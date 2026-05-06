@@ -17,9 +17,6 @@
 </p>
 
 > [!IMPORTANT]
-> This is proprietary premium software. Access, use, modification, and distribution are limited to authorized maintainers, customers, and license holders only.
-
-> [!IMPORTANT]
 > This plugin requires a valid license key to be used. You can get a free 7-day demo license from our Discord server, and you can also purchase the full license.
 >
 > Discord: https://dsc.gg/hellstarr
