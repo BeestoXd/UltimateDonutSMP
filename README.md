@@ -18,9 +18,6 @@
 </p>
 
 > [!IMPORTANT]
-> This repository contains proprietary premium plugin source code. It is not open source. Access, use, modification, build, and distribution are limited to authorized maintainers, customers, and license holders only.
-
-> [!IMPORTANT]
 > This plugin requires a valid license key to be used. You can get a free 7-day demo license from our Discord server, and you can also purchase the full license.
 >
 > Discord: https://dsc.gg/hellstarr
