@@ -42,14 +42,6 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
 | Network | Redis staff chat, network alerts, server status menu, Discord webhook support |
 | Operations | Config reloads, stats wipe tools, optimization controls, database support, license validation |
 
-## Screenshots
-
-<p align="center">
-  <img src="uds1.png" alt="UltimateDonutSmp screenshot 1" width="32%">
-  <img src="uds2.png" alt="UltimateDonutSmp screenshot 2" width="32%">
-  <img src="uds3.png" alt="UltimateDonutSmp screenshot 3" width="32%">
-</p>
-
 Additional media files are included in the repository for product pages, release notes, and premium listing assets.
 
 ## Requirements
