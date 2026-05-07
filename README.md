@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="main.png" alt="UltimateDonutSmp" width="420">
+  <img src="images/main.png" alt="UltimateDonutSmp" width="420">
 </p>
 
 <h1 align="center">UltimateDonutSmp</h1>
@@ -13,11 +13,11 @@
   <img alt="Java 21" src="https://img.shields.io/badge/Java-21-007396?style=for-the-badge&logo=openjdk&logoColor=white">
   <img alt="Paper" src="https://img.shields.io/badge/Platform-Paper_MC-2ea44f?style=for-the-badge">
   <img alt="Premium" src="https://img.shields.io/badge/Distribution-Premium-gold?style=for-the-badge">
-  <img alt="License" src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge">
+  <img alt="Distribution" src="https://img.shields.io/badge/Access-Commercial-red?style=for-the-badge">
 </p>
 
 > [!IMPORTANT]
-> This plugin requires a valid license key to be used. You can get a free 7-day demo license from our Discord server, and you can also purchase the full license.
+> This is proprietary premium software. Access, use, modification, and distribution are limited to authorized maintainers and customers only.
 >
 > Discord: https://dsc.gg/hellstarr
 
@@ -44,27 +44,27 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
 ## Screenshots
 
 <p align="center">
-  <img src="uds1.png" alt="UltimateDonutSmp screenshot 1" width="32%">
-  <img src="uds2.png" alt="UltimateDonutSmp screenshot 2" width="32%">
-  <img src="uds3.png" alt="UltimateDonutSmp screenshot 3" width="32%">
-  <img src="uds4.png" alt="UltimateDonutSmp screenshot 4" width="32%">
-  <img src="uds5.png" alt="UltimateDonutSmp screenshot 5" width="32%">
-  <img src="uds6.png" alt="UltimateDonutSmp screenshot 6" width="32%">
-  <img src="uds7.png" alt="UltimateDonutSmp screenshot 7" width="32%">
-  <img src="uds8.png" alt="UltimateDonutSmp screenshot 8" width="32%">
-  <img src="uds9.png" alt="UltimateDonutSmp screenshot 9" width="32%">
-  <img src="uds10.png" alt="UltimateDonutSmp screenshot 10" width="32%">
-  <img src="uds11.png" alt="UltimateDonutSmp screenshot 11" width="32%">
-  <img src="uds12.png" alt="UltimateDonutSmp screenshot 12" width="32%">
-  <img src="uds13.png" alt="UltimateDonutSmp screenshot 13" width="32%">
-  <img src="uds14.png" alt="UltimateDonutSmp screenshot 14" width="32%">
-  <img src="uds16.png" alt="UltimateDonutSmp screenshot 16" width="32%">
-  <img src="gif1.gif" alt="UltimateDonutSmp screenshot 1" width="32%">
-  <img src="gif2.gif" alt="UltimateDonutSmp screenshot 2" width="32%">
-  <img src="gif3.gif" alt="UltimateDonutSmp screenshot 3" width="32%">
-  <img src="gif4.gif" alt="UltimateDonutSmp screenshot 4" width="32%">
-  <img src="gif5.gif" alt="UltimateDonutSmp screenshot 5" width="32%">
-  <img src="gif6.gif" alt="UltimateDonutSmp screenshot 6" width="32%">
+  <img src="images/uds1.png" alt="UltimateDonutSmp screenshot 1" width="32%">
+  <img src="images/uds2.png" alt="UltimateDonutSmp screenshot 2" width="32%">
+  <img src="images/uds3.png" alt="UltimateDonutSmp screenshot 3" width="32%">
+  <img src="images/uds4.png" alt="UltimateDonutSmp screenshot 4" width="32%">
+  <img src="images/uds5.png" alt="UltimateDonutSmp screenshot 5" width="32%">
+  <img src="images/uds6.png" alt="UltimateDonutSmp screenshot 6" width="32%">
+  <img src="images/uds7.png" alt="UltimateDonutSmp screenshot 7" width="32%">
+  <img src="images/uds8.png" alt="UltimateDonutSmp screenshot 8" width="32%">
+  <img src="images/uds9.png" alt="UltimateDonutSmp screenshot 9" width="32%">
+  <img src="images/uds10.png" alt="UltimateDonutSmp screenshot 10" width="32%">
+  <img src="images/uds11.png" alt="UltimateDonutSmp screenshot 11" width="32%">
+  <img src="images/uds12.png" alt="UltimateDonutSmp screenshot 12" width="32%">
+  <img src="images/uds13.png" alt="UltimateDonutSmp screenshot 13" width="32%">
+  <img src="images/uds14.png" alt="UltimateDonutSmp screenshot 14" width="32%">
+  <img src="images/uds16.png" alt="UltimateDonutSmp screenshot 16" width="32%">
+  <img src="images/gif1.gif" alt="UltimateDonutSmp screenshot 1" width="32%">
+  <img src="images/gif2.gif" alt="UltimateDonutSmp screenshot 2" width="32%">
+  <img src="images/gif3.gif" alt="UltimateDonutSmp screenshot 3" width="32%">
+  <img src="images/gif4.gif" alt="UltimateDonutSmp screenshot 4" width="32%">
+  <img src="images/gif5.gif" alt="UltimateDonutSmp screenshot 5" width="32%">
+  <img src="images/gif6.gif" alt="UltimateDonutSmp screenshot 6" width="32%">
 </p>
 
 
@@ -91,7 +91,7 @@ The plugin can run without every soft dependency, but enabling them unlocks deep
 ## Installation
 
 1. Stop the Minecraft server.
-2. Place the licensed plugin jar into the server `plugins/` directory.
+2. Place the plugin jar into the server `plugins/` directory.
 3. Start the server once so the default configuration files are generated.
 4. Configure storage in `database.yml`.
 5. Review the core gameplay files such as `config.yml`, `menus.yml`, `shop.yml`, `worth.yml`, `rtp.yml`, and `messages.yml`.
@@ -152,7 +152,7 @@ The complete command and permission list is available in the packaged plugin met
 
 UltimateDonutSmp is proprietary commercial software.
 
-- The plugin may only be used by authorized license holders.
+- The plugin may only be used by authorized customers and maintainers.
 - Redistribution, resale, sublicensing, public mirroring, or unauthorized sharing is not permitted without written permission.
 
 Copyright (c) 2026 UltimateDonutSmp. All rights reserved.
