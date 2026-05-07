@@ -72,7 +72,7 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
 
 | Requirement | Notes |
 | --- | --- |
-| Java | Java 21 |
+| Java | Java 25 |
 | Server | Paper or a compatible Paper-based server matching the configured API target |
 | Storage | SQLite by default, with MySQL and MongoDB-backed modes available |
 | Optional network layer | Redis for cross-server staff chat, reports, helpop, and server status |
