@@ -2,7 +2,7 @@
   <img src="images/main.png" alt="UltimateDonutSmp" width="720">
 </p>
 
-<h1 align="center">UltimateDonutSmp</h1>
+<h1 align="center">UltimateDonutSmp (FREE)</h1>
 
 <p align="center">
   Premium Paper plugin for DonutSMP-style Minecraft servers.
