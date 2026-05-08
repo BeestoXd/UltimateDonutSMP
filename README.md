@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/main.png" alt="UltimateDonutSmp" width="420">
+  <img src="images/main.png" alt="UltimateDonutSmp" width="720">
 </p>
 
 <h1 align="center">UltimateDonutSmp</h1>
