@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.SpawnerInstance;
+import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,6 +54,10 @@ public class AntiEspManager {
         if (player == null || !player.isOnline() || !enabled || plugin.getSpawnerManager() == null) {
             return;
         }
+        if (!Bukkit.isOwnedByCurrentRegion(player)) {
+            plugin.getFoliaScheduler().runEntity(player, () -> updatePlayer(player));
+            return;
+        }
 
         var allSpawners = plugin.getSpawnerManager().getSpawnersInWorld(player.getWorld().getName());
         if (allSpawners.isEmpty()) {
@@ -96,9 +101,7 @@ public class AntiEspManager {
     }
 
     public void refreshAllPlayers() {
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            updatePlayer(player);
-        }
+        plugin.getFoliaScheduler().forEachOnlinePlayer(this::updatePlayer);
     }
 
     public void refreshNearby(Location location) {
@@ -107,11 +110,14 @@ public class AntiEspManager {
         }
 
         double radiusSquared = trackingRadius * (double) trackingRadius;
-        for (Player player : location.getWorld().getPlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
+            if (player.getWorld() != location.getWorld()) {
+                return;
+            }
             if (player.getLocation().distanceSquared(location) <= radiusSquared) {
                 updatePlayer(player);
             }
-        }
+        });
     }
 
     public void clearPlayer(java.util.UUID playerUuid) {
@@ -127,11 +133,11 @@ public class AntiEspManager {
             return;
         }
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
             for (SpawnerInstance instance : plugin.getSpawnerManager().getSpawnersInWorld(player.getWorld().getName())) {
                 revealActual(player, instance);
             }
-        }
+        });
         revealedSpawners.clear();
     }
 

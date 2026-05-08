@@ -1965,6 +1965,16 @@ public class DuelManager {
             return;
         }
 
+        Location center = snapshotCenter(snapshot, world);
+        if (!Bukkit.isOwnedByCurrentRegion(center)) {
+            plugin.getFoliaScheduler().runRegion(center, () -> rollbackArenaSnapshot(snapshot, world));
+            return;
+        }
+
+        rollbackArenaSnapshot(snapshot, world);
+    }
+
+    private void rollbackArenaSnapshot(ArenaSnapshot snapshot, World world) {
         for (BlockSnapshot blockSnapshot : snapshot.blocks()) {
             Block block = world.getBlockAt(blockSnapshot.x(), blockSnapshot.y(), blockSnapshot.z());
             try {
@@ -1982,7 +1992,12 @@ public class DuelManager {
     }
 
     private void cleanupTransientEntities(ArenaSnapshot snapshot, World world) {
-        for (Entity entity : world.getEntities()) {
+        Location center = snapshotCenter(snapshot, world);
+        double radiusX = Math.max(1.0D, (snapshot.maxX() - snapshot.minX() + 1) / 2.0D + 1.0D);
+        double radiusY = Math.max(1.0D, (snapshot.maxY() - snapshot.minY() + 1) / 2.0D + 1.0D);
+        double radiusZ = Math.max(1.0D, (snapshot.maxZ() - snapshot.minZ() + 1) / 2.0D + 1.0D);
+
+        for (Entity entity : world.getNearbyEntities(center, radiusX, radiusY, radiusZ)) {
             if (entity instanceof Player) {
                 continue;
             }
@@ -2011,6 +2026,15 @@ public class DuelManager {
                 entity.remove();
             }
         }
+    }
+
+    private Location snapshotCenter(ArenaSnapshot snapshot, World world) {
+        return new Location(
+                world,
+                (snapshot.minX() + snapshot.maxX() + 1) / 2.0D,
+                (snapshot.minY() + snapshot.maxY() + 1) / 2.0D,
+                (snapshot.minZ() + snapshot.maxZ() + 1) / 2.0D
+        );
     }
 
     private void prepareTransition(UUID uuid) {
@@ -2079,12 +2103,13 @@ public class DuelManager {
             return;
         }
 
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (viewer.getUniqueId().equals(hidden.getUniqueId())) {
-                continue;
+        UUID hiddenId = hidden.getUniqueId();
+        plugin.getFoliaScheduler().forEachOnlinePlayer(viewer -> {
+            if (viewer.getUniqueId().equals(hiddenId)) {
+                return;
             }
             viewer.hidePlayer(plugin, hidden);
-        }
+        });
     }
 
     private void clearTemporaryVanish(Player shown) {
@@ -2092,18 +2117,17 @@ public class DuelManager {
             return;
         }
 
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (viewer.getUniqueId().equals(shown.getUniqueId())) {
-                continue;
+        UUID shownId = shown.getUniqueId();
+        plugin.getFoliaScheduler().forEachOnlinePlayer(viewer -> {
+            if (viewer.getUniqueId().equals(shownId)) {
+                return;
             }
             viewer.showPlayer(plugin, shown);
-        }
+        });
     }
 
     private void showAllVanishedPlayers() {
-        for (Player shown : Bukkit.getOnlinePlayers()) {
-            clearTemporaryVanish(shown);
-        }
+        plugin.getFoliaScheduler().forEachOnlinePlayer(this::clearTemporaryVanish);
     }
 
     private String formatDuration(long totalSeconds) {

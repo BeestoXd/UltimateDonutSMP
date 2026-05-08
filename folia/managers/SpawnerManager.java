@@ -679,7 +679,7 @@ public class SpawnerManager {
         if (world != null && dropItem) {
             ItemStack item = createSpawnerItem(instance.getMobTypeKey(), instance.getStackAmount());
             if (item != null) {
-                world.dropItemNaturally(getSpawnerCenter(instance), item);
+                dropItemNaturally(getSpawnerCenter(instance), item);
             }
         }
 
@@ -911,6 +911,10 @@ public class SpawnerManager {
         if (location == null || location.getWorld() == null || material == null || amount <= 0L) {
             return 0L;
         }
+        if (!Bukkit.isOwnedByCurrentRegion(location)) {
+            plugin.getFoliaScheduler().runRegion(location, () -> dropMaterial(location, material, amount));
+            return amount;
+        }
 
         long remaining = amount;
         long dropped = 0L;
@@ -925,10 +929,24 @@ public class SpawnerManager {
         return dropped;
     }
 
+    private void dropItemNaturally(Location location, ItemStack item) {
+        if (location == null || location.getWorld() == null || item == null || item.getType().isAir()) {
+            return;
+        }
+        if (!Bukkit.isOwnedByCurrentRegion(location)) {
+            plugin.getFoliaScheduler().runRegion(location, () -> dropItemNaturally(location, item));
+            return;
+        }
+        location.getWorld().dropItemNaturally(location, item);
+    }
+
     private boolean hasNearbyPlayer(World world, SpawnerInstance instance, double radius) {
         double radiusSquared = radius * radius;
         Location center = new Location(world, instance.getX() + 0.5D, instance.getY() + 0.5D, instance.getZ() + 0.5D);
-        for (Player player : world.getPlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!Bukkit.isOwnedByCurrentRegion(player) || player.getWorld() != world) {
+                continue;
+            }
             if (player.getLocation().distanceSquared(center) <= radiusSquared) {
                 return true;
             }
@@ -1003,6 +1021,12 @@ public class SpawnerManager {
 
         World world = Bukkit.getWorld(instance.getWorld());
         if (world == null) {
+            return;
+        }
+
+        Location location = new Location(world, instance.getX(), instance.getY(), instance.getZ());
+        if (!Bukkit.isOwnedByCurrentRegion(location)) {
+            plugin.getFoliaScheduler().runRegion(location, () -> syncSpawnerBlockState(instance));
             return;
         }
 

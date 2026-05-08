@@ -4,7 +4,6 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.ChatManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -157,7 +156,7 @@ public class ChatCommand implements CommandExecutor {
 
     private void broadcast(String message, CommandSender sender) {
         Component component = ColorUtils.toComponent(message);
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(component));
+        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> player.sendMessage(component));
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(ColorUtils.colorize(message));

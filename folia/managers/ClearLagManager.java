@@ -4,10 +4,16 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClearLagManager {
 
@@ -43,27 +49,46 @@ public class ClearLagManager {
         return plugin.getConfigManager().getConfig().getStringList("CLEAR-LAG.EXCLUDED-WORLDS");
     }
 
-    public int clearEntities() {
-        List<String> excluded = getExcludedWorlds();
-        int count = 0;
-        for (World world : Bukkit.getWorlds()) {
-            if (excluded.contains(world.getName())) continue;
-            for (Entity entity : world.getEntities()) {
-                boolean remove = false;
-                if (clearDroppedItems() && entity instanceof Item) remove = true;
-                if (clearAnimals() && entity instanceof Animals) remove = true;
-                if (clearMonsters() && entity instanceof Monster) remove = true;
-                if (remove && !(entity instanceof Player)) {
-                    plugin.getFoliaScheduler().runEntity(entity, () -> {
-                        if (entity.isValid()) {
-                            entity.remove();
+    public int getScanRadius() {
+        return Math.max(16, plugin.getConfigManager().getConfig().getInt("CLEAR-LAG.SCAN-RADIUS", 96));
+    }
+
+    public CompletableFuture<Integer> clearEntities() {
+        CompletableFuture<Integer> result = new CompletableFuture<>();
+        ClearRules rules = new ClearRules(
+                List.copyOf(getExcludedWorlds()),
+                clearAnimals(),
+                clearMonsters(),
+                clearDroppedItems(),
+                getScanRadius()
+        );
+
+        plugin.getFoliaScheduler().runGlobal(() -> {
+            Collection<? extends Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+            if (onlinePlayers.isEmpty()) {
+                result.complete(0);
+                return;
+            }
+
+            Map<UUID, Entity> candidates = new ConcurrentHashMap<>();
+            AtomicInteger pendingScans = new AtomicInteger(onlinePlayers.size());
+
+            for (Player player : onlinePlayers) {
+                if (plugin.getFoliaScheduler().runEntity(player, () -> {
+                    try {
+                        scanNearbyEntities(player, rules, candidates);
+                    } finally {
+                        if (pendingScans.decrementAndGet() == 0) {
+                            removeCandidates(candidates.values(), rules, result);
                         }
-                    });
-                    count++;
+                    }
+                }) == null && pendingScans.decrementAndGet() == 0) {
+                    removeCandidates(candidates.values(), rules, result);
                 }
             }
-        }
-        return count;
+        });
+
+        return result;
     }
 
     public void broadcastCountdown(int seconds) {
@@ -87,5 +112,73 @@ public class ClearLagManager {
 
             player.sendMessage(ColorUtils.toComponent(message));
         });
+    }
+
+    private void scanNearbyEntities(Player player, ClearRules rules, Map<UUID, Entity> candidates) {
+        if (player == null || !player.isOnline() || player.getWorld() == null) {
+            return;
+        }
+        if (rules.excludedWorlds().contains(player.getWorld().getName())) {
+            return;
+        }
+
+        int radius = rules.scanRadius();
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (shouldClear(entity, rules)) {
+                candidates.putIfAbsent(entity.getUniqueId(), entity);
+            }
+        }
+    }
+
+    private void removeCandidates(
+            Collection<Entity> candidates,
+            ClearRules rules,
+            CompletableFuture<Integer> result
+    ) {
+        if (candidates.isEmpty()) {
+            result.complete(0);
+            return;
+        }
+
+        AtomicInteger removed = new AtomicInteger();
+        AtomicInteger pendingRemovals = new AtomicInteger(candidates.size());
+
+        for (Entity entity : candidates) {
+            if (plugin.getFoliaScheduler().runEntity(entity, () -> {
+                try {
+                    if (entity.isValid() && shouldClear(entity, rules)) {
+                        entity.remove();
+                        removed.incrementAndGet();
+                    }
+                } finally {
+                    if (pendingRemovals.decrementAndGet() == 0) {
+                        result.complete(removed.get());
+                    }
+                }
+            }) == null && pendingRemovals.decrementAndGet() == 0) {
+                result.complete(removed.get());
+            }
+        }
+    }
+
+    private boolean shouldClear(Entity entity, ClearRules rules) {
+        if (entity == null || entity instanceof Player || entity.getWorld() == null) {
+            return false;
+        }
+        if (rules.excludedWorlds().contains(entity.getWorld().getName())) {
+            return false;
+        }
+        return (rules.clearDroppedItems() && entity instanceof Item)
+                || (rules.clearAnimals() && entity instanceof Animals)
+                || (rules.clearMonsters() && entity instanceof Monster);
+    }
+
+    private record ClearRules(
+            List<String> excludedWorlds,
+            boolean clearAnimals,
+            boolean clearMonsters,
+            boolean clearDroppedItems,
+            int scanRadius
+    ) {
     }
 }

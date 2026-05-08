@@ -2632,25 +2632,25 @@ public class FfaManager {
     }
 
     private void applyTemporaryVanish(Player hidden) {
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (!viewer.getUniqueId().equals(hidden.getUniqueId())) {
+        UUID hiddenId = hidden.getUniqueId();
+        plugin.getFoliaScheduler().forEachOnlinePlayer(viewer -> {
+            if (!viewer.getUniqueId().equals(hiddenId)) {
                 viewer.hidePlayer(plugin, hidden);
             }
-        }
+        });
     }
 
     private void clearTemporaryVanish(Player shown) {
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (!viewer.getUniqueId().equals(shown.getUniqueId())) {
+        UUID shownId = shown.getUniqueId();
+        plugin.getFoliaScheduler().forEachOnlinePlayer(viewer -> {
+            if (!viewer.getUniqueId().equals(shownId)) {
                 viewer.showPlayer(plugin, shown);
             }
-        }
+        });
     }
 
     private void showAllVanishedPlayers() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            clearTemporaryVanish(player);
-        }
+        plugin.getFoliaScheduler().forEachOnlinePlayer(this::clearTemporaryVanish);
     }
 
     private void clearPotionEffects(Player player) {
@@ -3663,6 +3663,12 @@ public class FfaManager {
             return false;
         }
 
+        Location center = snapshotCenter(snapshot, world);
+        if (!Bukkit.isOwnedByCurrentRegion(center)) {
+            plugin.getFoliaScheduler().runRegion(center, () -> rollbackArena(snapshot, match, arena, changedBlocks));
+            return true;
+        }
+
         if (changedBlocks == null || changedBlocks.isEmpty()) {
             evacuatePlayersFromResetArea(match, arena, snapshot, world);
         } else {
@@ -4149,7 +4155,12 @@ public class FfaManager {
     }
 
     private void cleanupTransientEntities(ArenaSnapshot snapshot, World world) {
-        for (Entity entity : world.getEntities()) {
+        Location center = snapshotCenter(snapshot, world);
+        double radiusX = Math.max(1.0D, (snapshot.maxX() - snapshot.minX() + 1) / 2.0D + 1.0D);
+        double radiusY = Math.max(1.0D, (snapshot.maxY() - snapshot.minY() + 1) / 2.0D + 1.0D);
+        double radiusZ = Math.max(1.0D, (snapshot.maxZ() - snapshot.minZ() + 1) / 2.0D + 1.0D);
+
+        for (Entity entity : world.getNearbyEntities(center, radiusX, radiusY, radiusZ)) {
             if (entity instanceof Player || !snapshot.contains(entity.getLocation())) {
                 continue;
             }
@@ -4178,6 +4189,15 @@ public class FfaManager {
                 entity.remove();
             }
         }
+    }
+
+    private Location snapshotCenter(ArenaSnapshot snapshot, World world) {
+        return new Location(
+                world,
+                (snapshot.minX() + snapshot.maxX() + 1) / 2.0D,
+                (snapshot.minY() + snapshot.maxY() + 1) / 2.0D,
+                (snapshot.minZ() + snapshot.maxZ() + 1) / 2.0D
+        );
     }
 
     private void ensureTables() {

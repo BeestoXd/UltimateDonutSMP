@@ -742,15 +742,15 @@ public class StaffModeManager {
             }
         }
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(online -> {
             if (!isStaffMember(online)) {
-                continue;
+                return;
             }
             if (excluded.contains(online.getUniqueId())) {
-                continue;
+                return;
             }
             online.sendMessage(ColorUtils.toComponent(message, online));
-        }
+        });
         plugin.getLogger().info(ColorUtils.colorize(message));
     }
 
@@ -953,12 +953,13 @@ public class StaffModeManager {
             return;
         }
 
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (viewer.getUniqueId().equals(player.getUniqueId())) {
-                continue;
+        UUID playerId = player.getUniqueId();
+        plugin.getFoliaScheduler().forEachOnlinePlayer(viewer -> {
+            if (viewer.getUniqueId().equals(playerId)) {
+                return;
             }
             viewer.showPlayer(plugin, player);
-        }
+        });
     }
 
     private void clearBetterView(Player player, StaffModeState state) {
@@ -988,15 +989,13 @@ public class StaffModeManager {
     }
 
     private void refreshAllVanishVisibility() {
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            refreshViewerVisibility(viewer);
-        }
+        plugin.getFoliaScheduler().forEachOnlinePlayer(this::refreshViewerVisibility);
 
-        for (Player target : Bukkit.getOnlinePlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(target -> {
             if (isVanished(target.getUniqueId())) {
                 refreshTargetVisibility(target);
             }
-        }
+        });
     }
 
     private void refreshViewerVisibility(Player viewer) {
@@ -1004,14 +1003,18 @@ public class StaffModeManager {
             return;
         }
 
-        for (Player target : Bukkit.getOnlinePlayers()) {
-            if (target.getUniqueId().equals(viewer.getUniqueId())) {
-                continue;
+        UUID viewerId = viewer.getUniqueId();
+        plugin.getFoliaScheduler().forEachOnlinePlayer(target -> {
+            UUID targetId = target.getUniqueId();
+            if (targetId.equals(viewerId)) {
+                return;
             }
-            if (isVanished(target.getUniqueId()) && !canSeeVanished(viewer, target)) {
-                viewer.hidePlayer(plugin, target);
-            }
-        }
+            plugin.getFoliaScheduler().runEntity(viewer, () -> {
+                if (isVanished(targetId) && !canSeeVanished(viewer, target)) {
+                    viewer.hidePlayer(plugin, target);
+                }
+            });
+        });
     }
 
     private void refreshTargetVisibility(Player target) {
@@ -1019,16 +1022,17 @@ public class StaffModeManager {
             return;
         }
 
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (viewer.getUniqueId().equals(target.getUniqueId())) {
-                continue;
+        UUID targetId = target.getUniqueId();
+        plugin.getFoliaScheduler().forEachOnlinePlayer(viewer -> {
+            if (viewer.getUniqueId().equals(targetId)) {
+                return;
             }
-            if (isVanished(target.getUniqueId()) && !canSeeVanished(viewer, target)) {
+            if (isVanished(targetId) && !canSeeVanished(viewer, target)) {
                 viewer.hidePlayer(plugin, target);
             } else {
                 viewer.showPlayer(plugin, target);
             }
-        }
+        });
     }
 
     private boolean canSeeVanished(Player viewer, Player vanishedTarget) {

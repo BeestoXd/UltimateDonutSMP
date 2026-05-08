@@ -151,12 +151,12 @@ public class BountyManager {
                 "{player}", getDisplayName(targetUuid),
                 "{price}", NumberUtils.format(amount));
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(online -> {
             PlayerData data = plugin.getPlayerDataManager().get(online);
             if (data == null || data.isBountyAlertsEnabled()) {
                 online.sendMessage(ColorUtils.toComponent(message));
             }
-        }
+        });
     }
 
     public double claimBounty(Player killer, UUID targetUuid) {

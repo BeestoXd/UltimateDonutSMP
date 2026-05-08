@@ -44,11 +44,11 @@ public class FreezeManager {
             return;
         }
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
             if (hasActiveFreeze(player.getUniqueId())) {
                 createOrUpdateSession(player, player.getLocation());
             }
-        }
+        });
     }
 
     public void shutdown() {
@@ -425,11 +425,11 @@ public class FreezeManager {
             return;
         }
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(online -> {
             if (online.hasPermission(getAlertPermission())) {
                 online.sendMessage(ColorUtils.toComponent(message, online));
             }
-        }
+        });
     }
 
     private long getAlertCooldownMillis() {

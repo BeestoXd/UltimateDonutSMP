@@ -120,14 +120,16 @@ public final class FoliaScheduler {
         return Bukkit.getRegionScheduler().run(plugin, world, chunkX, chunkZ, task -> runnable.run());
     }
 
-    public void forEachOnlinePlayer(Consumer<Player> consumer) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            runEntity(player, () -> {
-                if (player.isOnline()) {
-                    consumer.accept(player);
-                }
-            });
-        }
+    public ScheduledTask forEachOnlinePlayer(Consumer<Player> consumer) {
+        return runGlobal(() -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                runEntity(player, () -> {
+                    if (player.isOnline()) {
+                        consumer.accept(player);
+                    }
+                });
+            }
+        });
     }
 
     public CompletableFuture<Boolean> teleport(Entity entity, Location location) {

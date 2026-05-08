@@ -3,7 +3,6 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -262,11 +261,11 @@ public class ChatManager {
 
     public void clearChatForAllPlayers() {
         int clearLines = Math.max(1, config().getInt(CHAT_ROOT + ".CLEAR-LINES", 150));
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
             for (int i = 0; i < clearLines; i++) {
                 player.sendMessage(Component.empty());
             }
-        }
+        });
     }
 
     public void clearPlayerState(UUID uuid) {
