@@ -67,7 +67,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             randomAreaCount++;
             List<String> lore = replaceAreaPlaceholders(area.lore(), area);
             if (canDeleteArea(player, area)) {
-                lore.add("&cRight-click to delete (Admin)");
+                lore.add("&cRight-click to delete");
             }
 
             set(area.slot(), ItemUtils.createItem(
