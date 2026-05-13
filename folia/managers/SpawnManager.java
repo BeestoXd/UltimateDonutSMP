@@ -57,6 +57,16 @@ public class SpawnManager {
         }
     }
 
+    public record AreaDeleteResult(boolean success, String message) {
+        public static AreaDeleteResult success(String message) {
+            return new AreaDeleteResult(true, message);
+        }
+
+        public static AreaDeleteResult failure(String message) {
+            return new AreaDeleteResult(false, message);
+        }
+    }
+
     private record SetupAreaTarget(String path, String areaId, int slot) {
     }
 
@@ -206,7 +216,7 @@ public class SpawnManager {
     }
 
     public boolean shouldOpenMenu(AreaType type) {
-        return isMenuEnabled(type) && hasMenuDefinition(type) && !getMenuAreas(type).isEmpty();
+        return isMenuEnabled(type) && hasMenuDefinition(type);
     }
 
     public boolean hasMenuDefinition(AreaType type) {
@@ -535,6 +545,38 @@ public class SpawnManager {
         return new SetupAreaTarget(menuPath + ".AREAS." + nextKey, nextKey, nextSlot);
     }
 
+    public AreaDeleteResult deleteMenuArea(TeleportArea area) {
+        if (area == null) {
+            return AreaDeleteResult.failure("Area is not available.");
+        }
+
+        if (!isStoredMenuArea(area)) {
+            return AreaDeleteResult.failure("This area is not stored in menus.yml.");
+        }
+
+        FileConfiguration menus = plugin.getConfigManager().getMenus();
+        String menuPath = area.type() == AreaType.SPAWN ? "SPAWN-MENU" : "AFK-MENU";
+        String areaPath = menuPath + ".AREAS." + area.id();
+        menus.set(areaPath, null);
+        if (!plugin.getConfigManager().saveMenus()) {
+            return AreaDeleteResult.failure("Failed to save menus.yml.");
+        }
+
+        load();
+        return AreaDeleteResult.success("Removed " + getLocationLabel(area.type()) + " area "
+                + area.id() + " from slot " + area.slot() + ".");
+    }
+
+    public boolean isStoredMenuArea(TeleportArea area) {
+        if (area == null) {
+            return false;
+        }
+
+        FileConfiguration menus = plugin.getConfigManager().getMenus();
+        String menuPath = area.type() == AreaType.SPAWN ? "SPAWN-MENU" : "AFK-MENU";
+        return menus.getConfigurationSection(menuPath + ".AREAS." + area.id()) != null;
+    }
+
     private boolean hasSetupDestination(AreaType type, String areaPath, ConfigurationSection areaSection) {
         Location location = parseAreaLocation(type, areaSection.get("LOCATION"), areaPath + ".LOCATION");
         if (location != null && makeSafeDestination(location) != null) {
@@ -564,17 +606,11 @@ public class SpawnManager {
     }
 
     private String nextAreaKey(ConfigurationSection areasSection) {
-        int highest = 0;
-        for (String key : areasSection.getKeys(false)) {
-            highest = Math.max(highest, parsePositiveInt(key, 0));
+        int candidate = 1;
+        while (areasSection.contains(String.valueOf(candidate))) {
+            candidate++;
         }
-
-        String candidate;
-        do {
-            highest++;
-            candidate = String.valueOf(highest);
-        } while (areasSection.contains(candidate));
-        return candidate;
+        return String.valueOf(candidate);
     }
 
     private int parsePositiveInt(String value, int fallback) {
