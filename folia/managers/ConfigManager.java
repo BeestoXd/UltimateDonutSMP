@@ -197,6 +197,7 @@ public class ConfigManager {
     public boolean saveDuels() { return save("duels.yml", duels); }
     public boolean saveFfa() { return save("ffa.yml", ffa); }
     public boolean saveCrates() { return save("crates.yml", crates); }
+    public boolean saveMenus() { return save("menus.yml", menus); }
     public boolean saveDatabase() { return save("database.yml", database); }
     public boolean saveNetwork() { return save("network.yml", network); }
     public boolean saveDiscord() { return save("discord.yml", discord); }

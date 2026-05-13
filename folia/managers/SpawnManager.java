@@ -61,16 +61,12 @@ public class SpawnManager {
         configuredAfkAreas = loadAreas("AFK-MENU", AreaType.AFK);
     }
 
-    public void setSpawnLocation(Location loc) {
-        this.spawnLocation = loc;
-        plugin.getConfigManager().getConfig().set("LOCATIONS.SPAWN-LOCATION", LocationUtils.serialize(loc));
-        plugin.saveConfig();
+    public boolean setSpawnLocation(Location loc) {
+        return setSetupLocation(AreaType.SPAWN, loc, "LOCATIONS.SPAWN-LOCATION");
     }
 
-    public void setAfkLocation(Location loc) {
-        this.afkLocation = loc;
-        plugin.getConfigManager().getConfig().set("LOCATIONS.AFK-LOCATION", LocationUtils.serialize(loc));
-        plugin.saveConfig();
+    public boolean setAfkLocation(Location loc) {
+        return setSetupLocation(AreaType.AFK, loc, "LOCATIONS.AFK-LOCATION");
     }
 
     public List<TeleportArea> getSpawnAreas() {
@@ -83,9 +79,10 @@ public class SpawnManager {
 
     public List<TeleportArea> getValidAreas(AreaType type) {
         List<TeleportArea> configured = type == AreaType.SPAWN ? configuredSpawnAreas : configuredAfkAreas;
+        List<TeleportArea> locationOverrideAreas = getConfiguredLocationOverrideAreas(configured);
         Set<String> boundCuboids = getBoundCuboidNames(type);
         if (boundCuboids.isEmpty()) {
-            return List.of();
+            return locationOverrideAreas;
         }
 
         List<String> existingBoundCuboids = new ArrayList<>();
@@ -95,7 +92,7 @@ public class SpawnManager {
             }
         }
         if (existingBoundCuboids.isEmpty()) {
-            return List.of();
+            return locationOverrideAreas;
         }
 
         if (configured.isEmpty()) {
@@ -106,19 +103,38 @@ public class SpawnManager {
         Set<Integer> usedTemplateIndexes = new HashSet<>();
         Set<String> assignedCuboids = new LinkedHashSet<>();
 
+        for (int index = 0; index < configured.size(); index++) {
+            TeleportArea area = configured.get(index);
+            if (area.locationOverride() == null || resolveDestination(area) == null) {
+                continue;
+            }
+
+            materialized.add(area);
+            usedTemplateIndexes.add(index);
+
+            String cuboidName = trimToNull(area.cuboidName());
+            if (cuboidName != null) {
+                assignedCuboids.add(cuboidName.toLowerCase());
+            }
+        }
+
         for (String boundCuboid : existingBoundCuboids) {
+            if (assignedCuboids.contains(boundCuboid.toLowerCase())) {
+                continue;
+            }
+
             int matchingTemplateIndex = findMatchingTemplateIndex(configured, usedTemplateIndexes, boundCuboid);
             if (matchingTemplateIndex >= 0) {
                 TeleportArea template = configured.get(matchingTemplateIndex);
                 materialized.add(materializeArea(template, boundCuboid));
                 usedTemplateIndexes.add(matchingTemplateIndex);
-                assignedCuboids.add(boundCuboid);
+                assignedCuboids.add(boundCuboid.toLowerCase());
             }
         }
 
         List<String> remainingCuboids = new ArrayList<>();
         for (String boundCuboid : existingBoundCuboids) {
-            if (!assignedCuboids.contains(boundCuboid)) {
+            if (!assignedCuboids.contains(boundCuboid.toLowerCase())) {
                 remainingCuboids.add(boundCuboid);
             }
         }
@@ -129,13 +145,13 @@ public class SpawnManager {
                 TeleportArea template = configured.get(nextTemplateIndex);
                 materialized.add(materializeArea(template, boundCuboid));
                 usedTemplateIndexes.add(nextTemplateIndex);
-                assignedCuboids.add(boundCuboid);
+                assignedCuboids.add(boundCuboid.toLowerCase());
             }
         }
 
         List<String> extraCuboids = new ArrayList<>();
         for (String boundCuboid : existingBoundCuboids) {
-            if (!assignedCuboids.contains(boundCuboid)) {
+            if (!assignedCuboids.contains(boundCuboid.toLowerCase())) {
                 extraCuboids.add(boundCuboid);
             }
         }
@@ -355,6 +371,84 @@ public class SpawnManager {
             warn(path + " has an invalid location override '" + serialized + "'. Falling back to cuboid teleport.");
         }
         return parsed;
+    }
+
+    private boolean setSetupLocation(AreaType type, Location location, String configPath) {
+        String serialized = LocationUtils.serialize(location);
+        FileConfiguration config = plugin.getConfigManager().getConfig();
+        FileConfiguration menus = plugin.getConfigManager().getMenus();
+
+        if (type == AreaType.SPAWN) {
+            this.spawnLocation = location == null ? null : location.clone();
+        } else {
+            this.afkLocation = location == null ? null : location.clone();
+        }
+
+        config.set(configPath, serialized);
+        String firstAreaPath = findFirstMenuAreaPath(type);
+        if (firstAreaPath != null) {
+            menus.set(firstAreaPath + ".LOCATION", serialized);
+        } else {
+            plugin.getLogger().warning("[SpawnManager] Could not find a configured "
+                    + type.name().toLowerCase() + " menu area to update.");
+        }
+
+        try {
+            plugin.saveConfig();
+        } catch (RuntimeException exception) {
+            plugin.getLogger().warning("[SpawnManager] Failed to save config.yml: " + exception.getMessage());
+            return false;
+        }
+
+        boolean savedMenus = plugin.getConfigManager().saveMenus();
+        if (!savedMenus) {
+            return false;
+        }
+
+        load();
+        return true;
+    }
+
+    private String findFirstMenuAreaPath(AreaType type) {
+        FileConfiguration menus = plugin.getConfigManager().getMenus();
+        String menuPath = type == AreaType.SPAWN ? "SPAWN-MENU" : "AFK-MENU";
+        ConfigurationSection areasSection = menus.getConfigurationSection(menuPath + ".AREAS");
+        if (areasSection == null) {
+            return null;
+        }
+
+        String selectedKey = null;
+        int selectedSlot = Integer.MAX_VALUE;
+        for (String key : areasSection.getKeys(false)) {
+            ConfigurationSection areaSection = areasSection.getConfigurationSection(key);
+            if (areaSection == null || !areaSection.getBoolean("ENABLED", true)) {
+                continue;
+            }
+
+            int slot = areaSection.getInt("SLOT", Integer.MAX_VALUE);
+            if (selectedKey == null || slot < selectedSlot) {
+                selectedKey = key;
+                selectedSlot = slot;
+            }
+        }
+
+        return selectedKey == null ? null : menuPath + ".AREAS." + selectedKey;
+    }
+
+    private List<TeleportArea> getConfiguredLocationOverrideAreas(List<TeleportArea> configured) {
+        if (configured.isEmpty()) {
+            return List.of();
+        }
+
+        List<TeleportArea> areas = new ArrayList<>();
+        for (TeleportArea area : configured) {
+            if (area.locationOverride() != null && resolveDestination(area) != null) {
+                areas.add(area);
+            }
+        }
+
+        areas.sort(Comparator.comparingInt(TeleportArea::slot));
+        return List.copyOf(areas);
     }
 
     private Location cloneLocation(Location location) {

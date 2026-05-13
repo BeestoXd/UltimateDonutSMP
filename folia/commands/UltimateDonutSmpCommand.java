@@ -237,12 +237,20 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
         Location location = player.getLocation();
         if (spawn) {
-            plugin.getSpawnManager().setSpawnLocation(location);
+            if (!plugin.getSpawnManager().setSpawnLocation(location)) {
+                plugin.getLogger().warning("Failed to save setup spawn location at " + describeLocation(location) + ".");
+                sender.sendMessage(ColorUtils.toComponent("&cSpawn location could not be saved. Check console for details."));
+                return;
+            }
             sender.sendMessage(ColorUtils.toComponent("&aSpawn location saved at &f" + describeLocation(location) + "&a."));
             return;
         }
 
-        plugin.getSpawnManager().setAfkLocation(location);
+        if (!plugin.getSpawnManager().setAfkLocation(location)) {
+            plugin.getLogger().warning("Failed to save setup AFK location at " + describeLocation(location) + ".");
+            sender.sendMessage(ColorUtils.toComponent("&cAFK location could not be saved. Check console for details."));
+            return;
+        }
         sender.sendMessage(ColorUtils.toComponent("&aAFK location saved at &f" + describeLocation(location) + "&a."));
     }
 
