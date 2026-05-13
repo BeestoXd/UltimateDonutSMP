@@ -67,7 +67,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             randomAreaCount++;
             List<String> lore = replaceAreaPlaceholders(area.lore(), area);
             if (canDeleteArea(player, area)) {
-                lore.add("&cLeft-click to delete (Admin)");
+                lore.add("&cRight-click to delete (Admin)");
             }
 
             set(area.slot(), ItemUtils.createItem(
@@ -118,7 +118,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
         }
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        if (canDeleteArea(player, area) && clickType.isLeftClick()) {
+        if (canDeleteArea(player, area) && clickType.isRightClick()) {
             deleteArea(player, area);
             return;
         }
