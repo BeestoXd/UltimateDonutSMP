@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.OptimizationManager;
+import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import com.bx.ultimateDonutSmp.managers.StatsWipeManager;
 import com.bx.ultimateDonutSmp.menus.StatsWipeMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -237,21 +238,27 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
         Location location = player.getLocation();
         if (spawn) {
-            if (!plugin.getSpawnManager().setSpawnLocation(location)) {
-                plugin.getLogger().warning("Failed to save setup spawn location at " + describeLocation(location) + ".");
-                sender.sendMessage(ColorUtils.toComponent("&cSpawn location could not be saved. Check console for details."));
+            SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setSpawnLocation(location);
+            if (!result.success()) {
+                plugin.getLogger().warning("Failed to save setup spawn location at "
+                        + describeLocation(location) + ": " + result.message());
+                sender.sendMessage(ColorUtils.toComponent("&cSpawn location could not be saved: &f" + result.message()));
                 return;
             }
-            sender.sendMessage(ColorUtils.toComponent("&aSpawn location saved at &f" + describeLocation(location) + "&a."));
+            sender.sendMessage(ColorUtils.toComponent("&aSpawn location saved at &f" + describeLocation(location)
+                    + "&a. &7Area &f" + result.areaId() + " &7slot &f" + result.slot() + "&7."));
             return;
         }
 
-        if (!plugin.getSpawnManager().setAfkLocation(location)) {
-            plugin.getLogger().warning("Failed to save setup AFK location at " + describeLocation(location) + ".");
-            sender.sendMessage(ColorUtils.toComponent("&cAFK location could not be saved. Check console for details."));
+        SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setAfkLocation(location);
+        if (!result.success()) {
+            plugin.getLogger().warning("Failed to save setup AFK location at "
+                    + describeLocation(location) + ": " + result.message());
+            sender.sendMessage(ColorUtils.toComponent("&cAFK location could not be saved: &f" + result.message()));
             return;
         }
-        sender.sendMessage(ColorUtils.toComponent("&aAFK location saved at &f" + describeLocation(location) + "&a."));
+        sender.sendMessage(ColorUtils.toComponent("&aAFK location saved at &f" + describeLocation(location)
+                + "&a. &7Area &f" + result.areaId() + " &7slot &f" + result.slot() + "&7."));
     }
 
     private void sendSetupStatus(CommandSender sender, String label) {

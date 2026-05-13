@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +21,9 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpawnManager {
+
+    private static final double LOCATION_COUNT_RADIUS = 16.0D;
+    private static final double LOCATION_COUNT_RADIUS_SQUARED = LOCATION_COUNT_RADIUS * LOCATION_COUNT_RADIUS;
 
     public enum AreaType {
         SPAWN,
@@ -43,6 +47,19 @@ public class SpawnManager {
         }
     }
 
+    public record SetupLocationResult(boolean success, String areaId, int slot, String message) {
+        public static SetupLocationResult success(String areaId, int slot) {
+            return new SetupLocationResult(true, areaId, slot, "");
+        }
+
+        public static SetupLocationResult failure(String message) {
+            return new SetupLocationResult(false, "", -1, message);
+        }
+    }
+
+    private record SetupAreaTarget(String path, String areaId, int slot) {
+    }
+
     private final UltimateDonutSmp plugin;
     private Location spawnLocation;
     private Location afkLocation;
@@ -63,11 +80,11 @@ public class SpawnManager {
         configuredAfkAreas = loadAreas("AFK-MENU", AreaType.AFK);
     }
 
-    public boolean setSpawnLocation(Location loc) {
+    public SetupLocationResult setSpawnLocation(Location loc) {
         return setSetupLocation(AreaType.SPAWN, loc, "LOCATIONS.SPAWN-LOCATION");
     }
 
-    public boolean setAfkLocation(Location loc) {
+    public SetupLocationResult setAfkLocation(Location loc) {
         return setSetupLocation(AreaType.AFK, loc, "LOCATIONS.AFK-LOCATION");
     }
 
@@ -220,7 +237,25 @@ public class SpawnManager {
         }
 
         String cuboidName = trimToNull(area.cuboidName());
-        return cuboidName == null ? 0 : plugin.getCuboidManager().countPlayersInCuboid(cuboidName);
+        if (cuboidName != null && plugin.getCuboidManager().exists(cuboidName)) {
+            return plugin.getCuboidManager().countPlayersInCuboid(cuboidName);
+        }
+
+        Location destination = resolveDestination(area);
+        if (destination == null || destination.getWorld() == null) {
+            return 0;
+        }
+
+        int count = 0;
+        for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
+            Location playerLocation = onlinePlayer.getLocation();
+            if (playerLocation.getWorld() != null
+                    && playerLocation.getWorld().equals(destination.getWorld())
+                    && playerLocation.distanceSquared(destination) <= LOCATION_COUNT_RADIUS_SQUARED) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public Location resolveDestination(TeleportArea area) {
@@ -403,66 +438,168 @@ public class SpawnManager {
         return parsed;
     }
 
-    private boolean setSetupLocation(AreaType type, Location location, String configPath) {
+    private SetupLocationResult setSetupLocation(AreaType type, Location location, String configPath) {
         String serialized = LocationUtils.serialize(location);
         FileConfiguration config = plugin.getConfigManager().getConfig();
         FileConfiguration menus = plugin.getConfigManager().getMenus();
-
-        if (type == AreaType.SPAWN) {
-            this.spawnLocation = location == null ? null : location.clone();
-        } else {
-            this.afkLocation = location == null ? null : location.clone();
+        SetupAreaTarget target = findNextSetupAreaTarget(type);
+        if (target == null) {
+            return SetupLocationResult.failure("No free " + getLocationLabel(type) + " menu slot is available.");
         }
 
         config.set(configPath, serialized);
-        String firstAreaPath = findFirstMenuAreaPath(type);
-        if (firstAreaPath != null) {
-            menus.set(firstAreaPath + ".LOCATION", serialized);
-        } else {
-            plugin.getLogger().warning("[SpawnManager] Could not find a configured "
-                    + type.name().toLowerCase() + " menu area to update.");
-        }
+        menus.set(target.path() + ".LOCATION", serialized);
 
         try {
             plugin.saveConfig();
         } catch (RuntimeException exception) {
             plugin.getLogger().warning("[SpawnManager] Failed to save config.yml: " + exception.getMessage());
-            return false;
+            return SetupLocationResult.failure("Failed to save config.yml.");
         }
 
         boolean savedMenus = plugin.getConfigManager().saveMenus();
         if (!savedMenus) {
-            return false;
+            return SetupLocationResult.failure("Failed to save menus.yml.");
         }
 
         load();
-        return true;
+        return SetupLocationResult.success(target.areaId(), target.slot());
     }
 
-    private String findFirstMenuAreaPath(AreaType type) {
+    private SetupAreaTarget findNextSetupAreaTarget(AreaType type) {
         FileConfiguration menus = plugin.getConfigManager().getMenus();
         String menuPath = type == AreaType.SPAWN ? "SPAWN-MENU" : "AFK-MENU";
+        if (menus.getConfigurationSection(menuPath) == null) {
+            return null;
+        }
+
         ConfigurationSection areasSection = menus.getConfigurationSection(menuPath + ".AREAS");
         if (areasSection == null) {
-            return null;
+            areasSection = menus.createSection(menuPath + ".AREAS");
         }
 
         String selectedKey = null;
         int selectedSlot = Integer.MAX_VALUE;
+        int menuSize = normalizeSize(menus.getInt(menuPath + ".SIZE", 54));
+        int randomSlot = menus.getInt(menuPath + ".RANDOM-BUTTON.SLOT", -1);
+        Set<Integer> usedSlots = new HashSet<>();
+        if (randomSlot >= 0) {
+            usedSlots.add(randomSlot);
+        }
+
         for (String key : areasSection.getKeys(false)) {
             ConfigurationSection areaSection = areasSection.getConfigurationSection(key);
-            if (areaSection == null || !areaSection.getBoolean("ENABLED", true)) {
+            if (areaSection == null) {
                 continue;
             }
 
-            int slot = areaSection.getInt("SLOT", Integer.MAX_VALUE);
+            int slot = areaSection.getInt("SLOT", -1);
+            if (slot >= 0 && slot < menuSize) {
+                usedSlots.add(slot);
+            }
+
+            if (!areaSection.getBoolean("ENABLED", true)
+                    || slot < 0
+                    || slot >= menuSize
+                    || slot == randomSlot
+                    || hasSetupDestination(type, menuPath + ".AREAS." + key, areaSection)) {
+                continue;
+            }
+
             if (selectedKey == null || slot < selectedSlot) {
                 selectedKey = key;
                 selectedSlot = slot;
             }
         }
 
-        return selectedKey == null ? null : menuPath + ".AREAS." + selectedKey;
+        if (selectedKey != null) {
+            return new SetupAreaTarget(menuPath + ".AREAS." + selectedKey, selectedKey, selectedSlot);
+        }
+
+        int nextSlot = findNextFreeSlot(menuSize, usedSlots);
+        if (nextSlot < 0) {
+            return null;
+        }
+
+        String nextKey = nextAreaKey(areasSection);
+        int areaNumber = parsePositiveInt(nextKey, areasSection.getKeys(false).size() + 1);
+        ConfigurationSection template = findSetupAreaTemplate(areasSection);
+        ConfigurationSection newArea = areasSection.createSection(nextKey);
+        newArea.set("SLOT", nextSlot);
+        newArea.set("MATERIAL", template == null ? "ITEM_FRAME" : template.getString("MATERIAL", "ITEM_FRAME"));
+        newArea.set("DISPLAY-NAME", setupAreaDisplayName(type, template, areaNumber));
+        newArea.set("LORE", template == null ? defaultLore(type) : template.getStringList("LORE"));
+        newArea.set("CUBOID", defaultCuboidName(type, areaNumber));
+        newArea.set("CAPACITY", template == null ? 200 : Math.max(1, template.getInt("CAPACITY", 200)));
+
+        return new SetupAreaTarget(menuPath + ".AREAS." + nextKey, nextKey, nextSlot);
+    }
+
+    private boolean hasSetupDestination(AreaType type, String areaPath, ConfigurationSection areaSection) {
+        Location location = parseAreaLocation(type, areaSection.get("LOCATION"), areaPath + ".LOCATION");
+        if (location != null && makeSafeDestination(location) != null) {
+            return true;
+        }
+
+        String cuboidName = trimToNull(areaSection.getString("CUBOID", ""));
+        return cuboidName != null && plugin.getCuboidManager().exists(cuboidName);
+    }
+
+    private ConfigurationSection findSetupAreaTemplate(ConfigurationSection areasSection) {
+        ConfigurationSection template = null;
+        int templateSlot = Integer.MAX_VALUE;
+        for (String key : areasSection.getKeys(false)) {
+            ConfigurationSection section = areasSection.getConfigurationSection(key);
+            if (section == null) {
+                continue;
+            }
+
+            int slot = section.getInt("SLOT", Integer.MAX_VALUE);
+            if (template == null || slot < templateSlot) {
+                template = section;
+                templateSlot = slot;
+            }
+        }
+        return template;
+    }
+
+    private String nextAreaKey(ConfigurationSection areasSection) {
+        int highest = 0;
+        for (String key : areasSection.getKeys(false)) {
+            highest = Math.max(highest, parsePositiveInt(key, 0));
+        }
+
+        String candidate;
+        do {
+            highest++;
+            candidate = String.valueOf(highest);
+        } while (areasSection.contains(candidate));
+        return candidate;
+    }
+
+    private int parsePositiveInt(String value, int fallback) {
+        try {
+            int parsed = Integer.parseInt(value);
+            return parsed > 0 ? parsed : fallback;
+        } catch (NumberFormatException ignored) {
+            return fallback;
+        }
+    }
+
+    private String setupAreaDisplayName(AreaType type, ConfigurationSection template, int areaNumber) {
+        String templateName = template == null ? null : trimToNull(template.getString("DISPLAY-NAME", ""));
+        if (templateName != null) {
+            return templateName.replaceFirst("#\\d+\\s*$", "#" + areaNumber);
+        }
+        return defaultDisplayName(type, areaNumber);
+    }
+
+    private String defaultCuboidName(AreaType type, int areaNumber) {
+        return (type == AreaType.SPAWN ? "spawn" : "afk") + areaNumber;
+    }
+
+    private String getLocationLabel(AreaType type) {
+        return type == AreaType.AFK ? "AFK" : "spawn";
     }
 
     public Location makeSafeDestination(Location location) {
