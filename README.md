@@ -74,19 +74,19 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
 | --- | --- |
 | Java | Java 21 |
 | Server | Paper or a compatible Paper-based server matching the configured API target |
+| PlaceholderAPI | Required; the plugin disables itself if PlaceholderAPI is missing or disabled |
 | Storage | SQLite by default, with MySQL and MongoDB-backed modes available |
 | Optional network layer | Redis for cross-server staff chat, reports, helpop, and server status |
 
 Soft integrations:
 
-- PlaceholderAPI
 - LuckPerms
 - Vault
 - ProtocolLib
 - Apollo
 - NickPlus
 
-The plugin can run without every soft dependency, but enabling them unlocks deeper permission, economy, placeholder, packet, client, and network behavior.
+The plugin can run without these soft dependencies, but enabling them unlocks deeper permission, economy, packet, client, and network behavior.
 
 ## Installation
 
