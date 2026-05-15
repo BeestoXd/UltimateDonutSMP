@@ -85,6 +85,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        if (!requirePlaceholderApi()) {
+            return;
+        }
+
         foliaScheduler = new FoliaScheduler(this);
 
         // 1. Config & database (no dependencies)
@@ -193,7 +198,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         FfaMatchTask.start(this);
 
         // 8. PlaceholderAPI expansion
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new EconomyExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
         }
@@ -277,6 +282,21 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     // ── Registration helpers ──────────────────────────────────────────────────
+
+    private boolean requirePlaceholderApi() {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            return true;
+        }
+
+        getLogger().severe("==================================================");
+        getLogger().severe("UltimateDonutSmp requires PlaceholderAPI to be installed and enabled.");
+        getLogger().severe("Scoreboard/sidebar placeholders will not resolve without PlaceholderAPI.");
+        getLogger().severe("Install PlaceholderAPI, then restart the server.");
+        getLogger().severe("UltimateDonutSmp is disabling itself to prevent broken sidebar output.");
+        getLogger().severe("==================================================");
+        getServer().getPluginManager().disablePlugin(this);
+        return false;
+    }
 
     private void registerListeners() {
         PluginManager pm = getServer().getPluginManager();
