@@ -65,8 +65,8 @@ public class CrateEditorMenu extends BaseMenu {
 
         if (!instructionsSent) {
             instructionsSent = true;
-            player.sendMessage(ColorUtils.toComponent("&8[&bCrates&8] &7Click item di inventory kamu untuk memilih template, lalu klik slot crate untuk menaruh atau menggantinya."));
-            player.sendMessage(ColorUtils.toComponent("&8[&bCrates&8] &7Klik slot reward tanpa template terpilih untuk menghapus reward item dari slot itu."));
+            player.sendMessage(ColorUtils.toComponent("&8[&bCrates&8] &7Click an item in your inventory to select it as a template, then click a crate slot to place or replace it."));
+            player.sendMessage(ColorUtils.toComponent("&8[&bCrates&8] &7Click a reward slot with no selected template to remove the item reward from that slot."));
         }
     }
 

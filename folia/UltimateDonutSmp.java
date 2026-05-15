@@ -388,6 +388,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("crate", crateCmd, FeatureManager.Feature.CRATES);
         setExecutor("crates", crateCmd, FeatureManager.Feature.CRATES);
         setExecutor("keys", crateCmd, FeatureManager.Feature.CRATES);
+        setTabCompleter("crate", crateCmd);
+        setTabCompleter("crates", crateCmd);
+        setTabCompleter("keys", crateCmd);
 
         // Shop / Sell / Worth
         setExecutor("shop", new ShopCommand(this), FeatureManager.Feature.SHOP);
