@@ -900,28 +900,13 @@ public class ShopManager {
                 continue;
             }
 
-            double unitWorth = getWorth(item);
-            if (unitWorth < 0) {
+            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
+            if (payout <= 0) {
                 continue;
             }
 
-            SellCategory category = getSellCategory(item);
-            if (category == null) {
-                continue;
-            }
-
-            double baseTotal = unitWorth * item.getAmount();
-            double payout = baseTotal * getCurrentSellMultiplier(progress, category);
             totalPayout += payout;
-            earnedByCategory.merge(category, baseTotal, Double::sum);
             soldSlots.add(slot);
-
-            plugin.getDatabaseManager().addSellHistory(
-                    player.getUniqueId(),
-                    item.getType().name(),
-                    item.getAmount(),
-                    payout
-            );
         }
 
         if (totalPayout <= 0) {
@@ -1054,27 +1039,12 @@ public class ShopManager {
                 continue;
             }
 
-            double unitWorth = getWorth(item);
-            if (unitWorth < 0) {
+            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
+            if (payout <= 0) {
                 continue;
             }
 
-            SellCategory category = getSellCategory(item);
-            if (category == null) {
-                continue;
-            }
-
-            double baseTotal = unitWorth * item.getAmount();
-            double payout = baseTotal * getCurrentSellMultiplier(progress, category);
             totalPayout += payout;
-            earnedByCategory.merge(category, baseTotal, Double::sum);
-
-            plugin.getDatabaseManager().addSellHistory(
-                    player.getUniqueId(),
-                    item.getType().name(),
-                    item.getAmount(),
-                    payout
-            );
             toRemove.add(i);
         }
 
@@ -1090,6 +1060,37 @@ public class ShopManager {
             finishSale(player, progress, earnedByCategory, totalPayout);
         }
 
+        return totalPayout;
+    }
+
+    private double processSellWorthEntries(
+            Player player,
+            ItemStack item,
+            Map<SellCategory, Double> progress,
+            Map<SellCategory, Double> earnedByCategory
+    ) {
+        List<WorthManager.SellWorthEntry> entries = plugin.getWorthManager().resolveSellWorthEntries(item);
+        if (entries.isEmpty()) {
+            return 0;
+        }
+
+        double totalPayout = 0;
+        for (WorthManager.SellWorthEntry entry : entries) {
+            double payout = entry.totalWorth() * getCurrentSellMultiplier(progress, entry.category());
+            if (payout <= 0) {
+                continue;
+            }
+
+            totalPayout += payout;
+            earnedByCategory.merge(entry.category(), entry.totalWorth(), Double::sum);
+
+            plugin.getDatabaseManager().addSellHistory(
+                    player.getUniqueId(),
+                    entry.material().name(),
+                    entry.amount(),
+                    payout
+            );
+        }
         return totalPayout;
     }
 

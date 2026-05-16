@@ -91,6 +91,13 @@ public class WorthManager {
             String sourceKey
     ) {}
 
+    public record SellWorthEntry(
+            Material material,
+            int amount,
+            double totalWorth,
+            SellCategory category
+    ) {}
+
     private record DirectWorthData(
             double worth,
             String sourceKey,
@@ -131,6 +138,16 @@ public class WorthManager {
 
     public WorthResult resolveWorth(ItemStack item) {
         return resolveWorth(item, 0, true, new HashSet<>());
+    }
+
+    public List<SellWorthEntry> resolveSellWorthEntries(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return List.of();
+        }
+
+        List<SellWorthEntry> entries = new ArrayList<>();
+        collectSellWorthEntries(item, 1, 0, true, new HashSet<>(), entries);
+        return List.copyOf(entries);
     }
 
     public SellCategory getSellCategory(ItemStack item) {
@@ -404,6 +421,7 @@ public class WorthManager {
 
         DirectWorthData directWorth = resolveDirectWorth(item);
         if (isContainerWorthEnabled()
+                && allowNestedExpansion
                 && isSupportedContainer(item)
                 && depth < getMaxContainerDepth()) {
             double contentsWorth = resolveContainerContentsWorth(item, depth + 1, allowNestedExpansion, visitedContainers);
@@ -484,6 +502,94 @@ public class WorthManager {
         } finally {
             visitedContainers.remove(containerIdentity);
         }
+    }
+
+    private void collectSellWorthEntries(
+            ItemStack item,
+            int amountMultiplier,
+            int depth,
+            boolean allowNestedExpansion,
+            Set<Integer> visitedContainers,
+            List<SellWorthEntry> entries
+    ) {
+        if (item == null || item.getType().isAir() || amountMultiplier <= 0) {
+            return;
+        }
+
+        boolean container = isSupportedContainer(item);
+        DirectWorthData directWorth = resolveDirectWorth(item);
+        if (directWorth != null
+                && (!container || !isContainerWorthEnabled() || shouldIncludeContainerBasePrice())) {
+            SellCategory category = resolveSellCategory(directWorth, item);
+            if (category != null && directWorth.worth() > 0) {
+                int amount = multiplyAmount(item.getAmount(), amountMultiplier);
+                entries.add(new SellWorthEntry(
+                        item.getType(),
+                        amount,
+                        directWorth.worth() * item.getAmount() * amountMultiplier,
+                        category
+                ));
+            }
+        }
+
+        if (!isContainerWorthEnabled()
+                || !container
+                || !allowNestedExpansion
+                || depth >= getMaxContainerDepth()) {
+            return;
+        }
+
+        collectContainerSellWorthEntries(
+                item,
+                multiplyAmount(item.getAmount(), amountMultiplier),
+                depth + 1,
+                allowNestedExpansion && allowNestedContainers(),
+                visitedContainers,
+                entries
+        );
+    }
+
+    private void collectContainerSellWorthEntries(
+            ItemStack item,
+            int amountMultiplier,
+            int depth,
+            boolean allowNestedExpansion,
+            Set<Integer> visitedContainers,
+            List<SellWorthEntry> entries
+    ) {
+        if (!(item.getItemMeta() instanceof BlockStateMeta blockStateMeta)) {
+            return;
+        }
+
+        BlockState blockState = blockStateMeta.getBlockState();
+        if (!(blockState instanceof Container container)) {
+            return;
+        }
+
+        int containerIdentity = buildContainerIdentity(item);
+        if (!visitedContainers.add(containerIdentity)) {
+            return;
+        }
+
+        try {
+            for (ItemStack content : container.getInventory().getContents()) {
+                collectSellWorthEntries(content, amountMultiplier, depth, allowNestedExpansion, visitedContainers, entries);
+            }
+        } finally {
+            visitedContainers.remove(containerIdentity);
+        }
+    }
+
+    private SellCategory resolveSellCategory(DirectWorthData directWorth, ItemStack item) {
+        if (directWorth != null && directWorth.categoryKey() != null && !directWorth.categoryKey().isBlank()) {
+            return SellCategory.fromConfigKey(directWorth.categoryKey()).orElse(null);
+        }
+        return getSellCategory(item);
+    }
+
+    private int multiplyAmount(int amount, int multiplier) {
+        long result = (long) amount * multiplier;
+        return result > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result;
     }
 
     private int buildContainerIdentity(ItemStack item) {
