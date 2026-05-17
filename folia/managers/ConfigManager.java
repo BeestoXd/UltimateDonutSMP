@@ -204,7 +204,7 @@ public class ConfigManager {
         }
 
         YamlConfiguration previousDefault = loadPreviousDefaultSnapshot(name);
-        int mergedPaths = mergeBundledDefaults(current, bundledDefault, previousDefault);
+        int mergedPaths = mergeBundledDefaults(name, current, bundledDefault, previousDefault);
         if (mergedPaths > 0) {
             backupExistingFile(targetFile, backupDirectory);
             try {
@@ -224,6 +224,7 @@ public class ConfigManager {
     }
 
     private int mergeBundledDefaults(
+            String resourceName,
             YamlConfiguration current,
             YamlConfiguration bundledDefault,
             YamlConfiguration previousDefault
@@ -231,6 +232,10 @@ public class ConfigManager {
         int changes = 0;
 
         for (String path : bundledDefault.getKeys(true)) {
+            if (isUserManagedBundledPath(resourceName, path)) {
+                continue;
+            }
+
             if (bundledDefault.isConfigurationSection(path)) {
                 if (!current.contains(path, true) && !hasScalarParent(current, path)) {
                     current.createSection(path);
@@ -265,6 +270,12 @@ public class ConfigManager {
         }
 
         return changes;
+    }
+
+    private boolean isUserManagedBundledPath(String resourceName, String path) {
+        // Crate definitions are live server content. The bundled CRATES tree is only
+        // an initial example and must not be merged back after admins edit/delete it.
+        return "crates.yml".equals(resourceName) && path.startsWith("CRATES.");
     }
 
     private boolean hasScalarParent(ConfigurationSection configuration, String path) {
