@@ -45,7 +45,7 @@ public class CrateChestListener implements Listener {
             event.setCancelled(true);
 
             if (!plugin.getCrateManager().isBindableBlock(clickedBlock.getType())) {
-                player.sendMessage(ColorUtils.toComponent("&cInvalid block. Left-click a chest, trapped chest, barrel, or ender chest."));
+                player.sendMessage(ColorUtils.toComponent("&cInvalid block. Left-click a chest, trapped chest, barrel, ender chest, or shulker box."));
                 return;
             }
 

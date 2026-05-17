@@ -9,6 +9,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.block.Block;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -241,7 +242,8 @@ public class CrateManager {
         return material == Material.CHEST
                 || material == Material.TRAPPED_CHEST
                 || material == Material.BARREL
-                || material == Material.ENDER_CHEST;
+                || material == Material.ENDER_CHEST
+                || Tag.SHULKER_BOXES.isTagged(material);
     }
 
     public void startPendingBind(UUID uuid, String crateId) {

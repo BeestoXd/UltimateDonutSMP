@@ -454,7 +454,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
         plugin.getCrateManager().startPendingBind(player.getUniqueId(), crate.id());
         player.sendMessage(ColorUtils.toComponent("&aBind mode enabled for &f" + crate.id() + "&a."));
-        player.sendMessage(ColorUtils.toComponent("&7Left-click a chest, trapped chest, barrel, or ender chest to bind it."));
+        player.sendMessage(ColorUtils.toComponent("&7Left-click a chest, trapped chest, barrel, ender chest, or shulker box to bind it."));
         return true;
     }
 
