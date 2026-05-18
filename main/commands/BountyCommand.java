@@ -67,7 +67,9 @@ public class BountyCommand implements CommandExecutor {
         }
 
         if (amount < 1) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BOUNTY.MINIMUM-PRICE")));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BOUNTY.MINIMUM-PRICE",
+                    "{amount}", NumberUtils.format(1D),
+                    "{amount_formatted}", plugin.getCurrencyManager().formatMoney(1D))));
             return;
         }
 
@@ -99,7 +101,8 @@ public class BountyCommand implements CommandExecutor {
 
         String msg = plugin.getConfigManager().getMessage("BOUNTY.PLAYER-HAS-BOUNTY",
                 "{player}", plugin.getBountyManager().getDisplayName(targetUuid),
-                "{amount}", NumberUtils.format(bounty.getAmount()));
+                "{amount}", NumberUtils.format(bounty.getAmount()),
+                "{amount_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount()));
         player.sendMessage(ColorUtils.toComponent(msg));
     }
 }

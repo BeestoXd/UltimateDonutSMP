@@ -662,7 +662,8 @@ public class SpawnerManager {
         saveLoot(instance);
         return new SellLootResult(
                 true,
-                "&aSold &f" + NumberUtils.format(soldItems) + "&a items for &f$" + NumberUtils.formatNice(totalPayout) + "&a.",
+                "&aSold &f" + NumberUtils.format(soldItems) + "&a items for "
+                        + plugin.getCurrencyManager().formatMoneyCompact(totalPayout) + "&a.",
                 totalPayout,
                 soldItems
         );

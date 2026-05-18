@@ -286,7 +286,9 @@ public class AmethystToolsListener implements Listener {
         manager.spawnAmethystParticles(clicked.getLocation().add(0.5, 1, 0.5));
         SoundUtils.play(player, manager.getSound("USE"));
         player.sendMessage(ColorUtils.toComponent(
-                manager.getMessage("SELL-SUCCESS", "{amount}", NumberUtils.formatNice(total))));
+                manager.getMessage("SELL-SUCCESS",
+                        "{amount}", plugin.getCurrencyManager().formatMoneyCompact(total),
+                        "{amount_formatted}", plugin.getCurrencyManager().formatMoneyCompact(total))));
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {

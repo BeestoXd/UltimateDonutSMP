@@ -542,9 +542,11 @@ public class OrdersManager {
         if (normalizedPrice < getMinPriceEach() || normalizedPrice > getMaxPriceEach()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.PRICE_OUT_OF_RANGE",
-                    "&cPrice each must be between &f${min}&c and &f${max}&c.",
+                    "&cPrice each must be between {min_formatted}&c and {max_formatted}&c.",
                     "{min}", NumberUtils.format(getMinPriceEach()),
-                    "{max}", NumberUtils.format(getMaxPriceEach())
+                    "{min_formatted}", plugin.getCurrencyManager().formatMoney(getMinPriceEach()),
+                    "{max}", NumberUtils.format(getMaxPriceEach()),
+                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach())
             )));
             resendPricePrompt(player, pending.entry());
             return;
@@ -553,8 +555,9 @@ public class OrdersManager {
         if (totalBudget <= 0D || totalBudget > getMaxTotalBudget()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.TOTAL_TOO_HIGH",
-                    "&cTotal order budget cannot exceed &f${max}&c.",
-                    "{max}", NumberUtils.format(getMaxTotalBudget())
+                    "&cTotal order budget cannot exceed {max_formatted}&c.",
+                    "{max}", NumberUtils.format(getMaxTotalBudget()),
+                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget())
             )));
             resendPricePrompt(player, pending.entry());
             return;

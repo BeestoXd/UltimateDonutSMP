@@ -76,8 +76,8 @@ public class OrdersEditMenu extends BaseMenu {
                 List.of(
                         "&7Delivered: &e" + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity(),
                         "&7Collected: &e" + order.collectedQuantity() + "&7/&e" + order.deliveredQuantity(),
-                        "&7Paid: &a$" + NumberUtils.format(order.paidAmount()),
-                        "&7Escrow Left: &a$" + NumberUtils.format(order.escrowRemaining()),
+                        "&7Paid: " + plugin.getCurrencyManager().formatMoney(order.paidAmount()),
+                        "&7Escrow Left: " + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()),
                         "&7Time Left: &f" + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis()))
                 )
         ));
@@ -110,7 +110,7 @@ public class OrdersEditMenu extends BaseMenu {
         List<String> deliverLore = new ArrayList<>();
         if (preview.success()) {
             deliverLore.add("&7Deliver Quantity: &e" + preview.deliverQuantity());
-            deliverLore.add("&7Payout: &a$" + NumberUtils.format(preview.payout()));
+            deliverLore.add("&7Payout: " + plugin.getCurrencyManager().formatMoney(preview.payout()));
             deliverLore.add("");
             deliverLore.add("&eClick to deliver");
             set(23, ItemUtils.createItem(Material.EMERALD, "&aDeliver Items", deliverLore));
@@ -198,7 +198,7 @@ public class OrdersEditMenu extends BaseMenu {
         } else {
             for (OrderDelivery delivery : deliveries) {
                 lore.add("&f" + delivery.delivererName() + " &7-> &e" + delivery.quantity()
-                        + " &7for &a$" + NumberUtils.format(delivery.payout()));
+                        + " &7for " + plugin.getCurrencyManager().formatMoney(delivery.payout()));
             }
         }
         return ItemUtils.createItem(Material.BOOK, "&bRecent Deliveries", lore);

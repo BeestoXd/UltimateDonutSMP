@@ -925,7 +925,7 @@ public class ShopManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7Worth: &a$%price%")
+                        .getString("WORTH-LORE.FORMAT", "&7Worth: &a{price_formatted}")
         );
     }
 
@@ -940,17 +940,7 @@ public class ShopManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7Worth: &a$%price%";
-        }
-        if (format.contains("$")) {
-            return format;
-        }
-
-        for (String placeholder : List.of("%price%", "${price}", "{price}")) {
-            int index = format.indexOf(placeholder);
-            if (index >= 0) {
-                return format.substring(0, index) + "$" + format.substring(index);
-            }
+            return "&7Worth: &a{price_formatted}";
         }
 
         return format;
@@ -960,7 +950,9 @@ public class ShopManager {
         String format = stripColorCodes(getWorthLoreFormat());
         List<String> placeholders = List.of(
                 "%unit_price%", "${unit_price}", "{unit_price}",
+                "%unit_price_formatted%", "${unit_price_formatted}", "{unit_price_formatted}",
                 "%price%", "${price}", "{price}",
+                "%price_formatted%", "${price_formatted}", "{price_formatted}",
                 "%amount%", "${amount}", "{amount}",
                 "%item%", "${item}", "{item}"
         );
@@ -1125,8 +1117,11 @@ public class ShopManager {
 
     private void sendSellFeedback(Player player, double totalPayout) {
         String sellMsg = plugin.getConfigManager().getConfig()
-                .getString("SETTINGS.SELL-MESSAGE", "&a+$%price%")
-                .replace("%price%", NumberUtils.formatNice(totalPayout));
+                .getString("SETTINGS.SELL-MESSAGE", "&a+{price_formatted}")
+                .replace("%price%", NumberUtils.formatNice(totalPayout))
+                .replace("%price_formatted%", plugin.getCurrencyManager().formatMoneyCompact(totalPayout))
+                .replace("{price}", NumberUtils.formatNice(totalPayout))
+                .replace("{price_formatted}", plugin.getCurrencyManager().formatMoneyCompact(totalPayout));
         PlayerSettingUtils.sendActionBar(plugin, player, sellMsg);
     }
 

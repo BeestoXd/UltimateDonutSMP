@@ -136,7 +136,8 @@ public class BountyMenu extends BaseMenu {
         Bounty bounty = displayedBounties.get(slot);
         String msg = plugin.getConfigManager().getMessage("BOUNTY.PLAYER-HAS-BOUNTY",
                 "{player}", plugin.getBountyManager().getDisplayName(bounty.getTargetUuid()),
-                "{amount}", NumberUtils.format(bounty.getAmount()));
+                "{amount}", NumberUtils.format(bounty.getAmount()),
+                "{amount_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount()));
         player.sendMessage(ColorUtils.toComponent(msg));
     }
 
@@ -146,7 +147,8 @@ public class BountyMenu extends BaseMenu {
                 .replace("{player}", playerName);
         List<String> lore = menus.getStringList("BOUNTIES-MENU.BOUNTY-BUTTON.LORE").stream()
                 .map(line -> line.replace("{player}", playerName)
-                        .replace("{price}", NumberUtils.format(bounty.getAmount())))
+                        .replace("{price}", NumberUtils.format(bounty.getAmount()))
+                        .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount())))
                 .toList();
 
         Material material = ItemUtils.parseMaterial(

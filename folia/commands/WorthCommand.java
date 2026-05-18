@@ -85,11 +85,14 @@ public class WorthCommand implements CommandExecutor {
         String name = plugin.getWorthManager().prettifyMaterial(item.getType()).toLowerCase();
         String msg = item.getAmount() == 1
                 ? plugin.getConfigManager().getMessage("WORTH.DEFAULT",
-                    "{item}", name, "{price}", NumberUtils.format(worthResult.totalWorth()))
+                    "{item}", name,
+                    "{price}", NumberUtils.format(worthResult.totalWorth()),
+                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.totalWorth()))
                 : plugin.getConfigManager().getMessage("WORTH.HAND-ITEM",
                     "{amount}", String.valueOf(item.getAmount()),
                     "{item}", name,
-                    "{total}", NumberUtils.format(worthResult.totalWorth()));
+                    "{total}", NumberUtils.format(worthResult.totalWorth()),
+                    "{total_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.totalWorth()));
         player.sendMessage(ColorUtils.toComponent(msg));
 
         if (worthResult.container() && worthResult.hasContainerContentsWorth()) {
@@ -99,7 +102,9 @@ public class WorthCommand implements CommandExecutor {
             );
             breakdown = breakdown
                     .replace("{base}", NumberUtils.formatNice(worthResult.baseWorth()))
-                    .replace("{contents}", NumberUtils.formatNice(worthResult.containerContentsWorth()));
+                    .replace("{base_formatted}", plugin.getCurrencyManager().formatMoneyCompact(worthResult.baseWorth()))
+                    .replace("{contents}", NumberUtils.formatNice(worthResult.containerContentsWorth()))
+                    .replace("{contents_formatted}", plugin.getCurrencyManager().formatMoneyCompact(worthResult.containerContentsWorth()));
             player.sendMessage(ColorUtils.toComponent(breakdown));
         }
         return true;

@@ -60,8 +60,10 @@ public class SetMoneyCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.ADMIN.SET-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", NumberUtils.format(result.afterBalance()),
-                "{previous_balance}", NumberUtils.format(result.beforeBalance())
+                "{amount}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                "{previous_balance}", plugin.getCurrencyManager().formatMoney(result.beforeBalance()),
+                "{money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                "{previous_balance_money}", plugin.getCurrencyManager().formatMoney(result.beforeBalance())
         )));
 
         Player targetPlayer = Bukkit.getPlayer(result.targetUuid());
@@ -69,8 +71,10 @@ public class SetMoneyCommand implements CommandExecutor {
             targetPlayer.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.ADMIN.SET-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", NumberUtils.format(result.afterBalance()),
-                    "{previous_balance}", NumberUtils.format(result.beforeBalance())
+                    "{amount}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                    "{previous_balance}", plugin.getCurrencyManager().formatMoney(result.beforeBalance()),
+                    "{money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                    "{previous_balance_money}", plugin.getCurrencyManager().formatMoney(result.beforeBalance())
             )));
         }
 

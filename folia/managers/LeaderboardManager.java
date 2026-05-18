@@ -78,8 +78,9 @@ public class LeaderboardManager {
     }
 
     public String getDisplayName(LeaderboardType type) {
-        return plugin.getConfigManager().getMenus()
+        String configured = plugin.getConfigManager().getMenus()
                 .getString("LEADERBOARDS-MENU.TYPE-NAMES." + type.getConfigKey(), prettify(type));
+        return plugin.getCurrencyManager().applyStaticPlaceholders(configured);
     }
 
     public String formatValue(LeaderboardType type, PlayerData data) {
@@ -88,8 +89,8 @@ public class LeaderboardManager {
 
     public String formatValue(LeaderboardType type, PlayerData data, boolean compact, boolean includeCurrencySymbol) {
         return switch (type) {
-            case MONEY -> formatCurrencyValue(data.getMoney(), compact, includeCurrencySymbol);
-            case SHARDS -> NumberUtils.format(data.getShards());
+            case MONEY -> formatCurrencyValue(CurrencyManager.CurrencyType.MONEY, data.getMoney(), compact, includeCurrencySymbol);
+            case SHARDS -> formatCurrencyValue(CurrencyManager.CurrencyType.SHARDS, data.getShards(), compact, includeCurrencySymbol);
             case KILLS -> NumberUtils.format(data.getKills());
             case DEATHS -> NumberUtils.format(data.getDeaths());
             case PLAYTIME -> NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds());
@@ -98,8 +99,8 @@ public class LeaderboardManager {
             case MOBS_KILLED -> NumberUtils.format(data.getMobsKilled());
             case KILL_STREAK -> NumberUtils.format(data.getKillStreak());
             case HIGHEST_KILL_STREAK -> NumberUtils.format(data.getHighestKillStreak());
-            case MONEY_SPENT -> formatCurrencyValue(data.getMoneySpent(), compact, includeCurrencySymbol);
-            case MONEY_MADE -> formatCurrencyValue(data.getMoneyMade(), compact, includeCurrencySymbol);
+            case MONEY_SPENT -> formatCurrencyValue(CurrencyManager.CurrencyType.MONEY, data.getMoneySpent(), compact, includeCurrencySymbol);
+            case MONEY_MADE -> formatCurrencyValue(CurrencyManager.CurrencyType.MONEY, data.getMoneyMade(), compact, includeCurrencySymbol);
         };
     }
 
@@ -209,9 +210,19 @@ public class LeaderboardManager {
         };
     }
 
-    private String formatCurrencyValue(double amount, boolean compact, boolean includeCurrencySymbol) {
-        String formatted = compact ? NumberUtils.formatNice(amount) : NumberUtils.format(amount);
-        return includeCurrencySymbol ? "$" + formatted : formatted;
+    private String formatCurrencyValue(
+            CurrencyManager.CurrencyType type,
+            double amount,
+            boolean compact,
+            boolean includeCurrencySymbol
+    ) {
+        CurrencyManager currencyManager = plugin.getCurrencyManager();
+        if (includeCurrencySymbol) {
+            return currencyManager.format(type, amount, compact);
+        }
+        return compact
+                ? currencyManager.formatCompactAmount(type, amount)
+                : currencyManager.formatAmount(type, amount);
     }
 
     private String prettify(LeaderboardType type) {

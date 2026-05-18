@@ -81,7 +81,13 @@ public class SpawnerStorageMenu extends BaseMenu {
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 2, ItemUtils.createItem(Material.HOPPER, "&aCollect All", List.of("&7Move all stored loot to your inventory.")));
         set(lastRow + 3, ItemUtils.createItem(Material.DISPENSER, "&6Drop Loot", List.of("&7Drop all stored loot on the ground.")));
-        set(lastRow + 4, ItemUtils.createItem(Material.GOLD_INGOT, "&eSell All", List.of("&7Sell all sellable loot for money.")));
+        set(lastRow + 4, ItemUtils.createItem(
+                Material.GOLD_INGOT,
+                "&eSell All",
+                List.of("&7Sell all sellable loot for "
+                        + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                        + ".")
+        ));
         set(lastRow + 5, ItemUtils.createItem(Material.SPAWNER, "&bSpawner Info", List.of(
                 "&7Type: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey()),
                 "&7Stack: &f" + NumberUtils.format(instance.getStackAmount()),

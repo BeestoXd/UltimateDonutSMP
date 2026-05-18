@@ -41,8 +41,8 @@ public class OrdersNewMenu extends BaseMenu {
                         "&7Item: &f" + plugin.getOrdersManager().describeMaterial(pending.entry().material()),
                         "&7Category: &f" + plugin.getOrdersManager().prettifyCategory(pending.entry().categoryKey()),
                         "&7Quantity: &e" + pending.quantity(),
-                        "&7Price Each: &a$" + NumberUtils.format(pending.priceEach()),
-                        "&7Total Budget: &a$" + NumberUtils.format(pending.totalBudget())
+                        "&7Price Each: " + plugin.getCurrencyManager().formatMoney(pending.priceEach()),
+                        "&7Total Budget: " + plugin.getCurrencyManager().formatMoney(pending.totalBudget())
                 )
         ));
         set(13, ItemUtils.createItem(
@@ -54,9 +54,9 @@ public class OrdersNewMenu extends BaseMenu {
                 Material.SUNFLOWER,
                 "&eBalance Check",
                 List.of(
-                        "&7Current Balance: &a$" + NumberUtils.format(plugin.getEconomyManager().getBalance(player)),
-                        "&7Creation Fee: &a$" + NumberUtils.format(plugin.getConfigManager().getOrders().getDouble("PRICING.ORDER_CREATION_FEE", 0D)),
-                        "&7Required: &a$" + NumberUtils.format(
+                        "&7Current Balance: " + plugin.getCurrencyManager().formatMoney(plugin.getEconomyManager().getBalance(player)),
+                        "&7Creation Fee: " + plugin.getCurrencyManager().formatMoney(plugin.getConfigManager().getOrders().getDouble("PRICING.ORDER_CREATION_FEE", 0D)),
+                        "&7Required: " + plugin.getCurrencyManager().formatMoney(
                                 pending.totalBudget() + plugin.getConfigManager().getOrders().getDouble("PRICING.ORDER_CREATION_FEE", 0D)
                         )
                 )
@@ -106,12 +106,14 @@ public class OrdersNewMenu extends BaseMenu {
 
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.CREATED",
-                    "&aOrder created! &7#{order_id} &ffor &e{quantity} {item}&7 at &a${price_each} &7each. Budget locked: &a${budget}&7.",
+                    "&aOrder created! &7#{order_id} &ffor &e{quantity} {item}&7 at {price_each_formatted} &7each. Budget locked: {budget_formatted}&7.",
                     "{order_id}", String.valueOf(result.order().id()),
                     "{quantity}", String.valueOf(result.order().requestedQuantity()),
                     "{item}", manager.describeItem(result.order().requestedItem()),
                     "{price_each}", NumberUtils.format(result.order().priceEach()),
-                    "{budget}", NumberUtils.format(result.order().totalBudget())
+                    "{price_each_formatted}", plugin.getCurrencyManager().formatMoney(result.order().priceEach()),
+                    "{budget}", NumberUtils.format(result.order().totalBudget()),
+                    "{budget_formatted}", plugin.getCurrencyManager().formatMoney(result.order().totalBudget())
             )));
             SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.SUCCESS"));
             new OrdersMyOrdersMenu(plugin, 1, manager.getDefaultSort()).open(player);
@@ -129,7 +131,7 @@ public class OrdersNewMenu extends BaseMenu {
             case INVALID_QUANTITY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_QUANTITY", "&cInvalid quantity.");
             case INVALID_PRICE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_PRICE", "&cInvalid price.");
             case TOTAL_TOO_HIGH -> plugin.getConfigManager().getMessageOrDefault("ORDERS.TOTAL_TOO_HIGH", "&cThat total order budget is too high.");
-            case NO_MONEY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_ENOUGH_MONEY", "&cYou do not have enough money for that order.");
+            case NO_MONEY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_ENOUGH_MONEY", "&cYou do not have enough {money_name_plural} for that order.");
             case MAX_ORDERS_REACHED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.MAX_ACTIVE_REACHED", "&cYou have reached your active order limit.");
             case DATABASE_ERROR -> "&cOrders could not save your order right now. Try again.";
         };

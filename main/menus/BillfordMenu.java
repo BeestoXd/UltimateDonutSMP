@@ -149,13 +149,15 @@ public class BillfordMenu extends BaseMenu {
         rewardPlaceholders.put(
                 "{money_line}",
                 currentTrade.moneyBonus() > 0
-                        ? "&7Money Bonus: &a$" + NumberUtils.format(currentTrade.moneyBonus())
+                        ? "&7" + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                        + " Bonus: " + plugin.getCurrencyManager().formatMoney(currentTrade.moneyBonus())
                         : ""
         );
         rewardPlaceholders.put(
                 "{shard_line}",
                 currentTrade.shardBonus() > 0
-                        ? "&7Shard Bonus: &#A303F9+" + currentTrade.shardBonus()
+                        ? "&7" + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                        + " Bonus: +" + plugin.getCurrencyManager().formatShards(currentTrade.shardBonus())
                         : ""
         );
 
@@ -368,7 +370,9 @@ public class BillfordMenu extends BaseMenu {
                 }
                 var depositResult = plugin.getEconomyManager().deposit(player, liveTrade.moneyBonus(), EconomyReason.BILLFORD_REWARD);
                 if (!depositResult.success()) {
-                    fail(player, "BILLFORD.BUSY", "&cBillford could not complete the money reward.");
+                    fail(player, "BILLFORD.BUSY", "&cBillford could not complete the "
+                            + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                            + " reward.");
                     return;
                 }
             }
@@ -379,8 +383,10 @@ public class BillfordMenu extends BaseMenu {
                     "BILLFORD.TRADE-COMPLETED",
                     "{reward}", liveTrade.rewardQuantity() + "x " + formatName(liveTrade.rewardMaterial().name()),
                     "{money_bonus}", NumberUtils.format(liveTrade.moneyBonus()),
+                    "{money_bonus_formatted}", plugin.getCurrencyManager().formatMoney(liveTrade.moneyBonus()),
                     "{shard_bonus}",
                     liveTrade.shardBonus() > 0 ? String.valueOf(liveTrade.shardBonus()) : "0",
+                    "{shard_bonus_formatted}", plugin.getCurrencyManager().formatShards(liveTrade.shardBonus()),
                     "{next_rotation}", manager.getFormattedCountdown()
             );
             player.sendMessage(ColorUtils.toComponent(success));

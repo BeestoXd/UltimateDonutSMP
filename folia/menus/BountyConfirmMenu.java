@@ -48,14 +48,14 @@ public class BountyConfirmMenu extends BaseMenu {
                 menus,
                 "BOUNTY-CONFIRM-MENU.CANCEL-BUTTON",
                 "{player}", targetName,
-                "{amount}", "$" + NumberUtils.format(amount)
+                "{amount}", plugin.getCurrencyManager().formatMoney(amount)
         ));
         set(PLAYER_SLOT, createTargetItem(menus));
         set(CONFIRM_SLOT, buildConfigItem(
                 menus,
                 "BOUNTY-CONFIRM-MENU.CONFIRM-BUTTON",
                 "{player}", targetName,
-                "{amount}", "$" + NumberUtils.format(amount)
+                "{amount}", plugin.getCurrencyManager().formatMoney(amount)
         ));
     }
 
@@ -100,7 +100,7 @@ public class BountyConfirmMenu extends BaseMenu {
                 menus,
                 "BOUNTY-CONFIRM-MENU.PLAYER-BUTTON",
                 "{player}", targetName,
-                "{amount}", "$" + NumberUtils.format(amount)
+                "{amount}", plugin.getCurrencyManager().formatMoney(amount)
         );
 
         if (!(item.getItemMeta() instanceof SkullMeta meta)) {

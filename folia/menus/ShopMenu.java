@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
@@ -126,8 +127,8 @@ public class ShopMenu extends BaseMenu {
         for (ShopManager.ShopCategory category : categories) {
             set(category.slot(), ItemUtils.createItem(
                     category.material(),
-                    category.displayName(),
-                    category.lore()
+                    plugin.getCurrencyManager().applyStaticPlaceholders(category.displayName()),
+                    plugin.getCurrencyManager().applyStaticPlaceholders(category.lore())
             ));
             slotCategories.put(category.slot(), category);
         }
@@ -188,16 +189,59 @@ public class ShopMenu extends BaseMenu {
     }
 
     private ItemStack createShopItem(ShopManager.ShopItem item) {
-        List<String> lore = new ArrayList<>(item.lore());
+        CurrencyManager.CurrencyType currencyType = item.currency() == ShopManager.Currency.SHARD
+                ? CurrencyManager.CurrencyType.SHARDS
+                : CurrencyManager.CurrencyType.MONEY;
+
+        List<String> lore = new ArrayList<>(replaceShopItemPlaceholders(item.lore(), item, currencyType));
         if (!lore.isEmpty()) {
             lore.add("");
         }
 
-        String currencyLabel = item.currency() == ShopManager.Currency.SHARD ? "&5Shards" : "&aMoney";
+        String currencyLabel = plugin.getCurrencyManager().color(currencyType)
+                + plugin.getCurrencyManager().plural(currencyType);
         lore.add("&7Currency: " + currencyLabel);
         lore.add("&eClick to choose quantity");
 
-        return ItemUtils.createItem(item.material(), item.displayName(), lore);
+        return ItemUtils.createItem(
+                item.material(),
+                plugin.getCurrencyManager().applyStaticPlaceholders(replaceShopItemPlaceholders(item.displayName(), item, currencyType)),
+                plugin.getCurrencyManager().applyStaticPlaceholders(lore)
+        );
+    }
+
+    private List<String> replaceShopItemPlaceholders(
+            List<String> lines,
+            ShopManager.ShopItem item,
+            CurrencyManager.CurrencyType currencyType
+    ) {
+        List<String> replaced = new ArrayList<>();
+        for (String line : lines) {
+            replaced.add(replaceShopItemPlaceholders(line, item, currencyType));
+        }
+        return replaced;
+    }
+
+    private String replaceShopItemPlaceholders(
+            String line,
+            ShopManager.ShopItem item,
+            CurrencyManager.CurrencyType currencyType
+    ) {
+        double price = currencyType == CurrencyManager.CurrencyType.SHARDS
+                ? Math.round(item.pricePerUnit())
+                : item.pricePerUnit();
+        String formatted = plugin.getCurrencyManager().format(currencyType, price);
+        String amount = plugin.getCurrencyManager().formatAmount(currencyType, price);
+        return line
+                .replace("${price}", formatted)
+                .replace("{price}", amount)
+                .replace("%price%", amount)
+                .replace("{price_formatted}", formatted)
+                .replace("{price_short_formatted}", plugin.getCurrencyManager().format(currencyType, price, true))
+                .replace("{currency}", formatted)
+                .replace("{currency_name}", plugin.getCurrencyManager().name(currencyType, price))
+                .replace("{currency_name_singular}", plugin.getCurrencyManager().singular(currencyType))
+                .replace("{currency_name_plural}", plugin.getCurrencyManager().plural(currencyType));
     }
 
     private void buildBackButton() {

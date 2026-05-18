@@ -57,16 +57,20 @@ public class AddMoneyCommand implements CommandExecutor {
 
         String success = plugin.getConfigManager().getMessage("BALANCE.ADMIN.ADD-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", NumberUtils.format(result.amount()),
-                "{balance}", NumberUtils.format(result.afterBalance()));
+                "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()));
         sender.sendMessage(ColorUtils.toComponent(success));
 
         Player targetPlayer = result.targetUuid() != null ? org.bukkit.Bukkit.getPlayer(result.targetUuid()) : null;
         if (targetPlayer != null && !targetPlayer.equals(sender)) {
             String received = plugin.getConfigManager().getMessage("BALANCE.ADMIN.ADD-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", NumberUtils.format(result.amount()),
-                    "{balance}", NumberUtils.format(result.afterBalance()));
+                    "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                    "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                    "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                    "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()));
             targetPlayer.sendMessage(ColorUtils.toComponent(received));
         }
 

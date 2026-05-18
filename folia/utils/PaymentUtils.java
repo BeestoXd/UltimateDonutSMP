@@ -55,12 +55,14 @@ public final class PaymentUtils {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.PAY.SUCCESS-SENDER",
                 "{player}", target.getName(),
-                "{amount}", NumberUtils.format(amount))));
+                "{amount}", plugin.getCurrencyManager().formatMoney(amount),
+                "{money}", plugin.getCurrencyManager().formatMoney(amount))));
         if (targetData.isPayAlertsEnabled()) {
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.PAY.SUCCESS-RECEIVER",
                     "{player}", sender.getName(),
-                    "{amount}", NumberUtils.format(amount))));
+                    "{amount}", plugin.getCurrencyManager().formatMoney(amount),
+                    "{money}", plugin.getCurrencyManager().formatMoney(amount))));
         }
         return true;
     }
@@ -102,12 +104,14 @@ public final class PaymentUtils {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "SHARD_PAY.SUCCESS-SENDER",
                 "{player}", target.getName(),
-                "{amount}", String.valueOf(amount))));
+                "{amount}", plugin.getCurrencyManager().formatShards(amount),
+                "{shards}", plugin.getCurrencyManager().formatShards(amount))));
         if (targetData.isPayAlertsEnabled()) {
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "SHARD_PAY.SUCCESS-RECEIVER",
                     "{player}", sender.getName(),
-                    "{amount}", String.valueOf(amount))));
+                    "{amount}", plugin.getCurrencyManager().formatShards(amount),
+                    "{shards}", plugin.getCurrencyManager().formatShards(amount))));
         }
         return true;
     }

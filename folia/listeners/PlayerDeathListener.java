@@ -69,6 +69,7 @@ public class PlayerDeathListener implements Listener {
                 if (amount > 0) {
                     String msg = plugin.getConfigManager().getMessage("BOUNTY.CLAIM-SUCCESS",
                             "{amount}", NumberUtils.format(amount),
+                            "{amount_formatted}", plugin.getCurrencyManager().formatMoney(amount),
                             "{player}", victim.getName());
                     killer.sendMessage(ColorUtils.toComponent(msg));
                 }

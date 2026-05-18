@@ -27,8 +27,8 @@ final class AuctionHouseMenuSupport {
         List<String> extraLore = new ArrayList<>();
         extraLore.add("");
         extraLore.add("&7Seller: &f" + listing.sellerName());
-        extraLore.add("&7Price: &a$" + NumberUtils.format(listing.price()));
-        extraLore.add("&7You Receive: &a$" + NumberUtils.format(listing.sellerPayout()));
+        extraLore.add("&7Price: " + plugin.getCurrencyManager().formatMoney(listing.price()));
+        extraLore.add("&7You Receive: " + plugin.getCurrencyManager().formatMoney(listing.sellerPayout()));
         extraLore.add("&7Time Left: &f" + manager.formatRemaining(listing.secondsRemaining(System.currentTimeMillis())));
         extraLore.add("&7Listing ID: &f#" + listing.id());
         extraLore.add("");
@@ -44,9 +44,11 @@ final class AuctionHouseMenuSupport {
         if (claim.moneyClaim()) {
             return ItemUtils.createItem(
                     Material.SUNFLOWER,
-                    "&aMoney Claim",
+                    plugin.getCurrencyManager().color(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                            + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                            + " Claim",
                     List.of(
-                            "&7Amount: &a$" + NumberUtils.format(claim.moneyAmount()),
+                            "&7Amount: " + plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
                             "&7Source Listing: &f#" + claim.sourceListingId(),
                             "",
                             "&eClick to claim"

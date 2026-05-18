@@ -28,7 +28,7 @@ public class RTPCommand implements CommandExecutor {
             return true;
         }
 
-        if (!plugin.getConfigManager().getRtp().getBoolean("ENABLED", true)) {
+        if (!plugin.getRtpManager().isEnabled()) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cRTP is disabled.")));
             return true;

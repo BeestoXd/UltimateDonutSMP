@@ -390,6 +390,8 @@ public class WorthManager {
                 getWorthLoreFormat(),
                 NumberUtils.formatNice(displayWorth),
                 NumberUtils.formatNice(worthResult.unitWorth()),
+                plugin.getCurrencyManager().formatMoneyCompact(displayWorth),
+                plugin.getCurrencyManager().formatMoneyCompact(worthResult.unitWorth()),
                 String.valueOf(item == null ? 0 : item.getAmount()),
                 itemName
         );
@@ -976,11 +978,15 @@ public class WorthManager {
             String format,
             String totalPrice,
             String unitPrice,
+            String totalPriceFormatted,
+            String unitPriceFormatted,
             String amount,
             String itemName
     ) {
         String resolved = replacePlaceholderVariants(format, "price", totalPrice);
         resolved = replacePlaceholderVariants(resolved, "unit_price", unitPrice);
+        resolved = replacePlaceholderVariants(resolved, "price_formatted", totalPriceFormatted);
+        resolved = replacePlaceholderVariants(resolved, "unit_price_formatted", unitPriceFormatted);
         resolved = replacePlaceholderVariants(resolved, "amount", amount);
         return replacePlaceholderVariants(resolved, "item", itemName);
     }
@@ -1005,7 +1011,7 @@ public class WorthManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7Worth: &a$%price%")
+                        .getString("WORTH-LORE.FORMAT", "&7Worth: &a{price_formatted}")
         );
     }
 
@@ -1020,17 +1026,7 @@ public class WorthManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7Worth: &a$%price%";
-        }
-        if (format.contains("$")) {
-            return format;
-        }
-
-        for (String placeholder : List.of("%price%", "${price}", "{price}")) {
-            int index = format.indexOf(placeholder);
-            if (index >= 0) {
-                return format.substring(0, index) + "$" + format.substring(index);
-            }
+            return "&7Worth: &a{price_formatted}";
         }
 
         return format;
@@ -1039,6 +1035,8 @@ public class WorthManager {
     private Pattern buildWorthLorePattern() {
         String format = stripColorCodes(getWorthLoreFormat());
         List<String> placeholders = List.of(
+                "%unit_price_formatted%", "${unit_price_formatted}", "{unit_price_formatted}",
+                "%price_formatted%", "${price_formatted}", "{price_formatted}",
                 "%unit_price%", "${unit_price}", "{unit_price}",
                 "%price%", "${price}", "{price}",
                 "%amount%", "${amount}", "{amount}",

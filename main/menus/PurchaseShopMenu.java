@@ -1,10 +1,10 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -111,7 +111,7 @@ public class PurchaseShopMenu extends BaseMenu {
         }
         lore.add("&7Quantity: &f" + quantity);
         lore.add("&7Allowed: &f" + restriction.minQuantity() + "&7 - &f" + restriction.maxQuantity());
-        lore.add("&7Currency: &f" + (item.currency() == ShopManager.Currency.SHARD ? "Shards" : "Money"));
+        lore.add("&7Currency: &f" + plugin.getCurrencyManager().plural(currencyType()));
 
         ItemStack preview = ItemUtils.createItem(item.material(), item.displayName(), lore);
         preview.setAmount(Math.min(quantity, preview.getMaxStackSize()));
@@ -223,8 +223,8 @@ public class PurchaseShopMenu extends BaseMenu {
                 ? "PURCHASE-SHOP-MENU.MESSAGES.SUCCESS.SHARDS"
                 : "PURCHASE-SHOP-MENU.MESSAGES.SUCCESS.MONEY";
         String fallback = result.currency() == ShopManager.Currency.SHARD
-                ? "&7You bought &e{quantity} {item-name}&7 for &5{amount} shards"
-                : "&7You bought &e{quantity} {item-name}&7 for &a${amount}";
+                ? "&7You bought &e{quantity} {item-name}&7 for {price_formatted}"
+                : "&7You bought &e{quantity} {item-name}&7 for {price_formatted}";
         return replaceMessagePlaceholders(getMenus().getString(path, fallback));
     }
 
@@ -232,11 +232,15 @@ public class PurchaseShopMenu extends BaseMenu {
         return switch (result.reason()) {
             case NO_MONEY -> getMenus().getString(
                     "PURCHASE-SHOP-MENU.MESSAGES.ERROR.NO_MONEY",
-                    "&cYou don't have enough money."
+                    "&cYou don't have enough "
+                            + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.MONEY)
+                            + "."
             );
             case NO_SHARDS -> getMenus().getString(
                     "PURCHASE-SHOP-MENU.MESSAGES.ERROR.NO_SHARDS",
-                    "&cYou don't have enough shards."
+                    "&cYou don't have enough "
+                            + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS)
+                            + "."
             );
             case INVENTORY_FULL -> getMenus().getString(
                     "PURCHASE-SHOP-MENU.MESSAGES.ERROR.FULL_INVENTORY",
@@ -256,11 +260,29 @@ public class PurchaseShopMenu extends BaseMenu {
     }
 
     private String replaceMessagePlaceholders(String text) {
-        String amount = item.currency() == ShopManager.Currency.SHARD
-                ? NumberUtils.format(Math.round(item.pricePerUnit() * quantity))
-                : NumberUtils.format(item.pricePerUnit() * quantity);
-        return replaceCommonPlaceholders(text)
+        CurrencyManager.CurrencyType currencyType = currencyType();
+        double totalPrice = item.currency() == ShopManager.Currency.SHARD
+                ? Math.round(item.pricePerUnit() * quantity)
+                : item.pricePerUnit() * quantity;
+        String amount = plugin.getCurrencyManager().formatAmount(currencyType, totalPrice);
+        String formattedPrice = plugin.getCurrencyManager().format(currencyType, totalPrice);
+        String resolved = replaceCommonPlaceholders(text);
+        if (currencyType == CurrencyManager.CurrencyType.SHARDS) {
+            resolved = resolved
+                    .replace("{amount} shards", "{price_formatted}")
+                    .replace("{amount} Shards", "{price_formatted}")
+                    .replace("%amount% shards", "{price_formatted}")
+                    .replace("${amount} shards", "{price_formatted}");
+        }
+        return resolved
                 .replace("{amount}", amount)
+                .replace("${amount}", formattedPrice)
+                .replace("%amount%", amount)
+                .replace("{price_formatted}", formattedPrice)
+                .replace("{currency}", formattedPrice)
+                .replace("{currency_name}", plugin.getCurrencyManager().name(currencyType, totalPrice))
+                .replace("{currency_name_singular}", plugin.getCurrencyManager().singular(currencyType))
+                .replace("{currency_name_plural}", plugin.getCurrencyManager().plural(currencyType))
                 .replace("{item-name}", resolveItemName())
                 .replace("{quantity}", String.valueOf(quantity));
     }
@@ -270,18 +292,40 @@ public class PurchaseShopMenu extends BaseMenu {
             return "";
         }
 
-        String amount = item.currency() == ShopManager.Currency.SHARD
-                ? NumberUtils.format(Math.round(item.pricePerUnit() * quantity))
-                : NumberUtils.format(item.pricePerUnit() * quantity);
-        String formattedPrice = item.currency() == ShopManager.Currency.SHARD ? amount : "$" + amount;
-        return text
+        CurrencyManager.CurrencyType currencyType = currencyType();
+        double totalPrice = item.currency() == ShopManager.Currency.SHARD
+                ? Math.round(item.pricePerUnit() * quantity)
+                : item.pricePerUnit() * quantity;
+        String amount = plugin.getCurrencyManager().formatAmount(currencyType, totalPrice);
+        String formattedPrice = plugin.getCurrencyManager().format(currencyType, totalPrice);
+        String resolved = text;
+        if (currencyType == CurrencyManager.CurrencyType.SHARDS) {
+            resolved = resolved
+                    .replace("${price}x &lShards", "{price_formatted}")
+                    .replace("${price}x Shards", "{price_formatted}")
+                    .replace("${price} shards", "{price_formatted}")
+                    .replace("{price} shards", "{price_formatted}")
+                    .replace("%price% shards", "{price_formatted}");
+        }
+        return resolved
                 .replace("${price}", formattedPrice)
                 .replace("%price%", amount)
                 .replace("{price}", amount)
+                .replace("{price_formatted}", formattedPrice)
+                .replace("{currency}", formattedPrice)
+                .replace("{currency_name}", plugin.getCurrencyManager().name(currencyType, totalPrice))
+                .replace("{currency_name_singular}", plugin.getCurrencyManager().singular(currencyType))
+                .replace("{currency_name_plural}", plugin.getCurrencyManager().plural(currencyType))
                 .replace("%quantity%", String.valueOf(quantity))
                 .replace("{quantity}", String.valueOf(quantity))
                 .replace("{item-name}", resolveItemName())
                 .replace("{item_name}", resolveItemName());
+    }
+
+    private CurrencyManager.CurrencyType currencyType() {
+        return item.currency() == ShopManager.Currency.SHARD
+                ? CurrencyManager.CurrencyType.SHARDS
+                : CurrencyManager.CurrencyType.MONEY;
     }
 
     private List<String> replaceCommonPlaceholders(List<String> lines) {

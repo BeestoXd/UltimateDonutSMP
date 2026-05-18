@@ -653,13 +653,24 @@ public class CrateManager {
         }
 
         int keys = player == null || crate == null ? 0 : getKeyBalance(player, crate.id());
-        return text
+        String result = text
                 .replace("{crate}", crate == null ? "crate" : getReadableCrateName(crate))
                 .replace("{crate_id}", crate == null ? "" : crate.id())
                 .replace("{reward}", reward == null ? "reward" : getReadableRewardName(reward))
                 .replace("{reward_id}", reward == null ? "" : reward.id())
                 .replace("{keys}", String.valueOf(keys))
                 .replace("{player}", player == null ? "" : player.getName());
+        if (reward != null && reward.grant() != null) {
+            GrantDefinition grant = reward.grant();
+            result = result
+                    .replace("{money}", plugin.getCurrencyManager().formatAmount(CurrencyManager.CurrencyType.MONEY, grant.moneyAmount()))
+                    .replace("{money_formatted}", plugin.getCurrencyManager().formatMoney(grant.moneyAmount()))
+                    .replace("{money_short_formatted}", plugin.getCurrencyManager().formatMoneyCompact(grant.moneyAmount()))
+                    .replace("{shards}", plugin.getCurrencyManager().formatAmount(CurrencyManager.CurrencyType.SHARDS, grant.shardAmount()))
+                    .replace("{shards_formatted}", plugin.getCurrencyManager().formatShards(grant.shardAmount()))
+                    .replace("{shards_short_formatted}", plugin.getCurrencyManager().formatShardsCompact(grant.shardAmount()));
+        }
+        return plugin.getCurrencyManager().applyStaticPlaceholders(result);
     }
 
     public List<String> applyPlaceholders(List<String> lines, Player player, CrateDefinition crate, CrateReward reward) {
@@ -1105,7 +1116,10 @@ public class CrateManager {
             );
             case MONEY -> new GrantDefinition(
                     type,
-                    new DisplayItem(Material.SUNFLOWER, "&eMoney Reward", List.of(), 1, List.of()),
+                    new DisplayItem(Material.SUNFLOWER,
+                            plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY)
+                                    + plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY)
+                                    + " Reward", List.of(), 1, List.of()),
                     section.getDouble("AMOUNT", 0D),
                     0L,
                     List.of(),
@@ -1113,7 +1127,10 @@ public class CrateManager {
             );
             case SHARDS -> new GrantDefinition(
                     type,
-                    new DisplayItem(Material.AMETHYST_SHARD, "&#A303F9Shard Reward", List.of(), 1, List.of()),
+                    new DisplayItem(Material.AMETHYST_SHARD,
+                            plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.SHARDS)
+                                    + plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.SHARDS)
+                                    + " Reward", List.of(), 1, List.of()),
                     0D,
                     Math.max(0L, section.getLong("AMOUNT", 0L)),
                     List.of(),

@@ -94,7 +94,9 @@ public class AuctionHouseCommand implements CommandExecutor {
                         "{listing_id}", String.valueOf(result.listing().id()),
                         "{item}", manager.describeItem(result.listing().item()),
                         "{price}", NumberUtils.format(result.listing().price()),
+                        "{price_formatted}", plugin.getCurrencyManager().formatMoney(result.listing().price()),
                         "{fee}", NumberUtils.format(result.listingFee()),
+                        "{fee_formatted}", plugin.getCurrencyManager().formatMoney(result.listingFee()),
                         "{expires}", manager.formatRemaining(result.listing().secondsRemaining(System.currentTimeMillis()))
                 )));
                 SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));
@@ -160,7 +162,8 @@ public class AuctionHouseCommand implements CommandExecutor {
             );
             case NO_MONEY -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NO_MONEY_FOR_FEE",
-                    "&cYou do not have enough money to pay the listing fee."
+                    "{fee}", NumberUtils.format(result.listingFee()),
+                    "{fee_formatted}", plugin.getCurrencyManager().formatMoney(result.listingFee())
             );
             case MAX_LISTINGS_REACHED -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.MAX_LISTINGS_REACHED",

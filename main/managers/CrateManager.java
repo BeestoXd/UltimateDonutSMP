@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.block.Block;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -592,6 +593,13 @@ public class CrateManager {
             return "reward";
         }
 
+        if (reward.grant().type() == GrantType.MONEY) {
+            return ColorUtils.strip(plugin.getCurrencyManager().formatMoney(reward.grant().moneyAmount()));
+        }
+        if (reward.grant().type() == GrantType.SHARDS) {
+            return ColorUtils.strip(plugin.getCurrencyManager().formatShards(reward.grant().shardAmount()));
+        }
+
         String stripped = ColorUtils.strip(reward.display().displayName());
         if (stripped == null || stripped.isBlank()) {
             stripped = ColorUtils.strip(reward.grant().item().displayName());
@@ -649,13 +657,26 @@ public class CrateManager {
         }
 
         int keys = player == null || crate == null ? 0 : getKeyBalance(player, crate.id());
-        return text
+        String result = text
                 .replace("{crate}", crate == null ? "crate" : getReadableCrateName(crate))
                 .replace("{crate_id}", crate == null ? "" : crate.id())
                 .replace("{reward}", reward == null ? "reward" : getReadableRewardName(reward))
                 .replace("{reward_id}", reward == null ? "" : reward.id())
                 .replace("{keys}", String.valueOf(keys))
                 .replace("{player}", player == null ? "" : player.getName());
+
+        if (reward != null) {
+            GrantDefinition grant = reward.grant();
+            result = result
+                    .replace("{money_amount}", NumberUtils.format(grant.moneyAmount()))
+                    .replace("{money_formatted}", plugin.getCurrencyManager().formatMoney(grant.moneyAmount()))
+                    .replace("{money_short_formatted}", plugin.getCurrencyManager().formatMoneyCompact(grant.moneyAmount()))
+                    .replace("{shards_amount}", String.valueOf(grant.shardAmount()))
+                    .replace("{shards_formatted}", plugin.getCurrencyManager().formatShards(grant.shardAmount()))
+                    .replace("{shards_short_formatted}", plugin.getCurrencyManager().formatShardsCompact(grant.shardAmount()));
+        }
+
+        return result;
     }
 
     public List<String> applyPlaceholders(List<String> lines, Player player, CrateDefinition crate, CrateReward reward) {
@@ -1101,7 +1122,11 @@ public class CrateManager {
             );
             case MONEY -> new GrantDefinition(
                     type,
-                    new DisplayItem(Material.SUNFLOWER, "&eMoney Reward", List.of(), 1, List.of()),
+                    new DisplayItem(Material.SUNFLOWER,
+                            plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY)
+                                    + plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY)
+                                    + " Reward",
+                            List.of(), 1, List.of()),
                     section.getDouble("AMOUNT", 0D),
                     0L,
                     List.of(),
@@ -1109,7 +1134,11 @@ public class CrateManager {
             );
             case SHARDS -> new GrantDefinition(
                     type,
-                    new DisplayItem(Material.AMETHYST_SHARD, "&#A303F9Shard Reward", List.of(), 1, List.of()),
+                    new DisplayItem(Material.AMETHYST_SHARD,
+                            plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.SHARDS)
+                                    + plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.SHARDS)
+                                    + " Reward",
+                            List.of(), 1, List.of()),
                     0D,
                     Math.max(0L, section.getLong("AMOUNT", 0L)),
                     List.of(),

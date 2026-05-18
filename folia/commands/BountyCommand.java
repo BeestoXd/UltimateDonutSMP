@@ -99,7 +99,8 @@ public class BountyCommand implements CommandExecutor {
 
         String msg = plugin.getConfigManager().getMessage("BOUNTY.PLAYER-HAS-BOUNTY",
                 "{player}", plugin.getBountyManager().getDisplayName(targetUuid),
-                "{amount}", NumberUtils.format(bounty.getAmount()));
+                "{amount}", NumberUtils.format(bounty.getAmount()),
+                "{amount_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount()));
         player.sendMessage(ColorUtils.toComponent(msg));
     }
 }

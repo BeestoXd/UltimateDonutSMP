@@ -73,7 +73,11 @@ public class ServerInfoMenu extends BaseMenu {
                 continue;
             }
 
-            set(button.slot(), ItemUtils.createItem(button.material(), button.displayName(), button.lore()));
+            set(button.slot(), ItemUtils.createItem(
+                    button.material(),
+                    plugin.getCurrencyManager().applyStaticPlaceholders(button.displayName()),
+                    plugin.getCurrencyManager().applyStaticPlaceholders(button.lore())
+            ));
             slotActions.put(button.slot(), button.action());
             renderedButtons++;
         }
@@ -134,7 +138,7 @@ public class ServerInfoMenu extends BaseMenu {
         }
 
         for (String line : action.messages()) {
-            player.sendMessage(ColorUtils.toComponent(line));
+            player.sendMessage(ColorUtils.toComponent(plugin.getCurrencyManager().applyStaticPlaceholders(line)));
         }
     }
 
@@ -329,7 +333,7 @@ public class ServerInfoMenu extends BaseMenu {
                     "&7Build your base, gear up, and use &f/spawn &7or &f/rtp &7to begin exploring."
             ));
             case "ECONOMY" -> ButtonAction.info(List.of(
-                    "&7Earn money with &f/sell &7and trade better gear through &f/auctionhouse&7."
+                    "&7Earn {money_name_plural} with &f/sell &7and trade better gear through &f/auctionhouse&7."
             ));
             default -> ButtonAction.info(List.of("&7This button is informational only."));
         };
@@ -436,7 +440,7 @@ public class ServerInfoMenu extends BaseMenu {
                         new ButtonDefinition(
                                 11,
                                 Material.GOLD_INGOT,
-                                "&#00A4FCMake Money",
+                                "&#00A4FCMake {money_name_plural}",
                                 List.of(
                                         "&fSell blocks, ores, and drops with",
                                         "&b/sell &for list items in &b/auctionhouse&f.",
@@ -537,7 +541,7 @@ public class ServerInfoMenu extends BaseMenu {
                                 "&#00A4FCSell",
                                 List.of(
                                         "&fTurn farmed or mined items",
-                                        "&finto quick money.",
+                                        "&finto quick {money_name_plural}.",
                                         "",
                                         "&#00A4FCCommand: &f/sell"
                                 ),

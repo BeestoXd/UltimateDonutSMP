@@ -36,7 +36,8 @@ public class ShardsCommand implements CommandExecutor {
             PlayerData data = plugin.getPlayerDataManager().get(player);
             if (data == null) return true;
             String msg = plugin.getConfigManager().getMessage("BALANCE.YOUR-SHARDS",
-                    "{amount}", String.valueOf(data.getShards()));
+                    "{amount}", plugin.getCurrencyManager().formatShards(data.getShards()),
+                    "{shards}", plugin.getCurrencyManager().formatShards(data.getShards()));
             player.sendMessage(ColorUtils.toComponent(msg));
         } else {
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
@@ -45,7 +46,8 @@ public class ShardsCommand implements CommandExecutor {
             if (data == null) { player.sendMessage(ColorUtils.toComponent("&cPlayer not found.")); return true; }
             String msg = plugin.getConfigManager().getMessage("BALANCE.OTHER-SHARDS",
                     "{player}", target.getName() != null ? target.getName() : args[0],
-                    "{amount}", String.valueOf(data.getShards()));
+                    "{amount}", plugin.getCurrencyManager().formatShards(data.getShards()),
+                    "{shards}", plugin.getCurrencyManager().formatShards(data.getShards()));
             player.sendMessage(ColorUtils.toComponent(msg));
         }
         return true;
@@ -53,7 +55,9 @@ public class ShardsCommand implements CommandExecutor {
 
     private boolean handleEverywhere(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission(ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to inspect Shards Everywhere."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to inspect "
+                    + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                    + " Everywhere."));
             return true;
         }
 
@@ -73,7 +77,9 @@ public class ShardsCommand implements CommandExecutor {
         }
 
         if (target == null || !target.isOnline()) {
-            sender.sendMessage(ColorUtils.toComponent("&cTarget player must be online for Shards Everywhere checks."));
+            sender.sendMessage(ColorUtils.toComponent("&cTarget player must be online for "
+                    + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                    + " Everywhere checks."));
             return true;
         }
 
@@ -99,7 +105,9 @@ public class ShardsCommand implements CommandExecutor {
         ShardManager.EverywhereEligibilityResult eligibility = shardManager.getEverywhereEligibility(target);
 
         sender.sendMessage(ColorUtils.toComponent("&8&m--------------------------------"));
-        sender.sendMessage(ColorUtils.toComponent("&#A303F9Shards Everywhere &7for &b" + target.getName()));
+        sender.sendMessage(ColorUtils.toComponent(plugin.getCurrencyManager().color(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                + " Everywhere &7for &b" + target.getName()));
         sender.sendMessage(ColorUtils.toComponent("&7Enabled: " + yesNo(shardManager.isEverywhereEnabled())));
         sender.sendMessage(ColorUtils.toComponent("&7Eligible now: " + eligibilityColor(eligibility) + formatEligibility(eligibility)));
         sender.sendMessage(ColorUtils.toComponent("&7Required permission: &f" + (requiredPermission != null ? requiredPermission : "<none>")));
@@ -111,7 +119,8 @@ public class ShardsCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent("&7Disable in shard cuboid: " + yesNo(disableWhileInShardCuboid)));
         sender.sendMessage(ColorUtils.toComponent("&7In shard cuboid: " + yesNo(inShardCuboid)));
         sender.sendMessage(ColorUtils.toComponent("&7Interval: &f" + shardManager.getEverywhereEveryMinutes() + " minute(s)"));
-        sender.sendMessage(ColorUtils.toComponent("&7Amount: &#A303F9" + shardManager.getEverywhereAmount()));
+        sender.sendMessage(ColorUtils.toComponent("&7Amount: "
+                + plugin.getCurrencyManager().formatShards(shardManager.getEverywhereAmount())));
         sender.sendMessage(ColorUtils.toComponent("&7Booster active: " + yesNo(booster)));
         sender.sendMessage(ColorUtils.toComponent("&7Multiplier: &f" + multiplier + "x"));
 
@@ -119,7 +128,9 @@ public class ShardsCommand implements CommandExecutor {
             long secondsSinceMovement = plugin.getAFKManager().getSecondsSinceLastMovement(target.getUniqueId());
             sender.sendMessage(ColorUtils.toComponent("&7Movement window: &f" + shardManager.getEverywhereRecentMovementWindowSeconds() + "s"));
             sender.sendMessage(ColorUtils.toComponent("&7Seconds since movement: &f" + secondsSinceMovement));
-            sender.sendMessage(ColorUtils.toComponent("&7Current shards: &#A303F9" + getCurrentShards(target)));
+            sender.sendMessage(ColorUtils.toComponent("&7Current "
+                    + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                    + ": " + plugin.getCurrencyManager().formatShards(getCurrentShards(target))));
         }
 
         sender.sendMessage(ColorUtils.toComponent("&8&m--------------------------------"));

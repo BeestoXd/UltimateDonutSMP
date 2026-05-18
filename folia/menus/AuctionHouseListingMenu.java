@@ -58,7 +58,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
                         "&7ID: &f#" + listing.id(),
                         "&7Seller: &f" + listing.sellerName(),
                         "&7Status: &f" + listing.status().name(),
-                        "&7Price: &a$" + NumberUtils.format(listing.price())
+                        "&7Price: " + plugin.getCurrencyManager().formatMoney(listing.price())
                 )
         ));
         set(13, AuctionHouseMenuSupport.createListingDisplay(plugin, plugin.getAuctionHouseManager(), listing, owner));
@@ -70,7 +70,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
                                 (System.currentTimeMillis() - listing.createdAt()) / 1000L)),
                         "&7Time Left: &f" + plugin.getAuctionHouseManager()
                                 .formatRemaining(listing.secondsRemaining(System.currentTimeMillis())),
-                        "&7Seller Payout: &a$" + NumberUtils.format(listing.sellerPayout())
+                        "&7Seller Payout: " + plugin.getCurrencyManager().formatMoney(listing.sellerPayout())
                 )
         ));
 
@@ -96,7 +96,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
                 Material.EMERALD,
                 "&aBuy Listing",
                 List.of(
-                        "&7Price: &a$" + NumberUtils.format(listing.price()),
+                        "&7Price: " + plugin.getCurrencyManager().formatMoney(listing.price()),
                         "&7Item: &f" + plugin.getAuctionHouseManager().describeItem(listing.item()),
                         "",
                         "&eClick to purchase"
@@ -172,6 +172,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
                     "AUCTION_HOUSE.PURCHASE_SUCCESS",
                     "{item}", manager.describeItem(listing.item()),
                     "{price}", NumberUtils.format(listing.price()),
+                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(listing.price()),
                     "{seller}", listing.sellerName()
             )));
             SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));

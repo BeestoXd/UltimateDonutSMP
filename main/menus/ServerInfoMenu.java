@@ -234,8 +234,8 @@ public class ServerInfoMenu extends BaseMenu {
                     normalizeSize(plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 27)),
                     legacyButtons
             ));
-            loadedPages.add(createDefaultGettingStartedPage());
-            loadedPages.add(createDefaultCommandsPage());
+            loadedPages.add(createDefaultGettingStartedPage(plugin));
+            loadedPages.add(createDefaultCommandsPage(plugin));
         }
         return loadedPages;
     }
@@ -288,15 +288,15 @@ public class ServerInfoMenu extends BaseMenu {
             buttons.add(new ButtonDefinition(
                     slot,
                     material,
-                    buttonSection.getString("NAME", prettifyKey(key)),
-                    buttonSection.getStringList("LORE"),
-                    resolveAction(key, buttonSection)
+                    plugin.getCurrencyManager().applyStaticPlaceholders(buttonSection.getString("NAME", prettifyKey(key))),
+                    plugin.getCurrencyManager().applyStaticPlaceholders(buttonSection.getStringList("LORE")),
+                    resolveAction(plugin, key, buttonSection)
             ));
         }
         return buttons;
     }
 
-    private static ButtonAction resolveAction(String key, ConfigurationSection buttonSection) {
+    private static ButtonAction resolveAction(UltimateDonutSmp plugin, String key, ConfigurationSection buttonSection) {
         String configuredCommand = firstNonBlank(
                 sanitizeCommand(buttonSection.getString("COMMAND")),
                 sanitizeCommand(buttonSection.getString("ACTION.VALUE"))
@@ -307,7 +307,7 @@ public class ServerInfoMenu extends BaseMenu {
 
         List<String> configuredMessages = buttonSection.getStringList("CLICK-MESSAGE");
         if (!configuredMessages.isEmpty()) {
-            return ButtonAction.info(configuredMessages);
+            return ButtonAction.info(plugin.getCurrencyManager().applyStaticPlaceholders(configuredMessages));
         }
 
         return switch (key.toUpperCase(Locale.ROOT)) {
@@ -329,7 +329,8 @@ public class ServerInfoMenu extends BaseMenu {
                     "&7Build your base, gear up, and use &f/spawn &7or &f/rtp &7to begin exploring."
             ));
             case "ECONOMY" -> ButtonAction.info(List.of(
-                    "&7Earn money with &f/sell &7and trade better gear through &f/auctionhouse&7."
+                    "&7Earn " + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                            + " with &f/sell &7and trade better gear through &f/auctionhouse&7."
             ));
             default -> ButtonAction.info(List.of("&7This button is informational only."));
         };
@@ -412,7 +413,8 @@ public class ServerInfoMenu extends BaseMenu {
         INFO
     }
 
-    private static PageDefinition createDefaultGettingStartedPage() {
+    private static PageDefinition createDefaultGettingStartedPage(UltimateDonutSmp plugin) {
+        String moneyPlural = plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
         return new PageDefinition(
                 "2",
                 "&8Getting Started",
@@ -436,7 +438,7 @@ public class ServerInfoMenu extends BaseMenu {
                         new ButtonDefinition(
                                 11,
                                 Material.GOLD_INGOT,
-                                "&#00A4FCMake Money",
+                                "&#00A4FCMake " + moneyPlural,
                                 List.of(
                                         "&fSell blocks, ores, and drops with",
                                         "&b/sell &for list items in &b/auctionhouse&f.",
@@ -513,7 +515,8 @@ public class ServerInfoMenu extends BaseMenu {
         );
     }
 
-    private static PageDefinition createDefaultCommandsPage() {
+    private static PageDefinition createDefaultCommandsPage(UltimateDonutSmp plugin) {
+        String moneyPlural = plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
         return new PageDefinition(
                 "3",
                 "&8Useful Commands",
@@ -537,7 +540,7 @@ public class ServerInfoMenu extends BaseMenu {
                                 "&#00A4FCSell",
                                 List.of(
                                         "&fTurn farmed or mined items",
-                                        "&finto quick money.",
+                                        "&finto quick " + moneyPlural + ".",
                                         "",
                                         "&#00A4FCCommand: &f/sell"
                                 ),
@@ -565,7 +568,7 @@ public class ServerInfoMenu extends BaseMenu {
                                 "&#00A4FCLeaderboards",
                                 List.of(
                                         "&fCheck who is leading in",
-                                        "&fmoney, kills, and more.",
+                                        "&f" + moneyPlural + ", kills, and more.",
                                         "",
                                         "&#00A4FCCommand: &f/leaderboards"
                                 ),

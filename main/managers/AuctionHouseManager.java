@@ -987,7 +987,9 @@ public class AuctionHouseManager {
                 "{buyer}", buyer.getName(),
                 "{item}", describeItem(listing.item()),
                 "{price}", NumberUtils.format(listing.price()),
-                "{payout}", NumberUtils.format(listing.sellerPayout())
+                "{price_formatted}", plugin.getCurrencyManager().formatMoney(listing.price()),
+                "{payout}", NumberUtils.format(listing.sellerPayout()),
+                "{payout_formatted}", plugin.getCurrencyManager().formatMoney(listing.sellerPayout())
         );
         seller.sendMessage(ColorUtils.toComponent(message));
     }

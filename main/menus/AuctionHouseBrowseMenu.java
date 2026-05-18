@@ -57,7 +57,13 @@ public class AuctionHouseBrowseMenu extends BaseMenu {
                 List.of("&7Click to cycle sorting mode")
         ));
         set(lastRow + 3, ItemUtils.createItem(Material.CHEST, "&bMy Listings", List.of("&7View your active listings")));
-        set(lastRow + 4, ItemUtils.createItem(Material.ENDER_CHEST, "&dClaims", List.of("&7Claim sold money and returned items")));
+        set(lastRow + 4, ItemUtils.createItem(
+                Material.ENDER_CHEST,
+                "&dClaims",
+                List.of("&7Claim sold "
+                        + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                        + " and returned items")
+        ));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
                 "&ePage " + page + "&7/&e" + getTotalPages(listings.size(), itemsPerPage),

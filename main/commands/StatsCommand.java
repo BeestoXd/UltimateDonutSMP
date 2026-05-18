@@ -31,8 +31,14 @@ public class StatsCommand implements CommandExecutor {
         String name = target.getName() != null ? target.getName() : args[0];
         player.sendMessage(ColorUtils.toComponent("&7&m------------------"));
         player.sendMessage(ColorUtils.toComponent("&b" + name + "&7's stats:"));
-        player.sendMessage(ColorUtils.toComponent("&#00FC00$ &fMoney: &a$" + NumberUtils.formatNice(data.getMoney())));
-        player.sendMessage(ColorUtils.toComponent("&#A303F9★ &fShards: &#A303F9" + data.getShards()));
+        player.sendMessage(ColorUtils.toComponent(plugin.getCurrencyManager().color(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                + plugin.getCurrencyManager().symbol(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                + " &f" + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                + ": " + plugin.getCurrencyManager().formatMoneyCompact(data.getMoney())));
+        player.sendMessage(ColorUtils.toComponent(plugin.getCurrencyManager().color(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                + plugin.getCurrencyManager().symbol(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                + " &f" + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                + ": " + plugin.getCurrencyManager().formatShards(data.getShards())));
         player.sendMessage(ColorUtils.toComponent("&#FC0000⚔ &fKills: &#FC0000" + data.getKills()));
         player.sendMessage(ColorUtils.toComponent("&#F97603☠ &fDeaths: &#F97603" + data.getDeaths()));
         player.sendMessage(ColorUtils.toComponent("&#FCE300⌚ &fPlaytime: &#FCE300" + NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds())));

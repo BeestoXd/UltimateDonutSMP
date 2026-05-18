@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.CrateManager;
+import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.menus.CrateEditorMenu;
 import com.bx.ultimateDonutSmp.menus.CrateGachaMenu;
 import com.bx.ultimateDonutSmp.menus.CrateRewardMenu;
@@ -34,6 +35,8 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
             "create", "delete", "type", "key", "take", "set", "add", "edit", "remove", "bind", "unbind", "info"
     );
     private static final List<String> OPEN_TYPE_COMPLETIONS = List.of("choose_one", "gacha");
+    private static final List<String> AMOUNT_COMPLETIONS = List.of("1", "5", "10", "25", "64");
+    private static final List<String> SLOT_COMPLETIONS = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
     private final UltimateDonutSmp plugin;
 
@@ -102,6 +105,9 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
                 case "keyall" -> hasKeyAllPermission(sender)
                         ? partialMatches(args[1], crateIds())
                         : Collections.emptyList();
+                case "key", "take", "set" -> hasAdminPermission(sender)
+                        ? partialMatches(args[1], targetNames())
+                        : Collections.emptyList();
                 case "bind" -> hasAdminPermission(sender)
                         ? partialMatches(args[1], bindTargets())
                         : Collections.emptyList();
@@ -117,8 +123,20 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
                 case "key", "take", "set" -> hasAdminPermission(sender)
                         ? partialMatches(args[2], crateIds())
                         : Collections.emptyList();
+                case "keyall" -> hasKeyAllPermission(sender)
+                        ? partialMatches(args[2], AMOUNT_COMPLETIONS)
+                        : Collections.emptyList();
+                case "add", "edit", "remove" -> hasAdminPermission(sender)
+                        ? partialMatches(args[2], SLOT_COMPLETIONS)
+                        : Collections.emptyList();
                 default -> Collections.emptyList();
             };
+        }
+
+        if (args.length == 4 && List.of("key", "take", "set").contains(subcommand)) {
+            return hasAdminPermission(sender)
+                    ? partialMatches(args[3], AMOUNT_COMPLETIONS)
+                    : Collections.emptyList();
         }
 
         return Collections.emptyList();
@@ -619,6 +637,22 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         List<String> completions = crateIds();
         completions.add("cancel");
         return completions;
+    }
+
+    private List<String> targetNames() {
+        List<String> names = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            names.add(player.getName());
+        }
+        for (PlayerData data : plugin.getPlayerDataManager().getAll()) {
+            if (data.getUsername() != null && !data.getUsername().isBlank()) {
+                names.add(data.getUsername());
+            }
+        }
+        return names.stream()
+                .distinct()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
     }
 
     private List<String> partialMatches(String token, List<String> completions) {

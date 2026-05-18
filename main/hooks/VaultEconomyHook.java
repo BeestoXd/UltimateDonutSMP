@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.hooks;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -40,17 +39,17 @@ public class VaultEconomyHook extends AbstractEconomy {
 
     @Override
     public String format(double amount) {
-        return "$" + NumberUtils.format(amount);
+        return plugin.getCurrencyManager().formatMoney(amount);
     }
 
     @Override
     public String currencyNamePlural() {
-        return "dollars";
+        return plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
     }
 
     @Override
     public String currencyNameSingular() {
-        return "dollar";
+        return plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
     }
 
     @Override

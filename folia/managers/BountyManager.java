@@ -140,7 +140,8 @@ public class BountyManager {
         if (targetData == null || targetData.isBountyAlertsEnabled()) {
             String msg = plugin.getConfigManager().getMessage("BOUNTY.ALERT",
                     "{who}", placer.getName(),
-                    "{price}", NumberUtils.format(amount));
+                    "{price}", NumberUtils.format(amount),
+                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(amount));
             target.sendMessage(ColorUtils.toComponent(msg));
         }
     }
@@ -149,7 +150,8 @@ public class BountyManager {
         String messageKey = result == PlacementResult.NEW ? "BOUNTY.NEW" : "BOUNTY.INCREASED";
         String message = plugin.getConfigManager().getMessage(messageKey,
                 "{player}", getDisplayName(targetUuid),
-                "{price}", NumberUtils.format(amount));
+                "{price}", NumberUtils.format(amount),
+                "{price_formatted}", plugin.getCurrencyManager().formatMoney(amount));
 
         plugin.getFoliaScheduler().forEachOnlinePlayer(online -> {
             PlayerData data = plugin.getPlayerDataManager().get(online);

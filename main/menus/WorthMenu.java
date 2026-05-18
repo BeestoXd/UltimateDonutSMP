@@ -133,8 +133,8 @@ public class WorthMenu extends BaseMenu {
                     "&b" + plugin.getWorthManager().prettifyMaterial(entry.material()),
                     List.of(
                             "&7Category: &f" + formatCategory(entry.categoryKey()),
-                            "&7Worth: &a$" + NumberUtils.formatNice(entry.unitWorth()),
-                            "&7Stack x64: &a$" + NumberUtils.formatNice(entry.unitWorth() * 64),
+                            "&7Worth: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth()),
+                            "&7Stack x64: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth() * 64),
                             "",
                             "&eClick to send worth info in chat"
                     )
@@ -207,7 +207,7 @@ public class WorthMenu extends BaseMenu {
         WorthManager.WorthBrowserEntry entry = entries.get(entryIndex);
         player.sendMessage(ColorUtils.toComponent(
                 "&7" + plugin.getWorthManager().prettifyMaterial(entry.material())
-                        + " &7is worth &a$" + NumberUtils.formatNice(entry.unitWorth())
+                        + " &7is worth " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth())
                         + " &8(" + formatCategory(entry.categoryKey()) + "&8)"
         ));
     }

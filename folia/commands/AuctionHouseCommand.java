@@ -94,7 +94,9 @@ public class AuctionHouseCommand implements CommandExecutor {
                         "{listing_id}", String.valueOf(result.listing().id()),
                         "{item}", manager.describeItem(result.listing().item()),
                         "{price}", NumberUtils.format(result.listing().price()),
+                        "{price_formatted}", plugin.getCurrencyManager().formatMoney(result.listing().price()),
                         "{fee}", NumberUtils.format(result.listingFee()),
+                        "{fee_formatted}", plugin.getCurrencyManager().formatMoney(result.listingFee()),
                         "{expires}", manager.formatRemaining(result.listing().secondsRemaining(System.currentTimeMillis()))
                 )));
                 SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));

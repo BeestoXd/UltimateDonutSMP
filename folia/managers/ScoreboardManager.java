@@ -10,10 +10,14 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScoreboardManager {
 
     private static final int MAX_LINES = 15;
+    private static final Pattern SIDEBAR_ICON_PATTERN = Pattern.compile("\\{sb_icon:([^}]*)\\}");
+    private static final char SECTION_CHAR = '\u00A7';
 
     private final UltimateDonutSmp plugin;
     private final PacketSidebarRenderer sidebarRenderer;
@@ -72,7 +76,8 @@ public class ScoreboardManager {
             if (visible.size() >= MAX_LINES) {
                 break;
             }
-            visible.add(ColorUtils.colorize(line, player));
+            String text = ColorUtils.colorize(line, player);
+            visible.add(alignSidebarIconColumn(text));
         }
         return visible;
     }
@@ -96,7 +101,7 @@ public class ScoreboardManager {
                     showShardCuboid
             );
             if (resolved != null) {
-                lines.add(resolved);
+                lines.add(applySidebarLayoutPlaceholders(resolved));
             }
         }
 
@@ -126,6 +131,170 @@ public class ScoreboardManager {
             return showShardCuboid ? shardCuboidLine : null;
         }
         return line;
+    }
+
+    private String applySidebarLayoutPlaceholders(String line) {
+        if (line == null || line.isEmpty()) {
+            return "";
+        }
+
+        String result = line
+                .replace("{money_icon}", paddedSidebarIcon(
+                        plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.MONEY)
+                                + "&l"
+                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY)))
+                .replace("{shards_icon}", paddedSidebarIcon(
+                        plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.SHARDS)
+                                + "&l"
+                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS)));
+
+        Matcher matcher = SIDEBAR_ICON_PATTERN.matcher(result);
+        StringBuffer buffer = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(paddedSidebarIcon(matcher.group(1))));
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    private String paddedSidebarIcon(String icon) {
+        int columnWidth = Math.max(0, plugin.getConfigManager().getScoreboard()
+                .getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10));
+        int iconWidth = minecraftTextWidth(icon);
+        int missingWidth = Math.max(0, columnWidth - iconWidth);
+        int spaces = Math.max(1, Math.round(missingWidth / 4F));
+        return icon + " ".repeat(spaces);
+    }
+
+    private String alignSidebarIconColumn(String text) {
+        if (text == null || text.isEmpty() || !plugin.getConfigManager().getScoreboard()
+                .getBoolean("SCOREBOARD.ALIGN-ICON-COLUMN", true)) {
+            return text == null ? "" : text;
+        }
+
+        int iconStart = firstVisibleIndex(text, 0);
+        if (iconStart < 0) {
+            return text;
+        }
+
+        int iconEnd = iconStart + Character.charCount(text.codePointAt(iconStart));
+        int cursor = iconEnd;
+        while (cursor < text.length()) {
+            int formattingEnd = formattingEnd(text, cursor);
+            if (formattingEnd <= cursor) {
+                break;
+            }
+            cursor = formattingEnd;
+        }
+
+        int spacesStart = cursor;
+        while (cursor < text.length() && text.charAt(cursor) == ' ') {
+            cursor++;
+        }
+        if (spacesStart == cursor) {
+            return text;
+        }
+
+        int nextVisible = firstVisibleIndex(text, cursor);
+        if (nextVisible < 0) {
+            return text;
+        }
+
+        String iconText = text.substring(0, iconEnd);
+        int columnWidth = Math.max(0, plugin.getConfigManager().getScoreboard()
+                .getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10));
+        int iconWidth = minecraftTextWidth(iconText);
+        int missingWidth = Math.max(0, columnWidth - iconWidth);
+        int spaces = Math.max(1, Math.round(missingWidth / 4F));
+        return text.substring(0, spacesStart) + " ".repeat(spaces) + text.substring(cursor);
+    }
+
+    private int firstVisibleIndex(String text, int start) {
+        int index = Math.max(0, start);
+        while (index < text.length()) {
+            int formattingEnd = formattingEnd(text, index);
+            if (formattingEnd > index) {
+                index = formattingEnd;
+                continue;
+            }
+            return index;
+        }
+        return -1;
+    }
+
+    private int formattingEnd(String text, int index) {
+        if (index < 0 || index + 1 >= text.length() || text.charAt(index) != SECTION_CHAR) {
+            return index;
+        }
+
+        char code = Character.toLowerCase(text.charAt(index + 1));
+        if (code == 'x' && index + 13 < text.length()) {
+            return index + 14;
+        }
+        return index + 2;
+    }
+
+    private int minecraftTextWidth(String text) {
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+
+        int width = 0;
+        boolean bold = false;
+        for (int i = 0; i < text.length(); ) {
+            char current = text.charAt(i);
+            if (current == '&' && i + 7 < text.length() && text.charAt(i + 1) == '#'
+                    && isHexColor(text, i + 2)) {
+                bold = false;
+                i += 8;
+                continue;
+            }
+            if ((current == '&' || current == SECTION_CHAR) && i + 1 < text.length()) {
+                char code = Character.toLowerCase(text.charAt(i + 1));
+                if (code == 'x' && current == SECTION_CHAR && i + 13 < text.length()) {
+                    bold = false;
+                    i += 14;
+                    continue;
+                }
+                if ("0123456789abcdefr".indexOf(code) >= 0) {
+                    bold = false;
+                } else if (code == 'l') {
+                    bold = true;
+                }
+                i += 2;
+                continue;
+            }
+
+            int codePoint = text.codePointAt(i);
+            int charWidth = minecraftCharWidth(codePoint);
+            width += bold && charWidth > 0 ? charWidth + 1 : charWidth;
+            i += Character.charCount(codePoint);
+        }
+        return width;
+    }
+
+    private boolean isHexColor(String text, int start) {
+        if (start + 6 > text.length()) {
+            return false;
+        }
+        for (int i = start; i < start + 6; i++) {
+            char c = text.charAt(i);
+            if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int minecraftCharWidth(int codePoint) {
+        return switch (codePoint) {
+            case ' ', '\u00A0' -> 4;
+            case '!', '.', ',', ':', ';', '|', 'i', '\'', '`' -> 2;
+            case 'l', 'I', '[', ']', 't' -> 3;
+            case '"', '(', ')', '*', '<', '>', '{', '}', 'f', 'k' -> 5;
+            case '@', '~' -> 7;
+            default -> codePoint > 127 ? 7 : 6;
+        };
     }
 
     public void updateAll() {

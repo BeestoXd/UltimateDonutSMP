@@ -30,9 +30,9 @@ final class OrdersMenuSupport {
         extraLore.add("&7Owner: &f" + order.ownerName());
         extraLore.add("&7Status: &f" + order.status().name());
         extraLore.add("&7Progress: &e" + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity());
-        extraLore.add("&7Price Each: &a$" + NumberUtils.format(order.priceEach()));
-        extraLore.add("&7Paid So Far: &a$" + NumberUtils.format(order.paidAmount()));
-        extraLore.add("&7Escrow Left: &a$" + NumberUtils.format(order.escrowRemaining()));
+        extraLore.add("&7Price Each: " + plugin.getCurrencyManager().formatMoney(order.priceEach()));
+        extraLore.add("&7Paid So Far: " + plugin.getCurrencyManager().formatMoney(order.paidAmount()));
+        extraLore.add("&7Escrow Left: " + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()));
         extraLore.add("&7Time Left: &f" + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis())));
         extraLore.add("&7Order ID: &f#" + order.id());
         extraLore.add("");
@@ -50,7 +50,7 @@ final class OrdersMenuSupport {
                     Material.SUNFLOWER,
                     "&aEscrow Refund",
                     List.of(
-                            "&7Amount: &a$" + NumberUtils.format(claim.moneyAmount()),
+                            "&7Amount: " + plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
                             "&7Order: &f#" + claim.orderId(),
                             "",
                             "&eClick to claim"

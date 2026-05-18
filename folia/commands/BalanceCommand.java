@@ -2,8 +2,6 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +21,8 @@ public class BalanceCommand implements CommandExecutor {
 
         if (args.length == 0) {
             String msg = plugin.getConfigManager().getMessage("BALANCE.YOUR-BALANCE",
-                    "{amount}", NumberUtils.format(plugin.getEconomyManager().getBalance(player)));
+                    "{amount}", plugin.getCurrencyManager().formatMoney(plugin.getEconomyManager().getBalance(player)),
+                    "{money}", plugin.getCurrencyManager().formatMoney(plugin.getEconomyManager().getBalance(player)));
             player.sendMessage(ColorUtils.toComponent(msg));
         } else {
             var account = plugin.getEconomyManager().resolveAccount(args[0]);
@@ -33,7 +32,8 @@ public class BalanceCommand implements CommandExecutor {
             }
             String msg = plugin.getConfigManager().getMessage("BALANCE.OTHER-BALANCE",
                     "{player}", account.displayName(),
-                    "{amount}", NumberUtils.format(plugin.getEconomyManager().getBalance(account.uuid())));
+                    "{amount}", plugin.getCurrencyManager().formatMoney(plugin.getEconomyManager().getBalance(account.uuid())),
+                    "{money}", plugin.getCurrencyManager().formatMoney(plugin.getEconomyManager().getBalance(account.uuid())));
             player.sendMessage(ColorUtils.toComponent(msg));
         }
         return true;

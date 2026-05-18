@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -21,26 +22,38 @@ public class StatsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Player only.");
+            return true;
+        }
 
         OfflinePlayer target = args.length > 0 ? Bukkit.getOfflinePlayer(args[0]) : player;
         PlayerData data = plugin.getPlayerDataManager().get(target.getUniqueId());
-        if (data == null) data = plugin.getDatabaseManager().loadPlayer(target.getUniqueId());
-        if (data == null) { player.sendMessage(ColorUtils.toComponent("&cPlayer not found.")); return true; }
+        if (data == null) {
+            data = plugin.getDatabaseManager().loadPlayer(target.getUniqueId());
+        }
+        if (data == null) {
+            player.sendMessage(ColorUtils.toComponent("&cPlayer not found."));
+            return true;
+        }
 
         String name = target.getName() != null ? target.getName() : args[0];
         player.sendMessage(ColorUtils.toComponent("&7&m------------------"));
         player.sendMessage(ColorUtils.toComponent("&b" + name + "&7's stats:"));
-        player.sendMessage(ColorUtils.toComponent("&#00FC00$ &fMoney: &a$" + NumberUtils.formatNice(data.getMoney())));
-        player.sendMessage(ColorUtils.toComponent("&#A303F9★ &fShards: &#A303F9" + data.getShards()));
-        player.sendMessage(ColorUtils.toComponent("&#FC0000⚔ &fKills: &#FC0000" + data.getKills()));
-        player.sendMessage(ColorUtils.toComponent("&#F97603☠ &fDeaths: &#F97603" + data.getDeaths()));
-        player.sendMessage(ColorUtils.toComponent("&#FCE300⌚ &fPlaytime: &#FCE300" + NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds())));
+        player.sendMessage(ColorUtils.toComponent(plugin.getCurrencyManager().coloredSymbol(CurrencyManager.CurrencyType.MONEY)
+                + " &f" + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.MONEY)
+                + ": " + plugin.getCurrencyManager().formatMoneyCompact(data.getMoney())));
+        player.sendMessage(ColorUtils.toComponent(plugin.getCurrencyManager().coloredSymbol(CurrencyManager.CurrencyType.SHARDS)
+                + " &f" + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS)
+                + ": " + plugin.getCurrencyManager().formatShards(data.getShards())));
+        player.sendMessage(ColorUtils.toComponent("&#FC0000\u2694 &fKills: &#FC0000" + data.getKills()));
+        player.sendMessage(ColorUtils.toComponent("&#F97603\u2620 &fDeaths: &#F97603" + data.getDeaths()));
+        player.sendMessage(ColorUtils.toComponent("&#FCE300\u231A &fPlaytime: &#FCE300" + NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds())));
 
         String teamName = plugin.getTeamManager().getTeam(target.getUniqueId()) != null
                 ? plugin.getTeamManager().getTeam(target.getUniqueId()).getName()
                 : null;
-        player.sendMessage(ColorUtils.toComponent("&#00A4FC⚑ &fTeam: &#00A4FC" + (teamName != null ? teamName.toUpperCase() : "None")));
+        player.sendMessage(ColorUtils.toComponent("&#00A4FC\u2691 &fTeam: &#00A4FC" + (teamName != null ? teamName.toUpperCase() : "None")));
         player.sendMessage(ColorUtils.toComponent("&7&m------------------"));
         return true;
     }

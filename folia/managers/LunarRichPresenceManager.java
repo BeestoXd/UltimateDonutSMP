@@ -213,7 +213,11 @@ public class LunarRichPresenceManager {
 
         String money = data != null ? NumberUtils.format(data.getMoney()) : "0";
         String moneyNice = data != null ? NumberUtils.formatNice(data.getMoney()) : "0";
+        String moneyFormatted = data != null ? plugin.getCurrencyManager().formatMoney(data.getMoney()) : plugin.getCurrencyManager().formatMoney(0D);
+        String moneyShortFormatted = data != null ? plugin.getCurrencyManager().formatMoneyCompact(data.getMoney()) : plugin.getCurrencyManager().formatMoneyCompact(0D);
         String shards = data != null ? String.valueOf(data.getShards()) : "0";
+        String shardsFormatted = data != null ? plugin.getCurrencyManager().formatShards(data.getShards()) : plugin.getCurrencyManager().formatShards(0L);
+        String shardsShortFormatted = data != null ? plugin.getCurrencyManager().formatShardsCompact(data.getShards()) : plugin.getCurrencyManager().formatShardsCompact(0L);
         String kills = data != null ? String.valueOf(data.getKills()) : "0";
         String deaths = data != null ? String.valueOf(data.getDeaths()) : "0";
         String playtime = data != null ? NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds()) : "0s";
@@ -232,7 +236,24 @@ public class LunarRichPresenceManager {
         result = result.replace("%economy_team%", teamName);
         result = result.replace("%economy_money%", money);
         result = result.replace("%economy_nicestMoney%", moneyNice);
+        result = result.replace("%economy_money_formatted%", moneyFormatted);
+        result = result.replace("%economy_money_short_formatted%", moneyShortFormatted);
+        result = result.replace("%economy_nicestMoney_formatted%", moneyShortFormatted);
+        result = result.replace("%economy_money_symbol%", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY));
+        result = result.replace("%economy_money_symbol_color%", plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.MONEY));
+        result = result.replace("%economy_money_symbol_colored%", plugin.getCurrencyManager().coloredSymbol(CurrencyManager.CurrencyType.MONEY));
+        result = result.replace("%economy_money_name%", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY));
+        result = result.replace("%economy_money_name_plural%", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.MONEY));
+        result = result.replace("%economy_money_color%", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY));
         result = result.replace("%economy_shards%", shards);
+        result = result.replace("%economy_shards_formatted%", shardsFormatted);
+        result = result.replace("%economy_shards_short_formatted%", shardsShortFormatted);
+        result = result.replace("%economy_shards_symbol%", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS));
+        result = result.replace("%economy_shards_symbol_color%", plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.SHARDS));
+        result = result.replace("%economy_shards_symbol_colored%", plugin.getCurrencyManager().coloredSymbol(CurrencyManager.CurrencyType.SHARDS));
+        result = result.replace("%economy_shards_name%", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.SHARDS));
+        result = result.replace("%economy_shards_name_plural%", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS));
+        result = result.replace("%economy_shards_color%", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.SHARDS));
         result = result.replace("%economy_kills%", kills);
         result = result.replace("%economy_deaths%", deaths);
         result = result.replace("%economy_playtime%", playtime);

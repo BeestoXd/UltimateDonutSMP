@@ -59,7 +59,8 @@ public class RemoveMoneyCommand implements CommandExecutor {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     key,
                     "{player}", result.displayName(),
-                    "{balance}", NumberUtils.format(result.beforeBalance())
+                    "{balance}", plugin.getCurrencyManager().formatMoney(result.beforeBalance()),
+                    "{balance_money}", plugin.getCurrencyManager().formatMoney(result.beforeBalance())
             )));
             return true;
         }
@@ -67,8 +68,10 @@ public class RemoveMoneyCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.ADMIN.REMOVE-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", NumberUtils.format(result.amount()),
-                "{balance}", NumberUtils.format(result.afterBalance())
+                "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance())
         )));
 
         Player targetPlayer = Bukkit.getPlayer(result.targetUuid());
@@ -76,8 +79,10 @@ public class RemoveMoneyCommand implements CommandExecutor {
             targetPlayer.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.ADMIN.REMOVE-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", NumberUtils.format(result.amount()),
-                    "{balance}", NumberUtils.format(result.afterBalance())
+                    "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                    "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
+                    "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
+                    "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance())
             )));
         }
 

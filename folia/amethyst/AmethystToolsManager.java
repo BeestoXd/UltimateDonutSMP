@@ -73,10 +73,16 @@ public class AmethystToolsManager {
 
         List<String> resolvedLore = new ArrayList<>();
         for (String line : cfg.getStringList("LORE")) {
-            resolvedLore.add(line.replace("{time}", NumberUtils.formatTimeLong(duration)));
+            resolvedLore.add(plugin.getCurrencyManager().applyStaticPlaceholders(
+                    line.replace("{time}", NumberUtils.formatTimeLong(duration))
+            ));
         }
 
-        ItemStack item = ItemUtils.createItem(material, cfg.getString("NAME", "&d&lAmethyst Tool"), resolvedLore);
+        ItemStack item = ItemUtils.createItem(
+                material,
+                plugin.getCurrencyManager().applyStaticPlaceholders(cfg.getString("NAME", "&d&lAmethyst Tool")),
+                resolvedLore
+        );
         item.setAmount(1);
 
         List<String> enchants = cfg.getStringList("ENCHANTMENTS");
@@ -543,7 +549,7 @@ public class AmethystToolsManager {
         }
         String prefix = msgs.getString("PREFIX", "&#9B59B6[Amethyst] &r");
         String raw = msgs.getString(key, key);
-        return raw.replace("{prefix}", prefix);
+        return plugin.getCurrencyManager().applyStaticPlaceholders(raw.replace("{prefix}", prefix));
     }
 
     public String getMessage(String key, String... replacements) {

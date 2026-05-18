@@ -161,7 +161,8 @@ public class SellHistoryMenu extends BaseMenu {
         String displayName = "&f" + toDisplayName(entry.itemName());
         List<String> lore = menus.getStringList("SELL-HISTORY-MENU.BUTTONS.MATERIAL-ITEM.LORE").stream()
                 .map(line -> line
-                        .replace("{price}", "$" + NumberUtils.formatNice(entry.price()))
+                        .replace("{price}", NumberUtils.formatNice(entry.price()))
+                        .replace("{price_formatted}", plugin.getCurrencyManager().formatMoneyCompact(entry.price()))
                         .replace("{amount}", NumberUtils.format(entry.amount())))
                 .toList();
 

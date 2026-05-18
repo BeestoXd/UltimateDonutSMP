@@ -29,6 +29,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private DatabaseManager    databaseManager;
     private PlayerDataManager  playerDataManager;
     private EconomyManager     economyManager;
+    private CurrencyManager    currencyManager;
     private ChatManager        chatManager;
     private IgnoreManager      ignoreManager;
     private PrivateMessageManager privateMessageManager;
@@ -107,6 +108,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // 2. Data managers (depend on DB / config)
         playerDataManager = new PlayerDataManager(this);
         economyManager    = new EconomyManager(this);
+        currencyManager   = new CurrencyManager(this);
         chatManager       = new ChatManager(this);
         ignoreManager     = new IgnoreManager(this);
         privateMessageManager = new PrivateMessageManager(this);
@@ -330,25 +332,28 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     private void registerCommands() {
+        UniversalCommandTabCompleter universalCommandTabCompleter = new UniversalCommandTabCompleter(this);
+        registerFallbackTabCompleters(universalCommandTabCompleter);
+
         // Team
         TeamCommand teamCmd = new TeamCommand(this);
         setExecutor("team", teamCmd, FeatureManager.Feature.TEAMS);
         ChatCommand chatCommand = new ChatCommand(this);
         ChatTabCompleter chatTabCompleter = new ChatTabCompleter();
         setExecutor("chat", chatCommand, FeatureManager.Feature.CHAT);
-        getCommand("chat").setTabCompleter(chatTabCompleter);
+        setTabCompleter("chat", chatTabCompleter);
         IgnoreCommand ignoreCommand = new IgnoreCommand(this);
         IgnoreTabCompleter ignoreTabCompleter = new IgnoreTabCompleter(this);
         setExecutor("ignore", ignoreCommand, FeatureManager.Feature.IGNORE);
-        getCommand("ignore").setTabCompleter(ignoreTabCompleter);
+        setTabCompleter("ignore", ignoreTabCompleter);
         setExecutor("unignore", ignoreCommand, FeatureManager.Feature.IGNORE);
-        getCommand("unignore").setTabCompleter(ignoreTabCompleter);
+        setTabCompleter("unignore", ignoreTabCompleter);
         MessageCommand messageCommand = new MessageCommand(this);
         MessageTabCompleter messageTabCompleter = new MessageTabCompleter();
         setExecutor("msg", messageCommand, FeatureManager.Feature.MESSAGING);
-        getCommand("msg").setTabCompleter(messageTabCompleter);
+        setTabCompleter("msg", messageTabCompleter);
         setExecutor("reply", messageCommand, FeatureManager.Feature.MESSAGING);
-        getCommand("reply").setTabCompleter(messageTabCompleter);
+        setTabCompleter("reply", messageTabCompleter);
         setExecutor("pm", new PrivateMessageToggleCommand(this), FeatureManager.Feature.MESSAGING);
 
         // Homes
@@ -427,7 +432,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("feed", new FeedCommand(this));
         GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
         setExecutor("gamemode", gamemodeCommand, FeatureManager.Feature.GAMEMODE);
-        getCommand("gamemode").setTabCompleter(gamemodeCommand);
+        setTabCompleter("gamemode", gamemodeCommand);
         setExecutor("staffmode", new StaffModeCommand(this));
         setExecutor("stafflist", new StaffListCommand(this), FeatureManager.Feature.STAFF_MODE);
         setExecutor("staffchat", new StaffChatCommand(this), FeatureManager.Feature.STAFF_CHAT);
@@ -461,18 +466,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
         WarpManagerCommand warpManagerCmd = new WarpManagerCommand(this);
         WarpTabCompleter warpTabCompleter = new WarpTabCompleter(this);
         setExecutor("warp", warpCmd, FeatureManager.Feature.WARPS);
-        getCommand("warp").setTabCompleter(warpTabCompleter);
+        setTabCompleter("warp", warpTabCompleter);
         setExecutor("warpmanager", warpManagerCmd, FeatureManager.Feature.WARPS);
-        getCommand("warpmanager").setTabCompleter(warpTabCompleter);
+        setTabCompleter("warpmanager", warpTabCompleter);
         setExecutor("setwarp", warpManagerCmd, FeatureManager.Feature.WARPS);
-        getCommand("setwarp").setTabCompleter(warpTabCompleter);
+        setTabCompleter("setwarp", warpTabCompleter);
         setExecutor("delwarp", warpManagerCmd, FeatureManager.Feature.WARPS);
-        getCommand("delwarp").setTabCompleter(warpTabCompleter);
+        setTabCompleter("delwarp", warpTabCompleter);
 
         PortalManagerCommand portalManagerCmd = new PortalManagerCommand(this);
         PortalTabCompleter portalTabCompleter = new PortalTabCompleter(this);
         setExecutor("portalmanager", portalManagerCmd, FeatureManager.Feature.PORTALS);
-        getCommand("portalmanager").setTabCompleter(portalTabCompleter);
+        setTabCompleter("portalmanager", portalTabCompleter);
 
         // Misc toggles
         setExecutor("nightvision", new NightVisionCommand(this), FeatureManager.Feature.NIGHT_VISION);
@@ -500,10 +505,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("cuboid", new CuboidCommand(this), FeatureManager.Feature.CUBOIDS);
         AmethystToolCommand amethystToolCommand = new AmethystToolCommand(this);
         setExecutor("amethysttool", amethystToolCommand, FeatureManager.Feature.AMETHYST_TOOLS);
-        getCommand("amethysttool").setTabCompleter(amethystToolCommand);
+        setTabCompleter("amethysttool", amethystToolCommand);
         UltimateDonutSmpCommand ultimateDonutSmpCommand = new UltimateDonutSmpCommand(this);
         setExecutor("ultimatedonutsmp", ultimateDonutSmpCommand);
-        getCommand("ultimatedonutsmp").setTabCompleter(ultimateDonutSmpCommand);
+        setTabCompleter("ultimatedonutsmp", ultimateDonutSmpCommand);
     }
 
     private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
@@ -518,17 +523,50 @@ public final class UltimateDonutSmp extends JavaPlugin {
             return;
         }
 
-        command.setExecutor(new FeatureCommandExecutor(this, executor, requiredFeatures));
+        FeatureCommandExecutor featureExecutor = new FeatureCommandExecutor(this, executor, requiredFeatures);
+        command.setExecutor(featureExecutor);
+        if (executor instanceof TabCompleter) {
+            command.setTabCompleter(featureExecutor);
+        }
     }
 
     @SuppressWarnings("unused")
     private void setTabCompleter(String commandName, TabCompleter tabCompleter) {
-        PluginCommand command = getCommand(commandName);
-        if (command == null) {
+        PluginCommand pluginCommand = getCommand(commandName);
+        if (pluginCommand == null) {
             getLogger().warning("Command missing from plugin.yml: " + commandName);
             return;
         }
-        command.setTabCompleter(tabCompleter);
+        pluginCommand.setTabCompleter((sender, tabCommand, alias, args) -> {
+            if (!isTabCompletionFeatureEnabled(tabCommand.getName())) {
+                return java.util.Collections.emptyList();
+            }
+            var completions = tabCompleter.onTabComplete(sender, tabCommand, alias, args);
+            return completions == null ? java.util.Collections.emptyList() : completions;
+        });
+    }
+
+    private void registerFallbackTabCompleters(TabCompleter tabCompleter) {
+        for (String commandName : getDescription().getCommands().keySet()) {
+            PluginCommand command = getCommand(commandName);
+            if (command == null) {
+                getLogger().warning("Command missing from plugin.yml: " + commandName);
+                continue;
+            }
+            command.setTabCompleter(tabCompleter);
+        }
+    }
+
+    private boolean isTabCompletionFeatureEnabled(String commandName) {
+        if (featureManager == null) {
+            return true;
+        }
+        for (FeatureManager.Feature feature : FeatureManager.featuresForCommand(commandName)) {
+            if (feature != null && !featureManager.isEnabled(feature)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void registerVaultEconomyProvider() {
@@ -577,6 +615,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public void reloadAllPluginConfigurations() {
         configManager.reload();
+        currencyManager.reload();
         optimizationManager.reload();
         warpManager.loadAll();
         spawnManager.load();
@@ -637,6 +676,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public DatabaseManager    getDatabaseManager()    { return databaseManager; }
     public PlayerDataManager  getPlayerDataManager()  { return playerDataManager; }
     public EconomyManager     getEconomyManager()     { return economyManager; }
+    public CurrencyManager    getCurrencyManager()    { return currencyManager; }
     public ChatManager        getChatManager()        { return chatManager; }
     public IgnoreManager      getIgnoreManager()      { return ignoreManager; }
     public PrivateMessageManager getPrivateMessageManager() { return privateMessageManager; }

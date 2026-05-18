@@ -513,7 +513,7 @@ public class ConfigManager {
     // ── Convenience helpers ────────────────────────────────────────────────────
 
     public String getMessage(String path) {
-        return messages.getString(path, "&cMessage not found: " + path);
+        return applyCurrencyPlaceholders(messages.getString(path, "&cMessage not found: " + path));
     }
 
     public String getMessage(String path, String... placeholders) {
@@ -521,11 +521,11 @@ public class ConfigManager {
         for (int i = 0; i + 1 < placeholders.length; i += 2) {
             msg = msg.replace(placeholders[i], placeholders[i + 1]);
         }
-        return msg;
+        return applyCurrencyPlaceholders(msg);
     }
 
     public String getMessageOrDefault(String path, String fallback) {
-        return messages.getString(path, fallback);
+        return applyCurrencyPlaceholders(messages.getString(path, fallback));
     }
 
     public String getMessageOrDefault(String path, String fallback, String... placeholders) {
@@ -533,7 +533,14 @@ public class ConfigManager {
         for (int i = 0; i + 1 < placeholders.length; i += 2) {
             msg = msg.replace(placeholders[i], placeholders[i + 1]);
         }
-        return msg;
+        return applyCurrencyPlaceholders(msg);
+    }
+
+    private String applyCurrencyPlaceholders(String text) {
+        if (text == null || plugin.getCurrencyManager() == null) {
+            return text;
+        }
+        return plugin.getCurrencyManager().applyStaticPlaceholders(text);
     }
 
     public String getSound(String path) {

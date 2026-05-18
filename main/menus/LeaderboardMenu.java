@@ -51,8 +51,14 @@ public class LeaderboardMenu extends BaseMenu {
             }
 
             Material material = ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE"));
-            String displayName = section.getString("DISPLAY-NAME", "&b" + plugin.getLeaderboardManager().getDisplayName(type));
-            List<String> lore = section.getStringList("LORE");
+            String typeName = plugin.getLeaderboardManager().getDisplayName(type);
+            String displayName = applyMenuPlaceholders(
+                    section.getString("DISPLAY-NAME", "&b" + typeName),
+                    typeName
+            );
+            List<String> lore = section.getStringList("LORE").stream()
+                    .map(line -> applyMenuPlaceholders(line, typeName))
+                    .toList();
 
             set(slot, ItemUtils.createItem(material, displayName, lore));
             clickableTypes.put(slot, type);
@@ -68,5 +74,10 @@ public class LeaderboardMenu extends BaseMenu {
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
         new LeaderboardTypeMenu(plugin, type).open(player);
+    }
+
+    private String applyMenuPlaceholders(String input, String typeName) {
+        return plugin.getCurrencyManager().applyStaticPlaceholders(input)
+                .replace("{type}", typeName);
     }
 }

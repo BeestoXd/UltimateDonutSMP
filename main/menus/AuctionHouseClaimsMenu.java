@@ -142,7 +142,8 @@ public class AuctionHouseClaimsMenu extends BaseMenu {
             if (claim.moneyClaim()) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                         "AUCTION_HOUSE.CLAIMED_MONEY",
-                        "{amount}", NumberUtils.format(claim.moneyAmount())
+                        "{amount}", NumberUtils.format(claim.moneyAmount()),
+                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount())
                 )));
             } else {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(

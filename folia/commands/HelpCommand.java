@@ -45,7 +45,7 @@ public class HelpCommand implements CommandExecutor {
         sendHelpLine(player, "SELL", "&b/sell &7- Sell your items");
         sendHelpLine(player, "CRATE", "&b/crates &7- Open the crates menu");
         player.sendMessage(ColorUtils.toComponent("&b/balance &7- Check your balance"));
-        sendHelpLine(player, "SHARDS", "&b/shards &7- Check your shards");
+        sendHelpLine(player, "SHARDS", "&b/shards &7- Check your {shards_name_plural}");
         sendHelpLine(player, "BOUNTY", "&b/bounty &7- View bounties");
         sendHelpLine(player, "STATS", "&b/stats &7- View your stats");
         sendHelpLine(player, "LEADERBOARDS", "&b/leaderboard &7- View top players");
@@ -59,7 +59,7 @@ public class HelpCommand implements CommandExecutor {
 
     private void sendHelpLine(Player player, String commandKey, String line) {
         if (plugin.getConfigManager().isCommandEnabled(commandKey)) {
-            player.sendMessage(ColorUtils.toComponent(line));
+            player.sendMessage(ColorUtils.toComponent(plugin.getCurrencyManager().applyStaticPlaceholders(line)));
         }
     }
 }
