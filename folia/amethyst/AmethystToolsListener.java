@@ -1,13 +1,13 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.PlayerDataManager;
 import com.bx.ultimateDonutSmp.managers.ShardManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -287,8 +287,8 @@ public class AmethystToolsListener implements Listener {
         SoundUtils.play(player, manager.getSound("USE"));
         player.sendMessage(ColorUtils.toComponent(
                 manager.getMessage("SELL-SUCCESS",
-                        "{amount}", plugin.getCurrencyManager().formatMoneyCompact(total),
-                        "{amount_formatted}", plugin.getCurrencyManager().formatMoneyCompact(total))));
+                        "{amount}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, total),
+                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(total))));
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {

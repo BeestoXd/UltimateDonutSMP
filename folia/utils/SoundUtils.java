@@ -1,7 +1,10 @@
 package com.bx.ultimateDonutSmp.utils;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+
+import java.util.Locale;
 
 public class SoundUtils {
 
@@ -16,7 +19,12 @@ public class SoundUtils {
         float volume = parseFloat(parts.length > 1 ? parts[1] : "1.0", 1.0f);
         float pitch  = parseFloat(parts.length > 2 ? parts[2] : "1.0", 1.0f);
         try {
-            player.playSound(player.getLocation(), key, volume, pitch);
+            if (key.indexOf(':') >= 0) {
+                player.playSound(player.getLocation(), key, volume, pitch);
+                return;
+            }
+
+            player.playSound(player.getLocation(), Sound.valueOf(key.toUpperCase(Locale.US)), volume, pitch);
         } catch (Exception ignored) {}
     }
 

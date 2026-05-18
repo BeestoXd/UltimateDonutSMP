@@ -388,10 +388,10 @@ public class WorthManager {
         double displayWorth = shouldUseUnitWorthDisplay(item) ? worthResult.unitWorth() : worthResult.totalWorth();
         return replaceWorthPlaceholders(
                 getWorthLoreFormat(),
-                NumberUtils.formatNice(displayWorth),
-                NumberUtils.formatNice(worthResult.unitWorth()),
-                plugin.getCurrencyManager().formatMoneyCompact(displayWorth),
-                plugin.getCurrencyManager().formatMoneyCompact(worthResult.unitWorth()),
+                plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, displayWorth),
+                plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.unitWorth()),
+                plugin.getCurrencyManager().formatMoney(displayWorth),
+                plugin.getCurrencyManager().formatMoney(worthResult.unitWorth()),
                 String.valueOf(item == null ? 0 : item.getAmount()),
                 itemName
         );

@@ -73,7 +73,9 @@ public class PurchaseShopMenu extends BaseMenu {
             if (result.success()) {
                 playSuccessSound(player);
                 player.sendMessage(ColorUtils.toComponent(resolveSuccessMessage(result)));
-                new ShopMenu(plugin, originMenuSection, originPage).open(player);
+                quantity = restriction.clamp(quantity);
+                build(player);
+                player.updateInventory();
             } else {
                 playErrorSound(player);
                 player.sendMessage(ColorUtils.toComponent(resolveErrorMessage(result)));

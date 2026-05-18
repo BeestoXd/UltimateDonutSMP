@@ -212,7 +212,10 @@ public class LunarRichPresenceManager {
         int teamMaxSize = Math.max(teamSize, plugin.getConfigManager().getConfig().getInt("TEAM.LIMIT-MEMBERS", 10));
 
         String money = data != null ? NumberUtils.format(data.getMoney()) : "0";
-        String moneyNice = data != null ? NumberUtils.formatNice(data.getMoney()) : "0";
+        String moneyNice = plugin.getCurrencyManager().formatCompactAmount(
+                CurrencyManager.CurrencyType.MONEY,
+                data != null ? data.getMoney() : 0D
+        );
         String moneyFormatted = data != null ? plugin.getCurrencyManager().formatMoney(data.getMoney()) : plugin.getCurrencyManager().formatMoney(0D);
         String moneyShortFormatted = data != null ? plugin.getCurrencyManager().formatMoneyCompact(data.getMoney()) : plugin.getCurrencyManager().formatMoneyCompact(0D);
         String shards = data != null ? String.valueOf(data.getShards()) : "0";

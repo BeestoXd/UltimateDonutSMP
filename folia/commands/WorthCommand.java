@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.menus.WorthMenu;
 import com.bx.ultimateDonutSmp.models.WorthResult;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -101,10 +102,10 @@ public class WorthCommand implements CommandExecutor {
                     "&7Base: &f${base} &8| &7Contents: &f${contents}"
             );
             breakdown = breakdown
-                    .replace("{base}", NumberUtils.formatNice(worthResult.baseWorth()))
-                    .replace("{base_formatted}", plugin.getCurrencyManager().formatMoneyCompact(worthResult.baseWorth()))
-                    .replace("{contents}", NumberUtils.formatNice(worthResult.containerContentsWorth()))
-                    .replace("{contents_formatted}", plugin.getCurrencyManager().formatMoneyCompact(worthResult.containerContentsWorth()));
+                    .replace("{base}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.baseWorth()))
+                    .replace("{base_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.baseWorth()))
+                    .replace("{contents}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.containerContentsWorth()))
+                    .replace("{contents_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.containerContentsWorth()));
             player.sendMessage(ColorUtils.toComponent(breakdown));
         }
         return true;

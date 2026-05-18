@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * Supported:
  *   %economy_money%                raw money
- *   %economy_nicestMoney%          formatted money (1.5K, 2.3M, ...)
+ *   %economy_nicestMoney%          compact money amount (1,5K, 2,3M, ...)
  *   %economy_money_formatted%      configured money display
  *   %economy_money_symbol%         configured money symbol
  *   %economy_money_symbol_color%   configured money symbol color
@@ -174,7 +174,7 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         return switch (params) {
             case "money" -> NumberUtils.format(data.getMoney());
-            case "nicestMoney" -> NumberUtils.formatNice(data.getMoney());
+            case "nicestMoney" -> currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, data.getMoney());
             case "money_formatted" -> currencyManager.formatMoney(data.getMoney());
             case "money_short_formatted", "nicestMoney_formatted" -> currencyManager.formatMoneyCompact(data.getMoney());
             case "shards" -> String.valueOf(data.getShards());

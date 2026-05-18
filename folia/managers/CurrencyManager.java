@@ -50,7 +50,7 @@ public class CurrencyManager {
         }
     }
 
-    private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T"};
+    private static final List<String> DEFAULT_COMPACT_SUFFIXES = List.of("K", "M", "B", "T", "Q");
 
     private final UltimateDonutSmp plugin;
 
@@ -63,7 +63,7 @@ public class CurrencyManager {
     }
 
     public String formatMoney(double amount) {
-        return format(CurrencyType.MONEY, amount, false);
+        return format(CurrencyType.MONEY, amount);
     }
 
     public String formatMoneyCompact(double amount) {
@@ -71,7 +71,7 @@ public class CurrencyManager {
     }
 
     public String formatShards(long amount) {
-        return format(CurrencyType.SHARDS, amount, false);
+        return format(CurrencyType.SHARDS, amount);
     }
 
     public String formatShardsCompact(long amount) {
@@ -79,13 +79,18 @@ public class CurrencyManager {
     }
 
     public String format(CurrencyType type, double amount) {
-        return format(type, amount, false);
+        CurrencyDefinition definition = definition(type);
+        return format(amount, definition, definition.compactEnabled());
     }
 
     public String format(CurrencyType type, double amount, boolean compact) {
         CurrencyDefinition definition = definition(type);
-        String rawAmount = formatNumber(amount, definition.decimalPlaces());
-        String shortAmount = formatShortNumber(amount, definition.decimalPlaces());
+        return format(amount, definition, compact && definition.compactEnabled());
+    }
+
+    private String format(double amount, CurrencyDefinition definition, boolean compact) {
+        String rawAmount = formatNumber(amount, definition.decimalPlaces(), definition);
+        String shortAmount = formatShortNumber(amount, definition);
         String name = isSingular(amount) ? definition.singular() : definition.plural();
 
         return (compact ? definition.compactFormat() : definition.format())
@@ -101,11 +106,12 @@ public class CurrencyManager {
     }
 
     public String formatAmount(CurrencyType type, double amount) {
-        return formatNumber(amount, definition(type).decimalPlaces());
+        CurrencyDefinition definition = definition(type);
+        return formatNumber(amount, definition.decimalPlaces(), definition);
     }
 
     public String formatCompactAmount(CurrencyType type, double amount) {
-        return formatShortNumber(amount, definition(type).decimalPlaces());
+        return formatShortNumber(amount, definition(type));
     }
 
     public String symbol(CurrencyType type) {
@@ -237,7 +243,33 @@ public class CurrencyManager {
                 : type.defaultDecimalPlaces);
         String format = getString(section, "FORMAT", type.defaultFormat);
         String compactFormat = getString(section, "COMPACT-FORMAT", type.defaultCompactFormat);
-        return new CurrencyDefinition(singular, plural, symbol, color, symbolColor, decimalPlaces, format, compactFormat);
+        boolean compactEnabled = section == null
+                ? true
+                : section.getBoolean("COMPACT-ENABLED", true);
+        List<String> compactSuffixes = getStringList(section, "COMPACT-SUFFIXES", DEFAULT_COMPACT_SUFFIXES);
+        int compactDecimalPlaces = clampDecimalPlaces(section != null
+                ? section.getInt("COMPACT-DECIMAL-PLACES", 1)
+                : 1);
+        char groupingSeparator = getSeparator(section, "GROUPING-SEPARATOR", '.');
+        char decimalSeparator = getSeparator(section, "DECIMAL-SEPARATOR", ',');
+        if (groupingSeparator == decimalSeparator) {
+            decimalSeparator = groupingSeparator == ',' ? '.' : ',';
+        }
+        return new CurrencyDefinition(
+                singular,
+                plural,
+                symbol,
+                color,
+                symbolColor,
+                decimalPlaces,
+                format,
+                compactFormat,
+                compactEnabled,
+                compactSuffixes,
+                compactDecimalPlaces,
+                groupingSeparator,
+                decimalSeparator
+        );
     }
 
     private String getString(ConfigurationSection section, String key, String fallback) {
@@ -248,6 +280,29 @@ public class CurrencyManager {
         return value == null || value.isBlank() ? fallback : value;
     }
 
+    private List<String> getStringList(ConfigurationSection section, String key, List<String> fallback) {
+        if (section == null || !section.isList(key)) {
+            return fallback;
+        }
+
+        List<String> values = new ArrayList<>();
+        for (String value : section.getStringList(key)) {
+            if (value != null && !value.isBlank()) {
+                values.add(value.trim());
+            }
+        }
+        return values.isEmpty() ? fallback : List.copyOf(values);
+    }
+
+    private char getSeparator(ConfigurationSection section, String key, char fallback) {
+        if (section == null) {
+            return fallback;
+        }
+
+        String value = section.getString(key);
+        return value == null || value.isEmpty() ? fallback : value.charAt(0);
+    }
+
     private boolean isSingular(double amount) {
         return Math.abs(Math.abs(amount) - 1D) < 0.0000001D;
     }
@@ -256,35 +311,47 @@ public class CurrencyManager {
         return Math.max(0, Math.min(8, decimalPlaces));
     }
 
-    private String formatNumber(double amount, int decimalPlaces) {
+    private String formatNumber(double amount, int decimalPlaces, CurrencyDefinition definition) {
         if (!Double.isFinite(amount)) {
             amount = 0D;
         }
 
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        symbols.setGroupingSeparator(definition.groupingSeparator());
+        symbols.setDecimalSeparator(definition.decimalSeparator());
         DecimalFormat format = new DecimalFormat(pattern(decimalPlaces), symbols);
         return format.format(amount);
     }
 
-    private String formatShortNumber(double amount, int decimalPlaces) {
+    private String formatShortNumber(double amount, CurrencyDefinition definition) {
         if (!Double.isFinite(amount)) {
             amount = 0D;
         }
 
+        if (!definition.compactEnabled()) {
+            return formatNumber(amount, definition.decimalPlaces(), definition);
+        }
+
         double absolute = Math.abs(amount);
-        int suffixIndex = 0;
-        while (absolute >= 1_000D && suffixIndex < SHORT_SUFFIXES.length - 1) {
+        int suffixIndex = -1;
+        while (absolute >= 1_000D && suffixIndex < definition.compactSuffixes().size() - 1) {
             absolute /= 1_000D;
             suffixIndex++;
         }
 
-        if (absolute >= 999.995D && suffixIndex < SHORT_SUFFIXES.length - 1) {
+        if (suffixIndex < 0) {
+            return formatNumber(amount, definition.decimalPlaces(), definition);
+        }
+
+        double rolloverThreshold = 1_000D - (0.5D / Math.pow(10D, definition.compactDecimalPlaces()));
+        if (absolute >= rolloverThreshold && suffixIndex < definition.compactSuffixes().size() - 1) {
             absolute /= 1_000D;
             suffixIndex++;
         }
 
         String sign = amount < 0D ? "-" : "";
-        return sign + formatNumber(absolute, Math.min(2, decimalPlaces)) + SHORT_SUFFIXES[suffixIndex];
+        return sign + formatNumber(absolute, definition.compactDecimalPlaces(), definition)
+                + definition.compactSuffixes().get(suffixIndex);
     }
 
     private String pattern(int decimalPlaces) {
@@ -303,6 +370,11 @@ public class CurrencyManager {
             String symbolColor,
             int decimalPlaces,
             String format,
-            String compactFormat
+            String compactFormat,
+            boolean compactEnabled,
+            List<String> compactSuffixes,
+            int compactDecimalPlaces,
+            char groupingSeparator,
+            char decimalSeparator
     ) {}
 }

@@ -168,7 +168,7 @@ public class HoverStatsManager {
         placeholders.put("%prefix%", prefix == null ? "" : prefix);
         placeholders.put("%luckperms_prefix%", prefix == null ? "" : prefix);
         placeholders.put("%team%", teamName);
-        placeholders.put("%money%", data != null ? NumberUtils.formatNice(data.getMoney()) : "0");
+        placeholders.put("%money%", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, money));
         placeholders.put("%money_raw%", data != null ? NumberUtils.format(data.getMoney()) : "0");
         placeholders.put("%money_formatted%", plugin.getCurrencyManager().formatMoney(data != null ? data.getMoney() : 0D));
         placeholders.put("%money_short_formatted%", plugin.getCurrencyManager().formatMoneyCompact(data != null ? data.getMoney() : 0D));
@@ -195,8 +195,14 @@ public class HoverStatsManager {
         placeholders.put("%mobs_killed%", String.valueOf(data != null ? data.getMobsKilled() : 0));
         placeholders.put("%killstreak%", String.valueOf(data != null ? data.getKillStreak() : 0));
         placeholders.put("%highest_killstreak%", String.valueOf(data != null ? data.getHighestKillStreak() : 0));
-        placeholders.put("%money_made%", data != null ? NumberUtils.formatNice(data.getMoneyMade()) : "0");
-        placeholders.put("%money_spent%", data != null ? NumberUtils.formatNice(data.getMoneySpent()) : "0");
+        placeholders.put("%money_made%", plugin.getCurrencyManager().formatCompactAmount(
+                CurrencyManager.CurrencyType.MONEY,
+                data != null ? data.getMoneyMade() : 0D
+        ));
+        placeholders.put("%money_spent%", plugin.getCurrencyManager().formatCompactAmount(
+                CurrencyManager.CurrencyType.MONEY,
+                data != null ? data.getMoneySpent() : 0D
+        ));
         return placeholders;
     }
 

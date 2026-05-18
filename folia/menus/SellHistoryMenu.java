@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.DatabaseManager;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -161,7 +162,7 @@ public class SellHistoryMenu extends BaseMenu {
         String displayName = "&f" + toDisplayName(entry.itemName());
         List<String> lore = menus.getStringList("SELL-HISTORY-MENU.BUTTONS.MATERIAL-ITEM.LORE").stream()
                 .map(line -> line
-                        .replace("{price}", "$" + NumberUtils.formatNice(entry.price()))
+                        .replace("{price}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, entry.price()))
                         .replace("{amount}", NumberUtils.format(entry.amount())))
                 .toList();
 

@@ -6,7 +6,6 @@ import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import net.kyori.adventure.text.Component;
@@ -394,9 +393,12 @@ public class ShopManager {
         }
 
         if (item.giveItem()) {
+            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
             ItemStack stack = createPurchasedItem(item, preview.quantity());
             player.getInventory().addItem(stack).values().forEach(left ->
                     player.getWorld().dropItemNaturally(player.getLocation(), left));
+            plugin.getWorthManager().syncWorthDisplay(player);
+            player.updateInventory();
         }
 
         return preview;
@@ -484,7 +486,7 @@ public class ShopManager {
         for (ItemStack current : storage) {
             if (current == null || current.getType().isAir()) {
                 remaining -= simulated.getMaxStackSize();
-            } else if (canStack(current, singleItem)) {
+            } else if (canStack(plugin.getWorthManager().stripWorthDisplay(current), singleItem)) {
                 remaining -= Math.max(0, current.getMaxStackSize() - current.getAmount());
             }
 
@@ -537,8 +539,8 @@ public class ShopManager {
                     double worth = getWorth(item.material());
                     if (worth > item.pricePerUnit()) {
                         plugin.getLogger().warning("Potential shop arbitrage detected for " + item.material().name()
-                                + " in " + category.menuSection() + ": buy $" + NumberUtils.format(item.pricePerUnit())
-                                + " but worth $" + NumberUtils.format(worth) + ".");
+                                + " in " + category.menuSection() + ": buy " + plugin.getCurrencyManager().formatMoney(item.pricePerUnit())
+                                + " but worth " + plugin.getCurrencyManager().formatMoney(worth) + ".");
                     }
                 }
             }
@@ -1127,10 +1129,10 @@ public class ShopManager {
     private void sendSellFeedback(Player player, double totalPayout) {
         String sellMsg = plugin.getConfigManager().getConfig()
                 .getString("SETTINGS.SELL-MESSAGE", "&a+{price_formatted}")
-                .replace("%price%", NumberUtils.formatNice(totalPayout))
-                .replace("%price_formatted%", plugin.getCurrencyManager().formatMoneyCompact(totalPayout))
-                .replace("{price}", NumberUtils.formatNice(totalPayout))
-                .replace("{price_formatted}", plugin.getCurrencyManager().formatMoneyCompact(totalPayout));
+                .replace("%price%", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
+                .replace("%price_formatted%", plugin.getCurrencyManager().formatMoney(totalPayout))
+                .replace("{price}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
+                .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(totalPayout));
         PlayerSettingUtils.sendActionBar(plugin, player, sellMsg);
     }
 
