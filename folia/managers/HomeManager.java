@@ -53,7 +53,7 @@ public class HomeManager {
     }
 
     public int getMaxHomes(Player player) {
-        int defaultHomes = plugin.getConfigManager().getConfig().getInt("SETTINGS.HOME-DEFAULT", 2);
+        int defaultHomes = plugin.getConfigManager().getConfig().getInt("SETTINGS.HOME-DEFAULT", 5);
         int homesByAmountPermission = resolveHighestPermissionValue(player, "ultimatedonutsmp.homes.");
         int pagesByPermission = resolveHighestPermissionValue(player, "ultimatedonutsmp.homes.page.");
         int homesByPagePermission = pagesByPermission * HOMES_PER_PAGE;
