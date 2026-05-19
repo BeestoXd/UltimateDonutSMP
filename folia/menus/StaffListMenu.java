@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.menus;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
@@ -94,7 +96,7 @@ public class StaffListMenu extends BaseMenu {
 
         List<Integer> contentSlots = plugin.getStaffModeManager().getMenuContentSlots(MENU_KEY, inventory.getSize());
         List<Player> staffMembers = plugin.getStaffModeManager().getOnlineStaffMembers();
-        boolean canSeeVanished = viewer.hasPermission(plugin.getStaffModeManager().getSeeVanishedPermission());
+        boolean canSeeVanished = PermissionUtils.has(viewer, plugin.getStaffModeManager().getSeeVanishedPermission());
 
         int rendered = 0;
         for (Player staff : staffMembers) {

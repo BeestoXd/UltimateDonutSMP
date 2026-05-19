@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -49,7 +51,7 @@ public class PrivateMessageManager {
             }
         }
 
-        if (!targetPrivateMessagesEnabled(target) && !sender.hasPermission(BYPASS_DISABLED_PERMISSION)) {
+        if (!targetPrivateMessagesEnabled(target) && !PermissionUtils.has(sender, BYPASS_DISABLED_PERMISSION)) {
             send(sender, applyPlaceholders(configuredMessage(
                     "MESSAGES.PMS_DISABLED",
                     null,

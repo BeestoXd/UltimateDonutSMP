@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.OrdersBrowseMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersCollectMenu;
@@ -27,7 +29,7 @@ public class OrdersCommand implements CommandExecutor {
 
         String subcommand = args.length == 0 ? "" : args[0].toLowerCase();
         if (subcommand.equals("reload")) {
-            if (!player.hasPermission("ultimatedonutsmp.admin.orders")) {
+            if (!PermissionUtils.has(player, "ultimatedonutsmp.admin.orders")) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.NO_ADMIN_PERMISSION",
                         "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴏʀᴅᴇʀѕ ѕᴇᴛᴛɪɴɢѕ."

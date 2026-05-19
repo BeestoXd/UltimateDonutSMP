@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
@@ -26,7 +28,7 @@ public class RenameCommand implements CommandExecutor {
             return true;
         }
 
-        if (!player.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(player, PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }

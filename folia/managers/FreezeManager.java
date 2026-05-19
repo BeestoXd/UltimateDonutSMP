@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.freeze.FreezeSession;
 import com.bx.ultimateDonutSmp.models.FreezeState;
@@ -101,11 +103,11 @@ public class FreezeManager {
     }
 
     public boolean canUse(CommandSender sender) {
-        return !(sender instanceof Player player) || player.hasPermission(getStaffPermission());
+        return !(sender instanceof Player player) || PermissionUtils.has(player, getStaffPermission());
     }
 
     public boolean canAdmin(CommandSender sender) {
-        return !(sender instanceof Player player) || player.hasPermission(getAdminPermission());
+        return !(sender instanceof Player player) || PermissionUtils.has(player, getAdminPermission());
     }
 
     public boolean isSelfTarget(CommandSender sender, Player target) {
@@ -123,7 +125,7 @@ public class FreezeManager {
         if (isSelfTarget(sender, target)) {
             return false;
         }
-        if (!target.hasPermission(getExemptPermission())) {
+        if (!PermissionUtils.has(target, getExemptPermission())) {
             return true;
         }
         return canAdmin(sender);
@@ -426,7 +428,7 @@ public class FreezeManager {
         }
 
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (online.hasPermission(getAlertPermission())) {
+            if (PermissionUtils.has(online, getAlertPermission())) {
                 online.sendMessage(ColorUtils.toComponent(message, online));
             }
         }

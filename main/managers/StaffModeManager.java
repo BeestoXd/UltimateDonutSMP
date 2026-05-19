@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.FrozenPlayersMenu;
 import com.bx.ultimateDonutSmp.menus.StaffListMenu;
@@ -144,33 +146,33 @@ public class StaffModeManager {
     }
 
     public boolean canUse(CommandSender sender) {
-        return !(sender instanceof Player player) || player.hasPermission(getStaffPermission());
+        return !(sender instanceof Player player) || PermissionUtils.has(player, getStaffPermission());
     }
 
     public boolean canAdmin(CommandSender sender) {
-        return !(sender instanceof Player player) || player.hasPermission(getAdminPermission());
+        return !(sender instanceof Player player) || PermissionUtils.has(player, getAdminPermission());
     }
 
     public boolean canUseVanish(Player player) {
-        return player != null && player.hasPermission(getVanishPermission());
+        return player != null && PermissionUtils.has(player, getVanishPermission());
     }
 
     public boolean canUseBetterView(Player player) {
-        return player != null && player.hasPermission(getBetterViewPermission());
+        return player != null && PermissionUtils.has(player, getBetterViewPermission());
     }
 
     public boolean canOpenStaffList(Player player) {
-        return player != null && player.hasPermission(getStaffListPermission());
+        return player != null && PermissionUtils.has(player, getStaffListPermission());
     }
 
     public boolean canUseRandomTeleport(Player player) {
-        return player != null && player.hasPermission(getRandomTeleportPermission());
+        return player != null && PermissionUtils.has(player, getRandomTeleportPermission());
     }
 
     public boolean canManageOthers(CommandSender sender) {
         return !(sender instanceof Player player)
-                || player.hasPermission(getOthersPermission())
-                || player.hasPermission(getAdminPermission());
+                || PermissionUtils.has(player, getOthersPermission())
+                || PermissionUtils.has(player, getAdminPermission());
     }
 
     public boolean isInStaffMode(UUID uuid) {
@@ -1036,7 +1038,7 @@ public class StaffModeManager {
         return viewer != null
                 && vanishedTarget != null
                 && (viewer.getUniqueId().equals(vanishedTarget.getUniqueId())
-                || viewer.hasPermission(getSeeVanishedPermission()));
+                || PermissionUtils.has(viewer, getSeeVanishedPermission()));
     }
 
     private void rebuildTools(Player player) {
@@ -1150,14 +1152,14 @@ public class StaffModeManager {
         if (player == null) {
             return false;
         }
-        return player.hasPermission(getStaffPermission())
-                || player.hasPermission(plugin.getFreezeManager().getStaffPermission())
-                || player.hasPermission("ultimatedonutsmp.staff.invsee")
-                || player.hasPermission("ultimatedonutsmp.staff.profileviewer")
-                || player.hasPermission("ultimatedonutsmp.staff.punishments.view")
-                || player.hasPermission("ultimatedonutsmp.staff.punishments.create")
-                || player.hasPermission("ultimatedonutsmp.staff.punishments.remove")
-                || player.hasPermission("ultimatedonutsmp.staff.punishments.delete");
+        return PermissionUtils.has(player, getStaffPermission())
+                || PermissionUtils.has(player, plugin.getFreezeManager().getStaffPermission())
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.invsee")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.profileviewer")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.view")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.create")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.remove")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.delete");
     }
 
     private boolean isBetterViewNightVisionEnabled() {

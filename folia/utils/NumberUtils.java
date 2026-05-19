@@ -8,7 +8,7 @@ public class NumberUtils {
 
     private static final DecimalFormat COMMA_FMT;
     private static final DecimalFormat SHORT_FMT;
-    private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T"};
+    private static final String[] SHORT_SUFFIXES = {"", "k", "m", "b", "t"};
 
     static {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -21,7 +21,7 @@ public class NumberUtils {
         return COMMA_FMT.format(number);
     }
 
-    /** Format with suffix: 1500 → 1.5K */
+    /** Format with suffix: 1500 -> 1.5k */
     public static String formatNice(double number) {
         if (!Double.isFinite(number)) {
             return "0";

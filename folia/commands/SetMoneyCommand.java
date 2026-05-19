@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -22,7 +24,7 @@ public class SetMoneyCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(sender, PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
@@ -60,8 +62,10 @@ public class SetMoneyCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.ADMIN.SET-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", NumberUtils.format(result.afterBalance()),
-                "{previous_balance}", NumberUtils.format(result.beforeBalance())
+                "{amount}", NumberUtils.formatNice(result.afterBalance()),
+                "{amount_full}", NumberUtils.format(result.afterBalance()),
+                "{previous_balance}", NumberUtils.formatNice(result.beforeBalance()),
+                "{previous_balance_full}", NumberUtils.format(result.beforeBalance())
         )));
 
         Player targetPlayer = Bukkit.getPlayer(result.targetUuid());
@@ -69,8 +73,10 @@ public class SetMoneyCommand implements CommandExecutor {
             targetPlayer.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.ADMIN.SET-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", NumberUtils.format(result.afterBalance()),
-                    "{previous_balance}", NumberUtils.format(result.beforeBalance())
+                    "{amount}", NumberUtils.formatNice(result.afterBalance()),
+                    "{amount_full}", NumberUtils.format(result.afterBalance()),
+                    "{previous_balance}", NumberUtils.formatNice(result.beforeBalance()),
+                    "{previous_balance_full}", NumberUtils.format(result.beforeBalance())
             )));
         }
 

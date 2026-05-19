@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.OptimizationManager;
 import com.bx.ultimateDonutSmp.managers.StatsWipeManager;
@@ -43,7 +45,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor {
     }
 
     private void handleReload(CommandSender sender, String label) {
-        if (!sender.hasPermission(RELOAD_PERMISSION)) {
+        if (!PermissionUtils.has(sender, RELOAD_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴘʟᴜɢɪɴ ѕᴇᴛᴛɪɴɢѕ."));
             return;
         }
@@ -58,7 +60,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor {
     }
 
     private void handleStatsWipe(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(STATS_WIPE_PERMISSION)) {
+        if (!PermissionUtils.has(sender, STATS_WIPE_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent(message("NO-PERMISSION",
                     "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ.")));
             return;
@@ -111,7 +113,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor {
     }
 
     private void handleOptimize(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(OPTIMIZE_PERMISSION)) {
+        if (!PermissionUtils.has(sender, OPTIMIZE_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴛᴏᴏʟѕ."));
             return;
         }

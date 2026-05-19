@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
@@ -40,7 +42,7 @@ public class FfaCommand implements CommandExecutor {
             return true;
         }
         if (subcommand.equals("reload")) {
-            if (!sender.hasPermission("ultimatedonutsmp.admin.ffa")) {
+            if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.ffa")) {
                 sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ꜰꜰᴀ."));
                 return true;
             }
@@ -65,7 +67,7 @@ public class FfaCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent("&e/" + label));
         sender.sendMessage(ColorUtils.toComponent("&e/leave"));
         sender.sendMessage(ColorUtils.toComponent("&e/ffastats [player]"));
-        if (sender.hasPermission("ultimatedonutsmp.admin.ffa")) {
+        if (PermissionUtils.has(sender, "ultimatedonutsmp.admin.ffa")) {
             sender.sendMessage(ColorUtils.toComponent("&e/" + label + " reload"));
             sender.sendMessage(ColorUtils.toComponent("&e/" + label + " ᴀʀᴇɴᴀ <subcommand>"));
         }

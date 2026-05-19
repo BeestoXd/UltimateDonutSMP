@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.HomeMenu;
 import com.bx.ultimateDonutSmp.models.Home;
@@ -182,7 +184,7 @@ public class HomeManager {
 
     private int resolveHighestPermissionValue(Player player, String prefix) {
         for (int i = MAX_PERMISSION_VALUE; i >= 1; i--) {
-            if (player.hasPermission(prefix + i)) return i;
+            if (PermissionUtils.has(player, prefix + i)) return i;
         }
         return 0;
     }

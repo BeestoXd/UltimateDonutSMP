@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.IgnoreManager;
 import com.bx.ultimateDonutSmp.models.IgnoreEntry;
@@ -36,7 +38,7 @@ public class IgnoreCommand implements CommandExecutor {
             return true;
         }
 
-        if (!player.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(player, PERMISSION)) {
             send(player, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }

@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PunishmentQuery;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
@@ -28,7 +30,7 @@ public class PunishmentManager {
     }
 
     public boolean canView(Player viewer) {
-        return viewer != null && viewer.hasPermission(VIEW_PERMISSION);
+        return viewer != null && PermissionUtils.has(viewer, VIEW_PERMISSION);
     }
 
     public Optional<UUID> resolveTargetUuid(String username) {

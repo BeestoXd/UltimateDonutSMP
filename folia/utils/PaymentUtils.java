@@ -55,12 +55,14 @@ public final class PaymentUtils {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.PAY.SUCCESS-SENDER",
                 "{player}", target.getName(),
-                "{amount}", NumberUtils.format(amount))));
+                "{amount}", NumberUtils.formatNice(amount),
+                "{amount_full}", NumberUtils.format(amount))));
         if (targetData.isPayAlertsEnabled()) {
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.PAY.SUCCESS-RECEIVER",
                     "{player}", sender.getName(),
-                    "{amount}", NumberUtils.format(amount))));
+                    "{amount}", NumberUtils.formatNice(amount),
+                    "{amount_full}", NumberUtils.format(amount))));
         }
         return true;
     }

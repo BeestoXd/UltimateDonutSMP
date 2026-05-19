@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PlayerDataManager;
 import com.bx.ultimateDonutSmp.managers.ShardManager;
@@ -540,7 +542,7 @@ public class AmethystToolsListener implements Listener {
         }
 
         String permission = manager.getToolPermission(type);
-        if (!permission.isBlank() && !player.hasPermission(permission)) {
+        if (!permission.isBlank() && !PermissionUtils.has(player, permission)) {
             if (sendFeedback) {
                 player.sendMessage(ColorUtils.toComponent(manager.getMessage("NO-PERMISSION")));
             }

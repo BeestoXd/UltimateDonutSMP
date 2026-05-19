@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.SpawnerInstance;
 import org.bukkit.FluidCollisionMode;
@@ -136,7 +138,7 @@ public class AntiEspManager {
     }
 
     private boolean shouldReveal(Player player, SpawnerInstance instance, Location center) {
-        if (player.hasPermission(bypassPermission) || player.hasPermission("ultimatedonutsmp.admin.spawner")) {
+        if (PermissionUtils.has(player, bypassPermission) || PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")) {
             return true;
         }
 

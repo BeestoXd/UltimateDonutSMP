@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.invsee.InvseeHolder;
 import com.bx.ultimateDonutSmp.invsee.InvseeSession;
@@ -108,11 +110,11 @@ public class InvseeManager {
     }
 
     public boolean canView(Player viewer) {
-        return viewer != null && viewer.hasPermission(getViewPermission());
+        return viewer != null && PermissionUtils.has(viewer, getViewPermission());
     }
 
     public boolean canModify(Player viewer) {
-        return viewer != null && viewer.hasPermission(getModifyPermission());
+        return viewer != null && PermissionUtils.has(viewer, getModifyPermission());
     }
 
     public boolean canOpenEditableSession(Player viewer, UUID targetUuid) {
@@ -128,7 +130,7 @@ public class InvseeManager {
     }
 
     public boolean canAdmin(CommandSender sender) {
-        return sender != null && sender.hasPermission(getAdminPermission());
+        return sender != null && PermissionUtils.has(sender, getAdminPermission());
     }
 
     public String getMessage(String path, String fallback) {

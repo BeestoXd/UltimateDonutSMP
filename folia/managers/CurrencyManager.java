@@ -50,7 +50,7 @@ public class CurrencyManager {
         }
     }
 
-    private static final List<String> DEFAULT_COMPACT_SUFFIXES = List.of("K", "M", "B", "T", "Q");
+    private static final List<String> DEFAULT_COMPACT_SUFFIXES = List.of("k", "m", "b", "t", "q");
 
     private final UltimateDonutSmp plugin;
 

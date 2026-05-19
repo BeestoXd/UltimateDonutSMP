@@ -79,6 +79,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private StaffModeManager staffModeManager;
     private DiscordWebhookManager discordWebhookManager;
     private LunarRichPresenceManager lunarRichPresenceManager;
+    private LuckPermsTablistRefreshBridge luckPermsTablistRefreshBridge;
     private OptimizationManager optimizationManager;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -170,6 +171,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         rtpZoneManager    = new RTPZoneManager(this);
         portalManager     = new PortalManager(this);
         portalManager.loadAll();
+        initializeLuckPermsTablistRefreshBridge();
 
         // 5. Listeners
         registerListeners();
@@ -237,6 +239,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (networkStaffAlertManager != null) {
             networkStaffAlertManager.shutdown();
+        }
+        if (luckPermsTablistRefreshBridge != null) {
+            luckPermsTablistRefreshBridge.shutdown();
         }
         if (lunarRichPresenceManager != null) {
             lunarRichPresenceManager.shutdown();
@@ -599,6 +604,20 @@ public final class UltimateDonutSmp extends JavaPlugin {
         } catch (Throwable error) {
             lunarRichPresenceManager = null;
             getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize Lunar Rich Presence.", error);
+        }
+    }
+
+    private void initializeLuckPermsTablistRefreshBridge() {
+        if (!isClassAvailable("net.luckperms.api.LuckPermsProvider")) {
+            return;
+        }
+
+        try {
+            luckPermsTablistRefreshBridge = new LuckPermsTablistRefreshBridge(this);
+            luckPermsTablistRefreshBridge.start();
+        } catch (Throwable error) {
+            luckPermsTablistRefreshBridge = null;
+            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize LuckPerms tablist refresh bridge.", error);
         }
     }
 

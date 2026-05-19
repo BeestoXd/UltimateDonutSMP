@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PunishmentManager;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
@@ -315,7 +317,7 @@ public class PunishmentCommand implements CommandExecutor {
     }
 
     private boolean hasPermission(CommandSender sender, String permission) {
-        return !(sender instanceof Player) || sender.hasPermission(permission);
+        return !(sender instanceof Player) || PermissionUtils.has(sender, permission);
     }
 
     private void sendUsage(CommandSender sender, String label) {

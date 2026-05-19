@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.ChatManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -178,12 +180,12 @@ public class ChatCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        if (player.hasPermission(BASE_PERMISSION)) {
+        if (PermissionUtils.has(player, BASE_PERMISSION)) {
             return true;
         }
 
         for (String permission : permissions) {
-            if (player.hasPermission(permission)) {
+            if (PermissionUtils.has(player, permission)) {
                 return true;
             }
         }

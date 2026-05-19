@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
@@ -27,7 +29,7 @@ public class HelpopCommand implements CommandExecutor {
             return true;
         }
 
-        if (!player.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(player, PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "HELPOP.NO_PERMISSION",
                     "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇǫᴜᴇѕᴛ ѕᴛᴀꜰꜰ ᴀѕѕɪѕᴛᴀɴᴄᴇ."

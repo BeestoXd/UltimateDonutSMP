@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.StaffAlertPayload;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -266,7 +268,7 @@ public class NetworkStaffAlertManager {
 
     private boolean checkCooldown(Player player, Map<UUID, Long> cooldowns, int cooldownSeconds,
                                   String messagePath, String fallback) {
-        if (cooldownSeconds <= 0 || player.hasPermission(PERMISSION_BYPASS_COOLDOWN)) {
+        if (cooldownSeconds <= 0 || PermissionUtils.has(player, PERMISSION_BYPASS_COOLDOWN)) {
             return true;
         }
 
@@ -358,7 +360,7 @@ public class NetworkStaffAlertManager {
     }
 
     private boolean canReceive(Player player, String typePermission) {
-        return player.hasPermission(PERMISSION_ALERTS_RECEIVE) || player.hasPermission(typePermission);
+        return PermissionUtils.has(player, PERMISSION_ALERTS_RECEIVE) || PermissionUtils.has(player, typePermission);
     }
 
     private boolean isNetworkEnabled() {

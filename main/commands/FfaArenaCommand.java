@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FfaManager;
 import com.bx.ultimateDonutSmp.models.FfaArena;
@@ -23,7 +25,7 @@ public class FfaArenaCommand implements CommandExecutor {
     }
 
     public boolean handle(CommandSender sender, String baseLabel, String[] args) {
-        if (!sender.hasPermission("ultimatedonutsmp.admin.ffa")) {
+        if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.ffa")) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ꜰꜰᴀ ᴀʀᴇɴᴀѕ."));
             return true;
         }

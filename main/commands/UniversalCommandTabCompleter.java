@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.models.AuctionListing;
@@ -521,7 +523,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
     }
 
     private boolean has(CommandSender sender, String permission) {
-        return permission == null || permission.isBlank() || sender.hasPermission(permission);
+        return permission == null || permission.isBlank() || PermissionUtils.has(sender, permission);
     }
 
     private String normalize(String value) {

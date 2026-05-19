@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import net.kyori.adventure.text.Component;
@@ -160,15 +162,15 @@ public class ChatManager {
     }
 
     public boolean ismuteBypassed(Player player) {
-        return player != null && player.hasPermission("ultimatedonutsmp.staff.chat.bypass.mute");
+        return player != null && PermissionUtils.has(player, "ultimatedonutsmp.staff.chat.bypass.mute");
     }
 
     public boolean isDelayBypassed(Player player) {
-        return player != null && player.hasPermission("ultimatedonutsmp.staff.chat.bypass.delay");
+        return player != null && PermissionUtils.has(player, "ultimatedonutsmp.staff.chat.bypass.delay");
     }
 
     public boolean isFilterBypassed(Player player) {
-        return player != null && player.hasPermission("ultimatedonutsmp.staff.chat.bypass.filter");
+        return player != null && PermissionUtils.has(player, "ultimatedonutsmp.staff.chat.bypass.filter");
     }
 
     public FilterResult validateGlobalMessage(Player player, String rawMessage) {

@@ -76,6 +76,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private DiscordWebhookManager discordWebhookManager;
     private LunarRichPresenceManager lunarRichPresenceManager;
     private OptimizationManager optimizationManager;
+    private LuckPermsTablistRefreshBridge luckPermsTablistRefreshBridge;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -160,6 +161,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         rtpZoneManager    = new RTPZoneManager(this);
         portalManager     = new PortalManager(this);
         portalManager.loadAll();
+        initializeLuckPermsTablistRefreshBridge();
 
         // 5. listeners
         registerListeners();
@@ -230,6 +232,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (lunarRichPresenceManager != null) {
             lunarRichPresenceManager.shutdown();
+        }
+        if (luckPermsTablistRefreshBridge != null) {
+            luckPermsTablistRefreshBridge.shutdown();
         }
         if (optimizationManager != null) {
             optimizationManager.shutdown();
@@ -507,6 +512,20 @@ public final class UltimateDonutSmp extends JavaPlugin {
         } catch (Throwable error) {
             lunarRichPresenceManager = null;
             getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize Lunar Rich Presence.", error);
+        }
+    }
+
+    private void initializeLuckPermsTablistRefreshBridge() {
+        if (!isClassAvailable("net.luckperms.api.LuckPermsProvider")) {
+            return;
+        }
+
+        try {
+            luckPermsTablistRefreshBridge = new LuckPermsTablistRefreshBridge(this);
+            luckPermsTablistRefreshBridge.start();
+        } catch (Throwable error) {
+            luckPermsTablistRefreshBridge = null;
+            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize LuckPerms tablist refresh bridge.", error);
         }
     }
 

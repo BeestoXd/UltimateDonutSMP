@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.listeners;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -44,7 +46,7 @@ public class CuboidWandListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (!player.hasPermission("ultimatedonutsmp.admin.cuboid")) {
+        if (!PermissionUtils.has(player, "ultimatedonutsmp.admin.cuboid")) {
             return;
         }
         if (!isCuboidWand(event.getItem())) {

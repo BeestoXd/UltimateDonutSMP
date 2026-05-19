@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.OrdersBrowseMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersNewMenu;
@@ -995,7 +997,7 @@ public class OrdersManager {
 
         int resolved = defaultValue;
         for (String permission : limitsSection.getKeys(false)) {
-            if (!player.hasPermission(permission)) {
+            if (!PermissionUtils.has(player, permission)) {
                 continue;
             }
             resolved = Math.max(resolved, limitsSection.getInt(permission, defaultValue));

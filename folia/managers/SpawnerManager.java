@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.SpawnerPanelMenu;
 import com.bx.ultimateDonutSmp.menus.SpawnerStorageMenu;
@@ -846,7 +848,7 @@ public class SpawnerManager {
         if (player == null || instance == null) {
             return false;
         }
-        if (player.hasPermission("ultimatedonutsmp.admin.spawner")) {
+        if (PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")) {
             return true;
         }
         if (player.getUniqueId().equals(instance.getOwnerUuid())) {
@@ -864,7 +866,7 @@ public class SpawnerManager {
         if (player == null || instance == null) {
             return false;
         }
-        return player.hasPermission("ultimatedonutsmp.admin.spawner")
+        return PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")
                 || player.getUniqueId().equals(instance.getOwnerUuid());
     }
 

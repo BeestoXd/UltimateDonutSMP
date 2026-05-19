@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
@@ -412,7 +414,7 @@ public class ShopManager {
             return failPurchase(item, amount, item.pricePerUnit() * Math.max(1, amount), PurchaseFailureReason.INVALID_QUANTITY);
         }
 
-        if (item.permission() != null && !item.permission().isBlank() && !player.hasPermission(item.permission())) {
+        if (item.permission() != null && !item.permission().isBlank() && !PermissionUtils.has(player, item.permission())) {
             return failPurchase(item, amount, item.pricePerUnit() * amount, PurchaseFailureReason.NO_PERMISSION);
         }
 

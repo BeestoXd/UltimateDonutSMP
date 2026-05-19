@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
@@ -117,12 +119,12 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (!player.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(player, PERMISSION)) {
             send(player, "GAMEMODE.NO_PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.");
             return false;
         }
 
-        if (!player.getUniqueId().equals(target.getUniqueId()) && !player.hasPermission(OTHERS_PERMISSION)) {
+        if (!player.getUniqueId().equals(target.getUniqueId()) && !PermissionUtils.has(player, OTHERS_PERMISSION)) {
             send(player, "GAMEMODE.NO_PERMISSION_OTHERS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʜᴀɴɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ' ɢᴀᴍᴇᴍᴏᴅᴇ.");
             return false;
         }
@@ -240,11 +242,11 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean canUseBaseCommand(CommandSender sender) {
-        return !(sender instanceof Player player) || player.hasPermission(PERMISSION);
+        return !(sender instanceof Player player) || PermissionUtils.has(player, PERMISSION);
     }
 
     private boolean hasBasePermission(CommandSender sender) {
-        if (sender instanceof Player player && !player.hasPermission(PERMISSION)) {
+        if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
             send(player, "GAMEMODE.NO_PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.");
             return false;
         }
@@ -252,7 +254,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean canTargetOthers(CommandSender sender) {
-        return !(sender instanceof Player player) || player.hasPermission(OTHERS_PERMISSION);
+        return !(sender instanceof Player player) || PermissionUtils.has(player, OTHERS_PERMISSION);
     }
 
     private List<String> onlinePlayerNames() {

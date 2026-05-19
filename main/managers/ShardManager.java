@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.LocationUtils;
@@ -498,7 +500,7 @@ public class ShardManager {
         }
 
         String permission = getEverywhereRequiredPermission();
-        return permission == null || player.hasPermission(permission);
+        return permission == null || PermissionUtils.has(player, permission);
     }
 
     public int getEverywhereRecentMovementWindowSeconds() {

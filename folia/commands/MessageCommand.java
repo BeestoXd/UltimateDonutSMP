@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
@@ -28,7 +30,7 @@ public class MessageCommand implements CommandExecutor {
             return true;
         }
 
-        if (sender instanceof Player player && !player.hasPermission(PERMISSION)) {
+        if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
             send(player, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }

@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.amethyst.AmethystToolType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -41,7 +43,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
         String sub = args[0].toLowerCase(Locale.ROOT);
 
         if (sub.equals("reload")) {
-            if (!sender.hasPermission(PERMISSION)) {
+            if (!PermissionUtils.has(sender, PERMISSION)) {
                 sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
                 return true;
             }
@@ -51,7 +53,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
         }
 
         if (sub.equals("give")) {
-            if (!sender.hasPermission(PERMISSION)) {
+            if (!PermissionUtils.has(sender, PERMISSION)) {
                 sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
                 return true;
             }
@@ -95,7 +97,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (!sender.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(sender, PERMISSION)) {
             return Collections.emptyList();
         }
 

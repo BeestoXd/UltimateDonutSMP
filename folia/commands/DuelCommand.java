@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.DuelClaimMenu;
 import com.bx.ultimateDonutSmp.menus.DuelCreateMenu;
@@ -42,7 +44,7 @@ public class DuelCommand implements CommandExecutor {
             return true;
         }
         if (subcommand.equals("reload")) {
-            if (!player.hasPermission("ultimatedonutsmp.admin.duels")) {
+            if (!PermissionUtils.has(player, "ultimatedonutsmp.admin.duels")) {
                 player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴅᴜᴇʟѕ."));
                 return true;
             }

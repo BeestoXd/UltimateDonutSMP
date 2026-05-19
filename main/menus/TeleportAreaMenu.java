@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.menus;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -171,8 +173,8 @@ public abstract class TeleportAreaMenu extends BaseMenu {
     }
 
     private boolean canDeleteArea(Player player, SpawnManager.TeleportArea area) {
-        return (player.hasPermission(DELETE_AREA_PERMISSION)
-                || player.hasPermission("ultimatedonutsmp.admin"))
+        return (PermissionUtils.has(player, DELETE_AREA_PERMISSION)
+                || PermissionUtils.has(player, "ultimatedonutsmp.admin"))
                 && plugin.getSpawnManager().isStoredMenuArea(area);
     }
 

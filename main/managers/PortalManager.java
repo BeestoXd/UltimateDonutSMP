@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PortalDefinition;
 import com.bx.ultimateDonutSmp.models.ServerStatusSnapshot;
@@ -310,7 +312,7 @@ public class PortalManager {
             return false;
         }
 
-        if (!portal.permission().isBlank() && !player.hasPermission(portal.permission())) {
+        if (!portal.permission().isBlank() && !PermissionUtils.has(player, portal.permission())) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.NO-PERMISSION",
                     "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴛʜɪѕ ᴘᴏʀᴛᴀʟ.")));
             return false;

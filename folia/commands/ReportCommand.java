@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
@@ -30,7 +32,7 @@ public class ReportCommand implements TabExecutor {
             return true;
         }
 
-        if (!reporter.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(reporter, PERMISSION)) {
             reporter.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "REPORT.NO_PERMISSION",
                     "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇᴘᴏʀᴛ ᴘʟᴀʏᴇʀѕ."
@@ -65,7 +67,7 @@ public class ReportCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length != 1 || !sender.hasPermission(PERMISSION)) {
+        if (args.length != 1 || !PermissionUtils.has(sender, PERMISSION)) {
             return List.of();
         }
 

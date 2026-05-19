@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.AuctionHouseManager;
 import com.bx.ultimateDonutSmp.menus.AuctionHouseBrowseMenu;
@@ -31,7 +33,7 @@ public class AuctionHouseCommand implements CommandExecutor {
         AuctionHouseManager manager = plugin.getAuctionHouseManager();
         String subcommand = args.length == 0 ? "" : args[0].toLowerCase();
         if (subcommand.equals("reload")) {
-            if (!player.hasPermission("ultimatedonutsmp.admin.auctionhouse")) {
+            if (!PermissionUtils.has(player, "ultimatedonutsmp.admin.auctionhouse")) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                         "AUCTION_HOUSE.NO_ADMIN_PERMISSION",
                         "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴇᴛᴛɪɴɢѕ."

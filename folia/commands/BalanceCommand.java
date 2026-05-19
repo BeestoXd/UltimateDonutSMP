@@ -23,7 +23,8 @@ public class BalanceCommand implements CommandExecutor {
 
         if (args.length == 0) {
             String msg = plugin.getConfigManager().getMessage("BALANCE.YOUR-BALANCE",
-                    "{amount}", NumberUtils.format(plugin.getEconomyManager().getBalance(player)));
+                    "{amount}", NumberUtils.formatNice(plugin.getEconomyManager().getBalance(player)),
+                    "{amount_full}", NumberUtils.format(plugin.getEconomyManager().getBalance(player)));
             player.sendMessage(ColorUtils.toComponent(msg));
         } else {
             var account = plugin.getEconomyManager().resolveAccount(args[0]);
@@ -33,7 +34,8 @@ public class BalanceCommand implements CommandExecutor {
             }
             String msg = plugin.getConfigManager().getMessage("BALANCE.OTHER-BALANCE",
                     "{player}", account.displayName(),
-                    "{amount}", NumberUtils.format(plugin.getEconomyManager().getBalance(account.uuid())));
+                    "{amount}", NumberUtils.formatNice(plugin.getEconomyManager().getBalance(account.uuid())),
+                    "{amount_full}", NumberUtils.format(plugin.getEconomyManager().getBalance(account.uuid())));
             player.sendMessage(ColorUtils.toComponent(msg));
         }
         return true;

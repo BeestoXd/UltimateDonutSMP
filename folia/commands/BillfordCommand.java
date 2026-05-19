@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.BillfordMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -26,7 +28,7 @@ public class BillfordCommand implements CommandExecutor {
 
         String permission = plugin.getConfigManager().getBillford()
                 .getString("ACCESS.PERMISSION", "");
-        if (!permission.isBlank() && !player.hasPermission(permission)) {
+        if (!permission.isBlank() && !PermissionUtils.has(player, permission)) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessage(
                             "BILLFORD.NO-PERMISSION",

@@ -8,7 +8,7 @@ public class NumberUtils {
 
     private static final DecimalFormat COMMA_FMT;
     private static final DecimalFormat SHORT_FMT;
-    private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T"};
+    private static final String[] SHORT_SUFFIXES = {"", "k", "m", "b", "t"};
 
     static {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -16,12 +16,12 @@ public class NumberUtils {
         SHORT_FMT = new DecimalFormat("#,##0.##", symbols);
     }
 
-    /** Format with commas: 1234567 → 1,234,567 */
+    /** Format with commas: 1234567 â†’ 1,234,567 */
     public static String format(double number) {
         return COMMA_FMT.format(number);
     }
 
-    /** Format with suffix: 1500 → 1.5K */
+    /** Format with suffix: 1500 -> 1.5k */
     public static String formatNice(double number) {
         if (!Double.isFinite(number)) {
             return "0";
@@ -68,7 +68,7 @@ public class NumberUtils {
         }
     }
 
-    /** Format seconds as readable time: 3665 → "1h 1m" */
+    /** Format seconds as readable time: 3665 â†’ "1h 1m" */
     public static String formatTime(long totalSeconds) {
         long h = totalSeconds / 3600;
         long m = (totalSeconds % 3600) / 60;
@@ -78,7 +78,7 @@ public class NumberUtils {
         return s + "s";
     }
 
-    /** Format seconds with days: 90061 → "1d 1h 1m" */
+    /** Format seconds with days: 90061 â†’ "1d 1h 1m" */
     public static String formatTimeLong(long totalSeconds) {
         long d = totalSeconds / 86400;
         long h = (totalSeconds % 86400) / 3600;

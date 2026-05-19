@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.StaffChatPayload;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -113,7 +115,7 @@ public class NetworkStaffChatManager {
         }
 
         plugin.getFoliaScheduler().runEntityLater(player, () -> {
-            if (!player.isOnline() || !player.hasPermission(PERMISSION) || shuttingDown) {
+            if (!player.isOnline() || !PermissionUtils.has(player, PERMISSION) || shuttingDown) {
                 return;
             }
             publishNotice(StaffChatPayload.TYPE_STAFF_JOIN, player);
@@ -121,7 +123,7 @@ public class NetworkStaffChatManager {
     }
 
     public void handleStaffLeave(Player player) {
-        if (!isJoinLeaveEnabled() || player == null || !player.hasPermission(PERMISSION) || shuttingDown) {
+        if (!isJoinLeaveEnabled() || player == null || !PermissionUtils.has(player, PERMISSION) || shuttingDown) {
             return;
         }
 
@@ -299,7 +301,7 @@ public class NetworkStaffChatManager {
     private void broadcastToStaff(String formatted, String excludedUuid) {
         String safeExcludedUuid = excludedUuid == null ? "" : excludedUuid;
         plugin.getFoliaScheduler().forEachOnlinePlayer(target -> {
-            if (!target.hasPermission(PERMISSION)) {
+            if (!PermissionUtils.has(target, PERMISSION)) {
                 return;
             }
             if (!safeExcludedUuid.isBlank() && target.getUniqueId().toString().equals(safeExcludedUuid)) {

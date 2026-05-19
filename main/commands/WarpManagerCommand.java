@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
@@ -172,17 +174,17 @@ public class WarpManagerCommand implements CommandExecutor {
     }
 
     private boolean hasCreatePermission(CommandSender sender) {
-        return sender.hasPermission(WARP_MANAGER_PERMISSION) || sender.hasPermission(SET_WARP_PERMISSION);
+        return PermissionUtils.has(sender, WARP_MANAGER_PERMISSION) || PermissionUtils.has(sender, SET_WARP_PERMISSION);
     }
 
     private boolean hasDeletePermission(CommandSender sender) {
-        return sender.hasPermission(WARP_MANAGER_PERMISSION) || sender.hasPermission(DELETE_WARP_PERMISSION);
+        return PermissionUtils.has(sender, WARP_MANAGER_PERMISSION) || PermissionUtils.has(sender, DELETE_WARP_PERMISSION);
     }
 
     private boolean hasListPermission(CommandSender sender) {
-        return sender.hasPermission(WARP_MANAGER_PERMISSION)
-                || sender.hasPermission(SET_WARP_PERMISSION)
-                || sender.hasPermission(DELETE_WARP_PERMISSION);
+        return PermissionUtils.has(sender, WARP_MANAGER_PERMISSION)
+                || PermissionUtils.has(sender, SET_WARP_PERMISSION)
+                || PermissionUtils.has(sender, DELETE_WARP_PERMISSION);
     }
 
     private void sendMessage(CommandSender sender, String message) {

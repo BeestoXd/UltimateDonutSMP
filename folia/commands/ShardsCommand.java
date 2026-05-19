@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.ShardManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
@@ -52,7 +54,7 @@ public class ShardsCommand implements CommandExecutor {
     }
 
     private boolean handleEverywhere(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ɪɴѕᴘᴇᴄᴛ ѕʜᴀʀᴅѕ ᴇᴠᴇʀʏᴡʜᴇʀᴇ."));
             return true;
         }

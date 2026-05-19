@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PortalDefinition;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -25,7 +27,7 @@ public class PortalManagerCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission(PORTAL_MANAGER_PERMISSION)) {
+        if (!PermissionUtils.has(sender, PORTAL_MANAGER_PERMISSION)) {
             sendMessage(sender, message("PORTALMANAGER.NO-PERMISSION",
                     "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴘᴏʀᴛᴀʟѕ."));
             return true;

@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.DuelArena;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -18,7 +20,7 @@ public class ArenaCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("ultimatedonutsmp.admin.duels")) {
+        if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.duels")) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴅᴜᴇʟ ᴀʀᴇɴᴀѕ."));
             return true;
         }

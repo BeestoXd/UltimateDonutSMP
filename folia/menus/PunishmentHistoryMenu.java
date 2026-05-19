@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.menus;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PunishmentManager;
 import com.bx.ultimateDonutSmp.models.PunishmentQuery;
@@ -150,7 +152,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
             return;
         }
 
-        if (!player.hasPermission(PunishmentManager.DELETE_PERMISSION)) {
+        if (!PermissionUtils.has(player, PunishmentManager.DELETE_PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-DELETE-PERMISSION",
                     "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅѕ."

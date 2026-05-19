@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -329,7 +331,7 @@ public class CrateManager {
         }
         return crate.permission() == null
                 || crate.permission().isBlank()
-                || player.hasPermission(crate.permission());
+                || PermissionUtils.has(player, crate.permission());
     }
 
     public int getKeyBalance(Player player, String crateId) {

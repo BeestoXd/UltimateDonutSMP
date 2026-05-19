@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.WorthMenu;
 import com.bx.ultimateDonutSmp.models.WorthResult;
@@ -31,7 +33,7 @@ public class WorthCommand implements CommandExecutor {
             }
 
             if (subcommand.equals("reload")) {
-                if (!sender.hasPermission("ultimatedonutsmp.admin.worth")) {
+                if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.worth")) {
                     sender.sendMessage(ColorUtils.colorize(
                             plugin.getConfigManager().getMessages().getString(
                                     "WORTH.NO-ADMIN-PERMISSION",

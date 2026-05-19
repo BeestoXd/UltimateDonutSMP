@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.ShopMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -19,7 +21,7 @@ public class ShopCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-            if (!sender.hasPermission("ultimatedonutsmp.admin.shop")) {
+            if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.shop")) {
                 sender.sendMessage(ColorUtils.colorize("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ѕʜᴏᴘ ѕᴇᴛᴛɪɴɢѕ."));
                 return true;
             }

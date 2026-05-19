@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.IgnoreEntry;
 import org.bukkit.command.CommandSender;
@@ -116,7 +118,7 @@ public class IgnoreManager {
         if (!(sender instanceof Player player)) {
             return true;
         }
-        return player.hasPermission(BYPASS_PERMISSION);
+        return PermissionUtils.has(player, BYPASS_PERMISSION);
     }
 
     public List<IgnoreEntry> getIgnoredPlayers(UUID ownerUuid) {

@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.TablistComponentUpdater;
@@ -242,20 +244,20 @@ public class TablistManager {
     private boolean hasMediaBadgeIncludePermission(Player player) {
         String permission = config().getString(
                 "TABLIST.MEDIA-BADGE-INCLUDE-PERMISSION",
-                "ʀᴀɴᴋ.ᴍᴇᴅɪᴀ.ɪɴᴄʟᴜᴅᴇ"
+                "rank.media.include"
         );
-        return permission != null && !permission.isBlank() && player.hasPermission(permission);
+        return permission != null && !permission.isBlank() && PermissionUtils.has(player, permission);
     }
 
     private String resolveMediaIconBadge(Player player, String iconMedia, boolean includeMediaBadge) {
         String iconFormat = config().getString("TABLIST.MEDIA-ICON-FORMAT", "&d<icon_media>");
-        String permission = config().getString("TABLIST.MEDIA-BADGE-PERMISSION", "");
+        String permission = config().getString("TABLIST.MEDIA-BADGE-PERMISSION", "rank.media");
 
         if (iconFormat == null || iconFormat.isBlank() || iconMedia.isBlank()) {
             return "";
         }
 
-        if (!includeMediaBadge && permission != null && !permission.isBlank() && !player.hasPermission(permission)) {
+        if (!includeMediaBadge && permission != null && !permission.isBlank() && !PermissionUtils.has(player, permission)) {
             return "";
         }
 
@@ -264,13 +266,13 @@ public class TablistManager {
 
     private String resolveMediaPlusBadge(Player player, boolean includeMediaBadge) {
         String plusFormat = config().getString("TABLIST.MEDIA-PLUS-FORMAT", "&#37BFF9+");
-        String permission = config().getString("TABLIST.MEDIA-PLUS-PERMISSION", "ʀᴀɴᴋ.ᴍᴇᴅɪᴀ.ᴘʟᴜѕ");
+        String permission = config().getString("TABLIST.MEDIA-PLUS-PERMISSION", "rank.media.plus");
 
         if (plusFormat == null || plusFormat.isBlank()) {
             return "";
         }
 
-        if (!includeMediaBadge && permission != null && !permission.isBlank() && !player.hasPermission(permission)) {
+        if (!includeMediaBadge && permission != null && !permission.isBlank() && !PermissionUtils.has(player, permission)) {
             return "";
         }
 

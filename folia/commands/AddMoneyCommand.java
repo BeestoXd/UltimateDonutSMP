@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -20,7 +22,7 @@ public class AddMoneyCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission(PERMISSION)) {
+        if (!PermissionUtils.has(sender, PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
@@ -57,16 +59,20 @@ public class AddMoneyCommand implements CommandExecutor {
 
         String success = plugin.getConfigManager().getMessage("BALANCE.ADMIN.ADD-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", NumberUtils.format(result.amount()),
-                "{balance}", NumberUtils.format(result.afterBalance()));
+                "{amount}", NumberUtils.formatNice(result.amount()),
+                "{amount_full}", NumberUtils.format(result.amount()),
+                "{balance}", NumberUtils.formatNice(result.afterBalance()),
+                "{balance_full}", NumberUtils.format(result.afterBalance()));
         sender.sendMessage(ColorUtils.toComponent(success));
 
         Player targetPlayer = result.targetUuid() != null ? org.bukkit.Bukkit.getPlayer(result.targetUuid()) : null;
         if (targetPlayer != null && !targetPlayer.equals(sender)) {
             String received = plugin.getConfigManager().getMessage("BALANCE.ADMIN.ADD-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", NumberUtils.format(result.amount()),
-                    "{balance}", NumberUtils.format(result.afterBalance()));
+                    "{amount}", NumberUtils.formatNice(result.amount()),
+                    "{amount_full}", NumberUtils.format(result.amount()),
+                    "{balance}", NumberUtils.formatNice(result.afterBalance()),
+                    "{balance_full}", NumberUtils.format(result.afterBalance()));
             targetPlayer.sendMessage(ColorUtils.toComponent(received));
         }
 

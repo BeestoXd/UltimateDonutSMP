@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
@@ -20,7 +22,7 @@ public class EnderChestCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-            if (!sender.hasPermission(ADMIN_PERMISSION)) {
+            if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
                 sender.sendMessage(ColorUtils.toComponent(
                         plugin.getEnderChestManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
                 ));
@@ -61,7 +63,7 @@ public class EnderChestCommand implements CommandExecutor {
         }
 
         if (plugin.getEnderChestManager().commandRequiresPermission()
-                && !player.hasPermission(plugin.getEnderChestManager().getCommandPermission())) {
+                && !PermissionUtils.has(player, plugin.getEnderChestManager().getCommandPermission())) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
             ));

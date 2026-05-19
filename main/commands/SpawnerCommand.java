@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.SpawnerInstance;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -31,7 +33,7 @@ public class SpawnerCommand implements CommandExecutor {
                 sender.sendMessage("ᴜѕᴇ /" + label + " ɢɪᴠᴇ <player> <type> [amount]");
                 return true;
             }
-            if (!sender.hasPermission(ADMIN_PERMISSION)) {
+            if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
                 sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ѕᴘᴀᴡɴᴇʀ ᴀᴅᴍɪɴ ᴘᴀɴᴇʟ."));
                 return true;
             }
@@ -51,7 +53,7 @@ public class SpawnerCommand implements CommandExecutor {
     }
 
     private boolean handleGive(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ɢɪᴠᴇ ѕᴘᴀᴡɴᴇʀѕ."));
             return true;
         }
@@ -89,7 +91,7 @@ public class SpawnerCommand implements CommandExecutor {
     }
 
     private boolean handleReload(CommandSender sender) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴᴇʀѕ."));
             return true;
         }
@@ -107,7 +109,7 @@ public class SpawnerCommand implements CommandExecutor {
             sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ѕᴘᴀᴡɴᴇʀ ᴘᴀɴᴇʟ."));
             return true;
         }
@@ -140,7 +142,7 @@ public class SpawnerCommand implements CommandExecutor {
     }
 
     private boolean handleRemove(CommandSender sender) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇᴍᴏᴠᴇ ѕᴘᴀᴡɴᴇʀѕ."));
             return true;
         }

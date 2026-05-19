@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.listeners.CuboidWandListener;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -27,7 +29,7 @@ public class CuboidCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!sender.hasPermission("ultimatedonutsmp.admin.cuboid")) {
+        if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.cuboid")) {
             sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }

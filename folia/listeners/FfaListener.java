@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.listeners;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.entity.Player;
@@ -192,7 +194,7 @@ public class FfaListener implements Listener {
             return;
         }
 
-        if (event.getPlayer().hasPermission("ultimatedonutsmp.admin.ffa")) {
+        if (PermissionUtils.has(event.getPlayer(), "ultimatedonutsmp.admin.ffa")) {
             return;
         }
 

@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.utils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import org.bukkit.Bukkit;
@@ -55,14 +56,18 @@ public final class PaymentUtils {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.PAY.SUCCESS-SENDER",
                 "{player}", target.getName(),
-                "{amount}", NumberUtils.format(amount),
-                "{money}", plugin.getCurrencyManager().formatMoney(amount))));
+                "{amount}", compactMoneyAmount(plugin, amount),
+                "{amount_full}", fullMoneyAmount(plugin, amount),
+                "{money}", plugin.getCurrencyManager().formatMoneyCompact(amount),
+                "{money_full}", fullMoney(plugin, amount))));
         if (targetData.isPayAlertsEnabled()) {
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.PAY.SUCCESS-RECEIVER",
                     "{player}", sender.getName(),
-                    "{amount}", NumberUtils.format(amount),
-                    "{money}", plugin.getCurrencyManager().formatMoney(amount))));
+                    "{amount}", compactMoneyAmount(plugin, amount),
+                    "{amount_full}", fullMoneyAmount(plugin, amount),
+                    "{money}", plugin.getCurrencyManager().formatMoneyCompact(amount),
+                    "{money_full}", fullMoney(plugin, amount))));
         }
         return true;
     }
@@ -114,5 +119,17 @@ public final class PaymentUtils {
                     "{shards}", plugin.getCurrencyManager().formatShards(amount))));
         }
         return true;
+    }
+
+    private static String compactMoneyAmount(UltimateDonutSmp plugin, double amount) {
+        return plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private static String fullMoneyAmount(UltimateDonutSmp plugin, double amount) {
+        return plugin.getCurrencyManager().formatAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private static String fullMoney(UltimateDonutSmp plugin, double amount) {
+        return plugin.getCurrencyManager().format(CurrencyManager.CurrencyType.MONEY, amount, false);
     }
 }

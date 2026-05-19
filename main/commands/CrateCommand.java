@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.CrateManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
@@ -167,7 +169,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean sendCrateUsage(CommandSender sender, String label) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&c/" + label + " ɪѕ ᴀɴ ᴀᴅᴍɪɴ ᴄʀᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅ."));
             sender.sendMessage(ColorUtils.toComponent("&7ᴜѕᴇ &f/crates &7ᴛᴏ ᴏᴘᴇɴ ᴄʀᴀᴛᴇѕ ᴀɴᴅ &f/keys &7ᴛᴏ ᴠɪᴇᴡ ʏᴏᴜʀ ᴋᴇʏѕ."));
             return true;
@@ -216,7 +218,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleCreate(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴄʀᴀᴛᴇѕ."));
             return true;
         }
@@ -235,7 +237,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleDelete(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴄʀᴀᴛᴇѕ."));
             return true;
         }
@@ -254,7 +256,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleType(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʜᴀɴɢᴇ ᴄʀᴀᴛᴇ ᴛʏᴘᴇѕ."));
             return true;
         }
@@ -285,7 +287,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleReload(CommandSender sender) {
-        if (!sender.hasPermission(RELOAD_PERMISSION) && !sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, RELOAD_PERMISSION) && !PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴄʀᴀᴛᴇ ѕᴇᴛᴛɪɴɢѕ."));
             return true;
         }
@@ -298,7 +300,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleKeyMutation(CommandSender sender, String[] args, MutationMode mode) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴏᴅɪꜰʏ ᴄʀᴀᴛᴇ ᴋᴇʏѕ."));
             return true;
         }
@@ -360,7 +362,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleKeyAll(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(KEYALL_PERMISSION) && !sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, KEYALL_PERMISSION) && !PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴜɴ ᴄʀᴀᴛᴇ ᴋᴇʏ-ᴀʟʟ."));
             return true;
         }
@@ -390,7 +392,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleRewardMutation(CommandSender sender, String label, String[] args, RewardMutationMode mode) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴏᴅɪꜰʏ ᴄʀᴀᴛᴇ ʀᴇᴡᴀʀᴅѕ."));
             return true;
         }
@@ -443,7 +445,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleBind(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʙɪɴᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
             return true;
         }
@@ -477,7 +479,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleUnbind(CommandSender sender) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜɴʙɪɴᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
             return true;
         }
@@ -510,7 +512,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleInfo(CommandSender sender) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) {
+        if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ɪɴѕᴘᴇᴄᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
             return true;
         }
@@ -613,15 +615,15 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean hasAdminPermission(CommandSender sender) {
-        return sender.hasPermission(ADMIN_PERMISSION);
+        return PermissionUtils.has(sender, ADMIN_PERMISSION);
     }
 
     private boolean hasReloadPermission(CommandSender sender) {
-        return hasAdminPermission(sender) || sender.hasPermission(RELOAD_PERMISSION);
+        return hasAdminPermission(sender) || PermissionUtils.has(sender, RELOAD_PERMISSION);
     }
 
     private boolean hasKeyAllPermission(CommandSender sender) {
-        return hasAdminPermission(sender) || sender.hasPermission(KEYALL_PERMISSION);
+        return hasAdminPermission(sender) || PermissionUtils.has(sender, KEYALL_PERMISSION);
     }
 
     private List<String> crateIds() {
