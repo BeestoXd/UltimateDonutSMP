@@ -29,7 +29,7 @@ public class BountyConfirmMenu extends BaseMenu {
     public BountyConfirmMenu(UltimateDonutSmp plugin, UUID targetUuid, String targetName, double amount) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("BOUNTY-CONFIRM-MENU.TITLE", "&8Confirm Bounty"),
+                plugin.getConfigManager().getMenus().getString("BOUNTY-CONFIRM-MENU.TITLE", "&8ᴄᴏɴꜰɪʀᴍ ʙᴏᴜɴᴛʏ"),
                 plugin.getConfigManager().getMenus().getInt("BOUNTY-CONFIRM-MENU.SIZE", 27)
         );
         this.targetUuid = targetUuid;

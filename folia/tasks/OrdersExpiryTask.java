@@ -19,7 +19,7 @@ public class OrdersExpiryTask implements Runnable {
 
     @Override
     public void run() {
-        if (plugin.getOrdersManager() != null && plugin.getOrdersManager().isEnabled()) {
+        if (plugin.getOrdersManager() != null) {
             plugin.getOrdersManager().expireOrders();
         }
     }

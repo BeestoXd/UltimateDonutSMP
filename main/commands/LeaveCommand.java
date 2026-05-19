@@ -18,7 +18,7 @@ public class LeaveCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
@@ -38,7 +38,7 @@ public class LeaveCommand implements CommandExecutor {
             }
         }
 
-        player.sendMessage(ColorUtils.toComponent("&cYou are not in a duel or FFA arena/match."));
+        player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɴ ᴀ ᴅᴜᴇʟ ᴏʀ ꜰꜰᴀ ᴀʀᴇɴᴀ/ᴍᴀᴛᴄʜ."));
         return true;
     }
 }

@@ -236,7 +236,7 @@ public class WorthManager {
     }
 
     public String getBrowserTitle() {
-        return plugin.getConfigManager().getWorth().getString("BROWSER.TITLE", "&8Item Prices");
+        return plugin.getConfigManager().getWorth().getString("BROWSER.TITLE", "&8ɪᴛᴇᴍ ᴘʀɪᴄᴇѕ");
     }
 
     public int getBrowserSize() {
@@ -1021,7 +1021,7 @@ public class WorthManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7Worth: &a{price_formatted}")
+                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a{price_formatted}")
         );
     }
 
@@ -1036,7 +1036,7 @@ public class WorthManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7Worth: &a{price_formatted}";
+            return "&7ᴡᴏʀᴛʜ: &a{price_formatted}";
         }
 
         return format;

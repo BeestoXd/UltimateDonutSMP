@@ -194,7 +194,7 @@ public class FreezeManager {
                 target.getUniqueId(),
                 target.getName(),
                 actor instanceof Player player ? player.getUniqueId() : null,
-                actor instanceof Player player ? player.getName() : "Console",
+                actor instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ",
                 System.currentTimeMillis(),
                 getServerName()
         );
@@ -228,12 +228,12 @@ public class FreezeManager {
         if (target != null && target.isOnline()) {
             target.sendMessage(ColorUtils.toComponent(getMessage(
                     "UNFROZEN",
-                    "&aYou are no longer frozen."
+                    "&aʏᴏᴜ ᴀʀᴇ ɴᴏ ʟᴏɴɢᴇʀ ꜰʀᴏᴢᴇɴ."
             )));
         }
 
         if (shouldLogUsage()) {
-            String actorName = actor instanceof Player player ? player.getName() : "Console";
+            String actorName = actor instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ";
             plugin.getLogger().info("Freeze disabled: target=" + removed.getTargetNameSnapshot() + " actor=" + actorName);
         }
 
@@ -274,7 +274,7 @@ public class FreezeManager {
 
         if (state != null) {
             broadcastStaffMessage(formatText(
-                    getConfig().getString("FREEZE.QUIT_MESSAGE", "&c[Freeze] &4%player% &cleft while frozen on &4%server%"),
+                    getConfig().getString("FREEZE.QUIT_MESSAGE", "&c[Freeze] &4%player% &cʟᴇꜰᴛ ᴡʜɪʟᴇ ꜰʀᴏᴢᴇɴ ᴏɴ &4%server%"),
                     state,
                     null
             ));
@@ -334,8 +334,8 @@ public class FreezeManager {
         if (lines.isEmpty()) {
             lines = List.of(
                     "",
-                    "&c&lYou're currently frozen!",
-                    "&7- You cannot move or interact",
+                    "&c&lʏᴏᴜ'ʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ꜰʀᴏᴢᴇɴ!",
+                    "&7- ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴏᴠᴇ ᴏʀ ɪɴᴛᴇʀᴀᴄᴛ",
                     ""
             );
         }
@@ -361,7 +361,7 @@ public class FreezeManager {
         session.markReminderSent(now);
         player.sendMessage(ColorUtils.toComponent(getMessage(
                 "STILL-FROZEN",
-                "&cYou are still frozen. Wait for staff instructions."
+                "&cʏᴏᴜ ᴀʀᴇ ѕᴛɪʟʟ ꜰʀᴏᴢᴇɴ. ᴡᴀɪᴛ ꜰᴏʀ ѕᴛᴀꜰꜰ ɪɴѕᴛʀᴜᴄᴛɪᴏɴѕ."
         )));
         return true;
     }
@@ -373,7 +373,7 @@ public class FreezeManager {
 
         player.sendMessage(ColorUtils.toComponent(getMessage(
                 "COMMAND-BLOCKED",
-                "&cYou cannot use commands while frozen."
+                "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴡʜɪʟᴇ ꜰʀᴏᴢᴇɴ."
         )));
     }
 
@@ -402,13 +402,13 @@ public class FreezeManager {
         );
         String template = getConfig().getString(
                 "FREEZE.MESSAGE",
-                "&bFreeze &a%player% &7is now %status%"
+                "&bꜰʀᴇᴇᴢᴇ &a%player% &7ɪѕ ɴᴏᴡ %status%"
         );
         return formatText(template, result.state(), status);
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("MESSAGES." + path, fallback);
+        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
     }
 
     private FreezeSession createOrUpdateSession(Player player, Location anchorLocation) {

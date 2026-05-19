@@ -41,35 +41,35 @@ public class DuelClaimMenu extends BaseMenu {
 
         int lastRow = inventory.getSize() - 9;
         set(lastRow, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page")
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ")
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 4, ItemUtils.createItem(Material.CLOCK, "&eRefresh"));
+        set(lastRow + 4, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ"));
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aNext Page")
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ")
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose"));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
 
         if (claims.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo Pending Claims",
-                    List.of("&7Loot from duel wins will show up here.")
+                    "&cɴᴏ ᴘᴇɴᴅɪɴɢ ᴄʟᴀɪᴍѕ",
+                    List.of("&7ʟᴏᴏᴛ ꜰʀᴏᴍ ᴅᴜᴇʟ ᴡɪɴѕ ᴡɪʟʟ ѕʜᴏᴡ ᴜᴘ ʜᴇʀᴇ.")
             ));
         }
     }
 
     private ItemStack createClaimItem(DuelClaim claim) {
         String defeatedName = claim.defeatedName() == null || claim.defeatedName().isBlank()
-                ? "Unknown"
+                ? "ᴜɴᴋɴᴏᴡɴ"
                 : claim.defeatedName();
         return ItemUtils.createItem(
                 Material.CHEST,
-                "&eLoot From &f" + defeatedName,
+                "&eʟᴏᴏᴛ ꜰʀᴏᴍ &f" + defeatedName,
                 List.of(
-                        "&7Match: &f#" + claim.matchId(),
-                        "&7Stored Items: &f" + claim.itemCount(),
-                        "&7Click to preview this loot package.",
-                        "&8Delete is available inside the preview."
+                        "&7ᴍᴀᴛᴄʜ: &f#" + claim.matchId(),
+                        "&7ѕᴛᴏʀᴇᴅ ɪᴛᴇᴍѕ: &f" + claim.itemCount(),
+                        "&7ᴄʟɪᴄᴋ ᴛᴏ ᴘʀᴇᴠɪᴇᴡ ᴛʜɪѕ ʟᴏᴏᴛ ᴘᴀᴄᴋᴀɢᴇ.",
+                        "&8ᴅᴇʟᴇᴛᴇ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ ɪɴѕɪᴅᴇ ᴛʜᴇ ᴘʀᴇᴠɪᴇᴡ."
                 )
         );
     }

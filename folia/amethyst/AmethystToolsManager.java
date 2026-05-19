@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -57,10 +56,6 @@ public class AmethystToolsManager {
         KEY_ID = new NamespacedKey(plugin, "amethyst_tool_id");
     }
 
-    public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.AMETHYST_TOOLS);
-    }
-
     public ItemStack createTool(AmethystToolType type, UUID ownerUuid, long durationSeconds) {
         ConfigurationSection cfg = getToolSection(type);
         if (cfg == null) {
@@ -73,16 +68,10 @@ public class AmethystToolsManager {
 
         List<String> resolvedLore = new ArrayList<>();
         for (String line : cfg.getStringList("LORE")) {
-            resolvedLore.add(plugin.getCurrencyManager().applyStaticPlaceholders(
-                    line.replace("{time}", NumberUtils.formatTimeLong(duration))
-            ));
+            resolvedLore.add(line.replace("{time}", NumberUtils.formatTimeLong(duration)));
         }
 
-        ItemStack item = ItemUtils.createItem(
-                material,
-                plugin.getCurrencyManager().applyStaticPlaceholders(cfg.getString("NAME", "&d&lAmethyst Tool")),
-                resolvedLore
-        );
+        ItemStack item = ItemUtils.createItem(material, cfg.getString("NAME", "&d&lᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ"), resolvedLore);
         item.setAmount(1);
 
         List<String> enchants = cfg.getStringList("ENCHANTMENTS");
@@ -116,7 +105,7 @@ public class AmethystToolsManager {
     }
 
     public boolean isAmethystTool(ItemStack item) {
-        if (!isEnabled() || item == null || !item.hasItemMeta()) {
+        if (item == null || !item.hasItemMeta()) {
             return false;
         }
         return item.getItemMeta().getPersistentDataContainer().has(KEY_TYPE, PersistentDataType.STRING);
@@ -269,7 +258,7 @@ public class AmethystToolsManager {
         }
 
         long remaining = getRemainingSeconds(item);
-        String timeStr = remaining > 0 ? NumberUtils.formatTimeLong(remaining) : "&cEXPIRED";
+        String timeStr = remaining > 0 ? NumberUtils.formatTimeLong(remaining) : "&cᴇxᴘɪʀᴇᴅ";
 
         PlainTextComponentSerializer plain = PlainTextComponentSerializer.plainText();
         boolean foundSelfDestruct = false;
@@ -280,7 +269,7 @@ public class AmethystToolsManager {
 
         for (int i = 0; i < newLore.size(); i++) {
             String lineText = plain.serialize(newLore.get(i));
-            if (lineText.contains("Self Destruct")) {
+            if (lineText.contains("ѕᴇʟꜰ ᴅᴇѕᴛʀᴜᴄᴛ")) {
                 foundSelfDestruct = true;
                 continue;
             }
@@ -511,7 +500,7 @@ public class AmethystToolsManager {
             return;
         }
 
-        String toolName = type != null ? type.getDisplayName() : "Amethyst Tool";
+        String toolName = type != null ? type.getDisplayName() : "ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ";
 
         SoundUtils.play(player, getSound("EXPIRE"));
         spawnAmethystParticles(player.getLocation().add(0, 1, 0));
@@ -547,9 +536,9 @@ public class AmethystToolsManager {
         if (msgs == null) {
             return key;
         }
-        String prefix = msgs.getString("PREFIX", "&#9B59B6[Amethyst] &r");
+        String prefix = msgs.getString("PREFIX", "&#9B59B6[ᴀᴍᴇᴛʜʏѕᴛ] &r");
         String raw = msgs.getString(key, key);
-        return plugin.getCurrencyManager().applyStaticPlaceholders(raw.replace("{prefix}", prefix));
+        return raw.replace("{prefix}", prefix);
     }
 
     public String getMessage(String key, String... replacements) {
@@ -630,7 +619,7 @@ public class AmethystToolsManager {
         return Math.max(1L, section.getLong("BOOSTER-DURATION", 86400L));
     }
 
-    public Set<Material> getDisabledBlocks() {
+    public Set<Material> getdisabledBlocks() {
         return parseMaterialSet(getToolSection(AmethystToolType.DRILL), "DISABLED-BLOCKS");
     }
 

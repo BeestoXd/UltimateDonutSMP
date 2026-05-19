@@ -27,25 +27,25 @@ public class IgnoreCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!plugin.getConfigManager().isCommandEnabled("IGNORE")) {
-            send(sender, message("DISABLED", "&cIgnore command is currently disabled."));
+            send(sender, message("DISABLED", "&cɪɢɴᴏʀᴇ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            send(sender, message("PLAYER-ONLY", "&cOnly players can use this command."));
+            send(sender, message("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
             return true;
         }
 
         if (!player.hasPermission(PERMISSION)) {
-            send(player, message("NO-PERMISSION", "&cYou do not have permission."));
+            send(player, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         boolean removeOnly = label.equalsIgnoreCase("unignore");
         if (args.length == 0) {
             send(player, removeOnly
-                    ? message("UNIGNORE-USAGE", "&cUsage: /unignore <player>")
-                    : message("USAGE", "&cUsage: /ignore <player|list>"));
+                    ? message("UNIGNORE-USAGE", "&cᴜѕᴀɢᴇ: /unignore <player>")
+                    : message("USAGE", "&cᴜѕᴀɢᴇ: /ignore <player|list>"));
             return true;
         }
 
@@ -56,12 +56,12 @@ public class IgnoreCommand implements CommandExecutor {
 
         ResolvedTarget target = resolveTarget(player, args[0]);
         if (target == null) {
-            send(player, message("PLAYER-NOT-FOUND", "&cPlayer not found."));
+            send(player, message("PLAYER-NOT-FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return true;
         }
 
         if (player.getUniqueId().equals(target.uuid())) {
-            send(player, message("CANNOT-IGNORE-SELF", "&cYou cannot ignore yourself."));
+            send(player, message("CANNOT-IGNORE-SELF", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɢɴᴏʀᴇ ʏᴏᴜʀѕᴇʟꜰ."));
             return true;
         }
 
@@ -73,46 +73,46 @@ public class IgnoreCommand implements CommandExecutor {
         IgnoreManager.ToggleResult result = plugin.getIgnoreManager()
                 .toggleIgnore(player, target.uuid(), target.name());
         if (result.action() == IgnoreManager.ToggleAction.ADDED) {
-            send(player, message("ADDED", "&7%player% &chas been added to your ignore list.")
+            send(player, message("ADDED", "&7%player% &cʜᴀѕ ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.")
                     .replace("%player%", target.name()));
             return true;
         }
 
         if (result.action() == IgnoreManager.ToggleAction.REMOVED) {
             String displayName = result.entry() == null ? target.name() : result.entry().ignoredNameSnapshot();
-            send(player, message("REMOVED", "&7%player% &chas been removed from your ignore list.")
+            send(player, message("REMOVED", "&7%player% &cʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.")
                     .replace("%player%", displayName));
             return true;
         }
 
-        send(player, message("ERROR", "&cCould not update your ignore list."));
+        send(player, message("ERROR", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ."));
         return true;
     }
 
     private void handleRemove(Player player, ResolvedTarget target) {
         if (!plugin.getIgnoreManager().isIgnoring(player.getUniqueId(), target.uuid())) {
-            send(player, message("NOT-IGNORED", "&7%player% &cis not in your ignore list.")
+            send(player, message("NOT-IGNORED", "&7%player% &cɪѕ ɴᴏᴛ ɪɴ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.")
                     .replace("%player%", target.name()));
             return;
         }
 
         if (!plugin.getIgnoreManager().removeIgnore(player.getUniqueId(), target.uuid())) {
-            send(player, message("ERROR", "&cCould not update your ignore list."));
+            send(player, message("ERROR", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ."));
             return;
         }
 
-        send(player, message("REMOVED", "&7%player% &chas been removed from your ignore list.")
+        send(player, message("REMOVED", "&7%player% &cʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.")
                 .replace("%player%", target.name()));
     }
 
     private void sendIgnoreList(Player player) {
         List<IgnoreEntry> entries = plugin.getIgnoreManager().getIgnoredPlayers(player.getUniqueId());
         if (entries.isEmpty()) {
-            send(player, message("LIST-EMPTY", "&7You are not ignoring anyone."));
+            send(player, message("LIST-EMPTY", "&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɢɴᴏʀɪɴɢ ᴀɴʏᴏɴᴇ."));
             return;
         }
 
-        send(player, message("LIST-HEADER", "&8&m-------- &cIgnored Players &7(%count%) &8&m--------")
+        send(player, message("LIST-HEADER", "&8&m-------- &cɪɢɴᴏʀᴇᴅ ᴘʟᴀʏᴇʀѕ &7(%count%) &8&m--------")
                 .replace("%count%", String.valueOf(entries.size()))
                 .replace("{count}", String.valueOf(entries.size())));
         for (IgnoreEntry entry : entries) {

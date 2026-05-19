@@ -61,12 +61,12 @@ public class ServersMenu extends BaseMenu {
         SoundUtils.play(player, plugin.getConfigManager().getSound(CLICK_SOUND_PATH));
 
         if (!plugin.getNetworkStatusManager().isKnownServer(serverId)) {
-            player.sendMessage(ColorUtils.toComponent("&cThat server is not configured in network.yml."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕᴇʀᴠᴇʀ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ɪɴ network.yml."));
             return;
         }
 
         player.sendMessage(ColorUtils.toComponent(
-                "&7Refreshing status for &f" + plugin.getNetworkStatusManager().resolveDisplayName(serverId) + "&7..."
+                "&7ʀᴇꜰʀᴇѕʜɪɴɢ ѕᴛᴀᴛᴜѕ ꜰᴏʀ &f" + plugin.getNetworkStatusManager().resolveDisplayName(serverId) + "&7..."
         ));
         plugin.getNetworkStatusManager().requestImmediateRefresh(serverId);
     }
@@ -83,7 +83,7 @@ public class ServersMenu extends BaseMenu {
 
         List<MenuEntry> entries = resolveMenuEntries();
         if (entries.isEmpty()) {
-            setFallbackItem("&cNo servers configured", "&7Configure SERVERS-MENU and network.yml first.");
+            setFallbackItem("&cɴᴏ ѕᴇʀᴠᴇʀѕ ᴄᴏɴꜰɪɢᴜʀᴇᴅ", "&7ᴄᴏɴꜰɪɢᴜʀᴇ ѕᴇʀᴠᴇʀѕ-ᴍᴇɴᴜ ᴀɴᴅ network.yml ꜰɪʀѕᴛ.");
             return;
         }
 
@@ -103,7 +103,7 @@ public class ServersMenu extends BaseMenu {
         }
 
         if (rendered == 0) {
-            setFallbackItem("&cNo usable server buttons", "&7Fix SERVERS-MENU.SERVERS first.");
+            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ѕᴇʀᴠᴇʀ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx SERVERS-MENU.SERVERS ꜰɪʀѕᴛ.");
         }
     }
 
@@ -212,7 +212,7 @@ public class ServersMenu extends BaseMenu {
     private String applyPlaceholders(String template, ServerStatusSnapshot snapshot) {
         return template
                 .replace("%server%", snapshot.displayName())
-                .replace("%status%", snapshot.online() ? "&aOnline" : "&cOffline")
+                .replace("%status%", snapshot.online() ? "&aᴏɴʟɪɴᴇ" : "&cᴏꜰꜰʟɪɴᴇ")
                 .replace("%players%", String.valueOf(snapshot.playerCount()))
                 .replace("%software%", snapshot.softwareLabel())
                 .replace("%performance%", snapshot.performanceLabel())
@@ -270,10 +270,10 @@ public class ServersMenu extends BaseMenu {
 
         return List.of(
                 "&8&m---------------------",
-                "&bStatus: %status%",
-                "&aPlayers: &a%players% online",
-                "&eSoftware: &a%software%",
-                "&6Performance: %performance%",
+                "&bѕᴛᴀᴛᴜѕ: %status%",
+                "&aᴘʟᴀʏᴇʀѕ: &a%players% oɴʟɪɴᴇ",
+                "&eѕᴏꜰᴛᴡᴀʀᴇ: &a%software%",
+                "&6ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ: %performance%",
                 "&8&m---------------------"
         );
     }
@@ -284,7 +284,7 @@ public class ServersMenu extends BaseMenu {
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
         return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE",
-                plugin.getConfigManager().getMenus().getString(TEMPLATE_PATH + ".TITLE", "&8Ongoing Servers"));
+                plugin.getConfigManager().getMenus().getString(TEMPLATE_PATH + ".TITLE", "&8ᴏɴɢᴏɪɴɢ ѕᴇʀᴠᴇʀѕ"));
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {

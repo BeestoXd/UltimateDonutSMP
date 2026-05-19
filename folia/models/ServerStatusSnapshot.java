@@ -27,8 +27,8 @@ public record ServerStatusSnapshot(
                 displayName,
                 false,
                 0,
-                "N/A",
-                "N/A",
+                "ɴ/ᴀ",
+                "ɴ/ᴀ",
                 0L,
                 0L
         );
@@ -48,6 +48,6 @@ public record ServerStatusSnapshot(
     }
 
     private static String normalizeLabel(String value) {
-        return value == null || value.isBlank() ? "N/A" : value;
+        return value == null || value.isBlank() ? "ɴ/ᴀ" : value;
     }
 }

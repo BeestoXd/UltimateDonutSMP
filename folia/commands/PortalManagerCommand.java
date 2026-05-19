@@ -27,7 +27,7 @@ public class PortalManagerCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(PORTAL_MANAGER_PERMISSION)) {
             sendMessage(sender, message("PORTALMANAGER.NO-PERMISSION",
-                    "&cYou do not have permission to manage portals."));
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴘᴏʀᴛᴀʟѕ."));
             return true;
         }
 
@@ -56,19 +56,19 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleList(CommandSender sender) {
         List<PortalDefinition> portals = plugin.getPortalManager().getPortals();
         if (portals.isEmpty()) {
-            sendMessage(sender, message("PORTAL.LIST-EMPTY", "&cNo portals have been configured yet."));
+            sendMessage(sender, message("PORTAL.LIST-EMPTY", "&cɴᴏ ᴘᴏʀᴛᴀʟѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʏᴇᴛ."));
             return;
         }
 
         sendMessage(sender, message("PORTALMANAGER.LIST-HEADER",
-                "&8&m---------------- &dPortals &7({count}) &8&m----------------")
+                "&8&m---------------- &dᴘᴏʀᴛᴀʟѕ &7({count}) &8&m----------------")
                 .replace("{count}", String.valueOf(portals.size())));
 
         for (PortalDefinition portal : portals) {
             String state = describeState(portal);
             String destination = plugin.getPortalManager().describeDestination(portal);
             sendMessage(sender, message("PORTALMANAGER.LIST-ENTRY",
-                    "&7- &d{id} &8[&f{state}&8] &7cuboid=&f{cuboid} &7destination=&f{destination}")
+                    "&7- &d{id} &8[&f{state}&8] &7ᴄᴜʙᴏɪᴅ=&f{cuboid} &7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ=&f{destination}")
                     .replace("{id}", portal.id())
                     .replace("{state}", state)
                     .replace("{cuboid}", portal.cuboidName())
@@ -79,7 +79,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleInfo(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
             sendMessage(sender, message("PORTALMANAGER.INFO-USAGE",
-                    "&cUsage: /" + label + " info <id>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ɪɴꜰᴏ <id>"));
             return;
         }
 
@@ -90,44 +90,44 @@ public class PortalManagerCommand implements CommandExecutor {
         }
 
         String worldName = plugin.getPortalManager().resolveDestinationWorld(portal);
-        String worldLabel = worldName == null ? "Unknown" : plugin.getRtpManager().describeWorld(worldName);
+        String worldLabel = worldName == null ? "ᴜɴᴋɴᴏᴡɴ" : plugin.getRtpManager().describeWorld(worldName);
 
         sendMessage(sender, message("PORTALMANAGER.INFO-HEADER",
-                "&8&m---------------- &dPortal: &f{id} &8&m----------------")
+                "&8&m---------------- &dᴘᴏʀᴛᴀʟ: &f{id} &8&m----------------")
                 .replace("{id}", portal.id()));
         sendMessage(sender, message("PORTALMANAGER.INFO-DISPLAY",
-                "&7Display: &f{display}")
+                "&7ᴅɪѕᴘʟᴀʏ: &f{display}")
                 .replace("{display}", portal.effectiveDisplayName()));
         sendMessage(sender, message("PORTALMANAGER.INFO-STATE",
-                "&7State: &f{state}")
+                "&7ѕᴛᴀᴛᴇ: &f{state}")
                 .replace("{state}", describeState(portal)));
         sendMessage(sender, message("PORTALMANAGER.INFO-CUBOID",
-                "&7Cuboid: &f{cuboid}")
+                "&7ᴄᴜʙᴏɪᴅ: &f{cuboid}")
                 .replace("{cuboid}", portal.cuboidName()));
         sendMessage(sender, message("PORTALMANAGER.INFO-DESTINATION",
-                "&7Destination: &f{destination}")
+                "&7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ: &f{destination}")
                 .replace("{destination}", portal.destinationValue()));
         sendMessage(sender, message("PORTALMANAGER.INFO-WORLD",
-                "&7Resolved World: &f{world}")
+                "&7ʀᴇѕᴏʟᴠᴇᴅ ᴡᴏʀʟᴅ: &f{world}")
                 .replace("{world}", worldLabel));
         sendMessage(sender, message("PORTALMANAGER.INFO-PRIORITY",
-                "&7Priority: &f{priority}")
+                "&7ᴘʀɪᴏʀɪᴛʏ: &f{priority}")
                 .replace("{priority}", String.valueOf(portal.priority())));
         sendMessage(sender, message("PORTALMANAGER.INFO-COOLDOWN",
-                "&7Trigger Cooldown: &f{cooldown}ms")
+                "&7ᴛʀɪɢɢᴇʀ ᴄᴏᴏʟᴅᴏᴡɴ: &f{cooldown}ᴍѕ")
                 .replace("{cooldown}", String.valueOf(portal.triggerCooldownMillis())));
         sendMessage(sender, message("PORTALMANAGER.INFO-PERMISSION",
-                "&7Permission: &f{permission}")
+                "&7ᴘᴇʀᴍɪѕѕɪᴏɴ: &f{permission}")
                 .replace("{permission}", portal.permission().isBlank() ? "-" : portal.permission()));
         sendMessage(sender, message("PORTALMANAGER.INFO-HOLOGRAM",
-                "&7Hologram: &f{hologram}")
+                "&7ʜᴏʟᴏɢʀᴀᴍ: &f{hologram}")
                 .replace("{hologram}", formatHologramLocation(portal)));
     }
 
     private void handleCreate(CommandSender sender, String label, String[] args) {
         if (args.length != 4) {
             sendMessage(sender, message("PORTALMANAGER.CREATE-USAGE",
-                    "&cUsage: /" + label + " create <id> <cuboid> <rtp_selector>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " create <id> <cuboid> <rtp_selector>"));
             return;
         }
 
@@ -137,40 +137,40 @@ public class PortalManagerCommand implements CommandExecutor {
 
         if (!plugin.getPortalManager().isValidPortalId(portalId)) {
             sendMessage(sender, message("PORTALMANAGER.INVALID-ID",
-                    "&cInvalid portal id. Use only letters, numbers, dashes, and underscores."));
+                    "&cɪɴᴠᴀʟɪᴅ ᴘᴏʀᴛᴀʟ ɪᴅ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ."));
             return;
         }
 
         if (!plugin.getCuboidManager().exists(cuboidName)) {
             sendMessage(sender, message("PORTALMANAGER.INVALID-CUBOID",
-                    "&cCuboid '&e{cuboid}&c' does not exist.")
+                    "&cᴄᴜʙᴏɪᴅ '&e{cuboid}&c' ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ.")
                     .replace("{cuboid}", cuboidName));
             return;
         }
 
         if (!plugin.getRtpManager().isPortalDestinationAvailable(selector)) {
             sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
-                    "&cRTP destination '&e{destination}&c' is unavailable.")
+                    "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
                     .replace("{destination}", selector));
             return;
         }
 
         if (!plugin.getPortalManager().createPortal(portalId, cuboidName, selector)) {
             sendMessage(sender, message("PORTALMANAGER.ALREADY-EXISTS",
-                    "&cPortal '&e{id}&c' already exists.")
+                    "&cᴘᴏʀᴛᴀʟ '&e{id}&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.")
                     .replace("{id}", portalId));
             return;
         }
 
         sendMessage(sender, message("PORTALMANAGER.CREATED",
-                "&aPortal &d{id} &ahas been created.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(portalId)));
     }
 
     private void handleDelete(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
             sendMessage(sender, message("PORTALMANAGER.DELETE-USAGE",
-                    "&cUsage: /" + label + " delete <id>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " delete <id>"));
             return;
         }
 
@@ -180,14 +180,14 @@ public class PortalManagerCommand implements CommandExecutor {
         }
 
         sendMessage(sender, message("PORTALMANAGER.DELETED",
-                "&aPortal &d{id} &ahas been deleted.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(args[1])));
     }
 
     private void handleSetCuboid(CommandSender sender, String label, String[] args) {
         if (args.length != 3) {
             sendMessage(sender, message("PORTALMANAGER.SETCUBOID-USAGE",
-                    "&cUsage: /" + label + " setcuboid <id> <cuboid>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴄᴜʙᴏɪᴅ <id> <cuboid>"));
             return;
         }
 
@@ -198,21 +198,21 @@ public class PortalManagerCommand implements CommandExecutor {
 
         if (!plugin.getCuboidManager().exists(args[2])) {
             sendMessage(sender, message("PORTALMANAGER.INVALID-CUBOID",
-                    "&cCuboid '&e{cuboid}&c' does not exist.")
+                    "&cᴄᴜʙᴏɪᴅ '&e{cuboid}&c' ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ.")
                     .replace("{cuboid}", args[2]));
             return;
         }
 
         plugin.getPortalManager().setPortalCuboid(args[1], args[2]);
         sendMessage(sender, message("PORTALMANAGER.UPDATED",
-                "&aPortal &d{id} &ahas been updated.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(args[1])));
     }
 
     private void handleSetDestination(CommandSender sender, String label, String[] args) {
         if (args.length != 3) {
             sendMessage(sender, message("PORTALMANAGER.SETDESTINATION-USAGE",
-                    "&cUsage: /" + label + " setdestination <id> <rtp_selector>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>"));
             return;
         }
 
@@ -223,21 +223,21 @@ public class PortalManagerCommand implements CommandExecutor {
 
         if (!plugin.getRtpManager().isPortalDestinationAvailable(args[2])) {
             sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
-                    "&cRTP destination '&e{destination}&c' is unavailable.")
+                    "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
                     .replace("{destination}", args[2]));
             return;
         }
 
         plugin.getPortalManager().setPortalDestination(args[1], args[2]);
         sendMessage(sender, message("PORTALMANAGER.UPDATED",
-                "&aPortal &d{id} &ahas been updated.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(args[1])));
     }
 
     private void handleSetDisplay(CommandSender sender, String label, String[] args) {
         if (args.length < 3) {
             sendMessage(sender, message("PORTALMANAGER.SETDISPLAY-USAGE",
-                    "&cUsage: /" + label + " setdisplay <id> <display name...>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <display name...>"));
             return;
         }
 
@@ -249,20 +249,20 @@ public class PortalManagerCommand implements CommandExecutor {
         String displayName = String.join(" ", Arrays.copyOfRange(args, 2, args.length)).trim();
         if (displayName.isBlank()) {
             sendMessage(sender, message("PORTALMANAGER.SETDISPLAY-USAGE",
-                    "&cUsage: /" + label + " setdisplay <id> <display name...>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <display name...>"));
             return;
         }
 
         plugin.getPortalManager().setPortalDisplayName(args[1], displayName);
         sendMessage(sender, message("PORTALMANAGER.UPDATED",
-                "&aPortal &d{id} &ahas been updated.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(args[1])));
     }
 
     private void handleToggle(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
             sendMessage(sender, message("PORTALMANAGER.TOGGLE-USAGE",
-                    "&cUsage: /" + label + " toggle <id>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ᴛᴏɢɢʟᴇ <id>"));
             return;
         }
 
@@ -275,15 +275,15 @@ public class PortalManagerCommand implements CommandExecutor {
         boolean nextState = !portal.enabled();
         plugin.getPortalManager().setPortalEnabled(portal.id(), nextState);
         sendMessage(sender, message("PORTALMANAGER.TOGGLED",
-                "&aPortal &d{id} &ais now &f{state}&a.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aɪѕ ɴᴏᴡ &f{state}&a.")
                 .replace("{id}", portal.id())
-                .replace("{state}", nextState ? "enabled" : "disabled"));
+                .replace("{state}", nextState ? "ᴇɴᴀʙʟᴇᴅ" : "ᴅɪѕᴀʙʟᴇᴅ"));
     }
 
     private void handleSetPriority(CommandSender sender, String label, String[] args) {
         if (args.length != 3) {
             sendMessage(sender, message("PORTALMANAGER.SETPRIORITY-USAGE",
-                    "&cUsage: /" + label + " setpriority <id> <number>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴘʀɪᴏʀɪᴛʏ <id> <number>"));
             return;
         }
 
@@ -297,26 +297,26 @@ public class PortalManagerCommand implements CommandExecutor {
             priority = Integer.parseInt(args[2]);
         } catch (NumberFormatException exception) {
             sendMessage(sender, message("PORTALMANAGER.INVALID-PRIORITY",
-                    "&cPriority must be a whole number."));
+                    "&cᴘʀɪᴏʀɪᴛʏ ᴍᴜѕᴛ ʙᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ."));
             return;
         }
 
         plugin.getPortalManager().setPortalPriority(args[1], priority);
         sendMessage(sender, message("PORTALMANAGER.UPDATED",
-                "&aPortal &d{id} &ahas been updated.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(args[1])));
     }
 
     private void handleSetHologramHere(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
             sendMessage(sender, message("PORTALMANAGER.SETHOLOGRAMHERE-USAGE",
-                    "&cUsage: /" + label + " sethologramhere <id>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛʜᴏʟᴏɢʀᴀᴍʜᴇʀᴇ <id>"));
             return;
         }
 
         if (!(sender instanceof Player player)) {
             sendMessage(sender, message("PORTALMANAGER.PLAYER-ONLY",
-                    "&cOnly players can use this command."));
+                    "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
             return;
         }
 
@@ -328,29 +328,29 @@ public class PortalManagerCommand implements CommandExecutor {
         Location hologramLocation = player.getLocation().clone().add(0D, getSetHereOffsetY(), 0D);
         plugin.getPortalManager().setPortalHologramLocation(args[1], hologramLocation);
         sendMessage(sender, message("PORTALMANAGER.HOLOGRAM-UPDATED",
-                "&aPortal &d{id} &ahologram has been moved to your location.")
+                "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴏʟᴏɢʀᴀᴍ ʜᴀѕ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(args[1])));
     }
 
     private String usage(String label) {
         return message("PORTALMANAGER.USAGE",
-                "&cUsage: /" + label + " <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>");
+                "&cᴜѕᴀɢᴇ: /" + label + " <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>");
     }
 
     private String portalNotFound(String id) {
         return message("PORTALMANAGER.NOT-FOUND",
-                "&cPortal '&e{id}&c' not found.")
+                "&cᴘᴏʀᴛᴀʟ '&e{id}&c' ɴᴏᴛ ꜰᴏᴜɴᴅ.")
                 .replace("{id}", id);
     }
 
     private String describeState(PortalDefinition portal) {
         String stateKey = plugin.getPortalManager().getPortalStateKey(portal);
         return switch (stateKey) {
-            case "READY" -> message("PORTAL.STATUS-READY", "&aready");
-            case "DISABLED" -> message("PORTAL.STATUS-DISABLED", "&cdisabled");
-            case "INVALID_CUBOID" -> message("PORTAL.STATUS-INVALID-CUBOID", "&einvalid cuboid");
-            case "INVALID_DESTINATION" -> message("PORTAL.STATUS-INVALID-DESTINATION", "&einvalid destination");
-            default -> "&7unknown";
+            case "READY" -> message("PORTAL.STATUS-READY", "&aʀᴇᴀᴅʏ");
+            case "DISABLED" -> message("PORTAL.STATUS-DISABLED", "&cᴅɪѕᴀʙʟᴇᴅ");
+            case "INVALID_CUBOID" -> message("PORTAL.STATUS-INVALID-CUBOID", "&eɪɴᴠᴀʟɪᴅ ᴄᴜʙᴏɪᴅ");
+            case "INVALID_DESTINATION" -> message("PORTAL.STATUS-INVALID-DESTINATION", "&eɪɴᴠᴀʟɪᴅ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ");
+            default -> "&7ᴜɴᴋɴᴏᴡɴ";
         };
     }
 

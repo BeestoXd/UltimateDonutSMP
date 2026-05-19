@@ -28,12 +28,12 @@ public class ChatCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!plugin.getConfigManager().isCommandEnabled("CHAT")) {
-            send(sender, message("DISABLED", "&cChat command is currently disabled."));
+            send(sender, message("DISABLED", "&cᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
 
         if (!hasAccess(sender, BASE_PERMISSION, MUTE_PERMISSION, UNMUTE_PERMISSION, DELAY_PERMISSION, CLEAR_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
+            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
@@ -56,34 +56,34 @@ public class ChatCommand implements CommandExecutor {
 
     private boolean handleMute(CommandSender sender) {
         if (!hasAccess(sender, MUTE_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
+            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         plugin.getChatManager().setGlobalChatMuted(true, true);
-        broadcast(message("MUTED", "&aGlobal chat is now muted."), sender);
+        broadcast(message("MUTED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴍᴜᴛᴇᴅ."), sender);
         return true;
     }
 
     private boolean handleUnmute(CommandSender sender) {
         if (!hasAccess(sender, UNMUTE_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
+            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         plugin.getChatManager().setGlobalChatMuted(false, true);
-        broadcast(message("UNMUTED", "&aGlobal chat is now unmuted."), sender);
+        broadcast(message("UNMUTED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴜɴᴍᴜᴛᴇᴅ."), sender);
         return true;
     }
 
     private boolean handleDelay(CommandSender sender, String[] args, String label) {
         if (!hasAccess(sender, DELAY_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
+            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length < 2) {
-            send(sender, "&cUsage: /" + label + " delay <seconds|off>");
+            send(sender, "&cᴜѕᴀɢᴇ: /" + label + " delay <seconds|off>");
             return true;
         }
 
@@ -94,14 +94,14 @@ public class ChatCommand implements CommandExecutor {
             try {
                 delaySeconds = Integer.parseInt(args[1]);
             } catch (NumberFormatException exception) {
-                send(sender, message("INVALID-DELAY", "&cInvalid delay."));
+                send(sender, message("INVALID-DELAY", "&cɪɴᴠᴀʟɪᴅ ᴅᴇʟᴀʏ."));
                 return true;
             }
         }
 
         int maxDelay = plugin.getChatManager().getMaxDelaySeconds();
         if (delaySeconds < 0 || delaySeconds > maxDelay) {
-            send(sender, message("INVALID-DELAY", "&cInvalid delay. Use a number between 0 and {max}.")
+            send(sender, message("INVALID-DELAY", "&cɪɴᴠᴀʟɪᴅ ᴅᴇʟᴀʏ. ᴜѕᴇ ᴀ ɴᴜᴍʙᴇʀ ʙᴇᴛᴡᴇᴇɴ 0 ᴀɴᴅ {max}.")
                     .replace("{max}", String.valueOf(maxDelay))
                     .replace("%max%", String.valueOf(maxDelay)));
             return true;
@@ -111,9 +111,9 @@ public class ChatCommand implements CommandExecutor {
         plugin.getChatManager().setGlobalDelay(delaySeconds, enabled, true);
 
         String status = enabled
-                ? message("STATUS-ENABLED", "enabled")
-                : message("STATUS-DISABLED", "disabled");
-        String response = message("DELAY", "&7Chat is now delayed &a%delay% &7seconds and delay is &a%status%")
+                ? message("STATUS-ENABLED", "ᴇɴᴀʙʟᴇᴅ")
+                : message("STATUS-DISABLED", "ᴅɪѕᴀʙʟᴇᴅ");
+        String response = message("DELAY", "&7ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴅᴇʟᴀʏᴇᴅ &a%delay% &7ѕᴇᴄᴏɴᴅѕ ᴀɴᴅ ᴅᴇʟᴀʏ ɪѕ &a%status%")
                 .replace("%delay%", String.valueOf(delaySeconds))
                 .replace("%status%", status)
                 .replace("{delay}", String.valueOf(delaySeconds))
@@ -124,12 +124,12 @@ public class ChatCommand implements CommandExecutor {
 
     private boolean handleClear(CommandSender sender) {
         if (!hasAccess(sender, CLEAR_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
+            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         plugin.getChatManager().clearChatForAllPlayers();
-        broadcast(message("CLEARED", "&aGlobal chat is cleared."), sender);
+        broadcast(message("CLEARED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄʟᴇᴀʀᴇᴅ."), sender);
         return true;
     }
 
@@ -138,12 +138,12 @@ public class ChatCommand implements CommandExecutor {
         if (lines.isEmpty()) {
             lines = List.of(
                     "",
-                    "&b&lChat Manager &7(Commands)",
+                    "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(Commands)",
                     "",
-                    "&f/chat mute &7- To mute global chat.",
-                    "&f/chat unmute &7- To unmute global chat.",
-                    "&f/chat delay (time) &7- To add delay to global chat.",
-                    "&f/chat clear &7- To clear global chat.",
+                    "&f/chat mute &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/chat unmute &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/chat delay (time) &7- ᴛᴏ ᴀᴅᴅ ᴅᴇʟᴀʏ ᴛᴏ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/chat clear &7- ᴛᴏ ᴄʟᴇᴀʀ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
                     ""
             );
         }
@@ -188,6 +188,6 @@ public class ChatCommand implements CommandExecutor {
     }
 
     private String message(String key, String fallback) {
-        return plugin.getConfigManager().getMessages().getString("CHAT-MANAGER." + key, fallback);
+        return plugin.getConfigManager().getMessages().getString("ᴄʜᴀᴛ-ᴍᴀɴᴀɢᴇʀ." + key, fallback);
     }
 }

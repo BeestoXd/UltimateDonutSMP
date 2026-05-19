@@ -24,7 +24,7 @@ public class AuctionHouseCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
@@ -34,7 +34,7 @@ public class AuctionHouseCommand implements CommandExecutor {
             if (!player.hasPermission("ultimatedonutsmp.admin.auctionhouse")) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                         "AUCTION_HOUSE.NO_ADMIN_PERMISSION",
-                        "&cYou do not have permission to reload Auction House settings."
+                        "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴇᴛᴛɪɴɢѕ."
                 )));
                 return true;
             }
@@ -43,7 +43,7 @@ public class AuctionHouseCommand implements CommandExecutor {
             plugin.getAuctionHouseManager().reload();
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.RELOADED",
-                    "&aAuction House config reloaded."
+                    "&aᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
             )));
             return true;
         }
@@ -51,7 +51,7 @@ public class AuctionHouseCommand implements CommandExecutor {
         if (!manager.isEnabled()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.DISABLED",
-                    "&cAuction House is currently disabled."
+                    "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
             )));
             return true;
         }
@@ -66,7 +66,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 if (args.length < 2) {
                     player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                             "AUCTION_HOUSE.SELL_USAGE",
-                            "&cUsage: /ah sell <price>"
+                            "&cᴜѕᴀɢᴇ: /ah sell <price>"
                     )));
                     return true;
                 }
@@ -77,7 +77,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 } catch (NumberFormatException exception) {
                     player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                             "AUCTION_HOUSE.INVALID_PRICE",
-                            "&cInvalid price format."
+                            "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ."
                     )));
                     return true;
                 }
@@ -108,7 +108,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 if (args.length < 2) {
                     player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                             "AUCTION_HOUSE.CANCEL_USAGE",
-                            "&cUsage: /ah cancel <listingId>"
+                            "&cᴜѕᴀɢᴇ: /ah cancel <listingId>"
                     )));
                     return true;
                 }
@@ -119,7 +119,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 } catch (NumberFormatException exception) {
                     player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                             "AUCTION_HOUSE.INVALID_LISTING_ID",
-                            "&cInvalid listing id."
+                            "&cɪɴᴠᴀʟɪᴅ ʟɪѕᴛɪɴɢ ɪᴅ."
                     )));
                     return true;
                 }
@@ -147,18 +147,18 @@ public class AuctionHouseCommand implements CommandExecutor {
     private String resolveCreateFailure(AuctionHouseManager.CreateListingResult result) {
         return switch (result.reason()) {
             case DISABLED -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.DISABLED");
-            case NO_PLAYER_DATA -> "&cYour player data could not be loaded.";
+            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
             case NO_ITEM -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NO_ITEM_IN_HAND",
-                    "&cHold the item you want to list in your main hand."
+                    "&cʜᴏʟᴅ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ʟɪѕᴛ ɪɴ ʏᴏᴜʀ ᴍᴀɪɴ ʜᴀɴᴅ."
             );
             case INVALID_ITEM -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.ITEM_BLOCKED",
-                    "&cThat item cannot be listed in the Auction House."
+                    "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʟɪѕᴛᴇᴅ ɪɴ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ."
             );
             case INVALID_PRICE -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.PRICE_OUT_OF_RANGE",
-                    "&cThat price is outside the allowed range."
+                    "&cᴛʜᴀᴛ ᴘʀɪᴄᴇ ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴛʜᴇ ᴀʟʟᴏᴡᴇᴅ ʀᴀɴɢᴇ."
             );
             case NO_MONEY -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NO_MONEY_FOR_FEE",
@@ -167,9 +167,9 @@ public class AuctionHouseCommand implements CommandExecutor {
             );
             case MAX_LISTINGS_REACHED -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.MAX_LISTINGS_REACHED",
-                    "&cYou have reached your active listing limit."
+                    "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ."
             );
-            case DATABASE_ERROR -> "&cAuction House could not save your listing. Try again.";
+            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ʟɪѕᴛɪɴɢ. ᴛʀʏ ᴀɢᴀɪɴ.";
         };
     }
 
@@ -178,17 +178,17 @@ public class AuctionHouseCommand implements CommandExecutor {
             case DISABLED -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.DISABLED");
             case LISTING_NOT_FOUND -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_FOUND",
-                    "&cThat listing no longer exists."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ."
             );
             case NOT_OWNER -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NOT_YOUR_LISTING",
-                    "&cThat listing does not belong to you."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ."
             );
             case NOT_ACTIVE -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_ACTIVE",
-                    "&cThat listing is no longer active."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ."
             );
-            case DATABASE_ERROR -> "&cAuction House could not cancel that listing right now.";
+            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴀɴᴄᴇʟ ᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 }

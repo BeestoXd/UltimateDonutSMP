@@ -69,30 +69,30 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
     private void handleReload(CommandSender sender) {
         if (!sender.hasPermission(RELOAD_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to reload plugin settings."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴘʟᴜɢɪɴ ѕᴇᴛᴛɪɴɢѕ."));
             return;
         }
 
         try {
             plugin.reloadAllPluginConfigurations();
-            sender.sendMessage(ColorUtils.toComponent("&aUltimateDonutSmp configuration reloaded."));
+            sender.sendMessage(ColorUtils.toComponent("&aᴜʟᴛɪᴍᴀᴛᴇᴅᴏɴᴜᴛѕᴍᴘ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ."));
         } catch (Exception exception) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to reload UltimateDonutSmp configuration.", exception);
-            sender.sendMessage(ColorUtils.toComponent("&cFailed to reload configuration. Check console for details."));
+            plugin.getLogger().log(Level.SEVERE, "ꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴜʟᴛɪᴍᴀᴛᴇᴅᴏɴᴜᴛѕᴍᴘ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ.", exception);
+            sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ ꜰᴏʀ ᴅᴇᴛᴀɪʟѕ."));
         }
     }
 
     private void handleStatsWipe(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission(STATS_WIPE_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent(message("NO-PERMISSION",
-                    "&cYou do not have permission to use Stats Wipe.")));
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ.")));
             return;
         }
 
         if (args.length == 1 || isGuiAlias(args[1])) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(ColorUtils.toComponent(message("PLAYER-ONLY-GUI",
-                        "&cOpen the Stats Wipe GUI in-game, or use /" + label + " statswipe <target> confirm.")));
+                        "&cᴏᴘᴇɴ ᴛʜᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ɢᴜɪ ɪɴ-ɢᴀᴍᴇ, ᴏʀ ᴜѕᴇ /" + label + " ѕᴛᴀᴛѕᴡɪᴘᴇ <target> ᴄᴏɴꜰɪʀᴍ.")));
                 return;
             }
 
@@ -103,47 +103,47 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         StatsWipeManager.WipeTarget target = StatsWipeManager.WipeTarget.fromInput(args[1]).orElse(null);
         if (target == null) {
             sender.sendMessage(ColorUtils.toComponent(message("INVALID-TARGET",
-                    "&cInvalid Stats Wipe target. Available: {targets}")
+                    "&cɪɴᴠᴀʟɪᴅ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ᴛᴀʀɢᴇᴛ. ᴀᴠᴀɪʟᴀʙʟᴇ: {targets}")
                     .replace("{targets}", availableTargets())));
             return;
         }
 
         if (args.length < 3 || !args[2].equalsIgnoreCase("confirm")) {
             sender.sendMessage(ColorUtils.toComponent(message("DIRECT-USAGE",
-                    "&cUse /" + label + " statswipe <target> confirm to run directly, or /" + label + " statswipe to open the GUI.")));
+                    "&cᴜѕᴇ /" + label + " ѕᴛᴀᴛѕᴡɪᴘᴇ <target> ᴄᴏɴꜰɪʀᴍ ᴛᴏ ʀᴜɴ ᴅɪʀᴇᴄᴛʟʏ, ᴏʀ /" + label + " ѕᴛᴀᴛѕᴡɪᴘᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ɢᴜɪ.")));
             return;
         }
 
         StatsWipeManager.WipeResult result = plugin.getStatsWipeManager().wipeTarget(target, sender.getName());
         if (result.busy()) {
-            sender.sendMessage(ColorUtils.toComponent(message("BUSY", "&cA wipe is already in progress.")));
+            sender.sendMessage(ColorUtils.toComponent(message("BUSY", "&cᴀ ᴡɪᴘᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ.")));
             return;
         }
         if (!result.success()) {
             String error = result.errorMessage() == null || result.errorMessage().isBlank()
-                    ? "Unknown error"
+                    ? "ᴜɴᴋɴᴏᴡɴ ᴇʀʀᴏʀ"
                     : result.errorMessage();
             sender.sendMessage(ColorUtils.toComponent(message("FAILED",
-                    "&cStats Wipe failed: {error}")
+                    "&cѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ: {error}")
                     .replace("{error}", error)));
             return;
         }
 
         sender.sendMessage(ColorUtils.toComponent(message("SUCCESS",
-                "&aWipe complete: &f{target}&a. Affected records: &f{count}&a.")
+                "&aᴡɪᴘᴇ ᴄᴏᴍᴘʟᴇᴛᴇ: &f{target}&a. ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}&a.")
                 .replace("{target}", target.getDisplayName())
                 .replace("{count}", String.valueOf(result.affectedCount(target)))));
     }
 
     private void handleOptimize(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission(OPTIMIZE_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to use optimization tools."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴛᴏᴏʟѕ."));
             return;
         }
 
         OptimizationManager optimizationManager = plugin.getOptimizationManager();
         if (optimizationManager == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cOptimization manager is not available."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴀɴᴀɢᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ."));
             return;
         }
 
@@ -155,19 +155,19 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         switch (args[1].toLowerCase(Locale.ROOT)) {
             case "reload" -> {
                 optimizationManager.reload();
-                sender.sendMessage(ColorUtils.toComponent("&aOptimization settings reloaded."));
+                sender.sendMessage(ColorUtils.toComponent("&aᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ."));
             }
             case "reset" -> {
                 optimizationManager.resetStats();
-                sender.sendMessage(ColorUtils.toComponent("&aOptimization runtime counters reset."));
+                sender.sendMessage(ColorUtils.toComponent("&aᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ʀᴜɴᴛɪᴍᴇ ᴄᴏᴜɴᴛᴇʀѕ ʀᴇѕᴇᴛ."));
             }
-            default -> sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " optimize [status|reload|reset]"));
+            default -> sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴏᴘᴛɪᴍɪᴢᴇ [status|reload|reset]"));
         }
     }
 
     private void handleSetup(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission(SETUP_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to use setup tools."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ѕᴇᴛᴜᴘ ᴛᴏᴏʟѕ."));
             return;
         }
 
@@ -190,7 +190,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "FEATURES.NO-PERMISSION",
-                            "&cYou do not have permission to manage feature toggles."
+                            "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ."
                     )
             ));
             return;
@@ -226,7 +226,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "FEATURES.UNKNOWN",
-                            "&cUnknown feature: &f{feature}",
+                            "&cᴜɴᴋɴᴏᴡɴ ꜰᴇᴀᴛᴜʀᴇ: &f{feature}",
                             "{feature}", args[2]
                     )
             ));
@@ -244,7 +244,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "FEATURES.TOGGLE-FAILED",
-                            "&cFailed to update {feature}.",
+                            "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴜᴘᴅᴀᴛᴇ {feature}.",
                             "{feature}", feature.displayName(),
                             "{feature_key}", feature.configKey()
                     )
@@ -255,7 +255,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault(
                         "FEATURES.TOGGLED",
-                        "&a{feature} is now {state}.",
+                        "&a{feature} ɪѕ ɴᴏᴡ {state}.",
                         "{feature}", feature.displayName(),
                         "{feature_key}", feature.configKey(),
                         "{state}", plugin.getFeatureManager().statusText(feature)
@@ -265,7 +265,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
     private void handleSetupApply(CommandSender sender, String label, String[] args) {
         if (args.length < 4 || !args[2].equalsIgnoreCase("single-paper") || !args[3].equalsIgnoreCase("confirm")) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " setup apply single-paper confirm"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ"));
             return;
         }
 
@@ -284,11 +284,11 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             database.set("REDIS.ENABLED", false);
 
             network.set("NETWORK.LOCAL_SERVER_ID", "local");
-            network.set("NETWORK.LOCAL_DISPLAY_NAME", "Local");
+            network.set("NETWORK.LOCAL_DISPLAY_NAME", "ʟᴏᴄᴀʟ");
             network.set("NETWORK-STATUS.LOCAL-SERVER-ID", "local");
-            network.set("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "Local");
+            network.set("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "ʟᴏᴄᴀʟ");
             network.set("NETWORK-STATUS.SERVERS", null);
-            network.set("NETWORK-STATUS.SERVERS.local.DISPLAY", "Local");
+            network.set("NETWORK-STATUS.SERVERS.local.DISPLAY", "ʟᴏᴄᴀʟ");
             network.set("NETWORK-STATUS.SERVERS.local.SOURCE.TYPE", "LOCAL");
 
             discord.set("WEBHOOKS.ENABLED", false);
@@ -298,23 +298,23 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
                     & plugin.getConfigManager().saveNetwork()
                     & plugin.getConfigManager().saveDiscord();
             if (!saved) {
-                sender.sendMessage(ColorUtils.toComponent("&cSingle Paper preset was applied in memory, but one or more files failed to save. Check console."));
+                sender.sendMessage(ColorUtils.toComponent("&cѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ᴘʀᴇѕᴇᴛ ᴡᴀѕ ᴀᴘᴘʟɪᴇᴅ ɪɴ ᴍᴇᴍᴏʀʏ, ʙᴜᴛ ᴏɴᴇ ᴏʀ ᴍᴏʀᴇ ꜰɪʟᴇѕ ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ."));
                 return;
             }
 
             plugin.reloadAllPluginConfigurations();
-            sender.sendMessage(ColorUtils.toComponent("&aSingle Paper setup preset applied."));
-            sender.sendMessage(ColorUtils.toComponent("&7Next: use &f/" + label + " setup setspawn &7and &f/" + label + " setup setafk&7."));
-            sender.sendMessage(ColorUtils.toComponent("&eRestart the server before going live so storage changes are fully applied."));
+            sender.sendMessage(ColorUtils.toComponent("&aѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ ᴀᴘᴘʟɪᴇᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&7ɴᴇxᴛ: ᴜѕᴇ &f/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ &7ᴀɴᴅ &f/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ&7."));
+            sender.sendMessage(ColorUtils.toComponent("&eʀᴇѕᴛᴀʀᴛ ᴛʜᴇ ѕᴇʀᴠᴇʀ ʙᴇꜰᴏʀᴇ ɢᴏɪɴɢ ʟɪᴠᴇ ѕᴏ ѕᴛᴏʀᴀɢᴇ ᴄʜᴀɴɢᴇѕ ᴀʀᴇ ꜰᴜʟʟʏ ᴀᴘᴘʟɪᴇᴅ."));
         } catch (Exception exception) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to apply Single Paper setup preset.", exception);
-            sender.sendMessage(ColorUtils.toComponent("&cFailed to apply setup preset. Check console for details."));
+            plugin.getLogger().log(Level.SEVERE, "ꜰᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ.", exception);
+            sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʟʏ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ ꜰᴏʀ ᴅᴇᴛᴀɪʟѕ."));
         }
     }
 
     private void handleSetupLocation(CommandSender sender, boolean spawn) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cOnly players can save setup locations."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ ʟᴏᴄᴀᴛɪᴏɴѕ."));
             return;
         }
 
@@ -322,25 +322,25 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         if (spawn) {
             SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setSpawnLocation(location);
             if (!result.success()) {
-                plugin.getLogger().warning("Failed to save setup spawn location at "
+                plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ ѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ "
                         + describeLocation(location) + ": " + result.message());
-                sender.sendMessage(ColorUtils.toComponent("&cSpawn location could not be saved: &f" + result.message()));
+                sender.sendMessage(ColorUtils.toComponent("&cѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ѕᴀᴠᴇᴅ: &f" + result.message()));
                 return;
             }
-            sender.sendMessage(ColorUtils.toComponent("&aSpawn location saved at &f" + describeLocation(location)
-                    + "&a. &7Area &f" + result.areaId() + " &7slot &f" + result.slot() + "&7."));
+            sender.sendMessage(ColorUtils.toComponent("&aѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ѕᴀᴠᴇᴅ ᴀᴛ &f" + describeLocation(location)
+                    + "&a. &7ᴀʀᴇᴀ &f" + result.areaId() + " &7ѕʟᴏᴛ &f" + result.slot() + "&7."));
             return;
         }
 
         SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setAfkLocation(location);
         if (!result.success()) {
-            plugin.getLogger().warning("Failed to save setup AFK location at "
+            plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ AFK ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ "
                     + describeLocation(location) + ": " + result.message());
-            sender.sendMessage(ColorUtils.toComponent("&cAFK location could not be saved: &f" + result.message()));
+            sender.sendMessage(ColorUtils.toComponent("&cᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ѕᴀᴠᴇᴅ: &f" + result.message()));
             return;
         }
-        sender.sendMessage(ColorUtils.toComponent("&aAFK location saved at &f" + describeLocation(location)
-                + "&a. &7Area &f" + result.areaId() + " &7slot &f" + result.slot() + "&7."));
+        sender.sendMessage(ColorUtils.toComponent("&aᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ѕᴀᴠᴇᴅ ᴀᴛ &f" + describeLocation(location)
+                + "&a. &7ᴀʀᴇᴀ &f" + result.areaId() + " &7ѕʟᴏᴛ &f" + result.slot() + "&7."));
     }
 
     private void sendSetupStatus(CommandSender sender, String label) {
@@ -348,42 +348,42 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         FileConfiguration database = plugin.getConfigManager().getDatabase();
         FileConfiguration discord = plugin.getConfigManager().getDiscord();
 
-        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bUltimateDonutSmp Setup &8&m----------"));
-        sendCheck(sender, isJava21OrNewer(), "Java",
-                System.getProperty("java.version", "unknown") + " (Java 21+ required)");
-        sendCheck(sender, isPaperLikeServer(), "Server",
+        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴜʟᴛɪᴍᴀᴛᴇᴅᴏɴᴜᴛѕᴍᴘ ѕᴇᴛᴜᴘ &8&m----------"));
+        sendCheck(sender, isJava21OrNewer(), "ᴊᴀᴠᴀ",
+                System.getProperty("java.version", "unknown") + " (ᴊᴀᴠᴀ 21+ ʀᴇǫᴜɪʀᴇᴅ)");
+        sendCheck(sender, isPaperLikeServer(), "ѕᴇʀᴠᴇʀ",
                 plugin.getServer().getName() + " " + plugin.getServer().getBukkitVersion());
-        sendCheck(sender, isDatabaseConnected(), "Storage",
-                database.getString("DATABASE.TYPE", "SQLITE").toUpperCase(Locale.ROOT) + " configured");
-        sendCheck(sender, isRedisReadyForSingleServer(database), "Redis",
+        sendCheck(sender, isDatabaseConnected(), "ѕᴛᴏʀᴀɢᴇ",
+                database.getString("DATABASE.TYPE", "SQLITE").toUpperCase(Locale.ROOT) + " ᴄᴏɴꜰɪɢᴜʀᴇᴅ");
+        sendCheck(sender, isRedisReadyForSingleServer(database), "ʀᴇᴅɪѕ",
                 redisDetail(database));
-        sendCheck(sender, isDiscordWebhookReady(discord), "Discord webhook",
+        sendCheck(sender, isDiscordWebhookReady(discord), "ᴅɪѕᴄᴏʀᴅ ᴡᴇʙʜᴏᴏᴋ",
                 discordWebhookDetail(discord));
-        sendCheck(sender, plugin.getSpawnManager().hasSpawn(), "Spawn",
-                plugin.getSpawnManager().hasSpawn() ? "ready" : "use /" + label + " setup setspawn");
-        sendCheck(sender, plugin.getSpawnManager().hasAfk(), "AFK",
-                plugin.getSpawnManager().hasAfk() ? "ready" : "use /" + label + " setup setafk");
+        sendCheck(sender, plugin.getSpawnManager().hasSpawn(), "ѕᴘᴀᴡɴ",
+                plugin.getSpawnManager().hasSpawn() ? "ʀᴇᴀᴅʏ" : "ᴜѕᴇ /" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ");
+        sendCheck(sender, plugin.getSpawnManager().hasAfk(), "ᴀꜰᴋ",
+                plugin.getSpawnManager().hasAfk() ? "ʀᴇᴀᴅʏ" : "ᴜѕᴇ /" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ");
         List<String> rtpWorlds = availableRtpWorlds();
         sendCheck(sender, plugin.getRtpManager().isEnabled()
                         && !rtpWorlds.isEmpty(),
-                "RTP worlds",
-                rtpWorlds.isEmpty() ? "no configured RTP worlds are loaded" : String.join(", ", rtpWorlds));
-        sendCheck(sender, true, "Optional integrations", optionalIntegrationDetail());
-        sender.sendMessage(ColorUtils.toComponent("&7Preset: &f/" + label + " setup apply single-paper confirm"));
-        sender.sendMessage(ColorUtils.toComponent("&7Commands: &f/" + label + " setup commands [category] [page]"));
+                "ʀᴛᴘ ᴡᴏʀʟᴅѕ",
+                rtpWorlds.isEmpty() ? "ɴᴏ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʀᴛᴘ ᴡᴏʀʟᴅѕ ᴀʀᴇ ʟᴏᴀᴅᴇᴅ" : String.join(", ", rtpWorlds));
+        sendCheck(sender, true, "ᴏᴘᴛɪᴏɴᴀʟ ɪɴᴛᴇɢʀᴀᴛɪᴏɴѕ", optionalIntegrationDetail());
+        sender.sendMessage(ColorUtils.toComponent("&7ᴘʀᴇѕᴇᴛ: &f/" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ"));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴏᴍᴍᴀɴᴅѕ: &f/" + label + " ѕᴇᴛᴜᴘ ᴄᴏᴍᴍᴀɴᴅѕ [category] [page]"));
     }
 
     private void handleSetupCommands(CommandSender sender, String label, String[] args) {
         String category = args.length >= 3 ? args[2].toLowerCase(Locale.ROOT) : "all";
         if (!COMMAND_CATEGORIES.contains(category)) {
-            sender.sendMessage(ColorUtils.toComponent("&cUnknown command category. Available: &f" + String.join(", ", COMMAND_CATEGORIES)));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀᴛᴇɢᴏʀʏ. ᴀᴠᴀɪʟᴀʙʟᴇ: &f" + String.join(", ", COMMAND_CATEGORIES)));
             return;
         }
 
         int page = args.length >= 4 ? parsePage(args[3]) : 1;
         List<CommandEntry> entries = commandEntries(category, label);
         if (entries.isEmpty()) {
-            sender.sendMessage(ColorUtils.toComponent("&cNo commands found for category: &f" + category));
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴄᴏᴍᴍᴀɴᴅѕ ꜰᴏᴜɴᴅ ꜰᴏʀ ᴄᴀᴛᴇɢᴏʀʏ: &f" + category));
             return;
         }
 
@@ -392,22 +392,22 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         int start = (page - 1) * COMMANDS_PER_PAGE;
         int end = Math.min(entries.size(), start + COMMANDS_PER_PAGE);
 
-        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bUDS Commands &8(&f" + category + " " + page + "/" + totalPages + "&8) &8&m----------"));
+        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴜᴅѕ ᴄᴏᴍᴍᴀɴᴅѕ &8(&f" + category + " " + page + "/" + totalPages + "&8) &8&m----------"));
         for (int index = start; index < end; index++) {
             CommandEntry entry = entries.get(index);
             sender.sendMessage(ColorUtils.toComponent("&f" + entry.usage() + " &8- &7" + entry.description()));
         }
-        sender.sendMessage(ColorUtils.toComponent("&7Categories: &f" + String.join("&7, &f", COMMAND_CATEGORIES)));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴀᴛᴇɢᴏʀɪᴇѕ: &f" + String.join("&7, &f", COMMAND_CATEGORIES)));
     }
 
     private List<CommandEntry> commandEntries(String category, String label) {
         if (category.equals("setup")) {
             return List.of(
-                    new CommandEntry("/" + label + " setup [status]", "Show setup checklist"),
-                    new CommandEntry("/" + label + " setup apply single-paper confirm", "Apply the single Paper preset"),
-                    new CommandEntry("/" + label + " setup setspawn", "Save your current location as spawn"),
-                    new CommandEntry("/" + label + " setup setafk", "Save your current location as AFK"),
-                    new CommandEntry("/" + label + " setup commands [category] [page]", "Browse command usage")
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ [status]", "ѕʜᴏᴡ ѕᴇᴛᴜᴘ ᴄʜᴇᴄᴋʟɪѕᴛ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ", "ᴀᴘᴘʟʏ ᴛʜᴇ ѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ᴘʀᴇѕᴇᴛ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ѕᴘᴀᴡɴ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ᴀꜰᴋ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ᴄᴏᴍᴍᴀɴᴅѕ [category] [page]", "ʙʀᴏᴡѕᴇ ᴄᴏᴍᴍᴀɴᴅ ᴜѕᴀɢᴇ")
             );
         }
 
@@ -421,10 +421,10 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             }
 
             String usage = String.valueOf(details.getOrDefault("usage", "/" + commandName));
-            String description = String.valueOf(details.getOrDefault("description", "No description"));
+            String description = String.valueOf(details.getOrDefault("description", "ɴᴏ ᴅᴇѕᴄʀɪᴘᴛɪᴏɴ"));
             String aliases = formatAliases(details.get("aliases"));
             if (!aliases.isBlank()) {
-                description += " (aliases: " + aliases + ")";
+                description += " (ᴀʟɪᴀѕᴇѕ: " + aliases + ")";
             }
             if (!plugin.getFeatureManager().isCommandFeatureEnabled(commandName)) {
                 continue;
@@ -435,7 +435,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendFeatureList(CommandSender sender) {
-        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bFeature Toggles &8&m----------"));
+        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ &8&m----------"));
         for (FeatureManager.Feature feature : plugin.getFeatureManager().getFeatures()) {
             sender.sendMessage(ColorUtils.toComponent("&f" + feature.configKey()
                     + " &8- " + plugin.getFeatureManager().statusText(feature)
@@ -494,7 +494,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendCheck(CommandSender sender, boolean ok, String label, String detail) {
-        String state = ok ? "&aOK" : "&eCHECK";
+        String state = ok ? "&aᴏᴋ" : "&eᴄʜᴇᴄᴋ";
         sender.sendMessage(ColorUtils.toComponent("&8- " + state + " &f" + label + " &8- &7" + detail));
     }
 
@@ -535,11 +535,11 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
     private String redisDetail(FileConfiguration database) {
         if (!database.getBoolean("REDIS.ENABLED", false)) {
-            return "disabled for single-server setup";
+            return "ᴅɪѕᴀʙʟᴇᴅ ꜰᴏʀ ѕɪɴɢʟᴇ-ѕᴇʀᴠᴇʀ ѕᴇᴛᴜᴘ";
         }
         return plugin.getRedisManager() != null && plugin.getRedisManager().isConnected()
-                ? "enabled and connected"
-                : "enabled but not connected";
+                ? "ᴇɴᴀʙʟᴇᴅ ᴀɴᴅ ᴄᴏɴɴᴇᴄᴛᴇᴅ"
+                : "ᴇɴᴀʙʟᴇᴅ ʙᴜᴛ ɴᴏᴛ ᴄᴏɴɴᴇᴄᴛᴇᴅ";
     }
 
     private boolean isDiscordWebhookReady(FileConfiguration discord) {
@@ -555,14 +555,14 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     private String discordWebhookDetail(FileConfiguration discord) {
         ConfigurationSection root = discord.getConfigurationSection("WEBHOOKS");
         if (root == null || !root.getBoolean("ENABLED", true)) {
-            return "disabled";
+            return "ᴅɪѕᴀʙʟᴇᴅ";
         }
 
         String url = root.getString("URL", "");
         if (url.isBlank() || DEFAULT_WEBHOOK_PLACEHOLDER.equalsIgnoreCase(url)) {
-            return "enabled with placeholder URL";
+            return "ᴇɴᴀʙʟᴇᴅ ᴡɪᴛʜ ᴘʟᴀᴄᴇʜᴏʟᴅᴇʀ URL";
         }
-        return "enabled";
+        return "ᴇɴᴀʙʟᴇᴅ";
     }
 
     private List<String> availableRtpWorlds() {
@@ -593,16 +593,16 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        String installedText = installed.isEmpty() ? "none installed" : "installed: " + String.join(", ", installed);
+        String installedText = installed.isEmpty() ? "ɴᴏɴᴇ ɪɴѕᴛᴀʟʟᴇᴅ" : "ɪɴѕᴛᴀʟʟᴇᴅ: " + String.join(", ", installed);
         if (missing.isEmpty()) {
             return installedText;
         }
-        return installedText + "; optional missing: " + String.join(", ", missing);
+        return installedText + "; ᴏᴘᴛɪᴏɴᴀʟ ᴍɪѕѕɪɴɢ: " + String.join(", ", missing);
     }
 
     private String describeLocation(Location location) {
         if (location == null || location.getWorld() == null) {
-            return "unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
         return location.getWorld().getName()
                 + " " + location.getBlockX()
@@ -623,32 +623,32 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             String label,
             OptimizationManager optimizationManager
     ) {
-        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bOptimization &8&m----------"));
-        sender.sendMessage(ColorUtils.toComponent("&7Enabled: &f" + optimizationManager.isEnabled()
-                + " &8| &7State: " + optimizationManager.getLoadState().display()));
+        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ &8&m----------"));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴇɴᴀʙʟᴇᴅ: &f" + optimizationManager.isEnabled()
+                + " &8| &7ѕᴛᴀᴛᴇ: " + optimizationManager.getLoadState().display()));
         sender.sendMessage(ColorUtils.toComponent("&7TPS: &f" + optimizationManager.formatMetric(optimizationManager.getLastTps())
-                + " &8| &7MSPT: &f" + optimizationManager.formatMetric(optimizationManager.getLastMspt())));
-        sender.sendMessage(ColorUtils.toComponent("&7Memory: &f" + optimizationManager.getUsedMemoryMb()
-                + "MB&8/&f" + optimizationManager.getMaxMemoryMb() + "MB"));
-        sender.sendMessage(ColorUtils.toComponent("&7Skipped task runs: &f"
+                + " &8| &7ᴍѕᴘᴛ: &f" + optimizationManager.formatMetric(optimizationManager.getLastMspt())));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴍᴇᴍᴏʀʏ: &f" + optimizationManager.getUsedMemoryMb()
+                + "ᴍʙ&8/&f" + optimizationManager.getMaxMemoryMb() + "MB"));
+        sender.sendMessage(ColorUtils.toComponent("&7ѕᴋɪᴘᴘᴇᴅ ᴛᴀѕᴋ ʀᴜɴѕ: &f"
                 + optimizationManager.getTotalSkippedRuns()
-                + " &8(&7scoreboard=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.SCOREBOARD)
-                + "&8, &7tablist=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.TABLIST)
-                + "&8, &7lunar=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.LUNAR_TEAMMATES)
+                + " &8(&7ѕᴄᴏʀᴇʙᴏᴀʀᴅ=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.SCOREBOARD)
+                + "&8, &7ᴛᴀʙʟɪѕᴛ=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.TABLIST)
+                + "&8, &7ʟᴜɴᴀʀ=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.LUNAR_TEAMMATES)
                 + "&8)"));
-        sender.sendMessage(ColorUtils.toComponent("&7Usage: &f/" + label + " optimize [status|reload|reset]"));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴜѕᴀɢᴇ: &f/" + label + " ᴏᴘᴛɪᴍɪᴢᴇ [status|reload|reset]"));
     }
 
     private void sendUsage(CommandSender sender, String label) {
-        sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <reload|statswipe|optimize|setup|features>"));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <reload|statswipe|optimize|setup|features>"));
     }
 
     private void sendSetupUsage(CommandSender sender, String label) {
-        sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " setup <status|apply|setspawn|setafk|commands>"));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴜᴘ <status|apply|setspawn|setafk|commands>"));
     }
 
     private void sendFeatureUsage(CommandSender sender, String label) {
-        sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " features [list|toggle|enable|disable] [feature]"));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " features [list|toggle|enable|disable] [feature]"));
     }
 
     private String message(String key, String fallback) {
@@ -663,7 +663,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         return Arrays.stream(StatsWipeManager.WipeTarget.values())
                 .map(StatsWipeManager.WipeTarget::getDisplayName)
                 .reduce((left, right) -> left + ", " + right)
-                .orElse("Player Stats");
+                .orElse("ᴘʟᴀʏᴇʀ ѕᴛᴀᴛѕ");
     }
 
     @Override

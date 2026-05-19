@@ -48,7 +48,7 @@ public class TeamMenu extends BaseMenu {
         if (team == null) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    message("MESSAGES.NOT-IN-TEAM", "&cYou are not part of the team."),
+                    message("MESSAGES.NOT-IN-TEAM", "&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴘᴀʀᴛ ᴏꜰ ᴛʜᴇ ᴛᴇᴀᴍ."),
                     null
             ));
             return;
@@ -79,10 +79,10 @@ public class TeamMenu extends BaseMenu {
         if (members.isEmpty()) {
             set(22, ItemUtils.createItem(
                     Material.PAPER,
-                    "&cNo members found",
+                    "&cɴᴏ ᴍᴇᴍʙᴇʀѕ ꜰᴏᴜɴᴅ",
                     searchQuery == null
-                            ? List.of("&7Your team has no members to display.")
-                            : List.of("&7No team member matched &f" + searchQuery, "&7Use search again or right-click search to clear.")
+                            ? List.of("&7ʏᴏᴜʀ ᴛᴇᴀᴍ ʜᴀѕ ɴᴏ ᴍᴇᴍʙᴇʀѕ ᴛᴏ ᴅɪѕᴘʟᴀʏ.")
+                            : List.of("&7ɴᴏ ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀ ᴍᴀᴛᴄʜᴇᴅ &f" + searchQuery, "&7ᴜѕᴇ ѕᴇᴀʀᴄʜ ᴀɢᴀɪɴ ᴏʀ ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ѕᴇᴀʀᴄʜ ᴛᴏ ᴄʟᴇᴀʀ.")
             ));
         }
 
@@ -115,7 +115,7 @@ public class TeamMenu extends BaseMenu {
                 searchQuery = null;
                 page = 0;
                 build(player);
-                player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent("&7Team member search cleared."));
+                player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent("&7ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀ ѕᴇᴀʀᴄʜ ᴄʟᴇᴀʀᴇᴅ."));
                 return;
             }
             plugin.getTeamManager().promptTeamSearch(player, page, sortMode);
@@ -158,7 +158,7 @@ public class TeamMenu extends BaseMenu {
         if (slot == pvpSlot) {
             if (!plugin.getTeamManager().toggleFriendlyFire(team, player.getUniqueId())) {
                 player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                        message("MESSAGES.NO-PERMISSION", "&cYou don't have permissions to do this.")));
+                        message("MESSAGES.NO-PERMISSION", "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴѕ ᴛᴏ ᴅᴏ ᴛʜɪѕ.")));
                 return;
             }
             player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
@@ -175,12 +175,12 @@ public class TeamMenu extends BaseMenu {
         }
         if (targetUuid.equals(player.getUniqueId())) {
             player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                    message("MESSAGES.CANT-EDIT-SELF", "&cYou can't do this yourself!")));
+                    message("MESSAGES.CANT-EDIT-SELF", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴅᴏ ᴛʜɪѕ ʏᴏᴜʀѕᴇʟꜰ!")));
             return;
         }
         if (!team.isLeader(player.getUniqueId())) {
             player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                    message("MESSAGES.NO-PERMISSION", "&cYou don't have permissions to do this.")));
+                    message("MESSAGES.NO-PERMISSION", "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴѕ ᴛᴏ ᴅᴏ ᴛʜɪѕ.")));
             return;
         }
 
@@ -188,19 +188,19 @@ public class TeamMenu extends BaseMenu {
     }
 
     private ItemStack createMemberItem(Team team, UUID memberUuid, OfflinePlayer member) {
-        String name = member.getName() != null ? member.getName() : "Unknown";
+        String name = member.getName() != null ? member.getName() : "ᴜɴᴋɴᴏᴡɴ";
         boolean online = member.isOnline();
 
         List<String> lore = new ArrayList<>();
         lore.add((online
                 ? menus().getString(MENU_PATH + ".PLAYER-BUTTON.ONLINE-SYMBOL", "&a■")
                 : menus().getString(MENU_PATH + ".PLAYER-BUTTON.OFFLINE-SYMBOL", "&4■"))
-                + "&7 " + (online ? "Online" : "Offline"));
+                + "&7 " + (online ? "ᴏɴʟɪɴᴇ" : "ᴏꜰꜰʟɪɴᴇ"));
         if (team.isLeader(memberUuid)) {
-            lore.add("&6Leader");
+            lore.add("&6ʟᴇᴀᴅᴇʀ");
         }
 
-        String configuredLore = menus().getString(MENU_PATH + ".PLAYER-BUTTON.LORE", "&fClick to edit");
+        String configuredLore = menus().getString(MENU_PATH + ".PLAYER-BUTTON.LORE", "&fᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ");
         if (configuredLore != null && !configuredLore.isBlank()) {
             lore.add(configuredLore);
         }
@@ -213,19 +213,19 @@ public class TeamMenu extends BaseMenu {
         List<String> lore = new ArrayList<>(menus().getStringList(path + ".LORE"));
         if (searchQuery == null || searchQuery.isBlank()) {
             lore.removeIf(line -> line.toLowerCase().contains("in development"));
-            lore.add("&7Current: &fNone");
-            lore.add("&7Left-click to type a search.");
+            lore.add("&7ᴄᴜʀʀᴇɴᴛ: &fɴᴏɴᴇ");
+            lore.add("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛʏᴘᴇ ᴀ ѕᴇᴀʀᴄʜ.");
         } else {
             lore.removeIf(line -> line.toLowerCase().contains("in development"));
-            lore.add("&7Current: &f" + searchQuery);
-            lore.add("&7Left-click to change search.");
-            lore.add("&7Right-click to clear search.");
+            lore.add("&7ᴄᴜʀʀᴇɴᴛ: &f" + searchQuery);
+            lore.add("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ ѕᴇᴀʀᴄʜ.");
+            lore.add("&7ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴇᴀʀ ѕᴇᴀʀᴄʜ.");
         }
         set(
                 menus().getInt(path + ".SLOT", 45),
                 ItemUtils.createItem(
                         material(path + ".MATERIAL", Material.OAK_SIGN),
-                        menus().getString(path + ".TITLE", "&aSearch"),
+                        menus().getString(path + ".TITLE", "&aѕᴇᴀʀᴄʜ"),
                         lore
                 )
         );
@@ -242,13 +242,13 @@ public class TeamMenu extends BaseMenu {
             boolean selected = mode == sortMode;
             lore.add((selected ? selectedPrefix : unselectedPrefix) + symbol + " " + mode.displayName);
         }
-        lore.add("&7Click to change sorting.");
+        lore.add("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ ѕᴏʀᴛɪɴɢ.");
 
         set(
                 menus().getInt(path + ".SLOT", 46),
                 ItemUtils.createItem(
                         material(path + ".MATERIAL", Material.HOPPER),
-                        menus().getString(path + ".TITLE", "&aSort"),
+                        menus().getString(path + ".TITLE", "&aѕᴏʀᴛ"),
                         lore
                 )
         );
@@ -264,7 +264,7 @@ public class TeamMenu extends BaseMenu {
                 menus().getInt(path + ".SLOT", 49),
                 ItemUtils.createItem(
                         material(path + ".MATERIAL", Material.IRON_HELMET),
-                        replace(menus().getString(path + ".TITLE", "&#6BF18DTeam {team_name}"), placeholders),
+                        replace(menus().getString(path + ".TITLE", "&#6BF18Dᴛᴇᴀᴍ {team_name}"), placeholders),
                         replace(menus().getStringList(path + ".LORE"), placeholders)
                 )
         );
@@ -282,43 +282,43 @@ public class TeamMenu extends BaseMenu {
         if (page > 0) {
             set(47, ItemUtils.createItem(
                     material,
-                    menus.getString(globalPath + ".BACK-BUTTON", "&aBack"),
-                    menus.getStringList(globalPath + ".BACK-LORE")
+                    menus.getString(globalPath + ".ʙᴀᴄᴋ-ʙᴜᴛᴛᴏɴ", "&aʙᴀᴄᴋ"),
+                    menus.getStringList(globalPath + ".ʙᴀᴄᴋ-ʟᴏʀᴇ")
             ));
         }
 
         set(49, inventory.getItem(49));
         set(50, ItemUtils.createItem(
                 Material.PAPER,
-                "&fPage " + (page + 1) + "/" + totalPages,
-                List.of("&7Browse team members.")
+                "&fᴘᴀɢᴇ " + (page + 1) + "/" + totalPages,
+                List.of("&7ʙʀᴏᴡѕᴇ ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀѕ.")
         ));
 
         if (page < totalPages - 1) {
             set(51, ItemUtils.createItem(
                     material,
-                    menus.getString(globalPath + ".NEXT-BUTTON", "&aNext"),
-                    menus.getStringList(globalPath + ".NEXT-LORE")
+                    menus.getString(globalPath + ".ɴᴇxᴛ-ʙᴜᴛᴛᴏɴ", "&aɴᴇxᴛ"),
+                    menus.getStringList(globalPath + ".ɴᴇxᴛ-ʟᴏʀᴇ")
             ));
         }
     }
 
     private void renderHomeButton(Player player, Team team) {
-        String path = MENU_PATH + ".HOME-BUTTON";
+        String path = MENU_PATH + ".ʜᴏᴍᴇ-ʙᴜᴛᴛᴏɴ";
         String loreLine;
         if (!plugin.getTeamManager().canVisitHome(team, player.getUniqueId())) {
             loreLine = plugin.getConfigManager().getMessage("TEAM.NO-VISIT-HOME-PERMISSION");
         } else if (team.hasHome()) {
-            loreLine = menus().getString(path + ".HOME-LORE", "&fClick to teleport to your team's home");
+            loreLine = menus().getString(path + ".ʜᴏᴍᴇ-ʟᴏʀᴇ", "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ");
         } else {
-            loreLine = menus().getString(path + ".NO-HOME-LORE", "&fSet the team home with /home");
+            loreLine = menus().getString(path + ".NO-HOME-LORE", "&fѕᴇᴛ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ ᴡɪᴛʜ /home");
         }
 
         set(
                 menus().getInt(path + ".SLOT", 52),
                 ItemUtils.createItem(
                         material(path + ".MATERIAL", Material.WHITE_BANNER),
-                        menus().getString(path + ".TITLE", "&#6BF18DTeam Home"),
+                        menus().getString(path + ".TITLE", "&#6BF18Dᴛᴇᴀᴍ ʜᴏᴍᴇ"),
                         List.of(loreLine)
                 )
         );
@@ -334,8 +334,8 @@ public class TeamMenu extends BaseMenu {
                 menus().getInt(path + ".SLOT", 53),
                 ItemUtils.createItem(
                         material(path + ".MATERIAL", Material.IRON_SWORD),
-                        menus().getString(path + ".TITLE", "&#6BF18DPvP"),
-                        List.of(replace(menus().getString(path + ".LORE", "&fCurrently: {state}"), Map.of("state", state)))
+                        menus().getString(path + ".TITLE", "&#6BF18Dᴘᴠᴘ"),
+                        List.of(replace(menus().getString(path + ".LORE", "&fᴄᴜʀʀᴇɴᴛʟʏ: {state}"), Map.of("state", state)))
                 )
         );
     }
@@ -394,7 +394,7 @@ public class TeamMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Team");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ᴛᴇᴀᴍ");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {
@@ -418,7 +418,7 @@ public class TeamMenu extends BaseMenu {
                 });
             }
         },
-        ONLINE_FIRST("Online First") {
+        ONLINE_FIRST("ᴏɴʟɪɴᴇ ꜰɪʀѕᴛ") {
             @Override
             Comparator<UUID> comparator(Team team) {
                 return Comparator
@@ -429,7 +429,7 @@ public class TeamMenu extends BaseMenu {
                         });
             }
         },
-        ALPHABETICAL("Alphabetical") {
+        ALPHABETICAL("ᴀʟᴘʜᴀʙᴇᴛɪᴄᴀʟ") {
             @Override
             Comparator<UUID> comparator(Team team) {
                 return Comparator.comparing(uuid -> {

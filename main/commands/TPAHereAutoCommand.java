@@ -18,7 +18,7 @@ public class TPAHereAutoCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data == null) return true;
 

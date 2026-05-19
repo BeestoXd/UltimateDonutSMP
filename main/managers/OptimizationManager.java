@@ -18,9 +18,9 @@ import java.util.logging.Level;
 public class OptimizationManager {
 
     public enum LoadState {
-        NORMAL(0, "&aNormal"),
-        WARN(1, "&eWarning"),
-        CRITICAL(2, "&cCritical");
+        NORMAL(0, "&aɴᴏʀᴍᴀʟ"),
+        WARN(1, "&eᴡᴀʀɴɪɴɢ"),
+        CRITICAL(2, "&cᴄʀɪᴛɪᴄᴀʟ");
 
         private final int severity;
         private final String display;

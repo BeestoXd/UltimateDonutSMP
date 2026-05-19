@@ -79,7 +79,7 @@ public class HomeManager {
 
     public boolean setHome(UUID uuid, String name, Location location) {
         List<Home> homes = cache.computeIfAbsent(uuid, k -> new ArrayList<>());
-        // Update existing
+        // update existing
         for (Home h : homes) {
             if (h.getName().equalsIgnoreCase(name)) {
                 h.setLocation(location.clone());
@@ -87,7 +87,7 @@ public class HomeManager {
                 return true;
             }
         }
-        // Create new
+        // create new
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null && homes.size() >= getMaxHomes(player)) return false;
         Home home = new Home(uuid, name, location.clone());
@@ -105,7 +105,7 @@ public class HomeManager {
     }
 
     public boolean renameHome(UUID uuid, String oldName, String newName) {
-        // Check newName not already taken
+        // check newname not already taken
         if (getHome(uuid, newName) != null) return false;
         Home home = getHome(uuid, oldName);
         if (home == null) return false;
@@ -158,7 +158,7 @@ public class HomeManager {
             }
             if (!setHome(player.getUniqueId(), input, pending.location)) {
                 pendingInputs.remove(player.getUniqueId());
-                player.sendMessage(ColorUtils.toComponent("&cYou cannot create another home right now."));
+                player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀɴᴏᴛʜᴇʀ ʜᴏᴍᴇ ʀɪɢʜᴛ ɴᴏᴡ."));
                 return;
             }
 
@@ -169,7 +169,7 @@ public class HomeManager {
         }
 
         if (!renameHome(player.getUniqueId(), pending.oldName, input)) {
-            player.sendMessage(ColorUtils.toComponent("&cFailed to rename home. Try another name."));
+            player.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇɴᴀᴍᴇ ʜᴏᴍᴇ. ᴛʀʏ ᴀɴᴏᴛʜᴇʀ ɴᴀᴍᴇ."));
             resendPrompt(player, pending);
             return;
         }

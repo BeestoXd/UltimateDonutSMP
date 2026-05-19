@@ -145,20 +145,20 @@ public class HoverStatsManager {
         return List.of(
                 "%prefix%%player%",
                 "&7&m----------",
-                "%money_symbol_colored% &f%money_name_plural% %money_color%%money%",
-                "&cKills: &f%kills%",
-                "&ePlaytime: &f%playtime%",
-                "&6Deaths: &f%deaths%",
-                "%shards_symbol_colored% &f%shards_name_plural% %shards_color%%shards%",
+                "&aᴍᴏɴᴇʏ: &f%money%",
+                "&cᴋɪʟʟѕ: &f%kills%",
+                "&eᴘʟᴀʏᴛɪᴍᴇ: &f%playtime%",
+                "&6ᴅᴇᴀᴛʜѕ: &f%deaths%",
+                "&dѕʜᴀʀᴅѕ: &f%shards%",
                 "&7&m----------",
-                "&7Click to view stats"
+                "&7ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕᴛᴀᴛѕ"
         );
     }
 
     private Map<String, String> buildPlaceholders(Player speaker, String prefix, PlayerData data) {
         Map<String, String> placeholders = new LinkedHashMap<>();
         Team team = plugin.getTeamManager().getTeam(speaker.getUniqueId());
-        String teamName = team != null ? team.getName().toUpperCase() : "None";
+        String teamName = team != null ? team.getName().toUpperCase() : "ɴᴏɴᴇ";
         String displayName = resolveDisplayName(speaker);
 
         placeholders.put("%player%", displayName);
@@ -168,41 +168,19 @@ public class HoverStatsManager {
         placeholders.put("%prefix%", prefix == null ? "" : prefix);
         placeholders.put("%luckperms_prefix%", prefix == null ? "" : prefix);
         placeholders.put("%team%", teamName);
-        placeholders.put("%money%", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, money));
+        placeholders.put("%money%", data != null ? NumberUtils.formatNice(data.getMoney()) : "0");
         placeholders.put("%money_raw%", data != null ? NumberUtils.format(data.getMoney()) : "0");
-        placeholders.put("%money_formatted%", plugin.getCurrencyManager().formatMoney(data != null ? data.getMoney() : 0D));
-        placeholders.put("%money_short_formatted%", plugin.getCurrencyManager().formatMoneyCompact(data != null ? data.getMoney() : 0D));
-        placeholders.put("%money_symbol%", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY));
-        placeholders.put("%money_symbol_color%", plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.MONEY));
-        placeholders.put("%money_symbol_colored%", plugin.getCurrencyManager().coloredSymbol(CurrencyManager.CurrencyType.MONEY));
-        placeholders.put("%money_color%", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY));
-        placeholders.put("%money_name%", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY));
-        placeholders.put("%money_name_plural%", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.MONEY));
         placeholders.put("%kills%", String.valueOf(data != null ? data.getKills() : 0));
         placeholders.put("%deaths%", String.valueOf(data != null ? data.getDeaths() : 0));
         placeholders.put("%playtime%", data != null ? NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds()) : "0s");
         placeholders.put("%shards%", String.valueOf(data != null ? data.getShards() : 0));
-        placeholders.put("%shards_formatted%", plugin.getCurrencyManager().formatShards(data != null ? data.getShards() : 0L));
-        placeholders.put("%shards_short_formatted%", plugin.getCurrencyManager().formatShardsCompact(data != null ? data.getShards() : 0L));
-        placeholders.put("%shards_symbol%", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS));
-        placeholders.put("%shards_symbol_color%", plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.SHARDS));
-        placeholders.put("%shards_symbol_colored%", plugin.getCurrencyManager().coloredSymbol(CurrencyManager.CurrencyType.SHARDS));
-        placeholders.put("%shards_color%", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.SHARDS));
-        placeholders.put("%shards_name%", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.SHARDS));
-        placeholders.put("%shards_name_plural%", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS));
         placeholders.put("%blocks_placed%", String.valueOf(data != null ? data.getBlocksPlaced() : 0));
         placeholders.put("%blocks_broken%", String.valueOf(data != null ? data.getBlocksBroken() : 0));
         placeholders.put("%mobs_killed%", String.valueOf(data != null ? data.getMobsKilled() : 0));
         placeholders.put("%killstreak%", String.valueOf(data != null ? data.getKillStreak() : 0));
         placeholders.put("%highest_killstreak%", String.valueOf(data != null ? data.getHighestKillStreak() : 0));
-        placeholders.put("%money_made%", plugin.getCurrencyManager().formatCompactAmount(
-                CurrencyManager.CurrencyType.MONEY,
-                data != null ? data.getMoneyMade() : 0D
-        ));
-        placeholders.put("%money_spent%", plugin.getCurrencyManager().formatCompactAmount(
-                CurrencyManager.CurrencyType.MONEY,
-                data != null ? data.getMoneySpent() : 0D
-        ));
+        placeholders.put("%money_made%", data != null ? NumberUtils.formatNice(data.getMoneyMade()) : "0");
+        placeholders.put("%money_spent%", data != null ? NumberUtils.formatNice(data.getMoneySpent()) : "0");
         return placeholders;
     }
 

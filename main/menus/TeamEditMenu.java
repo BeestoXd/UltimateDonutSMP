@@ -48,13 +48,13 @@ public class TeamEditMenu extends BaseMenu {
 
         Team team = plugin.getTeamManager().getTeam(player);
         if (team == null || !team.isLeader(player.getUniqueId())) {
-            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cYou don't have permissions to do this.", null));
+            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴѕ ᴛᴏ ᴅᴏ ᴛʜɪѕ.", null));
             return;
         }
 
         Team.TeamMember member = team.getMember(targetUuid);
         if (member == null || team.isLeader(targetUuid)) {
-            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cPlayer is not editable.", null));
+            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴇᴅɪᴛᴀʙʟᴇ.", null));
             return;
         }
 
@@ -91,22 +91,22 @@ public class TeamEditMenu extends BaseMenu {
                 member.canUseTeamChat()
         );
 
-        String kickPath = MENU_PATH + ".KICK-BUTTON";
+        String kickPath = MENU_PATH + ".ᴋɪᴄᴋ-ʙᴜᴛᴛᴏɴ";
         set(
                 menus().getInt(kickPath + ".SLOT", 11),
                 ItemUtils.createItem(
                         material(kickPath + ".MATERIAL", Material.OAK_DOOR),
-                        replace(menus().getString(kickPath + ".TITLE", "&cKick"), Map.of("player", targetName)),
+                        replace(menus().getString(kickPath + ".TITLE", "&cᴋɪᴄᴋ"), Map.of("player", targetName)),
                         replace(menus().getStringList(kickPath + ".LORE"), Map.of("player", targetName))
                 )
         );
 
-        String backPath = MENU_PATH + ".BACK-BUTTON";
+        String backPath = MENU_PATH + ".ʙᴀᴄᴋ-ʙᴜᴛᴛᴏɴ";
         set(
                 menus().getInt(backPath + ".SLOT", 18),
                 ItemUtils.createItem(
                         material(backPath + ".MATERIAL", Material.RED_STAINED_GLASS_PANE),
-                        menus().getString(backPath + ".TITLE", "&cBack"),
+                        menus().getString(backPath + ".TITLE", "&cʙᴀᴄᴋ"),
                         menus().getStringList(backPath + ".LORE")
                 )
         );
@@ -118,13 +118,13 @@ public class TeamEditMenu extends BaseMenu {
 
         Team team = plugin.getTeamManager().getTeam(player);
         if (team == null || !team.isLeader(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cYou don't have permissions to do this."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴѕ ᴛᴏ ᴅᴏ ᴛʜɪѕ."));
             return;
         }
 
         Team.TeamMember member = team.getMember(targetUuid);
         if (member == null || team.isLeader(targetUuid)) {
-            player.sendMessage(ColorUtils.toComponent("&cPlayer is not editable."));
+            player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴇᴅɪᴛᴀʙʟᴇ."));
             return;
         }
 
@@ -183,7 +183,7 @@ public class TeamEditMenu extends BaseMenu {
                 menus().getInt(path + ".SLOT", 10),
                 ItemUtils.createItem(
                         material(path + ".MATERIAL", fallbackMaterial),
-                        replace(menus().getString(path + ".TITLE", "&fToggle"), placeholders),
+                        replace(menus().getString(path + ".TITLE", "&fᴛᴏɢɢʟᴇ"), placeholders),
                         replace(menus().getStringList(path + ".LORE"), placeholders)
                 )
         );
@@ -196,7 +196,7 @@ public class TeamEditMenu extends BaseMenu {
         }
 
         String storedName = plugin.getDatabaseManager().getLastKnownUsername(targetUuid);
-        return storedName != null ? storedName : "Unknown";
+        return storedName != null ? storedName : "ᴜɴᴋɴᴏᴡɴ";
     }
 
     private FileConfiguration menus() {
@@ -231,7 +231,7 @@ public class TeamEditMenu extends BaseMenu {
         }
 
         return plugin.getConfigManager().getMenus()
-                .getString(MENU_PATH + ".TITLE", "&8Edit {player}")
+                .getString(MENU_PATH + ".TITLE", "&8ᴇᴅɪᴛ {player}")
                 .replace("{player}", name);
     }
 

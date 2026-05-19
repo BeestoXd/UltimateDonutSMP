@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -38,7 +37,7 @@ public class PlayerDeathListener implements Listener {
         boolean ffaHandled = plugin.getFfaManager() != null && plugin.getFfaManager().handleDeath(event);
         plugin.getStaffModeManager().handleDeath(event);
         Component deathMsg = buildDeathMessage(event, victim, killer);
-        overrideDeathScreenMessage(event, deathMsg);
+        event.deathScreenMessageOverride(deathMsg);
         if (ffaHandled) {
             event.deathMessage(deathMsg);
             return;
@@ -55,21 +54,17 @@ public class PlayerDeathListener implements Listener {
             if (killerData != null) {
                 killerData.addKill();
                 killerData.addKillStreak();
-                if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SHARDS)) {
-                    long shardsPerKill = plugin.getConfigManager().getConfig()
-                            .getLong("SETTINGS.SHARDS-PER-KILL", 1);
-                    plugin.getShardManager().giveShards(killer, shardsPerKill, true);
-                }
+                long shardsPerKill = plugin.getConfigManager().getConfig()
+                        .getLong("SETTINGS.SHARDS-PER-KILL", 1);
+                plugin.getShardManager().giveShards(killer, shardsPerKill, true);
             }
 
-            if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.BOUNTY)
-                    && plugin.getBountyManager().hasBounty(victim.getUniqueId()) && !plugin.getBountyManager()
+            if (plugin.getBountyManager().hasBounty(victim.getUniqueId()) && !plugin.getBountyManager()
                     .isExcludedWorld(victim.getWorld().getName())) {
                 double amount = plugin.getBountyManager().claimBounty(killer, victim.getUniqueId());
                 if (amount > 0) {
                     String msg = plugin.getConfigManager().getMessage("BOUNTY.CLAIM-SUCCESS",
                             "{amount}", NumberUtils.format(amount),
-                            "{amount_formatted}", plugin.getCurrencyManager().formatMoney(amount),
                             "{player}", victim.getName());
                     killer.sendMessage(ColorUtils.toComponent(msg));
                 }
@@ -100,47 +95,47 @@ public class PlayerDeathListener implements Listener {
         boolean hasNonPlayerKiller = killerName != null;
 
         String template = switch (cause) {
-            case "BLOCK_EXPLOSION" -> cfg.getString("MESSAGES.BLOCK-EXPLOSION", "{player} was blown up");
-            case "CONTACT" -> cfg.getString("MESSAGES.CONTACT", "{player} was pricked");
+            case "BLOCK_EXPLOSION" -> cfg.getString("MESSAGES.BLOCK-EXPLOSION", "{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ");
+            case "CONTACT" -> cfg.getString("MESSAGES.CONTACT", "{player} ᴡᴀѕ ᴘʀɪᴄᴋᴇᴅ");
             case "DROWNING" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.DROWNING.PVP", "{player} drowned escaping {killer}")
-                    : cfg.getString("MESSAGES.DROWNING.NORMAL", "{player} drowned!");
-            case "ENTITY_ATTACK" -> cfg.getString("MESSAGES.ENTITY-ATTACK", "{player} was slain by {killer}");
+                    ? cfg.getString("MESSAGES.DROWNING.PVP", "{player} ᴅʀᴏᴡɴᴇᴅ ᴇѕᴄᴀᴘɪɴɢ {killer}")
+                    : cfg.getString("MESSAGES.DROWNING.NORMAL", "{player} ᴅʀᴏᴡɴᴇᴅ!");
+            case "ENTITY_ATTACK" -> cfg.getString("MESSAGES.ENTITY-ATTACK", "{player} ᴡᴀѕ ѕʟᴀɪɴ ʙʏ {killer}");
             case "FALL" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.FALL.PVP", "{player} was doomed to fall by {killer}")
-                    : cfg.getString("MESSAGES.FALL.NORMAL", "{player} hit the ground too hard");
-            case "FALLING_BLOCK" -> cfg.getString("MESSAGES.FALLING-BLOCK", "{player} was squashed");
+                    ? cfg.getString("MESSAGES.FALL.PVP", "{player} ᴡᴀѕ ᴅᴏᴏᴍᴇᴅ ᴛᴏ ꜰᴀʟʟ ʙʏ {killer}")
+                    : cfg.getString("MESSAGES.FALL.NORMAL", "{player} ʜɪᴛ ᴛʜᴇ ɢʀᴏᴜɴᴅ ᴛᴏᴏ ʜᴀʀᴅ");
+            case "FALLING_BLOCK" -> cfg.getString("MESSAGES.FALLING-BLOCK", "{player} ᴡᴀѕ ѕǫᴜᴀѕʜᴇᴅ");
             case "FIRE" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.FIRE.PVP", "{player} walked into fire fighting {killer}")
-                    : cfg.getString("MESSAGES.FIRE.NORMAL", "{player} went up in flames");
+                    ? cfg.getString("MESSAGES.FIRE.PVP", "{player} ᴡᴀʟᴋᴇᴅ ɪɴᴛᴏ ꜰɪʀᴇ ꜰɪɢʜᴛɪɴɢ {killer}")
+                    : cfg.getString("MESSAGES.FIRE.NORMAL", "{player} ᴡᴇɴᴛ ᴜᴘ ɪɴ ꜰʟᴀᴍᴇѕ");
             case "FIRE_TICK" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.FIRE-TICK.PVP", "{player} burned while fighting {killer}")
-                    : cfg.getString("MESSAGES.FIRE-TICK.NORMAL", "{player} burned to death");
+                    ? cfg.getString("MESSAGES.FIRE-TICK.PVP", "{player} ʙᴜʀɴᴇᴅ ᴡʜɪʟᴇ ꜰɪɢʜᴛɪɴɢ {killer}")
+                    : cfg.getString("MESSAGES.FIRE-TICK.NORMAL", "{player} ʙᴜʀɴᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ");
             case "LAVA" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.LAVA.PVP", "{player} tried to swim in lava escaping {killer}")
-                    : cfg.getString("MESSAGES.LAVA.NORMAL", "{player} tried to swim in lava");
-            case "LIGHTNING" -> cfg.getString("MESSAGES.LIGHTNING", "{player} got struck by lightning");
-            case "POISON" -> cfg.getString("MESSAGES.POISON", "{player} was poisoned");
+                    ? cfg.getString("MESSAGES.LAVA.PVP", "{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ ᴇѕᴄᴀᴘɪɴɢ {killer}")
+                    : cfg.getString("MESSAGES.LAVA.NORMAL", "{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ");
+            case "LIGHTNING" -> cfg.getString("MESSAGES.LIGHTNING", "{player} ɢᴏᴛ ѕᴛʀᴜᴄᴋ ʙʏ ʟɪɢʜᴛɴɪɴɢ");
+            case "POISON" -> cfg.getString("MESSAGES.POISON", "{player} ᴡᴀѕ ᴘᴏɪѕᴏɴᴇᴅ");
             case "PROJECTILE" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.PROJECTILE.PVP", "{player} was shot by {killer}")
-                    : cfg.getString("MESSAGES.PROJECTILE.NORMAL", "{player} was shot");
-            case "STARVATION" -> cfg.getString("MESSAGES.STARVATION", "{player} starved to death");
-            case "SUFFOCATION" -> cfg.getString("MESSAGES.SUFFOCATION", "{player} suffocated in a wall");
-            case "SUICIDE" -> cfg.getString("MESSAGES.SUICIDE", "{player} took their own life");
-            case "THORNS" -> cfg.getString("MESSAGES.THORNS", "{player} killed themselves trying to kill someone");
+                    ? cfg.getString("MESSAGES.PROJECTILE.PVP", "{player} ᴡᴀѕ ѕʜᴏᴛ ʙʏ {killer}")
+                    : cfg.getString("MESSAGES.PROJECTILE.NORMAL", "{player} ᴡᴀѕ ѕʜᴏᴛ");
+            case "STARVATION" -> cfg.getString("MESSAGES.STARVATION", "{player} ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ");
+            case "SUFFOCATION" -> cfg.getString("MESSAGES.SUFFOCATION", "{player} ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ");
+            case "SUICIDE" -> cfg.getString("MESSAGES.SUICIDE", "{player} ᴛᴏᴏᴋ ᴛʜᴇɪʀ ᴏᴡɴ ʟɪꜰᴇ");
+            case "THORNS" -> cfg.getString("MESSAGES.THORNS", "{player} ᴋɪʟʟᴇᴅ ᴛʜᴇᴍѕᴇʟᴠᴇѕ ᴛʀʏɪɴɢ ᴛᴏ ᴋɪʟʟ ѕᴏᴍᴇᴏɴᴇ");
             case "VOID" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.VOID.PVP", "{player} was knocked into the void by {killer}")
-                    : cfg.getString("MESSAGES.VOID.NORMAL", "{player} fell out of the world");
-            case "WITHER" -> cfg.getString("MESSAGES.WITHER", "{player} withered away");
+                    ? cfg.getString("MESSAGES.VOID.PVP", "{player} ᴡᴀѕ ᴋɴᴏᴄᴋᴇᴅ ɪɴᴛᴏ ᴛʜᴇ ᴠᴏɪᴅ ʙʏ {killer}")
+                    : cfg.getString("MESSAGES.VOID.NORMAL", "{player} ꜰᴇʟʟ ᴏᴜᴛ ᴏꜰ ᴛʜᴇ ᴡᴏʀʟᴅ");
+            case "WITHER" -> cfg.getString("MESSAGES.WITHER", "{player} ᴡɪᴛʜᴇʀᴇᴅ ᴀᴡᴀʏ");
             case "ENTITY_EXPLOSION" -> hasNonPlayerKiller
-                    ? cfg.getString("MESSAGES.ENTITY-EXPLOSION.PVP", "{player} was blown up by {killer}")
-                    : cfg.getString("MESSAGES.ENTITY-EXPLOSION.NORMAL", "{player} was blown up");
-            default -> cfg.getString("MESSAGES.DEFAULT", "{player} died");
+                    ? cfg.getString("MESSAGES.ENTITY-EXPLOSION.PVP", "{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ ʙʏ {killer}")
+                    : cfg.getString("MESSAGES.ENTITY-EXPLOSION.NORMAL", "{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ");
+            default -> cfg.getString("MESSAGES.DEFAULT", "{player} ᴅɪᴇᴅ");
         };
 
         String msg = template
                 .replace("{player}", victim.getName())
-                .replace("{killer}", killerName != null ? killerName : "Unknown");
+                .replace("{killer}", killerName != null ? killerName : "ᴜɴᴋɴᴏᴡɴ");
 
         return ColorUtils.toComponent(prefix + msg);
     }
@@ -173,7 +168,7 @@ public class PlayerDeathListener implements Listener {
 
     private String safeEntityName(Entity entity) {
         if (entity == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         String name = entity.getName();
@@ -181,18 +176,11 @@ public class PlayerDeathListener implements Listener {
     }
 
     private Component buildPlayerKillMessage(Player victim, Player killer) {
-        String victimName = victim == null ? "Unknown" : victim.getName();
-        String killerName = killer == null ? "Unknown" : killer.getName();
+        String victimName = victim == null ? "ᴜɴᴋɴᴏᴡɴ" : victim.getName();
+        String killerName = killer == null ? "ᴜɴᴋɴᴏᴡɴ" : killer.getName();
         return Component.text(
-                "\u2620 " + victimName + " \u1D21\u1D00\u0455 \u0455\u029F\u1D00\u026A\u0274 \u0299\u028F " + killerName,
+                "☠ " + victimName + " ᴡᴀѕ ѕʟᴀɪɴ ʙʏ " + killerName,
                 NamedTextColor.RED
         );
-    }
-
-    private void overrideDeathScreenMessage(PlayerDeathEvent event, Component message) {
-        try {
-            event.getClass().getMethod("deathScreenMessageOverride", Component.class).invoke(event, message);
-        } catch (ReflectiveOperationException | RuntimeException ignored) {
-        }
     }
 }

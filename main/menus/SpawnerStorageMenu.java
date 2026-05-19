@@ -20,7 +20,7 @@ public class SpawnerStorageMenu extends BaseMenu {
     private final int page;
 
     public SpawnerStorageMenu(UltimateDonutSmp plugin, long spawnerId, int page) {
-        super(plugin, "&8Spawner Storage", plugin.getSpawnerManager().getStorageSize());
+        super(plugin, "&8ѕᴘᴀᴡɴᴇʀ ѕᴛᴏʀᴀɢᴇ", plugin.getSpawnerManager().getStorageSize());
         this.spawnerId = spawnerId;
         this.page = Math.max(1, page);
     }
@@ -29,10 +29,10 @@ public class SpawnerStorageMenu extends BaseMenu {
     public void build(Player player) {
         SpawnerInstance instance = plugin.getSpawnerManager().getSpawner(spawnerId);
         if (instance == null) {
-            inventory = Bukkit.createInventory(this, plugin.getSpawnerManager().getStorageSize(), ColorUtils.toComponent("&8Spawner Missing"));
+            inventory = Bukkit.createInventory(this, plugin.getSpawnerManager().getStorageSize(), ColorUtils.toComponent("&8ѕᴘᴀᴡɴᴇʀ ᴍɪѕѕɪɴɢ"));
             clear();
             fill(Material.GRAY_STAINED_GLASS_PANE);
-            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cSpawner not found"));
+            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cѕᴘᴀᴡɴᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ"));
             return;
         }
 
@@ -65,10 +65,10 @@ public class SpawnerStorageMenu extends BaseMenu {
             if (meta != null) {
                 meta.setDisplayName(ColorUtils.toComponent("&b" + plugin.getWorthManager().prettifyMaterial(entry.getMaterial())));
                 meta.setLore(ColorUtils.toComponentList(List.of(
-                        "&7Stored: &f" + NumberUtils.format(entry.getAmount()),
+                        "&7ѕᴛᴏʀᴇᴅ: &f" + NumberUtils.format(entry.getAmount()),
                         "",
-                        "&eLeft-click &7to collect one stack",
-                        "&eShift-left &7to collect all of this loot"
+                        "&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ᴄᴏʟʟᴇᴄᴛ ᴏɴᴇ ѕᴛᴀᴄᴋ",
+                        "&eѕʜɪꜰᴛ-ʟᴇꜰᴛ &7ᴛᴏ ᴄᴏʟʟᴇᴄᴛ ᴀʟʟ ᴏꜰ ᴛʜɪѕ ʟᴏᴏᴛ"
                 )));
                 display.setItemMeta(meta);
             }
@@ -77,26 +77,26 @@ public class SpawnerStorageMenu extends BaseMenu {
 
         int lastRow = inventory.getSize() - 9;
         set(lastRow, safePage > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page", List.of("&7Go to page &f" + (safePage - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 2, ItemUtils.createItem(Material.HOPPER, "&aCollect All", List.of("&7Move all stored loot to your inventory.")));
-        set(lastRow + 3, ItemUtils.createItem(Material.DISPENSER, "&6Drop Loot", List.of("&7Drop all stored loot on the ground.")));
+        set(lastRow + 2, ItemUtils.createItem(Material.HOPPER, "&aᴄᴏʟʟᴇᴄᴛ ᴀʟʟ", List.of("&7ᴍᴏᴠᴇ ᴀʟʟ ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ ᴛᴏ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ.")));
+        set(lastRow + 3, ItemUtils.createItem(Material.DISPENSER, "&6ᴅʀᴏᴘ ʟᴏᴏᴛ", List.of("&7ᴅʀᴏᴘ ᴀʟʟ ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ ᴏɴ ᴛʜᴇ ɢʀᴏᴜɴᴅ.")));
         set(lastRow + 4, ItemUtils.createItem(
                 Material.GOLD_INGOT,
-                "&eSell All",
-                List.of("&7Sell all sellable loot for "
+                "&eѕᴇʟʟ ᴀʟʟ",
+                List.of("&7ѕᴇʟʟ ᴀʟʟ ѕᴇʟʟᴀʙʟᴇ ʟᴏᴏᴛ ꜰᴏʀ "
                         + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
                         + ".")
         ));
-        set(lastRow + 5, ItemUtils.createItem(Material.SPAWNER, "&bSpawner Info", List.of(
-                "&7Type: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey()),
-                "&7Stack: &f" + NumberUtils.format(instance.getStackAmount()),
-                "&7Stored items: &f" + NumberUtils.format(instance.getTotalStoredItems())
+        set(lastRow + 5, ItemUtils.createItem(Material.SPAWNER, "&bѕᴘᴀᴡɴᴇʀ ɪɴꜰᴏ", List.of(
+                "&7ᴛʏᴘᴇ: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey()),
+                "&7ѕᴛᴀᴄᴋ: &f" + NumberUtils.format(instance.getStackAmount()),
+                "&7ѕᴛᴏʀᴇᴅ ɪᴛᴇᴍѕ: &f" + NumberUtils.format(instance.getTotalStoredItems())
         )));
         set(lastRow + 7, safePage < totalPages
-                ? ItemUtils.createItem(Material.ARROW, "&aNext Page", List.of("&7Go to page &f" + (safePage + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose", List.of("&7Close this menu.")));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ.")));
     }
 
     @Override

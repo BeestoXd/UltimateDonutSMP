@@ -22,24 +22,24 @@ public class RenameCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cOnly players can use this command."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
             return true;
         }
 
         if (!player.hasPermission(PERMISSION)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length == 0) {
-            player.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <name...|reset>"));
+            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <name...|reset>"));
             return true;
         }
 
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType().isAir()) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("RENAME.NO_ITEM", "&cYou must hold an item to rename it")
+                    plugin.getConfigManager().getMessageOrDefault("RENAME.NO_ITEM", "&cʏᴏᴜ ᴍᴜѕᴛ ʜᴏʟᴅ ᴀɴ ɪᴛᴇᴍ ᴛᴏ ʀᴇɴᴀᴍᴇ ɪᴛ")
             ));
             return true;
         }
@@ -47,7 +47,7 @@ public class RenameCommand implements CommandExecutor {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("RENAME.META_ERROR", "&cThis item cannot be renamed")
+                    plugin.getConfigManager().getMessageOrDefault("RENAME.META_ERROR", "&cᴛʜɪѕ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʀᴇɴᴀᴍᴇᴅ")
             ));
             return true;
         }
@@ -56,7 +56,7 @@ public class RenameCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "RENAME.STAFFMODE_BLOCKED",
-                            "&cYou cannot rename staff mode items."
+                            "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʀᴇɴᴀᴍᴇ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪᴛᴇᴍѕ."
                     ),
                     player
             ));
@@ -70,7 +70,7 @@ public class RenameCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "RENAME.RESET_SUCCESS",
-                            "&7Item name has been reset."
+                            "&7ɪᴛᴇᴍ ɴᴀᴍᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴇᴛ."
                     ),
                     player
             ));
@@ -80,7 +80,7 @@ public class RenameCommand implements CommandExecutor {
         meta.setDisplayName(ColorUtils.toComponent(newName, player));
         item.setItemMeta(meta);
         player.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("RENAME.SUCCESS", "&7New name: &f%name%", "%name%", newName),
+                plugin.getConfigManager().getMessageOrDefault("RENAME.SUCCESS", "&7ɴᴇᴡ ɴᴀᴍᴇ: &f%name%", "%name%", newName),
                 player
         ));
         return true;

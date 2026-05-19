@@ -927,7 +927,7 @@ public class ShopManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7Worth: &a{price_formatted}")
+                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a{price_formatted}")
         );
     }
 
@@ -942,7 +942,7 @@ public class ShopManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7Worth: &a{price_formatted}";
+            return "&7ᴡᴏʀᴛʜ: &a{price_formatted}";
         }
 
         return format;

@@ -22,7 +22,6 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
     private static final String PERMISSION = "ultimatedonutsmp.admin.amethysttool";
     private static final List<String> SUBCOMMAND_COMPLETIONS = List.of("give", "reload");
     private static final List<String> TYPE_COMPLETIONS = createTypeCompletions();
-    private static final List<String> DURATION_COMPLETIONS = List.of("600", "1200", "3600", "7200");
 
     private final UltimateDonutSmp plugin;
 
@@ -43,7 +42,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
         if (sub.equals("reload")) {
             if (!sender.hasPermission(PERMISSION)) {
-                sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
+                sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
                 return true;
             }
             plugin.getConfigManager().reloadAmethystTools();
@@ -53,7 +52,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
         if (sub.equals("give")) {
             if (!sender.hasPermission(PERMISSION)) {
-                sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
+                sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
                 return true;
             }
             if (args.length < 3) {
@@ -66,7 +65,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
             Player target = Bukkit.getPlayer(targetName);
             if (target == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cPlayer not found: " + targetName));
+                sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ: " + targetName));
                 return true;
             }
 
@@ -78,7 +77,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
             ItemStack item = mgr.createTool(type, target.getUniqueId(), duration);
             if (item == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cFailed to create item (check config)."));
+                sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ɪᴛᴇᴍ (ᴄʜᴇᴄᴋ ᴄᴏɴꜰɪɢ)."));
                 return true;
             }
 
@@ -110,10 +109,6 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
             return partialMatches(args[2], TYPE_COMPLETIONS);
-        }
-
-        if (args.length == 4 && args[0].equalsIgnoreCase("give")) {
-            return partialMatches(args[3], DURATION_COMPLETIONS);
         }
 
         return Collections.emptyList();

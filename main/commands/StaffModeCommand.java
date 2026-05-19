@@ -23,7 +23,7 @@ public class StaffModeCommand implements CommandExecutor {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!manager.canAdmin(sender)) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        manager.getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                        manager.getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
                 ));
                 return true;
             }
@@ -31,7 +31,7 @@ public class StaffModeCommand implements CommandExecutor {
             plugin.getConfigManager().reload();
             manager.reload();
             sender.sendMessage(ColorUtils.toComponent(
-                    manager.getMessage("RELOAD-SUCCESS", "&aStaff mode config reloaded.")
+                    manager.getMessage("RELOAD-SUCCESS", "&aѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.")
             ));
             return true;
         }
@@ -45,7 +45,7 @@ public class StaffModeCommand implements CommandExecutor {
                 sender.sendMessage(ColorUtils.toComponent(
                         manager.getStaffMessage(
                                 "NO_PERMISSION_OTHERS",
-                                "&c&lERROR &7>> &cYou don't have permission to manage other players' staff mode!"
+                                "&c&lᴇʀʀᴏʀ &7>> &cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ' ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!"
                         )
                 ));
                 return true;
@@ -53,7 +53,7 @@ public class StaffModeCommand implements CommandExecutor {
 
             Player target = plugin.getServer().getPlayerExact(args[0]);
             if (target == null || !target.isOnline()) {
-                sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
+                sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
                 return true;
             }
 
@@ -66,7 +66,7 @@ public class StaffModeCommand implements CommandExecutor {
                     : manager.enable(target, false);
             if (!result.success()) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        manager.getStaffMessage("TOGGLE_ERROR", "&c&lERROR &7>> &cFailed to toggle staff mode!")
+                        manager.getStaffMessage("TOGGLE_ERROR", "&c&lᴇʀʀᴏʀ &7>> &cꜰᴀɪʟᴇᴅ ᴛᴏ ᴛᴏɢɢʟᴇ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!")
                 ));
                 return true;
             }
@@ -77,7 +77,7 @@ public class StaffModeCommand implements CommandExecutor {
 
         if (!(sender instanceof Player player)) {
             sender.sendMessage(ColorUtils.toComponent(
-                    manager.getMessage("PLAYER-ONLY", "&cOnly players can use this command.")
+                    manager.getMessage("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.")
             ));
             return true;
         }
@@ -88,14 +88,14 @@ public class StaffModeCommand implements CommandExecutor {
     private boolean toggleSelf(Player player, StaffModeManager manager) {
         if (!manager.isInStaffMode(player.getUniqueId()) && !manager.isEnabled()) {
             player.sendMessage(ColorUtils.toComponent(
-                    manager.getMessage("FEATURE-DISABLED", "&cStaff mode is currently disabled.")
+                    manager.getMessage("FEATURE-DISABLED", "&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")
             ));
             return true;
         }
 
         if (!manager.canUse(player)) {
             player.sendMessage(ColorUtils.toComponent(
-                    manager.getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                    manager.getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
             ));
             return true;
         }

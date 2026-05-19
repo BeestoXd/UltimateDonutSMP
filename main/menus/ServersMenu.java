@@ -61,12 +61,12 @@ public class ServersMenu extends BaseMenu {
         SoundUtils.play(player, plugin.getConfigManager().getSound(CLICK_SOUND_PATH));
 
         if (!plugin.getNetworkStatusManager().isKnownServer(serverId)) {
-            player.sendMessage(ColorUtils.toComponent("&cThat server is not configured in network.yml."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕᴇʀᴠᴇʀ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ɪɴ ɴᴇᴛᴡᴏʀᴋ.ʏᴍʟ."));
             return;
         }
 
         player.sendMessage(ColorUtils.toComponent(
-                "&7Refreshing status for &f" + plugin.getNetworkStatusManager().resolveDisplayName(serverId) + "&7..."
+                "&7ʀᴇꜰʀᴇѕʜɪɴɢ ѕᴛᴀᴛᴜѕ ꜰᴏʀ &f" + plugin.getNetworkStatusManager().resolveDisplayName(serverId) + "&7..."
         ));
         plugin.getNetworkStatusManager().requestImmediateRefresh(serverId);
     }
@@ -83,7 +83,7 @@ public class ServersMenu extends BaseMenu {
 
         List<MenuEntry> entries = resolveMenuEntries();
         if (entries.isEmpty()) {
-            setFallbackItem("&cNo servers configured", "&7Configure SERVERS-MENU and network.yml first.");
+            setFallbackItem("&cɴᴏ ѕᴇʀᴠᴇʀѕ ᴄᴏɴꜰɪɢᴜʀᴇᴅ", "&7ᴄᴏɴꜰɪɢᴜʀᴇ ѕᴇʀᴠᴇʀѕ-ᴍᴇɴᴜ ᴀɴᴅ ɴᴇᴛᴡᴏʀᴋ.ʏᴍʟ ꜰɪʀѕᴛ.");
             return;
         }
 
@@ -91,7 +91,7 @@ public class ServersMenu extends BaseMenu {
         Set<Integer> usedSlots = new HashSet<>();
         for (MenuEntry entry : entries) {
             if (!usedSlots.add(entry.slot())) {
-                plugin.getLogger().warning("Skipping duplicate Servers Menu slot " + entry.slot()
+                plugin.getLogger().warning("ѕᴋɪᴘᴘɪɴɢ ᴅᴜᴘʟɪᴄᴀᴛᴇ ѕᴇʀᴠᴇʀѕ ᴍᴇɴᴜ ѕʟᴏᴛ " + entry.slot()
                         + " for server " + entry.serverId() + ".");
                 continue;
             }
@@ -103,7 +103,7 @@ public class ServersMenu extends BaseMenu {
         }
 
         if (rendered == 0) {
-            setFallbackItem("&cNo usable server buttons", "&7Fix SERVERS-MENU.SERVERS first.");
+            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ѕᴇʀᴠᴇʀ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx SERVERS-MENU.SERVERS ꜰɪʀѕᴛ.");
         }
     }
 
@@ -171,14 +171,14 @@ public class ServersMenu extends BaseMenu {
             ConfigurationSection serverSection = serversSection.getConfigurationSection(serverId);
             if (serverSection == null) {
                 plugin.getLogger().warning("Skipping " + SERVERS_PATH + "." + serverId
-                        + " because it is not a section.");
+                        + " ʙᴇᴄᴀᴜѕᴇ ɪᴛ ɪѕ ɴᴏᴛ ᴀ ѕᴇᴄᴛɪᴏɴ.");
                 continue;
             }
 
             int slot = serverSection.getInt("SLOT", -1);
             if (slot < 0 || slot >= inventory.getSize()) {
                 plugin.getLogger().warning("Skipping " + serverSection.getCurrentPath()
-                        + " because slot " + slot + " is outside menu size " + inventory.getSize() + ".");
+                        + " because slot " + slot + " ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴍᴇɴᴜ ѕɪᴢᴇ " + inventory.getSize() + ".");
                 continue;
             }
 
@@ -212,7 +212,7 @@ public class ServersMenu extends BaseMenu {
     private String applyPlaceholders(String template, ServerStatusSnapshot snapshot) {
         return template
                 .replace("%server%", snapshot.displayName())
-                .replace("%status%", snapshot.online() ? "&aOnline" : "&cOffline")
+                .replace("%status%", snapshot.online() ? "&aᴏɴʟɪɴᴇ" : "&cᴏꜰꜰʟɪɴᴇ")
                 .replace("%players%", String.valueOf(snapshot.playerCount()))
                 .replace("%software%", snapshot.softwareLabel())
                 .replace("%performance%", snapshot.performanceLabel())
@@ -252,8 +252,8 @@ public class ServersMenu extends BaseMenu {
             return material;
         }
 
-        plugin.getLogger().warning("Invalid " + TEMPLATE_PATH + ".MATERIALS." + key
-                + " value '" + raw + "'. Falling back to " + fallback + ".");
+        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + TEMPLATE_PATH + ".MATERIALS." + key
+                + " value '" + raw + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ " + fallback + ".");
         return fallback;
     }
 
@@ -270,10 +270,10 @@ public class ServersMenu extends BaseMenu {
 
         return List.of(
                 "&8&m---------------------",
-                "&bStatus: %status%",
-                "&aPlayers: &a%players% online",
-                "&eSoftware: &a%software%",
-                "&6Performance: %performance%",
+                "&bѕᴛᴀᴛᴜѕ: %status%",
+                "&aᴘʟᴀʏᴇʀѕ: &a%players% ᴏɴʟɪɴᴇ",
+                "&eѕᴏꜰᴛᴡᴀʀᴇ: &a%software%",
+                "&6ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ: %performance%",
                 "&8&m---------------------"
         );
     }
@@ -284,7 +284,7 @@ public class ServersMenu extends BaseMenu {
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
         return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE",
-                plugin.getConfigManager().getMenus().getString(TEMPLATE_PATH + ".TITLE", "&8Ongoing Servers"));
+                plugin.getConfigManager().getMenus().getString(TEMPLATE_PATH + ".TITLE", "&8ᴏɴɢᴏɪɴɢ ѕᴇʀᴠᴇʀѕ"));
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {
@@ -293,8 +293,8 @@ public class ServersMenu extends BaseMenu {
             return rawSize;
         }
 
-        plugin.getLogger().warning("Invalid " + MENU_PATH + ".SIZE value '" + rawSize
-                + "'. Falling back to 27.");
+        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + MENU_PATH + ".SIZE value '" + rawSize
+                + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ 27.");
         return 27;
     }
 

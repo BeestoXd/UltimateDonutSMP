@@ -1454,7 +1454,7 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load teams", e);
         }
-        // Load members
+        // load members
         for (Team team : teams) {
             loadTeamMembers(team);
         }
@@ -1509,7 +1509,7 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save team " + team.getName(), e);
         }
-        // Save members
+        // save members
         saveTeamMembers(team);
     }
 

@@ -1,9 +1,9 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.utils.AttributeUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,26 +25,26 @@ public class HealCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player && !player.hasPermission(PERMISSION)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " [player]"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [player]"));
             return true;
         }
 
         Player target;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
+                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
                 return true;
             }
             target = player;
         } else {
             target = findOnlinePlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
+                sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
                 return true;
             }
         }
@@ -52,23 +52,23 @@ public class HealCommand implements CommandExecutor {
         heal(target);
         if (sender instanceof Player player && player.getUniqueId().equals(target.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("HEAL.SELF", "&aYour health has been restored!")
+                    plugin.getConfigManager().getMessageOrDefault("HEAL.SELF", "&aʏᴏᴜʀ ʜᴇᴀʟᴛʜ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴛᴏʀᴇᴅ!")
             ));
             return true;
         }
 
         String senderName = sender instanceof Player player ? player.getName() : sender.getName();
         sender.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("HEAL.OTHER", "&7You healed &d%player%", "%player%", target.getName())
+                plugin.getConfigManager().getMessageOrDefault("HEAL.OTHER", "&7ʏᴏᴜ ʜᴇᴀʟᴇᴅ &d%player%", "%player%", target.getName())
         ));
         target.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("HEAL.NOTIFY", "&d%sender% &7restored your health", "%sender%", senderName)
+                plugin.getConfigManager().getMessageOrDefault("HEAL.NOTIFY", "&d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴇᴀʟᴛʜ", "%sender%", senderName)
         ));
         return true;
     }
 
     private void heal(Player target) {
-        AttributeInstance maxHealth = AttributeUtils.getMaxHealthAttribute(target);
+        AttributeInstance maxHealth = target.getAttribute(Attribute.MAX_HEALTH);
         target.setHealth(maxHealth == null ? 20D : maxHealth.getValue());
         target.setFireTicks(0);
         target.setFallDistance(0F);

@@ -98,7 +98,7 @@ public class TeleportManager {
                     if (throwable != null || !Boolean.TRUE.equals(success)) {
                         String failed = plugin.getConfigManager().getMessageOrDefault(
                                 "TELEPORT.FAILED",
-                                "&cTeleport failed. Please try again."
+                                "&cᴛᴇʟᴇᴘᴏʀᴛ ꜰᴀɪʟᴇᴅ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ."
                         );
                         player.sendMessage(ColorUtils.toComponent(failed));
                         return;

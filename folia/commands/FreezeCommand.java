@@ -24,7 +24,7 @@ public class FreezeCommand implements CommandExecutor {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!freezeManager.canAdmin(sender)) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        freezeManager.getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                        freezeManager.getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
                 ));
                 return true;
             }
@@ -32,27 +32,27 @@ public class FreezeCommand implements CommandExecutor {
             plugin.getConfigManager().reloadFreeze();
             freezeManager.reload();
             sender.sendMessage(ColorUtils.toComponent(
-                    freezeManager.getMessage("RELOAD-SUCCESS", "&aFreeze config reloaded.")
+                    freezeManager.getMessage("RELOAD-SUCCESS", "&aꜰʀᴇᴇᴢᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.")
             ));
             return true;
         }
 
         if (!freezeManager.isEnabled()) {
             sender.sendMessage(ColorUtils.toComponent(
-                    freezeManager.getMessage("FEATURE-DISABLED", "&cThe Freeze system is disabled.")
+                    freezeManager.getMessage("FEATURE-DISABLED", "&cᴛʜᴇ ꜰʀᴇᴇᴢᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")
             ));
             return true;
         }
 
         if (!freezeManager.canUse(sender)) {
             sender.sendMessage(ColorUtils.toComponent(
-                    freezeManager.getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                    freezeManager.getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
             ));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
             return true;
         }
 
@@ -68,14 +68,14 @@ public class FreezeCommand implements CommandExecutor {
 
             if (freezeManager.isSelfTarget(sender, target)) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        freezeManager.getMessage("SELF-TARGET", "&cYou cannot freeze yourself.")
+                        freezeManager.getMessage("SELF-TARGET", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ʏᴏᴜʀѕᴇʟꜰ.")
                 ));
                 return true;
             }
 
             if (!freezeManager.canFreeze(sender, target)) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        freezeManager.getMessage("TARGET-EXEMPT", "&cYou cannot freeze that player.")
+                        freezeManager.getMessage("TARGET-EXEMPT", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ.")
                 ));
                 return true;
             }
@@ -98,8 +98,8 @@ public class FreezeCommand implements CommandExecutor {
 
         String path = freezeManager.hasKnownPlayer(args[0]) ? "TARGET-OFFLINE" : "PLAYER-NOT-FOUND";
         String fallback = freezeManager.hasKnownPlayer(args[0])
-                ? "&cThat player must be online."
-                : "&cPlayer not found.";
+                ? "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ."
+                : "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.";
         sender.sendMessage(ColorUtils.toComponent(freezeManager.getMessage(path, fallback)));
         return true;
     }

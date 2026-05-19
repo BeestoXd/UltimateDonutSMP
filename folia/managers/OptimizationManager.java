@@ -18,9 +18,9 @@ import java.util.logging.Level;
 public class OptimizationManager {
 
     public enum LoadState {
-        NORMAL(0, "&aNormal"),
-        WARN(1, "&eWarning"),
-        CRITICAL(2, "&cCritical");
+        NORMAL(0, "&aɴᴏʀᴍᴀʟ"),
+        WARN(1, "&eᴡᴀʀɴɪɴɢ"),
+        CRITICAL(2, "&cᴄʀɪᴛɪᴄᴀʟ");
 
         private final int severity;
         private final String display;
@@ -114,8 +114,7 @@ public class OptimizationManager {
 
     public synchronized void reload() {
         FileConfiguration config = plugin.getConfigManager().getConfig();
-        enabled = plugin.getFeatureManager().isEnabled(FeatureManager.Feature.OPTIMIZATION)
-                && config.getBoolean(CONFIG_PATH + ".ENABLED", true);
+        enabled = config.getBoolean(CONFIG_PATH + ".ENABLED", true);
         logStateChanges = config.getBoolean(CONFIG_PATH + ".LOG-STATE-CHANGES", true);
         monitorIntervalTicks = Math.max(20L, config.getLong(CONFIG_PATH + ".MONITOR-INTERVAL-TICKS", 100L));
         warnTps = config.getDouble(CONFIG_PATH + ".TPS-WARN-THRESHOLD", 18.5D);
@@ -174,7 +173,7 @@ public class OptimizationManager {
     }
 
     public synchronized boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.OPTIMIZATION) && enabled;
+        return enabled;
     }
 
     public synchronized LoadState getLoadState() {
@@ -207,11 +206,11 @@ public class OptimizationManager {
 
     public long getUsedMemoryMb() {
         Runtime runtime = Runtime.getRuntime();
-        return (runtime.totalMemory() - runtime.freeMemory()) / (1024L * 1024L);
+        return (runtime.totalMemory() - runtime.freeMemory()) / (1024l * 1024L);
     }
 
     public long getMaxMemoryMb() {
-        return Runtime.getRuntime().maxMemory() / (1024L * 1024L);
+        return Runtime.getRuntime().maxMemory() / (1024l * 1024L);
     }
 
     public String formatMetric(double value) {
@@ -333,7 +332,7 @@ public class OptimizationManager {
                 samples++;
             }
             if (samples > 0) {
-                return (total / (double) samples) / 1_000_000.0D;
+                return (total / (double) samples) / 1_000_000.0d;
             }
         }
 

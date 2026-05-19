@@ -6,6 +6,7 @@ import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import net.kyori.adventure.text.Component;
@@ -393,12 +394,9 @@ public class ShopManager {
         }
 
         if (item.giveItem()) {
-            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
             ItemStack stack = createPurchasedItem(item, preview.quantity());
             player.getInventory().addItem(stack).values().forEach(left ->
                     player.getWorld().dropItemNaturally(player.getLocation(), left));
-            plugin.getWorthManager().syncWorthDisplay(player);
-            player.updateInventory();
         }
 
         return preview;
@@ -486,7 +484,7 @@ public class ShopManager {
         for (ItemStack current : storage) {
             if (current == null || current.getType().isAir()) {
                 remaining -= simulated.getMaxStackSize();
-            } else if (canStack(plugin.getWorthManager().stripWorthDisplay(current), singleItem)) {
+            } else if (canStack(current, singleItem)) {
                 remaining -= Math.max(0, current.getMaxStackSize() - current.getAmount());
             }
 
@@ -539,8 +537,8 @@ public class ShopManager {
                     double worth = getWorth(item.material());
                     if (worth > item.pricePerUnit()) {
                         plugin.getLogger().warning("Potential shop arbitrage detected for " + item.material().name()
-                                + " in " + category.menuSection() + ": buy " + plugin.getCurrencyManager().formatMoney(item.pricePerUnit())
-                                + " but worth " + plugin.getCurrencyManager().formatMoney(worth) + ".");
+                                + " in " + category.menuSection() + ": buy $" + NumberUtils.format(item.pricePerUnit())
+                                + " but worth $" + NumberUtils.format(worth) + ".");
                     }
                 }
             }
@@ -902,13 +900,28 @@ public class ShopManager {
                 continue;
             }
 
-            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
-            if (payout <= 0) {
+            double unitWorth = getWorth(item);
+            if (unitWorth < 0) {
                 continue;
             }
 
+            SellCategory category = getSellCategory(item);
+            if (category == null) {
+                continue;
+            }
+
+            double baseTotal = unitWorth * item.getAmount();
+            double payout = baseTotal * getCurrentSellMultiplier(progress, category);
             totalPayout += payout;
+            earnedByCategory.merge(category, baseTotal, Double::sum);
             soldSlots.add(slot);
+
+            plugin.getDatabaseManager().addSellHistory(
+                    player.getUniqueId(),
+                    item.getType().name(),
+                    item.getAmount(),
+                    payout
+            );
         }
 
         if (totalPayout <= 0) {
@@ -936,7 +949,7 @@ public class ShopManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7Worth: &a{price_formatted}")
+                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a$%price%")
         );
     }
 
@@ -951,7 +964,17 @@ public class ShopManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7Worth: &a{price_formatted}";
+            return "&7ᴡᴏʀᴛʜ: &a$%price%";
+        }
+        if (format.contains("$")) {
+            return format;
+        }
+
+        for (String placeholder : List.of("%price%", "${price}", "{price}")) {
+            int index = format.indexOf(placeholder);
+            if (index >= 0) {
+                return format.substring(0, index) + "$" + format.substring(index);
+            }
         }
 
         return format;
@@ -960,8 +983,6 @@ public class ShopManager {
     private Pattern buildWorthLorePattern() {
         String format = stripColorCodes(getWorthLoreFormat());
         List<String> placeholders = List.of(
-                "%unit_price_formatted%", "${unit_price_formatted}", "{unit_price_formatted}",
-                "%price_formatted%", "${price_formatted}", "{price_formatted}",
                 "%unit_price%", "${unit_price}", "{unit_price}",
                 "%price%", "${price}", "{price}",
                 "%amount%", "${amount}", "{amount}",
@@ -1033,12 +1054,27 @@ public class ShopManager {
                 continue;
             }
 
-            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
-            if (payout <= 0) {
+            double unitWorth = getWorth(item);
+            if (unitWorth < 0) {
                 continue;
             }
 
+            SellCategory category = getSellCategory(item);
+            if (category == null) {
+                continue;
+            }
+
+            double baseTotal = unitWorth * item.getAmount();
+            double payout = baseTotal * getCurrentSellMultiplier(progress, category);
             totalPayout += payout;
+            earnedByCategory.merge(category, baseTotal, Double::sum);
+
+            plugin.getDatabaseManager().addSellHistory(
+                    player.getUniqueId(),
+                    item.getType().name(),
+                    item.getAmount(),
+                    payout
+            );
             toRemove.add(i);
         }
 
@@ -1054,37 +1090,6 @@ public class ShopManager {
             finishSale(player, progress, earnedByCategory, totalPayout);
         }
 
-        return totalPayout;
-    }
-
-    private double processSellWorthEntries(
-            Player player,
-            ItemStack item,
-            Map<SellCategory, Double> progress,
-            Map<SellCategory, Double> earnedByCategory
-    ) {
-        List<WorthManager.SellWorthEntry> entries = plugin.getWorthManager().resolveSellWorthEntries(item);
-        if (entries.isEmpty()) {
-            return 0;
-        }
-
-        double totalPayout = 0;
-        for (WorthManager.SellWorthEntry entry : entries) {
-            double payout = entry.totalWorth() * getCurrentSellMultiplier(progress, entry.category());
-            if (payout <= 0) {
-                continue;
-            }
-
-            totalPayout += payout;
-            earnedByCategory.merge(entry.category(), entry.totalWorth(), Double::sum);
-
-            plugin.getDatabaseManager().addSellHistory(
-                    player.getUniqueId(),
-                    entry.material().name(),
-                    entry.amount(),
-                    payout
-            );
-        }
         return totalPayout;
     }
 
@@ -1128,11 +1133,8 @@ public class ShopManager {
 
     private void sendSellFeedback(Player player, double totalPayout) {
         String sellMsg = plugin.getConfigManager().getConfig()
-                .getString("SETTINGS.SELL-MESSAGE", "&a+{price_formatted}")
-                .replace("%price%", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
-                .replace("%price_formatted%", plugin.getCurrencyManager().formatMoney(totalPayout))
-                .replace("{price}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
-                .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(totalPayout));
+                .getString("SETTINGS.SELL-MESSAGE", "&a+$%price%")
+                .replace("%price%", NumberUtils.formatNice(totalPayout));
         PlayerSettingUtils.sendActionBar(plugin, player, sellMsg);
     }
 

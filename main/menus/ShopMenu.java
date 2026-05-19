@@ -41,8 +41,8 @@ public class ShopMenu extends BaseMenu {
         super(
                 plugin,
                 menuSection == null
-                        ? plugin.getConfigManager().getShop().getString("CATEGORIES.MENU-TITLE", "&8Shop")
-                        : plugin.getConfigManager().getShop().getString(menuSection + ".TITLE", "&8Shop"),
+                        ? plugin.getConfigManager().getShop().getString("CATEGORIES.MENU-TITLE", "&8ѕʜᴏᴘ")
+                        : plugin.getConfigManager().getShop().getString(menuSection + ".TITLE", "&8ѕʜᴏᴘ"),
                 normalizeSize(menuSection == null
                         ? plugin.getConfigManager().getShop().getInt("CATEGORIES.MENU-SIZE", 27)
                         : plugin.getConfigManager().getShop().getInt(menuSection + ".SIZE", 27))
@@ -136,8 +136,8 @@ public class ShopMenu extends BaseMenu {
         if (categories.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo shop categories",
-                    List.of("&7Belum ada kategori shop yang aktif.")
+                    "&cɴᴏ ѕʜᴏᴘ ᴄᴀᴛᴇɢᴏʀɪᴇѕ",
+                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ᴋᴀᴛᴇɢᴏʀɪ ѕʜᴏᴘ ʏᴀɴɢ ᴀᴋᴛɪꜰ.")
             ));
         }
     }
@@ -149,8 +149,8 @@ public class ShopMenu extends BaseMenu {
         if (items.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo items in this category",
-                    List.of("&7Belum ada item shop yang aktif di kategori ini.")
+                    "&cɴᴏ ɪᴛᴇᴍѕ ɪɴ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ",
+                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ɪᴛᴇᴍ ѕʜᴏᴘ ʏᴀɴɢ ᴀᴋᴛɪꜰ ᴅɪ ᴋᴀᴛᴇɢᴏʀɪ ɪɴɪ.")
             ));
             return;
         }
@@ -201,8 +201,8 @@ public class ShopMenu extends BaseMenu {
                 : com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY;
         String currencyLabel = plugin.getCurrencyManager().color(currencyType)
                 + plugin.getCurrencyManager().plural(currencyType);
-        lore.add("&7Currency: " + currencyLabel);
-        lore.add("&eClick to choose quantity");
+        lore.add("&7ᴄᴜʀʀᴇɴᴄʏ: " + currencyLabel);
+        lore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴏᴏѕᴇ ǫᴜᴀɴᴛɪᴛʏ");
 
         return ItemUtils.createItem(
                 item.material(),
@@ -228,7 +228,7 @@ public class ShopMenu extends BaseMenu {
                 .replace("{price}", rawPrice)
                 .replace("%price%", rawPrice);
 
-        if (line.toLowerCase(Locale.US).contains("buy price:") && !line.contains("{price")) {
+        if (line.toLowerCase(Locale.US).contains("ʙᴜʏ ᴘʀɪᴄᴇ:") && !line.contains("{price")) {
             int colonIndex = line.indexOf(':');
             if (colonIndex >= 0) {
                 return line.substring(0, colonIndex + 1) + " " + formattedPrice;
@@ -246,7 +246,7 @@ public class ShopMenu extends BaseMenu {
 
         set(getBackSlot(), ItemUtils.createItem(
                 ItemUtils.parseMaterial(backButton.getString("MATERIAL", "RED_STAINED_GLASS_PANE")),
-                backButton.getString("DISPLAY-NAME", "&cBack"),
+                backButton.getString("DISPLAY-NAME", "&cʙᴀᴄᴋ"),
                 backButton.getStringList("LORE")
         ));
     }
@@ -258,31 +258,31 @@ public class ShopMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(getFirstPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aFirst Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aꜰɪʀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.FIRST-PAGE-LORE")
             ));
             set(getPreviousPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aBack"),
+                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aʙᴀᴄᴋ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(getPageInfoSlot(), ItemUtils.createItem(
                 Material.BOOK,
-                "&ePage " + (page + 1) + "&7/&e" + totalPages,
-                List.of("&fItems: &7" + totalItems)
+                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
+                List.of("&fɪᴛᴇᴍѕ: &7" + totalItems)
         ));
 
         if (hasNextPage) {
             set(getNextPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
+                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
             set(getLastPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aLast Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aʟᴀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.LAST-PAGE-LORE")
             ));
         }

@@ -67,7 +67,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             randomAreaCount++;
             List<String> lore = replaceAreaPlaceholders(area.lore(), area);
             if (canDeleteArea(player, area)) {
-                lore.add("&cRight-click to delete");
+                lore.add("&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ");
             }
 
             set(area.slot(), ItemUtils.createItem(
@@ -82,8 +82,8 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             unsetBarrierSlot = inventory.getSize() / 2;
             set(unsetBarrierSlot, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cLocation not set",
-                    List.of("&7Set this " + getLocationLabel() + " location first.")
+                    "&cʟᴏᴄᴀᴛɪᴏɴ ɴᴏᴛ ѕᴇᴛ",
+                    List.of("&7ѕᴇᴛ ᴛʜɪѕ " + getLocationLabel() + " ʟᴏᴄᴀᴛɪᴏɴ ꜰɪʀѕᴛ.")
             ));
             return;
         }
@@ -99,7 +99,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             SpawnManager.TeleportArea randomArea = plugin.getSpawnManager().getRandomArea(getAreaType());
             if (randomArea == null) {
-                player.sendMessage(ColorUtils.toComponent("&cNo valid area is available right now."));
+                player.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴠᴀʟɪᴅ ᴀʀᴇᴀ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ."));
                 return;
             }
             queueTeleport(player, randomArea);
@@ -108,7 +108,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
 
         if (slot == unsetBarrierSlot) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            player.sendMessage(ColorUtils.toComponent("&cThis " + getLocationLabel() + " location is not set."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ " + getLocationLabel() + " ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
             return;
         }
 
@@ -129,8 +129,8 @@ public abstract class TeleportAreaMenu extends BaseMenu {
     private void deleteArea(Player player, SpawnManager.TeleportArea area) {
         SpawnManager.AreaDeleteResult result = plugin.getSpawnManager().deleteMenuArea(area);
         if (!result.success()) {
-            player.sendMessage(ColorUtils.toComponent("&cCould not delete this " + getLocationLabel()
-                    + " area: &f" + result.message()));
+            player.sendMessage(ColorUtils.toComponent("&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ " + getLocationLabel()
+                    + " ᴀʀᴇᴀ: &f" + result.message()));
             return;
         }
 
@@ -150,7 +150,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
 
         set(slot, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus.getString(path + ".MATERIAL", "COMPASS")),
-                replaceGlobalPlaceholders(menus.getString(path + ".DISPLAY-NAME", "&fRandom"), areaCount),
+                replaceGlobalPlaceholders(menus.getString(path + ".DISPLAY-NAME", "&fʀᴀɴᴅᴏᴍ"), areaCount),
                 replaceGlobalPlaceholders(menus.getStringList(path + ".LORE"), areaCount)
         ));
     }
@@ -158,7 +158,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
     private void queueTeleport(Player player, SpawnManager.TeleportArea area) {
         Location destination = plugin.getSpawnManager().resolveDestination(area);
         if (destination == null) {
-            player.sendMessage(ColorUtils.toComponent("&cThis " + getLocationLabel() + " location is not set."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ " + getLocationLabel() + " ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
             return;
         }
 
@@ -167,7 +167,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
     }
 
     private String getLocationLabel() {
-        return getAreaType() == SpawnManager.AreaType.AFK ? "AFK" : "spawn";
+        return getAreaType() == SpawnManager.AreaType.AFK ? "ᴀꜰᴋ" : "ѕᴘᴀᴡɴ";
     }
 
     private boolean canDeleteArea(Player player, SpawnManager.TeleportArea area) {

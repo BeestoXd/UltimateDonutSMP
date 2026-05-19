@@ -211,7 +211,7 @@ public class FfaListener implements Listener {
         }
 
         event.setCancelled(true);
-        event.getPlayer().sendMessage(ColorUtils.toComponent("&cYou cannot use that command during FFA."));
+        event.getPlayer().sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴛʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ᴅᴜʀɪɴɢ ꜰꜰᴀ."));
     }
 
     @EventHandler

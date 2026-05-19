@@ -75,7 +75,7 @@ public class BountyManager {
 
     public String getDisplayName(UUID playerUuid) {
         if (playerUuid == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         Player online = Bukkit.getPlayer(playerUuid);
@@ -93,7 +93,7 @@ public class BountyManager {
             return storedName;
         }
 
-        return "Unknown";
+        return "ᴜɴᴋɴᴏᴡɴ";
     }
 
     public PlacementResult placeBounty(Player placer, UUID targetUuid, double amount) {
@@ -140,8 +140,7 @@ public class BountyManager {
         if (targetData == null || targetData.isBountyAlertsEnabled()) {
             String msg = plugin.getConfigManager().getMessage("BOUNTY.ALERT",
                     "{who}", placer.getName(),
-                    "{price}", NumberUtils.format(amount),
-                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(amount));
+                    "{price}", NumberUtils.format(amount));
             target.sendMessage(ColorUtils.toComponent(msg));
         }
     }
@@ -150,15 +149,14 @@ public class BountyManager {
         String messageKey = result == PlacementResult.NEW ? "BOUNTY.NEW" : "BOUNTY.INCREASED";
         String message = plugin.getConfigManager().getMessage(messageKey,
                 "{player}", getDisplayName(targetUuid),
-                "{price}", NumberUtils.format(amount),
-                "{price_formatted}", plugin.getCurrencyManager().formatMoney(amount));
+                "{price}", NumberUtils.format(amount));
 
-        plugin.getFoliaScheduler().forEachOnlinePlayer(online -> {
+        for (Player online : Bukkit.getOnlinePlayers()) {
             PlayerData data = plugin.getPlayerDataManager().get(online);
             if (data == null || data.isBountyAlertsEnabled()) {
                 online.sendMessage(ColorUtils.toComponent(message));
             }
-        });
+        }
     }
 
     public double claimBounty(Player killer, UUID targetUuid) {

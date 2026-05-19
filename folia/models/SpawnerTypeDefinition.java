@@ -37,7 +37,7 @@ public record SpawnerTypeDefinition(
         }
 
         public double averageDropAmount() {
-            return (min + max) / 2.0D;
+            return (min + max) / 2.0d;
         }
     }
 }

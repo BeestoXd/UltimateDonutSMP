@@ -192,11 +192,11 @@ public class StaffModeManager {
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("MESSAGES." + path, fallback);
+        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
     }
 
     public String getStaffMessage(String path, String fallback) {
-        return plugin.getConfigManager().getMessages().getString("STAFF." + path, fallback);
+        return plugin.getConfigManager().getMessages().getString("ѕᴛᴀꜰꜰ." + path, fallback);
     }
 
     public String getRandomTeleportMessage(String path, String fallback) {
@@ -213,7 +213,7 @@ public class StaffModeManager {
 
     public StaffModeToggleResult toggle(Player player) {
         if (player == null) {
-            return new StaffModeToggleResult(false, false, getMessage("PLAYER-ONLY", "&cOnly players can use this command."));
+            return new StaffModeToggleResult(false, false, getMessage("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
         }
 
         if (isInStaffMode(player.getUniqueId())) {
@@ -229,22 +229,22 @@ public class StaffModeManager {
 
     public StaffModeToggleResult enable(Player player, boolean sendMessages) {
         if (player == null) {
-            return new StaffModeToggleResult(false, false, getMessage("PLAYER-ONLY", "&cOnly players can use this command."));
+            return new StaffModeToggleResult(false, false, getMessage("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
         }
         if (!isEnabled()) {
-            return new StaffModeToggleResult(false, false, getMessage("FEATURE-DISABLED", "&cStaff mode is currently disabled."));
+            return new StaffModeToggleResult(false, false, getMessage("FEATURE-DISABLED", "&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
         }
         if (!canUse(player)) {
-            return new StaffModeToggleResult(false, false, getMessage("NO-PERMISSION", "&cYou do not have permission."));
+            return new StaffModeToggleResult(false, false, getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
         }
         if (isInStaffMode(player.getUniqueId())) {
-            return new StaffModeToggleResult(true, true, getMessage("ENABLED", "&aStaff mode enabled."));
+            return new StaffModeToggleResult(true, true, getMessage("ENABLED", "&aѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ."));
         }
 
         player.closeInventory();
         StaffInventorySnapshot snapshot = captureSnapshot(player);
         if (!plugin.getDatabaseManager().saveStaffModeSnapshot(player.getUniqueId(), snapshot)) {
-            return new StaffModeToggleResult(false, false, getMessage("RESTORE-FAILED", "&cStaff mode restore failed. Contact an admin."));
+            return new StaffModeToggleResult(false, false, getMessage("RESTORE-FAILED", "&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʀᴇѕᴛᴏʀᴇ ꜰᴀɪʟᴇᴅ. ᴄᴏɴᴛᴀᴄᴛ ᴀɴ ᴀᴅᴍɪɴ."));
         }
 
         StaffModeState state = new StaffModeState(
@@ -287,12 +287,12 @@ public class StaffModeManager {
 
     public StaffModeToggleResult disable(Player player, boolean sendMessages) {
         if (player == null) {
-            return new StaffModeToggleResult(false, false, getMessage("PLAYER-ONLY", "&cOnly players can use this command."));
+            return new StaffModeToggleResult(false, false, getMessage("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
         }
 
         boolean restored = disableSilently(player, true);
         if (!restored) {
-            return new StaffModeToggleResult(false, false, getMessage("RESTORE-FAILED", "&cStaff mode restore failed. Contact an admin."));
+            return new StaffModeToggleResult(false, false, getMessage("RESTORE-FAILED", "&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʀᴇѕᴛᴏʀᴇ ꜰᴀɪʟᴇᴅ. ᴄᴏɴᴛᴀᴄᴛ ᴀɴ ᴀᴅᴍɪɴ."));
         }
 
         if (sendMessages) {
@@ -334,8 +334,8 @@ public class StaffModeManager {
             activeStates.put(player.getUniqueId(), updated);
             plugin.getDatabaseManager().saveStaffModeState(updated);
             refreshTool(player, StaffToolType.BETTER_VIEW);
-            player.sendMessage(ColorUtils.toComponent(getMessage("BETTER-VIEW-ON", "&aBetter View enabled."), player));
-            PlayerSettingUtils.sendActionBar(plugin, player, getMessage("BETTER-VIEW-ON", "&aBetter View enabled."));
+            player.sendMessage(ColorUtils.toComponent(getMessage("BETTER-VIEW-ON", "&aʙᴇᴛᴛᴇʀ ᴠɪᴇᴡ ᴇɴᴀʙʟᴇᴅ."), player));
+            PlayerSettingUtils.sendActionBar(plugin, player, getMessage("BETTER-VIEW-ON", "&aʙᴇᴛᴛᴇʀ ᴠɪᴇᴡ ᴇɴᴀʙʟᴇᴅ."));
             return true;
         }
 
@@ -344,8 +344,8 @@ public class StaffModeManager {
         activeStates.put(player.getUniqueId(), updated);
         plugin.getDatabaseManager().saveStaffModeState(updated);
         refreshTool(player, StaffToolType.BETTER_VIEW);
-        player.sendMessage(ColorUtils.toComponent(getMessage("BETTER-VIEW-OFF", "&cBetter View disabled."), player));
-        PlayerSettingUtils.sendActionBar(plugin, player, getMessage("BETTER-VIEW-OFF", "&cBetter View disabled."));
+        player.sendMessage(ColorUtils.toComponent(getMessage("BETTER-VIEW-OFF", "&cʙᴇᴛᴛᴇʀ ᴠɪᴇᴡ ᴅɪѕᴀʙʟᴇᴅ."), player));
+        PlayerSettingUtils.sendActionBar(plugin, player, getMessage("BETTER-VIEW-OFF", "&cʙᴇᴛᴛᴇʀ ᴠɪᴇᴡ ᴅɪѕᴀʙʟᴇᴅ."));
         return true;
     }
 
@@ -358,7 +358,7 @@ public class StaffModeManager {
         StaffModeSession session = runtimeSessions.computeIfAbsent(viewer.getUniqueId(), StaffModeSession::new);
         session.setLastRandomTeleportTarget(target.getUniqueId());
         String message = formatLegacyMessage(
-                getRandomTeleportMessage("SUCCESS", "&8[&dRTP&8] &7You were teleported to &e%player%"),
+                getRandomTeleportMessage("SUCCESS", "&8[&dʀᴛᴘ&8] &7ʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &e%player%"),
                 target.getName(),
                 null,
                 null,
@@ -380,7 +380,7 @@ public class StaffModeManager {
                 if (target.isOnline()) {
                     target.sendMessage(ColorUtils.toComponent(
                             formatLegacyMessage(
-                                    getRandomTeleportMessage("NOTIFY", "&8[&dRTP&8] &e%player% &7appeared near you!"),
+                                    getRandomTeleportMessage("NOTIFY", "&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!"),
                                     viewerName,
                                     null,
                                     null,
@@ -458,7 +458,7 @@ public class StaffModeManager {
             return;
         }
 
-        player.sendMessage(ColorUtils.toComponent(getMessage("TOOL-LOCKED", "&cYour staff tools are locked while Staff Mode is active."), player));
+        player.sendMessage(ColorUtils.toComponent(getMessage("TOOL-LOCKED", "&cʏᴏᴜʀ ѕᴛᴀꜰꜰ ᴛᴏᴏʟѕ ᴀʀᴇ ʟᴏᴄᴋᴇᴅ ᴡʜɪʟᴇ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪѕ ᴀᴄᴛɪᴠᴇ."), player));
     }
 
     public void handleJoin(Player player) {
@@ -482,10 +482,10 @@ public class StaffModeManager {
             if (disableSilently(player, true)) {
                 player.sendMessage(ColorUtils.toComponent(getMessage(
                         "RECOVERED-AFTER-RESTART",
-                        "&eStaff mode was disabled because the server restarted. Your inventory was restored."
+                        "&eѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴡᴀѕ ᴅɪѕᴀʙʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴛʜᴇ ѕᴇʀᴠᴇʀ ʀᴇѕᴛᴀʀᴛᴇᴅ. ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ᴡᴀѕ ʀᴇѕᴛᴏʀᴇᴅ."
                 ), player));
             } else {
-                player.sendMessage(ColorUtils.toComponent(getMessage("RESTORE-FAILED", "&cStaff mode restore failed. Contact an admin."), player));
+                player.sendMessage(ColorUtils.toComponent(getMessage("RESTORE-FAILED", "&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʀᴇѕᴛᴏʀᴇ ꜰᴀɪʟᴇᴅ. ᴄᴏɴᴛᴀᴄᴛ ᴀɴ ᴀᴅᴍɪɴ."), player));
             }
             refreshViewerVisibility(player);
             return;
@@ -572,17 +572,17 @@ public class StaffModeManager {
     }
 
     public String getLocalServerDisplayName() {
-        return plugin.getConfigManager().getNetwork().getString("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "Local");
+        return plugin.getConfigManager().getNetwork().getString("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "ʟᴏᴄᴀʟ");
     }
 
     public String getPlayerStatusSummary(Player player) {
         if (player == null) {
-            return "Offline";
+            return "ᴏꜰꜰʟɪɴᴇ";
         }
         if (plugin.getAFKManager().isAfk(player.getUniqueId())) {
-            return "Online (AFK)";
+            return "ᴏɴʟɪɴᴇ (ᴀꜰᴋ)";
         }
-        return "Online";
+        return "ᴏɴʟɪɴᴇ";
     }
 
     public int getMenuRefreshSlot(String menuKey) {
@@ -624,24 +624,24 @@ public class StaffModeManager {
     }
 
     public ItemStack createRefreshItem(String menuKey) {
-        return ItemUtils.createItem(Material.CLOCK, "&eRefresh", List.of("&7Click to refresh this view."));
+        return ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ ᴛʜɪѕ ᴠɪᴇᴡ."));
     }
 
     public ItemStack createMenuEmptyItem(String menuKey) {
         ConfigurationSection section = menuSection(menuKey);
         return ItemUtils.createItem(
                 parseMaterial(section.getString("EMPTY-MATERIAL", "BARRIER"), Material.BARRIER),
-                section.getString("EMPTY-NAME", "&cNothing here"),
+                section.getString("EMPTY-NAME", "&cɴᴏᴛʜɪɴɢ ʜᴇʀᴇ"),
                 section.getStringList("EMPTY-LORE")
         );
     }
 
     public String localizeState(boolean active) {
-        return getStaffMessage(active ? "STATE_ACTIVE" : "STATE_INACTIVE", active ? "&aActive" : "&cInactive");
+        return getStaffMessage(active ? "STATE_ACTIVE" : "STATE_INACTIVE", active ? "&aᴀᴄᴛɪᴠᴇ" : "&cɪɴᴀᴄᴛɪᴠᴇ");
     }
 
     private String localizeStatus(boolean enabled) {
-        return getStaffMessage(enabled ? "STATUS_ENABLED" : "STATUS_DISABLED", enabled ? "&aEnabled" : "&cDisabled");
+        return getStaffMessage(enabled ? "STATUS_ENABLED" : "STATUS_DISABLED", enabled ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ");
     }
 
     private String localizeIcon(boolean enabled) {
@@ -654,7 +654,7 @@ public class StaffModeManager {
 
         player.sendMessage(ColorUtils.toComponent(
                 formatLegacyMessage(
-                        getStaffMessage("SELF_TOGGLE", "&6&lSTAFF MODE &7» %status%&7!"),
+                        getStaffMessage("SELF_TOGGLE", "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status%&7!"),
                         player.getName(),
                         player.getName(),
                         status,
@@ -665,7 +665,7 @@ public class StaffModeManager {
         ));
         player.sendMessage(ColorUtils.toComponent(
                 formatLegacyMessage(
-                        getStaffMessage("SELF_STATUS", "&7Status: %icon% %status%"),
+                        getStaffMessage("SELF_STATUS", "&7ѕᴛᴀᴛᴜѕ: %icon% %status%"),
                         player.getName(),
                         player.getName(),
                         status,
@@ -694,7 +694,7 @@ public class StaffModeManager {
         if (actor instanceof Player player) {
             player.sendMessage(ColorUtils.toComponent(
                     formatLegacyMessage(
-                            getStaffMessage("OTHER_TOGGLE", "&6&lSTAFF MODE &7» %status% &7staff mode for &e%target%&7!"),
+                            getStaffMessage("OTHER_TOGGLE", "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%&7!"),
                             actorName,
                             target.getName(),
                             status,
@@ -707,7 +707,7 @@ public class StaffModeManager {
 
         target.sendMessage(ColorUtils.toComponent(
                 formatLegacyMessage(
-                        getStaffMessage("TARGET_NOTIFY", "&6&lSTAFF MODE &7» Your staff mode has been %status% &7by &e%staff%&7!"),
+                        getStaffMessage("TARGET_NOTIFY", "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» ʏᴏᴜʀ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ %status% &7ʙʏ &e%staff%&7!"),
                         actorName,
                         target.getName(),
                         status,
@@ -718,7 +718,7 @@ public class StaffModeManager {
         ));
 
         String broadcast = formatLegacyMessage(
-                getStaffMessage("BROADCAST", "&8[&6STAFF&8] &e%staff% &7has %status% &7staff mode for &e%target%"),
+                getStaffMessage("BROADCAST", "&8[&6ѕᴛᴀꜰꜰ&8] &e%staff% &7ʜᴀѕ %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%"),
                 actorName,
                 target.getName(),
                 status,
@@ -796,7 +796,7 @@ public class StaffModeManager {
                 disableSilently(player, true);
                 player.sendMessage(ColorUtils.toComponent(getMessage(
                         "RECOVERED-AFTER-RESTART",
-                        "&eStaff mode was disabled because the server restarted. Your inventory was restored."
+                        "&eѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴡᴀѕ ᴅɪѕᴀʙʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴛʜᴇ ѕᴇʀᴠᴇʀ ʀᴇѕᴛᴀʀᴛᴇᴅ. ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ᴡᴀѕ ʀᴇѕᴛᴏʀᴇᴅ."
                 ), player));
                 continue;
             }
@@ -842,7 +842,7 @@ public class StaffModeManager {
 
         String message = getConfig().getString(
                 "STAFF-MODE.VANISH-ACTIONBAR.MESSAGE",
-                "&aVANISHED &7>> &fYou are hidden from regular players"
+                "&aᴠᴀɴɪѕʜᴇᴅ &7>> &fʏᴏᴜ ᴀʀᴇ ʜɪᴅᴅᴇɴ ꜰʀᴏᴍ ʀᴇɢᴜʟᴀʀ ᴘʟᴀʏᴇʀѕ"
         );
         if (message == null || message.isBlank()) {
             return;
@@ -936,7 +936,7 @@ public class StaffModeManager {
 
         if (notify) {
             String path = active ? "VANISH-ON" : "VANISH-OFF";
-            String fallback = active ? "&aVanish enabled." : "&cVanish disabled.";
+            String fallback = active ? "&aᴠᴀɴɪѕʜ ᴇɴᴀʙʟᴇᴅ." : "&cᴠᴀɴɪѕʜ ᴅɪѕᴀʙʟᴇᴅ.";
             player.sendMessage(ColorUtils.toComponent(getMessage(path, fallback), player));
             PlayerSettingUtils.sendActionBar(plugin, player, getMessage(path, fallback));
         }
@@ -1084,11 +1084,11 @@ public class StaffModeManager {
             String statePath = isVanished(player.getUniqueId()) ? "ENABLED" : "DISABLED";
             path = path + "." + statePath;
             material = parseMaterial(getConfig().getString(path + ".MATERIAL", "GRAY_DYE"), Material.GRAY_DYE);
-            displayName = getConfig().getString(path + ".NAME", "&7Unvanished");
+            displayName = getConfig().getString(path + ".NAME", "&7ᴜɴᴠᴀɴɪѕʜᴇᴅ");
             lore = getConfig().getStringList(path + ".LORE");
         } else {
             material = parseMaterial(getConfig().getString(path + ".MATERIAL", "STONE"), Material.STONE);
-            displayName = getConfig().getString(path + ".NAME", "&fTool");
+            displayName = getConfig().getString(path + ".NAME", "&fᴛᴏᴏʟ");
             lore = getConfig().getStringList(path + ".LORE");
         }
 

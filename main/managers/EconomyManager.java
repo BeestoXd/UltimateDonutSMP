@@ -471,7 +471,7 @@ public class EconomyManager {
 
     private String resolveDisplayName(UUID uuid, String fallbackName) {
         if (uuid == null) {
-            return fallbackName != null && !fallbackName.isBlank() ? fallbackName : "Unknown";
+            return fallbackName != null && !fallbackName.isBlank() ? fallbackName : "ᴜɴᴋɴᴏᴡɴ";
         }
 
         Player onlinePlayer = Bukkit.getPlayer(uuid);
@@ -524,7 +524,7 @@ public class EconomyManager {
                 uuid,
                 displayName != null && !displayName.isBlank()
                         ? displayName
-                        : (uuid != null ? resolveDisplayName(uuid, null) : "Unknown"),
+                        : (uuid != null ? resolveDisplayName(uuid, null) : "ᴜɴᴋɴᴏᴡɴ"),
                 roundCurrency(Math.max(0D, Double.isFinite(amount) ? amount : 0D)),
                 roundCurrency(Math.max(0D, beforeBalance)),
                 roundCurrency(Math.max(0D, afterBalance))
@@ -565,11 +565,11 @@ public class EconomyManager {
                 senderUuid,
                 senderName != null && !senderName.isBlank()
                         ? senderName
-                        : (senderUuid != null ? resolveDisplayName(senderUuid, null) : "Unknown"),
+                        : (senderUuid != null ? resolveDisplayName(senderUuid, null) : "ᴜɴᴋɴᴏᴡɴ"),
                 recipientUuid,
                 recipientName != null && !recipientName.isBlank()
                         ? recipientName
-                        : (recipientUuid != null ? resolveDisplayName(recipientUuid, null) : "Unknown"),
+                        : (recipientUuid != null ? resolveDisplayName(recipientUuid, null) : "ᴜɴᴋɴᴏᴡɴ"),
                 roundCurrency(Math.max(0D, Double.isFinite(amount) ? amount : 0D)),
                 0D,
                 0D,

@@ -102,8 +102,7 @@ public class BillfordManager {
     }
 
     public boolean isTimeToAdvance() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.BILLFORD)
-                && nextAdvanceMillis != Long.MAX_VALUE
+        return nextAdvanceMillis != Long.MAX_VALUE
                 && System.currentTimeMillis() >= nextAdvanceMillis;
     }
 
@@ -145,7 +144,7 @@ public class BillfordManager {
             String raw = plugin.getConfigManager().getBillford()
                     .getString(
                             "ANNOUNCE_MESSAGE",
-                            "&6&l[Billford] &eTrade rotated! &7Next change in &b{countdown}&7."
+                            "&6&l[Billford] &eᴛʀᴀᴅᴇ ʀᴏᴛᴀᴛᴇᴅ! &7ɴᴇxᴛ ᴄʜᴀɴɢᴇ ɪɴ &b{countdown}&7."
                     )
                     .replace("{trade_id}", String.valueOf(currentTradeId))
                     .replace("{countdown}", getFormattedCountdown());
@@ -194,7 +193,7 @@ public class BillfordManager {
             return null;
         }
 
-        String displayName = section.getString("DISPLAY_NAME", "Trade #" + id);
+        String displayName = section.getString("DISPLAY_NAME", "ᴛʀᴀᴅᴇ #" + id);
         int tradeLimit = section.getInt("LIMIT", section.getInt("LIMIT_PER_PLAYER", 0));
 
         ConfigurationSection rewardSection = section.getConfigurationSection("REWARD");
@@ -311,9 +310,9 @@ public class BillfordManager {
 
     public String getFormattedCountdown() {
         long totalSeconds = getRemainingSeconds();
-        long days = totalSeconds / 86_400L;
-        long hours = (totalSeconds % 86_400L) / 3_600L;
-        long minutes = (totalSeconds % 3_600L) / 60L;
+        long days = totalSeconds / 86_400l;
+        long hours = (totalSeconds % 86_400L) / 3_600l;
+        long minutes = (totalSeconds % 3_600L) / 60l;
         long seconds = totalSeconds % 60L;
 
         if (days > 0) {

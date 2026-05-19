@@ -23,9 +23,6 @@ public class SpawnerInteractListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
-            return;
-        }
         if (event.getHand() != EquipmentSlot.HAND || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
@@ -54,7 +51,7 @@ public class SpawnerInteractListener implements Listener {
         }
 
         if (!plugin.getSpawnerManager().canOpen(player, instance)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou do not have access to that spawner."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴀᴄᴄᴇѕѕ ᴛᴏ ᴛʜᴀᴛ ѕᴘᴀᴡɴᴇʀ."));
             return;
         }
 

@@ -20,7 +20,7 @@ public class BillfordCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 

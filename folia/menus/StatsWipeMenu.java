@@ -69,7 +69,7 @@ public class StatsWipeMenu extends BaseMenu {
         if (plugin.getStatsWipeManager().isWipeInProgress()) {
             set(menus().getInt(MENU_PATH + ".STATUS.SLOT", 13), ItemUtils.createItem(
                     ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".STATUS.MATERIAL", "BARRIER")),
-                    menus().getString(MENU_PATH + ".STATUS.DISPLAY-NAME", "&cWipe In Progress"),
+                    menus().getString(MENU_PATH + ".STATUS.DISPLAY-NAME", "&cᴡɪᴘᴇ ɪɴ ᴘʀᴏɢʀᴇѕѕ"),
                     menus().getStringList(MENU_PATH + ".STATUS.LORE")
             ));
         }
@@ -97,7 +97,7 @@ public class StatsWipeMenu extends BaseMenu {
 
         if (plugin.getStatsWipeManager().isWipeInProgress()) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessages().getString("STATS-WIPE.BUSY", "&cA wipe is already in progress.")
+                    plugin.getConfigManager().getMessages().getString("STATS-WIPE.BUSY", "&cᴀ ᴡɪᴘᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ.")
             ));
             return;
         }
@@ -113,7 +113,7 @@ public class StatsWipeMenu extends BaseMenu {
 
         set(menus().getInt(path + ".SLOT", 22), ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", "CLOCK")),
-                menus().getString(path + ".DISPLAY-NAME", "&bRefresh"),
+                menus().getString(path + ".DISPLAY-NAME", "&bʀᴇꜰʀᴇѕʜ"),
                 menus().getStringList(path + ".LORE")
         ));
     }
@@ -126,7 +126,7 @@ public class StatsWipeMenu extends BaseMenu {
 
         set(menus().getInt(path + ".SLOT", 26), ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", "BARRIER")),
-                menus().getString(path + ".DISPLAY-NAME", "&cClose"),
+                menus().getString(path + ".DISPLAY-NAME", "&cᴄʟᴏѕᴇ"),
                 menus().getStringList(path + ".LORE")
         ));
     }
@@ -160,7 +160,7 @@ public class StatsWipeMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Stats Wipe");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ѕᴛᴀᴛѕ ᴡɪᴘᴇ");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {

@@ -19,7 +19,7 @@ public class SpawnerGenerationTask implements Runnable {
 
     @Override
     public void run() {
-        if (plugin.getSpawnerManager() != null && plugin.getSpawnerManager().isEnabled()) {
+        if (plugin.getSpawnerManager() != null) {
             plugin.getSpawnerManager().processGeneration();
         }
     }

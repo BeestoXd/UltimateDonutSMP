@@ -31,7 +31,7 @@ public class SettingsMenu extends BaseMenu {
     public SettingsMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Settings"),
+                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ѕᴇᴛᴛɪɴɢѕ"),
                 plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 45)
         );
     }
@@ -72,11 +72,11 @@ public class SettingsMenu extends BaseMenu {
             }
             case "HOTBAR_MESSAGES" -> {
                 data.setHotbarMessagesEnabled(!data.isHotbarMessagesEnabled());
-                sendToggleMessage(player, "Hotbar messages", data.isHotbarMessagesEnabled());
+                sendToggleMessage(player, "ʜᴏᴛʙᴀʀ ᴍᴇѕѕᴀɢᴇѕ", data.isHotbarMessagesEnabled());
             }
             case "CLEAR_ENTITIES_MESSAGES" -> {
                 data.setClearEntitiesMessagesEnabled(!data.isClearEntitiesMessagesEnabled());
-                sendToggleMessage(player, "Clear entities messages", data.isClearEntitiesMessagesEnabled());
+                sendToggleMessage(player, "ᴄʟᴇᴀʀ ᴇɴᴛɪᴛɪᴇѕ ᴍᴇѕѕᴀɢᴇѕ", data.isClearEntitiesMessagesEnabled());
             }
             case "WORTH_DISPLAY" -> {
                 data.setWorthDisplayEnabled(!data.isWorthDisplayEnabled());
@@ -85,15 +85,15 @@ public class SettingsMenu extends BaseMenu {
                 } else {
                     plugin.getWorthManager().clearWorthDisplay(player);
                 }
-                sendToggleMessage(player, "Worth display", data.isWorthDisplayEnabled());
+                sendToggleMessage(player, "ᴡᴏʀᴛʜ ᴅɪѕᴘʟᴀʏ", data.isWorthDisplayEnabled());
             }
             case "BOUNTY_ALERTS" -> {
                 data.setBountyAlertsEnabled(!data.isBountyAlertsEnabled());
-                sendToggleMessage(player, "Bounty alerts", data.isBountyAlertsEnabled());
+                sendToggleMessage(player, "ʙᴏᴜɴᴛʏ ᴀʟᴇʀᴛѕ", data.isBountyAlertsEnabled());
             }
             case "AMETHYST_BREAK_MESSAGES" -> {
                 data.setAmethystBreakMessagesEnabled(!data.isAmethystBreakMessagesEnabled());
-                sendToggleMessage(player, "Amethyst break messages", data.isAmethystBreakMessagesEnabled());
+                sendToggleMessage(player, "ᴀᴍᴇᴛʜʏѕᴛ ʙʀᴇᴀᴋ ᴍᴇѕѕᴀɢᴇѕ", data.isAmethystBreakMessagesEnabled());
             }
             case "KEY_ALL_NOTIFICATIONS" -> {
                 data.setKeyAllNotificationsEnabled(!data.isKeyAllNotificationsEnabled());
@@ -101,22 +101,22 @@ public class SettingsMenu extends BaseMenu {
             }
             case "TPA_CONFIRM_MENUS" -> {
                 data.setTpaConfirmMenuEnabled(!data.isTpaConfirmMenuEnabled());
-                sendToggleMessage(player, "TPA confirm menu", data.isTpaConfirmMenuEnabled());
+                sendToggleMessage(player, "ᴛᴘᴀ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜ", data.isTpaConfirmMenuEnabled());
             }
             case "CHAINMAIL_ON_RESPAWN" -> {
                 data.setChainmailOnRespawnEnabled(!data.isChainmailOnRespawnEnabled());
-                sendToggleMessage(player, "Respawn armor", data.isChainmailOnRespawnEnabled());
+                sendToggleMessage(player, "ʀᴇѕᴘᴀᴡɴ ᴀʀᴍᴏʀ", data.isChainmailOnRespawnEnabled());
             }
             case "LUNAR_TEAMMATES" -> {
                 data.setLunarTeammatesEnabled(!data.isLunarTeammatesEnabled());
-                sendToggleMessage(player, "Lunar teammates", data.isLunarTeammatesEnabled());
+                sendToggleMessage(player, "ʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇѕ", data.isLunarTeammatesEnabled());
             }
             case "TPA_REQUESTS" -> {
                 data.setTpaRequestsEnabled(!data.isTpaRequestsEnabled());
                 if (data.isTpaRequestsEnabled()) {
                     plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
                 }
-                sendToggleMessage(player, "TPA requests", data.isTpaRequestsEnabled());
+                sendToggleMessage(player, "ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ", data.isTpaRequestsEnabled());
             }
             case "TP_AUTO" -> {
                 data.setTpauto(!data.isTpauto());
@@ -140,11 +140,11 @@ public class SettingsMenu extends BaseMenu {
                 if (data.isTpaHereRequestsEnabled()) {
                     plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
                 }
-                sendToggleMessage(player, "TPA here requests", data.isTpaHereRequestsEnabled());
+                sendToggleMessage(player, "ᴛᴘᴀ ʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛѕ", data.isTpaHereRequestsEnabled());
             }
             case "TEAM_INVITES" -> {
                 data.setTeamInvitesEnabled(!data.isTeamInvitesEnabled());
-                sendToggleMessage(player, "Team invites", data.isTeamInvitesEnabled());
+                sendToggleMessage(player, "ᴛᴇᴀᴍ ɪɴᴠɪᴛᴇѕ", data.isTeamInvitesEnabled());
             }
             case "DISABLE_PHANTOM_SPAWN" -> {
                 data.setPhantomEnabled(!data.isPhantomEnabled());
@@ -158,21 +158,21 @@ public class SettingsMenu extends BaseMenu {
                 if (!data.isMobSpawnEnabled()) {
                     clearNearbyHostileMobs(player);
                 }
-                sendToggleMessage(player, "Nearby hostile mob spawns", data.isMobSpawnEnabled());
+                sendToggleMessage(player, "ɴᴇᴀʀʙʏ ʜᴏѕᴛɪʟᴇ ᴍᴏʙ ѕᴘᴀᴡɴѕ", data.isMobSpawnEnabled());
             }
             case "PAYMENTS" -> {
                 data.setPaymentsEnabled(!data.isPaymentsEnabled());
                 String msg = data.isPaymentsEnabled()
-                        ? "&7Payments are now &aenabled&7."
-                        : "&7Payments are now &cdisabled&7.";
+                        ? "&7ᴘᴀʏᴍᴇɴᴛѕ ᴀʀᴇ ɴᴏᴡ &aᴇɴᴀʙʟᴇᴅ&7."
+                        : "&7ᴘᴀʏᴍᴇɴᴛѕ ᴀʀᴇ ɴᴏᴡ &cᴅɪѕᴀʙʟᴇᴅ&7.";
                 player.sendMessage(ColorUtils.toComponent(msg));
             }
             case "SCOREBOARD_VISIBILITY" -> {
                 data.setScoreboardVisible(!data.isScoreboardVisible());
                 plugin.getScoreboardManager().applyVisibility(player);
                 String msg = data.isScoreboardVisible()
-                        ? "&7Scoreboard is now &aenabled&7."
-                        : "&7Scoreboard is now &cdisabled&7.";
+                        ? "&7ѕᴄᴏʀᴇʙᴏᴀʀᴅ ɪѕ ɴᴏᴡ &aᴇɴᴀʙʟᴇᴅ&7."
+                        : "&7ѕᴄᴏʀᴇʙᴏᴀʀᴅ ɪѕ ɴᴏᴡ &cᴅɪѕᴀʙʟᴇᴅ&7.";
                 player.sendMessage(ColorUtils.toComponent(msg));
             }
             case "TEAM_CHAT" -> {
@@ -195,7 +195,7 @@ public class SettingsMenu extends BaseMenu {
             }
             case "PAY_CONFIRM_MENUS" -> {
                 data.setPayConfirmMenuEnabled(!data.isPayConfirmMenuEnabled());
-                sendToggleMessage(player, "Pay confirm menu", data.isPayConfirmMenuEnabled());
+                sendToggleMessage(player, "ᴘᴀʏ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜ", data.isPayConfirmMenuEnabled());
             }
             case "TOTEM_PARTICLES" -> {
                 data.setTotemParticlesEnabled(!data.isTotemParticlesEnabled());
@@ -227,7 +227,7 @@ public class SettingsMenu extends BaseMenu {
         }
 
         Material material = ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE"));
-        ItemStack item = ItemUtils.createItem(material, section.getString("DISPLAY-NAME", "&fSetting"), lore);
+        ItemStack item = ItemUtils.createItem(material, section.getString("DISPLAY-NAME", "&fѕᴇᴛᴛɪɴɢ"), lore);
         if ("NIGHT_VISION".equals(key)) {
             item = toNightVisionPotion(item);
         }
@@ -270,28 +270,28 @@ public class SettingsMenu extends BaseMenu {
                     formatStatus(player.hasPotionEffect(PotionEffectType.NIGHT_VISION)),
                     true
             );
-            default -> new ButtonState("&8Preview", false);
+            default -> new ButtonState("&8ᴘʀᴇᴠɪᴇᴡ", false);
         };
     }
 
     private String formatStatus(boolean enabled) {
-        return enabled ? "&aEnabled" : "&cDisabled";
+        return enabled ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ";
     }
 
     private void sendToggleMessage(Player player, String label, boolean enabled) {
-        String state = enabled ? "&aenabled" : "&cdisabled";
-        player.sendMessage(ColorUtils.toComponent("&7" + label + " is now " + state + "&7."));
+        String state = enabled ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ";
+        player.sendMessage(ColorUtils.toComponent("&7" + label + " ɪѕ ɴᴏᴡ " + state + "&7."));
     }
 
     private void toggleNightVision(Player player) {
         if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
             player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-            player.sendMessage(ColorUtils.toComponent("&7Night vision &cdisabled&7."));
+            player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &cᴅɪѕᴀʙʟᴇᴅ&7."));
             return;
         }
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false));
-        player.sendMessage(ColorUtils.toComponent("&7Night vision &aenabled&7."));
+        player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &aᴇɴᴀʙʟᴇᴅ&7."));
     }
 
     private void clearNearbyHostileMobs(Player player) {
@@ -326,4 +326,3 @@ public class SettingsMenu extends BaseMenu {
     private record ButtonState(String statusText, boolean clickable) {
     }
 }
-

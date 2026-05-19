@@ -6,7 +6,7 @@ public enum AmethystToolType {
     SELL_AXE("Amethyst Sell Axe"),
     SHOVEL("Amethyst Shovel"),
     BUCKET("Amethyst Bucket"),
-    SHARD_BOOSTER("Shard Booster");
+    SHARD_BOOSTER("ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ");
 
     private final String displayName;
 

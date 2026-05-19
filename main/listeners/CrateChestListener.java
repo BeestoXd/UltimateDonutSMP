@@ -45,13 +45,13 @@ public class CrateChestListener implements Listener {
             event.setCancelled(true);
 
             if (!plugin.getCrateManager().isBindableBlock(clickedBlock.getType())) {
-                player.sendMessage(ColorUtils.toComponent("&cInvalid block. Left-click a chest, trapped chest, barrel, ender chest, or shulker box."));
+                player.sendMessage(ColorUtils.toComponent("&cɪɴᴠᴀʟɪᴅ ʙʟᴏᴄᴋ. ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ, ᴛʀᴀᴘᴘᴇᴅ ᴄʜᴇѕᴛ, ʙᴀʀʀᴇʟ, ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ, ᴏʀ ѕʜᴜʟᴋᴇʀ ʙᴏx."));
                 return;
             }
 
             String previousCrateId = plugin.getCrateManager().getBoundCrateId(clickedBlock);
             if (!plugin.getCrateManager().bindCrateBlock(clickedBlock, pendingBindCrateId)) {
-                player.sendMessage(ColorUtils.toComponent("&cFailed to bind that crate chest."));
+                player.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ʙɪɴᴅ ᴛʜᴀᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ."));
                 return;
             }
 
@@ -59,18 +59,18 @@ public class CrateChestListener implements Listener {
             plugin.getCrateVisualManager().refreshHologram(clickedBlock);
             String location = formatBlockLocation(clickedBlock);
             if (previousCrateId != null && !previousCrateId.equalsIgnoreCase(pendingBindCrateId)) {
-                player.sendMessage(ColorUtils.toComponent("&aUpdated crate chest at &f" + location
-                        + "&a from &f" + previousCrateId + "&a to &f" + pendingBindCrateId + "&a."));
+                player.sendMessage(ColorUtils.toComponent("&aᴜᴘᴅᴀᴛᴇᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ ᴀᴛ &f" + location
+                        + "&a ꜰʀᴏᴍ &f" + previousCrateId + "&a ᴛᴏ &f" + pendingBindCrateId + "&a."));
                 return;
             }
 
-            player.sendMessage(ColorUtils.toComponent("&aBound crate &f" + pendingBindCrateId + "&a to chest at &f" + location + "&a."));
+            player.sendMessage(ColorUtils.toComponent("&aʙᴏᴜɴᴅ ᴄʀᴀᴛᴇ &f" + pendingBindCrateId + "&a ᴛᴏ ᴄʜᴇѕᴛ ᴀᴛ &f" + location + "&a."));
             return;
         }
 
         if (pendingBindCrateId != null && event.getAction() == Action.RIGHT_CLICK_BLOCK && clickedBlock != null) {
             event.setCancelled(true);
-            player.sendMessage(ColorUtils.toComponent("&eBind mode is active. Left-click the target chest to finish binding, or use &f/crate bind cancel&e."));
+            player.sendMessage(ColorUtils.toComponent("&eʙɪɴᴅ ᴍᴏᴅᴇ ɪѕ ᴀᴄᴛɪᴠᴇ. ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴄʜᴇѕᴛ ᴛᴏ ꜰɪɴɪѕʜ ʙɪɴᴅɪɴɢ, ᴏʀ ᴜѕᴇ &f/crate bind cancel&e."));
             return;
         }
 
@@ -86,7 +86,7 @@ public class CrateChestListener implements Listener {
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(crateId);
         if (crate == null) {
             event.setCancelled(true);
-            player.sendMessage(ColorUtils.toComponent("&cThis crate chest is bound to an invalid crate."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ ɪѕ ʙᴏᴜɴᴅ ᴛᴏ ᴀɴ ɪɴᴠᴀʟɪᴅ ᴄʀᴀᴛᴇ."));
             return;
         }
 
@@ -110,17 +110,17 @@ public class CrateChestListener implements Listener {
         }
 
         if (!crate.enabled()) {
-            player.sendMessage(ColorUtils.toComponent("&cThis crate is currently disabled."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ ᴄʀᴀᴛᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return;
         }
 
         if (!plugin.getCrateManager().hasAccess(player, crate)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission to view this crate."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴠɪᴇᴡ ᴛʜɪѕ ᴄʀᴀᴛᴇ."));
             return;
         }
 
         if (crate.rewards().isEmpty()) {
-            player.sendMessage(ColorUtils.toComponent("&cThis crate has no valid rewards configured."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ ᴄʀᴀᴛᴇ ʜᴀѕ ɴᴏ ᴠᴀʟɪᴅ ʀᴇᴡᴀʀᴅѕ ᴄᴏɴꜰɪɢᴜʀᴇᴅ."));
             return;
         }
 
@@ -161,7 +161,7 @@ public class CrateChestListener implements Listener {
         }
 
         event.setCancelled(true);
-        event.getPlayer().sendMessage(ColorUtils.toComponent("&cThat crate chest is bound and cannot be broken until it is unbound."));
+        event.getPlayer().sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ ɪѕ ʙᴏᴜɴᴅ ᴀɴᴅ ᴄᴀɴɴᴏᴛ ʙᴇ ʙʀᴏᴋᴇɴ ᴜɴᴛɪʟ ɪᴛ ɪѕ ᴜɴʙᴏᴜɴᴅ."));
         plugin.getCrateVisualManager().playNoKeyEffects(event.getPlayer());
     }
 

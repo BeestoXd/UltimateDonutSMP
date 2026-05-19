@@ -159,12 +159,11 @@ public class OrdersManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.ORDERS)
-                && config().getBoolean("SETTINGS.ENABLED", true);
+        return config().getBoolean("SETTINGS.ENABLED", true);
     }
 
     public String getBrowseTitle() {
-        return config().getString("GUI.MAIN.TITLE", "&8Orders");
+        return config().getString("GUI.MAIN.TITLE", "&8ᴏʀᴅᴇʀѕ");
     }
 
     public int getBrowseSize() {
@@ -176,7 +175,7 @@ public class OrdersManager {
     }
 
     public String getMyOrdersTitle() {
-        return config().getString("GUI.MY_ORDERS.TITLE", "&8Orders -> My Orders");
+        return config().getString("GUI.MY_ORDERS.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴍʏ ᴏʀᴅᴇʀѕ");
     }
 
     public int getMyOrdersSize() {
@@ -188,7 +187,7 @@ public class OrdersManager {
     }
 
     public String getCollectTitle() {
-        return config().getString("GUI.COLLECT.TITLE", "&8Orders -> Collect");
+        return config().getString("GUI.COLLECT.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴄᴏʟʟᴇᴄᴛ");
     }
 
     public int getCollectSize() {
@@ -200,7 +199,7 @@ public class OrdersManager {
     }
 
     public String getSelectItemTitle() {
-        return config().getString("GUI.SELECT_ITEM.TITLE", "&8Orders -> Select Item");
+        return config().getString("GUI.SELECT_ITEM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ѕᴇʟᴇᴄᴛ ɪᴛᴇᴍ");
     }
 
     public int getSelectItemSize() {
@@ -212,7 +211,7 @@ public class OrdersManager {
     }
 
     public String getNewOrderTitle() {
-        return config().getString("GUI.NEW_ORDER.TITLE", "&8Orders -> New Order");
+        return config().getString("GUI.NEW_ORDER.TITLE", "&8ᴏʀᴅᴇʀѕ -> ɴᴇᴡ ᴏʀᴅᴇʀ");
     }
 
     public int getNewOrderSize() {
@@ -220,7 +219,7 @@ public class OrdersManager {
     }
 
     public String getEditOrderTitle(long orderId) {
-        return config().getString("GUI.EDIT_ORDER.TITLE", "&8Orders -> Edit Order")
+        return config().getString("GUI.EDIT_ORDER.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴇᴅɪᴛ ᴏʀᴅᴇʀ")
                 .replace("{order_id}", String.valueOf(orderId));
     }
 
@@ -229,7 +228,7 @@ public class OrdersManager {
     }
 
     public String getDeliverTitle(long orderId) {
-        return config().getString("GUI.DELIVER_CONFIRM.TITLE", "&8Orders -> Deliver")
+        return config().getString("GUI.DELIVER_CONFIRM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟɪᴠᴇʀ")
                 .replace("{order_id}", String.valueOf(orderId));
     }
 
@@ -283,7 +282,7 @@ public class OrdersManager {
     }
 
     public String prettifyCategory(String categoryKey) {
-        return normalizeCategory(categoryKey).replace('_', ' ');
+        return ColorUtils.toSmallCaps(normalizeCategory(categoryKey).replace('_', ' '));
     }
 
     public List<OrderCatalogEntry> getCatalogEntries(String categoryKey) {
@@ -327,7 +326,7 @@ public class OrdersManager {
         player.closeInventory();
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_QUANTITY",
-                "&7Enter the order quantity for &f{item}&7 in chat. Type &ccancel&7 to abort.",
+                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
                 "{item}", describeMaterial(entry.material())
         )));
     }
@@ -373,7 +372,7 @@ public class OrdersManager {
             pendingCreations.remove(player.getUniqueId());
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.INPUT_CANCELLED",
-                    "&7Order creation cancelled."
+                    "&7ᴏʀᴅᴇʀ ᴄʀᴇᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟʟᴇᴅ."
             )));
             new OrdersBrowseMenu(plugin, 1, getDefaultSort(), "ALL").open(player);
             return;
@@ -480,7 +479,7 @@ public class OrdersManager {
 
     public String describeItem(ItemStack item) {
         if (item == null || item.getType().isAir()) {
-            return "Unknown Item";
+            return "ᴜɴᴋɴᴏᴡɴ ɪᴛᴇᴍ";
         }
 
         return describeMaterial(item.getType());
@@ -500,7 +499,7 @@ public class OrdersManager {
         } catch (RuntimeException exception) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.INVALID_QUANTITY",
-                    "&cInvalid quantity. Use a whole number greater than 0."
+                    "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0."
             )));
             resendQuantityPrompt(player, pending.entry());
             return;
@@ -509,7 +508,7 @@ public class OrdersManager {
         if (quantity <= 0 || quantity > getMaxQuantityPerOrder()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.QUANTITY_OUT_OF_RANGE",
-                    "&cQuantity must be between 1 and {max}.",
+                    "&cǫᴜᴀɴᴛɪᴛʏ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {max}.",
                     "{max}", String.valueOf(getMaxQuantityPerOrder())
             )));
             resendQuantityPrompt(player, pending.entry());
@@ -519,7 +518,7 @@ public class OrdersManager {
         pendingCreations.put(player.getUniqueId(), pending.withQuantity(quantity));
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_PRICE",
-                "&7Enter the price each for &f{item}&7 in chat. Type &ccancel&7 to abort.",
+                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
                 "{item}", describeMaterial(pending.entry().material())
         )));
     }
@@ -531,7 +530,7 @@ public class OrdersManager {
         } catch (NumberFormatException exception) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.INVALID_PRICE",
-                    "&cInvalid price format. Use numbers like 100, 5K, or 1.5M."
+                    "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5M."
             )));
             resendPricePrompt(player, pending.entry());
             return;
@@ -542,11 +541,9 @@ public class OrdersManager {
         if (normalizedPrice < getMinPriceEach() || normalizedPrice > getMaxPriceEach()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.PRICE_OUT_OF_RANGE",
-                    "&cPrice each must be between {min_formatted}&c and {max_formatted}&c.",
+                    "&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f${min}&c ᴀɴᴅ &f${max}&c.",
                     "{min}", NumberUtils.format(getMinPriceEach()),
-                    "{min_formatted}", plugin.getCurrencyManager().formatMoney(getMinPriceEach()),
-                    "{max}", NumberUtils.format(getMaxPriceEach()),
-                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach())
+                    "{max}", NumberUtils.format(getMaxPriceEach())
             )));
             resendPricePrompt(player, pending.entry());
             return;
@@ -555,9 +552,8 @@ public class OrdersManager {
         if (totalBudget <= 0D || totalBudget > getMaxTotalBudget()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.TOTAL_TOO_HIGH",
-                    "&cTotal order budget cannot exceed {max_formatted}&c.",
-                    "{max}", NumberUtils.format(getMaxTotalBudget()),
-                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget())
+                    "&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f${max}&c.",
+                    "{max}", NumberUtils.format(getMaxTotalBudget())
             )));
             resendPricePrompt(player, pending.entry());
             return;
@@ -570,7 +566,7 @@ public class OrdersManager {
     private void resendQuantityPrompt(Player player, OrderCatalogEntry entry) {
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_QUANTITY",
-                "&7Enter the order quantity for &f{item}&7 in chat. Type &ccancel&7 to abort.",
+                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
                 "{item}", describeMaterial(entry.material())
         )));
     }
@@ -578,7 +574,7 @@ public class OrdersManager {
     private void resendPricePrompt(Player player, OrderCatalogEntry entry) {
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_PRICE",
-                "&7Enter the price each for &f{item}&7 in chat. Type &ccancel&7 to abort.",
+                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
                 "{item}", describeMaterial(entry.material())
         )));
     }
@@ -1556,7 +1552,7 @@ public class OrdersManager {
     }
 
     private double roundCurrency(double amount) {
-        return Math.round(amount * 100D) / 100D;
+        return Math.round(amount * 100D) / 100d;
     }
 
     private void ensureTables() {

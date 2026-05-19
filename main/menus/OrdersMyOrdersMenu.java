@@ -46,28 +46,28 @@ public class OrdersMyOrdersMenu extends BaseMenu {
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bBack to Board", List.of("&7Return to active orders")));
+        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ ᴛᴏ ʙᴏᴀʀᴅ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀѕ")));
         set(lastRow + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page", List.of("&7Go to page &f" + (page - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 2, ItemUtils.createItem(
                 Material.HOPPER,
-                "&aSort: &f" + sortMode.displayName(),
-                List.of("&7Click to cycle sorting mode")
+                "&aѕᴏʀᴛ: &f" + sortMode.displayName(),
+                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ ᴍᴏᴅᴇ")
         ));
-        set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eRefresh", List.of("&7Reload your orders")));
-        set(lastRow + 4, ItemUtils.createItem(Material.EMERALD, "&aNew Order", List.of("&7Create a new buy order")));
-        set(lastRow + 5, ItemUtils.createItem(Material.ENDER_CHEST, "&dCollect", List.of("&7Collect delivered items and refunds")));
+        set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 4, ItemUtils.createItem(Material.EMERALD, "&aɴᴇᴡ ᴏʀᴅᴇʀ", List.of("&7ᴄʀᴇᴀᴛᴇ ᴀ ɴᴇᴡ ʙᴜʏ ᴏʀᴅᴇʀ")));
+        set(lastRow + 5, ItemUtils.createItem(Material.ENDER_CHEST, "&dᴄᴏʟʟᴇᴄᴛ", List.of("&7ᴄᴏʟʟᴇᴄᴛ ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍѕ ᴀɴᴅ ʀᴇꜰᴜɴᴅѕ")));
         set(lastRow + 7, hasNextPage(orders.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aNext Page", List.of("&7Go to page &f" + (page + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose", List.of("&7Close Orders")));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
 
         if (orders.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo Orders Yet",
-                    List.of("&7Create your first buy order from the board.")
+                    "&cɴᴏ ᴏʀᴅᴇʀѕ ʏᴇᴛ",
+                    List.of("&7ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ꜰɪʀѕᴛ ʙᴜʏ ᴏʀᴅᴇʀ ꜰʀᴏᴍ ᴛʜᴇ ʙᴏᴀʀᴅ.")
             ));
         }
     }

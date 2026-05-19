@@ -68,13 +68,13 @@ public class NetworkStaffAlertManager {
 
     public void sendHelpop(Player sender, String rawMessage) {
         if (!isHelpopEnabled()) {
-            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.DISABLED", "&cHelpop is currently disabled.")));
+            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.DISABLED", "&cʜᴇʟᴘᴏᴘ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")));
             return;
         }
 
         String message = sanitizeUserMessage(rawMessage);
         if (message.isBlank()) {
-            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.USAGE", "&cUsage: /helpop <message>")));
+            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.USAGE", "&cᴜѕᴀɢᴇ: /helpop <message>")));
             return;
         }
 
@@ -82,14 +82,14 @@ public class NetworkStaffAlertManager {
         if (message.length() > maxLength) {
             sender.sendMessage(ColorUtils.toComponent(message(
                     "HELPOP.MESSAGE_TOO_LONG",
-                    "&cYour request is too long. Max: %max% characters.",
+                    "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
         }
 
         if (!checkCooldown(sender, helpopCooldowns, cooldownSeconds("NETWORK.HELPOP_COOLDOWN_SECONDS", 30),
-                "HELPOP.COOLDOWN", "&cPlease wait %seconds%s before using helpop again.")) {
+                "HELPOP.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%s ʙᴇꜰᴏʀᴇ ᴜѕɪɴɢ ʜᴇʟᴘᴏᴘ ᴀɢᴀɪɴ.")) {
             return;
         }
 
@@ -109,33 +109,33 @@ public class NetworkStaffAlertManager {
         markSeen(payload.messageId());
         broadcastPayload(payload);
         publishPayloadAsync(payload, helpopChannel, sender, "HELPOP.REDIS_UNAVAILABLE",
-                "&eYour request was delivered locally, but Redis is unavailable for cross-server delivery.");
+                "&eʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ.");
 
         sender.sendMessage(ColorUtils.toComponent(message(
                 "HELPOP.CONFIRMATION",
-                "&aYour request has been sent to all staff members."
+                "&aʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ."
         )));
     }
 
     public void sendReport(Player reporter, Player reported, String rawReason) {
         if (!isReportEnabled()) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.DISABLED", "&cReports are currently disabled.")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.DISABLED", "&cʀᴇᴘᴏʀᴛѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")));
             return;
         }
 
         if (reported == null || !reported.isOnline()) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.PLAYER_NOT_FOUND", "&cPlayer not found.")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.PLAYER_NOT_FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.")));
             return;
         }
 
         if (reporter.getUniqueId().equals(reported.getUniqueId())) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.CANNOT_REPORT_SELF", "&cYou can't report yourself!")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.CANNOT_REPORT_SELF", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴇᴘᴏʀᴛ ʏᴏᴜʀѕᴇʟꜰ!")));
             return;
         }
 
         String reason = sanitizeUserMessage(rawReason);
         if (reason.isBlank()) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.USAGE", "&cUsage: /report <player> <reason>")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.USAGE", "&cᴜѕᴀɢᴇ: /report <player> <reason>")));
             return;
         }
 
@@ -143,14 +143,14 @@ public class NetworkStaffAlertManager {
         if (reason.length() > maxLength) {
             reporter.sendMessage(ColorUtils.toComponent(message(
                     "REPORT.MESSAGE_TOO_LONG",
-                    "&cYour report reason is too long. Max: %max% characters.",
+                    "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
         }
 
         if (!checkCooldown(reporter, reportCooldowns, cooldownSeconds("NETWORK.REPORT_COOLDOWN_SECONDS", 60),
-                "REPORT.COOLDOWN", "&cPlease wait %seconds%s before reporting again.")) {
+                "REPORT.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%s ʙᴇꜰᴏʀᴇ ʀᴇᴘᴏʀᴛɪɴɢ ᴀɢᴀɪɴ.")) {
             return;
         }
 
@@ -172,11 +172,11 @@ public class NetworkStaffAlertManager {
         markSeen(payload.messageId());
         broadcastPayload(payload);
         publishPayloadAsync(payload, reportChannel, reporter, "REPORT.REDIS_UNAVAILABLE",
-                "&eYour report was delivered locally, but Redis is unavailable for cross-server delivery.");
+                "&eʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ.");
 
         reporter.sendMessage(ColorUtils.toComponent(message(
                 "REPORT.CONFIRMATION",
-                "&aYour report has been sent to all staff members."
+                "&aʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ."
         )));
     }
 
@@ -366,15 +366,11 @@ public class NetworkStaffAlertManager {
     }
 
     private boolean isHelpopEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_ALERTS)
-                && isNetworkEnabled()
-                && getNetworkConfig().getBoolean("NETWORK.HELPOP_ENABLED", true);
+        return isNetworkEnabled() && getNetworkConfig().getBoolean("NETWORK.HELPOP_ENABLED", true);
     }
 
     private boolean isReportEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_ALERTS)
-                && isNetworkEnabled()
-                && getNetworkConfig().getBoolean("NETWORK.REPORT_ENABLED", true);
+        return isNetworkEnabled() && getNetworkConfig().getBoolean("NETWORK.REPORT_ENABLED", true);
     }
 
     private boolean shouldWarnSenderOnRedisError() {

@@ -1,12 +1,12 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
 public enum AmethystToolType {
-    DRILL("Amethyst Drill"),
-    CHOPPER("Amethyst Tree Chopper"),
-    SELL_AXE("Amethyst Sell Axe"),
-    SHOVEL("Amethyst Shovel"),
-    BUCKET("Amethyst Bucket"),
-    SHARD_BOOSTER("Shard Booster");
+    DRILL("ᴀᴍᴇᴛʜʏѕᴛ ᴅʀɪʟʟ"),
+    CHOPPER("ᴀᴍᴇᴛʜʏѕᴛ ᴛʀᴇᴇ ᴄʜᴏᴘᴘᴇʀ"),
+    SELL_AXE("ᴀᴍᴇᴛʜʏѕᴛ ѕᴇʟʟ ᴀxᴇ"),
+    SHOVEL("ᴀᴍᴇᴛʜʏѕᴛ ѕʜᴏᴠᴇʟ"),
+    BUCKET("ᴀᴍᴇᴛʜʏѕᴛ ʙᴜᴄᴋᴇᴛ"),
+    SHARD_BOOSTER("ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ");
 
     private final String displayName;
 

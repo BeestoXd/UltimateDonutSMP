@@ -96,11 +96,6 @@ public class RTPManager {
         menuDestinations = buildMenuDestinations(configuredDestinations);
     }
 
-    public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP)
-                && plugin.getConfigManager().getRtp().getBoolean("ENABLED", true);
-    }
-
     public void clearSearch(UUID playerId) {
         stopSearch(playerId, true);
     }
@@ -204,15 +199,12 @@ public class RTPManager {
         return switch (worldName.toLowerCase(Locale.ROOT)) {
             case "world" -> "Overworld";
             case "world_nether" -> "Nether";
-            case "world_the_end" -> "The End";
+            case "world_the_end" -> "ᴛʜᴇ ᴇɴᴅ";
             default -> worldName;
         };
     }
 
     public boolean queueMenuTeleport(Player player, RTPDestination destination) {
-        if (!isEnabled()) {
-            return false;
-        }
         if (destination == null) {
             return false;
         }
@@ -220,13 +212,10 @@ public class RTPManager {
     }
 
     public boolean queueCommandTeleport(Player player, String selector) {
-        if (!isEnabled()) {
-            return false;
-        }
         String worldName = resolveWorldSelector(selector);
         if (worldName == null || worldName.isBlank()) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cWorld not found.")
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cᴡᴏʀʟᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ.")
             ));
             return false;
         }
@@ -234,14 +223,11 @@ public class RTPManager {
     }
 
     public boolean isPortalDestinationAvailable(String selector) {
-        if (!isEnabled()) {
-            return false;
-        }
         String worldName = resolveWorldSelector(selector);
         if (worldName == null || worldName.isBlank()) {
             return false;
         }
-        if (isDeniedWorld(worldName) || isConfiguredDestinationDisabled(worldName)) {
+        if (isDeniedWorld(worldName) || isConfiguredDestinationdisabled(worldName)) {
             return false;
         }
         if (!hasWorldSearchSettings(worldName)) {
@@ -251,9 +237,6 @@ public class RTPManager {
     }
 
     public List<String> getPortalSelectorSuggestions() {
-        if (!isEnabled()) {
-            return List.of();
-        }
         Set<String> selectors = new LinkedHashSet<>();
 
         for (RTPDestination destination : configuredDestinations) {
@@ -274,19 +257,19 @@ public class RTPManager {
         if (Bukkit.getWorld("world") != null
                 && hasWorldSearchSettings("world")
                 && !isDeniedWorld("world")
-                && !isConfiguredDestinationDisabled("world")) {
+                && !isConfiguredDestinationdisabled("world")) {
             selectors.add("overworld");
         }
         if (Bukkit.getWorld("world_nether") != null
                 && hasWorldSearchSettings("world_nether")
                 && !isDeniedWorld("world_nether")
-                && !isConfiguredDestinationDisabled("world_nether")) {
+                && !isConfiguredDestinationdisabled("world_nether")) {
             selectors.add("nether");
         }
         if (Bukkit.getWorld("world_the_end") != null
                 && hasWorldSearchSettings("world_the_end")
                 && !isDeniedWorld("world_the_end")
-                && !isConfiguredDestinationDisabled("world_the_end")) {
+                && !isConfiguredDestinationdisabled("world_the_end")) {
             selectors.add("end");
         }
 
@@ -296,9 +279,6 @@ public class RTPManager {
     }
 
     public Location findSafeLocation(SearchSettings settings) {
-        if (!isEnabled()) {
-            return null;
-        }
         if (settings == null || settings.worldName() == null || settings.worldName().isBlank()) {
             return null;
         }
@@ -315,14 +295,14 @@ public class RTPManager {
 
     private boolean queueTeleport(Player player, String worldName) {
         if (isDeniedWorld(worldName)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou cannot RTP in this world."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʀᴛᴘ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ."));
             return false;
         }
 
-        if (isConfiguredDestinationDisabled(worldName)) {
+        if (isConfiguredDestinationdisabled(worldName)) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
-                            .getString("MESSAGES.DESTINATION-DISABLED", "&cThis destination is currently disabled.")
+                            .getString("MESSAGES.DESTINATION-DISABLED", "&cᴛʜɪѕ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")
             ));
             return false;
         }
@@ -330,7 +310,7 @@ public class RTPManager {
         World world = Bukkit.getWorld(worldName);
         if (world == null) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cWorld not found.")
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cᴡᴏʀʟᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ.")
             ));
             return false;
         }
@@ -339,13 +319,13 @@ public class RTPManager {
         if (settings == null) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
-                            .getString("MESSAGES.DESTINATION-DISABLED", "&cThis destination is currently disabled.")
+                            .getString("MESSAGES.DESTINATION-DISABLED", "&cᴛʜɪѕ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")
             ));
             return false;
         }
 
         if (hasActiveRtpFlow(player.getUniqueId()) || plugin.getTeleportManager().hasPendingType(player.getUniqueId(), "RTP")) {
-            player.sendMessage(ColorUtils.toComponent("&cYour RTP is already in progress."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜʀ ʀᴛᴘ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ."));
             return false;
         }
 
@@ -353,7 +333,7 @@ public class RTPManager {
         if (cooldownRemaining > 0L) {
             long remainingSeconds = Math.max(1L, (long) Math.ceil(cooldownRemaining / 1000.0D));
             String message = plugin.getConfigManager().getRtp()
-                    .getString("MESSAGES.COOLDOWN", "&cYou can't rtp for another {remaining}s.");
+                    .getString("MESSAGES.COOLDOWN", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴛᴘ ꜰᴏʀ ᴀɴᴏᴛʜᴇʀ {remaining}ѕ.");
             message = message.replace("{remaining}", String.valueOf(remainingSeconds))
                     .replace("%remaining%", String.valueOf(remainingSeconds));
             player.sendMessage(ColorUtils.toComponent(message));
@@ -363,7 +343,7 @@ public class RTPManager {
         if (isQueueFull(player)) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
-                            .getString("MESSAGES.MAX-PLAYERS", "&cToo many players are using RTP right now. Please try again later.")
+                            .getString("MESSAGES.MAX-PLAYERS", "&cᴛᴏᴏ ᴍᴀɴʏ ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ᴜѕɪɴɢ ʀᴛᴘ ʀɪɢʜᴛ ɴᴏᴡ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.")
             ));
             return false;
         }
@@ -377,7 +357,7 @@ public class RTPManager {
 
         String worldLabel = describeWorld(worldName);
         String searching = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCHING", "&aSearching for safe location in {world}...")
+                .getString("MESSAGES.SEARCHING", "&aѕᴇᴀʀᴄʜɪɴɢ ꜰᴏʀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ɪɴ {world}...")
                 .replace("{world}", worldLabel);
         player.sendMessage(ColorUtils.toComponent(searching));
 
@@ -445,13 +425,12 @@ public class RTPManager {
         int z = progress.settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
-        Location anchor = new Location(world, x + 0.5D, world.getMinHeight(), z + 0.5D);
 
         progress.attemptsUsed++;
         progress.attemptInFlight = true;
 
         world.getChunkAtAsync(chunkX, chunkZ, true).whenComplete((chunk, throwable) ->
-                plugin.getFoliaScheduler().runRegion(anchor,
+                plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ,
                         () -> completeAsyncLocationAttempt(playerId, progress, x, z, throwable))
         );
     }
@@ -502,7 +481,7 @@ public class RTPManager {
 
         String attempts = String.valueOf(progress.settings.maxAttempts());
         String maxAttemptsMessage = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.MAX-ATTEMPTS", "&cCould not find a safe location after %attempts% attempts.")
+                .getString("MESSAGES.MAX-ATTEMPTS", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀꜰᴛᴇʀ %attempts% aᴛᴛᴇᴍᴘᴛѕ.")
                 .replace("%attempts%", attempts)
                 .replace("{attempts}", attempts);
         player.sendMessage(ColorUtils.toComponent(maxAttemptsMessage));
@@ -513,12 +492,12 @@ public class RTPManager {
         applyCooldown(player.getUniqueId(), worldName);
 
         String foundMessage = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SAFE-LOCATION-FOUND", "&aSafe location found at: X:{x} Y:{y} Z:{z}")
+                .getString("MESSAGES.SAFE-LOCATION-FOUND", "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ᴀᴛ: x:{x} ʏ:{y} ᴢ:{z}")
                 .replace("{x}", String.valueOf(found.getBlockX()))
                 .replace("{y}", String.valueOf(found.getBlockY()))
                 .replace("{z}", String.valueOf(found.getBlockZ()));
         player.sendMessage(ColorUtils.toComponent(foundMessage));
-        sendTeleportWarning(player, worldName);
+        sendTeleportwarning(player, worldName);
         SoundUtils.play(player, plugin.getConfigManager().getSound("RTP.SEARCH-FOUND"));
         UUID playerId = player.getUniqueId();
 
@@ -554,7 +533,7 @@ public class RTPManager {
         long displayedSeconds = getDisplayedSearchSeconds(progress.elapsedTicks);
 
         String actionBar = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7Searching {world}... &b{elapsed}s")
+                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ")
                 .replace("{world}", describeWorld(progress.worldName))
                 .replace("{elapsed}", formatElapsedSeconds(progress.elapsedTicks))
                 .replace("{attempts}", String.valueOf(progress.attemptsUsed))
@@ -573,7 +552,7 @@ public class RTPManager {
 
     private void sendFoundActionBar(Player player, String worldName, Location found, long refreshTick) {
         String actionBar = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCH-FOUND-ACTIONBAR", "&aSafe location found in {world}! &7Preparing teleport...")
+                .getString("MESSAGES.SEARCH-FOUND-ACTIONBAR", "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ɪɴ {world}! &7ᴘʀᴇᴘᴀʀɪɴɢ ᴛᴇʟᴇᴘᴏʀᴛ...")
                 .replace("{world}", describeWorld(worldName))
                 .replace("{x}", String.valueOf(found.getBlockX()))
                 .replace("{y}", String.valueOf(found.getBlockY()))
@@ -610,20 +589,12 @@ public class RTPManager {
             return resolveNetherSafeLocation(world, x, z);
         }
 
-        return resolveSurfaceSafeLocation(world, x, z);
-    }
-
-    private Location resolveSurfaceSafeLocation(World world, int x, int z) {
-        int minGroundY = world.getMinHeight();
-        int maxGroundY = world.getMaxHeight() - 1 - PLAYER_CLEARANCE_BLOCKS;
-
-        for (int groundY = maxGroundY; groundY >= minGroundY; groundY--) {
-            if (isSafeStandLocation(world, x, groundY, z)) {
-                return new Location(world, x + 0.5, groundY + 1.0, z + 0.5);
-            }
+        if (!isSafe(world, x, z)) {
+            return null;
         }
 
-        return null;
+        int y = world.getHighestBlockYAt(x, z);
+        return new Location(world, x + 0.5, y + 1.5, z + 0.5);
     }
 
     private Location resolveNetherSafeLocation(World world, int x, int z) {
@@ -746,7 +717,7 @@ public class RTPManager {
         };
     }
 
-    private boolean isConfiguredDestinationDisabled(String worldName) {
+    private boolean isConfiguredDestinationdisabled(String worldName) {
         boolean hasConfiguredDestination = false;
         for (RTPDestination destination : configuredDestinations) {
             if (!destination.worldName().equalsIgnoreCase(worldName)) {
@@ -834,6 +805,19 @@ public class RTPManager {
         return activeSearchTasks.containsKey(playerId) || activeResultTasks.containsKey(playerId);
     }
 
+    private boolean isSafe(World world, int x, int z) {
+        int y = world.getHighestBlockYAt(x, z);
+        if (y <= world.getMinHeight()) {
+            return false;
+        }
+
+        Block top = world.getBlockAt(x, y, z);
+        String typeName = top.getType().name();
+        return !typeName.contains("WATER")
+                && !typeName.contains("LAVA")
+                && !typeName.contains("VOID");
+    }
+
     private boolean isSafeStandLocation(World world, int x, int groundY, int z) {
         if (groundY < world.getMinHeight() || groundY + PLAYER_CLEARANCE_BLOCKS >= world.getMaxHeight()) {
             return false;
@@ -892,12 +876,12 @@ public class RTPManager {
         return Math.max(1L, (long) Math.ceil(Math.max(0D, elapsedTicks / 20.0D)));
     }
 
-    private void sendTeleportWarning(Player player, String worldName) {
+    private void sendTeleportwarning(Player player, String worldName) {
         int teleportCountdown = plugin.getConfigManager().getConfig().getInt("TELEPORT-COOLDOWN.RTP", 5);
         String warning = plugin.getConfigManager().getRtp()
                 .getString(
                         "MESSAGES.TP-WARNING",
-                        "&eDo not move for &b{countdown}&e seconds or the teleport will be canceled."
+                        "&eᴅᴏ ɴᴏᴛ ᴍᴏᴠᴇ ꜰᴏʀ &b{countdown}&e ѕᴇᴄᴏɴᴅѕ ᴏʀ ᴛʜᴇ ᴛᴇʟᴇᴘᴏʀᴛ ᴡɪʟʟ ʙᴇ ᴄᴀɴᴄᴇʟᴇᴅ."
                 )
                 .replace("{world}", describeWorld(worldName))
                 .replace("{countdown}", String.valueOf(teleportCountdown));

@@ -24,16 +24,16 @@ public class TPACommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
 
         String sub = label.toLowerCase();
 
         switch (sub) {
             case "tpa" -> {
-                if (args.length == 0) { send(player, "&cUsage: /tpa <player>"); return true; }
+                if (args.length == 0) { send(player, "&cᴜѕᴀɢᴇ: /tpa <player>"); return true; }
                 Player target = Bukkit.getPlayerExact(args[0]);
                 if (target == null || target.equals(player)) {
-                    send(player, target == null ? "&cPlayer not online."
+                    send(player, target == null ? "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."
                             : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
                     return true;
                 }
@@ -53,8 +53,8 @@ public class TPACommand implements CommandExecutor {
                     send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT",
                             "{player}", target.getName()));
                     if (!targetData.isTpaRequestsEnabled() || queuePosition > 1 || !targetData.isTpauto()) {
-                        send(player, "&7Your /tpa request was stored in &b" + target.getName()
-                                + "&7's queue &8(#" + queuePosition + "&8).");
+                        send(player, "&7ʏᴏᴜʀ /tpa ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ѕᴛᴏʀᴇᴅ ɪɴ &b" + target.getName()
+                                + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
                     }
                     SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
                     plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
@@ -72,10 +72,10 @@ public class TPACommand implements CommandExecutor {
                 sendIncomingRequest(player, target, false);
             }
             case "tpahere" -> {
-                if (args.length == 0) { send(player, "&cUsage: /tpahere <player>"); return true; }
+                if (args.length == 0) { send(player, "&cᴜѕᴀɢᴇ: /tpahere <player>"); return true; }
                 Player target = Bukkit.getPlayerExact(args[0]);
                 if (target == null || target.equals(player)) {
-                    send(player, target == null ? "&cPlayer not online."
+                    send(player, target == null ? "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."
                             : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
                     return true;
                 }
@@ -95,8 +95,8 @@ public class TPACommand implements CommandExecutor {
                     send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT",
                             "{player}", target.getName()));
                     if (!targetData.isTpaHereRequestsEnabled() || queuePosition > 1 || !targetData.isAutoTpaHereEnabled()) {
-                        send(player, "&7Your /tpahere request was added to &b" + target.getName()
-                                + "&7's queue &8(#" + queuePosition + "&8).");
+                        send(player, "&7ʏᴏᴜʀ /tpahere ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴀᴅᴅᴇᴅ ᴛᴏ &b" + target.getName()
+                                + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
                     }
                     SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
                     plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
@@ -122,7 +122,7 @@ public class TPACommand implements CommandExecutor {
                 }
                 plugin.getTPAManager().removeRequest(player.getUniqueId());
                 Player requester = Bukkit.getPlayer(req.requester());
-                if (requester == null) { send(player, "&cRequester is no longer online."); return true; }
+                if (requester == null) { send(player, "&cʀᴇǫᴜᴇѕᴛᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ."); return true; }
 
                 if (req.tpaHere()) {
                     // tpahere: player (target) teleports to requester
@@ -151,11 +151,11 @@ public class TPACommand implements CommandExecutor {
                 }
                 TPAManager.TpaRequest req = plugin.getTPAManager().getRequest(player.getUniqueId());
                 plugin.getTPAManager().removeRequest(player.getUniqueId());
-                send(player, "&7TPA request denied.");
+                send(player, "&7ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ᴅᴇɴɪᴇᴅ.");
                 if (req != null) {
                     Player requester = Bukkit.getPlayer(req.requester());
                     if (requester != null) {
-                        requester.sendMessage(ColorUtils.toComponent("&7Your teleport request was denied."));
+                        requester.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜʀ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴅᴇɴɪᴇᴅ."));
                     }
                 }
             }

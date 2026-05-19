@@ -335,7 +335,7 @@ public class KeyAllManager {
                 .replace("{uuid}", player.getUniqueId().toString())
                 .replace("{crate}", reward == null ? "" : reward.crateId())
                 .replace("{crate_id}", reward == null ? "" : reward.crateId())
-                .replace("{crate_name}", reward == null ? "crate" : reward.displayName())
+                .replace("{crate_name}", reward == null ? "ᴄʀᴀᴛᴇ" : reward.displayName())
                 .replace("{amount}", String.valueOf(reward == null ? 1 : reward.amount()));
     }
 

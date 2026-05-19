@@ -30,7 +30,7 @@ public class BountyConfirmMenu extends BaseMenu {
     public BountyConfirmMenu(UltimateDonutSmp plugin, UUID targetUuid, String targetName, double amount) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("BOUNTY-CONFIRM-MENU.TITLE", "&8Confirm Bounty"),
+                plugin.getConfigManager().getMenus().getString("BOUNTY-CONFIRM-MENU.TITLE", "&8ᴄᴏɴꜰɪʀᴍ ʙᴏᴜɴᴛʏ"),
                 plugin.getConfigManager().getMenus().getInt("BOUNTY-CONFIRM-MENU.SIZE", 27)
         );
         this.targetUuid = targetUuid;
@@ -48,14 +48,14 @@ public class BountyConfirmMenu extends BaseMenu {
                 menus,
                 "BOUNTY-CONFIRM-MENU.CANCEL-BUTTON",
                 "{player}", targetName,
-                "{amount}", plugin.getCurrencyManager().formatMoney(amount)
+                "{amount}", "$" + NumberUtils.format(amount)
         ));
         set(PLAYER_SLOT, createTargetItem(menus));
         set(CONFIRM_SLOT, buildConfigItem(
                 menus,
                 "BOUNTY-CONFIRM-MENU.CONFIRM-BUTTON",
                 "{player}", targetName,
-                "{amount}", plugin.getCurrencyManager().formatMoney(amount)
+                "{amount}", "$" + NumberUtils.format(amount)
         ));
     }
 
@@ -100,7 +100,7 @@ public class BountyConfirmMenu extends BaseMenu {
                 menus,
                 "BOUNTY-CONFIRM-MENU.PLAYER-BUTTON",
                 "{player}", targetName,
-                "{amount}", plugin.getCurrencyManager().formatMoney(amount)
+                "{amount}", "$" + NumberUtils.format(amount)
         );
 
         if (!(item.getItemMeta() instanceof SkullMeta meta)) {

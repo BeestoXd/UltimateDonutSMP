@@ -25,13 +25,13 @@ public class AltsCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player && !player.hasPermission(PERMISSION)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length == 0) {
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("ALTS.USAGE", "&cUsage: /alts <player>")
+                    plugin.getConfigManager().getMessageOrDefault("ALTS.USAGE", "&cᴜѕᴀɢᴇ: /alts <player>")
             ));
             return true;
         }
@@ -39,7 +39,7 @@ public class AltsCommand implements CommandExecutor {
         ProfileSnapshot snapshot = plugin.getProfileViewerManager().resolveProfile(args[0]).orElse(null);
         if (snapshot == null) {
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("ALTS.NOT_FOUND", "&cPlayer not found.")
+                    plugin.getConfigManager().getMessageOrDefault("ALTS.NOT_FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.")
             ));
             return true;
         }
@@ -47,24 +47,24 @@ public class AltsCommand implements CommandExecutor {
         List<String> knownIps = plugin.getDatabaseManager().loadKnownIpAddresses(snapshot.getUuid());
         if (knownIps.isEmpty()) {
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("ALTS.NO_DATA", "&cNo IP history found for that player.")
+                    plugin.getConfigManager().getMessageOrDefault("ALTS.NO_DATA", "&cɴᴏ ɪᴘ ʜɪѕᴛᴏʀʏ ꜰᴏᴜɴᴅ ꜰᴏʀ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ.")
             ));
             return true;
         }
 
         List<DatabaseManager.AltAccountMatch> matches = plugin.getDatabaseManager().loadAltAccounts(snapshot.getUuid());
         sender.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("ALTS.HEADER", "&8[&6Alts&8] &e%player%")
+                plugin.getConfigManager().getMessageOrDefault("ALTS.HEADER", "&8[&6ᴀʟᴛѕ&8] &e%player%")
                         .replace("%player%", snapshot.getUsername())
         ));
         sender.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("ALTS.KNOWN_IPS", "&7Known IPs: &f%ips%")
+                plugin.getConfigManager().getMessageOrDefault("ALTS.KNOWN_IPS", "&7ᴋɴᴏᴡɴ ɪᴘѕ: &f%ips%")
                         .replace("%ips%", String.join(", ", knownIps))
         ));
 
         if (matches.isEmpty()) {
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("ALTS.NONE", "&7No alternate accounts found.")
+                    plugin.getConfigManager().getMessageOrDefault("ALTS.NONE", "&7ɴᴏ ᴀʟᴛᴇʀɴᴀᴛᴇ ᴀᴄᴄᴏᴜɴᴛѕ ꜰᴏᴜɴᴅ.")
             ));
             return true;
         }
@@ -74,10 +74,10 @@ public class AltsCommand implements CommandExecutor {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                                     "ALTS.ENTRY",
-                                    "&8- &e%player% &7[%status%&7] &fshared: %ips%"
+                                    "&8- &e%player% &7[%status%&7] &fѕʜᴀʀᴇᴅ: %ips%"
                             )
                             .replace("%player%", match.username())
-                            .replace("%status%", online ? "&aOnline" : "&cOffline")
+                            .replace("%status%", online ? "&aᴏɴʟɪɴᴇ" : "&cᴏꜰꜰʟɪɴᴇ")
                             .replace("%ips%", String.join(", ", match.sharedIps()))
             ));
         }

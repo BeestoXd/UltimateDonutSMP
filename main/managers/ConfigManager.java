@@ -453,7 +453,7 @@ public class ConfigManager {
         try {
             Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to back up broken file " + file.getPath(), e);
+            plugin.getLogger().log(Level.WARNING, "ꜰᴀɪʟᴇᴅ ᴛᴏ ʙᴀᴄᴋ ᴜᴘ ʙʀᴏᴋᴇɴ ꜰɪʟᴇ " + file.getPath(), e);
         }
     }
 
@@ -513,7 +513,7 @@ public class ConfigManager {
     // ── Convenience helpers ────────────────────────────────────────────────────
 
     public String getMessage(String path) {
-        return messages.getString(path, "&cMessage not found: " + path);
+        return messages.getString(path, "&cᴍᴇѕѕᴀɢᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ: " + path);
     }
 
     public String getMessage(String path, String... placeholders) {

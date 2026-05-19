@@ -20,7 +20,7 @@ public class InvseeCommand implements CommandExecutor {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!plugin.getInvseeManager().canAdmin(sender)) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        plugin.getInvseeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                        plugin.getInvseeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
                 ));
                 return true;
             }
@@ -28,32 +28,32 @@ public class InvseeCommand implements CommandExecutor {
             plugin.getConfigManager().reloadInvsee();
             plugin.getInvseeManager().reload();
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getInvseeManager().getMessage("RELOAD-SUCCESS", "&aInvsee config reloaded.")
+                    plugin.getInvseeManager().getMessage("RELOAD-SUCCESS", "&aɪɴᴠѕᴇᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.")
             ));
             return true;
         }
 
         if (!(sender instanceof Player viewer)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
         if (!plugin.getInvseeManager().isEnabled()) {
             viewer.sendMessage(ColorUtils.toComponent(
-                    plugin.getInvseeManager().getMessage("FEATURE-DISABLED", "&cThe Invsee system is disabled.")
+                    plugin.getInvseeManager().getMessage("FEATURE-DISABLED", "&cᴛʜᴇ ɪɴᴠѕᴇᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")
             ));
             return true;
         }
 
         if (!plugin.getInvseeManager().canView(viewer)) {
             viewer.sendMessage(ColorUtils.toComponent(
-                    plugin.getInvseeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                    plugin.getInvseeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
             ));
             return true;
         }
 
         if (args.length == 0) {
-            viewer.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
+            viewer.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
             return true;
         }
 
@@ -64,8 +64,8 @@ public class InvseeCommand implements CommandExecutor {
                     ? "PLAYER-NOT-ONLINE"
                     : "PLAYER-NOT-FOUND";
             String fallback = plugin.getInvseeManager().requiresOnlineTarget() || knownPlayer
-                    ? "&cThat player must be online."
-                    : "&cPlayer not found.";
+                    ? "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ."
+                    : "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.";
             viewer.sendMessage(ColorUtils.toComponent(
                     plugin.getInvseeManager().formatMessage(path, fallback, "{player}", args[0], "{target}", args[0])
             ));
@@ -75,7 +75,7 @@ public class InvseeCommand implements CommandExecutor {
         if (!plugin.getInvseeManager().allowSelfView()
                 && viewer.getUniqueId().equals(target.getUniqueId())) {
             viewer.sendMessage(ColorUtils.toComponent(
-                    plugin.getInvseeManager().getMessage("SELF-VIEW-DISABLED", "&cYou cannot invsee yourself.")
+                    plugin.getInvseeManager().getMessage("SELF-VIEW-DISABLED", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠѕᴇᴇ ʏᴏᴜʀѕᴇʟꜰ.")
             ));
             return true;
         }

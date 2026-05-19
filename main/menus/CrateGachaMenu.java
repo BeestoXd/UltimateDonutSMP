@@ -80,7 +80,7 @@ public class CrateGachaMenu extends BaseMenu {
         }
 
         plugin.getCrateVisualManager().playNoKeyEffects(player);
-        player.sendMessage(ColorUtils.toComponent("&cPlease wait until the roll finishes."));
+        player.sendMessage(ColorUtils.toComponent("&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ ᴜɴᴛɪʟ ᴛʜᴇ ʀᴏʟʟ ꜰɪɴɪѕʜᴇѕ."));
         plugin.getSpigotScheduler().runEntity(player, () -> {
             if (!plugin.isEnabled() || allowClose || finished || !player.isOnline()) {
                 return;
@@ -103,7 +103,7 @@ public class CrateGachaMenu extends BaseMenu {
             finished = true;
             allowClose = true;
             player.closeInventory();
-            player.sendMessage(ColorUtils.toComponent("&cThat crate has no valid rewards configured."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴄʀᴀᴛᴇ ʜᴀѕ ɴᴏ ᴠᴀʟɪᴅ ʀᴇᴡᴀʀᴅѕ ᴄᴏɴꜰɪɢᴜʀᴇᴅ."));
             plugin.getCrateManager().clearSession(player.getUniqueId());
             return;
         }
@@ -260,7 +260,7 @@ public class CrateGachaMenu extends BaseMenu {
         return ItemUtils.createItem(
                 Material.RED_STAINED_GLASS_PANE,
                 arrow,
-                List.of("&7Winning slot")
+                List.of("&7ᴡɪɴɴɪɴɢ ѕʟᴏᴛ")
         );
     }
 

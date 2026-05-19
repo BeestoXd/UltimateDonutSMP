@@ -6,7 +6,6 @@ import com.bx.ultimateDonutSmp.menus.SellMenu;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -82,11 +81,6 @@ public class WorthDisplayListener implements Listener {
             plugin.getWorthManager().sanitizeInventory(event.getInventory());
         }
 
-        if (isShulkerInventory(event.getInventory())) {
-            queueRefresh(player, 1L);
-            return;
-        }
-
         queueRefresh(player, 1L);
     }
 
@@ -100,11 +94,6 @@ public class WorthDisplayListener implements Listener {
             return;
         }
 
-        if (isShulkerInventory(event.getView().getTopInventory())) {
-            queueRefresh(player, 1L);
-            return;
-        }
-
         queueRefresh(player, 1L);
     }
 
@@ -115,11 +104,6 @@ public class WorthDisplayListener implements Listener {
         }
 
         if (isAmethystItem(event.getOldCursor())) {
-            return;
-        }
-
-        if (isShulkerInventory(event.getView().getTopInventory())) {
-            queueRefresh(player, 1L);
             return;
         }
 
@@ -149,21 +133,14 @@ public class WorthDisplayListener implements Listener {
         );
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player player) {
             ItemStack current = event.getItem().getItemStack();
-            if (isAmethystItem(current)) {
-                return;
+            ItemStack updated = plugin.getWorthManager().applyWorthDisplayForPlayer(player, current);
+            if (updated != current) {
+                event.getItem().setItemStack(updated);
             }
-
-            ItemStack stripped = plugin.getWorthManager().stripWorthDisplay(current);
-            if (stripped != current) {
-                event.getItem().setItemStack(stripped);
-            }
-
-            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
-            queueRefresh(player, 1L);
         }
     }
 
@@ -236,12 +213,10 @@ public class WorthDisplayListener implements Listener {
 
                 if (player.getGameMode() == GameMode.CREATIVE) {
                     plugin.getWorthManager().clearWorthDisplay(player);
-                    sanitizeOpenShulkerInventory(player);
                     return;
                 }
 
                 plugin.getWorthManager().syncWorthDisplay(player);
-                syncOpenShulkerInventory(player);
             });
         }
     }
@@ -251,28 +226,6 @@ public class WorthDisplayListener implements Listener {
                 && (inventory.getHolder() instanceof Player
                 || inventory.getType() == InventoryType.CRAFTING
                 || inventory.getType() == InventoryType.CREATIVE);
-    }
-
-    private void syncOpenShulkerInventory(Player player) {
-        Inventory inventory = player.getOpenInventory().getTopInventory();
-        if (!isShulkerInventory(inventory)) {
-            return;
-        }
-
-        plugin.getWorthManager().syncWorthDisplay(player, inventory);
-    }
-
-    private void sanitizeOpenShulkerInventory(Player player) {
-        Inventory inventory = player.getOpenInventory().getTopInventory();
-        if (!isShulkerInventory(inventory)) {
-            return;
-        }
-
-        plugin.getWorthManager().sanitizeInventory(inventory);
-    }
-
-    private boolean isShulkerInventory(Inventory inventory) {
-        return inventory != null && inventory.getType() == InventoryType.SHULKER_BOX;
     }
 
     private boolean isAmethystItem(ItemStack item) {

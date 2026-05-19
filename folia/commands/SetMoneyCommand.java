@@ -23,12 +23,12 @@ public class SetMoneyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /setmoney <player> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /setmoney <player> <amount>"));
             return true;
         }
 
@@ -60,10 +60,8 @@ public class SetMoneyCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.ADMIN.SET-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                "{previous_balance}", plugin.getCurrencyManager().formatMoney(result.beforeBalance()),
-                "{money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                "{previous_balance_money}", plugin.getCurrencyManager().formatMoney(result.beforeBalance())
+                "{amount}", NumberUtils.format(result.afterBalance()),
+                "{previous_balance}", NumberUtils.format(result.beforeBalance())
         )));
 
         Player targetPlayer = Bukkit.getPlayer(result.targetUuid());
@@ -71,10 +69,8 @@ public class SetMoneyCommand implements CommandExecutor {
             targetPlayer.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.ADMIN.SET-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                    "{previous_balance}", plugin.getCurrencyManager().formatMoney(result.beforeBalance()),
-                    "{money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                    "{previous_balance_money}", plugin.getCurrencyManager().formatMoney(result.beforeBalance())
+                    "{amount}", NumberUtils.format(result.afterBalance()),
+                    "{previous_balance}", NumberUtils.format(result.beforeBalance())
             )));
         }
 

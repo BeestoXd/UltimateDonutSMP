@@ -20,11 +20,11 @@ import java.util.logging.Level;
 public class StatsWipeManager {
 
     public enum WipeTarget {
-        PLAYER_STATS("PLAYER_STATS", "Player Stats", "stats", "playerstats", "player_stats"),
-        TEAM_DOCUMENTS("TEAM_DOCUMENTS", "Team Documents", "teams", "team", "teamdocs", "team_documents"),
-        HOME_DOCUMENTS("HOME_DOCUMENTS", "Home Documents", "homes", "home", "homedocs", "home_documents"),
-        BOUNTIES("BOUNTIES", "Bounties", "bounty", "bounties"),
-        SELL_DOCUMENTS("SELL_DOCUMENTS", "Sell Documents", "sell", "sellhistory", "sell_history", "selldocuments", "sell_documents");
+        PLAYER_STATS("PLAYER_STATS", "ᴘʟᴀʏᴇʀ ѕᴛᴀᴛѕ", "stats", "playerstats", "player_stats"),
+        TEAM_DOCUMENTS("TEAM_DOCUMENTS", "ᴛᴇᴀᴍ ᴅᴏᴄᴜᴍᴇɴᴛѕ", "teams", "team", "teamdocs", "team_documents"),
+        HOME_DOCUMENTS("HOME_DOCUMENTS", "ʜᴏᴍᴇ ᴅᴏᴄᴜᴍᴇɴᴛѕ", "homes", "home", "homedocs", "home_documents"),
+        BOUNTIES("BOUNTIES", "ʙᴏᴜɴᴛɪᴇѕ", "bounty", "bounties"),
+        SELL_DOCUMENTS("SELL_DOCUMENTS", "ѕᴇʟʟ ᴅᴏᴄᴜᴍᴇɴᴛѕ", "sell", "sellhistory", "sell_history", "selldocuments", "sell_documents");
 
         private final String configKey;
         private final String displayName;
@@ -123,7 +123,7 @@ public class StatsWipeManager {
             plugin.getLogger().info("Stats wipe completed by " + actorName + " for targets " + normalizedTargets + ".");
             return new WipeResult(true, false, Map.copyOf(affectedCounts), null);
         } catch (Exception exception) {
-            plugin.getLogger().log(Level.SEVERE, "Stats wipe failed for " + normalizedTargets, exception);
+            plugin.getLogger().log(Level.SEVERE, "ѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ ꜰᴏʀ " + normalizedTargets, exception);
             return new WipeResult(false, false, Map.copyOf(affectedCounts), exception.getMessage());
         } finally {
             wipeInProgress.set(false);

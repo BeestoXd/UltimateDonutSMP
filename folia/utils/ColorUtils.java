@@ -28,6 +28,55 @@ public class ColorUtils {
         hasPAPI = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 
+    public static String toSmallCaps(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+
+        StringBuilder builder = new StringBuilder(text.length());
+        for (int i = 0; i < text.length(); i++) {
+            if (text.regionMatches(true, i, "currency", 0, "currency".length())) {
+                builder.append(text, i, i + "currency".length());
+                i += "currency".length() - 1;
+                continue;
+            }
+            builder.append(toSmallCapsChar(text.charAt(i)));
+        }
+        return builder.toString();
+    }
+
+    private static char toSmallCapsChar(char ch) {
+        return switch (Character.toLowerCase(ch)) {
+            case 'a' -> 'ᴀ';
+            case 'b' -> 'ʙ';
+            case 'c' -> 'ᴄ';
+            case 'd' -> 'ᴅ';
+            case 'e' -> 'ᴇ';
+            case 'f' -> 'ꜰ';
+            case 'g' -> 'ɢ';
+            case 'h' -> 'ʜ';
+            case 'i' -> 'ɪ';
+            case 'j' -> 'ᴊ';
+            case 'k' -> 'ᴋ';
+            case 'l' -> 'ʟ';
+            case 'm' -> 'ᴍ';
+            case 'n' -> 'ɴ';
+            case 'o' -> 'ᴏ';
+            case 'p' -> 'ᴘ';
+            case 'q' -> 'ǫ';
+            case 'r' -> 'ʀ';
+            case 's' -> 'ѕ';
+            case 't' -> 'ᴛ';
+            case 'u' -> 'ᴜ';
+            case 'v' -> 'ᴠ';
+            case 'w' -> 'ᴡ';
+            case 'x' -> 'x';
+            case 'y' -> 'ʏ';
+            case 'z' -> 'ᴢ';
+            default -> ch;
+        };
+    }
+
     public static String translateHex(String text) {
         if (text == null) {
             return "";

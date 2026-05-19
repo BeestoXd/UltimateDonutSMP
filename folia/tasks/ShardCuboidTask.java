@@ -18,9 +18,6 @@ public class ShardCuboidTask implements Runnable {
     @Override
     public void run() {
         ShardManager shardManager = plugin.getShardManager();
-        if (shardManager == null || !shardManager.isEnabled()) {
-            return;
-        }
 
         plugin.getFoliaScheduler().forEachOnlinePlayer(player -> tickPlayer(player, shardManager));
     }
@@ -39,7 +36,7 @@ public class ShardCuboidTask implements Runnable {
             handleLeave(uuid, previousId, shardManager);
             shardManager.setLastMatchedCuboid(uuid, null);
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
-                    "None",
+                    "ɴᴏɴᴇ",
                     "OUTSIDE",
                     "-",
                     0,
@@ -60,7 +57,7 @@ public class ShardCuboidTask implements Runnable {
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
                     current.cuboidName(),
                     "EXCLUDED_WORLD",
-                    "Disabled",
+                    "ᴅɪѕᴀʙʟᴇᴅ",
                     progress.getRemainingSeconds(),
                     true
             ));

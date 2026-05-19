@@ -70,7 +70,7 @@ public class AmethystToolsManager {
             resolvedLore.add(line.replace("{time}", NumberUtils.formatTimeLong(duration)));
         }
 
-        ItemStack item = ItemUtils.createItem(material, cfg.getString("NAME", "&d&lAmethyst Tool"), resolvedLore);
+        ItemStack item = ItemUtils.createItem(material, cfg.getString("NAME", "&d&lᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ"), resolvedLore);
         item.setAmount(1);
 
         List<String> enchants = cfg.getStringList("ENCHANTMENTS");
@@ -261,7 +261,7 @@ public class AmethystToolsManager {
         }
 
         long remaining = getRemainingSeconds(item);
-        String timeStr = remaining > 0 ? NumberUtils.formatTimeLong(remaining) : "&cEXPIRED";
+        String timeStr = remaining > 0 ? NumberUtils.formatTimeLong(remaining) : "&cᴇxᴘɪʀᴇᴅ";
 
         boolean foundSelfDestruct = false;
         List<String> newLore = new ArrayList<>(lore);

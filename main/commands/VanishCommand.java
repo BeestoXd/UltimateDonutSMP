@@ -19,20 +19,20 @@ public class VanishCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getStaffModeManager().getMessage("PLAYER-ONLY", "&cOnly players can use this command.")
+                    plugin.getStaffModeManager().getMessage("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.")
             ));
             return true;
         }
 
         if (!plugin.getStaffModeManager().canUseVanish(player)) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                    plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
             ));
             return true;
         }
 
         if (!plugin.getStaffModeManager().isInStaffMode(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cYou must be in Staff Mode to use /vanish."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴍᴜѕᴛ ʙᴇ ɪɴ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴛᴏ ᴜѕᴇ /vanish."));
             return true;
         }
 

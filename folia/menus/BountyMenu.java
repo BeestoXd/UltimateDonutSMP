@@ -38,7 +38,7 @@ public class BountyMenu extends BaseMenu {
     public BountyMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("BOUNTIES-MENU.TITLE", "&8bounties"),
+                plugin.getConfigManager().getMenus().getString("BOUNTIES-MENU.TITLE", "&8ʙᴏᴜɴᴛɪᴇѕ"),
                 plugin.getConfigManager().getMenus().getInt("BOUNTIES-MENU.SIZE", 54)
         );
     }
@@ -136,8 +136,7 @@ public class BountyMenu extends BaseMenu {
         Bounty bounty = displayedBounties.get(slot);
         String msg = plugin.getConfigManager().getMessage("BOUNTY.PLAYER-HAS-BOUNTY",
                 "{player}", plugin.getBountyManager().getDisplayName(bounty.getTargetUuid()),
-                "{amount}", NumberUtils.format(bounty.getAmount()),
-                "{amount_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount()));
+                "{amount}", NumberUtils.format(bounty.getAmount()));
         player.sendMessage(ColorUtils.toComponent(msg));
     }
 
@@ -147,8 +146,7 @@ public class BountyMenu extends BaseMenu {
                 .replace("{player}", playerName);
         List<String> lore = menus.getStringList("BOUNTIES-MENU.BOUNTY-BUTTON.LORE").stream()
                 .map(line -> line.replace("{player}", playerName)
-                        .replace("{price}", NumberUtils.format(bounty.getAmount()))
-                        .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount())))
+                        .replace("{price}", NumberUtils.format(bounty.getAmount())))
                 .toList();
 
         Material material = ItemUtils.parseMaterial(
@@ -172,17 +170,17 @@ public class BountyMenu extends BaseMenu {
     private void buildRefreshButton(FileConfiguration menus) {
         String path = "BOUNTIES-MENU.REFRESH-BUTTON";
         Material material = ItemUtils.parseMaterial(menus.getString(path + ".MATERIAL", "SKELETON_SKULL"));
-        String name = menus.getString(path + ".NAME", "&#6BF18Dbounties");
+        String name = menus.getString(path + ".NAME", "&#6BF18Dʙᴏᴜɴᴛɪᴇѕ");
         List<String> lore = menus.getStringList(path + ".LORE");
         set(menus.getInt(path + ".SLOT", 49), ItemUtils.createItem(material, name, lore));
     }
 
     private void buildSortButton() {
-        String sortState = descending ? "Highest Bounty" : "Lowest Bounty";
+        String sortState = descending ? "ʜɪɢʜᴇѕᴛ ʙᴏᴜɴᴛʏ" : "ʟᴏᴡᴇѕᴛ ʙᴏᴜɴᴛʏ";
         set(SORT_SLOT, ItemUtils.createItem(
                 Material.HOPPER,
-                "&aSort",
-                List.of("&fCurrently: &7" + sortState)
+                "&aѕᴏʀᴛ",
+                List.of("&fᴄᴜʀʀᴇɴᴛʟʏ: &7" + sortState)
         ));
     }
 
@@ -192,31 +190,31 @@ public class BountyMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(FIRST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aFirst Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aꜰɪʀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.FIRST-PAGE-LORE")
             ));
             set(PREVIOUS_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aBack"),
+                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aʙᴀᴄᴋ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(PAGE_INFO_SLOT, ItemUtils.createItem(
                 Material.BOOK,
-                "&ePage " + (page + 1) + "&7/&e" + totalPages,
-                List.of("&fActive bounties: &7" + NumberUtils.format(totalItems))
+                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
+                List.of("&fᴀᴄᴛɪᴠᴇ ʙᴏᴜɴᴛɪᴇѕ: &7" + NumberUtils.format(totalItems))
         ));
 
         if (hasNextPage) {
             set(NEXT_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
+                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
             set(LAST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aLast Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aʟᴀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.LAST-PAGE-LORE")
             ));
         }

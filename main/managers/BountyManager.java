@@ -75,7 +75,7 @@ public class BountyManager {
 
     public String getDisplayName(UUID playerUuid) {
         if (playerUuid == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         Player online = Bukkit.getPlayer(playerUuid);
@@ -93,7 +93,7 @@ public class BountyManager {
             return storedName;
         }
 
-        return "Unknown";
+        return "ᴜɴᴋɴᴏᴡɴ";
     }
 
     public PlacementResult placeBounty(Player placer, UUID targetUuid, double amount) {

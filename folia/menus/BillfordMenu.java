@@ -56,7 +56,7 @@ public class BillfordMenu extends BaseMenu {
     private static String resolveTitle(UltimateDonutSmp plugin) {
         return plugin.getConfigManager().getMenus().getString(
                 MENU_PATH + ".TITLE",
-                plugin.getConfigManager().getBillford().getString("GUI.TITLE", "&8&lBillford &7Trade")
+                plugin.getConfigManager().getBillford().getString("GUI.TITLE", "&8&lʙɪʟʟꜰᴏʀᴅ &7ᴛʀᴀᴅᴇ")
         );
     }
 
@@ -99,8 +99,8 @@ public class BillfordMenu extends BaseMenu {
         if (currentTrade == null) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo Billford trade configured",
-                    List.of("&7Add entries inside &fbillford.yml &7to enable the system.")
+                    "&cɴᴏ ʙɪʟʟꜰᴏʀᴅ ᴛʀᴀᴅᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ",
+                    List.of("&7ᴀᴅᴅ ᴇɴᴛʀɪᴇѕ ɪɴѕɪᴅᴇ &fbillford.yml &7ᴛᴏ ᴇɴᴀʙʟᴇ ᴛʜᴇ ѕʏѕᴛᴇᴍ.")
             ));
             return;
         }
@@ -130,9 +130,9 @@ public class BillfordMenu extends BaseMenu {
                                     getConfigStringList(
                                             "GUI.INPUT_LORE",
                                             List.of(
-                                                    "&7Cost: &f{amount}x &e{item}",
+                                                    "&7ᴄᴏѕᴛ: &f{amount}x &e{item}",
                                                     "",
-                                                    "&8Must be in your inventory."
+                                                    "&8ᴍᴜѕᴛ ʙᴇ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ."
                                             )
                                     )
                             ),
@@ -149,30 +149,28 @@ public class BillfordMenu extends BaseMenu {
         rewardPlaceholders.put(
                 "{money_line}",
                 currentTrade.moneyBonus() > 0
-                        ? "&7" + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
-                        + " Bonus: " + plugin.getCurrencyManager().formatMoney(currentTrade.moneyBonus())
+                        ? "&7ᴍᴏɴᴇʏ ʙᴏɴᴜѕ: &a$" + NumberUtils.format(currentTrade.moneyBonus())
                         : ""
         );
         rewardPlaceholders.put(
                 "{shard_line}",
                 currentTrade.shardBonus() > 0
-                        ? "&7" + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
-                        + " Bonus: +" + plugin.getCurrencyManager().formatShards(currentTrade.shardBonus())
+                        ? "&7ѕʜᴀʀᴅ ʙᴏɴᴜѕ: &#A303F9+" + currentTrade.shardBonus()
                         : ""
         );
 
         ItemStack rewardDisplay = ItemUtils.createItem(
                 currentTrade.rewardMaterial(),
-                replacePlaceholders(getConfigString("GUI.REWARD_NAME", "&aReward"), rewardPlaceholders),
+                replacePlaceholders(getConfigString("GUI.REWARD_NAME", "&aʀᴇᴡᴀʀᴅ"), rewardPlaceholders),
                 replaceLore(
                         getConfigStringList(
                                 "GUI.REWARD_LORE",
                                 List.of(
-                                        "&7Reward: &a{amount}x &f{item}",
+                                        "&7ʀᴇᴡᴀʀᴅ: &a{amount}x &f{item}",
                                         "{money_line}",
                                         "{shard_line}",
                                         "",
-                                        "&8Awarded upon successful trade."
+                                        "&8ᴀᴡᴀʀᴅᴇᴅ ᴜᴘᴏɴ ѕᴜᴄᴄᴇѕѕꜰᴜʟ ᴛʀᴀᴅᴇ."
                                 )
                         ),
                         rewardPlaceholders
@@ -193,9 +191,9 @@ public class BillfordMenu extends BaseMenu {
                         getConfigStringList(
                                 "GUI.COUNTDOWN_LORE",
                                 List.of(
-                                        "&7Next rotation: &b{countdown}",
+                                        "&7ɴᴇxᴛ ʀᴏᴛᴀᴛɪᴏɴ: &b{countdown}",
                                         "",
-                                        "&8Trade &f{trade_id} &8of &f{trade_count}"
+                                        "&8ᴛʀᴀᴅᴇ &f{trade_id} &8ᴏꜰ &f{trade_count}"
                                 )
                         ),
                         timerPlaceholders
@@ -209,8 +207,8 @@ public class BillfordMenu extends BaseMenu {
         infoPlaceholders.put(
                 "{status_line}",
                 limitReached
-                        ? "&c&lLimit reached this rotation."
-                        : "&aYou can trade &f" + Math.max(0, currentTrade.tradeLimit() - playerCount) + " &amore time(s)."
+                        ? "&c&lʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ."
+                        : "&aʏᴏᴜ ᴄᴀɴ ᴛʀᴀᴅᴇ &f" + Math.max(0, currentTrade.tradeLimit() - playerCount) + " &aᴍᴏʀᴇ ᴛɪᴍᴇ(ѕ)."
         );
 
         List<String> infoLore = currentTrade.tradeLimit() > 0
@@ -218,7 +216,7 @@ public class BillfordMenu extends BaseMenu {
                 getConfigStringList(
                         "GUI.INFO_LIMITED_LORE",
                         List.of(
-                                "&7Trades: &f{used} &7/ &f{limit}",
+                                "&7ᴛʀᴀᴅᴇѕ: &f{used} &7/ &f{limit}",
                                 "{status_line}"
                         )
                 ),
@@ -228,8 +226,8 @@ public class BillfordMenu extends BaseMenu {
                 getConfigStringList(
                         "GUI.INFO_UNLIMITED_LORE",
                         List.of(
-                                "&7Trades done: &f{used}",
-                                "&aUnlimited trades this rotation."
+                                "&7ᴛʀᴀᴅᴇѕ ᴅᴏɴᴇ: &f{used}",
+                                "&aᴜɴʟɪᴍɪᴛᴇᴅ ᴛʀᴀᴅᴇѕ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ."
                         )
                 ),
                 infoPlaceholders
@@ -237,19 +235,19 @@ public class BillfordMenu extends BaseMenu {
 
         set(infoSlot, ItemUtils.createItem(
                 ItemUtils.parseMaterial(getConfigString("GUI.INFO_MATERIAL", "BOOK")),
-                getConfigString("GUI.INFO_NAME", "&6Trade Info"),
+                getConfigString("GUI.INFO_NAME", "&6ᴛʀᴀᴅᴇ ɪɴꜰᴏ"),
                 infoLore
         ));
 
         if (limitReached) {
             set(confirmSlot, ItemUtils.createItem(
                     ItemUtils.parseMaterial(getConfigString("GUI.LIMIT_BUTTON.MATERIAL", "BARRIER")),
-                    getConfigString("GUI.LIMIT_BUTTON.NAME", "&c&lLimit Reached"),
+                    getConfigString("GUI.LIMIT_BUTTON.NAME", "&c&lʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ"),
                     getConfigStringList(
                             "GUI.LIMIT_BUTTON.LORE",
                             List.of(
-                                    "&cTrade limit reached for this rotation.",
-                                    "&7Check back after the next rotation."
+                                    "&cᴛʀᴀᴅᴇ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ ꜰᴏʀ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ.",
+                                    "&7ᴄʜᴇᴄᴋ ʙᴀᴄᴋ ᴀꜰᴛᴇʀ ᴛʜᴇ ɴᴇxᴛ ʀᴏᴛᴀᴛɪᴏɴ."
                             )
                     )
             ));
@@ -261,17 +259,17 @@ public class BillfordMenu extends BaseMenu {
                     )),
                     getMenuString(
                             "CONFIRM-TRADE-BUTTON.NAME",
-                            getConfigString("GUI.CONFIRM_BUTTON.NAME", "&a&lConfirm Trade")
+                            getConfigString("GUI.CONFIRM_BUTTON.NAME", "&a&lᴄᴏɴꜰɪʀᴍ ᴛʀᴀᴅᴇ")
                     ),
                     getMenuStringList(
                             "CONFIRM-TRADE-BUTTON.LORE",
                             getConfigStringList(
                                     "GUI.CONFIRM_BUTTON.LORE",
                                     List.of(
-                                            "&7Have the required items in your",
-                                            "&7inventory, then click to trade.",
+                                            "&7ʜᴀᴠᴇ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ɪɴ ʏᴏᴜʀ",
+                                            "&7ɪɴᴠᴇɴᴛᴏʀʏ, ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴛᴏ ᴛʀᴀᴅᴇ.",
                                             "",
-                                            "&a&lClick to Confirm"
+                                            "&a&lᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ"
                                     )
                             )
                     )
@@ -293,13 +291,13 @@ public class BillfordMenu extends BaseMenu {
 
         BillfordManager manager = plugin.getBillfordManager();
         if (!manager.beginTrade(player.getUniqueId())) {
-            fail(player, "BILLFORD.BUSY", "&cBillford is already processing your last click.");
+            fail(player, "BILLFORD.BUSY", "&cʙɪʟʟꜰᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴄʟɪᴄᴋ.");
             return;
         }
 
         try {
             if (manager.isOnCooldown(player.getUniqueId())) {
-                fail(player, "BILLFORD.CLICK-COOLDOWN", "&cSlow down. Billford is still checking your last trade.");
+                fail(player, "BILLFORD.CLICK-COOLDOWN", "&cѕʟᴏᴡ ᴅᴏᴡɴ. ʙɪʟʟꜰᴏʀᴅ ɪѕ ѕᴛɪʟʟ ᴄʜᴇᴄᴋɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴛʀᴀᴅᴇ.");
                 return;
             }
             manager.updateCooldown(player.getUniqueId());
@@ -323,23 +321,23 @@ public class BillfordMenu extends BaseMenu {
 
             BillfordManager.BillfordTrade liveTrade = manager.getCurrentTrade();
             if (liveTrade == null) {
-                fail(player, "BILLFORD.NOT-CONFIGURED", "&cBillford trade is not configured right now.");
+                fail(player, "BILLFORD.NOT-CONFIGURED", "&cʙɪʟʟꜰᴏʀᴅ ᴛʀᴀᴅᴇ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʀɪɢʜᴛ ɴᴏᴡ.");
                 return;
             }
 
             if (manager.hasReachedLimit(player.getUniqueId())) {
-                fail(player, "BILLFORD.LIMIT-REACHED", "&cYou've reached the trade limit for this rotation.");
+                fail(player, "BILLFORD.LIMIT-REACHED", "&cʏᴏᴜ'ᴠᴇ ʀᴇᴀᴄʜᴇᴅ ᴛʜᴇ ᴛʀᴀᴅᴇ ʟɪᴍɪᴛ ꜰᴏʀ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ.");
                 return;
             }
 
             if (!hasRequiredItems(player, liveTrade)) {
-                fail(player, "BILLFORD.REQUIRED_CONTENTS", "&cYou don't have all the required items for this trade.");
+                fail(player, "BILLFORD.REQUIRED_CONTENTS", "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀʟʟ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ꜰᴏʀ ᴛʜɪѕ ᴛʀᴀᴅᴇ.");
                 return;
             }
 
             ItemStack reward = new ItemStack(liveTrade.rewardMaterial(), liveTrade.rewardQuantity());
             if (!canFitReward(player, reward)) {
-                fail(player, "BILLFORD.FULL-INVENTORY", "&cYour inventory is too full to receive the reward.");
+                fail(player, "BILLFORD.FULL-INVENTORY", "&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ᴛᴏᴏ ꜰᴜʟʟ ᴛᴏ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ʀᴇᴡᴀʀᴅ.");
                 return;
             }
 
@@ -347,7 +345,7 @@ public class BillfordMenu extends BaseMenu {
             ItemStack[] originalStorage = cloneStorage(playerInventory.getStorageContents());
             ItemStack[] updatedStorage = cloneStorage(originalStorage);
             if (!consumeRequiredItems(updatedStorage, liveTrade)) {
-                fail(player, "BILLFORD.REQUIRED_CONTENTS", "&cYou don't have all the required items for this trade.");
+                fail(player, "BILLFORD.REQUIRED_CONTENTS", "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀʟʟ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ꜰᴏʀ ᴛʜɪѕ ᴛʀᴀᴅᴇ.");
                 return;
             }
 
@@ -355,7 +353,7 @@ public class BillfordMenu extends BaseMenu {
             Map<Integer, ItemStack> leftovers = playerInventory.addItem(reward.clone());
             if (!leftovers.isEmpty()) {
                 playerInventory.setStorageContents(originalStorage);
-                fail(player, "BILLFORD.FULL-INVENTORY", "&cYour inventory is too full to receive the reward.");
+                fail(player, "BILLFORD.FULL-INVENTORY", "&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ᴛᴏᴏ ꜰᴜʟʟ ᴛᴏ ʀᴇᴄᴇɪᴠᴇ ᴛʜᴇ ʀᴇᴡᴀʀᴅ.");
                 return;
             }
 
@@ -370,7 +368,7 @@ public class BillfordMenu extends BaseMenu {
                 }
                 var depositResult = plugin.getEconomyManager().deposit(player, liveTrade.moneyBonus(), EconomyReason.BILLFORD_REWARD);
                 if (!depositResult.success()) {
-                    fail(player, "BILLFORD.BUSY", "&cBillford could not complete the money reward.");
+                    fail(player, "BILLFORD.BUSY", "&cʙɪʟʟꜰᴏʀᴅ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ᴍᴏɴᴇʏ ʀᴇᴡᴀʀᴅ.");
                     return;
                 }
             }
@@ -381,10 +379,8 @@ public class BillfordMenu extends BaseMenu {
                     "BILLFORD.TRADE-COMPLETED",
                     "{reward}", liveTrade.rewardQuantity() + "x " + formatName(liveTrade.rewardMaterial().name()),
                     "{money_bonus}", NumberUtils.format(liveTrade.moneyBonus()),
-                    "{money_bonus_formatted}", plugin.getCurrencyManager().formatMoney(liveTrade.moneyBonus()),
                     "{shard_bonus}",
                     liveTrade.shardBonus() > 0 ? String.valueOf(liveTrade.shardBonus()) : "0",
-                    "{shard_bonus_formatted}", plugin.getCurrencyManager().formatShards(liveTrade.shardBonus()),
                     "{next_rotation}", manager.getFormattedCountdown()
             );
             player.sendMessage(ColorUtils.toComponent(success));
@@ -404,7 +400,7 @@ public class BillfordMenu extends BaseMenu {
 
     private void fail(Player player, String messagePath, String fallbackMessage) {
         String message = plugin.getConfigManager().getMessage(messagePath);
-        if (message.startsWith("&cMessage not found")) {
+        if (message.startsWith("&cᴍᴇѕѕᴀɢᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ")) {
             message = fallbackMessage;
         }
         player.sendMessage(ColorUtils.toComponent(message));

@@ -59,7 +59,7 @@ public class CurrencyManager {
     }
 
     public void reload() {
-        // Currency values are read live from config.
+        // currency values are read live from config.
     }
 
     public String formatMoney(double amount) {

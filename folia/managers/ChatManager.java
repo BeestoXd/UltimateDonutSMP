@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -118,11 +119,11 @@ public class ChatManager {
         return fallback;
     }
 
-    public boolean isGlobalChatMuted() {
+    public boolean isGlobalChatmuted() {
         return config().getBoolean(CHAT_ROOT + ".GLOBAL-CHAT-MUTED", false);
     }
 
-    public void setGlobalChatMuted(boolean muted, boolean persist) {
+    public void setGlobalChatmuted(boolean muted, boolean persist) {
         config().set(CHAT_ROOT + ".GLOBAL-CHAT-MUTED", muted);
         if (persist) {
             plugin.saveConfig();
@@ -158,7 +159,7 @@ public class ChatManager {
         }
     }
 
-    public boolean isMuteBypassed(Player player) {
+    public boolean ismuteBypassed(Player player) {
         return player != null && player.hasPermission("ultimatedonutsmp.staff.chat.bypass.mute");
     }
 
@@ -182,7 +183,7 @@ public class ChatManager {
             int min = getMinLength();
             if (trimmed.length() < min) {
                 return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.LENGTH.MIN.BLOCK-MESSAGE",
-                        "&cYour message is too short! (Min: %min%)")
+                        "&cʏᴏᴜʀ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ѕʜᴏʀᴛ! (ᴍɪɴ: %min%)")
                         .replace("%min%", String.valueOf(min)));
             }
         }
@@ -191,36 +192,36 @@ public class ChatManager {
             int max = getMaxLength();
             if (trimmed.length() > max) {
                 return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.LENGTH.MAX.BLOCK-MESSAGE",
-                        "&cYour message is too long! (Max: %max%)")
+                        "&cʏᴏᴜʀ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ! (ᴍᴀx: %max%)")
                         .replace("%max%", String.valueOf(max)));
             }
         }
 
         if (isLanguageFilterEnabled() && !containsOnlyAllowedCharacters(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.LANGUAGE.BLOCK-MESSAGE",
-                    "&cYour message contains characters that are not allowed on this server."));
+                    "&cʏᴏᴜʀ ᴍᴇѕѕᴀɢᴇ ᴄᴏɴᴛᴀɪɴѕ ᴄʜᴀʀᴀᴄᴛᴇʀѕ ᴛʜᴀᴛ ᴀʀᴇ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ᴏɴ ᴛʜɪѕ ѕᴇʀᴠᴇʀ."));
         }
 
         if (containsBlockedWord(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.BLOCK-MESSAGE",
-                    "&7Please avoid using inappropriate words."));
+                    "&7ᴘʟᴇᴀѕᴇ ᴀᴠᴏɪᴅ ᴜѕɪɴɢ ɪɴᴀᴘᴘʀᴏᴘʀɪᴀᴛᴇ ᴡᴏʀᴅѕ."));
         }
 
         if (isCapsFilterTriggered(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.CAPS.BLOCK-MESSAGE",
-                    "&cPlease avoid using too many capital letters."));
+                    "&cᴘʟᴇᴀѕᴇ ᴀᴠᴏɪᴅ ᴜѕɪɴɢ ᴛᴏᴏ ᴍᴀɴʏ ᴄᴀᴘɪᴛᴀʟ ʟᴇᴛᴛᴇʀѕ."));
         }
 
         if (containsDisallowedLink(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.ANTI-LINK.BLOCK-MESSAGE",
-                    "&cLinks are not allowed in the chat!"));
+                    "&cʟɪɴᴋѕ ᴀʀᴇ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!"));
         }
 
         if (isAntiRepeatEnabled() && player != null) {
             String previous = lastAcceptedGlobalMessageByPlayer.get(player.getUniqueId());
             if (previous != null && previous.equals(normalized)) {
                 return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.ANTI-REPEAT.BLOCK-MESSAGE",
-                        "&cYou cannot repeat the same message!"));
+                        "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʀᴇᴘᴇᴀᴛ ᴛʜᴇ ѕᴀᴍᴇ ᴍᴇѕѕᴀɢᴇ!"));
             }
         }
 
@@ -261,11 +262,11 @@ public class ChatManager {
 
     public void clearChatForAllPlayers() {
         int clearLines = Math.max(1, config().getInt(CHAT_ROOT + ".CLEAR-LINES", 150));
-        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             for (int i = 0; i < clearLines; i++) {
                 player.sendMessage(Component.empty());
             }
-        });
+        }
     }
 
     public void clearPlayerState(UUID uuid) {

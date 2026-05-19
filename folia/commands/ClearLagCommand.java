@@ -17,11 +17,11 @@ public class ClearLagCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!sender.hasPermission("ultimatedonutsmp.admin.clearlag")) {
-            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
-        plugin.getClearLagManager().clearEntities()
-                .thenAccept(plugin.getClearLagManager()::broadcastSuccess);
+        int cleared = plugin.getClearLagManager().clearEntities();
+        plugin.getClearLagManager().broadcastSuccess(cleared);
         return true;
     }
 }

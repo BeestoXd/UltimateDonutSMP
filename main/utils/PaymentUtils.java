@@ -23,14 +23,14 @@ public final class PaymentUtils {
 
         Player target = Bukkit.getPlayerExact(targetName);
         if (target == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return false;
         }
 
         PlayerData senderData = plugin.getPlayerDataManager().get(sender);
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
         if (targetData == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cTarget profile not found."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return false;
         }
         if (!targetData.isPaymentsEnabled()) {
@@ -79,7 +79,7 @@ public final class PaymentUtils {
 
         Player target = Bukkit.getPlayerExact(targetName);
         if (target == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return false;
         }
 

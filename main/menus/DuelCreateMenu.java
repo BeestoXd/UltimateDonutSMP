@@ -27,8 +27,8 @@ public class DuelCreateMenu extends BaseMenu {
 
         Player target = Bukkit.getPlayer(targetUuid);
         if (target == null) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cTarget Offline", List.of("&7This player is no longer online.")));
-            set(inventory.getSize() - 1, ItemUtils.createItem(Material.BARRIER, "&cClose"));
+            set(13, ItemUtils.createItem(Material.BARRIER, "&cᴛᴀʀɢᴇᴛ ᴏꜰꜰʟɪɴᴇ", List.of("&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ.")));
+            set(inventory.getSize() - 1, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
             return;
         }
 
@@ -43,21 +43,21 @@ public class DuelCreateMenu extends BaseMenu {
                     Material.IRON_SWORD,
                     "&a" + arena.getDisplayName(),
                     List.of(
-                            "&7Arena ID: &f" + arena.getId(),
-                            "&7Click to challenge &f" + target.getName(),
-                            "&7using this arena."
+                            "&7ᴀʀᴇɴᴀ ID: &f" + arena.getId(),
+                            "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀʟʟᴇɴɢᴇ &f" + target.getName(),
+                            "&7ᴜѕɪɴɢ ᴛʜɪѕ ᴀʀᴇɴᴀ."
                     )
             ));
         }
 
         if (arenas.isEmpty()) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cNo Ready Arena", List.of("&7Set duel arenas first with &f/arena&7.")));
+            set(13, ItemUtils.createItem(Material.BARRIER, "&cɴᴏ ʀᴇᴀᴅʏ ᴀʀᴇɴᴀ", List.of("&7ѕᴇᴛ ᴅᴜᴇʟ ᴀʀᴇɴᴀѕ ꜰɪʀѕᴛ ᴡɪᴛʜ &f/arena&7.")));
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow + 3, ItemUtils.createPlayerHead(target, "&eTarget: &f" + target.getName(), List.of("&7Choose an arena to send a duel request.")));
-        set(lastRow + 4, ItemUtils.createItem(Material.COMPASS, "&bRandom Arena", List.of("&7Send a duel request using any available arena.")));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose"));
+        set(lastRow + 3, ItemUtils.createPlayerHead(target, "&eᴛᴀʀɢᴇᴛ: &f" + target.getName(), List.of("&7ᴄʜᴏᴏѕᴇ ᴀɴ ᴀʀᴇɴᴀ ᴛᴏ ѕᴇɴᴅ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ.")));
+        set(lastRow + 4, ItemUtils.createItem(Material.COMPASS, "&bʀᴀɴᴅᴏᴍ ᴀʀᴇɴᴀ", List.of("&7ѕᴇɴᴅ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴜѕɪɴɢ ᴀɴʏ ᴀᴠᴀɪʟᴀʙʟᴇ ᴀʀᴇɴᴀ.")));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
     }
 
     @Override

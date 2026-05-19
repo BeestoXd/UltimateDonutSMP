@@ -40,7 +40,7 @@ public class TeleportManager {
 
         sendCountdownFeedback(player, cooldownSecs);
         if (!"RTP".equals(normalizedType)) {
-            sendMovementWarning(player, cooldownSecs);
+            sendMovementwarning(player, cooldownSecs);
         }
 
         final int[] remaining = {cooldownSecs};
@@ -78,7 +78,7 @@ public class TeleportManager {
         SoundUtils.play(player, plugin.getConfigManager().getSound("TELEPORT.COUNTDOWN"));
     }
 
-    private void sendMovementWarning(Player player, int seconds) {
+    private void sendMovementwarning(Player player, int seconds) {
         String warning = plugin.getConfigManager().getMessage(
                 "TELEPORT.WARNING",
                 "{seconds}", String.valueOf(seconds)
@@ -98,7 +98,7 @@ public class TeleportManager {
                     if (throwable != null || !Boolean.TRUE.equals(success)) {
                         String failed = plugin.getConfigManager().getMessageOrDefault(
                                 "TELEPORT.FAILED",
-                                "&cTeleport failed. Please try again."
+                                "&cᴛᴇʟᴇᴘᴏʀᴛ ꜰᴀɪʟᴇᴅ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ."
                         );
                         player.sendMessage(ColorUtils.toComponent(failed));
                         return;

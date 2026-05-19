@@ -158,7 +158,7 @@ public class HomeManager {
             }
             if (!setHome(player.getUniqueId(), input, pending.location)) {
                 pendingInputs.remove(player.getUniqueId());
-                player.sendMessage(ColorUtils.toComponent("&cYou cannot create another home right now."));
+                player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀɴᴏᴛʜᴇʀ ʜᴏᴍᴇ ʀɪɢʜᴛ ɴᴏᴡ."));
                 return;
             }
 
@@ -169,7 +169,7 @@ public class HomeManager {
         }
 
         if (!renameHome(player.getUniqueId(), pending.oldName, input)) {
-            player.sendMessage(ColorUtils.toComponent("&cFailed to rename home. Try another name."));
+            player.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇɴᴀᴍᴇ ʜᴏᴍᴇ. ᴛʀʏ ᴀɴᴏᴛʜᴇʀ ɴᴀᴍᴇ."));
             resendPrompt(player, pending);
             return;
         }

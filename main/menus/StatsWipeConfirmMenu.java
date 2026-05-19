@@ -40,24 +40,24 @@ public class StatsWipeConfirmMenu extends BaseMenu {
         int previewCount = plugin.getStatsWipeManager().getPreviewCount(target);
         Map<String, String> placeholders = placeholders(previewCount);
 
-        String infoPath = MENU_PATH + ".BUTTONS.TARGET";
+        String infoPath = MENU_PATH + ".ʙᴜᴛᴛᴏɴѕ.ᴛᴀʀɢᴇᴛ";
         set(menus().getInt(infoPath + ".SLOT", 13), ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(infoPath + ".MATERIAL", "PAPER")),
-                replace(menus().getString(infoPath + ".DISPLAY-NAME", "&cConfirm {target}"), placeholders),
+                replace(menus().getString(infoPath + ".DISPLAY-NAME", "&cᴄᴏɴꜰɪʀᴍ {target}"), placeholders),
                 replace(menus().getStringList(infoPath + ".LORE"), placeholders)
         ));
 
-        String cancelPath = MENU_PATH + ".BUTTONS.CANCEL";
+        String cancelPath = MENU_PATH + ".ʙᴜᴛᴛᴏɴѕ.ᴄᴀɴᴄᴇʟ";
         set(menus().getInt(cancelPath + ".SLOT", 11), ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(cancelPath + ".MATERIAL", "RED_STAINED_GLASS_PANE")),
-                replace(menus().getString(cancelPath + ".DISPLAY-NAME", "&cCancel"), placeholders),
+                replace(menus().getString(cancelPath + ".DISPLAY-NAME", "&cᴄᴀɴᴄᴇʟ"), placeholders),
                 replace(menus().getStringList(cancelPath + ".LORE"), placeholders)
         ));
 
-        String confirmPath = MENU_PATH + ".BUTTONS.CONFIRM";
+        String confirmPath = MENU_PATH + ".ʙᴜᴛᴛᴏɴѕ.ᴄᴏɴꜰɪʀᴍ";
         set(menus().getInt(confirmPath + ".SLOT", 15), ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(confirmPath + ".MATERIAL", "LIME_STAINED_GLASS_PANE")),
-                replace(menus().getString(confirmPath + ".DISPLAY-NAME", "&aConfirm"), placeholders),
+                replace(menus().getString(confirmPath + ".DISPLAY-NAME", "&aᴄᴏɴꜰɪʀᴍ"), placeholders),
                 replace(menus().getStringList(confirmPath + ".LORE"), placeholders)
         ));
     }
@@ -79,21 +79,21 @@ public class StatsWipeConfirmMenu extends BaseMenu {
 
         StatsWipeManager.WipeResult result = plugin.getStatsWipeManager().wipeTarget(target, player.getName());
         if (result.busy()) {
-            player.sendMessage(ColorUtils.toComponent(message("BUSY", "&cA wipe is already in progress.")));
+            player.sendMessage(ColorUtils.toComponent(message("BUSY", "&cᴀ ᴡɪᴘᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ.")));
             new StatsWipeMenu(plugin).open(player);
             return;
         }
         if (!result.success()) {
             String error = result.errorMessage() == null || result.errorMessage().isBlank()
-                    ? "Unknown error"
+                    ? "ᴜɴᴋɴᴏᴡɴ ᴇʀʀᴏʀ"
                     : result.errorMessage();
-            player.sendMessage(ColorUtils.toComponent(message("FAILED", "&cStats Wipe failed: {error}")
+            player.sendMessage(ColorUtils.toComponent(message("FAILED", "&cѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ: {error}")
                     .replace("{error}", error)));
             new StatsWipeMenu(plugin).open(player);
             return;
         }
 
-        player.sendMessage(ColorUtils.toComponent(message("SUCCESS", "&aWipe complete: &f{target}&a. Affected records: &f{count}&a.")
+        player.sendMessage(ColorUtils.toComponent(message("SUCCESS", "&aᴡɪᴘᴇ ᴄᴏᴍᴘʟᴇᴛᴇ: &f{target}&a. ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}&a.")
                 .replace("{target}", target.getDisplayName())
                 .replace("{count}", String.valueOf(result.affectedCount(target)))));
         new StatsWipeMenu(plugin).open(player);
@@ -132,7 +132,7 @@ public class StatsWipeConfirmMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin, StatsWipeManager.WipeTarget target) {
-        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Confirm {target}");
+        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ᴄᴏɴꜰɪʀᴍ {target}");
         return template.replace("{target}", target.getDisplayName());
     }
 

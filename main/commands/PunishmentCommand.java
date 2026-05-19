@@ -25,17 +25,17 @@ public class PunishmentCommand implements CommandExecutor {
     private static final String REMOVE_PERMISSION = "ultimatedonutsmp.staff.punishments.remove";
     private static final Pattern DURATION_TOKEN = Pattern.compile("(\\d+)([smhdw])", Pattern.CASE_INSENSITIVE);
     private static final Map<String, String> USAGE_MESSAGES = Map.ofEntries(
-            Map.entry("ban", "&cUsage: /ban <player> [reason]"),
-            Map.entry("tempban", "&cUsage: /tempban <player> <time> [reason] &7(Time: 30s, 15m, 2h, 5d, or 5d 15m 30s)"),
-            Map.entry("mute", "&cUsage: /mute <player> [reason]"),
-            Map.entry("tempmute", "&cUsage: /tempmute <player> <time> [reason] &7(Time: 30s, 15m, 2h, 5d, or 5d 15m 30s)"),
-            Map.entry("warn", "&cUsage: /warn <player> [reason]"),
-            Map.entry("kick", "&cUsage: /kick <player> [reason]"),
-            Map.entry("blacklist", "&cUsage: /blacklist <player> [reason]"),
-            Map.entry("unban", "&cUsage: /unban <player> [reason]"),
-            Map.entry("pardon", "&cUsage: /pardon <player> [reason]"),
-            Map.entry("unmute", "&cUsage: /unmute <player> [reason]"),
-            Map.entry("unblacklist", "&cUsage: /unblacklist <player> [reason]")
+            Map.entry("ban", "&cᴜѕᴀɢᴇ: /ban <player> [reason]"),
+            Map.entry("tempban", "&cᴜѕᴀɢᴇ: /tempban <player> <time> [reason] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)"),
+            Map.entry("mute", "&cᴜѕᴀɢᴇ: /mute <player> [reason]"),
+            Map.entry("tempmute", "&cᴜѕᴀɢᴇ: /tempmute <player> <time> [reason] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)"),
+            Map.entry("warn", "&cᴜѕᴀɢᴇ: /warn <player> [reason]"),
+            Map.entry("kick", "&cᴜѕᴀɢᴇ: /kick <player> [reason]"),
+            Map.entry("blacklist", "&cᴜѕᴀɢᴇ: /blacklist <player> [reason]"),
+            Map.entry("unban", "&cᴜѕᴀɢᴇ: /unban <player> [reason]"),
+            Map.entry("pardon", "&cᴜѕᴀɢᴇ: /pardon <player> [reason]"),
+            Map.entry("unmute", "&cᴜѕᴀɢᴇ: /unmute <player> [reason]"),
+            Map.entry("unblacklist", "&cᴜѕᴀɢᴇ: /unblacklist <player> [reason]")
     );
 
     private final UltimateDonutSmp plugin;
@@ -81,7 +81,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (!hasPermission(sender, CREATE_PERMISSION)) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-CREATE-PERMISSION",
-                    "&cYou do not have permission to create punishments."
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
             ));
             return true;
         }
@@ -94,7 +94,7 @@ public class PunishmentCommand implements CommandExecutor {
 
         ResolvedTarget target = resolveTarget(args[0]);
         if (target == null || target.uuid() == null) {
-            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cPlayer not found."));
+            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return true;
         }
 
@@ -102,7 +102,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (onlineOnly && onlineTarget == null) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.TARGET-OFFLINE",
-                    "&cThat player is not online."
+                    "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ."
             ));
             return true;
         }
@@ -114,7 +114,7 @@ public class PunishmentCommand implements CommandExecutor {
             if (duration.millis() <= 0L) {
                 send(sender, plugin.getConfigManager().getMessageOrDefault(
                         "PUNISHMENTS.INVALID-DURATION",
-                        "&cInvalid time. Use values like 30s, 15m, 2h, 5d, or combine: 5d 15m 30s."
+                        "&cɪɴᴠᴀʟɪᴅ ᴛɪᴍᴇ. ᴜѕᴇ ᴠᴀʟᴜᴇѕ ʟɪᴋᴇ 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ ᴄᴏᴍʙɪɴᴇ: 5ᴅ 15ᴍ 30ѕ."
                 ));
                 return true;
             }
@@ -140,7 +140,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (record == null) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.CREATE-FAILED",
-                    "&cFailed to create punishment record."
+                    "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ."
             ));
             return true;
         }
@@ -149,7 +149,7 @@ public class PunishmentCommand implements CommandExecutor {
         plugin.getDiscordWebhookManager().sendPunishment(record);
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.CREATED",
-                "&aCreated &f{type} &apunishment for &b{player}&a. ID: &f#{id}",
+                "&aᴄʀᴇᴀᴛᴇᴅ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏʀ &b{player}&a. ID: &f#{id}",
                 "{type}", plugin.getPunishmentManager().getDisplayType(record),
                 "{player}", target.name(),
                 "{id}", String.valueOf(record.getId())
@@ -161,7 +161,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (!hasPermission(sender, REMOVE_PERMISSION)) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-REMOVE-PERMISSION",
-                    "&cYou do not have permission to remove punishments."
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
             ));
             return true;
         }
@@ -173,13 +173,13 @@ public class PunishmentCommand implements CommandExecutor {
 
         ResolvedTarget target = resolveTarget(args[0]);
         if (target == null || target.uuid() == null) {
-            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cPlayer not found."));
+            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return true;
         }
 
         String reason = joinReason(args, 1);
-        if (reason.equals("No reason specified")) {
-            reason = "Removed by staff";
+        if (reason.equals("ɴᴏ ʀᴇᴀѕᴏɴ ѕᴘᴇᴄɪꜰɪᴇᴅ")) {
+            reason = "ʀᴇᴍᴏᴠᴇᴅ ʙʏ ѕᴛᴀꜰꜰ";
         }
 
         Actor actor = resolveActor(sender);
@@ -197,7 +197,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (!removed) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-ACTIVE",
-                    "&cNo active {type} punishment found for {player}.",
+                    "&cɴᴏ ᴀᴄᴛɪᴠᴇ {type} ᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏᴜɴᴅ ꜰᴏʀ {player}.",
                     "{type}", type.name(),
                     "{player}", target.name()
             ));
@@ -206,7 +206,7 @@ public class PunishmentCommand implements CommandExecutor {
 
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.REMOVED",
-                "&aRemoved active &f{type} &apunishment(s) for &b{player}&a.",
+                "&aʀᴇᴍᴏᴠᴇᴅ ᴀᴄᴛɪᴠᴇ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ(s) ꜰᴏʀ &b{player}&a.",
                 "{type}", type.name(),
                 "{player}", target.name()
         ));
@@ -223,7 +223,7 @@ public class PunishmentCommand implements CommandExecutor {
             case WARN -> onlineTarget.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "PUNISHMENTS.WARN-RECEIVED",
-                            "&cWarning: &f{reason}",
+                            "&cᴡᴀʀɴɪɴɢ: &f{reason}",
                             "{reason}", record.getReason()
                     )
             ));
@@ -251,11 +251,11 @@ public class PunishmentCommand implements CommandExecutor {
 
     private String defaultPunishmentMessage(PunishmentType type) {
         return switch (type) {
-            case BAN -> "&c&lYou have been banned!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Expires: &f%nicest_expiration%\n&7Banned by: &f%issuer%\n&8&m----------------------------\n&7Appeal at: &fdiscord.example.space";
-            case KICK -> "&c&lYou have been kicked!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Kicked by: &f%issuer%\n&8&m----------------------------\n&7You may reconnect";
-            case MUTE -> "&c&lYou have been muted!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Expires: &f%nicest_expiration%\n&7Muted by: &f%issuer%\n&8&m----------------------------\n&7You cannot speak in chat";
-            case BLACKLIST -> "&4&lYOU HAVE BEEN BLACKLISTED!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Blacklisted by: &f%issuer%\n&8&m----------------------------\n&4You cannot join the server";
-            case WARN -> "&cWarning: &f{reason}";
+            case BAN -> "&c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%\n&7ʙᴀɴɴᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&7ᴀᴘᴘᴇᴀʟ ᴀᴛ: &fdiscord.example.space";
+            case KICK -> "&c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ᴋɪᴄᴋᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&7ʏᴏᴜ ᴍᴀʏ ʀᴇᴄᴏɴɴᴇᴄᴛ";
+            case MUTE -> "&c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%\n&7ᴍᴜᴛᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&7ʏᴏᴜ ᴄᴀɴɴᴏᴛ ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ";
+            case BLACKLIST -> "&4&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&4ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴊᴏɪɴ ᴛʜᴇ ѕᴇʀᴠᴇʀ";
+            case WARN -> "&cᴡᴀʀɴɪɴɢ: &f{reason}";
         };
     }
 
@@ -282,7 +282,7 @@ public class PunishmentCommand implements CommandExecutor {
 
     private String formatIssuer(PunishmentRecord record) {
         String issuer = record.getIssuerNameSnapshot();
-        return issuer == null || issuer.isBlank() ? "Unknown" : issuer;
+        return issuer == null || issuer.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : issuer;
     }
 
     private ResolvedTarget resolveTarget(String input) {
@@ -311,7 +311,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (sender instanceof Player player) {
             return new Actor(player.getUniqueId(), player.getName());
         }
-        return new Actor(null, "Console");
+        return new Actor(null, "ᴄᴏɴѕᴏʟᴇ");
     }
 
     private boolean hasPermission(CommandSender sender, String permission) {
@@ -320,9 +320,9 @@ public class PunishmentCommand implements CommandExecutor {
 
     private void sendUsage(CommandSender sender, String label) {
         String normalizedLabel = label.toLowerCase(Locale.ROOT);
-        String fallback = USAGE_MESSAGES.getOrDefault(normalizedLabel, "&cUsage: /" + normalizedLabel + " <player> [reason]");
+        String fallback = USAGE_MESSAGES.getOrDefault(normalizedLabel, "&cᴜѕᴀɢᴇ: /" + normalizedLabel + " <player> [reason]");
         send(sender, plugin.getConfigManager().getMessageOrDefault(
-                "PUNISHMENTS.USAGE-" + normalizedLabel.toUpperCase(Locale.ROOT),
+                "ᴘᴜɴɪѕʜᴍᴇɴᴛѕ.ᴜѕᴀɢᴇ-" + normalizedLabel.toUpperCase(Locale.ROOT),
                 fallback
         ));
     }
@@ -378,7 +378,7 @@ public class PunishmentCommand implements CommandExecutor {
 
     private String joinReason(String[] args, int startIndex) {
         if (args.length <= startIndex) {
-            return "No reason specified";
+            return "ɴᴏ ʀᴇᴀѕᴏɴ ѕᴘᴇᴄɪꜰɪᴇᴅ";
         }
 
         StringBuilder builder = new StringBuilder();
@@ -388,7 +388,7 @@ public class PunishmentCommand implements CommandExecutor {
             }
             builder.append(args[index]);
         }
-        return builder.isEmpty() ? "No reason specified" : builder.toString();
+        return builder.isEmpty() ? "ɴᴏ ʀᴇᴀѕᴏɴ ѕᴘᴇᴄɪꜰɪᴇᴅ" : builder.toString();
     }
 
     private void send(CommandSender sender, String message) {

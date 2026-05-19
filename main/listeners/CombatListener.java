@@ -71,7 +71,7 @@ public class CombatListener implements Listener {
             event.setCancelled(true);
             String msg = plugin.getConfigManager().getConfig()
                     .getString("COMBAT-MANAGER.BLOCK-MESSAGE",
-                            "&cYou can't use this command in your current status.");
+                            "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ ɪɴ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ѕᴛᴀᴛᴜѕ.");
             player.sendMessage(ColorUtils.toComponent(msg));
         }
     }

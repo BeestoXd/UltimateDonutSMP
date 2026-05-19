@@ -65,7 +65,7 @@ public class NetworkStaffChatManager {
         if (!isNetworkEnabled() || !isStaffChatEnabled()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "STAFFCHAT.DISABLED",
-                    "&cNetwork staff chat is currently disabled."
+                    "&cɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
             )));
             return;
         }
@@ -74,7 +74,7 @@ public class NetworkStaffChatManager {
         if (message.isBlank()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "STAFFCHAT.USAGE",
-                    "&cUsage: /staffchat <message>"
+                    "&cᴜѕᴀɢᴇ: /staffchat <message>"
             )));
             return;
         }
@@ -83,7 +83,7 @@ public class NetworkStaffChatManager {
         if (message.length() > maxLength) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "STAFFCHAT.MESSAGE_TOO_LONG",
-                    "&cStaff chat message is too long. Max: %max% characters.",
+                    "&cѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
@@ -240,7 +240,7 @@ public class NetworkStaffChatManager {
             Runnable feedback = () -> feedbackTarget.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "STAFFCHAT.REDIS_UNAVAILABLE",
-                            "&eStaff chat was delivered locally, but Redis is unavailable for cross-server delivery."
+                            "&eѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ."
                     )
             ));
             if (feedbackTarget instanceof Player player) {
@@ -265,7 +265,7 @@ public class NetworkStaffChatManager {
                 "NETWORK.STAFF_CHAT",
                 plugin.getConfigManager().getMessageOrDefault(
                         "STAFFCHAT.FORMAT",
-                        "&8[&6StaffChat&8] &e%player%&7: %message%"
+                        "&8[&6ѕᴛᴀꜰꜰᴄʜᴀᴛ&8] &e%player%&7: %message%"
                 )
         );
 
@@ -286,9 +286,9 @@ public class NetworkStaffChatManager {
         }
 
         String fallback = switch (payload.type()) {
-            case StaffChatPayload.TYPE_STAFF_JOIN -> "&8[&a+&8] &a%player% &7joined &b%server%";
-            case StaffChatPayload.TYPE_STAFF_LEAVE -> "&8[&c-&8] &a%player% &7left &b%server%";
-            case StaffChatPayload.TYPE_SERVER_STATUS -> "&6%server% &eis now %status%&e.";
+            case StaffChatPayload.TYPE_STAFF_JOIN -> "&8[&a+&8] &a%player% &7ᴊᴏɪɴᴇᴅ &b%server%";
+            case StaffChatPayload.TYPE_STAFF_LEAVE -> "&8[&c-&8] &a%player% &7ʟᴇꜰᴛ &b%server%";
+            case StaffChatPayload.TYPE_SERVER_STATUS -> "&6%server% &eɪѕ ɴᴏᴡ %status%&e.";
             default -> "";
         };
 
@@ -348,8 +348,7 @@ public class NetworkStaffChatManager {
     }
 
     private boolean isStaffChatEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_CHAT)
-                && getNetworkConfig().getBoolean("NETWORK.STAFF_CHAT_ENABLED", true);
+        return getNetworkConfig().getBoolean("NETWORK.STAFF_CHAT_ENABLED", true);
     }
 
     private boolean isJoinLeaveEnabled() {

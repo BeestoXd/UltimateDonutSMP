@@ -20,14 +20,14 @@ public class PlayerMoveListener implements Listener {
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
-        // Only care about block-level movement
+        // only care about block-level movement
         if (event.getFrom().getBlockX() == event.getTo().getBlockX()
                 && event.getFrom().getBlockZ() == event.getTo().getBlockZ()
                 && event.getFrom().getBlockY() == event.getTo().getBlockY()) {
             return;
         }
 
-        // Reset AFK timer
+        // reset afk timer
         plugin.getAFKManager().recordMovement(player.getUniqueId());
         plugin.getShardManager().recordMovement(
                 player.getUniqueId(),
@@ -36,7 +36,7 @@ public class PlayerMoveListener implements Listener {
                 event instanceof PlayerTeleportEvent
         );
 
-        // Check pending teleport
+        // check pending teleport
         if (plugin.getTeleportManager().hasPending(player.getUniqueId())) {
             plugin.getTeleportManager().checkMovement(player);
         }

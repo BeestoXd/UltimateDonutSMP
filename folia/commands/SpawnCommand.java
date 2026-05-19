@@ -21,24 +21,24 @@ public class SpawnCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
         if (plugin.getCombatManager().isInCombat(player.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getConfig()
-                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cYou can't use this command in combat.")));
+                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ ɪɴ ᴄᴏᴍʙᴀᴛ.")));
             return true;
         }
 
-        if (plugin.getSpawnManager().shouldOpenMenu(SpawnManager.AreaType.SPAWN)) {
+        if (plugin.getSpawnManager().hasMenuDefinition(SpawnManager.AreaType.SPAWN)) {
             new SpawnMenu(plugin).open(player);
             return true;
         }
 
         Location destination = plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.SPAWN);
         if (destination == null) {
-            player.sendMessage(ColorUtils.toComponent("&cSpawn location is not set."));
+            player.sendMessage(ColorUtils.toComponent("&cѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
             return true;
         }
 

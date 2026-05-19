@@ -28,7 +28,7 @@ public class ChatListener implements Listener {
         Player player = event.getPlayer();
         ChatManager chatManager = plugin.getChatManager();
 
-        // Extract plain text
+        // extract plain text
         String rawMessage = PlainTextComponentSerializer.plainText().serialize(event.message());
 
         if (plugin.getHomeManager().hasPendingInput(player.getUniqueId())) {
@@ -52,17 +52,17 @@ public class ChatListener implements Listener {
             return;
         }
 
-        PunishmentRecord activeMute = plugin.getPunishmentManager()
+        PunishmentRecord activemute = plugin.getPunishmentManager()
                 .getActiveRecord(player.getUniqueId(), PunishmentType.MUTE)
                 .orElse(null);
-        if (activeMute != null) {
+        if (activemute != null) {
             event.setCancelled(true);
             plugin.getFoliaScheduler().runEntity(player, () ->
-                    player.sendMessage(ColorUtils.toComponent(mutedChatMessage(activeMute))));
+                    player.sendMessage(ColorUtils.toComponent(mutedChatMessage(activemute))));
             return;
         }
 
-        // Team chat check
+        // team chat check
         if (plugin.getTeamManager().isTeamChatEnabled(player.getUniqueId())) {
             event.setCancelled(true);
             Team team = plugin.getTeamManager().getTeam(player);
@@ -90,12 +90,12 @@ public class ChatListener implements Listener {
             return;
         }
 
-        if (chatManager.isGlobalChatMuted() && !chatManager.isMuteBypassed(player)) {
+        if (chatManager.isGlobalChatmuted() && !chatManager.ismuteBypassed(player)) {
             event.setCancelled(true);
             plugin.getFoliaScheduler().runEntity(player, () -> player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "CHAT-MANAGER.GLOBAL-MUTED-BLOCK",
-                            "&cGlobal chat is currently muted."
+                            "&cɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴍᴜᴛᴇᴅ."
                     )
             )));
             return;
@@ -113,7 +113,7 @@ public class ChatListener implements Listener {
             event.setCancelled(true);
             String delayMessage = plugin.getConfigManager().getMessageOrDefault(
                     "CHAT-MANAGER.GLOBAL-DELAY-BLOCK",
-                    "&cYou must wait &f{seconds}s &cbefore chatting again."
+                    "&cʏᴏᴜ ᴍᴜѕᴛ ᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀᴛᴛɪɴɢ ᴀɢᴀɪɴ."
             ).replace("{seconds}", String.valueOf(delayResult.remainingSeconds()))
                     .replace("%seconds%", String.valueOf(delayResult.remainingSeconds()));
             plugin.getFoliaScheduler().runEntity(player, () -> player.sendMessage(ColorUtils.toComponent(delayMessage)));
@@ -148,7 +148,7 @@ public class ChatListener implements Listener {
     private String mutedChatMessage(PunishmentRecord record) {
         return plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.MUTE",
-                "&c&lYou have been muted!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Expires: &f%nicest_expiration%\n&7Muted by: &f%issuer%\n&8&m----------------------------\n&7You cannot speak in chat",
+                "&c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%\n&7ᴍᴜᴛᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&7ʏᴏᴜ ᴄᴀɴɴᴏᴛ ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ",
                 "%reason%", record.getReason(),
                 "%nicest_expiration%", formatExpires(record),
                 "%issuer%", formatIssuer(record),
@@ -168,6 +168,6 @@ public class ChatListener implements Listener {
 
     private String formatIssuer(PunishmentRecord record) {
         String issuer = record.getIssuerNameSnapshot();
-        return issuer == null || issuer.isBlank() ? "Unknown" : issuer;
+        return issuer == null || issuer.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : issuer;
     }
 }

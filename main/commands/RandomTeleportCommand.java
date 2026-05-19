@@ -18,20 +18,20 @@ public class RandomTeleportCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cOnly players can use this command."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
             return true;
         }
 
         if (!plugin.getStaffModeManager().canUseRandomTeleport(player)) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
+                    plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
             ));
             return true;
         }
 
         if (plugin.getStaffModeManager().teleportToRandomPlayer(player) == null) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("RANDOMTP.NO_PLAYERS", "&cNo other players available for random teleport")
+                    plugin.getConfigManager().getMessageOrDefault("RANDOMTP.NO_PLAYERS", "&cɴᴏ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ")
             ));
         }
         return true;

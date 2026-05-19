@@ -646,7 +646,7 @@ public class CrateVisualManager {
         if (lines.isEmpty()) {
             lines = List.of(
                     "{crate}",
-                    "&7Right-click to open"
+                    "&7ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ"
             );
         }
 
@@ -662,7 +662,7 @@ public class CrateVisualManager {
     private String getKeyLine(CrateManager.CrateDefinition crate, int keys) {
         String template = plugin.getConfigManager().getCrates().getString(
                 "SETTINGS.HOLOGRAM.KEY-LINE",
-                "&7Keys: &f{keys}"
+                "&7ᴋᴇʏѕ: &f{keys}"
         );
         return template
                 .replace("{crate}", crate.display().displayName())

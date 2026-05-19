@@ -135,7 +135,7 @@ public class TPAManager {
     }
 
     public void clearAutoTpaHereQueue(UUID targetUuid) {
-        clearAutoTpaHereQueue(targetUuid, "&ctpahere auto-accept&7 was disabled.");
+        clearAutoTpaHereQueue(targetUuid, "&cᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴡᴀѕ ᴅɪѕᴀʙʟᴇᴅ.");
     }
 
     public void clearIncomingRequests(UUID targetUuid, boolean tpaHere, String reason) {
@@ -236,10 +236,10 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7Auto-accepting &b/tpa&7 request from &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " has &atpa auto-accept&7 enabled. Your &b/tpa&7 request is being processed."
+                "&7" + target.getName() + " ʜᴀѕ &aᴛᴘᴀ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
         plugin.getSpigotScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
@@ -297,10 +297,10 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7Auto-accepting &b/tpahere&7 request from &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " has &atpahere auto-accept&7 enabled. Your &b/tpahere&7 request is being processed."
+                "&7" + target.getName() + " ʜᴀѕ &aᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
         plugin.getSpigotScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
@@ -338,10 +338,10 @@ public class TPAManager {
         }
 
         Player target = Bukkit.getPlayer(request.target());
-        String targetName = target != null ? target.getName() : "this player";
+        String targetName = target != null ? target.getName() : "ᴛʜɪѕ ᴘʟᴀʏᴇʀ";
         String requestType = request.tpaHere() ? "/tpahere" : "/tpa";
         requester.sendMessage(ColorUtils.toComponent(
-                "&7Your &b" + requestType + "&7 request to &f" + targetName + "&7 was cleared because " + reason
+                "&7ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + targetName + "&7 ᴡᴀѕ ᴄʟᴇᴀʀᴇᴅ ʙᴇᴄᴀᴜѕᴇ " + reason
         ));
     }
 
@@ -371,10 +371,10 @@ public class TPAManager {
         String autoName = tpaHere ? "tpahere auto-accept" : "tpa auto-accept";
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7Auto-accepting pending &b" + requestType + "&7 request from &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ ᴘᴇɴᴅɪɴɢ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " has &a" + autoName + "&7 enabled. Your &b" + requestType + "&7 request is being processed."
+                "&7" + target.getName() + " ʜᴀѕ &a" + autoName + "&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
         plugin.getSpigotScheduler().runEntity(target, () -> target.performCommand(command));

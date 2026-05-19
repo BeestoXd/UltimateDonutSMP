@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
+import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
@@ -92,7 +93,7 @@ public class FeatureToggleMenu extends BaseMenu {
         player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault(
                         "FEATURES.TOGGLED",
-                        "&a{feature} is now {state}.",
+                        "&a{feature} ɪѕ ɴᴏᴡ {state}.",
                         "{feature}", feature.displayName(),
                         "{feature_key}", feature.configKey(),
                         "{state}", plugin.getFeatureManager().statusText(feature)
@@ -128,7 +129,7 @@ public class FeatureToggleMenu extends BaseMenu {
             lore = menus.getStringList(MENU_PATH + ".DEFAULTS.LORE");
         }
         if (lore.isEmpty()) {
-            lore = List.of("&7{description}", "", "&7Status: {state}", "&eClick to toggle.");
+            lore = List.of("&7{description}", "", "&7ѕᴛᴀᴛᴜѕ: {state}", "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴏɢɢʟᴇ.");
         }
 
         Map<String, String> placeholders = placeholders(feature);
@@ -184,7 +185,7 @@ public class FeatureToggleMenu extends BaseMenu {
         placeholders.put("feature_key", feature.configKey());
         placeholders.put("description", feature.description());
         placeholders.put("state", plugin.getFeatureManager().statusText(feature));
-        placeholders.put("raw_state", plugin.getFeatureManager().isEnabled(feature) ? "enabled" : "disabled");
+        placeholders.put("raw_state", plugin.getFeatureManager().isEnabled(feature) ? "ᴇɴᴀʙʟᴇᴅ" : "ᴅɪѕᴀʙʟᴇᴅ");
         return placeholders;
     }
 
@@ -215,7 +216,7 @@ public class FeatureToggleMenu extends BaseMenu {
 
     private static String prettify(String key) {
         String lower = key.toLowerCase(Locale.ROOT).replace('_', ' ');
-        return lower.substring(0, 1).toUpperCase(Locale.ROOT) + lower.substring(1);
+        return ColorUtils.toSmallCaps(lower.substring(0, 1).toUpperCase(Locale.ROOT) + lower.substring(1));
     }
 
     private FileConfiguration menus() {
@@ -224,7 +225,7 @@ public class FeatureToggleMenu extends BaseMenu {
 
     private static String configuredTitle(UltimateDonutSmp plugin, int page) {
         return plugin.getConfigManager().getMenus()
-                .getString(MENU_PATH + ".TITLE", "&8Feature Toggles")
+                .getString(MENU_PATH + ".TITLE", "&8ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ")
                 .replace("{page}", String.valueOf(Math.max(1, page + 1)));
     }
 

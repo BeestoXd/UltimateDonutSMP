@@ -33,11 +33,11 @@ import org.jetbrains.annotations.Nullable;
  *   %economy_kills%                kill count
  *   %economy_deaths%               death count
  *   %economy_playtime%             formatted playtime
- *   %economy_team%                 team name (or "None")
+ *   %economy_team%                 team name (or "ɴᴏɴᴇ")
  *   %economy_ping%                 player ping in ms
  *   %economy_username%             player name
  *   %economy_keyall_countdown%     time until next key-all
- *   %economy_booster_countdown%    time until booster expires (or "Inactive")
+ *   %economy_booster_countdown%    time until booster expires (or "ɪɴᴀᴄᴛɪᴠᴇ")
  *   %economy_shard_cuboid_display% shard cuboid HUD text for scoreboard/action info
  *   %economy_shard_cuboid_status%  current shard cuboid state
  *   %economy_shard_cuboid_name%    active shard cuboid name
@@ -80,9 +80,9 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         // Booster countdown (needs uuid)
         if (params.equals("booster_countdown")) {
-            if (!offlinePlayer.isOnline()) return "Inactive";
+            if (!offlinePlayer.isOnline()) return "ɪɴᴀᴄᴛɪᴠᴇ";
             long secs = plugin.getShardManager().getBoosterRemainingSeconds(offlinePlayer.getUniqueId());
-            return secs > 0 ? NumberUtils.formatCountdown(secs) : "Inactive";
+            return secs > 0 ? NumberUtils.formatCountdown(secs) : "ɪɴᴀᴄᴛɪᴠᴇ";
         }
 
         if (params.equals("shard_cuboid_display")) {
@@ -91,12 +91,12 @@ public class EconomyExpansion extends PlaceholderExpansion {
         }
 
         if (params.equals("shard_cuboid_status")) {
-            if (!offlinePlayer.isOnline()) return "OUTSIDE";
+            if (!offlinePlayer.isOnline()) return "ᴏᴜᴛѕɪᴅᴇ";
             return plugin.getShardManager().getShardCuboidStatus(offlinePlayer.getUniqueId());
         }
 
         if (params.equals("shard_cuboid_name")) {
-            if (!offlinePlayer.isOnline()) return "None";
+            if (!offlinePlayer.isOnline()) return "ɴᴏɴᴇ";
             return plugin.getShardManager().getShardCuboidName(offlinePlayer.getUniqueId());
         }
 
@@ -108,7 +108,7 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         // Username
         if (params.equals("username")) {
-            return offlinePlayer.getName() != null ? offlinePlayer.getName() : "Unknown";
+            return offlinePlayer.getName() != null ? offlinePlayer.getName() : "ᴜɴᴋɴᴏᴡɴ";
         }
 
         CurrencyManager currencyManager = plugin.getCurrencyManager();
@@ -154,7 +154,7 @@ public class EconomyExpansion extends PlaceholderExpansion {
             String team = offlinePlayer.isOnline()
                     ? plugin.getTeamManager().getTeamName(offlinePlayer.getPlayer())
                     : null;
-            return team != null ? team.toUpperCase() : "None";
+            return team != null ? team.toUpperCase() : "ɴᴏɴᴇ";
         }
 
         // All others require player data

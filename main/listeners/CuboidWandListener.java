@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class CuboidWandListener implements Listener {
 
-    private static final String WAND_NAME = "&6Cuboid Wand";
+    private static final String WAND_NAME = "&6ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ";
 
     private final UltimateDonutSmp plugin;
 
@@ -55,13 +55,13 @@ public class CuboidWandListener implements Listener {
 
         if (action == Action.LEFT_CLICK_BLOCK) {
             plugin.getCuboidManager().setPos1(player.getUniqueId(), clicked.getLocation());
-            player.sendMessage(ColorUtils.toComponent("&aFirst position set at &f" + formatLoc(clicked)));
+            player.sendMessage(ColorUtils.toComponent("&aꜰɪʀѕᴛ ᴘᴏѕɪᴛɪᴏɴ ѕᴇᴛ ᴀᴛ &f" + formatLoc(clicked)));
             handleSelectionCompleted(player);
             return;
         }
 
         plugin.getCuboidManager().setPos2(player.getUniqueId(), clicked.getLocation());
-        player.sendMessage(ColorUtils.toComponent("&aSecond position set at &f" + formatLoc(clicked)));
+        player.sendMessage(ColorUtils.toComponent("&aѕᴇᴄᴏɴᴅ ᴘᴏѕɪᴛɪᴏɴ ѕᴇᴛ ᴀᴛ &f" + formatLoc(clicked)));
         handleSelectionCompleted(player);
     }
 
@@ -89,14 +89,14 @@ public class CuboidWandListener implements Listener {
         }
 
         removeWandFromInventory(player);
-        player.sendMessage(ColorUtils.toComponent("&aSelection complete. &7Cuboid Wand removed from your inventory."));
+        player.sendMessage(ColorUtils.toComponent("&aѕᴇʟᴇᴄᴛɪᴏɴ ᴄᴏᴍᴘʟᴇᴛᴇ. &7ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ."));
 
-        TextComponent guideMessage = ColorUtils.toBaseComponent("&eStep 3/3 &7Type ");
+        TextComponent guideMessage = ColorUtils.toBaseComponent("&eѕᴛᴇᴘ 3/3 &7ᴛʏᴘᴇ ");
         TextComponent commandPart = ColorUtils.toBaseComponent("&f/cuboid create <name>");
         commandPart.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/cuboid create "));
         commandPart.setHoverEvent(new HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                ColorUtils.toBaseComponents("&7Click to autofill the create command.")
+                ColorUtils.toBaseComponents("&7ᴄʟɪᴄᴋ ᴛᴏ ᴀᴜᴛᴏꜰɪʟʟ ᴛʜᴇ ᴄʀᴇᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅ.")
         ));
         guideMessage.addExtra(commandPart);
         player.spigot().sendMessage(guideMessage);

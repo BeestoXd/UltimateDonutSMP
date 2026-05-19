@@ -182,7 +182,7 @@ public class ChatManager {
             int min = getMinLength();
             if (trimmed.length() < min) {
                 return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.LENGTH.MIN.BLOCK-MESSAGE",
-                        "&cYour message is too short! (Min: %min%)")
+                        "&cʏᴏᴜʀ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ѕʜᴏʀᴛ! (ᴍɪɴ: %min%)")
                         .replace("%min%", String.valueOf(min)));
             }
         }
@@ -191,36 +191,36 @@ public class ChatManager {
             int max = getMaxLength();
             if (trimmed.length() > max) {
                 return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.LENGTH.MAX.BLOCK-MESSAGE",
-                        "&cYour message is too long! (Max: %max%)")
+                        "&cʏᴏᴜʀ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ! (ᴍᴀx: %max%)")
                         .replace("%max%", String.valueOf(max)));
             }
         }
 
         if (isLanguageFilterEnabled() && !containsOnlyAllowedCharacters(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.LANGUAGE.BLOCK-MESSAGE",
-                    "&cYour message contains characters that are not allowed on this server."));
+                    "&cʏᴏᴜʀ ᴍᴇѕѕᴀɢᴇ ᴄᴏɴᴛᴀɪɴѕ ᴄʜᴀʀᴀᴄᴛᴇʀѕ ᴛʜᴀᴛ ᴀʀᴇ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ᴏɴ ᴛʜɪѕ ѕᴇʀᴠᴇʀ."));
         }
 
         if (containsBlockedWord(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.BLOCK-MESSAGE",
-                    "&7Please avoid using inappropriate words."));
+                    "&7ᴘʟᴇᴀѕᴇ ᴀᴠᴏɪᴅ ᴜѕɪɴɢ ɪɴᴀᴘᴘʀᴏᴘʀɪᴀᴛᴇ ᴡᴏʀᴅѕ."));
         }
 
         if (isCapsFilterTriggered(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.CAPS.BLOCK-MESSAGE",
-                    "&cPlease avoid using too many capital letters."));
+                    "&cᴘʟᴇᴀѕᴇ ᴀᴠᴏɪᴅ ᴜѕɪɴɢ ᴛᴏᴏ ᴍᴀɴʏ ᴄᴀᴘɪᴛᴀʟ ʟᴇᴛᴛᴇʀѕ."));
         }
 
         if (containsDisallowedLink(trimmed)) {
             return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.ANTI-LINK.BLOCK-MESSAGE",
-                    "&cLinks are not allowed in the chat!"));
+                    "&cʟɪɴᴋѕ ᴀʀᴇ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!"));
         }
 
         if (isAntiRepeatEnabled() && player != null) {
             String previous = lastAcceptedGlobalMessageByPlayer.get(player.getUniqueId());
             if (previous != null && previous.equals(normalized)) {
                 return FilterResult.blocked(message(CHAT_ROOT + ".FILTER.ANTI-REPEAT.BLOCK-MESSAGE",
-                        "&cYou cannot repeat the same message!"));
+                        "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʀᴇᴘᴇᴀᴛ ᴛʜᴇ ѕᴀᴍᴇ ᴍᴇѕѕᴀɢᴇ!"));
             }
         }
 

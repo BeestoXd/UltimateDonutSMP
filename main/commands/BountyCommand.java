@@ -24,7 +24,7 @@ public class BountyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
@@ -36,14 +36,14 @@ public class BountyCommand implements CommandExecutor {
         switch (args[0].toLowerCase()) {
             case "add", "set" -> handleAdd(player, args);
             case "info" -> handleInfo(player, args);
-            default -> player.sendMessage(ColorUtils.toComponent("&cUsage: /bounty <add|info|list> [player] [amount]"));
+            default -> player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty <add|info|list> [player] [amount]"));
         }
         return true;
     }
 
     private void handleAdd(Player player, String[] args) {
         if (args.length < 3) {
-            player.sendMessage(ColorUtils.toComponent("&cUsage: /bounty add <player> <amount>"));
+            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty add <player> <amount>"));
             return;
         }
 
@@ -83,7 +83,7 @@ public class BountyCommand implements CommandExecutor {
 
     private void handleInfo(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage(ColorUtils.toComponent("&cUsage: /bounty info <player>"));
+            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty info <player>"));
             return;
         }
 

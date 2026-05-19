@@ -36,7 +36,7 @@ public class WorthCommand implements CommandExecutor {
                     sender.sendMessage(ColorUtils.colorize(
                             plugin.getConfigManager().getMessages().getString(
                                     "WORTH.NO-ADMIN-PERMISSION",
-                                    "&cYou do not have permission to reload worth settings."
+                                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴡᴏʀᴛʜ ѕᴇᴛᴛɪɴɢѕ."
                             )));
                     return true;
                 }
@@ -46,7 +46,7 @@ public class WorthCommand implements CommandExecutor {
                 sender.sendMessage(ColorUtils.colorize(
                         plugin.getConfigManager().getMessages().getString(
                                 "WORTH.RELOADED",
-                                "&aWorth config reloaded."
+                                "&aᴡᴏʀᴛʜ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
                         )));
                 return true;
             }
@@ -66,13 +66,13 @@ public class WorthCommand implements CommandExecutor {
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType().isAir()) {
-            player.sendMessage(ColorUtils.toComponent("&cHold an item to check its worth."));
+            player.sendMessage(ColorUtils.toComponent("&cʜᴏʟᴅ ᴀɴ ɪᴛᴇᴍ ᴛᴏ ᴄʜᴇᴄᴋ ɪᴛѕ ᴡᴏʀᴛʜ."));
             return true;
         }
 
@@ -99,7 +99,7 @@ public class WorthCommand implements CommandExecutor {
         if (worthResult.container() && worthResult.hasContainerContentsWorth()) {
             String breakdown = plugin.getConfigManager().getMessages().getString(
                     "WORTH.CONTAINER-BREAKDOWN",
-                    "&7Base: &f{base_formatted} &8| &7Contents: &f{contents_formatted}"
+                    "&7ʙᴀѕᴇ: &f{base_formatted} &8| &7ᴄᴏɴᴛᴇɴᴛѕ: &f{contents_formatted}"
             );
             breakdown = breakdown
                     .replace("{base}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.baseWorth()))
@@ -113,7 +113,7 @@ public class WorthCommand implements CommandExecutor {
 
     private void openBrowser(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return;
         }
 

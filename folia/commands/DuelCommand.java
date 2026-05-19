@@ -22,12 +22,12 @@ public class DuelCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
         if (!plugin.getDuelManager().isEnabled() && (args.length == 0 || !"reload".equalsIgnoreCase(args[0]))) {
-            player.sendMessage(ColorUtils.toComponent("&cDuels are currently disabled."));
+            player.sendMessage(ColorUtils.toComponent("&cᴅᴜᴇʟѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
 
@@ -43,12 +43,12 @@ public class DuelCommand implements CommandExecutor {
         }
         if (subcommand.equals("reload")) {
             if (!player.hasPermission("ultimatedonutsmp.admin.duels")) {
-                player.sendMessage(ColorUtils.toComponent("&cYou do not have permission to reload duels."));
+                player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴅᴜᴇʟѕ."));
                 return true;
             }
             plugin.getConfigManager().reloadDuels();
             plugin.getDuelManager().reload();
-            player.sendMessage(ColorUtils.toComponent("&aDuels config reloaded."));
+            player.sendMessage(ColorUtils.toComponent("&aᴅᴜᴇʟѕ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."));
             return true;
         }
         if (subcommand.equals("accept")) {
@@ -62,7 +62,7 @@ public class DuelCommand implements CommandExecutor {
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cThat player is not online."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return true;
         }
 

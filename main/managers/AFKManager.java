@@ -106,7 +106,7 @@ public class AFKManager {
     public void sendToAfk(Player player) {
         sendToAfk(player, resolveAutomaticAfkLocation(), plugin.getConfigManager().getConfig()
                 .getString("AFK-SYSTEM.MESSAGE",
-                        "&7You have been moved to the AFK area for being inactive in the spawn."));
+                        "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ᴛʜᴇ ᴀꜰᴋ ᴀʀᴇᴀ ꜰᴏʀ ʙᴇɪɴɢ ɪɴᴀᴄᴛɪᴠᴇ ɪɴ ᴛʜᴇ ѕᴘᴀᴡɴ."));
     }
 
     public Location resolveAutomaticAfkLocation() {

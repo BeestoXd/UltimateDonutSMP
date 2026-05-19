@@ -51,15 +51,15 @@ public class DiscordWebhookManager {
     }
 
     public void reload() {
-        // Configuration is read on each send so reload only exists for lifecycle symmetry.
+        // configuration is read on each send so reload only exists for lifecycle symmetry.
     }
 
     private Map<String, String> basePunishmentPlaceholders(PunishmentRecord record) {
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%player%", fallback(record.getTargetNameSnapshot(), "Unknown"));
+        placeholders.put("%player%", fallback(record.getTargetNameSnapshot(), "ᴜɴᴋɴᴏᴡɴ"));
         placeholders.put("%uuid%", record.getTargetUuid() == null ? "" : record.getTargetUuid().toString());
-        placeholders.put("%staff%", fallback(record.getIssuerNameSnapshot(), "Unknown"));
-        placeholders.put("%reason%", fallback(record.getReason(), "No reason specified"));
+        placeholders.put("%staff%", fallback(record.getIssuerNameSnapshot(), "ᴜɴᴋɴᴏᴡɴ"));
+        placeholders.put("%reason%", fallback(record.getReason(), "ɴᴏ ʀᴇᴀѕᴏɴ ѕᴘᴇᴄɪꜰɪᴇᴅ"));
         placeholders.put("%duration%", formatDuration(record));
         placeholders.put("%date%", formatDate(record.getIssuedAt()));
         placeholders.put("%id%", String.valueOf(record.getId()));

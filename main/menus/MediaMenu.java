@@ -29,22 +29,22 @@ public class MediaMenu extends BaseMenu {
         FileConfiguration menus = plugin.getConfigManager().getMenus();
         mediaButtonSlot = configuredSlot(plugin, inventory.getSize());
 
-        String displayName = menus.getString(BUTTON_PATH + ".DISPLAY-NAME", "&dMedia Rank");
+        String displayName = menus.getString(BUTTON_PATH + ".DISPLAY-NAME", "&dᴍᴇᴅɪᴀ ʀᴀɴᴋ");
         List<String> lore = menus.getStringList(BUTTON_PATH + ".LORE");
 
         if (lore.isEmpty()) {
             lore = List.of(
-                    "&dRequirements: (only one needed)",
-                    "&d- &f25 average viewers on Stream",
-                    "&d- &f5k views on a YouTube Video",
-                    "&d- &f25k views on a TikTok",
-                    "&d- &f50k views on YouTube Short",
+                    "&dʀᴇǫᴜɪʀᴇᴍᴇɴᴛѕ: (only one needed)",
+                    "&d- &f25 ᴀᴠᴇʀᴀɢᴇ ᴠɪᴇᴡᴇʀѕ ᴏɴ ѕᴛʀᴇᴀᴍ",
+                    "&d- &f5ᴋ ᴠɪᴇᴡѕ ᴏɴ ᴀ ʏᴏᴜᴛᴜʙᴇ ᴠɪᴅᴇᴏ",
+                    "&d- &f25ᴋ ᴠɪᴇᴡѕ ᴏɴ ᴀ ᴛɪᴋᴛᴏᴋ",
+                    "&d- &f50ᴋ ᴠɪᴇᴡѕ ᴏɴ ʏᴏᴜᴛᴜʙᴇ ѕʜᴏʀᴛ",
                     "",
-                    "&dReminders:",
-                    "&8- &7Must have the IP on screen",
-                    "&8- &7Must be from the new season",
-                    "&8- &7Create ticket in discord for the rank",
-                    "&8- &7It lasts 90 days and has all top ranks perks"
+                    "&dʀᴇᴍɪɴᴅᴇʀѕ:",
+                    "&8- &7ᴍᴜѕᴛ ʜᴀᴠᴇ ᴛʜᴇ ɪᴘ ᴏɴ ѕᴄʀᴇᴇɴ",
+                    "&8- &7ᴍᴜѕᴛ ʙᴇ ꜰʀᴏᴍ ᴛʜᴇ ɴᴇᴡ ѕᴇᴀѕᴏɴ",
+                    "&8- &7ᴄʀᴇᴀᴛᴇ ᴛɪᴄᴋᴇᴛ ɪɴ ᴅɪѕᴄᴏʀᴅ ꜰᴏʀ ᴛʜᴇ ʀᴀɴᴋ",
+                    "&8- &7ɪᴛ ʟᴀѕᴛѕ 90 ᴅᴀʏѕ ᴀɴᴅ ʜᴀѕ ᴀʟʟ ᴛᴏᴘ ʀᴀɴᴋѕ ᴘᴇʀᴋѕ"
             );
         }
 
@@ -62,12 +62,12 @@ public class MediaMenu extends BaseMenu {
         }
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        player.sendMessage(ColorUtils.toComponent("&dCreate a ticket in Discord to apply for Media Rank."));
-        player.sendMessage(ColorUtils.toComponent("&7You only need to meet &fone&7 of the listed requirements."));
+        player.sendMessage(ColorUtils.toComponent("&dᴄʀᴇᴀᴛᴇ ᴀ ᴛɪᴄᴋᴇᴛ ɪɴ ᴅɪѕᴄᴏʀᴅ ᴛᴏ ᴀᴘᴘʟʏ ꜰᴏʀ ᴍᴇᴅɪᴀ ʀᴀɴᴋ."));
+        player.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜ ᴏɴʟʏ ɴᴇᴇᴅ ᴛᴏ ᴍᴇᴇᴛ &fᴏɴᴇ&7 ᴏꜰ ᴛʜᴇ ʟɪѕᴛᴇᴅ ʀᴇǫᴜɪʀᴇᴍᴇɴᴛѕ."));
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Media Rank");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ᴍᴇᴅɪᴀ ʀᴀɴᴋ");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {
@@ -76,8 +76,8 @@ public class MediaMenu extends BaseMenu {
             return rawSize;
         }
 
-        plugin.getLogger().warning("Invalid " + MENU_PATH + ".SIZE value '" + rawSize
-                + "'. Falling back to 27.");
+        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + MENU_PATH + ".SIZE value '" + rawSize
+                + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ 27.");
         return 27;
     }
 
@@ -88,8 +88,8 @@ public class MediaMenu extends BaseMenu {
         }
 
         int fallback = Math.min(13, inventorySize - 1);
-        plugin.getLogger().warning("Invalid " + BUTTON_PATH + ".SLOT value '" + slot
-                + "'. Falling back to slot " + fallback + ".");
+        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + BUTTON_PATH + ".SLOT value '" + slot
+                + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ ѕʟᴏᴛ " + fallback + ".");
         return fallback;
     }
 
@@ -101,8 +101,8 @@ public class MediaMenu extends BaseMenu {
             return material;
         }
 
-        plugin.getLogger().warning("Invalid " + BUTTON_PATH + ".MATERIAL value '" + rawMaterial
-                + "'. Falling back to PINK_DYE.");
+        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + BUTTON_PATH + ".MATERIAL value '" + rawMaterial
+                + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ ᴘɪɴᴋ_ᴅʏᴇ.");
         return Material.PINK_DYE;
     }
 }

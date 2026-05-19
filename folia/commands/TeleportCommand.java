@@ -25,12 +25,12 @@ public class TeleportCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cOnly players can use this command."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
             return true;
         }
 
         if (!player.hasPermission(PERMISSION)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
@@ -76,7 +76,7 @@ public class TeleportCommand implements CommandExecutor {
 
     private boolean handleTeleportHereAlias(Player player, String[] args) {
         if (args.length != 1) {
-            player.sendMessage(ColorUtils.toComponent("&cUsage: /tphere <player>"));
+            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /tphere <player>"));
             return true;
         }
         teleportHere(player, args[0]);
@@ -85,7 +85,7 @@ public class TeleportCommand implements CommandExecutor {
 
     private boolean handleTeleportAllAlias(Player player, String[] args) {
         if (args.length != 0) {
-            player.sendMessage(ColorUtils.toComponent("&cUsage: /tpall"));
+            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /tpall"));
             return true;
         }
         teleportAll(player);
@@ -95,7 +95,7 @@ public class TeleportCommand implements CommandExecutor {
     private void teleportToPlayer(Player player, String input) {
         Player target = findOnlinePlayer(input);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
+            player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return;
         }
 
@@ -104,7 +104,7 @@ public class TeleportCommand implements CommandExecutor {
                 plugin.getFoliaScheduler().runEntity(player, () -> {
                     if (Boolean.TRUE.equals(success) && player.isOnline()) {
                         player.sendMessage(ColorUtils.toComponent(
-                                message("TELEPORT.TO_PLAYER", "&dTeleported &7to %player%")
+                                message("TELEPORT.TO_PLAYER", "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ %player%")
                                         .replace("%player%", targetName),
                                 player
                         ));
@@ -115,12 +115,12 @@ public class TeleportCommand implements CommandExecutor {
     private void teleportHere(Player player, String input) {
         Player target = findOnlinePlayer(input);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
+            player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return;
         }
 
         if (player.getUniqueId().equals(target.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cYou cannot teleport yourself to yourself."));
+            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴛᴇʟᴇᴘᴏʀᴛ ʏᴏᴜʀѕᴇʟꜰ ᴛᴏ ʏᴏᴜʀѕᴇʟꜰ."));
             return;
         }
 
@@ -134,7 +134,7 @@ public class TeleportCommand implements CommandExecutor {
             plugin.getFoliaScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.sendMessage(ColorUtils.toComponent(
-                            message("TELEPORT.HERE", "&dTeleported &7%player% to your location")
+                            message("TELEPORT.HERE", "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7%player% tᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ")
                                     .replace("%player%", targetName),
                             player
                     ));
@@ -143,7 +143,7 @@ public class TeleportCommand implements CommandExecutor {
             plugin.getFoliaScheduler().runEntity(target, () -> {
                 if (target.isOnline()) {
                     target.sendMessage(ColorUtils.toComponent(
-                            message("TELEPORT.HERE_TARGET", "&dYou were teleported to &7%sender%")
+                            message("TELEPORT.HERE_TARGET", "&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%")
                                     .replace("%sender%", senderName),
                             target
                     ));
@@ -164,7 +164,7 @@ public class TeleportCommand implements CommandExecutor {
                     plugin.getFoliaScheduler().runEntity(target, () -> {
                         if (Boolean.TRUE.equals(success) && target.isOnline()) {
                             target.sendMessage(ColorUtils.toComponent(
-                                    message("TELEPORT.ALL_TARGET", "&dYou were teleported to &7%sender%")
+                                    message("TELEPORT.ALL_TARGET", "&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%")
                                             .replace("%sender%", senderName),
                                     target
                             ));
@@ -174,12 +174,12 @@ public class TeleportCommand implements CommandExecutor {
         }
 
         if (moved == 0) {
-            player.sendMessage(ColorUtils.toComponent("&cNo other players online."));
+            player.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴏɴʟɪɴᴇ."));
             return;
         }
 
         player.sendMessage(ColorUtils.toComponent(
-                message("TELEPORT.ALL", "&dTeleported &7all players to your location"),
+                message("TELEPORT.ALL", "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴀʟʟ ᴘʟᴀʏᴇʀѕ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ"),
                 player
         ));
     }
@@ -192,7 +192,7 @@ public class TeleportCommand implements CommandExecutor {
                 plugin.getFoliaScheduler().runEntity(player, () -> {
                     if (Boolean.TRUE.equals(success) && player.isOnline()) {
                         player.sendMessage(ColorUtils.toComponent(
-                                message("TELEPORT.TOP", "&dTeleported &7to the highest position"),
+                                message("TELEPORT.TOP", "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ ᴛʜᴇ ʜɪɢʜᴇѕᴛ ᴘᴏѕɪᴛɪᴏɴ"),
                                 player
                         ));
                     }
@@ -204,7 +204,7 @@ public class TeleportCommand implements CommandExecutor {
         Double y = parseCoordinate(args[1]);
         Double z = parseCoordinate(args[2]);
         if (x == null || y == null || z == null) {
-            player.sendMessage(ColorUtils.toComponent("&cCoordinates must be valid numbers."));
+            player.sendMessage(ColorUtils.toComponent("&cᴄᴏᴏʀᴅɪɴᴀᴛᴇѕ ᴍᴜѕᴛ ʙᴇ ᴠᴀʟɪᴅ ɴᴜᴍʙᴇʀѕ."));
             return;
         }
 
@@ -212,7 +212,7 @@ public class TeleportCommand implements CommandExecutor {
         if (args.length == 4) {
             world = Bukkit.getWorld(args[3]);
             if (world == null) {
-                player.sendMessage(ColorUtils.toComponent("&cWorld not found."));
+                player.sendMessage(ColorUtils.toComponent("&cᴡᴏʀʟᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
                 return;
             }
         }
@@ -223,7 +223,7 @@ public class TeleportCommand implements CommandExecutor {
                 plugin.getFoliaScheduler().runEntity(player, () -> {
                     if (Boolean.TRUE.equals(success) && player.isOnline()) {
                         player.sendMessage(ColorUtils.toComponent(
-                                message("TELEPORT.POSITION", "&7Teleported to: &d%x%,%y%,%z% &7(%world%)")
+                                message("TELEPORT.POSITION", "&7ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ: &d%x%,%y%,%z% &7(%world%)")
                                         .replace("%x%", formatCoordinate(x))
                                         .replace("%y%", formatCoordinate(y))
                                         .replace("%z%", formatCoordinate(z))
@@ -236,7 +236,7 @@ public class TeleportCommand implements CommandExecutor {
 
     private void sendUsage(Player player, String label) {
         player.sendMessage(ColorUtils.toComponent(
-                "&cUsage: /" + label + " <player|here <player>|all|top|x y z [world]>"
+                "&cᴜѕᴀɢᴇ: /" + label + " <player|here <player>|ᴀʟʟ|ᴛᴏᴘ|x ʏ ᴢ [world]>"
         ));
     }
 

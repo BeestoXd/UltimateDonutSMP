@@ -19,7 +19,7 @@ public class ArenaCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("ultimatedonutsmp.admin.duels")) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to manage duel arenas."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴅᴜᴇʟ ᴀʀᴇɴᴀѕ."));
             return true;
         }
 
@@ -41,21 +41,21 @@ public class ArenaCommand implements CommandExecutor {
         String subcommand = args[0].toLowerCase();
         if (subcommand.equals("list")) {
             if (plugin.getDuelManager().getArenas().isEmpty()) {
-                sender.sendMessage(ColorUtils.toComponent("&cNo duel arenas configured."));
+                sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴅᴜᴇʟ ᴀʀᴇɴᴀѕ ᴄᴏɴꜰɪɢᴜʀᴇᴅ."));
                 return true;
             }
-            sender.sendMessage(ColorUtils.toComponent("&eDuel Arenas:"));
+            sender.sendMessage(ColorUtils.toComponent("&eᴅᴜᴇʟ ᴀʀᴇɴᴀѕ:"));
             for (DuelArena arena : plugin.getDuelManager().getArenas()) {
                 sender.sendMessage(ColorUtils.toComponent(
                         "&7- &f" + arena.getId()
                                 + " &8(" + arena.getDisplayName() + "&8)"
-                                + " &7ready=&f" + arena.isReady()
-                                + " &7rollback=&f" + arena.hasRollbackRegion()
-                                + " &7pos1=&f" + (arena.getSpawn1() != null)
-                                + " &7pos2=&f" + (arena.getSpawn2() != null)
-                                + " &7return=&f" + (arena.getReturnLocation() != null)
-                                + " &7enabled=&f" + arena.isEnabled()
-                                + " &7queue=&f" + arena.isQueueEnabled()
+                                + " &7ʀᴇᴀᴅʏ=&f" + arena.isReady()
+                                + " &7ʀᴏʟʟʙᴀᴄᴋ=&f" + arena.hasRollbackRegion()
+                                + " &7ᴘᴏѕ1=&f" + (arena.getSpawn1() != null)
+                                + " &7ᴘᴏѕ2=&f" + (arena.getSpawn2() != null)
+                                + " &7ʀᴇᴛᴜʀɴ=&f" + (arena.getReturnLocation() != null)
+                                + " &7ᴇɴᴀʙʟᴇᴅ=&f" + arena.isEnabled()
+                                + " &7ǫᴜᴇᴜᴇ=&f" + arena.isQueueEnabled()
                 ));
             }
             return true;
@@ -63,12 +63,12 @@ public class ArenaCommand implements CommandExecutor {
         if (subcommand.equals("reload")) {
             plugin.getConfigManager().reloadDuels();
             plugin.getDuelManager().reload();
-            sender.sendMessage(ColorUtils.toComponent("&aReloaded duel arenas and config."));
+            sender.sendMessage(ColorUtils.toComponent("&aʀᴇʟᴏᴀᴅᴇᴅ ᴅᴜᴇʟ ᴀʀᴇɴᴀѕ ᴀɴᴅ ᴄᴏɴꜰɪɢ."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou must specify an arena id."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴍᴜѕᴛ ѕᴘᴇᴄɪꜰʏ ᴀɴ ᴀʀᴇɴᴀ ɪᴅ."));
             return true;
         }
 
@@ -76,51 +76,51 @@ public class ArenaCommand implements CommandExecutor {
         if (subcommand.equals("create")) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().createArena(id)
-                            ? "&aCreated duel arena &f" + id + "&a."
-                            : "&cCould not create that duel arena."
+                            ? "&aᴄʀᴇᴀᴛᴇᴅ ᴅᴜᴇʟ ᴀʀᴇɴᴀ &f" + id + "&a."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴛʜᴀᴛ ᴅᴜᴇʟ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
         if (subcommand.equals("delete")) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().deleteArena(id)
-                            ? "&aDeleted duel arena &f" + id + "&a."
-                            : "&cCould not delete that duel arena."
+                            ? "&aᴅᴇʟᴇᴛᴇᴅ ᴅᴜᴇʟ ᴀʀᴇɴᴀ &f" + id + "&a."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴅᴇʟᴇᴛᴇ ᴛʜᴀᴛ ᴅᴜᴇʟ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
         if (subcommand.equals("enable")) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().setArenaEnabled(id, true)
-                            ? "&aEnabled duel arena &f" + id + "&a."
-                            : "&cCould not enable that duel arena."
+                            ? "&aᴇɴᴀʙʟᴇᴅ ᴅᴜᴇʟ ᴀʀᴇɴᴀ &f" + id + "&a."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴇɴᴀʙʟᴇ ᴛʜᴀᴛ ᴅᴜᴇʟ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
         if (subcommand.equals("disable")) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().setArenaEnabled(id, false)
-                            ? "&eDisabled duel arena &f" + id + "&e."
-                            : "&cCould not disable that duel arena."
+                            ? "&eᴅɪѕᴀʙʟᴇᴅ ᴅᴜᴇʟ ᴀʀᴇɴᴀ &f" + id + "&e."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴅɪѕᴀʙʟᴇ ᴛʜᴀᴛ ᴅᴜᴇʟ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
         if (subcommand.equals("queue")) {
             if (args.length < 3) {
-                sender.sendMessage(ColorUtils.toComponent("&cUsage: /arena queue <id> <true|false>"));
+                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /arena queue <id> <true|false>"));
                 return true;
             }
             boolean enabled = Boolean.parseBoolean(args[2]);
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().setArenaQueueEnabled(id, enabled)
-                            ? "&aUpdated queue status for &f" + id + "&a."
-                            : "&cCould not update queue status for that arena."
+                            ? "&aᴜᴘᴅᴀᴛᴇᴅ ǫᴜᴇᴜᴇ ѕᴛᴀᴛᴜѕ ꜰᴏʀ &f" + id + "&a."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ǫᴜᴇᴜᴇ ѕᴛᴀᴛᴜѕ ꜰᴏʀ ᴛʜᴀᴛ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
         if (subcommand.equals("setdisplay")) {
             if (args.length < 3) {
-                sender.sendMessage(ColorUtils.toComponent("&cUsage: /arena setdisplay <id> <name>"));
+                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /arena setdisplay <id> <name>"));
                 return true;
             }
             StringBuilder builder = new StringBuilder();
@@ -132,41 +132,41 @@ public class ArenaCommand implements CommandExecutor {
             }
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().setArenaDisplayName(id, builder.toString())
-                            ? "&aUpdated display name for arena &f" + id + "&a."
-                            : "&cCould not update that arena display name."
+                            ? "&aᴜᴘᴅᴀᴛᴇᴅ ᴅɪѕᴘʟᴀʏ ɴᴀᴍᴇ ꜰᴏʀ ᴀʀᴇɴᴀ &f" + id + "&a."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ᴛʜᴀᴛ ᴀʀᴇɴᴀ ᴅɪѕᴘʟᴀʏ ɴᴀᴍᴇ."
             ));
             return true;
         }
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cThis subcommand requires a player sender."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ ѕᴜʙᴄᴏᴍᴍᴀɴᴅ ʀᴇǫᴜɪʀᴇѕ ᴀ ᴘʟᴀʏᴇʀ ѕᴇɴᴅᴇʀ."));
             return true;
         }
         if (subcommand.equals("setpos1")) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().setArenaRegionPos(id, 1, player.getLocation())
-                            ? "&aSet pos 1 for arena &f" + id + "&a. This now acts as spawn 1 and rollback anchor."
-                            : "&cCould not set pos 1 for that arena."
+                            ? "&aѕᴇᴛ ᴘᴏѕ 1 ꜰᴏʀ ᴀʀᴇɴᴀ &f" + id + "&a. ᴛʜɪѕ ɴᴏᴡ ᴀᴄᴛѕ ᴀѕ ѕᴘᴀᴡɴ 1 ᴀɴᴅ ʀᴏʟʟʙᴀᴄᴋ ᴀɴᴄʜᴏʀ."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴇᴛ ᴘᴏѕ 1 ꜰᴏʀ ᴛʜᴀᴛ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
         if (subcommand.equals("setpos2")) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().setArenaRegionPos(id, 2, player.getLocation())
-                            ? "&aSet pos 2 for arena &f" + id + "&a. This now acts as spawn 2 and rollback anchor."
-                            : "&cCould not set pos 2 for that arena."
+                            ? "&aѕᴇᴛ ᴘᴏѕ 2 ꜰᴏʀ ᴀʀᴇɴᴀ &f" + id + "&a. ᴛʜɪѕ ɴᴏᴡ ᴀᴄᴛѕ ᴀѕ ѕᴘᴀᴡɴ 2 ᴀɴᴅ ʀᴏʟʟʙᴀᴄᴋ ᴀɴᴄʜᴏʀ."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴇᴛ ᴘᴏѕ 2 ꜰᴏʀ ᴛʜᴀᴛ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
         if (subcommand.equals("setreturn")) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getDuelManager().setArenaReturn(id, player.getLocation())
-                            ? "&aSet return location for arena &f" + id + "&a."
-                            : "&cCould not set return location for that arena."
+                            ? "&aѕᴇᴛ ʀᴇᴛᴜʀɴ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏʀ ᴀʀᴇɴᴀ &f" + id + "&a."
+                            : "&cᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴇᴛ ʀᴇᴛᴜʀɴ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏʀ ᴛʜᴀᴛ ᴀʀᴇɴᴀ."
             ));
             return true;
         }
 
-        sender.sendMessage(ColorUtils.toComponent("&cUnknown arena subcommand."));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ᴀʀᴇɴᴀ ѕᴜʙᴄᴏᴍᴍᴀɴᴅ."));
         return true;
     }
 }

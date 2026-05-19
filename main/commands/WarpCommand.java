@@ -26,12 +26,12 @@ public class WarpCommand implements CommandExecutor {
         }
 
         if (args.length > 1) {
-            sendMessage(sender, message("WARP.USAGE", "&cUsage: /warp [name]"));
+            sendMessage(sender, message("WARP.USAGE", "&cᴜѕᴀɢᴇ: /warp [name]"));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sendMessage(sender, message("WARP.PLAYER-ONLY", "&cOnly players can use this warp command."));
+            sendMessage(sender, message("WARP.PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴡᴀʀᴘ ᴄᴏᴍᴍᴀɴᴅ."));
             return true;
         }
 
@@ -49,12 +49,12 @@ public class WarpCommand implements CommandExecutor {
     private void sendWarpList(CommandSender sender) {
         List<String> names = plugin.getWarpManager().getSortedWarpNames();
         if (names.isEmpty()) {
-            sendMessage(sender, message("WARP.LIST-EMPTY", "&cNo warps available."));
+            sendMessage(sender, message("WARP.LIST-EMPTY", "&cɴᴏ ᴡᴀʀᴘѕ ᴀᴠᴀɪʟᴀʙʟᴇ."));
             return;
         }
 
         sendMessage(sender, message("WARP.LIST-HEADER",
-                "&8&m---------------- &bWarps &7({count}) &8&m----------------",
+                "&8&m---------------- &bᴡᴀʀᴘѕ &7({count}) &8&m----------------",
                 "{count}", String.valueOf(names.size())));
         for (String name : names) {
             sendMessage(sender, message("WARP.LIST-ENTRY", "&7- &b{name}", "{name}", name));
@@ -62,12 +62,12 @@ public class WarpCommand implements CommandExecutor {
     }
 
     private void sendWarpNotFound(CommandSender sender, String requestedName) {
-        sendMessage(sender, message("WARP.NOT-FOUND", "&cWarp '&e{name}&c' not found.", "{name}", requestedName));
+        sendMessage(sender, message("WARP.NOT-FOUND", "&cᴡᴀʀᴘ '&e{name}&c' ɴᴏᴛ ꜰᴏᴜɴᴅ.", "{name}", requestedName));
 
         List<String> suggestions = plugin.getWarpManager().findWarpSuggestions(requestedName);
         if (!suggestions.isEmpty()) {
             sendMessage(sender, message("WARP.NOT-FOUND-SUGGESTION",
-                    "&7Did you mean: &b{suggestions}",
+                    "&7ᴅɪᴅ ʏᴏᴜ ᴍᴇᴀɴ: &b{suggestions}",
                     "{suggestions}", String.join("&7, &b", suggestions)));
         }
     }

@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class CuboidWandListener implements Listener {
 
-    private static final String WAND_NAME = "&6Cuboid Wand";
+    private static final String WAND_NAME = "&6ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ";
 
     private final UltimateDonutSmp plugin;
 
@@ -56,13 +56,13 @@ public class CuboidWandListener implements Listener {
 
         if (action == Action.LEFT_CLICK_BLOCK) {
             plugin.getCuboidManager().setPos1(player.getUniqueId(), clicked.getLocation());
-            player.sendMessage(ColorUtils.toComponent("&aFirst position set at &f" + formatLoc(clicked)));
+            player.sendMessage(ColorUtils.toComponent("&aꜰɪʀѕᴛ ᴘᴏѕɪᴛɪᴏɴ ѕᴇᴛ ᴀᴛ &f" + formatLoc(clicked)));
             handleSelectionCompleted(player);
             return;
         }
 
         plugin.getCuboidManager().setPos2(player.getUniqueId(), clicked.getLocation());
-        player.sendMessage(ColorUtils.toComponent("&aSecond position set at &f" + formatLoc(clicked)));
+        player.sendMessage(ColorUtils.toComponent("&aѕᴇᴄᴏɴᴅ ᴘᴏѕɪᴛɪᴏɴ ѕᴇᴛ ᴀᴛ &f" + formatLoc(clicked)));
         handleSelectionCompleted(player);
     }
 
@@ -79,7 +79,7 @@ public class CuboidWandListener implements Listener {
         String displayName = meta.displayName() == null
                 ? ""
                 : PlainTextComponentSerializer.plainText().serialize(meta.displayName());
-        return displayName.contains("Cuboid Wand");
+        return displayName.contains("ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ");
     }
 
     public static String getWandName() {
@@ -92,12 +92,12 @@ public class CuboidWandListener implements Listener {
         }
 
         removeWandFromInventory(player);
-        player.sendMessage(ColorUtils.toComponent("&aSelection complete. &7Cuboid Wand removed from your inventory."));
+        player.sendMessage(ColorUtils.toComponent("&aѕᴇʟᴇᴄᴛɪᴏɴ ᴄᴏᴍᴘʟᴇᴛᴇ. &7ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ."));
 
-        Component guideMessage = ColorUtils.toComponent("&eStep 3/3 &7Type ")
+        Component guideMessage = ColorUtils.toComponent("&eѕᴛᴇᴘ 3/3 &7ᴛʏᴘᴇ ")
                 .append(ColorUtils.toComponent("&f/cuboid create <name>")
                         .clickEvent(ClickEvent.suggestCommand("/cuboid create "))
-                        .hoverEvent(HoverEvent.showText(ColorUtils.toComponent("&7Click to autofill the create command."))));
+                        .hoverEvent(HoverEvent.showText(ColorUtils.toComponent("&7ᴄʟɪᴄᴋ ᴛᴏ ᴀᴜᴛᴏꜰɪʟʟ ᴛʜᴇ ᴄʀᴇᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅ."))));
         player.sendMessage(guideMessage);
     }
 

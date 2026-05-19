@@ -39,8 +39,8 @@ public class ShardCuboidTask implements Runnable {
             handleLeave(uuid, previousId, shardManager);
             shardManager.setLastMatchedCuboid(uuid, null);
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
-                    "None",
-                    "OUTSIDE",
+                    "ɴᴏɴᴇ",
+                    "ᴏᴜᴛѕɪᴅᴇ",
                     "-",
                     0,
                     false
@@ -60,7 +60,7 @@ public class ShardCuboidTask implements Runnable {
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
                     current.cuboidName(),
                     "EXCLUDED_WORLD",
-                    "Disabled",
+                    "ᴅɪѕᴀʙʟᴇᴅ",
                     progress.getRemainingSeconds(),
                     true
             ));

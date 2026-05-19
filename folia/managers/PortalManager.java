@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class PortalManager {
@@ -36,7 +35,7 @@ public class PortalManager {
     private final UltimateDonutSmp plugin;
     private final Map<UUID, Long> entryDebounceUntil = new LinkedHashMap<>();
     private final Map<UUID, Long> postTeleportGraceUntil = new LinkedHashMap<>();
-    private final Map<String, List<UUID>> portalHolograms = new ConcurrentHashMap<>();
+    private final Map<String, List<UUID>> portalHolograms = new LinkedHashMap<>();
     private Map<String, PortalDefinition> portals = new LinkedHashMap<>();
     private ScheduledTask hologramTask;
 
@@ -301,32 +300,32 @@ public class PortalManager {
 
         if (!hasValidCuboid(portal)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.INVALID-CUBOID",
-                    "&cThis portal is not configured correctly right now.")));
+                    "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴄᴏʀʀᴇᴄᴛʟʏ ʀɪɢʜᴛ ɴᴏᴡ.")));
             return false;
         }
 
         if (!isDestinationUsable(portal)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.INVALID-DESTINATION",
-                    "&cThis portal destination is currently unavailable.")));
+                    "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")));
             return false;
         }
 
         if (!portal.permission().isBlank() && !player.hasPermission(portal.permission())) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.NO-PERMISSION",
-                    "&cYou do not have permission to use this portal.")));
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴛʜɪѕ ᴘᴏʀᴛᴀʟ.")));
             return false;
         }
 
         if (shouldBlockInCombat() && plugin.getCombatManager().isInCombat(playerId)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.IN-COMBAT",
-                    "&cYou cannot use portals while in combat.")));
+                    "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴘᴏʀᴛᴀʟѕ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ.")));
             return false;
         }
 
         if (plugin.getTeleportManager().hasPending(playerId)
                 && !plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.TELEPORT-IN-PROGRESS",
-                    "&cYou are already teleporting.")));
+                    "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.")));
             return false;
         }
 
@@ -370,7 +369,7 @@ public class PortalManager {
 
     public String describeDestination(PortalDefinition portal) {
         if (portal == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         if (!DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
@@ -422,8 +421,7 @@ public class PortalManager {
     }
 
     public boolean isSystemEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.PORTALS)
-                && plugin.getConfigManager().getConfig().getBoolean("PORTAL-SYSTEM.ENABLED", true);
+        return plugin.getConfigManager().getConfig().getBoolean("PORTAL-SYSTEM.ENABLED", true);
     }
 
     public void clearPlayerState(UUID playerId) {
@@ -527,12 +525,7 @@ public class PortalManager {
             return;
         }
 
-        plugin.getFoliaScheduler().runRegion(baseLocation,
-                () -> updatePortalHologramInRegion(portal, lines, baseLocation));
-    }
-
-    private void updatePortalHologramInRegion(PortalDefinition portal, List<String> lines, Location baseLocation) {
-        removeLoadedPortalHologramOrphansInRegion(portal.id(), baseLocation, lines.size());
+        removeLoadedPortalHologramOrphans(portal.id(), baseLocation, lines.size());
 
         if (!hasValidPortalHologram(portal.id(), lines.size(), baseLocation)) {
             spawnPortalHologram(portal, lines);
@@ -647,9 +640,9 @@ public class PortalManager {
         int minZ = Math.min(cuboid.z1(), cuboid.z2());
         int maxZ = Math.max(cuboid.z1(), cuboid.z2());
 
-        double x = (minX + maxX + 1) / 2.0D;
+        double x = (minX + maxX + 1) / 2.0d;
         double y = maxY + getHologramOffsetY();
-        double z = (minZ + maxZ + 1) / 2.0D;
+        double z = (minZ + maxZ + 1) / 2.0d;
         return new Location(world, x, y, z);
     }
 
@@ -663,9 +656,9 @@ public class PortalManager {
         if (configured.isEmpty()) {
             configured = List.of(
                     "&f{portal}",
-                    "&7Region {region}",
+                    "&7ʀᴇɢɪᴏɴ {region}",
                     "",
-                    "&f<total_player> Players"
+                    "&f<total_player> ᴘʟᴀʏᴇʀѕ"
             );
         }
 
@@ -819,23 +812,19 @@ public class PortalManager {
         textDisplay.setPersistent(false);
     }
 
-    private void removeLoadedPortalHologramOrphansInRegion(String portalId, Location baseLocation, int lineCount) {
+    private void removeLoadedPortalHologramOrphans(String portalId, Location baseLocation, int lineCount) {
         List<UUID> trackedIds = portalHolograms.get(portalId);
         Set<UUID> tracked = trackedIds == null ? Set.of() : new HashSet<>(trackedIds);
-        World world = baseLocation == null ? null : baseLocation.getWorld();
-        if (world == null) {
-            return;
-        }
 
-        double verticalRadius = Math.max(1.0D, lineCount * getHologramLineSpacing() + 0.75D);
-        for (Entity entity : world.getNearbyEntities(baseLocation, 1.0D, verticalRadius, 1.0D,
-                candidate -> candidate instanceof TextDisplay)) {
-            if (!isManagedPortalHologram(entity) || tracked.contains(entity.getUniqueId())) {
-                continue;
-            }
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntitiesByClass(TextDisplay.class)) {
+                if (!isManagedPortalHologram(entity) || tracked.contains(entity.getUniqueId())) {
+                    continue;
+                }
 
-            if (isAttachedToPortal(entity, portalId) || isNearHologramLocation(entity, baseLocation, lineCount)) {
-                entity.remove();
+                if (isAttachedToPortal(entity, portalId) || isNearHologramLocation(entity, baseLocation, lineCount)) {
+                    entity.remove();
+                }
             }
         }
     }
@@ -863,6 +852,18 @@ public class PortalManager {
 
     private void removePortalHologram(String portalId) {
         removeTrackedPortalHologram(portalId);
+
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntitiesByClass(TextDisplay.class)) {
+                if (!isManagedPortalHologram(entity)) {
+                    continue;
+                }
+
+                if (isAttachedToPortal(entity, portalId)) {
+                    entity.remove();
+                }
+            }
+        }
     }
 
     private void removeTrackedPortalHologram(String portalId) {
@@ -874,14 +875,8 @@ public class PortalManager {
         for (UUID entityId : entityIds) {
             Entity entity = Bukkit.getEntity(entityId);
             if (entity != null && entity.isValid()) {
-                removeEntity(entity);
+                entity.remove();
             }
-        }
-    }
-
-    private void removeEntity(Entity entity) {
-        if (entity != null && entity.isValid()) {
-            plugin.getFoliaScheduler().runEntity(entity, entity::remove);
         }
     }
 
@@ -893,13 +888,12 @@ public class PortalManager {
     }
 
     private void purgeAllPortalHologramsInWorlds() {
-        for (PortalDefinition portal : portals.values()) {
-            Location baseLocation = getHologramLocation(portal);
-            if (baseLocation == null || baseLocation.getWorld() == null) {
-                continue;
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntitiesByClass(TextDisplay.class)) {
+                if (isManagedPortalHologram(entity)) {
+                    entity.remove();
+                }
             }
-            plugin.getFoliaScheduler().runRegion(baseLocation,
-                    () -> removeLoadedPortalHologramOrphansInRegion(portal.id(), baseLocation, getHologramLines(portal).size()));
         }
     }
 

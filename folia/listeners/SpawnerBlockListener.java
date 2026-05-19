@@ -27,9 +27,6 @@ public class SpawnerBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
-            return;
-        }
         ItemStack item = event.getItemInHand();
         if (!plugin.getSpawnerManager().isSpawnerItem(item)) {
             return;
@@ -47,9 +44,6 @@ public class SpawnerBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
-            return;
-        }
         Block block = event.getBlock();
         if (plugin.getSpawnerManager().getSpawner(block) == null) {
             return;
@@ -70,9 +64,6 @@ public class SpawnerBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpawnerSpawn(SpawnerSpawnEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
-            return;
-        }
         if (plugin.getSpawnerManager().getSpawner(event.getSpawner().getBlock()) != null) {
             event.setCancelled(true);
         }
@@ -80,17 +71,11 @@ public class SpawnerBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
-            return;
-        }
         filterManagedSpawners(event.blockList().iterator());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
-            return;
-        }
         filterManagedSpawners(event.blockList().iterator());
     }
 

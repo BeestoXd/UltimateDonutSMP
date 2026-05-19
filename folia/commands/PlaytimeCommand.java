@@ -24,7 +24,7 @@ public class PlaytimeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " [player]"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [player]"));
             return true;
         }
 
@@ -32,7 +32,7 @@ public class PlaytimeCommand implements CommandExecutor {
         String requestedName = null;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
+                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
                 return true;
             }
             target = player;
@@ -44,7 +44,7 @@ public class PlaytimeCommand implements CommandExecutor {
 
         PlayerData data = resolvePlayerData(target, requestedName);
         if (data == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cPlayer not found."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return true;
         }
 
@@ -62,8 +62,8 @@ public class PlaytimeCommand implements CommandExecutor {
                 && player.getUniqueId().equals(target.getUniqueId()));
         String path = selfRequest ? "PLAYTIME.MESSAGE" : "PLAYTIME.OTHER";
         String fallback = selfRequest
-                ? "&a%time% &eplaying on &a%server%"
-                : "&e%player% &7has played for &a%time% &7on &a%server%";
+                ? "&a%time% &eᴘʟᴀʏɪɴɢ ᴏɴ &a%server%"
+                : "&e%player% &7ʜᴀѕ ᴘʟᴀʏᴇᴅ ꜰᴏʀ &a%time% &7ᴏɴ &a%server%";
 
         sender.sendMessage(ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault(
@@ -95,7 +95,7 @@ public class PlaytimeCommand implements CommandExecutor {
         if (username != null && !username.isBlank()) {
             return username;
         }
-        return requestedName == null || requestedName.isBlank() ? "Unknown" : requestedName;
+        return requestedName == null || requestedName.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : requestedName;
     }
 
     private String resolveServerName() {

@@ -18,9 +18,9 @@ public class SettingsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
         if (!plugin.getConfigManager().isCommandEnabled("SETTINGS")) {
-            player.sendMessage(ColorUtils.toComponent("&cSettings command is currently disabled."));
+            player.sendMessage(ColorUtils.toComponent("&cѕᴇᴛᴛɪɴɢѕ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
         new SettingsMenu(plugin).open(player);

@@ -56,8 +56,8 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         if (snapshot == null) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cProfile Not Found",
-                    List.of("&7This player no longer has profile data.")
+                    "&cᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ",
+                    List.of("&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ʜᴀѕ ᴘʀᴏꜰɪʟᴇ ᴅᴀᴛᴀ.")
             ));
             return;
         }
@@ -147,10 +147,10 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     }
 
     private void buildEmptyState() {
-        String name = menus().getString(MENU_PATH + ".EMPTY-BUTTON.DISPLAY-NAME", "&cNo Homes");
+        String name = menus().getString(MENU_PATH + ".EMPTY-BUTTON.DISPLAY-NAME", "&cɴᴏ ʜᴏᴍᴇѕ");
         List<String> lore = menus().getStringList(MENU_PATH + ".EMPTY-BUTTON.LORE");
         if (lore.isEmpty()) {
-            lore = List.of("&7This player has no homes saved.");
+            lore = List.of("&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ʜᴀѕ ɴᴏ ʜᴏᴍᴇѕ ѕᴀᴠᴇᴅ.");
         }
 
         set(inventory.getSize() / 2, ItemUtils.createItem(
@@ -171,8 +171,8 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         List<String> lore = menus().getStringList(lorePath);
         if (lore.isEmpty()) {
             lore = valid
-                    ? List.of("&7World: &f{world}", "&7X: &f{x} &7Y: &f{y} &7Z: &f{z}", "&aClick to teleport")
-                    : List.of("&7This home points to an unavailable world.");
+                    ? List.of("&7ᴡᴏʀʟᴅ: &f{world}", "&7X: &f{x} &7Y: &f{y} &7Z: &f{z}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ")
+                    : List.of("&7ᴛʜɪѕ ʜᴏᴍᴇ ᴘᴏɪɴᴛѕ ᴛᴏ ᴀɴ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ᴡᴏʀʟᴅ.");
         }
 
         return ItemUtils.createItem(
@@ -185,9 +185,9 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     private void buildBackButton() {
         set(BACK_SLOT, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BACK-BUTTON.MATERIAL", "RED_STAINED_GLASS_PANE")),
-                menus().getString(MENU_PATH + ".BACK-BUTTON.DISPLAY-NAME", "&cBack"),
+                menus().getString(MENU_PATH + ".BACK-BUTTON.DISPLAY-NAME", "&cʙᴀᴄᴋ"),
                 menus().getStringList(MENU_PATH + ".BACK-BUTTON.LORE").isEmpty()
-                        ? List.of("&7Return to the main profile viewer.")
+                        ? List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴍᴀɪɴ ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ.")
                         : menus().getStringList(MENU_PATH + ".BACK-BUTTON.LORE")
         ));
     }
@@ -195,10 +195,10 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     private void buildRefreshButton() {
         set(REFRESH_SLOT, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".REFRESH-BUTTON.MATERIAL", "CLOCK")),
-                replaceSnapshotPlaceholders(menus().getString(MENU_PATH + ".REFRESH-BUTTON.DISPLAY-NAME", "&bRefresh")),
+                replaceSnapshotPlaceholders(menus().getString(MENU_PATH + ".REFRESH-BUTTON.DISPLAY-NAME", "&bʀᴇꜰʀᴇѕʜ")),
                 replaceSnapshotPlaceholders(defaultIfEmpty(
                         menus().getStringList(MENU_PATH + ".REFRESH-BUTTON.LORE"),
-                        List.of("&7Reload this player's homes.")
+                        List.of("&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ʜᴏᴍᴇѕ.")
                 ))
         ));
     }
@@ -209,31 +209,31 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(FIRST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aFirst Page"),
+                    menus().getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aꜰɪʀѕᴛ ᴘᴀɢᴇ"),
                     menus().getStringList("GLOBAL.PAGE-MENU.FIRST-PAGE-LORE")
             ));
             set(PREVIOUS_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aBack"),
+                    menus().getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aʙᴀᴄᴋ"),
                     menus().getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(PAGE_INFO_SLOT, ItemUtils.createItem(
                 Material.BOOK,
-                "&ePage " + (page + 1) + "&7/&e" + totalPages,
-                List.of("&fHomes: &7" + NumberUtils.format(totalHomes))
+                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
+                List.of("&fʜᴏᴍᴇѕ: &7" + NumberUtils.format(totalHomes))
         ));
 
         if (hasNextPage) {
             set(NEXT_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
+                    menus().getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
                     menus().getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
             set(LAST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aLast Page"),
+                    menus().getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aʟᴀѕᴛ ᴘᴀɢᴇ"),
                     menus().getStringList("GLOBAL.PAGE-MENU.LAST-PAGE-LORE")
             ));
         }
@@ -283,7 +283,7 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         }
 
         return value
-                .replace("{username}", snapshot == null ? "Unknown" : snapshot.getUsername())
+                .replace("{username}", snapshot == null ? "ᴜɴᴋɴᴏᴡɴ" : snapshot.getUsername())
                 .replace("{name}", home.getName())
                 .replace("{world}", world)
                 .replace("{x}", String.valueOf(x))
@@ -321,10 +321,10 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin, UUID uuid) {
-        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8{username}'s Homes");
+        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8{username}'ѕ ʜᴏᴍᴇѕ");
         String username = plugin.getProfileViewerManager().resolveProfile(uuid)
                 .map(ProfileSnapshot::getUsername)
-                .orElse("Unknown");
+                .orElse("ᴜɴᴋɴᴏᴡɴ");
         return template.replace("{username}", username);
     }
 

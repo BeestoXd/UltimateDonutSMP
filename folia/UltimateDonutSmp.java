@@ -10,9 +10,6 @@ import com.bx.ultimateDonutSmp.tasks.*;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.FoliaScheduler;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -29,7 +26,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private DatabaseManager    databaseManager;
     private PlayerDataManager  playerDataManager;
     private EconomyManager     economyManager;
-    private CurrencyManager    currencyManager;
     private ChatManager        chatManager;
     private IgnoreManager      ignoreManager;
     private PrivateMessageManager privateMessageManager;
@@ -86,14 +82,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-
-        if (!requirePlaceholderApi()) {
-            return;
-        }
-
         foliaScheduler = new FoliaScheduler(this);
 
-        // 1. Config & database (no dependencies)
+        // 1. config & database (no dependencies)
         ColorUtils.init();
 
         configManager   = new ConfigManager(this);
@@ -105,10 +96,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
 
-        // 2. Data managers (depend on DB / config)
+        // 2. data managers (depend on DB / config)
         playerDataManager = new PlayerDataManager(this);
         economyManager    = new EconomyManager(this);
-        currencyManager   = new CurrencyManager(this);
         chatManager       = new ChatManager(this);
         ignoreManager     = new IgnoreManager(this);
         privateMessageManager = new PrivateMessageManager(this);
@@ -125,7 +115,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         spawnManager = new SpawnManager(this);
         spawnManager.load();
 
-        // 3. Gameplay managers
+        // 3. gameplay managers
         combatManager   = new CombatManager(this);
         fastCrystalManager = new FastCrystalManager(this);
         tpaManager      = new TPAManager(this);
@@ -162,7 +152,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         discordWebhookManager = new DiscordWebhookManager(this);
         initializeLunarRichPresenceManager();
 
-        // 4. Display managers
+        // 4. display managers
         scoreboardManager = new ScoreboardManager(this);
         tablistManager    = new TablistManager(this);
         teleportManager   = new TeleportManager(this);
@@ -171,16 +161,16 @@ public final class UltimateDonutSmp extends JavaPlugin {
         portalManager     = new PortalManager(this);
         portalManager.loadAll();
 
-        // 5. Listeners
+        // 5. listeners
         registerListeners();
 
         // 6. Commands
         registerCommands();
 
-        // 6.5 Optional integrations
+        // 6.5 optional integrations
         registerVaultEconomyProvider();
 
-        // 7. Background tasks
+        // 7. background tasks
         ScoreboardTask.start(this);
         TablistTask.start(this);
         ShardTask.start(this);        // passive "everywhere" shards (per minute)
@@ -191,7 +181,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         AutoSaveTask.start(this);
         AFKCheckTask.start(this);
         LunarTeammatesTask.start(this);
-        BillfordTask.start(this);     // Billford trade rotation check (every 30 s)
+        BillfordTask.start(this);     // billford trade rotation check (every 30 s)
         OrdersExpiryTask.start(this);
         AuctionHouseExpiryTask.start(this);
         AmethystToolsTask.start(this);
@@ -199,8 +189,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         DuelMatchTask.start(this);
         FfaMatchTask.start(this);
 
-        // 8. PlaceholderAPI expansion
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        // 8. placeholderapi expansion
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new EconomyExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
         }
@@ -272,7 +262,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
             portalManager.shutdown();
         }
 
-        // Save all online players and close DB
+        // save all online players and close DB
         if (playerDataManager != null) {
             playerDataManager.saveAll();
         }
@@ -284,21 +274,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     // ── Registration helpers ──────────────────────────────────────────────────
-
-    private boolean requirePlaceholderApi() {
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            return true;
-        }
-
-        getLogger().severe("==================================================");
-        getLogger().severe("UltimateDonutSmp requires PlaceholderAPI to be installed and enabled.");
-        getLogger().severe("Scoreboard/sidebar placeholders will not resolve without PlaceholderAPI.");
-        getLogger().severe("Install PlaceholderAPI, then restart the server.");
-        getLogger().severe("UltimateDonutSmp is disabling itself to prevent broken sidebar output.");
-        getLogger().severe("==================================================");
-        getServer().getPluginManager().disablePlugin(this);
-        return false;
-    }
 
     private void registerListeners() {
         PluginManager pm = getServer().getPluginManager();
@@ -332,241 +307,175 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     private void registerCommands() {
-        UniversalCommandTabCompleter universalCommandTabCompleter = new UniversalCommandTabCompleter(this);
-        registerFallbackTabCompleters(universalCommandTabCompleter);
-
-        // Team
+        // team
         TeamCommand teamCmd = new TeamCommand(this);
-        setExecutor("team", teamCmd, FeatureManager.Feature.TEAMS);
+        getCommand("team").setExecutor(teamCmd);
         ChatCommand chatCommand = new ChatCommand(this);
         ChatTabCompleter chatTabCompleter = new ChatTabCompleter();
-        setExecutor("chat", chatCommand, FeatureManager.Feature.CHAT);
-        setTabCompleter("chat", chatTabCompleter);
+        getCommand("chat").setExecutor(chatCommand);
+        getCommand("chat").setTabCompleter(chatTabCompleter);
         IgnoreCommand ignoreCommand = new IgnoreCommand(this);
         IgnoreTabCompleter ignoreTabCompleter = new IgnoreTabCompleter(this);
-        setExecutor("ignore", ignoreCommand, FeatureManager.Feature.IGNORE);
-        setTabCompleter("ignore", ignoreTabCompleter);
-        setExecutor("unignore", ignoreCommand, FeatureManager.Feature.IGNORE);
-        setTabCompleter("unignore", ignoreTabCompleter);
+        getCommand("ignore").setExecutor(ignoreCommand);
+        getCommand("ignore").setTabCompleter(ignoreTabCompleter);
+        getCommand("unignore").setExecutor(ignoreCommand);
+        getCommand("unignore").setTabCompleter(ignoreTabCompleter);
         MessageCommand messageCommand = new MessageCommand(this);
         MessageTabCompleter messageTabCompleter = new MessageTabCompleter();
-        setExecutor("msg", messageCommand, FeatureManager.Feature.MESSAGING);
-        setTabCompleter("msg", messageTabCompleter);
-        setExecutor("reply", messageCommand, FeatureManager.Feature.MESSAGING);
-        setTabCompleter("reply", messageTabCompleter);
-        setExecutor("pm", new PrivateMessageToggleCommand(this), FeatureManager.Feature.MESSAGING);
+        getCommand("msg").setExecutor(messageCommand);
+        getCommand("msg").setTabCompleter(messageTabCompleter);
+        getCommand("reply").setExecutor(messageCommand);
+        getCommand("reply").setTabCompleter(messageTabCompleter);
+        getCommand("pm").setExecutor(new PrivateMessageToggleCommand(this));
 
-        // Homes
+        // homes
         HomeCommand homeCmd = new HomeCommand(this);
-        setExecutor("home", homeCmd, FeatureManager.Feature.HOMES);
-        setExecutor("homes", homeCmd, FeatureManager.Feature.HOMES);
-        setExecutor("sethome", homeCmd, FeatureManager.Feature.HOMES);
-        setExecutor("delhome", homeCmd, FeatureManager.Feature.HOMES);
-        setExecutor("renamehome", homeCmd, FeatureManager.Feature.HOMES);
+        getCommand("home").setExecutor(homeCmd);
+        getCommand("homes").setExecutor(homeCmd);
+        getCommand("sethome").setExecutor(homeCmd);
+        getCommand("delhome").setExecutor(homeCmd);
+        getCommand("renamehome").setExecutor(homeCmd);
 
-        // Spawn / AFK
-        setExecutor("spawn", new SpawnCommand(this), FeatureManager.Feature.SPAWN);
-        setExecutor("afk", new AFKCommand(this), FeatureManager.Feature.AFK);
+        // spawn / afk
+        getCommand("spawn").setExecutor(new SpawnCommand(this));
+        getCommand("afk").setExecutor(new AFKCommand(this));
 
-        // Teleport
+        // teleport
         TPACommand tpaCmd = new TPACommand(this);
-        setExecutor("tpa", tpaCmd, FeatureManager.Feature.TPA);
-        setExecutor("tpahere", tpaCmd, FeatureManager.Feature.TPA);
-        setExecutor("tpaccept", tpaCmd, FeatureManager.Feature.TPA);
-        setExecutor("tpadeny", tpaCmd, FeatureManager.Feature.TPA);
-        setExecutor("tpacancel", tpaCmd, FeatureManager.Feature.TPA);
-        setExecutor("tpauto", new TPAutoCommand(this), FeatureManager.Feature.TPA, FeatureManager.Feature.TPA_AUTO);
-        setExecutor("tpahereauto", new TPAHereAutoCommand(this), FeatureManager.Feature.TPA, FeatureManager.Feature.TPA_AUTO);
+        getCommand("tpa").setExecutor(tpaCmd);
+        getCommand("tpahere").setExecutor(tpaCmd);
+        getCommand("tpaccept").setExecutor(tpaCmd);
+        getCommand("tpadeny").setExecutor(tpaCmd);
+        getCommand("tpacancel").setExecutor(tpaCmd);
+        getCommand("tpauto").setExecutor(new TPAutoCommand(this));
+        getCommand("tpahereauto").setExecutor(new TPAHereAutoCommand(this));
 
-        // Economy
+        // economy
         BalanceCommand balCmd = new BalanceCommand(this);
-        setExecutor("balance", balCmd);
-        setExecutor("pay", new PayCommand(this));
-        setExecutor("addmoney", new AddMoneyCommand(this));
-        setExecutor("removemoney", new RemoveMoneyCommand(this));
-        setExecutor("setmoney", new SetMoneyCommand(this));
+        getCommand("balance").setExecutor(balCmd);
+        getCommand("pay").setExecutor(new PayCommand(this));
+        getCommand("addmoney").setExecutor(new AddMoneyCommand(this));
+        getCommand("removemoney").setExecutor(new RemoveMoneyCommand(this));
+        getCommand("setmoney").setExecutor(new SetMoneyCommand(this));
 
         ShardsCommand shardsCmd = new ShardsCommand(this);
-        setExecutor("shards", shardsCmd, FeatureManager.Feature.SHARDS);
-        setExecutor("shardpay", new ShardPayCommand(this), FeatureManager.Feature.SHARDS);
+        getCommand("shards").setExecutor(shardsCmd);
+        getCommand("shardpay").setExecutor(new ShardPayCommand(this));
         CrateCommand crateCmd = new CrateCommand(this);
-        setExecutor("crate", crateCmd, FeatureManager.Feature.CRATES);
-        setExecutor("crates", crateCmd, FeatureManager.Feature.CRATES);
-        setExecutor("keys", crateCmd, FeatureManager.Feature.CRATES);
-        setTabCompleter("crate", crateCmd);
-        setTabCompleter("crates", crateCmd);
-        setTabCompleter("keys", crateCmd);
+        getCommand("crate").setExecutor(crateCmd);
+        getCommand("crates").setExecutor(crateCmd);
+        getCommand("keys").setExecutor(crateCmd);
 
-        // Shop / Sell / Worth
-        setExecutor("shop", new ShopCommand(this), FeatureManager.Feature.SHOP);
-        setExecutor("orders", new OrdersCommand(this), FeatureManager.Feature.ORDERS);
-        setExecutor("duel", new DuelCommand(this), FeatureManager.Feature.DUELS);
-        setExecutor("queue", new QueueCommand(this), FeatureManager.Feature.DUELS);
-        setExecutor("leave", new LeaveCommand(this));
-        setExecutor("draw", new DrawCommand(this), FeatureManager.Feature.DUELS);
-        setExecutor("arena", new ArenaCommand(this), FeatureManager.Feature.DUELS);
-        setExecutor("ffa", new FfaCommand(this), FeatureManager.Feature.FFA);
-        setExecutor("ffastats", new FfaStatsCommand(this), FeatureManager.Feature.FFA);
-        setExecutor("ffaarena", new FfaArenaCommand(this), FeatureManager.Feature.FFA);
-        setExecutor("auctionhouse", new AuctionHouseCommand(this), FeatureManager.Feature.AUCTION_HOUSE);
-        setExecutor("enderchest", new EnderChestCommand(this), FeatureManager.Feature.ENDER_CHEST);
+        // shop / sell / worth
+        getCommand("shop").setExecutor(new ShopCommand(this));
+        getCommand("orders").setExecutor(new OrdersCommand(this));
+        getCommand("duel").setExecutor(new DuelCommand(this));
+        getCommand("queue").setExecutor(new QueueCommand(this));
+        getCommand("leave").setExecutor(new LeaveCommand(this));
+        getCommand("draw").setExecutor(new DrawCommand(this));
+        getCommand("arena").setExecutor(new ArenaCommand(this));
+        getCommand("ffa").setExecutor(new FfaCommand(this));
+        getCommand("ffastats").setExecutor(new FfaStatsCommand(this));
+        getCommand("ffaarena").setExecutor(new FfaArenaCommand(this));
+        getCommand("auctionhouse").setExecutor(new AuctionHouseCommand(this));
+        getCommand("enderchest").setExecutor(new EnderChestCommand(this));
         SellCommand sellCmd = new SellCommand(this);
-        setExecutor("sell", sellCmd, FeatureManager.Feature.SELL);
-        setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
-        setExecutor("sellall", sellCmd, FeatureManager.Feature.SELL);
-        setExecutor("sellhistory", sellCmd, FeatureManager.Feature.SELL);
-        setExecutor("worth", new WorthCommand(this), FeatureManager.Feature.SELL, FeatureManager.Feature.WORTH);
+        getCommand("sell").setExecutor(sellCmd);
+        getCommand("sellhand").setExecutor(sellCmd);
+        getCommand("sellall").setExecutor(sellCmd);
+        getCommand("sellhistory").setExecutor(sellCmd);
+        getCommand("worth").setExecutor(new WorthCommand(this));
 
-        // RTP
-        setExecutor("rtp", new RTPCommand(this), FeatureManager.Feature.RTP);
+        // rtp
+        getCommand("rtp").setExecutor(new RTPCommand(this));
 
-        // Stats / Leaderboard
-        setExecutor("stats", new StatsCommand(this), FeatureManager.Feature.STATS);
-        setExecutor("ping", new PingCommand(this), FeatureManager.Feature.STATS);
-        setExecutor("playtime", new PlaytimeCommand(this), FeatureManager.Feature.STATS);
+        // stats / Leaderboard
+        getCommand("stats").setExecutor(new StatsCommand(this));
+        getCommand("ping").setExecutor(new PingCommand(this));
+        getCommand("playtime").setExecutor(new PlaytimeCommand(this));
         LeaderboardCommand lbCmd = new LeaderboardCommand(this);
-        setExecutor("leaderboard", lbCmd, FeatureManager.Feature.LEADERBOARDS);
-        setExecutor("freeze", new FreezeCommand(this));
-        setExecutor("fly", new FlyCommand(this));
-        setExecutor("heal", new HealCommand(this));
-        setExecutor("feed", new FeedCommand(this));
+        getCommand("leaderboard").setExecutor(lbCmd);
+        getCommand("freeze").setExecutor(new FreezeCommand(this));
+        getCommand("fly").setExecutor(new FlyCommand(this));
+        getCommand("heal").setExecutor(new HealCommand(this));
+        getCommand("feed").setExecutor(new FeedCommand(this));
         GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
-        setExecutor("gamemode", gamemodeCommand, FeatureManager.Feature.GAMEMODE);
-        setTabCompleter("gamemode", gamemodeCommand);
-        setExecutor("staffmode", new StaffModeCommand(this));
-        setExecutor("stafflist", new StaffListCommand(this), FeatureManager.Feature.STAFF_MODE);
-        setExecutor("staffchat", new StaffChatCommand(this), FeatureManager.Feature.STAFF_CHAT);
-        setExecutor("helpop", new HelpopCommand(this), FeatureManager.Feature.STAFF_ALERTS);
-        setExecutor("report", new ReportCommand(this), FeatureManager.Feature.STAFF_ALERTS);
-        setExecutor("rename", new RenameCommand(this));
-        setExecutor("randomteleport", new RandomTeleportCommand(this));
-        setExecutor("teleport", new TeleportCommand(this));
-        setExecutor("alts", new AltsCommand(this));
-        setExecutor("vanish", new VanishCommand(this), FeatureManager.Feature.STAFF_MODE);
-        setExecutor("invsee", new InvseeCommand(this));
-        setExecutor("profileviewer", new ProfileViewerCommand(this), FeatureManager.Feature.PROFILE_VIEWER);
-        setExecutor("punishments", new PunishmentHistoryCommand(this), FeatureManager.Feature.PUNISHMENTS);
+        getCommand("gamemode").setExecutor(gamemodeCommand);
+        getCommand("gamemode").setTabCompleter(gamemodeCommand);
+        getCommand("staffmode").setExecutor(new StaffModeCommand(this));
+        getCommand("stafflist").setExecutor(new StaffListCommand(this));
+        getCommand("staffchat").setExecutor(new StaffChatCommand(this));
+        getCommand("helpop").setExecutor(new HelpopCommand(this));
+        getCommand("report").setExecutor(new ReportCommand(this));
+        getCommand("rename").setExecutor(new RenameCommand(this));
+        getCommand("randomteleport").setExecutor(new RandomTeleportCommand(this));
+        getCommand("teleport").setExecutor(new TeleportCommand(this));
+        getCommand("alts").setExecutor(new AltsCommand(this));
+        getCommand("vanish").setExecutor(new VanishCommand(this));
+        getCommand("invsee").setExecutor(new InvseeCommand(this));
+        getCommand("profileviewer").setExecutor(new ProfileViewerCommand(this));
+        getCommand("punishments").setExecutor(new PunishmentHistoryCommand(this));
         PunishmentCommand punishmentCommand = new PunishmentCommand(this);
-        setExecutor("ban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("tempban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("mute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("tempmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("warn", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("kick", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("blacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("unban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("unmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
-        setExecutor("unblacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        getCommand("ban").setExecutor(punishmentCommand);
+        getCommand("tempban").setExecutor(punishmentCommand);
+        getCommand("mute").setExecutor(punishmentCommand);
+        getCommand("tempmute").setExecutor(punishmentCommand);
+        getCommand("warn").setExecutor(punishmentCommand);
+        getCommand("kick").setExecutor(punishmentCommand);
+        getCommand("blacklist").setExecutor(punishmentCommand);
+        getCommand("unban").setExecutor(punishmentCommand);
+        getCommand("unmute").setExecutor(punishmentCommand);
+        getCommand("unblacklist").setExecutor(punishmentCommand);
 
-        // Bounty
-        setExecutor("bounty", new BountyCommand(this), FeatureManager.Feature.BOUNTY);
+        // bounty
+        getCommand("bounty").setExecutor(new BountyCommand(this));
 
-        // Warps
+        // warps
         WarpCommand warpCmd = new WarpCommand(this);
         WarpManagerCommand warpManagerCmd = new WarpManagerCommand(this);
         WarpTabCompleter warpTabCompleter = new WarpTabCompleter(this);
-        setExecutor("warp", warpCmd, FeatureManager.Feature.WARPS);
-        setTabCompleter("warp", warpTabCompleter);
-        setExecutor("warpmanager", warpManagerCmd, FeatureManager.Feature.WARPS);
-        setTabCompleter("warpmanager", warpTabCompleter);
-        setExecutor("setwarp", warpManagerCmd, FeatureManager.Feature.WARPS);
-        setTabCompleter("setwarp", warpTabCompleter);
-        setExecutor("delwarp", warpManagerCmd, FeatureManager.Feature.WARPS);
-        setTabCompleter("delwarp", warpTabCompleter);
+        getCommand("warp").setExecutor(warpCmd);
+        getCommand("warp").setTabCompleter(warpTabCompleter);
+        getCommand("warpmanager").setExecutor(warpManagerCmd);
+        getCommand("warpmanager").setTabCompleter(warpTabCompleter);
+        getCommand("setwarp").setExecutor(warpManagerCmd);
+        getCommand("setwarp").setTabCompleter(warpTabCompleter);
+        getCommand("delwarp").setExecutor(warpManagerCmd);
+        getCommand("delwarp").setTabCompleter(warpTabCompleter);
 
         PortalManagerCommand portalManagerCmd = new PortalManagerCommand(this);
         PortalTabCompleter portalTabCompleter = new PortalTabCompleter(this);
-        setExecutor("portalmanager", portalManagerCmd, FeatureManager.Feature.PORTALS);
-        setTabCompleter("portalmanager", portalTabCompleter);
+        getCommand("portalmanager").setExecutor(portalManagerCmd);
+        getCommand("portalmanager").setTabCompleter(portalTabCompleter);
 
-        // Misc toggles
-        setExecutor("nightvision", new NightVisionCommand(this), FeatureManager.Feature.NIGHT_VISION);
-        setExecutor("phantom", new PhantomCommand(this), FeatureManager.Feature.PHANTOM);
-        setExecutor("findplayer", new FindPlayerCommand(this), FeatureManager.Feature.FIND_PLAYER);
-        setExecutor("settings", new SettingsCommand(this), FeatureManager.Feature.SETTINGS);
+        // misc toggles
+        getCommand("nightvision").setExecutor(new NightVisionCommand(this));
+        getCommand("phantom").setExecutor(new PhantomCommand(this));
+        getCommand("findplayer").setExecutor(new FindPlayerCommand(this));
+        getCommand("settings").setExecutor(new SettingsCommand(this));
 
-        // Social / info
+        // social / info
         SocialCommand socialCmd = new SocialCommand(this);
-        setExecutor("discord", socialCmd, FeatureManager.Feature.SOCIAL);
-        setExecutor("twitter", socialCmd, FeatureManager.Feature.SOCIAL);
-        setExecutor("store", socialCmd, FeatureManager.Feature.SOCIAL);
-        setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
+        getCommand("discord").setExecutor(socialCmd);
+        getCommand("twitter").setExecutor(socialCmd);
+        getCommand("store").setExecutor(socialCmd);
+        getCommand("social").setExecutor(socialCmd);
 
-        setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
-        setExecutor("help", new HelpCommand(this), FeatureManager.Feature.HELP);
-        setExecutor("servers", new ServersCommand(this), FeatureManager.Feature.NETWORK_SERVERS);
+        getCommand("rules").setExecutor(new RulesCommand(this));
+        getCommand("help").setExecutor(new HelpCommand(this));
+        getCommand("servers").setExecutor(new ServersCommand(this));
 
-        // Billford
-        setExecutor("billford", new BillfordCommand(this), FeatureManager.Feature.BILLFORD);
-        setExecutor("spawner", new SpawnerCommand(this), FeatureManager.Feature.SPAWNERS);
+        // billford
+        getCommand("billford").setExecutor(new BillfordCommand(this));
+        getCommand("spawner").setExecutor(new SpawnerCommand(this));
 
-        // Admin
-        setExecutor("clearlag", new ClearLagCommand(this), FeatureManager.Feature.CLEAR_LAG);
-        setExecutor("cuboid", new CuboidCommand(this), FeatureManager.Feature.CUBOIDS);
+        // admin
+        getCommand("clearlag").setExecutor(new ClearLagCommand(this));
+        getCommand("cuboid").setExecutor(new CuboidCommand(this));
         AmethystToolCommand amethystToolCommand = new AmethystToolCommand(this);
-        setExecutor("amethysttool", amethystToolCommand, FeatureManager.Feature.AMETHYST_TOOLS);
-        setTabCompleter("amethysttool", amethystToolCommand);
-        UltimateDonutSmpCommand ultimateDonutSmpCommand = new UltimateDonutSmpCommand(this);
-        setExecutor("ultimatedonutsmp", ultimateDonutSmpCommand);
-        setTabCompleter("ultimatedonutsmp", ultimateDonutSmpCommand);
-    }
-
-    private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
-        PluginCommand command = getCommand(commandName);
-        if (command == null) {
-            getLogger().warning("Command missing from plugin.yml: " + commandName);
-            return;
-        }
-
-        if (requiredFeatures == null || requiredFeatures.length == 0) {
-            command.setExecutor(executor);
-            return;
-        }
-
-        FeatureCommandExecutor featureExecutor = new FeatureCommandExecutor(this, executor, requiredFeatures);
-        command.setExecutor(featureExecutor);
-        if (executor instanceof TabCompleter) {
-            command.setTabCompleter(featureExecutor);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    private void setTabCompleter(String commandName, TabCompleter tabCompleter) {
-        PluginCommand pluginCommand = getCommand(commandName);
-        if (pluginCommand == null) {
-            getLogger().warning("Command missing from plugin.yml: " + commandName);
-            return;
-        }
-        pluginCommand.setTabCompleter((sender, tabCommand, alias, args) -> {
-            if (!isTabCompletionFeatureEnabled(tabCommand.getName())) {
-                return java.util.Collections.emptyList();
-            }
-            var completions = tabCompleter.onTabComplete(sender, tabCommand, alias, args);
-            return completions == null ? java.util.Collections.emptyList() : completions;
-        });
-    }
-
-    private void registerFallbackTabCompleters(TabCompleter tabCompleter) {
-        for (String commandName : getDescription().getCommands().keySet()) {
-            PluginCommand command = getCommand(commandName);
-            if (command == null) {
-                getLogger().warning("Command missing from plugin.yml: " + commandName);
-                continue;
-            }
-            command.setTabCompleter(tabCompleter);
-        }
-    }
-
-    private boolean isTabCompletionFeatureEnabled(String commandName) {
-        if (featureManager == null) {
-            return true;
-        }
-        for (FeatureManager.Feature feature : FeatureManager.featuresForCommand(commandName)) {
-            if (feature != null && !featureManager.isEnabled(feature)) {
-                return false;
-            }
-        }
-        return true;
+        getCommand("amethysttool").setExecutor(amethystToolCommand);
+        getCommand("amethysttool").setTabCompleter(amethystToolCommand);
+        getCommand("ultimatedonutsmp").setExecutor(new UltimateDonutSmpCommand(this));
     }
 
     private void registerVaultEconomyProvider() {
@@ -584,13 +493,12 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     public void initializeLunarRichPresenceManager() {
-        if (!featureManager.isEnabled(FeatureManager.Feature.LUNAR_RICH_PRESENCE)
-                || !configManager.getConfig().getBoolean("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", true)) {
+        if (!configManager.getConfig().getBoolean("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", true)) {
             return;
         }
 
         if (!isClassAvailable("com.lunarclient.apollo.Apollo")) {
-            getLogger().warning("Lunar Rich Presence is enabled, but the Apollo plugin/API is not installed.");
+            getLogger().warning("Lunar Rich Presence is enabled, but the Apollo plugin/api is not installed.");
             return;
         }
 
@@ -615,7 +523,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public void reloadAllPluginConfigurations() {
         configManager.reload();
-        currencyManager.reload();
         optimizationManager.reload();
         warpManager.loadAll();
         spawnManager.load();
@@ -676,7 +583,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public DatabaseManager    getDatabaseManager()    { return databaseManager; }
     public PlayerDataManager  getPlayerDataManager()  { return playerDataManager; }
     public EconomyManager     getEconomyManager()     { return economyManager; }
-    public CurrencyManager    getCurrencyManager()    { return currencyManager; }
     public ChatManager        getChatManager()        { return chatManager; }
     public IgnoreManager      getIgnoreManager()      { return ignoreManager; }
     public PrivateMessageManager getPrivateMessageManager() { return privateMessageManager; }

@@ -22,7 +22,7 @@ public class HelpopCommand implements CommandExecutor {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "HELPOP.PLAYER_ONLY",
-                    "&cOnly players can use helpop."
+                    "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʜᴇʟᴘᴏᴘ."
             )));
             return true;
         }
@@ -30,7 +30,7 @@ public class HelpopCommand implements CommandExecutor {
         if (!player.hasPermission(PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "HELPOP.NO_PERMISSION",
-                    "&cYou do not have permission to request staff assistance."
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇǫᴜᴇѕᴛ ѕᴛᴀꜰꜰ ᴀѕѕɪѕᴛᴀɴᴄᴇ."
             )));
             return true;
         }
@@ -38,7 +38,7 @@ public class HelpopCommand implements CommandExecutor {
         if (args.length == 0) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "HELPOP.USAGE",
-                    "&cUsage: /helpop <message>"
+                    "&cᴜѕᴀɢᴇ: /helpop <message>"
             )));
             return true;
         }

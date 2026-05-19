@@ -23,12 +23,12 @@ public class RemoveMoneyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /removemoney <player> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /removemoney <player> <amount>"));
             return true;
         }
 
@@ -59,8 +59,7 @@ public class RemoveMoneyCommand implements CommandExecutor {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     key,
                     "{player}", result.displayName(),
-                    "{balance}", plugin.getCurrencyManager().formatMoney(result.beforeBalance()),
-                    "{balance_money}", plugin.getCurrencyManager().formatMoney(result.beforeBalance())
+                    "{balance}", NumberUtils.format(result.beforeBalance())
             )));
             return true;
         }
@@ -68,10 +67,8 @@ public class RemoveMoneyCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.ADMIN.REMOVE-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance())
+                "{amount}", NumberUtils.format(result.amount()),
+                "{balance}", NumberUtils.format(result.afterBalance())
         )));
 
         Player targetPlayer = Bukkit.getPlayer(result.targetUuid());
@@ -79,10 +76,8 @@ public class RemoveMoneyCommand implements CommandExecutor {
             targetPlayer.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.ADMIN.REMOVE-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                    "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                    "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                    "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance())
+                    "{amount}", NumberUtils.format(result.amount()),
+                    "{balance}", NumberUtils.format(result.afterBalance())
             )));
         }
 

@@ -38,7 +38,7 @@ public class SellMenu extends BaseMenu {
     public SellMenu(UltimateDonutSmp plugin) {
         super(plugin, plugin.getConfigManager().getMenus().getString(
                 "SELL-MENU.TITLE",
-                "&8place items in here to sell"
+                "&8ᴘʟᴀᴄᴇ ɪᴛᴇᴍѕ ɪɴ ʜᴇʀᴇ ᴛᴏ ѕᴇʟʟ"
         ), SIZE);
     }
 

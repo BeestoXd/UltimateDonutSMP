@@ -1,10 +1,10 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -30,7 +30,7 @@ public class SellProgressMenu extends BaseMenu {
     public SellProgressMenu(UltimateDonutSmp plugin, SellCategory category) {
         super(plugin, plugin.getConfigManager().getMenus().getString(
                 "PROGRESS-MENU.TITLE." + category.getConfigKey(),
-                "&8sell progress"
+                "&8ѕᴇʟʟ ᴘʀᴏɢʀᴇѕѕ"
         ), SIZE);
         this.category = category;
     }
@@ -76,7 +76,7 @@ public class SellProgressMenu extends BaseMenu {
             long targetGoal = levels.get(index);
 
             if (index < info.completedLevels()) {
-                String title = menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.TITLE", "&aCompleted");
+                String title = menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.TITLE", "&aᴄᴏᴍᴘʟᴇᴛᴇᴅ");
                 Material material = ItemUtils.parseMaterial(
                         menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.MATERIAL", "LIME_STAINED_GLASS_PANE")
                 );
@@ -93,7 +93,7 @@ public class SellProgressMenu extends BaseMenu {
             }
 
             if (index == info.completedLevels() && !info.maxed()) {
-                String title = menus.getString("PROGRESS-MENU.WORKING-BUTTON.TITLE", "&eWorking");
+                String title = menus.getString("PROGRESS-MENU.WORKING-BUTTON.TITLE", "&eᴡᴏʀᴋɪɴɢ");
                 Material material = ItemUtils.parseMaterial(
                         menus.getString("PROGRESS-MENU.WORKING-BUTTON.MATERIAL", "YELLOW_STAINED_GLASS_PANE")
                 );
@@ -114,7 +114,7 @@ public class SellProgressMenu extends BaseMenu {
         Material material = ItemUtils.parseMaterial(
                 menus.getString("GLOBAL.PAGE-MENU.MATERIAL", "ARROW")
         );
-        String title = menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cBack");
+        String title = menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cʙᴀᴄᴋ");
         List<String> lore = menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE");
         set(BACK_BUTTON_SLOT, ItemUtils.createItem(material, title, lore));
     }
@@ -131,8 +131,8 @@ public class SellProgressMenu extends BaseMenu {
                 .map(line -> line
                         .replace("{next_multiplier}", nextMultiplier)
                         .replace("{porcentage}", String.valueOf(percentage))
-                        .replace("{current_earned}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, currentEarned))
-                        .replace("{next_goal}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, nextGoal))
+                        .replace("{current_earned}", NumberUtils.formatNice(currentEarned))
+                        .replace("{next_goal}", NumberUtils.formatNice(nextGoal))
                         .replace("{porcentage_level}", progressBar))
                 .toList();
     }

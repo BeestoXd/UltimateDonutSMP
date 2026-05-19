@@ -25,29 +25,29 @@ public class DuelQueueMenu extends BaseMenu {
 
         set(11, ItemUtils.createItem(
                 queued ? Material.RED_STAINED_GLASS_PANE : Material.LIME_STAINED_GLASS_PANE,
-                queued ? "&cLeave Queue" : "&aJoin Casual Queue",
+                queued ? "&cʟᴇᴀᴠᴇ ǫᴜᴇᴜᴇ" : "&aᴊᴏɪɴ ᴄᴀѕᴜᴀʟ ǫᴜᴇᴜᴇ",
                 List.of(
-                        "&7Players queued: &f" + plugin.getDuelManager().getQueueSizeCount(),
-                        queued ? "&7Click to leave the duel queue." : "&7Click to join the duel queue."
+                        "&7ᴘʟᴀʏᴇʀѕ ǫᴜᴇᴜᴇᴅ: &f" + plugin.getDuelManager().getQueueSizeCount(),
+                        queued ? "&7ᴄʟɪᴄᴋ ᴛᴏ ʟᴇᴀᴠᴇ ᴛʜᴇ ᴅᴜᴇʟ ǫᴜᴇᴜᴇ." : "&7ᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ ᴅᴜᴇʟ ǫᴜᴇᴜᴇ."
                 )
         ));
         set(13, ItemUtils.createItem(
                 Material.NETHERITE_SWORD,
-                "&eYour Duel Stats",
+                "&eʏᴏᴜʀ ᴅᴜᴇʟ ѕᴛᴀᴛѕ",
                 List.of(
-                        "&7Wins: &f" + stats.getWins(),
-                        "&7Losses: &f" + stats.getLosses(),
-                        "&7Draws: &f" + stats.getDraws(),
-                        "&7Streak: &f" + stats.getCurrentStreak(),
-                        "&7Best Streak: &f" + stats.getBestStreak()
+                        "&7ᴡɪɴѕ: &f" + stats.getWins(),
+                        "&7ʟᴏѕѕᴇѕ: &f" + stats.getLosses(),
+                        "&7ᴅʀᴀᴡѕ: &f" + stats.getDraws(),
+                        "&7ѕᴛʀᴇᴀᴋ: &f" + stats.getCurrentStreak(),
+                        "&7ʙᴇѕᴛ ѕᴛʀᴇᴀᴋ: &f" + stats.getBestStreak()
                 )
         ));
         set(15, ItemUtils.createItem(
                 Material.ENDER_CHEST,
-                "&dClaims",
-                List.of("&7Open duel loot claim packages.")
+                "&dᴄʟᴀɪᴍѕ",
+                List.of("&7ᴏᴘᴇɴ ᴅᴜᴇʟ ʟᴏᴏᴛ ᴄʟᴀɪᴍ ᴘᴀᴄᴋᴀɢᴇѕ.")
         ));
-        set(26, ItemUtils.createItem(Material.BARRIER, "&cClose"));
+        set(26, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
     }
 
     @Override

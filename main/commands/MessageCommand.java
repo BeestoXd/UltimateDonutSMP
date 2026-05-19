@@ -24,12 +24,12 @@ public class MessageCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!plugin.getConfigManager().isCommandEnabled("MESSAGE")) {
-            send(sender, message("DISABLED", "&cPrivate messages are currently disabled."));
+            send(sender, message("DISABLED", "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
 
         if (sender instanceof Player player && !player.hasPermission(PERMISSION)) {
-            send(player, message("NO-PERMISSION", "&cYou do not have permission."));
+            send(player, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
@@ -38,13 +38,13 @@ public class MessageCommand implements CommandExecutor {
         }
 
         if (args.length < 2) {
-            send(sender, message("USAGE", "&cUsage: /msg <player> <message>"));
+            send(sender, message("USAGE", "&cᴜѕᴀɢᴇ: /msg <player> <message>"));
             return true;
         }
 
         Player target = findOnlinePlayer(args[0]);
         if (target == null) {
-            send(sender, message("PLAYER-NOT-ONLINE", "&cPlayer not online."));
+            send(sender, message("PLAYER-NOT-ONLINE", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return true;
         }
 
@@ -55,12 +55,12 @@ public class MessageCommand implements CommandExecutor {
 
     private boolean handleReply(CommandSender sender, String[] args, String label) {
         if (!(sender instanceof Player player)) {
-            send(sender, message("PLAYER-ONLY-REPLY", "&cOnly players can use /" + label + "."));
+            send(sender, message("PLAYER-ONLY-REPLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /" + label + "."));
             return true;
         }
 
         if (args.length == 0) {
-            send(player, message("REPLY-USAGE", "&cUsage: /reply <message>"));
+            send(player, message("REPLY-USAGE", "&cᴜѕᴀɢᴇ: /reply <message>"));
             return true;
         }
 
@@ -103,7 +103,7 @@ public class MessageCommand implements CommandExecutor {
             case "NO-PERMISSION" -> configuredMessage("MESSAGES.NO_PERMISSION", "PRIVATE-MESSAGE.NO-PERMISSION");
             case "DISABLED" -> configuredMessage("MESSAGES.DISABLED", "PRIVATE-MESSAGE.DISABLED");
             case "PLAYER-NOT-ONLINE" -> configuredMessage("MESSAGES.PLAYER_NOT_ONLINE", "PRIVATE-MESSAGE.PLAYER-NOT-ONLINE");
-            default -> plugin.getConfigManager().getMessages().getString("PRIVATE-MESSAGE." + key);
+            default -> plugin.getConfigManager().getMessages().getString("ᴘʀɪᴠᴀᴛᴇ-ᴍᴇѕѕᴀɢᴇ." + key);
         };
         return configured == null ? fallback : configured;
     }

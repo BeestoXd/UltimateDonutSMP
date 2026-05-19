@@ -21,12 +21,12 @@ public class AddMoneyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /addmoney <player> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /addmoney <player> <amount>"));
             return true;
         }
 

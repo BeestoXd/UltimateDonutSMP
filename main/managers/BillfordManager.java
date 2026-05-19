@@ -146,7 +146,7 @@ public class BillfordManager {
             String raw = plugin.getConfigManager().getBillford()
                     .getString(
                             "ANNOUNCE_MESSAGE",
-                            "&6&l[Billford] &eTrade rotated! &7Next change in &b{countdown}&7."
+                            "&6&l[Billford] &eᴛʀᴀᴅᴇ ʀᴏᴛᴀᴛᴇᴅ! &7ɴᴇxᴛ ᴄʜᴀɴɢᴇ ɪɴ &b{countdown}&7."
                     )
                     .replace("{trade_id}", String.valueOf(currentTradeId))
                     .replace("{countdown}", getFormattedCountdown());
@@ -195,7 +195,7 @@ public class BillfordManager {
             return null;
         }
 
-        String displayName = section.getString("DISPLAY_NAME", "Trade #" + id);
+        String displayName = section.getString("DISPLAY_NAME", "ᴛʀᴀᴅᴇ #" + id);
         int tradeLimit = section.getInt("LIMIT", section.getInt("LIMIT_PER_PLAYER", 0));
 
         ConfigurationSection rewardSection = section.getConfigurationSection("REWARD");

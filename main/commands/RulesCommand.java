@@ -18,9 +18,9 @@ public class RulesCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
         if (!plugin.getConfigManager().isCommandEnabled("RULES")) {
-            player.sendMessage(ColorUtils.toComponent("&cRules command is currently disabled."));
+            player.sendMessage(ColorUtils.toComponent("&cʀᴜʟᴇѕ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
 
@@ -35,12 +35,12 @@ public class RulesCommand implements CommandExecutor {
     }
 
     private void sendLegacyRules(Player player) {
-        player.sendMessage(ColorUtils.toComponent("&7&m---------- &bServer Rules &7&m----------"));
-        player.sendMessage(ColorUtils.toComponent("&71. &fNo cheating or hacking"));
-        player.sendMessage(ColorUtils.toComponent("&72. &fBe respectful to other players"));
-        player.sendMessage(ColorUtils.toComponent("&73. &fNo griefing at spawn"));
-        player.sendMessage(ColorUtils.toComponent("&74. &fNo use of exploits or duplication"));
-        player.sendMessage(ColorUtils.toComponent("&75. &fHave fun!"));
+        player.sendMessage(ColorUtils.toComponent("&7&m---------- &bѕᴇʀᴠᴇʀ ʀᴜʟᴇѕ &7&m----------"));
+        player.sendMessage(ColorUtils.toComponent("&71. &fɴᴏ ᴄʜᴇᴀᴛɪɴɢ ᴏʀ ʜᴀᴄᴋɪɴɢ"));
+        player.sendMessage(ColorUtils.toComponent("&72. &fʙᴇ ʀᴇѕᴘᴇᴄᴛꜰᴜʟ ᴛᴏ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ"));
+        player.sendMessage(ColorUtils.toComponent("&73. &fɴᴏ ɢʀɪᴇꜰɪɴɢ ᴀᴛ ѕᴘᴀᴡɴ"));
+        player.sendMessage(ColorUtils.toComponent("&74. &fɴᴏ ᴜѕᴇ ᴏꜰ ᴇxᴘʟᴏɪᴛѕ ᴏʀ ᴅᴜᴘʟɪᴄᴀᴛɪᴏɴ"));
+        player.sendMessage(ColorUtils.toComponent("&75. &fʜᴀᴠᴇ ꜰᴜɴ!"));
         player.sendMessage(ColorUtils.toComponent("&7&m-----------------------------------"));
     }
 }

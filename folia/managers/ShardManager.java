@@ -130,10 +130,6 @@ public class ShardManager {
         loadShardCuboidConfigs();
     }
 
-    public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SHARDS);
-    }
-
     public void giveShards(Player player, long amount, boolean showMessage) {
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data == null) {
@@ -142,12 +138,9 @@ public class ShardManager {
 
         data.addShards(amount);
         if (showMessage) {
-            String msg = plugin.getCurrencyManager().applyStaticPlaceholders(plugin.getConfigManager().getConfig()
-                    .getString("SETTINGS.SHARDS-KILL-MESSAGE", "+{amount_formatted}"))
-                    .replace("{shards}", String.valueOf(amount))
-                    .replace("{shards_formatted}", plugin.getCurrencyManager().formatShards(amount))
-                    .replace("{amount}", String.valueOf(amount))
-                    .replace("{amount_formatted}", plugin.getCurrencyManager().formatShards(amount));
+            String msg = plugin.getConfigManager().getConfig()
+                    .getString("SETTINGS.SHARDS-KILL-MESSAGE", "&#A303F9+{shards} ѕʜᴀʀᴅ")
+                    .replace("{shards}", String.valueOf(amount));
             PlayerSettingUtils.sendActionBar(plugin, player, msg);
         }
     }
@@ -250,7 +243,7 @@ public class ShardManager {
         cuboidProgress.remove(uuid);
         pendingMovementBlocks.put(uuid, 0);
         lastMatchedCuboid.remove(uuid);
-        hudStates.put(uuid, new ShardCuboidHudState("None", "OUTSIDE", "-", 0, false));
+        hudStates.put(uuid, new ShardCuboidHudState("ɴᴏɴᴇ", "OUTSIDE", "-", 0, false));
     }
 
     public void removeCountdown(UUID uuid) {
@@ -297,9 +290,6 @@ public class ShardManager {
     }
 
     public ShardCuboidConfig findMatchingShardCuboid(Player player) {
-        if (!isEnabled()) {
-            return null;
-        }
         for (ShardCuboidConfig config : shardCuboidConfigs) {
             if (config.matches(player, plugin.getCuboidManager())) {
                 return config;
@@ -341,7 +331,7 @@ public class ShardManager {
     }
 
     public ShardCuboidHudState getHudState(UUID uuid) {
-        return hudStates.getOrDefault(uuid, new ShardCuboidHudState("None", "OUTSIDE", "-", 0, false));
+        return hudStates.getOrDefault(uuid, new ShardCuboidHudState("ɴᴏɴᴇ", "OUTSIDE", "-", 0, false));
     }
 
     public boolean shouldShowShardCuboidLine(UUID uuid) {
@@ -383,14 +373,12 @@ public class ShardManager {
     public String formatRewardMessage(Player player, ShardCuboidConfig config, long amount, long multiplier) {
         String base = replaceRewardPlaceholders(player, config.rewardMessage(), config, amount, multiplier);
         if (multiplier > 1) {
-            return plugin.getCurrencyManager().applyStaticPlaceholders(config.boostedRewardMessage())
+            return config.boostedRewardMessage()
                     .replace("%base%", base)
                     .replace("%multiplier%", String.valueOf(multiplier))
                     .replace("%amount%", String.valueOf(amount))
-                    .replace("%amount_formatted%", plugin.getCurrencyManager().formatShards(amount))
                     .replace("%cuboid%", config.cuboidName())
-                    .replace("%total%", String.valueOf(getTotalShardsOrZero(player)))
-                    .replace("%total_formatted%", plugin.getCurrencyManager().formatShards(getTotalShardsOrZero(player)));
+                    .replace("%total%", String.valueOf(getTotalShardsOrZero(player)));
         }
         return base;
     }
@@ -449,13 +437,11 @@ public class ShardManager {
         }
 
         int movementProgress = progress != null ? progress.getMovementThisCycle() : 0;
-        String resolved = plugin.getCurrencyManager().applyStaticPlaceholders(message);
-        return resolved
+        return message
                 .replace("%cuboid%", config.cuboidName())
                 .replace("%time%", NumberUtils.formatCountdown(Math.max(0, remainingSeconds)))
                 .replace("%seconds%", String.valueOf(Math.max(0, remainingSeconds)))
                 .replace("%amount%", String.valueOf(amount))
-                .replace("%amount_formatted%", plugin.getCurrencyManager().formatShards(amount))
                 .replace("%multiplier%", String.valueOf(Math.max(1, multiplier)))
                 .replace("%required_movement%", String.valueOf(config.minimumMovementBlocks()))
                 .replace("%movement%", String.valueOf(movementProgress));
@@ -463,8 +449,7 @@ public class ShardManager {
 
     private String replaceRewardPlaceholders(Player player, String message, ShardCuboidConfig config, long amount, long multiplier) {
         return replaceCommonPlaceholders(message, config, 0, amount, multiplier, null)
-                .replace("%total%", String.valueOf(getTotalShardsOrZero(player)))
-                .replace("%total_formatted%", plugin.getCurrencyManager().formatShards(getTotalShardsOrZero(player)));
+                .replace("%total%", String.valueOf(getTotalShardsOrZero(player)));
     }
 
     private long getTotalShardsOrZero(Player player) {
@@ -476,8 +461,7 @@ public class ShardManager {
     }
 
     public boolean isEverywhereEnabled() {
-        return isEnabled()
-                && plugin.getConfigManager().getConfig().getBoolean("SHARDS.EVERYWHERE.ENABLED", true);
+        return plugin.getConfigManager().getConfig().getBoolean("SHARDS.EVERYWHERE.ENABLED", true);
     }
 
     public int getEverywhereEveryMinutes() {
@@ -518,7 +502,7 @@ public class ShardManager {
                 .anyMatch(world -> world.equalsIgnoreCase(worldName));
     }
 
-    public boolean isEverywhereDisabledWhileInShardCuboid() {
+    public boolean isEverywheredisabledWhileInShardCuboid() {
         return plugin.getConfigManager().getConfig()
                 .getBoolean("SHARDS.EVERYWHERE.DISABLE-WHILE-IN-SHARD-CUBOID", false);
     }
@@ -545,7 +529,7 @@ public class ShardManager {
                 getEverywhereRecentMovementWindowSeconds())) {
             return EverywhereEligibilityResult.NO_RECENT_MOVEMENT;
         }
-        if (isEverywhereDisabledWhileInShardCuboid() && isInShardCuboid(player)) {
+        if (isEverywheredisabledWhileInShardCuboid() && isInShardCuboid(player)) {
             return EverywhereEligibilityResult.IN_SHARD_CUBOID;
         }
         return EverywhereEligibilityResult.ELIGIBLE;
@@ -557,16 +541,14 @@ public class ShardManager {
                 ? "SHARDS.EVERYWHERE.RECEIVED-BOOSTED"
                 : "SHARDS.EVERYWHERE.RECEIVED";
         String fallback = boosted
-                ? "You received %amount_formatted% &7(&ax%multiplier%&7) &8[Everywhere] &7(Total: %total_formatted%&7)"
-                : "You received %amount_formatted% &8[Everywhere] &7(Total: %total_formatted%&7)";
+                ? "&#A303F9ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount% ѕʜᴀʀᴅѕ &7(&ax%multiplier%&7) &8[ᴇᴠᴇʀʏᴡʜᴇʀᴇ] &7(ᴛᴏᴛᴀʟ: &#A303F9%total%&7)"
+                : "&#A303F9ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount% ѕʜᴀʀᴅ &8[ᴇᴠᴇʀʏᴡʜᴇʀᴇ] &7(ᴛᴏᴛᴀʟ: &#A303F9%total%&7)";
 
-        return plugin.getCurrencyManager().applyStaticPlaceholders(plugin.getConfigManager().getConfig()
-                .getString(path, fallback))
+        return plugin.getConfigManager().getConfig()
+                .getString(path, fallback)
                 .replace("%amount%", String.valueOf(amount))
-                .replace("%amount_formatted%", plugin.getCurrencyManager().formatShards(amount))
                 .replace("%multiplier%", String.valueOf(Math.max(1L, multiplier)))
-                .replace("%total%", String.valueOf(getTotalShardsOrZero(player)))
-                .replace("%total_formatted%", plugin.getCurrencyManager().formatShards(getTotalShardsOrZero(player)));
+                .replace("%total%", String.valueOf(getTotalShardsOrZero(player)));
     }
 
     public void sendEverywhereRewardFeedback(Player player, long amount, long multiplier) {
@@ -635,22 +617,22 @@ public class ShardManager {
                     section.getInt("PRIORITY", 0),
                     Math.max(1, section.getInt("INTERVAL", 60)),
                     Math.max(1L, section.getLong("AMOUNT", 1L)),
-                    section.getString("COUNTDOWN-MESSAGE", "&7Next reward in %time%"),
-                    section.getString("REWARD-MESSAGE", "You received %amount_formatted% &7(Total: %total_formatted%&7)"),
-                    section.getString("BOOSTED-REWARD-MESSAGE", "You received %amount_formatted% &7(&ax%multiplier%&7) &7(Total: %total_formatted%&7)"),
-                    section.getString("LEAVE-MESSAGE", "&c{shards_name_singular} reward cancelled &7(Left %cuboid% zone)"),
+                    section.getString("COUNTDOWN-MESSAGE", "&7ɴᴇxᴛ ѕʜᴀʀᴅ ɪɴ &#A303F9%time%"),
+                    section.getString("REWARD-MESSAGE", "&#A303F9ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount% ѕʜᴀʀᴅ &7(ᴛᴏᴛᴀʟ: &#A303F9%total%&7)"),
+                    section.getString("BOOSTED-REWARD-MESSAGE", "&#A303F9ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount% ѕʜᴀʀᴅѕ &7(&ax%multiplier%&7) &7(ᴛᴏᴛᴀʟ: &#A303F9%total%&7)"),
+                    section.getString("LEAVE-MESSAGE", "&cѕʜᴀʀᴅ ʀᴇᴡᴀʀᴅ ᴄᴀɴᴄᴇʟʟᴇᴅ &7(ʟᴇꜰᴛ %cuboid% zᴏɴᴇ)"),
                     Math.max(1, section.getInt("AFK-TIME", cfg.getInt("AFK-SYSTEM.TIME", 180))),
                     emptyToNull(section.getString("AFK-CUBOID")),
                     parseExplicitLocation(section.getString("AFK-LOCATION")),
                     section.getString("AFK-MESSAGE", cfg.getString("AFK-SYSTEM.MESSAGE",
-                            "&7You have been moved to the AFK area for being inactive in the shard zone.")),
+                            "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ᴛʜᴇ ᴀꜰᴋ ᴀʀᴇᴀ ꜰᴏʀ ʙᴇɪɴɢ ɪɴᴀᴄᴛɪᴠᴇ ɪɴ ᴛʜᴇ ѕʜᴀʀᴅ ᴢᴏɴᴇ.")),
                     section.getBoolean("TELEPORT-ON-AFK", true),
                     section.getBoolean("RESET-ON-LEAVE", cfg.getBoolean("SHARDS.RESET-ON-LEAVE", true)),
                     Math.max(1, section.getInt("RECENT-MOVEMENT-WINDOW", 15)),
                     Math.max(1, section.getInt("MIN-MOVEMENT-BLOCKS", 5)),
-                    section.getString("PAUSED-MESSAGE", "&eMove to keep earning rewards"),
-                    section.getString("AFK-PAUSED-MESSAGE", "&cYou are AFK. Move to resume {shards_name_plural} gain"),
-                    section.getString("EXCLUDED-WORLD-MESSAGE", "&c{shards_name_plural} are disabled in this world"),
+                    section.getString("PAUSED-MESSAGE", "&eᴍᴏᴠᴇ ᴛᴏ ᴋᴇᴇᴘ ᴇᴀʀɴɪɴɢ ѕʜᴀʀᴅѕ"),
+                    section.getString("AFK-PAUSED-MESSAGE", "&cʏᴏᴜ ᴀʀᴇ ᴀꜰᴋ. ᴍᴏᴠᴇ ᴛᴏ ʀᴇѕᴜᴍᴇ ѕʜᴀʀᴅ ɢᴀɪɴ"),
+                    section.getString("EXCLUDED-WORLD-MESSAGE", "&cѕʜᴀʀᴅѕ ᴀʀᴇ ᴅɪѕᴀʙʟᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ"),
                     section.getStringList("EXCLUDED-WORLDS").stream()
                             .map(world -> world.toLowerCase(Locale.ROOT))
                             .collect(Collectors.toSet())
@@ -671,22 +653,22 @@ public class ShardManager {
                 0,
                 Math.max(1, cfg.getInt("SHARDS.EVERY", 1) * 60),
                 Math.max(1L, cfg.getLong("SHARDS.AMOUNT", 1L)),
-                cfg.getString("SHARDS.COUNTDOWN", "&7Next reward in &#A303F9%time%"),
-                cfg.getString("SHARDS.RECEIVED", "You received %amount_formatted% &7(Total: %total_formatted%&7)"),
-                cfg.getString("SHARDS.RECEIVED-BOOSTED", "You received %amount_formatted% &7(&ax%multiplier%&7) &7(Total: %total_formatted%&7)"),
-                cfg.getString("SHARDS.CANCELLED-MESSAGE", "&c{shards_name_singular} reward cancelled &7(Left %cuboid% zone)"),
+                cfg.getString("SHARDS.COUNTDOWN", "&7ɴᴇxᴛ ѕʜᴀʀᴅ ɪɴ &#A303F9%time%"),
+                cfg.getString("SHARDS.RECEIVED", "&#A303F9ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount% ѕʜᴀʀᴅ &7(ᴛᴏᴛᴀʟ: &#A303F9%total%&7)"),
+                cfg.getString("SHARDS.RECEIVED-BOOSTED", "&#A303F9ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount% ѕʜᴀʀᴅѕ &7(&ax%multiplier%&7) &7(ᴛᴏᴛᴀʟ: &#A303F9%total%&7)"),
+                cfg.getString("SHARDS.CANCELLED-MESSAGE", "&cѕʜᴀʀᴅ ʀᴇᴡᴀʀᴅ ᴄᴀɴᴄᴇʟʟᴇᴅ &7(ʟᴇꜰᴛ %cuboid% zᴏɴᴇ)"),
                 Math.max(1, cfg.getInt("AFK-SYSTEM.TIME", 180)),
                 emptyToNull(cfg.getString("AFK-SYSTEM.AFK-CUBOID-NAME")),
                 plugin.getSpawnManager().getAfkLocation(),
                 cfg.getString("AFK-SYSTEM.MESSAGE",
-                        "&7You have been moved to the AFK area for being inactive in the spawn."),
+                        "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ᴛʜᴇ ᴀꜰᴋ ᴀʀᴇᴀ ꜰᴏʀ ʙᴇɪɴɢ ɪɴᴀᴄᴛɪᴠᴇ ɪɴ ᴛʜᴇ ѕᴘᴀᴡɴ."),
                 cfg.getBoolean("AFK-SYSTEM.ENABLED", true),
                 cfg.getBoolean("SHARDS.RESET-ON-LEAVE", true),
                 15,
                 5,
-                "&eMove to keep earning rewards",
-                "&cYou are AFK. Move to resume {shards_name_plural} gain",
-                "&c{shards_name_plural} are disabled in this world",
+                "&eᴍᴏᴠᴇ ᴛᴏ ᴋᴇᴇᴘ ᴇᴀʀɴɪɴɢ ѕʜᴀʀᴅѕ",
+                "&cʏᴏᴜ ᴀʀᴇ ᴀꜰᴋ. ᴍᴏᴠᴇ ᴛᴏ ʀᴇѕᴜᴍᴇ ѕʜᴀʀᴅ ɢᴀɪɴ",
+                "&cѕʜᴀʀᴅѕ ᴀʀᴇ ᴅɪѕᴀʙʟᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ",
                 Set.of()
         );
     }

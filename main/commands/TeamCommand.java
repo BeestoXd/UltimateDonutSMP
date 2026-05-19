@@ -28,7 +28,7 @@ public class TeamCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
@@ -56,13 +56,13 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleCreate(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cUsage: /team create <name>");
+            send(player, "&cᴜѕᴀɢᴇ: /team create <name>");
             return;
         }
 
         String name = args[1];
         if (!plugin.getTeamManager().isValidName(name)) {
-            send(player, "&cTeam name must be 3-5 alphanumeric characters.");
+            send(player, "&cᴛᴇᴀᴍ ɴᴀᴍᴇ ᴍᴜѕᴛ ʙᴇ 3-5 ᴀʟᴘʜᴀɴᴜᴍᴇʀɪᴄ ᴄʜᴀʀᴀᴄᴛᴇʀѕ.");
             return;
         }
         if (plugin.getTeamManager().isInTeam(player)) {
@@ -94,7 +94,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleInvite(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cUsage: /team invite <player>");
+            send(player, "&cᴜѕᴀɢᴇ: /team invite <player>");
             return;
         }
 
@@ -108,7 +108,7 @@ public class TeamCommand implements CommandExecutor {
             return;
         }
         if (args[1].equalsIgnoreCase(player.getName())) {
-            send(player, "&cYou cannot invite yourself!");
+            send(player, "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠɪᴛᴇ ʏᴏᴜʀѕᴇʟꜰ!");
             return;
         }
 
@@ -120,7 +120,7 @@ public class TeamCommand implements CommandExecutor {
 
         Player target = Bukkit.getPlayerExact(args[1]);
         if (target == null) {
-            send(player, "&cPlayer not online.");
+            send(player, "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.");
             return;
         }
 
@@ -153,7 +153,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleJoin(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cUsage: /team join <team>");
+            send(player, "&cᴜѕᴀɢᴇ: /team join <team>");
             return;
         }
         if (plugin.getTeamManager().isInTeam(player)) {
@@ -201,12 +201,12 @@ public class TeamCommand implements CommandExecutor {
         }
 
         plugin.getTeamManager().leaveTeam(player);
-        send(player, "&7You left the team.");
+        send(player, "&7ʏᴏᴜ ʟᴇꜰᴛ ᴛʜᴇ ᴛᴇᴀᴍ.");
     }
 
     private void handleKick(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cUsage: /team kick <player>");
+            send(player, "&cᴜѕᴀɢᴇ: /team kick <player>");
             return;
         }
 

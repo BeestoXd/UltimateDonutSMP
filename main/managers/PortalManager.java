@@ -300,32 +300,32 @@ public class PortalManager {
 
         if (!hasValidCuboid(portal)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.INVALID-CUBOID",
-                    "&cThis portal is not configured correctly right now.")));
+                    "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴄᴏʀʀᴇᴄᴛʟʏ ʀɪɢʜᴛ ɴᴏᴡ.")));
             return false;
         }
 
         if (!isDestinationUsable(portal)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.INVALID-DESTINATION",
-                    "&cThis portal destination is currently unavailable.")));
+                    "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")));
             return false;
         }
 
         if (!portal.permission().isBlank() && !player.hasPermission(portal.permission())) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.NO-PERMISSION",
-                    "&cYou do not have permission to use this portal.")));
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴛʜɪѕ ᴘᴏʀᴛᴀʟ.")));
             return false;
         }
 
         if (shouldBlockInCombat() && plugin.getCombatManager().isInCombat(playerId)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.IN-COMBAT",
-                    "&cYou cannot use portals while in combat.")));
+                    "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴘᴏʀᴛᴀʟѕ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ.")));
             return false;
         }
 
         if (plugin.getTeleportManager().hasPending(playerId)
                 && !plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.TELEPORT-IN-PROGRESS",
-                    "&cYou are already teleporting.")));
+                    "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.")));
             return false;
         }
 
@@ -369,7 +369,7 @@ public class PortalManager {
 
     public String describeDestination(PortalDefinition portal) {
         if (portal == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         if (!DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
@@ -657,9 +657,9 @@ public class PortalManager {
         if (configured.isEmpty()) {
             configured = List.of(
                     "&f{portal}",
-                    "&7Region {region}",
+                    "&7ʀᴇɢɪᴏɴ {region}",
                     "",
-                    "&f<total_player> Players"
+                    "&f<total_player> ᴘʟᴀʏᴇʀѕ"
             );
         }
 
@@ -992,7 +992,7 @@ public class PortalManager {
                 warn("Portal '" + portal.id() + "' references missing cuboid '" + portal.cuboidName() + "'.");
             }
             if (!isDestinationUsable(portal)) {
-                warn("Portal '" + portal.id() + "' has unavailable destination '" + portal.destinationValue() + "'.");
+                warn("Portal '" + portal.id() + "' ʜᴀѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '" + portal.destinationValue() + "'.");
             }
         }
     }

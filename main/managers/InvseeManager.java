@@ -132,7 +132,7 @@ public class InvseeManager {
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("MESSAGES." + path, fallback);
+        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
     }
 
     public String formatMessage(String path, String fallback, String... placeholders) {
@@ -287,7 +287,7 @@ public class InvseeManager {
         if (isEditEnabled() && canModify(viewer) && !editable) {
             viewer.sendMessage(ColorUtils.toComponent(formatMessage(
                     "EDIT-CONFLICT",
-                    "&eAnother staff member is already editing this inventory. Opened in read-only mode.",
+                    "&eᴀɴᴏᴛʜᴇʀ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴇᴅɪᴛɪɴɢ ᴛʜɪѕ ɪɴᴠᴇɴᴛᴏʀʏ. ᴏᴘᴇɴᴇᴅ ɪɴ ʀᴇᴀᴅ-ᴏɴʟʏ ᴍᴏᴅᴇ.",
                     "{target}", target.getName(),
                     "{player}", target.getName()
             )));
@@ -296,7 +296,7 @@ public class InvseeManager {
         if (shouldNotifyTarget()) {
             target.sendMessage(ColorUtils.toComponent(formatMessage(
                     "TARGET-NOTIFY",
-                    "&eYour inventory is being viewed by staff.",
+                    "&eʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ʙᴇɪɴɢ ᴠɪᴇᴡᴇᴅ ʙʏ ѕᴛᴀꜰꜰ.",
                     "{viewer}", viewer.getName(),
                     "{player}", viewer.getName(),
                     "{mode}", editable ? "editable" : "read-only"
@@ -497,21 +497,21 @@ public class InvseeManager {
         String targetName = target == null ? session.getTargetName() : target.getName();
 
         List<String> lore = new ArrayList<>();
-        lore.add("&7Status: &f" + (session.isFrozen() ? "Frozen Snapshot" : "Live"));
-        lore.add("&7Player: &f" + targetName);
-        lore.add("&7World: &f" + (target == null ? "Offline" : target.getWorld().getName()));
+        lore.add("&7ѕᴛᴀᴛᴜѕ: &f" + (session.isFrozen() ? "Frozen Snapshot" : "Live"));
+        lore.add("&7ᴘʟᴀʏᴇʀ: &f" + targetName);
+        lore.add("&7ᴡᴏʀʟᴅ: &f" + (target == null ? "Offline" : target.getWorld().getName()));
         if (target != null) {
-            lore.add("&7Coords: &f" + target.getLocation().getBlockX()
+            lore.add("&7ᴄᴏᴏʀᴅѕ: &f" + target.getLocation().getBlockX()
                     + ", " + target.getLocation().getBlockY()
                     + ", " + target.getLocation().getBlockZ());
         } else {
-            lore.add("&7Coords: &fUnavailable");
+            lore.add("&7ᴄᴏᴏʀᴅѕ: &fᴜɴᴀᴠᴀɪʟᴀʙʟᴇ");
         }
-        lore.add("&7Mode: &f" + (session.isEditable() && !session.isFrozen() ? "Editable" : "Read Only"));
+        lore.add("&7ᴍᴏᴅᴇ: &f" + (session.isEditable() && !session.isFrozen() ? "Editable" : "Read Only"));
 
         return ItemUtils.createPlayerHead(
                 offlinePlayer,
-                "&6Inventory of &f" + targetName,
+                "&6ɪɴᴠᴇɴᴛᴏʀʏ ᴏꜰ &f" + targetName,
                 lore
         );
     }
@@ -523,24 +523,24 @@ public class InvseeManager {
                 ? (editable ? Material.ORANGE_DYE : Material.LIME_DYE)
                 : Material.GRAY_DYE;
         String name = live
-                ? (editable ? "&6Live Edit" : "&aLive Sync")
-                : "&7Frozen Snapshot";
+                ? (editable ? "&6ʟɪᴠᴇ ᴇᴅɪᴛ" : "&aʟɪᴠᴇ ѕʏɴᴄ")
+                : "&7ꜰʀᴏᴢᴇɴ ѕɴᴀᴘѕʜᴏᴛ";
         List<String> lore = live
                 ? editable
                 ? List.of(
-                "&7This view is mirroring the target's",
-                "&7inventory and will write changes back",
-                "&7while the target remains online."
+                "&7ᴛʜɪѕ ᴠɪᴇᴡ ɪѕ ᴍɪʀʀᴏʀɪɴɢ ᴛʜᴇ ᴛᴀʀɢᴇᴛ'ѕ",
+                "&7ɪɴᴠᴇɴᴛᴏʀʏ ᴀɴᴅ ᴡɪʟʟ ᴡʀɪᴛᴇ ᴄʜᴀɴɢᴇѕ ʙᴀᴄᴋ",
+                "&7ᴡʜɪʟᴇ ᴛʜᴇ ᴛᴀʀɢᴇᴛ ʀᴇᴍᴀɪɴѕ ᴏɴʟɪɴᴇ."
         )
                 : List.of(
-                "&7This view is mirroring the target's",
-                "&7inventory while they remain online.",
-                "&cAll interactions are blocked."
+                "&7ᴛʜɪѕ ᴠɪᴇᴡ ɪѕ ᴍɪʀʀᴏʀɪɴɢ ᴛʜᴇ ᴛᴀʀɢᴇᴛ'ѕ",
+                "&7ɪɴᴠᴇɴᴛᴏʀʏ ᴡʜɪʟᴇ ᴛʜᴇʏ ʀᴇᴍᴀɪɴ ᴏɴʟɪɴᴇ.",
+                "&cᴀʟʟ ɪɴᴛᴇʀᴀᴄᴛɪᴏɴѕ ᴀʀᴇ ʙʟᴏᴄᴋᴇᴅ."
         )
                 : List.of(
-                "&7The target went offline.",
-                "&7This GUI now shows the last synced state.",
-                "&cAll interactions remain blocked."
+                "&7ᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴡᴇɴᴛ ᴏꜰꜰʟɪɴᴇ.",
+                "&7ᴛʜɪѕ ɢᴜɪ ɴᴏᴡ ѕʜᴏᴡѕ ᴛʜᴇ ʟᴀѕᴛ ѕʏɴᴄᴇᴅ ѕᴛᴀᴛᴇ.",
+                "&cᴀʟʟ ɪɴᴛᴇʀᴀᴄᴛɪᴏɴѕ ʀᴇᴍᴀɪɴ ʙʟᴏᴄᴋᴇᴅ."
         );
 
         return ItemUtils.createItem(material, name, lore);
@@ -602,7 +602,7 @@ public class InvseeManager {
         if (viewer != null && viewer.isOnline()) {
             viewer.sendMessage(ColorUtils.toComponent(formatMessage(
                     "TARGET-LOGGED-OUT",
-                    "&eThis inventory is now a frozen snapshot because the target logged out.",
+                    "&eᴛʜɪѕ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ɴᴏᴡ ᴀ ꜰʀᴏᴢᴇɴ ѕɴᴀᴘѕʜᴏᴛ ʙᴇᴄᴀᴜѕᴇ ᴛʜᴇ ᴛᴀʀɢᴇᴛ ʟᴏɢɢᴇᴅ ᴏᴜᴛ.",
                     "{player}", session.getTargetName(),
                     "{target}", session.getTargetName()
             )));
@@ -834,7 +834,7 @@ public class InvseeManager {
     }
 
     private String buildTitle(String targetName) {
-        String template = getConfig().getString("INVSEE.TITLE", "&8Inventory of {player}");
+        String template = getConfig().getString("INVSEE.TITLE", "&8ɪɴᴠᴇɴᴛᴏʀʏ ᴏꜰ {player}");
         return template
                 .replace("{player}", targetName)
                 .replace("{target}", targetName);

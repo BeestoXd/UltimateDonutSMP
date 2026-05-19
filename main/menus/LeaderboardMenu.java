@@ -21,7 +21,7 @@ public class LeaderboardMenu extends BaseMenu {
     public LeaderboardMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Leaderboards"),
+                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ"),
                 plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 36)
         );
     }

@@ -27,16 +27,16 @@ final class OrdersMenuSupport {
     ) {
         List<String> extraLore = new ArrayList<>();
         extraLore.add("");
-        extraLore.add("&7Owner: &f" + order.ownerName());
-        extraLore.add("&7Status: &f" + order.status().name());
-        extraLore.add("&7Progress: &e" + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity());
-        extraLore.add("&7Price Each: " + plugin.getCurrencyManager().formatMoney(order.priceEach()));
-        extraLore.add("&7Paid So Far: " + plugin.getCurrencyManager().formatMoney(order.paidAmount()));
-        extraLore.add("&7Escrow Left: " + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()));
-        extraLore.add("&7Time Left: &f" + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis())));
-        extraLore.add("&7Order ID: &f#" + order.id());
+        extraLore.add("&7ᴏᴡɴᴇʀ: &f" + order.ownerName());
+        extraLore.add("&7ѕᴛᴀᴛᴜѕ: &f" + order.status().name());
+        extraLore.add("&7ᴘʀᴏɢʀᴇѕѕ: &e" + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity());
+        extraLore.add("&7ᴘʀɪᴄᴇ ᴇᴀᴄʜ: " + plugin.getCurrencyManager().formatMoney(order.priceEach()));
+        extraLore.add("&7ᴘᴀɪᴅ ѕᴏ ꜰᴀʀ: " + plugin.getCurrencyManager().formatMoney(order.paidAmount()));
+        extraLore.add("&7ᴇѕᴄʀᴏᴡ ʟᴇꜰᴛ: " + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()));
+        extraLore.add("&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis())));
+        extraLore.add("&7ᴏʀᴅᴇʀ ID: &f#" + order.id());
         extraLore.add("");
-        extraLore.add(ownedByViewer ? "&eClick to manage order" : "&eClick to view delivery options");
+        extraLore.add(ownedByViewer ? "&eᴄʟɪᴄᴋ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴏʀᴅᴇʀ" : "&eᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴅᴇʟɪᴠᴇʀʏ ᴏᴘᴛɪᴏɴѕ");
         return decorateItem(plugin, order.requestedItem(), manager.describeItem(order.requestedItem()), extraLore);
     }
 
@@ -48,24 +48,24 @@ final class OrdersMenuSupport {
         if (claim.refundClaim()) {
             return ItemUtils.createItem(
                     Material.SUNFLOWER,
-                    "&aEscrow Refund",
+                    "&aᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ",
                     List.of(
-                            "&7Amount: " + plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
-                            "&7Order: &f#" + claim.orderId(),
+                            "&7ᴀᴍᴏᴜɴᴛ: " + plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
+                            "&7ᴏʀᴅᴇʀ: &f#" + claim.orderId(),
                             "",
-                            "&eClick to claim"
+                            "&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ"
                     )
             );
         }
 
         List<String> extraLore = new ArrayList<>();
         extraLore.add("");
-        extraLore.add("&7Claim Type: &fDelivered Item");
-        extraLore.add("&7Order: &f#" + claim.orderId());
-        extraLore.add("&7Created: &f" + NumberUtils.formatTimeLong(Math.max(0L,
+        extraLore.add("&7ᴄʟᴀɪᴍ ᴛʏᴘᴇ: &fᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍ");
+        extraLore.add("&7ᴏʀᴅᴇʀ: &f#" + claim.orderId());
+        extraLore.add("&7ᴄʀᴇᴀᴛᴇᴅ: &f" + NumberUtils.formatTimeLong(Math.max(0L,
                 (System.currentTimeMillis() - claim.createdAt()) / 1000L)));
         extraLore.add("");
-        extraLore.add("&eClick to claim");
+        extraLore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ");
         return decorateItem(plugin, claim.item(), manager.describeItem(claim.item()), extraLore);
     }
 
@@ -76,7 +76,7 @@ final class OrdersMenuSupport {
             List<String> extraLore
     ) {
         if (source == null || source.getType().isAir()) {
-            return ItemUtils.createItem(Material.BARRIER, "&cMissing Item", List.of("&7This entry has no item data."));
+            return ItemUtils.createItem(Material.BARRIER, "&cᴍɪѕѕɪɴɢ ɪᴛᴇᴍ", List.of("&7ᴛʜɪѕ ᴇɴᴛʀʏ ʜᴀѕ ɴᴏ ɪᴛᴇᴍ ᴅᴀᴛᴀ."));
         }
 
         ItemStack display = source.clone();

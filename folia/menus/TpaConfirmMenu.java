@@ -21,8 +21,8 @@ public class TpaConfirmMenu extends BaseMenu {
         super(
                 plugin,
                 plugin.getConfigManager().getMenus()
-                        .getString("TPA-CONFIRM-MENU.TITLE", "&8Confirm TPA {here}")
-                        .replace("{here}", tpaHere ? "Here" : ""),
+                        .getString("TPA-CONFIRM-MENU.TITLE", "&8ᴄᴏɴꜰɪʀᴍ ᴛᴘᴀ {here}")
+                        .replace("{here}", tpaHere ? "ʜᴇʀᴇ" : ""),
                 plugin.getConfigManager().getMenus().getInt("TPA-CONFIRM-MENU.SIZE", 27)
         );
         this.requesterName = requesterName;
@@ -34,15 +34,15 @@ public class TpaConfirmMenu extends BaseMenu {
         clear();
         fill(Material.GRAY_STAINED_GLASS_PANE);
 
-        set(11, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cCancel",
-                List.of("&7Deny this teleport request.")));
+        set(11, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cᴄᴀɴᴄᴇʟ",
+                List.of("&7ᴅᴇɴʏ ᴛʜɪѕ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ.")));
 
-        set(15, ItemUtils.createItem(Material.LIME_STAINED_GLASS_PANE, "&aConfirm",
-                List.of("&7Accept this teleport request.")));
+        set(15, ItemUtils.createItem(Material.LIME_STAINED_GLASS_PANE, "&aᴄᴏɴꜰɪʀᴍ",
+                List.of("&7ᴀᴄᴄᴇᴘᴛ ᴛʜɪѕ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ.")));
 
         String requestText = tpaHere
-                ? "&7" + requesterName + " wants you to teleport to them."
-                : "&7" + requesterName + " wants to teleport to you.";
+                ? "&7" + requesterName + " ᴡᴀɴᴛѕ ʏᴏᴜ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴛʜᴇᴍ."
+                : "&7" + requesterName + " ᴡᴀɴᴛѕ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜ.";
         set(13, createRequesterItem(List.of(requestText)));
     }
 

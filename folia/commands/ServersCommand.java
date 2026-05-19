@@ -22,24 +22,24 @@ public class ServersCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to use /servers."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ /servers."));
             return true;
         }
 
         if (!plugin.getConfigManager().isCommandEnabled("SERVERS")) {
-            sender.sendMessage(ColorUtils.toComponent("&cServers menu is currently disabled."));
+            sender.sendMessage(ColorUtils.toComponent("&cѕᴇʀᴠᴇʀѕ ᴍᴇɴᴜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
 
         if (!plugin.getNetworkStatusManager().isEnabled()) {
-            sender.sendMessage(ColorUtils.toComponent("&cNetwork server status is currently disabled."));
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴇᴛᴡᴏʀᴋ ѕᴇʀᴠᴇʀ ѕᴛᴀᴛᴜѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
 
         if (sender instanceof Player player) {
             ServersMenu menu = new ServersMenu(plugin);
             if (!menu.hasRenderableServers()) {
-                player.sendMessage(ColorUtils.toComponent("&cNo servers are configured for the Servers Menu."));
+                player.sendMessage(ColorUtils.toComponent("&cɴᴏ ѕᴇʀᴠᴇʀѕ ᴀʀᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ꜰᴏʀ ᴛʜᴇ ѕᴇʀᴠᴇʀѕ ᴍᴇɴᴜ."));
                 return true;
             }
 
@@ -48,17 +48,17 @@ public class ServersCommand implements CommandExecutor {
         }
 
         if (!plugin.getNetworkStatusManager().hasConfiguredServers()) {
-            sender.sendMessage("No servers are configured for network status.");
+            sender.sendMessage("ɴᴏ ѕᴇʀᴠᴇʀѕ ᴀʀᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ꜰᴏʀ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀᴛᴜѕ.");
             return true;
         }
 
-        sender.sendMessage("Network server status:");
+        sender.sendMessage("ɴᴇᴛᴡᴏʀᴋ ѕᴇʀᴠᴇʀ ѕᴛᴀᴛᴜѕ:");
         for (ServerStatusSnapshot snapshot : plugin.getNetworkStatusManager().getOrderedSnapshots()) {
             sender.sendMessage("- " + snapshot.displayName()
-                    + " | " + (snapshot.online() ? "ONLINE" : "OFFLINE")
-                    + " | players=" + snapshot.playerCount()
-                    + " | software=" + snapshot.softwareLabel()
-                    + " | performance=" + snapshot.performanceLabel());
+                    + " | " + (snapshot.online() ? "ᴏɴʟɪɴᴇ" : "ᴏꜰꜰʟɪɴᴇ")
+                    + " | ᴘʟᴀʏᴇʀѕ=" + snapshot.playerCount()
+                    + " | ѕᴏꜰᴛᴡᴀʀᴇ=" + snapshot.softwareLabel()
+                    + " | ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ=" + snapshot.performanceLabel());
         }
         return true;
     }

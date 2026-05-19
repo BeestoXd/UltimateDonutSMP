@@ -19,7 +19,7 @@ public class KeysMenu extends BaseMenu {
     );
 
     public KeysMenu(UltimateDonutSmp plugin) {
-        super(plugin, "&8Your Keys", 27);
+        super(plugin, "&8ʏᴏᴜʀ ᴋᴇʏѕ", 27);
     }
 
     @Override
@@ -31,8 +31,8 @@ public class KeysMenu extends BaseMenu {
         if (crates.isEmpty()) {
             set(13, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo Crates",
-                    List.of("&7No crate keys are available right now.")
+                    "&cɴᴏ ᴄʀᴀᴛᴇѕ",
+                    List.of("&7ɴᴏ ᴄʀᴀᴛᴇ ᴋᴇʏѕ ᴀʀᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ.")
             ));
             return;
         }
@@ -53,7 +53,7 @@ public class KeysMenu extends BaseMenu {
         ItemStack item = ItemUtils.createItem(
                 keyItem.material(),
                 plugin.getCrateManager().applyPlaceholders(keyItem.displayName(), player, crate, null),
-                List.of("&7Keys: &f" + keyCount)
+                List.of("&7ᴋᴇʏѕ: &f" + keyCount)
         );
         ItemUtils.addEnchantments(item, keyItem.enchantments());
 

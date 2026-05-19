@@ -5,11 +5,15 @@ import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import io.papermc.paper.connection.PlayerConfigurationConnection;
+import io.papermc.paper.connection.PlayerConnection;
+import io.papermc.paper.connection.PlayerLoginConnection;
+import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -24,12 +28,12 @@ public class PlayerJoinQuitListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onValidateLogin(AsyncPlayerPreLoginEvent event) {
-        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+    public void onValidateLogin(PlayerConnectionValidateLoginEvent event) {
+        if (!event.isAllowed()) {
             return;
         }
 
-        UUID uuid = event.getUniqueId();
+        UUID uuid = resolveLoginUuid(event.getConnection());
         if (uuid == null) {
             return;
         }
@@ -38,7 +42,7 @@ public class PlayerJoinQuitListener implements Listener {
                 .getActiveRecord(uuid, PunishmentType.BLACKLIST)
                 .orElse(null);
         if (blacklist != null) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ColorUtils.toComponent(kickMessage(blacklist)));
+            event.kickMessage(ColorUtils.toComponent(kickMessage(blacklist)));
             return;
         }
 
@@ -46,15 +50,29 @@ public class PlayerJoinQuitListener implements Listener {
                 .getActiveRecord(uuid, PunishmentType.BAN)
                 .orElse(null);
         if (ban != null) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ColorUtils.toComponent(kickMessage(ban)));
+            event.kickMessage(ColorUtils.toComponent(kickMessage(ban)));
         }
+    }
+
+    private UUID resolveLoginUuid(PlayerConnection connection) {
+        if (connection instanceof PlayerConfigurationConnection configurationConnection) {
+            return configurationConnection.getProfile().getId();
+        }
+        if (connection instanceof PlayerLoginConnection loginConnection) {
+            PlayerProfile profile = loginConnection.getAuthenticatedProfile();
+            if (profile == null) {
+                profile = loginConnection.getUnsafeProfile();
+            }
+            return profile == null ? null : profile.getId();
+        }
+        return null;
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        // Load player data
+        // load player data
         plugin.getPlayerDataManager().loadOrCreate(player);
         plugin.getIgnoreManager().loadPlayer(player.getUniqueId());
         if (player.getAddress() != null && player.getAddress().getAddress() != null) {
@@ -66,17 +84,17 @@ public class PlayerJoinQuitListener implements Listener {
         }
         plugin.getKeyAllManager().handleJoin(player);
 
-        // Load homes
+        // load homes
         plugin.getHomeManager().loadHomes(player);
 
-        // Setup scoreboard
+        // setup scoreboard
         plugin.getScoreboardManager().setupPlayer(player);
 
-        // Update tablist name
+        // update tablist name
         plugin.getTablistManager().updateTablistName(player);
         plugin.getTablistManager().update(player);
 
-        // Track for AFK
+        // track for AFK
         plugin.getAFKManager().trackPlayer(player);
         plugin.getShardManager().syncBooster(player);
         plugin.getAmethystToolsManager().sanitizePlayerInventory(player, true);
@@ -89,7 +107,7 @@ public class PlayerJoinQuitListener implements Listener {
             plugin.getLunarRichPresenceManager().handleJoin(player);
         }
 
-        // Initialize cuboid-shard countdown so the player cannot receive shards
+        // initialize cuboid-shard countdown so the player cannot receive shards
         // the instant they join – they must wait the full interval first.
         plugin.getShardManager().initCountdown(player.getUniqueId());
         plugin.getRtpZoneManager().clearState(player.getUniqueId());
@@ -100,7 +118,7 @@ public class PlayerJoinQuitListener implements Listener {
             plugin.getDuelManager().handleJoin(player);
         }
 
-        // Hide join message (optional, uncomment to suppress)
+        // hide join message (optional, uncomment to suppress)
         // event.joinMessage(null);
     }
 
@@ -122,32 +140,32 @@ public class PlayerJoinQuitListener implements Listener {
             plugin.getFfaManager().handleQuit(player);
         }
 
-        // Clear combat tag
+        // clear combat tag
         plugin.getCombatManager().clearTag(player.getUniqueId());
 
-        // Cancel any pending teleport
+        // cancel any pending teleport
         plugin.getTeleportManager().cancel(player.getUniqueId());
 
-        // Remove pending TPA requests
+        // remove pending tpa requests
         plugin.getTPAManager().removeRequest(player.getUniqueId());
         plugin.getTPAManager().cancelRequestsByRequester(player.getUniqueId());
 
-        // Remove temporary worth lore before the inventory is persisted by the server
+        // remove temporary worth lore before the inventory is persisted by the server
         plugin.getWorthManager().clearWorthDisplay(player);
 
-        // Save and unload player data
+        // save and unload player data
         plugin.getPlayerDataManager().unload(player.getUniqueId());
 
-        // Unload homes
+        // unload homes
         plugin.getHomeManager().unloadHomes(player.getUniqueId());
 
-        // Remove scoreboard
+        // remove scoreboard
         plugin.getScoreboardManager().removePlayer(player.getUniqueId());
 
-        // Remove AFK tracking
+        // remove afk tracking
         plugin.getAFKManager().removePlayer(player.getUniqueId());
 
-        // Clean up cuboid-shard countdown state
+        // clean up cuboid-shard countdown state
         plugin.getShardManager().removeCountdown(player.getUniqueId());
         plugin.getShardManager().clearBoosterCache(player.getUniqueId());
         plugin.getRtpZoneManager().clearState(player.getUniqueId());
@@ -163,7 +181,7 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getPrivateMessageManager().clearPlayer(player.getUniqueId());
         plugin.getIgnoreManager().unloadPlayer(player.getUniqueId());
 
-        // Remove team chat
+        // remove team chat
         plugin.getTeamManager().setTeamChat(player.getUniqueId(), false);
         plugin.getTeamManager().clearSearchState(player.getUniqueId());
     }
@@ -172,8 +190,8 @@ public class PlayerJoinQuitListener implements Listener {
         return plugin.getConfigManager().getMessageOrDefault(
                 record.getType() == PunishmentType.BLACKLIST ? "PUNISHMENTS.BLACKLIST" : "PUNISHMENTS.BAN",
                 record.getType() == PunishmentType.BLACKLIST
-                        ? "&4&lYOU HAVE BEEN BLACKLISTED!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Blacklisted by: &f%issuer%\n&8&m----------------------------\n&4You cannot join the server"
-                        : "&c&lYou have been banned!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Expires: &f%nicest_expiration%\n&7Banned by: &f%issuer%\n&8&m----------------------------\n&7Appeal at: &fdiscord.example.space",
+                        ? "&4&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&4ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴊᴏɪɴ ᴛʜᴇ ѕᴇʀᴠᴇʀ"
+                        : "&c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%\n&7ʙᴀɴɴᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&7ᴀᴘᴘᴇᴀʟ ᴀᴛ: &fdiscord.example.space",
                 "%reason%", record.getReason(),
                 "%nicest_expiration%", formatExpires(record),
                 "%issuer%", formatIssuer(record),
@@ -194,6 +212,6 @@ public class PlayerJoinQuitListener implements Listener {
 
     private String formatIssuer(PunishmentRecord record) {
         String issuer = record.getIssuerNameSnapshot();
-        return issuer == null || issuer.isBlank() ? "Unknown" : issuer;
+        return issuer == null || issuer.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : issuer;
     }
 }

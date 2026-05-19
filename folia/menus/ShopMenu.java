@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
@@ -41,8 +40,8 @@ public class ShopMenu extends BaseMenu {
         super(
                 plugin,
                 menuSection == null
-                        ? plugin.getConfigManager().getShop().getString("CATEGORIES.MENU-TITLE", "&8Shop")
-                        : plugin.getConfigManager().getShop().getString(menuSection + ".TITLE", "&8Shop"),
+                        ? plugin.getConfigManager().getShop().getString("CATEGORIES.MENU-TITLE", "&8ѕʜᴏᴘ")
+                        : plugin.getConfigManager().getShop().getString(menuSection + ".TITLE", "&8ѕʜᴏᴘ"),
                 normalizeSize(menuSection == null
                         ? plugin.getConfigManager().getShop().getInt("CATEGORIES.MENU-SIZE", 27)
                         : plugin.getConfigManager().getShop().getInt(menuSection + ".SIZE", 27))
@@ -127,8 +126,8 @@ public class ShopMenu extends BaseMenu {
         for (ShopManager.ShopCategory category : categories) {
             set(category.slot(), ItemUtils.createItem(
                     category.material(),
-                    plugin.getCurrencyManager().applyStaticPlaceholders(category.displayName()),
-                    plugin.getCurrencyManager().applyStaticPlaceholders(category.lore())
+                    category.displayName(),
+                    category.lore()
             ));
             slotCategories.put(category.slot(), category);
         }
@@ -136,8 +135,8 @@ public class ShopMenu extends BaseMenu {
         if (categories.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo shop categories",
-                    List.of("&7Belum ada kategori shop yang aktif.")
+                    "&cɴᴏ ѕʜᴏᴘ ᴄᴀᴛᴇɢᴏʀɪᴇѕ",
+                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ᴋᴀᴛᴇɢᴏʀɪ ѕʜᴏᴘ ʏᴀɴɢ ᴀᴋᴛɪꜰ.")
             ));
         }
     }
@@ -149,8 +148,8 @@ public class ShopMenu extends BaseMenu {
         if (items.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo items in this category",
-                    List.of("&7Belum ada item shop yang aktif di kategori ini.")
+                    "&cɴᴏ ɪᴛᴇᴍѕ ɪɴ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ",
+                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ɪᴛᴇᴍ ѕʜᴏᴘ ʏᴀɴɢ ᴀᴋᴛɪꜰ ᴅɪ ᴋᴀᴛᴇɢᴏʀɪ ɪɴɪ.")
             ));
             return;
         }
@@ -189,59 +188,16 @@ public class ShopMenu extends BaseMenu {
     }
 
     private ItemStack createShopItem(ShopManager.ShopItem item) {
-        CurrencyManager.CurrencyType currencyType = item.currency() == ShopManager.Currency.SHARD
-                ? CurrencyManager.CurrencyType.SHARDS
-                : CurrencyManager.CurrencyType.MONEY;
-
-        List<String> lore = new ArrayList<>(replaceShopItemPlaceholders(item.lore(), item, currencyType));
+        List<String> lore = new ArrayList<>(item.lore());
         if (!lore.isEmpty()) {
             lore.add("");
         }
 
-        String currencyLabel = plugin.getCurrencyManager().color(currencyType)
-                + plugin.getCurrencyManager().plural(currencyType);
-        lore.add("&7Currency: " + currencyLabel);
-        lore.add("&eClick to choose quantity");
+        String currencyLabel = item.currency() == ShopManager.Currency.SHARD ? "&5ѕʜᴀʀᴅѕ" : "&aᴍᴏɴᴇʏ";
+        lore.add("&7ᴄᴜʀʀᴇɴᴄʏ: " + currencyLabel);
+        lore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴏᴏѕᴇ ǫᴜᴀɴᴛɪᴛʏ");
 
-        return ItemUtils.createItem(
-                item.material(),
-                plugin.getCurrencyManager().applyStaticPlaceholders(replaceShopItemPlaceholders(item.displayName(), item, currencyType)),
-                plugin.getCurrencyManager().applyStaticPlaceholders(lore)
-        );
-    }
-
-    private List<String> replaceShopItemPlaceholders(
-            List<String> lines,
-            ShopManager.ShopItem item,
-            CurrencyManager.CurrencyType currencyType
-    ) {
-        List<String> replaced = new ArrayList<>();
-        for (String line : lines) {
-            replaced.add(replaceShopItemPlaceholders(line, item, currencyType));
-        }
-        return replaced;
-    }
-
-    private String replaceShopItemPlaceholders(
-            String line,
-            ShopManager.ShopItem item,
-            CurrencyManager.CurrencyType currencyType
-    ) {
-        double price = currencyType == CurrencyManager.CurrencyType.SHARDS
-                ? Math.round(item.pricePerUnit())
-                : item.pricePerUnit();
-        String formatted = plugin.getCurrencyManager().format(currencyType, price);
-        String amount = plugin.getCurrencyManager().formatAmount(currencyType, price);
-        return line
-                .replace("${price}", formatted)
-                .replace("{price}", amount)
-                .replace("%price%", amount)
-                .replace("{price_formatted}", formatted)
-                .replace("{price_short_formatted}", plugin.getCurrencyManager().format(currencyType, price, true))
-                .replace("{currency}", formatted)
-                .replace("{currency_name}", plugin.getCurrencyManager().name(currencyType, price))
-                .replace("{currency_name_singular}", plugin.getCurrencyManager().singular(currencyType))
-                .replace("{currency_name_plural}", plugin.getCurrencyManager().plural(currencyType));
+        return ItemUtils.createItem(item.material(), item.displayName(), lore);
     }
 
     private void buildBackButton() {
@@ -253,7 +209,7 @@ public class ShopMenu extends BaseMenu {
 
         set(getBackSlot(), ItemUtils.createItem(
                 ItemUtils.parseMaterial(backButton.getString("MATERIAL", "RED_STAINED_GLASS_PANE")),
-                backButton.getString("DISPLAY-NAME", "&cBack"),
+                backButton.getString("DISPLAY-NAME", "&cʙᴀᴄᴋ"),
                 backButton.getStringList("LORE")
         ));
     }
@@ -265,31 +221,31 @@ public class ShopMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(getFirstPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aFirst Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aꜰɪʀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.FIRST-PAGE-LORE")
             ));
             set(getPreviousPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aBack"),
+                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aʙᴀᴄᴋ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(getPageInfoSlot(), ItemUtils.createItem(
                 Material.BOOK,
-                "&ePage " + (page + 1) + "&7/&e" + totalPages,
-                List.of("&fItems: &7" + totalItems)
+                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
+                List.of("&fɪᴛᴇᴍѕ: &7" + totalItems)
         ));
 
         if (hasNextPage) {
             set(getNextPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
+                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
             set(getLastPageSlot(), ItemUtils.createItem(
                     arrowMaterial,
-                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aLast Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aʟᴀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.LAST-PAGE-LORE")
             ));
         }

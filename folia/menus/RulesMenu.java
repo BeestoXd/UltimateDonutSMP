@@ -54,7 +54,7 @@ public class RulesMenu extends BaseMenu {
         }
 
         if (renderedButtons == 0) {
-            setFallbackItem("&cNo usable rules buttons", "&7Fix RULES-MENU.BUTTONS to use the GUI.");
+            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ʀᴜʟᴇѕ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx RULES-MENU.BUTTONS ᴛᴏ ᴜѕᴇ ᴛʜᴇ ɢᴜɪ.");
         }
     }
 
@@ -133,7 +133,7 @@ public class RulesMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Rules");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ʀᴜʟᴇѕ");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {
@@ -153,19 +153,19 @@ public class RulesMenu extends BaseMenu {
 
         if (normalizedKey.contains("CHAT") || strippedName.contains("chat")) {
             return List.of(
-                    "&7Keep chat respectful and report serious issues in the Discord.",
-                    "&7Breaking chat rules can lead to punishments."
+                    "&7ᴋᴇᴇᴘ ᴄʜᴀᴛ ʀᴇѕᴘᴇᴄᴛꜰᴜʟ ᴀɴᴅ ʀᴇᴘᴏʀᴛ ѕᴇʀɪᴏᴜѕ ɪѕѕᴜᴇѕ ɪɴ ᴛʜᴇ ᴅɪѕᴄᴏʀᴅ.",
+                    "&7ʙʀᴇᴀᴋɪɴɢ ᴄʜᴀᴛ ʀᴜʟᴇѕ ᴄᴀɴ ʟᴇᴀᴅ ᴛᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
             );
         }
 
         if (normalizedKey.contains("SERVER") || strippedName.contains("server")) {
             return List.of(
-                    "&7Read the full server rules carefully before playing.",
-                    "&7Violating server rules may result in punishments."
+                    "&7ʀᴇᴀᴅ ᴛʜᴇ ꜰᴜʟʟ ѕᴇʀᴠᴇʀ ʀᴜʟᴇѕ ᴄᴀʀᴇꜰᴜʟʟʏ ʙᴇꜰᴏʀᴇ ᴘʟᴀʏɪɴɢ.",
+                    "&7ᴠɪᴏʟᴀᴛɪɴɢ ѕᴇʀᴠᴇʀ ʀᴜʟᴇѕ ᴍᴀʏ ʀᴇѕᴜʟᴛ ɪɴ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
             );
         }
 
-        return List.of("&7Make sure you understand these rules before continuing.");
+        return List.of("&7ᴍᴀᴋᴇ ѕᴜʀᴇ ʏᴏᴜ ᴜɴᴅᴇʀѕᴛᴀɴᴅ ᴛʜᴇѕᴇ ʀᴜʟᴇѕ ʙᴇꜰᴏʀᴇ ᴄᴏɴᴛɪɴᴜɪɴɢ.");
     }
 
     private static String prettifyKey(String key) {
@@ -183,7 +183,7 @@ public class RulesMenu extends BaseMenu {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "Rules" : builder.toString();
+        return builder.isEmpty() ? "ʀᴜʟᴇѕ" : ColorUtils.toSmallCaps(builder.toString());
     }
 
     private record RulesButton(

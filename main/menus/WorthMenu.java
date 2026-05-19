@@ -19,19 +19,19 @@ public class WorthMenu extends BaseMenu {
 
     private enum SortMode {
         CATEGORY(
-                "Category Order",
+                "ᴄᴀᴛᴇɢᴏʀʏ ᴏʀᴅᴇʀ",
                 Material.BOOK,
                 null
         ),
         PRICE_HIGH_TO_LOW(
-                "Price High to Low",
+                "ᴘʀɪᴄᴇ ʜɪɢʜ ᴛᴏ ʟᴏᴡ",
                 Material.GOLD_INGOT,
                 Comparator.comparingDouble(WorthManager.WorthBrowserEntry::unitWorth)
                         .reversed()
                         .thenComparing(entry -> entry.material().name())
         ),
         PRICE_LOW_TO_HIGH(
-                "Price Low to High",
+                "ᴘʀɪᴄᴇ ʟᴏᴡ ᴛᴏ ʜɪɢʜ",
                 Material.IRON_INGOT,
                 Comparator.comparingDouble(WorthManager.WorthBrowserEntry::unitWorth)
                         .thenComparing(entry -> entry.material().name())
@@ -132,11 +132,11 @@ public class WorthMenu extends BaseMenu {
                     entry.material(),
                     "&b" + plugin.getWorthManager().prettifyMaterial(entry.material()),
                     List.of(
-                            "&7Category: &f" + formatCategory(entry.categoryKey()),
-                            "&7Worth: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth()),
-                            "&7Stack x64: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth() * 64),
+                            "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + formatCategory(entry.categoryKey()),
+                            "&7ᴡᴏʀᴛʜ: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth()),
+                            "&7ѕᴛᴀᴄᴋ x64: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth() * 64),
                             "",
-                            "&eClick to send worth info in chat"
+                            "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇɴᴅ ᴡᴏʀᴛʜ ɪɴꜰᴏ ɪɴ ᴄʜᴀᴛ"
                     )
             );
             set(inventorySlot, displayItem);
@@ -145,28 +145,28 @@ public class WorthMenu extends BaseMenu {
         int lastRowStart = inventory.getSize() - 9;
         set(lastRowStart, ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRowStart + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page", List.of("&7Go to page &f" + (page - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRowStart + 3, ItemUtils.createItem(
                 Material.BOOK,
-                "&bWorth Browser",
+                "&bᴡᴏʀᴛʜ ʙʀᴏᴡѕᴇʀ",
                 List.of(
-                        "&7Page: &f" + page + "&7/&f" + getTotalPages(entries.size()),
-                        "&7Entries: &f" + entries.size()
+                        "&7ᴘᴀɢᴇ: &f" + page + "&7/&f" + getTotalPages(entries.size()),
+                        "&7ᴇɴᴛʀɪᴇѕ: &f" + entries.size()
                 )
         ));
         set(lastRowStart + 4, ItemUtils.createItem(
                 sortMode.icon(),
-                "&eSort: &f" + sortMode.displayName(),
+                "&eѕᴏʀᴛ: &f" + sortMode.displayName(),
                 List.of(
-                        "&7Left click: &fNext sort",
-                        "&7Right click: &fPrevious sort"
+                        "&7ʟᴇꜰᴛ ᴄʟɪᴄᴋ: &fɴᴇxᴛ ѕᴏʀᴛ",
+                        "&7ʀɪɢʜᴛ ᴄʟɪᴄᴋ: &fᴘʀᴇᴠɪᴏᴜѕ ѕᴏʀᴛ"
                 )
         ));
         set(lastRowStart + 7, hasNextPage(entries.size())
-                ? ItemUtils.createItem(Material.ARROW, "&aNext Page", List.of("&7Go to page &f" + (page + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRowStart + 8, ItemUtils.createItem(Material.BARRIER, "&cClose", List.of("&7Close this menu")));
+        set(lastRowStart + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ")));
     }
 
     @Override
@@ -207,7 +207,7 @@ public class WorthMenu extends BaseMenu {
         WorthManager.WorthBrowserEntry entry = entries.get(entryIndex);
         player.sendMessage(ColorUtils.toComponent(
                 "&7" + plugin.getWorthManager().prettifyMaterial(entry.material())
-                        + " &7is worth " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth())
+                        + " &7ɪѕ ᴡᴏʀᴛʜ " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth())
                         + " &8(" + formatCategory(entry.categoryKey()) + "&8)"
         ));
     }

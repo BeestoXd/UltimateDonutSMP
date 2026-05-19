@@ -34,7 +34,7 @@ public class PlayerRespawnListener implements Listener {
                 && plugin.getFfaManager() != null
                 && plugin.getFfaManager().consumeRespawn(player, event);
 
-        // Teleport to spawn if set
+        // teleport to spawn if set
         if (!duelRespawnHandled && !ffaRespawnHandled && plugin.getSpawnManager().hasSpawn()) {
             event.setRespawnLocation(plugin.getSpawnManager().getSpawnLocation());
         }

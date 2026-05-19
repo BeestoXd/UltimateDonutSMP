@@ -113,7 +113,7 @@ public class NetworkStatusManager {
     public ServerStatusSnapshot getSnapshot(String serverId) {
         String normalizedId = normalizeId(serverId);
         if (normalizedId.isEmpty()) {
-            return ServerStatusSnapshot.offline("unknown", "Unknown");
+            return ServerStatusSnapshot.offline("unknown", "ᴜɴᴋɴᴏᴡɴ");
         }
 
         ServerStatusSnapshot snapshot = snapshots.get(normalizedId);
@@ -399,7 +399,7 @@ public class NetworkStatusManager {
             endpointServer.setExecutor(endpointExecutor);
             endpointServer.start();
         } catch (IOException exception) {
-            plugin.getLogger().warning("Failed to start network status endpoint on "
+            plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴛᴀʀᴛ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀᴛᴜѕ ᴇɴᴅᴘᴏɪɴᴛ ᴏɴ "
                     + host + ":" + port + path + " (" + exception.getMessage() + ").");
             stopEndpointServer();
         }
@@ -578,7 +578,7 @@ public class NetworkStatusManager {
     private String prettifyId(String value) {
         String normalized = normalizeId(value);
         if (normalized.isEmpty()) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         String[] parts = normalized.split("[-_\\s]+");
@@ -595,7 +595,7 @@ public class NetworkStatusManager {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "Unknown" : builder.toString();
+        return builder.isEmpty() ? "ᴜɴᴋɴᴏᴡɴ" : builder.toString();
     }
 
     private int parseInt(String value, int fallback) {

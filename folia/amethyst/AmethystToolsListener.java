@@ -1,13 +1,13 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.PlayerDataManager;
 import com.bx.ultimateDonutSmp.managers.ShardManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -89,7 +89,7 @@ public class AmethystToolsListener implements Listener {
         ConfigurationSection cfg = manager.getToolSection(AmethystToolType.DRILL);
         int radius = cfg != null ? cfg.getInt("RADIUS", 1) : 1;
 
-        Set<Material> disabled = manager.getDisabledBlocks();
+        Set<Material> disabled = manager.getdisabledBlocks();
         if (disabled.contains(origin.getType())) {
             return;
         }
@@ -286,9 +286,7 @@ public class AmethystToolsListener implements Listener {
         manager.spawnAmethystParticles(clicked.getLocation().add(0.5, 1, 0.5));
         SoundUtils.play(player, manager.getSound("USE"));
         player.sendMessage(ColorUtils.toComponent(
-                manager.getMessage("SELL-SUCCESS",
-                        "{amount}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, total),
-                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(total))));
+                manager.getMessage("SELL-SUCCESS", "{amount}", NumberUtils.formatNice(total))));
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {

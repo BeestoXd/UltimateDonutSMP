@@ -30,7 +30,7 @@ public class SellProgressMenu extends BaseMenu {
     public SellProgressMenu(UltimateDonutSmp plugin, SellCategory category) {
         super(plugin, plugin.getConfigManager().getMenus().getString(
                 "PROGRESS-MENU.TITLE." + category.getConfigKey(),
-                "&8sell progress"
+                "&8ѕᴇʟʟ ᴘʀᴏɢʀᴇѕѕ"
         ), SIZE);
         this.category = category;
     }
@@ -76,7 +76,7 @@ public class SellProgressMenu extends BaseMenu {
             long targetGoal = levels.get(index);
 
             if (index < info.completedLevels()) {
-                String title = menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.TITLE", "&aCompleted");
+                String title = menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.TITLE", "&aᴄᴏᴍᴘʟᴇᴛᴇᴅ");
                 Material material = ItemUtils.parseMaterial(
                         menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.MATERIAL", "LIME_STAINED_GLASS_PANE")
                 );
@@ -93,7 +93,7 @@ public class SellProgressMenu extends BaseMenu {
             }
 
             if (index == info.completedLevels() && !info.maxed()) {
-                String title = menus.getString("PROGRESS-MENU.WORKING-BUTTON.TITLE", "&eWorking");
+                String title = menus.getString("PROGRESS-MENU.WORKING-BUTTON.TITLE", "&eᴡᴏʀᴋɪɴɢ");
                 Material material = ItemUtils.parseMaterial(
                         menus.getString("PROGRESS-MENU.WORKING-BUTTON.MATERIAL", "YELLOW_STAINED_GLASS_PANE")
                 );
@@ -114,7 +114,7 @@ public class SellProgressMenu extends BaseMenu {
         Material material = ItemUtils.parseMaterial(
                 menus.getString("GLOBAL.PAGE-MENU.MATERIAL", "ARROW")
         );
-        String title = menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cBack");
+        String title = menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cʙᴀᴄᴋ");
         List<String> lore = menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE");
         set(BACK_BUTTON_SLOT, ItemUtils.createItem(material, title, lore));
     }

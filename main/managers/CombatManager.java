@@ -43,7 +43,7 @@ public class CombatManager {
             }
             long remaining = getRemainingSeconds(uuid);
             String format = plugin.getConfigManager().getConfig()
-                    .getString("COMBAT-MANAGER.ACTION-BAR", "&fCombat: &b${time}s")
+                    .getString("COMBAT-MANAGER.ACTION-BAR", "&fᴄᴏᴍʙᴀᴛ: &b${time}ѕ")
                     .replace("${time}", String.valueOf(remaining));
             PlayerSettingUtils.sendActionBar(plugin, p, ColorUtils.toComponent(format));
         }, 0L, 20L);

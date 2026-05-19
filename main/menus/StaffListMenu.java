@@ -25,7 +25,7 @@ public class StaffListMenu extends BaseMenu {
     public StaffListMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getStaffModeManager().getMenuTitle(MENU_KEY, "&8Online Staff"),
+                plugin.getStaffModeManager().getMenuTitle(MENU_KEY, "&8ᴏɴʟɪɴᴇ ѕᴛᴀꜰꜰ"),
                 plugin.getStaffModeManager().getMenuSize(MENU_KEY)
         );
     }
@@ -59,7 +59,7 @@ public class StaffListMenu extends BaseMenu {
 
         Player target = plugin.getServer().getPlayer(targetUuid);
         if (target == null || !target.isOnline()) {
-            player.sendMessage(ColorUtils.toComponent("&cThat staff member is no longer online."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ."));
             render(player);
             return;
         }
@@ -67,14 +67,14 @@ public class StaffListMenu extends BaseMenu {
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
         player.closeInventory();
         if (player.getUniqueId().equals(target.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&7You are already viewing yourself."));
+            player.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴠɪᴇᴡɪɴɢ ʏᴏᴜʀѕᴇʟꜰ."));
             return;
         }
 
         plugin.getSpigotScheduler().teleport(player, target.getLocation()).thenAccept(success ->
                 plugin.getSpigotScheduler().runEntity(player, () -> {
                     if (Boolean.TRUE.equals(success) && player.isOnline()) {
-                        player.sendMessage(ColorUtils.toComponent("&eTeleported to staff member &f" + target.getName() + "&e."));
+                        player.sendMessage(ColorUtils.toComponent("&eᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀ &f" + target.getName() + "&e."));
                     }
                 }));
     }
@@ -119,14 +119,14 @@ public class StaffListMenu extends BaseMenu {
 
     private ItemStack createStaffItem(Player viewer, Player staff) {
         List<String> lore = List.of(
-                "&7Status: &f" + plugin.getStaffModeManager().getPlayerStatusSummary(staff),
-                "&7World: &f" + staff.getWorld().getName(),
-                "&7Server: &f" + plugin.getStaffModeManager().getLocalServerDisplayName(),
-                "&7Vanished: " + (plugin.getStaffModeManager().isVanished(staff.getUniqueId()) ? "&aYes" : "&cNo"),
-                "&7Better View: " + (plugin.getStaffModeManager().isBetterViewEnabled(staff.getUniqueId()) ? "&aOn" : "&cOff"),
+                "&7ѕᴛᴀᴛᴜѕ: &f" + plugin.getStaffModeManager().getPlayerStatusSummary(staff),
+                "&7ᴡᴏʀʟᴅ: &f" + staff.getWorld().getName(),
+                "&7ѕᴇʀᴠᴇʀ: &f" + plugin.getStaffModeManager().getLocalServerDisplayName(),
+                "&7ᴠᴀɴɪѕʜᴇᴅ: " + (plugin.getStaffModeManager().isVanished(staff.getUniqueId()) ? "&aʏᴇѕ" : "&cɴᴏ"),
+                "&7ʙᴇᴛᴛᴇʀ ᴠɪᴇᴡ: " + (plugin.getStaffModeManager().isBetterViewEnabled(staff.getUniqueId()) ? "&aᴏɴ" : "&cᴏꜰꜰ"),
                 viewer.getUniqueId().equals(staff.getUniqueId())
-                        ? "&7This is you."
-                        : "&eClick to teleport"
+                        ? "&7ᴛʜɪѕ ɪѕ ʏᴏᴜ."
+                        : "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ"
         );
         return ItemUtils.createPlayerHead(staff, "&e" + staff.getName(), lore);
     }

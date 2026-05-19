@@ -118,19 +118,19 @@ public class HoverStatsManager {
                 "%prefix%%player%",
                 "&7&m----------",
                 "{money_color}{money_name_plural}: &f%money_formatted%",
-                "&cKills: &f%kills%",
-                "&ePlaytime: &f%playtime%",
-                "&6Deaths: &f%deaths%",
+                "&cᴋɪʟʟѕ: &f%kills%",
+                "&eᴘʟᴀʏᴛɪᴍᴇ: &f%playtime%",
+                "&6ᴅᴇᴀᴛʜѕ: &f%deaths%",
                 "{shards_color}{shards_name_plural}: &f%shards_formatted%",
                 "&7&m----------",
-                "&7Click to view stats"
+                "&7ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕᴛᴀᴛѕ"
         );
     }
 
     private Map<String, String> buildPlaceholders(Player speaker, String prefix, PlayerData data) {
         Map<String, String> placeholders = new LinkedHashMap<>();
         Team team = plugin.getTeamManager().getTeam(speaker.getUniqueId());
-        String teamName = team != null ? team.getName().toUpperCase() : "None";
+        String teamName = team != null ? team.getName().toUpperCase() : "ɴᴏɴᴇ";
         String displayName = resolveDisplayName(speaker);
 
         placeholders.put("%player%", displayName);

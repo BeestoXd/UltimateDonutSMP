@@ -46,28 +46,28 @@ public class SpawnerPanelMenu extends BaseMenu {
                     icon,
                     "&b" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey()) + " &fx" + NumberUtils.format(instance.getStackAmount()),
                     List.of(
-                            "&7Owner: &f" + instance.getOwnerNameSnapshot(),
-                            "&7World: &f" + worldLabel,
-                            "&7Coords: &f" + instance.getX() + ", " + instance.getY() + ", " + instance.getZ(),
-                            "&7Stored loot: &f" + NumberUtils.format(instance.getTotalStoredItems()),
+                            "&7ᴏᴡɴᴇʀ: &f" + instance.getOwnerNameSnapshot(),
+                            "&7ᴡᴏʀʟᴅ: &f" + worldLabel,
+                            "&7ᴄᴏᴏʀᴅѕ: &f" + instance.getX() + ", " + instance.getY() + ", " + instance.getZ(),
+                            "&7ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ: &f" + NumberUtils.format(instance.getTotalStoredItems()),
                             "",
-                            "&eClick to teleport to this spawner"
+                            "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ"
                     )
             ));
         }
 
         int lastRow = inventory.getSize() - 9;
         set(lastRow, ItemUtils.createItem(Material.COMPASS, "&b" + worldLabel, List.of(
-                "&7Page: &f" + safePage + "&7/&f" + totalPages,
-                "&7Spawners in world: &f" + spawners.size()
+                "&7ᴘᴀɢᴇ: &f" + safePage + "&7/&f" + totalPages,
+                "&7ѕᴘᴀᴡɴᴇʀѕ ɪɴ ᴡᴏʀʟᴅ: &f" + spawners.size()
         )));
         set(lastRow + 1, safePage > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page", List.of("&7Go to page &f" + (safePage - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 7, safePage < totalPages
-                ? ItemUtils.createItem(Material.ARROW, "&aNext Page", List.of("&7Go to page &f" + (safePage + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.OAK_DOOR, "&cBack", List.of("&7Return to world list.")));
+        set(lastRow + 8, ItemUtils.createItem(Material.OAK_DOOR, "&cʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴡᴏʀʟᴅ ʟɪѕᴛ.")));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class SpawnerPanelMenu extends BaseMenu {
         SpawnerInstance instance = spawners.get(entryIndex);
         Location destination = plugin.getSpawnerManager().getSpawnerCenter(instance).add(0, 1, 0);
         if (destination.getWorld() == null) {
-            player.sendMessage(ColorUtils.toComponent("&cThat spawner's world is not currently loaded."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕᴘᴀᴡɴᴇʀ'ѕ ᴡᴏʀʟᴅ ɪѕ ɴᴏᴛ ᴄᴜʀʀᴇɴᴛʟʏ ʟᴏᴀᴅᴇᴅ."));
             return;
         }
 
@@ -111,8 +111,8 @@ public class SpawnerPanelMenu extends BaseMenu {
                     if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
                         return;
                     }
-                    player.sendMessage(ColorUtils.toComponent("&aTeleported to spawner at &f"
-                            + instance.getX() + ", " + instance.getY() + ", " + instance.getZ() + "&a in &f" + worldLabel + "&a."));
+                    player.sendMessage(ColorUtils.toComponent("&aᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ ѕᴘᴀᴡɴᴇʀ ᴀᴛ &f"
+                            + instance.getX() + ", " + instance.getY() + ", " + instance.getZ() + "&a ɪɴ &f" + worldLabel + "&a."));
                     plugin.getAntiEspManager().updatePlayer(player);
                 }));
     }

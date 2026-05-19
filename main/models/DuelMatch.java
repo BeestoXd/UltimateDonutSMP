@@ -154,7 +154,7 @@ public class DuelMatch {
         if (playerTwoUuid.equals(uuid)) {
             return playerOneName;
         }
-        return "Unknown";
+        return "ᴜɴᴋɴᴏᴡɴ";
     }
 
     public void setReturnLocation(UUID uuid, Location location) {

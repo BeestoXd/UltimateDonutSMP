@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PrivateMessageManager {
 
-    private static final String BYPASS_DISABLED_PERMISSION = "ultimatedonutsmp.message.bypass-disabled";
+    private static final String BYPASS_DISABLED_PERMISSION = "ultimatedonutsmp.message.bypass-ᴅɪѕᴀʙʟᴇᴅ";
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, UUID> replyTargets = new ConcurrentHashMap<>();
@@ -27,13 +27,13 @@ public class PrivateMessageManager {
             return false;
         }
 
-        String senderName = sender instanceof Player player ? player.getName() : "Console";
+        String senderName = sender instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ";
         if (sender instanceof Player player) {
             if (player.getUniqueId().equals(target.getUniqueId())) {
                 send(sender, configuredMessage(
                         "MESSAGES.CANNOT_MESSAGE_SELF",
                         "PRIVATE-MESSAGE.CANNOT-MESSAGE-SELF",
-                        "&cYou cannot message yourself!"
+                        "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!"
                 ));
                 return false;
             }
@@ -43,7 +43,7 @@ public class PrivateMessageManager {
                 send(sender, applyPlaceholders(configuredMessage(
                         "MESSAGES.PLAYER_BLOCKED",
                         "IGNORE.MESSAGE-BLOCKED-SENDER",
-                        "&c%player% has blocked you."
+                        "&c%player% hᴀѕ ʙʟᴏᴄᴋᴇᴅ ʏᴏᴜ."
                 ), target.getName(), message));
                 return false;
             }
@@ -53,7 +53,7 @@ public class PrivateMessageManager {
             send(sender, applyPlaceholders(configuredMessage(
                     "MESSAGES.PMS_DISABLED",
                     null,
-                    "&c%player% has private messages disabled."
+                    "&c%player% hᴀѕ ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴅɪѕᴀʙʟᴇᴅ."
             ), target.getName(), message));
             return false;
         }
@@ -61,12 +61,12 @@ public class PrivateMessageManager {
         String sentFormat = configuredMessage(
                 "MESSAGES.SENDER_FORMAT",
                 "PRIVATE-MESSAGE.SENT",
-                "&d(To &a%player%&d) %message%"
+                "&d(ᴛᴏ &a%player%&d) %message%"
         );
         String receivedFormat = configuredMessage(
                 "MESSAGES.RECEIVER_FORMAT",
                 "PRIVATE-MESSAGE.RECEIVED",
-                "&d(From &a%player%&d) %message%"
+                "&d(ꜰʀᴏᴍ &a%player%&d) %message%"
         );
 
         send(sender, applyPlaceholders(sentFormat, target.getName(), message));
@@ -142,7 +142,7 @@ public class PrivateMessageManager {
         sender.sendMessage(ColorUtils.toComponent(configuredMessage(
                 "MESSAGES.NO_CONVERSATION",
                 "PRIVATE-MESSAGE.NO-REPLY-TARGET",
-                "&cYou are currently not in conversation with anyone or the player is offline."
+                "&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ."
         ), sender));
     }
 

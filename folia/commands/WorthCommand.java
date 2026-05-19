@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.menus.WorthMenu;
 import com.bx.ultimateDonutSmp.models.WorthResult;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -36,7 +35,7 @@ public class WorthCommand implements CommandExecutor {
                     sender.sendMessage(ColorUtils.colorize(
                             plugin.getConfigManager().getMessages().getString(
                                     "WORTH.NO-ADMIN-PERMISSION",
-                                    "&cYou do not have permission to reload worth settings."
+                                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴡᴏʀᴛʜ ѕᴇᴛᴛɪɴɢѕ."
                             )));
                     return true;
                 }
@@ -46,7 +45,7 @@ public class WorthCommand implements CommandExecutor {
                 sender.sendMessage(ColorUtils.colorize(
                         plugin.getConfigManager().getMessages().getString(
                                 "WORTH.RELOADED",
-                                "&aWorth config reloaded."
+                                "&aᴡᴏʀᴛʜ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
                         )));
                 return true;
             }
@@ -66,13 +65,13 @@ public class WorthCommand implements CommandExecutor {
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType().isAir()) {
-            player.sendMessage(ColorUtils.toComponent("&cHold an item to check its worth."));
+            player.sendMessage(ColorUtils.toComponent("&cʜᴏʟᴅ ᴀɴ ɪᴛᴇᴍ ᴛᴏ ᴄʜᴇᴄᴋ ɪᴛѕ ᴡᴏʀᴛʜ."));
             return true;
         }
 
@@ -86,26 +85,21 @@ public class WorthCommand implements CommandExecutor {
         String name = plugin.getWorthManager().prettifyMaterial(item.getType()).toLowerCase();
         String msg = item.getAmount() == 1
                 ? plugin.getConfigManager().getMessage("WORTH.DEFAULT",
-                    "{item}", name,
-                    "{price}", NumberUtils.format(worthResult.totalWorth()),
-                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.totalWorth()))
+                    "{item}", name, "{price}", NumberUtils.format(worthResult.totalWorth()))
                 : plugin.getConfigManager().getMessage("WORTH.HAND-ITEM",
                     "{amount}", String.valueOf(item.getAmount()),
                     "{item}", name,
-                    "{total}", NumberUtils.format(worthResult.totalWorth()),
-                    "{total_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.totalWorth()));
+                    "{total}", NumberUtils.format(worthResult.totalWorth()));
         player.sendMessage(ColorUtils.toComponent(msg));
 
         if (worthResult.container() && worthResult.hasContainerContentsWorth()) {
             String breakdown = plugin.getConfigManager().getMessages().getString(
                     "WORTH.CONTAINER-BREAKDOWN",
-                    "&7Base: &f${base} &8| &7Contents: &f${contents}"
+                    "&7ʙᴀѕᴇ: &f${base} &8| &7ᴄᴏɴᴛᴇɴᴛѕ: &f${contents}"
             );
             breakdown = breakdown
-                    .replace("{base}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.baseWorth()))
-                    .replace("{base_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.baseWorth()))
-                    .replace("{contents}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.containerContentsWorth()))
-                    .replace("{contents_formatted}", plugin.getCurrencyManager().formatMoney(worthResult.containerContentsWorth()));
+                    .replace("{base}", NumberUtils.formatNice(worthResult.baseWorth()))
+                    .replace("{contents}", NumberUtils.formatNice(worthResult.containerContentsWorth()));
             player.sendMessage(ColorUtils.toComponent(breakdown));
         }
         return true;
@@ -113,7 +107,7 @@ public class WorthCommand implements CommandExecutor {
 
     private void openBrowser(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return;
         }
 

@@ -35,19 +35,18 @@ public class RTPZoneManager {
     }
 
     public void reloadSettings() {
-        enabled = plugin.getFeatureManager().areEnabled(FeatureManager.Feature.RTP, FeatureManager.Feature.RTP_ZONE)
-                && plugin.getConfigManager().getConfig().getBoolean("RTP-ZONE.ENABLED", true);
+        enabled = plugin.getConfigManager().getConfig().getBoolean("RTP-ZONE.ENABLED", true);
         cuboidName = plugin.getConfigManager().getConfig().getString("RTP-ZONE.CUBOID", "");
         countdownSeconds = Math.max(1, plugin.getConfigManager().getConfig().getInt("RTP-ZONE.EVERY", 30));
-        titleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.TITLE", "&c&lRTP Zone");
-        subtitleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.SUB-TITLE", "&fTeleporting in %countdown%");
+        titleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.TITLE", "&c&lʀᴛᴘ ᴢᴏɴᴇ");
+        subtitleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.SUB-TITLE", "&fᴛᴇʟᴇᴘᴏʀᴛɪɴɢ ɪɴ %countdown%");
         cancelledMessage = plugin.getConfigManager().getConfig().getString(
                 "RTP-ZONE.CANCELLED-MESSAGE",
-                "&cRTP cancelled because you left the zone."
+                "&cʀᴛᴘ ᴄᴀɴᴄᴇʟʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ʏᴏᴜ ʟᴇꜰᴛ ᴛʜᴇ ᴢᴏɴᴇ."
         );
         failedMessage = plugin.getConfigManager().getConfig().getString(
                 "RTP-ZONE.FAILED-MESSAGE",
-                "&cCould not find a safe RTP zone location."
+                "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʀᴛᴘ ᴢᴏɴᴇ ʟᴏᴄᴀᴛɪᴏɴ."
         );
         successMessage = plugin.getConfigManager().getConfig().getString("RTP-ZONE.SUCCESS-MESSAGE", "");
         countdownSound = plugin.getConfigManager().getSound("RTP-ZONE.COUNTDOWN");
@@ -63,11 +62,6 @@ public class RTPZoneManager {
     }
 
     public void tick(Player player) {
-        if (!enabled) {
-            clearState(player);
-            return;
-        }
-
         if (plugin.getDuelManager() != null) {
             UUID uuid = player.getUniqueId();
             if (plugin.getDuelManager().isInDuel(uuid) || plugin.getDuelManager().isTransitioning(uuid)) {
@@ -76,7 +70,7 @@ public class RTPZoneManager {
             }
         }
 
-        if (cuboidName == null || cuboidName.isBlank()) {
+        if (!enabled || cuboidName == null || cuboidName.isBlank()) {
             clearState(player);
             return;
         }

@@ -21,7 +21,7 @@ public class OrdersCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
@@ -30,7 +30,7 @@ public class OrdersCommand implements CommandExecutor {
             if (!player.hasPermission("ultimatedonutsmp.admin.orders")) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.NO_ADMIN_PERMISSION",
-                        "&cYou do not have permission to reload Orders settings."
+                        "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴏʀᴅᴇʀѕ ѕᴇᴛᴛɪɴɢѕ."
                 )));
                 return true;
             }
@@ -39,7 +39,7 @@ public class OrdersCommand implements CommandExecutor {
             plugin.getOrdersManager().reload();
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.RELOADED",
-                    "&aOrders config reloaded."
+                    "&aᴏʀᴅᴇʀѕ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
             )));
             return true;
         }
@@ -47,7 +47,7 @@ public class OrdersCommand implements CommandExecutor {
         if (!plugin.getOrdersManager().isEnabled()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.DISABLED",
-                    "&cOrders is currently disabled."
+                    "&cᴏʀᴅᴇʀѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
             )));
             return true;
         }

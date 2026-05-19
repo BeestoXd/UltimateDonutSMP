@@ -44,27 +44,27 @@ public class OrdersCollectMenu extends BaseMenu {
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bBack to Board", List.of("&7Return to active orders")));
+        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ ᴛᴏ ʙᴏᴀʀᴅ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀѕ")));
         set(lastRow + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page", List.of("&7Go to page &f" + (page - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 2, ItemUtils.createItem(Material.WRITABLE_BOOK, "&bMy Orders", List.of("&7View your orders")));
-        set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eRefresh", List.of("&7Reload your collect queue")));
+        set(lastRow + 2, ItemUtils.createItem(Material.WRITABLE_BOOK, "&bᴍʏ ᴏʀᴅᴇʀѕ", List.of("&7ᴠɪᴇᴡ ʏᴏᴜʀ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴄᴏʟʟᴇᴄᴛ ǫᴜᴇᴜᴇ")));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
-                "&ePage " + page + "&7/&e" + getTotalPages(claims.size(), itemsPerPage),
-                List.of("&7Pending claims: &f" + claims.size())
+                "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(claims.size(), itemsPerPage),
+                List.of("&7ᴘᴇɴᴅɪɴɢ ᴄʟᴀɪᴍѕ: &f" + claims.size())
         ));
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aNext Page", List.of("&7Go to page &f" + (page + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose", List.of("&7Close Orders")));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
 
         if (claims.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNothing to Collect",
-                    List.of("&7Delivered items and refunds will appear here.")
+                    "&cɴᴏᴛʜɪɴɢ ᴛᴏ ᴄᴏʟʟᴇᴄᴛ",
+                    List.of("&7ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍѕ ᴀɴᴅ ʀᴇꜰᴜɴᴅѕ ᴡɪʟʟ ᴀᴘᴘᴇᴀʀ ʜᴇʀᴇ.")
             ));
         }
     }
@@ -120,13 +120,13 @@ public class OrdersCollectMenu extends BaseMenu {
 
         OrdersManager manager = plugin.getOrdersManager();
         if (!manager.beginAction(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cOrders is still processing your previous action."));
+            player.sendMessage(ColorUtils.toComponent("&cᴏʀᴅᴇʀѕ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ᴘʀᴇᴠɪᴏᴜѕ ᴀᴄᴛɪᴏɴ."));
             return;
         }
 
         try {
             if (manager.isOnClickCooldown(player.getUniqueId())) {
-                player.sendMessage(ColorUtils.toComponent("&cSlow down for a moment."));
+                player.sendMessage(ColorUtils.toComponent("&cѕʟᴏᴡ ᴅᴏᴡɴ ꜰᴏʀ ᴀ ᴍᴏᴍᴇɴᴛ."));
                 return;
             }
             manager.updateClickCooldown(player.getUniqueId());
@@ -142,14 +142,13 @@ public class OrdersCollectMenu extends BaseMenu {
             if (claim.refundClaim()) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.CLAIMED_REFUND",
-                        "&aClaimed escrow refund of {amount_formatted}&a.",
-                        "{amount}", NumberUtils.format(claim.moneyAmount()),
-                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount())
+                        "&aᴄʟᴀɪᴍᴇᴅ ᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ ᴏꜰ &a${amount}&a.",
+                        "{amount}", NumberUtils.format(claim.moneyAmount())
                 )));
             } else {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.CLAIMED_ITEM",
-                        "&aClaimed delivered item: &f{item}&a.",
+                        "&aᴄʟᴀɪᴍᴇᴅ ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍ: &f{item}&a.",
                         "{item}", manager.describeItem(claim.item())
                 )));
             }
@@ -170,13 +169,13 @@ public class OrdersCollectMenu extends BaseMenu {
 
     private String resolveFailureMessage(OrdersManager.ClaimResult result) {
         return switch (result.reason()) {
-            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cOrders is currently disabled.");
-            case CLAIM_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_NOT_FOUND", "&cThat claim no longer exists.");
-            case NOT_OWNER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_YOUR_CLAIM", "&cThat claim does not belong to you.");
-            case ALREADY_CLAIMED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_ALREADY_CLAIMED", "&cThat claim was already collected.");
-            case INVENTORY_FULL -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_INVENTORY_FULL", "&cYou need a free inventory slot to claim that item.");
-            case NO_PLAYER_DATA -> "&cYour player data could not be loaded.";
-            case DATABASE_ERROR -> "&cOrders could not complete that claim right now.";
+            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cᴏʀᴅᴇʀѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
+            case CLAIM_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_NOT_FOUND", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.");
+            case NOT_OWNER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_YOUR_CLAIM", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.");
+            case ALREADY_CLAIMED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_ALREADY_CLAIMED", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ.");
+            case INVENTORY_FULL -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_INVENTORY_FULL", "&cʏᴏᴜ ɴᴇᴇᴅ ᴀ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕʟᴏᴛ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ.");
+            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
+            case DATABASE_ERROR -> "&cᴏʀᴅᴇʀѕ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴄʟᴀɪᴍ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 }

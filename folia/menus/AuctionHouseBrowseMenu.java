@@ -48,35 +48,31 @@ public class AuctionHouseBrowseMenu extends BaseMenu {
 
         int lastRow = inventory.getSize() - 9;
         set(lastRow, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page", List.of("&7Go to page &f" + (page - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 1, ItemUtils.createItem(Material.CLOCK, "&eRefresh", List.of("&7Reload active listings")));
+        set(lastRow + 1, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ")));
         set(lastRow + 2, ItemUtils.createItem(
                 Material.HOPPER,
-                "&aSort: &f" + sortMode.name().replace('_', ' '),
-                List.of("&7Click to cycle sorting mode")
+                "&aѕᴏʀᴛ: &f" + sortMode.name().replace('_', ' '),
+                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ ᴍᴏᴅᴇ")
         ));
-        set(lastRow + 3, ItemUtils.createItem(Material.CHEST, "&bMy Listings", List.of("&7View your active listings")));
-        set(lastRow + 4, ItemUtils.createItem(
-                Material.ENDER_CHEST,
-                "&dClaims",
-                plugin.getCurrencyManager().applyStaticPlaceholders(List.of("&7Claim sold {money_name_plural} and returned items"))
-        ));
+        set(lastRow + 3, ItemUtils.createItem(Material.CHEST, "&bᴍʏ ʟɪѕᴛɪɴɢѕ", List.of("&7ᴠɪᴇᴡ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ")));
+        set(lastRow + 4, ItemUtils.createItem(Material.ENDER_CHEST, "&dᴄʟᴀɪᴍѕ", List.of("&7ᴄʟᴀɪᴍ ѕᴏʟᴅ ᴍᴏɴᴇʏ ᴀɴᴅ ʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍѕ")));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
-                "&ePage " + page + "&7/&e" + getTotalPages(listings.size(), itemsPerPage),
-                List.of("&7Active listings: &f" + listings.size())
+                "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(listings.size(), itemsPerPage),
+                List.of("&7ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ: &f" + listings.size())
         ));
         set(lastRow + 7, hasNextPage(listings.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aNext Page", List.of("&7Go to page &f" + (page + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose", List.of("&7Close the Auction House")));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ")));
 
         if (listings.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cNo Active Listings",
-                    List.of("&7Use &f/ah sell <price> &7to create one.")
+                    "&cɴᴏ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ",
+                    List.of("&7ᴜѕᴇ &f/ah sell <price> &7ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏɴᴇ.")
             ));
         }
     }

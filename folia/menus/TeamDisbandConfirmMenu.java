@@ -30,7 +30,7 @@ public class TeamDisbandConfirmMenu extends BaseMenu {
                 menus().getInt(cancelPath + ".SLOT", 11),
                 ItemUtils.createItem(
                         material(cancelPath + ".MATERIAL", Material.RED_STAINED_GLASS_PANE),
-                        menus().getString(cancelPath + ".TITLE", "&cCancel"),
+                        menus().getString(cancelPath + ".TITLE", "&cᴄᴀɴᴄᴇʟ"),
                         menus().getStringList(cancelPath + ".LORE")
                 )
         );
@@ -40,7 +40,7 @@ public class TeamDisbandConfirmMenu extends BaseMenu {
                 menus().getInt(confirmPath + ".SLOT", 15),
                 ItemUtils.createItem(
                         material(confirmPath + ".MATERIAL", Material.LIME_STAINED_GLASS_PANE),
-                        menus().getString(confirmPath + ".TITLE", "&aConfirm"),
+                        menus().getString(confirmPath + ".TITLE", "&aᴄᴏɴꜰɪʀᴍ"),
                         menus().getStringList(confirmPath + ".LORE")
                 )
         );
@@ -86,7 +86,7 @@ public class TeamDisbandConfirmMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Confirm disbanding team");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ᴄᴏɴꜰɪʀᴍ ᴅɪѕʙᴀɴᴅɪɴɢ ᴛᴇᴀᴍ");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {

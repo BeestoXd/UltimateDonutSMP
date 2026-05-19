@@ -20,7 +20,7 @@ public class ShopCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("ultimatedonutsmp.admin.shop")) {
-                sender.sendMessage(ColorUtils.colorize("&cYou do not have permission to reload shop settings."));
+                sender.sendMessage(ColorUtils.colorize("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ѕʜᴏᴘ ѕᴇᴛᴛɪɴɢѕ."));
                 return true;
             }
 
@@ -28,11 +28,11 @@ public class ShopCommand implements CommandExecutor {
             plugin.getConfigManager().reloadMenus();
             plugin.getConfigManager().reloadSounds();
             plugin.getShopManager().reload();
-            sender.sendMessage(ColorUtils.colorize("&aShop config reloaded."));
+            sender.sendMessage(ColorUtils.colorize("&aѕʜᴏᴘ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."));
             return true;
         }
 
-        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
         new ShopMenu(plugin).open(player);
         return true;
     }

@@ -48,7 +48,7 @@ public class NumberUtils {
         return sign + SHORT_FMT.format(absolute) + SHORT_SUFFIXES[suffixIndex];
     }
 
-    /** Parse a number string with optional K/M/B/T suffix */
+    /** Parse a number string with optional K/m/b/t suffix */
     public static double parse(String input) {
         if (input == null || input.isBlank()) throw new NumberFormatException("Empty input");
         String clean = input.trim().toUpperCase(Locale.US);

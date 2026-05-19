@@ -132,12 +132,11 @@ public class AuctionHouseManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.AUCTION_HOUSE)
-                && config().getBoolean("SETTINGS.ENABLED", true);
+        return config().getBoolean("SETTINGS.ENABLED", true);
     }
 
     public String getBrowseTitle() {
-        return config().getString("GUI.BROWSE.TITLE", "&8Auction House");
+        return config().getString("GUI.BROWSE.TITLE", "&8ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ");
     }
 
     public int getBrowseSize() {
@@ -149,7 +148,7 @@ public class AuctionHouseManager {
     }
 
     public String getMyListingsTitle() {
-        return config().getString("GUI.MY_LISTINGS.TITLE", "&8My Auctions");
+        return config().getString("GUI.MY_LISTINGS.TITLE", "&8ᴍʏ ᴀᴜᴄᴛɪᴏɴѕ");
     }
 
     public int getMyListingsSize() {
@@ -161,7 +160,7 @@ public class AuctionHouseManager {
     }
 
     public String getClaimsTitle() {
-        return config().getString("GUI.CLAIMS.TITLE", "&8Auction Claims");
+        return config().getString("GUI.CLAIMS.TITLE", "&8ᴀᴜᴄᴛɪᴏɴ ᴄʟᴀɪᴍѕ");
     }
 
     public int getClaimsSize() {
@@ -307,7 +306,7 @@ public class AuctionHouseManager {
 
     public String describeItem(ItemStack item) {
         if (item == null || item.getType().isAir()) {
-            return "Unknown Item";
+            return "ᴜɴᴋɴᴏᴡɴ ɪᴛᴇᴍ";
         }
 
         if (item.hasItemMeta()
@@ -986,9 +985,7 @@ public class AuctionHouseManager {
                 "{buyer}", buyer.getName(),
                 "{item}", describeItem(listing.item()),
                 "{price}", NumberUtils.format(listing.price()),
-                "{price_formatted}", plugin.getCurrencyManager().formatMoney(listing.price()),
-                "{payout}", NumberUtils.format(listing.sellerPayout()),
-                "{payout_formatted}", plugin.getCurrencyManager().formatMoney(listing.sellerPayout())
+                "{payout}", NumberUtils.format(listing.sellerPayout())
         );
         seller.sendMessage(ColorUtils.toComponent(message));
     }

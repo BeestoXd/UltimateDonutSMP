@@ -42,8 +42,7 @@ public class EnderChestManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.ENDER_CHEST)
-                && getConfig().getBoolean(
+        return getConfig().getBoolean(
                 "ENDER-CHEST.ENABLED",
                 plugin.getConfigManager().getConfig().getBoolean("ENDER-CHEST.SIX-ROW", false)
         );
@@ -115,7 +114,7 @@ public class EnderChestManager {
                     exception
             );
             player.sendMessage(ColorUtils.toComponent(
-                    getMessage("OPEN-FAILED", "&cFailed to open your Ender Chest. Please try again.")
+                    getMessage("OPEN-FAILED", "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ.")
             ));
         }
     }
@@ -153,7 +152,7 @@ public class EnderChestManager {
 
         if (player != null && player.isOnline()) {
             player.sendMessage(ColorUtils.toComponent(
-                    getMessage("SAVE-FAILED", "&cFailed to save your Ender Chest. Contact staff.")
+                    getMessage("SAVE-FAILED", "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴄᴏɴᴛᴀᴄᴛ ѕᴛᴀꜰꜰ.")
             ));
         }
     }
@@ -259,7 +258,7 @@ public class EnderChestManager {
     }
 
     private String getTitle() {
-        return getConfig().getString("ENDER-CHEST.TITLE", "&5Ender Chest");
+        return getConfig().getString("ENDER-CHEST.TITLE", "&5ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ");
     }
 
     private int clampRows(int rows) {

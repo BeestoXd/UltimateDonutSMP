@@ -28,8 +28,8 @@ public class ClearLagTask implements Runnable {
             }
         }
         if (secondsLeft <= 0) {
-            plugin.getClearLagManager().clearEntities()
-                    .thenAccept(plugin.getClearLagManager()::broadcastSuccess);
+            int cleared = plugin.getClearLagManager().clearEntities();
+            plugin.getClearLagManager().broadcastSuccess(cleared);
             secondsLeft = plugin.getClearLagManager().getIntervalMinutes() * 60;
         }
     }

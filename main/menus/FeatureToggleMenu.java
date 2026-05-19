@@ -92,7 +92,7 @@ public class FeatureToggleMenu extends BaseMenu {
         player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault(
                         "FEATURES.TOGGLED",
-                        "&a{feature} is now {state}.",
+                        "&a{feature} ɪѕ ɴᴏᴡ {state}.",
                         "{feature}", feature.displayName(),
                         "{feature_key}", feature.configKey(),
                         "{state}", plugin.getFeatureManager().statusText(feature)
@@ -128,7 +128,7 @@ public class FeatureToggleMenu extends BaseMenu {
             lore = menus.getStringList(MENU_PATH + ".DEFAULTS.LORE");
         }
         if (lore.isEmpty()) {
-            lore = List.of("&7{description}", "", "&7Status: {state}", "&eClick to toggle.");
+            lore = List.of("&7{description}", "", "&7ѕᴛᴀᴛᴜѕ: {state}", "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴏɢɢʟᴇ.");
         }
 
         Map<String, String> placeholders = placeholders(feature);
@@ -224,7 +224,7 @@ public class FeatureToggleMenu extends BaseMenu {
 
     private static String configuredTitle(UltimateDonutSmp plugin, int page) {
         return plugin.getConfigManager().getMenus()
-                .getString(MENU_PATH + ".TITLE", "&8Feature Toggles")
+                .getString(MENU_PATH + ".TITLE", "&8ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ")
                 .replace("{page}", String.valueOf(Math.max(1, page + 1)));
     }
 

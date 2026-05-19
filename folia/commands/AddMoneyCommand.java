@@ -21,12 +21,12 @@ public class AddMoneyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /addmoney <player> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /addmoney <player> <amount>"));
             return true;
         }
 
@@ -57,20 +57,16 @@ public class AddMoneyCommand implements CommandExecutor {
 
         String success = plugin.getConfigManager().getMessage("BALANCE.ADMIN.ADD-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()));
+                "{amount}", NumberUtils.format(result.amount()),
+                "{balance}", NumberUtils.format(result.afterBalance()));
         sender.sendMessage(ColorUtils.toComponent(success));
 
         Player targetPlayer = result.targetUuid() != null ? org.bukkit.Bukkit.getPlayer(result.targetUuid()) : null;
         if (targetPlayer != null && !targetPlayer.equals(sender)) {
             String received = plugin.getConfigManager().getMessage("BALANCE.ADMIN.ADD-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                    "{balance}", plugin.getCurrencyManager().formatMoney(result.afterBalance()),
-                    "{money}", plugin.getCurrencyManager().formatMoney(result.amount()),
-                    "{balance_money}", plugin.getCurrencyManager().formatMoney(result.afterBalance()));
+                    "{amount}", NumberUtils.format(result.amount()),
+                    "{balance}", NumberUtils.format(result.afterBalance()));
             targetPlayer.sendMessage(ColorUtils.toComponent(received));
         }
 

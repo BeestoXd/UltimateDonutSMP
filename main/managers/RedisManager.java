@@ -86,13 +86,13 @@ public class RedisManager {
             return true;
         } catch (Exception exception) {
             connected = false;
-            logFailure("Redis publish failed: " + exception.getMessage());
+            logFailure("ʀᴇᴅɪѕ ᴘᴜʙʟɪѕʜ ꜰᴀɪʟᴇᴅ: " + exception.getMessage());
             return false;
         }
     }
 
     public void subscribe(String channel, Consumer<String> messageConsumer) {
-        Objects.requireNonNull(messageConsumer, "messageConsumer");
+        Objects.requireNonNull(messageConsumer, "ᴍᴇѕѕᴀɢᴇᴄᴏɴѕᴜᴍᴇʀ");
 
         synchronized (lifecycleLock) {
             String normalizedChannel = normalizeChannel(channel);
@@ -203,7 +203,7 @@ public class RedisManager {
             } catch (Exception exception) {
                 connected = false;
                 if (subscriberRunning.get()) {
-                    logFailure("Redis subscriber failed: " + exception.getMessage());
+                    logFailure("ʀᴇᴅɪѕ ѕᴜʙѕᴄʀɪʙᴇʀ ꜰᴀɪʟᴇᴅ: " + exception.getMessage());
                     sleepBeforeReconnect();
                 }
             } finally {
@@ -252,7 +252,7 @@ public class RedisManager {
             lastFailureMessage = "";
         } catch (Exception exception) {
             connected = false;
-            logFailure("Redis connection failed: " + exception.getMessage());
+            logFailure("ʀᴇᴅɪѕ ᴄᴏɴɴᴇᴄᴛɪᴏɴ ꜰᴀɪʟᴇᴅ: " + exception.getMessage());
         }
     }
 

@@ -28,11 +28,11 @@ public class SpawnerCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage("Use /" + label + " give <player> <type> [amount]");
+                sender.sendMessage("ᴜѕᴇ /" + label + " ɢɪᴠᴇ <player> <type> [amount]");
                 return true;
             }
             if (!sender.hasPermission(ADMIN_PERMISSION)) {
-                sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to open the spawner admin panel."));
+                sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ѕᴘᴀᴡɴᴇʀ ᴀᴅᴍɪɴ ᴘᴀɴᴇʟ."));
                 return true;
             }
 
@@ -52,17 +52,17 @@ public class SpawnerCommand implements CommandExecutor {
 
     private boolean handleGive(CommandSender sender, String[] args) {
         if (!sender.hasPermission(ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to give spawners."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ɢɪᴠᴇ ѕᴘᴀᴡɴᴇʀѕ."));
             return true;
         }
         if (args.length < 3) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /spawner give <player> <type> [amount]"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /spawner give <player> <type> [amount]"));
             return true;
         }
 
         Player target = Bukkit.getPlayerExact(args[1]);
         if (target == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cPlayer '&f" + args[1] + "&c' must be online."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ '&f" + args[1] + "&c' ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ."));
             return true;
         }
 
@@ -70,19 +70,19 @@ public class SpawnerCommand implements CommandExecutor {
         try {
             amount = args.length >= 4 ? NumberUtils.parseLong(args[3]) : 1L;
         } catch (NumberFormatException exception) {
-            sender.sendMessage(ColorUtils.toComponent("&cAmount must be a valid positive number."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴀ ᴠᴀʟɪᴅ ᴘᴏѕɪᴛɪᴠᴇ ɴᴜᴍʙᴇʀ."));
             return true;
         }
 
         if (amount <= 0L) {
-            sender.sendMessage(ColorUtils.toComponent("&cAmount must be greater than zero."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ ᴢᴇʀᴏ."));
             return true;
         }
 
         var result = plugin.getSpawnerManager().giveSpawner(target, args[2], amount);
         sender.sendMessage(ColorUtils.toComponent(result.message()));
         if (!sender.equals(target)) {
-            target.sendMessage(ColorUtils.toComponent("&aYou received &f" + NumberUtils.format(amount)
+            target.sendMessage(ColorUtils.toComponent("&aʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &f" + NumberUtils.format(amount)
                     + "x " + plugin.getSpawnerManager().getPlainTypeDisplayName(args[2]) + "&a."));
         }
         return true;
@@ -90,7 +90,7 @@ public class SpawnerCommand implements CommandExecutor {
 
     private boolean handleReload(CommandSender sender) {
         if (!sender.hasPermission(ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to reload spawners."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴᴇʀѕ."));
             return true;
         }
 
@@ -98,17 +98,17 @@ public class SpawnerCommand implements CommandExecutor {
         plugin.getSpawnerManager().reload();
         plugin.getAntiEspManager().reload();
         plugin.getAntiEspManager().refreshAllPlayers();
-        sender.sendMessage(ColorUtils.toComponent("&aSpawner settings reloaded."));
+        sender.sendMessage(ColorUtils.toComponent("&aѕᴘᴀᴡɴᴇʀ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ."));
         return true;
     }
 
     private boolean handlePanel(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
         if (!sender.hasPermission(ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to open the spawner panel."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ѕᴘᴀᴡɴᴇʀ ᴘᴀɴᴇʟ."));
             return true;
         }
 
@@ -118,41 +118,41 @@ public class SpawnerCommand implements CommandExecutor {
 
     private boolean handleInfo(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
         Block target = player.getTargetBlockExact(6);
         SpawnerInstance instance = target == null ? null : plugin.getSpawnerManager().getSpawner(target);
         if (instance == null) {
-            player.sendMessage(ColorUtils.toComponent("&cLook at a managed spawner to inspect it."));
+            player.sendMessage(ColorUtils.toComponent("&cʟᴏᴏᴋ ᴀᴛ ᴀ ᴍᴀɴᴀɢᴇᴅ ѕᴘᴀᴡɴᴇʀ ᴛᴏ ɪɴѕᴘᴇᴄᴛ ɪᴛ."));
             return true;
         }
 
-        player.sendMessage(ColorUtils.toComponent("&8&m----------- &bSpawner Info &8&m-----------"));
-        player.sendMessage(ColorUtils.toComponent("&7Type: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey())));
-        player.sendMessage(ColorUtils.toComponent("&7Owner: &f" + instance.getOwnerNameSnapshot()));
-        player.sendMessage(ColorUtils.toComponent("&7Stack: &f" + NumberUtils.format(instance.getStackAmount())));
-        player.sendMessage(ColorUtils.toComponent("&7Stored loot: &f" + NumberUtils.format(instance.getTotalStoredItems())));
-        player.sendMessage(ColorUtils.toComponent("&7Location: &f" + instance.getWorld() + " "
+        player.sendMessage(ColorUtils.toComponent("&8&m----------- &bѕᴘᴀᴡɴᴇʀ ɪɴꜰᴏ &8&m-----------"));
+        player.sendMessage(ColorUtils.toComponent("&7ᴛʏᴘᴇ: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey())));
+        player.sendMessage(ColorUtils.toComponent("&7ᴏᴡɴᴇʀ: &f" + instance.getOwnerNameSnapshot()));
+        player.sendMessage(ColorUtils.toComponent("&7ѕᴛᴀᴄᴋ: &f" + NumberUtils.format(instance.getStackAmount())));
+        player.sendMessage(ColorUtils.toComponent("&7ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ: &f" + NumberUtils.format(instance.getTotalStoredItems())));
+        player.sendMessage(ColorUtils.toComponent("&7ʟᴏᴄᴀᴛɪᴏɴ: &f" + instance.getWorld() + " "
                 + instance.getX() + ", " + instance.getY() + ", " + instance.getZ()));
         return true;
     }
 
     private boolean handleRemove(CommandSender sender) {
         if (!sender.hasPermission(ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to remove spawners."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇᴍᴏᴠᴇ ѕᴘᴀᴡɴᴇʀѕ."));
             return true;
         }
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Player only.");
+            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
             return true;
         }
 
         Block target = player.getTargetBlockExact(6);
         SpawnerInstance instance = target == null ? null : plugin.getSpawnerManager().getSpawner(target);
         if (instance == null) {
-            player.sendMessage(ColorUtils.toComponent("&cLook at a managed spawner to remove it."));
+            player.sendMessage(ColorUtils.toComponent("&cʟᴏᴏᴋ ᴀᴛ ᴀ ᴍᴀɴᴀɢᴇᴅ ѕᴘᴀᴡɴᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ɪᴛ."));
             return true;
         }
 
@@ -162,13 +162,13 @@ public class SpawnerCommand implements CommandExecutor {
     }
 
     private boolean sendUsage(CommandSender sender, String label) {
-        sender.sendMessage(ColorUtils.toComponent("&8&m----------- &dSpawner &8&m-----------"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " &7- Open the spawner panel"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " info &7- Inspect the looked-at spawner"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " panel &7- Open the spawner admin panel"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " give <player> <type> [amount] &7- Give a spawner item"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " reload &7- Reload spawner settings"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " remove &7- Remove the looked-at spawner"));
+        sender.sendMessage(ColorUtils.toComponent("&8&m----------- &dѕᴘᴀᴡɴᴇʀ &8&m-----------"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " &7- ᴏᴘᴇɴ ᴛʜᴇ ѕᴘᴀᴡɴᴇʀ ᴘᴀɴᴇʟ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ɪɴꜰᴏ &7- ɪɴѕᴘᴇᴄᴛ ᴛʜᴇ ʟᴏᴏᴋᴇᴅ-ᴀᴛ ѕᴘᴀᴡɴᴇʀ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴘᴀɴᴇʟ &7- ᴏᴘᴇɴ ᴛʜᴇ ѕᴘᴀᴡɴᴇʀ ᴀᴅᴍɪɴ ᴘᴀɴᴇʟ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ɢɪᴠᴇ <player> <type> [amount] &7- ɢɪᴠᴇ ᴀ ѕᴘᴀᴡɴᴇʀ ɪᴛᴇᴍ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴᴇʀ ѕᴇᴛᴛɪɴɢѕ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʀᴇᴍᴏᴠᴇ &7- ʀᴇᴍᴏᴠᴇ ᴛʜᴇ ʟᴏᴏᴋᴇᴅ-ᴀᴛ ѕᴘᴀᴡɴᴇʀ"));
         return true;
     }
 }

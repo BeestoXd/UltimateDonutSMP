@@ -415,7 +415,7 @@ public class SpawnManager {
                     type,
                     slot,
                     ItemUtils.parseMaterial(section.getString("MATERIAL", "ITEM_FRAME")),
-                    section.getString("DISPLAY-NAME", type == AreaType.SPAWN ? "&bSpawn" : "&#A303F9AFK"),
+                    section.getString("DISPLAY-NAME", type == AreaType.SPAWN ? "&bѕᴘᴀᴡɴ" : "&#A303F9ᴀꜰᴋ"),
                     section.getStringList("LORE"),
                     cuboidName,
                     Math.max(1, section.getInt("CAPACITY", 200)),
@@ -458,18 +458,18 @@ public class SpawnManager {
         }
 
         config.set(configPath, serialized);
-        menus.set(target.path() + ".LOCATION", serialized);
+        menus.set(target.path() + ".ʟᴏᴄᴀᴛɪᴏɴ", serialized);
 
         try {
             plugin.saveConfig();
         } catch (RuntimeException exception) {
-            plugin.getLogger().warning("[SpawnManager] Failed to save config.yml: " + exception.getMessage());
-            return SetupLocationResult.failure("Failed to save config.yml.");
+            plugin.getLogger().warning("[SpawnManager] ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄᴏɴꜰɪɢ.ʏᴍʟ: " + exception.getMessage());
+            return SetupLocationResult.failure("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄᴏɴꜰɪɢ.ʏᴍʟ.");
         }
 
         boolean savedMenus = plugin.getConfigManager().saveMenus();
         if (!savedMenus) {
-            return SetupLocationResult.failure("Failed to save menus.yml.");
+            return SetupLocationResult.failure("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴍᴇɴᴜѕ.ʏᴍʟ.");
         }
 
         load();
@@ -960,8 +960,8 @@ public class SpawnManager {
 
     private List<String> defaultLore(AreaType type) {
         return type == AreaType.SPAWN
-                ? List.of("&8{players}/200", "&7Click to got to this", "&7Spawn area.")
-                : List.of("&8{players}/200", "&7Click to got to this", "&7Afk zone area.");
+                ? List.of("&8{players}/200", "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏᴛ ᴛᴏ ᴛʜɪѕ", "&7ѕᴘᴀᴡɴ ᴀʀᴇᴀ.")
+                : List.of("&8{players}/200", "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏᴛ ᴛᴏ ᴛʜɪѕ", "&7ᴀꜰᴋ ᴢᴏɴᴇ ᴀʀᴇᴀ.");
     }
 
     private int normalizeSize(int size) {

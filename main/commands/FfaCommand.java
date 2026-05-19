@@ -33,7 +33,7 @@ public class FfaCommand implements CommandExecutor {
         String subcommand = args[0].toLowerCase();
         if (subcommand.equals("join")) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage("Player only.");
+                sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
                 return true;
             }
             plugin.getFfaManager().joinArena(player);
@@ -41,12 +41,12 @@ public class FfaCommand implements CommandExecutor {
         }
         if (subcommand.equals("reload")) {
             if (!sender.hasPermission("ultimatedonutsmp.admin.ffa")) {
-                sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to reload FFA."));
+                sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ꜰꜰᴀ."));
                 return true;
             }
             plugin.getConfigManager().reloadFfa();
             plugin.getFfaManager().reload();
-            sender.sendMessage(ColorUtils.toComponent("&aFFA config reloaded."));
+            sender.sendMessage(ColorUtils.toComponent("&aꜰꜰᴀ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."));
             return true;
         }
         if (subcommand.equals("arena")) {
@@ -67,7 +67,7 @@ public class FfaCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent("&e/ffastats [player]"));
         if (sender.hasPermission("ultimatedonutsmp.admin.ffa")) {
             sender.sendMessage(ColorUtils.toComponent("&e/" + label + " reload"));
-            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " arena <subcommand>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " ᴀʀᴇɴᴀ <subcommand>"));
         }
     }
 }

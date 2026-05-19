@@ -19,7 +19,7 @@ public class AuctionHouseExpiryTask implements Runnable {
 
     @Override
     public void run() {
-        if (plugin.getAuctionHouseManager() != null && plugin.getAuctionHouseManager().isEnabled()) {
+        if (plugin.getAuctionHouseManager() != null) {
             plugin.getAuctionHouseManager().expireListings();
         }
     }

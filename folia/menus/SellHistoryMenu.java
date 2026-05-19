@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.DatabaseManager;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -31,7 +30,7 @@ public class SellHistoryMenu extends BaseMenu {
     public SellHistoryMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("SELL-HISTORY-MENU.TITLE", "&8sell history"),
+                plugin.getConfigManager().getMenus().getString("SELL-HISTORY-MENU.TITLE", "&8ѕᴇʟʟ ʜɪѕᴛᴏʀʏ"),
                 plugin.getConfigManager().getMenus().getInt("SELL-HISTORY-MENU.SIZE", 54)
         );
     }
@@ -107,8 +106,8 @@ public class SellHistoryMenu extends BaseMenu {
     private void buildSortButton(FileConfiguration menus) {
         String path = "SELL-HISTORY-MENU.BUTTONS.SORT";
         Material material = ItemUtils.parseMaterial(menus.getString(path + ".MATERIAL", "ANVIL"));
-        String name = menus.getString(path + ".NAME", "&aSort");
-        String sortState = sortByPrice ? "Highest Price" : "Newest";
+        String name = menus.getString(path + ".NAME", "&aѕᴏʀᴛ");
+        String sortState = sortByPrice ? "ʜɪɢʜᴇѕᴛ ᴘʀɪᴄᴇ" : "Newest";
         List<String> lore = menus.getStringList(path + ".LORE").stream()
                 .map(line -> line.replace("{sort_state}", sortState))
                 .toList();
@@ -121,34 +120,34 @@ public class SellHistoryMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(FIRST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aFirst Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aꜰɪʀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.FIRST-PAGE-LORE")
             ));
             set(PREVIOUS_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cBack"),
+                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cʙᴀᴄᴋ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(PAGE_INFO_SLOT, ItemUtils.createItem(
                 Material.BOOK,
-                "&ePage " + (page + 1) + "&7/&e" + totalPages,
+                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
                 List.of(
-                        "&fEntries: &7" + NumberUtils.format(totalItems),
-                        "&fSort: &7" + (sortByPrice ? "Highest Price" : "Newest")
+                        "&fᴇɴᴛʀɪᴇѕ: &7" + NumberUtils.format(totalItems),
+                        "&fѕᴏʀᴛ: &7" + (sortByPrice ? "ʜɪɢʜᴇѕᴛ ᴘʀɪᴄᴇ" : "Newest")
                 )
         ));
 
         if (hasNextPage) {
             set(NEXT_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
+                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
             set(LAST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aLast Page"),
+                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aʟᴀѕᴛ ᴘᴀɢᴇ"),
                     menus.getStringList("GLOBAL.PAGE-MENU.LAST-PAGE-LORE")
             ));
         }
@@ -162,7 +161,7 @@ public class SellHistoryMenu extends BaseMenu {
         String displayName = "&f" + toDisplayName(entry.itemName());
         List<String> lore = menus.getStringList("SELL-HISTORY-MENU.BUTTONS.MATERIAL-ITEM.LORE").stream()
                 .map(line -> line
-                        .replace("{price}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, entry.price()))
+                        .replace("{price}", "$" + NumberUtils.formatNice(entry.price()))
                         .replace("{amount}", NumberUtils.format(entry.amount())))
                 .toList();
 

@@ -41,13 +41,13 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
         OrdersManager manager = plugin.getOrdersManager();
         OrdersManager.DeliveryPreview preview = manager.getDeliveryPreview(player, orderId);
-        set(18, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cBack", List.of("&7Return to order details")));
+        set(18, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴏʀᴅᴇʀ ᴅᴇᴛᴀɪʟѕ")));
 
         if (preview.order() == null) {
             set(13, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cOrder Not Found",
-                    List.of("&7This order no longer exists.")
+                    "&cᴏʀᴅᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ",
+                    List.of("&7ᴛʜɪѕ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.")
             ));
             return;
         }
@@ -58,7 +58,7 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
         if (!preview.success()) {
             set(11, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cCannot Deliver",
+                    "&cᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ",
                     List.of(resolveFailureMessage(preview))
             ));
             return;
@@ -66,28 +66,28 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
         set(11, ItemUtils.createItem(
                 Material.PAPER,
-                "&bDelivery Preview",
+                "&bᴅᴇʟɪᴠᴇʀʏ ᴘʀᴇᴠɪᴇᴡ",
                 List.of(
-                        "&7Deliver Quantity: &e" + preview.deliverQuantity(),
-                        "&7Payout: " + plugin.getCurrencyManager().formatMoney(preview.payout()),
-                        "&7Remaining After This: &e" + Math.max(0, order.remainingQuantity() - preview.deliverQuantity())
+                        "&7ᴅᴇʟɪᴠᴇʀ ǫᴜᴀɴᴛɪᴛʏ: &e" + preview.deliverQuantity(),
+                        "&7ᴘᴀʏᴏᴜᴛ: " + plugin.getCurrencyManager().formatMoney(preview.payout()),
+                        "&7ʀᴇᴍᴀɪɴɪɴɢ ᴀꜰᴛᴇʀ ᴛʜɪѕ: &e" + Math.max(0, order.remainingQuantity() - preview.deliverQuantity())
                 )
         ));
         set(15, ItemUtils.createItem(
                 Material.CHEST,
-                "&eMatching Items Found",
+                "&eᴍᴀᴛᴄʜɪɴɢ ɪᴛᴇᴍѕ ꜰᴏᴜɴᴅ",
                 List.of(
-                        "&7Orders will remove matching items from your inventory.",
-                        "&7Requested Item: &f" + manager.describeItem(order.requestedItem())
+                        "&7ᴏʀᴅᴇʀѕ ᴡɪʟʟ ʀᴇᴍᴏᴠᴇ ᴍᴀᴛᴄʜɪɴɢ ɪᴛᴇᴍѕ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ.",
+                        "&7ʀᴇǫᴜᴇѕᴛᴇᴅ ɪᴛᴇᴍ: &f" + manager.describeItem(order.requestedItem())
                 )
         ));
         set(23, ItemUtils.createItem(
                 Material.LIME_DYE,
-                "&aConfirm Delivery",
+                "&aᴄᴏɴꜰɪʀᴍ ᴅᴇʟɪᴠᴇʀʏ",
                 List.of(
-                        "&7You will be paid instantly on success.",
+                        "&7ʏᴏᴜ ᴡɪʟʟ ʙᴇ ᴘᴀɪᴅ ɪɴѕᴛᴀɴᴛʟʏ ᴏɴ ѕᴜᴄᴄᴇѕѕ.",
                         "",
-                        "&eClick to deliver"
+                        "&eᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟɪᴠᴇʀ"
                 )
         ));
     }
@@ -106,13 +106,13 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
         OrdersManager manager = plugin.getOrdersManager();
         if (!manager.beginAction(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cOrders is still processing your previous action."));
+            player.sendMessage(ColorUtils.toComponent("&cᴏʀᴅᴇʀѕ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ᴘʀᴇᴠɪᴏᴜѕ ᴀᴄᴛɪᴏɴ."));
             return;
         }
 
         try {
             if (manager.isOnClickCooldown(player.getUniqueId())) {
-                player.sendMessage(ColorUtils.toComponent("&cSlow down for a moment."));
+                player.sendMessage(ColorUtils.toComponent("&cѕʟᴏᴡ ᴅᴏᴡɴ ꜰᴏʀ ᴀ ᴍᴏᴍᴇɴᴛ."));
                 return;
             }
             manager.updateClickCooldown(player.getUniqueId());
@@ -127,7 +127,7 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.DELIVERY_SUCCESS",
-                    "&aDelivered &e{quantity} {item}&a and received {payout_formatted}&a.",
+                    "&aᴅᴇʟɪᴠᴇʀᴇᴅ &e{quantity} {item}&a ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ {payout_formatted}&a.",
                     "{quantity}", String.valueOf(result.deliveredQuantity()),
                     "{item}", manager.describeItem(result.order().requestedItem()),
                     "{payout}", NumberUtils.format(result.payout()),
@@ -142,32 +142,32 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
     private String resolveFailureMessage(OrdersManager.DeliveryPreview preview) {
         if (preview.reason() == null) {
-            return "&7Ready.";
+            return "&7ʀᴇᴀᴅʏ.";
         }
         return switch (preview.reason()) {
-            case DISABLED -> "&7Orders is disabled.";
-            case NO_PLAYER_DATA -> "&7Your player data is unavailable.";
-            case ORDER_NOT_FOUND -> "&7This order no longer exists.";
-            case NOT_ACTIVE -> "&7This order is no longer active.";
-            case OWN_ORDER -> "&7You cannot deliver to your own order.";
-            case NO_MATCHING_ITEMS -> "&7You do not have matching items to deliver.";
-            case ORDER_FULL -> "&7This order is already fulfilled.";
-            case PAYOUT_ERROR -> "&7The payout could not be calculated.";
-            case DATABASE_ERROR -> "&7Orders is busy right now.";
+            case DISABLED -> "&7ᴏʀᴅᴇʀѕ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.";
+            case NO_PLAYER_DATA -> "&7ʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.";
+            case ORDER_NOT_FOUND -> "&7ᴛʜɪѕ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.";
+            case NOT_ACTIVE -> "&7ᴛʜɪѕ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.";
+            case OWN_ORDER -> "&7ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ ᴛᴏ ʏᴏᴜʀ ᴏᴡɴ ᴏʀᴅᴇʀ.";
+            case NO_MATCHING_ITEMS -> "&7ʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴍᴀᴛᴄʜɪɴɢ ɪᴛᴇᴍѕ ᴛᴏ ᴅᴇʟɪᴠᴇʀ.";
+            case ORDER_FULL -> "&7ᴛʜɪѕ ᴏʀᴅᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ꜰᴜʟꜰɪʟʟᴇᴅ.";
+            case PAYOUT_ERROR -> "&7ᴛʜᴇ ᴘᴀʏᴏᴜᴛ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴄᴀʟᴄᴜʟᴀᴛᴇᴅ.";
+            case DATABASE_ERROR -> "&7ᴏʀᴅᴇʀѕ ɪѕ ʙᴜѕʏ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 
     private String resolveDeliverFailure(OrdersManager.DeliverOrderResult result) {
         return switch (result.reason()) {
-            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cOrders is currently disabled.");
-            case NO_PLAYER_DATA -> "&cYour player data could not be loaded.";
-            case ORDER_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_FOUND", "&cThat order no longer exists.");
-            case NOT_ACTIVE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_ACTIVE", "&cThat order is no longer active.");
-            case OWN_ORDER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CANNOT_DELIVER_OWN", "&cYou cannot deliver to your own order.");
-            case NO_MATCHING_ITEMS -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NO_MATCHING_ITEMS", "&cYou do not have the required items to deliver.");
-            case ORDER_FULL -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_FULL", "&cThat order is already full.");
-            case PAYOUT_ERROR -> "&cOrders could not process the payout right now.";
-            case DATABASE_ERROR -> "&cOrders could not complete that delivery right now.";
+            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cᴏʀᴅᴇʀѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
+            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
+            case ORDER_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_FOUND", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.");
+            case NOT_ACTIVE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_ACTIVE", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.");
+            case OWN_ORDER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CANNOT_DELIVER_OWN", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ ᴛᴏ ʏᴏᴜʀ ᴏᴡɴ ᴏʀᴅᴇʀ.");
+            case NO_MATCHING_ITEMS -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NO_MATCHING_ITEMS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ᴛᴏ ᴅᴇʟɪᴠᴇʀ.");
+            case ORDER_FULL -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_FULL", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ꜰᴜʟʟ.");
+            case PAYOUT_ERROR -> "&cᴏʀᴅᴇʀѕ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴘʀᴏᴄᴇѕѕ ᴛʜᴇ ᴘᴀʏᴏᴜᴛ ʀɪɢʜᴛ ɴᴏᴡ.";
+            case DATABASE_ERROR -> "&cᴏʀᴅᴇʀѕ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴅᴇʟɪᴠᴇʀʏ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 }

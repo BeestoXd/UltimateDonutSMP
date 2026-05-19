@@ -199,12 +199,12 @@ public class PlayerData {
     }
 
     public long getTotalPlaytimeSeconds() {
-        return playtimeSeconds + (System.currentTimeMillis() - sessionStartMillis) / 1000L;
+        return playtimeSeconds + (System.currentTimeMillis() - sessionStartMillis) / 1000l;
     }
 
     public void commitSession() {
         long now = System.currentTimeMillis();
-        playtimeSeconds += (now - sessionStartMillis) / 1000L;
+        playtimeSeconds += (now - sessionStartMillis) / 1000l;
         sessionStartMillis = now;
         dirty = true;
     }

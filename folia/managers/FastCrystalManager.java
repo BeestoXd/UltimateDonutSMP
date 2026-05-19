@@ -20,8 +20,7 @@ public class FastCrystalManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.FAST_CRYSTALS)
-                && plugin.getConfigManager().getConfig()
+        return plugin.getConfigManager().getConfig()
                 .getBoolean("FAST-CRYSTALS.ENABLED", true);
     }
 
@@ -58,7 +57,7 @@ public class FastCrystalManager {
                 .getInt("FAST-CRYSTALS.PLACE.ENABLED-COOLDOWN-TICKS", 0));
     }
 
-    public int getDisabledCooldownTicks() {
+    public int getdisabledCooldownTicks() {
         return Math.max(0, plugin.getConfigManager().getConfig()
                 .getInt("FAST-CRYSTALS.PLACE.DISABLED-COOLDOWN-TICKS", 8));
     }
@@ -89,7 +88,7 @@ public class FastCrystalManager {
     }
 
     public int getCooldownTicksFor(Player player) {
-        return isEnabledFor(player) ? getEnabledCooldownTicks() : getDisabledCooldownTicks();
+        return isEnabledFor(player) ? getEnabledCooldownTicks() : getdisabledCooldownTicks();
     }
 
     public void applyCrystalCooldown(Player player) {

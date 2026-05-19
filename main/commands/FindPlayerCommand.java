@@ -15,13 +15,13 @@ import java.util.Locale;
 
 public class FindPlayerCommand implements CommandExecutor {
 
-    private static final String DEFAULT_AFK = "&7{player}'s in the &#A303F9afk";
-    private static final String DEFAULT_RTP_ZONE = "&7{player}'s in the &crtpzone";
-    private static final String DEFAULT_SPAWN = "&7{player}'s in the &bspawn";
-    private static final String DEFAULT_OVERWORLD = "&7{player}'s in the &boverworld &7(&b{biome}&7)";
-    private static final String DEFAULT_NETHER = "&7{player}'s in the &bnether &7(&b{biome}&7)";
-    private static final String DEFAULT_THE_END = "&7{player}'s in the &bthe end &7(&b{biome}&7)";
-    private static final String DEFAULT_UNKNOWN = "&7{player}'s in the &b{world}";
+    private static final String DEFAULT_AFK = "&7{player}'ѕ ɪɴ ᴛʜᴇ &#A303F9ᴀꜰᴋ";
+    private static final String DEFAULT_RTP_ZONE = "&7{player}'ѕ ɪɴ ᴛʜᴇ &cʀᴛᴘᴢᴏɴᴇ";
+    private static final String DEFAULT_SPAWN = "&7{player}'ѕ ɪɴ ᴛʜᴇ &bѕᴘᴀᴡɴ";
+    private static final String DEFAULT_OVERWORLD = "&7{player}'ѕ ɪɴ ᴛʜᴇ &bᴏᴠᴇʀᴡᴏʀʟᴅ &7(&b{biome}&7)";
+    private static final String DEFAULT_NETHER = "&7{player}'ѕ ɪɴ ᴛʜᴇ &bɴᴇᴛʜᴇʀ &7(&b{biome}&7)";
+    private static final String DEFAULT_THE_END = "&7{player}'ѕ ɪɴ ᴛʜᴇ &bᴛʜᴇ ᴇɴᴅ &7(&b{biome}&7)";
+    private static final String DEFAULT_UNKNOWN = "&7{player}'ѕ ɪɴ ᴛʜᴇ &b{world}";
 
     private final UltimateDonutSmp plugin;
 
@@ -31,11 +31,11 @@ public class FindPlayerCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
-        if (args.length == 0) { player.sendMessage(ColorUtils.toComponent("&cUsage: /findplayer <player>")); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (args.length == 0) { player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /findplayer <player>")); return true; }
 
         Player target = Bukkit.getPlayerExact(args[0]);
-        if (target == null) { player.sendMessage(ColorUtils.toComponent("&cPlayer not online.")); return true; }
+        if (target == null) { player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.")); return true; }
 
         LocationMessage locationMessage = resolveLocationMessage(target);
         String msg = plugin.getConfigManager().getMessageOrDefault(
@@ -75,25 +75,25 @@ public class FindPlayerCommand implements CommandExecutor {
 
     private String friendlyWorldName(World world) {
         if (world == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         return switch (world.getEnvironment()) {
-            case NORMAL -> "Overworld";
-            case NETHER -> "Nether";
-            case THE_END -> "The End";
+            case NORMAL -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
+            case NETHER -> "ɴᴇᴛʜᴇʀ";
+            case THE_END -> "ᴛʜᴇ ᴇɴᴅ";
             case CUSTOM -> formatIdentifier(world.getName());
         };
     }
 
     private String formatBiome(Location location) {
         if (location == null || location.getWorld() == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         Biome biome = location.getBlock().getBiome();
         if (biome == null) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         return formatIdentifier(biome.getKey().getKey());
@@ -101,7 +101,7 @@ public class FindPlayerCommand implements CommandExecutor {
 
     private String formatIdentifier(String value) {
         if (value == null || value.isBlank()) {
-            return "Unknown";
+            return "ᴜɴᴋɴᴏᴡɴ";
         }
 
         String normalized = value;
@@ -126,7 +126,7 @@ public class FindPlayerCommand implements CommandExecutor {
             }
         }
 
-        return builder.isEmpty() ? "Unknown" : builder.toString();
+        return builder.isEmpty() ? "ᴜɴᴋɴᴏᴡɴ" : builder.toString();
     }
 
     private record LocationMessage(String key, String fallback) {

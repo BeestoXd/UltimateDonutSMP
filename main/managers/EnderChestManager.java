@@ -68,7 +68,7 @@ public class EnderChestManager {
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("MESSAGES." + path, fallback);
+        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
     }
 
     public boolean isCustomEnderChest(Inventory inventory) {
@@ -111,11 +111,11 @@ public class EnderChestManager {
         } catch (Exception exception) {
             plugin.getLogger().log(
                     Level.SEVERE,
-                    "Failed to open custom Ender Chest for " + player.getUniqueId(),
+                    "ꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ ᴄᴜѕᴛᴏᴍ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ꜰᴏʀ " + player.getUniqueId(),
                     exception
             );
             player.sendMessage(ColorUtils.toComponent(
-                    getMessage("OPEN-FAILED", "&cFailed to open your Ender Chest. Please try again.")
+                    getMessage("OPEN-FAILED", "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ.")
             ));
         }
     }
@@ -153,7 +153,7 @@ public class EnderChestManager {
 
         if (player != null && player.isOnline()) {
             player.sendMessage(ColorUtils.toComponent(
-                    getMessage("SAVE-FAILED", "&cFailed to save your Ender Chest. Contact staff.")
+                    getMessage("SAVE-FAILED", "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴄᴏɴᴛᴀᴄᴛ ѕᴛᴀꜰꜰ.")
             ));
         }
     }
@@ -259,7 +259,7 @@ public class EnderChestManager {
     }
 
     private String getTitle() {
-        return getConfig().getString("ENDER-CHEST.TITLE", "&5Ender Chest");
+        return getConfig().getString("ENDER-CHEST.TITLE", "&5ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ");
     }
 
     private int clampRows(int rows) {

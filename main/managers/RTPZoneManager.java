@@ -38,15 +38,15 @@ public class RTPZoneManager {
                 && plugin.getConfigManager().getConfig().getBoolean("RTP-ZONE.ENABLED", true);
         cuboidName = plugin.getConfigManager().getConfig().getString("RTP-ZONE.CUBOID", "");
         countdownSeconds = Math.max(1, plugin.getConfigManager().getConfig().getInt("RTP-ZONE.EVERY", 30));
-        titleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.TITLE", "&c&lRTP Zone");
-        subtitleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.SUB-TITLE", "&fTeleporting in %countdown%");
+        titleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.TITLE", "&c&lʀᴛᴘ ᴢᴏɴᴇ");
+        subtitleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.SUB-TITLE", "&fᴛᴇʟᴇᴘᴏʀᴛɪɴɢ ɪɴ %countdown%");
         cancelledMessage = plugin.getConfigManager().getConfig().getString(
                 "RTP-ZONE.CANCELLED-MESSAGE",
-                "&cRTP cancelled because you left the zone."
+                "&cʀᴛᴘ ᴄᴀɴᴄᴇʟʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ʏᴏᴜ ʟᴇꜰᴛ ᴛʜᴇ ᴢᴏɴᴇ."
         );
         failedMessage = plugin.getConfigManager().getConfig().getString(
                 "RTP-ZONE.FAILED-MESSAGE",
-                "&cCould not find a safe RTP zone location."
+                "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʀᴛᴘ ᴢᴏɴᴇ ʟᴏᴄᴀᴛɪᴏɴ."
         );
         successMessage = plugin.getConfigManager().getConfig().getString("RTP-ZONE.SUCCESS-MESSAGE", "");
         countdownSound = plugin.getConfigManager().getSound("RTP-ZONE.COUNTDOWN");

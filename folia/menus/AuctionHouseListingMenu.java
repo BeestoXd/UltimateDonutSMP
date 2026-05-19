@@ -26,7 +26,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
             int originPage,
             AuctionHouseManager.AuctionSort sortMode
     ) {
-        super(plugin, "&8Auction #" + listingId, 27);
+        super(plugin, "&8ᴀᴜᴄᴛɪᴏɴ #" + listingId, 27);
         this.listingId = listingId;
         this.backToMyListings = backToMyListings;
         this.originPage = Math.max(1, originPage);
@@ -39,13 +39,13 @@ public class AuctionHouseListingMenu extends BaseMenu {
         fill(Material.GRAY_STAINED_GLASS_PANE);
 
         AuctionListing listing = plugin.getAuctionHouseManager().getListing(listingId);
-        set(18, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cBack", List.of("&7Return to the previous menu")));
+        set(18, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴘʀᴇᴠɪᴏᴜѕ ᴍᴇɴᴜ")));
 
         if (listing == null) {
             set(13, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cListing Not Found",
-                    List.of("&7This listing no longer exists.")
+                    "&cʟɪѕᴛɪɴɢ ɴᴏᴛ ꜰᴏᴜɴᴅ",
+                    List.of("&7ᴛʜɪѕ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.")
             ));
             return;
         }
@@ -53,40 +53,40 @@ public class AuctionHouseListingMenu extends BaseMenu {
         boolean owner = listing.sellerUuid().equals(player.getUniqueId());
         set(11, ItemUtils.createItem(
                 Material.PAPER,
-                "&bListing Info",
+                "&bʟɪѕᴛɪɴɢ ɪɴꜰᴏ",
                 List.of(
-                        "&7ID: &f#" + listing.id(),
-                        "&7Seller: &f" + listing.sellerName(),
-                        "&7Status: &f" + listing.status().name(),
-                        "&7Price: " + plugin.getCurrencyManager().formatMoney(listing.price())
+                        "&7ɪᴅ: &f#" + listing.id(),
+                        "&7ѕᴇʟʟᴇʀ: &f" + listing.sellerName(),
+                        "&7ѕᴛᴀᴛᴜѕ: &f" + listing.status().name(),
+                        "&7ᴘʀɪᴄᴇ: &a$" + NumberUtils.format(listing.price())
                 )
         ));
         set(13, AuctionHouseMenuSupport.createListingDisplay(plugin, plugin.getAuctionHouseManager(), listing, owner));
         set(15, ItemUtils.createItem(
                 Material.CLOCK,
-                "&eTiming",
+                "&eᴛɪᴍɪɴɢ",
                 List.of(
-                        "&7Created: &f" + NumberUtils.formatTimeLong(Math.max(0L,
+                        "&7ᴄʀᴇᴀᴛᴇᴅ: &f" + NumberUtils.formatTimeLong(Math.max(0L,
                                 (System.currentTimeMillis() - listing.createdAt()) / 1000L)),
-                        "&7Time Left: &f" + plugin.getAuctionHouseManager()
+                        "&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + plugin.getAuctionHouseManager()
                                 .formatRemaining(listing.secondsRemaining(System.currentTimeMillis())),
-                        "&7Seller Payout: " + plugin.getCurrencyManager().formatMoney(listing.sellerPayout())
+                        "&7ѕᴇʟʟᴇʀ ᴘᴀʏᴏᴜᴛ: &a$" + NumberUtils.format(listing.sellerPayout())
                 )
         ));
 
         if (!listing.active()) {
-            set(23, ItemUtils.createItem(Material.BARRIER, "&cListing Unavailable", List.of("&7This listing is no longer active.")));
+            set(23, ItemUtils.createItem(Material.BARRIER, "&cʟɪѕᴛɪɴɢ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ", List.of("&7ᴛʜɪѕ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.")));
             return;
         }
 
         if (owner) {
             set(23, ItemUtils.createItem(
                     Material.REDSTONE,
-                    "&cCancel Listing",
+                    "&cᴄᴀɴᴄᴇʟ ʟɪѕᴛɪɴɢ",
                     List.of(
-                            "&7Move this listing into your claim queue.",
+                            "&7ᴍᴏᴠᴇ ᴛʜɪѕ ʟɪѕᴛɪɴɢ ɪɴᴛᴏ ʏᴏᴜʀ ᴄʟᴀɪᴍ ǫᴜᴇᴜᴇ.",
                             "",
-                            "&eClick to cancel"
+                            "&eᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ"
                     )
             ));
             return;
@@ -94,12 +94,12 @@ public class AuctionHouseListingMenu extends BaseMenu {
 
         set(23, ItemUtils.createItem(
                 Material.EMERALD,
-                "&aBuy Listing",
+                "&aʙᴜʏ ʟɪѕᴛɪɴɢ",
                 List.of(
-                        "&7Price: " + plugin.getCurrencyManager().formatMoney(listing.price()),
-                        "&7Item: &f" + plugin.getAuctionHouseManager().describeItem(listing.item()),
+                        "&7ᴘʀɪᴄᴇ: &a$" + NumberUtils.format(listing.price()),
+                        "&7ɪᴛᴇᴍ: &f" + plugin.getAuctionHouseManager().describeItem(listing.item()),
                         "",
-                        "&eClick to purchase"
+                        "&eᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀѕᴇ"
                 )
         ));
     }
@@ -125,19 +125,19 @@ public class AuctionHouseListingMenu extends BaseMenu {
         if (listing == null) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_FOUND",
-                    "&cThat listing no longer exists."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ."
             )));
             return;
         }
 
         if (!manager.beginAction(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cAuction House is still processing your previous action."));
+            player.sendMessage(ColorUtils.toComponent("&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ᴘʀᴇᴠɪᴏᴜѕ ᴀᴄᴛɪᴏɴ."));
             return;
         }
 
         try {
             if (manager.isOnClickCooldown(player.getUniqueId())) {
-                player.sendMessage(ColorUtils.toComponent("&cSlow down for a moment."));
+                player.sendMessage(ColorUtils.toComponent("&cѕʟᴏᴡ ᴅᴏᴡɴ ꜰᴏʀ ᴀ ᴍᴏᴍᴇɴᴛ."));
                 return;
             }
             manager.updateClickCooldown(player.getUniqueId());
@@ -172,7 +172,6 @@ public class AuctionHouseListingMenu extends BaseMenu {
                     "AUCTION_HOUSE.PURCHASE_SUCCESS",
                     "{item}", manager.describeItem(listing.item()),
                     "{price}", NumberUtils.format(listing.price()),
-                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(listing.price()),
                     "{seller}", listing.sellerName()
             )));
             SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));
@@ -185,28 +184,28 @@ public class AuctionHouseListingMenu extends BaseMenu {
     private String resolvePurchaseFailure(AuctionHouseManager.PurchaseListingResult result) {
         return switch (result.reason()) {
             case DISABLED -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.DISABLED");
-            case NO_PLAYER_DATA -> "&cYour player data could not be loaded.";
+            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
             case LISTING_NOT_FOUND -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_FOUND",
-                    "&cThat listing no longer exists."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ."
             );
             case NOT_ACTIVE -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_ACTIVE",
-                    "&cThat listing is no longer active."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ."
             );
             case OWN_LISTING -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.CANNOT_BUY_OWN",
-                    "&cYou cannot buy your own listing."
+                    "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʙᴜʏ ʏᴏᴜʀ ᴏᴡɴ ʟɪѕᴛɪɴɢ."
             );
             case NO_MONEY -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NOT_ENOUGH_MONEY",
-                    "&cYou do not have enough money."
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ."
             );
             case INVENTORY_FULL -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.FULL_INVENTORY",
-                    "&cYou need free inventory space to buy that item."
+                    "&cʏᴏᴜ ɴᴇᴇᴅ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕᴘᴀᴄᴇ ᴛᴏ ʙᴜʏ ᴛʜᴀᴛ ɪᴛᴇᴍ."
             );
-            case DATABASE_ERROR -> "&cAuction House could not complete that purchase right now.";
+            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴘᴜʀᴄʜᴀѕᴇ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 
@@ -215,17 +214,17 @@ public class AuctionHouseListingMenu extends BaseMenu {
             case DISABLED -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.DISABLED");
             case LISTING_NOT_FOUND -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_FOUND",
-                    "&cThat listing no longer exists."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ."
             );
             case NOT_OWNER -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NOT_YOUR_LISTING",
-                    "&cThat listing does not belong to you."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ."
             );
             case NOT_ACTIVE -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_ACTIVE",
-                    "&cThat listing is no longer active."
+                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ."
             );
-            case DATABASE_ERROR -> "&cAuction House could not cancel that listing right now.";
+            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴀɴᴄᴇʟ ᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 }

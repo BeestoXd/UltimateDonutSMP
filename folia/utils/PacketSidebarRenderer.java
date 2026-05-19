@@ -107,7 +107,7 @@ public final class PacketSidebarRenderer {
             state.lines.clear();
             state.lines.addAll(normalized);
         } catch (ReflectiveOperationException | RuntimeException exception) {
-            disableWithWarning(exception);
+            disableWithwarning(exception);
         }
     }
 
@@ -128,7 +128,7 @@ public final class PacketSidebarRenderer {
             }
             sendPacket(player, createObjectivePacket(state.objectiveName, state.title, 1));
         } catch (ReflectiveOperationException | RuntimeException exception) {
-            disableWithWarning(exception);
+            disableWithwarning(exception);
         }
     }
 
@@ -831,7 +831,7 @@ public final class PacketSidebarRenderer {
         return base + Integer.toHexString(index);
     }
 
-    private void disableWithWarning(Exception exception) {
+    private void disableWithwarning(Exception exception) {
         disabled = true;
         states.clear();
         if (warned) {
