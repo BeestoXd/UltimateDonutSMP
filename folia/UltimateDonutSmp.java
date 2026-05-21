@@ -83,6 +83,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        printStartupBanner();
+
         foliaScheduler = new FoliaScheduler(this);
 
         // 1. config & database (no dependencies)
@@ -276,6 +279,46 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         getServer().getServicesManager().unregisterAll(this);
         getLogger().info("UltimateDonutSmp disabled.");
+    }
+
+    // ── Startup Banner ─────────────────────────────────────────────────────────
+
+    private void printStartupBanner() {
+        var console = getServer().getConsoleSender();
+        String v = getDescription().getVersion();
+
+        console.sendMessage("");
+        console.sendMessage("§6§l  ██╗   ██╗██╗  ████████╗██╗███╗   ███╗ █████╗ ████████╗███████╗");
+        console.sendMessage("§6§l  ██║   ██║██║  ╚══██╔══╝██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝");
+        console.sendMessage("§6§l  ██║   ██║██║     ██║   ██║██╔████╔██║███████║   ██║   █████╗  ");
+        console.sendMessage("§6§l  ██║   ██║██║     ██║   ██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  ");
+        console.sendMessage("§6§l  ╚██████╔╝███████╗██║   ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗");
+        console.sendMessage("§6§l   ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝");
+        console.sendMessage("");
+        console.sendMessage("§e§l  ██████╗  ██████╗ ███╗   ██╗██╗   ██╗████████╗    ███████╗███╗   ███╗██████╗ ");
+        console.sendMessage("§e§l  ██╔══██╗██╔═══██╗████╗  ██║██║   ██║╚══██╔══╝    ██╔════╝████╗ ████║██╔══██╗");
+        console.sendMessage("§e§l  ██║  ██║██║   ██║██╔██╗ ██║██║   ██║   ██║       ███████╗██╔████╔██║██████╔╝");
+        console.sendMessage("§e§l  ██║  ██║██║   ██║██║╚██╗██║██║   ██║   ██║       ╚════██║██║╚██╔╝██║██╔═══╝ ");
+        console.sendMessage("§e§l  ██████╔╝╚██████╔╝██║ ╚████║╚██████╔╝   ██║       ███████║██║ ╚═╝ ██║██║     ");
+        console.sendMessage("§e§l  ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝    ╚═╝       ╚══════╝╚═╝     ╚═╝╚═╝     ");
+        console.sendMessage("");
+        console.sendMessage("§8  ═══════════════════════════════════════════════════════════════════════════════");
+        console.sendMessage("§7                       §fMade by §b§lBeestoXd §8| §fVersion §a§l" + v);
+        console.sendMessage("§7                   §fDiscord: §9§nhttps://dsc.gg/hellstarr");
+        console.sendMessage("§8  ═══════════════════════════════════════════════════════════════════════════════");
+        console.sendMessage("");
+        console.sendMessage("§8  ╔═══════════════════════════════════════════════════════════════════════════╗");
+        console.sendMessage("§8  ║                                                                         ║");
+        console.sendMessage("§8  ║  §e§l⚠ §6§lNOTE                                                              §8║");
+        console.sendMessage("§8  ║                                                                         ║");
+        console.sendMessage("§8  ║  §fGuys, please donate to this project or this plugin if you really      §8║");
+        console.sendMessage("§8  ║  §flike this plugin, for the donation link just DM me on Discord,        §8║");
+        console.sendMessage("§8  ║  §fand for those who have donated to me, may God bless you and may       §8║");
+        console.sendMessage("§8  ║  §fyou always be healthy and I am very grateful for the donations        §8║");
+        console.sendMessage("§8  ║  §fthat have been given to me §e:)                                       §8║");
+        console.sendMessage("§8  ║                                                                         ║");
+        console.sendMessage("§8  ╚═══════════════════════════════════════════════════════════════════════════╝");
+        console.sendMessage("");
     }
 
     // ── Registration helpers ──────────────────────────────────────────────────
