@@ -10,6 +10,7 @@ import com.bx.ultimateDonutSmp.tasks.*;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.FoliaScheduler;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -62,6 +63,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private AmethystToolsManager amethystToolsManager;
     private EnderChestManager  enderChestManager;
     private FreezeManager      freezeManager;
+    private GodModeManager     godModeManager;
     private InvseeManager      invseeManager;
     private ProfileViewerManager profileViewerManager;
     private PunishmentManager  punishmentManager;
@@ -142,6 +144,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         leaderboardManager = new LeaderboardManager(this);
         enderChestManager = new EnderChestManager(this);
         freezeManager = new FreezeManager(this);
+        godModeManager = new GodModeManager();
         staffModeManager = new StaffModeManager(this);
         invseeManager = new InvseeManager(this);
         profileViewerManager = new ProfileViewerManager(this);
@@ -217,6 +220,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (staffModeManager != null) {
             staffModeManager.shutdown();
+        }
+        if (godModeManager != null) {
+            godModeManager.clearAll();
         }
         if (invseeManager != null) {
             invseeManager.shutdown();
@@ -329,6 +335,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new PlayerDeathListener(this), this);
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new CombatListener(this), this);
+        pm.registerEvents(new GodModeListener(this), this);
         pm.registerEvents(new FastCrystalListener(this), this);
         pm.registerEvents(new PlayerRespawnListener(this), this);
         pm.registerEvents(new PlayerMoveListener(this), this);
@@ -447,6 +454,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         getCommand("fly").setExecutor(new FlyCommand(this));
         getCommand("heal").setExecutor(new HealCommand(this));
         getCommand("feed").setExecutor(new FeedCommand(this));
+        registerGodModeCommand(new GodModeCommand(this));
         GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
         getCommand("gamemode").setExecutor(gamemodeCommand);
         getCommand("gamemode").setTabCompleter(gamemodeCommand);
@@ -524,6 +532,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
         getCommand("amethysttool").setExecutor(amethystToolCommand);
         getCommand("amethysttool").setTabCompleter(amethystToolCommand);
         getCommand("ultimatedonutsmp").setExecutor(new UltimateDonutSmpCommand(this));
+    }
+
+    private void registerGodModeCommand(GodModeCommand executor) {
+        PluginCommand command = getCommand("god");
+        if (command != null) {
+            command.setExecutor(executor);
+            return;
+        }
+
+        if (!executor.registerDynamically()) {
+            getLogger().warning("Command missing from plugin.yml and dynamic registration failed: god");
+        }
     }
 
     private void registerVaultEconomyProvider() {
@@ -681,6 +701,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public AmethystToolsManager getAmethystToolsManager() { return amethystToolsManager; }
     public EnderChestManager  getEnderChestManager()  { return enderChestManager; }
     public FreezeManager getFreezeManager() { return freezeManager; }
+    public GodModeManager getGodModeManager() { return godModeManager; }
     public StaffModeManager getStaffModeManager() { return staffModeManager; }
     public InvseeManager getInvseeManager() { return invseeManager; }
     public ProfileViewerManager getProfileViewerManager() { return profileViewerManager; }

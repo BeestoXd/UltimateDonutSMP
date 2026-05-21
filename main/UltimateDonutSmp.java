@@ -66,6 +66,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private AmethystToolsManager amethystToolsManager;
     private EnderChestManager enderChestManager;
     private FreezeManager freezeManager;
+    private GodModeManager godModeManager;
     private InvseeManager invseeManager;
     private ProfileViewerManager profileViewerManager;
     private PunishmentManager punishmentManager;
@@ -151,6 +152,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         leaderboardManager = new LeaderboardManager(this);
         enderChestManager = new EnderChestManager(this);
         freezeManager = new FreezeManager(this);
+        godModeManager = new GodModeManager();
         staffModeManager = new StaffModeManager(this);
         invseeManager = new InvseeManager(this);
         profileViewerManager = new ProfileViewerManager(this);
@@ -226,6 +228,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (staffModeManager != null) {
             staffModeManager.shutdown();
+        }
+        if (godModeManager != null) {
+            godModeManager.clearAll();
         }
         if (invseeManager != null) {
             invseeManager.shutdown();
@@ -353,6 +358,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new PlayerDeathListener(this), this);
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new CombatListener(this), this);
+        pm.registerEvents(new GodModeListener(this), this);
         pm.registerEvents(new FastCrystalListener(this), this);
         pm.registerEvents(new PlayerRespawnListener(this), this);
         pm.registerEvents(new PlayerMoveListener(this), this);
@@ -478,6 +484,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("fly", new FlyCommand(this));
         setExecutor("heal", new HealCommand(this));
         setExecutor("feed", new FeedCommand(this));
+        registerGodModeCommand(new GodModeCommand(this));
         GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
         setExecutor("gamemode", gamemodeCommand, FeatureManager.Feature.GAMEMODE);
         setTabCompleter("gamemode", gamemodeCommand);
@@ -575,6 +582,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
         command.setExecutor(featureExecutor);
         if (executor instanceof TabCompleter) {
             command.setTabCompleter(featureExecutor);
+        }
+    }
+
+    private void registerGodModeCommand(GodModeCommand executor) {
+        PluginCommand command = getCommand("god");
+        if (command != null) {
+            command.setExecutor(executor);
+            return;
+        }
+
+        if (!executor.registerDynamically()) {
+            getLogger().warning("Command missing from plugin.yml and dynamic registration failed: god");
         }
     }
 
@@ -906,6 +925,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public FreezeManager getFreezeManager() {
         return freezeManager;
+    }
+
+    public GodModeManager getGodModeManager() {
+        return godModeManager;
     }
 
     public StaffModeManager getStaffModeManager() {
