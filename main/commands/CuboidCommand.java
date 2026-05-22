@@ -125,7 +125,8 @@ public class CuboidCommand implements CommandExecutor {
         }
 
         String cuboidName = args[1].toLowerCase();
-        if (plugin.getCuboidManager().getCuboid(cuboidName) == null) {
+        var cuboid = plugin.getCuboidManager().getCuboid(cuboidName);
+        if (cuboid == null) {
             player.sendMessage(ColorUtils.toComponent("&cᴄᴜʙᴏɪᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ: &f" + args[1]));
             return;
         }
@@ -160,8 +161,10 @@ public class CuboidCommand implements CommandExecutor {
                 List<String> afkBinds = config.getStringList("CUBOID-BINDS.AFK");
                 if (enabled) {
                     config.set("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", cuboidName);
+                    config.set("SHARDS.CUBOIDS.REGIONS.spawn.WORLD", cuboid.world());
                 } else {
                     config.set("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", "");
+                    config.set("SHARDS.CUBOIDS.REGIONS.spawn.WORLD", "");
                 }
                 config.set("AFK-SYSTEM.AFK-CUBOID-NAME", afkBinds.isEmpty() ? "" : afkBinds.get(0));
             }
