@@ -21,6 +21,7 @@ public class SellMenu extends BaseMenu {
 
     private static final int SIZE = 54;
     private static final int SELLABLE_SLOT_END = 45;
+    private static final long PROCESS_DELAY_TICKS = 2L;
     private static final List<SellCategory> BUTTON_ORDER = List.of(
             SellCategory.CROPS,
             SellCategory.ORES,
@@ -64,11 +65,14 @@ public class SellMenu extends BaseMenu {
             return;
         }
 
+        boolean autoSell = isAutoSellEnabled();
         int rawSlot = event.getRawSlot();
         if (rawSlot >= 0 && rawSlot < inventory.getSize()) {
             if (isSellableSlot(rawSlot)) {
                 event.setCancelled(false);
-                scheduleProcessing(player);
+                if (autoSell) {
+                    scheduleProcessing(player);
+                }
                 return;
             }
 
@@ -82,7 +86,9 @@ public class SellMenu extends BaseMenu {
         }
 
         event.setCancelled(false);
-        scheduleProcessing(player);
+        if (autoSell) {
+            scheduleProcessing(player);
+        }
     }
 
     public void handleInventoryDrag(InventoryDragEvent event) {
@@ -94,14 +100,16 @@ public class SellMenu extends BaseMenu {
         }
 
         event.setCancelled(false);
-        if (event.getWhoClicked() instanceof Player player) {
+        if (isAutoSellEnabled() && event.getWhoClicked() instanceof Player player) {
             scheduleProcessing(player);
         }
     }
 
     @Override
     public void onClose(Player player) {
-        plugin.getShopManager().sellInventoryContents(player, inventory, 0, SELLABLE_SLOT_END);
+        if (isAutoSellEnabled()) {
+            plugin.getShopManager().sellInventoryContents(player, inventory, 0, SELLABLE_SLOT_END);
+        }
 
         for (int slot = 0; slot < SELLABLE_SLOT_END; slot++) {
             ItemStack item = inventory.getItem(slot);
@@ -121,16 +129,19 @@ public class SellMenu extends BaseMenu {
         }
 
         processScheduled = true;
-        plugin.getSpigotScheduler().runEntity(player, () -> {
+        plugin.getSpigotScheduler().runEntityLater(player, () -> {
             processScheduled = false;
             if (!player.isOnline()) {
+                return;
+            }
+            if (!inventory.equals(player.getOpenInventory().getTopInventory())) {
                 return;
             }
 
             plugin.getShopManager().sellInventoryContents(player, inventory, 0, SELLABLE_SLOT_END);
             refreshMultiplierButtons(player);
             player.updateInventory();
-        });
+        }, PROCESS_DELAY_TICKS);
     }
 
     private void refreshMultiplierButtons(Player player) {
@@ -171,5 +182,9 @@ public class SellMenu extends BaseMenu {
 
     private boolean isSellableSlot(int slot) {
         return slot >= 0 && slot < SELLABLE_SLOT_END;
+    }
+
+    private boolean isAutoSellEnabled() {
+        return plugin.getConfigManager().getMenus().getBoolean("SELL-MENU.AUTO-SELL", true);
     }
 }
