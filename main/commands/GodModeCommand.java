@@ -83,10 +83,6 @@ public class GodModeCommand extends Command implements CommandExecutor {
         }
 
         boolean enabled = plugin.getGodModeManager().toggle(target.getUniqueId());
-        if (enabled) {
-            target.setRemainingAir(target.getMaximumAir());
-        }
-
         notifyTarget(sender, target, enabled);
         return true;
     }
