@@ -60,6 +60,7 @@ public class RTPManager {
     private static final long MIN_SEARCH_DISPLAY_TICKS = 60L;
     private static final int SEARCH_ATTEMPTS_PER_TICK = 1;
     private static final long FOUND_ACTIONBAR_DELAY_TICKS = 20L;
+    private static final int SYNC_SEARCH_UNLIMITED_SAMPLE_CAP = 512;
     private static final int NETHER_ROOF_PADDING_BLOCKS = 8;
     private static final int PLAYER_CLEARANCE_BLOCKS = 2;
     private static final String GENERATE_CHUNKS_SETTING = "SETTINGS.GENERATE-CHUNKS";
@@ -182,8 +183,8 @@ public class RTPManager {
                 Math.max(minRadius, maxRadius),
                 centerX,
                 centerZ,
-                Math.max(1, maxAttempts),
-                Math.max(maxAttempts, maxChunkSamples),
+                normalizeSearchLimit(maxAttempts),
+                normalizeChunkSampleLimit(maxAttempts, maxChunkSamples),
                 Math.max(1, attemptIntervalTicks)
         );
     }
@@ -203,8 +204,8 @@ public class RTPManager {
                 Math.max(minRadius, maxRadius),
                 centerX,
                 centerZ,
-                Math.max(1, maxAttempts),
-                Math.max(maxAttempts, maxChunkSamples),
+                normalizeSearchLimit(maxAttempts),
+                normalizeChunkSampleLimit(maxAttempts, maxChunkSamples),
                 Math.max(1, attemptIntervalTicks)
         );
     }
@@ -329,7 +330,10 @@ public class RTPManager {
 
         int attemptsUsed = 0;
         int chunkSamplesUsed = 0;
-        while (attemptsUsed < settings.maxAttempts() && chunkSamplesUsed < settings.maxChunkSamples()) {
+        int synchronousSampleCap = getSynchronousSampleCap(settings);
+        while (hasAttemptBudget(attemptsUsed, settings)
+                && hasChunkSampleBudget(chunkSamplesUsed, settings)
+                && chunkSamplesUsed < synchronousSampleCap) {
             chunkSamplesUsed++;
             LocationAttempt attempt = shouldUseLoadedChunkFallback(attemptsUsed, chunkSamplesUsed)
                     ? tryLoadedChunkLocationAttempt(settings)
@@ -453,8 +457,7 @@ public class RTPManager {
         }
 
         for (int i = 0; i < SEARCH_ATTEMPTS_PER_TICK
-                && progress.attemptsUsed < progress.settings.maxAttempts()
-                && progress.chunkSamplesUsed < progress.settings.maxChunkSamples(); i++) {
+                && hasSearchBudget(progress); i++) {
             beginAsyncLocationAttempt(playerId, progress);
         }
     }
@@ -532,8 +535,8 @@ public class RTPManager {
     }
 
     private boolean isSearchLimitReached(SearchProgress progress) {
-        return progress.attemptsUsed >= progress.settings.maxAttempts()
-                || progress.chunkSamplesUsed >= progress.settings.maxChunkSamples();
+        return isFiniteLimitReached(progress.attemptsUsed, progress.settings.maxAttempts())
+                || isFiniteLimitReached(progress.chunkSamplesUsed, progress.settings.maxChunkSamples());
     }
 
     private void failSearch(UUID playerId, SearchProgress progress) {
@@ -544,9 +547,9 @@ public class RTPManager {
         }
 
         String attempts = String.valueOf(progress.attemptsUsed);
-        String maxAttempts = String.valueOf(progress.settings.maxAttempts());
+        String maxAttempts = formatSearchLimit(progress.settings.maxAttempts());
         String samples = String.valueOf(progress.chunkSamplesUsed);
-        String maxSamples = String.valueOf(progress.settings.maxChunkSamples());
+        String maxSamples = formatSearchLimit(progress.settings.maxChunkSamples());
         String maxAttemptsMessage = plugin.getConfigManager().getRtp()
                 .getString("MESSAGES.MAX-ATTEMPTS", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀꜰᴛᴇʀ %attempts% ᴀᴛᴛᴇᴍᴘᴛѕ.")
                 .replace("%attempts%", attempts)
@@ -606,13 +609,14 @@ public class RTPManager {
         long displayedSeconds = getDisplayedSearchSeconds(progress.elapsedTicks);
 
         String actionBar = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ")
+                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ");
+        actionBar = stripSearchCounter(actionBar)
                 .replace("{world}", describeWorld(progress.worldName))
                 .replace("{elapsed}", formatElapsedSeconds(progress.elapsedTicks))
                 .replace("{attempts}", String.valueOf(progress.attemptsUsed))
-                .replace("{max_attempts}", String.valueOf(progress.settings.maxAttempts()))
+                .replace("{max_attempts}", formatSearchLimit(progress.settings.maxAttempts()))
                 .replace("{samples}", String.valueOf(progress.chunkSamplesUsed))
-                .replace("{max_samples}", String.valueOf(progress.settings.maxChunkSamples()));
+                .replace("{max_samples}", formatSearchLimit(progress.settings.maxChunkSamples()));
 
         sendPersistentActionBar(player, actionBar, progress.elapsedTicks);
         if (displayedSeconds > progress.lastElapsedSecond) {
@@ -678,12 +682,12 @@ public class RTPManager {
         }
 
         boolean generateChunks = plugin.getConfigManager().getRtp()
-                .getBoolean(GENERATE_CHUNKS_SETTING, false);
+                .getBoolean(GENERATE_CHUNKS_SETTING, true);
         if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
             return false;
         }
         if (!generateChunks && !plugin.getConfigManager().getRtp()
-                .getBoolean(LOAD_GENERATED_CHUNKS_SETTING, false)) {
+                .getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
             return false;
         }
 
@@ -919,6 +923,64 @@ public class RTPManager {
 
     private boolean hasWorldSearchSettings(String worldName) {
         return plugin.getConfigManager().getRtp().isConfigurationSection("WORLD-SETTINGS." + worldName);
+    }
+
+    private int normalizeSearchLimit(int limit) {
+        return limit <= 0 || limit == 16 ? 0 : limit;
+    }
+
+    private int normalizeChunkSampleLimit(int maxAttempts, int maxChunkSamples) {
+        int normalizedAttempts = normalizeSearchLimit(maxAttempts);
+        int normalizedSamples = maxChunkSamples <= 0 || maxChunkSamples == 128 ? 0 : maxChunkSamples;
+        if (normalizedAttempts <= 0 || normalizedSamples <= 0) {
+            return 0;
+        }
+        return Math.max(normalizedAttempts, normalizedSamples);
+    }
+
+    private boolean hasSearchBudget(SearchProgress progress) {
+        return hasAttemptBudget(progress.attemptsUsed, progress.settings)
+                && hasChunkSampleBudget(progress.chunkSamplesUsed, progress.settings);
+    }
+
+    private boolean hasAttemptBudget(int attemptsUsed, SearchSettings settings) {
+        return settings.maxAttempts() <= 0 || attemptsUsed < settings.maxAttempts();
+    }
+
+    private boolean hasChunkSampleBudget(int chunkSamplesUsed, SearchSettings settings) {
+        return settings.maxChunkSamples() <= 0 || chunkSamplesUsed < settings.maxChunkSamples();
+    }
+
+    private boolean isFiniteLimitReached(int used, int limit) {
+        return limit > 0 && used >= limit;
+    }
+
+    private String formatSearchLimit(int limit) {
+        return limit <= 0 ? "unlimited" : String.valueOf(limit);
+    }
+
+    private int getSynchronousSampleCap(SearchSettings settings) {
+        if (settings.maxChunkSamples() > 0) {
+            return settings.maxChunkSamples();
+        }
+        if (settings.maxAttempts() > 0) {
+            return Math.max(settings.maxAttempts(), SYNC_SEARCH_UNLIMITED_SAMPLE_CAP);
+        }
+        return SYNC_SEARCH_UNLIMITED_SAMPLE_CAP;
+    }
+
+    private String stripSearchCounter(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text
+                .replace(" &8(&f{attempts}/{max_attempts}&8)", "")
+                .replace("&8(&f{attempts}/{max_attempts}&8)", "")
+                .replace(" &8(&f{attempts} checks&8)", "")
+                .replace("&8(&f{attempts} checks&8)", "")
+                .replace(" ({attempts}/{max_attempts})", "")
+                .replace("{attempts}/{max_attempts}", "")
+                .trim();
     }
 
     private long getCooldownRemainingMillis(UUID playerId, String worldName) {

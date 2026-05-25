@@ -60,6 +60,7 @@ public class RTPManager {
     private static final long FOUND_ACTIONBAR_DELAY_TICKS = 20L;
     private static final int NETHER_ROOF_PADDING_BLOCKS = 8;
     private static final int PLAYER_CLEARANCE_BLOCKS = 2;
+    private static final int SYNC_SEARCH_UNLIMITED_ATTEMPT_CAP = 512;
 
     private static final class SearchProgress {
         private final String worldName;
@@ -165,7 +166,7 @@ public class RTPManager {
                 Math.max(minRadius, maxRadius),
                 centerX,
                 centerZ,
-                Math.max(1, maxAttempts)
+                normalizeSearchLimit(maxAttempts)
         );
     }
 
@@ -182,7 +183,7 @@ public class RTPManager {
                 Math.max(minRadius, maxRadius),
                 centerX,
                 centerZ,
-                Math.max(1, maxAttempts)
+                normalizeSearchLimit(maxAttempts)
         );
     }
 
@@ -283,7 +284,10 @@ public class RTPManager {
             return null;
         }
 
-        for (int attempt = 0; attempt < settings.maxAttempts(); attempt++) {
+        int synchronousAttemptCap = getSynchronousAttemptCap(settings);
+        for (int attempt = 0;
+             hasAttemptBudget(attempt, settings) && attempt < synchronousAttemptCap;
+             attempt++) {
             Location found = tryFindSafeLocationAttempt(settings);
             if (found != null) {
                 return found;
@@ -400,7 +404,7 @@ public class RTPManager {
             return;
         }
 
-        for (int i = 0; i < SEARCH_ATTEMPTS_PER_TICK && progress.attemptsUsed < progress.settings.maxAttempts(); i++) {
+        for (int i = 0; i < SEARCH_ATTEMPTS_PER_TICK && hasAttemptBudget(progress.attemptsUsed, progress.settings); i++) {
             beginAsyncLocationAttempt(playerId, progress);
         }
     }
@@ -444,7 +448,7 @@ public class RTPManager {
         progress.attemptInFlight = false;
         if (throwable != null) {
             plugin.getLogger().warning("[RTPManager] Async RTP chunk load failed: " + throwable.getMessage());
-            if (progress.attemptsUsed >= progress.settings.maxAttempts()) {
+            if (isSearchLimitReached(progress)) {
                 failSearch(playerId, progress);
             }
             return;
@@ -467,7 +471,7 @@ public class RTPManager {
             return;
         }
 
-        if (progress.attemptsUsed >= progress.settings.maxAttempts()) {
+        if (isSearchLimitReached(progress)) {
             failSearch(playerId, progress);
         }
     }
@@ -479,7 +483,7 @@ public class RTPManager {
             return;
         }
 
-        String attempts = String.valueOf(progress.settings.maxAttempts());
+        String attempts = formatSearchLimit(progress.settings.maxAttempts());
         String maxAttemptsMessage = plugin.getConfigManager().getRtp()
                 .getString("MESSAGES.MAX-ATTEMPTS", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀꜰᴛᴇʀ %attempts% aᴛᴛᴇᴍᴘᴛѕ.")
                 .replace("%attempts%", attempts)
@@ -533,11 +537,12 @@ public class RTPManager {
         long displayedSeconds = getDisplayedSearchSeconds(progress.elapsedTicks);
 
         String actionBar = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ")
+                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ");
+        actionBar = stripSearchCounter(actionBar)
                 .replace("{world}", describeWorld(progress.worldName))
                 .replace("{elapsed}", formatElapsedSeconds(progress.elapsedTicks))
                 .replace("{attempts}", String.valueOf(progress.attemptsUsed))
-                .replace("{max_attempts}", String.valueOf(progress.settings.maxAttempts()));
+                .replace("{max_attempts}", formatSearchLimit(progress.settings.maxAttempts()));
 
         sendPersistentActionBar(player, actionBar, progress.elapsedTicks);
         if (displayedSeconds > progress.lastElapsedSecond) {
@@ -742,6 +747,43 @@ public class RTPManager {
 
     private boolean hasWorldSearchSettings(String worldName) {
         return plugin.getConfigManager().getRtp().isConfigurationSection("WORLD-SETTINGS." + worldName);
+    }
+
+    private int normalizeSearchLimit(int limit) {
+        return limit <= 0 || limit == 16 ? 0 : limit;
+    }
+
+    private boolean hasAttemptBudget(int attemptsUsed, SearchSettings settings) {
+        return settings.maxAttempts() <= 0 || attemptsUsed < settings.maxAttempts();
+    }
+
+    private boolean isSearchLimitReached(SearchProgress progress) {
+        return progress.settings.maxAttempts() > 0 && progress.attemptsUsed >= progress.settings.maxAttempts();
+    }
+
+    private String formatSearchLimit(int limit) {
+        return limit <= 0 ? "unlimited" : String.valueOf(limit);
+    }
+
+    private int getSynchronousAttemptCap(SearchSettings settings) {
+        if (settings.maxAttempts() > 0) {
+            return Math.max(settings.maxAttempts(), SYNC_SEARCH_UNLIMITED_ATTEMPT_CAP);
+        }
+        return SYNC_SEARCH_UNLIMITED_ATTEMPT_CAP;
+    }
+
+    private String stripSearchCounter(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text
+                .replace(" &8(&f{attempts}/{max_attempts}&8)", "")
+                .replace("&8(&f{attempts}/{max_attempts}&8)", "")
+                .replace(" &8(&f{attempts} checks&8)", "")
+                .replace("&8(&f{attempts} checks&8)", "")
+                .replace(" ({attempts}/{max_attempts})", "")
+                .replace("{attempts}/{max_attempts}", "")
+                .trim();
     }
 
     private long getCooldownRemainingMillis(UUID playerId, String worldName) {
