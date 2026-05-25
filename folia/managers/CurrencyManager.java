@@ -50,7 +50,7 @@ public class CurrencyManager {
         }
     }
 
-    private static final List<String> DEFAULT_COMPACT_SUFFIXES = List.of("k", "m", "b", "t", "q");
+    private static final List<String> DEFAULT_COMPACT_SUFFIXES = List.of("K", "M", "B", "T", "Q");
 
     private final UltimateDonutSmp plugin;
 
@@ -246,7 +246,7 @@ public class CurrencyManager {
         boolean compactEnabled = section == null
                 ? true
                 : section.getBoolean("COMPACT-ENABLED", true);
-        List<String> compactSuffixes = getStringList(section, "COMPACT-SUFFIXES", DEFAULT_COMPACT_SUFFIXES);
+        List<String> compactSuffixes = getCompactSuffixes(section, "COMPACT-SUFFIXES", DEFAULT_COMPACT_SUFFIXES);
         int compactDecimalPlaces = clampDecimalPlaces(section != null
                 ? section.getInt("COMPACT-DECIMAL-PLACES", 1)
                 : 1);
@@ -292,6 +292,15 @@ public class CurrencyManager {
             }
         }
         return values.isEmpty() ? fallback : List.copyOf(values);
+    }
+
+    private List<String> getCompactSuffixes(ConfigurationSection section, String key, List<String> fallback) {
+        List<String> suffixes = getStringList(section, key, fallback);
+        List<String> normalized = new ArrayList<>(suffixes.size());
+        for (String suffix : suffixes) {
+            normalized.add(suffix.toUpperCase(Locale.US));
+        }
+        return List.copyOf(normalized);
     }
 
     private char getSeparator(ConfigurationSection section, String key, char fallback) {
