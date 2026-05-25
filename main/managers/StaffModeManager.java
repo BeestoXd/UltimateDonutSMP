@@ -194,11 +194,11 @@ public class StaffModeManager {
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
+        return getConfig().getString("MESSAGES." + path, fallback);
     }
 
     public String getStaffMessage(String path, String fallback) {
-        return plugin.getConfigManager().getMessages().getString("ѕᴛᴀꜰꜰ." + path, fallback);
+        return plugin.getConfigManager().getMessages().getString("STAFF." + path, fallback);
     }
 
     public String getRandomTeleportMessage(String path, String fallback) {

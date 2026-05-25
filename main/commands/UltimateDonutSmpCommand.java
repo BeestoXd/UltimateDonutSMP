@@ -277,8 +277,8 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             FileConfiguration network = plugin.getConfigManager().getNetwork();
             FileConfiguration discord = plugin.getConfigManager().getDiscord();
 
-            config.set("SETTINGS.SPAWN-MENU", false);
-            config.set("SETTINGS.AFK-MENU", false);
+            config.set("SETTINGS.SPAWN-MENU", true);
+            config.set("SETTINGS.AFK-MENU", true);
             config.set("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", false);
 
             database.set("DATABASE.TYPE", "SQLITE");

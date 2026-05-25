@@ -105,7 +105,11 @@ public class CuboidCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /cuboid delete <name>"));
             return;
         }
-        plugin.getCuboidManager().removeCuboid(args[1]);
+        String cuboidName = args[1].toLowerCase();
+        plugin.getCuboidManager().removeCuboid(cuboidName);
+        clearDeletedCuboidReferences(cuboidName);
+        plugin.saveConfig();
+        plugin.reloadAllPluginConfigurations();
         player.sendMessage(ColorUtils.toComponent("&aᴄᴜʙᴏɪᴅ &b" + args[1] + " &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ."));
     }
 
@@ -167,6 +171,13 @@ public class CuboidCommand implements CommandExecutor {
                 } else {
                     config.set("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", "");
                     config.set("SHARDS.CUBOIDS.REGIONS.spawn.WORLD", "");
+                    if (isBlank(config.getString("SHARDS.CUBOIDS.REGIONS.spawn.LOCATION"))) {
+                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", false);
+                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+                    } else {
+                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", true);
+                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+                    }
                 }
                 config.set("AFK-SYSTEM.AFK-CUBOID-NAME", afkBinds.isEmpty() ? "" : afkBinds.get(0));
             }
@@ -191,6 +202,34 @@ public class CuboidCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent("&aᴀʟʟ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ꜰɪʟᴇѕ ʜᴀᴠᴇ ʙᴇᴇɴ ʀᴇʟᴏᴀᴅᴇᴅ."));
     }
 
+    private void clearDeletedCuboidReferences(String cuboidName) {
+        FileConfiguration config = plugin.getConfigManager().getConfig();
+        updateBindList(config, "CUBOID-BINDS.SPAWN", cuboidName, false);
+        updateBindList(config, "CUBOID-BINDS.AFK", cuboidName, false);
+
+        List<String> spawnBinds = config.getStringList("CUBOID-BINDS.SPAWN");
+        if (cuboidName.equalsIgnoreCase(config.getString("AFK-SYSTEM.SPAWN-CUBOID-NAME", ""))) {
+            config.set("AFK-SYSTEM.SPAWN-CUBOID-NAME", spawnBinds.isEmpty() ? "" : spawnBinds.get(0));
+        }
+
+        List<String> afkBinds = config.getStringList("CUBOID-BINDS.AFK");
+        if (cuboidName.equalsIgnoreCase(config.getString("AFK-SYSTEM.AFK-CUBOID-NAME", ""))) {
+            config.set("AFK-SYSTEM.AFK-CUBOID-NAME", afkBinds.isEmpty() ? "" : afkBinds.get(0));
+        }
+
+        if (cuboidName.equalsIgnoreCase(config.getString("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", ""))) {
+            config.set("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", "");
+            config.set("SHARDS.CUBOIDS.REGIONS.spawn.WORLD", "");
+            if (isBlank(config.getString("SHARDS.CUBOIDS.REGIONS.spawn.LOCATION"))) {
+                config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", false);
+                config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+            } else {
+                config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", true);
+                config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+            }
+        }
+    }
+
     private void updateBindList(FileConfiguration config, String path, String cuboidName, boolean enabled) {
         List<String> current = new ArrayList<>(config.getStringList(path));
         current.removeIf(entry -> entry.equalsIgnoreCase(cuboidName));
@@ -198,6 +237,10 @@ public class CuboidCommand implements CommandExecutor {
             current.add(cuboidName);
         }
         config.set(path, current);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     private String normalizeRole(String raw) {

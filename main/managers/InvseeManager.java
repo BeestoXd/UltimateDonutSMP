@@ -134,7 +134,7 @@ public class InvseeManager {
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
+        return getConfig().getString("MESSAGES." + path, fallback);
     }
 
     public String formatMessage(String path, String fallback, String... placeholders) {

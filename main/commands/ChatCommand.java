@@ -190,6 +190,6 @@ public class ChatCommand implements CommandExecutor {
     }
 
     private String message(String key, String fallback) {
-        return plugin.getConfigManager().getMessages().getString("ᴄʜᴀᴛ-ᴍᴀɴᴀɢᴇʀ." + key, fallback);
+        return plugin.getConfigManager().getMessages().getString("CHAT-MANAGER." + key, fallback);
     }
 }

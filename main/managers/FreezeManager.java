@@ -410,7 +410,7 @@ public class FreezeManager {
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
+        return getConfig().getString("MESSAGES." + path, fallback);
     }
 
     private FreezeSession createOrUpdateSession(Player player, Location anchorLocation) {

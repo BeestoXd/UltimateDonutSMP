@@ -228,13 +228,30 @@ public class ShopMenu extends BaseMenu {
                 .replace("{price}", rawPrice)
                 .replace("%price%", rawPrice);
 
-        if (line.toLowerCase(Locale.US).contains("ʙᴜʏ ᴘʀɪᴄᴇ:") && !line.contains("{price")) {
+        String normalizedLine = normalizePriceLabel(line);
+        if ((normalizedLine.contains("buy price:") || normalizedLine.contains("harga beli:")) && !line.contains("{price")) {
             int colonIndex = line.indexOf(':');
             if (colonIndex >= 0) {
                 return line.substring(0, colonIndex + 1) + " " + formattedPrice;
             }
         }
         return result;
+    }
+
+    private String normalizePriceLabel(String value) {
+        return (value == null ? "" : value.toLowerCase(Locale.ROOT))
+                .replace('ʙ', 'b')
+                .replace('ᴜ', 'u')
+                .replace('ʏ', 'y')
+                .replace('ᴘ', 'p')
+                .replace('ʀ', 'r')
+                .replace('ɪ', 'i')
+                .replace('ᴄ', 'c')
+                .replace('ᴇ', 'e')
+                .replace('ʜ', 'h')
+                .replace('ᴀ', 'a')
+                .replace('ɢ', 'g')
+                .replace('ʟ', 'l');
     }
 
     private void buildBackButton() {

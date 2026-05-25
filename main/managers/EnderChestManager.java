@@ -68,7 +68,7 @@ public class EnderChestManager {
     }
 
     public String getMessage(String path, String fallback) {
-        return getConfig().getString("ᴍᴇѕѕᴀɢᴇѕ." + path, fallback);
+        return getConfig().getString("MESSAGES." + path, fallback);
     }
 
     public boolean isCustomEnderChest(Inventory inventory) {

@@ -105,7 +105,7 @@ public class MessageCommand implements CommandExecutor {
             case "NO-PERMISSION" -> configuredMessage("MESSAGES.NO_PERMISSION", "PRIVATE-MESSAGE.NO-PERMISSION");
             case "DISABLED" -> configuredMessage("MESSAGES.DISABLED", "PRIVATE-MESSAGE.DISABLED");
             case "PLAYER-NOT-ONLINE" -> configuredMessage("MESSAGES.PLAYER_NOT_ONLINE", "PRIVATE-MESSAGE.PLAYER-NOT-ONLINE");
-            default -> plugin.getConfigManager().getMessages().getString("ᴘʀɪᴠᴀᴛᴇ-ᴍᴇѕѕᴀɢᴇ." + key);
+            default -> plugin.getConfigManager().getMessages().getString("PRIVATE-MESSAGE." + key);
         };
         return configured == null ? fallback : configured;
     }

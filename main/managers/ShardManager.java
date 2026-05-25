@@ -41,6 +41,8 @@ public class ShardManager {
             String id,
             String cuboidName,
             String world,
+            Location rewardLocation,
+            double rewardRadius,
             int priority,
             int intervalSeconds,
             long amountPerInterval,
@@ -61,6 +63,13 @@ public class ShardManager {
             String excludedWorldMessage,
             Set<String> excludedWorlds
     ) {
+        public ShardCuboidConfig {
+            rewardLocation = rewardLocation == null ? null : rewardLocation.clone();
+            rewardRadius = Math.max(0D, rewardRadius);
+            afkLocation = afkLocation == null ? null : afkLocation.clone();
+            excludedWorlds = excludedWorlds == null ? Set.of() : Set.copyOf(excludedWorlds);
+        }
+
         public boolean matches(Player player, CuboidManager cuboidManager) {
             if (player.getWorld() == null) {
                 return false;
@@ -69,7 +78,21 @@ public class ShardManager {
                 return false;
             }
             CuboidManager.Cuboid cuboid = cuboidManager.getCuboid(cuboidName);
-            return cuboid != null && cuboid.contains(player.getLocation());
+            if (cuboid != null && cuboid.contains(player.getLocation())) {
+                return true;
+            }
+            return isInsideRewardRadius(player.getLocation());
+        }
+
+        private boolean isInsideRewardRadius(Location location) {
+            if (rewardLocation == null || rewardRadius <= 0D || location == null || location.getWorld() == null
+                    || rewardLocation.getWorld() == null) {
+                return false;
+            }
+            if (!location.getWorld().getName().equalsIgnoreCase(rewardLocation.getWorld().getName())) {
+                return false;
+            }
+            return location.distanceSquared(rewardLocation) <= rewardRadius * rewardRadius;
         }
 
         public boolean isWorldExcluded(String worldName) {
@@ -622,17 +645,22 @@ public class ShardManager {
                 continue;
             }
 
+            Location rewardLocation = parseExplicitLocation(section.getString("LOCATION"));
             boolean bound = section.getBoolean("BOUND", false);
-            if (!bound) {
+            if (!bound && rewardLocation == null) {
                 plugin.getLogger().warning("[ShardManager] Ignoring shard cuboid region '" + key
-                        + "' because it is not bound yet. Use /cuboid bind <cuboid> shard true.");
+                        + "' because it is not bound yet and has no LOCATION/RADIUS fallback. "
+                        + "Use /cuboid bind <cuboid> shard true or configure LOCATION.");
                 continue;
             }
+            String cuboidName = emptyToNull(section.getString("CUBOID"));
 
             ShardCuboidConfig config = new ShardCuboidConfig(
                     key.toLowerCase(Locale.ROOT),
-                    section.getString("CUBOID", key),
+                    cuboidName == null ? key : cuboidName,
                     emptyToNull(section.getString("WORLD")),
+                    rewardLocation,
+                    Math.max(0D, section.getDouble("RADIUS", 0D)),
                     section.getInt("PRIORITY", 0),
                     Math.max(1, section.getInt("INTERVAL", 60)),
                     Math.max(1L, section.getLong("AMOUNT", 1L)),
@@ -670,6 +698,8 @@ public class ShardManager {
                 "legacy-spawn",
                 cfg.getString("AFK-SYSTEM.SPAWN-CUBOID-NAME", "spawn"),
                 null,
+                null,
+                0D,
                 0,
                 Math.max(1, cfg.getInt("SHARDS.EVERY", 1) * 60),
                 Math.max(1L, cfg.getLong("SHARDS.AMOUNT", 1L)),
