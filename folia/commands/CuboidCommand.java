@@ -75,6 +75,8 @@ public class CuboidCommand implements CommandExecutor {
                 )
         );
 
+        CuboidWandListener.markAsCuboidWand(plugin, wand);
+
         var leftovers = player.getInventory().addItem(wand);
         if (!leftovers.isEmpty()) {
             leftovers.values().forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));

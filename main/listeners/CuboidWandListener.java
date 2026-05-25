@@ -10,18 +10,24 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 public class CuboidWandListener implements Listener {
 
     private static final String WAND_NAME = "&6ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ";
+
+    private static final String WAND_KEY = "cuboid_wand";
 
     private final UltimateDonutSmp plugin;
 
@@ -54,6 +60,8 @@ public class CuboidWandListener implements Listener {
         }
 
         event.setCancelled(true);
+        event.setUseInteractedBlock(Event.Result.DENY);
+        event.setUseItemInHand(Event.Result.DENY);
 
         if (action == Action.LEFT_CLICK_BLOCK) {
             plugin.getCuboidManager().setPos1(player.getUniqueId(), clicked.getLocation());
@@ -67,22 +75,65 @@ public class CuboidWandListener implements Listener {
         handleSelectionCompleted(player);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockDamage(BlockDamageEvent event) {
+        if (isCuboidWand(event.getPlayer().getInventory().getItemInMainHand())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (isCuboidWand(event.getPlayer().getInventory().getItemInMainHand())) {
+            event.setCancelled(true);
+        }
+    }
+
     public static boolean isCuboidWand(ItemStack item) {
         if (item == null || item.getType() != Material.GOLDEN_SHOVEL) {
             return false;
         }
 
         ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasDisplayName()) {
+        if (meta == null) {
             return false;
         }
 
-        String displayName = meta.getDisplayName();
-        return displayName.contains("Cuboid Wand");
+        if (hasWandMarker(meta)) {
+            return true;
+        }
+        if (!meta.hasDisplayName()) {
+            return false;
+        }
+
+        String displayName = ColorUtils.strip(meta.getDisplayName()).trim();
+        String wandName = ColorUtils.strip(WAND_NAME).trim();
+        return displayName.equalsIgnoreCase(wandName)
+                || displayName.equalsIgnoreCase("Cuboid Wand");
     }
 
     public static String getWandName() {
         return WAND_NAME;
+    }
+
+    public static void markAsCuboidWand(UltimateDonutSmp plugin, ItemStack item) {
+        if (plugin == null || item == null) {
+            return;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return;
+        }
+
+        meta.getPersistentDataContainer().set(plugin.getKey(WAND_KEY), PersistentDataType.BYTE, (byte) 1);
+        item.setItemMeta(meta);
+    }
+
+    private static boolean hasWandMarker(ItemMeta meta) {
+        UltimateDonutSmp instance = UltimateDonutSmp.getInstance();
+        return instance != null
+                && meta.getPersistentDataContainer().has(instance.getKey(WAND_KEY), PersistentDataType.BYTE);
     }
 
     private void handleSelectionCompleted(Player player) {
