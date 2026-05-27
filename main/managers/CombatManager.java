@@ -89,7 +89,7 @@ public class CombatManager {
 
     public boolean isKillOnLogoutEnabled() {
         return plugin.getConfigManager().getConfig()
-                .getBoolean("COMBAT-MANAGER.KILL-ON-LOGOUT", true);
+                .getBoolean("COMBAT-MANAGER.KILL-ON-LOGOUT", false);
     }
 
     public boolean isBlockedCommand(String command) {
