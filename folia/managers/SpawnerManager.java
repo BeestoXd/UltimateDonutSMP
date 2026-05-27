@@ -359,7 +359,7 @@ public class SpawnerManager {
         instance.setId(id);
         registerSpawner(instance);
         plugin.getFoliaScheduler().runRegion(block.getLocation(), () -> {
-            syncSpawnerBlockState(instance);
+            syncSpawnerBlockStateImmediate(instance);
             if (plugin.getAntiEspManager() != null) {
                 plugin.getAntiEspManager().refreshNearby(block.getLocation());
             }
@@ -403,7 +403,7 @@ public class SpawnerManager {
         existing.setUpdatedAt(System.currentTimeMillis());
         plugin.getDatabaseManager().saveSpawner(existing);
         plugin.getFoliaScheduler().runRegion(block.getLocation(), () -> {
-            syncSpawnerBlockState(existing);
+            syncSpawnerBlockStateImmediate(existing);
             if (plugin.getAntiEspManager() != null) {
                 plugin.getAntiEspManager().refreshNearby(block.getLocation());
             }
@@ -999,6 +999,24 @@ public class SpawnerManager {
     }
 
     public void syncSpawnerBlockState(SpawnerInstance instance) {
+        if (instance == null) {
+            return;
+        }
+
+        World world = Bukkit.getWorld(instance.getWorld());
+        if (world == null) {
+            return;
+        }
+
+        plugin.getFoliaScheduler().runRegion(
+                world,
+                instance.getX() >> 4,
+                instance.getZ() >> 4,
+                () -> syncSpawnerBlockStateImmediate(instance)
+        );
+    }
+
+    private void syncSpawnerBlockStateImmediate(SpawnerInstance instance) {
         if (instance == null) {
             return;
         }
