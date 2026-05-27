@@ -14,6 +14,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class TPACommand implements CommandExecutor {
 
     private final UltimateDonutSmp plugin;
@@ -173,6 +175,7 @@ public class TPACommand implements CommandExecutor {
 
     private void sendIncomingRequest(Player requester, Player target, boolean tpaHere) {
         String requesterName = requester.getName();
+        UUID requesterUuid = requester.getUniqueId();
 
         plugin.getFoliaScheduler().runEntity(target, () -> {
             if (!target.isOnline()) {
@@ -181,17 +184,35 @@ public class TPACommand implements CommandExecutor {
 
             SoundUtils.play(target, plugin.getConfigManager().getSound("TPA.REQUEST-RECEIVED"));
 
-            PlayerData currentTargetData = plugin.getPlayerDataManager().get(target);
-            if (currentTargetData != null && currentTargetData.isTpaConfirmMenuEnabled()) {
-                new TpaConfirmMenu(plugin, requesterName, tpaHere).open(target);
-                return;
-            }
-
             String messagePath = tpaHere ? "TPA.REQUEST-HERE-RECEIVED" : "TPA.REQUEST-RECEIVED";
             Component requestMsg = ColorUtils.toComponent(
                     plugin.getConfigManager().getMessage(messagePath, "{player}", requesterName))
                     .clickEvent(ClickEvent.runCommand("/tpaccept " + requesterName));
             target.sendMessage(requestMsg);
+
+            if (shouldOpenTpaConfirmMenu(target)) {
+                plugin.getFoliaScheduler().runEntityLater(target,
+                        () -> openTpaConfirmMenuIfPending(target, requesterUuid, requesterName, tpaHere),
+                        1L);
+            }
         });
+    }
+
+    private boolean shouldOpenTpaConfirmMenu(Player target) {
+        PlayerData currentTargetData = plugin.getPlayerDataManager().get(target);
+        return currentTargetData == null || currentTargetData.isTpaConfirmMenuEnabled();
+    }
+
+    private void openTpaConfirmMenuIfPending(Player target, UUID requesterUuid, String requesterName, boolean tpaHere) {
+        if (!target.isOnline() || !shouldOpenTpaConfirmMenu(target)) {
+            return;
+        }
+
+        TPAManager.TpaRequest request = plugin.getTPAManager().getRequest(target.getUniqueId());
+        if (request == null || !request.requester().equals(requesterUuid) || request.tpaHere() != tpaHere) {
+            return;
+        }
+
+        new TpaConfirmMenu(plugin, requesterName, tpaHere).open(target);
     }
 }
