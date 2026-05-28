@@ -36,6 +36,10 @@ public class LunarTeammatesTask implements Runnable {
     }
 
     private void tickViewer(Player viewer) {
+        if (!isParticleTargetValid(viewer)) {
+            return;
+        }
+
         PlayerData viewerData = plugin.getPlayerDataManager().get(viewer);
         if (viewerData == null || !viewerData.isLunarTeammatesEnabled()) {
             return;
@@ -52,7 +56,7 @@ public class LunarTeammatesTask implements Runnable {
             }
 
             Player teammate = Bukkit.getPlayer(teammateUuid);
-            if (teammate == null || !teammate.isOnline() || !Bukkit.isOwnedByCurrentRegion(teammate)) {
+            if (!isParticleTargetValid(teammate) || !Bukkit.isOwnedByCurrentRegion(teammate)) {
                 continue;
             }
             if (!viewer.getWorld().equals(teammate.getWorld())) {
@@ -66,6 +70,10 @@ public class LunarTeammatesTask implements Runnable {
             viewer.spawnParticle(Particle.GLOW, marker, 3, 0.20, 0.30, 0.20, 0.0);
             viewer.spawnParticle(Particle.END_ROD, marker.clone().add(0, 0.18, 0), 1, 0.05, 0.05, 0.05, 0.0);
         }
+    }
+
+    private boolean isParticleTargetValid(Player player) {
+        return player != null && player.isOnline() && player.isValid() && !player.isDead();
     }
 
     public static void start(UltimateDonutSmp plugin) {

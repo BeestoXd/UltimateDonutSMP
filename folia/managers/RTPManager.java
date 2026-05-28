@@ -10,11 +10,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -140,24 +142,25 @@ public class RTPManager {
     }
 
     public int getPlayersInWorld(String worldName) {
-        World world = Bukkit.getWorld(worldName);
+        World world = getLoadedWorld(worldName);
         return world == null ? 0 : world.getPlayers().size();
     }
 
     public int getWorldCooldownSeconds(String worldName) {
-        return Math.max(0, plugin.getConfigManager().getRtp()
-                .getInt("WORLD-SETTINGS." + worldName + ".COOLDOWN", 0));
+        ConfigurationSection settings = getWorldSettingsSection(worldName);
+        return settings == null ? 0 : Math.max(0, settings.getInt("COOLDOWN", 0));
     }
 
     public SearchSettings getWorldSearchSettings(String worldName) {
-        if (!hasWorldSearchSettings(worldName)) {
+        ConfigurationSection worldSettings = getWorldSettingsSection(worldName);
+        if (worldSettings == null) {
             return null;
         }
 
-        int minRadius = plugin.getConfigManager().getRtp().getInt("WORLD-SETTINGS." + worldName + ".MIN-RADIUS", 500);
-        int maxRadius = plugin.getConfigManager().getRtp().getInt("WORLD-SETTINGS." + worldName + ".MAX-RADIUS", 5000);
-        int centerX = plugin.getConfigManager().getRtp().getInt("WORLD-SETTINGS." + worldName + ".CENTER-X", 0);
-        int centerZ = plugin.getConfigManager().getRtp().getInt("WORLD-SETTINGS." + worldName + ".CENTER-Z", 0);
+        int minRadius = worldSettings.getInt("MIN-RADIUS", 500);
+        int maxRadius = worldSettings.getInt("MAX-RADIUS", 5000);
+        int centerX = worldSettings.getInt("CENTER-X", 0);
+        int centerZ = worldSettings.getInt("CENTER-Z", 0);
         int maxAttempts = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-ATTEMPTS", 16);
 
         return new SearchSettings(
@@ -176,9 +179,12 @@ public class RTPManager {
         int centerX = plugin.getConfigManager().getConfig().getInt("RTP-ZONE.WORLD.CENTER-X", 0);
         int centerZ = plugin.getConfigManager().getConfig().getInt("RTP-ZONE.WORLD.CENTER-Z", 0);
         int maxAttempts = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-ATTEMPTS", 16);
+        String worldName = normalizeConfiguredWorldName(
+                plugin.getConfigManager().getConfig().getString("RTP-ZONE.WORLD.NAME", "world")
+        );
 
         return new SearchSettings(
-                plugin.getConfigManager().getConfig().getString("RTP-ZONE.WORLD.NAME", "world"),
+                worldName,
                 minRadius,
                 Math.max(minRadius, maxRadius),
                 centerX,
@@ -234,7 +240,7 @@ public class RTPManager {
         if (!hasWorldSearchSettings(worldName)) {
             return false;
         }
-        return Bukkit.getWorld(worldName) != null;
+        return isWorldAvailable(worldName);
     }
 
     public List<String> getPortalSelectorSuggestions() {
@@ -247,7 +253,7 @@ public class RTPManager {
             if (!hasWorldSearchSettings(destination.worldName())) {
                 continue;
             }
-            if (Bukkit.getWorld(destination.worldName()) == null) {
+            if (!isWorldAvailable(destination.worldName())) {
                 continue;
             }
 
@@ -255,19 +261,19 @@ public class RTPManager {
             selectors.add(destination.worldName());
         }
 
-        if (Bukkit.getWorld("world") != null
+        if (isWorldAvailable("world")
                 && hasWorldSearchSettings("world")
                 && !isDeniedWorld("world")
                 && !isConfiguredDestinationdisabled("world")) {
             selectors.add("overworld");
         }
-        if (Bukkit.getWorld("world_nether") != null
+        if (isWorldAvailable("world_nether")
                 && hasWorldSearchSettings("world_nether")
                 && !isDeniedWorld("world_nether")
                 && !isConfiguredDestinationdisabled("world_nether")) {
             selectors.add("nether");
         }
-        if (Bukkit.getWorld("world_the_end") != null
+        if (isWorldAvailable("world_the_end")
                 && hasWorldSearchSettings("world_the_end")
                 && !isDeniedWorld("world_the_end")
                 && !isConfiguredDestinationdisabled("world_the_end")) {
@@ -311,7 +317,7 @@ public class RTPManager {
             return false;
         }
 
-        World world = Bukkit.getWorld(worldName);
+        World world = resolveWorld(worldName);
         if (world == null) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cᴡᴏʀʟᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ.")
@@ -410,7 +416,7 @@ public class RTPManager {
     }
 
     private void beginAsyncLocationAttempt(UUID playerId, SearchProgress progress) {
-        World world = Bukkit.getWorld(progress.worldName);
+        World world = resolveWorld(progress.worldName);
         if (world == null) {
             failSearch(playerId, progress);
             return;
@@ -454,7 +460,7 @@ public class RTPManager {
             return;
         }
 
-        World world = Bukkit.getWorld(progress.worldName);
+        World world = resolveWorld(progress.worldName);
         if (world == null) {
             failSearch(playerId, progress);
             return;
@@ -570,7 +576,7 @@ public class RTPManager {
             return null;
         }
 
-        World world = Bukkit.getWorld(settings.worldName());
+        World world = resolveWorld(settings.worldName());
         if (world == null) {
             return null;
         }
@@ -686,7 +692,7 @@ public class RTPManager {
                 continue;
             }
 
-            if (Bukkit.getWorld(destination.worldName()) == null) {
+            if (!isWorldAvailable(destination.worldName())) {
                 warn("RTP destination '" + destination.id() + "' points to missing world '" + destination.worldName() + "'.");
                 continue;
             }
@@ -746,7 +752,135 @@ public class RTPManager {
     }
 
     private boolean hasWorldSearchSettings(String worldName) {
-        return plugin.getConfigManager().getRtp().isConfigurationSection("WORLD-SETTINGS." + worldName);
+        return getWorldSettingsSection(worldName) != null;
+    }
+
+    private ConfigurationSection getWorldSettingsSection(String worldName) {
+        if (worldName == null || worldName.isBlank()) {
+            return null;
+        }
+
+        ConfigurationSection worlds = plugin.getConfigManager().getRtp().getConfigurationSection("WORLD-SETTINGS");
+        if (worlds == null) {
+            return null;
+        }
+
+        ConfigurationSection exact = worlds.getConfigurationSection(worldName);
+        if (exact != null) {
+            return exact;
+        }
+
+        for (String key : worlds.getKeys(false)) {
+            if (key.equalsIgnoreCase(worldName)) {
+                return worlds.getConfigurationSection(key);
+            }
+        }
+        return null;
+    }
+
+    private World getLoadedWorld(String worldName) {
+        if (worldName == null || worldName.isBlank()) {
+            return null;
+        }
+
+        World exact = Bukkit.getWorld(worldName);
+        if (exact != null) {
+            return exact;
+        }
+
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getName().equalsIgnoreCase(worldName.trim())) {
+                return world;
+            }
+        }
+        return null;
+    }
+
+    private World resolveWorld(String worldName) {
+        World loaded = getLoadedWorld(worldName);
+        if (loaded != null) {
+            return loaded;
+        }
+
+        String folderWorldName = findWorldFolderName(worldName);
+        if (folderWorldName == null) {
+            return null;
+        }
+
+        try {
+            return WorldCreator.name(folderWorldName)
+                    .environment(inferWorldEnvironment(folderWorldName))
+                    .createWorld();
+        } catch (RuntimeException exception) {
+            warn("Failed to load RTP world '" + folderWorldName + "': " + exception.getMessage());
+            return null;
+        }
+    }
+
+    private boolean isWorldAvailable(String worldName) {
+        return getLoadedWorld(worldName) != null || findWorldFolderName(worldName) != null;
+    }
+
+    private String findWorldFolderName(String worldName) {
+        if (worldName == null || worldName.isBlank()) {
+            return null;
+        }
+
+        String trimmed = worldName.trim();
+        File worldContainer = Bukkit.getWorldContainer();
+        File exactFolder = new File(worldContainer, trimmed);
+        if (exactFolder.isDirectory()) {
+            return exactFolder.getName();
+        }
+
+        File[] folders = worldContainer.listFiles(File::isDirectory);
+        if (folders == null) {
+            return null;
+        }
+
+        for (File folder : folders) {
+            if (folder.getName().equalsIgnoreCase(trimmed)) {
+                return folder.getName();
+            }
+        }
+        return null;
+    }
+
+    private World.Environment inferWorldEnvironment(String worldName) {
+        String lower = worldName.toLowerCase(Locale.ROOT);
+        if (lower.endsWith("_nether") || lower.equals("nether")) {
+            return World.Environment.NETHER;
+        }
+        if (lower.endsWith("_the_end") || lower.equals("the_end") || lower.equals("end")) {
+            return World.Environment.THE_END;
+        }
+        return World.Environment.NORMAL;
+    }
+
+    private String normalizeConfiguredWorldName(String worldName) {
+        String trimmed = worldName == null ? "" : worldName.trim();
+        if (trimmed.isBlank()) {
+            return "world";
+        }
+
+        String ascii = trimmed
+                .replace('ᴡ', 'w')
+                .replace('ᴏ', 'o')
+                .replace('ʀ', 'r')
+                .replace('ʟ', 'l')
+                .replace('ᴅ', 'd')
+                .replace('ɴ', 'n')
+                .replace('ᴇ', 'e')
+                .replace('ᴛ', 't')
+                .replace('ʜ', 'h')
+                .replace('ᴀ', 'a')
+                .replace('ѕ', 's');
+        return switch (ascii.toLowerCase(Locale.ROOT)) {
+            case "overworld", "world" -> "world";
+            case "nether", "world_nether" -> "world_nether";
+            case "end", "the_end", "the-end", "world_the_end" -> "world_the_end";
+            default -> trimmed;
+        };
     }
 
     private int normalizeSearchLimit(int limit) {
