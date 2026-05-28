@@ -64,7 +64,7 @@ public class OrdersEditMenu extends BaseMenu {
                 Material.PAPER,
                 "&bᴏʀᴅᴇʀ ɪɴꜰᴏ",
                 List.of(
-                        "&7ɪᴅ: &f#" + order.id(),
+                        "&7ID: &f#" + order.id(),
                         "&7ᴏᴡɴᴇʀ: &f" + order.ownerName(),
                         "&7ѕᴛᴀᴛᴜѕ: &f" + order.status().name(),
                         "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + manager.prettifyCategory(order.categoryKey())
@@ -76,14 +76,39 @@ public class OrdersEditMenu extends BaseMenu {
                 List.of(
                         "&7ᴅᴇʟɪᴠᴇʀᴇᴅ: &e" + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity(),
                         "&7ᴄᴏʟʟᴇᴄᴛᴇᴅ: &e" + order.collectedQuantity() + "&7/&e" + order.deliveredQuantity(),
-                        "&7ᴘᴀɪᴅ: &a$" + NumberUtils.format(order.paidAmount()),
-                        "&7ᴇѕᴄʀᴏᴡ ʟᴇꜰᴛ: &a$" + NumberUtils.format(order.escrowRemaining()),
+                        "&7ᴘᴀɪᴅ: " + plugin.getCurrencyManager().formatMoney(order.paidAmount()),
+                        "&7ᴇѕᴄʀᴏᴡ ʟᴇꜰᴛ: " + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()),
                         "&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis()))
                 )
         ));
         set(14, buildDeliveryHistory(order.id()));
 
         if (owner) {
+            boolean editable = order.active() && order.deliveredQuantity() == 0;
+            if (editable) {
+                set(19, ItemUtils.createItem(
+                        Material.NAME_TAG,
+                        "&bᴄʜᴀɴɢᴇ ɪᴛᴇᴍ",
+                        List.of("&7ᴜѕᴇ ᴛʜᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ɪᴛᴇᴍ ѕᴇʟᴇᴄᴛɪᴏɴ ᴍᴏᴅᴇ.", "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ")
+                ));
+                set(20, ItemUtils.createItem(
+                        Material.WRITABLE_BOOK,
+                        "&eᴄʜᴀɴɢᴇ ǫᴜᴀɴᴛɪᴛʏ",
+                        List.of("&7ᴄᴜʀʀᴇɴᴛ: &e" + order.requestedQuantity(), "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ")
+                ));
+                set(22, ItemUtils.createItem(
+                        Material.GOLD_INGOT,
+                        "&eᴄʜᴀɴɢᴇ ᴘʀɪᴄᴇ",
+                        List.of("&7ᴄᴜʀʀᴇɴᴛ: " + plugin.getCurrencyManager().formatMoney(order.priceEach()), "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ")
+                ));
+            } else {
+                List<String> lockedLore = order.active()
+                        ? List.of("&7ᴛʜɪѕ ᴏʀᴅᴇʀ ᴀʟʀᴇᴀᴅʏ ʜᴀѕ ᴅᴇʟɪᴠᴇʀɪᴇѕ.")
+                        : List.of("&7ᴛʜɪѕ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.");
+                set(19, ItemUtils.createItem(Material.GRAY_DYE, "&cᴇᴅɪᴛ ʟᴏᴄᴋᴇᴅ", lockedLore));
+                set(20, ItemUtils.createItem(Material.GRAY_DYE, "&cᴇᴅɪᴛ ʟᴏᴄᴋᴇᴅ", lockedLore));
+                set(22, ItemUtils.createItem(Material.GRAY_DYE, "&cᴇᴅɪᴛ ʟᴏᴄᴋᴇᴅ", lockedLore));
+            }
             set(21, ItemUtils.createItem(Material.ENDER_CHEST, "&dᴄᴏʟʟᴇᴄᴛ", List.of("&7ᴏᴘᴇɴ ʏᴏᴜʀ ᴄᴏʟʟᴇᴄᴛ ǫᴜᴇᴜᴇ")));
             if (order.active()) {
                 set(23, ItemUtils.createItem(
@@ -110,7 +135,7 @@ public class OrdersEditMenu extends BaseMenu {
         List<String> deliverLore = new ArrayList<>();
         if (preview.success()) {
             deliverLore.add("&7ᴅᴇʟɪᴠᴇʀ ǫᴜᴀɴᴛɪᴛʏ: &e" + preview.deliverQuantity());
-            deliverLore.add("&7ᴘᴀʏᴏᴜᴛ: &a$" + NumberUtils.format(preview.payout()));
+            deliverLore.add("&7ᴘᴀʏᴏᴜᴛ: " + plugin.getCurrencyManager().formatMoney(preview.payout()));
             deliverLore.add("");
             deliverLore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟɪᴠᴇʀ");
             set(23, ItemUtils.createItem(Material.EMERALD, "&aᴅᴇʟɪᴠᴇʀ ɪᴛᴇᴍѕ", deliverLore));
@@ -142,9 +167,27 @@ public class OrdersEditMenu extends BaseMenu {
         }
 
         boolean owner = order.ownerUuid().equals(player.getUniqueId());
+        if (owner && slot == 19) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            plugin.getOrdersManager().openEditOrderItemSelection(player, order.id(), backToMyOrders, originPage, sortMode, categoryFilter);
+            return;
+        }
+
+        if (owner && slot == 20) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            plugin.getOrdersManager().promptEditOrderQuantityInput(player, order.id(), backToMyOrders, originPage, sortMode, categoryFilter);
+            return;
+        }
+
         if (owner && slot == 21) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             new OrdersCollectMenu(plugin, 1).open(player);
+            return;
+        }
+
+        if (owner && slot == 22) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            plugin.getOrdersManager().promptEditOrderPriceInput(player, order.id(), backToMyOrders, originPage, sortMode, categoryFilter);
             return;
         }
 
@@ -198,7 +241,7 @@ public class OrdersEditMenu extends BaseMenu {
         } else {
             for (OrderDelivery delivery : deliveries) {
                 lore.add("&f" + delivery.delivererName() + " &7-> &e" + delivery.quantity()
-                        + " &7ꜰᴏʀ &a$" + NumberUtils.format(delivery.payout()));
+                        + " &7ꜰᴏʀ " + plugin.getCurrencyManager().formatMoney(delivery.payout()));
             }
         }
         return ItemUtils.createItem(Material.BOOK, "&bʀᴇᴄᴇɴᴛ ᴅᴇʟɪᴠᴇʀɪᴇѕ", lore);

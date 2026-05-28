@@ -84,6 +84,31 @@ public class OrdersEditMenu extends BaseMenu {
         set(14, buildDeliveryHistory(order.id()));
 
         if (owner) {
+            boolean editable = order.active() && order.deliveredQuantity() == 0;
+            if (editable) {
+                set(19, ItemUtils.createItem(
+                        Material.NAME_TAG,
+                        "&bᴄʜᴀɴɢᴇ ɪᴛᴇᴍ",
+                        List.of("&7ᴜѕᴇ ᴛʜᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ɪᴛᴇᴍ ѕᴇʟᴇᴄᴛɪᴏɴ ᴍᴏᴅᴇ.", "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ")
+                ));
+                set(20, ItemUtils.createItem(
+                        Material.WRITABLE_BOOK,
+                        "&eᴄʜᴀɴɢᴇ ǫᴜᴀɴᴛɪᴛʏ",
+                        List.of("&7ᴄᴜʀʀᴇɴᴛ: &e" + order.requestedQuantity(), "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ")
+                ));
+                set(22, ItemUtils.createItem(
+                        Material.GOLD_INGOT,
+                        "&eᴄʜᴀɴɢᴇ ᴘʀɪᴄᴇ",
+                        List.of("&7ᴄᴜʀʀᴇɴᴛ: " + plugin.getCurrencyManager().formatMoney(order.priceEach()), "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ")
+                ));
+            } else {
+                List<String> lockedLore = order.active()
+                        ? List.of("&7ᴛʜɪѕ ᴏʀᴅᴇʀ ᴀʟʀᴇᴀᴅʏ ʜᴀѕ ᴅᴇʟɪᴠᴇʀɪᴇѕ.")
+                        : List.of("&7ᴛʜɪѕ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.");
+                set(19, ItemUtils.createItem(Material.GRAY_DYE, "&cᴇᴅɪᴛ ʟᴏᴄᴋᴇᴅ", lockedLore));
+                set(20, ItemUtils.createItem(Material.GRAY_DYE, "&cᴇᴅɪᴛ ʟᴏᴄᴋᴇᴅ", lockedLore));
+                set(22, ItemUtils.createItem(Material.GRAY_DYE, "&cᴇᴅɪᴛ ʟᴏᴄᴋᴇᴅ", lockedLore));
+            }
             set(21, ItemUtils.createItem(Material.ENDER_CHEST, "&dᴄᴏʟʟᴇᴄᴛ", List.of("&7ᴏᴘᴇɴ ʏᴏᴜʀ ᴄᴏʟʟᴇᴄᴛ ǫᴜᴇᴜᴇ")));
             if (order.active()) {
                 set(23, ItemUtils.createItem(
@@ -142,9 +167,27 @@ public class OrdersEditMenu extends BaseMenu {
         }
 
         boolean owner = order.ownerUuid().equals(player.getUniqueId());
+        if (owner && slot == 19) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            plugin.getOrdersManager().openEditOrderItemSelection(player, order.id(), backToMyOrders, originPage, sortMode, categoryFilter);
+            return;
+        }
+
+        if (owner && slot == 20) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            plugin.getOrdersManager().promptEditOrderQuantityInput(player, order.id(), backToMyOrders, originPage, sortMode, categoryFilter);
+            return;
+        }
+
         if (owner && slot == 21) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             new OrdersCollectMenu(plugin, 1).open(player);
+            return;
+        }
+
+        if (owner && slot == 22) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            plugin.getOrdersManager().promptEditOrderPriceInput(player, order.id(), backToMyOrders, originPage, sortMode, categoryFilter);
             return;
         }
 

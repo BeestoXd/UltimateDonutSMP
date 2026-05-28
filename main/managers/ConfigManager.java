@@ -210,6 +210,8 @@ public class ConfigManager {
             try {
                 current.save(targetFile);
                 result.updated = true;
+                syncBundledCommentTags(name, targetFile, backupDirectory, true);
+                syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, true);
                 result.snapshotUpdated = refreshDefaultSnapshot(name);
                 plugin.getLogger().info("Updated " + name + " with " + mergedPaths + " bundled default path(s).");
             } catch (IOException e) {
@@ -219,8 +221,224 @@ public class ConfigManager {
             return result;
         }
 
+        boolean commentsUpdated = syncBundledCommentTags(name, targetFile, backupDirectory, false);
+        boolean pricingUpdated = syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, commentsUpdated);
+        if (commentsUpdated || pricingUpdated) {
+            result.updated = true;
+        }
         result.snapshotUpdated = refreshDefaultSnapshot(name);
         return result;
+    }
+
+    private boolean syncBundledCommentTags(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
+        if (!"orders.yml".equals(resourceName)) {
+            return false;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            boolean changed = false;
+
+            int modeLineIndex = findConfigLine(lines, "ITEM_SELECTION_MODE:");
+            if (modeLineIndex >= 0) {
+                String indent = leadingWhitespace(lines.get(modeLineIndex));
+                changed |= syncCommentBlockBeforeLine(
+                        lines,
+                        "ITEM_SELECTION_MODE:",
+                        List.of(
+                                indent + "# SELECT_ITEM = opens the configured order catalog menu. This is the default.",
+                                indent + "# INVENTORY_ITEM = lets players click an item from their inventory as the exact order template.",
+                                indent + "# SEARCH_ITEM = asks players to type an item/category search, then opens matching results.",
+                                indent + "# Valid values: SELECT_ITEM, INVENTORY_ITEM, SEARCH_ITEM. Invalid values fall back to SELECT_ITEM."
+                        ),
+                        this::isItemSelectionModeComment
+                );
+            }
+
+            int sourceLineIndex = findConfigLine(lines, "SELECT_ITEM_SOURCE:");
+            if (sourceLineIndex >= 0) {
+                String indent = leadingWhitespace(lines.get(sourceLineIndex));
+                changed |= syncCommentBlockBeforeLine(
+                        lines,
+                        "SELECT_ITEM_SOURCE:",
+                        List.of(
+                                indent + "# SELECT_ITEM_SOURCE only changes the SELECT_ITEM menu contents.",
+                                indent + "# CATEGORY_FILTERS = use the curated CATEGORY_FILTERS list below. This is the default.",
+                                indent + "# SERVER_MATERIALS = generate all orderable materials from the running server.jar.",
+                                indent + "# Valid values: CATEGORY_FILTERS, SERVER_MATERIALS. Invalid values fall back to CATEGORY_FILTERS."
+                        ),
+                        this::isSelectItemSourceComment
+                );
+            }
+
+            if (!changed) {
+                return false;
+            }
+
+            if (!alreadyBackedUp) {
+                backupExistingFile(targetFile, backupDirectory);
+            }
+            Files.write(targetFile.toPath(), lines, StandardCharsets.UTF_8);
+            plugin.getLogger().info("Updated orders.yml item selection comment tags.");
+            return true;
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to sync orders.yml item selection comment tags.", e);
+            return false;
+        }
+    }
+
+    private boolean syncOrdersPricingDefaultsAndComments(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
+        if (!"orders.yml".equals(resourceName)) {
+            return false;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            boolean changed = false;
+
+            int maxPriceLineIndex = findConfigLine(lines, "MAX_PRICE_EACH:");
+            if (maxPriceLineIndex >= 0) {
+                String indent = leadingWhitespace(lines.get(maxPriceLineIndex));
+                changed |= syncCommentBlockBeforeLine(
+                        lines,
+                        "MAX_PRICE_EACH:",
+                        List.of(indent + "# Maximum price for one requested item. Default matches MAX_TOTAL_BUDGET so the total escrow cap is the main limit."),
+                        this::isOrdersPricingComment
+                );
+
+                maxPriceLineIndex = findConfigLine(lines, "MAX_PRICE_EACH:");
+                if (maxPriceLineIndex >= 0 && isOldDefaultMaxPrice(lines.get(maxPriceLineIndex))) {
+                    lines.set(maxPriceLineIndex, leadingWhitespace(lines.get(maxPriceLineIndex)) + "MAX_PRICE_EACH: 250000000");
+                    changed = true;
+                }
+            }
+
+            int maxTotalLineIndex = findConfigLine(lines, "MAX_TOTAL_BUDGET:");
+            if (maxTotalLineIndex >= 0) {
+                String indent = leadingWhitespace(lines.get(maxTotalLineIndex));
+                changed |= syncCommentBlockBeforeLine(
+                        lines,
+                        "MAX_TOTAL_BUDGET:",
+                        List.of(indent + "# Maximum total escrow budget for one order after quantity x price each."),
+                        this::isOrdersPricingComment
+                );
+            }
+
+            if (!changed) {
+                return false;
+            }
+
+            if (!alreadyBackedUp) {
+                backupExistingFile(targetFile, backupDirectory);
+            }
+            Files.write(targetFile.toPath(), lines, StandardCharsets.UTF_8);
+            plugin.getLogger().info("Updated orders.yml pricing defaults/comment tags.");
+            return true;
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to sync orders.yml pricing defaults/comment tags.", e);
+            return false;
+        }
+    }
+
+    private boolean syncCommentBlockBeforeLine(
+            List<String> lines,
+            String keyPrefix,
+            List<String> desiredComments,
+            java.util.function.Predicate<String> managedCommentPredicate
+    ) {
+        int keyLineIndex = findConfigLine(lines, keyPrefix);
+        if (keyLineIndex < 0) {
+            return false;
+        }
+
+        int commentStart = keyLineIndex;
+        while (commentStart > 0 && lines.get(commentStart - 1).trim().startsWith("#")) {
+            commentStart--;
+        }
+
+        List<String> existingComments = new ArrayList<>(lines.subList(commentStart, keyLineIndex));
+        if (existingComments.equals(desiredComments)) {
+            return false;
+        }
+
+        boolean replaceExistingComments = existingComments.isEmpty()
+                || existingComments.stream().anyMatch(managedCommentPredicate);
+        int copyUntil = replaceExistingComments ? commentStart : keyLineIndex;
+
+        List<String> updatedLines = new ArrayList<>(lines.size() + desiredComments.size());
+        updatedLines.addAll(lines.subList(0, copyUntil));
+        updatedLines.addAll(desiredComments);
+        updatedLines.addAll(lines.subList(keyLineIndex, lines.size()));
+
+        lines.clear();
+        lines.addAll(updatedLines);
+        return true;
+    }
+
+    private boolean isOldDefaultMaxPrice(String line) {
+        String trimmed = line == null ? "" : line.trim();
+        if (!trimmed.startsWith("MAX_PRICE_EACH:")) {
+            return false;
+        }
+
+        String value = trimmed.substring("MAX_PRICE_EACH:".length()).trim();
+        int commentIndex = value.indexOf('#');
+        if (commentIndex >= 0) {
+            value = value.substring(0, commentIndex).trim();
+        }
+        value = value.replace("_", "").replace(",", "");
+        return "1000000".equals(value) || "1000000.0".equals(value);
+    }
+
+    private boolean isOrdersPricingComment(String line) {
+        String comment = line.trim();
+        return comment.startsWith("#")
+                && (comment.contains("MAX_PRICE_EACH")
+                || comment.contains("MAX_TOTAL_BUDGET")
+                || comment.contains("Maximum price")
+                || comment.contains("Maximum total escrow")
+                || comment.contains("total escrow cap")
+                || comment.contains("quantity x price"));
+    }
+
+    private int findConfigLine(List<String> lines, String keyPrefix) {
+        for (int index = 0; index < lines.size(); index++) {
+            if (lines.get(index).trim().startsWith(keyPrefix)) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private boolean isItemSelectionModeComment(String line) {
+        String comment = line.trim();
+        return comment.startsWith("#")
+                && (comment.contains("SELECT_ITEM")
+                || comment.contains("INVENTORY_ITEM")
+                || comment.contains("SEARCH_ITEM")
+                || comment.contains("ITEM_SELECTION_MODE")
+                || comment.contains("Invalid values")
+                || comment.contains("Valid values"));
+    }
+
+    private boolean isSelectItemSourceComment(String line) {
+        String comment = line.trim();
+        return comment.startsWith("#")
+                && (comment.contains("SELECT_ITEM_SOURCE")
+                || comment.contains("CATEGORY_FILTERS")
+                || comment.contains("SERVER_MATERIALS")
+                || comment.contains("server.jar")
+                || comment.contains("catalog source")
+                || comment.contains("SELECT_ITEM menu contents")
+                || comment.contains("Valid values"));
+    }
+
+    private String leadingWhitespace(String line) {
+        int index = 0;
+        while (index < line.length() && Character.isWhitespace(line.charAt(index))) {
+            index++;
+        }
+        return line.substring(0, index);
     }
 
     private int mergeBundledDefaults(
@@ -344,6 +562,7 @@ public class ConfigManager {
 
             try (Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
                 YamlConfiguration configuration = new YamlConfiguration();
+                configuration.options().parseComments(true);
                 configuration.load(reader);
                 return configuration;
             }
@@ -352,6 +571,7 @@ public class ConfigManager {
 
     private YamlConfiguration loadYamlFile(File file) throws IOException, InvalidConfigurationException {
         YamlConfiguration configuration = new YamlConfiguration();
+        configuration.options().parseComments(true);
         configuration.load(file);
         return configuration;
     }
@@ -426,6 +646,7 @@ public class ConfigManager {
     private FileConfiguration load(String name) {
         File file = new File(plugin.getDataFolder(), name);
         YamlConfiguration configuration = new YamlConfiguration();
+        configuration.options().parseComments(true);
 
         try {
             configuration.load(file);

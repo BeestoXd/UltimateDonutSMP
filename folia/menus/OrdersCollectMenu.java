@@ -142,8 +142,9 @@ public class OrdersCollectMenu extends BaseMenu {
             if (claim.refundClaim()) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.CLAIMED_REFUND",
-                        "&aᴄʟᴀɪᴍᴇᴅ ᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ ᴏꜰ &a${amount}&a.",
-                        "{amount}", NumberUtils.format(claim.moneyAmount())
+                        "&aᴄʟᴀɪᴍᴇᴅ ᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ ᴏꜰ {amount_formatted}&a.",
+                        "{amount}", NumberUtils.format(claim.moneyAmount()),
+                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount())
                 )));
             } else {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(

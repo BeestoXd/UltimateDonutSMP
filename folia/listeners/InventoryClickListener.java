@@ -3,6 +3,8 @@ package com.bx.ultimateDonutSmp.listeners;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.BaseMenu;
 import com.bx.ultimateDonutSmp.menus.CrateEditorMenu;
+import com.bx.ultimateDonutSmp.menus.OrdersInventoryItemMenu;
+import com.bx.ultimateDonutSmp.menus.OrdersNewMenu;
 import com.bx.ultimateDonutSmp.menus.RTPMenu;
 import com.bx.ultimateDonutSmp.menus.SellMenu;
 import org.bukkit.entity.Player;
@@ -46,6 +48,16 @@ public class InventoryClickListener implements Listener {
             return;
         }
 
+        if (menu instanceof OrdersInventoryItemMenu ordersInventoryItemMenu) {
+            ordersInventoryItemMenu.handleInventoryClick(event);
+            return;
+        }
+
+        if (menu instanceof OrdersNewMenu && event.getRawSlot() == 23) {
+            handleProtectedMenuClick(event, player, menu);
+            return;
+        }
+
         event.setCancelled(true);
         if (event.getClickedInventory() == null || !event.getClickedInventory().equals(topInventory)) return;
         if (event.getCurrentItem() == null) return;
@@ -71,6 +83,11 @@ public class InventoryClickListener implements Listener {
 
         if (menu instanceof CrateEditorMenu crateEditorMenu) {
             crateEditorMenu.handleInventoryDrag(event);
+            return;
+        }
+
+        if (menu instanceof OrdersInventoryItemMenu ordersInventoryItemMenu) {
+            ordersInventoryItemMenu.handleInventoryDrag(event);
             return;
         }
 
@@ -105,6 +122,33 @@ public class InventoryClickListener implements Listener {
 
             player.setItemOnCursor(originalCursor);
             player.closeInventory();
+            player.updateInventory();
+
+            if (validTopClick) {
+                menu.handleClick(rawSlot, player, clickType);
+            }
+        });
+    }
+
+    private void handleProtectedMenuClick(InventoryClickEvent event, Player player, BaseMenu menu) {
+        Inventory topInventory = event.getView().getTopInventory();
+        ItemStack originalCursor = event.getCursor() == null ? null : event.getCursor().clone();
+        int rawSlot = event.getRawSlot();
+        ClickType clickType = event.getClick();
+        boolean validTopClick = event.getClickedInventory() != null
+                && event.getClickedInventory().equals(topInventory)
+                && event.getCurrentItem() != null
+                && !event.getCurrentItem().getType().isAir();
+
+        event.setCancelled(true);
+        event.setResult(Event.Result.DENY);
+
+        plugin.getFoliaScheduler().runEntity(player, () -> {
+            if (!player.isOnline()) {
+                return;
+            }
+
+            player.setItemOnCursor(originalCursor);
             player.updateInventory();
 
             if (validTopClick) {

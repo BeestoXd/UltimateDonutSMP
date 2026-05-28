@@ -30,11 +30,11 @@ final class OrdersMenuSupport {
         extraLore.add("&7ᴏᴡɴᴇʀ: &f" + order.ownerName());
         extraLore.add("&7ѕᴛᴀᴛᴜѕ: &f" + order.status().name());
         extraLore.add("&7ᴘʀᴏɢʀᴇѕѕ: &e" + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity());
-        extraLore.add("&7ᴘʀɪᴄᴇ ᴇᴀᴄʜ: &a$" + NumberUtils.format(order.priceEach()));
-        extraLore.add("&7ᴘᴀɪᴅ ѕᴏ ꜰᴀʀ: &a$" + NumberUtils.format(order.paidAmount()));
-        extraLore.add("&7ᴇѕᴄʀᴏᴡ ʟᴇꜰᴛ: &a$" + NumberUtils.format(order.escrowRemaining()));
+        extraLore.add("&7ᴘʀɪᴄᴇ ᴇᴀᴄʜ: " + plugin.getCurrencyManager().formatMoney(order.priceEach()));
+        extraLore.add("&7ᴘᴀɪᴅ ѕᴏ ꜰᴀʀ: " + plugin.getCurrencyManager().formatMoney(order.paidAmount()));
+        extraLore.add("&7ᴇѕᴄʀᴏᴡ ʟᴇꜰᴛ: " + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()));
         extraLore.add("&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis())));
-        extraLore.add("&7ᴏʀᴅᴇʀ ɪᴅ: &f#" + order.id());
+        extraLore.add("&7ᴏʀᴅᴇʀ ID: &f#" + order.id());
         extraLore.add("");
         extraLore.add(ownedByViewer ? "&eᴄʟɪᴄᴋ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴏʀᴅᴇʀ" : "&eᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴅᴇʟɪᴠᴇʀʏ ᴏᴘᴛɪᴏɴѕ");
         return decorateItem(plugin, order.requestedItem(), manager.describeItem(order.requestedItem()), extraLore);
@@ -50,7 +50,7 @@ final class OrdersMenuSupport {
                     Material.SUNFLOWER,
                     "&aᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ",
                     List.of(
-                            "&7ᴀᴍᴏᴜɴᴛ: &a$" + NumberUtils.format(claim.moneyAmount()),
+                            "&7ᴀᴍᴏᴜɴᴛ: " + plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
                             "&7ᴏʀᴅᴇʀ: &f#" + claim.orderId(),
                             "",
                             "&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ"

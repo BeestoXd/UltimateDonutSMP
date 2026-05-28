@@ -102,7 +102,7 @@ public class OrdersMyOrdersMenu extends BaseMenu {
         }
         if (slot == lastRow + 4) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersSelectItemMenu(plugin, 1, "ALL").open(player);
+            plugin.getOrdersManager().openNewOrderItemSelection(player);
             return;
         }
         if (slot == lastRow + 5) {

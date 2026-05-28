@@ -25,6 +25,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     // ── Managers ──────────────────────────────────────────────────────────────
     private ConfigManager      configManager;
+    private CurrencyManager    currencyManager;
     private FeatureManager     featureManager;
     private DatabaseManager    databaseManager;
     private PlayerDataManager  playerDataManager;
@@ -101,6 +102,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         configManager   = new ConfigManager(this);
         configManager.loadAll();
+        currencyManager = new CurrencyManager(this);
         featureManager = new FeatureManager(this);
         optimizationManager = new OptimizationManager(this);
         optimizationManager.start();
@@ -690,6 +692,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public void reloadAllPluginConfigurations() {
         configManager.reload();
+        currencyManager.reload();
         optimizationManager.reload();
         warpManager.loadAll();
         spawnManager.load();
@@ -746,6 +749,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     // ── Getters ───────────────────────────────────────────────────────────────
 
     public ConfigManager      getConfigManager()      { return configManager; }
+    public CurrencyManager    getCurrencyManager()    { return currencyManager; }
     public FeatureManager     getFeatureManager()     { return featureManager; }
     public DatabaseManager    getDatabaseManager()    { return databaseManager; }
     public PlayerDataManager  getPlayerDataManager()  { return playerDataManager; }

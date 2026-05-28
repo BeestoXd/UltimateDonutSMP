@@ -22,7 +22,8 @@ public class OrdersNewMenu extends BaseMenu {
         clear();
         fill(Material.GRAY_STAINED_GLASS_PANE);
 
-        OrdersManager.PendingOrderCreationSnapshot pending = plugin.getOrdersManager().getPendingCreation(player.getUniqueId());
+        OrdersManager manager = plugin.getOrdersManager();
+        OrdersManager.PendingOrderCreationSnapshot pending = manager.getPendingCreation(player.getUniqueId());
         set(18, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ɪᴛᴇᴍ ѕᴇʟᴇᴄᴛɪᴏɴ")));
 
         if (pending == null) {
@@ -38,17 +39,18 @@ public class OrdersNewMenu extends BaseMenu {
                 Material.PAPER,
                 "&bᴏʀᴅᴇʀ ᴅᴇᴛᴀɪʟѕ",
                 List.of(
-                        "&7ɪᴛᴇᴍ: &f" + plugin.getOrdersManager().describeMaterial(pending.entry().material()),
-                        "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + plugin.getOrdersManager().prettifyCategory(pending.entry().categoryKey()),
+                        "&7ɪᴛᴇᴍ: &f" + manager.describeItem(pending.requestedItem()),
+                        "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + manager.prettifyCategory(pending.categoryKey()),
                         "&7ǫᴜᴀɴᴛɪᴛʏ: &e" + pending.quantity(),
                         "&7ᴘʀɪᴄᴇ ᴇᴀᴄʜ: " + plugin.getCurrencyManager().formatMoney(pending.priceEach()),
                         "&7ᴛᴏᴛᴀʟ ʙᴜᴅɢᴇᴛ: " + plugin.getCurrencyManager().formatMoney(pending.totalBudget())
                 )
         ));
-        set(13, ItemUtils.createItem(
-                pending.entry().material(),
-                "&b" + plugin.getOrdersManager().describeMaterial(pending.entry().material()),
-                List.of("&7ᴛʜɪѕ ɪѕ ᴛʜᴇ ɪᴛᴇᴍ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴡɪʟʟ ᴅᴇʟɪᴠᴇʀ.")
+        set(13, OrdersMenuSupport.decorateItem(
+                plugin,
+                pending.requestedItem(),
+                manager.describeItem(pending.requestedItem()),
+                List.of("&7ᴛʜɪѕ ɪѕ ᴛʜᴇ ɪᴛᴇᴍ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴍᴜѕᴛ ᴅᴇʟɪᴠᴇʀ.")
         ));
         set(15, ItemUtils.createItem(
                 Material.SUNFLOWER,
@@ -76,7 +78,7 @@ public class OrdersNewMenu extends BaseMenu {
     public void handleClick(int slot, Player player) {
         if (slot == 18) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersSelectItemMenu(plugin, 1, "ALL").open(player);
+            plugin.getOrdersManager().openNewOrderItemSelection(player);
             return;
         }
 
@@ -139,9 +141,7 @@ public class OrdersNewMenu extends BaseMenu {
             );
             case NO_MONEY -> plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.NOT_ENOUGH_MONEY",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ "
-                            + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
-                            + " ꜰᴏʀ ᴛʜᴀᴛ ᴏʀᴅᴇʀ."
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ꜰᴏʀ ᴛʜᴀᴛ ᴏʀᴅᴇʀ."
             );
             case MAX_ORDERS_REACHED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.MAX_ACTIVE_REACHED", "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀ ʟɪᴍɪᴛ.");
             case DATABASE_ERROR -> "&cᴏʀᴅᴇʀѕ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ᴏʀᴅᴇʀ ʀɪɢʜᴛ ɴᴏᴡ. ᴛʀʏ ᴀɢᴀɪɴ.";

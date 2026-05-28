@@ -4,8 +4,13 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.OrdersBrowseMenu;
+import com.bx.ultimateDonutSmp.menus.OrdersEditMenu;
+import com.bx.ultimateDonutSmp.menus.OrdersInventoryItemMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersNewMenu;
+import com.bx.ultimateDonutSmp.menus.OrdersSearchItemMenu;
+import com.bx.ultimateDonutSmp.menus.OrdersSelectItemMenu;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
+import com.bx.ultimateDonutSmp.models.EconomyTransactionResult;
 import com.bx.ultimateDonutSmp.models.Order;
 import com.bx.ultimateDonutSmp.models.OrderCatalogEntry;
 import com.bx.ultimateDonutSmp.models.OrderCollectionClaim;
@@ -23,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,6 +63,52 @@ public class OrdersManager {
             "INGREDIENTS",
             "UTILITIES"
     );
+    private static final List<ServerCatalogCategory> SERVER_CATALOG_CATEGORIES = List.of(
+            new ServerCatalogCategory("ALL", Material.COMPASS),
+            new ServerCatalogCategory("BLOCKS", Material.GRASS_BLOCK),
+            new ServerCatalogCategory("ITEMS", Material.CHEST),
+            new ServerCatalogCategory("FOOD", Material.APPLE),
+            new ServerCatalogCategory("TOOLS", Material.DIAMOND_PICKAXE),
+            new ServerCatalogCategory("SWORDS", Material.DIAMOND_SWORD),
+            new ServerCatalogCategory("ARMOR", Material.DIAMOND_CHESTPLATE),
+            new ServerCatalogCategory("COMBAT", Material.BOW),
+            new ServerCatalogCategory("REDSTONE", Material.REDSTONE)
+    );
+
+    public enum ItemSelectionMode {
+        SELECT_ITEM,
+        INVENTORY_ITEM,
+        SEARCH_ITEM;
+
+        private static ItemSelectionMode fromConfig(String rawValue) {
+            if (rawValue == null || rawValue.isBlank()) {
+                return SELECT_ITEM;
+            }
+
+            try {
+                return ItemSelectionMode.valueOf(rawValue.trim().toUpperCase(Locale.US));
+            } catch (IllegalArgumentException ignored) {
+                return SELECT_ITEM;
+            }
+        }
+    }
+
+    public enum SelectItemSource {
+        CATEGORY_FILTERS,
+        SERVER_MATERIALS;
+
+        private static SelectItemSource fromConfig(String rawValue) {
+            if (rawValue == null || rawValue.isBlank()) {
+                return CATEGORY_FILTERS;
+            }
+
+            try {
+                return SelectItemSource.valueOf(rawValue.trim().toUpperCase(Locale.US));
+            } catch (IllegalArgumentException ignored) {
+                return CATEGORY_FILTERS;
+            }
+        }
+    }
 
     public enum CreateFailureReason {
         DISABLED,
@@ -101,8 +153,32 @@ public class OrdersManager {
         DATABASE_ERROR
     }
 
+    public enum EditFailureReason {
+        DISABLED,
+        ORDER_NOT_FOUND,
+        NOT_OWNER,
+        NOT_ACTIVE,
+        ALREADY_DELIVERED,
+        INVALID_ITEM,
+        INVALID_QUANTITY,
+        INVALID_PRICE,
+        PRICE_OUT_OF_RANGE,
+        TOTAL_TOO_HIGH,
+        NO_MONEY,
+        NO_PLAYER_DATA,
+        DATABASE_ERROR
+    }
+
+    public record OrderEditNavigation(
+            boolean backToMyOrders,
+            int originPage,
+            OrderSort sortMode,
+            String categoryFilter
+    ) {}
+
     public record PendingOrderCreationSnapshot(
-            OrderCatalogEntry entry,
+            ItemStack requestedItem,
+            String categoryKey,
             int quantity,
             double priceEach,
             double totalBudget
@@ -143,10 +219,19 @@ public class OrdersManager {
             OrderCollectionClaim claim
     ) {}
 
+    public record EditOrderResult(
+            boolean success,
+            EditFailureReason reason,
+            Order order,
+            double balanceDelta
+    ) {}
+
     private final UltimateDonutSmp plugin;
     private final Set<UUID> activeTransactions = new HashSet<>();
     private final Map<UUID, Long> lastClickTimes = new HashMap<>();
     private final Map<UUID, PendingOrderCreation> pendingCreations = new HashMap<>();
+    private final Map<UUID, PendingSearchInput> pendingSearchInputs = new HashMap<>();
+    private final Map<UUID, PendingOrderEdit> pendingEdits = new HashMap<>();
     private final Map<String, List<OrderCatalogEntry>> catalogByCategory = new LinkedHashMap<>();
     private final List<String> categoryOrder = new ArrayList<>();
 
@@ -207,11 +292,35 @@ public class OrdersManager {
     }
 
     public int getSelectItemSize() {
-        return normalizeSize(config().getInt("GUI.SELECT_ITEM.SIZE", 54));
+        int normalized = normalizeSize(config().getInt("GUI.SELECT_ITEM.SIZE", 54));
+        return getSelectItemSource() == SelectItemSource.SERVER_MATERIALS ? Math.max(27, normalized) : normalized;
     }
 
     public int getSelectItemItemsPerPage() {
         return Math.max(1, Math.min(45, config().getInt("GUI.SELECT_ITEM.ITEMS_PER_PAGE", 45)));
+    }
+
+    public String getSearchItemTitle(String query) {
+        String safeQuery = query == null ? "" : query;
+        return config().getString("GUI.SEARCH_ITEM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ")
+                .replace("{query}", safeQuery);
+    }
+
+    public int getSearchItemSize() {
+        return Math.max(18, normalizeSize(config().getInt("GUI.SEARCH_ITEM.SIZE", 54)));
+    }
+
+    public int getSearchItemItemsPerPage() {
+        int maxResultSlots = Math.max(1, getSearchItemSize() - 9);
+        return Math.max(1, Math.min(maxResultSlots, config().getInt("GUI.SEARCH_ITEM.ITEMS_PER_PAGE", 45)));
+    }
+
+    public String getInventoryItemTitle() {
+        return config().getString("GUI.INVENTORY_ITEM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴄʜᴏᴏѕᴇ ɪᴛᴇᴍ");
+    }
+
+    public int getInventoryItemSize() {
+        return Math.max(27, normalizeSize(config().getInt("GUI.INVENTORY_ITEM.SIZE", 27)));
     }
 
     public String getNewOrderTitle() {
@@ -242,6 +351,70 @@ public class OrdersManager {
 
     public OrderSort getDefaultSort() {
         return OrderSort.fromConfig(config().getString("SORTING.DEFAULT", "MOST_PAID"));
+    }
+
+    public ItemSelectionMode getItemSelectionMode() {
+        return ItemSelectionMode.fromConfig(config().getString("SETTINGS.ITEM_SELECTION_MODE", "SELECT_ITEM"));
+    }
+
+    public SelectItemSource getSelectItemSource() {
+        return SelectItemSource.fromConfig(config().getString("SETTINGS.SELECT_ITEM_SOURCE", "CATEGORY_FILTERS"));
+    }
+
+    public void openNewOrderItemSelection(Player player) {
+        if (player == null) {
+            return;
+        }
+
+        pendingEdits.remove(player.getUniqueId());
+        ItemSelectionMode mode = getItemSelectionMode();
+        if (mode == ItemSelectionMode.INVENTORY_ITEM) {
+            new OrdersInventoryItemMenu(plugin).open(player);
+            return;
+        }
+
+        if (mode == ItemSelectionMode.SEARCH_ITEM) {
+            promptOrderSearchInput(player);
+            return;
+        }
+
+        new OrdersSelectItemMenu(plugin, 1, "ALL").open(player);
+    }
+
+    public void openEditOrderItemSelection(
+            Player player,
+            long orderId,
+            boolean backToMyOrders,
+            int originPage,
+            OrderSort sortMode,
+            String categoryFilter
+    ) {
+        if (player == null) {
+            return;
+        }
+
+        OrderEditNavigation navigation = normalizeNavigation(backToMyOrders, originPage, sortMode, categoryFilter);
+        EditOrderResult validation = validateEditableOrder(player, orderId);
+        if (!validation.success()) {
+            player.sendMessage(ColorUtils.toComponent(resolveEditFailureMessage(validation)));
+            openEditOrderMenu(player, orderId, navigation);
+            return;
+        }
+
+        pendingCreations.remove(player.getUniqueId());
+        pendingEdits.remove(player.getUniqueId());
+        ItemSelectionMode mode = getItemSelectionMode();
+        if (mode == ItemSelectionMode.INVENTORY_ITEM) {
+            new OrdersInventoryItemMenu(plugin, orderId, navigation).open(player);
+            return;
+        }
+
+        if (mode == ItemSelectionMode.SEARCH_ITEM) {
+            promptEditOrderSearchInput(player, orderId, navigation);
+            return;
+        }
+
+        new OrdersSelectItemMenu(plugin, 1, "ALL", orderId, navigation).open(player);
     }
 
     public List<OrderSort> getAllowedSorts() {
@@ -289,6 +462,34 @@ public class OrdersManager {
         return normalizeCategory(categoryKey).replace('_', ' ');
     }
 
+    public String prettifySelectItemCategory(String categoryKey) {
+        if (getSelectItemSource() == SelectItemSource.SERVER_MATERIALS) {
+            return normalizeServerCatalogCategory(categoryKey).replace('_', ' ');
+        }
+
+        return prettifyCategory(categoryKey);
+    }
+
+    public String resolveCategoryForMaterial(Material material) {
+        if (!isModernMaterial(material) || material.isAir()) {
+            return "ALL";
+        }
+
+        for (String categoryKey : categoryOrder) {
+            if (categoryKey.equals("ALL")) {
+                continue;
+            }
+
+            for (OrderCatalogEntry entry : catalogByCategory.getOrDefault(categoryKey, List.of())) {
+                if (entry.material() == material) {
+                    return categoryKey;
+                }
+            }
+        }
+
+        return "ALL";
+    }
+
     public List<OrderCatalogEntry> getCatalogEntries(String categoryKey) {
         String normalized = normalizeCategory(categoryKey);
         if (normalized.equals("ALL")) {
@@ -302,6 +503,54 @@ public class OrdersManager {
         }
 
         return List.copyOf(catalogByCategory.getOrDefault(normalized, List.of()));
+    }
+
+    public List<OrderCatalogEntry> getSelectItemCatalogEntries(String categoryKey) {
+        if (getSelectItemSource() == SelectItemSource.SERVER_MATERIALS) {
+            return getServerMaterialCatalogEntries(categoryKey);
+        }
+
+        return getCatalogEntries(categoryKey);
+    }
+
+    public List<String> getSelectItemCategories() {
+        if (getSelectItemSource() == SelectItemSource.SERVER_MATERIALS) {
+            return SERVER_CATALOG_CATEGORIES.stream()
+                    .map(ServerCatalogCategory::key)
+                    .toList();
+        }
+
+        return getAvailableCategories();
+    }
+
+    public String normalizeSelectItemCategory(String rawCategory) {
+        if (getSelectItemSource() == SelectItemSource.SERVER_MATERIALS) {
+            return normalizeServerCatalogCategory(rawCategory);
+        }
+
+        return normalizeCategory(rawCategory);
+    }
+
+    public String nextSelectItemCategory(String currentCategory) {
+        if (getSelectItemSource() == SelectItemSource.SERVER_MATERIALS) {
+            List<String> categories = getSelectItemCategories();
+            String normalized = normalizeServerCatalogCategory(currentCategory);
+            int currentIndex = categories.indexOf(normalized);
+            if (currentIndex < 0) {
+                return "ALL";
+            }
+            return categories.get((currentIndex + 1) % categories.size());
+        }
+
+        return nextCategory(currentCategory);
+    }
+
+    public Material getSelectItemCategoryIcon(String categoryKey) {
+        if (getSelectItemSource() == SelectItemSource.SERVER_MATERIALS) {
+            return serverCategory(normalizeServerCatalogCategory(categoryKey)).icon();
+        }
+
+        return Material.CHEST;
     }
 
     public boolean beginAction(UUID uuid) {
@@ -326,6 +575,8 @@ public class OrdersManager {
             return;
         }
 
+        pendingSearchInputs.remove(player.getUniqueId());
+        pendingEdits.remove(player.getUniqueId());
         pendingCreations.put(player.getUniqueId(), PendingOrderCreation.start(entry));
         player.closeInventory();
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
@@ -335,7 +586,82 @@ public class OrdersManager {
         )));
     }
 
+    public boolean promptOrderQuantityInput(Player player, ItemStack item) {
+        return promptOrderQuantityInput(player, item, resolveCategoryForMaterial(item == null ? null : item.getType()));
+    }
+
+    public boolean promptOrderQuantityInput(Player player, ItemStack item, String categoryKey) {
+        if (player == null) {
+            return false;
+        }
+
+        pendingSearchInputs.remove(player.getUniqueId());
+        pendingEdits.remove(player.getUniqueId());
+        ItemStack requestedItem = prepareRequestedItem(item);
+        if (requestedItem == null || !isOrderable(requestedItem.getType())) {
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.ITEM_BLOCKED",
+                    "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ."
+            )));
+            return false;
+        }
+
+        pendingCreations.put(player.getUniqueId(), PendingOrderCreation.start(requestedItem, normalizeCategory(categoryKey)));
+        player.closeInventory();
+        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                "ORDERS.PROMPT_QUANTITY",
+                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
+                "{item}", describeItem(requestedItem)
+        )));
+        return true;
+    }
+
+    public void promptOrderSearchInput(Player player) {
+        if (player == null) {
+            return;
+        }
+
+        pendingCreations.remove(player.getUniqueId());
+        pendingEdits.remove(player.getUniqueId());
+        pendingSearchInputs.put(player.getUniqueId(), PendingSearchInput.newOrder());
+        player.closeInventory();
+        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                "ORDERS.PROMPT_SEARCH",
+                "&7ᴇɴᴛᴇʀ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ѕᴇᴀʀᴄʜ ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ."
+        )));
+    }
+
+    public void promptEditOrderSearchInput(Player player, long orderId, OrderEditNavigation navigation) {
+        if (player == null) {
+            return;
+        }
+
+        EditOrderResult validation = validateEditableOrder(player, orderId);
+        if (!validation.success()) {
+            player.sendMessage(ColorUtils.toComponent(resolveEditFailureMessage(validation)));
+            openEditOrderMenu(player, orderId, navigation);
+            return;
+        }
+
+        pendingCreations.remove(player.getUniqueId());
+        pendingEdits.remove(player.getUniqueId());
+        pendingSearchInputs.put(player.getUniqueId(), PendingSearchInput.editOrder(orderId, navigation));
+        player.closeInventory();
+        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                "ORDERS.PROMPT_SEARCH",
+                "&7á´‡É´á´›á´‡Ê€ á´€É´ Éªá´›á´‡á´ á´Ê€ á´„á´€á´›á´‡É¢á´Ê€Ê Ñ•á´‡á´€Ê€á´„Êœ ÉªÉ´ á´„Êœá´€á´›. á´›Êá´˜á´‡ &cá´„á´€É´á´„á´‡ÊŸ&7 á´›á´ á´€Ê™á´Ê€á´›."
+        )));
+    }
+
     public boolean hasPendingInput(UUID uuid) {
+        if (pendingSearchInputs.containsKey(uuid)) {
+            return true;
+        }
+
+        if (pendingEdits.containsKey(uuid)) {
+            return true;
+        }
+
         PendingOrderCreation pending = pendingCreations.get(uuid);
         return pending != null && !pending.readyForConfirmation();
     }
@@ -347,7 +673,8 @@ public class OrdersManager {
         }
 
         return new PendingOrderCreationSnapshot(
-                pending.entry(),
+                pending.requestedItem().clone(),
+                pending.categoryKey(),
                 pending.quantity(),
                 pending.priceEach(),
                 roundCurrency(pending.quantity() * pending.priceEach())
@@ -358,6 +685,8 @@ public class OrdersManager {
         if (uuid == null) {
             return;
         }
+        pendingSearchInputs.remove(uuid);
+        pendingEdits.remove(uuid);
         pendingCreations.remove(uuid);
     }
 
@@ -366,12 +695,23 @@ public class OrdersManager {
             return;
         }
 
+        String input = rawInput == null ? "" : rawInput.trim();
+        if (pendingSearchInputs.containsKey(player.getUniqueId())) {
+            handleSearchInput(player, input);
+            return;
+        }
+
+        PendingOrderEdit pendingEdit = pendingEdits.get(player.getUniqueId());
+        if (pendingEdit != null) {
+            handleEditInput(player, pendingEdit, input);
+            return;
+        }
+
         PendingOrderCreation pending = pendingCreations.get(player.getUniqueId());
         if (pending == null) {
             return;
         }
 
-        String input = rawInput == null ? "" : rawInput.trim();
         if (input.equalsIgnoreCase("cancel")) {
             pendingCreations.remove(player.getUniqueId());
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
@@ -402,7 +742,8 @@ public class OrdersManager {
             return new CreateOrderResult(false, CreateFailureReason.NO_PENDING_ORDER, null, 0D);
         }
 
-        if (!isOrderable(pending.entry().material())) {
+        ItemStack requestedItem = prepareRequestedItem(pending.requestedItem());
+        if (requestedItem == null || !isOrderable(requestedItem.getType())) {
             return new CreateOrderResult(false, CreateFailureReason.INVALID_ITEM, null, 0D);
         }
 
@@ -454,8 +795,8 @@ public class OrdersManager {
         long orderId = insertOrder(
                 player.getUniqueId(),
                 player.getName(),
-                new ItemStack(pending.entry().material()),
-                pending.entry().categoryKey(),
+                requestedItem,
+                pending.categoryKey(),
                 pending.quantity(),
                 pending.priceEach(),
                 totalBudget,
@@ -477,12 +818,199 @@ public class OrdersManager {
         return new CreateOrderResult(true, null, getOrder(orderId), creationFee);
     }
 
+    public boolean selectOrderItem(
+            Player player,
+            ItemStack item,
+            String categoryKey,
+            long editOrderId,
+            OrderEditNavigation navigation
+    ) {
+        if (editOrderId <= 0L) {
+            return promptOrderQuantityInput(player, item, categoryKey);
+        }
+
+        EditOrderResult result = updateOrderItem(player, editOrderId, item, categoryKey);
+        if (result.success()) {
+            ItemStack displayItem = result.order() == null ? item : result.order().requestedItem();
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.EDIT_ITEM_UPDATED",
+                    "&aᴏʀᴅᴇʀ #{order_id} ɪᴛᴇᴍ ᴜᴘᴅᴀᴛᴇᴅ ᴛᴏ &f{item}&a.",
+                    "{order_id}", String.valueOf(editOrderId),
+                    "{item}", describeItem(displayItem)
+            )));
+        } else {
+            player.sendMessage(ColorUtils.toComponent(resolveEditFailureMessage(result)));
+        }
+        openEditOrderMenu(player, editOrderId, navigation);
+        return result.success();
+    }
+
+    public void promptEditOrderQuantityInput(
+            Player player,
+            long orderId,
+            boolean backToMyOrders,
+            int originPage,
+            OrderSort sortMode,
+            String categoryFilter
+    ) {
+        OrderEditNavigation navigation = normalizeNavigation(backToMyOrders, originPage, sortMode, categoryFilter);
+        EditOrderResult validation = validateEditableOrder(player, orderId);
+        if (!validation.success()) {
+            player.sendMessage(ColorUtils.toComponent(resolveEditFailureMessage(validation)));
+            openEditOrderMenu(player, orderId, navigation);
+            return;
+        }
+
+        pendingCreations.remove(player.getUniqueId());
+        pendingSearchInputs.remove(player.getUniqueId());
+        pendingEdits.put(player.getUniqueId(), new PendingOrderEdit(orderId, EditField.QUANTITY, navigation));
+        player.closeInventory();
+        resendEditQuantityPrompt(player, validation.order());
+    }
+
+    public void promptEditOrderPriceInput(
+            Player player,
+            long orderId,
+            boolean backToMyOrders,
+            int originPage,
+            OrderSort sortMode,
+            String categoryFilter
+    ) {
+        OrderEditNavigation navigation = normalizeNavigation(backToMyOrders, originPage, sortMode, categoryFilter);
+        EditOrderResult validation = validateEditableOrder(player, orderId);
+        if (!validation.success()) {
+            player.sendMessage(ColorUtils.toComponent(resolveEditFailureMessage(validation)));
+            openEditOrderMenu(player, orderId, navigation);
+            return;
+        }
+
+        pendingCreations.remove(player.getUniqueId());
+        pendingSearchInputs.remove(player.getUniqueId());
+        pendingEdits.put(player.getUniqueId(), new PendingOrderEdit(orderId, EditField.PRICE, navigation));
+        player.closeInventory();
+        resendEditPricePrompt(player, validation.order());
+    }
+
+    public synchronized EditOrderResult updateOrderItem(Player player, long orderId, ItemStack item, String categoryKey) {
+        EditOrderResult validation = validateEditableOrder(player, orderId);
+        if (!validation.success()) {
+            return validation;
+        }
+
+        ItemStack requestedItem = prepareRequestedItem(item);
+        if (requestedItem == null || !isOrderable(requestedItem.getType())) {
+            return new EditOrderResult(false, EditFailureReason.INVALID_ITEM, validation.order(), 0D);
+        }
+
+        String serializedItem = serializeItem(requestedItem);
+        if (serializedItem.isBlank()) {
+            return new EditOrderResult(false, EditFailureReason.DATABASE_ERROR, validation.order(), 0D);
+        }
+
+        try (PreparedStatement ps = connection().prepareStatement(
+                "UPDATE orders SET requested_item_data = ?, requested_material_key = ?, category_key = ? " +
+                        "WHERE id = ? AND owner_uuid = ? AND status = ? AND delivered_quantity = 0")) {
+            ps.setString(1, serializedItem);
+            ps.setString(2, requestedItem.getType().name());
+            ps.setString(3, normalizeCategory(categoryKey));
+            ps.setLong(4, orderId);
+            ps.setString(5, player.getUniqueId().toString());
+            ps.setString(6, OrderStatus.ACTIVE.name());
+            if (ps.executeUpdate() != 1) {
+                return new EditOrderResult(false, EditFailureReason.ALREADY_DELIVERED, validation.order(), 0D);
+            }
+        } catch (SQLException exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to update order item " + orderId, exception);
+            return new EditOrderResult(false, EditFailureReason.DATABASE_ERROR, validation.order(), 0D);
+        }
+
+        return new EditOrderResult(true, null, getOrder(orderId), 0D);
+    }
+
+    public synchronized EditOrderResult updateOrderQuantity(Player player, long orderId, int quantity) {
+        EditOrderResult validation = validateEditableOrder(player, orderId);
+        if (!validation.success()) {
+            return validation;
+        }
+        return updateOrderBudget(player, validation.order(), quantity, validation.order().priceEach());
+    }
+
+    public synchronized EditOrderResult updateOrderPrice(Player player, long orderId, double priceEach) {
+        EditOrderResult validation = validateEditableOrder(player, orderId);
+        if (!validation.success()) {
+            return validation;
+        }
+        return updateOrderBudget(player, validation.order(), validation.order().requestedQuantity(), priceEach);
+    }
+
+    public EditOrderResult validateEditableOrder(Player player, long orderId) {
+        if (!isEnabled()) {
+            return new EditOrderResult(false, EditFailureReason.DISABLED, null, 0D);
+        }
+        if (player == null) {
+            return new EditOrderResult(false, EditFailureReason.NO_PLAYER_DATA, null, 0D);
+        }
+
+        Order order = getOrder(orderId);
+        if (order == null) {
+            return new EditOrderResult(false, EditFailureReason.ORDER_NOT_FOUND, null, 0D);
+        }
+        if (!order.ownerUuid().equals(player.getUniqueId())) {
+            return new EditOrderResult(false, EditFailureReason.NOT_OWNER, order, 0D);
+        }
+        if (!order.active() || order.expiresAt() <= System.currentTimeMillis()) {
+            if (order.active() && order.expiresAt() <= System.currentTimeMillis()) {
+                expireOrder(order);
+                order = getOrder(orderId);
+            }
+            return new EditOrderResult(false, EditFailureReason.NOT_ACTIVE, order, 0D);
+        }
+        if (order.deliveredQuantity() > 0) {
+            return new EditOrderResult(false, EditFailureReason.ALREADY_DELIVERED, order, 0D);
+        }
+
+        return new EditOrderResult(true, null, order, 0D);
+    }
+
+    public String resolveEditFailureMessage(EditOrderResult result) {
+        EditFailureReason reason = result == null ? EditFailureReason.DATABASE_ERROR : result.reason();
+        return switch (reason) {
+            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cᴏʀᴅᴇʀѕ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.");
+            case ORDER_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_FOUND", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.");
+            case NOT_OWNER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_YOUR_ORDER", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.");
+            case NOT_ACTIVE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_ACTIVE", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.");
+            case ALREADY_DELIVERED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.EDIT_LOCKED", "&cᴛʜɪѕ ᴏʀᴅᴇʀ ᴀʟʀᴇᴀᴅʏ ʜᴀѕ ᴅᴇʟɪᴠᴇʀɪᴇѕ, ѕᴏ ɪᴛ ᴄᴀɴɴᴏᴛ ʙᴇ ᴇᴅɪᴛᴇᴅ.");
+            case INVALID_ITEM -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ITEM_BLOCKED", "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ.");
+            case INVALID_QUANTITY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_QUANTITY", "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ.");
+            case INVALID_PRICE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_PRICE", "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ.");
+            case PRICE_OUT_OF_RANGE -> plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.PRICE_OUT_OF_RANGE",
+                    "&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f{min_formatted}&c ᴀɴᴅ &f{max_formatted}&c.",
+                    "{min}", NumberUtils.format(getMinPriceEach()),
+                    "{min_formatted}", plugin.getCurrencyManager().formatMoney(getMinPriceEach()),
+                    "{max}", NumberUtils.format(getMaxPriceEach()),
+                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach())
+            );
+            case TOTAL_TOO_HIGH -> plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.TOTAL_TOO_HIGH",
+                    "&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f{max_formatted}&c.",
+                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget())
+            );
+            case NO_MONEY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_ENOUGH_MONEY", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ꜰᴏʀ ᴛʜᴀᴛ ᴄʜᴀɴɢᴇ.");
+            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
+            case DATABASE_ERROR -> "&cᴏʀᴅᴇʀѕ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ᴛʜᴀᴛ ᴏʀᴅᴇʀ ʀɪɢʜᴛ ɴᴏᴡ.";
+        };
+    }
+
     public String describeMaterial(Material material) {
+        if (!isModernMaterial(material)) {
+            return "unknown item";
+        }
         return plugin.getWorthManager().prettifyMaterial(material);
     }
 
     public String describeItem(ItemStack item) {
-        if (item == null || item.getType().isAir()) {
+        if (isMissingItem(item)) {
             return "ᴜɴᴋɴᴏᴡɴ ɪᴛᴇᴍ";
         }
 
@@ -496,6 +1024,661 @@ public class OrdersManager {
         return NumberUtils.formatTimeLong(seconds);
     }
 
+    public List<Material> searchOrderMaterials(String rawQuery) {
+        String query = rawQuery == null ? "" : rawQuery.trim();
+        String normalizedQuery = normalizeSearchText(query);
+        if (normalizedQuery.isBlank()) {
+            return List.of();
+        }
+
+        SearchCategoryMatch categoryMatch = resolveSearchCategory(normalizedQuery);
+        List<SearchCandidate> candidates = new ArrayList<>();
+        for (Material material : Material.values()) {
+            if (!isOrderable(material)) {
+                continue;
+            }
+
+            SearchCandidate candidate = scoreSearchMaterial(material, normalizedQuery, categoryMatch);
+            if (candidate != null) {
+                candidates.add(candidate);
+            }
+        }
+
+        boolean hasDirectMaterialMatch = candidates.stream()
+                .anyMatch(candidate -> candidate.tier() == SearchMatchTier.DIRECT_MATERIAL);
+        boolean hasExactCategoryMatch = candidates.stream()
+                .anyMatch(candidate -> candidate.tier() == SearchMatchTier.EXACT_CATEGORY);
+        if (hasDirectMaterialMatch || hasExactCategoryMatch) {
+            candidates.removeIf(candidate -> candidate.tier() != SearchMatchTier.EXACT_CATEGORY
+                    && candidate.tier() != SearchMatchTier.DIRECT_MATERIAL);
+        }
+
+        candidates.sort(Comparator
+                .comparingInt(SearchCandidate::score)
+                .reversed()
+                .thenComparing(candidate -> candidate.material().name()));
+        return candidates.stream()
+                .map(SearchCandidate::material)
+                .toList();
+    }
+
+    private void handleSearchInput(Player player, String input) {
+        UUID uuid = player.getUniqueId();
+        PendingSearchInput pendingSearch = pendingSearchInputs.get(uuid);
+        if (input.equalsIgnoreCase("cancel")) {
+            pendingSearchInputs.remove(uuid);
+            pendingCreations.remove(uuid);
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.INPUT_CANCELLED",
+                    "&7ᴏʀᴅᴇʀ ᴄʀᴇᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+            )));
+            if (pendingSearch != null && pendingSearch.editOrderId() > 0L) {
+                openEditOrderMenu(player, pendingSearch.editOrderId(), pendingSearch.navigation());
+            } else {
+                new OrdersBrowseMenu(plugin, 1, getDefaultSort(), "ALL").open(player);
+            }
+            return;
+        }
+
+        if (input.isBlank()) {
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.SEARCH_EMPTY",
+                    "&cᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ɴᴀᴍᴇ ᴛᴏ ѕᴇᴀʀᴄʜ."
+            )));
+            if (pendingSearch != null && pendingSearch.editOrderId() > 0L) {
+                promptEditOrderSearchInput(player, pendingSearch.editOrderId(), pendingSearch.navigation());
+            } else {
+                promptOrderSearchInput(player);
+            }
+            return;
+        }
+
+        pendingSearchInputs.remove(uuid);
+        if (pendingSearch != null && pendingSearch.editOrderId() > 0L) {
+            new OrdersSearchItemMenu(plugin, input, 1, pendingSearch.editOrderId(), pendingSearch.navigation()).open(player);
+        } else {
+            new OrdersSearchItemMenu(plugin, input, 1).open(player);
+        }
+    }
+
+    private void handleEditInput(Player player, PendingOrderEdit pendingEdit, String input) {
+        if (input.equalsIgnoreCase("cancel")) {
+            pendingEdits.remove(player.getUniqueId());
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.EDIT_CANCELLED",
+                    "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+            )));
+            openEditOrderMenu(player, pendingEdit.orderId(), pendingEdit.navigation());
+            return;
+        }
+
+        if (pendingEdit.field() == EditField.QUANTITY) {
+            handleEditQuantityInput(player, pendingEdit, input);
+            return;
+        }
+
+        if (pendingEdit.field() == EditField.PRICE) {
+            handleEditPriceInput(player, pendingEdit, input);
+        }
+    }
+
+    private void handleEditQuantityInput(Player player, PendingOrderEdit pendingEdit, String input) {
+        int quantity;
+        try {
+            quantity = Math.toIntExact(NumberUtils.parseLong(input));
+        } catch (RuntimeException exception) {
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.INVALID_QUANTITY",
+                    "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0."
+            )));
+            Order order = getOrder(pendingEdit.orderId());
+            if (order != null) {
+                resendEditQuantityPrompt(player, order);
+            }
+            return;
+        }
+
+        EditOrderResult result = updateOrderQuantity(player, pendingEdit.orderId(), quantity);
+        handleEditUpdateResult(player, pendingEdit, result);
+    }
+
+    private void handleEditPriceInput(Player player, PendingOrderEdit pendingEdit, String input) {
+        double priceEach;
+        try {
+            priceEach = NumberUtils.parse(input);
+        } catch (NumberFormatException exception) {
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.INVALID_PRICE",
+                    "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ."
+            )));
+            Order order = getOrder(pendingEdit.orderId());
+            if (order != null) {
+                resendEditPricePrompt(player, order);
+            }
+            return;
+        }
+
+        EditOrderResult result = updateOrderPrice(player, pendingEdit.orderId(), priceEach);
+        handleEditUpdateResult(player, pendingEdit, result);
+    }
+
+    private void handleEditUpdateResult(Player player, PendingOrderEdit pendingEdit, EditOrderResult result) {
+        if (result.success()) {
+            Order updatedOrder = result.order() == null ? getOrder(pendingEdit.orderId()) : result.order();
+            if (updatedOrder == null) {
+                pendingEdits.remove(player.getUniqueId());
+                player.sendMessage(ColorUtils.toComponent(resolveEditFailureMessage(
+                        new EditOrderResult(false, EditFailureReason.DATABASE_ERROR, null, 0D)
+                )));
+                return;
+            }
+            pendingEdits.remove(player.getUniqueId());
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                    "ORDERS.EDIT_UPDATED",
+                    "&aᴏʀᴅᴇʀ #{order_id} ᴜᴘᴅᴀᴛᴇᴅ. ɴᴇᴡ ʙᴜᴅɢᴇᴛ: {budget_formatted}.",
+                    "{order_id}", String.valueOf(updatedOrder.id()),
+                    "{budget}", NumberUtils.format(updatedOrder.totalBudget()),
+                    "{budget_formatted}", plugin.getCurrencyManager().formatMoney(updatedOrder.totalBudget())
+            )));
+            openEditOrderMenu(player, updatedOrder.id(), pendingEdit.navigation());
+            return;
+        }
+
+        player.sendMessage(ColorUtils.toComponent(resolveEditFailureMessage(result)));
+        Order order = result.order() != null ? result.order() : getOrder(pendingEdit.orderId());
+        if (order == null || !canRetryEditInput(result.reason())) {
+            pendingEdits.remove(player.getUniqueId());
+            openEditOrderMenu(player, pendingEdit.orderId(), pendingEdit.navigation());
+            return;
+        }
+
+        if (pendingEdit.field() == EditField.QUANTITY) {
+            resendEditQuantityPrompt(player, order);
+        } else {
+            resendEditPricePrompt(player, order);
+        }
+    }
+
+    private boolean canRetryEditInput(EditFailureReason reason) {
+        return reason == EditFailureReason.INVALID_QUANTITY
+                || reason == EditFailureReason.INVALID_PRICE
+                || reason == EditFailureReason.PRICE_OUT_OF_RANGE
+                || reason == EditFailureReason.TOTAL_TOO_HIGH
+                || reason == EditFailureReason.NO_MONEY;
+    }
+
+    private SearchCandidate scoreSearchMaterial(Material material, String normalizedQuery, SearchCategoryMatch categoryMatch) {
+        int bestScore = 0;
+        SearchMatchTier bestTier = null;
+        if (categoryMatch != null && matchesSearchCategory(material, categoryMatch.category())) {
+            bestScore = Math.max(bestScore, categoryMatch.score());
+            bestTier = categoryMatch.exact() ? SearchMatchTier.EXACT_CATEGORY : SearchMatchTier.FUZZY_CATEGORY;
+        }
+
+        String normalizedName = normalizeSearchText(material.name());
+        if (normalizedName.equals(normalizedQuery)) {
+            return new SearchCandidate(material, Math.max(bestScore, 9_500), SearchMatchTier.DIRECT_MATERIAL);
+        }
+
+        int containsIndex = normalizedName.indexOf(normalizedQuery);
+        if (containsIndex >= 0) {
+            bestScore = Math.max(bestScore, 9_000 - Math.min(500, containsIndex));
+            bestTier = SearchMatchTier.DIRECT_MATERIAL;
+        }
+
+        int bestPrefixScore = 0;
+        for (String token : searchTokens(material)) {
+            if (token.equals(normalizedQuery)) {
+                bestPrefixScore = Math.max(bestPrefixScore, 8_750);
+                continue;
+            }
+            if (token.startsWith(normalizedQuery)) {
+                bestPrefixScore = Math.max(bestPrefixScore, 8_500 - Math.min(250, token.length() - normalizedQuery.length()));
+                continue;
+            }
+            if (normalizedQuery.startsWith(token)) {
+                bestPrefixScore = Math.max(bestPrefixScore, 8_250 - Math.min(250, normalizedQuery.length() - token.length()));
+            }
+        }
+        if (bestPrefixScore > 0) {
+            bestScore = Math.max(bestScore, bestPrefixScore);
+            bestTier = SearchMatchTier.DIRECT_MATERIAL;
+        }
+
+        int threshold = fuzzyThreshold(normalizedQuery);
+        if (threshold <= 0) {
+            return bestScore > 0 ? new SearchCandidate(material, bestScore, bestTier) : null;
+        }
+
+        int bestDistance = Integer.MAX_VALUE;
+        for (String token : searchTokens(material)) {
+            if (Math.abs(token.length() - normalizedQuery.length()) > threshold + 1) {
+                continue;
+            }
+            int distance = damerauLevenshtein(normalizedQuery, token);
+            if (distance <= threshold) {
+                bestDistance = Math.min(bestDistance, distance);
+            }
+        }
+
+        if (bestDistance != Integer.MAX_VALUE) {
+            int fuzzyScore = 7_000 - (bestDistance * 250);
+            if (fuzzyScore > bestScore) {
+                bestScore = fuzzyScore;
+                bestTier = SearchMatchTier.FUZZY_MATERIAL;
+            }
+        }
+
+        return bestScore > 0 ? new SearchCandidate(material, bestScore, bestTier) : null;
+    }
+
+    private List<String> searchTokens(Material material) {
+        List<String> tokens = new ArrayList<>();
+        for (String rawToken : material.name().split("_")) {
+            String token = normalizeSearchText(rawToken);
+            if (!token.isBlank()) {
+                tokens.add(token);
+            }
+        }
+        return tokens;
+    }
+
+    private SearchCategoryMatch resolveSearchCategory(String normalizedQuery) {
+        for (SearchCategory category : SearchCategory.values()) {
+            for (String alias : searchCategoryAliases(category)) {
+                if (alias.equals(normalizedQuery)) {
+                    return new SearchCategoryMatch(category, 10_000, true);
+                }
+            }
+        }
+
+        int threshold = fuzzyThreshold(normalizedQuery);
+        if (threshold <= 0) {
+            return null;
+        }
+
+        for (SearchCategory category : SearchCategory.values()) {
+            for (String alias : searchCategoryAliases(category)) {
+                if (Math.abs(alias.length() - normalizedQuery.length()) > threshold + 1) {
+                    continue;
+                }
+                int distance = damerauLevenshtein(normalizedQuery, alias);
+                if (distance <= threshold) {
+                    return new SearchCategoryMatch(category, 6_500 - (distance * 250), false);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private List<String> searchCategoryAliases(SearchCategory category) {
+        return switch (category) {
+            case BLOCKS -> List.of("block", "blocks");
+            case ITEMS -> List.of("item", "items");
+            case SWORDS -> List.of("sword", "swords");
+            case ARMOR -> List.of("armor");
+            case FOOD -> List.of("food", "foods");
+            case WOOD -> List.of("wood", "woods");
+        };
+    }
+
+    private boolean matchesSearchCategory(Material material, SearchCategory category) {
+        if (!isModernMaterial(material)) {
+            return false;
+        }
+
+        return switch (category) {
+            case BLOCKS -> material.isBlock();
+            case ITEMS -> !material.isBlock();
+            case SWORDS -> material.name().endsWith("_SWORD");
+            case ARMOR -> isArmorMaterial(material);
+            case FOOD -> material.isEdible();
+            case WOOD -> isWoodFamilyMaterial(material);
+        };
+    }
+
+    private List<OrderCatalogEntry> getServerMaterialCatalogEntries(String categoryKey) {
+        String normalizedCategory = normalizeServerCatalogCategory(categoryKey);
+        List<OrderCatalogEntry> entries = new ArrayList<>();
+        for (Material material : Material.values()) {
+            if (!isOrderable(material) || !matchesServerCatalogCategory(material, normalizedCategory)) {
+                continue;
+            }
+            entries.add(new OrderCatalogEntry(normalizedCategory, material));
+        }
+        entries.sort(Comparator.comparing(entry -> entry.material().name()));
+        return List.copyOf(entries);
+    }
+
+    private String normalizeServerCatalogCategory(String rawCategory) {
+        if (rawCategory == null || rawCategory.isBlank()) {
+            return "ALL";
+        }
+
+        String normalized = rawCategory.trim().toUpperCase(Locale.US);
+        for (ServerCatalogCategory category : SERVER_CATALOG_CATEGORIES) {
+            if (category.key().equals(normalized)) {
+                return normalized;
+            }
+        }
+        return "ALL";
+    }
+
+    private ServerCatalogCategory serverCategory(String categoryKey) {
+        String normalized = normalizeServerCatalogCategory(categoryKey);
+        for (ServerCatalogCategory category : SERVER_CATALOG_CATEGORIES) {
+            if (category.key().equals(normalized)) {
+                return category;
+            }
+        }
+        return SERVER_CATALOG_CATEGORIES.get(0);
+    }
+
+    private boolean matchesServerCatalogCategory(Material material, String categoryKey) {
+        if (!isModernMaterial(material) || material.isAir() || !material.isItem()) {
+            return false;
+        }
+
+        return switch (normalizeServerCatalogCategory(categoryKey)) {
+            case "ALL" -> true;
+            case "BLOCKS" -> material.isBlock();
+            case "ITEMS" -> !material.isBlock() && !isFoodMaterial(material) && !isToolMaterial(material)
+                    && !isSwordMaterial(material) && !isArmorMaterial(material)
+                    && !isCombatMaterial(material) && !isRedstoneMaterial(material);
+            case "FOOD" -> isFoodMaterial(material);
+            case "TOOLS" -> isToolMaterial(material);
+            case "SWORDS" -> isSwordMaterial(material);
+            case "ARMOR" -> isArmorMaterial(material);
+            case "COMBAT" -> isCombatMaterial(material);
+            case "REDSTONE" -> isRedstoneMaterial(material);
+            default -> true;
+        };
+    }
+
+    private boolean isFoodMaterial(Material material) {
+        return isModernMaterial(material) && material.isEdible();
+    }
+
+    private boolean isSwordMaterial(Material material) {
+        return isModernMaterial(material) && material.name().endsWith("_SWORD");
+    }
+
+    private boolean isArmorMaterial(Material material) {
+        String name = material.name();
+        return name.endsWith("_HELMET")
+                || name.endsWith("_CHESTPLATE")
+                || name.endsWith("_LEGGINGS")
+                || name.endsWith("_BOOTS")
+                || material == Material.TURTLE_HELMET
+                || material == Material.ELYTRA;
+    }
+
+    private boolean isToolMaterial(Material material) {
+        if (!isModernMaterial(material)) {
+            return false;
+        }
+
+        String name = material.name();
+        return name.endsWith("_PICKAXE")
+                || name.endsWith("_AXE")
+                || name.endsWith("_SHOVEL")
+                || name.endsWith("_HOE")
+                || material == Material.SHEARS
+                || material == Material.FLINT_AND_STEEL
+                || material == Material.FISHING_ROD
+                || material == Material.BRUSH
+                || material == Material.COMPASS
+                || material == Material.CLOCK
+                || material == Material.LEAD
+                || material == Material.NAME_TAG;
+    }
+
+    private boolean isCombatMaterial(Material material) {
+        if (!isModernMaterial(material)) {
+            return false;
+        }
+
+        String name = material.name();
+        return isSwordMaterial(material)
+                || isArmorMaterial(material)
+                || name.contains("BOW")
+                || name.contains("ARROW")
+                || name.contains("SHIELD")
+                || material == Material.TRIDENT
+                || material == Material.MACE
+                || material == Material.TOTEM_OF_UNDYING;
+    }
+
+    private boolean isRedstoneMaterial(Material material) {
+        if (!isModernMaterial(material)) {
+            return false;
+        }
+
+        String name = material.name();
+        return name.contains("REDSTONE")
+                || name.contains("PISTON")
+                || name.contains("OBSERVER")
+                || name.contains("DISPENSER")
+                || name.contains("DROPPER")
+                || name.contains("HOPPER")
+                || name.contains("REPEATER")
+                || name.contains("COMPARATOR")
+                || name.contains("DAYLIGHT_DETECTOR")
+                || name.contains("PRESSURE_PLATE")
+                || name.contains("BUTTON")
+                || name.contains("LEVER")
+                || name.contains("TRIPWIRE")
+                || name.contains("SCULK_SENSOR")
+                || material == Material.TARGET
+                || material == Material.NOTE_BLOCK
+                || material == Material.TNT
+                || material == Material.CRAFTER;
+    }
+
+    private boolean isWoodFamilyMaterial(Material material) {
+        String name = material.name();
+        return name.contains("WOOD")
+                || name.contains("LOG")
+                || name.contains("PLANKS")
+                || name.contains("STEM")
+                || name.contains("HYPHAE");
+    }
+
+    private String normalizeSearchText(String rawText) {
+        if (rawText == null || rawText.isBlank()) {
+            return "";
+        }
+
+        String lower = rawText.toLowerCase(Locale.US);
+        StringBuilder normalized = new StringBuilder(lower.length());
+        for (int i = 0; i < lower.length(); i++) {
+            char character = lower.charAt(i);
+            if (character == ' ' || character == '_' || character == '-') {
+                continue;
+            }
+            if (Character.isLetterOrDigit(character)) {
+                normalized.append(character);
+            }
+        }
+        return normalized.toString();
+    }
+
+    private int fuzzyThreshold(String normalizedQuery) {
+        int length = normalizedQuery.length();
+        if (length <= 2) {
+            return 0;
+        }
+        if (length <= 4) {
+            return 1;
+        }
+        if (length <= 7) {
+            return 2;
+        }
+        return 3;
+    }
+
+    private int damerauLevenshtein(String left, String right) {
+        int[][] distances = new int[left.length() + 1][right.length() + 1];
+        for (int i = 0; i <= left.length(); i++) {
+            distances[i][0] = i;
+        }
+        for (int j = 0; j <= right.length(); j++) {
+            distances[0][j] = j;
+        }
+
+        for (int i = 1; i <= left.length(); i++) {
+            for (int j = 1; j <= right.length(); j++) {
+                int substitutionCost = left.charAt(i - 1) == right.charAt(j - 1) ? 0 : 1;
+                int distance = Math.min(
+                        Math.min(distances[i - 1][j] + 1, distances[i][j - 1] + 1),
+                        distances[i - 1][j - 1] + substitutionCost
+                );
+
+                if (i > 1
+                        && j > 1
+                        && left.charAt(i - 1) == right.charAt(j - 2)
+                        && left.charAt(i - 2) == right.charAt(j - 1)) {
+                    distance = Math.min(distance, distances[i - 2][j - 2] + 1);
+                }
+
+                distances[i][j] = distance;
+            }
+        }
+
+        return distances[left.length()][right.length()];
+    }
+
+    private EditOrderResult updateOrderBudget(Player player, Order order, int requestedQuantity, double priceEach) {
+        if (requestedQuantity <= 0 || requestedQuantity > getMaxQuantityPerOrder()) {
+            return new EditOrderResult(false, EditFailureReason.INVALID_QUANTITY, order, 0D);
+        }
+
+        double normalizedPrice = roundCurrency(priceEach);
+        if (!Double.isFinite(normalizedPrice)) {
+            return new EditOrderResult(false, EditFailureReason.INVALID_PRICE, order, 0D);
+        }
+        if (normalizedPrice < getMinPriceEach() || normalizedPrice > getMaxPriceEach()) {
+            return new EditOrderResult(false, EditFailureReason.PRICE_OUT_OF_RANGE, order, 0D);
+        }
+
+        double totalBudget = roundCurrency(requestedQuantity * normalizedPrice);
+        if (totalBudget <= 0D || totalBudget > getMaxTotalBudget()) {
+            return new EditOrderResult(false, EditFailureReason.TOTAL_TOO_HIGH, order, 0D);
+        }
+
+        double balanceDelta = roundCurrency(totalBudget - order.escrowRemaining());
+        boolean withdrewDelta = false;
+        if (balanceDelta > EPSILON) {
+            if (!plugin.getEconomyManager().has(player, balanceDelta)) {
+                return new EditOrderResult(false, EditFailureReason.NO_MONEY, order, balanceDelta);
+            }
+
+            EconomyTransactionResult withdraw = plugin.getEconomyManager().withdraw(player, balanceDelta, EconomyReason.ORDER_CREATE_ESCROW);
+            if (!withdraw.success()) {
+                return new EditOrderResult(false, economyFailureToEditFailure(withdraw), order, balanceDelta);
+            }
+            withdrewDelta = true;
+        }
+
+        boolean updated = updateOrderBudgetRow(player, order.id(), requestedQuantity, normalizedPrice, totalBudget);
+        if (!updated) {
+            if (withdrewDelta) {
+                plugin.getEconomyManager().deposit(player, balanceDelta, EconomyReason.ORDER_REFUND);
+            }
+            return new EditOrderResult(false, EditFailureReason.DATABASE_ERROR, order, balanceDelta);
+        }
+
+        if (balanceDelta < -EPSILON) {
+            double refund = roundCurrency(Math.abs(balanceDelta));
+            EconomyTransactionResult deposit = plugin.getEconomyManager().deposit(player, refund, EconomyReason.ORDER_REFUND);
+            if (!deposit.success()) {
+                updateOrderBudgetRow(player, order.id(), order.requestedQuantity(), order.priceEach(), order.totalBudget());
+                return new EditOrderResult(false, economyFailureToEditFailure(deposit), order, balanceDelta);
+            }
+        }
+
+        return new EditOrderResult(true, null, getOrder(order.id()), balanceDelta);
+    }
+
+    private boolean updateOrderBudgetRow(Player player, long orderId, int requestedQuantity, double priceEach, double totalBudget) {
+        try (PreparedStatement ps = connection().prepareStatement(
+                "UPDATE orders SET requested_quantity = ?, price_each = ?, total_budget = ?, escrow_remaining = ? " +
+                        "WHERE id = ? AND owner_uuid = ? AND status = ? AND delivered_quantity = 0")) {
+            ps.setInt(1, requestedQuantity);
+            ps.setDouble(2, roundCurrency(priceEach));
+            ps.setDouble(3, roundCurrency(totalBudget));
+            ps.setDouble(4, roundCurrency(totalBudget));
+            ps.setLong(5, orderId);
+            ps.setString(6, player.getUniqueId().toString());
+            ps.setString(7, OrderStatus.ACTIVE.name());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to update order budget " + orderId, exception);
+            return false;
+        }
+    }
+
+    private EditFailureReason economyFailureToEditFailure(EconomyTransactionResult result) {
+        if (result == null) {
+            return EditFailureReason.DATABASE_ERROR;
+        }
+        if (result.insufficientFunds()) {
+            return EditFailureReason.NO_MONEY;
+        }
+        if (result.noPlayerData() || result.playerNotFound()) {
+            return EditFailureReason.NO_PLAYER_DATA;
+        }
+        return EditFailureReason.DATABASE_ERROR;
+    }
+
+    private void resendEditQuantityPrompt(Player player, Order order) {
+        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                "ORDERS.PROMPT_EDIT_QUANTITY",
+                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: &e{quantity}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
+                "{order_id}", String.valueOf(order.id()),
+                "{quantity}", String.valueOf(order.requestedQuantity())
+        )));
+    }
+
+    private void resendEditPricePrompt(Player player, Order order) {
+        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                "ORDERS.PROMPT_EDIT_PRICE",
+                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: {price_formatted}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
+                "{order_id}", String.valueOf(order.id()),
+                "{price}", NumberUtils.format(order.priceEach()),
+                "{price_formatted}", plugin.getCurrencyManager().formatMoney(order.priceEach())
+        )));
+    }
+
+    private OrderEditNavigation normalizeNavigation(
+            boolean backToMyOrders,
+            int originPage,
+            OrderSort sortMode,
+            String categoryFilter
+    ) {
+        return new OrderEditNavigation(
+                backToMyOrders,
+                Math.max(1, originPage),
+                sortMode == null ? getDefaultSort() : sortMode,
+                categoryFilter == null ? "ALL" : categoryFilter
+        );
+    }
+
+    private void openEditOrderMenu(Player player, long orderId, OrderEditNavigation navigation) {
+        OrderEditNavigation effectiveNavigation = navigation == null
+                ? normalizeNavigation(true, 1, getDefaultSort(), "ALL")
+                : navigation;
+        new OrdersEditMenu(
+                plugin,
+                orderId,
+                effectiveNavigation.backToMyOrders(),
+                effectiveNavigation.originPage(),
+                effectiveNavigation.sortMode(),
+                effectiveNavigation.categoryFilter()
+        ).open(player);
+    }
+
     private void handleQuantityInput(Player player, PendingOrderCreation pending, String input) {
         int quantity;
         try {
@@ -505,7 +1688,7 @@ public class OrdersManager {
                     "ORDERS.INVALID_QUANTITY",
                     "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0."
             )));
-            resendQuantityPrompt(player, pending.entry());
+            resendQuantityPrompt(player, pending.requestedItem());
             return;
         }
 
@@ -515,7 +1698,7 @@ public class OrdersManager {
                     "&cǫᴜᴀɴᴛɪᴛʏ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {max}.",
                     "{max}", String.valueOf(getMaxQuantityPerOrder())
             )));
-            resendQuantityPrompt(player, pending.entry());
+            resendQuantityPrompt(player, pending.requestedItem());
             return;
         }
 
@@ -523,7 +1706,7 @@ public class OrdersManager {
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_PRICE",
                 "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeMaterial(pending.entry().material())
+                "{item}", describeItem(pending.requestedItem())
         )));
     }
 
@@ -536,7 +1719,7 @@ public class OrdersManager {
                     "ORDERS.INVALID_PRICE",
                     "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ."
             )));
-            resendPricePrompt(player, pending.entry());
+            resendPricePrompt(player, pending.requestedItem());
             return;
         }
 
@@ -551,7 +1734,7 @@ public class OrdersManager {
                     "{max}", NumberUtils.format(getMaxPriceEach()),
                     "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach())
             )));
-            resendPricePrompt(player, pending.entry());
+            resendPricePrompt(player, pending.requestedItem());
             return;
         }
 
@@ -562,7 +1745,7 @@ public class OrdersManager {
                     "{max}", NumberUtils.format(getMaxTotalBudget()),
                     "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget())
             )));
-            resendPricePrompt(player, pending.entry());
+            resendPricePrompt(player, pending.requestedItem());
             return;
         }
 
@@ -570,19 +1753,19 @@ public class OrdersManager {
         new OrdersNewMenu(plugin).open(player);
     }
 
-    private void resendQuantityPrompt(Player player, OrderCatalogEntry entry) {
+    private void resendQuantityPrompt(Player player, ItemStack item) {
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_QUANTITY",
                 "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeMaterial(entry.material())
+                "{item}", describeItem(item)
         )));
     }
 
-    private void resendPricePrompt(Player player, OrderCatalogEntry entry) {
+    private void resendPricePrompt(Player player, ItemStack item) {
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_PRICE",
                 "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeMaterial(entry.material())
+                "{item}", describeItem(item)
         )));
     }
 
@@ -780,15 +1963,15 @@ public class OrdersManager {
 
         ItemStack requestedItem = preview.order().requestedItem().clone();
         requestedItem.setAmount(1);
-        ItemStack deliveredStack = requestedItem.clone();
-        deliveredStack.setAmount(preview.deliverQuantity());
+        RemovedOrderItems removedItems = removeMatchingItems(player.getInventory(), requestedItem, preview.deliverQuantity());
 
-        if (!removeMatchingItems(player.getInventory(), requestedItem, preview.deliverQuantity())) {
+        if (!removedItems.success() || isMissingItem(removedItems.deliveredStack())) {
             return new DeliverOrderResult(false, DeliveryFailureReason.NO_MATCHING_ITEMS, preview.order(), 0, 0D);
         }
 
+        ItemStack deliveredStack = removedItems.deliveredStack();
         long now = System.currentTimeMillis();
-        boolean updated = applyDelivery(preview.order(), player, deliveredStack, preview.deliverQuantity(), preview.payout(), now);
+        boolean updated = applyDelivery(preview.order(), player, deliveredStack, removedItems.quantity(), preview.payout(), now);
         if (!updated) {
             player.getInventory().addItem(deliveredStack);
             player.updateInventory();
@@ -797,7 +1980,7 @@ public class OrdersManager {
 
         var payoutResult = plugin.getEconomyManager().deposit(player, preview.payout(), EconomyReason.ORDER_DELIVERY_PAYOUT);
         if (!payoutResult.success()) {
-            revertDelivery(preview.order().id(), player.getUniqueId(), deliveredStack, preview.deliverQuantity(), preview.payout(), now);
+            revertDelivery(preview.order().id(), player.getUniqueId(), deliveredStack, removedItems.quantity(), preview.payout(), now);
             player.getInventory().addItem(deliveredStack);
             player.updateInventory();
             return new DeliverOrderResult(false, DeliveryFailureReason.PAYOUT_ERROR, preview.order(), 0, 0D);
@@ -872,6 +2055,11 @@ public class OrdersManager {
             ownerData.setMoneySpent(Math.max(0D, ownerData.getMoneySpent() - claim.moneyAmount()));
             plugin.getDatabaseManager().savePlayer(ownerData);
             return new ClaimResult(true, null, getClaim(claim.id()));
+        }
+
+        if (isMissingItem(claim.item())) {
+            plugin.getLogger().warning("Order claim #" + claim.id() + " has unreadable item data; refusing item claim.");
+            return new ClaimResult(false, ClaimFailureReason.DATABASE_ERROR, claim);
         }
 
         if (!canFitItem(player, claim.item())) {
@@ -1027,7 +2215,7 @@ public class OrdersManager {
     }
 
     private double getMaxPriceEach() {
-        return Math.max(getMinPriceEach(), config().getDouble("PRICING.MAX_PRICE_EACH", 1_000_000D));
+        return Math.max(getMinPriceEach(), config().getDouble("PRICING.MAX_PRICE_EACH", 250_000_000D));
     }
 
     private double getMaxTotalBudget() {
@@ -1039,7 +2227,7 @@ public class OrdersManager {
     }
 
     private boolean isOrderable(Material material) {
-        if (material == null || material.isAir() || !material.isItem()) {
+        if (!isModernMaterial(material) || material.isAir() || !material.isItem()) {
             return false;
         }
 
@@ -1053,16 +2241,47 @@ public class OrdersManager {
         return !blocked.contains(material);
     }
 
+    private ItemStack prepareRequestedItem(ItemStack item) {
+        if (isMissingItem(item)) {
+            return null;
+        }
+
+        ItemStack prepared = item.clone();
+        prepared = plugin.getWorthManager().stripWorthDisplay(prepared);
+        if (isMissingItem(prepared)) {
+            return null;
+        }
+
+        prepared.setAmount(1);
+        return prepared;
+    }
+
     private Material parseMaterial(String rawMaterial) {
         if (rawMaterial == null || rawMaterial.isBlank()) {
             return null;
         }
 
         try {
-            return Material.valueOf(rawMaterial.trim().toUpperCase(Locale.US));
+            Material material = Material.valueOf(rawMaterial.trim().toUpperCase(Locale.US));
+            return isModernMaterial(material) ? material : null;
         } catch (IllegalArgumentException exception) {
             return null;
         }
+    }
+
+    private boolean isModernMaterial(Material material) {
+        return material != null
+                && !material.name().startsWith("LEGACY_")
+                && !material.isLegacy();
+    }
+
+    private boolean isMissingItem(ItemStack item) {
+        if (item == null) {
+            return true;
+        }
+
+        Material material = item.getType();
+        return !isModernMaterial(material) || material.isAir();
     }
 
     private int countActiveOrders(UUID ownerUuid) {
@@ -1431,9 +2650,9 @@ public class OrdersManager {
         return total;
     }
 
-    private boolean removeMatchingItems(PlayerInventory inventory, ItemStack requestedItem, int quantity) {
+    private RemovedOrderItems removeMatchingItems(PlayerInventory inventory, ItemStack requestedItem, int quantity) {
         if (quantity <= 0) {
-            return true;
+            return new RemovedOrderItems(true, null, 0);
         }
 
         ItemStack[] original = inventory.getStorageContents();
@@ -1443,13 +2662,26 @@ public class OrdersManager {
         }
 
         int remaining = quantity;
+        ItemStack deliveredStack = null;
         for (int slot = 0; slot < working.length && remaining > 0; slot++) {
-            ItemStack stack = working[slot];
-            if (!matchesRequestedItem(stack, requestedItem)) {
+            ItemStack originalStack = working[slot];
+            if (!matchesRequestedItem(originalStack, requestedItem)) {
                 continue;
             }
 
+            ItemStack stack = normalizeForOrderMatch(originalStack);
+            if (isMissingItem(stack)) {
+                continue;
+            }
+
+            working[slot] = stack;
             int removed = Math.min(remaining, stack.getAmount());
+            if (deliveredStack == null) {
+                deliveredStack = stack.clone();
+                deliveredStack.setAmount(removed);
+            } else {
+                deliveredStack.setAmount(deliveredStack.getAmount() + removed);
+            }
             stack.setAmount(stack.getAmount() - removed);
             remaining -= removed;
             if (stack.getAmount() <= 0) {
@@ -1458,23 +2690,42 @@ public class OrdersManager {
         }
 
         if (remaining > 0) {
-            return false;
+            return new RemovedOrderItems(false, null, 0);
         }
 
         inventory.setStorageContents(working);
-        return true;
+        return new RemovedOrderItems(true, deliveredStack, quantity);
     }
 
     private boolean matchesRequestedItem(ItemStack stack, ItemStack requestedItem) {
-        if (stack == null || requestedItem == null || stack.getType().isAir()) {
+        if (isMissingItem(stack) || isMissingItem(requestedItem)) {
             return false;
         }
-        return stack.isSimilar(requestedItem);
+
+        ItemStack normalizedStack = normalizeForOrderMatch(stack);
+        ItemStack normalizedRequested = normalizeForOrderMatch(requestedItem);
+        if (isMissingItem(normalizedStack) || isMissingItem(normalizedRequested)) {
+            return false;
+        }
+
+        normalizedStack.setAmount(1);
+        normalizedRequested.setAmount(1);
+        try {
+            return ItemSerializationUtils.serialize(normalizedStack).equals(ItemSerializationUtils.serialize(normalizedRequested));
+        } catch (java.io.IOException exception) {
+            plugin.getLogger().warning("Failed to compare order item data: " + summarizeException(exception));
+            return false;
+        }
+    }
+
+    private ItemStack normalizeForOrderMatch(ItemStack item) {
+        ItemStack normalized = plugin.getWorthManager().stripWorthDisplay(item);
+        return normalized == null ? null : normalized.clone();
     }
 
     private boolean canFitItem(Player player, ItemStack item) {
-        if (item == null || item.getType().isAir()) {
-            return true;
+        if (isMissingItem(item)) {
+            return false;
         }
 
         int remaining = item.getAmount();
@@ -1483,7 +2734,7 @@ public class OrdersManager {
         comparison.setAmount(1);
 
         for (ItemStack current : player.getInventory().getStorageContents()) {
-            if (current == null || current.getType().isAir()) {
+            if (isMissingItem(current)) {
                 remaining -= maxStack;
             } else if (current.isSimilar(comparison) && current.getAmount() < current.getMaxStackSize()) {
                 remaining -= Math.max(0, current.getMaxStackSize() - current.getAmount());
@@ -1505,32 +2756,88 @@ public class OrdersManager {
         }
     }
 
-    private ItemStack deserializeItem(String encoded) {
+    private DeserializedItem deserializeItem(String encoded) {
         if (encoded == null || encoded.isBlank()) {
-            return null;
+            return new DeserializedItem(null, true, "missing item data");
+        }
+
+        if (serializedItemLooksLegacy(encoded)) {
+            return new DeserializedItem(null, true, "legacy serialized material data");
         }
 
         try {
-            return ItemSerializationUtils.deserialize(encoded);
+            ItemStack item = ItemSerializationUtils.deserialize(encoded);
+            if (isMissingItem(item)) {
+                return new DeserializedItem(null, true, "serialized item is missing or legacy");
+            }
+            return new DeserializedItem(item, false, "");
         } catch (IllegalArgumentException | java.io.IOException | ClassNotFoundException exception) {
-            plugin.getLogger().log(Level.WARNING, "Failed to deserialize order item", exception);
-            return null;
+            return new DeserializedItem(null, true, summarizeException(exception));
         }
     }
 
+    private DeserializedItem deserializeOrderItem(String encoded, Material fallbackMaterial) {
+        if (fallbackMaterial != null
+                && !ItemSerializationUtils.isByteSerialized(encoded)
+                && serializedItemMissingMaterialKey(encoded, fallbackMaterial)) {
+            return new DeserializedItem(null, true, "legacy serialized data missing " + fallbackMaterial.name());
+        }
+
+        return deserializeItem(encoded);
+    }
+
+    private boolean serializedItemLooksLegacy(String encoded) {
+        try {
+            byte[] decoded = Base64.getDecoder().decode(encoded);
+            return new String(decoded, StandardCharsets.ISO_8859_1).contains("LEGACY_");
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+    }
+
+    private boolean serializedItemMissingMaterialKey(String encoded, Material material) {
+        if (encoded == null || encoded.isBlank() || material == null) {
+            return false;
+        }
+
+        try {
+            byte[] decoded = Base64.getDecoder().decode(encoded);
+            String rawData = new String(decoded, StandardCharsets.ISO_8859_1);
+            return rawData.contains("org.bukkit.inventory.ItemStack") && !rawData.contains(material.name());
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+    }
+
+    private String summarizeException(Exception exception) {
+        String message = exception.getMessage();
+        if ((message == null || message.isBlank()) && exception.getCause() != null) {
+            message = exception.getCause().getMessage();
+        }
+        return exception.getClass().getSimpleName()
+                + (message == null || message.isBlank() ? "" : ": " + message);
+    }
+
     private Order mapOrder(ResultSet rs) throws SQLException {
+        long orderId = rs.getLong("id");
         String materialKey = rs.getString("requested_material_key");
         Material material = parseMaterial(materialKey);
-        ItemStack requestedItem = deserializeItem(rs.getString("requested_item_data"));
+        DeserializedItem deserialized = deserializeOrderItem(rs.getString("requested_item_data"), material);
+        ItemStack requestedItem = deserialized.item();
         if (requestedItem == null && material != null) {
             requestedItem = new ItemStack(material);
+            requestedItem.setAmount(1);
+            repairOrderItemData(orderId, requestedItem, deserialized.failureReason());
+        } else if (requestedItem != null) {
+            requestedItem.setAmount(1);
         }
         if (requestedItem == null) {
+            plugin.getLogger().warning("Order #" + orderId + " has unreadable item data and invalid fallback material: " + materialKey);
             return null;
         }
 
         return new Order(
-                rs.getLong("id"),
+                orderId,
                 UUID.fromString(rs.getString("owner_uuid")),
                 rs.getString("owner_name"),
                 requestedItem,
@@ -1551,16 +2858,44 @@ public class OrdersManager {
     }
 
     private OrderCollectionClaim mapClaim(ResultSet rs) throws SQLException {
+        long claimId = rs.getLong("id");
+        OrderCollectionClaim.ClaimType claimType = OrderCollectionClaim.ClaimType.fromDatabase(rs.getString("claim_type"));
+        DeserializedItem deserialized = claimType == OrderCollectionClaim.ClaimType.ITEM
+                ? deserializeItem(rs.getString("item_data"))
+                : new DeserializedItem(null, false, "");
+        if (claimType == OrderCollectionClaim.ClaimType.ITEM && deserialized.needsRepair()) {
+            plugin.getLogger().warning("Order claim #" + claimId + " has unreadable item data: " + deserialized.failureReason());
+        }
+
         return new OrderCollectionClaim(
-                rs.getLong("id"),
+                claimId,
                 UUID.fromString(rs.getString("owner_uuid")),
                 rs.getLong("order_id"),
-                OrderCollectionClaim.ClaimType.fromDatabase(rs.getString("claim_type")),
-                deserializeItem(rs.getString("item_data")),
+                claimType,
+                deserialized.item(),
                 rs.getDouble("money_amount"),
                 rs.getLong("created_at"),
                 rs.getLong("claimed_at")
         );
+    }
+
+    private void repairOrderItemData(long orderId, ItemStack fallbackItem, String reason) {
+        String serializedFallback = serializeItem(fallbackItem);
+        if (serializedFallback.isBlank()) {
+            return;
+        }
+
+        try (PreparedStatement ps = connection().prepareStatement(
+                "UPDATE orders SET requested_item_data = ?, requested_material_key = ? WHERE id = ?")) {
+            ps.setString(1, serializedFallback);
+            ps.setString(2, fallbackItem.getType().name());
+            ps.setLong(3, orderId);
+            ps.executeUpdate();
+            plugin.getLogger().warning("Repaired order #" + orderId + " item data with " + fallbackItem.getType().name()
+                    + " fallback" + (reason == null || reason.isBlank() ? "." : " (" + reason + ")."));
+        } catch (SQLException exception) {
+            plugin.getLogger().warning("Failed to repair order #" + orderId + " item data: " + summarizeException(exception));
+        }
     }
 
     private double roundCurrency(double amount) {
@@ -1641,6 +2976,49 @@ public class OrdersManager {
         }
     }
 
+    private enum SearchCategory {
+        BLOCKS,
+        ITEMS,
+        SWORDS,
+        ARMOR,
+        FOOD,
+        WOOD
+    }
+
+    private enum SearchMatchTier {
+        EXACT_CATEGORY,
+        DIRECT_MATERIAL,
+        FUZZY_MATERIAL,
+        FUZZY_CATEGORY
+    }
+
+    private record SearchCandidate(Material material, int score, SearchMatchTier tier) {}
+
+    private record SearchCategoryMatch(SearchCategory category, int score, boolean exact) {}
+
+    private record DeserializedItem(ItemStack item, boolean needsRepair, String failureReason) {}
+
+    private record RemovedOrderItems(boolean success, ItemStack deliveredStack, int quantity) {}
+
+    private record ServerCatalogCategory(String key, Material icon) {}
+
+    private enum EditField {
+        QUANTITY,
+        PRICE
+    }
+
+    private record PendingSearchInput(long editOrderId, OrderEditNavigation navigation) {
+        private static PendingSearchInput newOrder() {
+            return new PendingSearchInput(0L, null);
+        }
+
+        private static PendingSearchInput editOrder(long orderId, OrderEditNavigation navigation) {
+            return new PendingSearchInput(orderId, navigation);
+        }
+    }
+
+    private record PendingOrderEdit(long orderId, EditField field, OrderEditNavigation navigation) {}
+
     private enum PendingStep {
         QUANTITY,
         PRICE,
@@ -1648,21 +3026,28 @@ public class OrdersManager {
     }
 
     private record PendingOrderCreation(
-            OrderCatalogEntry entry,
+            ItemStack requestedItem,
+            String categoryKey,
             int quantity,
             double priceEach,
             PendingStep step
     ) {
         private static PendingOrderCreation start(OrderCatalogEntry entry) {
-            return new PendingOrderCreation(entry, 0, 0D, PendingStep.QUANTITY);
+            return start(entry.createPreviewItem(), entry.categoryKey());
+        }
+
+        private static PendingOrderCreation start(ItemStack requestedItem, String categoryKey) {
+            ItemStack storedItem = requestedItem.clone();
+            storedItem.setAmount(1);
+            return new PendingOrderCreation(storedItem, categoryKey, 0, 0D, PendingStep.QUANTITY);
         }
 
         private PendingOrderCreation withQuantity(int quantity) {
-            return new PendingOrderCreation(entry, quantity, 0D, PendingStep.PRICE);
+            return new PendingOrderCreation(requestedItem.clone(), categoryKey, quantity, 0D, PendingStep.PRICE);
         }
 
         private PendingOrderCreation withPriceEach(double priceEach) {
-            return new PendingOrderCreation(entry, quantity, priceEach, PendingStep.READY);
+            return new PendingOrderCreation(requestedItem.clone(), categoryKey, quantity, priceEach, PendingStep.READY);
         }
 
         private boolean readyForConfirmation() {

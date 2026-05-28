@@ -69,7 +69,7 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
                 "&bᴅᴇʟɪᴠᴇʀʏ ᴘʀᴇᴠɪᴇᴡ",
                 List.of(
                         "&7ᴅᴇʟɪᴠᴇʀ ǫᴜᴀɴᴛɪᴛʏ: &e" + preview.deliverQuantity(),
-                        "&7ᴘᴀʏᴏᴜᴛ: &a$" + NumberUtils.format(preview.payout()),
+                        "&7ᴘᴀʏᴏᴜᴛ: " + plugin.getCurrencyManager().formatMoney(preview.payout()),
                         "&7ʀᴇᴍᴀɪɴɪɴɢ ᴀꜰᴛᴇʀ ᴛʜɪѕ: &e" + Math.max(0, order.remainingQuantity() - preview.deliverQuantity())
                 )
         ));
@@ -127,10 +127,11 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.DELIVERY_SUCCESS",
-                    "&aᴅᴇʟɪᴠᴇʀᴇᴅ &e{quantity} {item}&a ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ &a${payout}&a.",
+                    "&aᴅᴇʟɪᴠᴇʀᴇᴅ &e{quantity} {item}&a ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ {payout_formatted}&a.",
                     "{quantity}", String.valueOf(result.deliveredQuantity()),
                     "{item}", manager.describeItem(result.order().requestedItem()),
-                    "{payout}", NumberUtils.format(result.payout())
+                    "{payout}", NumberUtils.format(result.payout()),
+                    "{payout_formatted}", plugin.getCurrencyManager().formatMoney(result.payout())
             )));
             SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.SUCCESS"));
             new OrdersBrowseMenu(plugin, originPage, sortMode, categoryFilter).open(player);
