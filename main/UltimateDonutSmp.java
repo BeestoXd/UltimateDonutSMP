@@ -161,9 +161,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
         spawnerManager = new SpawnerManager(this);
         antiEspManager = new AntiEspManager(this);
         redisManager = new RedisManager(this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         networkStatusManager = new NetworkStatusManager(this);
         networkStaffChatManager = new NetworkStaffChatManager(this);
         networkStaffAlertManager = new NetworkStaffAlertManager(this);
+        duelManager.initializeCrossServer();
         discordWebhookManager = new DiscordWebhookManager(this);
         initializeLunarRichPresenceManager();
 
@@ -456,6 +458,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("orders", new OrdersCommand(this), FeatureManager.Feature.ORDERS);
         setExecutor("duel", new DuelCommand(this), FeatureManager.Feature.DUELS);
         setExecutor("queue", new QueueCommand(this), FeatureManager.Feature.DUELS);
+        setExecutor("create", new CreateCommand(this), FeatureManager.Feature.DUELS);
         setExecutor("leave", new LeaveCommand(this));
         setExecutor("draw", new DrawCommand(this), FeatureManager.Feature.DUELS);
         setExecutor("arena", new ArenaCommand(this), FeatureManager.Feature.DUELS);

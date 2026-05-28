@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.models.DuelClaim;
 import com.bx.ultimateDonutSmp.models.DuelMatch;
 import com.bx.ultimateDonutSmp.models.DuelRequest;
 import com.bx.ultimateDonutSmp.models.DuelStats;
+import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.LocationUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
@@ -602,6 +603,10 @@ public class DuelManager {
             return false;
         }
         if (!canEnterDuel(challenger, true) || !canEnterDuel(target, false)) {
+            return false;
+        }
+        if (!isAcceptingDuelRequests(target)) {
+            send(challenger, "&cThat player is not accepting duel requests.");
             return false;
         }
 
@@ -1570,6 +1575,14 @@ public class DuelManager {
             }
             syncArenaRulesForOccupants(arena);
         }
+    }
+
+    private boolean isAcceptingDuelRequests(Player target) {
+        if (target == null || plugin.getPlayerDataManager() == null) {
+            return true;
+        }
+        PlayerData data = plugin.getPlayerDataManager().get(target);
+        return data == null || data.isDuelRequestsEnabled();
     }
 
     private boolean canEnterDuel(Player player, boolean selfFeedback) {

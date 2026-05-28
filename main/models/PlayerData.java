@@ -43,6 +43,7 @@ public class PlayerData {
     private boolean amethystBreakMessagesEnabled;
     private boolean privateMessagesEnabled;
     private boolean keyAllNotificationsEnabled;
+    private boolean duelRequestsEnabled;
     private long keyAllRemainingSeconds;
     private boolean dirty;
 
@@ -86,6 +87,7 @@ public class PlayerData {
         this.amethystBreakMessagesEnabled = true;
         this.privateMessagesEnabled = true;
         this.keyAllNotificationsEnabled = true;
+        this.duelRequestsEnabled = true;
         this.keyAllRemainingSeconds = -1L;
         this.dirty = false;
     }
@@ -522,6 +524,15 @@ public class PlayerData {
 
     public void setKeyAllNotificationsEnabled(boolean keyAllNotificationsEnabled) {
         this.keyAllNotificationsEnabled = keyAllNotificationsEnabled;
+        dirty = true;
+    }
+
+    public boolean isDuelRequestsEnabled() {
+        return duelRequestsEnabled;
+    }
+
+    public void setDuelRequestsEnabled(boolean duelRequestsEnabled) {
+        this.duelRequestsEnabled = duelRequestsEnabled;
         dirty = true;
     }
 

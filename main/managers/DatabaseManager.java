@@ -248,6 +248,7 @@ public class DatabaseManager {
               "  amethyst_break_messages_enabled INTEGER DEFAULT 1," +
               "  private_messages_enabled INTEGER DEFAULT 1," +
               "  keyall_notifications_enabled INTEGER DEFAULT 1," +
+              "  duel_requests_enabled INTEGER DEFAULT 1," +
               "  keyall_remaining_seconds INTEGER DEFAULT -1," +
               "  shard_booster_expiry INTEGER DEFAULT 0" +
               ")"
@@ -515,6 +516,7 @@ public class DatabaseManager {
         ensureColumnExists("players", "amethyst_break_messages_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "private_messages_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "keyall_notifications_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "duel_requests_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "keyall_remaining_seconds", "INTEGER DEFAULT -1");
         ensureColumnExists("players", "shard_booster_expiry", "INTEGER DEFAULT 0");
     }
@@ -644,6 +646,7 @@ public class DatabaseManager {
         data.setAmethystBreakMessagesEnabled(rs.getInt("amethyst_break_messages_enabled") != 0);
         data.setPrivateMessagesEnabled(rs.getInt("private_messages_enabled") != 0);
         data.setKeyAllNotificationsEnabled(rs.getInt("keyall_notifications_enabled") != 0);
+        data.setDuelRequestsEnabled(rs.getInt("duel_requests_enabled") != 0);
         data.setKeyAllRemainingSeconds(rs.getLong("keyall_remaining_seconds"));
         data.setShardBoosterExpiryMillis(rs.getLong("shard_booster_expiry"));
         data.setDirty(false);
@@ -933,8 +936,8 @@ public class DatabaseManager {
                  chainmail_on_respawn_enabled, lunar_teammates_enabled, tpa_requests_enabled, auto_tpahere_enabled,
                  tpahere_requests_enabled, team_invites_enabled, mob_spawn_enabled, pay_confirm_menu_enabled,
                  totem_particles_enabled, fast_crystals_enabled, amethyst_break_messages_enabled,
-                 private_messages_enabled, keyall_notifications_enabled, keyall_remaining_seconds, shard_booster_expiry)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                 private_messages_enabled, keyall_notifications_enabled, duel_requests_enabled, keyall_remaining_seconds, shard_booster_expiry)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """)) {
             ps.setString(1, data.getUuid().toString());
             ps.setString(2, data.getUsername());
@@ -973,8 +976,9 @@ public class DatabaseManager {
             ps.setInt(35, data.isAmethystBreakMessagesEnabled() ? 1 : 0);
             ps.setInt(36, data.isPrivateMessagesEnabled() ? 1 : 0);
             ps.setInt(37, data.isKeyAllNotificationsEnabled() ? 1 : 0);
-            ps.setLong(38, data.getKeyAllRemainingSeconds());
-            ps.setLong(39, data.getShardBoosterExpiryMillis());
+            ps.setInt(38, data.isDuelRequestsEnabled() ? 1 : 0);
+            ps.setLong(39, data.getKeyAllRemainingSeconds());
+            ps.setLong(40, data.getShardBoosterExpiryMillis());
             ps.executeUpdate();
             data.setDirty(false);
         } catch (SQLException e) {
@@ -2991,4 +2995,3 @@ public class DatabaseManager {
 
     public Connection getConnection() { return connection; }
 }
-

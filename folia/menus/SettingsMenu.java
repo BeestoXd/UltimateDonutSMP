@@ -49,6 +49,9 @@ public class SettingsMenu extends BaseMenu {
         if (buttons == null) return;
 
         for (String key : buttons.getKeys(false)) {
+            if (!shouldRenderButton(key)) {
+                continue;
+            }
             ConfigurationSection section = buttons.getConfigurationSection(key);
             if (section == null) continue;
             renderButton(player, data, key, section);
@@ -59,6 +62,7 @@ public class SettingsMenu extends BaseMenu {
     public void handleClick(int slot, Player player) {
         String key = clickableButtons.get(slot);
         if (key == null) return;
+        if (!shouldRenderButton(key)) return;
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data == null) return;
@@ -98,6 +102,10 @@ public class SettingsMenu extends BaseMenu {
             case "KEY_ALL_NOTIFICATIONS" -> {
                 data.setKeyAllNotificationsEnabled(!data.isKeyAllNotificationsEnabled());
                 sendToggleMessage(player, "ᴋᴇʏ-ᴀʟʟ ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴѕ", data.isKeyAllNotificationsEnabled());
+            }
+            case "DUEL_REQUESTS" -> {
+                data.setDuelRequestsEnabled(!data.isDuelRequestsEnabled());
+                sendToggleMessage(player, "Duel requests", data.isDuelRequestsEnabled());
             }
             case "TPA_CONFIRM_MENUS" -> {
                 data.setTpaConfirmMenuEnabled(!data.isTpaConfirmMenuEnabled());
@@ -215,6 +223,13 @@ public class SettingsMenu extends BaseMenu {
         build(player);
     }
 
+    private boolean shouldRenderButton(String key) {
+        if (!"DUEL_REQUESTS".equals(key)) {
+            return true;
+        }
+        return plugin.getDuelManager() != null && plugin.getDuelManager().isEnabled();
+    }
+
     private void renderButton(Player player, PlayerData data, String key, ConfigurationSection section) {
         int slot = section.getInt("SLOT", -1);
         if (slot < 0 || slot >= inventory.getSize()) return;
@@ -247,6 +262,7 @@ public class SettingsMenu extends BaseMenu {
             case "BOUNTY_ALERTS" -> new ButtonState(formatStatus(data.isBountyAlertsEnabled()), true);
             case "AMETHYST_BREAK_MESSAGES" -> new ButtonState(formatStatus(data.isAmethystBreakMessagesEnabled()), true);
             case "KEY_ALL_NOTIFICATIONS" -> new ButtonState(formatStatus(data.isKeyAllNotificationsEnabled()), true);
+            case "DUEL_REQUESTS" -> new ButtonState(formatStatus(data.isDuelRequestsEnabled()), true);
             case "TPA_CONFIRM_MENUS" -> new ButtonState(formatStatus(data.isTpaConfirmMenuEnabled()), true);
             case "CHAINMAIL_ON_RESPAWN" -> new ButtonState(formatStatus(data.isChainmailOnRespawnEnabled()), true);
             case "SCOREBOARD_VISIBILITY" -> new ButtonState(formatStatus(data.isScoreboardVisible()), true);
@@ -326,4 +342,3 @@ public class SettingsMenu extends BaseMenu {
     private record ButtonState(String statusText, boolean clickable) {
     }
 }
-

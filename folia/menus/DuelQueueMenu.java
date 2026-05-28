@@ -11,6 +11,10 @@ import java.util.List;
 
 public class DuelQueueMenu extends BaseMenu {
 
+    private static final int QUEUE_SLOT = 20;
+    private static final int STATS_SLOT = 22;
+    private static final int CLAIMS_SLOT = 24;
+
     public DuelQueueMenu(UltimateDonutSmp plugin) {
         super(plugin, plugin.getDuelManager().getQueueTitle(), plugin.getDuelManager().getQueueSize());
     }
@@ -23,36 +27,37 @@ public class DuelQueueMenu extends BaseMenu {
         DuelStats stats = plugin.getDuelManager().getStats(player.getUniqueId());
         boolean queued = plugin.getDuelManager().isInQueue(player.getUniqueId());
 
-        set(11, ItemUtils.createItem(
-                queued ? Material.RED_STAINED_GLASS_PANE : Material.LIME_STAINED_GLASS_PANE,
-                queued ? "&cʟᴇᴀᴠᴇ ǫᴜᴇᴜᴇ" : "&aᴊᴏɪɴ ᴄᴀѕᴜᴀʟ ǫᴜᴇᴜᴇ",
+        set(QUEUE_SLOT, ItemUtils.createItem(
+                Material.PAPER,
+                queued ? "&cLeave queue" : "&aJoin casual queue",
                 List.of(
-                        "&7ᴘʟᴀʏᴇʀѕ ǫᴜᴇᴜᴇᴅ: &f" + plugin.getDuelManager().getQueueSizeCount(),
-                        queued ? "&7ᴄʟɪᴄᴋ ᴛᴏ ʟᴇᴀᴠᴇ ᴛʜᴇ ᴅᴜᴇʟ ǫᴜᴇᴜᴇ." : "&7ᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ ᴅᴜᴇʟ ǫᴜᴇᴜᴇ."
+                        "&7Players queued: &f" + plugin.getDuelManager().getQueueSizeCount(),
+                        "&7Mode: &fDefault queue arena",
+                        queued ? "&7Click to leave the duel queue." : "&7Click to join the duel queue."
                 )
         ));
-        set(13, ItemUtils.createItem(
+        set(STATS_SLOT, ItemUtils.createItem(
                 Material.NETHERITE_SWORD,
-                "&eʏᴏᴜʀ ᴅᴜᴇʟ ѕᴛᴀᴛѕ",
+                "&eYour duel stats",
                 List.of(
-                        "&7ᴡɪɴѕ: &f" + stats.getWins(),
-                        "&7ʟᴏѕѕᴇѕ: &f" + stats.getLosses(),
-                        "&7ᴅʀᴀᴡѕ: &f" + stats.getDraws(),
-                        "&7ѕᴛʀᴇᴀᴋ: &f" + stats.getCurrentStreak(),
-                        "&7ʙᴇѕᴛ ѕᴛʀᴇᴀᴋ: &f" + stats.getBestStreak()
+                        "&7Wins: &f" + stats.getWins(),
+                        "&7Losses: &f" + stats.getLosses(),
+                        "&7Draws: &f" + stats.getDraws(),
+                        "&7Streak: &f" + stats.getCurrentStreak(),
+                        "&7Best streak: &f" + stats.getBestStreak()
                 )
         ));
-        set(15, ItemUtils.createItem(
+        set(CLAIMS_SLOT, ItemUtils.createItem(
                 Material.ENDER_CHEST,
-                "&dᴄʟᴀɪᴍѕ",
-                List.of("&7ᴏᴘᴇɴ ᴅᴜᴇʟ ʟᴏᴏᴛ ᴄʟᴀɪᴍ ᴘᴀᴄᴋᴀɢᴇѕ.")
+                "&dClaims",
+                List.of("&7Open duel loot claim packages.")
         ));
-        set(26, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
+        set(inventory.getSize() - 1, ItemUtils.createItem(Material.BARRIER, "&cClose"));
     }
 
     @Override
     public void handleClick(int slot, Player player) {
-        if (slot == 11) {
+        if (slot == QUEUE_SLOT) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
             if (plugin.getDuelManager().isInQueue(player.getUniqueId())) {
                 plugin.getDuelManager().leaveState(player);
@@ -66,12 +71,12 @@ public class DuelQueueMenu extends BaseMenu {
             }
             return;
         }
-        if (slot == 15) {
+        if (slot == CLAIMS_SLOT) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
             new DuelClaimMenu(plugin, 1).open(player);
             return;
         }
-        if (slot == 26) {
+        if (slot == inventory.getSize() - 1) {
             player.closeInventory();
         }
     }

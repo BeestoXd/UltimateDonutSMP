@@ -68,7 +68,8 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             case "shop" -> completeReloadOnly(sender, args, "ultimatedonutsmp.admin.shop");
             case "orders" -> completeOrders(sender, args);
             case "duel" -> completeDuel(sender, args);
-            case "queue" -> singleArg(args, List.of("join", "leave"));
+            case "create" -> completeCreate(sender, args);
+            case "queue" -> completeQueue(args);
             case "arena" -> completeArena(sender, args);
             case "ffa" -> completeFfa(sender, args);
             case "ffastats" -> completeKnownPlayer(args, sender, true);
@@ -160,6 +161,34 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         }
         if (args.length == 2 && Set.of("accept", "deny").contains(normalize(args[0]))) {
             return partial(args[1], onlinePlayerNames(sender, true));
+        }
+        return List.of();
+    }
+
+    private List<String> completeCreate(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            List<String> options = new ArrayList<>(List.of("invite", "friends"));
+            options.addAll(onlinePlayerNames(sender, false));
+            return partial(args[0], options);
+        }
+
+        String first = normalize(args[0]);
+        boolean hasMode = first.equals("invite") || first.equals("friends");
+        if (hasMode && args.length == 2) {
+            return partial(args[1], onlinePlayerNames(sender, false));
+        }
+        if ((hasMode && args.length == 3) || (!hasMode && args.length == 2)) {
+            return partial(args[args.length - 1], plugin.getDuelManager().getMapSelectionSuggestions(false));
+        }
+        return List.of();
+    }
+
+    private List<String> completeQueue(String[] args) {
+        if (args.length == 1) {
+            return partial(args[0], List.of("join", "leave"));
+        }
+        if (args.length == 2 && normalize(args[0]).equals("join")) {
+            return partial(args[1], plugin.getDuelManager().getMapSelectionSuggestions(true));
         }
         return List.of();
     }
