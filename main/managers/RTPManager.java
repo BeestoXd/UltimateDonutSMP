@@ -773,6 +773,36 @@ public class RTPManager {
             }
         } catch (Exception ignored) {
         }
+        if (gen || world.isChunkGenerated(chunkX, chunkZ)) {
+            try {
+                Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class);
+                if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                    return (CompletableFuture<Chunk>) method.invoke(world, chunkX, chunkZ);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, java.util.function.Consumer.class);
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
+            method.invoke(world, chunkX, chunkZ, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
+            return future;
+        } catch (Exception ignored) {
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class, java.util.function.Consumer.class);
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
+            method.invoke(world, chunkX, chunkZ, gen, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
+            return future;
+        } catch (Exception ignored) {
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class, boolean.class, java.util.function.Consumer.class);
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
+            method.invoke(world, chunkX, chunkZ, gen, false, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
+            return future;
+        } catch (Exception ignored) {
+        }
         CompletableFuture<Chunk> future = new CompletableFuture<>();
         plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
             try {

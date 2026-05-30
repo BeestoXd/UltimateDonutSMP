@@ -317,7 +317,16 @@ public class RTPManager {
         int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
-        world.getChunkAtAsync(chunkX, chunkZ, true).thenAccept(chunk -> {
+        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean("SETTINGS.GENERATE-CHUNKS", true);
+        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
+            findSafeLocationAsyncHelper(settings, attempt + 1, future);
+            return;
+        }
+        if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean("SETTINGS.LOAD-GENERATED-CHUNKS", true)) {
+            findSafeLocationAsyncHelper(settings, attempt + 1, future);
+            return;
+        }
+        world.getChunkAtAsync(chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
             plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
                 try {
                     Location found = resolveSafeLocation(world, x, z);
@@ -471,10 +480,20 @@ public class RTPManager {
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
 
+        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean("SETTINGS.GENERATE-CHUNKS", true);
+        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
+            progress.attemptInFlight = false;
+            return;
+        }
+        if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean("SETTINGS.LOAD-GENERATED-CHUNKS", true)) {
+            progress.attemptInFlight = false;
+            return;
+        }
+
         progress.attemptsUsed++;
         progress.attemptInFlight = true;
 
-        world.getChunkAtAsync(chunkX, chunkZ, true).whenComplete((chunk, throwable) ->
+        world.getChunkAtAsync(chunkX, chunkZ, generateChunks).whenComplete((chunk, throwable) ->
                 plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ,
                         () -> completeAsyncLocationAttempt(playerId, progress, x, z, throwable))
         );

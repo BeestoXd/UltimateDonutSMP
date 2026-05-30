@@ -166,6 +166,7 @@ public final class SpigotScheduler {
         return teleport(entity, location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
+    @SuppressWarnings("unchecked")
     public CompletableFuture<Boolean> teleport(
             Entity entity,
             Location location,
@@ -176,6 +177,40 @@ public final class SpigotScheduler {
         }
         if (isFolia()) {
             return foliaBridge.teleport(entity, location, cause);
+        }
+        try {
+            Class<?> flagClass = Class.forName("io.papermc.paper.entity.TeleportFlag");
+            Class<?> flagArrayClass = java.lang.reflect.Array.newInstance(flagClass, 0).getClass();
+            Method method = entity.getClass().getMethod("teleportAsync", Location.class, PlayerTeleportEvent.TeleportCause.class, flagArrayClass);
+            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                Object emptyFlags = java.lang.reflect.Array.newInstance(flagClass, 0);
+                return (CompletableFuture<Boolean>) method.invoke(entity, location, cause, emptyFlags);
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            Class<?> flagClass = Class.forName("io.papermc.paper.entity.TeleportFlag");
+            Class<?> flagArrayClass = java.lang.reflect.Array.newInstance(flagClass, 0).getClass();
+            Method method = entity.getClass().getMethod("teleportAsync", Location.class, flagArrayClass);
+            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                Object emptyFlags = java.lang.reflect.Array.newInstance(flagClass, 0);
+                return (CompletableFuture<Boolean>) method.invoke(entity, location, emptyFlags);
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            Method method = entity.getClass().getMethod("teleportAsync", Location.class, PlayerTeleportEvent.TeleportCause.class);
+            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                return (CompletableFuture<Boolean>) method.invoke(entity, location, cause);
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            Method method = entity.getClass().getMethod("teleportAsync", Location.class);
+            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                return (CompletableFuture<Boolean>) method.invoke(entity, location);
+            }
+        } catch (Exception ignored) {
         }
         return CompletableFuture.completedFuture(entity.teleport(location, cause));
     }
