@@ -68,7 +68,6 @@ public class TablistManager {
 
     public void update(Player player) {
         if (!isEnabled()) {
-            player.setPlayerListHeaderFooter("", "");
             return;
         }
 
@@ -79,12 +78,20 @@ public class TablistManager {
     }
 
     public void updateAll() {
+        if (!isEnabled()) {
+            return;
+        }
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             update(player);
         }
     }
 
     public void updateNamesAll() {
+        if (!isEnabled()) {
+            return;
+        }
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             updateTablistName(player);
         }
@@ -92,7 +99,6 @@ public class TablistManager {
 
     public void updateTablistName(Player player) {
         if (!isEnabled()) {
-            player.setPlayerListName(player.getName());
             return;
         }
 
@@ -120,7 +126,7 @@ public class TablistManager {
         for (long delayTicks : getSkinHeadRefreshDelays()) {
             plugin.getSpigotScheduler().runEntityLater(player, () -> {
                 Player online = Bukkit.getPlayer(playerId);
-                if (online != null && online.isOnline()) {
+                if (online != null && online.isOnline() && isEnabled()) {
                     refreshSkinHeadTextureIfNeeded(online, resolveNameFormat(online), true);
                     updateTablistName(online);
                 } else {
@@ -442,7 +448,7 @@ public class TablistManager {
     }
 
     private void refreshSkinHeadTextureIfNeeded(Player player, String text, boolean force) {
-        if (player == null || !player.isOnline() || !usesConfiguredSkinHead(text)) {
+        if (player == null || !player.isOnline() || !isEnabled() || !usesConfiguredSkinHead(text)) {
             return;
         }
 
@@ -493,7 +499,7 @@ public class TablistManager {
             skinHeadTextureRefreshTimes.put(playerId, System.currentTimeMillis());
 
             Player online = Bukkit.getPlayer(playerId);
-            if (online == null || !online.isOnline()) {
+            if (online == null || !online.isOnline() || !isEnabled()) {
                 return;
             }
 
@@ -727,14 +733,14 @@ public class TablistManager {
     }
 
     private void refreshTablistAvatar(Player player) {
-        if (player == null || !player.isOnline() || !componentUpdater.refreshAvatar(player)) {
+        if (player == null || !player.isOnline() || !isEnabled() || !componentUpdater.refreshAvatar(player)) {
             return;
         }
 
         UUID playerId = player.getUniqueId();
         plugin.getSpigotScheduler().runEntityLater(player, () -> {
             Player online = Bukkit.getPlayer(playerId);
-            if (online != null && online.isOnline()) {
+            if (online != null && online.isOnline() && isEnabled()) {
                 updateTablistName(online);
             }
         }, 1L);

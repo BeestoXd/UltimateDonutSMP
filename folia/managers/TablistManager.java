@@ -36,7 +36,6 @@ public class TablistManager {
 
     public void update(Player player) {
         if (!isEnabled()) {
-            player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
             return;
         }
 
@@ -50,16 +49,23 @@ public class TablistManager {
     }
 
     public void updateAll() {
+        if (!isEnabled()) {
+            return;
+        }
+
         plugin.getFoliaScheduler().forEachOnlinePlayer(this::update);
     }
 
     public void updateNamesAll() {
+        if (!isEnabled()) {
+            return;
+        }
+
         plugin.getFoliaScheduler().forEachOnlinePlayer(this::updateTablistName);
     }
 
     public void updateTablistName(Player player) {
         if (!isEnabled()) {
-            player.playerListName(Component.text(player.getName()));
             return;
         }
 

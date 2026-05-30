@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -285,22 +286,56 @@ public class RTPManager {
         return List.copyOf(list);
     }
 
-    public Location findSafeLocation(SearchSettings settings) {
+    public CompletableFuture<Location> findSafeLocationAsync(SearchSettings settings) {
         if (settings == null || settings.worldName() == null || settings.worldName().isBlank()) {
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
+        CompletableFuture<Location> future = new CompletableFuture<>();
+        findSafeLocationAsyncHelper(settings, 0, future);
+        return future;
+    }
 
+    private void findSafeLocationAsyncHelper(SearchSettings settings, int attempt, CompletableFuture<Location> future) {
         int synchronousAttemptCap = getSynchronousAttemptCap(settings);
-        for (int attempt = 0;
-             hasAttemptBudget(attempt, settings) && attempt < synchronousAttemptCap;
-             attempt++) {
-            Location found = tryFindSafeLocationAttempt(settings);
-            if (found != null) {
-                return found;
-            }
+        if (!hasAttemptBudget(attempt, settings) || attempt >= synchronousAttemptCap) {
+            future.complete(null);
+            return;
         }
-
-        return null;
+        World world = resolveWorld(settings.worldName());
+        if (world == null) {
+            future.complete(null);
+            return;
+        }
+        int minRadius = Math.max(0, settings.minRadius());
+        int maxRadius = Math.max(minRadius, settings.maxRadius());
+        double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
+        double distance = minRadius;
+        if (maxRadius > minRadius) {
+            distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
+        }
+        int x = settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
+        int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
+        int chunkX = x >> 4;
+        int chunkZ = z >> 4;
+        world.getChunkAtAsync(chunkX, chunkZ, true).thenAccept(chunk -> {
+            plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                try {
+                    Location found = resolveSafeLocation(world, x, z);
+                    if (found != null) {
+                        future.complete(found);
+                    } else {
+                        findSafeLocationAsyncHelper(settings, attempt + 1, future);
+                    }
+                } catch (RuntimeException exception) {
+                    findSafeLocationAsyncHelper(settings, attempt + 1, future);
+                }
+            });
+        }).exceptionally(throwable -> {
+            plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                findSafeLocationAsyncHelper(settings, attempt + 1, future);
+            });
+            return null;
+        });
     }
 
     private boolean queueTeleport(Player player, String worldName) {

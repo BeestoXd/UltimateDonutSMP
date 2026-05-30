@@ -45,7 +45,11 @@ public class ScoreboardManager {
     }
 
     public void applyVisibility(Player player) {
-        if (!isEnabled() || !isVisibleFor(player)) {
+        if (!isEnabled()) {
+            releaseOwnedBoard(player);
+            return;
+        }
+        if (!isVisibleFor(player)) {
             hidePlayer(player);
             return;
         }
@@ -60,7 +64,11 @@ public class ScoreboardManager {
 
     /** Called once on player join, creates the board structure. */
     public void setupPlayer(Player player) {
-        if (!isEnabled() || !isVisibleFor(player)) {
+        if (!isEnabled()) {
+            releaseOwnedBoard(player);
+            return;
+        }
+        if (!isVisibleFor(player)) {
             hidePlayer(player);
             return;
         }
@@ -82,7 +90,11 @@ public class ScoreboardManager {
 
     /** Called every tick, only updates text without recreating entries. */
     public void update(Player player) {
-        if (!isEnabled() || !isVisibleFor(player)) {
+        if (!isEnabled()) {
+            releaseOwnedBoard(player);
+            return;
+        }
+        if (!isVisibleFor(player)) {
             hidePlayer(player);
             return;
         }
@@ -209,6 +221,11 @@ public class ScoreboardManager {
     }
 
     public void updateAll() {
+        if (!isEnabled()) {
+            releaseAll();
+            return;
+        }
+
         List<String> titles = plugin.getConfigManager().getScoreboard()
                 .getStringList("SCOREBOARD.TITLE");
         if (!titles.isEmpty()) titleIndex = (titleIndex + 1) % titles.size();
@@ -222,8 +239,24 @@ public class ScoreboardManager {
     }
 
     private void hidePlayer(Player player) {
-        playerBoards.remove(player.getUniqueId());
-        if (Bukkit.getScoreboardManager() != null) {
+        releaseOwnedBoard(player);
+    }
+
+    public void releaseAll() {
+        if (playerBoards.isEmpty()) {
+            return;
+        }
+
+        plugin.getFoliaScheduler().forEachOnlinePlayer(this::releaseOwnedBoard);
+        playerBoards.clear();
+    }
+
+    private void releaseOwnedBoard(Player player) {
+        Scoreboard board = playerBoards.remove(player.getUniqueId());
+        if (board == null || Bukkit.getScoreboardManager() == null) {
+            return;
+        }
+        if (player.getScoreboard() == board) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }

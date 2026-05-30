@@ -18,7 +18,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,8 +31,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 public class RTPManager {
 
@@ -326,33 +331,90 @@ public class RTPManager {
         return List.copyOf(list);
     }
 
-    public Location findSafeLocation(SearchSettings settings) {
+    public CompletableFuture<Location> findSafeLocationAsync(SearchSettings settings) {
         if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP)) {
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
         if (settings == null || settings.worldName() == null || settings.worldName().isBlank()) {
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
+        CompletableFuture<Location> future = new CompletableFuture<>();
+        findSafeLocationAsyncHelper(settings, 0, 0, future);
+        return future;
+    }
 
-        int attemptsUsed = 0;
-        int chunkSamplesUsed = 0;
+    private void findSafeLocationAsyncHelper(SearchSettings settings, int attemptsUsed, int chunkSamplesUsed, CompletableFuture<Location> future) {
         int synchronousSampleCap = getSynchronousSampleCap(settings);
-        while (hasAttemptBudget(attemptsUsed, settings)
-                && hasChunkSampleBudget(chunkSamplesUsed, settings)
-                && chunkSamplesUsed < synchronousSampleCap) {
-            chunkSamplesUsed++;
-            LocationAttempt attempt = shouldUseLoadedChunkFallback(attemptsUsed, chunkSamplesUsed)
-                    ? tryLoadedChunkLocationAttempt(settings)
-                    : tryFindSafeLocationAttempt(settings);
-            if (attempt.countedAttempt()) {
-                attemptsUsed++;
-            }
-            if (attempt.location() != null) {
-                return attempt.location();
-            }
+        if (!hasAttemptBudget(attemptsUsed, settings)
+                || !hasChunkSampleBudget(chunkSamplesUsed, settings)
+                || chunkSamplesUsed >= synchronousSampleCap) {
+            future.complete(null);
+            return;
         }
-
-        return null;
+        int nextChunkSamplesUsed = chunkSamplesUsed + 1;
+        boolean useFallback = shouldUseLoadedChunkFallback(attemptsUsed, nextChunkSamplesUsed);
+        if (useFallback) {
+            World world = resolveWorld(settings.worldName());
+            if (world == null) {
+                future.complete(null);
+                return;
+            }
+            plugin.getSpigotScheduler().runRegion(world, settings.centerX() >> 4, settings.centerZ() >> 4, () -> {
+                LocationAttempt attempt = tryLoadedChunkLocationAttempt(settings);
+                int nextAttemptsUsed = attemptsUsed + (attempt.countedAttempt() ? 1 : 0);
+                if (attempt.location() != null) {
+                    future.complete(attempt.location());
+                } else {
+                    findSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
+                }
+            });
+        } else {
+            World world = resolveWorld(settings.worldName());
+            if (world == null) {
+                future.complete(null);
+                return;
+            }
+            int minRadius = Math.max(0, settings.minRadius());
+            int maxRadius = Math.max(minRadius, settings.maxRadius());
+            double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
+            double distance = minRadius;
+            if (maxRadius > minRadius) {
+                distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
+            }
+            int x = settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
+            int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
+            int chunkX = x >> 4;
+            int chunkZ = z >> 4;
+            boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, true);
+            if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
+                findSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                return;
+            }
+            if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+                findSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                return;
+            }
+            getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
+                plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                    try {
+                        Location found = resolveSafeLocation(world, x, z);
+                        int nextAttemptsUsed = attemptsUsed + 1;
+                        if (found != null) {
+                            future.complete(found);
+                        } else {
+                            findSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
+                        }
+                    } catch (RuntimeException exception) {
+                        findSafeLocationAsyncHelper(settings, attemptsUsed + 1, nextChunkSamplesUsed, future);
+                    }
+                });
+            }).exceptionally(throwable -> {
+                plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                    findSafeLocationAsyncHelper(settings, attemptsUsed + 1, nextChunkSamplesUsed, future);
+                });
+                return null;
+            });
+        }
     }
 
     private boolean queueTeleport(Player player, String worldName) {
@@ -474,33 +536,53 @@ public class RTPManager {
             failSearch(playerId, progress);
             return;
         }
-
+        if (shouldUseLoadedChunkFallback(progress)) {
+            plugin.getSpigotScheduler().runRegion(world, progress.settings.centerX() >> 4, progress.settings.centerZ() >> 4, () -> {
+                try {
+                    LocationAttempt attempt = tryLoadedChunkLocationAttempt(progress.settings);
+                    completeAsyncLocationAttempt(playerId, progress, attempt, null);
+                } catch (RuntimeException exception) {
+                    completeAsyncLocationAttempt(playerId, progress, null, exception);
+                }
+            });
+            return;
+        }
         int minRadius = Math.max(0, progress.settings.minRadius());
         int maxRadius = Math.max(minRadius, progress.settings.maxRadius());
-
         double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
         double distance = minRadius;
         if (maxRadius > minRadius) {
             distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
         }
-
         int x = progress.settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
         int z = progress.settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
-
         progress.chunkSamplesUsed++;
         progress.attemptInFlight = true;
-
-        plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
-            try {
-                LocationAttempt attempt = shouldUseLoadedChunkFallback(progress)
-                        ? tryLoadedChunkLocationAttempt(progress.settings)
-                        : tryResolveSafeLocation(world, x, z, chunkX, chunkZ);
-                completeAsyncLocationAttempt(playerId, progress, attempt, null);
-            } catch (RuntimeException exception) {
-                completeAsyncLocationAttempt(playerId, progress, null, exception);
-            }
+        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, true);
+        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
+            completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
+            return;
+        }
+        if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+            completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
+            return;
+        }
+        getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
+            plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                try {
+                    Location found = resolveSafeLocation(world, x, z);
+                    completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(found, true), null);
+                } catch (RuntimeException exception) {
+                    completeAsyncLocationAttempt(playerId, progress, null, exception);
+                }
+            });
+        }).exceptionally(throwable -> {
+            plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                completeAsyncLocationAttempt(playerId, progress, null, throwable);
+            });
+            return null;
         });
     }
 
@@ -680,6 +762,27 @@ public class RTPManager {
             return new LocationAttempt(null, false);
         }
         return new LocationAttempt(resolveSafeLocation(world, x, z), true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private CompletableFuture<Chunk> getChunkAtAsync(World world, int chunkX, int chunkZ, boolean gen) {
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class);
+            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                return (CompletableFuture<Chunk>) method.invoke(world, chunkX, chunkZ, gen);
+            }
+        } catch (Exception ignored) {
+        }
+        CompletableFuture<Chunk> future = new CompletableFuture<>();
+        plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
+            try {
+                Chunk chunk = world.loadChunk(chunkX, chunkZ, gen) ? world.getChunkAt(chunkX, chunkZ) : null;
+                future.complete(chunk);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
     }
 
     private boolean prepareChunkForRtp(World world, int chunkX, int chunkZ) {

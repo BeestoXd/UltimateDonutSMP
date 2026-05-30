@@ -66,7 +66,11 @@ public class ScoreboardManager {
             playerBoards.remove(player.getUniqueId());
             return;
         }
-        if (!isEnabled() || !isVisibleFor(player)) {
+        if (!isEnabled()) {
+            releaseOwnedBoard(player);
+            return;
+        }
+        if (!isVisibleFor(player)) {
             hidePlayer(player);
             return;
         }
@@ -85,7 +89,11 @@ public class ScoreboardManager {
             playerBoards.remove(player.getUniqueId());
             return;
         }
-        if (!isEnabled() || !isVisibleFor(player)) {
+        if (!isEnabled()) {
+            releaseOwnedBoard(player);
+            return;
+        }
+        if (!isVisibleFor(player)) {
             hidePlayer(player);
             return;
         }
@@ -110,7 +118,11 @@ public class ScoreboardManager {
             playerBoards.remove(player.getUniqueId());
             return;
         }
-        if (!isEnabled() || !isVisibleFor(player)) {
+        if (!isEnabled()) {
+            releaseOwnedBoard(player);
+            return;
+        }
+        if (!isVisibleFor(player)) {
             hidePlayer(player);
             return;
         }
@@ -408,6 +420,11 @@ public class ScoreboardManager {
             playerBoards.clear();
             return;
         }
+        if (!isEnabled()) {
+            releaseAll();
+            return;
+        }
+
         List<String> titles = plugin.getConfigManager().getScoreboard()
                 .getStringList("SCOREBOARD.TITLE");
         if (!titles.isEmpty()) titleIndex = (titleIndex + 1) % titles.size();
@@ -423,11 +440,27 @@ public class ScoreboardManager {
     }
 
     private void hidePlayer(Player player) {
-        playerBoards.remove(player.getUniqueId());
-        if (!runtimeSupported) {
+        releaseOwnedBoard(player);
+    }
+
+    public void releaseAll() {
+        if (!runtimeSupported || playerBoards.isEmpty()) {
+            playerBoards.clear();
             return;
         }
-        if (Bukkit.getScoreboardManager() != null) {
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            releaseOwnedBoard(player);
+        }
+        playerBoards.clear();
+    }
+
+    private void releaseOwnedBoard(Player player) {
+        Scoreboard board = playerBoards.remove(player.getUniqueId());
+        if (board == null || !runtimeSupported || Bukkit.getScoreboardManager() == null) {
+            return;
+        }
+        if (player.getScoreboard() == board) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }

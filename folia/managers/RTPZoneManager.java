@@ -127,24 +127,26 @@ public class RTPZoneManager {
     }
 
     private void teleportPlayer(Player player) {
-        Location destination = plugin.getRtpManager().findSafeLocation(searchSettings);
-        if (destination == null) {
-            if (failedMessage != null && !failedMessage.isBlank()) {
-                player.sendMessage(ColorUtils.toComponent(failedMessage));
-            }
-            return;
-        }
-
-        plugin.getFoliaScheduler().teleport(player, destination).thenAccept(success ->
-                plugin.getFoliaScheduler().runEntity(player, () -> {
-                    if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
-                        return;
+        plugin.getRtpManager().findSafeLocationAsync(searchSettings).thenAccept(destination -> {
+            plugin.getFoliaScheduler().runEntity(player, () -> {
+                if (destination == null) {
+                    if (failedMessage != null && !failedMessage.isBlank()) {
+                        player.sendMessage(ColorUtils.toComponent(failedMessage));
                     }
-                    SoundUtils.play(player, plugin.getConfigManager().getSound("TELEPORT.SUCCESS"));
-                    if (successMessage != null && !successMessage.isBlank()) {
-                        player.sendMessage(ColorUtils.toComponent(successMessage));
-                    }
-                }));
+                    return;
+                }
+                plugin.getFoliaScheduler().teleport(player, destination).thenAccept(success ->
+                        plugin.getFoliaScheduler().runEntity(player, () -> {
+                            if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
+                                return;
+                            }
+                            SoundUtils.play(player, plugin.getConfigManager().getSound("TELEPORT.SUCCESS"));
+                            if (successMessage != null && !successMessage.isBlank()) {
+                                player.sendMessage(ColorUtils.toComponent(successMessage));
+                            }
+                        }));
+            });
+        });
     }
 
     private void showCountdown(Player player, int remaining) {
