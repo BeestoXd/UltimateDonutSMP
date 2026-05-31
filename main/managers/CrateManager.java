@@ -38,6 +38,7 @@ public class CrateManager {
     private final Map<UUID, CrateOpenSession> activeSessions = new HashMap<>();
     private final Map<CrateBlockKey, String> boundBlocks = new HashMap<>();
     private final Map<UUID, String> pendingBindCrates = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> keyBalanceCache = new HashMap<>();
 
     private ListMenuSettings listMenuSettings = ListMenuSettings.defaults();
     private ConfirmMenuSettings confirmMenuSettings = ConfirmMenuSettings.defaults();
@@ -53,6 +54,7 @@ public class CrateManager {
         activeSessions.clear();
         boundBlocks.clear();
         pendingBindCrates.clear();
+        keyBalanceCache.clear();
         listMenuSettings = loadListMenuSettings();
         confirmMenuSettings = loadConfirmMenuSettings();
         gachaDefaults = loadGachaDefaults();
@@ -342,7 +344,7 @@ public class CrateManager {
         if (uuid == null || normalized == null) {
             return 0;
         }
-        return plugin.getDatabaseManager().getCrateKeyAmount(uuid, normalized);
+        return getCachedKeyBalances(uuid).getOrDefault(normalized, 0);
     }
 
     public int addKeys(UUID uuid, String crateId, int amount) {
@@ -351,7 +353,9 @@ public class CrateManager {
         if (uuid == null || crate == null || amount <= 0) {
             return getKeyBalance(uuid, normalized);
         }
-        return plugin.getDatabaseManager().addCrateKeys(uuid, crate.id(), amount);
+        int balance = plugin.getDatabaseManager().addCrateKeys(uuid, crate.id(), amount);
+        cacheKeyBalance(uuid, crate.id(), balance);
+        return balance;
     }
 
     public int setKeys(UUID uuid, String crateId, int amount) {
@@ -360,7 +364,9 @@ public class CrateManager {
         if (uuid == null || crate == null) {
             return 0;
         }
-        return plugin.getDatabaseManager().setCrateKeyAmount(uuid, crate.id(), amount);
+        int balance = plugin.getDatabaseManager().setCrateKeyAmount(uuid, crate.id(), amount);
+        cacheKeyBalance(uuid, crate.id(), balance);
+        return balance;
     }
 
     public boolean takeKeys(UUID uuid, String crateId, int amount) {
@@ -369,7 +375,23 @@ public class CrateManager {
         if (uuid == null || crate == null) {
             return false;
         }
-        return plugin.getDatabaseManager().removeCrateKeys(uuid, crate.id(), amount);
+        if (amount <= 0) {
+            return true;
+        }
+
+        int currentBalance = getKeyBalance(uuid, crate.id());
+        if (!plugin.getDatabaseManager().removeCrateKeys(uuid, crate.id(), amount)) {
+            return false;
+        }
+
+        cacheKeyBalance(uuid, crate.id(), currentBalance - amount);
+        return true;
+    }
+
+    public void unloadKeyBalanceCache(UUID uuid) {
+        if (uuid != null) {
+            keyBalanceCache.remove(uuid);
+        }
     }
 
     public Map<CrateDefinition, Integer> getKeySummary(UUID uuid) {
@@ -487,7 +509,7 @@ public class CrateManager {
                     getKeyBalance(player, crate.id()));
         }
 
-        if (!plugin.getDatabaseManager().removeCrateKeys(player.getUniqueId(), crate.id(), 1)) {
+        if (!takeKeys(player.getUniqueId(), crate.id(), 1)) {
             clearSession(player.getUniqueId());
             return new ClaimResult(false, FailureReason.NO_KEYS,
                     "&cʏᴏᴜ ɴᴏ ʟᴏɴɢᴇʀ ʜᴀᴠᴇ ᴀ ᴋᴇʏ ꜰᴏʀ " + getReadableCrateName(crate) + ".", crate, reward, 0);
@@ -502,7 +524,7 @@ public class CrateManager {
         }
 
         if (!granted) {
-            plugin.getDatabaseManager().addCrateKeys(player.getUniqueId(), crate.id(), 1);
+            addKeys(player.getUniqueId(), crate.id(), 1);
             return new ClaimResult(false, FailureReason.REWARD_GRANT_FAILED,
                     "&cꜰᴀɪʟᴇᴅ ᴛᴏ ɢʀᴀɴᴛ ᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ. ʏᴏᴜʀ ᴋᴇʏ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴛᴜʀɴᴇᴅ.", crate, reward,
                     getKeyBalance(player, crate.id()));
@@ -575,6 +597,27 @@ public class CrateManager {
 
     public int grantKeysToOnlinePlayers(String crateId, int amount) {
         return grantKeysToPlayers(Bukkit.getOnlinePlayers(), crateId, amount).size();
+    }
+
+    private Map<String, Integer> getCachedKeyBalances(UUID uuid) {
+        return keyBalanceCache.computeIfAbsent(uuid, playerId ->
+                new HashMap<>(plugin.getDatabaseManager().loadCrateKeyBalances(playerId))
+        );
+    }
+
+    private void cacheKeyBalance(UUID uuid, String crateId, int amount) {
+        String normalized = normalizeCrateId(crateId);
+        if (uuid == null || normalized == null) {
+            return;
+        }
+
+        Map<String, Integer> balances = getCachedKeyBalances(uuid);
+        int normalizedAmount = Math.max(0, amount);
+        if (normalizedAmount == 0) {
+            balances.remove(normalized);
+        } else {
+            balances.put(normalized, normalizedAmount);
+        }
     }
 
     public String getReadableCrateName(String crateId) {

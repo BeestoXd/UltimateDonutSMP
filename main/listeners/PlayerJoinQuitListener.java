@@ -158,6 +158,7 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getPortalManager().refreshHologramsSoon();
         plugin.getCrateManager().clearSession(player.getUniqueId());
         plugin.getCrateManager().clearPendingBind(player.getUniqueId());
+        plugin.getCrateManager().unloadKeyBalanceCache(player.getUniqueId());
         plugin.getCrateVisualManager().handleQuit(player.getUniqueId());
         plugin.getFreezeManager().handleQuit(player);
         plugin.getStaffModeManager().handleQuit(player);

@@ -36,6 +36,7 @@ public class CrateVisualManager {
     private final Map<CrateManager.CrateBlockKey, List<UUID>> holograms = new HashMap<>();
     private final Map<UUID, Map<CrateManager.CrateBlockKey, List<UUID>>> personalLineDisplays = new HashMap<>();
     private final Map<UUID, Map<CrateManager.CrateBlockKey, UUID>> personalKeyDisplays = new HashMap<>();
+    private final Map<UUID, Map<CrateManager.CrateBlockKey, String>> personalKeyDisplayTexts = new HashMap<>();
 
     private ScheduledTask visualTask;
     private int visualPulse;
@@ -67,37 +68,7 @@ public class CrateVisualManager {
     }
 
     public void handleJoin(Player player) {
-        if (player == null) {
-            return;
-        }
-
-        for (Map.Entry<UUID, Map<CrateManager.CrateBlockKey, UUID>> entry : personalKeyDisplays.entrySet()) {
-            if (entry.getKey().equals(player.getUniqueId())) {
-                continue;
-            }
-
-            for (UUID entityId : entry.getValue().values()) {
-                Entity entity = Bukkit.getEntity(entityId);
-                if (entity != null && entity.isValid()) {
-                    player.hideEntity(plugin, entity);
-                }
-            }
-        }
-
-        for (Map.Entry<UUID, Map<CrateManager.CrateBlockKey, List<UUID>>> entry : personalLineDisplays.entrySet()) {
-            if (entry.getKey().equals(player.getUniqueId())) {
-                continue;
-            }
-
-            for (List<UUID> entityIds : entry.getValue().values()) {
-                for (UUID entityId : entityIds) {
-                    Entity entity = Bukkit.getEntity(entityId);
-                    if (entity != null && entity.isValid()) {
-                        player.hideEntity(plugin, entity);
-                    }
-                }
-            }
-        }
+        // Personal crate displays are hidden by default, so joins do not need per-entity hide calls.
     }
 
     public void handleQuit(UUID playerId) {
@@ -166,12 +137,13 @@ public class CrateVisualManager {
     }
 
     private void startVisualTask() {
+        long updateTicks = getHologramUpdateTicks();
         visualTask = plugin.getFoliaScheduler().runGlobalTimer(() -> {
             visualPulse++;
             spawnIdleParticles();
             ensureGlobalHolograms();
             updatePersonalKeyDisplays();
-        }, 10L, 10L);
+        }, updateTicks, updateTicks);
     }
 
     private void spawnAllHolograms() {
@@ -323,15 +295,22 @@ public class CrateVisualManager {
                 player.getUniqueId(),
                 ignored -> new HashMap<>()
         );
+        Map<CrateManager.CrateBlockKey, String> playerDisplayTexts = personalKeyDisplayTexts.computeIfAbsent(
+                player.getUniqueId(),
+                ignored -> new HashMap<>()
+        );
 
         TextDisplay display = null;
+        boolean shouldShowToOwner = false;
         UUID existingId = playerDisplays.get(key);
         if (existingId != null) {
             Entity entity = Bukkit.getEntity(existingId);
             if (entity instanceof TextDisplay textDisplay && entity.isValid()) {
                 display = textDisplay;
+                shouldShowToOwner = !playerDisplayTexts.containsKey(key);
             } else {
                 playerDisplays.remove(key);
+                playerDisplayTexts.remove(key);
             }
         }
 
@@ -340,6 +319,7 @@ public class CrateVisualManager {
             Location location = new Location(world, key.x() + 0.5, baseY, key.z() + 0.5);
             display = world.spawn(location, TextDisplay.class, textDisplay -> {
                 configureHologramDisplay(textDisplay);
+                textDisplay.setVisibleByDefault(false);
                 textDisplay.addScoreboardTag(PERSONAL_TAG);
                 textDisplay.getPersistentDataContainer().set(
                         plugin.getKey("crate_hologram"),
@@ -353,21 +333,20 @@ public class CrateVisualManager {
                 );
             });
             playerDisplays.put(key, display.getUniqueId());
+            shouldShowToOwner = true;
         }
 
-        display.text(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                getKeyLine(crate, plugin.getCrateManager().getKeyBalance(player, crate.id()))
-        ));
-        hideDisplayFromOtherPlayers(player, display);
-    }
+        if (display.isVisibleByDefault()) {
+            display.setVisibleByDefault(false);
+        }
 
-    private void hideDisplayFromOtherPlayers(Player owner, TextDisplay display) {
-        for (Player other : Bukkit.getOnlinePlayers()) {
-            if (other.getUniqueId().equals(owner.getUniqueId())) {
-                other.showEntity(plugin, display);
-            } else {
-                other.hideEntity(plugin, display);
-            }
+        String text = getKeyLine(crate, plugin.getCrateManager().getKeyBalance(player, crate.id()));
+        if (!text.equals(playerDisplayTexts.get(key))) {
+            display.text(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(text));
+            playerDisplayTexts.put(key, text);
+        }
+        if (shouldShowToOwner) {
+            player.showEntity(plugin, display);
         }
     }
 
@@ -507,6 +486,7 @@ public class CrateVisualManager {
             }
         }
         personalKeyDisplays.clear();
+        personalKeyDisplayTexts.clear();
     }
 
     private void clearPersonalLineDisplays(UUID viewerId) {
@@ -528,6 +508,7 @@ public class CrateVisualManager {
     private void clearPersonalDisplays(UUID viewerId) {
         Map<CrateManager.CrateBlockKey, UUID> displays = personalKeyDisplays.remove(viewerId);
         if (displays == null) {
+            personalKeyDisplayTexts.remove(viewerId);
             return;
         }
 
@@ -537,6 +518,7 @@ public class CrateVisualManager {
                 entity.remove();
             }
         }
+        personalKeyDisplayTexts.remove(viewerId);
     }
 
     private void removePersonalLineDisplays(UUID viewerId, CrateManager.CrateBlockKey key) {
@@ -571,6 +553,13 @@ public class CrateVisualManager {
             Entity entity = Bukkit.getEntity(entityId);
             if (entity != null && entity.isValid()) {
                 entity.remove();
+            }
+        }
+        Map<CrateManager.CrateBlockKey, String> textCache = personalKeyDisplayTexts.get(viewerId);
+        if (textCache != null) {
+            textCache.remove(key);
+            if (textCache.isEmpty()) {
+                personalKeyDisplayTexts.remove(viewerId);
             }
         }
 
@@ -667,8 +656,12 @@ public class CrateVisualManager {
         return plugin.getConfigManager().getCrates().getDouble("SETTINGS.HOLOGRAM.OFFSET-Y", 1.6D);
     }
 
+    private long getHologramUpdateTicks() {
+        return Math.max(1L, plugin.getConfigManager().getCrates().getLong("SETTINGS.HOLOGRAM.UPDATE-TICKS", 20L));
+    }
+
     private double getHologramViewDistance() {
-        return 0D;
+        return plugin.getConfigManager().getCrates().getDouble("SETTINGS.HOLOGRAM.VIEW-DISTANCE", 24D);
     }
 
     private Particle parseParticle(String particleName) {
