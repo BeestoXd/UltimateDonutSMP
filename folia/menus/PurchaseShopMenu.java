@@ -263,6 +263,10 @@ public class PurchaseShopMenu extends BaseMenu {
             case INVALID_QUANTITY -> "&cᴛʜᴇ ѕᴇʟᴇᴄᴛᴇᴅ ǫᴜᴀɴᴛɪᴛʏ ɪѕ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ꜰᴏʀ ᴛʜɪѕ ɪᴛᴇᴍ.";
             case INVALID_ITEM -> "&cᴛʜɪѕ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴘᴜʀᴄʜᴀѕᴇᴅ ʀɪɢʜᴛ ɴᴏᴡ.";
             case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ. ᴛʀʏ ᴀɢᴀɪɴ.";
+            case REWARD_FAILED -> getMenus().getString(
+                    "PURCHASE-SHOP-MENU.MESSAGES.ERROR.REWARD_FAILED",
+                    "&cPurchase failed because the reward could not be delivered."
+            );
         };
     }
 

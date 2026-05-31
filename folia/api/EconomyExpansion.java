@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.api;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -14,11 +15,14 @@ import org.jetbrains.annotations.Nullable;
  * Supported:
  *   %economy_money%                raw money
  *   %economy_nicestMoney%          formatted money (1.5K, 2.3M, ...)
+ *   %economy_money_short%          compact money amount
  *   %economy_top_money_1_name%     leaderboard name for rank 1
  *   %economy_top_money_1_value%    full leaderboard value for rank 1
  *   %economy_top_money_1_value_short% compact leaderboard value for rank 1
  *   %economy_top_money_1_display%  ready-to-render leaderboard line for rank 1
  *   %economy_shards%               shard count
+ *   %economy_nicestShards%         compact shard count
+ *   %economy_shards_short%         compact shard count
  *   %economy_kills%                kill count
  *   %economy_deaths%               death count
  *   %economy_playtime%             formatted playtime
@@ -113,12 +117,24 @@ public class EconomyExpansion extends PlaceholderExpansion {
         if (data == null && offlinePlayer.isOnline()) {
             data = plugin.getPlayerDataManager().get(offlinePlayer.getPlayer());
         }
-        if (data == null) return "0";
+        CurrencyManager currencyManager = plugin.getCurrencyManager();
+        if (data == null) {
+            return switch (params) {
+                case "nicestMoney", "money_short", "money_amount_short" ->
+                        currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, 0D);
+                case "nicestShards", "shards_short", "shards_amount_short" ->
+                        currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, 0D);
+                default -> "0";
+            };
+        }
 
         return switch (params) {
             case "money" -> NumberUtils.format(data.getMoney());
-            case "nicestMoney" -> NumberUtils.formatNice(data.getMoney());
+            case "nicestMoney", "money_short", "money_amount_short" ->
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, data.getMoney());
             case "shards" -> String.valueOf(data.getShards());
+            case "nicestShards", "shards_short", "shards_amount_short" ->
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, data.getShards());
             case "kills" -> String.valueOf(data.getKills());
             case "deaths" -> String.valueOf(data.getDeaths());
             case "playtime" -> NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds());

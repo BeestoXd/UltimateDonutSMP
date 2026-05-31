@@ -28,7 +28,9 @@ import java.util.UUID;
 
 public class UniversalCommandTabCompleter implements TabCompleter {
 
-    private static final List<String> AMOUNTS = List.of("1", "10", "100", "1000", "10000");
+    private static final List<String> AMOUNTS = List.of(
+            "1", "10", "100", "1K", "10K", "100K", "1M", "10M", "100M", "1B"
+    );
     private static final List<String> DURATIONS = List.of("30s", "15m", "1h", "2h", "1d", "7d");
     private static final List<String> TOGGLES = List.of("true", "false", "on", "off");
     private static final List<String> TEAM_SUBCOMMANDS = List.of(
@@ -81,7 +83,8 @@ public class UniversalCommandTabCompleter implements TabCompleter {
                     completeKnownPlayer(args, sender, true);
             case "ping", "findplayer" -> completeOnlinePlayer(args, sender, true);
             case "pay", "shardpay" -> completePayment(sender, args);
-            case "addmoney", "removemoney", "setmoney" -> completeMoneyAdmin(sender, args);
+            case "addmoney", "removemoney", "setmoney", "addshards", "removeshards", "setshards" ->
+                    completeMoneyAdmin(sender, args);
             case "shards" -> completeShards(sender, args);
             case "freeze" -> completePlayerOrReload(sender, args, "ultimatedonutsmp.admin.freeze", false);
             case "fly", "heal", "feed" -> completeOnlinePlayer(args, sender, true);

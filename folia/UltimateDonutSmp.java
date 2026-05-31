@@ -443,6 +443,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ShardsCommand shardsCmd = new ShardsCommand(this);
         setExecutor("shards", shardsCmd, FeatureManager.Feature.SHARDS);
         setExecutor("shardpay", new ShardPayCommand(this), FeatureManager.Feature.SHARDS);
+        ShardAdminCommand shardAdminCommand = new ShardAdminCommand(this);
+        setExecutor("addshards", shardAdminCommand, FeatureManager.Feature.SHARDS);
+        setExecutor("removeshards", shardAdminCommand, FeatureManager.Feature.SHARDS);
+        setExecutor("setshards", shardAdminCommand, FeatureManager.Feature.SHARDS);
         CrateCommand crateCmd = new CrateCommand(this);
         setExecutor("crate", crateCmd, FeatureManager.Feature.CRATES);
         setExecutor("crates", crateCmd, FeatureManager.Feature.CRATES);

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * Supported:
  *   %economy_money%                raw money
  *   %economy_nicestMoney%          compact money amount (1,5K, 2,3M, ...)
+ *   %economy_money_short%          compact money amount
  *   %economy_money_formatted%      configured money display
  *   %economy_money_symbol%         configured money symbol
  *   %economy_money_symbol_color%   configured money symbol color
@@ -25,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
  *   %economy_top_money_1_value_short% compact leaderboard value for rank 1
  *   %economy_top_money_1_display%  ready-to-render leaderboard line for rank 1
  *   %economy_shards%               shard count
+ *   %economy_nicestShards%         compact shard count
+ *   %economy_shards_short%         compact shard count
  *   %economy_shards_formatted%     configured shard display
  *   %economy_shards_symbol%        configured shard symbol
  *   %economy_shards_symbol_color%  configured shard symbol color
@@ -164,8 +167,12 @@ public class EconomyExpansion extends PlaceholderExpansion {
         }
         if (data == null) {
             return switch (params) {
+                case "nicestMoney", "money_short", "money_amount_short" ->
+                        currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, 0D);
                 case "money_formatted" -> currencyManager.formatMoney(0D);
                 case "money_short_formatted", "nicestMoney_formatted" -> currencyManager.formatMoneyCompact(0D);
+                case "nicestShards", "shards_short", "shards_amount_short" ->
+                        currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, 0D);
                 case "shards_formatted" -> currencyManager.formatShards(0L);
                 case "shards_short_formatted" -> currencyManager.formatShardsCompact(0L);
                 default -> "0";
@@ -174,10 +181,13 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         return switch (params) {
             case "money" -> NumberUtils.format(data.getMoney());
-            case "nicestMoney" -> currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, data.getMoney());
+            case "nicestMoney", "money_short", "money_amount_short" ->
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, data.getMoney());
             case "money_formatted" -> currencyManager.formatMoney(data.getMoney());
             case "money_short_formatted", "nicestMoney_formatted" -> currencyManager.formatMoneyCompact(data.getMoney());
             case "shards" -> String.valueOf(data.getShards());
+            case "nicestShards", "shards_short", "shards_amount_short" ->
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, data.getShards());
             case "shards_formatted" -> currencyManager.formatShards(data.getShards());
             case "shards_short_formatted" -> currencyManager.formatShardsCompact(data.getShards());
             case "kills" -> String.valueOf(data.getKills());

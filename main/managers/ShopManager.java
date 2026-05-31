@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.logging.Level;
 
 public class ShopManager {
 
@@ -106,7 +107,8 @@ public class ShopManager {
         NO_PERMISSION,
         NO_MONEY,
         NO_SHARDS,
-        INVENTORY_FULL
+        INVENTORY_FULL,
+        REWARD_FAILED
     }
 
     public record ShopCategory(
@@ -176,6 +178,22 @@ public class ShopManager {
 
         public boolean inventoryFull() {
             return reason == PurchaseFailureReason.INVENTORY_FULL;
+        }
+    }
+
+    private record ManagedSpawnerReward(String typeKey) {}
+
+    private record RewardDeliveryResult(boolean success, String message, Throwable throwable) {
+        static RewardDeliveryResult ok() {
+            return new RewardDeliveryResult(true, "", null);
+        }
+
+        static RewardDeliveryResult failure(String message) {
+            return new RewardDeliveryResult(false, message == null ? "" : message, null);
+        }
+
+        static RewardDeliveryResult failure(String message, Throwable throwable) {
+            return new RewardDeliveryResult(false, message == null ? "" : message, throwable);
         }
     }
 
@@ -370,8 +388,8 @@ public class ShopManager {
             return failPurchase(item, amount, preview.totalPrice(), PurchaseFailureReason.NO_PLAYER_DATA);
         }
 
+        long shardCost = preview.currency() == Currency.SHARD ? Math.round(preview.totalPrice()) : 0L;
         if (preview.currency() == Currency.SHARD) {
-            long shardCost = Math.round(preview.totalPrice());
             if (!data.removeShards(shardCost)) {
                 return failPurchase(item, amount, preview.totalPrice(), PurchaseFailureReason.NO_SHARDS);
             }
@@ -380,15 +398,13 @@ public class ShopManager {
             if (!withdrawResult.success()) {
                 return failPurchase(item, amount, preview.totalPrice(), PurchaseFailureReason.NO_MONEY);
             }
-            data.addMoneySpent(preview.totalPrice());
         }
 
-        if (item.command() != null && !item.command().isBlank()) {
-            String cmd = item.command()
-                    .replace("{username}", player.getName())
-                    .replace("{player}", player.getName())
-                    .replace("{amount}", String.valueOf(preview.quantity()));
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+        RewardDeliveryResult commandReward = deliverCommandReward(player, item, preview.quantity());
+        if (!commandReward.success()) {
+            refundPurchase(player, data, preview, shardCost);
+            logRewardFailure(player, item, preview, commandReward);
+            return failPurchase(item, preview.quantity(), preview.totalPrice(), PurchaseFailureReason.REWARD_FAILED);
         }
 
         if (item.giveItem()) {
@@ -400,7 +416,113 @@ public class ShopManager {
             player.updateInventory();
         }
 
+        if (preview.currency() != Currency.SHARD) {
+            data.addMoneySpent(preview.totalPrice());
+        }
+
         return preview;
+    }
+
+    private RewardDeliveryResult deliverCommandReward(Player player, ShopItem item, int quantity) {
+        if (item == null || item.command() == null || item.command().isBlank()) {
+            return RewardDeliveryResult.ok();
+        }
+
+        ManagedSpawnerReward spawnerReward = parseManagedSpawnerReward(item.command());
+        if (spawnerReward != null) {
+            try {
+                var result = plugin.getSpawnerManager().giveSpawner(player, spawnerReward.typeKey(), quantity);
+                return result.success()
+                        ? RewardDeliveryResult.ok()
+                        : RewardDeliveryResult.failure(result.message());
+            } catch (RuntimeException exception) {
+                return RewardDeliveryResult.failure(
+                        "Managed spawner reward threw an exception: " + item.command(),
+                        exception
+                );
+            }
+        }
+
+        String command = resolveShopCommand(player, item.command(), quantity);
+        try {
+            boolean dispatched = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            return dispatched
+                    ? RewardDeliveryResult.ok()
+                    : RewardDeliveryResult.failure("Command returned false: " + command);
+        } catch (RuntimeException exception) {
+            return RewardDeliveryResult.failure("Command threw an exception: " + command, exception);
+        }
+    }
+
+    private ManagedSpawnerReward parseManagedSpawnerReward(String command) {
+        if (command == null || command.isBlank()) {
+            return null;
+        }
+
+        String normalized = command.trim();
+        if (normalized.startsWith("/")) {
+            normalized = normalized.substring(1).trim();
+        }
+
+        String[] parts = normalized.split("\\s+");
+        if (parts.length != 5
+                || !parts[0].equalsIgnoreCase("spawner")
+                || !parts[1].equalsIgnoreCase("give")
+                || !isPlayerPlaceholder(parts[2])
+                || !isAmountPlaceholder(parts[4])) {
+            return null;
+        }
+
+        return new ManagedSpawnerReward(parts[3]);
+    }
+
+    private boolean isPlayerPlaceholder(String token) {
+        return token != null
+                && (token.equalsIgnoreCase("{username}") || token.equalsIgnoreCase("{player}"));
+    }
+
+    private boolean isAmountPlaceholder(String token) {
+        return token != null && token.equalsIgnoreCase("{amount}");
+    }
+
+    private String resolveShopCommand(Player player, String command, int quantity) {
+        return command
+                .replace("{username}", player.getName())
+                .replace("{player}", player.getName())
+                .replace("{amount}", String.valueOf(quantity));
+    }
+
+    private void refundPurchase(Player player, PlayerData data, PurchaseResult purchase, long shardCost) {
+        if (purchase.currency() == Currency.SHARD) {
+            data.addShards(shardCost);
+            return;
+        }
+
+        var refundResult = plugin.getEconomyManager().deposit(player, purchase.totalPrice(), EconomyReason.SHOP_REFUND);
+        if (!refundResult.success()) {
+            plugin.getLogger().warning("[ShopManager] Failed to refund shop purchase for "
+                    + player.getName() + " after reward delivery failed.");
+        }
+    }
+
+    private void logRewardFailure(
+            Player player,
+            ShopItem item,
+            PurchaseResult purchase,
+            RewardDeliveryResult result
+    ) {
+        String message = "[ShopManager] Failed to deliver shop reward for "
+                + player.getName()
+                + " item=" + (item == null ? "unknown" : item.key())
+                + " quantity=" + purchase.quantity()
+                + " price=" + purchase.totalPrice()
+                + " currency=" + purchase.currency()
+                + " reason=" + ColorUtils.strip(result.message());
+        if (result.throwable() != null) {
+            plugin.getLogger().log(Level.WARNING, message, result.throwable());
+        } else {
+            plugin.getLogger().warning(message);
+        }
     }
 
     private PurchaseResult validatePurchase(Player player, ShopItem item, int amount) {

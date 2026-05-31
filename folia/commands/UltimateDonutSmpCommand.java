@@ -359,6 +359,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             );
             case "economy" -> List.of(
                     "balance", "pay", "addmoney", "removemoney", "setmoney", "shards", "shardpay",
+                    "addshards", "removeshards", "setshards",
                     "shop", "sell", "sellhand", "sellall", "sellhistory", "worth"
             );
             case "market" -> List.of(

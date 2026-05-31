@@ -155,7 +155,7 @@ public class ScoreboardManager {
                     showShardCuboid
             );
             if (resolved != null) {
-                lines.add(resolved);
+                lines.add(applySidebarEconomyPlaceholders(resolved, player));
             }
         }
 
@@ -185,6 +185,28 @@ public class ScoreboardManager {
             return showShardCuboid ? shardCuboidLine : null;
         }
         return line;
+    }
+
+    private String applySidebarEconomyPlaceholders(String line, Player player) {
+        if (line == null || line.isEmpty()) {
+            return line == null ? "" : line;
+        }
+
+        PlayerData data = plugin.getPlayerDataManager().get(player);
+        double money = data != null ? data.getMoney() : 0D;
+        long shards = data != null ? data.getShards() : 0L;
+        CurrencyManager currencyManager = plugin.getCurrencyManager();
+        String moneyShort = currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, money);
+        String shardsShort = currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, shards);
+
+        return line
+                .replace("%economy_nicestMoney%", moneyShort)
+                .replace("%economy_money_short%", moneyShort)
+                .replace("%economy_money_amount_short%", moneyShort)
+                .replace("%economy_nicestShards%", shardsShort)
+                .replace("%economy_shards_short%", shardsShort)
+                .replace("%economy_shards_amount_short%", shardsShort)
+                .replace("%economy_shards%", shardsShort);
     }
 
     private void syncLineSlots(Scoreboard board, Objective obj, int count) {

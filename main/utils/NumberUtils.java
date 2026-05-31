@@ -8,7 +8,7 @@ public class NumberUtils {
 
     private static final DecimalFormat COMMA_FMT;
     private static final DecimalFormat SHORT_FMT;
-    private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T"};
+    private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T", "Q"};
 
     static {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -51,9 +51,10 @@ public class NumberUtils {
     /** Parse a number string with optional K/M/B/T suffix */
     public static double parse(String input) {
         if (input == null || input.isBlank()) throw new NumberFormatException("Empty input");
-        String clean = input.trim().toUpperCase(Locale.US);
+        String clean = input.trim().replace(",", "").replace("_", "").toUpperCase(Locale.US);
         double multiplier = 1;
-        if (clean.endsWith("T")) { multiplier = 1_000_000_000_000D; clean = clean.substring(0, clean.length() - 1); }
+        if (clean.endsWith("Q")) { multiplier = 1_000_000_000_000_000D; clean = clean.substring(0, clean.length() - 1); }
+        else if (clean.endsWith("T")) { multiplier = 1_000_000_000_000D; clean = clean.substring(0, clean.length() - 1); }
         else if (clean.endsWith("B")) { multiplier = 1_000_000_000; clean = clean.substring(0, clean.length() - 1); }
         else if (clean.endsWith("M")) { multiplier = 1_000_000; clean = clean.substring(0, clean.length() - 1); }
         else if (clean.endsWith("K")) { multiplier = 1_000;    clean = clean.substring(0, clean.length() - 1); }

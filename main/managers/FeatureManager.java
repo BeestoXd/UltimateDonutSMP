@@ -174,7 +174,7 @@ public class FeatureManager {
             case "afk" -> new Feature[]{Feature.AFK};
             case "tpa", "tpahere", "tpaccept", "tpadeny", "tpacancel" -> new Feature[]{Feature.TPA};
             case "tpauto", "tpahereauto" -> new Feature[]{Feature.TPA, Feature.TPA_AUTO};
-            case "shards", "shardpay" -> new Feature[]{Feature.SHARDS};
+            case "shards", "shardpay", "addshards", "removeshards", "setshards" -> new Feature[]{Feature.SHARDS};
             case "crate", "crates", "keys" -> new Feature[]{Feature.CRATES};
             case "shop" -> new Feature[]{Feature.SHOP};
             case "orders" -> new Feature[]{Feature.ORDERS};
