@@ -41,7 +41,8 @@ public class ScoreboardManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getConfigManager().getScoreboard().getBoolean("SCOREBOARD.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SCOREBOARD)
+                && plugin.getConfigManager().getScoreboard().getBoolean("SCOREBOARD.ENABLED", true);
     }
 
     public void applyVisibility(Player player) {
