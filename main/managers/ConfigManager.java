@@ -55,6 +55,7 @@ public class ConfigManager {
 
     private static final DateTimeFormatter BACKUP_TIMESTAMP_FORMAT =
             DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
+    private static final String SETUP_COMMENT_PREFIX = "# UDS setup:";
 
     private final UltimateDonutSmp plugin;
 
@@ -213,6 +214,8 @@ public class ConfigManager {
                 syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, true);
                 syncBundledCommentTags(name, targetFile, backupDirectory, true);
                 syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, true);
+                syncCrashProtectionPlacement(name, targetFile, backupDirectory, true);
+                syncBundledSetupComments(name, targetFile, backupDirectory, true);
                 result.snapshotUpdated = refreshDefaultSnapshot(name);
                 plugin.getLogger().info("Updated " + name + " with " + mergedPaths + " bundled default path(s).");
             } catch (IOException e) {
@@ -225,11 +228,237 @@ public class ConfigManager {
         boolean rtpUpdated = syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, false);
         boolean commentsUpdated = syncBundledCommentTags(name, targetFile, backupDirectory, rtpUpdated);
         boolean pricingUpdated = syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, rtpUpdated || commentsUpdated);
-        if (rtpUpdated || commentsUpdated || pricingUpdated) {
+        boolean crashProtectionUpdated = syncCrashProtectionPlacement(
+                name,
+                targetFile,
+                backupDirectory,
+                rtpUpdated || commentsUpdated || pricingUpdated
+        );
+        boolean setupCommentsUpdated = syncBundledSetupComments(
+                name,
+                targetFile,
+                backupDirectory,
+                rtpUpdated || commentsUpdated || pricingUpdated || crashProtectionUpdated
+        );
+        if (rtpUpdated || commentsUpdated || pricingUpdated || crashProtectionUpdated || setupCommentsUpdated) {
             result.updated = true;
         }
         result.snapshotUpdated = refreshDefaultSnapshot(name);
         return result;
+    }
+
+    private boolean syncCrashProtectionPlacement(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
+        if (!"config.yml".equals(resourceName)) {
+            return false;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            int crashProtectionLine = findTopLevelConfigLine(lines, "CRASH-PROTECTION:");
+            if (crashProtectionLine < 0) {
+                return false;
+            }
+
+            int commentStart = crashProtectionLine;
+            while (commentStart > 0 && isCrashProtectionComment(lines.get(commentStart - 1))) {
+                commentStart--;
+            }
+
+            int blockEnd = findTopLevelBlockEnd(lines, crashProtectionLine);
+            List<String> crashProtectionBlock = new ArrayList<>();
+            crashProtectionBlock.add(SETUP_COMMENT_PREFIX
+                    + " Blocks unsafe item metadata before it is saved in UDS storage.");
+            crashProtectionBlock.addAll(lines.subList(crashProtectionLine, blockEnd));
+            while (!crashProtectionBlock.isEmpty()
+                    && crashProtectionBlock.get(crashProtectionBlock.size() - 1).trim().isEmpty()) {
+                crashProtectionBlock.remove(crashProtectionBlock.size() - 1);
+            }
+
+            List<String> remainingLines = new ArrayList<>(lines.size() + 3);
+            remainingLines.addAll(lines.subList(0, commentStart));
+            remainingLines.addAll(lines.subList(blockEnd, lines.size()));
+
+            int insertAt = crashProtectionInsertIndex(remainingLines);
+            normalizeBlankLinesAroundInsertion(remainingLines, insertAt);
+            insertAt = crashProtectionInsertIndex(remainingLines);
+
+            List<String> updatedLines = new ArrayList<>(remainingLines.size() + crashProtectionBlock.size() + 2);
+            updatedLines.addAll(remainingLines.subList(0, insertAt));
+            if (!updatedLines.isEmpty() && !updatedLines.get(updatedLines.size() - 1).trim().isEmpty()) {
+                updatedLines.add("");
+            }
+            updatedLines.addAll(crashProtectionBlock);
+            if (insertAt < remainingLines.size()) {
+                updatedLines.add("");
+            }
+            updatedLines.addAll(remainingLines.subList(insertAt, remainingLines.size()));
+
+            if (updatedLines.equals(lines)) {
+                return false;
+            }
+
+            if (!alreadyBackedUp) {
+                backupExistingFile(targetFile, backupDirectory);
+            }
+            Files.write(targetFile.toPath(), updatedLines, StandardCharsets.UTF_8);
+            plugin.getLogger().info("Updated config.yml crash protection placement/comment tags.");
+            return true;
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to sync config.yml crash protection placement.", e);
+            return false;
+        }
+    }
+
+    private int crashProtectionInsertIndex(List<String> lines) {
+        int settingsLine = findTopLevelConfigLine(lines, "SETTINGS:");
+        if (settingsLine >= 0) {
+            return findTopLevelBlockEnd(lines, settingsLine);
+        }
+
+        int chatLine = findTopLevelConfigLine(lines, "CHAT:");
+        if (chatLine >= 0) {
+            return chatLine;
+        }
+
+        int commandsLine = findTopLevelConfigLine(lines, "COMMANDS:");
+        if (commandsLine >= 0) {
+            return commandsLine;
+        }
+
+        return lines.size();
+    }
+
+    private void normalizeBlankLinesAroundInsertion(List<String> lines, int insertAt) {
+        while (insertAt > 0 && lines.get(insertAt - 1).trim().isEmpty()) {
+            lines.remove(insertAt - 1);
+            insertAt--;
+        }
+        while (insertAt < lines.size() && lines.get(insertAt).trim().isEmpty()) {
+            lines.remove(insertAt);
+        }
+    }
+
+    private boolean syncBundledSetupComments(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
+        try {
+            List<String> bundledLines = readBundledResourceLines(resourceName);
+            List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            boolean changed = false;
+
+            changed |= syncManagedHeader(lines, extractManagedHeader(bundledLines));
+            Map<String, List<String>> commentsByKey = collectTopLevelSetupComments(bundledLines);
+            for (Map.Entry<String, List<String>> entry : commentsByKey.entrySet()) {
+                changed |= syncTopLevelSetupComment(lines, entry.getKey(), entry.getValue());
+            }
+
+            if (!changed) {
+                return false;
+            }
+
+            if (!alreadyBackedUp) {
+                backupExistingFile(targetFile, backupDirectory);
+            }
+            Files.write(targetFile.toPath(), lines, StandardCharsets.UTF_8);
+            plugin.getLogger().info("Updated " + resourceName + " setup comment tags.");
+            return true;
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to sync setup comments for " + resourceName + ".", e);
+            return false;
+        }
+    }
+
+    private List<String> readBundledResourceLines(String name) throws IOException {
+        String content = new String(readBundledResourceBytes(name), StandardCharsets.UTF_8);
+        return new ArrayList<>(Arrays.asList(content.split("\\R", -1)));
+    }
+
+    private List<String> extractManagedHeader(List<String> lines) {
+        List<String> header = new ArrayList<>();
+        for (String line : lines) {
+            if (!isSetupComment(line)) {
+                break;
+            }
+            header.add(line);
+        }
+        return header;
+    }
+
+    private Map<String, List<String>> collectTopLevelSetupComments(List<String> lines) {
+        Map<String, List<String>> commentsByKey = new LinkedHashMap<>();
+        for (int index = 0; index < lines.size(); index++) {
+            String keyPrefix = topLevelKeyPrefix(lines.get(index));
+            if (keyPrefix == null) {
+                continue;
+            }
+
+            int commentStart = index;
+            while (commentStart > 0 && isSetupComment(lines.get(commentStart - 1))) {
+                commentStart--;
+            }
+            if (commentStart < index) {
+                commentsByKey.put(keyPrefix, new ArrayList<>(lines.subList(commentStart, index)));
+            }
+        }
+        return commentsByKey;
+    }
+
+    private boolean syncManagedHeader(List<String> lines, List<String> desiredHeader) {
+        if (desiredHeader.isEmpty()) {
+            return false;
+        }
+
+        int removeEnd = 0;
+        while (removeEnd < lines.size() && isSetupComment(lines.get(removeEnd))) {
+            removeEnd++;
+        }
+        List<String> currentHeader = new ArrayList<>(lines.subList(0, removeEnd));
+        if (currentHeader.equals(desiredHeader)) {
+            return false;
+        }
+
+        lines.subList(0, removeEnd).clear();
+        lines.addAll(0, desiredHeader);
+        if (lines.size() > desiredHeader.size() && !lines.get(desiredHeader.size()).trim().isEmpty()) {
+            lines.add(desiredHeader.size(), "");
+        }
+        return true;
+    }
+
+    private boolean syncTopLevelSetupComment(List<String> lines, String keyPrefix, List<String> desiredComments) {
+        int keyLine = findTopLevelConfigLine(lines, keyPrefix);
+        if (keyLine < 0) {
+            return false;
+        }
+
+        int commentStart = keyLine;
+        while (commentStart > 0 && isSetupComment(lines.get(commentStart - 1))) {
+            commentStart--;
+        }
+
+        List<String> currentComments = new ArrayList<>(lines.subList(commentStart, keyLine));
+        if (currentComments.equals(desiredComments)) {
+            return false;
+        }
+
+        lines.subList(commentStart, keyLine).clear();
+        lines.addAll(commentStart, desiredComments);
+        return true;
+    }
+
+    private String topLevelKeyPrefix(String line) {
+        if (line == null || !leadingWhitespace(line).isEmpty()) {
+            return null;
+        }
+
+        String trimmed = line.trim();
+        if (trimmed.isEmpty() || trimmed.startsWith("#") || trimmed.startsWith("-")) {
+            return null;
+        }
+
+        int colonIndex = trimmed.indexOf(':');
+        if (colonIndex <= 0) {
+            return null;
+        }
+        return trimmed.substring(0, colonIndex + 1);
     }
 
     private boolean syncBundledCommentTags(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
@@ -595,6 +824,47 @@ public class ConfigManager {
             }
         }
         return -1;
+    }
+
+    private int findTopLevelConfigLine(List<String> lines, String keyPrefix) {
+        for (int index = 0; index < lines.size(); index++) {
+            String line = lines.get(index);
+            String trimmed = line.trim();
+            if (leadingWhitespace(line).isEmpty()
+                    && (trimmed.equals(keyPrefix) || trimmed.startsWith(keyPrefix + " "))) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private int findTopLevelBlockEnd(List<String> lines, int startIndex) {
+        for (int index = startIndex + 1; index < lines.size(); index++) {
+            String line = lines.get(index);
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                continue;
+            }
+            if (leadingWhitespace(line).isEmpty() && trimmed.contains(":")) {
+                return index;
+            }
+        }
+        return lines.size();
+    }
+
+    private boolean isCrashProtectionComment(String line) {
+        String comment = line.trim();
+        return isSetupComment(line)
+                || comment.startsWith("#")
+                && (comment.contains("Crash protection")
+                || comment.contains("unsafe item metadata")
+                || comment.contains("UDS storage")
+                || comment.contains("MAX-SERIALIZED-BYTES")
+                || comment.contains("production use"));
+    }
+
+    private boolean isSetupComment(String line) {
+        return line != null && line.trim().startsWith(SETUP_COMMENT_PREFIX);
     }
 
     private boolean isItemSelectionModeComment(String line) {
