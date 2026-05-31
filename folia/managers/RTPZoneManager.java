@@ -10,12 +10,15 @@ import org.bukkit.entity.Player;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RTPZoneManager {
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, Integer> countdowns = new HashMap<>();
+    private final Set<UUID> pendingTeleports = ConcurrentHashMap.newKeySet();
 
     private boolean enabled;
     private String cuboidName;
@@ -59,6 +62,7 @@ public class RTPZoneManager {
         }
         searchSettings = plugin.getRtpManager().getZoneSearchSettings();
         countdowns.clear();
+        pendingTeleports.clear();
     }
 
     public void tick(Player player) {
@@ -91,6 +95,10 @@ public class RTPZoneManager {
                     player.sendMessage(ColorUtils.toComponent(cancelledMessage));
                 }
             }
+            return;
+        }
+
+        if (pendingTeleports.contains(uuid)) {
             return;
         }
 
@@ -127,9 +135,15 @@ public class RTPZoneManager {
     }
 
     private void teleportPlayer(Player player) {
-        plugin.getRtpManager().findSafeLocationAsync(searchSettings).thenAccept(destination -> {
+        UUID uuid = player.getUniqueId();
+        if (!pendingTeleports.add(uuid)) {
+            return;
+        }
+
+        plugin.getRtpManager().findSafeLocationAsync(player, searchSettings).whenComplete((destination, throwable) -> {
+            pendingTeleports.remove(uuid);
             plugin.getFoliaScheduler().runEntity(player, () -> {
-                if (destination == null) {
+                if (throwable != null || destination == null) {
                     if (failedMessage != null && !failedMessage.isBlank()) {
                         player.sendMessage(ColorUtils.toComponent(failedMessage));
                     }

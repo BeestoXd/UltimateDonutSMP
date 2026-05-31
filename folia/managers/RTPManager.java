@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -17,6 +18,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 public class RTPManager {
 
@@ -39,7 +42,9 @@ public class RTPManager {
             int maxRadius,
             int centerX,
             int centerZ,
-            int maxAttempts
+            int maxAttempts,
+            int maxChunkSamples,
+            int attemptIntervalTicks
     ) {}
 
     public record RTPDestination(
@@ -57,19 +62,29 @@ public class RTPManager {
     }
 
     private static final long SEARCH_ACTIONBAR_REFRESH_TICKS = 1L;
-    private static final long SEARCH_ATTEMPT_INTERVAL_TICKS = 2L;
     private static final long MIN_SEARCH_DISPLAY_TICKS = 60L;
     private static final int SEARCH_ATTEMPTS_PER_TICK = 1;
     private static final long FOUND_ACTIONBAR_DELAY_TICKS = 20L;
+    private static final int DEFAULT_MAX_CONCURRENT_RTP = 1;
+    private static final int MIN_MAX_ATTEMPTS = 32;
+    private static final int MIN_MAX_CHUNK_SAMPLES = 64;
+    private static final int DEFAULT_MAX_ATTEMPTS = 64;
+    private static final int DEFAULT_MAX_CHUNK_SAMPLES = 128;
+    private static final int DEFAULT_ATTEMPT_INTERVAL_TICKS = 8;
+    private static final int CHUNK_COLUMN_CHECKS = 8;
     private static final int NETHER_ROOF_PADDING_BLOCKS = 8;
     private static final int PLAYER_CLEARANCE_BLOCKS = 2;
-    private static final int SYNC_SEARCH_UNLIMITED_ATTEMPT_CAP = 512;
+    private static final String GENERATE_CHUNKS_SETTING = "SETTINGS.GENERATE-CHUNKS";
+    private static final String LOAD_GENERATED_CHUNKS_SETTING = "SETTINGS.LOAD-GENERATED-CHUNKS";
+    private static final String LOADED_CHUNK_FALLBACK_SETTING = "SETTINGS.FALLBACK-TO-LOADED-CHUNKS";
+    private static final String LOADED_CHUNK_FALLBACK_AFTER_SETTING = "SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES";
 
     private static final class SearchProgress {
         private final String worldName;
         private final SearchSettings settings;
         private long elapsedTicks;
         private int attemptsUsed;
+        private int chunkSamplesUsed;
         private long lastElapsedSecond;
         private boolean attemptInFlight;
         private Location pendingFoundLocation;
@@ -80,10 +95,14 @@ public class RTPManager {
         }
     }
 
+    private record LocationAttempt(Location location, boolean countedAttempt) {
+    }
+
     private final UltimateDonutSmp plugin;
     private final Map<UUID, Map<String, Long>> cooldownsByPlayer = new ConcurrentHashMap<>();
     private final Map<UUID, ScheduledTask> activeSearchTasks = new ConcurrentHashMap<>();
     private final Map<UUID, ScheduledTask> activeResultTasks = new ConcurrentHashMap<>();
+    private final Map<UUID, CompletableFuture<Location>> activeDirectSearches = new ConcurrentHashMap<>();
     private final Map<UUID, SearchProgress> activeSearches = new ConcurrentHashMap<>();
     private List<RTPDestination> configuredDestinations = List.of();
     private List<RTPDestination> menuDestinations = List.of();
@@ -100,6 +119,11 @@ public class RTPManager {
         menuDestinations = buildMenuDestinations(configuredDestinations);
     }
 
+    public boolean isEnabled() {
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP)
+                && plugin.getConfigManager().getRtp().getBoolean("ENABLED", true);
+    }
+
     public void clearSearch(UUID playerId) {
         stopSearch(playerId, true);
     }
@@ -114,6 +138,10 @@ public class RTPManager {
             resultTask.cancel();
         }
         activeSearches.remove(playerId);
+        CompletableFuture<Location> directSearch = activeDirectSearches.remove(playerId);
+        if (directSearch != null) {
+            directSearch.complete(null);
+        }
 
         if (!clearActionBar) {
             return;
@@ -162,7 +190,9 @@ public class RTPManager {
         int maxRadius = worldSettings.getInt("MAX-RADIUS", 5000);
         int centerX = worldSettings.getInt("CENTER-X", 0);
         int centerZ = worldSettings.getInt("CENTER-Z", 0);
-        int maxAttempts = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-ATTEMPTS", 16);
+        int maxAttempts = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-ATTEMPTS", DEFAULT_MAX_ATTEMPTS);
+        int maxChunkSamples = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-CHUNK-SAMPLES", DEFAULT_MAX_CHUNK_SAMPLES);
+        int attemptIntervalTicks = plugin.getConfigManager().getRtp().getInt("SETTINGS.ATTEMPT-INTERVAL-TICKS", DEFAULT_ATTEMPT_INTERVAL_TICKS);
 
         return new SearchSettings(
                 worldName,
@@ -170,7 +200,9 @@ public class RTPManager {
                 Math.max(minRadius, maxRadius),
                 centerX,
                 centerZ,
-                normalizeSearchLimit(maxAttempts)
+                normalizeSearchLimit(maxAttempts),
+                normalizeChunkSampleLimit(maxChunkSamples),
+                normalizeAttemptInterval(attemptIntervalTicks)
         );
     }
 
@@ -179,7 +211,9 @@ public class RTPManager {
         int maxRadius = plugin.getConfigManager().getConfig().getInt("RTP-ZONE.WORLD.MAX-RADIUS", 2000);
         int centerX = plugin.getConfigManager().getConfig().getInt("RTP-ZONE.WORLD.CENTER-X", 0);
         int centerZ = plugin.getConfigManager().getConfig().getInt("RTP-ZONE.WORLD.CENTER-Z", 0);
-        int maxAttempts = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-ATTEMPTS", 16);
+        int maxAttempts = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-ATTEMPTS", DEFAULT_MAX_ATTEMPTS);
+        int maxChunkSamples = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-CHUNK-SAMPLES", DEFAULT_MAX_CHUNK_SAMPLES);
+        int attemptIntervalTicks = plugin.getConfigManager().getRtp().getInt("SETTINGS.ATTEMPT-INTERVAL-TICKS", DEFAULT_ATTEMPT_INTERVAL_TICKS);
         String worldName = normalizeConfiguredWorldName(
                 plugin.getConfigManager().getConfig().getString("RTP-ZONE.WORLD.NAME", "world")
         );
@@ -190,7 +224,9 @@ public class RTPManager {
                 Math.max(minRadius, maxRadius),
                 centerX,
                 centerZ,
-                normalizeSearchLimit(maxAttempts)
+                normalizeSearchLimit(maxAttempts),
+                normalizeChunkSampleLimit(maxChunkSamples),
+                normalizeAttemptInterval(attemptIntervalTicks)
         );
     }
 
@@ -205,14 +241,20 @@ public class RTPManager {
         }
 
         return switch (worldName.toLowerCase(Locale.ROOT)) {
-            case "world" -> "Overworld";
-            case "world_nether" -> "Nether";
+            case "world" -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
+            case "world_nether" -> "ɴᴇᴛʜᴇʀ";
             case "world_the_end" -> "ᴛʜᴇ ᴇɴᴅ";
             default -> worldName;
         };
     }
 
     public boolean queueMenuTeleport(Player player, RTPDestination destination) {
+        if (!isEnabled()) {
+            player.sendMessage(ColorUtils.toComponent(
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cʀᴛᴘ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")
+            ));
+            return false;
+        }
         if (destination == null) {
             return false;
         }
@@ -220,6 +262,12 @@ public class RTPManager {
     }
 
     public boolean queueCommandTeleport(Player player, String selector) {
+        if (!isEnabled()) {
+            player.sendMessage(ColorUtils.toComponent(
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cʀᴛᴘ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")
+            ));
+            return false;
+        }
         String worldName = resolveWorldSelector(selector);
         if (worldName == null || worldName.isBlank()) {
             player.sendMessage(ColorUtils.toComponent(
@@ -231,11 +279,14 @@ public class RTPManager {
     }
 
     public boolean isPortalDestinationAvailable(String selector) {
+        if (!isEnabled()) {
+            return false;
+        }
         String worldName = resolveWorldSelector(selector);
         if (worldName == null || worldName.isBlank()) {
             return false;
         }
-        if (isDeniedWorld(worldName) || isConfiguredDestinationdisabled(worldName)) {
+        if (isDeniedWorld(worldName) || isConfiguredDestinationDisabled(worldName)) {
             return false;
         }
         if (!hasWorldSearchSettings(worldName)) {
@@ -245,6 +296,9 @@ public class RTPManager {
     }
 
     public List<String> getPortalSelectorSuggestions() {
+        if (!isEnabled()) {
+            return List.of();
+        }
         Set<String> selectors = new LinkedHashSet<>();
 
         for (RTPDestination destination : configuredDestinations) {
@@ -265,19 +319,19 @@ public class RTPManager {
         if (isWorldAvailable("world")
                 && hasWorldSearchSettings("world")
                 && !isDeniedWorld("world")
-                && !isConfiguredDestinationdisabled("world")) {
+                && !isConfiguredDestinationDisabled("world")) {
             selectors.add("overworld");
         }
         if (isWorldAvailable("world_nether")
                 && hasWorldSearchSettings("world_nether")
                 && !isDeniedWorld("world_nether")
-                && !isConfiguredDestinationdisabled("world_nether")) {
+                && !isConfiguredDestinationDisabled("world_nether")) {
             selectors.add("nether");
         }
         if (isWorldAvailable("world_the_end")
                 && hasWorldSearchSettings("world_the_end")
                 && !isDeniedWorld("world_the_end")
-                && !isConfiguredDestinationdisabled("world_the_end")) {
+                && !isConfiguredDestinationDisabled("world_the_end")) {
             selectors.add("end");
         }
 
@@ -286,65 +340,156 @@ public class RTPManager {
         return List.copyOf(list);
     }
 
-    public CompletableFuture<Location> findSafeLocationAsync(SearchSettings settings) {
-        if (settings == null || settings.worldName() == null || settings.worldName().isBlank()) {
+    public CompletableFuture<Location> findSafeLocationAsync(Player player, SearchSettings settings) {
+        if (player == null) {
             return CompletableFuture.completedFuture(null);
         }
+        UUID playerId = player.getUniqueId();
+        if (hasActiveRtpFlow(playerId) || plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
+            return CompletableFuture.completedFuture(null);
+        }
+        if (isQueueFull(playerId)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        if (!isSearchRequestValid(settings)) {
+            return CompletableFuture.completedFuture(null);
+        }
+
         CompletableFuture<Location> future = new CompletableFuture<>();
-        findSafeLocationAsyncHelper(settings, 0, future);
+        CompletableFuture<Location> existing = activeDirectSearches.putIfAbsent(playerId, future);
+        if (existing != null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        future.whenComplete((location, throwable) -> activeDirectSearches.remove(playerId, future));
+        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, future, settings.attemptIntervalTicks());
         return future;
     }
 
-    private void findSafeLocationAsyncHelper(SearchSettings settings, int attempt, CompletableFuture<Location> future) {
-        int synchronousAttemptCap = getSynchronousAttemptCap(settings);
-        if (!hasAttemptBudget(attempt, settings) || attempt >= synchronousAttemptCap) {
-            future.complete(null);
+    public CompletableFuture<Location> findSafeLocationAsync(SearchSettings settings) {
+        if (!isSearchRequestValid(settings)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        CompletableFuture<Location> future = new CompletableFuture<>();
+        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, future, settings.attemptIntervalTicks());
+        return future;
+    }
+
+    private boolean isSearchRequestValid(SearchSettings settings) {
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP)) {
+            return false;
+        }
+        return settings != null && settings.worldName() != null && !settings.worldName().isBlank();
+    }
+
+    private void scheduleFindSafeLocationAsyncHelper(
+            SearchSettings settings,
+            int attemptsUsed,
+            int chunkSamplesUsed,
+            CompletableFuture<Location> future,
+            long delayTicks
+    ) {
+        if (future.isDone()) {
             return;
         }
-        World world = resolveWorld(settings.worldName());
-        if (world == null) {
-            future.complete(null);
+        plugin.getFoliaScheduler().runGlobalLater(
+                () -> findSafeLocationAsyncHelper(settings, attemptsUsed, chunkSamplesUsed, future),
+                Math.max(0L, delayTicks)
+        );
+    }
+
+    private void retryFindSafeLocationAsyncHelper(
+            SearchSettings settings,
+            int attemptsUsed,
+            int chunkSamplesUsed,
+            CompletableFuture<Location> future
+    ) {
+        scheduleFindSafeLocationAsyncHelper(settings, attemptsUsed, chunkSamplesUsed, future, settings.attemptIntervalTicks());
+    }
+
+    private void findSafeLocationAsyncHelper(SearchSettings settings, int attemptsUsed, int chunkSamplesUsed, CompletableFuture<Location> future) {
+        if (future.isDone()) {
             return;
         }
-        int minRadius = Math.max(0, settings.minRadius());
-        int maxRadius = Math.max(minRadius, settings.maxRadius());
-        double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
-        double distance = minRadius;
-        if (maxRadius > minRadius) {
-            distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
-        }
-        int x = settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
-        int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
-        int chunkX = x >> 4;
-        int chunkZ = z >> 4;
-        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean("SETTINGS.GENERATE-CHUNKS", true);
-        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
-            findSafeLocationAsyncHelper(settings, attempt + 1, future);
+        if (!hasAttemptBudget(attemptsUsed, settings)
+                || !hasChunkSampleBudget(chunkSamplesUsed, settings)) {
+            completeDirectSearchFailure(settings, attemptsUsed, chunkSamplesUsed, future);
             return;
         }
-        if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean("SETTINGS.LOAD-GENERATED-CHUNKS", true)) {
-            findSafeLocationAsyncHelper(settings, attempt + 1, future);
-            return;
-        }
-        world.getChunkAtAsync(chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
-            plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
-                try {
-                    Location found = resolveSafeLocation(world, x, z);
-                    if (found != null) {
-                        future.complete(found);
-                    } else {
-                        findSafeLocationAsyncHelper(settings, attempt + 1, future);
-                    }
-                } catch (RuntimeException exception) {
-                    findSafeLocationAsyncHelper(settings, attempt + 1, future);
+        int nextChunkSamplesUsed = chunkSamplesUsed + 1;
+        boolean useFallback = shouldUseLoadedChunkFallback(attemptsUsed, nextChunkSamplesUsed);
+        if (useFallback) {
+            World world = resolveWorld(settings.worldName());
+            if (world == null) {
+                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                return;
+            }
+            plugin.getFoliaScheduler().runRegion(world, settings.centerX() >> 4, settings.centerZ() >> 4, () -> {
+                LocationAttempt attempt = tryLoadedChunkLocationAttempt(settings);
+                int nextAttemptsUsed = attemptsUsed + (attempt.countedAttempt() ? 1 : 0);
+                if (attempt.location() != null) {
+                    future.complete(attempt.location());
+                } else {
+                    retryFindSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
                 }
             });
-        }).exceptionally(throwable -> {
-            plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
-                findSafeLocationAsyncHelper(settings, attempt + 1, future);
+        } else {
+            World world = resolveWorld(settings.worldName());
+            if (world == null) {
+                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                return;
+            }
+            int minRadius = Math.max(0, settings.minRadius());
+            int maxRadius = Math.max(minRadius, settings.maxRadius());
+            double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
+            double distance = minRadius;
+            if (maxRadius > minRadius) {
+                distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
+            }
+            int x = settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
+            int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
+            int chunkX = x >> 4;
+            int chunkZ = z >> 4;
+            boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
+            if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
+                retryFindSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                return;
+            }
+            if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+                retryFindSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                return;
+            }
+            getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
+                plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                    try {
+                        Location found = resolveSafeLocationInChunk(world, settings, x, z, chunkX, chunkZ);
+                        int nextAttemptsUsed = attemptsUsed + 1;
+                        if (found != null) {
+                            future.complete(found);
+                        } else {
+                            retryFindSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
+                        }
+                    } catch (RuntimeException exception) {
+                        retryFindSafeLocationAsyncHelper(settings, attemptsUsed + 1, nextChunkSamplesUsed, future);
+                    }
+                });
+            }).exceptionally(throwable -> {
+                plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                    retryFindSafeLocationAsyncHelper(settings, attemptsUsed + 1, nextChunkSamplesUsed, future);
+                });
+                return null;
             });
-            return null;
-        });
+        }
+    }
+
+    private void completeDirectSearchFailure(
+            SearchSettings settings,
+            int attemptsUsed,
+            int chunkSamplesUsed,
+            CompletableFuture<Location> future
+    ) {
+        if (future.complete(null)) {
+            logSearchFailure(settings, attemptsUsed, chunkSamplesUsed);
+        }
     }
 
     private boolean queueTeleport(Player player, String worldName) {
@@ -353,7 +498,7 @@ public class RTPManager {
             return false;
         }
 
-        if (isConfiguredDestinationdisabled(worldName)) {
+        if (isConfiguredDestinationDisabled(worldName)) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
                             .getString("MESSAGES.DESTINATION-DISABLED", "&cᴛʜɪѕ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")
@@ -394,7 +539,7 @@ public class RTPManager {
             return false;
         }
 
-        if (isQueueFull(player)) {
+        if (isQueueFull(player.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
                             .getString("MESSAGES.MAX-PLAYERS", "&cᴛᴏᴏ ᴍᴀɴʏ ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ᴜѕɪɴɢ ʀᴛᴘ ʀɪɢʜᴛ ɴᴏᴡ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.")
@@ -450,11 +595,12 @@ public class RTPManager {
             return;
         }
 
-        if (progress.attemptInFlight || progress.elapsedTicks % SEARCH_ATTEMPT_INTERVAL_TICKS != 0L) {
+        if (progress.attemptInFlight || progress.elapsedTicks % progress.settings.attemptIntervalTicks() != 0L) {
             return;
         }
 
-        for (int i = 0; i < SEARCH_ATTEMPTS_PER_TICK && hasAttemptBudget(progress.attemptsUsed, progress.settings); i++) {
+        for (int i = 0; i < SEARCH_ATTEMPTS_PER_TICK
+                && hasSearchBudget(progress); i++) {
             beginAsyncLocationAttempt(playerId, progress);
         }
     }
@@ -465,41 +611,57 @@ public class RTPManager {
             failSearch(playerId, progress);
             return;
         }
-
+        if (shouldUseLoadedChunkFallback(progress)) {
+            plugin.getFoliaScheduler().runRegion(world, progress.settings.centerX() >> 4, progress.settings.centerZ() >> 4, () -> {
+                try {
+                    LocationAttempt attempt = tryLoadedChunkLocationAttempt(progress.settings);
+                    completeAsyncLocationAttempt(playerId, progress, attempt, null);
+                } catch (RuntimeException exception) {
+                    completeAsyncLocationAttempt(playerId, progress, null, exception);
+                }
+            });
+            return;
+        }
         int minRadius = Math.max(0, progress.settings.minRadius());
         int maxRadius = Math.max(minRadius, progress.settings.maxRadius());
-
         double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
         double distance = minRadius;
         if (maxRadius > minRadius) {
             distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
         }
-
         int x = progress.settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
         int z = progress.settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
-
-        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean("SETTINGS.GENERATE-CHUNKS", true);
-        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
-            progress.attemptInFlight = false;
-            return;
-        }
-        if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean("SETTINGS.LOAD-GENERATED-CHUNKS", true)) {
-            progress.attemptInFlight = false;
-            return;
-        }
-
-        progress.attemptsUsed++;
+        progress.chunkSamplesUsed++;
         progress.attemptInFlight = true;
-
-        world.getChunkAtAsync(chunkX, chunkZ, generateChunks).whenComplete((chunk, throwable) ->
-                plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ,
-                        () -> completeAsyncLocationAttempt(playerId, progress, x, z, throwable))
-        );
+        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
+        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
+            completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
+            return;
+        }
+        if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+            completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
+            return;
+        }
+        getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
+            plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                try {
+                    Location found = resolveSafeLocationInChunk(world, progress.settings, x, z, chunkX, chunkZ);
+                    completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(found, true), null);
+                } catch (RuntimeException exception) {
+                    completeAsyncLocationAttempt(playerId, progress, null, exception);
+                }
+            });
+        }).exceptionally(throwable -> {
+            plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                completeAsyncLocationAttempt(playerId, progress, null, throwable);
+            });
+            return null;
+        });
     }
 
-    private void completeAsyncLocationAttempt(UUID playerId, SearchProgress progress, int x, int z, Throwable throwable) {
+    private void completeAsyncLocationAttempt(UUID playerId, SearchProgress progress, LocationAttempt attempt, Throwable throwable) {
         SearchProgress activeProgress = activeSearches.get(playerId);
         if (activeProgress != progress) {
             return;
@@ -507,20 +669,19 @@ public class RTPManager {
 
         progress.attemptInFlight = false;
         if (throwable != null) {
-            plugin.getLogger().warning("[RTPManager] Async RTP chunk load failed: " + throwable.getMessage());
+            progress.attemptsUsed++;
+            plugin.getLogger().warning("[RTPManager] ᴀѕʏɴᴄ ʀᴛᴘ ᴄʜᴜɴᴋ ʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ: " + throwable.getMessage());
             if (isSearchLimitReached(progress)) {
                 failSearch(playerId, progress);
             }
             return;
         }
 
-        World world = resolveWorld(progress.worldName);
-        if (world == null) {
-            failSearch(playerId, progress);
-            return;
+        if (attempt != null && attempt.countedAttempt()) {
+            progress.attemptsUsed++;
         }
 
-        Location found = resolveSafeLocation(world, x, z);
+        Location found = attempt == null ? null : attempt.location();
         if (found != null) {
             progress.pendingFoundLocation = found;
             Player player = plugin.getServer().getPlayer(playerId);
@@ -536,20 +697,55 @@ public class RTPManager {
         }
     }
 
+    private boolean isSearchLimitReached(SearchProgress progress) {
+        return isFiniteLimitReached(progress.attemptsUsed, progress.settings.maxAttempts())
+                || isFiniteLimitReached(progress.chunkSamplesUsed, progress.settings.maxChunkSamples());
+    }
+
     private void failSearch(UUID playerId, SearchProgress progress) {
+        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
+        warn("RTP search failed in world '" + progress.worldName
+                + "' radius " + progress.settings.minRadius() + "-" + progress.settings.maxRadius()
+                + ", attempts " + progress.attemptsUsed + "/" + progress.settings.maxAttempts()
+                + ", samples " + progress.chunkSamplesUsed + "/" + progress.settings.maxChunkSamples()
+                + ", generateChunks=" + generateChunks + ".");
+
         Player player = plugin.getServer().getPlayer(playerId);
         clearSearch(playerId);
         if (player == null || !player.isOnline()) {
             return;
         }
 
-        String attempts = formatSearchLimit(progress.settings.maxAttempts());
+        String attempts = String.valueOf(progress.attemptsUsed);
+        String maxAttempts = formatSearchLimit(progress.settings.maxAttempts());
+        String samples = String.valueOf(progress.chunkSamplesUsed);
+        String maxSamples = formatSearchLimit(progress.settings.maxChunkSamples());
         String maxAttemptsMessage = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.MAX-ATTEMPTS", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀꜰᴛᴇʀ %attempts% aᴛᴛᴇᴍᴘᴛѕ.")
+                .getString("MESSAGES.MAX-ATTEMPTS", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀꜰᴛᴇʀ %attempts% ᴀᴛᴛᴇᴍᴘᴛѕ.")
                 .replace("%attempts%", attempts)
-                .replace("{attempts}", attempts);
+                .replace("{attempts}", attempts)
+                .replace("%max_attempts%", maxAttempts)
+                .replace("{max_attempts}", maxAttempts)
+                .replace("%samples%", samples)
+                .replace("{samples}", samples)
+                .replace("%max_samples%", maxSamples)
+                .replace("{max_samples}", maxSamples);
+        String sampleRatio = samples + "/" + maxSamples;
+        if (!maxAttemptsMessage.contains(sampleRatio)) {
+            maxAttemptsMessage += " &7(Attempts: &f" + attempts + "/" + maxAttempts
+                    + "&7, Samples: &f" + sampleRatio + "&7)";
+        }
         player.sendMessage(ColorUtils.toComponent(maxAttemptsMessage));
         SoundUtils.play(player, plugin.getConfigManager().getSound("RTP.SEARCH-FAIL"));
+    }
+
+    private void logSearchFailure(SearchSettings settings, int attemptsUsed, int chunkSamplesUsed) {
+        boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
+        warn("RTP search failed in world '" + settings.worldName()
+                + "' radius " + settings.minRadius() + "-" + settings.maxRadius()
+                + ", attempts " + attemptsUsed + "/" + settings.maxAttempts()
+                + ", samples " + chunkSamplesUsed + "/" + settings.maxChunkSamples()
+                + ", generateChunks=" + generateChunks + ".");
     }
 
     private void finishSearch(Player player, String worldName, Location found) {
@@ -561,7 +757,7 @@ public class RTPManager {
                 .replace("{y}", String.valueOf(found.getBlockY()))
                 .replace("{z}", String.valueOf(found.getBlockZ()));
         player.sendMessage(ColorUtils.toComponent(foundMessage));
-        sendTeleportwarning(player, worldName);
+        sendTeleportWarning(player, worldName);
         SoundUtils.play(player, plugin.getConfigManager().getSound("RTP.SEARCH-FOUND"));
         UUID playerId = player.getUniqueId();
 
@@ -602,7 +798,9 @@ public class RTPManager {
                 .replace("{world}", describeWorld(progress.worldName))
                 .replace("{elapsed}", formatElapsedSeconds(progress.elapsedTicks))
                 .replace("{attempts}", String.valueOf(progress.attemptsUsed))
-                .replace("{max_attempts}", formatSearchLimit(progress.settings.maxAttempts()));
+                .replace("{max_attempts}", formatSearchLimit(progress.settings.maxAttempts()))
+                .replace("{samples}", String.valueOf(progress.chunkSamplesUsed))
+                .replace("{max_samples}", formatSearchLimit(progress.settings.maxChunkSamples()));
 
         sendPersistentActionBar(player, actionBar, progress.elapsedTicks);
         if (displayedSeconds > progress.lastElapsedSecond) {
@@ -625,14 +823,14 @@ public class RTPManager {
         sendPersistentActionBar(player, actionBar, refreshTick);
     }
 
-    private Location tryFindSafeLocationAttempt(SearchSettings settings) {
+    private LocationAttempt tryFindSafeLocationAttempt(SearchSettings settings) {
         if (settings == null || settings.worldName() == null || settings.worldName().isBlank()) {
-            return null;
+            return new LocationAttempt(null, false);
         }
 
         World world = resolveWorld(settings.worldName());
         if (world == null) {
-            return null;
+            return new LocationAttempt(null, false);
         }
 
         int minRadius = Math.max(0, settings.minRadius());
@@ -646,7 +844,160 @@ public class RTPManager {
 
         int x = settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
         int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
-        return resolveSafeLocation(world, x, z);
+        return tryResolveSafeLocation(world, x, z, x >> 4, z >> 4);
+    }
+
+    private LocationAttempt tryResolveSafeLocation(
+            World world,
+            int x,
+            int z,
+            int chunkX,
+            int chunkZ
+    ) {
+        if (!prepareChunkForRtp(world, chunkX, chunkZ)) {
+            return new LocationAttempt(null, false);
+        }
+        return new LocationAttempt(resolveSafeLocation(world, x, z), true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private CompletableFuture<Chunk> getChunkAtAsync(World world, int chunkX, int chunkZ, boolean gen) {
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class);
+            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                return (CompletableFuture<Chunk>) method.invoke(world, chunkX, chunkZ, gen);
+            }
+        } catch (Exception ignored) {
+        }
+        if (gen || world.isChunkGenerated(chunkX, chunkZ)) {
+            try {
+                Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class);
+                if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                    return (CompletableFuture<Chunk>) method.invoke(world, chunkX, chunkZ);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, java.util.function.Consumer.class);
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
+            method.invoke(world, chunkX, chunkZ, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
+            return future;
+        } catch (Exception ignored) {
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class, java.util.function.Consumer.class);
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
+            method.invoke(world, chunkX, chunkZ, gen, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
+            return future;
+        } catch (Exception ignored) {
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class, boolean.class, java.util.function.Consumer.class);
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
+            method.invoke(world, chunkX, chunkZ, gen, false, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
+            return future;
+        } catch (Exception ignored) {
+        }
+        CompletableFuture<Chunk> future = new CompletableFuture<>();
+        plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
+            try {
+                Chunk chunk = world.loadChunk(chunkX, chunkZ, gen) ? world.getChunkAt(chunkX, chunkZ) : null;
+                future.complete(chunk);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
+    }
+
+    private boolean prepareChunkForRtp(World world, int chunkX, int chunkZ) {
+        if (world.isChunkLoaded(chunkX, chunkZ)) {
+            return true;
+        }
+
+        boolean generateChunks = plugin.getConfigManager().getRtp()
+                .getBoolean(GENERATE_CHUNKS_SETTING, false);
+        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
+            return false;
+        }
+        if (!generateChunks && !plugin.getConfigManager().getRtp()
+                .getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+            return false;
+        }
+
+        return world.loadChunk(chunkX, chunkZ, generateChunks);
+    }
+
+    private LocationAttempt tryLoadedChunkLocationAttempt(SearchSettings settings) {
+        if (settings == null || settings.worldName() == null || settings.worldName().isBlank()) {
+            return new LocationAttempt(null, false);
+        }
+
+        World world = resolveWorld(settings.worldName());
+        if (world == null) {
+            return new LocationAttempt(null, false);
+        }
+
+        Chunk[] loadedChunks = world.getLoadedChunks();
+        if (loadedChunks.length == 0) {
+            return new LocationAttempt(null, false);
+        }
+
+        int start = ThreadLocalRandom.current().nextInt(loadedChunks.length);
+        Location relaxedMatch = null;
+        int checked = 0;
+        int maxChecks = Math.min(loadedChunks.length, 32);
+        for (int offset = 0; offset < loadedChunks.length && checked < maxChecks; offset++) {
+            Chunk chunk = loadedChunks[(start + offset) % loadedChunks.length];
+            int baseX = chunk.getX() << 4;
+            int baseZ = chunk.getZ() << 4;
+            int x = baseX + ThreadLocalRandom.current().nextInt(16);
+            int z = baseZ + ThreadLocalRandom.current().nextInt(16);
+            checked++;
+
+            Location found = resolveSafeLocation(world, x, z);
+            if (found == null) {
+                continue;
+            }
+            if (isWithinRadius(settings, found, true)) {
+                return new LocationAttempt(found, true);
+            }
+            if (relaxedMatch == null && isWithinRadius(settings, found, false)) {
+                relaxedMatch = found;
+            }
+        }
+
+        return new LocationAttempt(relaxedMatch, true);
+    }
+
+    private boolean isWithinRadius(SearchSettings settings, Location location, boolean requireMinimum) {
+        double dx = location.getX() - settings.centerX();
+        double dz = location.getZ() - settings.centerZ();
+        double distanceSquared = dx * dx + dz * dz;
+        double maxRadius = Math.max(settings.minRadius(), settings.maxRadius());
+        if (distanceSquared > maxRadius * maxRadius) {
+            return false;
+        }
+        if (!requireMinimum) {
+            return true;
+        }
+        double minRadius = Math.max(0, settings.minRadius());
+        return distanceSquared >= minRadius * minRadius;
+    }
+
+    private boolean shouldUseLoadedChunkFallback(SearchProgress progress) {
+        return shouldUseLoadedChunkFallback(progress.attemptsUsed, progress.chunkSamplesUsed);
+    }
+
+    private boolean shouldUseLoadedChunkFallback(int attemptsUsed, int chunkSamplesUsed) {
+        FileConfiguration rtp = plugin.getConfigManager().getRtp();
+        if (!rtp.getBoolean(LOADED_CHUNK_FALLBACK_SETTING, true)) {
+            return false;
+        }
+
+        int afterSamples = Math.max(1, rtp.getInt(LOADED_CHUNK_FALLBACK_AFTER_SETTING, 32));
+        return attemptsUsed == 0 && chunkSamplesUsed >= afterSamples;
     }
 
     private Location resolveSafeLocation(World world, int x, int z) {
@@ -660,6 +1011,40 @@ public class RTPManager {
 
         int y = world.getHighestBlockYAt(x, z);
         return new Location(world, x + 0.5, y + 1.5, z + 0.5);
+    }
+
+    private Location resolveSafeLocationInChunk(
+            World world,
+            SearchSettings settings,
+            int preferredX,
+            int preferredZ,
+            int chunkX,
+            int chunkZ
+    ) {
+        Location preferred = resolveSafeLocationWithinRadius(world, settings, preferredX, preferredZ);
+        if (preferred != null) {
+            return preferred;
+        }
+
+        int baseX = chunkX << 4;
+        int baseZ = chunkZ << 4;
+        for (int check = 1; check < CHUNK_COLUMN_CHECKS; check++) {
+            int x = baseX + ThreadLocalRandom.current().nextInt(16);
+            int z = baseZ + ThreadLocalRandom.current().nextInt(16);
+            Location found = resolveSafeLocationWithinRadius(world, settings, x, z);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
+    }
+
+    private Location resolveSafeLocationWithinRadius(World world, SearchSettings settings, int x, int z) {
+        Location found = resolveSafeLocation(world, x, z);
+        if (found == null || !isWithinRadius(settings, found, true)) {
+            return null;
+        }
+        return found;
     }
 
     private Location resolveNetherSafeLocation(World world, int x, int z) {
@@ -782,7 +1167,7 @@ public class RTPManager {
         };
     }
 
-    private boolean isConfiguredDestinationdisabled(String worldName) {
+    private boolean isConfiguredDestinationDisabled(String worldName) {
         boolean hasConfiguredDestination = false;
         for (RTPDestination destination : configuredDestinations) {
             if (!destination.worldName().equalsIgnoreCase(worldName)) {
@@ -938,26 +1323,36 @@ public class RTPManager {
     }
 
     private int normalizeSearchLimit(int limit) {
-        return limit <= 0 || limit == 16 ? 0 : limit;
+        return limit <= 0 ? DEFAULT_MAX_ATTEMPTS : Math.max(MIN_MAX_ATTEMPTS, limit);
+    }
+
+    private int normalizeChunkSampleLimit(int maxChunkSamples) {
+        return maxChunkSamples <= 0 ? DEFAULT_MAX_CHUNK_SAMPLES : Math.max(MIN_MAX_CHUNK_SAMPLES, maxChunkSamples);
+    }
+
+    private int normalizeAttemptInterval(int attemptIntervalTicks) {
+        return Math.max(DEFAULT_ATTEMPT_INTERVAL_TICKS, attemptIntervalTicks);
+    }
+
+    private boolean hasSearchBudget(SearchProgress progress) {
+        return hasAttemptBudget(progress.attemptsUsed, progress.settings)
+                && hasChunkSampleBudget(progress.chunkSamplesUsed, progress.settings);
     }
 
     private boolean hasAttemptBudget(int attemptsUsed, SearchSettings settings) {
-        return settings.maxAttempts() <= 0 || attemptsUsed < settings.maxAttempts();
+        return attemptsUsed < settings.maxAttempts();
     }
 
-    private boolean isSearchLimitReached(SearchProgress progress) {
-        return progress.settings.maxAttempts() > 0 && progress.attemptsUsed >= progress.settings.maxAttempts();
+    private boolean hasChunkSampleBudget(int chunkSamplesUsed, SearchSettings settings) {
+        return chunkSamplesUsed < settings.maxChunkSamples();
+    }
+
+    private boolean isFiniteLimitReached(int used, int limit) {
+        return limit > 0 && used >= limit;
     }
 
     private String formatSearchLimit(int limit) {
-        return limit <= 0 ? "unlimited" : String.valueOf(limit);
-    }
-
-    private int getSynchronousAttemptCap(SearchSettings settings) {
-        if (settings.maxAttempts() > 0) {
-            return Math.max(settings.maxAttempts(), SYNC_SEARCH_UNLIMITED_ATTEMPT_CAP);
-        }
-        return SYNC_SEARCH_UNLIMITED_ATTEMPT_CAP;
+        return String.valueOf(Math.max(0, limit));
     }
 
     private String stripSearchCounter(String text) {
@@ -1007,32 +1402,36 @@ public class RTPManager {
                 .put(normalizeWorldKey(worldName), System.currentTimeMillis() + (cooldownSeconds * 1000L));
     }
 
-    private boolean isQueueFull(Player player) {
-        int maxPlayers = plugin.getConfigManager().getRtp().getInt("SETTINGS.PLAYERS-IN-RTP", 0);
-        if (maxPlayers <= 0) {
-            return false;
-        }
-
+    private boolean isQueueFull(UUID playerId) {
+        int maxPlayers = getMaxConcurrentRtp();
         int inProgress = countActiveSearches() + plugin.getTeleportManager().countPendingByType("RTP");
-        if (isSearching(player.getUniqueId())) {
+        if (isSearching(playerId)) {
             inProgress = Math.max(0, inProgress - 1);
         }
-        if (plugin.getTeleportManager().hasPendingType(player.getUniqueId(), "RTP")) {
+        if (plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
             inProgress = Math.max(0, inProgress - 1);
         }
         return inProgress >= maxPlayers;
     }
 
+    private int getMaxConcurrentRtp() {
+        int configured = plugin.getConfigManager().getRtp()
+                .getInt("SETTINGS.PLAYERS-IN-RTP", DEFAULT_MAX_CONCURRENT_RTP);
+        return configured <= 0 ? DEFAULT_MAX_CONCURRENT_RTP : configured;
+    }
+
     private int countActiveSearches() {
-        return activeSearchTasks.size() + activeResultTasks.size();
+        return activeSearches.size() + activeResultTasks.size() + activeDirectSearches.size();
     }
 
     private boolean isSearching(UUID playerId) {
-        return activeSearchTasks.containsKey(playerId);
+        return activeSearches.containsKey(playerId) || activeDirectSearches.containsKey(playerId);
     }
 
     private boolean hasActiveRtpFlow(UUID playerId) {
-        return activeSearchTasks.containsKey(playerId) || activeResultTasks.containsKey(playerId);
+        return activeSearches.containsKey(playerId)
+                || activeResultTasks.containsKey(playerId)
+                || activeDirectSearches.containsKey(playerId);
     }
 
     private boolean isSafe(World world, int x, int z) {
@@ -1106,7 +1505,7 @@ public class RTPManager {
         return Math.max(1L, (long) Math.ceil(Math.max(0D, elapsedTicks / 20.0D)));
     }
 
-    private void sendTeleportwarning(Player player, String worldName) {
+    private void sendTeleportWarning(Player player, String worldName) {
         int teleportCountdown = plugin.getConfigManager().getConfig().getInt("TELEPORT-COOLDOWN.RTP", 5);
         String warning = plugin.getConfigManager().getRtp()
                 .getString(
@@ -1125,7 +1524,12 @@ public class RTPManager {
     }
 
     private void clearAllSearches() {
-        for (UUID playerId : List.copyOf(activeSearchTasks.keySet())) {
+        Set<UUID> playerIds = new HashSet<>();
+        playerIds.addAll(activeSearches.keySet());
+        playerIds.addAll(activeSearchTasks.keySet());
+        playerIds.addAll(activeResultTasks.keySet());
+        playerIds.addAll(activeDirectSearches.keySet());
+        for (UUID playerId : playerIds) {
             clearSearch(playerId);
         }
     }

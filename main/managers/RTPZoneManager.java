@@ -4,17 +4,19 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import com.bx.ultimateDonutSmp.utils.TitleUtils;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RTPZoneManager {
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, Integer> countdowns = new HashMap<>();
+    private final Set<UUID> pendingTeleports = ConcurrentHashMap.newKeySet();
 
     private boolean enabled;
     private String cuboidName;
@@ -59,6 +61,7 @@ public class RTPZoneManager {
         }
         searchSettings = plugin.getRtpManager().getZoneSearchSettings();
         countdowns.clear();
+        pendingTeleports.clear();
     }
 
     public void tick(Player player) {
@@ -100,6 +103,10 @@ public class RTPZoneManager {
             return;
         }
 
+        if (pendingTeleports.contains(uuid)) {
+            return;
+        }
+
         int remaining = countdowns.getOrDefault(uuid, countdownSeconds + 1) - 1;
         if (remaining <= 0) {
             TitleUtils.clearTitle(player);
@@ -133,9 +140,15 @@ public class RTPZoneManager {
     }
 
     private void teleportPlayer(Player player) {
-        plugin.getRtpManager().findSafeLocationAsync(searchSettings).thenAccept(destination -> {
+        UUID uuid = player.getUniqueId();
+        if (!pendingTeleports.add(uuid)) {
+            return;
+        }
+
+        plugin.getRtpManager().findSafeLocationAsync(player, searchSettings).whenComplete((destination, throwable) -> {
+            pendingTeleports.remove(uuid);
             plugin.getSpigotScheduler().runEntity(player, () -> {
-                if (destination == null) {
+                if (throwable != null || destination == null) {
                     if (failedMessage != null && !failedMessage.isBlank()) {
                         player.sendMessage(ColorUtils.toComponent(failedMessage));
                     }

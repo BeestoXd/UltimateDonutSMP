@@ -210,6 +210,7 @@ public class ConfigManager {
             try {
                 current.save(targetFile);
                 result.updated = true;
+                syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, true);
                 syncBundledCommentTags(name, targetFile, backupDirectory, true);
                 syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, true);
                 result.snapshotUpdated = refreshDefaultSnapshot(name);
@@ -221,9 +222,10 @@ public class ConfigManager {
             return result;
         }
 
-        boolean commentsUpdated = syncBundledCommentTags(name, targetFile, backupDirectory, false);
-        boolean pricingUpdated = syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, commentsUpdated);
-        if (commentsUpdated || pricingUpdated) {
+        boolean rtpUpdated = syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, false);
+        boolean commentsUpdated = syncBundledCommentTags(name, targetFile, backupDirectory, rtpUpdated);
+        boolean pricingUpdated = syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, rtpUpdated || commentsUpdated);
+        if (rtpUpdated || commentsUpdated || pricingUpdated) {
             result.updated = true;
         }
         result.snapshotUpdated = refreshDefaultSnapshot(name);
@@ -340,6 +342,68 @@ public class ConfigManager {
         }
     }
 
+    private boolean syncRtpSearchDefaultsAndComments(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
+        if (!"rtp.yml".equals(resourceName)) {
+            return false;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            boolean changed = false;
+
+            changed |= syncRtpComment(lines, "PLAYERS-IN-RTP:",
+                    "# Max players searching or waiting for RTP simultaneously. Values below 1 are treated as 1.");
+            changed |= syncLegacyScalarDefault(lines, "PLAYERS-IN-RTP:", "1", List.of("0"));
+
+            changed |= syncRtpComment(lines, "MAX-ATTEMPTS:",
+                    "# Max tries to find a valid RTP location before failing. Values below 32 use 32.");
+            changed |= syncLegacyScalarDefault(lines, "MAX-ATTEMPTS:", "64", List.of("0", "1", "16"));
+
+            changed |= syncRtpComment(lines, "MAX-CHUNK-SAMPLES:",
+                    "# Max chunk samples to inspect while looking for a valid location. Values below 64 use 64.");
+            changed |= syncLegacyScalarDefault(lines, "MAX-CHUNK-SAMPLES:", "128", List.of("0", "1"));
+
+            changed |= syncRtpComment(lines, "ATTEMPT-INTERVAL-TICKS:",
+                    "# Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 8 use 8.");
+            changed |= syncLegacyScalarDefault(lines, "ATTEMPT-INTERVAL-TICKS:", "8", List.of("1", "2", "4"));
+
+            changed |= syncRtpComment(lines, "GENERATE-CHUNKS:",
+                    "# Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS.");
+            changed |= syncLegacyScalarDefault(lines, "GENERATE-CHUNKS:", "false", List.of("true"));
+
+            changed |= syncRtpComment(lines, "LOAD-GENERATED-CHUNKS:",
+                    "# If chunk generation is disabled, allow loading already-generated chunks from disk.");
+            changed |= syncRtpComment(lines, "FALLBACK-TO-LOADED-CHUNKS:",
+                    "# If random samples cannot be prepared, try already-loaded chunks as a fallback.");
+
+            int maxAttemptsMessageIndex = findConfigLineInSection(lines, "MESSAGES:", "MAX-ATTEMPTS:");
+            if (maxAttemptsMessageIndex >= 0) {
+                String indent = leadingWhitespace(lines.get(maxAttemptsMessageIndex));
+                String desiredLine = indent
+                        + "MAX-ATTEMPTS: \"&cCould not find a safe RTP location. &7Attempts: &f{attempts}/{max_attempts} &8| &7Samples: &f{samples}/{max_samples}\"";
+                String existingBlock = collectYamlScalarBlock(lines, maxAttemptsMessageIndex);
+                if (!existingBlock.contains("{samples}") || !lines.get(maxAttemptsMessageIndex).equals(desiredLine)) {
+                    setConfigLineAndRemoveContinuations(lines, maxAttemptsMessageIndex, desiredLine);
+                    changed = true;
+                }
+            }
+
+            if (!changed) {
+                return false;
+            }
+
+            if (!alreadyBackedUp) {
+                backupExistingFile(targetFile, backupDirectory);
+            }
+            Files.write(targetFile.toPath(), lines, StandardCharsets.UTF_8);
+            plugin.getLogger().info("Updated rtp.yml search defaults/comment tags.");
+            return true;
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to sync rtp.yml search defaults/comment tags.", e);
+            return false;
+        }
+    }
+
     private boolean syncCommentBlockBeforeLine(
             List<String> lines,
             String keyPrefix,
@@ -375,6 +439,111 @@ public class ConfigManager {
         return true;
     }
 
+    private boolean syncRtpComment(List<String> lines, String keyPrefix, String comment) {
+        int keyLineIndex = findConfigLine(lines, keyPrefix);
+        if (keyLineIndex < 0) {
+            return false;
+        }
+        String indent = leadingWhitespace(lines.get(keyLineIndex));
+        return syncCommentBlockBeforeLine(
+                lines,
+                keyPrefix,
+                List.of(indent + comment),
+                this::isRtpSearchComment
+        );
+    }
+
+    private boolean syncLegacyScalarDefault(
+            List<String> lines,
+            String keyPrefix,
+            String desiredValue,
+            List<String> legacyValues
+    ) {
+        int keyLineIndex = findConfigLine(lines, keyPrefix);
+        if (keyLineIndex < 0) {
+            return false;
+        }
+
+        String currentValue = normalizeYamlScalarValue(lines.get(keyLineIndex), keyPrefix);
+        if (!legacyValues.contains(currentValue) || desiredValue.equals(currentValue)) {
+            return false;
+        }
+
+        lines.set(keyLineIndex, leadingWhitespace(lines.get(keyLineIndex)) + keyPrefix + " " + desiredValue);
+        return true;
+    }
+
+    private String normalizeYamlScalarValue(String line, String keyPrefix) {
+        String trimmed = line == null ? "" : line.trim();
+        if (!trimmed.startsWith(keyPrefix)) {
+            return "";
+        }
+
+        String value = trimmed.substring(keyPrefix.length()).trim();
+        int commentIndex = value.indexOf('#');
+        if (commentIndex >= 0) {
+            value = value.substring(0, commentIndex).trim();
+        }
+        if ((value.startsWith("\"") && value.endsWith("\""))
+                || (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.substring(1, value.length() - 1);
+        }
+        return value.trim().toLowerCase(java.util.Locale.ROOT);
+    }
+
+    private int findConfigLineInSection(List<String> lines, String sectionPrefix, String keyPrefix) {
+        int sectionLineIndex = findConfigLine(lines, sectionPrefix);
+        if (sectionLineIndex < 0) {
+            return -1;
+        }
+
+        int sectionIndent = leadingWhitespace(lines.get(sectionLineIndex)).length();
+        for (int index = sectionLineIndex + 1; index < lines.size(); index++) {
+            String line = lines.get(index);
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                continue;
+            }
+
+            int indent = leadingWhitespace(line).length();
+            if (indent <= sectionIndent) {
+                return -1;
+            }
+            if (trimmed.startsWith(keyPrefix)) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private String collectYamlScalarBlock(List<String> lines, int keyLineIndex) {
+        StringBuilder block = new StringBuilder(lines.get(keyLineIndex));
+        int baseIndent = leadingWhitespace(lines.get(keyLineIndex)).length();
+        for (int index = keyLineIndex + 1; index < lines.size(); index++) {
+            String line = lines.get(index);
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#") || leadingWhitespace(line).length() <= baseIndent) {
+                break;
+            }
+            block.append('\n').append(line);
+        }
+        return block.toString();
+    }
+
+    private void setConfigLineAndRemoveContinuations(List<String> lines, int keyLineIndex, String desiredLine) {
+        lines.set(keyLineIndex, desiredLine);
+        int baseIndent = leadingWhitespace(desiredLine).length();
+        int index = keyLineIndex + 1;
+        while (index < lines.size()) {
+            String line = lines.get(index);
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#") || leadingWhitespace(line).length() <= baseIndent) {
+                break;
+            }
+            lines.remove(index);
+        }
+    }
+
     private boolean isOldDefaultMaxPrice(String line) {
         String trimmed = line == null ? "" : line.trim();
         if (!trimmed.startsWith("MAX_PRICE_EACH:")) {
@@ -399,6 +568,24 @@ public class ConfigManager {
                 || comment.contains("Maximum total escrow")
                 || comment.contains("total escrow cap")
                 || comment.contains("quantity x price"));
+    }
+
+    private boolean isRtpSearchComment(String line) {
+        String comment = line.trim();
+        return comment.startsWith("#")
+                && (comment.contains("RTP countdown")
+                || comment.contains("searching or waiting for RTP")
+                || comment.contains("Max players")
+                || comment.contains("Max tries")
+                || comment.contains("Max chunk samples")
+                || comment.contains("Ticks between chunk samples")
+                || comment.contains("Generate new chunks")
+                || comment.contains("chunk generation is disabled")
+                || comment.contains("already-generated chunks")
+                || comment.contains("already-loaded chunks")
+                || comment.contains("Values below")
+                || comment.contains("safe default")
+                || comment.contains("Set 0"));
     }
 
     private int findConfigLine(List<String> lines, String keyPrefix) {
