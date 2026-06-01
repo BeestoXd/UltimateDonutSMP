@@ -604,6 +604,22 @@ public class ConfigManager {
                     "# If chunk generation is disabled, allow loading already-generated chunks from disk.");
             changed |= syncRtpComment(lines, "FALLBACK-TO-LOADED-CHUNKS:",
                     "# If random samples cannot be prepared, try already-loaded chunks as a fallback.");
+            changed |= syncRtpComment(lines, "PRELOAD-TELEPORT-CHUNKS:",
+                    "# Preload generated chunks around the RTP destination before teleporting to reduce post-teleport ping spikes.");
+            changed |= syncRtpComment(lines, "PRELOAD-RADIUS:",
+                    "# Chunk radius to preload around the destination. Values are clamped between 0 and 3.");
+            changed |= syncRtpComment(lines, "PRELOAD-CHUNKS-PER-TICK:",
+                    "# How many destination chunks to preload per tick.");
+            changed |= syncRtpComment(lines, "PRELOAD-MAX-TICKS:",
+                    "# Maximum ticks to spend preloading before teleport continues anyway.");
+            changed |= syncRtpComment(lines, "POST-TELEPORT-CHUNK-THROTTLE:",
+                    "# Temporarily lower player chunk send distance after RTP to avoid a large client chunk burst.");
+            changed |= syncRtpComment(lines, "POST-TELEPORT-VIEW-DISTANCE:",
+                    "# Temporary per-player view distance after RTP. Values below 2 use 2.");
+            changed |= syncRtpComment(lines, "POST-TELEPORT-SIMULATION-DISTANCE:",
+                    "# Temporary per-player simulation distance after RTP. Values below 2 use 2.");
+            changed |= syncRtpComment(lines, "POST-TELEPORT-THROTTLE-TICKS:",
+                    "# Ticks before the player's original view/simulation distance is restored after RTP.");
 
             int maxAttemptsMessageIndex = findConfigLineInSection(lines, "MESSAGES:", "MAX-ATTEMPTS:");
             if (maxAttemptsMessageIndex >= 0) {
@@ -812,6 +828,14 @@ public class ConfigManager {
                 || comment.contains("chunk generation is disabled")
                 || comment.contains("already-generated chunks")
                 || comment.contains("already-loaded chunks")
+                || comment.contains("Preload generated chunks")
+                || comment.contains("Chunk radius to preload")
+                || comment.contains("destination chunks")
+                || comment.contains("Maximum ticks to spend preloading")
+                || comment.contains("player chunk send distance")
+                || comment.contains("per-player view distance")
+                || comment.contains("per-player simulation distance")
+                || comment.contains("original view/simulation distance")
                 || comment.contains("Values below")
                 || comment.contains("safe default")
                 || comment.contains("Set 0"));

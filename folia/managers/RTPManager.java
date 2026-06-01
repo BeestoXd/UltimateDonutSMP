@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class RTPManager {
@@ -78,6 +79,12 @@ public class RTPManager {
     private static final String LOAD_GENERATED_CHUNKS_SETTING = "SETTINGS.LOAD-GENERATED-CHUNKS";
     private static final String LOADED_CHUNK_FALLBACK_SETTING = "SETTINGS.FALLBACK-TO-LOADED-CHUNKS";
     private static final String LOADED_CHUNK_FALLBACK_AFTER_SETTING = "SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES";
+    private static final String PRELOAD_TELEPORT_CHUNKS_SETTING = "SETTINGS.PRELOAD-TELEPORT-CHUNKS";
+    private static final String PRELOAD_RADIUS_SETTING = "SETTINGS.PRELOAD-RADIUS";
+    private static final String PRELOAD_CHUNKS_PER_TICK_SETTING = "SETTINGS.PRELOAD-CHUNKS-PER-TICK";
+    private static final String PRELOAD_MAX_TICKS_SETTING = "SETTINGS.PRELOAD-MAX-TICKS";
+    private static final String POST_TELEPORT_CHUNK_THROTTLE_SETTING = "SETTINGS.POST-TELEPORT-CHUNK-THROTTLE";
+    private static final String POST_TELEPORT_VIEW_DISTANCE_SETTING = "SETTINGS.POST-TELEPORT-VIEW-DISTANCE";
 
     private static final class SearchProgress {
         private final String worldName;
@@ -450,10 +457,6 @@ public class RTPManager {
             int chunkX = x >> 4;
             int chunkZ = z >> 4;
             boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
-            if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
-                retryFindSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
-                return;
-            }
             if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
                 retryFindSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
                 return;
@@ -461,6 +464,10 @@ public class RTPManager {
             getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
                 plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
                     try {
+                        if (chunk == null) {
+                            retryFindSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                            return;
+                        }
                         Location found = resolveSafeLocationInChunk(world, settings, x, z, chunkX, chunkZ);
                         int nextAttemptsUsed = attemptsUsed + 1;
                         if (found != null) {
@@ -474,7 +481,8 @@ public class RTPManager {
                 });
             }).exceptionally(throwable -> {
                 plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
-                    retryFindSafeLocationAsyncHelper(settings, attemptsUsed + 1, nextChunkSamplesUsed, future);
+                    int nextAttemptsUsed = generateChunks ? attemptsUsed + 1 : attemptsUsed;
+                    retryFindSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
                 });
                 return null;
             });
@@ -636,10 +644,6 @@ public class RTPManager {
         progress.chunkSamplesUsed++;
         progress.attemptInFlight = true;
         boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
-        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
-            completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
-            return;
-        }
         if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
             completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
             return;
@@ -647,6 +651,10 @@ public class RTPManager {
         getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
             plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
                 try {
+                    if (chunk == null) {
+                        completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
+                        return;
+                    }
                     Location found = resolveSafeLocationInChunk(world, progress.settings, x, z, chunkX, chunkZ);
                     completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(found, true), null);
                 } catch (RuntimeException exception) {
@@ -655,7 +663,11 @@ public class RTPManager {
             });
         }).exceptionally(throwable -> {
             plugin.getFoliaScheduler().runRegion(world, chunkX, chunkZ, () -> {
-                completeAsyncLocationAttempt(playerId, progress, null, throwable);
+                if (generateChunks) {
+                    completeAsyncLocationAttempt(playerId, progress, null, throwable);
+                } else {
+                    completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
+                }
             });
             return null;
         });
@@ -760,12 +772,15 @@ public class RTPManager {
         sendTeleportWarning(player, worldName);
         SoundUtils.play(player, plugin.getConfigManager().getSound("RTP.SEARCH-FOUND"));
         UUID playerId = player.getUniqueId();
+        CompletableFuture<Void> preloadFuture = preloadTeleportChunks(found);
 
         final long[] shownTicks = {0L};
+        final boolean[] queuedTeleport = {false};
         final ScheduledTask[] resultTaskRef = new ScheduledTask[1];
         ScheduledTask resultTask = plugin.getFoliaScheduler().runEntityTimer(player, () -> {
             if (!player.isOnline()) {
                 activeResultTasks.remove(playerId);
+                preloadFuture.cancel(false);
                 if (resultTaskRef[0] != null) {
                     resultTaskRef[0].cancel();
                 }
@@ -775,17 +790,33 @@ public class RTPManager {
             sendFoundActionBar(player, worldName, found, shownTicks[0]);
             shownTicks[0]++;
 
-            if (shownTicks[0] >= FOUND_ACTIONBAR_DELAY_TICKS) {
-                activeResultTasks.remove(playerId);
-                if (resultTaskRef[0] != null) {
-                    resultTaskRef[0].cancel();
-                }
-                plugin.getTeleportManager().queue(player, found, "RTP", null);
+            if (shownTicks[0] >= FOUND_ACTIONBAR_DELAY_TICKS && preloadFuture.isDone()) {
+                queuePreparedRtpTeleport(player, found, playerId, resultTaskRef, queuedTeleport);
             }
         }, 1L, SEARCH_ACTIONBAR_REFRESH_TICKS);
         resultTaskRef[0] = resultTask;
         if (resultTask != null) {
             activeResultTasks.put(playerId, resultTask);
+        }
+    }
+
+    private void queuePreparedRtpTeleport(
+            Player player,
+            Location found,
+            UUID playerId,
+            ScheduledTask[] resultTaskRef,
+            boolean[] queuedTeleport
+    ) {
+        if (queuedTeleport[0]) {
+            return;
+        }
+        queuedTeleport[0] = true;
+        activeResultTasks.remove(playerId);
+        if (resultTaskRef[0] != null) {
+            resultTaskRef[0].cancel();
+        }
+        if (player.isOnline()) {
+            plugin.getTeleportManager().queue(player, found, "RTP", null);
         }
     }
 
@@ -869,22 +900,6 @@ public class RTPManager {
             }
         } catch (Exception ignored) {
         }
-        if (gen || world.isChunkGenerated(chunkX, chunkZ)) {
-            try {
-                Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class);
-                if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
-                    return (CompletableFuture<Chunk>) method.invoke(world, chunkX, chunkZ);
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        try {
-            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, java.util.function.Consumer.class);
-            CompletableFuture<Chunk> future = new CompletableFuture<>();
-            method.invoke(world, chunkX, chunkZ, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
-            return future;
-        } catch (Exception ignored) {
-        }
         try {
             Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class, java.util.function.Consumer.class);
             CompletableFuture<Chunk> future = new CompletableFuture<>();
@@ -896,6 +911,23 @@ public class RTPManager {
             Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, boolean.class, boolean.class, java.util.function.Consumer.class);
             CompletableFuture<Chunk> future = new CompletableFuture<>();
             method.invoke(world, chunkX, chunkZ, gen, false, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
+            return future;
+        } catch (Exception ignored) {
+        }
+        if (!gen) {
+            return CompletableFuture.completedFuture(null);
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class);
+            if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+                return (CompletableFuture<Chunk>) method.invoke(world, chunkX, chunkZ);
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            Method method = world.getClass().getMethod("getChunkAtAsync", int.class, int.class, java.util.function.Consumer.class);
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
+            method.invoke(world, chunkX, chunkZ, (java.util.function.Consumer<Chunk>) chunk -> future.complete(chunk));
             return future;
         } catch (Exception ignored) {
         }
@@ -918,15 +950,123 @@ public class RTPManager {
 
         boolean generateChunks = plugin.getConfigManager().getRtp()
                 .getBoolean(GENERATE_CHUNKS_SETTING, false);
-        if (!generateChunks && !world.isChunkGenerated(chunkX, chunkZ)) {
-            return false;
-        }
         if (!generateChunks && !plugin.getConfigManager().getRtp()
                 .getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
             return false;
         }
+        if (!generateChunks) {
+            return false;
+        }
 
-        return world.loadChunk(chunkX, chunkZ, generateChunks);
+        return world.loadChunk(chunkX, chunkZ, true);
+    }
+
+    private CompletableFuture<Void> preloadTeleportChunks(Location destination) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        if (!plugin.getConfigManager().getRtp().getBoolean(PRELOAD_TELEPORT_CHUNKS_SETTING, true)
+                || destination == null
+                || destination.getWorld() == null) {
+            future.complete(null);
+            return future;
+        }
+
+        World world = destination.getWorld();
+        int centerChunkX = destination.getBlockX() >> 4;
+        int centerChunkZ = destination.getBlockZ() >> 4;
+        List<int[]> chunks = buildPreloadChunkOrder(centerChunkX, centerChunkZ, getPreloadRadius());
+        if (chunks.isEmpty()) {
+            future.complete(null);
+            return future;
+        }
+
+        int chunksPerTick = getPreloadChunksPerTick();
+        int minimumTicksForFullWarmup = (int) Math.ceil((double) chunks.size() / chunksPerTick) + 10;
+        int maxTicks = Math.max(getPreloadMaxTicks(), minimumTicksForFullWarmup);
+        AtomicInteger nextIndex = new AtomicInteger();
+        AtomicInteger pendingLoads = new AtomicInteger();
+        AtomicInteger elapsedTicks = new AtomicInteger();
+        final ScheduledTask[] taskRef = new ScheduledTask[1];
+
+        Runnable complete = () -> {
+            if (future.complete(null) && taskRef[0] != null) {
+                taskRef[0].cancel();
+            }
+        };
+
+        taskRef[0] = plugin.getFoliaScheduler().runGlobalTimer(() -> {
+            if (future.isDone()) {
+                if (taskRef[0] != null) {
+                    taskRef[0].cancel();
+                }
+                return;
+            }
+
+            if (elapsedTicks.incrementAndGet() > maxTicks) {
+                complete.run();
+                return;
+            }
+
+            int scheduled = 0;
+            while (scheduled < chunksPerTick) {
+                int index = nextIndex.getAndIncrement();
+                if (index >= chunks.size()) {
+                    break;
+                }
+                int[] chunk = chunks.get(index);
+                scheduled++;
+                pendingLoads.incrementAndGet();
+                getChunkAtAsync(world, chunk[0], chunk[1], false).whenComplete((chunkResult, throwable) -> {
+                    if (pendingLoads.decrementAndGet() <= 0 && nextIndex.get() >= chunks.size()) {
+                        complete.run();
+                    }
+                });
+            }
+
+            if (nextIndex.get() >= chunks.size() && pendingLoads.get() <= 0) {
+                complete.run();
+            }
+        }, 1L, 1L);
+
+        if (taskRef[0] == null) {
+            complete.run();
+        }
+        future.whenComplete((ignored, throwable) -> {
+            if (taskRef[0] != null) {
+                taskRef[0].cancel();
+            }
+        });
+        return future;
+    }
+
+    private List<int[]> buildPreloadChunkOrder(int centerChunkX, int centerChunkZ, int radius) {
+        List<int[]> chunks = new ArrayList<>();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                chunks.add(new int[]{centerChunkX + dx, centerChunkZ + dz});
+            }
+        }
+        chunks.sort(Comparator.comparingInt(chunk ->
+                Math.abs(chunk[0] - centerChunkX) + Math.abs(chunk[1] - centerChunkZ)));
+        return chunks;
+    }
+
+    private int getPreloadRadius() {
+        int configured = plugin.getConfigManager().getRtp().getInt(PRELOAD_RADIUS_SETTING, 1);
+        int radius = Math.max(0, Math.min(4, configured));
+        if (plugin.getConfigManager().getRtp().getBoolean(POST_TELEPORT_CHUNK_THROTTLE_SETTING, true)) {
+            int throttledViewDistance = Math.max(2, plugin.getConfigManager().getRtp()
+                    .getInt(POST_TELEPORT_VIEW_DISTANCE_SETTING, 4));
+            radius = Math.max(radius, Math.min(4, throttledViewDistance));
+        }
+        return Math.max(2, radius);
+    }
+
+    private int getPreloadChunksPerTick() {
+        return Math.max(2, plugin.getConfigManager().getRtp().getInt(PRELOAD_CHUNKS_PER_TICK_SETTING, 1));
+    }
+
+    private int getPreloadMaxTicks() {
+        return Math.max(1, plugin.getConfigManager().getRtp().getInt(PRELOAD_MAX_TICKS_SETTING, 40));
     }
 
     private LocationAttempt tryLoadedChunkLocationAttempt(SearchSettings settings) {

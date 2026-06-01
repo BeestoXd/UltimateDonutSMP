@@ -218,6 +218,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (teleportManager != null) {
+            teleportManager.restoreAllRtpChunkThrottles();
+        }
         if (worthManager != null) {
             getServer().getOnlinePlayers().forEach(worthManager::clearWorthDisplay);
         }
@@ -702,6 +705,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
     // ── Static accessor ───────────────────────────────────────────────────────
 
     public void reloadAllPluginConfigurations() {
+        if (teleportManager != null) {
+            teleportManager.restoreAllRtpChunkThrottles();
+        }
         configManager.reload();
         currencyManager.reload();
         optimizationManager.reload();
