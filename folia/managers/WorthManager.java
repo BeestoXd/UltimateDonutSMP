@@ -137,6 +137,9 @@ public class WorthManager {
         if (item == null || item.getType().isAir()) {
             return null;
         }
+        if (isBlockedItem(item)) {
+            return null;
+        }
 
         Material material = item.getType();
         if (FISH_CATEGORY_OVERRIDES.contains(material)) {
@@ -203,7 +206,7 @@ public class WorthManager {
                 }
 
                 Material material = matchMaterial(key);
-                if (material == null || material.isAir() || !seenMaterials.add(material)) {
+                if (material == null || material.isAir() || isBlockedMaterial(material) || !seenMaterials.add(material)) {
                     continue;
                 }
 
@@ -385,6 +388,9 @@ public class WorthManager {
         if (item == null || item.getType().isAir()) {
             return WorthResult.unsellable();
         }
+        if (isBlockedItem(item)) {
+            return WorthResult.unsellable();
+        }
 
         DirectWorthData directWorth = resolveDirectWorth(item);
         if (isContainerWorthEnabled()
@@ -481,6 +487,34 @@ public class WorthManager {
                 && blockStateMeta.getBlockState() instanceof Container;
     }
 
+    private boolean isBlockedItem(ItemStack item) {
+        return item != null && isBlockedMaterial(item.getType());
+    }
+
+    private boolean isBlockedMaterial(Material material) {
+        if (material == null || material.isAir()) {
+            return false;
+        }
+
+        for (String rawMaterial : plugin.getConfigManager().getWorth().getStringList("BLOCK-ITEMS")) {
+            if (rawMaterial == null || rawMaterial.isBlank()) {
+                continue;
+            }
+
+            Material blockedMaterial;
+            try {
+                blockedMaterial = matchMaterial(rawMaterial.trim());
+            } catch (IllegalArgumentException exception) {
+                continue;
+            }
+
+            if (material == blockedMaterial) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isContainerWorthEnabled() {
         return plugin.getConfigManager().getWorth().getBoolean("CONTAINER.ENABLED", true);
     }
@@ -499,6 +533,9 @@ public class WorthManager {
 
     private DirectWorthData resolveDirectWorth(ItemStack item) {
         if (item == null || item.getType().isAir()) {
+            return null;
+        }
+        if (isBlockedItem(item)) {
             return null;
         }
 
