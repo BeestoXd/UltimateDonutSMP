@@ -406,10 +406,7 @@ public class ConfigManager {
             return false;
         }
 
-        int removeEnd = 0;
-        while (removeEnd < lines.size() && isSetupComment(lines.get(removeEnd))) {
-            removeEnd++;
-        }
+        int removeEnd = findManagedHeaderEnd(lines);
         List<String> currentHeader = new ArrayList<>(lines.subList(0, removeEnd));
         if (currentHeader.equals(desiredHeader)) {
             return false;
@@ -429,10 +426,7 @@ public class ConfigManager {
             return false;
         }
 
-        int commentStart = keyLine;
-        while (commentStart > 0 && isSetupComment(lines.get(commentStart - 1))) {
-            commentStart--;
-        }
+        int commentStart = findSetupCommentBlockStart(lines, keyLine, desiredComments);
 
         List<String> currentComments = new ArrayList<>(lines.subList(commentStart, keyLine));
         if (currentComments.equals(desiredComments)) {
@@ -442,6 +436,94 @@ public class ConfigManager {
         lines.subList(commentStart, keyLine).clear();
         lines.addAll(commentStart, desiredComments);
         return true;
+    }
+
+    private int findManagedHeaderEnd(List<String> lines) {
+        int index = 0;
+        while (index < lines.size() && isSetupComment(lines.get(index))) {
+            index++;
+        }
+
+        while (index < lines.size()) {
+            int blankStart = index;
+            while (index < lines.size() && lines.get(index).trim().isEmpty()) {
+                index++;
+            }
+            if (index == blankStart || index >= lines.size() || !isSetupComment(lines.get(index))) {
+                return blankStart;
+            }
+
+            int setupBlockEnd = index;
+            while (setupBlockEnd < lines.size() && isSetupComment(lines.get(setupBlockEnd))) {
+                setupBlockEnd++;
+            }
+
+            int nextContent = nextNonBlankIndex(lines, setupBlockEnd);
+            if (nextContent >= 0 && topLevelKeyPrefix(lines.get(nextContent)) != null) {
+                return blankStart;
+            }
+            index = setupBlockEnd;
+        }
+
+        return index;
+    }
+
+    private int findSetupCommentBlockStart(List<String> lines, int keyLine, List<String> desiredComments) {
+        int commentStart = keyLine;
+        while (commentStart > 0) {
+            String previousLine = lines.get(commentStart - 1);
+            if (isSetupComment(previousLine)) {
+                commentStart--;
+                continue;
+            }
+            if (previousLine.trim().isEmpty()
+                    && isSetupCommentBeforeManagedBlank(lines, commentStart - 1, desiredComments)) {
+                commentStart--;
+                continue;
+            }
+            break;
+        }
+        return commentStart;
+    }
+
+    private boolean isSetupCommentBeforeManagedBlank(
+            List<String> lines,
+            int blankLineIndex,
+            List<String> desiredComments
+    ) {
+        int previousContent = previousNonBlankIndex(lines, blankLineIndex - 1);
+        if (previousContent < 0 || !isSetupComment(lines.get(previousContent))) {
+            return false;
+        }
+        return desiredComments.contains(lines.get(previousContent))
+                || hasTopLevelKeyBefore(lines, previousContent);
+    }
+
+    private int previousNonBlankIndex(List<String> lines, int startIndex) {
+        for (int index = startIndex; index >= 0; index--) {
+            if (!lines.get(index).trim().isEmpty()) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private int nextNonBlankIndex(List<String> lines, int startIndex) {
+        for (int index = startIndex; index < lines.size(); index++) {
+            if (!lines.get(index).trim().isEmpty()) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private boolean hasTopLevelKeyBefore(List<String> lines, int beforeIndex) {
+        for (int index = 0; index < beforeIndex; index++) {
+            if (topLevelKeyPrefix(lines.get(index)) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String topLevelKeyPrefix(String line) {
