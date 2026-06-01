@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 public class TablistManager {
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+    private static final Pattern HEAD_TAG_PATTERN = Pattern.compile("(?i)<head:[^>\\r\\n]*>");
     private static final Pattern GRADIENT_TAG_PATTERN = Pattern.compile(
             "<#([A-Fa-f0-9]{6})>(.*?)</#([A-Fa-f0-9]{6})>",
             Pattern.DOTALL
@@ -291,13 +292,22 @@ public class TablistManager {
         }
 
         resolved = applyInternalPlaceholders(resolved, player);
+        resolved = stripUnsupportedHeadTags(resolved);
         resolved = convertLegacyAndGradientToMiniMessage(resolved);
 
         try {
             return MINI_MESSAGE.deserialize(resolved);
         } catch (Exception ignored) {
-            return ColorUtils.toComponent(text, player);
+            return ColorUtils.toComponent(stripUnsupportedHeadTags(text), player);
         }
+    }
+
+    private String stripUnsupportedHeadTags(String text) {
+        if (text == null || text.isBlank()) {
+            return "";
+        }
+
+        return HEAD_TAG_PATTERN.matcher(text).replaceAll("");
     }
 
     private String convertLegacyAndGradientToMiniMessage(String text) {

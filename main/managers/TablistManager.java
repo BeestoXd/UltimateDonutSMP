@@ -3,14 +3,13 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.utils.AdventureHeadComponentBridge;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.TablistComponentUpdater;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.object.ObjectContents;
-import net.kyori.adventure.text.object.PlayerHeadObjectContents;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -49,6 +48,7 @@ public class TablistManager {
 
     private final UltimateDonutSmp plugin;
     private final TablistComponentUpdater componentUpdater;
+    private final AdventureHeadComponentBridge headComponentBridge;
     private final boolean inlinePlayerHeadSupported;
     private final Set<UUID> refreshedSkinHeads = ConcurrentHashMap.newKeySet();
     private final Set<UUID> pendingSkinHeadTextureRefreshes = ConcurrentHashMap.newKeySet();
@@ -58,6 +58,7 @@ public class TablistManager {
     public TablistManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
         this.componentUpdater = new TablistComponentUpdater(plugin);
+        this.headComponentBridge = new AdventureHeadComponentBridge();
         this.inlinePlayerHeadSupported = detectInlinePlayerHeadSupport();
     }
 
@@ -400,9 +401,13 @@ public class TablistManager {
                 source = player.getName();
             }
 
+            AdventureHeadComponentBridge.HeadBuilder builder = headComponentBridge.newPlayerHeadBuilder();
+            if (builder == null) {
+                return Tag.inserting(Component.empty());
+            }
+
             boolean selfHead = isSelfHeadSource(source, player);
-            PlayerHeadObjectContents.Builder builder = ObjectContents.playerHead().hat(true);
-            boolean paperSkinApplied = selfHead && applyPaperSkinToPlayerHead(player, builder);
+            boolean paperSkinApplied = selfHead && builder.applyPaperSkin(player);
             if (!paperSkinApplied) {
                 builder.name(source);
                 UUID id = parseUuid(source);
@@ -414,11 +419,11 @@ public class TablistManager {
 
                 SkinTexture skinTexture = skinHeadTextures.get(player.getUniqueId());
                 if (skinTexture != null && skinTexture.isValid() && selfHead) {
-                    builder.profileProperty(skinTexture.toProfileProperty());
+                    builder.profileProperty(skinTexture.value(), skinTexture.signature());
                 }
             }
 
-            return Tag.inserting(Component.object(builder.build()));
+            return Tag.inserting(builder.buildComponent());
         });
     }
 
@@ -592,20 +597,6 @@ public class TablistManager {
         }
 
         return null;
-    }
-
-    private boolean applyPaperSkinToPlayerHead(Player player, PlayerHeadObjectContents.Builder builder) {
-        try {
-            Method method = player.getClass().getMethod(
-                    "applySkinToPlayerHeadContents",
-                    PlayerHeadObjectContents.Builder.class
-            );
-            method.setAccessible(true);
-            method.invoke(player, builder);
-            return true;
-        } catch (ReflectiveOperationException | RuntimeException | LinkageError ignored) {
-            return false;
-        }
     }
 
     private SkinTexture resolveGameProfileTexture(Player player) {
@@ -1112,13 +1103,6 @@ public class TablistManager {
     private record SkinTexture(String value, String signature) {
         private boolean isValid() {
             return value != null && !value.isBlank();
-        }
-
-        private PlayerHeadObjectContents.ProfileProperty toProfileProperty() {
-            if (signature == null || signature.isBlank()) {
-                return PlayerHeadObjectContents.property("textures", value);
-            }
-            return PlayerHeadObjectContents.property("textures", value, signature);
         }
     }
 }
