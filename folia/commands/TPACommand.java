@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.commands;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.TPAManager;
 import com.bx.ultimateDonutSmp.menus.TpaConfirmMenu;
+import com.bx.ultimateDonutSmp.menus.TpaQueueMenu;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
@@ -26,151 +27,171 @@ public class TPACommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Player only.");
+            return true;
+        }
 
         String sub = label.toLowerCase();
-
         switch (sub) {
-            case "tpa" -> {
-                if (args.length == 0) { send(player, "&cᴜѕᴀɢᴇ: /tpa <player>"); return true; }
-                Player target = Bukkit.getPlayerExact(args[0]);
-                if (target == null || target.equals(player)) {
-                    send(player, target == null ? "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."
-                            : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
-                    return true;
-                }
-                PlayerData targetData = plugin.getPlayerDataManager().get(target);
-                if (targetData != null && (targetData.isTpauto() || !targetData.isTpaRequestsEnabled())) {
-                    int queuePosition = plugin.getTPAManager().queueAutoTPA(
-                            player,
-                            target,
-                            !targetData.isTpaRequestsEnabled()
-                    );
-                    if (queuePosition == 0) {
-                        send(player, plugin.getConfigManager().getMessage("TPA.ALREADY-SENT",
-                                "{player}", target.getName()));
-                        return true;
-                    }
-
-                    send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT",
-                            "{player}", target.getName()));
-                    if (!targetData.isTpaRequestsEnabled() || queuePosition > 1 || !targetData.isTpauto()) {
-                        send(player, "&7ʏᴏᴜʀ /tpa ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ѕᴛᴏʀᴇᴅ ɪɴ &b" + target.getName()
-                                + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
-                    }
-                    SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
-                    plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
-                    return true;
-                }
-
-                if (!plugin.getTPAManager().sendTPA(player, target)) {
-                    send(player, plugin.getConfigManager().getMessage("TPA.ALREADY-SENT",
-                            "{player}", target.getName()));
-                    return true;
-                }
-                send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT",
-                        "{player}", target.getName()));
-                SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
-                sendIncomingRequest(player, target, false);
-            }
-            case "tpahere" -> {
-                if (args.length == 0) { send(player, "&cᴜѕᴀɢᴇ: /tpahere <player>"); return true; }
-                Player target = Bukkit.getPlayerExact(args[0]);
-                if (target == null || target.equals(player)) {
-                    send(player, target == null ? "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."
-                            : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
-                    return true;
-                }
-                PlayerData targetData = plugin.getPlayerDataManager().get(target);
-                if (targetData != null && (targetData.isAutoTpaHereEnabled() || !targetData.isTpaHereRequestsEnabled())) {
-                    int queuePosition = plugin.getTPAManager().queueAutoTPAHere(
-                            player,
-                            target,
-                            !targetData.isTpaHereRequestsEnabled()
-                    );
-                    if (queuePosition == 0) {
-                        send(player, plugin.getConfigManager().getMessage("TPA.ALREADY-SENT",
-                                "{player}", target.getName()));
-                        return true;
-                    }
-
-                    send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT",
-                            "{player}", target.getName()));
-                    if (!targetData.isTpaHereRequestsEnabled() || queuePosition > 1 || !targetData.isAutoTpaHereEnabled()) {
-                        send(player, "&7ʏᴏᴜʀ /tpahere ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴀᴅᴅᴇᴅ ᴛᴏ &b" + target.getName()
-                                + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
-                    }
-                    SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
-                    plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
-                    return true;
-                }
-
-                if (!plugin.getTPAManager().sendTPAHere(player, target)) {
-                    send(player, plugin.getConfigManager().getMessage("TPA.ALREADY-SENT",
-                            "{player}", target.getName()));
-                    return true;
-                }
-                send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT",
-                        "{player}", target.getName()));
-                SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
-                sendIncomingRequest(player, target, true);
-            }
-            case "tpaccept" -> {
-                TPAManager.TpaRequest req = plugin.getTPAManager().getRequest(player.getUniqueId());
-                if (req == null) {
-                    send(player, plugin.getConfigManager().getMessage("TPA.NO-REQUEST",
-                            "{player}", args.length > 0 ? args[0] : ""));
-                    return true;
-                }
-                plugin.getTPAManager().removeRequest(player.getUniqueId());
-                Player requester = Bukkit.getPlayer(req.requester());
-                if (requester == null) { send(player, "&cʀᴇǫᴜᴇѕᴛᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ."); return true; }
-
-                if (req.tpaHere()) {
-                    // tpahere: player (target) teleports to requester
-                    plugin.getTeleportManager().queue(player, requester.getLocation(), "TPA", null);
-                    send(player, plugin.getConfigManager().getMessage("TPA.ACCEPTED-HERE",
-                            "{player}", requester.getName()));
-                    requester.sendMessage(ColorUtils.toComponent(
-                            plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-HERE-ACCEPTED",
-                                    "{player}", player.getName())));
-                } else {
-                    // tpa: requester teleports to player (target)
-                    plugin.getTeleportManager().queue(requester, player.getLocation(), "TPA", null);
-                    send(player, plugin.getConfigManager().getMessage("TPA.ACCEPTED",
-                            "{player}", requester.getName()));
-                    requester.sendMessage(ColorUtils.toComponent(
-                            plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-ACCEPTED",
-                                    "{player}", player.getName())));
-                }
-                SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.CONFIRM"));
-                SoundUtils.play(requester, plugin.getConfigManager().getSound("TPA.CONFIRM"));
-            }
-            case "tpadeny" -> {
-                if (!plugin.getTPAManager().hasRequest(player.getUniqueId())) {
-                    send(player, plugin.getConfigManager().getMessage("TPA.NO-REQUEST", "{player}", ""));
-                    return true;
-                }
-                TPAManager.TpaRequest req = plugin.getTPAManager().getRequest(player.getUniqueId());
-                plugin.getTPAManager().removeRequest(player.getUniqueId());
-                send(player, "&7ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ᴅᴇɴɪᴇᴅ.");
-                if (req != null) {
-                    Player requester = Bukkit.getPlayer(req.requester());
-                    if (requester != null) {
-                        requester.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜʀ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴅᴇɴɪᴇᴅ."));
-                    }
-                }
-            }
+            case "tpa" -> handleTpa(player, args);
+            case "tpahere" -> handleTpaHere(player, args);
+            case "tpaccept" -> handleAccept(player, args);
+            case "tpadeny" -> handleDeny(player);
             case "tpacancel" -> {
                 plugin.getTPAManager().cancelRequestsByRequester(player.getUniqueId());
                 send(player, plugin.getConfigManager().getMessage("TPA.CANCELLED-REQUESTS"));
+            }
+            default -> {
             }
         }
         return true;
     }
 
-    private void send(Player p, String msg) {
-        p.sendMessage(ColorUtils.toComponent(msg));
+    private void handleTpa(Player player, String[] args) {
+        if (args.length == 0) {
+            new TpaQueueMenu(plugin, false).open(player);
+            return;
+        }
+
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null || target.equals(player)) {
+            send(player, target == null ? "&cPlayer not online."
+                    : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
+            return;
+        }
+
+        PlayerData targetData = plugin.getPlayerDataManager().get(target);
+        if (targetData != null && !targetData.isTpaRequestsEnabled()) {
+            int queuePosition = plugin.getTPAManager().queueManualTPA(player, target);
+            if (queuePosition == 0) {
+                sendAlreadySent(player, target);
+                return;
+            }
+
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", target.getName()));
+            send(player, "&7Your /tpa request was stored in &b" + target.getName()
+                    + "&7's queue &8(#" + queuePosition + "&8).");
+            SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
+            return;
+        }
+
+        if (targetData != null && targetData.isTpauto()) {
+            int queuePosition = plugin.getTPAManager().queueAutoTPA(player, target, false);
+            if (queuePosition == 0) {
+                sendAlreadySent(player, target);
+                return;
+            }
+
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", target.getName()));
+            if (queuePosition > 1) {
+                send(player, "&7Your /tpa request was stored in &b" + target.getName()
+                        + "&7's auto-accept queue &8(#" + queuePosition + "&8).");
+            }
+            SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
+            plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
+            return;
+        }
+
+        if (!plugin.getTPAManager().sendTPA(player, target)) {
+            sendAlreadySent(player, target);
+            return;
+        }
+        send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", target.getName()));
+        SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
+        sendIncomingRequest(player, target, false);
+    }
+
+    private void handleTpaHere(Player player, String[] args) {
+        if (args.length == 0) {
+            new TpaQueueMenu(plugin, true).open(player);
+            return;
+        }
+
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null || target.equals(player)) {
+            send(player, target == null ? "&cPlayer not online."
+                    : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
+            return;
+        }
+
+        PlayerData targetData = plugin.getPlayerDataManager().get(target);
+        if (targetData != null && !targetData.isTpaHereRequestsEnabled()) {
+            int queuePosition = plugin.getTPAManager().queueManualTPAHere(player, target);
+            if (queuePosition == 0) {
+                sendAlreadySent(player, target);
+                return;
+            }
+
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", target.getName()));
+            send(player, "&7Your /tpahere request was added to &b" + target.getName()
+                    + "&7's queue &8(#" + queuePosition + "&8).");
+            SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
+            return;
+        }
+
+        if (targetData != null && targetData.isAutoTpaHereEnabled()) {
+            int queuePosition = plugin.getTPAManager().queueAutoTPAHere(player, target, false);
+            if (queuePosition == 0) {
+                sendAlreadySent(player, target);
+                return;
+            }
+
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", target.getName()));
+            if (queuePosition > 1) {
+                send(player, "&7Your /tpahere request was added to &b" + target.getName()
+                        + "&7's auto-accept queue &8(#" + queuePosition + "&8).");
+            }
+            SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
+            plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
+            return;
+        }
+
+        if (!plugin.getTPAManager().sendTPAHere(player, target)) {
+            sendAlreadySent(player, target);
+            return;
+        }
+        send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", target.getName()));
+        SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
+        sendIncomingRequest(player, target, true);
+    }
+
+    private void handleAccept(Player player, String[] args) {
+        TPAManager.TpaRequest request = plugin.getTPAManager().getRequest(player.getUniqueId());
+        if (request == null) {
+            send(player, plugin.getConfigManager().getMessage("TPA.NO-REQUEST",
+                    "{player}", args.length > 0 ? args[0] : ""));
+            return;
+        }
+
+        plugin.getTPAManager().acceptPendingRequest(player);
+    }
+
+    private void handleDeny(Player player) {
+        if (!plugin.getTPAManager().hasRequest(player.getUniqueId())) {
+            send(player, plugin.getConfigManager().getMessage("TPA.NO-REQUEST", "{player}", ""));
+            return;
+        }
+
+        TPAManager.TpaRequest request = plugin.getTPAManager().getRequest(player.getUniqueId());
+        plugin.getTPAManager().removeRequest(player.getUniqueId());
+        send(player, "&7TPA request denied.");
+        if (request == null) {
+            return;
+        }
+
+        Player requester = Bukkit.getPlayer(request.requester());
+        if (requester != null) {
+            requester.sendMessage(ColorUtils.toComponent("&7Your teleport request was denied."));
+        }
+    }
+
+    private void sendAlreadySent(Player player, Player target) {
+        send(player, plugin.getConfigManager().getMessage("TPA.ALREADY-SENT", "{player}", target.getName()));
+    }
+
+    private void send(Player player, String message) {
+        player.sendMessage(ColorUtils.toComponent(message));
     }
 
     private void sendIncomingRequest(Player requester, Player target, boolean tpaHere) {

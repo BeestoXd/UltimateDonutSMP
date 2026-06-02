@@ -148,6 +148,7 @@ public class PlayerJoinQuitListener implements Listener {
 
         // remove pending tpa requests
         plugin.getTPAManager().removeRequest(player.getUniqueId());
+        plugin.getTPAManager().clearQueuedRequestsForTarget(player.getUniqueId());
         plugin.getTPAManager().cancelRequestsByRequester(player.getUniqueId());
 
         // remove temporary worth lore before the inventory is persisted by the server

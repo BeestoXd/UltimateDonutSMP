@@ -121,9 +121,6 @@ public class SettingsMenu extends BaseMenu {
             }
             case "TPA_REQUESTS" -> {
                 data.setTpaRequestsEnabled(!data.isTpaRequestsEnabled());
-                if (data.isTpaRequestsEnabled()) {
-                    plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
-                }
                 sendToggleMessage(player, "ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ", data.isTpaRequestsEnabled());
             }
             case "TP_AUTO" -> {
@@ -145,9 +142,6 @@ public class SettingsMenu extends BaseMenu {
             }
             case "TPA_HERE_REQUESTS" -> {
                 data.setTpaHereRequestsEnabled(!data.isTpaHereRequestsEnabled());
-                if (data.isTpaHereRequestsEnabled()) {
-                    plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
-                }
                 sendToggleMessage(player, "ᴛᴘᴀ ʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛѕ", data.isTpaHereRequestsEnabled());
             }
             case "TEAM_INVITES" -> {
