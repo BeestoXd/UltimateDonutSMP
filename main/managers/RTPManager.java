@@ -1085,7 +1085,6 @@ public class RTPManager {
         }
 
         int start = ThreadLocalRandom.current().nextInt(loadedChunks.length);
-        Location relaxedMatch = null;
         int checked = 0;
         int maxChecks = Math.min(loadedChunks.length, 32);
         for (int offset = 0; offset < loadedChunks.length && checked < maxChecks; offset++) {
@@ -1103,12 +1102,9 @@ public class RTPManager {
             if (isWithinRadius(settings, found, true)) {
                 return new LocationAttempt(found, true);
             }
-            if (relaxedMatch == null && isWithinRadius(settings, found, false)) {
-                relaxedMatch = found;
-            }
         }
 
-        return new LocationAttempt(relaxedMatch, true);
+        return new LocationAttempt(null, true);
     }
 
     private boolean isWithinRadius(SearchSettings settings, Location location, boolean requireMinimum) {
