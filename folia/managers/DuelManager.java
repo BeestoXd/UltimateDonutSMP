@@ -53,6 +53,10 @@ import net.kyori.adventure.title.Title;
 public class DuelManager {
 
     public enum ArenaSetting {
+        ALLOW_ITEM_DROP("ᴀʟʟᴏᴡ ɪᴛᴇᴍ ᴅʀᴏᴘ"),
+        ALLOW_BLOCK_BREAK("ᴀʟʟᴏᴡ ʙʟᴏᴄᴋ ʙʀᴇᴀᴋ"),
+        ALLOW_BLOCK_PLACE("ᴀʟʟᴏᴡ ʙʟᴏᴄᴋ ᴘʟᴀᴄᴇ"),
+        ALLOW_BUCKET_USE("ᴀʟʟᴏᴡ ʙᴜᴄᴋᴇᴛ ᴜѕᴇ"),
         NO_HUNGER("ɴᴏ ʜᴜɴɢᴇʀ"),
         NO_WEATHER("ɴᴏ ᴡᴇᴀᴛʜᴇʀ"),
         ALWAYS_MORNING("ᴀʟᴡᴀʏѕ ᴍᴏʀɴɪɴɢ"),
@@ -213,9 +217,12 @@ public class DuelManager {
     }
 
     public boolean areOpponents(UUID first, UUID second) {
+        if (first == null || second == null || first.equals(second)) {
+            return false;
+        }
         DuelMatch match = getActiveMatch(first);
         return match != null && match.getStatus() != DuelMatch.MatchStatus.FINISHED
-                && match.isParticipant(second);
+                && second.equals(match.getOpponent(first));
     }
 
     public boolean canModifyArena(Player player) {
@@ -432,6 +439,10 @@ public class DuelManager {
         }
 
         return switch (setting) {
+            case ALLOW_ITEM_DROP -> arena.isAllowItemDrop();
+            case ALLOW_BLOCK_BREAK -> arena.isAllowBlockBreak();
+            case ALLOW_BLOCK_PLACE -> arena.isAllowBlockPlace();
+            case ALLOW_BUCKET_USE -> arena.isAllowBucketUse();
             case NO_HUNGER -> arena.isNoHunger();
             case NO_WEATHER -> arena.isNoWeather();
             case ALWAYS_MORNING -> arena.isAlwaysMorning();
@@ -473,6 +484,10 @@ public class DuelManager {
                 null,
                 null,
                 null,
+                true,
+                true,
+                false,
+                true,
                 true,
                 true,
                 false,
@@ -2271,6 +2286,10 @@ public class DuelManager {
                         rs.getInt("enabled") == 1,
                         rs.getInt("queue_enabled") == 1,
                         false,
+                        true,
+                        true,
+                        true,
+                        false,
                         false,
                         false,
                         false
@@ -2303,6 +2322,10 @@ public class DuelManager {
         target.setRegionPos2(loaded.getRegionPos2());
         target.setEnabled(loaded.isEnabled());
         target.setQueueEnabled(loaded.isQueueEnabled());
+        target.setAllowItemDrop(loaded.isAllowItemDrop());
+        target.setAllowBlockBreak(loaded.isAllowBlockBreak());
+        target.setAllowBlockPlace(loaded.isAllowBlockPlace());
+        target.setAllowBucketUse(loaded.isAllowBucketUse());
         target.setNoHunger(loaded.isNoHunger());
         target.setNoWeather(loaded.isNoWeather());
         target.setAlwaysMorning(loaded.isAlwaysMorning());
@@ -2576,7 +2599,7 @@ public class DuelManager {
         for (ArenaSetting setting : ArenaSetting.values()) {
             String path = getArenaSettingPath(arena.getId(), setting);
             if (!duelConfig.contains(path)) {
-                duelConfig.set(path, false);
+                duelConfig.set(path, defaultArenaSettingValue(setting));
                 changed = true;
             }
         }
@@ -2588,19 +2611,49 @@ public class DuelManager {
             return;
         }
 
-        arena.setNoHunger(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_HUNGER), false));
-        arena.setNoWeather(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_WEATHER), false));
-        arena.setAlwaysMorning(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.ALWAYS_MORNING), false));
-        arena.setNoFallDamage(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_FALL_DAMAGE), false));
+        for (ArenaSetting setting : ArenaSetting.values()) {
+            setArenaSetting(arena, setting, duelConfig.getBoolean(
+                    getArenaSettingPath(arena.getId(), setting),
+                    defaultArenaSettingValue(setting)
+            ));
+        }
     }
 
     private String getArenaSettingPath(String arenaId, ArenaSetting setting) {
-        return "ARENA_SETTINGS." + normalizeArenaId(arenaId) + "." + switch (setting) {
+        return "ARENA_SETTINGS." + normalizeArenaId(arenaId) + "." + getArenaSettingKey(setting);
+    }
+
+    private String getArenaSettingKey(ArenaSetting setting) {
+        return switch (setting) {
+            case ALLOW_ITEM_DROP -> "ALLOW_ITEM_DROP";
+            case ALLOW_BLOCK_BREAK -> "ALLOW_BLOCK_BREAK";
+            case ALLOW_BLOCK_PLACE -> "ALLOW_BLOCK_PLACE";
+            case ALLOW_BUCKET_USE -> "ALLOW_BUCKET_USE";
             case NO_HUNGER -> "NO_HUNGER";
             case NO_WEATHER -> "NO_WEATHER";
             case ALWAYS_MORNING -> "ALWAYS_MORNING";
             case NO_FALL_DAMAGE -> "NO_FALL_DAMAGE";
         };
+    }
+
+    private boolean defaultArenaSettingValue(ArenaSetting setting) {
+        return switch (setting) {
+            case ALLOW_BLOCK_BREAK, ALLOW_BLOCK_PLACE, ALLOW_BUCKET_USE -> true;
+            case ALLOW_ITEM_DROP, NO_HUNGER, NO_WEATHER, ALWAYS_MORNING, NO_FALL_DAMAGE -> false;
+        };
+    }
+
+    private void setArenaSetting(DuelArena arena, ArenaSetting setting, boolean enabled) {
+        switch (setting) {
+            case ALLOW_ITEM_DROP -> arena.setAllowItemDrop(enabled);
+            case ALLOW_BLOCK_BREAK -> arena.setAllowBlockBreak(enabled);
+            case ALLOW_BLOCK_PLACE -> arena.setAllowBlockPlace(enabled);
+            case ALLOW_BUCKET_USE -> arena.setAllowBucketUse(enabled);
+            case NO_HUNGER -> arena.setNoHunger(enabled);
+            case NO_WEATHER -> arena.setNoWeather(enabled);
+            case ALWAYS_MORNING -> arena.setAlwaysMorning(enabled);
+            case NO_FALL_DAMAGE -> arena.setNoFallDamage(enabled);
+        }
     }
 
     private ArenaRegionBounds resolveArenaRegionBounds(DuelArena arena) {

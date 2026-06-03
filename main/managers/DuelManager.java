@@ -67,6 +67,10 @@ import java.util.logging.Level;
 public class DuelManager {
 
     public enum ArenaSetting {
+        ALLOW_ITEM_DROP("Allow Item Drop"),
+        ALLOW_BLOCK_BREAK("Allow Block Break"),
+        ALLOW_BLOCK_PLACE("Allow Block Place"),
+        ALLOW_BUCKET_USE("Allow Bucket Use"),
         NO_HUNGER("No Hunger"),
         NO_WEATHER("No Weather"),
         ALWAYS_MORNING("Always Morning"),
@@ -102,6 +106,8 @@ public class DuelManager {
                                            UUID secondUuid, String secondName,
                                            DuelMapSelection selection, long expiresAt) {
     }
+
+    private static final String TERRAIN_MODE_SETTINGS_PATH = "MAP_SOURCES.RANDOM_BIOMES.TERRAIN_MODE_SETTINGS";
 
     private final UltimateDonutSmp plugin;
     private final DuelWorldManager worldManager;
@@ -310,9 +316,12 @@ public class DuelManager {
     }
 
     public boolean areOpponents(UUID first, UUID second) {
+        if (first == null || second == null || first.equals(second)) {
+            return false;
+        }
         DuelMatch match = getActiveMatch(first);
         return match != null && match.getStatus() != DuelMatch.MatchStatus.FINISHED
-                && match.isParticipant(second);
+                && second.equals(match.getOpponent(first));
     }
 
     public boolean canModifyArena(Player player) {
@@ -638,6 +647,10 @@ public class DuelManager {
         }
 
         return switch (setting) {
+            case ALLOW_ITEM_DROP -> arena.isAllowItemDrop();
+            case ALLOW_BLOCK_BREAK -> arena.isAllowBlockBreak();
+            case ALLOW_BLOCK_PLACE -> arena.isAllowBlockPlace();
+            case ALLOW_BUCKET_USE -> arena.isAllowBucketUse();
             case NO_HUNGER -> arena.isNoHunger();
             case NO_WEATHER -> arena.isNoWeather();
             case ALWAYS_MORNING -> arena.isAlwaysMorning();
@@ -679,6 +692,10 @@ public class DuelManager {
                 null,
                 null,
                 null,
+                true,
+                true,
+                false,
+                true,
                 true,
                 true,
                 false,
@@ -1312,6 +1329,10 @@ public class DuelManager {
             return;
         }
 
+        if (match.usesGeneratedWorld()) {
+            rememberGeneratedInventorySnapshot(match, first, second);
+        }
+
         match.setStatus(DuelMatch.MatchStatus.ACTIVE);
         long now = System.currentTimeMillis();
         match.setStartedAt(now);
@@ -1475,9 +1496,10 @@ public class DuelManager {
 
         List<ItemStack> claimLoot = loot == null ? List.of() : loot;
         if (match.usesGeneratedWorld()) {
-            claimLoot = List.of();
-            restoreGeneratedInventory(match, match.getPlayerOneUuid());
-            restoreGeneratedInventory(match, match.getPlayerTwoUuid());
+            restoreGeneratedInventory(match, match.getPlayerOneUuid(),
+                    match.getPlayerOneUuid().equals(loserUuid) ? claimLoot : List.of());
+            restoreGeneratedInventory(match, match.getPlayerTwoUuid(),
+                    match.getPlayerTwoUuid().equals(loserUuid) ? claimLoot : List.of());
             cleanupGeneratedTransientEntities(match);
             generatedMatchInventorySnapshots.remove(match.getId());
         }
@@ -1896,9 +1918,6 @@ public class DuelManager {
         );
         match.setReturnLocation(first.getUniqueId(), first.getLocation());
         match.setReturnLocation(second.getUniqueId(), second.getLocation());
-        if (match.usesGeneratedWorld()) {
-            rememberGeneratedInventorySnapshot(match, first, second);
-        }
 
         activeMatches.put(matchId, match);
         activeMatchIds.put(first.getUniqueId(), matchId);
@@ -2145,6 +2164,7 @@ public class DuelManager {
             if (generatedArena == null) {
                 return null;
             }
+            applyGeneratedTerrainSettings(generatedArena.arena(), generatedArena.terrainMode());
             return new ResolvedArena(
                     generatedArena.arena(),
                     generatedArena.selection(),
@@ -2830,34 +2850,6 @@ public class DuelManager {
         );
     }
 
-    private List<ItemStack> filterGeneratedLoot(DuelMatch match, UUID ownerUuid, List<ItemStack> loot) {
-        if (match == null || !match.usesGeneratedWorld() || ownerUuid == null || loot == null || loot.isEmpty()) {
-            return List.of();
-        }
-
-        List<ItemStack> remaining = copyGeneratedInventorySnapshotItems(match, ownerUuid);
-        if (remaining.isEmpty()) {
-            return List.of();
-        }
-
-        List<ItemStack> filtered = new ArrayList<>();
-        for (ItemStack item : loot) {
-            if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
-                continue;
-            }
-
-            int allowedAmount = consumeAllowedAmount(remaining, item, item.getAmount());
-            if (allowedAmount <= 0) {
-                continue;
-            }
-
-            ItemStack clone = item.clone();
-            clone.setAmount(allowedAmount);
-            filtered.add(clone);
-        }
-        return filtered;
-    }
-
     private void sanitizeGeneratedInventory(DuelMatch match, UUID uuid) {
         if (match == null || !match.usesGeneratedWorld() || uuid == null) {
             return;
@@ -2900,6 +2892,10 @@ public class DuelManager {
     }
 
     private void restoreGeneratedInventory(DuelMatch match, UUID uuid) {
+        restoreGeneratedInventory(match, uuid, List.of());
+    }
+
+    private void restoreGeneratedInventory(DuelMatch match, UUID uuid, List<ItemStack> removedItems) {
         if (match == null || !match.usesGeneratedWorld() || uuid == null) {
             return;
         }
@@ -2915,23 +2911,62 @@ public class DuelManager {
         }
 
         PlayerInventory inventory = player.getInventory();
-        inventory.setStorageContents(fitContents(snapshot.storage(), inventory.getStorageContents().length));
-        inventory.setArmorContents(fitContents(snapshot.armor(), inventory.getArmorContents().length));
-        inventory.setItemInOffHand(cloneItem(snapshot.offHand()));
-        player.setItemOnCursor(cloneItem(snapshot.cursor()));
+        List<ItemStack> remainingRemovedItems = cloneItemList(removedItems);
+        inventory.setStorageContents(fitContentsWithoutRemovedItems(
+                snapshot.storage(),
+                inventory.getStorageContents().length,
+                remainingRemovedItems
+        ));
+        inventory.setArmorContents(fitContentsWithoutRemovedItems(
+                snapshot.armor(),
+                inventory.getArmorContents().length,
+                remainingRemovedItems
+        ));
+        inventory.setItemInOffHand(cloneItemWithoutRemovedItems(snapshot.offHand(), remainingRemovedItems));
+        player.setItemOnCursor(cloneItemWithoutRemovedItems(snapshot.cursor(), remainingRemovedItems));
         player.updateInventory();
     }
 
-    private ItemStack[] fitContents(ItemStack[] source, int targetLength) {
+    private ItemStack[] fitContentsWithoutRemovedItems(ItemStack[] source, int targetLength, List<ItemStack> remainingRemovedItems) {
         int length = Math.max(0, targetLength);
         ItemStack[] fitted = new ItemStack[length];
         if (source == null) {
             return fitted;
         }
         for (int index = 0; index < Math.min(source.length, fitted.length); index++) {
-            fitted[index] = cloneItem(source[index]);
+            fitted[index] = cloneItemWithoutRemovedItems(source[index], remainingRemovedItems);
         }
         return fitted;
+    }
+
+    private ItemStack cloneItemWithoutRemovedItems(ItemStack item, List<ItemStack> remainingRemovedItems) {
+        ItemStack clone = cloneItem(item);
+        if (clone == null) {
+            return null;
+        }
+
+        int removedAmount = consumeAllowedAmount(remainingRemovedItems, clone, clone.getAmount());
+        int restoredAmount = clone.getAmount() - removedAmount;
+        if (restoredAmount <= 0) {
+            return null;
+        }
+
+        clone.setAmount(restoredAmount);
+        return clone;
+    }
+
+    private List<ItemStack> cloneItemList(List<ItemStack> source) {
+        List<ItemStack> clones = new ArrayList<>();
+        if (source == null) {
+            return clones;
+        }
+        for (ItemStack item : source) {
+            ItemStack clone = cloneItem(item);
+            if (clone != null) {
+                clones.add(clone);
+            }
+        }
+        return clones;
     }
 
     private GeneratedInventorySnapshot getGeneratedInventorySnapshot(DuelMatch match, UUID uuid) {
@@ -2940,14 +2975,6 @@ public class DuelManager {
             return null;
         }
         return snapshots.get(uuid);
-    }
-
-    private List<ItemStack> copyGeneratedInventorySnapshotItems(DuelMatch match, UUID uuid) {
-        GeneratedInventorySnapshot snapshot = getGeneratedInventorySnapshot(match, uuid);
-        if (snapshot == null) {
-            return new ArrayList<>();
-        }
-        return snapshot.copyItems();
     }
 
     private boolean[] preserveSnapshotSlots(ItemStack[] contents, ItemStack[] snapshotContents, List<ItemStack> remaining) {
@@ -3571,6 +3598,10 @@ public class DuelManager {
                         rs.getInt("enabled") == 1,
                         rs.getInt("queue_enabled") == 1,
                         false,
+                        true,
+                        true,
+                        true,
+                        false,
                         false,
                         false,
                         false
@@ -3603,6 +3634,10 @@ public class DuelManager {
         target.setRegionPos2(loaded.getRegionPos2());
         target.setEnabled(loaded.isEnabled());
         target.setQueueEnabled(loaded.isQueueEnabled());
+        target.setAllowItemDrop(loaded.isAllowItemDrop());
+        target.setAllowBlockBreak(loaded.isAllowBlockBreak());
+        target.setAllowBlockPlace(loaded.isAllowBlockPlace());
+        target.setAllowBucketUse(loaded.isAllowBucketUse());
         target.setNoHunger(loaded.isNoHunger());
         target.setNoWeather(loaded.isNoWeather());
         target.setAlwaysMorning(loaded.isAlwaysMorning());
@@ -3867,7 +3902,7 @@ public class DuelManager {
             return;
         }
 
-        boolean changed = false;
+        boolean changed = ensureGeneratedTerrainSettingsEntry(duelConfig);
         for (DuelArena arena : arenas.values()) {
             if (arena == null) {
                 continue;
@@ -3881,6 +3916,24 @@ public class DuelManager {
         }
     }
 
+    private boolean ensureGeneratedTerrainSettingsEntry(FileConfiguration duelConfig) {
+        if (duelConfig == null) {
+            return false;
+        }
+
+        boolean changed = false;
+        for (DuelWorldManager.TerrainMode terrainMode : DuelWorldManager.TerrainMode.values()) {
+            for (ArenaSetting setting : ArenaSetting.values()) {
+                String path = getTerrainModeSettingPath(terrainMode, setting);
+                if (!duelConfig.contains(path)) {
+                    duelConfig.set(path, defaultArenaSettingValue(setting));
+                    changed = true;
+                }
+            }
+        }
+        return changed;
+    }
+
     private boolean ensureArenaSettingsEntry(FileConfiguration duelConfig, DuelArena arena) {
         if (duelConfig == null || arena == null) {
             return false;
@@ -3890,7 +3943,7 @@ public class DuelManager {
         for (ArenaSetting setting : ArenaSetting.values()) {
             String path = getArenaSettingPath(arena.getId(), setting);
             if (!duelConfig.contains(path)) {
-                duelConfig.set(path, false);
+                duelConfig.set(path, defaultArenaSettingValue(setting));
                 changed = true;
             }
         }
@@ -3902,19 +3955,67 @@ public class DuelManager {
             return;
         }
 
-        arena.setNoHunger(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_HUNGER), false));
-        arena.setNoWeather(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_WEATHER), false));
-        arena.setAlwaysMorning(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.ALWAYS_MORNING), false));
-        arena.setNoFallDamage(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_FALL_DAMAGE), false));
+        for (ArenaSetting setting : ArenaSetting.values()) {
+            setArenaSetting(arena, setting, duelConfig.getBoolean(
+                    getArenaSettingPath(arena.getId(), setting),
+                    defaultArenaSettingValue(setting)
+            ));
+        }
+    }
+
+    private void applyGeneratedTerrainSettings(DuelArena arena, DuelWorldManager.TerrainMode terrainMode) {
+        if (arena == null || terrainMode == null) {
+            return;
+        }
+
+        FileConfiguration duelConfig = config();
+        for (ArenaSetting setting : ArenaSetting.values()) {
+            setArenaSetting(arena, setting, duelConfig.getBoolean(
+                    getTerrainModeSettingPath(terrainMode, setting),
+                    defaultArenaSettingValue(setting)
+            ));
+        }
     }
 
     private String getArenaSettingPath(String arenaId, ArenaSetting setting) {
-        return "ARENA_SETTINGS." + normalizeArenaId(arenaId) + "." + switch (setting) {
+        return "ARENA_SETTINGS." + normalizeArenaId(arenaId) + "." + getArenaSettingKey(setting);
+    }
+
+    private String getTerrainModeSettingPath(DuelWorldManager.TerrainMode terrainMode, ArenaSetting setting) {
+        return TERRAIN_MODE_SETTINGS_PATH + "." + terrainMode.name() + "." + getArenaSettingKey(setting);
+    }
+
+    private String getArenaSettingKey(ArenaSetting setting) {
+        return switch (setting) {
+            case ALLOW_ITEM_DROP -> "ALLOW_ITEM_DROP";
+            case ALLOW_BLOCK_BREAK -> "ALLOW_BLOCK_BREAK";
+            case ALLOW_BLOCK_PLACE -> "ALLOW_BLOCK_PLACE";
+            case ALLOW_BUCKET_USE -> "ALLOW_BUCKET_USE";
             case NO_HUNGER -> "NO_HUNGER";
             case NO_WEATHER -> "NO_WEATHER";
             case ALWAYS_MORNING -> "ALWAYS_MORNING";
             case NO_FALL_DAMAGE -> "NO_FALL_DAMAGE";
         };
+    }
+
+    private boolean defaultArenaSettingValue(ArenaSetting setting) {
+        return switch (setting) {
+            case ALLOW_BLOCK_BREAK, ALLOW_BLOCK_PLACE, ALLOW_BUCKET_USE -> true;
+            case ALLOW_ITEM_DROP, NO_HUNGER, NO_WEATHER, ALWAYS_MORNING, NO_FALL_DAMAGE -> false;
+        };
+    }
+
+    private void setArenaSetting(DuelArena arena, ArenaSetting setting, boolean enabled) {
+        switch (setting) {
+            case ALLOW_ITEM_DROP -> arena.setAllowItemDrop(enabled);
+            case ALLOW_BLOCK_BREAK -> arena.setAllowBlockBreak(enabled);
+            case ALLOW_BLOCK_PLACE -> arena.setAllowBlockPlace(enabled);
+            case ALLOW_BUCKET_USE -> arena.setAllowBucketUse(enabled);
+            case NO_HUNGER -> arena.setNoHunger(enabled);
+            case NO_WEATHER -> arena.setNoWeather(enabled);
+            case ALWAYS_MORNING -> arena.setAlwaysMorning(enabled);
+            case NO_FALL_DAMAGE -> arena.setNoFallDamage(enabled);
+        }
     }
 
     private ArenaRegionBounds resolveArenaRegionBounds(DuelArena arena) {
