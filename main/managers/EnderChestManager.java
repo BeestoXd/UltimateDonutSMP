@@ -4,8 +4,14 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.enderchest.EnderChestHolder;
 import com.bx.ultimateDonutSmp.enderchest.EnderChestSession;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Lidded;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -25,6 +31,8 @@ public class EnderChestManager {
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, EnderChestSession> activeSessions = new HashMap<>();
+    private final Map<UUID, EnderChestBlockKey> activeVisualViewers = new HashMap<>();
+    private final Map<EnderChestBlockKey, Integer> visualViewerCounts = new HashMap<>();
     private BukkitTask autoSaveTask;
 
     public EnderChestManager(UltimateDonutSmp plugin) {
@@ -33,11 +41,15 @@ public class EnderChestManager {
     }
 
     public void reload() {
+        if (!areVanillaEffectsEnabled()) {
+            closeAllVisuals();
+        }
         restartAutoSaveTask();
     }
 
     public void shutdown() {
         saveAllOpenSessions();
+        closeAllVisuals();
         cancelAutoSaveTask();
     }
 
@@ -80,6 +92,10 @@ public class EnderChestManager {
     }
 
     public void open(Player player) {
+        open(player, null);
+    }
+
+    public void open(Player player, Location sourceLocation) {
         if (player == null || !player.isOnline()) {
             return;
         }
@@ -91,6 +107,7 @@ public class EnderChestManager {
                 return;
             }
             player.openInventory(existingSession.getInventory());
+            registerVisualOpenIfViewing(player, existingSession.getInventory(), sourceLocation);
             return;
         }
 
@@ -108,6 +125,7 @@ public class EnderChestManager {
             EnderChestSession session = new EnderChestSession(uuid, inventory, rows);
             activeSessions.put(uuid, session);
             player.openInventory(inventory);
+            registerVisualOpenIfViewing(player, inventory, sourceLocation);
         } catch (Exception exception) {
             plugin.getLogger().log(
                     Level.SEVERE,
@@ -140,6 +158,10 @@ public class EnderChestManager {
             return;
         }
 
+        if (player != null) {
+            releaseVisualViewer(player.getUniqueId());
+        }
+
         EnderChestHolder holder = (EnderChestHolder) inventory.getHolder();
         EnderChestSession session = activeSessions.get(holder.getOwnerUuid());
         if (session == null || session.getInventory() != inventory) {
@@ -164,6 +186,7 @@ public class EnderChestManager {
         }
 
         UUID uuid = player.getUniqueId();
+        releaseVisualViewer(uuid);
         EnderChestSession session = activeSessions.get(uuid);
         if (session == null) {
             return;
@@ -254,6 +277,109 @@ public class EnderChestManager {
         }
     }
 
+    private void registerVisualOpenIfViewing(Player player, Inventory inventory, Location sourceLocation) {
+        if (sourceLocation == null || !areVanillaEffectsEnabled()) {
+            return;
+        }
+
+        if (!player.getOpenInventory().getTopInventory().equals(inventory)) {
+            return;
+        }
+
+        registerVisualViewer(player.getUniqueId(), sourceLocation);
+    }
+
+    private synchronized void registerVisualViewer(UUID playerUuid, Location sourceLocation) {
+        if (sourceLocation.getWorld() == null) {
+            return;
+        }
+
+        EnderChestBlockKey key = EnderChestBlockKey.from(sourceLocation);
+        EnderChestBlockKey previousKey = activeVisualViewers.get(playerUuid);
+        if (key.equals(previousKey)) {
+            return;
+        }
+
+        if (previousKey != null) {
+            releaseVisualViewer(playerUuid);
+        }
+
+        activeVisualViewers.put(playerUuid, key);
+        int viewers = visualViewerCounts.merge(key, 1, Integer::sum);
+        if (viewers == 1) {
+            runVisualBlockAction(key, true);
+        }
+    }
+
+    private synchronized void releaseVisualViewer(UUID playerUuid) {
+        EnderChestBlockKey key = activeVisualViewers.remove(playerUuid);
+        if (key == null) {
+            return;
+        }
+
+        Integer currentViewers = visualViewerCounts.get(key);
+        if (currentViewers == null || currentViewers <= 1) {
+            visualViewerCounts.remove(key);
+            runVisualBlockAction(key, false);
+            return;
+        }
+
+        visualViewerCounts.put(key, currentViewers - 1);
+    }
+
+    private synchronized void closeAllVisuals() {
+        for (EnderChestBlockKey key : List.copyOf(visualViewerCounts.keySet())) {
+            runVisualBlockAction(key, false);
+        }
+        activeVisualViewers.clear();
+        visualViewerCounts.clear();
+    }
+
+    private void runVisualBlockAction(EnderChestBlockKey key, boolean open) {
+        Location blockLocation = key.toLocation();
+        if (blockLocation == null) {
+            return;
+        }
+
+        plugin.getSpigotScheduler().runRegion(blockLocation, () -> {
+            if (blockLocation.getBlock().getType() != Material.ENDER_CHEST) {
+                return;
+            }
+
+            BlockState state = blockLocation.getBlock().getState();
+            if (state instanceof Lidded lidded) {
+                if (open) {
+                    lidded.open();
+                } else {
+                    lidded.close();
+                }
+            }
+
+            if (shouldPlayManualSounds()) {
+                SoundUtils.play(
+                        blockLocation.clone().add(0.5D, 0.5D, 0.5D),
+                        open ? getOpenSound() : getCloseSound()
+                );
+            }
+        });
+    }
+
+    private boolean areVanillaEffectsEnabled() {
+        return getConfig().getBoolean("ENDER-CHEST.VANILLA-EFFECTS", true);
+    }
+
+    private boolean shouldPlayManualSounds() {
+        return getConfig().getBoolean("ENDER-CHEST.MANUAL-SOUNDS", false);
+    }
+
+    private String getOpenSound() {
+        return getConfig().getString("ENDER-CHEST.OPEN-SOUND", "minecraft:block.ender_chest.open|1.0|1.0");
+    }
+
+    private String getCloseSound() {
+        return getConfig().getString("ENDER-CHEST.CLOSE-SOUND", "minecraft:block.ender_chest.close|1.0|1.0");
+    }
+
     private int getDefaultRows() {
         return clampRows(getConfig().getInt("ENDER-CHEST.DEFAULT-ROWS", 6));
     }
@@ -268,5 +394,22 @@ public class EnderChestManager {
 
     private FileConfiguration getConfig() {
         return plugin.getConfigManager().getEnderChest();
+    }
+
+    private record EnderChestBlockKey(UUID worldUuid, int x, int y, int z) {
+
+        private static EnderChestBlockKey from(Location location) {
+            return new EnderChestBlockKey(
+                    location.getWorld().getUID(),
+                    location.getBlockX(),
+                    location.getBlockY(),
+                    location.getBlockZ()
+            );
+        }
+
+        private Location toLocation() {
+            World world = Bukkit.getWorld(worldUuid);
+            return world == null ? null : new Location(world, x, y, z);
+        }
     }
 }
