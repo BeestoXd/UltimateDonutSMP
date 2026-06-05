@@ -180,13 +180,11 @@ public class AntiEspManager {
     }
 
     private void revealActual(Player player, SpawnerInstance instance) {
-        World world = player.getWorld();
-        if (!world.getName().equalsIgnoreCase(instance.getWorld())) {
+        if (plugin.getSpawnerManager() == null) {
             return;
         }
 
-        Block block = world.getBlockAt(instance.getX(), instance.getY(), instance.getZ());
-        player.sendBlockChange(block.getLocation(), block.getBlockData());
+        plugin.getSpawnerManager().sendSpawnerVisual(player, instance);
     }
 
     private void conceal(Player player, SpawnerInstance instance) {

@@ -839,6 +839,45 @@ public class SpawnerManager {
                 : new Location(world, instance.getX() + 0.5D, instance.getY() + 0.5D, instance.getZ() + 0.5D);
     }
 
+    public void sendSpawnerVisual(Player player, SpawnerInstance instance) {
+        if (player == null || !player.isOnline() || instance == null) {
+            return;
+        }
+
+        World world = player.getWorld();
+        if (world == null || !world.getName().equalsIgnoreCase(instance.getWorld())) {
+            return;
+        }
+
+        Block block = world.getBlockAt(instance.getX(), instance.getY(), instance.getZ());
+        if (block.getType() != Material.SPAWNER) {
+            return;
+        }
+
+        if (!(block.getState() instanceof CreatureSpawner spawnerState)) {
+            player.sendBlockChange(block.getLocation(), block.getBlockData());
+            return;
+        }
+
+        SpawnerTypeDefinition definition = getTypeDefinition(instance.getMobTypeKey());
+        if (definition == null) {
+            player.sendBlockChange(block.getLocation(), block.getBlockData());
+            return;
+        }
+
+        if (spawnerState.getSpawnedType() != definition.entityType()) {
+            spawnerState.setSpawnedType(definition.entityType());
+            spawnerState.update(true, false);
+        }
+
+        player.sendBlockChange(block.getLocation(), block.getBlockData());
+        try {
+            player.sendBlockUpdate(block.getLocation(), spawnerState);
+        } catch (IllegalArgumentException ignored) {
+            // The block can change between lookup and packet send; the block change above is still valid.
+        }
+    }
+
     public boolean canOpen(Player player, SpawnerInstance instance) {
         if (player == null || instance == null) {
             return false;
