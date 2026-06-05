@@ -660,60 +660,7 @@ public class ConfigManager {
 
         try {
             List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
-            boolean changed = false;
-
-            changed |= syncRtpComment(lines, "PLAYERS-IN-RTP:",
-                    "# Max players searching or waiting for RTP simultaneously. Values below 1 are treated as 1.");
-            changed |= syncLegacyScalarDefault(lines, "PLAYERS-IN-RTP:", "1", List.of("0"));
-
-            changed |= syncRtpComment(lines, "MAX-ATTEMPTS:",
-                    "# Max tries to find a valid RTP location before failing. Values below 32 use 32.");
-            changed |= syncLegacyScalarDefault(lines, "MAX-ATTEMPTS:", "64", List.of("0", "1", "16"));
-
-            changed |= syncRtpComment(lines, "MAX-CHUNK-SAMPLES:",
-                    "# Max chunk samples to inspect while looking for a valid location. Values below 64 use 64.");
-            changed |= syncLegacyScalarDefault(lines, "MAX-CHUNK-SAMPLES:", "128", List.of("0", "1"));
-
-            changed |= syncRtpComment(lines, "ATTEMPT-INTERVAL-TICKS:",
-                    "# Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 8 use 8.");
-            changed |= syncLegacyScalarDefault(lines, "ATTEMPT-INTERVAL-TICKS:", "8", List.of("1", "2", "4"));
-
-            changed |= syncRtpComment(lines, "GENERATE-CHUNKS:",
-                    "# Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS.");
-            changed |= syncLegacyScalarDefault(lines, "GENERATE-CHUNKS:", "false", List.of("true"));
-
-            changed |= syncRtpComment(lines, "LOAD-GENERATED-CHUNKS:",
-                    "# If chunk generation is disabled, allow loading already-generated chunks from disk.");
-            changed |= syncRtpComment(lines, "FALLBACK-TO-LOADED-CHUNKS:",
-                    "# If random samples cannot be prepared, try already-loaded chunks as a fallback.");
-            changed |= syncRtpComment(lines, "PRELOAD-TELEPORT-CHUNKS:",
-                    "# Preload generated chunks around the RTP destination before teleporting to reduce post-teleport ping spikes.");
-            changed |= syncRtpComment(lines, "PRELOAD-RADIUS:",
-                    "# Chunk radius to preload around the destination. Values are clamped between 0 and 3.");
-            changed |= syncRtpComment(lines, "PRELOAD-CHUNKS-PER-TICK:",
-                    "# How many destination chunks to preload per tick.");
-            changed |= syncRtpComment(lines, "PRELOAD-MAX-TICKS:",
-                    "# Maximum ticks to spend preloading before teleport continues anyway.");
-            changed |= syncRtpComment(lines, "POST-TELEPORT-CHUNK-THROTTLE:",
-                    "# Temporarily lower player chunk send distance after RTP to avoid a large client chunk burst.");
-            changed |= syncRtpComment(lines, "POST-TELEPORT-VIEW-DISTANCE:",
-                    "# Temporary per-player view distance after RTP. Values below 2 use 2.");
-            changed |= syncRtpComment(lines, "POST-TELEPORT-SIMULATION-DISTANCE:",
-                    "# Temporary per-player simulation distance after RTP. Values below 2 use 2.");
-            changed |= syncRtpComment(lines, "POST-TELEPORT-THROTTLE-TICKS:",
-                    "# Ticks before the player's original view/simulation distance is restored after RTP.");
-
-            int maxAttemptsMessageIndex = findConfigLineInSection(lines, "MESSAGES:", "MAX-ATTEMPTS:");
-            if (maxAttemptsMessageIndex >= 0) {
-                String indent = leadingWhitespace(lines.get(maxAttemptsMessageIndex));
-                String desiredLine = indent
-                        + "MAX-ATTEMPTS: \"&cCould not find a safe RTP location. &7Attempts: &f{attempts}/{max_attempts} &8| &7Samples: &f{samples}/{max_samples}\"";
-                String existingBlock = collectYamlScalarBlock(lines, maxAttemptsMessageIndex);
-                if (!existingBlock.contains("{samples}") || !lines.get(maxAttemptsMessageIndex).equals(desiredLine)) {
-                    setConfigLineAndRemoveContinuations(lines, maxAttemptsMessageIndex, desiredLine);
-                    changed = true;
-                }
-            }
+            boolean changed = syncRtpSearchDefaultsAndComments(lines);
 
             if (!changed) {
                 return false;
@@ -729,6 +676,85 @@ public class ConfigManager {
             plugin.getLogger().log(Level.WARNING, "Failed to sync rtp.yml search defaults/comment tags.", e);
             return false;
         }
+    }
+
+    private boolean syncRtpSearchDefaultsAndComments(List<String> lines) {
+        boolean changed = false;
+
+        changed |= syncRtpComment(lines, "PLAYERS-IN-RTP:",
+                "# Max players searching or waiting for RTP simultaneously. Values below 1 are treated as 1.");
+        changed |= syncLegacyScalarDefault(lines, "PLAYERS-IN-RTP:", "1", List.of("0"));
+
+        changed |= syncRtpComment(lines, "MAX-ATTEMPTS:",
+                "# Max tries to find a valid RTP location before failing. Values below 32 use 32.");
+        changed |= syncLegacyScalarDefault(lines, "MAX-ATTEMPTS:", "64", List.of("0", "1", "16"));
+
+        changed |= syncRtpComment(lines, "MAX-CHUNK-SAMPLES:",
+                "# Max chunk samples to inspect while looking for a valid location. Values below 64 use 64.");
+        changed |= syncLegacyScalarDefault(lines, "MAX-CHUNK-SAMPLES:", "128", List.of("0", "1"));
+
+        changed |= syncRtpComment(lines, "ATTEMPT-INTERVAL-TICKS:",
+                "# Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 8 use 8.");
+        changed |= syncLegacyScalarDefault(lines, "ATTEMPT-INTERVAL-TICKS:", "8", List.of("1", "2", "4"));
+
+        changed |= syncRtpComment(lines, "GENERATE-CHUNKS:",
+                "# Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS.");
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "GENERATE-FALLBACK-CHUNKS:",
+                "true",
+                "# Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot.",
+                "GENERATE-CHUNKS:"
+        );
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "GENERATE-FALLBACK-AFTER-SAMPLES:",
+                "48",
+                "# Chunk samples to try before limited fallback generation starts.",
+                "GENERATE-FALLBACK-CHUNKS:"
+        );
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "MAX-GENERATE-FALLBACK-SAMPLES:",
+                "32",
+                "# Maximum fallback chunks allowed to generate during one RTP search. Set 0 to disable generation fallback.",
+                "GENERATE-FALLBACK-AFTER-SAMPLES:"
+        );
+
+        changed |= syncRtpComment(lines, "LOAD-GENERATED-CHUNKS:",
+                "# If chunk generation is disabled, allow loading already-generated chunks from disk.");
+        changed |= syncRtpComment(lines, "FALLBACK-TO-LOADED-CHUNKS:",
+                "# If random samples cannot be prepared, try already-loaded chunks as a fallback.");
+        changed |= syncRtpComment(lines, "PRELOAD-TELEPORT-CHUNKS:",
+                "# Preload generated chunks around the RTP destination before teleporting to reduce post-teleport ping spikes.");
+        changed |= syncRtpComment(lines, "PRELOAD-RADIUS:",
+                "# Chunk radius to preload around the destination. Values are clamped between 0 and 3.");
+        changed |= syncRtpComment(lines, "PRELOAD-CHUNKS-PER-TICK:",
+                "# How many destination chunks to preload per tick.");
+        changed |= syncRtpComment(lines, "PRELOAD-MAX-TICKS:",
+                "# Maximum ticks to spend preloading before teleport continues anyway.");
+        changed |= syncRtpComment(lines, "POST-TELEPORT-CHUNK-THROTTLE:",
+                "# Temporarily lower player chunk send distance after RTP to avoid a large client chunk burst.");
+        changed |= syncRtpComment(lines, "POST-TELEPORT-VIEW-DISTANCE:",
+                "# Temporary per-player view distance after RTP. Values below 2 use 2.");
+        changed |= syncRtpComment(lines, "POST-TELEPORT-SIMULATION-DISTANCE:",
+                "# Temporary per-player simulation distance after RTP. Values below 2 use 2.");
+        changed |= syncRtpComment(lines, "POST-TELEPORT-THROTTLE-TICKS:",
+                "# Ticks before the player's original view/simulation distance is restored after RTP.");
+
+        int maxAttemptsMessageIndex = findConfigLineInSection(lines, "MESSAGES:", "MAX-ATTEMPTS:");
+        if (maxAttemptsMessageIndex >= 0) {
+            String indent = leadingWhitespace(lines.get(maxAttemptsMessageIndex));
+            String desiredLine = indent
+                    + "MAX-ATTEMPTS: \"&cCould not find a safe RTP location. &7Attempts: &f{attempts}/{max_attempts} &8| &7Samples: &f{samples}/{max_samples}\"";
+            String existingBlock = collectYamlScalarBlock(lines, maxAttemptsMessageIndex);
+            if (!existingBlock.contains("{samples}") || !lines.get(maxAttemptsMessageIndex).equals(desiredLine)) {
+                setConfigLineAndRemoveContinuations(lines, maxAttemptsMessageIndex, desiredLine);
+                changed = true;
+            }
+        }
+
+        return changed;
     }
 
     private boolean syncCommentBlockBeforeLine(
@@ -778,6 +804,30 @@ public class ConfigManager {
                 List.of(indent + comment),
                 this::isRtpSearchComment
         );
+    }
+
+    private boolean syncRtpSettingDefaultAndComment(
+            List<String> lines,
+            String keyPrefix,
+            String defaultValue,
+            String comment,
+            String insertAfterKeyPrefix
+    ) {
+        int keyLineIndex = findConfigLine(lines, keyPrefix);
+        if (keyLineIndex >= 0) {
+            return syncRtpComment(lines, keyPrefix, comment);
+        }
+
+        int anchorLineIndex = findConfigLine(lines, insertAfterKeyPrefix);
+        if (anchorLineIndex < 0) {
+            return false;
+        }
+
+        String indent = leadingWhitespace(lines.get(anchorLineIndex));
+        int insertAt = anchorLineIndex + 1;
+        lines.add(insertAt, indent + comment);
+        lines.add(insertAt + 1, indent + keyPrefix + " " + defaultValue);
+        return true;
     }
 
     private boolean syncLegacyScalarDefault(
@@ -907,6 +957,9 @@ public class ConfigManager {
                 || comment.contains("Max chunk samples")
                 || comment.contains("Ticks between chunk samples")
                 || comment.contains("Generate new chunks")
+                || comment.contains("limited number of chunks")
+                || comment.contains("limited fallback generation")
+                || comment.contains("fallback chunks")
                 || comment.contains("chunk generation is disabled")
                 || comment.contains("already-generated chunks")
                 || comment.contains("already-loaded chunks")

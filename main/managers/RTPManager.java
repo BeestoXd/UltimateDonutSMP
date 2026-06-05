@@ -76,6 +76,9 @@ public class RTPManager {
     private static final int NETHER_ROOF_PADDING_BLOCKS = 8;
     private static final int PLAYER_CLEARANCE_BLOCKS = 2;
     private static final String GENERATE_CHUNKS_SETTING = "SETTINGS.GENERATE-CHUNKS";
+    private static final String GENERATE_FALLBACK_CHUNKS_SETTING = "SETTINGS.GENERATE-FALLBACK-CHUNKS";
+    private static final String GENERATE_FALLBACK_AFTER_SETTING = "SETTINGS.GENERATE-FALLBACK-AFTER-SAMPLES";
+    private static final String MAX_GENERATE_FALLBACK_SAMPLES_SETTING = "SETTINGS.MAX-GENERATE-FALLBACK-SAMPLES";
     private static final String LOAD_GENERATED_CHUNKS_SETTING = "SETTINGS.LOAD-GENERATED-CHUNKS";
     private static final String LOADED_CHUNK_FALLBACK_SETTING = "SETTINGS.FALLBACK-TO-LOADED-CHUNKS";
     private static final String LOADED_CHUNK_FALLBACK_AFTER_SETTING = "SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES";
@@ -85,6 +88,8 @@ public class RTPManager {
     private static final String PRELOAD_MAX_TICKS_SETTING = "SETTINGS.PRELOAD-MAX-TICKS";
     private static final String POST_TELEPORT_CHUNK_THROTTLE_SETTING = "SETTINGS.POST-TELEPORT-CHUNK-THROTTLE";
     private static final String POST_TELEPORT_VIEW_DISTANCE_SETTING = "SETTINGS.POST-TELEPORT-VIEW-DISTANCE";
+    private static final int DEFAULT_GENERATE_FALLBACK_AFTER_SAMPLES = 48;
+    private static final int DEFAULT_MAX_GENERATE_FALLBACK_SAMPLES = 32;
 
     private static final class SearchProgress {
         private final String worldName;
@@ -92,6 +97,7 @@ public class RTPManager {
         private long elapsedTicks;
         private int attemptsUsed;
         private int chunkSamplesUsed;
+        private int generateFallbackSamplesUsed;
         private long lastElapsedSecond;
         private boolean attemptInFlight;
         private Location pendingFoundLocation;
@@ -368,7 +374,7 @@ public class RTPManager {
             return CompletableFuture.completedFuture(null);
         }
         future.whenComplete((location, throwable) -> activeDirectSearches.remove(playerId, future));
-        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, future, settings.attemptIntervalTicks());
+        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, 0, future, settings.attemptIntervalTicks());
         return future;
     }
 
@@ -377,7 +383,7 @@ public class RTPManager {
             return CompletableFuture.completedFuture(null);
         }
         CompletableFuture<Location> future = new CompletableFuture<>();
-        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, future, settings.attemptIntervalTicks());
+        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, 0, future, settings.attemptIntervalTicks());
         return future;
     }
 
@@ -392,6 +398,7 @@ public class RTPManager {
             SearchSettings settings,
             int attemptsUsed,
             int chunkSamplesUsed,
+            int generateFallbackSamplesUsed,
             CompletableFuture<Location> future,
             long delayTicks
     ) {
@@ -399,7 +406,13 @@ public class RTPManager {
             return;
         }
         plugin.getSpigotScheduler().runGlobalLater(
-                () -> findSafeLocationAsyncHelper(settings, attemptsUsed, chunkSamplesUsed, future),
+                () -> findSafeLocationAsyncHelper(
+                        settings,
+                        attemptsUsed,
+                        chunkSamplesUsed,
+                        generateFallbackSamplesUsed,
+                        future
+                ),
                 Math.max(0L, delayTicks)
         );
     }
@@ -408,41 +421,72 @@ public class RTPManager {
             SearchSettings settings,
             int attemptsUsed,
             int chunkSamplesUsed,
+            int generateFallbackSamplesUsed,
             CompletableFuture<Location> future
     ) {
-        scheduleFindSafeLocationAsyncHelper(settings, attemptsUsed, chunkSamplesUsed, future, settings.attemptIntervalTicks());
+        scheduleFindSafeLocationAsyncHelper(
+                settings,
+                attemptsUsed,
+                chunkSamplesUsed,
+                generateFallbackSamplesUsed,
+                future,
+                settings.attemptIntervalTicks()
+        );
     }
 
-    private void findSafeLocationAsyncHelper(SearchSettings settings, int attemptsUsed, int chunkSamplesUsed, CompletableFuture<Location> future) {
+    private void findSafeLocationAsyncHelper(
+            SearchSettings settings,
+            int attemptsUsed,
+            int chunkSamplesUsed,
+            int generateFallbackSamplesUsed,
+            CompletableFuture<Location> future
+    ) {
         if (future.isDone()) {
             return;
         }
         if (!hasAttemptBudget(attemptsUsed, settings)
                 || !hasChunkSampleBudget(chunkSamplesUsed, settings)) {
-            completeDirectSearchFailure(settings, attemptsUsed, chunkSamplesUsed, future);
+            completeDirectSearchFailure(settings, attemptsUsed, chunkSamplesUsed, generateFallbackSamplesUsed, future);
             return;
         }
         int nextChunkSamplesUsed = chunkSamplesUsed + 1;
-        boolean useFallback = shouldUseLoadedChunkFallback(attemptsUsed, nextChunkSamplesUsed);
-        if (useFallback) {
+        boolean generateFallback = shouldUseGenerateFallback(chunkSamplesUsed, generateFallbackSamplesUsed);
+        boolean useLoadedFallback = !generateFallback && shouldUseLoadedChunkFallback(chunkSamplesUsed);
+        if (useLoadedFallback) {
             World world = resolveWorld(settings.worldName());
             if (world == null) {
-                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, generateFallbackSamplesUsed, future);
                 return;
             }
             plugin.getSpigotScheduler().runRegion(world, settings.centerX() >> 4, settings.centerZ() >> 4, () -> {
-                LocationAttempt attempt = tryLoadedChunkLocationAttempt(settings);
-                int nextAttemptsUsed = attemptsUsed + (attempt.countedAttempt() ? 1 : 0);
-                if (attempt.location() != null) {
-                    future.complete(attempt.location());
-                } else {
-                    retryFindSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
+                try {
+                    LocationAttempt attempt = tryLoadedChunkLocationAttempt(settings);
+                    int nextAttemptsUsed = attemptsUsed + (attempt.countedAttempt() ? 1 : 0);
+                    if (attempt.location() != null) {
+                        future.complete(attempt.location());
+                    } else {
+                        retryFindSafeLocationAsyncHelper(
+                                settings,
+                                nextAttemptsUsed,
+                                nextChunkSamplesUsed,
+                                generateFallbackSamplesUsed,
+                                future
+                        );
+                    }
+                } catch (RuntimeException exception) {
+                    retryFindSafeLocationAsyncHelper(
+                            settings,
+                            attemptsUsed + 1,
+                            nextChunkSamplesUsed,
+                            generateFallbackSamplesUsed,
+                            future
+                    );
                 }
             });
         } else {
             World world = resolveWorld(settings.worldName());
             if (world == null) {
-                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, generateFallbackSamplesUsed, future);
                 return;
             }
             int minRadius = Math.max(0, settings.minRadius());
@@ -457,15 +501,31 @@ public class RTPManager {
             int chunkX = x >> 4;
             int chunkZ = z >> 4;
             boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
-            if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
-                retryFindSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
+            boolean generateForSample = generateChunks || generateFallback;
+            int nextGenerateFallbackSamplesUsed = generateFallback
+                    ? generateFallbackSamplesUsed + 1
+                    : generateFallbackSamplesUsed;
+            if (!generateForSample && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+                retryFindSafeLocationAsyncHelper(
+                        settings,
+                        attemptsUsed,
+                        nextChunkSamplesUsed,
+                        nextGenerateFallbackSamplesUsed,
+                        future
+                );
                 return;
             }
-            getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
+            getChunkAtAsync(world, chunkX, chunkZ, generateForSample).thenAccept(chunk -> {
                 plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
                     try {
                         if (chunk == null) {
-                            retryFindSafeLocationAsyncHelper(settings, attemptsUsed, nextChunkSamplesUsed, future);
+                            retryFindSafeLocationAsyncHelper(
+                                    settings,
+                                    attemptsUsed,
+                                    nextChunkSamplesUsed,
+                                    nextGenerateFallbackSamplesUsed,
+                                    future
+                            );
                             return;
                         }
                         Location found = resolveSafeLocationInChunk(world, settings, x, z, chunkX, chunkZ);
@@ -473,16 +533,34 @@ public class RTPManager {
                         if (found != null) {
                             future.complete(found);
                         } else {
-                            retryFindSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
+                            retryFindSafeLocationAsyncHelper(
+                                    settings,
+                                    nextAttemptsUsed,
+                                    nextChunkSamplesUsed,
+                                    nextGenerateFallbackSamplesUsed,
+                                    future
+                            );
                         }
                     } catch (RuntimeException exception) {
-                        retryFindSafeLocationAsyncHelper(settings, attemptsUsed + 1, nextChunkSamplesUsed, future);
+                        retryFindSafeLocationAsyncHelper(
+                                settings,
+                                attemptsUsed + 1,
+                                nextChunkSamplesUsed,
+                                nextGenerateFallbackSamplesUsed,
+                                future
+                        );
                     }
                 });
             }).exceptionally(throwable -> {
                 plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
-                    int nextAttemptsUsed = generateChunks ? attemptsUsed + 1 : attemptsUsed;
-                    retryFindSafeLocationAsyncHelper(settings, nextAttemptsUsed, nextChunkSamplesUsed, future);
+                    int nextAttemptsUsed = generateForSample ? attemptsUsed + 1 : attemptsUsed;
+                    retryFindSafeLocationAsyncHelper(
+                            settings,
+                            nextAttemptsUsed,
+                            nextChunkSamplesUsed,
+                            nextGenerateFallbackSamplesUsed,
+                            future
+                    );
                 });
                 return null;
             });
@@ -493,10 +571,11 @@ public class RTPManager {
             SearchSettings settings,
             int attemptsUsed,
             int chunkSamplesUsed,
+            int generateFallbackSamplesUsed,
             CompletableFuture<Location> future
     ) {
         if (future.complete(null)) {
-            logSearchFailure(settings, attemptsUsed, chunkSamplesUsed);
+            logSearchFailure(settings, attemptsUsed, chunkSamplesUsed, generateFallbackSamplesUsed);
         }
     }
 
@@ -619,7 +698,10 @@ public class RTPManager {
             failSearch(playerId, progress);
             return;
         }
-        if (shouldUseLoadedChunkFallback(progress)) {
+        boolean generateFallback = shouldUseGenerateFallback(progress);
+        if (!generateFallback && shouldUseLoadedChunkFallback(progress)) {
+            progress.chunkSamplesUsed++;
+            progress.attemptInFlight = true;
             plugin.getSpigotScheduler().runRegion(world, progress.settings.centerX() >> 4, progress.settings.centerZ() >> 4, () -> {
                 try {
                     LocationAttempt attempt = tryLoadedChunkLocationAttempt(progress.settings);
@@ -642,13 +724,17 @@ public class RTPManager {
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
         progress.chunkSamplesUsed++;
+        if (generateFallback) {
+            progress.generateFallbackSamplesUsed++;
+        }
         progress.attemptInFlight = true;
         boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
-        if (!generateChunks && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+        boolean generateForSample = generateChunks || generateFallback;
+        if (!generateForSample && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
             completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
             return;
         }
-        getChunkAtAsync(world, chunkX, chunkZ, generateChunks).thenAccept(chunk -> {
+        getChunkAtAsync(world, chunkX, chunkZ, generateForSample).thenAccept(chunk -> {
             plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
                 try {
                     if (chunk == null) {
@@ -663,7 +749,7 @@ public class RTPManager {
             });
         }).exceptionally(throwable -> {
             plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
-                if (generateChunks) {
+                if (generateForSample) {
                     completeAsyncLocationAttempt(playerId, progress, null, throwable);
                 } else {
                     completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
@@ -720,7 +806,11 @@ public class RTPManager {
                 + "' radius " + progress.settings.minRadius() + "-" + progress.settings.maxRadius()
                 + ", attempts " + progress.attemptsUsed + "/" + progress.settings.maxAttempts()
                 + ", samples " + progress.chunkSamplesUsed + "/" + progress.settings.maxChunkSamples()
-                + ", generateChunks=" + generateChunks + ".");
+                + ", generateChunks=" + generateChunks
+                + ", generateFallback=" + isGenerateFallbackEnabled()
+                + ", fallbackGeneratedSamples=" + progress.generateFallbackSamplesUsed
+                + "/" + getMaxGenerateFallbackSamples()
+                + ".");
 
         Player player = plugin.getServer().getPlayer(playerId);
         clearSearch(playerId);
@@ -751,13 +841,22 @@ public class RTPManager {
         SoundUtils.play(player, plugin.getConfigManager().getSound("RTP.SEARCH-FAIL"));
     }
 
-    private void logSearchFailure(SearchSettings settings, int attemptsUsed, int chunkSamplesUsed) {
+    private void logSearchFailure(
+            SearchSettings settings,
+            int attemptsUsed,
+            int chunkSamplesUsed,
+            int generateFallbackSamplesUsed
+    ) {
         boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
         warn("RTP search failed in world '" + settings.worldName()
                 + "' radius " + settings.minRadius() + "-" + settings.maxRadius()
                 + ", attempts " + attemptsUsed + "/" + settings.maxAttempts()
                 + ", samples " + chunkSamplesUsed + "/" + settings.maxChunkSamples()
-                + ", generateChunks=" + generateChunks + ".");
+                + ", generateChunks=" + generateChunks
+                + ", generateFallback=" + isGenerateFallbackEnabled()
+                + ", fallbackGeneratedSamples=" + generateFallbackSamplesUsed
+                + "/" + getMaxGenerateFallbackSamples()
+                + ".");
     }
 
     private void finishSearch(Player player, String worldName, Location found) {
@@ -1123,17 +1222,51 @@ public class RTPManager {
     }
 
     private boolean shouldUseLoadedChunkFallback(SearchProgress progress) {
-        return shouldUseLoadedChunkFallback(progress.attemptsUsed, progress.chunkSamplesUsed);
+        return shouldUseLoadedChunkFallback(progress.chunkSamplesUsed);
     }
 
-    private boolean shouldUseLoadedChunkFallback(int attemptsUsed, int chunkSamplesUsed) {
+    private boolean shouldUseLoadedChunkFallback(int chunkSamplesUsed) {
         FileConfiguration rtp = plugin.getConfigManager().getRtp();
         if (!rtp.getBoolean(LOADED_CHUNK_FALLBACK_SETTING, true)) {
             return false;
         }
 
         int afterSamples = Math.max(1, rtp.getInt(LOADED_CHUNK_FALLBACK_AFTER_SETTING, 32));
-        return attemptsUsed == 0 && chunkSamplesUsed >= afterSamples;
+        return chunkSamplesUsed >= afterSamples;
+    }
+
+    private boolean shouldUseGenerateFallback(SearchProgress progress) {
+        return shouldUseGenerateFallback(progress.chunkSamplesUsed, progress.generateFallbackSamplesUsed);
+    }
+
+    private boolean shouldUseGenerateFallback(int chunkSamplesUsed, int generateFallbackSamplesUsed) {
+        if (!isGenerateFallbackEnabled()) {
+            return false;
+        }
+        if (plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false)) {
+            return false;
+        }
+
+        int maxFallbackSamples = getMaxGenerateFallbackSamples();
+        if (maxFallbackSamples <= 0 || generateFallbackSamplesUsed >= maxFallbackSamples) {
+            return false;
+        }
+
+        return chunkSamplesUsed >= getGenerateFallbackAfterSamples();
+    }
+
+    private boolean isGenerateFallbackEnabled() {
+        return plugin.getConfigManager().getRtp().getBoolean(GENERATE_FALLBACK_CHUNKS_SETTING, true);
+    }
+
+    private int getGenerateFallbackAfterSamples() {
+        return Math.max(1, plugin.getConfigManager().getRtp()
+                .getInt(GENERATE_FALLBACK_AFTER_SETTING, DEFAULT_GENERATE_FALLBACK_AFTER_SAMPLES));
+    }
+
+    private int getMaxGenerateFallbackSamples() {
+        return Math.max(0, plugin.getConfigManager().getRtp()
+                .getInt(MAX_GENERATE_FALLBACK_SAMPLES_SETTING, DEFAULT_MAX_GENERATE_FALLBACK_SAMPLES));
     }
 
     private Location resolveSafeLocation(World world, int x, int z) {
@@ -1141,12 +1274,11 @@ public class RTPManager {
             return resolveNetherSafeLocation(world, x, z);
         }
 
-        if (!isSafe(world, x, z)) {
+        int y = world.getHighestBlockYAt(x, z);
+        if (!isSafeStandLocation(world, x, y, z)) {
             return null;
         }
-
-        int y = world.getHighestBlockYAt(x, z);
-        return new Location(world, x + 0.5, y + 1.5, z + 0.5);
+        return new Location(world, x + 0.5, y + 1.0, z + 0.5);
     }
 
     private Location resolveSafeLocationInChunk(
