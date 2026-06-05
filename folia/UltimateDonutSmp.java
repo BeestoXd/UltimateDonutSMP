@@ -72,6 +72,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PunishmentManager  punishmentManager;
     private StatsWipeManager  statsWipeManager;
     private SpawnerManager    spawnerManager;
+    private SpawnStashManager spawnStashManager;
     private AntiEspManager    antiEspManager;
     private NetworkStatusManager networkStatusManager;
     private RedisManager redisManager;
@@ -159,6 +160,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         punishmentManager = new PunishmentManager(this);
         statsWipeManager = new StatsWipeManager(this);
         spawnerManager = new SpawnerManager(this);
+        spawnStashManager = new SpawnStashManager(this);
         antiEspManager = new AntiEspManager(this);
         redisManager = new RedisManager(this);
         networkStatusManager = new NetworkStatusManager(this);
@@ -267,6 +269,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (ffaManager != null) {
             ffaManager.shutdown();
+        }
+        if (spawnStashManager != null) {
+            spawnStashManager.shutdown();
         }
         if (spawnerManager != null) {
             spawnerManager.shutdown();
@@ -384,6 +389,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new SpawnerBlockListener(this), this);
         pm.registerEvents(new SpawnerInteractListener(this), this);
         pm.registerEvents(new SpawnerVisibilityListener(this), this);
+        pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
     }
 
@@ -558,6 +564,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // Billford
         setExecutor("billford", new BillfordCommand(this), FeatureManager.Feature.BILLFORD);
         setExecutor("spawner", new SpawnerCommand(this), FeatureManager.Feature.SPAWNERS);
+        setExecutor("spawnstash", new SpawnStashCommand(this), FeatureManager.Feature.SPAWN_STASH);
 
         // Admin
         setExecutor("clearlag", new ClearLagCommand(this), FeatureManager.Feature.CLEAR_LAG);
@@ -728,7 +735,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         configManager.reloadNetwork();
         configManager.reloadDatabase();
         configManager.reloadDiscord();
+        configManager.reloadSpawnStash();
         spawnerManager.reload();
+        spawnStashManager.reload();
         antiEspManager.reload();
         antiEspManager.refreshAllPlayers();
         networkStatusManager.reload();
@@ -807,6 +816,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public PunishmentManager getPunishmentManager() { return punishmentManager; }
     public StatsWipeManager  getStatsWipeManager() { return statsWipeManager; }
     public SpawnerManager    getSpawnerManager()    { return spawnerManager; }
+    public SpawnStashManager getSpawnStashManager() { return spawnStashManager; }
     public AntiEspManager    getAntiEspManager()    { return antiEspManager; }
     public NetworkStatusManager getNetworkStatusManager() { return networkStatusManager; }
     public RedisManager getRedisManager() { return redisManager; }

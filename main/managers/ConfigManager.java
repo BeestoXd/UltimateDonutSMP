@@ -47,6 +47,7 @@ public class ConfigManager {
             "ffa.yml",
             "crates.yml",
             "spawners.yml",
+            "spawn-stash.yml",
             "network.yml",
             "staff-mode.yml",
             "database.yml",
@@ -79,6 +80,7 @@ public class ConfigManager {
     private FileConfiguration ffa;
     private FileConfiguration crates;
     private FileConfiguration spawners;
+    private FileConfiguration spawnStash;
     private FileConfiguration network;
     private FileConfiguration staffMode;
     private FileConfiguration database;
@@ -120,6 +122,7 @@ public class ConfigManager {
         ffa          = load("ffa.yml");
         crates       = load("crates.yml");
         spawners     = load("spawners.yml");
+        spawnStash   = load("spawn-stash.yml");
         network      = load("network.yml");
         staffMode    = load("staff-mode.yml");
         database     = load("database.yml");
@@ -1316,6 +1319,7 @@ public class ConfigManager {
     public FileConfiguration getFfa()           { return ffa; }
     public FileConfiguration getCrates()        { return crates; }
     public FileConfiguration getSpawners()      { return spawners; }
+    public FileConfiguration getSpawnStash()    { return spawnStash; }
     public FileConfiguration getNetwork()       { return network; }
     public FileConfiguration getStaffMode()     { return staffMode; }
     public FileConfiguration getDatabase()      { return database; }
@@ -1335,6 +1339,7 @@ public class ConfigManager {
     public void reloadFfa() { ffa = load("ffa.yml"); }
     public void reloadCrates() { crates = load("crates.yml"); }
     public void reloadSpawners() { spawners = load("spawners.yml"); }
+    public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml"); }
     public void reloadNetwork() { network = load("network.yml"); }
     public void reloadStaffMode() { staffMode = load("staff-mode.yml"); }
     public void reloadDatabase() { database = load("database.yml"); }

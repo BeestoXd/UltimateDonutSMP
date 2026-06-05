@@ -23,6 +23,9 @@ public class SpawnerInteractListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled()) {
+            return;
+        }
         if (event.getHand() != EquipmentSlot.HAND || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
@@ -40,6 +43,18 @@ public class SpawnerInteractListener implements Listener {
         Player player = event.getPlayer();
         ItemStack held = player.getInventory().getItemInMainHand();
         event.setCancelled(true);
+
+        if (plugin.getSpawnStashManager() != null && plugin.getSpawnStashManager().isActiveBlock(block)) {
+            plugin.getSpawnStashManager().triggerBlockAlert(player, block, "open");
+            if (!plugin.getSpawnerManager().canOpen(player, instance)) {
+                player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴀᴄᴄᴇѕѕ ᴛᴏ ᴛʜᴀᴛ ѕᴘᴀᴡɴᴇʀ."));
+                return;
+            }
+
+            plugin.getSpawnerManager().openStorage(player, instance, 1);
+            plugin.getAntiEspManager().updatePlayer(player);
+            return;
+        }
 
         if (plugin.getSpawnerManager().isSpawnerItem(held)) {
             var result = plugin.getSpawnerManager().stackSpawner(player, block, held);

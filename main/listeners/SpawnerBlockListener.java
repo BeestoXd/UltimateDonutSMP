@@ -51,6 +51,9 @@ public class SpawnerBlockListener implements Listener {
             return;
         }
         Block block = event.getBlock();
+        if (plugin.getSpawnStashManager() != null && plugin.getSpawnStashManager().isActiveBlock(block)) {
+            return;
+        }
         if (plugin.getSpawnerManager().getSpawner(block) == null) {
             return;
         }
@@ -97,6 +100,9 @@ public class SpawnerBlockListener implements Listener {
     private void filterManagedSpawners(Iterator<Block> iterator) {
         while (iterator.hasNext()) {
             Block block = iterator.next();
+            if (plugin.getSpawnStashManager() != null && plugin.getSpawnStashManager().isActiveBlock(block)) {
+                continue;
+            }
             if (block.getType() == Material.SPAWNER && plugin.getSpawnerManager().getSpawner(block) != null) {
                 iterator.remove();
             }

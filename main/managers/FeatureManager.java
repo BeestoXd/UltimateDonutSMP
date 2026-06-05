@@ -57,6 +57,7 @@ public class FeatureManager {
         STAFF_MODE("STAFF_MODE", "ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ", "ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴄᴏᴍᴍᴀɴᴅ, ʜᴏᴛʙᴀʀ, ᴠᴀɴɪѕʜ, ᴀɴᴅ ѕᴛᴀꜰꜰ ᴛᴏᴏʟѕ.", "NETHERITE_CHESTPLATE", null),
         STAFF_CHAT("STAFF_CHAT", "ѕᴛᴀꜰꜰ ᴄʜᴀᴛ", "ѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ.", "ECHO_SHARD", null),
         STAFF_ALERTS("STAFF_ALERTS", "ѕᴛᴀꜰꜰ ᴀʟᴇʀᴛѕ", "ʜᴇʟᴘᴏᴘ, ʀᴇᴘᴏʀᴛѕ, ᴀɴᴅ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴀʟᴇʀᴛѕ.", "BELL", null),
+        SPAWN_STASH("SPAWN_STASH", "SpawnStash", "Staff bait stash spawning, alerts, and rollback cleanup.", "CHEST", "SPAWN-STASH"),
         FREEZE("FREEZE", "ꜰʀᴇᴇᴢᴇ", "ꜰʀᴇᴇᴢᴇ ᴄᴏᴍᴍᴀɴᴅ, ʟɪѕᴛᴇɴᴇʀѕ, ᴀɴᴅ ꜰʀᴇᴇᴢᴇ ѕᴛᴀᴛᴇ ᴇɴꜰᴏʀᴄᴇᴍᴇɴᴛ.", "PACKED_ICE", null),
         INVSEE("INVSEE", "ɪɴᴠѕᴇᴇ", "ɪɴᴠᴇɴᴛᴏʀʏ ɪɴѕᴘᴇᴄᴛɪᴏɴ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ѕᴇѕѕɪᴏɴѕ.", "CHEST_MINECART", null),
         PROFILE_VIEWER("PROFILE_VIEWER", "ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ", "ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ʜᴏᴍᴇѕ ʙʀᴏᴡѕᴇʀ.", "PLAYER_HEAD", null),
@@ -192,6 +193,7 @@ public class FeatureManager {
             case "staffmode", "stafflist", "vanish" -> new Feature[]{Feature.STAFF_MODE};
             case "staffchat" -> new Feature[]{Feature.STAFF_CHAT};
             case "helpop", "report" -> new Feature[]{Feature.STAFF_ALERTS};
+            case "spawnstash", "stash" -> new Feature[]{Feature.SPAWN_STASH};
             case "invsee" -> new Feature[]{Feature.INVSEE};
             case "profileviewer" -> new Feature[]{Feature.PROFILE_VIEWER};
             case "punishments", "ban", "tempban", "mute", "tempmute", "warn", "kick", "blacklist",
@@ -380,6 +382,15 @@ public class FeatureManager {
             case STAFF_ALERTS -> {
                 if (plugin.getNetworkStaffAlertManager() != null) {
                     plugin.getNetworkStaffAlertManager().reload();
+                }
+            }
+            case SPAWN_STASH -> {
+                if (plugin.getSpawnStashManager() != null) {
+                    if (isEnabled(feature)) {
+                        plugin.getSpawnStashManager().reload();
+                    } else {
+                        plugin.getSpawnStashManager().shutdown();
+                    }
                 }
             }
             case LUNAR_RICH_PRESENCE -> {
