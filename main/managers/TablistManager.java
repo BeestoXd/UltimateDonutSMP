@@ -6,6 +6,10 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.AdventureHeadComponentBridge;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.TablistComponentUpdater;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -15,9 +19,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -60,6 +69,146 @@ public class TablistManager {
         this.componentUpdater = new TablistComponentUpdater(plugin);
         this.headComponentBridge = new AdventureHeadComponentBridge();
         this.inlinePlayerHeadSupported = detectInlinePlayerHeadSupport();
+    }
+
+    public void updateSkinTexture(UUID playerId, String value, String signature) {
+        if (playerId == null) {
+            return;
+        }
+        if (value == null || value.isBlank()) {
+            skinHeadTextures.remove(playerId);
+            return;
+        }
+        skinHeadTextures.put(playerId, new SkinTexture(value, signature));
+    }
+
+    SkinTexture resolveCurrentSkinTexture(Player player) {
+        if (player == null || !player.isOnline()) {
+            return null;
+        }
+
+        SkinTexture cached = skinHeadTextures.get(player.getUniqueId());
+        if (cached != null && cached.isValid()) {
+            return cached;
+        }
+
+        SkinTexture restored = resolveSkinTextureForFakePlayer(player.getUniqueId(), player.getName());
+        if (restored != null && restored.isValid()) {
+            skinHeadTextures.put(player.getUniqueId(), restored);
+            return restored;
+        }
+
+        return resolveLiveGameProfileSkinTexture(player);
+    }
+
+    SkinTexture resolveSkinTextureForFakePlayer(UUID playerId, String playerName) {
+        SkinTexture texture = SkinsRestorerSkinLookup.resolve(playerId, playerName);
+        return texture != null && texture.isValid() ? texture : null;
+    }
+
+    SkinTexture resolveOriginalGameProfileSkinTexture(UUID playerId, String playerName) {
+        SkinTexture texture = resolveMojangSessionSkinTexture(playerId);
+        if (texture != null && texture.isValid()) {
+            return texture;
+        }
+
+        UUID namedUuid = resolveMojangUuidByName(playerName);
+        return namedUuid == null ? null : resolveMojangSessionSkinTexture(namedUuid);
+    }
+
+    SkinTexture resolveLiveGameProfileSkinTexture(Player player) {
+        if (player == null || !player.isOnline()) {
+            return null;
+        }
+        SkinTexture texture = resolveGameProfileTexture(player);
+        return texture != null && texture.isValid() ? texture : null;
+    }
+
+    private SkinTexture resolveMojangSessionSkinTexture(UUID playerId) {
+        if (playerId == null) {
+            return null;
+        }
+
+        JsonObject root = fetchJsonObject(URI.create(
+                "https://sessionserver.mojang.com/session/minecraft/profile/"
+                        + playerId.toString().replace("-", "")
+                        + "?unsigned=false"
+        ));
+        if (root == null) {
+            return null;
+        }
+
+        JsonArray properties = root.getAsJsonArray("properties");
+        if (properties == null) {
+            return null;
+        }
+        for (JsonElement element : properties) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            JsonObject property = element.getAsJsonObject();
+            if (!property.has("name")
+                    || !property.has("value")
+                    || !"textures".equalsIgnoreCase(property.get("name").getAsString())) {
+                continue;
+            }
+            JsonElement signature = property.get("signature");
+            SkinTexture texture = new SkinTexture(
+                    property.get("value").getAsString(),
+                    signature == null || signature.isJsonNull() ? null : signature.getAsString()
+            );
+            return texture.isValid() ? texture : null;
+        }
+        return null;
+    }
+
+    private UUID resolveMojangUuidByName(String playerName) {
+        if (playerName == null || playerName.isBlank()) {
+            return null;
+        }
+
+        JsonObject root = fetchJsonObject(URI.create(
+                "https://api.mojang.com/users/profiles/minecraft/" + playerName
+        ));
+        if (root == null || !root.has("id")) {
+            return null;
+        }
+
+        String compact = root.get("id").getAsString().replace("-", "");
+        if (compact.length() != 32) {
+            return null;
+        }
+        return UUID.fromString(compact.substring(0, 8)
+                + "-" + compact.substring(8, 12)
+                + "-" + compact.substring(12, 16)
+                + "-" + compact.substring(16, 20)
+                + "-" + compact.substring(20));
+    }
+
+    private JsonObject fetchJsonObject(URI uri) {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setConnectTimeout(4000);
+            connection.setReadTimeout(4000);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+            int status = connection.getResponseCode();
+            if (status < 200 || status >= 300) {
+                return null;
+            }
+
+            try (Reader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
+                JsonElement parsed = JsonParser.parseReader(reader);
+                return parsed.isJsonObject() ? parsed.getAsJsonObject() : null;
+            }
+        } catch (Exception | LinkageError ignored) {
+            return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     public boolean isEnabled() {
@@ -1100,8 +1249,8 @@ public class TablistManager {
         return parsed;
     }
 
-    private record SkinTexture(String value, String signature) {
-        private boolean isValid() {
+    record SkinTexture(String value, String signature) {
+        boolean isValid() {
             return value != null && !value.isBlank();
         }
     }
