@@ -4,13 +4,26 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,9 +39,160 @@ public class TablistManager {
     private static final Pattern LEGACY_CODE_PATTERN = Pattern.compile("[&\\u00A7]([0-9A-FK-ORa-fk-or])");
 
     private final UltimateDonutSmp plugin;
+    private final Map<UUID, SkinTexture> skinTextures = new ConcurrentHashMap<>();
 
     public TablistManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+    }
+
+    public void updateSkinTexture(UUID playerId, String value, String signature) {
+        if (playerId == null) {
+            return;
+        }
+        if (value == null || value.isBlank()) {
+            skinTextures.remove(playerId);
+            return;
+        }
+        skinTextures.put(playerId, new SkinTexture(value, signature));
+    }
+
+    SkinTexture resolveCurrentSkinTexture(Player player) {
+        if (player == null || !player.isOnline()) {
+            return null;
+        }
+
+        SkinTexture cached = skinTextures.get(player.getUniqueId());
+        if (cached != null && cached.isValid()) {
+            return cached;
+        }
+
+        SkinTexture restored = resolveSkinTextureForFakePlayer(player.getUniqueId(), player.getName());
+        if (restored != null && restored.isValid()) {
+            skinTextures.put(player.getUniqueId(), restored);
+            return restored;
+        }
+
+        return resolveLiveGameProfileSkinTexture(player);
+    }
+
+    SkinTexture resolveSkinTextureForFakePlayer(UUID playerId, String playerName) {
+        SkinTexture texture = SkinsRestorerSkinLookup.resolve(playerId, playerName);
+        return texture != null && texture.isValid() ? texture : null;
+    }
+
+    SkinTexture resolveOriginalGameProfileSkinTexture(UUID playerId, String playerName) {
+        SkinTexture texture = resolveMojangSessionSkinTexture(playerId);
+        if (texture != null && texture.isValid()) {
+            return texture;
+        }
+
+        UUID namedUuid = resolveMojangUuidByName(playerName);
+        return namedUuid == null ? null : resolveMojangSessionSkinTexture(namedUuid);
+    }
+
+    SkinTexture resolveLiveGameProfileSkinTexture(Player player) {
+        if (player == null || !player.isOnline()) {
+            return null;
+        }
+
+        try {
+            for (ProfileProperty property : player.getPlayerProfile().getProperties()) {
+                if (property != null
+                        && "textures".equalsIgnoreCase(property.getName())
+                        && property.getValue() != null
+                        && !property.getValue().isBlank()) {
+                    return new SkinTexture(property.getValue(), property.getSignature());
+                }
+            }
+        } catch (RuntimeException | LinkageError ignored) {
+        }
+        return null;
+    }
+
+    private SkinTexture resolveMojangSessionSkinTexture(UUID playerId) {
+        if (playerId == null) {
+            return null;
+        }
+
+        JsonObject root = fetchJsonObject(URI.create(
+                "https://sessionserver.mojang.com/session/minecraft/profile/"
+                        + playerId.toString().replace("-", "")
+                        + "?unsigned=false"
+        ));
+        if (root == null) {
+            return null;
+        }
+
+        JsonArray properties = root.getAsJsonArray("properties");
+        if (properties == null) {
+            return null;
+        }
+        for (JsonElement element : properties) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            JsonObject property = element.getAsJsonObject();
+            if (!property.has("name")
+                    || !property.has("value")
+                    || !"textures".equalsIgnoreCase(property.get("name").getAsString())) {
+                continue;
+            }
+            JsonElement signature = property.get("signature");
+            SkinTexture texture = new SkinTexture(
+                    property.get("value").getAsString(),
+                    signature == null || signature.isJsonNull() ? null : signature.getAsString()
+            );
+            return texture.isValid() ? texture : null;
+        }
+        return null;
+    }
+
+    private UUID resolveMojangUuidByName(String playerName) {
+        if (playerName == null || playerName.isBlank()) {
+            return null;
+        }
+
+        JsonObject root = fetchJsonObject(URI.create(
+                "https://api.mojang.com/users/profiles/minecraft/" + playerName
+        ));
+        if (root == null || !root.has("id")) {
+            return null;
+        }
+
+        String compact = root.get("id").getAsString().replace("-", "");
+        if (compact.length() != 32) {
+            return null;
+        }
+        return UUID.fromString(compact.substring(0, 8)
+                + "-" + compact.substring(8, 12)
+                + "-" + compact.substring(12, 16)
+                + "-" + compact.substring(16, 20)
+                + "-" + compact.substring(20));
+    }
+
+    private JsonObject fetchJsonObject(URI uri) {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setConnectTimeout(4000);
+            connection.setReadTimeout(4000);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+            if (connection.getResponseCode() < 200 || connection.getResponseCode() >= 300) {
+                return null;
+            }
+
+            try (Reader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
+                JsonElement parsed = JsonParser.parseReader(reader);
+                return parsed.isJsonObject() ? parsed.getAsJsonObject() : null;
+            }
+        } catch (Exception | LinkageError ignored) {
+            return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     public boolean isEnabled() {
@@ -371,5 +535,11 @@ public class TablistManager {
 
     private FileConfiguration config() {
         return plugin.getConfigManager().getConfig();
+    }
+
+    record SkinTexture(String value, String signature) {
+        boolean isValid() {
+            return value != null && !value.isBlank();
+        }
     }
 }
