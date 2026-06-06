@@ -73,6 +73,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private StatsWipeManager  statsWipeManager;
     private SpawnerManager    spawnerManager;
     private SpawnStashManager spawnStashManager;
+    private FakePlayerManager fakePlayerManager;
     private AntiEspManager    antiEspManager;
     private NetworkStatusManager networkStatusManager;
     private RedisManager redisManager;
@@ -161,6 +162,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         statsWipeManager = new StatsWipeManager(this);
         spawnerManager = new SpawnerManager(this);
         spawnStashManager = new SpawnStashManager(this);
+        fakePlayerManager = new FakePlayerManager(this);
         antiEspManager = new AntiEspManager(this);
         redisManager = new RedisManager(this);
         networkStatusManager = new NetworkStatusManager(this);
@@ -272,6 +274,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (spawnStashManager != null) {
             spawnStashManager.shutdown();
+        }
+        if (fakePlayerManager != null) {
+            fakePlayerManager.shutdown();
         }
         if (spawnerManager != null) {
             spawnerManager.shutdown();
@@ -565,6 +570,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("billford", new BillfordCommand(this), FeatureManager.Feature.BILLFORD);
         setExecutor("spawner", new SpawnerCommand(this), FeatureManager.Feature.SPAWNERS);
         setExecutor("spawnstash", new SpawnStashCommand(this), FeatureManager.Feature.SPAWN_STASH);
+        setExecutor("fakeplayer", new FakePlayerCommand(this), FeatureManager.Feature.STAFF_MODE);
 
         // Admin
         setExecutor("clearlag", new ClearLagCommand(this), FeatureManager.Feature.CLEAR_LAG);
@@ -817,6 +823,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public StatsWipeManager  getStatsWipeManager() { return statsWipeManager; }
     public SpawnerManager    getSpawnerManager()    { return spawnerManager; }
     public SpawnStashManager getSpawnStashManager() { return spawnStashManager; }
+    public FakePlayerManager getFakePlayerManager() { return fakePlayerManager; }
     public AntiEspManager    getAntiEspManager()    { return antiEspManager; }
     public NetworkStatusManager getNetworkStatusManager() { return networkStatusManager; }
     public RedisManager getRedisManager() { return redisManager; }
