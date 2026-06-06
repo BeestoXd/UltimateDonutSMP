@@ -104,15 +104,18 @@ public class AmethystToolsManager {
         return item;
     }
 
+    public boolean hasAmethystMetadata(ItemStack item) {
+        return item != null
+                && item.hasItemMeta()
+                && item.getItemMeta().getPersistentDataContainer().has(KEY_TYPE, PersistentDataType.STRING);
+    }
+
     public boolean isAmethystTool(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) {
-            return false;
-        }
-        return item.getItemMeta().getPersistentDataContainer().has(KEY_TYPE, PersistentDataType.STRING);
+        return hasAmethystMetadata(item);
     }
 
     public boolean hasValidSignature(ItemStack item) {
-        if (!isAmethystTool(item)) {
+        if (!hasAmethystMetadata(item)) {
             return false;
         }
 
@@ -144,7 +147,7 @@ public class AmethystToolsManager {
     }
 
     public AmethystToolType getToolType(ItemStack item) {
-        if (!isAmethystTool(item)) {
+        if (!hasAmethystMetadata(item)) {
             return null;
         }
         String raw = item.getItemMeta().getPersistentDataContainer().get(KEY_TYPE, PersistentDataType.STRING);
@@ -159,7 +162,7 @@ public class AmethystToolsManager {
     }
 
     public long getExpiryEpoch(ItemStack item) {
-        if (!isAmethystTool(item)) {
+        if (!hasAmethystMetadata(item)) {
             return 0L;
         }
         return item.getItemMeta().getPersistentDataContainer().getOrDefault(KEY_EXPIRY, PersistentDataType.LONG, 0L);
@@ -175,6 +178,38 @@ public class AmethystToolsManager {
 
     public boolean isExpired(ItemStack item) {
         return getRemainingSeconds(item) <= 0L;
+    }
+
+    public ItemStack createRewardCopy(ItemStack template, UUID ownerUuid, long durationSeconds) {
+        if (!hasAmethystMetadata(template)) {
+            return null;
+        }
+
+        ItemStack reward = template.clone();
+        reward.setAmount(1);
+
+        ItemMeta meta = reward.getItemMeta();
+        if (meta == null) {
+            return null;
+        }
+
+        String rawType = meta.getPersistentDataContainer().get(KEY_TYPE, PersistentDataType.STRING);
+        AmethystToolType type = AmethystToolType.fromString(rawType);
+        if (type == null) {
+            return null;
+        }
+
+        long duration = durationSeconds > 0L ? durationSeconds : getConfiguredDuration(type);
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        pdc.set(KEY_EXPIRY, PersistentDataType.LONG, (System.currentTimeMillis() / 1000L) + Math.max(1L, duration));
+        pdc.set(KEY_ID, PersistentDataType.STRING, UUID.randomUUID().toString());
+        if (ownerUuid != null) {
+            pdc.set(KEY_OWNER, PersistentDataType.STRING, ownerUuid.toString());
+        }
+
+        reward.setItemMeta(meta);
+        updateLoreCountdown(reward);
+        return reward;
     }
 
     public boolean ensureIdentity(ItemStack item, UUID defaultOwner, boolean forceNewId) {
@@ -243,7 +278,7 @@ public class AmethystToolsManager {
     }
 
     public boolean updateLoreCountdown(ItemStack item) {
-        if (!isAmethystTool(item)) {
+        if (!hasAmethystMetadata(item)) {
             return false;
         }
 
@@ -291,6 +326,11 @@ public class AmethystToolsManager {
         meta.lore(newLore);
         item.setItemMeta(meta);
         return true;
+    }
+
+    private long getConfiguredDuration(AmethystToolType type) {
+        ConfigurationSection section = getToolSection(type);
+        return section == null ? 86400L : Math.max(1L, section.getLong("DURATION", 86400L));
     }
 
     public void sanitizePlayerInventory(Player player, boolean notifyExpired) {
