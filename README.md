@@ -12,7 +12,6 @@
 <p align="center">
   <img alt="Java 21" src="https://img.shields.io/badge/Java-21-007396?style=for-the-badge&logo=openjdk&logoColor=white">
   <img alt="Paper" src="https://img.shields.io/badge/Platform-Paper_MC-2ea44f?style=for-the-badge">
-  <img alt="Premium" src="https://img.shields.io/badge/Distribution-Premium-gold?style=for-the-badge">
   <img alt="Distribution" src="https://img.shields.io/badge/Access-Commercial-red?style=for-the-badge">
 </p>
 
@@ -54,6 +53,7 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
   <img src="images/uds13.png" alt="UltimateDonutSmp screenshot 13" width="32%">
   <img src="images/uds14.png" alt="UltimateDonutSmp screenshot 14" width="32%">
   <img src="images/uds16.png" alt="UltimateDonutSmp screenshot 16" width="32%">
+  <img src="images/uds17.png" alt="UltimateDonutSmp screenshot 17" width="32%">
   <img src="images/gif1.gif" alt="UltimateDonutSmp screenshot 1" width="32%">
   <img src="images/gif2.gif" alt="UltimateDonutSmp screenshot 2" width="32%">
   <img src="images/gif3.gif" alt="UltimateDonutSmp screenshot 3" width="32%">
