@@ -465,7 +465,9 @@ public class SpawnManager {
         }
 
         try {
-            plugin.saveConfig();
+            if (!plugin.getConfigManager().saveConfig()) {
+                return SetupLocationResult.failure("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄᴏɴꜰɪɢ.ʏᴍʟ.");
+            }
         } catch (RuntimeException exception) {
             plugin.getLogger().warning("[SpawnManager] ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄᴏɴꜰɪɢ.ʏᴍʟ: " + exception.getMessage());
             return SetupLocationResult.failure("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄᴏɴꜰɪɢ.ʏᴍʟ.");
@@ -643,7 +645,9 @@ public class SpawnManager {
 
         if (configChanged) {
             try {
-                plugin.saveConfig();
+                if (!plugin.getConfigManager().saveConfig()) {
+                    return AreaDeleteResult.failure("Failed to save config.yml.");
+                }
             } catch (RuntimeException exception) {
                 plugin.getLogger().warning("[SpawnManager] ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄᴏɴꜰɪɢ.ʏᴍʟ: " + exception.getMessage());
                 return AreaDeleteResult.failure("Failed to save config.yml.");

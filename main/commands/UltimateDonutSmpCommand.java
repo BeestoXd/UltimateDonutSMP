@@ -295,8 +295,8 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
             discord.set("WEBHOOKS.ENABLED", false);
 
-            plugin.saveConfig();
-            boolean saved = plugin.getConfigManager().saveDatabase()
+            boolean saved = plugin.getConfigManager().saveConfig()
+                    & plugin.getConfigManager().saveDatabase()
                     & plugin.getConfigManager().saveNetwork()
                     & plugin.getConfigManager().saveDiscord();
             if (!saved) {
