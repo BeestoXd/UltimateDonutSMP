@@ -577,7 +577,10 @@ public class AmethystToolsManager {
             return key;
         }
         String prefix = msgs.getString("PREFIX", "&#9B59B6[ᴀᴍᴇᴛʜʏѕᴛ] &r");
-        String raw = msgs.getString(key, key);
+        String fallback = "SELL-FAILED".equals(key)
+                ? "{prefix}&#BDC3C7ᴛʜᴇ ѕᴀʟᴇ ꜰᴀɪʟᴇᴅ. ɴᴏ ɪᴛᴇᴍѕ ᴡᴇʀᴇ ʀᴇᴍᴏᴠᴇᴅ."
+                : key;
+        String raw = msgs.getString(key, fallback);
         return raw.replace("{prefix}", prefix);
     }
 
