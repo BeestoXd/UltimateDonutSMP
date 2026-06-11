@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +23,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -61,6 +61,7 @@ public class ConfigManager {
     private static final String SETUP_COMMENT_PREFIX = "# UDS setup:";
 
     private final UltimateDonutSmp plugin;
+    private final Set<String> invalidConfigurations = new HashSet<>();
 
     private FileConfiguration config;
     private FileConfiguration messages;
@@ -103,32 +104,31 @@ public class ConfigManager {
     }
 
     private void reloadLoadedConfigurations() {
-        plugin.reloadConfig();
-        config       = plugin.getConfig();
-        messages     = load("messages.yml");
-        deathMessages= load("death-messages.yml");
-        menus        = load("menus.yml");
-        scoreboard   = load("scoreboard.yml");
-        shop         = load("shop.yml");
-        sounds       = load("sounds.yml");
-        billford     = load("billford.yml");
-        rtp          = load("rtp.yml");
-        worth        = load("worth.yml");
-        amethystTools = load("amethyst-tools.yml");
-        enderChest   = load("ender-chest.yml");
-        invsee       = load("invsee.yml");
-        freeze       = load("freeze.yml");
-        auctionHouse = load("auction-house.yml");
-        orders       = load("orders.yml");
-        duels        = load("duels.yml");
-        ffa          = load("ffa.yml");
-        crates       = load("crates.yml");
-        spawners     = load("spawners.yml");
-        spawnStash   = load("spawn-stash.yml");
-        network      = load("network.yml");
-        staffMode    = load("staff-mode.yml");
-        database     = load("database.yml");
-        discord      = load("discord.yml");
+        config       = load("config.yml", config);
+        messages     = load("messages.yml", messages);
+        deathMessages= load("death-messages.yml", deathMessages);
+        menus        = load("menus.yml", menus);
+        scoreboard   = load("scoreboard.yml", scoreboard);
+        shop         = load("shop.yml", shop);
+        sounds       = load("sounds.yml", sounds);
+        billford     = load("billford.yml", billford);
+        rtp          = load("rtp.yml", rtp);
+        worth        = load("worth.yml", worth);
+        amethystTools = load("amethyst-tools.yml", amethystTools);
+        enderChest   = load("ender-chest.yml", enderChest);
+        invsee       = load("invsee.yml", invsee);
+        freeze       = load("freeze.yml", freeze);
+        auctionHouse = load("auction-house.yml", auctionHouse);
+        orders       = load("orders.yml", orders);
+        duels        = load("duels.yml", duels);
+        ffa          = load("ffa.yml", ffa);
+        crates       = load("crates.yml", crates);
+        spawners     = load("spawners.yml", spawners);
+        spawnStash   = load("spawn-stash.yml", spawnStash);
+        network      = load("network.yml", network);
+        staffMode    = load("staff-mode.yml", staffMode);
+        database     = load("database.yml", database);
+        discord      = load("discord.yml", discord);
     }
 
     private void syncBundledConfigurations() {
@@ -139,9 +139,7 @@ public class ConfigManager {
 
         int created = 0;
         int updated = 0;
-        int restored = 0;
         int skipped = 0;
-        int snapshots = 0;
 
         for (String name : CONFIGURATION_RESOURCES) {
             SyncResult result = syncBundledConfiguration(name, backupDirectory);
@@ -151,22 +149,14 @@ public class ConfigManager {
             if (result.updated) {
                 updated++;
             }
-            if (result.restored) {
-                restored++;
-            }
             if (result.skipped) {
                 skipped++;
-            }
-            if (result.snapshotUpdated) {
-                snapshots++;
             }
         }
 
         plugin.getLogger().info("Configuration sync complete: "
                 + created + " created, "
                 + updated + " updated, "
-                + restored + " restored, "
-                + snapshots + " default snapshots refreshed"
                 + (skipped > 0 ? ", " + skipped + " skipped" : "")
                 + ".");
     }
@@ -187,7 +177,6 @@ public class ConfigManager {
         if (!targetFile.exists()) {
             if (copyBundledResource(name, targetFile, false)) {
                 result.created = true;
-                result.snapshotUpdated = refreshDefaultSnapshot(name);
             } else {
                 result.skipped = true;
             }
@@ -198,21 +187,19 @@ public class ConfigManager {
         try {
             current = loadYamlFile(targetFile);
         } catch (IOException | InvalidConfigurationException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to load " + targetFile.getPath() + ", restoring default copy.", e);
+            invalidConfigurations.add(name);
+            result.skipped = true;
+            plugin.getLogger().log(Level.SEVERE,
+                    "Skipping configuration sync for invalid YAML without replacing the original file: "
+                            + targetFile.getPath(),
+                    e);
             backupExistingFile(targetFile, backupDirectory);
-            if (copyBundledResource(name, targetFile, true)) {
-                result.restored = true;
-                result.snapshotUpdated = refreshDefaultSnapshot(name);
-            } else {
-                result.skipped = true;
-            }
             return result;
         }
 
-        YamlConfiguration previousDefault = loadPreviousDefaultSnapshot(name);
-        List<String> currentLines;
+        TextFileContent currentText;
         try {
-            currentLines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            currentText = readTextFile(targetFile);
         } catch (IOException e) {
             result.skipped = true;
             plugin.getLogger().log(Level.WARNING, "Failed to read configuration for line-preserving sync: "
@@ -220,85 +207,26 @@ public class ConfigManager {
             return result;
         }
 
-        int removedPaths = pruneRemovedBundledDefaults(name, currentLines, current, bundledDefault, previousDefault);
-        if (removedPaths > 0) {
-            try {
-                current = loadYamlLines(currentLines);
-            } catch (InvalidConfigurationException e) {
-                result.skipped = true;
-                plugin.getLogger().log(Level.WARNING, "Failed to validate pruned configuration " + targetFile.getPath(), e);
-                return result;
-            }
-        }
-
-        int mergedPaths = mergeBundledDefaults(name, currentLines, current, bundledDefault, previousDefault);
-        int defaultChanges = removedPaths + mergedPaths;
-        if (defaultChanges > 0) {
-            backupExistingFile(targetFile, backupDirectory);
-            try {
-                validateYamlLines(currentLines);
-                Files.write(targetFile.toPath(), currentLines, StandardCharsets.UTF_8);
-                result.updated = true;
-                syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, true);
-                syncBundledCommentTags(name, targetFile, backupDirectory, true);
-                syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, true);
-                syncCrashProtectionPlacement(name, targetFile, backupDirectory, true);
-                syncBundledSetupComments(name, targetFile, backupDirectory, true);
-                syncBundledTopLevelOrder(name, targetFile, backupDirectory, true);
-                syncBundledInlineComments(name, targetFile, backupDirectory, true);
-                result.snapshotUpdated = refreshDefaultSnapshot(name);
-                plugin.getLogger().info("Updated " + name + " with "
-                        + mergedPaths + " bundled default path(s) and "
-                        + removedPaths + " removed stale default path(s).");
-            } catch (IOException | InvalidConfigurationException e) {
-                result.skipped = true;
-                plugin.getLogger().log(Level.WARNING, "Failed to save synced configuration " + targetFile.getPath(), e);
-            }
+        int mergedPaths = mergeBundledDefaults(name, currentText.lines(), current, bundledDefault);
+        if (mergedPaths == 0) {
             return result;
         }
 
-        boolean rtpUpdated = syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, false);
-        boolean commentsUpdated = syncBundledCommentTags(name, targetFile, backupDirectory, rtpUpdated);
-        boolean pricingUpdated = syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, rtpUpdated || commentsUpdated);
-        boolean crashProtectionUpdated = syncCrashProtectionPlacement(
-                name,
-                targetFile,
-                backupDirectory,
-                rtpUpdated || commentsUpdated || pricingUpdated
-        );
-        boolean setupCommentsUpdated = syncBundledSetupComments(
-                name,
-                targetFile,
-                backupDirectory,
-                rtpUpdated || commentsUpdated || pricingUpdated || crashProtectionUpdated
-        );
-        boolean topLevelOrderUpdated = syncBundledTopLevelOrder(
-                name,
-                targetFile,
-                backupDirectory,
-                rtpUpdated || commentsUpdated || pricingUpdated || crashProtectionUpdated || setupCommentsUpdated
-        );
-        boolean inlineCommentsUpdated = syncBundledInlineComments(
-                name,
-                targetFile,
-                backupDirectory,
-                rtpUpdated
-                        || commentsUpdated
-                        || pricingUpdated
-                        || crashProtectionUpdated
-                        || setupCommentsUpdated
-                        || topLevelOrderUpdated
-        );
-        if (rtpUpdated
-                || commentsUpdated
-                || pricingUpdated
-                || crashProtectionUpdated
-                || setupCommentsUpdated
-                || topLevelOrderUpdated
-                || inlineCommentsUpdated) {
+        try {
+            validateYamlLines(currentText.lines());
+            if (!backupExistingFile(targetFile, backupDirectory)) {
+                result.skipped = true;
+                plugin.getLogger().warning("Skipped configuration sync because backup creation failed: "
+                        + targetFile.getPath());
+                return result;
+            }
+            writeTextFileAtomically(targetFile, currentText);
             result.updated = true;
+            plugin.getLogger().info("Added " + mergedPaths + " missing bundled default path(s) to " + name + ".");
+        } catch (IOException | InvalidConfigurationException e) {
+            result.skipped = true;
+            plugin.getLogger().log(Level.WARNING, "Failed to save synced configuration " + targetFile.getPath(), e);
         }
-        result.snapshotUpdated = refreshDefaultSnapshot(name);
         return result;
     }
 
@@ -559,6 +487,53 @@ public class ConfigManager {
     private List<String> readBundledResourceLines(String name) throws IOException {
         String content = new String(readBundledResourceBytes(name), StandardCharsets.UTF_8);
         return new ArrayList<>(Arrays.asList(content.split("\\R", -1)));
+    }
+
+    private TextFileContent readTextFile(File file) throws IOException {
+        String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        String lineSeparator = detectLineSeparator(content);
+        boolean trailingLineSeparator = content.endsWith("\r\n")
+                || content.endsWith("\n")
+                || content.endsWith("\r");
+        List<String> lines = new ArrayList<>(Arrays.asList(content.split("\\r\\n|\\n|\\r", -1)));
+        if (trailingLineSeparator && !lines.isEmpty()) {
+            lines.remove(lines.size() - 1);
+        }
+        return new TextFileContent(lines, lineSeparator, trailingLineSeparator);
+    }
+
+    private String detectLineSeparator(String content) {
+        int crlf = content.indexOf("\r\n");
+        int lf = content.indexOf('\n');
+        int cr = content.indexOf('\r');
+        if (crlf >= 0 && (lf < 0 || crlf <= lf) && (cr < 0 || crlf <= cr)) {
+            return "\r\n";
+        }
+        if (lf >= 0 && (cr < 0 || lf < cr)) {
+            return "\n";
+        }
+        if (cr >= 0) {
+            return "\r";
+        }
+        return System.lineSeparator();
+    }
+
+    private void writeTextFileAtomically(File file, TextFileContent content) throws IOException {
+        Path target = file.toPath();
+        Path parent = target.getParent();
+        Files.createDirectories(parent);
+        Path temporary = Files.createTempFile(parent, "." + file.getName() + ".", ".tmp");
+        try {
+            Files.writeString(temporary, content.serialize(), StandardCharsets.UTF_8);
+            Files.move(
+                    temporary,
+                    target,
+                    StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+        } finally {
+            Files.deleteIfExists(temporary);
+        }
     }
 
     private List<String> extractManagedHeader(List<String> lines) {
@@ -1251,8 +1226,7 @@ public class ConfigManager {
             String resourceName,
             List<String> currentLines,
             YamlConfiguration current,
-            YamlConfiguration bundledDefault,
-            YamlConfiguration previousDefault
+            YamlConfiguration bundledDefault
     ) {
         List<String> bundledLines;
         try {
@@ -1262,120 +1236,7 @@ public class ConfigManager {
             return 0;
         }
 
-        return mergeBundledDefaults(resourceName, currentLines, bundledLines, current, bundledDefault, previousDefault);
-    }
-
-    private int pruneRemovedBundledDefaults(
-            String resourceName,
-            List<String> currentLines,
-            YamlConfiguration current,
-            YamlConfiguration bundledDefault,
-            YamlConfiguration previousDefault
-    ) {
-        Map<String, YamlPathLine> currentLineIndex = indexYamlPathLines(currentLines);
-        List<String> staleRoots = previousDefault == null
-                ? new ArrayList<>()
-                : removedBundledDefaultRoots(resourceName, previousDefault, bundledDefault);
-        staleRoots.addAll(currentRootsAbsentFromBundled(
-                resourceName,
-                currentLineIndex,
-                bundledDefault,
-                staleRoots
-        ));
-        staleRoots = minimalPathRoots(staleRoots);
-        if (staleRoots.isEmpty()) {
-            return 0;
-        }
-
-        List<YamlPathLine> removeNodes = staleRoots.stream()
-                .map(currentLineIndex::get)
-                .filter(Objects::nonNull)
-                .sorted((first, second) -> Integer.compare(second.lineIndex, first.lineIndex))
-                .toList();
-
-        int removed = 0;
-        for (YamlPathLine node : removeNodes) {
-            if (!current.contains(node.path, true)) {
-                continue;
-            }
-            removeYamlNodeBlock(currentLines, node);
-            removed++;
-        }
-
-        return removed;
-    }
-
-    private List<String> removedBundledDefaultRoots(
-            String resourceName,
-            YamlConfiguration previousDefault,
-            YamlConfiguration bundledDefault
-    ) {
-        List<String> roots = new ArrayList<>();
-        for (String path : previousDefault.getKeys(true)) {
-            if (isUserManagedBundledPath(resourceName, path)
-                    || bundledDefault.contains(path, true)
-                    || hasAncestorPath(roots, path)) {
-                continue;
-            }
-            roots.add(path);
-        }
-        return roots;
-    }
-
-    private List<String> minimalPathRoots(List<String> paths) {
-        List<String> roots = new ArrayList<>();
-        for (String path : paths.stream()
-                .distinct()
-                .sorted((first, second) -> {
-                    int firstDepth = first.split("\\.").length;
-                    int secondDepth = second.split("\\.").length;
-                    if (firstDepth != secondDepth) {
-                        return Integer.compare(firstDepth, secondDepth);
-                    }
-                    return first.compareTo(second);
-                })
-                .toList()) {
-            if (!hasAncestorPath(roots, path)) {
-                roots.add(path);
-            }
-        }
-        return roots;
-    }
-
-    private List<String> currentRootsAbsentFromBundled(
-            String resourceName,
-            Map<String, YamlPathLine> currentLineIndex,
-            YamlConfiguration bundledDefault,
-            List<String> existingRoots
-    ) {
-        List<String> roots = new ArrayList<>();
-        List<YamlPathLine> candidates = currentLineIndex.values().stream()
-                .filter(node -> !isUserManagedBundledPath(resourceName, node.path))
-                .filter(node -> !bundledDefault.contains(node.path, true))
-                .filter(node -> !isCurrentOnlyUserPath(resourceName))
-                .filter(node -> !hasAncestorPath(existingRoots, node.path))
-                .sorted((first, second) -> {
-                    int firstDepth = first.path.split("\\.").length;
-                    int secondDepth = second.path.split("\\.").length;
-                    if (firstDepth != secondDepth) {
-                        return Integer.compare(firstDepth, secondDepth);
-                    }
-                    return Integer.compare(first.lineIndex, second.lineIndex);
-                })
-                .toList();
-
-        for (YamlPathLine candidate : candidates) {
-            if (!hasAncestorPath(existingRoots, candidate.path) && !hasAncestorPath(roots, candidate.path)) {
-                roots.add(candidate.path);
-            }
-        }
-        return roots;
-    }
-
-    private boolean isCurrentOnlyUserPath(String resourceName) {
-        // Shop categories, menu sections, and item definitions are intentionally
-        // extensible. Previous bundled snapshots still identify obsolete defaults.
-        return "shop.yml".equals(resourceName);
+        return mergeBundledDefaults(resourceName, currentLines, bundledLines, current, bundledDefault);
     }
 
     private int mergeBundledDefaults(
@@ -1383,8 +1244,7 @@ public class ConfigManager {
             List<String> currentLines,
             List<String> bundledLines,
             YamlConfiguration current,
-            YamlConfiguration bundledDefault,
-            YamlConfiguration previousDefault
+            YamlConfiguration bundledDefault
     ) {
         int changes = 0;
         Map<String, YamlPathLine> bundledLineIndex = indexYamlPathLines(bundledLines);
@@ -1411,24 +1271,6 @@ public class ConfigManager {
                         changes++;
                     }
                 }
-                continue;
-            }
-
-            if (previousDefault == null
-                    || !previousDefault.contains(path, true)
-                    || previousDefault.isConfigurationSection(path)) {
-                continue;
-            }
-
-            Object currentValue = current.get(path);
-            Object previousValue = previousDefault.get(path);
-            Object bundledValue = bundledDefault.get(path);
-
-            if (valuesEquivalent(currentValue, previousValue)
-                    && !valuesEquivalent(currentValue, bundledValue)) {
-                if (replaceCurrentPathBlock(currentLines, bundledLines, bundledLineIndex, path)) {
-                    changes++;
-                }
             }
         }
 
@@ -1450,27 +1292,6 @@ public class ConfigManager {
         int insertAt = findBundledOrderInsertionIndex(currentLines, currentLineIndex, bundledLineIndex, path);
         List<String> block = extractYamlNodeBlock(bundledLines, bundledNode, true);
         insertYamlBlock(currentLines, insertAt, block);
-        return true;
-    }
-
-    private boolean replaceCurrentPathBlock(
-            List<String> currentLines,
-            List<String> bundledLines,
-            Map<String, YamlPathLine> bundledLineIndex,
-            String path
-    ) {
-        Map<String, YamlPathLine> currentLineIndex = indexYamlPathLines(currentLines);
-        YamlPathLine currentNode = currentLineIndex.get(path);
-        YamlPathLine bundledNode = bundledLineIndex.get(path);
-        if (currentNode == null || bundledNode == null) {
-            return false;
-        }
-
-        List<String> replacement = extractYamlNodeBlock(bundledLines, bundledNode, false);
-        replacement = reindentYamlBlock(replacement, bundledNode.indent, currentNode.indent);
-        int end = findYamlNodeEnd(currentLines, currentNode);
-        currentLines.subList(currentNode.lineIndex, end).clear();
-        currentLines.addAll(currentNode.lineIndex, replacement);
         return true;
     }
 
@@ -1855,7 +1676,6 @@ public class ConfigManager {
                 && !lines.get(insertAt - 1).trim().isEmpty()
                 && !cleanBlock.get(0).trim().isEmpty()) {
             cleanBlock.add(0, "");
-            insertAt++;
         }
 
         lines.addAll(insertAt, cleanBlock);
@@ -1982,51 +1802,6 @@ public class ConfigManager {
         return false;
     }
 
-    private YamlConfiguration loadPreviousDefaultSnapshot(String name) {
-        File snapshot = new File(defaultSnapshotsFolder(), name);
-        if (!snapshot.exists()) {
-            return null;
-        }
-
-        try {
-            return loadYamlFile(snapshot);
-        } catch (IOException | InvalidConfigurationException e) {
-            plugin.getLogger().log(Level.WARNING, "Ignoring invalid default configuration snapshot: " + snapshot.getPath(), e);
-            return null;
-        }
-    }
-
-    private boolean refreshDefaultSnapshot(String name) {
-        byte[] bundledBytes;
-        try {
-            bundledBytes = readBundledResourceBytes(name);
-        } catch (IOException | IllegalArgumentException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to read bundled configuration snapshot for " + name, e);
-            return false;
-        }
-
-        File snapshot = new File(defaultSnapshotsFolder(), name);
-        try {
-            if (snapshot.exists()) {
-                byte[] existingBytes = Files.readAllBytes(snapshot.toPath());
-                if (Arrays.equals(existingBytes, bundledBytes)) {
-                    return false;
-                }
-            }
-
-            Files.createDirectories(snapshot.getParentFile().toPath());
-            Files.write(snapshot.toPath(), bundledBytes);
-            return true;
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to refresh default configuration snapshot: " + snapshot.getPath(), e);
-            return false;
-        }
-    }
-
-    private File defaultSnapshotsFolder() {
-        return new File(plugin.getDataFolder(), ".default-configs");
-    }
-
     private YamlConfiguration loadBundledYaml(String name) throws IOException, InvalidConfigurationException {
         try (InputStream input = plugin.getResource(name)) {
             if (input == null) {
@@ -2078,64 +1853,65 @@ public class ConfigManager {
         }
     }
 
-    private void backupExistingFile(File file, File backupDirectory) {
+    private boolean backupExistingFile(File file, File backupDirectory) {
         if (!file.exists()) {
-            return;
+            return true;
         }
 
         File backup = new File(backupDirectory, file.getName());
         try {
             Files.createDirectories(backupDirectory.toPath());
             Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return true;
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to back up " + file.getPath(), e);
+            return false;
         }
     }
 
-    private Object copyConfigValue(Object value) {
-        if (value instanceof List<?> list) {
-            List<Object> copy = new ArrayList<>(list.size());
-            for (Object entry : list) {
-                copy.add(copyConfigValue(entry));
-            }
-            return copy;
-        }
-
-        if (value instanceof Map<?, ?> map) {
-            Map<Object, Object> copy = new LinkedHashMap<>();
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                copy.put(entry.getKey(), copyConfigValue(entry.getValue()));
-            }
-            return copy;
-        }
-
-        return value;
-    }
-
-    private boolean valuesEquivalent(Object first, Object second) {
-        return Objects.equals(first, second);
-    }
-
-    private FileConfiguration load(String name) {
+    private FileConfiguration load(String name, FileConfiguration previousConfiguration) {
         File file = new File(plugin.getDataFolder(), name);
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.options().parseComments(true);
 
         try {
             configuration.load(file);
+            invalidConfigurations.remove(name);
             return configuration;
         } catch (IOException | InvalidConfigurationException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to load " + file.getPath() + ", restoring default copy.", e);
-            backupBrokenFile(file);
-
-            try {
-                copyBundledResource(name, file, true);
-                configuration.load(file);
-            } catch (IOException | InvalidConfigurationException | IllegalArgumentException restoreException) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to restore default resource " + name, restoreException);
+            boolean firstInvalidLoad = invalidConfigurations.add(name);
+            plugin.getLogger().log(Level.SEVERE,
+                    "Failed to load " + file.getPath() + "; the original file will not be replaced.",
+                    e);
+            if (firstInvalidLoad) {
+                backupInvalidFile(file);
             }
-            return configuration;
+            if (previousConfiguration != null) {
+                plugin.getLogger().warning("Keeping the previously loaded in-memory configuration for " + name + ".");
+                return previousConfiguration;
+            }
+            try {
+                plugin.getLogger().warning("Using bundled defaults for " + name
+                        + " in memory only until the YAML file is fixed and reloaded.");
+                return loadBundledYaml(name);
+            } catch (IOException | InvalidConfigurationException | IllegalArgumentException fallbackException) {
+                plugin.getLogger().log(Level.SEVERE,
+                        "Failed to load bundled in-memory fallback for " + name,
+                        fallbackException);
+                return configuration;
+            }
         }
+    }
+
+    private void backupInvalidFile(File file) {
+        if (!file.exists()) {
+            return;
+        }
+        File backupDirectory = new File(
+                new File(plugin.getDataFolder(), "config-backups"),
+                LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT)
+        );
+        backupExistingFile(file, backupDirectory);
     }
 
     private void backupBrokenFile(File file) {
@@ -2179,25 +1955,26 @@ public class ConfigManager {
     public FileConfiguration getDatabase()      { return database; }
     public FileConfiguration getDiscord()       { return discord; }
 
-    public void reloadShop() { shop = load("shop.yml"); }
-    public void reloadMenus() { menus = load("menus.yml"); }
-    public void reloadSounds() { sounds = load("sounds.yml"); }
-    public void reloadWorth() { worth = load("worth.yml"); }
-    public void reloadAmethystTools() { amethystTools = load("amethyst-tools.yml"); }
-    public void reloadEnderChest() { enderChest = load("ender-chest.yml"); }
-    public void reloadInvsee() { invsee = load("invsee.yml"); }
-    public void reloadFreeze() { freeze = load("freeze.yml"); }
-    public void reloadAuctionHouse() { auctionHouse = load("auction-house.yml"); }
-    public void reloadOrders() { orders = load("orders.yml"); }
-    public void reloadDuels() { duels = load("duels.yml"); }
-    public void reloadFfa() { ffa = load("ffa.yml"); }
-    public void reloadCrates() { crates = load("crates.yml"); }
-    public void reloadSpawners() { spawners = load("spawners.yml"); }
-    public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml"); }
-    public void reloadNetwork() { network = load("network.yml"); }
-    public void reloadStaffMode() { staffMode = load("staff-mode.yml"); }
-    public void reloadDatabase() { database = load("database.yml"); }
-    public void reloadDiscord() { discord = load("discord.yml"); }
+    public void reloadShop() { shop = load("shop.yml", shop); }
+    public void reloadMenus() { menus = load("menus.yml", menus); }
+    public void reloadSounds() { sounds = load("sounds.yml", sounds); }
+    public void reloadWorth() { worth = load("worth.yml", worth); }
+    public void reloadAmethystTools() { amethystTools = load("amethyst-tools.yml", amethystTools); }
+    public void reloadEnderChest() { enderChest = load("ender-chest.yml", enderChest); }
+    public void reloadInvsee() { invsee = load("invsee.yml", invsee); }
+    public void reloadFreeze() { freeze = load("freeze.yml", freeze); }
+    public void reloadAuctionHouse() { auctionHouse = load("auction-house.yml", auctionHouse); }
+    public void reloadOrders() { orders = load("orders.yml", orders); }
+    public void reloadDuels() { duels = load("duels.yml", duels); }
+    public void reloadFfa() { ffa = load("ffa.yml", ffa); }
+    public void reloadCrates() { crates = load("crates.yml", crates); }
+    public void reloadSpawners() { spawners = load("spawners.yml", spawners); }
+    public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml", spawnStash); }
+    public void reloadNetwork() { network = load("network.yml", network); }
+    public void reloadStaffMode() { staffMode = load("staff-mode.yml", staffMode); }
+    public void reloadDatabase() { database = load("database.yml", database); }
+    public void reloadDiscord() { discord = load("discord.yml", discord); }
+    public boolean saveConfig() { return save("config.yml", config); }
     public boolean saveDuels() { return save("duels.yml", duels); }
     public boolean saveFfa() { return save("ffa.yml", ffa); }
     public boolean saveCrates() { return save("crates.yml", crates); }
@@ -2244,6 +2021,11 @@ public class ConfigManager {
         if (configuration == null) {
             return false;
         }
+        if (invalidConfigurations.contains(name)) {
+            plugin.getLogger().warning("Refusing to save " + name
+                    + " because its on-disk YAML is invalid. Fix the file and reload it first.");
+            return false;
+        }
 
         File file = new File(plugin.getDataFolder(), name);
         try {
@@ -2258,9 +2040,7 @@ public class ConfigManager {
     private static final class SyncResult {
         private boolean created;
         private boolean updated;
-        private boolean restored;
         private boolean skipped;
-        private boolean snapshotUpdated;
     }
 
     private record YamlPathLine(
@@ -2273,5 +2053,16 @@ public class ConfigManager {
     }
 
     private record YamlStackEntry(int indent, String path) {
+    }
+
+    private record TextFileContent(
+            List<String> lines,
+            String lineSeparator,
+            boolean trailingLineSeparator
+    ) {
+        private String serialize() {
+            String joined = String.join(lineSeparator, lines);
+            return trailingLineSeparator ? joined + lineSeparator : joined;
+        }
     }
 }
