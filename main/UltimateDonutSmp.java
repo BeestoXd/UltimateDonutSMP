@@ -501,6 +501,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("playtime", new PlaytimeCommand(this), FeatureManager.Feature.STATS);
         LeaderboardCommand lbCmd = new LeaderboardCommand(this);
         setExecutor("leaderboard", lbCmd, FeatureManager.Feature.LEADERBOARDS);
+        getServer().getPluginManager().registerEvents(lbCmd, this);
         setExecutor("freeze", new FreezeCommand(this));
         setExecutor("fly", new FlyCommand(this));
         setExecutor("heal", new HealCommand(this));
