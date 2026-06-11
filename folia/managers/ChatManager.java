@@ -128,7 +128,7 @@ public class ChatManager {
     public void setGlobalChatmuted(boolean muted, boolean persist) {
         config().set(CHAT_ROOT + ".GLOBAL-CHAT-MUTED", muted);
         if (persist) {
-            plugin.saveConfig();
+            plugin.getConfigManager().saveConfig();
         }
     }
 
@@ -157,7 +157,7 @@ public class ChatManager {
         }
 
         if (persist) {
-            plugin.saveConfig();
+            plugin.getConfigManager().saveConfig();
         }
     }
 

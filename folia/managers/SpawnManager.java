@@ -421,7 +421,9 @@ public class SpawnManager {
         }
 
         try {
-            plugin.saveConfig();
+            if (!plugin.getConfigManager().saveConfig()) {
+                return SetupLocationResult.failure("Failed to save config.yml.");
+            }
         } catch (RuntimeException exception) {
             plugin.getLogger().warning("[SpawnManager] Failed to save config.yml: " + exception.getMessage());
             return SetupLocationResult.failure("Failed to save config.yml.");

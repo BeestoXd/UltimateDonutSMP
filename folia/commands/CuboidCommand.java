@@ -108,7 +108,10 @@ public class CuboidCommand implements CommandExecutor {
         String cuboidName = args[1].toLowerCase();
         plugin.getCuboidManager().removeCuboid(cuboidName);
         clearDeletedCuboidReferences(cuboidName);
-        plugin.saveConfig();
+        if (!plugin.getConfigManager().saveConfig()) {
+            player.sendMessage(ColorUtils.toComponent("&cFailed to save config.yml."));
+            return;
+        }
         plugin.reloadAllPluginConfigurations();
         player.sendMessage(ColorUtils.toComponent("&aᴄᴜʙᴏɪᴅ &b" + args[1] + " &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ."));
     }
@@ -188,7 +191,10 @@ public class CuboidCommand implements CommandExecutor {
             }
         }
 
-        plugin.saveConfig();
+        if (!plugin.getConfigManager().saveConfig()) {
+            player.sendMessage(ColorUtils.toComponent("&cFailed to save config.yml."));
+            return;
+        }
         plugin.reloadAllPluginConfigurations();
 
         String state = enabled ? "&aᴛʀᴜᴇ" : "&cꜰᴀʟѕᴇ";

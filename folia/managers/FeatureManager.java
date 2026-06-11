@@ -248,7 +248,9 @@ public class FeatureManager {
         }
 
         plugin.getConfigManager().getConfig().set(path(feature), enabled);
-        plugin.saveConfig();
+        if (!plugin.getConfigManager().saveConfig()) {
+            return false;
+        }
         applyRuntimeState(feature);
         return true;
     }
