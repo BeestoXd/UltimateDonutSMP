@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.utils;
 
+import com.bx.ultimateDonutSmp.managers.LanguageManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
@@ -96,6 +97,10 @@ public class ColorUtils {
             return "";
         }
 
+        return applyColors(LanguageManager.translateBuiltInText(text));
+    }
+
+    private static String applyColors(String text) {
         String result = translateTaggedGradients(text);
         result = translateTaggedHex(result);
         return translateHex(result).replace('&', SECTION_CHAR);
@@ -106,14 +111,14 @@ public class ColorUtils {
             return "";
         }
 
-        String result = text;
+        String result = LanguageManager.translateBuiltInText(text);
         if (hasPAPI && player != null) {
             try {
                 result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, result);
             } catch (Exception ignored) {
             }
         }
-        return colorize(result);
+        return applyColors(result);
     }
 
     public static String colorizeOffline(String text, OfflinePlayer player) {
@@ -121,14 +126,14 @@ public class ColorUtils {
             return "";
         }
 
-        String result = text;
+        String result = LanguageManager.translateBuiltInText(text);
         if (hasPAPI && player != null) {
             try {
                 result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, result);
             } catch (Exception ignored) {
             }
         }
-        return colorize(result);
+        return applyColors(result);
     }
 
     public static Component toComponent(String text) {

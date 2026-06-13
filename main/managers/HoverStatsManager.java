@@ -185,6 +185,9 @@ public class HoverStatsManager {
     }
 
     private String resolveDisplayName(Player player) {
+        if (plugin.getHideManager() != null && plugin.getHideManager().isHidden(player.getUniqueId())) {
+            return plugin.getHideManager().publicName(player);
+        }
         if (!ColorUtils.hasPAPI()) {
             return player.getName();
         }

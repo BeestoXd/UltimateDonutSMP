@@ -62,6 +62,58 @@ public class TablistManager {
         this.inlinePlayerHeadSupported = detectInlinePlayerHeadSupport();
     }
 
+    public void updateSkinTexture(UUID playerId, String value, String signature) {
+        if (playerId == null) {
+            return;
+        }
+        if (value == null || value.isBlank()) {
+            skinHeadTextures.remove(playerId);
+            skinHeadTextureRefreshTimes.remove(playerId);
+            return;
+        }
+
+        SkinTexture texture = new SkinTexture(value, signature);
+        skinHeadTextures.put(playerId, texture);
+        skinHeadTextureRefreshTimes.put(playerId, System.currentTimeMillis());
+        refreshedSkinHeads.add(playerId);
+
+        Player player = Bukkit.getPlayer(playerId);
+        if (player != null && player.isOnline()) {
+            applySkinTexture(player, texture);
+            refreshTablistAvatar(player);
+            updateTablistName(player);
+            update(player);
+        }
+    }
+
+    SkinTexture resolveSkinTextureForFakePlayer(UUID playerId, String playerName) {
+        if (Bukkit.isPrimaryThread()) {
+            return null;
+        }
+        SkinTexture texture = resolveSkinsRestorerTexture(playerId, playerName);
+        return texture != null && texture.isValid() ? texture : null;
+    }
+
+    SkinTexture resolveOriginalGameProfileSkinTexture(UUID playerId, String playerName) {
+        Player online = playerId == null ? null : Bukkit.getPlayer(playerId);
+        if (online != null) {
+            SkinTexture live = resolveGameProfileTexture(online);
+            if (live != null && live.isValid()) {
+                return live;
+            }
+        }
+        if (playerName == null || playerName.isBlank()) {
+            return null;
+        }
+        try {
+            Object updatedProfile = Bukkit.createPlayerProfile(playerName).update().join();
+            SkinTexture texture = resolveProfileTexture(updatedProfile);
+            return texture != null && texture.isValid() ? texture : null;
+        } catch (RuntimeException | ReflectiveOperationException ignored) {
+            return null;
+        }
+    }
+
     public boolean isEnabled() {
         return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.TABLIST)
                 && config().getBoolean("TABLIST.ENABLED", true);
@@ -153,6 +205,13 @@ public class TablistManager {
         String iconHeadSkin = inlinePlayerHeadSupported
                 ? config().getString("TABLIST.ICON-HEAD-SKIN", "<head:%player_name%>")
                 : "";
+        if (iconHeadSkin != null) {
+            String profileId = player.getUniqueId().toString();
+            iconHeadSkin = iconHeadSkin
+                    .replace("%player_name%", profileId)
+                    .replace("%player%", profileId)
+                    .replace("<player>", profileId);
+        }
         String iconMedia = config().getString("TABLIST.ICON-MEDIA", "");
         String normalizedIconMedia = iconMedia == null ? "" : iconMedia;
         boolean includeMediaBadge = hasMediaBadgeIncludePermission(player);
@@ -160,6 +219,9 @@ public class TablistManager {
         String mediaPlusBadge = resolveMediaPlusBadge(player, includeMediaBadge);
         String mediaBadge = resolveMediaBadge(mediaIconBadge, mediaPlusBadge, normalizedIconMedia);
         String nickname = resolveNickname(player);
+        String publicName = plugin.getHideManager() == null
+                ? player.getName()
+                : plugin.getHideManager().publicName(player);
 
         if (showTeam && teamName != null && !teamName.isBlank()) {
             teamSuffix = " &7[&b" + teamName.toUpperCase() + "&7]";
@@ -176,9 +238,9 @@ public class TablistManager {
 
         return applyInternalPlaceholders(configuredFormat, player)
                 .replace("%prefix%", prefix)
-                .replace("%player%", player.getName())
+                .replace("%player%", publicName)
                 .replace("%nick%", nickname)
-                .replace("<player>", player.getName())
+                .replace("<player>", publicName)
                 .replace("<nick>", nickname)
                 .replace("<icon_head_skin>", iconHeadSkin == null ? "" : iconHeadSkin)
                 .replace("<icon_media>", normalizedIconMedia)
@@ -323,17 +385,23 @@ public class TablistManager {
             return "";
         }
 
+        String publicName = plugin.getHideManager() == null
+                ? player.getName()
+                : plugin.getHideManager().publicName(player);
         return text
                 .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size()))
                 .replace("%max_players%", String.valueOf(Bukkit.getMaxPlayers()))
-                .replace("%player_name%", player.getName())
-                .replace("%player%", player.getName())
-                .replace("<player>", player.getName())
+                .replace("%player_name%", publicName)
+                .replace("%player%", publicName)
+                .replace("<player>", publicName)
                 .replace("%nick%", resolveNickname(player))
                 .replace("<nick>", resolveNickname(player));
     }
 
     private String resolveNickname(Player player) {
+        if (plugin.getHideManager() != null && plugin.getHideManager().isHidden(player.getUniqueId())) {
+            return plugin.getHideManager().publicName(player);
+        }
         if (!ColorUtils.hasPAPI()) {
             return player.getName();
         }
@@ -407,19 +475,23 @@ public class TablistManager {
             }
 
             boolean selfHead = isSelfHeadSource(source, player);
-            boolean paperSkinApplied = selfHead && builder.applyPaperSkin(player);
-            if (!paperSkinApplied) {
+            SkinTexture skinTexture = selfHead ? skinHeadTextures.get(player.getUniqueId()) : null;
+            if (skinTexture != null && skinTexture.isValid()) {
+                builder.name(player.getName());
+                builder.id(player.getUniqueId());
+                builder.profileProperty(skinTexture.value(), skinTexture.signature());
+            } else {
+                boolean paperSkinApplied = selfHead && builder.applyPaperSkin(player);
+                if (paperSkinApplied) {
+                    return Tag.inserting(builder.buildComponent());
+                }
+
                 builder.name(source);
                 UUID id = parseUuid(source);
                 if (id != null) {
                     builder.id(id);
                 } else if (selfHead) {
                     builder.id(player.getUniqueId());
-                }
-
-                SkinTexture skinTexture = skinHeadTextures.get(player.getUniqueId());
-                if (skinTexture != null && skinTexture.isValid() && selfHead) {
-                    builder.profileProperty(skinTexture.value(), skinTexture.signature());
                 }
             }
 
@@ -433,6 +505,11 @@ public class TablistManager {
         }
 
         if (source.equalsIgnoreCase(player.getName())) {
+            return true;
+        }
+
+        HideManager hideManager = plugin.getHideManager();
+        if (hideManager != null && source.equalsIgnoreCase(hideManager.plainPublicName(player))) {
             return true;
         }
 
@@ -597,6 +674,10 @@ public class TablistManager {
         }
 
         return null;
+    }
+
+    SkinTexture resolveLiveGameProfileSkinTexture(Player player) {
+        return resolveGameProfileTexture(player);
     }
 
     private SkinTexture resolveGameProfileTexture(Player player) {
@@ -1100,8 +1181,8 @@ public class TablistManager {
         return parsed;
     }
 
-    private record SkinTexture(String value, String signature) {
-        private boolean isValid() {
+    record SkinTexture(String value, String signature) {
+        boolean isValid() {
             return value != null && !value.isBlank();
         }
     }

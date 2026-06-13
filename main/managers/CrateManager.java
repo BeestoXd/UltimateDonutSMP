@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.block.Block;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -463,6 +465,12 @@ public class CrateManager {
         pendingBindCrates.clear();
     }
 
+    public void prepareForServerWipe() {
+        activeSessions.clear();
+        pendingBindCrates.clear();
+        keyBalanceCache.clear();
+    }
+
     public ClaimResult claimSelectedReward(Player player) {
         if (player == null) {
             return new ClaimResult(false, FailureReason.NO_PLAYER_DATA, "&cᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ.", null, null, 0);
@@ -489,8 +497,10 @@ public class CrateManager {
                     "&cʏᴏᴜ ɴᴏ ʟᴏɴɢᴇʀ ʜᴀᴠᴇ ᴀ ᴋᴇʏ ꜰᴏʀ " + getReadableCrateName(crate) + ".", crate, reward, 0);
         }
 
+        ItemStack preparedItem = null;
         if (reward.grant().type() == GrantType.ITEM) {
-            ItemStack rewardItem = createGrantItem(reward.grant());
+            preparedItem = createGrantItem(player, crate, reward);
+            ItemStack rewardItem = preparedItem;
             if (rewardItem == null || rewardItem.getType().isAir()) {
                 return new ClaimResult(false, FailureReason.INVALID_REWARD,
                         "&cᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴠᴀʟɪᴅ.", crate, reward, getKeyBalance(player, crate.id()));
@@ -517,7 +527,7 @@ public class CrateManager {
 
         boolean granted = false;
         try {
-            granted = grantReward(player, crate, reward);
+            granted = grantReward(player, crate, reward, preparedItem);
         } catch (Exception exception) {
             plugin.getLogger().log(Level.WARNING, "Failed to grant crate reward " + reward.id()
                     + " from crate " + crate.id() + " to " + player.getName(), exception);
@@ -732,18 +742,17 @@ public class CrateManager {
         return replaced;
     }
 
-    private boolean grantReward(Player player, CrateDefinition crate, CrateReward reward) {
+    private boolean grantReward(Player player, CrateDefinition crate, CrateReward reward, ItemStack preparedItem) {
         GrantDefinition grant = reward.grant();
         return switch (grant.type()) {
-            case ITEM -> grantItemReward(player, grant);
+            case ITEM -> grantItemReward(player, grant, preparedItem);
             case MONEY -> grantMoneyReward(player, grant);
             case SHARDS -> grantShardReward(player, grant);
             case COMMAND -> grantCommandReward(player, crate, reward, grant);
         };
     }
 
-    private boolean grantItemReward(Player player, GrantDefinition grant) {
-        ItemStack rewardItem = createGrantItem(grant);
+    private boolean grantItemReward(Player player, GrantDefinition grant, ItemStack rewardItem) {
         if (rewardItem == null || rewardItem.getType().isAir()) {
             return false;
         }
@@ -808,15 +817,48 @@ public class CrateManager {
         return true;
     }
 
-    private ItemStack createGrantItem(GrantDefinition grant) {
+    private ItemStack createGrantItem(Player player, CrateDefinition crate, CrateReward reward) {
+        GrantDefinition grant = reward.grant();
         DisplayItem item = grant.item();
         if (item == null || item.material() == null || item.material().isAir()) {
             return null;
         }
 
-        ItemStack grantedItem = createDisplayItem(item, item.amount());
+        ItemStack grantedItem = deserializeGrantItem(grant.serializedItemData(), crate, reward);
+        if (grantedItem == null || grantedItem.getType().isAir()) {
+            grantedItem = createDisplayItem(item, item.amount());
+        }
         stripPreviewLore(grantedItem);
+
+        if (plugin.getAmethystToolsManager().hasAmethystMetadata(grantedItem)) {
+            ItemStack amethystReward = plugin.getAmethystToolsManager().createRewardCopy(
+                    grantedItem,
+                    player.getUniqueId(),
+                    grant.amethystDurationSeconds()
+            );
+            if (amethystReward == null) {
+                plugin.getLogger().warning("Failed to prepare Amethyst crate reward '" + reward.id()
+                        + "' in crate '" + crate.id() + "' because its metadata is invalid.");
+                return null;
+            }
+            grantedItem = amethystReward;
+        }
+
         return grantedItem;
+    }
+
+    private ItemStack deserializeGrantItem(String encoded, CrateDefinition crate, CrateReward reward) {
+        if (encoded == null || encoded.isBlank()) {
+            return null;
+        }
+
+        try {
+            return ItemSerializationUtils.deserialize(encoded);
+        } catch (Exception exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to deserialize item data for crate reward '"
+                    + reward.id() + "' in crate '" + crate.id() + "'. Falling back to legacy item fields.", exception);
+            return null;
+        }
     }
 
     private ItemStack createDisplayItem(DisplayItem display, int amount) {
@@ -876,6 +918,29 @@ public class CrateManager {
             return new ActionResult(false, "&cʜᴏʟᴅ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ѕᴀᴠᴇ ɪɴ ʏᴏᴜʀ ᴍᴀɪɴ ʜᴀɴᴅ ꜰɪʀѕᴛ.");
         }
 
+        ItemStack storedItem = item.clone();
+        stripPreviewLore(storedItem);
+        long amethystDuration = 0L;
+        if (plugin.getAmethystToolsManager().hasAmethystMetadata(storedItem)) {
+            if (!plugin.getAmethystToolsManager().hasValidSignature(storedItem)) {
+                return new ActionResult(false, "&cThat Amethyst item has invalid metadata and cannot be used as a crate reward.");
+            }
+            amethystDuration = plugin.getAmethystToolsManager().getRemainingSeconds(storedItem);
+            if (amethystDuration <= 0L) {
+                return new ActionResult(false, "&cExpired Amethyst items cannot be used as crate rewards.");
+            }
+            storedItem.setAmount(1);
+        }
+
+        String serializedItemData;
+        try {
+            serializedItemData = ItemSerializationUtils.serialize(storedItem);
+        } catch (IOException exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to serialize crate reward for crate "
+                    + crate.id() + " slot " + slot, exception);
+            return new ActionResult(false, "&cFailed to serialize that item for the crate reward.");
+        }
+
         FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
         ConfigurationSection rewardsSection = cratesConfig.getConfigurationSection("CRATES." + crate.id() + ".REWARDS");
         if (rewardsSection == null) {
@@ -888,7 +953,7 @@ public class CrateManager {
         }
 
         String basePath = "CRATES." + crate.id() + ".REWARDS." + rewardKey;
-        writeItemReward(cratesConfig, basePath, slot, item);
+        writeItemReward(cratesConfig, basePath, slot, storedItem, serializedItemData, amethystDuration);
 
         if (!plugin.getConfigManager().saveCrates()) {
             return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ᴡʜɪʟᴇ ᴜᴘᴅᴀᴛɪɴɢ ᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ.");
@@ -899,7 +964,14 @@ public class CrateManager {
                 + " ʀᴇᴡᴀʀᴅ ɪɴ ѕʟᴏᴛ &f" + slot + "&a ꜰᴏʀ ᴄʀᴀᴛᴇ &f" + crate.id() + "&a.");
     }
 
-    private void writeItemReward(FileConfiguration cratesConfig, String basePath, int slot, ItemStack item) {
+    private void writeItemReward(
+            FileConfiguration cratesConfig,
+            String basePath,
+            int slot,
+            ItemStack item,
+            String serializedItemData,
+            long amethystDuration
+    ) {
         ItemStack clonedItem = item.clone();
         ItemMeta meta = clonedItem.getItemMeta();
 
@@ -916,6 +988,8 @@ public class CrateManager {
         cratesConfig.set(basePath + ".GRANT.LORE", serializeGrantLore(meta));
         cratesConfig.set(basePath + ".GRANT.AMOUNT", Math.max(1, clonedItem.getAmount()));
         cratesConfig.set(basePath + ".GRANT.ENCHANTMENTS", serializeEnchantments(clonedItem));
+        cratesConfig.set(basePath + ".GRANT.ITEM-DATA", serializedItemData);
+        cratesConfig.set(basePath + ".GRANT.AMETHYST-DURATION", amethystDuration > 0L ? amethystDuration : null);
         cratesConfig.set(basePath + ".GRANT.REQUIRES-INVENTORY-SPACE", true);
     }
 
@@ -1155,7 +1229,9 @@ public class CrateManager {
             case ITEM -> {
                 DisplayItem item = parseDisplayItem(section, "grant reward " + rewardId + " in crate " + crateId, Material.STONE);
                 yield new GrantDefinition(type, item, 0D, 0L, List.of(),
-                        section.getBoolean("REQUIRES-INVENTORY-SPACE", true));
+                        section.getBoolean("REQUIRES-INVENTORY-SPACE", true),
+                        section.getString("ITEM-DATA", ""),
+                        Math.max(0L, section.getLong("AMETHYST-DURATION", 0L)));
             }
             case COMMAND -> new GrantDefinition(
                     type,
@@ -1163,7 +1239,9 @@ public class CrateManager {
                     0D,
                     0L,
                     readStringList(section, "COMMANDS"),
-                    false
+                    false,
+                    "",
+                    0L
             );
             case MONEY -> new GrantDefinition(
                     type,
@@ -1175,7 +1253,9 @@ public class CrateManager {
                     section.getDouble("AMOUNT", 0D),
                     0L,
                     List.of(),
-                    false
+                    false,
+                    "",
+                    0L
             );
             case SHARDS -> new GrantDefinition(
                     type,
@@ -1187,7 +1267,9 @@ public class CrateManager {
                     0D,
                     Math.max(0L, section.getLong("AMOUNT", 0L)),
                     List.of(),
-                    false
+                    false,
+                    "",
+                    0L
             );
         };
     }
@@ -1441,7 +1523,9 @@ public class CrateManager {
             double moneyAmount,
             long shardAmount,
             List<String> commands,
-            boolean requiresInventorySpace
+            boolean requiresInventorySpace,
+            String serializedItemData,
+            long amethystDurationSeconds
     ) {
     }
 

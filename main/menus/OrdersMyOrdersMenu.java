@@ -52,7 +52,11 @@ public class OrdersMyOrdersMenu extends BaseMenu {
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 2, ItemUtils.createItem(
                 Material.HOPPER,
-                "&aѕᴏʀᴛ: &f" + sortMode.displayName(),
+                OrdersMenuSupport.tr("&aѕᴏʀᴛ: &f") + plugin.getLanguageManager().display(
+                        "ORDER_SORTS",
+                        sortMode.name(),
+                        sortMode.displayName()
+                ),
                 List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ ᴍᴏᴅᴇ")
         ));
         set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴏʀᴅᴇʀѕ")));

@@ -28,6 +28,9 @@ public class PlayerDeathListener implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().clearNametag(victim.getUniqueId());
+        }
 
         if (plugin.getDuelManager() != null && plugin.getDuelManager().handleDuelDeath(event)) {
             return;
@@ -67,7 +70,7 @@ public class PlayerDeathListener implements Listener {
                     String msg = plugin.getConfigManager().getMessage("BOUNTY.CLAIM-SUCCESS",
                             "{amount}", NumberUtils.format(amount),
                             "{amount_formatted}", plugin.getCurrencyManager().formatMoney(amount),
-                            "{player}", victim.getName());
+                            "{player}", plugin.getHideManager().publicName(victim));
                     killer.sendMessage(ColorUtils.toComponent(msg));
                 }
             }
@@ -136,7 +139,7 @@ public class PlayerDeathListener implements Listener {
         };
 
         String msg = template
-                .replace("{player}", victim.getName())
+                .replace("{player}", plugin.getHideManager().publicName(victim))
                 .replace("{killer}", killerName != null ? killerName : "ᴜɴᴋɴᴏᴡɴ");
 
         return ColorUtils.colorize(prefix + msg);
@@ -178,8 +181,8 @@ public class PlayerDeathListener implements Listener {
     }
 
     private String buildPlayerKillMessage(Player victim, Player killer) {
-        String victimName = victim == null ? "ᴜɴᴋɴᴏᴡɴ" : victim.getName();
-        String killerName = killer == null ? "ᴜɴᴋɴᴏᴡɴ" : killer.getName();
+        String victimName = victim == null ? "ᴜɴᴋɴᴏᴡɴ" : plugin.getHideManager().publicName(victim);
+        String killerName = killer == null ? "ᴜɴᴋɴᴏᴡɴ" : plugin.getHideManager().publicName(killer);
         return ColorUtils.colorize("&c\u2620 " + victimName + " \u1D21\u1D00\u0455 \u0455\u029F\u1D00\u026A\u0274 \u0299\u028F " + killerName);
     }
 }

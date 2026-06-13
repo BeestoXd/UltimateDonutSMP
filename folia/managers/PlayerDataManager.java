@@ -63,6 +63,10 @@ public class PlayerDataManager {
         return cache.values();
     }
 
+    public void discardAllForServerWipe() {
+        cache.clear();
+    }
+
     public boolean isLoaded(UUID uuid) {
         return cache.containsKey(uuid);
     }

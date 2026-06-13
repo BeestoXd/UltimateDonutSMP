@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.LeaderboardManager;
 import com.bx.ultimateDonutSmp.menus.LeaderboardMenu;
 import com.bx.ultimateDonutSmp.menus.LeaderboardTypeMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -24,6 +25,11 @@ public class LeaderboardCommand implements CommandExecutor {
         if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
         if (!plugin.getConfigManager().isCommandEnabled("LEADERBOARDS")) {
             player.sendMessage(ColorUtils.toComponent("&cʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            return true;
+        }
+
+        if (args.length == 0 && label.equalsIgnoreCase("baltop")) {
+            new LeaderboardTypeMenu(plugin, LeaderboardManager.LeaderboardType.MONEY).open(player);
             return true;
         }
 

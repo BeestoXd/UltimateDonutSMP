@@ -13,15 +13,17 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class ConfigManager {
@@ -50,7 +52,9 @@ public class ConfigManager {
             "spawn-stash.yml",
             "network.yml",
             "staff-mode.yml",
+            "hide.yml",
             "database.yml",
+            "server-wipe.yml",
             "discord.yml"
     );
 
@@ -59,6 +63,7 @@ public class ConfigManager {
     private static final String SETUP_COMMENT_PREFIX = "# UDS setup:";
 
     private final UltimateDonutSmp plugin;
+    private final Set<String> invalidConfigurations = new HashSet<>();
 
     private FileConfiguration config;
     private FileConfiguration messages;
@@ -83,7 +88,9 @@ public class ConfigManager {
     private FileConfiguration spawnStash;
     private FileConfiguration network;
     private FileConfiguration staffMode;
+    private FileConfiguration hide;
     private FileConfiguration database;
+    private FileConfiguration serverWipe;
     private FileConfiguration discord;
 
     public ConfigManager(UltimateDonutSmp plugin) {
@@ -101,32 +108,33 @@ public class ConfigManager {
     }
 
     private void reloadLoadedConfigurations() {
-        plugin.reloadConfig();
-        config       = plugin.getConfig();
-        messages     = load("messages.yml");
-        deathMessages= load("death-messages.yml");
-        menus        = load("menus.yml");
-        scoreboard   = load("scoreboard.yml");
-        shop         = load("shop.yml");
-        sounds       = load("sounds.yml");
-        billford     = load("billford.yml");
-        rtp          = load("rtp.yml");
-        worth        = load("worth.yml");
-        amethystTools = load("amethyst-tools.yml");
-        enderChest   = load("ender-chest.yml");
-        invsee       = load("invsee.yml");
-        freeze       = load("freeze.yml");
-        auctionHouse = load("auction-house.yml");
-        orders       = load("orders.yml");
-        duels        = load("duels.yml");
-        ffa          = load("ffa.yml");
-        crates       = load("crates.yml");
-        spawners     = load("spawners.yml");
-        spawnStash   = load("spawn-stash.yml");
-        network      = load("network.yml");
-        staffMode    = load("staff-mode.yml");
-        database     = load("database.yml");
-        discord      = load("discord.yml");
+        config       = load("config.yml", config);
+        messages     = load("messages.yml", messages);
+        deathMessages= load("death-messages.yml", deathMessages);
+        menus        = load("menus.yml", menus);
+        scoreboard   = load("scoreboard.yml", scoreboard);
+        shop         = load("shop.yml", shop);
+        sounds       = load("sounds.yml", sounds);
+        billford     = load("billford.yml", billford);
+        rtp          = load("rtp.yml", rtp);
+        worth        = load("worth.yml", worth);
+        amethystTools = load("amethyst-tools.yml", amethystTools);
+        enderChest   = load("ender-chest.yml", enderChest);
+        invsee       = load("invsee.yml", invsee);
+        freeze       = load("freeze.yml", freeze);
+        auctionHouse = load("auction-house.yml", auctionHouse);
+        orders       = load("orders.yml", orders);
+        duels        = load("duels.yml", duels);
+        ffa          = load("ffa.yml", ffa);
+        crates       = load("crates.yml", crates);
+        spawners     = load("spawners.yml", spawners);
+        spawnStash   = load("spawn-stash.yml", spawnStash);
+        network      = load("network.yml", network);
+        staffMode    = load("staff-mode.yml", staffMode);
+        hide         = load("hide.yml", hide);
+        database     = load("database.yml", database);
+        serverWipe   = load("server-wipe.yml", serverWipe);
+        discord      = load("discord.yml", discord);
     }
 
     private void syncBundledConfigurations() {
@@ -137,9 +145,7 @@ public class ConfigManager {
 
         int created = 0;
         int updated = 0;
-        int restored = 0;
         int skipped = 0;
-        int snapshots = 0;
 
         for (String name : CONFIGURATION_RESOURCES) {
             SyncResult result = syncBundledConfiguration(name, backupDirectory);
@@ -149,22 +155,14 @@ public class ConfigManager {
             if (result.updated) {
                 updated++;
             }
-            if (result.restored) {
-                restored++;
-            }
             if (result.skipped) {
                 skipped++;
-            }
-            if (result.snapshotUpdated) {
-                snapshots++;
             }
         }
 
         plugin.getLogger().info("Configuration sync complete: "
                 + created + " created, "
                 + updated + " updated, "
-                + restored + " restored, "
-                + snapshots + " default snapshots refreshed"
                 + (skipped > 0 ? ", " + skipped + " skipped" : "")
                 + ".");
     }
@@ -185,7 +183,6 @@ public class ConfigManager {
         if (!targetFile.exists()) {
             if (copyBundledResource(name, targetFile, false)) {
                 result.created = true;
-                result.snapshotUpdated = refreshDefaultSnapshot(name);
             } else {
                 result.skipped = true;
             }
@@ -196,57 +193,46 @@ public class ConfigManager {
         try {
             current = loadYamlFile(targetFile);
         } catch (IOException | InvalidConfigurationException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to load " + targetFile.getPath() + ", restoring default copy.", e);
+            invalidConfigurations.add(name);
+            result.skipped = true;
+            plugin.getLogger().log(Level.SEVERE,
+                    "Skipping configuration sync for invalid YAML without replacing the original file: "
+                            + targetFile.getPath(),
+                    e);
             backupExistingFile(targetFile, backupDirectory);
-            if (copyBundledResource(name, targetFile, true)) {
-                result.restored = true;
-                result.snapshotUpdated = refreshDefaultSnapshot(name);
-            } else {
-                result.skipped = true;
-            }
             return result;
         }
 
-        YamlConfiguration previousDefault = loadPreviousDefaultSnapshot(name);
-        int mergedPaths = mergeBundledDefaults(name, current, bundledDefault, previousDefault);
-        if (mergedPaths > 0) {
-            backupExistingFile(targetFile, backupDirectory);
-            try {
-                current.save(targetFile);
-                result.updated = true;
-                syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, true);
-                syncBundledCommentTags(name, targetFile, backupDirectory, true);
-                syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, true);
-                syncCrashProtectionPlacement(name, targetFile, backupDirectory, true);
-                syncBundledSetupComments(name, targetFile, backupDirectory, true);
-                result.snapshotUpdated = refreshDefaultSnapshot(name);
-                plugin.getLogger().info("Updated " + name + " with " + mergedPaths + " bundled default path(s).");
-            } catch (IOException e) {
-                result.skipped = true;
-                plugin.getLogger().log(Level.WARNING, "Failed to save synced configuration " + targetFile.getPath(), e);
-            }
+        TextFileContent currentText;
+        try {
+            currentText = readTextFile(targetFile);
+        } catch (IOException e) {
+            result.skipped = true;
+            plugin.getLogger().log(Level.WARNING, "Failed to read configuration for line-preserving sync: "
+                    + targetFile.getPath(), e);
             return result;
         }
 
-        boolean rtpUpdated = syncRtpSearchDefaultsAndComments(name, targetFile, backupDirectory, false);
-        boolean commentsUpdated = syncBundledCommentTags(name, targetFile, backupDirectory, rtpUpdated);
-        boolean pricingUpdated = syncOrdersPricingDefaultsAndComments(name, targetFile, backupDirectory, rtpUpdated || commentsUpdated);
-        boolean crashProtectionUpdated = syncCrashProtectionPlacement(
-                name,
-                targetFile,
-                backupDirectory,
-                rtpUpdated || commentsUpdated || pricingUpdated
-        );
-        boolean setupCommentsUpdated = syncBundledSetupComments(
-                name,
-                targetFile,
-                backupDirectory,
-                rtpUpdated || commentsUpdated || pricingUpdated || crashProtectionUpdated
-        );
-        if (rtpUpdated || commentsUpdated || pricingUpdated || crashProtectionUpdated || setupCommentsUpdated) {
+        int mergedPaths = mergeBundledDefaults(name, currentText.lines(), current, bundledDefault);
+        if (mergedPaths == 0) {
+            return result;
+        }
+
+        try {
+            validateYamlLines(currentText.lines());
+            if (!backupExistingFile(targetFile, backupDirectory)) {
+                result.skipped = true;
+                plugin.getLogger().warning("Skipped configuration sync because backup creation failed: "
+                        + targetFile.getPath());
+                return result;
+            }
+            writeTextFileAtomically(targetFile, currentText);
             result.updated = true;
+            plugin.getLogger().info("Added " + mergedPaths + " missing bundled default path(s) to " + name + ".");
+        } catch (IOException | InvalidConfigurationException e) {
+            result.skipped = true;
+            plugin.getLogger().log(Level.WARNING, "Failed to save synced configuration " + targetFile.getPath(), e);
         }
-        result.snapshotUpdated = refreshDefaultSnapshot(name);
         return result;
     }
 
@@ -369,9 +355,191 @@ public class ConfigManager {
         }
     }
 
+    private boolean syncBundledInlineComments(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
+        try {
+            List<String> bundledLines = readBundledResourceLines(resourceName);
+            List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            boolean changed = syncBundledInlineComments(lines, bundledLines, resourceName);
+
+            if (!changed) {
+                return false;
+            }
+
+            validateYamlLines(lines);
+            if (!alreadyBackedUp) {
+                backupExistingFile(targetFile, backupDirectory);
+            }
+            Files.write(targetFile.toPath(), lines, StandardCharsets.UTF_8);
+            plugin.getLogger().info("Updated " + resourceName + " inline option comment tags.");
+            return true;
+        } catch (IOException | InvalidConfigurationException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to sync inline option comments for " + resourceName + ".", e);
+            return false;
+        }
+    }
+
+    private boolean syncBundledInlineComments(List<String> lines, List<String> bundledLines, String resourceName) {
+        Map<String, YamlPathLine> bundledLineIndex = indexYamlPathLines(bundledLines);
+        Map<String, YamlPathLine> currentLineIndex = indexYamlPathLines(lines);
+        boolean changed = false;
+
+        for (Map.Entry<String, YamlPathLine> entry : bundledLineIndex.entrySet()) {
+            String path = entry.getKey();
+            YamlPathLine bundledNode = entry.getValue();
+            if (bundledNode.sectionSyntax || isUserManagedBundledPath(resourceName, path)) {
+                continue;
+            }
+
+            YamlPathLine currentNode = currentLineIndex.get(path);
+            if (currentNode == null || currentNode.sectionSyntax) {
+                continue;
+            }
+
+            String bundledComment = yamlInlineComment(bundledLines.get(bundledNode.lineIndex));
+            if (bundledComment.isBlank()) {
+                continue;
+            }
+
+            String currentLine = lines.get(currentNode.lineIndex);
+            if (!canPlaceYamlInlineComment(currentLine)) {
+                String cleanedLine = removeManagedInlineCommentFromQuotedValue(currentLine, bundledComment);
+                if (!cleanedLine.equals(currentLine)) {
+                    lines.set(currentNode.lineIndex, cleanedLine);
+                    changed = true;
+                }
+                continue;
+            }
+
+            String updatedLine = replaceYamlInlineComment(currentLine, bundledComment);
+            if (!updatedLine.equals(currentLine)) {
+                lines.set(currentNode.lineIndex, updatedLine);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    private boolean syncBundledTopLevelOrder(String resourceName, File targetFile, File backupDirectory, boolean alreadyBackedUp) {
+        try {
+            List<String> bundledLines = readBundledResourceLines(resourceName);
+            List<String> lines = Files.readAllLines(targetFile.toPath(), StandardCharsets.UTF_8);
+            boolean changed = syncBundledTopLevelOrder(lines, bundledLines);
+
+            if (!changed) {
+                return false;
+            }
+
+            validateYamlLines(lines);
+            if (!alreadyBackedUp) {
+                backupExistingFile(targetFile, backupDirectory);
+            }
+            Files.write(targetFile.toPath(), lines, StandardCharsets.UTF_8);
+            plugin.getLogger().info("Updated " + resourceName + " top-level section order.");
+            return true;
+        } catch (IOException | InvalidConfigurationException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to sync top-level section order for " + resourceName + ".", e);
+            return false;
+        }
+    }
+
+    private boolean syncBundledTopLevelOrder(List<String> lines, List<String> bundledLines) {
+        Map<String, YamlPathLine> bundledIndex = indexYamlPathLines(bundledLines);
+        Map<String, YamlPathLine> currentIndex = indexYamlPathLines(lines);
+        List<String> bundledTopLevel = bundledIndex.values().stream()
+                .filter(node -> parentPath(node.path).isEmpty())
+                .map(YamlPathLine::path)
+                .toList();
+        if (bundledTopLevel.isEmpty()) {
+            return false;
+        }
+
+        List<YamlPathLine> currentTopLevel = currentIndex.values().stream()
+                .filter(node -> parentPath(node.path).isEmpty())
+                .sorted((first, second) -> Integer.compare(first.lineIndex, second.lineIndex))
+                .toList();
+        if (currentTopLevel.isEmpty()) {
+            return false;
+        }
+
+        int firstBlockStart = attachedCommentStart(lines, currentTopLevel.get(0).lineIndex);
+        List<String> reordered = new ArrayList<>(lines.subList(0, firstBlockStart));
+        Set<String> appended = new HashSet<>();
+
+        for (String path : bundledTopLevel) {
+            YamlPathLine node = currentIndex.get(path);
+            if (node != null && parentPath(node.path).isEmpty()) {
+                appendYamlTopLevelBlock(reordered, extractYamlNodeBlock(lines, node, true));
+                appended.add(path);
+            }
+        }
+
+        for (YamlPathLine node : currentTopLevel) {
+            if (!appended.contains(node.path)) {
+                appendYamlTopLevelBlock(reordered, extractYamlNodeBlock(lines, node, true));
+            }
+        }
+
+        List<String> trimmed = trimTrailingBlankLines(reordered);
+        if (trimmed.equals(lines)) {
+            return false;
+        }
+
+        lines.clear();
+        lines.addAll(trimmed);
+        return true;
+    }
+
     private List<String> readBundledResourceLines(String name) throws IOException {
         String content = new String(readBundledResourceBytes(name), StandardCharsets.UTF_8);
         return new ArrayList<>(Arrays.asList(content.split("\\R", -1)));
+    }
+
+    private TextFileContent readTextFile(File file) throws IOException {
+        String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        String lineSeparator = detectLineSeparator(content);
+        boolean trailingLineSeparator = content.endsWith("\r\n")
+                || content.endsWith("\n")
+                || content.endsWith("\r");
+        List<String> lines = new ArrayList<>(Arrays.asList(content.split("\\r\\n|\\n|\\r", -1)));
+        if (trailingLineSeparator && !lines.isEmpty()) {
+            lines.remove(lines.size() - 1);
+        }
+        return new TextFileContent(lines, lineSeparator, trailingLineSeparator);
+    }
+
+    private String detectLineSeparator(String content) {
+        int crlf = content.indexOf("\r\n");
+        int lf = content.indexOf('\n');
+        int cr = content.indexOf('\r');
+        if (crlf >= 0 && (lf < 0 || crlf <= lf) && (cr < 0 || crlf <= cr)) {
+            return "\r\n";
+        }
+        if (lf >= 0 && (cr < 0 || lf < cr)) {
+            return "\n";
+        }
+        if (cr >= 0) {
+            return "\r";
+        }
+        return System.lineSeparator();
+    }
+
+    private void writeTextFileAtomically(File file, TextFileContent content) throws IOException {
+        Path target = file.toPath();
+        Path parent = target.getParent();
+        Files.createDirectories(parent);
+        Path temporary = Files.createTempFile(parent, "." + file.getName() + ".", ".tmp");
+        try {
+            Files.writeString(temporary, content.serialize(), StandardCharsets.UTF_8);
+            Files.move(
+                    temporary,
+                    target,
+                    StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+        } finally {
+            Files.deleteIfExists(temporary);
+        }
     }
 
     private List<String> extractManagedHeader(List<String> lines) {
@@ -1062,57 +1230,569 @@ public class ConfigManager {
 
     private int mergeBundledDefaults(
             String resourceName,
+            List<String> currentLines,
             YamlConfiguration current,
-            YamlConfiguration bundledDefault,
-            YamlConfiguration previousDefault
+            YamlConfiguration bundledDefault
+    ) {
+        List<String> bundledLines;
+        try {
+            bundledLines = readBundledResourceLines(resourceName);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to read bundled configuration lines for " + resourceName, e);
+            return 0;
+        }
+
+        return mergeBundledDefaults(resourceName, currentLines, bundledLines, current, bundledDefault);
+    }
+
+    private int mergeBundledDefaults(
+            String resourceName,
+            List<String> currentLines,
+            List<String> bundledLines,
+            YamlConfiguration current,
+            YamlConfiguration bundledDefault
     ) {
         int changes = 0;
+        Map<String, YamlPathLine> bundledLineIndex = indexYamlPathLines(bundledLines);
+        Set<String> insertedSubtrees = new HashSet<>();
 
         for (String path : bundledDefault.getKeys(true)) {
-            if (isUserManagedBundledPath(resourceName, path)) {
+            if (isUserManagedBundledPath(resourceName, path) || isUnderAnyPath(insertedSubtrees, path)) {
                 continue;
             }
 
             if (bundledDefault.isConfigurationSection(path)) {
                 if (!current.contains(path, true) && !hasScalarParent(current, path)) {
-                    current.createSection(path);
-                    changes++;
+                    if (insertBundledPathBlock(currentLines, bundledLines, bundledLineIndex, path)) {
+                        insertedSubtrees.add(path);
+                        changes += countBundledDefaultPaths(resourceName, bundledDefault, path);
+                    }
                 }
                 continue;
             }
 
             if (!current.contains(path, true)) {
                 if (!hasScalarParent(current, path)) {
-                    current.set(path, copyConfigValue(bundledDefault.get(path)));
-                    changes++;
+                    if (insertBundledPathBlock(currentLines, bundledLines, bundledLineIndex, path)) {
+                        changes++;
+                    }
                 }
-                continue;
-            }
-
-            if (previousDefault == null
-                    || !previousDefault.contains(path, true)
-                    || previousDefault.isConfigurationSection(path)) {
-                continue;
-            }
-
-            Object currentValue = current.get(path);
-            Object previousValue = previousDefault.get(path);
-            Object bundledValue = bundledDefault.get(path);
-
-            if (valuesEquivalent(currentValue, previousValue)
-                    && !valuesEquivalent(currentValue, bundledValue)) {
-                current.set(path, copyConfigValue(bundledValue));
-                changes++;
             }
         }
 
         return changes;
     }
 
+    private boolean insertBundledPathBlock(
+            List<String> currentLines,
+            List<String> bundledLines,
+            Map<String, YamlPathLine> bundledLineIndex,
+            String path
+    ) {
+        YamlPathLine bundledNode = bundledLineIndex.get(path);
+        if (bundledNode == null) {
+            return false;
+        }
+
+        Map<String, YamlPathLine> currentLineIndex = indexYamlPathLines(currentLines);
+        int insertAt = findBundledOrderInsertionIndex(currentLines, currentLineIndex, bundledLineIndex, path);
+        List<String> block = extractYamlNodeBlock(bundledLines, bundledNode, true);
+        insertYamlBlock(currentLines, insertAt, block);
+        return true;
+    }
+
+    private int findBundledOrderInsertionIndex(
+            List<String> currentLines,
+            Map<String, YamlPathLine> currentLineIndex,
+            Map<String, YamlPathLine> bundledLineIndex,
+            String path
+    ) {
+        List<YamlPathLine> siblings = bundledLineIndex.values().stream()
+                .filter(node -> parentPath(node.path).equals(parentPath(path)))
+                .toList();
+
+        int siblingIndex = -1;
+        for (int index = 0; index < siblings.size(); index++) {
+            if (siblings.get(index).path.equals(path)) {
+                siblingIndex = index;
+                break;
+            }
+        }
+
+        for (int index = siblingIndex - 1; index >= 0; index--) {
+            YamlPathLine currentSibling = currentLineIndex.get(siblings.get(index).path);
+            if (currentSibling != null) {
+                return findYamlNodeEnd(currentLines, currentSibling);
+            }
+        }
+
+        for (int index = siblingIndex + 1; index < siblings.size(); index++) {
+            YamlPathLine currentSibling = currentLineIndex.get(siblings.get(index).path);
+            if (currentSibling != null) {
+                return attachedCommentStart(currentLines, currentSibling.lineIndex);
+            }
+        }
+
+        YamlPathLine parent = currentLineIndex.get(parentPath(path));
+        if (parent != null) {
+            return findYamlNodeEnd(currentLines, parent);
+        }
+        return currentLines.size();
+    }
+
+    private Map<String, YamlPathLine> indexYamlPathLines(List<String> lines) {
+        Map<String, YamlPathLine> index = new LinkedHashMap<>();
+        List<YamlStackEntry> stack = new ArrayList<>();
+        List<Integer> listItemIndents = new ArrayList<>();
+        int blockScalarBaseIndent = -1;
+
+        for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
+            String line = lines.get(lineIndex);
+            String trimmed = line.trim();
+            int indent = leadingWhitespace(line).length();
+
+            if (blockScalarBaseIndent >= 0) {
+                if (trimmed.isEmpty() || indent > blockScalarBaseIndent) {
+                    continue;
+                }
+                blockScalarBaseIndent = -1;
+            }
+
+            if (trimmed.isEmpty() || trimmed.startsWith("#") || trimmed.startsWith("-")) {
+                if (trimmed.startsWith("-")) {
+                    while (!listItemIndents.isEmpty()
+                            && indent <= listItemIndents.get(listItemIndents.size() - 1)) {
+                        listItemIndents.remove(listItemIndents.size() - 1);
+                    }
+                    listItemIndents.add(indent);
+                }
+                continue;
+            }
+
+            while (!listItemIndents.isEmpty()
+                    && indent <= listItemIndents.get(listItemIndents.size() - 1)) {
+                listItemIndents.remove(listItemIndents.size() - 1);
+            }
+            if (!listItemIndents.isEmpty()) {
+                continue;
+            }
+
+            int colonIndex = yamlKeyColonIndex(line, indent);
+            if (colonIndex < 0) {
+                continue;
+            }
+
+            while (!stack.isEmpty() && stack.get(stack.size() - 1).indent >= indent) {
+                stack.remove(stack.size() - 1);
+            }
+
+            String key = line.substring(indent, colonIndex).trim();
+            if (key.isEmpty()) {
+                continue;
+            }
+
+            String path = stack.isEmpty() ? key : stack.get(stack.size() - 1).path + "." + key;
+            String rawValue = line.substring(colonIndex + 1);
+            String value = yamlValueWithoutInlineComment(rawValue).trim();
+            boolean blockScalar = isBlockScalarValue(value) || isUnclosedQuotedScalarValue(rawValue);
+            boolean sectionSyntax = value.isEmpty();
+
+            index.putIfAbsent(path, new YamlPathLine(path, lineIndex, indent, sectionSyntax, blockScalar));
+            if (sectionSyntax) {
+                stack.add(new YamlStackEntry(indent, path));
+            }
+            if (blockScalar) {
+                blockScalarBaseIndent = indent;
+            }
+        }
+
+        return index;
+    }
+
+    private int yamlKeyColonIndex(String line, int indent) {
+        int colonIndex = line.indexOf(':', indent);
+        if (colonIndex <= indent) {
+            return -1;
+        }
+
+        String key = line.substring(indent, colonIndex).trim();
+        if (key.isEmpty() || key.startsWith("-") || key.startsWith("#")) {
+            return -1;
+        }
+        return colonIndex;
+    }
+
+    private String yamlValueWithoutInlineComment(String rawValue) {
+        boolean singleQuoted = false;
+        boolean doubleQuoted = false;
+        boolean escaped = false;
+        for (int index = 0; index < rawValue.length(); index++) {
+            char current = rawValue.charAt(index);
+            if (current == '"' && !singleQuoted && !escaped) {
+                doubleQuoted = !doubleQuoted;
+            } else if (current == '\'' && !doubleQuoted) {
+                singleQuoted = !singleQuoted;
+            } else if (current == '#'
+                    && !singleQuoted
+                    && !doubleQuoted
+                    && (index == 0 || Character.isWhitespace(rawValue.charAt(index - 1)))) {
+                return rawValue.substring(0, index);
+            }
+            escaped = current == '\\' && doubleQuoted && !escaped;
+            if (current != '\\') {
+                escaped = false;
+            }
+        }
+        return rawValue;
+    }
+
+    private boolean isUnclosedQuotedScalarValue(String rawValue) {
+        String trimmed = rawValue.stripLeading();
+        if (!trimmed.startsWith("\"") && !trimmed.startsWith("'")) {
+            return false;
+        }
+
+        boolean singleQuoted = false;
+        boolean doubleQuoted = false;
+        boolean escaped = false;
+        for (int index = 0; index < rawValue.length(); index++) {
+            char current = rawValue.charAt(index);
+            if (current == '"' && !singleQuoted && !escaped) {
+                doubleQuoted = !doubleQuoted;
+            } else if (current == '\'' && !doubleQuoted) {
+                if (singleQuoted && index + 1 < rawValue.length() && rawValue.charAt(index + 1) == '\'') {
+                    index++;
+                } else {
+                    singleQuoted = !singleQuoted;
+                }
+            }
+            escaped = current == '\\' && doubleQuoted && !escaped;
+            if (current != '\\') {
+                escaped = false;
+            }
+        }
+        return singleQuoted || doubleQuoted;
+    }
+
+    private boolean canPlaceYamlInlineComment(String line) {
+        int colonIndex = yamlKeyColonIndex(line, leadingWhitespace(line).length());
+        if (colonIndex < 0) {
+            return false;
+        }
+        return !isUnclosedQuotedScalarValue(line.substring(colonIndex + 1));
+    }
+
+    private String removeManagedInlineCommentFromQuotedValue(String line, String bundledComment) {
+        int colonIndex = yamlKeyColonIndex(line, leadingWhitespace(line).length());
+        if (colonIndex < 0 || bundledComment.isBlank()) {
+            return line;
+        }
+        String marker = " " + bundledComment.trim();
+        int markerIndex = line.indexOf(marker, colonIndex + 1);
+        if (markerIndex < 0) {
+            return line;
+        }
+        return line.substring(0, markerIndex) + line.substring(markerIndex + marker.length());
+    }
+
+    private boolean containsManagedInlineCommentText(String line) {
+        int commentIndex = line.indexOf('#');
+        while (commentIndex >= 0) {
+            if (isManagedInlineComment(line.substring(commentIndex).trim())) {
+                return true;
+            }
+            commentIndex = line.indexOf('#', commentIndex + 1);
+        }
+        return false;
+    }
+
+    private boolean isManagedInlineComment(String comment) {
+        return comment.startsWith("# Enables ")
+                || comment.startsWith("# Sets ")
+                || comment.startsWith("# Configures ")
+                || comment.startsWith("# Selects ")
+                || comment.startsWith("# Removes ")
+                || comment.startsWith("# Uses ")
+                || comment.startsWith("# Requires ")
+                || comment.startsWith("# Plays ")
+                || comment.startsWith("# Applies ")
+                || comment.startsWith("# Resets ");
+    }
+
+    private String yamlInlineComment(String line) {
+        int colonIndex = yamlKeyColonIndex(line, leadingWhitespace(line).length());
+        if (colonIndex < 0) {
+            return "";
+        }
+
+        String rawValue = line.substring(colonIndex + 1);
+        boolean singleQuoted = false;
+        boolean doubleQuoted = false;
+        boolean escaped = false;
+        for (int index = 0; index < rawValue.length(); index++) {
+            char current = rawValue.charAt(index);
+            if (current == '"' && !singleQuoted && !escaped) {
+                doubleQuoted = !doubleQuoted;
+            } else if (current == '\'' && !doubleQuoted) {
+                singleQuoted = !singleQuoted;
+            } else if (current == '#'
+                    && !singleQuoted
+                    && !doubleQuoted
+                    && (index == 0 || Character.isWhitespace(rawValue.charAt(index - 1)))) {
+                return rawValue.substring(index).trim();
+            }
+            escaped = current == '\\' && doubleQuoted && !escaped;
+            if (current != '\\') {
+                escaped = false;
+            }
+        }
+        return "";
+    }
+
+    private String replaceYamlInlineComment(String line, String desiredComment) {
+        int colonIndex = yamlKeyColonIndex(line, leadingWhitespace(line).length());
+        if (colonIndex < 0 || desiredComment.isBlank()) {
+            return line;
+        }
+
+        String rawValue = line.substring(colonIndex + 1);
+        int commentIndex = yamlInlineCommentIndex(rawValue);
+        String valuePart = commentIndex >= 0 ? rawValue.substring(0, commentIndex) : rawValue;
+        return line.substring(0, colonIndex + 1)
+                + valuePart.stripTrailing()
+                + " "
+                + desiredComment.trim();
+    }
+
+    private int yamlInlineCommentIndex(String rawValue) {
+        boolean singleQuoted = false;
+        boolean doubleQuoted = false;
+        boolean escaped = false;
+        for (int index = 0; index < rawValue.length(); index++) {
+            char current = rawValue.charAt(index);
+            if (current == '"' && !singleQuoted && !escaped) {
+                doubleQuoted = !doubleQuoted;
+            } else if (current == '\'' && !doubleQuoted) {
+                singleQuoted = !singleQuoted;
+            } else if (current == '#'
+                    && !singleQuoted
+                    && !doubleQuoted
+                    && (index == 0 || Character.isWhitespace(rawValue.charAt(index - 1)))) {
+                return index;
+            }
+            escaped = current == '\\' && doubleQuoted && !escaped;
+            if (current != '\\') {
+                escaped = false;
+            }
+        }
+        return -1;
+    }
+
+    private boolean isBlockScalarValue(String value) {
+        return value.startsWith("|") || value.startsWith(">");
+    }
+
+    private List<String> extractYamlNodeBlock(List<String> lines, YamlPathLine node, boolean includeAttachedComments) {
+        int start = includeAttachedComments ? attachedCommentStart(lines, node.lineIndex) : node.lineIndex;
+        int end = findYamlNodeEnd(lines, node);
+        return new ArrayList<>(lines.subList(start, end));
+    }
+
+    private int attachedCommentStart(List<String> lines, int lineIndex) {
+        int start = lineIndex;
+        while (start > 0 && lines.get(start - 1).trim().startsWith("#")) {
+            start--;
+        }
+        return start;
+    }
+
+    private int findYamlNodeEnd(List<String> lines, YamlPathLine node) {
+        if (!node.sectionSyntax && !node.blockScalar) {
+            return Math.min(node.lineIndex + 1, lines.size());
+        }
+
+        int index = node.lineIndex + 1;
+        while (index < lines.size()) {
+            String line = lines.get(index);
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) {
+                index++;
+                continue;
+            }
+
+            int indent = leadingWhitespace(line).length();
+            if (indent <= node.indent) {
+                break;
+            }
+            index++;
+        }
+
+        while (index > node.lineIndex + 1 && lines.get(index - 1).trim().isEmpty()) {
+            index--;
+        }
+        return index;
+    }
+
+    private void removeYamlNodeBlock(List<String> lines, YamlPathLine node) {
+        int start = attachedCommentStart(lines, node.lineIndex);
+        int end = findYamlNodeEnd(lines, node);
+        lines.subList(start, end).clear();
+        collapseBlankLinesAt(lines, Math.max(0, start - 1));
+    }
+
+    private void collapseBlankLinesAt(List<String> lines, int aroundIndex) {
+        int index = Math.max(1, Math.min(aroundIndex + 1, lines.size() - 1));
+        while (index < lines.size()
+                && index > 0
+                && lines.get(index).trim().isEmpty()
+                && lines.get(index - 1).trim().isEmpty()) {
+            lines.remove(index);
+        }
+    }
+
+    private void appendYamlTopLevelBlock(List<String> target, List<String> block) {
+        List<String> cleanBlock = trimYamlBlock(block);
+        if (cleanBlock.isEmpty()) {
+            return;
+        }
+        if (!target.isEmpty() && !target.get(target.size() - 1).trim().isEmpty()) {
+            target.add("");
+        }
+        target.addAll(cleanBlock);
+    }
+
+    private List<String> trimTrailingBlankLines(List<String> lines) {
+        List<String> trimmed = new ArrayList<>(lines);
+        while (!trimmed.isEmpty() && trimmed.get(trimmed.size() - 1).trim().isEmpty()) {
+            trimmed.remove(trimmed.size() - 1);
+        }
+        return trimmed;
+    }
+
+    private void insertYamlBlock(List<String> lines, int insertAt, List<String> block) {
+        List<String> cleanBlock = trimYamlBlock(block);
+        if (cleanBlock.isEmpty()) {
+            return;
+        }
+
+        int firstIndent = leadingWhitespace(cleanBlock.get(0)).length();
+        boolean topLevelBlock = firstIndent == 0;
+        if (topLevelBlock
+                && insertAt > 0
+                && !lines.get(insertAt - 1).trim().isEmpty()
+                && !cleanBlock.get(0).trim().isEmpty()) {
+            cleanBlock.add(0, "");
+        }
+
+        lines.addAll(insertAt, cleanBlock);
+
+        int afterInsert = insertAt + cleanBlock.size();
+        if (topLevelBlock
+                && afterInsert < lines.size()
+                && !lines.get(afterInsert - 1).trim().isEmpty()
+                && !lines.get(afterInsert).trim().isEmpty()) {
+            lines.add(afterInsert, "");
+        }
+    }
+
+    private List<String> trimYamlBlock(List<String> block) {
+        int start = 0;
+        int end = block.size();
+        while (start < end && block.get(start).trim().isEmpty()) {
+            start++;
+        }
+        while (end > start && block.get(end - 1).trim().isEmpty()) {
+            end--;
+        }
+        return new ArrayList<>(block.subList(start, end));
+    }
+
+    private List<String> reindentYamlBlock(List<String> block, int fromIndent, int toIndent) {
+        if (fromIndent == toIndent) {
+            return new ArrayList<>(block);
+        }
+
+        String targetPrefix = " ".repeat(Math.max(0, toIndent));
+        List<String> reindented = new ArrayList<>(block.size());
+        for (String line : block) {
+            if (line.trim().isEmpty()) {
+                reindented.add(line);
+                continue;
+            }
+            String sourcePrefix = " ".repeat(Math.min(fromIndent, leadingWhitespace(line).length()));
+            if (line.startsWith(sourcePrefix)) {
+                reindented.add(targetPrefix + line.substring(sourcePrefix.length()));
+            } else {
+                reindented.add(line);
+            }
+        }
+        return reindented;
+    }
+
+    private boolean isUnderAnyPath(Set<String> parentPaths, String path) {
+        for (String parentPath : parentPaths) {
+            if (path.startsWith(parentPath + ".")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasAncestorPath(List<String> parentPaths, String path) {
+        for (String parentPath : parentPaths) {
+            if (path.startsWith(parentPath + ".")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String parentPath(String path) {
+        int dotIndex = path.lastIndexOf('.');
+        return dotIndex < 0 ? "" : path.substring(0, dotIndex);
+    }
+
+    private int countBundledDefaultPaths(String resourceName, YamlConfiguration bundledDefault, String rootPath) {
+        int count = 0;
+        for (String path : bundledDefault.getKeys(true)) {
+            if (isUserManagedBundledPath(resourceName, path)) {
+                continue;
+            }
+            if (path.equals(rootPath) || path.startsWith(rootPath + ".")) {
+                count++;
+            }
+        }
+        return Math.max(1, count);
+    }
+
+    private void validateYamlLines(List<String> lines) throws InvalidConfigurationException {
+        loadYamlLines(lines);
+    }
+
+    private YamlConfiguration loadYamlLines(List<String> lines) throws InvalidConfigurationException {
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.options().parseComments(true);
+        configuration.loadFromString(String.join("\n", lines) + "\n");
+        return configuration;
+    }
+
     private boolean isUserManagedBundledPath(String resourceName, String path) {
         // Crate definitions are live server content. The bundled CRATES tree is only
         // an initial example and must not be merged back after admins edit/delete it.
-        return "crates.yml".equals(resourceName) && path.startsWith("CRATES.");
+        if ("crates.yml".equals(resourceName)
+                && (path.equals("CRATES") || path.startsWith("CRATES."))) {
+            return true;
+        }
+
+        // Arena sections are written by admin commands and store live map/region data.
+        if (("duels.yml".equals(resourceName) || "ffa.yml".equals(resourceName))
+                && (path.equals("ARENA_SETTINGS") || path.startsWith("ARENA_SETTINGS."))) {
+            return true;
+        }
+
+        // Network server entries can be expanded per deployment.
+        return "network.yml".equals(resourceName)
+                && path.startsWith("NETWORK-STATUS.SERVERS.");
     }
 
     private boolean hasScalarParent(ConfigurationSection configuration, String path) {
@@ -1126,51 +1806,6 @@ public class ConfigManager {
             dotIndex = path.indexOf('.', dotIndex + 1);
         }
         return false;
-    }
-
-    private YamlConfiguration loadPreviousDefaultSnapshot(String name) {
-        File snapshot = new File(defaultSnapshotsFolder(), name);
-        if (!snapshot.exists()) {
-            return null;
-        }
-
-        try {
-            return loadYamlFile(snapshot);
-        } catch (IOException | InvalidConfigurationException e) {
-            plugin.getLogger().log(Level.WARNING, "Ignoring invalid default configuration snapshot: " + snapshot.getPath(), e);
-            return null;
-        }
-    }
-
-    private boolean refreshDefaultSnapshot(String name) {
-        byte[] bundledBytes;
-        try {
-            bundledBytes = readBundledResourceBytes(name);
-        } catch (IOException | IllegalArgumentException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to read bundled configuration snapshot for " + name, e);
-            return false;
-        }
-
-        File snapshot = new File(defaultSnapshotsFolder(), name);
-        try {
-            if (snapshot.exists()) {
-                byte[] existingBytes = Files.readAllBytes(snapshot.toPath());
-                if (Arrays.equals(existingBytes, bundledBytes)) {
-                    return false;
-                }
-            }
-
-            Files.createDirectories(snapshot.getParentFile().toPath());
-            Files.write(snapshot.toPath(), bundledBytes);
-            return true;
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to refresh default configuration snapshot: " + snapshot.getPath(), e);
-            return false;
-        }
-    }
-
-    private File defaultSnapshotsFolder() {
-        return new File(plugin.getDataFolder(), ".default-configs");
     }
 
     private YamlConfiguration loadBundledYaml(String name) throws IOException, InvalidConfigurationException {
@@ -1224,64 +1859,65 @@ public class ConfigManager {
         }
     }
 
-    private void backupExistingFile(File file, File backupDirectory) {
+    private boolean backupExistingFile(File file, File backupDirectory) {
         if (!file.exists()) {
-            return;
+            return true;
         }
 
         File backup = new File(backupDirectory, file.getName());
         try {
             Files.createDirectories(backupDirectory.toPath());
             Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return true;
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to back up " + file.getPath(), e);
+            return false;
         }
     }
 
-    private Object copyConfigValue(Object value) {
-        if (value instanceof List<?> list) {
-            List<Object> copy = new ArrayList<>(list.size());
-            for (Object entry : list) {
-                copy.add(copyConfigValue(entry));
-            }
-            return copy;
-        }
-
-        if (value instanceof Map<?, ?> map) {
-            Map<Object, Object> copy = new LinkedHashMap<>();
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                copy.put(entry.getKey(), copyConfigValue(entry.getValue()));
-            }
-            return copy;
-        }
-
-        return value;
-    }
-
-    private boolean valuesEquivalent(Object first, Object second) {
-        return Objects.equals(first, second);
-    }
-
-    private FileConfiguration load(String name) {
+    private FileConfiguration load(String name, FileConfiguration previousConfiguration) {
         File file = new File(plugin.getDataFolder(), name);
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.options().parseComments(true);
 
         try {
             configuration.load(file);
+            invalidConfigurations.remove(name);
             return configuration;
         } catch (IOException | InvalidConfigurationException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to load " + file.getPath() + ", restoring default copy.", e);
-            backupBrokenFile(file);
-
-            try {
-                copyBundledResource(name, file, true);
-                configuration.load(file);
-            } catch (IOException | InvalidConfigurationException | IllegalArgumentException restoreException) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to restore default resource " + name, restoreException);
+            boolean firstInvalidLoad = invalidConfigurations.add(name);
+            plugin.getLogger().log(Level.SEVERE,
+                    "Failed to load " + file.getPath() + "; the original file will not be replaced.",
+                    e);
+            if (firstInvalidLoad) {
+                backupInvalidFile(file);
             }
-            return configuration;
+            if (previousConfiguration != null) {
+                plugin.getLogger().warning("Keeping the previously loaded in-memory configuration for " + name + ".");
+                return previousConfiguration;
+            }
+            try {
+                plugin.getLogger().warning("Using bundled defaults for " + name
+                        + " in memory only until the YAML file is fixed and reloaded.");
+                return loadBundledYaml(name);
+            } catch (IOException | InvalidConfigurationException | IllegalArgumentException fallbackException) {
+                plugin.getLogger().log(Level.SEVERE,
+                        "Failed to load bundled in-memory fallback for " + name,
+                        fallbackException);
+                return configuration;
+            }
         }
+    }
+
+    private void backupInvalidFile(File file) {
+        if (!file.exists()) {
+            return;
+        }
+        File backupDirectory = new File(
+                new File(plugin.getDataFolder(), "config-backups"),
+                LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT)
+        );
+        backupExistingFile(file, backupDirectory);
     }
 
     private void backupBrokenFile(File file) {
@@ -1300,50 +1936,58 @@ public class ConfigManager {
     // ── Getters ────────────────────────────────────────────────────────────────
 
     public FileConfiguration getConfig()        { return config; }
-    public FileConfiguration getMessages()      { return messages; }
-    public FileConfiguration getDeathMessages() { return deathMessages; }
-    public FileConfiguration getMenus()         { return menus; }
+    public FileConfiguration getMessages()      { return localized("MESSAGES", messages); }
+    public FileConfiguration getDeathMessages() { return localized("DEATH_MESSAGES", deathMessages); }
+    public FileConfiguration getMenus()         { return localized("MENUS", menus); }
     public FileConfiguration getScoreboard()    { return scoreboard; }
     public FileConfiguration getShop()          { return shop; }
     public FileConfiguration getSounds()        { return sounds; }
-    public FileConfiguration getBillford()      { return billford; }
-    public FileConfiguration getRtp()           { return rtp; }
-    public FileConfiguration getWorth()         { return worth; }
-    public FileConfiguration getAmethystTools() { return amethystTools; }
-    public FileConfiguration getEnderChest()    { return enderChest; }
-    public FileConfiguration getInvsee()        { return invsee; }
-    public FileConfiguration getFreeze()        { return freeze; }
-    public FileConfiguration getAuctionHouse()  { return auctionHouse; }
-    public FileConfiguration getOrders()        { return orders; }
-    public FileConfiguration getDuels()         { return duels; }
-    public FileConfiguration getFfa()           { return ffa; }
-    public FileConfiguration getCrates()        { return crates; }
-    public FileConfiguration getSpawners()      { return spawners; }
-    public FileConfiguration getSpawnStash()    { return spawnStash; }
-    public FileConfiguration getNetwork()       { return network; }
-    public FileConfiguration getStaffMode()     { return staffMode; }
+    public FileConfiguration getBillford()      { return localized("CONFIG.BILLFORD", billford); }
+    public FileConfiguration getRtp()           { return localized("CONFIG.RTP", rtp); }
+    public FileConfiguration getWorth()         { return localized("CONFIG.WORTH", worth); }
+    public FileConfiguration getAmethystTools() { return localized("CONFIG.AMETHYST_TOOLS", amethystTools); }
+    public FileConfiguration getEnderChest()    { return localized("CONFIG.ENDER_CHEST", enderChest); }
+    public FileConfiguration getInvsee()        { return localized("CONFIG.INVSEE", invsee); }
+    public FileConfiguration getFreeze()        { return localized("CONFIG.FREEZE", freeze); }
+    public FileConfiguration getAuctionHouse()  { return localized("CONFIG.AUCTION_HOUSE", auctionHouse); }
+    public FileConfiguration getOrders()        { return localized("CONFIG.ORDERS", orders); }
+    public FileConfiguration getDuels()         { return localized("CONFIG.DUELS", duels); }
+    public FileConfiguration getFfa()           { return localized("CONFIG.FFA", ffa); }
+    public FileConfiguration getCrates()        { return localized("CONFIG.CRATES", crates); }
+    public FileConfiguration getSpawners()      { return localized("CONFIG.SPAWNERS", spawners); }
+    public FileConfiguration getSpawnStash()    { return localized("CONFIG.SPAWN_STASH", spawnStash); }
+    public FileConfiguration getNetwork()       { return localized("CONFIG.NETWORK", network); }
+    public FileConfiguration getStaffMode()     { return localized("CONFIG.STAFF_MODE", staffMode); }
+    public FileConfiguration getHide()          { return hide; }
     public FileConfiguration getDatabase()      { return database; }
+    public FileConfiguration getServerWipe()    { return localized("CONFIG.SERVER_WIPE", serverWipe); }
     public FileConfiguration getDiscord()       { return discord; }
 
-    public void reloadShop() { shop = load("shop.yml"); }
-    public void reloadMenus() { menus = load("menus.yml"); }
-    public void reloadSounds() { sounds = load("sounds.yml"); }
-    public void reloadWorth() { worth = load("worth.yml"); }
-    public void reloadAmethystTools() { amethystTools = load("amethyst-tools.yml"); }
-    public void reloadEnderChest() { enderChest = load("ender-chest.yml"); }
-    public void reloadInvsee() { invsee = load("invsee.yml"); }
-    public void reloadFreeze() { freeze = load("freeze.yml"); }
-    public void reloadAuctionHouse() { auctionHouse = load("auction-house.yml"); }
-    public void reloadOrders() { orders = load("orders.yml"); }
-    public void reloadDuels() { duels = load("duels.yml"); }
-    public void reloadFfa() { ffa = load("ffa.yml"); }
-    public void reloadCrates() { crates = load("crates.yml"); }
-    public void reloadSpawners() { spawners = load("spawners.yml"); }
-    public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml"); }
-    public void reloadNetwork() { network = load("network.yml"); }
-    public void reloadStaffMode() { staffMode = load("staff-mode.yml"); }
-    public void reloadDatabase() { database = load("database.yml"); }
-    public void reloadDiscord() { discord = load("discord.yml"); }
+    public FileConfiguration getLegacyMessages() { return messages; }
+    public FileConfiguration getLegacyDeathMessages() { return deathMessages; }
+    public FileConfiguration getLegacyMenus() { return menus; }
+
+    public void reloadShop() { shop = load("shop.yml", shop); }
+    public void reloadMenus() { menus = load("menus.yml", menus); }
+    public void reloadSounds() { sounds = load("sounds.yml", sounds); }
+    public void reloadWorth() { worth = load("worth.yml", worth); }
+    public void reloadAmethystTools() { amethystTools = load("amethyst-tools.yml", amethystTools); }
+    public void reloadEnderChest() { enderChest = load("ender-chest.yml", enderChest); }
+    public void reloadInvsee() { invsee = load("invsee.yml", invsee); }
+    public void reloadFreeze() { freeze = load("freeze.yml", freeze); }
+    public void reloadAuctionHouse() { auctionHouse = load("auction-house.yml", auctionHouse); }
+    public void reloadOrders() { orders = load("orders.yml", orders); }
+    public void reloadDuels() { duels = load("duels.yml", duels); }
+    public void reloadFfa() { ffa = load("ffa.yml", ffa); }
+    public void reloadCrates() { crates = load("crates.yml", crates); }
+    public void reloadSpawners() { spawners = load("spawners.yml", spawners); }
+    public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml", spawnStash); }
+    public void reloadNetwork() { network = load("network.yml", network); }
+    public void reloadStaffMode() { staffMode = load("staff-mode.yml", staffMode); }
+    public void reloadHide() { hide = load("hide.yml", hide); }
+    public void reloadDatabase() { database = load("database.yml", database); }
+    public void reloadDiscord() { discord = load("discord.yml", discord); }
+    public boolean saveConfig() { return save("config.yml", config); }
     public boolean saveDuels() { return save("duels.yml", duels); }
     public boolean saveFfa() { return save("ffa.yml", ffa); }
     public boolean saveCrates() { return save("crates.yml", crates); }
@@ -1355,7 +1999,12 @@ public class ConfigManager {
     // ── Convenience helpers ────────────────────────────────────────────────────
 
     public String getMessage(String path) {
-        return messages.getString(path, "&cᴍᴇѕѕᴀɢᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ: " + path);
+        String legacy = messages.getString(path);
+        LanguageManager languageManager = plugin == null ? null : plugin.getLanguageManager();
+        if (languageManager != null) {
+            return languageManager.message(path, legacy);
+        }
+        return legacy == null ? "&cMissing message: " + path : legacy;
     }
 
     public String getMessage(String path, String... placeholders) {
@@ -1367,7 +2016,12 @@ public class ConfigManager {
     }
 
     public String getMessageOrDefault(String path, String fallback) {
-        return messages.getString(path, fallback);
+        String legacy = messages.getString(path);
+        LanguageManager languageManager = plugin == null ? null : plugin.getLanguageManager();
+        if (languageManager != null) {
+            return languageManager.text("MESSAGES." + path, legacy, fallback);
+        }
+        return legacy == null ? fallback : legacy;
     }
 
     public String getMessageOrDefault(String path, String fallback, String... placeholders) {
@@ -1386,8 +2040,20 @@ public class ConfigManager {
         return FeatureManager.isCommandEnabled(config, key);
     }
 
+    private FileConfiguration localized(String rootPath, FileConfiguration legacy) {
+        if (plugin == null || plugin.getLanguageManager() == null) {
+            return legacy;
+        }
+        return plugin.getLanguageManager().localize(rootPath, legacy);
+    }
+
     private boolean save(String name, FileConfiguration configuration) {
         if (configuration == null) {
+            return false;
+        }
+        if (invalidConfigurations.contains(name)) {
+            plugin.getLogger().warning("Refusing to save " + name
+                    + " because its on-disk YAML is invalid. Fix the file and reload it first.");
             return false;
         }
 
@@ -1404,8 +2070,29 @@ public class ConfigManager {
     private static final class SyncResult {
         private boolean created;
         private boolean updated;
-        private boolean restored;
         private boolean skipped;
-        private boolean snapshotUpdated;
+    }
+
+    private record YamlPathLine(
+            String path,
+            int lineIndex,
+            int indent,
+            boolean sectionSyntax,
+            boolean blockScalar
+    ) {
+    }
+
+    private record YamlStackEntry(int indent, String path) {
+    }
+
+    private record TextFileContent(
+            List<String> lines,
+            String lineSeparator,
+            boolean trailingLineSeparator
+    ) {
+        private String serialize() {
+            String joined = String.join(lineSeparator, lines);
+            return trailingLineSeparator ? joined + lineSeparator : joined;
+        }
     }
 }

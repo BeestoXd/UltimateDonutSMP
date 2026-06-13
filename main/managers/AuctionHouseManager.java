@@ -134,6 +134,11 @@ public class AuctionHouseManager {
         validateConfiguration();
     }
 
+    public void prepareForServerWipe() {
+        activeTransactions.clear();
+        lastClickTimes.clear();
+    }
+
     public boolean isEnabled() {
         return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.AUCTION_HOUSE)
                 && config().getBoolean("SETTINGS.ENABLED", true);
@@ -986,7 +991,7 @@ public class AuctionHouseManager {
 
         String message = plugin.getConfigManager().getMessage(
                 "AUCTION_HOUSE.ITEM_SOLD",
-                "{buyer}", buyer.getName(),
+                "{buyer}", plugin.getHideManager().publicName(buyer),
                 "{item}", describeItem(listing.item()),
                 "{price}", NumberUtils.format(listing.price()),
                 "{price_formatted}", plugin.getCurrencyManager().formatMoney(listing.price()),

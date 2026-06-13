@@ -246,6 +246,14 @@ public class OrdersManager {
         validateConfiguration();
     }
 
+    public void prepareForServerWipe() {
+        activeTransactions.clear();
+        lastClickTimes.clear();
+        pendingCreations.clear();
+        pendingSearchInputs.clear();
+        pendingEdits.clear();
+    }
+
     public boolean isEnabled() {
         return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.ORDERS)
                 && config().getBoolean("SETTINGS.ENABLED", true);

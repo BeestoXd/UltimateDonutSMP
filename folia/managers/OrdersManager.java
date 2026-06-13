@@ -296,6 +296,14 @@ public class OrdersManager {
         return getSelectItemSource() == SelectItemSource.SERVER_MATERIALS ? Math.max(27, normalized) : normalized;
     }
 
+    public void prepareForServerWipe() {
+        activeTransactions.clear();
+        lastClickTimes.clear();
+        pendingCreations.clear();
+        pendingSearchInputs.clear();
+        pendingEdits.clear();
+    }
+
     public int getSelectItemItemsPerPage() {
         return Math.max(1, Math.min(45, config().getInt("GUI.SELECT_ITEM.ITEMS_PER_PAGE", 45)));
     }

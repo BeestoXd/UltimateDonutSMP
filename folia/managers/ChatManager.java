@@ -488,9 +488,12 @@ public class ChatManager {
             return template == null ? "" : template;
         }
 
+        String publicName = plugin.getHideManager() == null
+                ? player.getName()
+                : plugin.getHideManager().plainPublicName(player);
         return template
-                .replace("<player>", player.getName())
-                .replace("%player%", player.getName())
+                .replace("<player>", publicName)
+                .replace("%player%", publicName)
                 .replace("%uuid%", player.getUniqueId().toString());
     }
 

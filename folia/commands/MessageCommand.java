@@ -44,7 +44,7 @@ public class MessageCommand implements CommandExecutor {
             return true;
         }
 
-        Player target = findOnlinePlayer(args[0]);
+        Player target = plugin.getHideManager().findOnlinePlayer(sender, args[0]);
         if (target == null) {
             send(sender, message("PLAYER-NOT-ONLINE", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return true;
@@ -68,25 +68,6 @@ public class MessageCommand implements CommandExecutor {
 
         plugin.getPrivateMessageManager().reply(player, String.join(" ", args));
         return true;
-    }
-
-    private Player findOnlinePlayer(String input) {
-        if (input == null || input.isBlank()) {
-            return null;
-        }
-
-        Player exact = Bukkit.getPlayerExact(input);
-        if (exact != null) {
-            return exact;
-        }
-
-        String expected = input.toLowerCase(Locale.ROOT);
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getName().toLowerCase(Locale.ROOT).equals(expected)) {
-                return player;
-            }
-        }
-        return null;
     }
 
     private void send(CommandSender sender, String message) {

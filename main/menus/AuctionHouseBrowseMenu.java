@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.AuctionHouseManager;
+import com.bx.ultimateDonutSmp.managers.LanguageManager;
 import com.bx.ultimateDonutSmp.models.AuctionListing;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
@@ -47,38 +48,73 @@ public class AuctionHouseBrowseMenu extends BaseMenu {
         }
 
         int lastRow = inventory.getSize() - 9;
+        LanguageManager language = plugin.getLanguageManager();
+        String sortLabel = language.display(
+                "SORTS",
+                sortMode.name(),
+                sortMode.name().replace('_', ' ')
+        );
         set(lastRow, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
+                ? ItemUtils.createItem(
+                        Material.ARROW,
+                        language.menu("COMMON.PREVIOUS.NAME", "&aPrevious Page"),
+                        language.menuList("COMMON.PREVIOUS.LORE", List.of("&7Go to page &f{page}"),
+                                "{page}", String.valueOf(page - 1))
+                )
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 1, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ")));
+        set(lastRow + 1, ItemUtils.createItem(
+                Material.CLOCK,
+                language.menu("COMMON.REFRESH.NAME", "&eRefresh"),
+                language.menuList("AUCTION_HOUSE.BROWSE.REFRESH_LORE", List.of("&7Reload active listings"))
+        ));
         set(lastRow + 2, ItemUtils.createItem(
                 Material.HOPPER,
-                "&aѕᴏʀᴛ: &f" + sortMode.name().replace('_', ' '),
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ ᴍᴏᴅᴇ")
+                language.menu("AUCTION_HOUSE.BROWSE.SORT_NAME", "&aSort: &f{sort}",
+                        "{sort}", sortLabel),
+                language.menuList("AUCTION_HOUSE.BROWSE.SORT_LORE",
+                        List.of("&7Click to cycle sorting mode"))
         ));
-        set(lastRow + 3, ItemUtils.createItem(Material.CHEST, "&bᴍʏ ʟɪѕᴛɪɴɢѕ", List.of("&7ᴠɪᴇᴡ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ")));
+        set(lastRow + 3, ItemUtils.createItem(
+                Material.CHEST,
+                language.menu("AUCTION_HOUSE.BROWSE.MY_LISTINGS_NAME", "&bMy Listings"),
+                language.menuList("AUCTION_HOUSE.BROWSE.MY_LISTINGS_LORE",
+                        List.of("&7View your active listings"))
+        ));
         set(lastRow + 4, ItemUtils.createItem(
                 Material.ENDER_CHEST,
-                "&dᴄʟᴀɪᴍѕ",
-                List.of("&7ᴄʟᴀɪᴍ ѕᴏʟᴅ "
-                        + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
-                        + " ᴀɴᴅ ʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍѕ")
+                language.menu("AUCTION_HOUSE.BROWSE.CLAIMS_NAME", "&dClaims"),
+                language.menuList("AUCTION_HOUSE.BROWSE.CLAIMS_LORE",
+                        List.of("&7Claim sold money and returned items"))
         ));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
-                "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(listings.size(), itemsPerPage),
-                List.of("&7ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ: &f" + listings.size())
+                language.menu("COMMON.PAGE.NAME", "&ePage {page}&7/&e{pages}",
+                        "{page}", String.valueOf(page),
+                        "{pages}", String.valueOf(getTotalPages(listings.size(), itemsPerPage))),
+                language.menuList("AUCTION_HOUSE.BROWSE.PAGE_LORE",
+                        List.of("&7Active listings: &f{count}"),
+                        "{count}", String.valueOf(listings.size()))
         ));
         set(lastRow + 7, hasNextPage(listings.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
+                ? ItemUtils.createItem(
+                        Material.ARROW,
+                        language.menu("COMMON.NEXT.NAME", "&aNext Page"),
+                        language.menuList("COMMON.NEXT.LORE", List.of("&7Go to page &f{page}"),
+                                "{page}", String.valueOf(page + 1))
+                )
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ")));
+        set(lastRow + 8, ItemUtils.createItem(
+                Material.BARRIER,
+                language.menu("COMMON.CLOSE.NAME", "&cClose"),
+                language.menuList("AUCTION_HOUSE.BROWSE.CLOSE_LORE", List.of("&7Close the Auction House"))
+        ));
 
         if (listings.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ",
-                    List.of("&7ᴜѕᴇ &f/ah sell <price> &7ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏɴᴇ.")
+                    language.menu("AUCTION_HOUSE.BROWSE.EMPTY_NAME", "&cNo Active Listings"),
+                    language.menuList("AUCTION_HOUSE.BROWSE.EMPTY_LORE",
+                            List.of("&7Use &f/ah sell <price> &7to create one."))
             ));
         }
     }

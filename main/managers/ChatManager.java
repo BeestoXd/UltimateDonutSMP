@@ -127,7 +127,7 @@ public class ChatManager {
     public void setGlobalChatMuted(boolean muted, boolean persist) {
         config().set(CHAT_ROOT + ".GLOBAL-CHAT-MUTED", muted);
         if (persist) {
-            plugin.saveConfig();
+            plugin.getConfigManager().saveConfig();
         }
     }
 
@@ -156,7 +156,7 @@ public class ChatManager {
         }
 
         if (persist) {
-            plugin.saveConfig();
+            plugin.getConfigManager().saveConfig();
         }
     }
 
@@ -487,9 +487,12 @@ public class ChatManager {
             return template == null ? "" : template;
         }
 
+        String publicName = plugin.getHideManager() == null
+                ? player.getName()
+                : plugin.getHideManager().plainPublicName(player);
         return template
-                .replace("<player>", player.getName())
-                .replace("%player%", player.getName())
+                .replace("<player>", publicName)
+                .replace("%player%", publicName)
                 .replace("%uuid%", player.getUniqueId().toString());
     }
 

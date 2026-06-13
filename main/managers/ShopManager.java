@@ -154,10 +154,34 @@ public class ShopManager {
             boolean maxed
     ) {}
 
-    public record SellResult(double totalPayout, Set<SellCategory> leveledUpCategories) {
+    public enum SellStatus {
+        SUCCESS,
+        NO_SELLABLE_ITEMS,
+        TRANSACTION_FAILED
+    }
+
+    public record SellResult(SellStatus status, double totalPayout, Set<SellCategory> leveledUpCategories) {
         public boolean hasSales() {
-            return totalPayout > 0;
+            return status == SellStatus.SUCCESS;
         }
+
+        public boolean transactionFailed() {
+            return status == SellStatus.TRANSACTION_FAILED;
+        }
+    }
+
+    private record PendingSellHistory(
+            Material material,
+            int amount,
+            double payout
+    ) {}
+
+    private static final class PendingSale {
+        private final Map<SellCategory, Double> currentProgress = new EnumMap<>(SellCategory.class);
+        private final EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
+        private final List<PendingSellHistory> history = new ArrayList<>();
+        private final List<Integer> soldSlots = new ArrayList<>();
+        private double totalPayout;
     }
 
     public record PurchaseResult(
@@ -1000,41 +1024,87 @@ public class ShopManager {
     }
 
     public SellResult sellInventoryContents(Player player, Inventory inventory, int startInclusive, int endExclusive) {
-        if (inventory == null) {
-            return new SellResult(0, Set.of());
+        return sellInventoryContents(
+                player,
+                inventory,
+                startInclusive,
+                endExclusive,
+                EconomyReason.SELL_PAYOUT,
+                true
+        );
+    }
+
+    public SellResult sellInventoryContents(
+            Player player,
+            Inventory inventory,
+            int startInclusive,
+            int endExclusive,
+            EconomyReason reason,
+            boolean sendFeedback
+    ) {
+        if (player == null || inventory == null) {
+            return emptySale();
         }
 
-        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
-        progress.putAll(getSellProgress(player.getUniqueId()));
+        PendingSale sale = createPendingSale(player);
+        int firstSlot = Math.max(0, startInclusive);
+        int lastSlot = Math.min(inventory.getSize(), Math.max(firstSlot, endExclusive));
 
-        EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
-        List<Integer> soldSlots = new ArrayList<>();
-        double totalPayout = 0;
-
-        for (int slot = startInclusive; slot < endExclusive; slot++) {
+        for (int slot = firstSlot; slot < lastSlot; slot++) {
             ItemStack item = inventory.getItem(slot);
             if (item == null || item.getType().isAir()) {
                 continue;
             }
 
-            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
+            double payout = collectSellWorthEntries(item, sale);
             if (payout <= 0) {
                 continue;
             }
 
-            totalPayout += payout;
-            soldSlots.add(slot);
+            sale.totalPayout += payout;
+            sale.soldSlots.add(slot);
         }
 
-        if (totalPayout <= 0) {
-            return new SellResult(0, Set.of());
+        return executeSale(player, sale, reason, sendFeedback, () -> {
+            for (int slot : sale.soldSlots) {
+                inventory.setItem(slot, null);
+            }
+        });
+    }
+
+    private PendingSale createPendingSale(Player player) {
+        PendingSale sale = new PendingSale();
+        sale.currentProgress.putAll(getSellProgress(player.getUniqueId()));
+        return sale;
+    }
+
+    private SellResult emptySale() {
+        return new SellResult(SellStatus.NO_SELLABLE_ITEMS, 0, Set.of());
+    }
+
+    private SellResult failedSale() {
+        return new SellResult(SellStatus.TRANSACTION_FAILED, 0, Set.of());
+    }
+
+    private SellResult executeSale(
+            Player player,
+            PendingSale sale,
+            EconomyReason reason,
+            boolean sendFeedback,
+            Runnable removeSoldItems
+    ) {
+        if (sale.totalPayout <= 0) {
+            return emptySale();
         }
 
-        for (int slot : soldSlots) {
-            inventory.setItem(slot, null);
+        EconomyReason resolvedReason = reason == null ? EconomyReason.SELL_PAYOUT : reason;
+        var depositResult = plugin.getEconomyManager().deposit(player, sale.totalPayout, resolvedReason);
+        if (!depositResult.success()) {
+            return failedSale();
         }
 
-        return finishSale(player, progress, earnedByCategory, totalPayout);
+        removeSoldItems.run();
+        return commitSale(player, sale, sendFeedback);
     }
 
     private String getWorthLoreFormat() {
@@ -1132,15 +1202,10 @@ public class ShopManager {
     }
 
     public double sellInventory(Player player, boolean handOnly) {
-        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
-        progress.putAll(getSellProgress(player.getUniqueId()));
-
-        EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
-        double totalPayout = 0;
+        PendingSale sale = createPendingSale(player);
         ItemStack[] contents = handOnly
                 ? new ItemStack[]{player.getInventory().getItemInMainHand()}
                 : player.getInventory().getContents();
-        List<Integer> toRemove = new ArrayList<>();
 
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
@@ -1148,36 +1213,29 @@ public class ShopManager {
                 continue;
             }
 
-            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
+            double payout = collectSellWorthEntries(item, sale);
             if (payout <= 0) {
                 continue;
             }
 
-            totalPayout += payout;
-            toRemove.add(i);
+            sale.totalPayout += payout;
+            sale.soldSlots.add(i);
         }
 
-        if (totalPayout > 0) {
+        SellResult result = executeSale(player, sale, EconomyReason.SELL_PAYOUT, true, () -> {
             if (handOnly) {
                 player.getInventory().setItemInMainHand(null);
             } else {
-                for (int slot : toRemove) {
+                for (int slot : sale.soldSlots) {
                     player.getInventory().setItem(slot, null);
                 }
             }
+        });
 
-            finishSale(player, progress, earnedByCategory, totalPayout);
-        }
-
-        return totalPayout;
+        return result.hasSales() ? result.totalPayout() : 0;
     }
 
-    private double processSellWorthEntries(
-            Player player,
-            ItemStack item,
-            Map<SellCategory, Double> progress,
-            Map<SellCategory, Double> earnedByCategory
-    ) {
+    private double collectSellWorthEntries(ItemStack item, PendingSale sale) {
         List<WorthManager.SellWorthEntry> entries = plugin.getWorthManager().resolveSellWorthEntries(item);
         if (entries.isEmpty()) {
             return 0;
@@ -1185,58 +1243,58 @@ public class ShopManager {
 
         double totalPayout = 0;
         for (WorthManager.SellWorthEntry entry : entries) {
-            double payout = entry.totalWorth() * getCurrentSellMultiplier(progress, entry.category());
+            double payout = entry.totalWorth() * getCurrentSellMultiplier(sale.currentProgress, entry.category());
             if (payout <= 0) {
                 continue;
             }
 
             totalPayout += payout;
-            earnedByCategory.merge(entry.category(), entry.totalWorth(), Double::sum);
-
-            plugin.getDatabaseManager().addSellHistory(
-                    player.getUniqueId(),
-                    entry.material().name(),
-                    entry.amount(),
-                    payout
-            );
+            sale.earnedByCategory.merge(entry.category(), entry.totalWorth(), Double::sum);
+            sale.history.add(new PendingSellHistory(entry.material(), entry.amount(), payout));
         }
         return totalPayout;
     }
 
-    private SellResult finishSale(
-            Player player,
-            Map<SellCategory, Double> currentProgress,
-            Map<SellCategory, Double> earnedByCategory,
-            double totalPayout
-    ) {
+    private SellResult commitSale(Player player, PendingSale sale, boolean sendFeedback) {
         EnumSet<SellCategory> leveledUpCategories = EnumSet.noneOf(SellCategory.class);
 
-        for (var entry : earnedByCategory.entrySet()) {
+        for (PendingSellHistory historyEntry : sale.history) {
+            plugin.getDatabaseManager().addSellHistory(
+                    player.getUniqueId(),
+                    historyEntry.material().name(),
+                    historyEntry.amount(),
+                    historyEntry.payout()
+            );
+        }
+
+        for (var entry : sale.earnedByCategory.entrySet()) {
             SellCategory category = entry.getKey();
-            double before = currentProgress.getOrDefault(category, 0D);
+            double before = sale.currentProgress.getOrDefault(category, 0D);
             double after = before + entry.getValue();
             if (getCompletedLevels(after, getSellProgressLevels())
                     > getCompletedLevels(before, getSellProgressLevels())) {
                 leveledUpCategories.add(category);
             }
 
-            currentProgress.put(category, after);
+            sale.currentProgress.put(category, after);
             plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), category, entry.getValue());
         }
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
-        var depositResult = plugin.getEconomyManager().deposit(player, totalPayout, EconomyReason.SELL_PAYOUT);
-        if (data != null && depositResult.success()) {
-            data.addMoneyMade(totalPayout);
+        if (data != null) {
+            data.addMoneyMade(sale.totalPayout);
         }
 
-        sendSellFeedback(player, totalPayout);
+        if (sendFeedback) {
+            sendSellFeedback(player, sale.totalPayout);
+        }
         if (!leveledUpCategories.isEmpty()) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("SELL.LEVEL-UP"));
         }
 
         return new SellResult(
-                totalPayout,
+                SellStatus.SUCCESS,
+                sale.totalPayout,
                 leveledUpCategories.isEmpty() ? Set.of() : EnumSet.copyOf(leveledUpCategories)
         );
     }

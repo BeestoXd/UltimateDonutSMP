@@ -12,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.UUID;
 
@@ -25,6 +27,13 @@ public class PlayerJoinQuitListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onLogin(PlayerLoginEvent event) {
+        if (plugin.getServerWipeManager() != null && plugin.getServerWipeManager().isMaintenanceMode()) {
+            event.disallow(
+                    PlayerLoginEvent.Result.KICK_OTHER,
+                    ColorUtils.colorize(plugin.getServerWipeManager().getMaintenanceMessage())
+            );
+            return;
+        }
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
         }
@@ -65,6 +74,10 @@ public class PlayerJoinQuitListener implements Listener {
             );
         }
         plugin.getKeyAllManager().handleJoin(player);
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().handleJoin(player,
+                    message -> player.sendMessage(ColorUtils.toComponent(message, player)));
+        }
 
         // Load homes
         plugin.getHomeManager().loadHomes(player);
@@ -103,6 +116,26 @@ public class PlayerJoinQuitListener implements Listener {
 
         // Hide join message (optional, uncomment to suppress)
         // event.joinMessage(null);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) {
+        refreshHiddenNametag(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onRespawn(PlayerRespawnEvent event) {
+        refreshHiddenNametag(event.getPlayer());
+    }
+
+    private void refreshHiddenNametag(Player player) {
+        if (plugin.getHideManager() == null) {
+            return;
+        }
+        var state = plugin.getHideManager().getState(player.getUniqueId());
+        if (plugin.getHideManager().usesObfuscatedText(state)) {
+            plugin.getHideManager().refreshNametag(player);
+        }
     }
 
     @EventHandler
@@ -166,6 +199,9 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getChatManager().clearPlayerState(player.getUniqueId());
         plugin.getPrivateMessageManager().clearPlayer(player.getUniqueId());
         plugin.getIgnoreManager().unloadPlayer(player.getUniqueId());
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().handleQuit(player.getUniqueId());
+        }
 
         // Remove team chat
         plugin.getTeamManager().setTeamChat(player.getUniqueId(), false);

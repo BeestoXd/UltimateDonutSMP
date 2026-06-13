@@ -122,6 +122,12 @@ public final class LuckPermsTablistRefreshBridge {
         }
 
         player.recalculatePermissions();
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().enforcePermission(
+                    player,
+                    message -> player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(message))
+            );
+        }
         try {
             player.updateCommands();
         } catch (RuntimeException | LinkageError ignored) {

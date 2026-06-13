@@ -130,7 +130,7 @@ public class DuelManager {
     }
 
     public String getCreateTitle(Player target) {
-        String name = target == null ? "Player" : target.getName();
+        String name = target == null ? "Player" : publicName(target);
         return config().getString("GUI.CREATE.TITLE", "&8ᴄʀᴇᴀᴛᴇ ᴅᴜᴇʟ -> {player}")
                 .replace("{player}", name);
     }
@@ -643,17 +643,17 @@ public class DuelManager {
         long expiresAt = System.currentTimeMillis() + (getRequestTimeoutSeconds() * 1000L);
         DuelRequest request = new DuelRequest(
                 challenger.getUniqueId(),
-                challenger.getName(),
+                plainPublicName(challenger),
                 target.getUniqueId(),
-                target.getName(),
+                plainPublicName(target),
                 preferredArenaId,
                 expiresAt
         );
         requestsByTarget.put(target.getUniqueId(), request);
 
-        send(challenger, "&aѕᴇɴᴛ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + target.getName() + "&a.");
-        send(target, "&e" + challenger.getName() + " &fʜᴀѕ ᴄʜᴀʟʟᴇɴɢᴇᴅ ʏᴏᴜ ᴛᴏ ᴀ ᴅᴜᴇʟ.");
-        send(target, "&7ᴜѕᴇ &f/duel accept " + challenger.getName() + " &7ᴏʀ &f/duel deny " + challenger.getName() + "&7.");
+        send(challenger, "&aѕᴇɴᴛ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + publicName(target) + "&a.");
+        send(target, "&e" + publicName(challenger) + " &fʜᴀѕ ᴄʜᴀʟʟᴇɴɢᴇᴅ ʏᴏᴜ ᴛᴏ ᴀ ᴅᴜᴇʟ.");
+        send(target, "&7ᴜѕᴇ &f/duel accept " + publicName(challenger) + " &7ᴏʀ &f/duel deny " + publicName(challenger) + "&7.");
         play(challenger, "DUELS.REQUEST-SENT");
         play(target, "DUELS.REQUEST-RECEIVED");
         return true;
@@ -671,7 +671,7 @@ public class DuelManager {
             return false;
         }
         if (challengerName != null && !challengerName.isBlank()
-                && !request.challengerName().equalsIgnoreCase(challengerName.trim())) {
+                && !matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
             send(target, "&cʏᴏᴜʀ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ɪѕ ꜰʀᴏᴍ &f" + request.challengerName() + "&c.");
             return false;
         }
@@ -706,7 +706,7 @@ public class DuelManager {
             return false;
         }
         if (challengerName != null && !challengerName.isBlank()
-                && !request.challengerName().equalsIgnoreCase(challengerName.trim())) {
+                && !matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
             send(target, "&cʏᴏᴜʀ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ɪѕ ꜰʀᴏᴍ &f" + request.challengerName() + "&c.");
             return false;
         }
@@ -714,7 +714,7 @@ public class DuelManager {
         requestsByTarget.remove(target.getUniqueId());
         Player challenger = Bukkit.getPlayer(request.challengerUuid());
         if (challenger != null) {
-            send(challenger, "&c" + target.getName() + " denied your duel request.");
+            send(challenger, "&c" + publicName(target) + " denied your duel request.");
         }
         send(target, "&eᴅᴇɴɪᴇᴅ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + request.challengerName() + "&e.");
         return true;
@@ -796,8 +796,8 @@ public class DuelManager {
         if (match.getDrawRequester() == null) {
             match.setDrawRequester(requester);
             match.setDrawRequestExpiresAt(System.currentTimeMillis() + (getDrawTimeoutSeconds() * 1000L));
-            send(player, "&eᴅʀᴀᴡ ʀᴇǫᴜᴇѕᴛ ѕᴇɴᴛ ᴛᴏ &f" + opponent.getName() + "&e.");
-            send(opponent, "&e" + player.getName() + " &fʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀ ᴅʀᴀᴡ. ᴜѕᴇ &f/draw &fᴛᴏ ᴀᴄᴄᴇᴘᴛ.");
+            send(player, "&eᴅʀᴀᴡ ʀᴇǫᴜᴇѕᴛ ѕᴇɴᴛ ᴛᴏ &f" + publicName(opponent) + "&e.");
+            send(opponent, "&e" + publicName(player) + " &fʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀ ᴅʀᴀᴡ. ᴜѕᴇ &f/draw &fᴛᴏ ᴀᴄᴄᴇᴘᴛ.");
             return true;
         }
 
@@ -870,7 +870,7 @@ public class DuelManager {
         finishMatch(match, winnerUuid, victimUuid, "DEATH", false, loot, true);
 
         if (winner != null) {
-            send(winner, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + victim.getName() + "&a.");
+            send(winner, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + publicName(victim) + "&a.");
         }
         send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + match.getOpponentName(victimUuid) + "&c.");
         return true;
@@ -894,8 +894,8 @@ public class DuelManager {
         finishMatch(match, attacker.getUniqueId(), victim.getUniqueId(), "PVP_KILL", false, loot, true);
         PlayerRespawnListener.scheduleChainmailKit(plugin, victim, getReturnDelayTicks() + 2L);
 
-        send(attacker, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + victim.getName() + "&a.");
-        send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + attacker.getName() + "&c.");
+        send(attacker, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + publicName(victim) + "&a.");
+        send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + publicName(attacker) + "&c.");
         return true;
     }
 
@@ -1013,8 +1013,8 @@ public class DuelManager {
         match.setEndsAt(now + (getMatchDurationSeconds() * 1000L));
         sendCountdownStart(first);
         sendCountdownStart(second);
-        send(first, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a.");
-        send(second, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a.");
+        send(first, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a.");
+        send(second, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a.");
         playCountdownStartSound(first);
         playCountdownStartSound(second);
     }
@@ -1189,13 +1189,13 @@ public class DuelManager {
         if (winner != null && loser != null) {
             storeTransitionTitle(
                     winner.getUniqueId(),
-                    formatResultTitle("victory", winner.getName(), loser.getName(), "&e&lᴠɪᴄᴛᴏʀʏ!"),
-                    formatResultSubtitle("victory", winner.getName(), loser.getName(), "&e" + winner.getName() + " &fᴡᴏɴ ᴛʜᴇ ᴍᴀᴛᴄʜ!")
+                    formatResultTitle("victory", publicName(winner), publicName(loser), "&e&lᴠɪᴄᴛᴏʀʏ!"),
+                    formatResultSubtitle("victory", publicName(winner), publicName(loser), "&e" + publicName(winner) + " &fᴡᴏɴ ᴛʜᴇ ᴍᴀᴛᴄʜ!")
             );
             storeTransitionTitle(
                     loser.getUniqueId(),
-                    formatResultTitle("defeat", loser.getName(), winner.getName(), "&c&lᴅᴇꜰᴇᴀᴛ!"),
-                    formatResultSubtitle("defeat", loser.getName(), winner.getName(), "&c" + winner.getName() + " &fᴡᴏɴ ᴛʜɪѕ ᴍᴀᴛᴄʜ!")
+                    formatResultTitle("defeat", publicName(loser), publicName(winner), "&c&lᴅᴇꜰᴇᴀᴛ!"),
+                    formatResultSubtitle("defeat", publicName(loser), publicName(winner), "&c" + publicName(winner) + " &fᴡᴏɴ ᴛʜɪѕ ᴍᴀᴛᴄʜ!")
             );
             play(winner, "DUELS.VICTORY");
             play(loser, "DUELS.DEFEAT");
@@ -1486,9 +1486,9 @@ public class DuelManager {
                 type,
                 arena,
                 first.getUniqueId(),
-                first.getName(),
+                publicName(first),
                 second.getUniqueId(),
-                second.getName(),
+                publicName(second),
                 getCountdownSeconds()
         );
         match.setReturnLocation(first.getUniqueId(), first.getLocation());
@@ -1513,8 +1513,8 @@ public class DuelManager {
         preparePlayerForMatch(first, arena.getSpawn1(), arena);
         preparePlayerForMatch(second, arena.getSpawn2(), arena);
 
-        send(first, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
-        send(second, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
+        send(first, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
+        send(second, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
         play(first, "DUELS.MATCH-FOUND");
         play(second, "DUELS.MATCH-FOUND");
     }
@@ -2735,6 +2735,25 @@ public class DuelManager {
         if (sender != null && message != null && !message.isBlank()) {
             sender.sendMessage(ColorUtils.toComponent(message));
         }
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
+    }
+
+    private String plainPublicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().plainPublicName(player);
+    }
+
+    private boolean matchesIdentity(Player viewer, UUID subjectUuid, String publicSnapshot, String input) {
+        if (input == null || input.isBlank()) return true;
+        String candidate = input.trim();
+        if (publicSnapshot != null && publicSnapshot.equalsIgnoreCase(candidate)) return true;
+        Player subject = Bukkit.getPlayer(subjectUuid);
+        return subject != null
+                && plugin.getHideManager() != null
+                && plugin.getHideManager().canSeeRealIdentity(viewer)
+                && subject.getName().equalsIgnoreCase(candidate);
     }
 
     private void play(Player player, String path) {

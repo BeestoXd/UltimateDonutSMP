@@ -352,11 +352,17 @@ public class UniversalCommandTabCompleter implements TabCompleter {
     private List<String> completeSpawner(CommandSender sender, String[] args) {
         boolean admin = has(sender, "ultimatedonutsmp.admin.spawner");
         if (args.length == 1) {
-            List<String> options = new ArrayList<>(List.of("info"));
+            List<String> options = new ArrayList<>(List.of("info", "split"));
             if (admin) {
                 options.addAll(List.of("give", "panel", "remove", "forcebreak", "reload"));
             }
             return partial(args[0], options);
+        }
+        if (normalize(args[0]).equals("split")) {
+            if (args.length == 2) {
+                return partial(args[1], List.of("1", "5", "10", "32", "64"));
+            }
+            return List.of();
         }
         if (!admin || !normalize(args[0]).equals("give")) {
             return List.of();

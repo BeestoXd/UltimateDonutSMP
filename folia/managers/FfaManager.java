@@ -761,8 +761,8 @@ public class FfaManager {
             arenaSnapshots.put(matchId, arenaSnapshot);
         }
 
-        send(first, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a.");
-        send(second, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a.");
+        send(first, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a.");
+        send(second, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a.");
         return true;
     }
 
@@ -902,7 +902,7 @@ public class FfaManager {
         waitingPlayers.add(uuid);
         waitingArenaEntries.put(uuid, new WaitingArenaEntry(
                 arena,
-                player.getName(),
+                publicName(player),
                 snapshot,
                 arenaSnapshot,
                 waitingSpawn
@@ -966,7 +966,7 @@ public class FfaManager {
                 first.getUniqueId(),
                 entry.playerName(),
                 second.getUniqueId(),
-                second.getName()
+                publicName(second)
         );
         match.putSnapshot(first.getUniqueId(), entry.snapshot());
         match.putSnapshot(second.getUniqueId(), secondSnapshot);
@@ -993,7 +993,7 @@ public class FfaManager {
             clearMatchSpawnProtection(second.getUniqueId());
         }, 1L);
 
-        send(first, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
+        send(first, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
         send(second, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + entry.playerName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
         send(first, "&7ᴜѕᴇ &f/leave &7ᴛᴏ ѕᴜʀʀᴇɴᴅᴇʀ.");
         send(second, "&7ᴜѕᴇ &f/leave &7ᴛᴏ ѕᴜʀʀᴇɴᴅᴇʀ.");
@@ -1762,7 +1762,7 @@ public class FfaManager {
         waitingPlayers.add(uuid);
         waitingArenaEntries.put(uuid, new WaitingArenaEntry(
                 arena,
-                player.getName(),
+                publicName(player),
                 snapshot,
                 arenaSnapshot,
                 waitingLocation.clone()
@@ -4588,6 +4588,10 @@ public class FfaManager {
         if (sender != null && message != null && !message.isBlank()) {
             sender.sendMessage(ColorUtils.toComponent(message));
         }
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
     }
 
     private void play(Player player, String soundPath) {

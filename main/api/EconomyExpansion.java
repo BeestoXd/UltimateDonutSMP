@@ -111,7 +111,9 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         // Username
         if (params.equals("username")) {
-            return offlinePlayer.getName() != null ? offlinePlayer.getName() : "ᴜɴᴋɴᴏᴡɴ";
+            return plugin.getHideManager() == null
+                    ? (offlinePlayer.getName() != null ? offlinePlayer.getName() : "ᴜɴᴋɴᴏᴡɴ")
+                    : plugin.getHideManager().publicName(offlinePlayer.getUniqueId(), offlinePlayer.getName());
         }
 
         CurrencyManager currencyManager = plugin.getCurrencyManager();

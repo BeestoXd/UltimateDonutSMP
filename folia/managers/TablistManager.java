@@ -252,6 +252,9 @@ public class TablistManager {
         String mediaPlusBadge = resolveMediaPlusBadge(player, includeMediaBadge);
         String mediaBadge = resolveMediaBadge(mediaIconBadge, mediaPlusBadge, normalizedIconMedia);
         String nickname = resolveNickname(player);
+        String publicName = plugin.getHideManager() == null
+                ? player.getName()
+                : plugin.getHideManager().publicName(player);
 
         if (showTeam && teamName != null && !teamName.isBlank()) {
             teamSuffix = " &7[&b" + teamName.toUpperCase() + "&7]";
@@ -268,9 +271,9 @@ public class TablistManager {
 
         return applyInternalPlaceholders(configuredFormat, player)
                 .replace("%prefix%", prefix)
-                .replace("%player%", player.getName())
+                .replace("%player%", publicName)
                 .replace("%nick%", nickname)
-                .replace("<player>", player.getName())
+                .replace("<player>", publicName)
                 .replace("<nick>", nickname)
                 .replace("<icon_head_skin>", iconHeadSkin == null ? "" : iconHeadSkin)
                 .replace("<icon_media>", normalizedIconMedia)
@@ -415,17 +418,23 @@ public class TablistManager {
             return "";
         }
 
+        String publicName = plugin.getHideManager() == null
+                ? player.getName()
+                : plugin.getHideManager().publicName(player);
         return text
                 .replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size()))
                 .replace("%max_players%", String.valueOf(Bukkit.getMaxPlayers()))
-                .replace("%player_name%", player.getName())
-                .replace("%player%", player.getName())
-                .replace("<player>", player.getName())
+                .replace("%player_name%", publicName)
+                .replace("%player%", publicName)
+                .replace("<player>", publicName)
                 .replace("%nick%", resolveNickname(player))
                 .replace("<nick>", resolveNickname(player));
     }
 
     private String resolveNickname(Player player) {
+        if (plugin.getHideManager() != null && plugin.getHideManager().isHidden(player.getUniqueId())) {
+            return plugin.getHideManager().publicName(player);
+        }
         if (!ColorUtils.hasPAPI()) {
             return player.getName();
         }

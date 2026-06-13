@@ -74,6 +74,7 @@ public class SpawnerManager {
     private final Map<String, SpawnerTypeDefinition> typeDefinitions = new LinkedHashMap<>();
     private final AtomicLong temporarySpawnerIdSequence = new AtomicLong(-1L);
     private final Set<Long> temporarySpawnerIds = new HashSet<>();
+    private boolean serverWipeMode;
     private boolean enabled;
     private SpawnerInstance.AccessMode defaultAccessMode;
     private long generationIntervalSeconds;
@@ -226,6 +227,29 @@ public class SpawnerManager {
         container.set(spawnerItemAmountKey, PersistentDataType.LONG, amount);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public void updateSpawnerItemAmount(ItemStack item, long newAmount) {
+        if (item == null || item.getType().isAir()) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return;
+        }
+        String typeKey = getSpawnerItemType(item);
+        SpawnerTypeDefinition definition = getTypeDefinition(typeKey);
+        if (definition == null) {
+            return;
+        }
+        meta.setLore(ColorUtils.toComponentList(List.of(
+                "&7ᴛʏᴘᴇ: &f" + ColorUtils.strip(definition.displayName()),
+                "&7ᴀᴍᴏᴜɴᴛ: &a" + NumberUtils.format(newAmount),
+                "",
+                "&eᴘʟᴀᴄᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏʀ ѕᴛᴀᴄᴋ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ."
+        )));
+        meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, newAmount);
+        item.setItemMeta(meta);
     }
 
     public boolean isSpawnerItem(ItemStack item) {
@@ -996,7 +1020,14 @@ public class SpawnerManager {
         return canOpen(player, instance);
     }
 
+    public void setServerWipeMode(boolean serverWipeMode) {
+        this.serverWipeMode = serverWipeMode;
+    }
+
     public void shutdown() {
+        if (serverWipeMode) {
+            return;
+        }
         for (SpawnerInstance instance : spawnersById.values()) {
             if (isTemporarySpawner(instance)) {
                 continue;

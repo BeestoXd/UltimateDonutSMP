@@ -1,11 +1,10 @@
 package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -29,6 +28,9 @@ public class PlayerDeathListener implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().clearNametag(victim.getUniqueId());
+        }
 
         if (plugin.getDuelManager() != null && plugin.getDuelManager().handleDuelDeath(event)) {
             return;
@@ -36,10 +38,9 @@ public class PlayerDeathListener implements Listener {
 
         boolean ffaHandled = plugin.getFfaManager() != null && plugin.getFfaManager().handleDeath(event);
         plugin.getStaffModeManager().handleDeath(event);
-        Component deathMsg = buildDeathMessage(event, victim, killer);
-        event.deathScreenMessageOverride(deathMsg);
+        String deathMsg = buildDeathMessage(event, victim, killer);
         if (ffaHandled) {
-            event.deathMessage(deathMsg);
+            event.setDeathMessage(deathMsg);
             return;
         }
 
@@ -54,18 +55,22 @@ public class PlayerDeathListener implements Listener {
             if (killerData != null) {
                 killerData.addKill();
                 killerData.addKillStreak();
-                long shardsPerKill = plugin.getConfigManager().getConfig()
-                        .getLong("SETTINGS.SHARDS-PER-KILL", 1);
-                plugin.getShardManager().giveShards(killer, shardsPerKill, true);
+                if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SHARDS)) {
+                    long shardsPerKill = plugin.getConfigManager().getConfig()
+                            .getLong("SETTINGS.SHARDS-PER-KILL", 1);
+                    plugin.getShardManager().giveShards(killer, shardsPerKill, true);
+                }
             }
 
-            if (plugin.getBountyManager().hasBounty(victim.getUniqueId()) && !plugin.getBountyManager()
+            if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.BOUNTY)
+                    && plugin.getBountyManager().hasBounty(victim.getUniqueId()) && !plugin.getBountyManager()
                     .isExcludedWorld(victim.getWorld().getName())) {
                 double amount = plugin.getBountyManager().claimBounty(killer, victim.getUniqueId());
                 if (amount > 0) {
                     String msg = plugin.getConfigManager().getMessage("BOUNTY.CLAIM-SUCCESS",
                             "{amount}", NumberUtils.format(amount),
-                            "{player}", victim.getName());
+                            "{amount_formatted}", plugin.getCurrencyManager().formatMoney(amount),
+                            "{player}", plugin.getHideManager().publicName(victim));
                     killer.sendMessage(ColorUtils.toComponent(msg));
                 }
             }
@@ -73,14 +78,14 @@ public class PlayerDeathListener implements Listener {
 
         if (plugin.getConfigManager().getDeathMessages()
                 .getBoolean("MESSAGES.ENABLED", true)) {
-            event.deathMessage(deathMsg);
+            event.setDeathMessage(deathMsg);
         }
 
         plugin.getCombatManager().clearTag(victim.getUniqueId());
         plugin.getRtpZoneManager().clearState(victim.getUniqueId());
     }
 
-    private Component buildDeathMessage(PlayerDeathEvent event, Player victim, Player killer) {
+    private String buildDeathMessage(PlayerDeathEvent event, Player victim, Player killer) {
         if (killer != null && !killer.equals(victim)) {
             return buildPlayerKillMessage(victim, killer);
         }
@@ -134,10 +139,10 @@ public class PlayerDeathListener implements Listener {
         };
 
         String msg = template
-                .replace("{player}", victim.getName())
+                .replace("{player}", plugin.getHideManager().publicName(victim))
                 .replace("{killer}", killerName != null ? killerName : "ᴜɴᴋɴᴏᴡɴ");
 
-        return ColorUtils.toComponent(prefix + msg);
+        return ColorUtils.colorize(prefix + msg);
     }
 
     private String resolveNonPlayerKillerName(EntityDamageEvent damageCause, Player victim) {
@@ -175,12 +180,9 @@ public class PlayerDeathListener implements Listener {
         return name == null || name.isBlank() ? entity.getType().name() : name;
     }
 
-    private Component buildPlayerKillMessage(Player victim, Player killer) {
-        String victimName = victim == null ? "ᴜɴᴋɴᴏᴡɴ" : victim.getName();
-        String killerName = killer == null ? "ᴜɴᴋɴᴏᴡɴ" : killer.getName();
-        return Component.text(
-                "☠ " + victimName + " ᴡᴀѕ ѕʟᴀɪɴ ʙʏ " + killerName,
-                NamedTextColor.RED
-        );
+    private String buildPlayerKillMessage(Player victim, Player killer) {
+        String victimName = victim == null ? "ᴜɴᴋɴᴏᴡɴ" : plugin.getHideManager().publicName(victim);
+        String killerName = killer == null ? "ᴜɴᴋɴᴏᴡɴ" : plugin.getHideManager().publicName(killer);
+        return ColorUtils.colorize("&c\u2620 " + victimName + " \u1D21\u1D00\u0455 \u0455\u029F\u1D00\u026A\u0274 \u0299\u028F " + killerName);
     }
 }

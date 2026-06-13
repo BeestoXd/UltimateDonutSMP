@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.AuctionHouseManager;
+import com.bx.ultimateDonutSmp.managers.LanguageManager;
 import com.bx.ultimateDonutSmp.models.AuctionClaim;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
@@ -44,27 +45,62 @@ public class AuctionHouseClaimsMenu extends BaseMenu {
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ ᴛᴏ ᴍᴀʀᴋᴇᴛ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ")));
+        LanguageManager language = plugin.getLanguageManager();
+        set(lastRow, ItemUtils.createItem(
+                Material.COMPASS,
+                language.menu("AUCTION_HOUSE.CLAIMS.BACK_NAME", "&bBack to Market"),
+                language.menuList("AUCTION_HOUSE.CLAIMS.BACK_LORE",
+                        List.of("&7Return to Auction House"))
+        ));
         set(lastRow + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
+                ? ItemUtils.createItem(
+                        Material.ARROW,
+                        language.menu("COMMON.PREVIOUS.NAME", "&aPrevious Page"),
+                        language.menuList("COMMON.PREVIOUS.LORE", List.of("&7Go to page &f{page}"),
+                                "{page}", String.valueOf(page - 1))
+                )
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 2, ItemUtils.createItem(Material.CHEST, "&bᴍʏ ʟɪѕᴛɪɴɢѕ", List.of("&7ᴍᴀɴᴀɢᴇ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢѕ")));
-        set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴄʟᴀɪᴍ ǫᴜᴇᴜᴇ")));
+        set(lastRow + 2, ItemUtils.createItem(
+                Material.CHEST,
+                language.menu("AUCTION_HOUSE.CLAIMS.MY_LISTINGS_NAME", "&bMy Listings"),
+                language.menuList("AUCTION_HOUSE.CLAIMS.MY_LISTINGS_LORE",
+                        List.of("&7Manage your active listings"))
+        ));
+        set(lastRow + 3, ItemUtils.createItem(
+                Material.CLOCK,
+                language.menu("COMMON.REFRESH.NAME", "&eRefresh"),
+                language.menuList("AUCTION_HOUSE.CLAIMS.REFRESH_LORE",
+                        List.of("&7Reload your claim queue"))
+        ));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
-                "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(claims.size(), itemsPerPage),
-                List.of("&7ᴘᴇɴᴅɪɴɢ ᴄʟᴀɪᴍѕ: &f" + claims.size())
+                language.menu("COMMON.PAGE.NAME", "&ePage {page}&7/&e{pages}",
+                        "{page}", String.valueOf(page),
+                        "{pages}", String.valueOf(getTotalPages(claims.size(), itemsPerPage))),
+                language.menuList("AUCTION_HOUSE.CLAIMS.PAGE_LORE",
+                        List.of("&7Pending claims: &f{count}"),
+                        "{count}", String.valueOf(claims.size()))
         ));
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
+                ? ItemUtils.createItem(
+                        Material.ARROW,
+                        language.menu("COMMON.NEXT.NAME", "&aNext Page"),
+                        language.menuList("COMMON.NEXT.LORE", List.of("&7Go to page &f{page}"),
+                                "{page}", String.valueOf(page + 1))
+                )
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ")));
+        set(lastRow + 8, ItemUtils.createItem(
+                Material.BARRIER,
+                language.menu("COMMON.CLOSE.NAME", "&cClose"),
+                language.menuList("COMMON.CLOSE.LORE", List.of("&7Close this menu"))
+        ));
 
         if (claims.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ᴘᴇɴᴅɪɴɢ ᴄʟᴀɪᴍѕ",
-                    List.of("&7ѕᴏʟᴅ ᴘᴀʏᴏᴜᴛѕ ᴀɴᴅ ʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍѕ ᴡɪʟʟ ѕʜᴏᴡ ᴜᴘ ʜᴇʀᴇ.")
+                    language.menu("AUCTION_HOUSE.CLAIMS.EMPTY_NAME", "&cNo Pending Claims"),
+                    language.menuList("AUCTION_HOUSE.CLAIMS.EMPTY_LORE",
+                            List.of("&7Sold payouts and returned items will show up here."))
             ));
         }
     }
@@ -120,13 +156,19 @@ public class AuctionHouseClaimsMenu extends BaseMenu {
 
         AuctionHouseManager manager = plugin.getAuctionHouseManager();
         if (!manager.beginAction(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ᴘʀᴇᴠɪᴏᴜѕ ᴀᴄᴛɪᴏɴ."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getLanguageManager().message(
+                    "AUCTION_HOUSE.ACTION_IN_PROGRESS",
+                    "&cAuction House is still processing your previous action."
+            )));
             return;
         }
 
         try {
             if (manager.isOnClickCooldown(player.getUniqueId())) {
-                player.sendMessage(ColorUtils.toComponent("&cѕʟᴏᴡ ᴅᴏᴡɴ ꜰᴏʀ ᴀ ᴍᴏᴍᴇɴᴛ."));
+                player.sendMessage(ColorUtils.toComponent(plugin.getLanguageManager().message(
+                        "AUCTION_HOUSE.CLICK_COOLDOWN",
+                        "&cSlow down for a moment."
+                )));
                 return;
             }
             manager.updateClickCooldown(player.getUniqueId());
@@ -142,7 +184,8 @@ public class AuctionHouseClaimsMenu extends BaseMenu {
             if (claim.moneyClaim()) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                         "AUCTION_HOUSE.CLAIMED_MONEY",
-                        "{amount}", NumberUtils.format(claim.moneyAmount())
+                        "{amount}", NumberUtils.format(claim.moneyAmount()),
+                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount())
                 )));
             } else {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
@@ -184,8 +227,14 @@ public class AuctionHouseClaimsMenu extends BaseMenu {
                     "AUCTION_HOUSE.CLAIM_INVENTORY_FULL",
                     "&cʏᴏᴜ ɴᴇᴇᴅ ᴀ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕʟᴏᴛ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ."
             );
-            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
-            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴄʟᴀɪᴍ ʀɪɢʜᴛ ɴᴏᴡ.";
+            case NO_PLAYER_DATA -> plugin.getLanguageManager().message(
+                    "AUCTION_HOUSE.PLAYER_DATA_UNAVAILABLE",
+                    "&cYour player data could not be loaded."
+            );
+            case DATABASE_ERROR -> plugin.getLanguageManager().message(
+                    "AUCTION_HOUSE.CLAIM_DATABASE_ERROR",
+                    "&cAuction House could not complete that claim right now."
+            );
         };
     }
 }
