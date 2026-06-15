@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
+import com.bx.ultimateDonutSmp.managers.MaintenanceManager;
 import com.bx.ultimateDonutSmp.managers.OptimizationManager;
 import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import com.bx.ultimateDonutSmp.managers.StatsWipeManager;
@@ -41,7 +42,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     private static final String DEFAULT_WEBHOOK_PLACEHOLDER = "https://discord.com/api/webhooks/your_webhook_here";
     private static final int COMMANDS_PER_PAGE = 8;
 
-    private static final List<String> ROOT_COMPLETIONS = List.of("reload", "statswipe", "optimize", "setup", "features");
+    private static final List<String> ROOT_COMPLETIONS = List.of("reload", "statswipe", "optimize", "setup", "features", "maintenance");
     private static final List<String> SETUP_COMPLETIONS = List.of("status", "apply", "setspawn", "setafk", "commands");
     private static final List<String> COMMAND_CATEGORIES = List.of("all", "starter", "economy", "market", "pvp", "staff", "admin", "setup");
 
@@ -64,6 +65,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             case "optimize", "optimization" -> handleOptimize(sender, label, args);
             case "setup" -> handleSetup(sender, label, args);
             case "features" -> handleFeatures(sender, label, args);
+            case "maintenance" -> handleMaintenance(sender, label, args);
             default -> sendUsage(sender, label);
         }
         return true;
@@ -683,6 +685,21 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             return completeFeatures(args);
         }
 
+        if (root.equals("maintenance")) {
+            if (args.length == 2) {
+                return partialMatches(args[1], List.of("on", "off", "status", "setlobby"));
+            }
+            if (args.length == 3 && args[1].equalsIgnoreCase("setlobby")) {
+                List<String> servers = new ArrayList<>();
+                ConfigurationSection sec = plugin.getConfigManager().getNetwork().getConfigurationSection("NETWORK-STATUS.SERVERS");
+                if (sec != null) {
+                    servers.addAll(sec.getKeys(false));
+                }
+                return partialMatches(args[2], servers);
+            }
+            return List.of();
+        }
+
         if (root.equals("statswipe")) {
             if (args.length == 2) {
                 List<String> targets = Arrays.stream(StatsWipeManager.WipeTarget.values())
@@ -743,6 +760,60 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         return options.stream()
                 .filter(option -> option.toLowerCase(Locale.ROOT).startsWith(normalized))
                 .toList();
+    }
+
+    private void handleMaintenance(CommandSender sender, String label, String[] args) {
+        if (!sender.hasPermission("ultimatedonutsmp.admin.maintenance")) {
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ."));
+            return;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " maintenance <on|off|status|setlobby [server]>"));
+            return;
+        }
+
+        MaintenanceManager mm = plugin.getMaintenanceManager();
+        if (mm == null) {
+            sender.sendMessage(ColorUtils.toComponent("&cᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴀɴᴀɢᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ."));
+            return;
+        }
+
+        switch (args[1].toLowerCase(Locale.ROOT)) {
+            case "on", "start", "enable" -> {
+                if (mm.isMaintenanceActive()) {
+                    sender.sendMessage(ColorUtils.toComponent("&eᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴀᴄᴛɪᴠᴇ."));
+                    return;
+                }
+                mm.startMaintenance();
+                sender.sendMessage(ColorUtils.toComponent("&aᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴇɴᴀʙʟᴇᴅ. ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ʙᴇɪɴɢ ʀᴇᴅɪʀᴇᴄᴛᴇᴅ."));
+            }
+            case "off", "stop", "disable" -> {
+                if (!mm.isMaintenanceActive()) {
+                    sender.sendMessage(ColorUtils.toComponent("&eᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ɴᴏᴛ ᴀᴄᴛɪᴠᴇ."));
+                    return;
+                }
+                mm.stopMaintenance();
+                sender.sendMessage(ColorUtils.toComponent("&aᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴅɪѕᴀʙʟᴇᴅ. ʀᴇᴄᴏɴɴᴇᴄᴛ ѕɪɢɴᴀʟ ѕᴇɴᴛ."));
+            }
+            case "status" -> {
+                boolean active = mm.isMaintenanceActive();
+                String lobby = mm.getLobbyServer();
+                sender.sendMessage(ColorUtils.toComponent("&d&lᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕᴛᴀᴛᴜѕ:"));
+                sender.sendMessage(ColorUtils.toComponent("  &fᴀᴄᴛɪᴠᴇ: " + (active ? "&aʏᴇѕ" : "&cɴᴏ")));
+                sender.sendMessage(ColorUtils.toComponent("  &fʟᴏʙʙʏ ѕᴇʀᴠᴇʀ: &b" + lobby));
+            }
+            case "setlobby" -> {
+                if (args.length < 3) {
+                    sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " maintenance setlobby <server>"));
+                    return;
+                }
+                String lobby = args[2];
+                mm.setLobbyServer(lobby);
+                sender.sendMessage(ColorUtils.toComponent("&aʟᴏʙʙʏ ѕᴇʀᴠᴇʀ ѕᴇᴛ ᴛᴏ &b" + lobby + "&a."));
+            }
+            default -> sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " maintenance <on|off|status|setlobby [server]>"));
+        }
     }
 
     private record CommandEntry(String usage, String description) {

@@ -485,6 +485,20 @@ public class DatabaseManager {
             "  PRIMARY KEY (spawner_id, loot_key)" +
             ")"
         );
+        execute(
+            "CREATE TABLE IF NOT EXISTS maintenance_locations (" +
+            "  uuid VARCHAR(36) NOT NULL," +
+            "  server_id VARCHAR(64) NOT NULL," +
+            "  world_name VARCHAR(128) NOT NULL," +
+            "  x DOUBLE NOT NULL," +
+            "  y DOUBLE NOT NULL," +
+            "  z DOUBLE NOT NULL," +
+            "  yaw FLOAT NOT NULL," +
+            "  pitch FLOAT NOT NULL," +
+            "  timestamp BIGINT NOT NULL," +
+            "  PRIMARY KEY (uuid, server_id)" +
+            ")"
+        );
     }
 
     private void ensurePlayerColumns() throws SQLException {
@@ -2987,6 +3001,85 @@ public class DatabaseManager {
 
     public boolean isMongoDb() {
         return databaseType == DatabaseType.MONGODB;
+    }
+
+    public void saveMaintenanceLocation(UUID uuid, String serverId, String world, double x, double y, double z, float yaw, float pitch) {
+        try (Connection conn = getConnection()) {
+            try (PreparedStatement del = conn.prepareStatement("DELETE FROM maintenance_locations WHERE uuid = ? AND server_id = ?")) {
+                del.setString(1, uuid.toString());
+                del.setString(2, serverId);
+                del.executeUpdate();
+            }
+            try (PreparedStatement ins = conn.prepareStatement(
+                    "INSERT INTO maintenance_locations (uuid, server_id, world_name, x, y, z, yaw, pitch, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                ins.setString(1, uuid.toString());
+                ins.setString(2, serverId);
+                ins.setString(3, world);
+                ins.setDouble(4, x);
+                ins.setDouble(5, y);
+                ins.setDouble(6, z);
+                ins.setFloat(7, yaw);
+                ins.setFloat(8, pitch);
+                ins.setLong(9, System.currentTimeMillis());
+                ins.executeUpdate();
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save maintenance location for " + uuid, e);
+        }
+    }
+
+    public Location getMaintenanceLocation(UUID uuid, String serverId) {
+        String sql = "SELECT world_name, x, y, z, yaw, pitch FROM maintenance_locations WHERE uuid = ? AND server_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, serverId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String worldName = rs.getString("world_name");
+                    double x = rs.getDouble("x");
+                    double y = rs.getDouble("y");
+                    double z = rs.getDouble("z");
+                    float yaw = rs.getFloat("yaw");
+                    float pitch = rs.getFloat("pitch");
+                    World world = Bukkit.getWorld(worldName);
+                    if (world != null) {
+                        return new Location(world, x, y, z, yaw, pitch);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to load maintenance location for " + uuid, e);
+        }
+        return null;
+    }
+
+    public void deleteMaintenanceLocation(UUID uuid, String serverId) {
+        String sql = "DELETE FROM maintenance_locations WHERE uuid = ? AND server_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, serverId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to delete maintenance location for " + uuid, e);
+        }
+    }
+
+    public List<UUID> getMaintenancePlayers(String serverId) {
+        List<UUID> list = new ArrayList<>();
+        String sql = "SELECT uuid FROM maintenance_locations WHERE server_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, serverId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    try {
+                        list.add(UUID.fromString(rs.getString("uuid")));
+                    } catch (IllegalArgumentException ignored) {}
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to load maintenance players for server " + serverId, e);
+        }
+        return list;
     }
 
     public Connection getConnection() { return connection; }

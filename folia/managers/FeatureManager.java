@@ -69,7 +69,8 @@ public class FeatureManager {
         KEY_ALL("KEY_ALL", "ᴋᴇʏ-ᴀʟʟ", "ᴀᴜᴛᴏᴍᴀᴛɪᴄ ᴄʀᴀᴛᴇ ᴋᴇʏ-ᴀʟʟ ʀᴇᴡᴀʀᴅѕ.", "TRIPWIRE_HOOK", null),
         LUNAR_RICH_PRESENCE("LUNAR_RICH_PRESENCE", "ʟᴜɴᴀʀ ʀɪᴄʜ ᴘʀᴇѕᴇɴᴄᴇ", "ʟᴜɴᴀʀ ᴄʟɪᴇɴᴛ ʀɪᴄʜ ᴘʀᴇѕᴇɴᴄᴇ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ.", "ENDER_EYE", null),
         LUNAR_TEAM_VIEW("LUNAR_TEAM_VIEW", "ʟᴜɴᴀʀ ᴛᴇᴀᴍ ᴠɪᴇᴡ", "ʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇ ᴏᴠᴇʀʟᴀʏ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ.", "LEATHER_HELMET", null),
-        OPTIMIZATION("OPTIMIZATION", "ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ", "ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴏɴɪᴛᴏʀ ᴀɴᴅ ᴀᴅᴀᴘᴛɪᴠᴇ ᴛᴀѕᴋ ѕᴋɪᴘᴘɪɴɢ.", "REDSTONE", null);
+        OPTIMIZATION("OPTIMIZATION", "ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ", "ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴏɴɪᴛᴏʀ ᴀɴᴅ ᴀᴅᴀᴘᴛɪᴠᴇ ᴛᴀѕᴋ ѕᴋɪᴘᴘɪɴɢ.", "REDSTONE", null),
+        MAINTENANCE("MAINTENANCE", "ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ", "ѕᴇᴀᴍʟᴇѕѕ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕʏѕᴛᴇᴍ ᴡɪᴛʜ ʟᴏʙʙʏ ʀᴇᴅɪʀᴇᴄᴛɪᴏɴ.", "REDSTONE_LAMP", "MAINTENANCE");
 
         private final String configKey;
         private final String displayName;

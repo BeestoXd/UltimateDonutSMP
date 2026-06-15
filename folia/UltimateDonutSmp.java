@@ -77,6 +77,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private AntiEspManager    antiEspManager;
     private NetworkStatusManager networkStatusManager;
     private RedisManager redisManager;
+    private MaintenanceManager maintenanceManager;
     private NetworkStaffChatManager networkStaffChatManager;
     private NetworkStaffAlertManager networkStaffAlertManager;
     private StaffModeManager staffModeManager;
@@ -165,9 +166,12 @@ public final class UltimateDonutSmp extends JavaPlugin {
         fakePlayerManager = new FakePlayerManager(this);
         antiEspManager = new AntiEspManager(this);
         redisManager = new RedisManager(this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         networkStatusManager = new NetworkStatusManager(this);
         networkStaffChatManager = new NetworkStaffChatManager(this);
         networkStaffAlertManager = new NetworkStaffAlertManager(this);
+        maintenanceManager = new MaintenanceManager(this);
+        maintenanceManager.initializeRedisListener();
         discordWebhookManager = new DiscordWebhookManager(this);
         initializeLunarRichPresenceManager();
 
@@ -213,6 +217,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new EconomyExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
+        }
+
+        if (maintenanceManager != null && !maintenanceManager.isMaintenanceActive()) {
+            maintenanceManager.broadcastOnline();
         }
 
         getLogger().info("UltimateDonutSmp enabled successfully.");
@@ -495,6 +503,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("playtime", new PlaytimeCommand(this), FeatureManager.Feature.STATS);
         LeaderboardCommand lbCmd = new LeaderboardCommand(this);
         setExecutor("leaderboard", lbCmd, FeatureManager.Feature.LEADERBOARDS);
+        getServer().getPluginManager().registerEvents(lbCmd, this);
         setExecutor("freeze", new FreezeCommand(this));
         setExecutor("fly", new FlyCommand(this));
         setExecutor("heal", new HealCommand(this));
@@ -581,6 +590,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         UltimateDonutSmpCommand ultimateDonutSmpCommand = new UltimateDonutSmpCommand(this);
         setExecutor("ultimatedonutsmp", ultimateDonutSmpCommand);
         setTabCompleter("ultimatedonutsmp", ultimateDonutSmpCommand);
+        MaintenanceCommand maintenanceCommand = new MaintenanceCommand(this);
+        setExecutor("maintenance", maintenanceCommand, FeatureManager.Feature.MAINTENANCE);
+        setTabCompleter("maintenance", maintenanceCommand);
     }
 
     private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
@@ -750,6 +762,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         networkStaffChatManager.reload();
         networkStaffAlertManager.reload();
         discordWebhookManager.reload();
+        if (maintenanceManager != null) {
+            maintenanceManager.load();
+        }
         leaderboardManager.invalidateAll();
         scoreboardManager.updateAll();
         tablistManager.updateAll();
@@ -827,6 +842,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public AntiEspManager    getAntiEspManager()    { return antiEspManager; }
     public NetworkStatusManager getNetworkStatusManager() { return networkStatusManager; }
     public RedisManager getRedisManager() { return redisManager; }
+
+    public MaintenanceManager getMaintenanceManager() {
+        return maintenanceManager;
+    }
     public NetworkStaffChatManager getNetworkStaffChatManager() { return networkStaffChatManager; }
     public NetworkStaffAlertManager getNetworkStaffAlertManager() { return networkStaffAlertManager; }
     public DiscordWebhookManager getDiscordWebhookManager() { return discordWebhookManager; }

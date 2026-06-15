@@ -71,7 +71,9 @@ public class FeatureManager {
         KEY_ALL("KEY_ALL", "ᴋᴇʏ-ᴀʟʟ", "ᴀᴜᴛᴏᴍᴀᴛɪᴄ ᴄʀᴀᴛᴇ ᴋᴇʏ-ᴀʟʟ ʀᴇᴡᴀʀᴅѕ.", "TRIPWIRE_HOOK", null),
         LUNAR_RICH_PRESENCE("LUNAR_RICH_PRESENCE", "ʟᴜɴᴀʀ ʀɪᴄʜ ᴘʀᴇѕᴇɴᴄᴇ", "ʟᴜɴᴀʀ ᴄʟɪᴇɴᴛ ʀɪᴄʜ ᴘʀᴇѕᴇɴᴄᴇ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ.", "ENDER_EYE", null),
         LUNAR_TEAM_VIEW("LUNAR_TEAM_VIEW", "ʟᴜɴᴀʀ ᴛᴇᴀᴍ ᴠɪᴇᴡ", "ʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇ ᴏᴠᴇʀʟᴀʏ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ.", "LEATHER_HELMET", null),
-        OPTIMIZATION("OPTIMIZATION", "ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ", "ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴏɴɪᴛᴏʀ ᴀɴᴅ ᴀᴅᴀᴘᴛɪᴠᴇ ᴛᴀѕᴋ ѕᴋɪᴘᴘɪɴɢ.", "REDSTONE", null);
+        OPTIMIZATION("OPTIMIZATION", "ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ", "ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴏɴɪᴛᴏʀ ᴀɴᴅ ᴀᴅᴀᴘᴛɪᴠᴇ ᴛᴀѕᴋ ѕᴋɪᴘᴘɪɴɢ.", "REDSTONE", null),
+        MAINTENANCE("MAINTENANCE", "ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ", "ѕᴇᴀᴍʟᴇѕѕ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕʏѕᴛᴇᴍ ᴡɪᴛʜ ʟᴏʙʙʏ ʀᴇᴅɪʀᴇᴄᴛɪᴏɴ.", "REDSTONE_LAMP", "MAINTENANCE"),
+        HIDE("HIDE", "Hide", "Persistent player identity scrambling and configured disguises.", "NAME_TAG", "HIDE");
 
         private final String configKey;
         private final String displayName;
@@ -179,10 +181,10 @@ public class FeatureManager {
             case "crate", "crates", "keys" -> new Feature[]{Feature.CRATES};
             case "shop" -> new Feature[]{Feature.SHOP};
             case "orders" -> new Feature[]{Feature.ORDERS};
-            case "duel", "queue", "draw", "arena" -> new Feature[]{Feature.DUELS};
+            case "duel", "create", "queue", "draw", "arena" -> new Feature[]{Feature.DUELS};
             case "ffa", "ffastats", "ffaarena" -> new Feature[]{Feature.FFA};
             case "auctionhouse" -> new Feature[]{Feature.AUCTION_HOUSE};
-            case "enderchest" -> new Feature[]{Feature.ENDER_CHEST};
+            case "enderchest", "ecsee" -> new Feature[]{Feature.ENDER_CHEST};
             case "sell", "sellhand", "sellall", "sellhistory" -> new Feature[]{Feature.SELL};
             case "worth" -> new Feature[]{Feature.SELL, Feature.WORTH};
             case "rtp" -> new Feature[]{Feature.RTP};
@@ -190,7 +192,7 @@ public class FeatureManager {
             case "leaderboard" -> new Feature[]{Feature.LEADERBOARDS};
             case "freeze" -> new Feature[]{Feature.FREEZE};
             case "gamemode" -> new Feature[]{Feature.GAMEMODE};
-            case "staffmode", "stafflist", "vanish" -> new Feature[]{Feature.STAFF_MODE};
+            case "staffmode", "stafflist", "vanish", "fakeplayer", "fplayer" -> new Feature[]{Feature.STAFF_MODE};
             case "staffchat" -> new Feature[]{Feature.STAFF_CHAT};
             case "helpop", "report" -> new Feature[]{Feature.STAFF_ALERTS};
             case "spawnstash", "stash" -> new Feature[]{Feature.SPAWN_STASH};
@@ -212,6 +214,7 @@ public class FeatureManager {
             case "billford" -> new Feature[]{Feature.BILLFORD};
             case "spawner" -> new Feature[]{Feature.SPAWNERS};
             case "clearlag" -> new Feature[]{Feature.CLEAR_LAG};
+            case "hide", "disguise" -> new Feature[]{Feature.HIDE};
             case "cuboid" -> new Feature[]{Feature.CUBOIDS};
             case "amethysttool" -> new Feature[]{Feature.AMETHYST_TOOLS};
             default -> new Feature[0];
@@ -326,6 +329,11 @@ public class FeatureManager {
                 }
                 if (plugin.getCrateVisualManager() != null) {
                     plugin.getCrateVisualManager().reload();
+                }
+            }
+            case ENDER_CHEST -> {
+                if (plugin.getEnderChestManager() != null) {
+                    plugin.getEnderChestManager().reload();
                 }
             }
             case STAFF_MODE -> {
