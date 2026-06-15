@@ -2,10 +2,13 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Locale;
 
 public class PingCommand implements CommandExecutor {
 
@@ -31,7 +34,7 @@ public class PingCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "PING.SELF",
-                            "&7ʏᴏᴜʀ ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ",
+                            "&7ʏᴏᴜʀ ᴘɪɴɢ ɪѕ &b%ping%mѕ",
                             "%ping%",
                             String.valueOf(player.getPing())
                     ),
@@ -40,7 +43,7 @@ public class PingCommand implements CommandExecutor {
             return true;
         }
 
-        Player target = plugin.getHideManager().findOnlinePlayer(sender, args[0]);
+        Player target = findOnlinePlayer(args[0]);
         if (target == null) {
             sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return true;
@@ -49,9 +52,9 @@ public class PingCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault(
                         "PING.OTHER",
-                        "&e%player%'ѕ &7ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ",
+                        "&e%player%'ѕ &7ᴘɪɴɢ ɪѕ &b%ping%mѕ",
                         "%player%",
-                        plugin.getHideManager().publicName(target),
+                        target.getName(),
                         "%ping%",
                         String.valueOf(target.getPing())
                 )
@@ -59,4 +62,22 @@ public class PingCommand implements CommandExecutor {
         return true;
     }
 
+    private Player findOnlinePlayer(String input) {
+        if (input == null || input.isBlank()) {
+            return null;
+        }
+
+        Player exact = Bukkit.getPlayerExact(input);
+        if (exact != null) {
+            return exact;
+        }
+
+        String expected = input.toLowerCase(Locale.ROOT);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getName().toLowerCase(Locale.ROOT).equals(expected)) {
+                return player;
+            }
+        }
+        return null;
+    }
 }

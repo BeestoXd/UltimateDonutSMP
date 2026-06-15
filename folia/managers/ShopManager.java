@@ -240,7 +240,8 @@ public class ShopManager {
             int minQuantity,
             int maxQuantity,
             int defaultQuantity,
-            Boolean hideQuantityButtons
+            Boolean hideQuantityButtons,
+            Boolean stayOpenAfterPurchase
     ) {}
 
     private final UltimateDonutSmp plugin;
@@ -343,7 +344,8 @@ public class ShopManager {
                     itemSec.contains("MIN-QUANTITY") ? itemSec.getInt("MIN-QUANTITY") : -1,
                     itemSec.contains("MAX-QUANTITY") ? itemSec.getInt("MAX-QUANTITY") : -1,
                     itemSec.contains("DEFAULT-QUANTITY") ? itemSec.getInt("DEFAULT-QUANTITY") : -1,
-                    itemSec.contains("HIDE-QUANTITY-BUTTONS") ? itemSec.getBoolean("HIDE-QUANTITY-BUTTONS") : null
+                    itemSec.contains("HIDE-QUANTITY-BUTTONS") ? itemSec.getBoolean("HIDE-QUANTITY-BUTTONS") : null,
+                    itemSec.contains("STAY-OPEN-AFTER-PURCHASE") ? itemSec.getBoolean("STAY-OPEN-AFTER-PURCHASE") : null
             ));
         }
 
@@ -542,7 +544,7 @@ public class ShopManager {
                 + " quantity=" + purchase.quantity()
                 + " price=" + purchase.totalPrice()
                 + " currency=" + purchase.currency()
-                + " reason=" + ColorUtils.strip(result.message());
+                + " reason=" + result.message();
         if (result.throwable() != null) {
             plugin.getLogger().log(Level.WARNING, message, result.throwable());
         } else {

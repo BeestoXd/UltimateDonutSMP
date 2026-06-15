@@ -73,7 +73,12 @@ public class PurchaseShopMenu extends BaseMenu {
             if (result.success()) {
                 playSuccessSound(player);
                 player.sendMessage(ColorUtils.toComponent(resolveSuccessMessage(result)));
-                new ShopMenu(plugin, originMenuSection, originPage).open(player);
+                if (shouldStayOpenAfterPurchase()) {
+                    quantity = plugin.getShopManager().getPurchaseRestriction(item).clamp(quantity);
+                    build(player);
+                } else {
+                    new ShopMenu(plugin, originMenuSection, originPage).open(player);
+                }
             } else {
                 playErrorSound(player);
                 player.sendMessage(ColorUtils.toComponent(resolveErrorMessage(result)));
@@ -330,6 +335,10 @@ public class PurchaseShopMenu extends BaseMenu {
             return List.of();
         }
         return List.of(singleLine);
+    }
+
+    private boolean shouldStayOpenAfterPurchase() {
+        return item.stayOpenAfterPurchase() != null && item.stayOpenAfterPurchase();
     }
 
     private void playSuccessSound(Player player) {

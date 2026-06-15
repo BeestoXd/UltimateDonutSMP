@@ -56,16 +56,12 @@ public class OrdersBrowseMenu extends BaseMenu {
         set(lastRow + 1, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀѕ")));
         set(lastRow + 2, ItemUtils.createItem(
                 Material.HOPPER,
-                OrdersMenuSupport.tr("&aѕᴏʀᴛ: &f") + plugin.getLanguageManager().display(
-                        "ORDER_SORTS",
-                        sortMode.name(),
-                        sortMode.displayName()
-                ),
+                "&aѕᴏʀᴛ: &f" + sortMode.displayName(),
                 List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ ᴍᴏᴅᴇ")
         ));
         set(lastRow + 3, ItemUtils.createItem(
                 Material.CHEST,
-                OrdersMenuSupport.tr("&bꜰɪʟᴛᴇʀ: &f") + plugin.getOrdersManager().prettifyCategory(categoryFilter),
+                "&bꜰɪʟᴛᴇʀ: &f" + plugin.getOrdersManager().prettifyCategory(categoryFilter),
                 List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ᴄᴀᴛᴇɢᴏʀʏ ꜰɪʟᴛᴇʀ")
         ));
         set(lastRow + 4, ItemUtils.createItem(Material.EMERALD, "&aɴᴇᴡ ᴏʀᴅᴇʀ", List.of("&7ᴄʀᴇᴀᴛᴇ ᴀ ɴᴇᴡ ʙᴜʏ ᴏʀᴅᴇʀ")));

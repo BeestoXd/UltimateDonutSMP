@@ -3,41 +3,28 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import io.papermc.paper.scoreboard.numbers.NumberFormat;
-import org.bukkit.Bukkit;
+import com.bx.ultimateDonutSmp.utils.PacketSidebarRenderer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Criteria;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class ScoreboardManager {
 
     private static final int MAX_LINES = 15;
 
-    // unique invisible entries, one per line slot, so updates stay flicker free.
-    private static final String[] ENTRIES = new String[MAX_LINES];
-    static {
-        String[] codes = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e"};
-        for (int i = 0; i < MAX_LINES; i++) {
-            ENTRIES[i] = "\u00A7" + codes[i] + "\u00A7r";
-        }
-    }
-
     private final UltimateDonutSmp plugin;
-    private final Map<UUID, Scoreboard> playerBoards = new HashMap<>();
+    private final PacketSidebarRenderer sidebarRenderer;
+    private final Set<UUID> visiblePlayers = new HashSet<>();
     private int titleIndex = 0;
 
     public ScoreboardManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+        this.sidebarRenderer = new PacketSidebarRenderer(plugin);
     }
 
     public boolean isEnabled() {
@@ -47,26 +34,21 @@ public class ScoreboardManager {
 
     public void applyVisibility(Player player) {
         if (!isEnabled()) {
-            releaseOwnedBoard(player);
+            releasePlayer(player);
             return;
         }
         if (!isVisibleFor(player)) {
             hidePlayer(player);
-            return;
-        }
-
-        if (!playerBoards.containsKey(player.getUniqueId())) {
-            setupPlayer(player);
             return;
         }
 
         update(player);
     }
 
-    /** Called once on player join, creates the board structure. */
+    /** Called once on player join, creates the client-side sidebar. */
     public void setupPlayer(Player player) {
         if (!isEnabled()) {
-            releaseOwnedBoard(player);
+            releasePlayer(player);
             return;
         }
         if (!isVisibleFor(player)) {
@@ -74,25 +56,18 @@ public class ScoreboardManager {
             return;
         }
 
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = board.registerNewObjective("sidebar", Criteria.DUMMY,
-                ColorUtils.toComponent("EconomySMP"));
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        obj.numberFormat(NumberFormat.blank());
-
-        playerBoards.put(player.getUniqueId(), board);
-        player.setScoreboard(board);
-        updateText(player, board, obj);
+        renderPlayer(player);
     }
 
     public void removePlayer(UUID uuid) {
-        playerBoards.remove(uuid);
+        visiblePlayers.remove(uuid);
+        sidebarRenderer.remove(uuid);
     }
 
-    /** Called every tick, only updates text without recreating entries. */
+    /** Called every tick, only updates changed sidebar packets. */
     public void update(Player player) {
         if (!isEnabled()) {
-            releaseOwnedBoard(player);
+            releasePlayer(player);
             return;
         }
         if (!isVisibleFor(player)) {
@@ -100,40 +75,7 @@ public class ScoreboardManager {
             return;
         }
 
-        Scoreboard board = playerBoards.get(player.getUniqueId());
-        if (board == null) {
-            setupPlayer(player);
-            return;
-        }
-
-        Objective obj = board.getObjective("sidebar");
-        if (obj == null) return;
-        updateText(player, board, obj);
-    }
-
-    private void updateText(Player player, Scoreboard board, Objective obj) {
-        List<String> titles = plugin.getConfigManager().getScoreboard()
-                .getStringList("SCOREBOARD.TITLE");
-        if (!titles.isEmpty()) {
-            String title = titles.get(titleIndex % titles.size());
-            obj.displayName(ColorUtils.toComponent(title, player));
-        }
-
-        List<String> lines = getLines(player);
-        int count = Math.min(lines.size(), MAX_LINES);
-        syncLineSlots(board, obj, count);
-
-        for (int i = 0; i < count; i++) {
-            Team team = board.getTeam("sb_" + i);
-            if (team == null) continue;
-            String text = ColorUtils.colorize(lines.get(i), player);
-            applyLine(team, text);
-        }
-
-        for (int i = count; i < MAX_LINES; i++) {
-            Team team = board.getTeam("sb_" + i);
-            if (team != null) applyLine(team, "");
-        }
+        renderPlayer(player);
     }
 
     private List<String> getLines(Player player) {
@@ -209,38 +151,30 @@ public class ScoreboardManager {
                 .replace("%economy_shards%", shardsShort);
     }
 
-    private void syncLineSlots(Scoreboard board, Objective obj, int count) {
-        for (int i = 0; i < count; i++) {
-            Team team = board.getTeam("sb_" + i);
-            if (team == null) {
-                team = board.registerNewTeam("sb_" + i);
-                team.addEntry(ENTRIES[i]);
+    private void renderPlayer(Player player) {
+        sidebarRenderer.show(player, getTitle(player), getRenderedLines(player));
+        visiblePlayers.add(player.getUniqueId());
+    }
+
+    private String getTitle(Player player) {
+        List<String> titles = plugin.getConfigManager().getScoreboard()
+                .getStringList("SCOREBOARD.TITLE");
+        if (titles.isEmpty()) {
+            return ColorUtils.colorize("EconomySMP", player);
+        }
+        return ColorUtils.colorize(titles.get(titleIndex % titles.size()), player);
+    }
+
+    private List<String> getRenderedLines(Player player) {
+        List<String> lines = getLines(player);
+        List<String> rendered = new ArrayList<>(Math.min(lines.size(), MAX_LINES));
+        for (String line : lines) {
+            if (rendered.size() >= MAX_LINES) {
+                break;
             }
-            obj.getScore(ENTRIES[i]).setScore(count - i);
+            rendered.add(ColorUtils.colorize(line, player));
         }
-
-        for (int i = count; i < MAX_LINES; i++) {
-            board.resetScores(ENTRIES[i]);
-        }
-    }
-
-    private void applyLine(Team team, String text) {
-        if (text.length() <= 64) {
-            team.prefix(ColorUtils.toComponent(text));
-            team.suffix(ColorUtils.toComponent(""));
-            return;
-        }
-
-        int split = findSafeSplit(text, 64);
-        team.prefix(ColorUtils.toComponent(text.substring(0, split)));
-        team.suffix(ColorUtils.toComponent(text.substring(split, Math.min(text.length(), split + 64))));
-    }
-
-    private int findSafeSplit(String text, int max) {
-        if (max >= text.length()) return text.length();
-        int split = max;
-        if (split > 0 && text.charAt(split - 1) == '\u00A7') split--;
-        return split;
+        return rendered;
     }
 
     public void updateAll() {
@@ -262,26 +196,30 @@ public class ScoreboardManager {
     }
 
     private void hidePlayer(Player player) {
-        releaseOwnedBoard(player);
+        releasePlayer(player);
     }
 
     public void releaseAll() {
-        if (playerBoards.isEmpty()) {
+        if (visiblePlayers.isEmpty()) {
             return;
         }
 
-        plugin.getFoliaScheduler().forEachOnlinePlayer(this::releaseOwnedBoard);
-        playerBoards.clear();
+        Set<UUID> uuids = new HashSet<>(visiblePlayers);
+        for (UUID uuid : uuids) {
+            Player player = plugin.getServer().getPlayer(uuid);
+            if (player != null && player.isOnline()) {
+                sidebarRenderer.hide(player);
+            } else {
+                sidebarRenderer.remove(uuid);
+            }
+        }
+        visiblePlayers.clear();
     }
 
-    private void releaseOwnedBoard(Player player) {
-        Scoreboard board = playerBoards.remove(player.getUniqueId());
-        if (board == null || Bukkit.getScoreboardManager() == null) {
+    private void releasePlayer(Player player) {
+        if (player == null || !visiblePlayers.remove(player.getUniqueId())) {
             return;
         }
-        if (player.getScoreboard() == board) {
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-        }
+        sidebarRenderer.hide(player);
     }
 }
-

@@ -76,11 +76,12 @@ public class CombatListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        // kill player if they disconnect during combat (optional, can be configured)
         Player player = event.getPlayer();
         if (plugin.getCombatManager().isInCombat(player.getUniqueId())) {
+            if (plugin.getCombatManager().isKillOnLogoutEnabled()) {
+                player.setHealth(0.0);
+            }
             plugin.getCombatManager().clearTag(player.getUniqueId());
-            // optionally kill: player.setHealth(0);
         }
     }
 }

@@ -466,12 +466,6 @@ public class CrateManager {
         pendingBindCrates.clear();
     }
 
-    public void prepareForServerWipe() {
-        activeSessions.clear();
-        pendingBindCrates.clear();
-        keyBalanceCache.clear();
-    }
-
     public ClaimResult claimSelectedReward(Player player) {
         if (player == null) {
             return new ClaimResult(false, FailureReason.NO_PLAYER_DATA, "&cᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ.", null, null, 0);

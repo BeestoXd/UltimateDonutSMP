@@ -10,14 +10,15 @@ import io.papermc.paper.connection.PlayerConfigurationConnection;
 import io.papermc.paper.connection.PlayerConnection;
 import io.papermc.paper.connection.PlayerLoginConnection;
 import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.UUID;
 
@@ -31,10 +32,6 @@ public class PlayerJoinQuitListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onValidateLogin(PlayerConnectionValidateLoginEvent event) {
-        if (plugin.getServerWipeManager() != null && plugin.getServerWipeManager().isMaintenanceMode()) {
-            event.kickMessage(ColorUtils.toComponent(plugin.getServerWipeManager().getMaintenanceMessage()));
-            return;
-        }
         if (!event.isAllowed()) {
             return;
         }
@@ -78,6 +75,69 @@ public class PlayerJoinQuitListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
+        // Check maintenance mode
+        if (plugin.getMaintenanceManager() != null && plugin.getMaintenanceManager().isMaintenanceActive()) {
+            String bypassPerm = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.BYPASS_PERMISSION", "ultimatedonutsmp.admin.maintenance.bypass");
+            if (!player.hasPermission(bypassPerm)) {
+                boolean useProxy = plugin.getConfigManager().getNetwork().getBoolean("MAINTENANCE.USE_PROXY", true);
+                String notAllowedMsg = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.NOT_ALLOWED", "&d[Maintenance] &cThis server is currently in maintenance. Redirecting to lobby...");
+                player.sendMessage(ColorUtils.toComponent(notAllowedMsg));
+                
+                if (useProxy) {
+                    String lobby = plugin.getMaintenanceManager().getLobbyServer();
+                    plugin.getMaintenanceManager().sendToLobby(player, lobby);
+                    event.setJoinMessage(null);
+                    
+                    plugin.getFoliaScheduler().runEntityLater(player, () -> {
+                        if (player.isOnline()) {
+                            String kickMessage = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cThis server is in maintenance and no lobby is available.");
+                            player.kickPlayer(ColorUtils.colorize(kickMessage));
+                        }
+                    }, 40L);
+                } else {
+                    // Local server: Teleport them to the lobby world spawn
+                    String localServerId = plugin.getConfigManager().getNetwork().getString("NETWORK.LOCAL_SERVER_ID", "local");
+                    if (plugin.getDatabaseManager().getMaintenanceLocation(player.getUniqueId(), localServerId) == null) {
+                        org.bukkit.Location loc = player.getLocation();
+                        if (loc.getWorld() != null) {
+                            plugin.getDatabaseManager().saveMaintenanceLocation(
+                                    player.getUniqueId(),
+                                    localServerId,
+                                    loc.getWorld().getName(),
+                                    loc.getX(),
+                                    loc.getY(),
+                                    loc.getZ(),
+                                    loc.getYaw(),
+                                    loc.getPitch()
+                            );
+                        }
+                    }
+                    
+                    String lobbyWorld = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.LOBBY_WORLD", "world");
+                    org.bukkit.World world = Bukkit.getWorld(lobbyWorld);
+                    if (world != null) {
+                        plugin.getFoliaScheduler().teleport(player, world.getSpawnLocation());
+                    }
+                }
+                return;
+            } else {
+                String bypassJoinMsg = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.BYPASS_JOIN", "&d[Maintenance] &7You joined while maintenance mode is active.");
+                player.sendMessage(ColorUtils.toComponent(bypassJoinMsg));
+            }
+        } else if (plugin.getMaintenanceManager() != null) {
+            String localServerId = plugin.getConfigManager().getNetwork().getString("NETWORK.LOCAL_SERVER_ID", "local");
+            Location savedLoc = plugin.getDatabaseManager().getMaintenanceLocation(player.getUniqueId(), localServerId);
+            if (savedLoc != null) {
+                plugin.getFoliaScheduler().teleport(player, savedLoc).thenAccept(success -> {
+                    if (success) {
+                        plugin.getFoliaScheduler().runAsync(() -> {
+                            plugin.getDatabaseManager().deleteMaintenanceLocation(player.getUniqueId(), localServerId);
+                        });
+                    }
+                });
+            }
+        }
+
         // load player data
         plugin.getPlayerDataManager().loadOrCreate(player);
         plugin.getIgnoreManager().loadPlayer(player.getUniqueId());
@@ -89,10 +149,6 @@ public class PlayerJoinQuitListener implements Listener {
             );
         }
         plugin.getKeyAllManager().handleJoin(player);
-        if (plugin.getHideManager() != null) {
-            plugin.getHideManager().handleJoin(player,
-                    message -> player.sendMessage(ColorUtils.toComponent(message, player)));
-        }
 
         // load homes
         plugin.getHomeManager().loadHomes(player);
@@ -130,26 +186,6 @@ public class PlayerJoinQuitListener implements Listener {
 
         // hide join message (optional, uncomment to suppress)
         // event.joinMessage(null);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onTeleport(PlayerTeleportEvent event) {
-        refreshHiddenNametag(event.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onRespawn(PlayerRespawnEvent event) {
-        refreshHiddenNametag(event.getPlayer());
-    }
-
-    private void refreshHiddenNametag(Player player) {
-        if (plugin.getHideManager() == null) {
-            return;
-        }
-        var state = plugin.getHideManager().getState(player.getUniqueId());
-        if (plugin.getHideManager().usesObfuscatedText(state)) {
-            plugin.getHideManager().refreshNametag(player);
-        }
     }
 
     @EventHandler
@@ -212,9 +248,6 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getChatManager().clearPlayerState(player.getUniqueId());
         plugin.getPrivateMessageManager().clearPlayer(player.getUniqueId());
         plugin.getIgnoreManager().unloadPlayer(player.getUniqueId());
-        if (plugin.getHideManager() != null) {
-            plugin.getHideManager().handleQuit(player.getUniqueId());
-        }
 
         // remove team chat
         plugin.getTeamManager().setTeamChat(player.getUniqueId(), false);

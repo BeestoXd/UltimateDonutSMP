@@ -15,9 +15,6 @@ public class AutoSaveTask implements Runnable {
 
     @Override
     public void run() {
-        if (plugin.getServerWipeManager() != null && plugin.getServerWipeManager().isMaintenanceMode()) {
-            return;
-        }
         plugin.getPlayerDataManager().autoSaveDirty();
         if (plugin.getConfigManager().getDatabase().getBoolean("DATABASE.MONGODB.SYNC-ON-AUTOSAVE", true)) {
             plugin.getDatabaseManager().flush();

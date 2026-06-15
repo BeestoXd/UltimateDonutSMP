@@ -133,11 +133,6 @@ public class AuctionHouseManager {
         validateConfiguration();
     }
 
-    public void prepareForServerWipe() {
-        activeTransactions.clear();
-        lastClickTimes.clear();
-    }
-
     public boolean isEnabled() {
         return config().getBoolean("SETTINGS.ENABLED", true);
     }
@@ -989,7 +984,7 @@ public class AuctionHouseManager {
 
         String message = plugin.getConfigManager().getMessage(
                 "AUCTION_HOUSE.ITEM_SOLD",
-                "{buyer}", plugin.getHideManager().publicName(buyer),
+                "{buyer}", buyer.getName(),
                 "{item}", describeItem(listing.item()),
                 "{price}", NumberUtils.format(listing.price()),
                 "{payout}", NumberUtils.format(listing.sellerPayout())

@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp;
 
 import com.bx.ultimateDonutSmp.amethyst.*;
 import com.bx.ultimateDonutSmp.api.EconomyExpansion;
-import com.bx.ultimateDonutSmp.api.HideExpansion;
 import com.bx.ultimateDonutSmp.commands.*;
 import com.bx.ultimateDonutSmp.hooks.VaultEconomyHook;
 import com.bx.ultimateDonutSmp.listeners.*;
@@ -26,7 +25,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     // ── Managers ──────────────────────────────────────────────────────────────
     private ConfigManager      configManager;
-    private LanguageManager    languageManager;
     private CurrencyManager    currencyManager;
     private FeatureManager     featureManager;
     private DatabaseManager    databaseManager;
@@ -73,14 +71,13 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private ProfileViewerManager profileViewerManager;
     private PunishmentManager  punishmentManager;
     private StatsWipeManager  statsWipeManager;
-    private ServerWipeManager serverWipeManager;
     private SpawnerManager    spawnerManager;
     private SpawnStashManager spawnStashManager;
     private FakePlayerManager fakePlayerManager;
-    private HideManager hideManager;
     private AntiEspManager    antiEspManager;
     private NetworkStatusManager networkStatusManager;
     private RedisManager redisManager;
+    private MaintenanceManager maintenanceManager;
     private NetworkStaffChatManager networkStaffChatManager;
     private NetworkStaffAlertManager networkStaffAlertManager;
     private StaffModeManager staffModeManager;
@@ -108,8 +105,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         configManager   = new ConfigManager(this);
         configManager.loadAll();
-        languageManager = new LanguageManager(this);
-        languageManager.load();
         currencyManager = new CurrencyManager(this);
         featureManager = new FeatureManager(this);
         optimizationManager = new OptimizationManager(this);
@@ -117,8 +112,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
-        serverWipeManager = new ServerWipeManager(this);
-        serverWipeManager.recoverOrRecreatePendingWorlds();
 
         // 2. data managers (depend on DB / config)
         playerDataManager = new PlayerDataManager(this);
@@ -173,17 +166,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
         fakePlayerManager = new FakePlayerManager(this);
         antiEspManager = new AntiEspManager(this);
         redisManager = new RedisManager(this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         networkStatusManager = new NetworkStatusManager(this);
         networkStaffChatManager = new NetworkStaffChatManager(this);
         networkStaffAlertManager = new NetworkStaffAlertManager(this);
+        maintenanceManager = new MaintenanceManager(this);
+        maintenanceManager.initializeRedisListener();
         discordWebhookManager = new DiscordWebhookManager(this);
         initializeLunarRichPresenceManager();
 
         // 4. display managers
         scoreboardManager = new ScoreboardManager(this);
         tablistManager    = new TablistManager(this);
-        hideManager = new HideManager(this);
-        hideManager.loadAll();
         teleportManager   = new TeleportManager(this);
         rtpManager        = new RTPManager(this);
         rtpZoneManager    = new RTPZoneManager(this);
@@ -222,8 +216,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // 8. placeholderapi expansion
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new EconomyExpansion(this).register();
-            new HideExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
+        }
+
+        if (maintenanceManager != null && !maintenanceManager.isMaintenanceActive()) {
+            maintenanceManager.broadcastOnline();
         }
 
         getLogger().info("UltimateDonutSmp enabled successfully.");
@@ -231,8 +228,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        boolean suppressWipeSaves = serverWipeManager != null
-                && serverWipeManager.shouldSuppressShutdownSaves();
         if (teleportManager != null) {
             teleportManager.restoreAllRtpChunkThrottles();
         }
@@ -240,7 +235,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
             getServer().getOnlinePlayers().forEach(worthManager::clearWorthDisplay);
         }
 
-        if (enderChestManager != null && !suppressWipeSaves) {
+        if (enderChestManager != null) {
             enderChestManager.shutdown();
         }
         if (freezeManager != null) {
@@ -291,10 +286,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (fakePlayerManager != null) {
             fakePlayerManager.shutdown();
         }
-        if (hideManager != null) {
-            hideManager.shutdown();
-        }
-        if (spawnerManager != null && !suppressWipeSaves) {
+        if (spawnerManager != null) {
             spawnerManager.shutdown();
         }
         if (crateManager != null) {
@@ -314,7 +306,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
 
         // save all online players and close DB
-        if (playerDataManager != null && !suppressWipeSaves) {
+        if (playerDataManager != null) {
             playerDataManager.saveAll();
         }
         if (databaseManager != null) {
@@ -432,7 +424,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("unignore", ignoreCommand, FeatureManager.Feature.IGNORE);
         setTabCompleter("unignore", ignoreTabCompleter);
         MessageCommand messageCommand = new MessageCommand(this);
-        MessageTabCompleter messageTabCompleter = new MessageTabCompleter(this);
+        MessageTabCompleter messageTabCompleter = new MessageTabCompleter();
         setExecutor("msg", messageCommand, FeatureManager.Feature.MESSAGING);
         setTabCompleter("msg", messageTabCompleter);
         setExecutor("reply", messageCommand, FeatureManager.Feature.MESSAGING);
@@ -495,7 +487,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("ffaarena", new FfaArenaCommand(this), FeatureManager.Feature.FFA);
         setExecutor("auctionhouse", new AuctionHouseCommand(this), FeatureManager.Feature.AUCTION_HOUSE);
         setExecutor("enderchest", new EnderChestCommand(this), FeatureManager.Feature.ENDER_CHEST);
-        setExecutor("ecsee", new EcseeCommand(this), FeatureManager.Feature.ENDER_CHEST);
         SellCommand sellCmd = new SellCommand(this);
         setExecutor("sell", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
@@ -589,11 +580,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("spawner", new SpawnerCommand(this), FeatureManager.Feature.SPAWNERS);
         setExecutor("spawnstash", new SpawnStashCommand(this), FeatureManager.Feature.SPAWN_STASH);
         setExecutor("fakeplayer", new FakePlayerCommand(this), FeatureManager.Feature.STAFF_MODE);
-        HideCommand hideCommand = new HideCommand(this);
-        setExecutor("hide", hideCommand, FeatureManager.Feature.HIDE);
-        setExecutor("disguise", hideCommand, FeatureManager.Feature.HIDE);
-        setTabCompleter("hide", hideCommand);
-        setTabCompleter("disguise", hideCommand);
 
         // Admin
         setExecutor("clearlag", new ClearLagCommand(this), FeatureManager.Feature.CLEAR_LAG);
@@ -604,9 +590,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         UltimateDonutSmpCommand ultimateDonutSmpCommand = new UltimateDonutSmpCommand(this);
         setExecutor("ultimatedonutsmp", ultimateDonutSmpCommand);
         setTabCompleter("ultimatedonutsmp", ultimateDonutSmpCommand);
-        ServerWipeCommand serverWipeCommand = new ServerWipeCommand(this);
-        setExecutor("serverwipe", serverWipeCommand);
-        setTabCompleter("serverwipe", serverWipeCommand);
+        MaintenanceCommand maintenanceCommand = new MaintenanceCommand(this);
+        setExecutor("maintenance", maintenanceCommand, FeatureManager.Feature.MAINTENANCE);
+        setTabCompleter("maintenance", maintenanceCommand);
     }
 
     private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
@@ -741,7 +727,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
             teleportManager.restoreAllRtpChunkThrottles();
         }
         configManager.reload();
-        languageManager.reload();
         currencyManager.reload();
         optimizationManager.reload();
         warpManager.loadAll();
@@ -771,13 +756,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         configManager.reloadSpawnStash();
         spawnerManager.reload();
         spawnStashManager.reload();
-        hideManager.reload();
         antiEspManager.reload();
         antiEspManager.refreshAllPlayers();
         networkStatusManager.reload();
         networkStaffChatManager.reload();
         networkStaffAlertManager.reload();
         discordWebhookManager.reload();
+        if (maintenanceManager != null) {
+            maintenanceManager.load();
+        }
         leaderboardManager.invalidateAll();
         scoreboardManager.updateAll();
         tablistManager.updateAll();
@@ -802,7 +789,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
     // ── Getters ───────────────────────────────────────────────────────────────
 
     public ConfigManager      getConfigManager()      { return configManager; }
-    public LanguageManager    getLanguageManager()    { return languageManager; }
     public CurrencyManager    getCurrencyManager()    { return currencyManager; }
     public FeatureManager     getFeatureManager()     { return featureManager; }
     public DatabaseManager    getDatabaseManager()    { return databaseManager; }
@@ -837,7 +823,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public LeaderboardManager getLeaderboardManager() { return leaderboardManager; }
     public ScoreboardManager  getScoreboardManager()  { return scoreboardManager; }
     public TablistManager     getTablistManager()     { return tablistManager; }
-    public HideManager getHideManager() { return hideManager; }
     public TeleportManager    getTeleportManager()    { return teleportManager; }
     public RTPManager         getRtpManager()         { return rtpManager; }
     public RTPZoneManager     getRtpZoneManager()     { return rtpZoneManager; }
@@ -851,13 +836,16 @@ public final class UltimateDonutSmp extends JavaPlugin {
     public ProfileViewerManager getProfileViewerManager() { return profileViewerManager; }
     public PunishmentManager getPunishmentManager() { return punishmentManager; }
     public StatsWipeManager  getStatsWipeManager() { return statsWipeManager; }
-    public ServerWipeManager getServerWipeManager() { return serverWipeManager; }
     public SpawnerManager    getSpawnerManager()    { return spawnerManager; }
     public SpawnStashManager getSpawnStashManager() { return spawnStashManager; }
     public FakePlayerManager getFakePlayerManager() { return fakePlayerManager; }
     public AntiEspManager    getAntiEspManager()    { return antiEspManager; }
     public NetworkStatusManager getNetworkStatusManager() { return networkStatusManager; }
     public RedisManager getRedisManager() { return redisManager; }
+
+    public MaintenanceManager getMaintenanceManager() {
+        return maintenanceManager;
+    }
     public NetworkStaffChatManager getNetworkStaffChatManager() { return networkStaffChatManager; }
     public NetworkStaffAlertManager getNetworkStaffAlertManager() { return networkStaffAlertManager; }
     public DiscordWebhookManager getDiscordWebhookManager() { return discordWebhookManager; }

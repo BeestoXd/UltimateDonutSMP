@@ -30,24 +30,23 @@ public class FfaStatsCommand implements CommandExecutor {
                 return true;
             }
             targetUuid = player.getUniqueId();
-            targetName = plugin.getHideManager().publicName(player);
+            targetName = player.getName();
         } else {
-            Player online = plugin.getHideManager().findOnlinePlayer(sender, args[0]);
+            Player online = Bukkit.getPlayerExact(args[0]);
             if (online != null) {
                 targetUuid = online.getUniqueId();
-                targetName = plugin.getHideManager().publicName(online);
+                targetName = online.getName();
             } else {
-                targetUuid = plugin.getHideManager().findKnownPlayerUuid(sender, args[0]);
+                targetUuid = plugin.getDatabaseManager().findPlayerUuidByUsername(args[0]);
                 if (targetUuid == null) {
                     sender.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
                     return true;
                 }
                 OfflinePlayer offline = Bukkit.getOfflinePlayer(targetUuid);
                 String lastKnown = plugin.getDatabaseManager().getLastKnownUsername(targetUuid);
-                String fallback = lastKnown == null || lastKnown.isBlank()
+                targetName = lastKnown == null || lastKnown.isBlank()
                         ? (offline.getName() == null ? args[0] : offline.getName())
                         : lastKnown;
-                targetName = plugin.getHideManager().publicName(targetUuid, fallback);
             }
         }
 

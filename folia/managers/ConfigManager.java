@@ -52,9 +52,7 @@ public class ConfigManager {
             "spawn-stash.yml",
             "network.yml",
             "staff-mode.yml",
-            "hide.yml",
             "database.yml",
-            "server-wipe.yml",
             "discord.yml"
     );
 
@@ -88,9 +86,7 @@ public class ConfigManager {
     private FileConfiguration spawnStash;
     private FileConfiguration network;
     private FileConfiguration staffMode;
-    private FileConfiguration hide;
     private FileConfiguration database;
-    private FileConfiguration serverWipe;
     private FileConfiguration discord;
 
     public ConfigManager(UltimateDonutSmp plugin) {
@@ -131,9 +127,7 @@ public class ConfigManager {
         spawnStash   = load("spawn-stash.yml", spawnStash);
         network      = load("network.yml", network);
         staffMode    = load("staff-mode.yml", staffMode);
-        hide         = load("hide.yml", hide);
         database     = load("database.yml", database);
-        serverWipe   = load("server-wipe.yml", serverWipe);
         discord      = load("discord.yml", discord);
     }
 
@@ -1936,36 +1930,30 @@ public class ConfigManager {
     // ── Getters ────────────────────────────────────────────────────────────────
 
     public FileConfiguration getConfig()        { return config; }
-    public FileConfiguration getMessages()      { return localized("MESSAGES", messages); }
-    public FileConfiguration getDeathMessages() { return localized("DEATH_MESSAGES", deathMessages); }
-    public FileConfiguration getMenus()         { return localized("MENUS", menus); }
+    public FileConfiguration getMessages()      { return messages; }
+    public FileConfiguration getDeathMessages() { return deathMessages; }
+    public FileConfiguration getMenus()         { return menus; }
     public FileConfiguration getScoreboard()    { return scoreboard; }
     public FileConfiguration getShop()          { return shop; }
     public FileConfiguration getSounds()        { return sounds; }
-    public FileConfiguration getBillford()      { return localized("CONFIG.BILLFORD", billford); }
-    public FileConfiguration getRtp()           { return localized("CONFIG.RTP", rtp); }
-    public FileConfiguration getWorth()         { return localized("CONFIG.WORTH", worth); }
-    public FileConfiguration getAmethystTools() { return localized("CONFIG.AMETHYST_TOOLS", amethystTools); }
-    public FileConfiguration getEnderChest()    { return localized("CONFIG.ENDER_CHEST", enderChest); }
-    public FileConfiguration getInvsee()        { return localized("CONFIG.INVSEE", invsee); }
-    public FileConfiguration getFreeze()        { return localized("CONFIG.FREEZE", freeze); }
-    public FileConfiguration getAuctionHouse()  { return localized("CONFIG.AUCTION_HOUSE", auctionHouse); }
-    public FileConfiguration getOrders()        { return localized("CONFIG.ORDERS", orders); }
-    public FileConfiguration getDuels()         { return localized("CONFIG.DUELS", duels); }
-    public FileConfiguration getFfa()           { return localized("CONFIG.FFA", ffa); }
-    public FileConfiguration getCrates()        { return localized("CONFIG.CRATES", crates); }
-    public FileConfiguration getSpawners()      { return localized("CONFIG.SPAWNERS", spawners); }
-    public FileConfiguration getSpawnStash()    { return localized("CONFIG.SPAWN_STASH", spawnStash); }
-    public FileConfiguration getNetwork()       { return localized("CONFIG.NETWORK", network); }
-    public FileConfiguration getStaffMode()     { return localized("CONFIG.STAFF_MODE", staffMode); }
-    public FileConfiguration getHide()          { return hide; }
+    public FileConfiguration getBillford()      { return billford; }
+    public FileConfiguration getRtp()           { return rtp; }
+    public FileConfiguration getWorth()         { return worth; }
+    public FileConfiguration getAmethystTools() { return amethystTools; }
+    public FileConfiguration getEnderChest()    { return enderChest; }
+    public FileConfiguration getInvsee()        { return invsee; }
+    public FileConfiguration getFreeze()        { return freeze; }
+    public FileConfiguration getAuctionHouse()  { return auctionHouse; }
+    public FileConfiguration getOrders()        { return orders; }
+    public FileConfiguration getDuels()         { return duels; }
+    public FileConfiguration getFfa()           { return ffa; }
+    public FileConfiguration getCrates()        { return crates; }
+    public FileConfiguration getSpawners()      { return spawners; }
+    public FileConfiguration getSpawnStash()    { return spawnStash; }
+    public FileConfiguration getNetwork()       { return network; }
+    public FileConfiguration getStaffMode()     { return staffMode; }
     public FileConfiguration getDatabase()      { return database; }
-    public FileConfiguration getServerWipe()    { return localized("CONFIG.SERVER_WIPE", serverWipe); }
     public FileConfiguration getDiscord()       { return discord; }
-
-    public FileConfiguration getLegacyMessages() { return messages; }
-    public FileConfiguration getLegacyDeathMessages() { return deathMessages; }
-    public FileConfiguration getLegacyMenus() { return menus; }
 
     public void reloadShop() { shop = load("shop.yml", shop); }
     public void reloadMenus() { menus = load("menus.yml", menus); }
@@ -1984,7 +1972,6 @@ public class ConfigManager {
     public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml", spawnStash); }
     public void reloadNetwork() { network = load("network.yml", network); }
     public void reloadStaffMode() { staffMode = load("staff-mode.yml", staffMode); }
-    public void reloadHide() { hide = load("hide.yml", hide); }
     public void reloadDatabase() { database = load("database.yml", database); }
     public void reloadDiscord() { discord = load("discord.yml", discord); }
     public boolean saveConfig() { return save("config.yml", config); }
@@ -1999,12 +1986,7 @@ public class ConfigManager {
     // ── Convenience helpers ────────────────────────────────────────────────────
 
     public String getMessage(String path) {
-        String legacy = messages.getString(path);
-        LanguageManager languageManager = plugin == null ? null : plugin.getLanguageManager();
-        if (languageManager != null) {
-            return languageManager.message(path, legacy);
-        }
-        return legacy == null ? "&cMissing message: " + path : legacy;
+        return messages.getString(path, "&cᴍᴇѕѕᴀɢᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ: " + path);
     }
 
     public String getMessage(String path, String... placeholders) {
@@ -2016,12 +1998,7 @@ public class ConfigManager {
     }
 
     public String getMessageOrDefault(String path, String fallback) {
-        String legacy = messages.getString(path);
-        LanguageManager languageManager = plugin == null ? null : plugin.getLanguageManager();
-        if (languageManager != null) {
-            return languageManager.text("MESSAGES." + path, legacy, fallback);
-        }
-        return legacy == null ? fallback : legacy;
+        return messages.getString(path, fallback);
     }
 
     public String getMessageOrDefault(String path, String fallback, String... placeholders) {
@@ -2038,13 +2015,6 @@ public class ConfigManager {
 
     public boolean isCommandEnabled(String key) {
         return FeatureManager.isCommandEnabled(config, key);
-    }
-
-    private FileConfiguration localized(String rootPath, FileConfiguration legacy) {
-        if (plugin == null || plugin.getLanguageManager() == null) {
-            return legacy;
-        }
-        return plugin.getLanguageManager().localize(rootPath, legacy);
     }
 
     private boolean save(String name, FileConfiguration configuration) {

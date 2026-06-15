@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -33,14 +34,14 @@ public class FindPlayerCommand implements CommandExecutor {
         if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
         if (args.length == 0) { player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /findplayer <player>")); return true; }
 
-        Player target = plugin.getHideManager().findOnlinePlayer(player, args[0]);
+        Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) { player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.")); return true; }
 
         LocationMessage locationMessage = resolveLocationMessage(target);
         String msg = plugin.getConfigManager().getMessageOrDefault(
                 locationMessage.key(),
                 locationMessage.fallback(),
-                "{player}", plugin.getHideManager().publicName(target),
+                "{player}", target.getName(),
                 "{world}", friendlyWorldName(target.getWorld()),
                 "{biome}", formatBiome(target.getLocation())
         );
@@ -78,8 +79,8 @@ public class FindPlayerCommand implements CommandExecutor {
         }
 
         return switch (world.getEnvironment()) {
-            case NORMAL -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
-            case NETHER -> "ɴᴇᴛʜᴇʀ";
+            case NORMAL -> "Overworld";
+            case NETHER -> "Nether";
             case THE_END -> "ᴛʜᴇ ᴇɴᴅ";
             case CUSTOM -> formatIdentifier(world.getName());
         };

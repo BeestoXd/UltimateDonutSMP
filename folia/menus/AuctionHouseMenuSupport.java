@@ -2,12 +2,9 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.AuctionHouseManager;
-import com.bx.ultimateDonutSmp.managers.CurrencyManager;
-import com.bx.ultimateDonutSmp.managers.LanguageManager;
 import com.bx.ultimateDonutSmp.models.AuctionClaim;
 import com.bx.ultimateDonutSmp.models.AuctionListing;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import net.kyori.adventure.text.Component;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.Material;
@@ -27,27 +24,15 @@ final class AuctionHouseMenuSupport {
             AuctionListing listing,
             boolean ownedByViewer
     ) {
-        LanguageManager language = plugin.getLanguageManager();
-        List<String> extraLore = new ArrayList<>(language.menuList(
-                "AUCTION_HOUSE.ENTRY.LISTING_LORE",
-                List.of(
-                        "",
-                        "&7Seller: &f{seller}",
-                        "&7Price: {price}",
-                        "&7You receive: {payout}",
-                        "&7Time left: &f{time}",
-                        "&7Listing ID: &f#{id}",
-                        ""
-                ),
-                "{seller}", plugin.getHideManager().publicName(listing.sellerUuid(), listing.sellerName()),
-                "{price}", plugin.getCurrencyManager().formatMoney(listing.price()),
-                "{payout}", plugin.getCurrencyManager().formatMoney(listing.sellerPayout()),
-                "{time}", manager.formatRemaining(listing.secondsRemaining(System.currentTimeMillis())),
-                "{id}", String.valueOf(listing.id())
-        ));
-        extraLore.add(ownedByViewer
-                ? language.menu("AUCTION_HOUSE.ENTRY.MANAGE", "&eClick to manage listing")
-                : language.menu("AUCTION_HOUSE.ENTRY.BUY", "&eClick to buy"));
+        List<String> extraLore = new ArrayList<>();
+        extraLore.add("");
+        extraLore.add("&7ѕᴇʟʟᴇʀ: &f" + listing.sellerName());
+        extraLore.add("&7ᴘʀɪᴄᴇ: &a$" + NumberUtils.format(listing.price()));
+        extraLore.add("&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇ: &a$" + NumberUtils.format(listing.sellerPayout()));
+        extraLore.add("&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + manager.formatRemaining(listing.secondsRemaining(System.currentTimeMillis())));
+        extraLore.add("&7ʟɪѕᴛɪɴɢ ɪᴅ: &f#" + listing.id());
+        extraLore.add("");
+        extraLore.add(ownedByViewer ? "&eᴄʟɪᴄᴋ ᴛᴏ ᴍᴀɴᴀɢᴇ ʟɪѕᴛɪɴɢ" : "&eᴄʟɪᴄᴋ ᴛᴏ ʙᴜʏ");
         return decorateItem(plugin, listing.item(), manager.describeItem(listing.item()), extraLore);
     }
 
@@ -56,39 +41,27 @@ final class AuctionHouseMenuSupport {
             AuctionHouseManager manager,
             AuctionClaim claim
     ) {
-        LanguageManager language = plugin.getLanguageManager();
         if (claim.moneyClaim()) {
             return ItemUtils.createItem(
                     Material.SUNFLOWER,
-                    language.menu(
-                            "AUCTION_HOUSE.ENTRY.MONEY_CLAIM_NAME",
-                            "{money_color}{money_name} Claim",
-                            "{money_color}", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY),
-                            "{money_name}", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY)
-                    ),
-                    language.menuList(
-                            "AUCTION_HOUSE.ENTRY.MONEY_CLAIM_LORE",
-                            List.of("&7Amount: {amount}", "&7Source listing: &f#{id}", "", "&eClick to claim"),
-                            "{amount}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
-                            "{id}", String.valueOf(claim.sourceListingId())
+                    "&aᴍᴏɴᴇʏ ᴄʟᴀɪᴍ",
+                    List.of(
+                            "&7ᴀᴍᴏᴜɴᴛ: &a$" + NumberUtils.format(claim.moneyAmount()),
+                            "&7ѕᴏᴜʀᴄᴇ ʟɪѕᴛɪɴɢ: &f#" + claim.sourceListingId(),
+                            "",
+                            "&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ"
                     )
             );
         }
 
-        List<String> extraLore = language.menuList(
-                "AUCTION_HOUSE.ENTRY.ITEM_CLAIM_LORE",
-                List.of(
-                        "",
-                        "&7Claim type: &fReturned Item",
-                        "&7Source listing: &f#{id}",
-                        "&7Created: &f{created}",
-                        "",
-                        "&eClick to claim"
-                ),
-                "{id}", String.valueOf(claim.sourceListingId()),
-                "{created}", NumberUtils.formatTimeLong(Math.max(0L,
-                        (System.currentTimeMillis() - claim.createdAt()) / 1000L))
-        );
+        List<String> extraLore = new ArrayList<>();
+        extraLore.add("");
+        extraLore.add("&7ᴄʟᴀɪᴍ ᴛʏᴘᴇ: &fʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ");
+        extraLore.add("&7ѕᴏᴜʀᴄᴇ ʟɪѕᴛɪɴɢ: &f#" + claim.sourceListingId());
+        extraLore.add("&7ᴄʀᴇᴀᴛᴇᴅ: &f" + NumberUtils.formatTimeLong(Math.max(0L,
+                (System.currentTimeMillis() - claim.createdAt()) / 1000L)));
+        extraLore.add("");
+        extraLore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ");
         return decorateItem(plugin, claim.item(), manager.describeItem(claim.item()), extraLore);
     }
 
@@ -96,15 +69,10 @@ final class AuctionHouseMenuSupport {
             UltimateDonutSmp plugin,
             ItemStack source,
             String fallbackDisplayName,
-        List<String> extraLore
+            List<String> extraLore
     ) {
         if (source == null || source.getType().isAir()) {
-            return ItemUtils.createItem(
-                    Material.BARRIER,
-                    plugin.getLanguageManager().menu("AUCTION_HOUSE.ENTRY.MISSING_NAME", "&cMissing Item"),
-                    plugin.getLanguageManager().menuList("AUCTION_HOUSE.ENTRY.MISSING_LORE",
-                            List.of("&7This entry has no item data."))
-            );
+            return ItemUtils.createItem(Material.BARRIER, "&cᴍɪѕѕɪɴɢ ɪᴛᴇᴍ", List.of("&7ᴛʜɪѕ ᴇɴᴛʀʏ ʜᴀѕ ɴᴏ ɪᴛᴇᴍ ᴅᴀᴛᴀ."));
         }
 
         ItemStack display = source.clone();
@@ -113,16 +81,18 @@ final class AuctionHouseMenuSupport {
             return display;
         }
 
-        List<Component> combinedLore = new ArrayList<>();
+        List<String> combinedLore = new ArrayList<>();
         if (meta.hasLore() && meta.lore() != null) {
-            combinedLore.addAll(meta.lore());
+            for (net.kyori.adventure.text.Component line : meta.lore()) {
+                combinedLore.add(ColorUtils.toLegacyString(line));
+            }
         }
-        combinedLore.addAll(ColorUtils.toComponentList(extraLore));
+        combinedLore.addAll(extraLore);
 
         if (!meta.hasDisplayName() && fallbackDisplayName != null && !fallbackDisplayName.isBlank()) {
             meta.displayName(ColorUtils.toComponent("&b" + fallbackDisplayName));
         }
-        meta.lore(combinedLore);
+        meta.lore(ColorUtils.toComponentList(combinedLore));
         display.setItemMeta(meta);
         return display;
     }

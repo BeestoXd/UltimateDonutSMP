@@ -8,7 +8,6 @@ import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -51,28 +50,18 @@ public class BountyManager {
         return bounties.values();
     }
 
-    public UUID resolvePlayerUuid(CommandSender viewer, String input) {
+    public UUID resolvePlayerUuid(String input) {
         if (input == null || input.isBlank()) {
             return null;
         }
 
-        Player online = plugin.getHideManager().findOnlinePlayer(viewer, input);
+        Player online = Bukkit.getPlayerExact(input);
         if (online != null) {
             return online.getUniqueId();
-        }
-        var hiddenState = plugin.getHideManager().findState(input);
-        if (hiddenState != null
-                && (hiddenState.alias().equalsIgnoreCase(input)
-                || plugin.getHideManager().canSeeRealIdentity(viewer))) {
-            return hiddenState.playerUuid();
         }
 
         UUID storedUuid = plugin.getDatabaseManager().findPlayerUuidByUsername(input);
         if (storedUuid != null) {
-            if (plugin.getHideManager().isHidden(storedUuid)
-                    && !plugin.getHideManager().canSeeRealIdentity(viewer)) {
-                return null;
-            }
             return storedUuid;
         }
 
@@ -91,7 +80,7 @@ public class BountyManager {
 
         Player online = Bukkit.getPlayer(playerUuid);
         if (online != null) {
-            return plugin.getHideManager().publicName(online);
+            return online.getName();
         }
 
         String offlineName = Bukkit.getOfflinePlayer(playerUuid).getName();
@@ -150,9 +139,8 @@ public class BountyManager {
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
         if (targetData == null || targetData.isBountyAlertsEnabled()) {
             String msg = plugin.getConfigManager().getMessage("BOUNTY.ALERT",
-                    "{who}", plugin.getHideManager().publicName(placer),
-                    "{price}", NumberUtils.format(amount),
-                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(amount));
+                    "{who}", placer.getName(),
+                    "{price}", NumberUtils.format(amount));
             target.sendMessage(ColorUtils.toComponent(msg));
         }
     }
@@ -161,8 +149,7 @@ public class BountyManager {
         String messageKey = result == PlacementResult.NEW ? "BOUNTY.NEW" : "BOUNTY.INCREASED";
         String message = plugin.getConfigManager().getMessage(messageKey,
                 "{player}", getDisplayName(targetUuid),
-                "{price}", NumberUtils.format(amount),
-                "{price_formatted}", plugin.getCurrencyManager().formatMoney(amount));
+                "{price}", NumberUtils.format(amount));
 
         for (Player online : Bukkit.getOnlinePlayers()) {
             PlayerData data = plugin.getPlayerDataManager().get(online);

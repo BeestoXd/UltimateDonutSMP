@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.menus.DuelClaimMenu;
 import com.bx.ultimateDonutSmp.menus.DuelCreateMenu;
 import com.bx.ultimateDonutSmp.menus.DuelQueueMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -61,7 +62,7 @@ public class DuelCommand implements CommandExecutor {
             return true;
         }
 
-        Player target = plugin.getHideManager().findOnlinePlayer(player, args[0]);
+        Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
             player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return true;

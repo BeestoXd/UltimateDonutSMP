@@ -112,4 +112,9 @@ public class CombatManager {
         return plugin.getConfigManager().getConfig()
                 .getInt("COMBAT-MANAGER.ANTI-STASIS-CHAMBER.MAX-DISTANCE", 500);
     }
+
+    public boolean isKillOnLogoutEnabled() {
+        return plugin.getConfigManager().getConfig()
+                .getBoolean("COMBAT-MANAGER.KILL-ON-LOGOUT", true);
+    }
 }

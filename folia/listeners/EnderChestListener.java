@@ -86,35 +86,23 @@ public class EnderChestListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (plugin.getEnderChestManager().isInspectionView(event.getView())) {
-            event.setCancelled(true);
-            event.setResult(org.bukkit.event.Event.Result.DENY);
-            return;
-        }
         plugin.getEnderChestManager().markDirty(event.getView());
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryDrag(InventoryDragEvent event) {
-        if (plugin.getEnderChestManager().isInspectionView(event.getView())) {
-            event.setCancelled(true);
-            event.setResult(org.bukkit.event.Event.Result.DENY);
-            return;
-        }
         plugin.getEnderChestManager().markDirty(event.getView());
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         if (event.getPlayer() instanceof Player player) {
-            plugin.getEnderChestManager().handleInspectionClose(player, event.getInventory());
             plugin.getEnderChestManager().handleClose(player, event.getInventory());
         }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getEnderChestManager().handleInspectionViewerQuit(event.getPlayer());
         plugin.getEnderChestManager().handleQuit(event.getPlayer());
     }
 }

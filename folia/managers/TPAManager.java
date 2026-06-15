@@ -428,14 +428,13 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7Auto-accepting &b/tpa&7 request from &f" + publicName(requester) + "&7."
+                "&7Auto-accepting &b/tpa&7 request from &f" + requester.getName() + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + publicName(target) + " has &aTPA auto-accept&7 enabled. Your &b/tpa&7 request is being processed."
+                "&7" + target.getName() + " has &aTPA auto-accept&7 enabled. Your &b/tpa&7 request is being processed."
         ));
 
-        plugin.getFoliaScheduler().runEntity(target, () ->
-                target.performCommand("tpaccept " + plainPublicName(requester)));
+        plugin.getFoliaScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
 
         long delayTicks = Math.max(20L, getTpaCooldownTicks() + 20L);
         plugin.getFoliaScheduler().runEntityLater(target, () -> processNextAutoTpa(targetUuid), delayTicks);
@@ -490,14 +489,13 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7Auto-accepting &b/tpahere&7 request from &f" + publicName(requester) + "&7."
+                "&7Auto-accepting &b/tpahere&7 request from &f" + requester.getName() + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + publicName(target) + " has &aTPAHere auto-accept&7 enabled. Your &b/tpahere&7 request is being processed."
+                "&7" + target.getName() + " has &aTPAHere auto-accept&7 enabled. Your &b/tpahere&7 request is being processed."
         ));
 
-        plugin.getFoliaScheduler().runEntity(target, () ->
-                target.performCommand("tpaccept " + plainPublicName(requester)));
+        plugin.getFoliaScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
 
         long delayTicks = Math.max(20L, getTpaCooldownTicks() + 20L);
         plugin.getFoliaScheduler().runEntityLater(target, () -> processNextAutoTpaHere(targetUuid), delayTicks);
@@ -543,7 +541,7 @@ public class TPAManager {
         }
 
         Player target = Bukkit.getPlayer(request.target());
-        String targetName = target != null ? publicName(target) : "this player";
+        String targetName = target != null ? target.getName() : "this player";
         String requestType = request.tpaHere() ? "/tpahere" : "/tpa";
         requester.sendMessage(ColorUtils.toComponent(
                 "&7Your &b" + requestType + "&7 request to &f" + targetName + "&7 was cleared because " + reason
@@ -571,15 +569,15 @@ public class TPAManager {
             return false;
         }
 
-        String command = "tpaccept " + plainPublicName(requester);
+        String command = "tpaccept " + requester.getName();
         String requestType = tpaHere ? "/tpahere" : "/tpa";
         String autoName = tpaHere ? "tpahere auto-accept" : "tpa auto-accept";
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7Auto-accepting pending &b" + requestType + "&7 request from &f" + publicName(requester) + "&7."
+                "&7Auto-accepting pending &b" + requestType + "&7 request from &f" + requester.getName() + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + publicName(target) + " has &a" + autoName + "&7 enabled. Your &b" + requestType + "&7 request is being processed."
+                "&7" + target.getName() + " has &a" + autoName + "&7 enabled. Your &b" + requestType + "&7 request is being processed."
         ));
 
         plugin.getFoliaScheduler().runEntity(target, () -> target.performCommand(command));
@@ -601,15 +599,15 @@ public class TPAManager {
         if (request.tpaHere()) {
             plugin.getTeleportManager().queue(target, requester.getLocation(), "TPA", null);
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.ACCEPTED-HERE",
-                    "{player}", publicName(requester))));
+                    "{player}", requester.getName())));
             requester.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-HERE-ACCEPTED",
-                    "{player}", publicName(target))));
+                    "{player}", target.getName())));
         } else {
             plugin.getTeleportManager().queue(requester, target.getLocation(), "TPA", null);
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.ACCEPTED",
-                    "{player}", publicName(requester))));
+                    "{player}", requester.getName())));
             requester.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-ACCEPTED",
-                    "{player}", publicName(target))));
+                    "{player}", target.getName())));
         }
 
         SoundUtils.play(target, plugin.getConfigManager().getSound("TPA.CONFIRM"));
@@ -685,13 +683,5 @@ public class TPAManager {
     private long getTpaCooldownTicks() {
         int seconds = plugin.getConfigManager().getConfig().getInt("TELEPORT-COOLDOWN.TPA", 5);
         return seconds * 20L;
-    }
-
-    private String publicName(Player player) {
-        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
-    }
-
-    private String plainPublicName(Player player) {
-        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().plainPublicName(player);
     }
 }

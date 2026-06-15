@@ -48,7 +48,10 @@ public class ReportCommand implements TabExecutor {
             return true;
         }
 
-        Player reported = plugin.getHideManager().findOnlinePlayer(reporter, args[0]);
+        Player reported = plugin.getServer().getPlayerExact(args[0]);
+        if (reported == null) {
+            reported = findOnlinePlayer(args[0]);
+        }
 
         if (reported == null) {
             reporter.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
@@ -70,17 +73,30 @@ public class ReportCommand implements TabExecutor {
 
         String input = args[0].toLowerCase();
         List<String> suggestions = new ArrayList<>();
-        for (String name : plugin.getHideManager().onlineNames(sender)) {
-            Player player = plugin.getHideManager().findOnlinePlayer(sender, name);
-            if (player == null
-                    || sender instanceof Player reporter && reporter.getUniqueId().equals(player.getUniqueId())) {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (sender instanceof Player reporter && reporter.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
-            if (name.toLowerCase().startsWith(input)) {
-                suggestions.add(name);
+            if (player.getName().toLowerCase().startsWith(input)) {
+                suggestions.add(player.getName());
             }
         }
         return suggestions;
+    }
+
+    private Player findOnlinePlayer(String input) {
+        String lowerInput = input.toLowerCase();
+        Player match = null;
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (!player.getName().toLowerCase().startsWith(lowerInput)) {
+                continue;
+            }
+            if (match != null) {
+                return null;
+            }
+            match = player;
+        }
+        return match;
     }
 
     private String joinArgs(String[] args, int startIndex) {

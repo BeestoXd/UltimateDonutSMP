@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
@@ -26,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CrateVisualManager {
 
@@ -33,10 +36,10 @@ public class CrateVisualManager {
     private static final String PERSONAL_TAG = "uds_crate_personal_hologram";
 
     private final UltimateDonutSmp plugin;
-    private final Map<CrateManager.CrateBlockKey, List<UUID>> holograms = new HashMap<>();
-    private final Map<UUID, Map<CrateManager.CrateBlockKey, List<UUID>>> personalLineDisplays = new HashMap<>();
-    private final Map<UUID, Map<CrateManager.CrateBlockKey, UUID>> personalKeyDisplays = new HashMap<>();
-    private final Map<UUID, Map<CrateManager.CrateBlockKey, String>> personalKeyDisplayTexts = new HashMap<>();
+    private final Map<CrateManager.CrateBlockKey, List<UUID>> holograms = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<CrateManager.CrateBlockKey, UUID>> personalKeyDisplays = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<CrateManager.CrateBlockKey, String>> personalKeyDisplayTexts = new ConcurrentHashMap<>();
+    private final AtomicInteger lifecycleGeneration = new AtomicInteger();
 
     private ScheduledTask visualTask;
     private int visualPulse;
@@ -47,24 +50,60 @@ public class CrateVisualManager {
     }
 
     public void reload() {
-        shutdown();
-        purgeNearbyDisplaysForAllBoundCrates();
-        purgeAllCrateHologramsInWorlds();
-        spawnAllHolograms();
+        stopVisualTask();
+        int generation = lifecycleGeneration.incrementAndGet();
+        Map<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> boundCrates = snapshotBoundCrates();
+        Map<CrateManager.CrateBlockKey, List<UUID>> globalSnapshot = snapshotGlobalHolograms();
+        Map<CrateManager.CrateBlockKey, List<UUID>> personalSnapshot = snapshotPersonalKeyDisplaysByCrate();
+        Set<CrateManager.CrateBlockKey> keys = collectKnownKeys(boundCrates.keySet(), globalSnapshot.keySet(), personalSnapshot.keySet());
+
+        holograms.clear();
+        personalKeyDisplays.clear();
+        personalKeyDisplayTexts.clear();
         visualPulse = 0;
+
+        for (CrateManager.CrateBlockKey key : keys) {
+            CrateManager.CrateDefinition crate = boundCrates.get(key);
+            List<UUID> entityIds = combineTrackedIds(key, globalSnapshot, personalSnapshot);
+            runAtCrateRegion(key, () -> {
+                if (isStale(generation)) {
+                    return;
+                }
+
+                removeEntityIdsNow(entityIds);
+                purgeNearbyDisplaysForCrateNow(key);
+                if (crate != null) {
+                    spawnHologramNow(key, crate);
+                }
+            });
+        }
+
         startVisualTask();
     }
 
     public void shutdown() {
-        if (visualTask != null) {
-            visualTask.cancel();
-            visualTask = null;
+        stopVisualTask();
+        int generation = lifecycleGeneration.incrementAndGet();
+        Map<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> boundCrates = snapshotBoundCrates();
+        Map<CrateManager.CrateBlockKey, List<UUID>> globalSnapshot = snapshotGlobalHolograms();
+        Map<CrateManager.CrateBlockKey, List<UUID>> personalSnapshot = snapshotPersonalKeyDisplaysByCrate();
+        Set<CrateManager.CrateBlockKey> keys = collectKnownKeys(boundCrates.keySet(), globalSnapshot.keySet(), personalSnapshot.keySet());
+
+        holograms.clear();
+        personalKeyDisplays.clear();
+        personalKeyDisplayTexts.clear();
+
+        for (CrateManager.CrateBlockKey key : keys) {
+            List<UUID> entityIds = combineTrackedIds(key, globalSnapshot, personalSnapshot);
+            runAtCrateRegion(key, () -> {
+                if (isStale(generation)) {
+                    return;
+                }
+
+                removeEntityIdsNow(entityIds);
+                purgeNearbyDisplaysForCrateNow(key);
+            });
         }
-        clearAllPersonalLineDisplays();
-        clearAllPersonalDisplays();
-        clearAllHolograms();
-        purgeNearbyDisplaysForAllBoundCrates();
-        purgeAllCrateHologramsInWorlds();
     }
 
     public void handleJoin(Player player) {
@@ -73,8 +112,7 @@ public class CrateVisualManager {
 
     public void handleQuit(UUID playerId) {
         if (playerId != null) {
-            clearPersonalLineDisplays(playerId);
-            clearPersonalDisplays(playerId);
+            scheduleClearPersonalKeyDisplays(playerId);
         }
     }
 
@@ -83,16 +121,15 @@ public class CrateVisualManager {
             return;
         }
 
-        CrateManager.CrateBlockKey key = toKey(block);
-        removeHologram(key);
-        purgeNearbyDisplaysForCrate(key);
+        scheduleRefreshHologram(toKey(block));
     }
 
     public void removeHologram(Block block) {
         if (block == null || block.getWorld() == null) {
             return;
         }
-        removeHologram(toKey(block));
+
+        scheduleRemoveHologram(toKey(block));
     }
 
     public void playOpenEffects(Player player, Block block, CrateManager.CrateDefinition crate) {
@@ -100,124 +137,180 @@ public class CrateVisualManager {
             return;
         }
 
-        SoundUtils.play(player, plugin.getConfigManager().getSounds().getString(
+        String sound = plugin.getConfigManager().getSounds().getString(
                 "CRATES.OPEN",
                 "minecraft:block.ender_chest.open|1.0|1.05"
-        ));
+        );
+        plugin.getFoliaScheduler().runEntity(player, () -> {
+            if (player.isOnline()) {
+                SoundUtils.play(player, sound);
+            }
+        });
 
-        Location origin = block.getLocation().add(0.5, 1.0, 0.5);
-        block.getWorld().spawnParticle(Particle.END_ROD, origin, 10, 0.25, 0.35, 0.25, 0.01);
-        block.getWorld().spawnParticle(Particle.GLOW, origin.clone().add(0, 0.25, 0), 8, 0.3, 0.3, 0.3, 0.0);
-        animateLid(block);
+        CrateManager.CrateBlockKey key = toKey(block);
+        runAtCrateRegion(key, () -> playOpenEffectsNow(key));
     }
 
     public void playNoKeyEffects(Player player) {
         if (player == null) {
             return;
         }
-        SoundUtils.play(player, plugin.getConfigManager().getSounds().getString(
+
+        String sound = plugin.getConfigManager().getSounds().getString(
                 "CRATES.NO-KEY",
                 "minecraft:entity.villager.no|1.0|1.0"
-        ));
+        );
+        plugin.getFoliaScheduler().runEntity(player, () -> {
+            if (player.isOnline()) {
+                SoundUtils.play(player, sound);
+            }
+        });
     }
 
     public void playClaimEffects(Player player, CrateManager.CrateDefinition crate) {
-        if (player == null || crate == null || player.getWorld() == null) {
+        if (player == null || crate == null) {
             return;
         }
 
-        SoundUtils.play(player, plugin.getConfigManager().getSounds().getString(
+        String sound = plugin.getConfigManager().getSounds().getString(
                 "CRATES.CLAIM",
                 "minecraft:entity.player.levelup|1.0|1.25"
-        ));
+        );
+        plugin.getFoliaScheduler().runEntity(player, () -> {
+            if (!player.isOnline() || player.getWorld() == null) {
+                return;
+            }
 
-        Location origin = player.getLocation().add(0, 1.0, 0);
-        player.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, origin, 20, 0.4, 0.6, 0.4, 0.05);
-        player.getWorld().spawnParticle(Particle.GLOW, origin, 15, 0.35, 0.5, 0.35, 0.0);
+            SoundUtils.play(player, sound);
+            Location origin = player.getLocation().add(0, 1.0, 0);
+            player.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, origin, 20, 0.4, 0.6, 0.4, 0.05);
+            player.getWorld().spawnParticle(Particle.GLOW, origin, 15, 0.35, 0.5, 0.35, 0.0);
+        });
     }
 
     private void startVisualTask() {
         long updateTicks = getHologramUpdateTicks();
-        visualTask = plugin.getFoliaScheduler().runGlobalTimer(() -> {
-            visualPulse++;
-            spawnIdleParticles();
-            ensureGlobalHolograms();
-            updatePersonalKeyDisplays();
-        }, updateTicks, updateTicks);
+        visualTask = plugin.getFoliaScheduler().runGlobalTimer(this::dispatchVisualTick, updateTicks, updateTicks);
     }
 
-    private void spawnAllHolograms() {
-        for (Map.Entry<CrateManager.CrateBlockKey, String> entry : plugin.getCrateManager().getBoundBlockIds().entrySet()) {
-            CrateManager.CrateBlockKey key = entry.getKey();
-            World world = Bukkit.getWorld(key.world());
-            if (world == null) {
-                continue;
-            }
-
-            Block block = world.getBlockAt(key.x(), key.y(), key.z());
-            CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(entry.getValue());
-            if (crate == null) {
-                continue;
-            }
-
-            spawnHologram(block, crate);
+    private void stopVisualTask() {
+        if (visualTask != null) {
+            visualTask.cancel();
+            visualTask = null;
         }
     }
 
-    private void spawnHologram(Block block, CrateManager.CrateDefinition crate) {
-        removeTrackedGlobalHologram(toKey(block));
+    private void dispatchVisualTick() {
+        int generation = lifecycleGeneration.get();
+        visualPulse++;
+
+        Map<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> boundCrates = snapshotBoundCrates();
+        boolean particlesEnabled = plugin.getConfigManager().getCrates().getBoolean("SETTINGS.PARTICLES.ENABLED", true);
+        Particle particle = parseParticle(
+                plugin.getConfigManager().getCrates().getString("SETTINGS.PARTICLES.TYPE", "ENCHANT")
+        );
+        int particleCount = Math.max(1, plugin.getConfigManager().getCrates().getInt("SETTINGS.PARTICLES.COUNT", 4));
+
+        for (Map.Entry<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> entry : boundCrates.entrySet()) {
+            CrateManager.CrateBlockKey key = entry.getKey();
+            CrateManager.CrateDefinition crate = entry.getValue();
+            runAtCrateRegion(key, () -> {
+                if (isStale(generation)) {
+                    return;
+                }
+
+                if (particlesEnabled) {
+                    spawnIdleParticlesNow(key, particle, particleCount);
+                }
+                ensureGlobalHologramNow(key, crate);
+            });
+        }
+
+        updatePersonalKeyDisplays(generation, boundCrates);
+    }
+
+    private void scheduleRefreshHologram(CrateManager.CrateBlockKey key) {
+        int generation = lifecycleGeneration.get();
+        CrateManager.CrateDefinition crate = snapshotBoundCrates().get(key);
+        List<UUID> entityIds = removeTrackedDisplaysForCrate(key);
+
+        runAtCrateRegion(key, () -> {
+            if (isStale(generation)) {
+                return;
+            }
+
+            removeEntityIdsNow(entityIds);
+            purgeNearbyDisplaysForCrateNow(key);
+            if (crate != null) {
+                spawnHologramNow(key, crate);
+            }
+        });
+    }
+
+    private void scheduleRemoveHologram(CrateManager.CrateBlockKey key) {
+        int generation = lifecycleGeneration.get();
+        List<UUID> entityIds = removeTrackedDisplaysForCrate(key);
+
+        runAtCrateRegion(key, () -> {
+            if (isStale(generation)) {
+                return;
+            }
+
+            removeEntityIdsNow(entityIds);
+            purgeNearbyDisplaysForCrateNow(key);
+        });
+    }
+
+    private void spawnHologramNow(CrateManager.CrateBlockKey key, CrateManager.CrateDefinition crate) {
+        removeTrackedGlobalHologramNow(key);
 
         List<String> lines = getHologramLines(crate);
         if (lines.isEmpty()) {
             return;
         }
 
+        World world = Bukkit.getWorld(key.world());
+        if (world == null) {
+            return;
+        }
+
         List<UUID> entityIds = new ArrayList<>();
-        double baseY = block.getY() + getHologramOffsetY();
+        double baseY = key.y() + getHologramOffsetY();
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
-            Location location = new Location(block.getWorld(), block.getX() + 0.5, baseY - (i * 0.27), block.getZ() + 0.5);
-            TextDisplay display = block.getWorld().spawn(location, TextDisplay.class, textDisplay -> {
-                textDisplay.text(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(line));
+            Location location = new Location(world, key.x() + 0.5, baseY - (i * 0.27), key.z() + 0.5);
+            TextDisplay display = world.spawn(location, TextDisplay.class, textDisplay -> {
+                textDisplay.text(ColorUtils.toComponent(line));
                 configureHologramDisplay(textDisplay);
                 textDisplay.addScoreboardTag(HOLOGRAM_TAG);
                 textDisplay.getPersistentDataContainer().set(
                         plugin.getKey("crate_hologram"),
                         PersistentDataType.STRING,
-                        formatBlockKey(toKey(block))
+                        formatBlockKey(key)
                 );
             });
             entityIds.add(display.getUniqueId());
         }
 
-        holograms.put(toKey(block), entityIds);
+        holograms.put(key, List.copyOf(entityIds));
     }
 
-    private void ensureGlobalHolograms() {
-        for (Map.Entry<CrateManager.CrateBlockKey, String> entry : plugin.getCrateManager().getBoundBlockIds().entrySet()) {
-            CrateManager.CrateBlockKey key = entry.getKey();
-            CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(entry.getValue());
-            if (crate == null) {
-                continue;
-            }
+    private void ensureGlobalHologramNow(CrateManager.CrateBlockKey key, CrateManager.CrateDefinition crate) {
+        int requiredLines = getHologramLines(crate).size();
+        if (requiredLines <= 0) {
+            removeTrackedGlobalHologramNow(key);
+            return;
+        }
 
-            if (hasValidGlobalHologram(key, getHologramLines(crate).size())) {
-                continue;
-            }
-
-            World world = Bukkit.getWorld(key.world());
-            if (world == null) {
-                continue;
-            }
-
-            spawnHologram(world.getBlockAt(key.x(), key.y(), key.z()), crate);
+        if (!hasValidGlobalHologramNow(key, requiredLines)) {
+            spawnHologramNow(key, crate);
         }
     }
 
-    private boolean hasValidGlobalHologram(CrateManager.CrateBlockKey key, int requiredLines) {
+    private boolean hasValidGlobalHologramNow(CrateManager.CrateBlockKey key, int requiredLines) {
         List<UUID> trackedIds = holograms.get(key);
         if (trackedIds == null || trackedIds.size() != requiredLines) {
-            removeTrackedGlobalHologram(key);
+            removeTrackedGlobalHologramNow(key);
             return false;
         }
 
@@ -235,69 +328,118 @@ public class CrateVisualManager {
             return true;
         }
 
-        removeTrackedGlobalHologram(key);
+        removeTrackedGlobalHologramNow(key);
         return false;
     }
 
-    private void updatePersonalKeyDisplays() {
+    private void updatePersonalKeyDisplays(
+            int generation,
+            Map<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> boundCrates
+    ) {
         double viewDistance = getHologramViewDistance();
         boolean unlimitedDistance = viewDistance <= 0D;
         double maxDistanceSquared = unlimitedDistance ? 0D : Math.pow(viewDistance, 2);
-        Map<UUID, Set<CrateManager.CrateBlockKey>> activeDisplays = new HashMap<>();
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            Set<CrateManager.CrateBlockKey> playerActive = new HashSet<>();
-            activeDisplays.put(player.getUniqueId(), playerActive);
+            plugin.getFoliaScheduler().runEntity(player, () -> updatePersonalKeyDisplaysForPlayer(
+                    generation,
+                    player,
+                    boundCrates,
+                    unlimitedDistance,
+                    maxDistanceSquared
+            ));
+        }
+    }
 
-            for (Map.Entry<CrateManager.CrateBlockKey, String> entry : plugin.getCrateManager().getBoundBlockIds().entrySet()) {
-                CrateManager.CrateBlockKey key = entry.getKey();
-                if (!player.getWorld().getName().equals(key.world())) {
-                    continue;
-                }
-
-                double distanceSquared = player.getLocation().distanceSquared(new Location(player.getWorld(), key.x() + 0.5, key.y() + 0.5, key.z() + 0.5));
-                if (!unlimitedDistance && distanceSquared > maxDistanceSquared) {
-                    continue;
-                }
-
-                CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(entry.getValue());
-                if (crate == null) {
-                    continue;
-                }
-
-                playerActive.add(key);
-                upsertPersonalKeyDisplay(player, key, crate);
-            }
+    private void updatePersonalKeyDisplaysForPlayer(
+            int generation,
+            Player player,
+            Map<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> boundCrates,
+            boolean unlimitedDistance,
+            double maxDistanceSquared
+    ) {
+        if (isStale(generation)) {
+            return;
         }
 
-        for (Map.Entry<UUID, Map<CrateManager.CrateBlockKey, UUID>> entry : new HashMap<>(personalKeyDisplays).entrySet()) {
-            UUID viewerId = entry.getKey();
-            Set<CrateManager.CrateBlockKey> active = activeDisplays.getOrDefault(viewerId, Set.of());
-            for (CrateManager.CrateBlockKey key : new HashSet<>(entry.getValue().keySet())) {
-                if (!active.contains(key)) {
-                    removePersonalKeyDisplay(viewerId, key);
-                }
+        UUID viewerId = player.getUniqueId();
+        if (!player.isOnline() || player.getWorld() == null) {
+            scheduleClearPersonalKeyDisplays(viewerId);
+            return;
+        }
+
+        Set<CrateManager.CrateBlockKey> active = new HashSet<>();
+        World playerWorld = player.getWorld();
+        Location playerLocation = player.getLocation();
+
+        for (Map.Entry<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> entry : boundCrates.entrySet()) {
+            CrateManager.CrateBlockKey key = entry.getKey();
+            if (!playerWorld.getName().equals(key.world())) {
+                continue;
+            }
+
+            Location crateLocation = new Location(playerWorld, key.x() + 0.5, key.y() + 0.5, key.z() + 0.5);
+            double distanceSquared = playerLocation.distanceSquared(crateLocation);
+            if (!unlimitedDistance && distanceSquared > maxDistanceSquared) {
+                continue;
+            }
+
+            CrateManager.CrateDefinition crate = entry.getValue();
+            int keys = plugin.getCrateManager().getKeyBalance(player, crate.id());
+            active.add(key);
+            scheduleUpsertPersonalKeyDisplay(generation, viewerId, key, crate, getKeyLine(crate, keys));
+        }
+
+        Map<CrateManager.CrateBlockKey, UUID> playerDisplays = personalKeyDisplays.get(viewerId);
+        if (playerDisplays == null) {
+            return;
+        }
+
+        for (CrateManager.CrateBlockKey key : new HashSet<>(playerDisplays.keySet())) {
+            if (!active.contains(key)) {
+                scheduleRemovePersonalKeyDisplay(generation, viewerId, key);
             }
         }
     }
 
-    private void upsertPersonalLineDisplays(Player player, CrateManager.CrateBlockKey key, CrateManager.CrateDefinition crate) {
-        removePersonalLineDisplays(player.getUniqueId(), key);
+    private void scheduleUpsertPersonalKeyDisplay(
+            int generation,
+            UUID viewerId,
+            CrateManager.CrateBlockKey key,
+            CrateManager.CrateDefinition crate,
+            String line
+    ) {
+        runAtCrateRegion(key, () -> {
+            if (isStale(generation)) {
+                return;
+            }
+
+            upsertPersonalKeyDisplayNow(viewerId, key, crate, line);
+        });
     }
 
-    private void upsertPersonalKeyDisplay(Player player, CrateManager.CrateBlockKey key, CrateManager.CrateDefinition crate) {
+    private void upsertPersonalKeyDisplayNow(
+            UUID viewerId,
+            CrateManager.CrateBlockKey key,
+            CrateManager.CrateDefinition crate,
+            String line
+    ) {
+        if (Bukkit.getPlayer(viewerId) == null) {
+            return;
+        }
+
         World world = Bukkit.getWorld(key.world());
         if (world == null) {
             return;
         }
 
         Map<CrateManager.CrateBlockKey, UUID> playerDisplays = personalKeyDisplays.computeIfAbsent(
-                player.getUniqueId(),
-                ignored -> new HashMap<>()
+                viewerId,
+                ignored -> new ConcurrentHashMap<>()
         );
         Map<CrateManager.CrateBlockKey, String> playerDisplayTexts = personalKeyDisplayTexts.computeIfAbsent(
-                player.getUniqueId(),
-                ignored -> new HashMap<>()
+                viewerId,
+                ignored -> new ConcurrentHashMap<>()
         );
 
         TextDisplay display = null;
@@ -305,7 +447,9 @@ public class CrateVisualManager {
         UUID existingId = playerDisplays.get(key);
         if (existingId != null) {
             Entity entity = Bukkit.getEntity(existingId);
-            if (entity instanceof TextDisplay textDisplay && entity.isValid()) {
+            if (entity instanceof TextDisplay textDisplay
+                    && entity.isValid()
+                    && textDisplay.getScoreboardTags().contains(PERSONAL_TAG)) {
                 display = textDisplay;
                 shouldShowToOwner = !playerDisplayTexts.containsKey(key);
             } else {
@@ -329,7 +473,7 @@ public class CrateVisualManager {
                 textDisplay.getPersistentDataContainer().set(
                         plugin.getKey("crate_hologram_owner"),
                         PersistentDataType.STRING,
-                        player.getUniqueId().toString()
+                        viewerId.toString()
                 );
             });
             playerDisplays.put(key, display.getUniqueId());
@@ -339,97 +483,122 @@ public class CrateVisualManager {
         if (display.isVisibleByDefault()) {
             display.setVisibleByDefault(false);
         }
-
-        String text = getKeyLine(crate, plugin.getCrateManager().getKeyBalance(player, crate.id()));
-        if (!text.equals(playerDisplayTexts.get(key))) {
-            display.text(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(text));
-            playerDisplayTexts.put(key, text);
+        if (!line.equals(playerDisplayTexts.get(key))) {
+            display.text(ColorUtils.toComponent(line));
+            playerDisplayTexts.put(key, line);
         }
         if (shouldShowToOwner) {
-            player.showEntity(plugin, display);
+            TextDisplay displayToShow = display;
+            Player owner = Bukkit.getPlayer(viewerId);
+            if (owner != null) {
+                plugin.getFoliaScheduler().runEntity(owner, () -> {
+                    if (owner.isOnline()) {
+                        owner.showEntity(plugin, displayToShow);
+                    }
+                });
+            }
         }
     }
 
-    private void removeHologram(CrateManager.CrateBlockKey key) {
-        removeTrackedGlobalHologram(key);
-
-        for (UUID viewerId : new HashSet<>(personalLineDisplays.keySet())) {
-            removePersonalLineDisplays(viewerId, key);
-        }
-
-        for (UUID viewerId : new HashSet<>(personalKeyDisplays.keySet())) {
-            removePersonalKeyDisplay(viewerId, key);
-        }
-
-        World world = Bukkit.getWorld(key.world());
-        if (world == null) {
+    private void scheduleClearPersonalKeyDisplays(UUID viewerId) {
+        Map<CrateManager.CrateBlockKey, UUID> displays = personalKeyDisplays.remove(viewerId);
+        personalKeyDisplayTexts.remove(viewerId);
+        if (displays == null) {
             return;
         }
 
-        String expected = formatBlockKey(key);
-        for (Entity entity : world.getEntitiesByClass(TextDisplay.class)) {
-            if (!entity.getScoreboardTags().contains(HOLOGRAM_TAG) && !entity.getScoreboardTags().contains(PERSONAL_TAG)) {
-                continue;
-            }
+        for (Map.Entry<CrateManager.CrateBlockKey, UUID> entry : displays.entrySet()) {
+            CrateManager.CrateBlockKey key = entry.getKey();
+            UUID entityId = entry.getValue();
+            runAtCrateRegion(key, () -> removeEntityIdNow(entityId));
+        }
+    }
 
-            String attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_hologram"), PersistentDataType.STRING);
-            if (expected.equals(attachedKey)) {
-                entity.remove();
+    private void scheduleRemovePersonalKeyDisplay(int generation, UUID viewerId, CrateManager.CrateBlockKey key) {
+        Map<CrateManager.CrateBlockKey, UUID> displays = personalKeyDisplays.get(viewerId);
+        if (displays == null) {
+            return;
+        }
+
+        UUID entityId = displays.remove(key);
+        Map<CrateManager.CrateBlockKey, String> textCache = personalKeyDisplayTexts.get(viewerId);
+        if (textCache != null) {
+            textCache.remove(key);
+            if (textCache.isEmpty()) {
+                personalKeyDisplayTexts.remove(viewerId, textCache);
+            }
+        }
+        if (displays.isEmpty()) {
+            personalKeyDisplays.remove(viewerId, displays);
+        }
+        if (entityId == null) {
+            return;
+        }
+
+        runAtCrateRegion(key, () -> {
+            if (!isStale(generation)) {
+                removeEntityIdNow(entityId);
+            }
+        });
+    }
+
+    private List<UUID> removeTrackedDisplaysForCrate(CrateManager.CrateBlockKey key) {
+        List<UUID> entityIds = new ArrayList<>();
+
+        List<UUID> globalIds = holograms.remove(key);
+        if (globalIds != null) {
+            entityIds.addAll(globalIds);
+        }
+
+        for (Map.Entry<UUID, Map<CrateManager.CrateBlockKey, UUID>> entry : personalKeyDisplays.entrySet()) {
+            UUID personalId = entry.getValue().remove(key);
+            Map<CrateManager.CrateBlockKey, String> textCache = personalKeyDisplayTexts.get(entry.getKey());
+            if (textCache != null) {
+                textCache.remove(key);
+                if (textCache.isEmpty()) {
+                    personalKeyDisplayTexts.remove(entry.getKey(), textCache);
+                }
+            }
+            if (entry.getValue().isEmpty()) {
+                personalKeyDisplays.remove(entry.getKey(), entry.getValue());
+            }
+            if (personalId != null) {
+                entityIds.add(personalId);
             }
         }
 
-        purgeNearbyDisplaysForCrate(key);
+        return entityIds;
     }
 
-    private void removeTrackedGlobalHologram(CrateManager.CrateBlockKey key) {
+    private void removeTrackedGlobalHologramNow(CrateManager.CrateBlockKey key) {
         List<UUID> entityIds = holograms.remove(key);
-        if (entityIds == null) {
+        if (entityIds != null) {
+            removeEntityIdsNow(entityIds);
+        }
+    }
+
+    private void removeEntityIdsNow(List<UUID> entityIds) {
+        if (entityIds == null || entityIds.isEmpty()) {
             return;
         }
 
-        for (UUID entityId : entityIds) {
-            Entity entity = Bukkit.getEntity(entityId);
-            if (entity != null && entity.isValid()) {
-                entity.remove();
-            }
+        for (UUID entityId : new HashSet<>(entityIds)) {
+            removeEntityIdNow(entityId);
         }
     }
 
-    private void clearAllHolograms() {
-        for (World world : Bukkit.getWorlds()) {
-            for (Entity entity : world.getEntitiesByClass(TextDisplay.class)) {
-                if (entity.getScoreboardTags().contains(HOLOGRAM_TAG)) {
-                    entity.remove();
-                }
-            }
+    private void removeEntityIdNow(UUID entityId) {
+        if (entityId == null) {
+            return;
         }
-        holograms.clear();
-    }
 
-    private void purgeAllCrateHologramsInWorlds() {
-        for (World world : Bukkit.getWorlds()) {
-            for (Entity entity : world.getEntitiesByClass(TextDisplay.class)) {
-                if (!isManagedCrateHologram(entity)) {
-                    continue;
-                }
-                entity.remove();
-            }
+        Entity entity = Bukkit.getEntity(entityId);
+        if (entity != null && entity.isValid()) {
+            entity.remove();
         }
     }
 
-    private void purgeNearbyDisplaysForAllBoundCrates() {
-        for (CrateManager.CrateBlockKey key : plugin.getCrateManager().getBoundBlockIds().keySet()) {
-            purgeNearbyDisplaysForCrate(key);
-        }
-    }
-
-    private void purgeUntrackedDisplaysForBoundCrates() {
-        for (CrateManager.CrateBlockKey key : plugin.getCrateManager().getBoundBlockIds().keySet()) {
-            purgeUntrackedDisplaysForCrate(key);
-        }
-    }
-
-    private void purgeNearbyDisplaysForCrate(CrateManager.CrateBlockKey key) {
+    private void purgeNearbyDisplaysForCrateNow(CrateManager.CrateBlockKey key) {
         World world = Bukkit.getWorld(key.world());
         if (world == null) {
             return;
@@ -443,154 +612,30 @@ public class CrateVisualManager {
         }
     }
 
-    private void purgeUntrackedDisplaysForCrate(CrateManager.CrateBlockKey key) {
+    private void spawnIdleParticlesNow(CrateManager.CrateBlockKey key, Particle particle, int count) {
         World world = Bukkit.getWorld(key.world());
         if (world == null) {
             return;
         }
 
-        Set<UUID> trackedIds = collectTrackedDisplayIds(key);
-        Location center = new Location(world, key.x() + 0.5, key.y() + getHologramOffsetY() - 0.35, key.z() + 0.5);
-        for (Entity entity : world.getNearbyEntities(center, 0.4, 1.5, 0.4, candidate -> candidate instanceof TextDisplay)) {
-            if (!isAtCrateHologramColumn(entity, key)) {
-                continue;
-            }
-
-            if (!trackedIds.contains(entity.getUniqueId())) {
-                entity.remove();
-            }
-        }
+        Location location = new Location(world, key.x() + 0.5, key.y() + 1.05, key.z() + 0.5);
+        world.spawnParticle(particle, location, count, 0.18, 0.25, 0.18, 0.02);
+        world.spawnParticle(Particle.GLOW, location.clone().add(0, 0.15, 0), 1, 0.06, 0.06, 0.06, 0.0);
     }
 
-    private void clearAllPersonalLineDisplays() {
-        for (Map<CrateManager.CrateBlockKey, List<UUID>> displays : personalLineDisplays.values()) {
-            for (List<UUID> entityIds : displays.values()) {
-                for (UUID entityId : entityIds) {
-                    Entity entity = Bukkit.getEntity(entityId);
-                    if (entity != null && entity.isValid()) {
-                        entity.remove();
-                    }
-                }
-            }
-        }
-        personalLineDisplays.clear();
-    }
-
-    private void clearAllPersonalDisplays() {
-        for (Map<CrateManager.CrateBlockKey, UUID> displays : personalKeyDisplays.values()) {
-            for (UUID entityId : displays.values()) {
-                Entity entity = Bukkit.getEntity(entityId);
-                if (entity != null && entity.isValid()) {
-                    entity.remove();
-                }
-            }
-        }
-        personalKeyDisplays.clear();
-        personalKeyDisplayTexts.clear();
-    }
-
-    private void clearPersonalLineDisplays(UUID viewerId) {
-        Map<CrateManager.CrateBlockKey, List<UUID>> displays = personalLineDisplays.remove(viewerId);
-        if (displays == null) {
+    private void playOpenEffectsNow(CrateManager.CrateBlockKey key) {
+        World world = Bukkit.getWorld(key.world());
+        if (world == null) {
             return;
         }
 
-        for (List<UUID> entityIds : displays.values()) {
-            for (UUID entityId : entityIds) {
-                Entity entity = Bukkit.getEntity(entityId);
-                if (entity != null && entity.isValid()) {
-                    entity.remove();
-                }
-            }
-        }
+        Location origin = new Location(world, key.x() + 0.5, key.y() + 1.0, key.z() + 0.5);
+        world.spawnParticle(Particle.END_ROD, origin, 10, 0.25, 0.35, 0.25, 0.01);
+        world.spawnParticle(Particle.GLOW, origin.clone().add(0, 0.25, 0), 8, 0.3, 0.3, 0.3, 0.0);
+        animateLidNow(world.getBlockAt(key.x(), key.y(), key.z()));
     }
 
-    private void clearPersonalDisplays(UUID viewerId) {
-        Map<CrateManager.CrateBlockKey, UUID> displays = personalKeyDisplays.remove(viewerId);
-        if (displays == null) {
-            personalKeyDisplayTexts.remove(viewerId);
-            return;
-        }
-
-        for (UUID entityId : displays.values()) {
-            Entity entity = Bukkit.getEntity(entityId);
-            if (entity != null && entity.isValid()) {
-                entity.remove();
-            }
-        }
-        personalKeyDisplayTexts.remove(viewerId);
-    }
-
-    private void removePersonalLineDisplays(UUID viewerId, CrateManager.CrateBlockKey key) {
-        Map<CrateManager.CrateBlockKey, List<UUID>> displays = personalLineDisplays.get(viewerId);
-        if (displays == null) {
-            return;
-        }
-
-        List<UUID> entityIds = displays.remove(key);
-        if (entityIds != null) {
-            for (UUID entityId : entityIds) {
-                Entity entity = Bukkit.getEntity(entityId);
-                if (entity != null && entity.isValid()) {
-                    entity.remove();
-                }
-            }
-        }
-
-        if (displays.isEmpty()) {
-            personalLineDisplays.remove(viewerId);
-        }
-    }
-
-    private void removePersonalKeyDisplay(UUID viewerId, CrateManager.CrateBlockKey key) {
-        Map<CrateManager.CrateBlockKey, UUID> displays = personalKeyDisplays.get(viewerId);
-        if (displays == null) {
-            return;
-        }
-
-        UUID entityId = displays.remove(key);
-        if (entityId != null) {
-            Entity entity = Bukkit.getEntity(entityId);
-            if (entity != null && entity.isValid()) {
-                entity.remove();
-            }
-        }
-        Map<CrateManager.CrateBlockKey, String> textCache = personalKeyDisplayTexts.get(viewerId);
-        if (textCache != null) {
-            textCache.remove(key);
-            if (textCache.isEmpty()) {
-                personalKeyDisplayTexts.remove(viewerId);
-            }
-        }
-
-        if (displays.isEmpty()) {
-            personalKeyDisplays.remove(viewerId);
-        }
-    }
-
-    private void spawnIdleParticles() {
-        if (!plugin.getConfigManager().getCrates().getBoolean("SETTINGS.PARTICLES.ENABLED", true)) {
-            return;
-        }
-
-        Particle particle = parseParticle(
-                plugin.getConfigManager().getCrates().getString("SETTINGS.PARTICLES.TYPE", "ENCHANT")
-        );
-        int count = Math.max(1, plugin.getConfigManager().getCrates().getInt("SETTINGS.PARTICLES.COUNT", 4));
-
-        for (CrateManager.CrateBlockKey key : plugin.getCrateManager().getBoundBlockIds().keySet()) {
-            World world = Bukkit.getWorld(key.world());
-            if (world == null) {
-                continue;
-            }
-
-            Location location = new Location(world, key.x() + 0.5, key.y() + 1.05, key.z() + 0.5);
-            world.spawnParticle(particle, location, count, 0.18, 0.25, 0.18, 0.02);
-            world.spawnParticle(Particle.GLOW, location.clone().add(0, 0.15, 0), 1, 0.06, 0.06, 0.06, 0.0);
-        }
-    }
-
-    private void animateLid(Block block) {
+    private void animateLidNow(Block block) {
         BlockState state = block.getState();
         if (!(state instanceof Lidded lidded)) {
             return;
@@ -606,6 +651,84 @@ public class CrateVisualManager {
             }, 20L);
         } catch (Exception ignored) {
         }
+    }
+
+    private ScheduledTask runAtCrateRegion(CrateManager.CrateBlockKey key, Runnable runnable) {
+        if (key == null) {
+            return null;
+        }
+
+        World world = Bukkit.getWorld(key.world());
+        if (world == null) {
+            return null;
+        }
+
+        return plugin.getFoliaScheduler().runRegion(world, key.x() >> 4, key.z() >> 4, runnable);
+    }
+
+    private Map<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> snapshotBoundCrates() {
+        if (plugin.getCrateManager() == null) {
+            return Map.of();
+        }
+
+        Map<CrateManager.CrateBlockKey, String> boundBlockIds = new HashMap<>(plugin.getCrateManager().getBoundBlockIds());
+        Map<CrateManager.CrateBlockKey, CrateManager.CrateDefinition> snapshot = new HashMap<>();
+        for (Map.Entry<CrateManager.CrateBlockKey, String> entry : boundBlockIds.entrySet()) {
+            CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(entry.getValue());
+            if (crate != null) {
+                snapshot.put(entry.getKey(), crate);
+            }
+        }
+        return snapshot;
+    }
+
+    private Map<CrateManager.CrateBlockKey, List<UUID>> snapshotGlobalHolograms() {
+        Map<CrateManager.CrateBlockKey, List<UUID>> snapshot = new HashMap<>();
+        for (Map.Entry<CrateManager.CrateBlockKey, List<UUID>> entry : holograms.entrySet()) {
+            snapshot.put(entry.getKey(), List.copyOf(entry.getValue()));
+        }
+        return snapshot;
+    }
+
+    private Map<CrateManager.CrateBlockKey, List<UUID>> snapshotPersonalKeyDisplaysByCrate() {
+        Map<CrateManager.CrateBlockKey, List<UUID>> snapshot = new HashMap<>();
+        for (Map<CrateManager.CrateBlockKey, UUID> displays : personalKeyDisplays.values()) {
+            for (Map.Entry<CrateManager.CrateBlockKey, UUID> entry : displays.entrySet()) {
+                snapshot.computeIfAbsent(entry.getKey(), ignored -> new ArrayList<>()).add(entry.getValue());
+            }
+        }
+        return snapshot;
+    }
+
+    @SafeVarargs
+    private final Set<CrateManager.CrateBlockKey> collectKnownKeys(Set<CrateManager.CrateBlockKey>... keySets) {
+        Set<CrateManager.CrateBlockKey> keys = new HashSet<>();
+        for (Set<CrateManager.CrateBlockKey> keySet : keySets) {
+            keys.addAll(keySet);
+        }
+        return keys;
+    }
+
+    private List<UUID> combineTrackedIds(
+            CrateManager.CrateBlockKey key,
+            Map<CrateManager.CrateBlockKey, List<UUID>> globalSnapshot,
+            Map<CrateManager.CrateBlockKey, List<UUID>> personalSnapshot
+    ) {
+        List<UUID> entityIds = new ArrayList<>();
+        List<UUID> globalIds = globalSnapshot.get(key);
+        if (globalIds != null) {
+            entityIds.addAll(globalIds);
+        }
+
+        List<UUID> personalIds = personalSnapshot.get(key);
+        if (personalIds != null) {
+            entityIds.addAll(personalIds);
+        }
+        return entityIds;
+    }
+
+    private boolean isStale(int generation) {
+        return generation != lifecycleGeneration.get();
     }
 
     private void configureHologramDisplay(TextDisplay textDisplay) {
@@ -624,7 +747,7 @@ public class CrateVisualManager {
         if (lines.isEmpty()) {
             lines = List.of(
                     "{crate}",
-                    "&7ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ"
+                    "&7Ê€ÉªÉ¢Êœá´›-á´„ÊŸÉªá´„á´‹ á´›á´ á´á´˜á´‡É´"
             );
         }
 
@@ -640,7 +763,7 @@ public class CrateVisualManager {
     private String getKeyLine(CrateManager.CrateDefinition crate, int keys) {
         String template = plugin.getConfigManager().getCrates().getString(
                 "SETTINGS.HOLOGRAM.KEY-LINE",
-                "&7ᴋᴇʏѕ: &f{keys}"
+                "&7á´‹á´‡ÊÑ•: &f{keys}"
         );
         return template
                 .replace("{crate}", crate.display().displayName())
@@ -689,19 +812,6 @@ public class CrateVisualManager {
         return key.world().toLowerCase(Locale.ROOT) + ":" + key.x() + ":" + key.y() + ":" + key.z();
     }
 
-    private boolean isManagedCrateHologram(Entity entity) {
-        if (!(entity instanceof TextDisplay)) {
-            return false;
-        }
-
-        if (entity.getScoreboardTags().contains(HOLOGRAM_TAG) || entity.getScoreboardTags().contains(PERSONAL_TAG)) {
-            return true;
-        }
-
-        return entity.getPersistentDataContainer().has(plugin.getKey("crate_hologram"), PersistentDataType.STRING)
-                || entity.getPersistentDataContainer().has(plugin.getKey("crate_hologram_owner"), PersistentDataType.STRING);
-    }
-
     private boolean isAtCrateHologramColumn(Entity entity, CrateManager.CrateBlockKey key) {
         if (entity == null || entity.getWorld() == null || !entity.getWorld().getName().equals(key.world())) {
             return false;
@@ -717,30 +827,5 @@ public class CrateVisualManager {
                 && deltaZ <= 0.2D
                 && location.getY() >= minY
                 && location.getY() <= maxY;
-    }
-
-    private Set<UUID> collectTrackedDisplayIds(CrateManager.CrateBlockKey key) {
-        Set<UUID> trackedIds = new HashSet<>();
-
-        List<UUID> globalIds = holograms.get(key);
-        if (globalIds != null) {
-            trackedIds.addAll(globalIds);
-        }
-
-        for (Map<CrateManager.CrateBlockKey, List<UUID>> displays : personalLineDisplays.values()) {
-            List<UUID> ids = displays.get(key);
-            if (ids != null) {
-                trackedIds.addAll(ids);
-            }
-        }
-
-        for (Map<CrateManager.CrateBlockKey, UUID> displays : personalKeyDisplays.values()) {
-            UUID id = displays.get(key);
-            if (id != null) {
-                trackedIds.add(id);
-            }
-        }
-
-        return trackedIds;
     }
 }

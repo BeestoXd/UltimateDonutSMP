@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.AuctionHouseManager;
-import com.bx.ultimateDonutSmp.managers.LanguageManager;
 import com.bx.ultimateDonutSmp.models.AuctionListing;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
@@ -27,7 +26,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
             int originPage,
             AuctionHouseManager.AuctionSort sortMode
     ) {
-        super(plugin, resolveTitle(plugin, listingId), 27);
+        super(plugin, "&8ᴀᴜᴄᴛɪᴏɴ #" + listingId, 27);
         this.listingId = listingId;
         this.backToMyListings = backToMyListings;
         this.originPage = Math.max(1, originPage);
@@ -39,21 +38,14 @@ public class AuctionHouseListingMenu extends BaseMenu {
         clear();
         fill(Material.GRAY_STAINED_GLASS_PANE);
 
-        LanguageManager language = plugin.getLanguageManager();
         AuctionListing listing = plugin.getAuctionHouseManager().getListing(listingId);
-        set(18, ItemUtils.createItem(
-                Material.RED_STAINED_GLASS_PANE,
-                language.menu("AUCTION_HOUSE.LISTING.BACK_NAME", "&cBack"),
-                language.menuList("AUCTION_HOUSE.LISTING.BACK_LORE",
-                        List.of("&7Return to the previous menu"))
-        ));
+        set(18, ItemUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴘʀᴇᴠɪᴏᴜѕ ᴍᴇɴᴜ")));
 
         if (listing == null) {
             set(13, ItemUtils.createItem(
                     Material.BARRIER,
-                    language.menu("AUCTION_HOUSE.LISTING.NOT_FOUND_NAME", "&cListing Not Found"),
-                    language.menuList("AUCTION_HOUSE.LISTING.NOT_FOUND_LORE",
-                            List.of("&7This listing no longer exists."))
+                    "&cʟɪѕᴛɪɴɢ ɴᴏᴛ ꜰᴏᴜɴᴅ",
+                    List.of("&7ᴛʜɪѕ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.")
             ));
             return;
         }
@@ -61,68 +53,53 @@ public class AuctionHouseListingMenu extends BaseMenu {
         boolean owner = listing.sellerUuid().equals(player.getUniqueId());
         set(11, ItemUtils.createItem(
                 Material.PAPER,
-                language.menu("AUCTION_HOUSE.LISTING.INFO_NAME", "&bListing Info"),
-                language.menuList(
-                        "AUCTION_HOUSE.LISTING.INFO_LORE",
-                        List.of(
-                                "&7ID: &f#{id}",
-                                "&7Seller: &f{seller}",
-                                "&7Status: &f{status}",
-                                "&7Price: {price}"
-                        ),
-                        "{id}", String.valueOf(listing.id()),
-                        "{seller}", plugin.getHideManager().publicName(listing.sellerUuid(), listing.sellerName()),
-                        "{status}", language.display("STATUSES", listing.status().name(), listing.status().name()),
-                        "{price}", plugin.getCurrencyManager().formatMoney(listing.price())
+                "&bʟɪѕᴛɪɴɢ ɪɴꜰᴏ",
+                List.of(
+                        "&7ɪᴅ: &f#" + listing.id(),
+                        "&7ѕᴇʟʟᴇʀ: &f" + listing.sellerName(),
+                        "&7ѕᴛᴀᴛᴜѕ: &f" + listing.status().name(),
+                        "&7ᴘʀɪᴄᴇ: &a$" + NumberUtils.format(listing.price())
                 )
         ));
         set(13, AuctionHouseMenuSupport.createListingDisplay(plugin, plugin.getAuctionHouseManager(), listing, owner));
         set(15, ItemUtils.createItem(
                 Material.CLOCK,
-                language.menu("AUCTION_HOUSE.LISTING.TIMING_NAME", "&eTiming"),
-                language.menuList(
-                        "AUCTION_HOUSE.LISTING.TIMING_LORE",
-                        List.of(
-                                "&7Created: &f{created}",
-                                "&7Time left: &f{time}",
-                                "&7Seller payout: {payout}"
-                        ),
-                        "{created}", NumberUtils.formatTimeLong(Math.max(0L,
+                "&eᴛɪᴍɪɴɢ",
+                List.of(
+                        "&7ᴄʀᴇᴀᴛᴇᴅ: &f" + NumberUtils.formatTimeLong(Math.max(0L,
                                 (System.currentTimeMillis() - listing.createdAt()) / 1000L)),
-                        "{time}", plugin.getAuctionHouseManager()
+                        "&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + plugin.getAuctionHouseManager()
                                 .formatRemaining(listing.secondsRemaining(System.currentTimeMillis())),
-                        "{payout}", plugin.getCurrencyManager().formatMoney(listing.sellerPayout())
+                        "&7ѕᴇʟʟᴇʀ ᴘᴀʏᴏᴜᴛ: &a$" + NumberUtils.format(listing.sellerPayout())
                 )
         ));
 
         if (!listing.active()) {
-            set(23, ItemUtils.createItem(
-                    Material.BARRIER,
-                    language.menu("AUCTION_HOUSE.LISTING.UNAVAILABLE_NAME", "&cListing Unavailable"),
-                    language.menuList("AUCTION_HOUSE.LISTING.UNAVAILABLE_LORE",
-                            List.of("&7This listing is no longer active."))
-            ));
+            set(23, ItemUtils.createItem(Material.BARRIER, "&cʟɪѕᴛɪɴɢ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ", List.of("&7ᴛʜɪѕ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.")));
             return;
         }
 
         if (owner) {
             set(23, ItemUtils.createItem(
                     Material.REDSTONE,
-                    language.menu("AUCTION_HOUSE.LISTING.CANCEL_NAME", "&cCancel Listing"),
-                    language.menuList("AUCTION_HOUSE.LISTING.CANCEL_LORE",
-                            List.of("&7Move this listing into your claim queue.", "", "&eClick to cancel"))
+                    "&cᴄᴀɴᴄᴇʟ ʟɪѕᴛɪɴɢ",
+                    List.of(
+                            "&7ᴍᴏᴠᴇ ᴛʜɪѕ ʟɪѕᴛɪɴɢ ɪɴᴛᴏ ʏᴏᴜʀ ᴄʟᴀɪᴍ ǫᴜᴇᴜᴇ.",
+                            "",
+                            "&eᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ"
+                    )
             ));
             return;
         }
 
         set(23, ItemUtils.createItem(
                 Material.EMERALD,
-                language.menu("AUCTION_HOUSE.LISTING.BUY_NAME", "&aBuy Listing"),
-                language.menuList(
-                        "AUCTION_HOUSE.LISTING.BUY_LORE",
-                        List.of("&7Price: {price}", "&7Item: &f{item}", "", "&eClick to purchase"),
-                        "{price}", plugin.getCurrencyManager().formatMoney(listing.price()),
-                        "{item}", plugin.getAuctionHouseManager().describeItem(listing.item())
+                "&aʙᴜʏ ʟɪѕᴛɪɴɢ",
+                List.of(
+                        "&7ᴘʀɪᴄᴇ: &a$" + NumberUtils.format(listing.price()),
+                        "&7ɪᴛᴇᴍ: &f" + plugin.getAuctionHouseManager().describeItem(listing.item()),
+                        "",
+                        "&eᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀѕᴇ"
                 )
         ));
     }
@@ -154,19 +131,13 @@ public class AuctionHouseListingMenu extends BaseMenu {
         }
 
         if (!manager.beginAction(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getLanguageManager().message(
-                    "AUCTION_HOUSE.ACTION_IN_PROGRESS",
-                    "&cAuction House is still processing your previous action."
-            )));
+            player.sendMessage(ColorUtils.toComponent("&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ᴘʀᴇᴠɪᴏᴜѕ ᴀᴄᴛɪᴏɴ."));
             return;
         }
 
         try {
             if (manager.isOnClickCooldown(player.getUniqueId())) {
-                player.sendMessage(ColorUtils.toComponent(plugin.getLanguageManager().message(
-                        "AUCTION_HOUSE.CLICK_COOLDOWN",
-                        "&cSlow down for a moment."
-                )));
+                player.sendMessage(ColorUtils.toComponent("&cѕʟᴏᴡ ᴅᴏᴡɴ ꜰᴏʀ ᴀ ᴍᴏᴍᴇɴᴛ."));
                 return;
             }
             manager.updateClickCooldown(player.getUniqueId());
@@ -201,8 +172,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
                     "AUCTION_HOUSE.PURCHASE_SUCCESS",
                     "{item}", manager.describeItem(listing.item()),
                     "{price}", NumberUtils.format(listing.price()),
-                    "{price_formatted}", plugin.getCurrencyManager().formatMoney(listing.price()),
-                    "{seller}", plugin.getHideManager().publicName(listing.sellerUuid(), listing.sellerName())
+                    "{seller}", listing.sellerName()
             )));
             SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));
             new AuctionHouseBrowseMenu(plugin, originPage, sortMode).open(player);
@@ -214,10 +184,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
     private String resolvePurchaseFailure(AuctionHouseManager.PurchaseListingResult result) {
         return switch (result.reason()) {
             case DISABLED -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.DISABLED");
-            case NO_PLAYER_DATA -> plugin.getLanguageManager().message(
-                    "AUCTION_HOUSE.PLAYER_DATA_UNAVAILABLE",
-                    "&cYour player data could not be loaded."
-            );
+            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
             case LISTING_NOT_FOUND -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.LISTING_NOT_FOUND",
                     "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ."
@@ -232,18 +199,13 @@ public class AuctionHouseListingMenu extends BaseMenu {
             );
             case NO_MONEY -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NOT_ENOUGH_MONEY",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ "
-                            + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
-                            + "."
+                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ."
             );
             case INVENTORY_FULL -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.FULL_INVENTORY",
                     "&cʏᴏᴜ ɴᴇᴇᴅ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕᴘᴀᴄᴇ ᴛᴏ ʙᴜʏ ᴛʜᴀᴛ ɪᴛᴇᴍ."
             );
-            case DATABASE_ERROR -> plugin.getLanguageManager().message(
-                    "AUCTION_HOUSE.PURCHASE_DATABASE_ERROR",
-                    "&cAuction House could not complete that purchase right now."
-            );
+            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴘᴜʀᴄʜᴀѕᴇ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 
@@ -262,19 +224,7 @@ public class AuctionHouseListingMenu extends BaseMenu {
                     "AUCTION_HOUSE.LISTING_NOT_ACTIVE",
                     "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ."
             );
-            case DATABASE_ERROR -> plugin.getLanguageManager().message(
-                    "AUCTION_HOUSE.CANCEL_DATABASE_ERROR",
-                    "&cAuction House could not cancel that listing right now."
-            );
+            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴀɴᴄᴇʟ ᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
-    }
-
-    private static String resolveTitle(UltimateDonutSmp plugin, long listingId) {
-        LanguageManager language = plugin.getLanguageManager();
-        if (language == null) {
-            return "&8Auction #" + listingId;
-        }
-        return language.menu("AUCTION_HOUSE.LISTING.TITLE", "&8Auction #{id}",
-                "{id}", String.valueOf(listingId));
     }
 }
