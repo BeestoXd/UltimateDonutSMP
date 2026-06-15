@@ -1621,7 +1621,7 @@ public class ConfigManager {
             }
 
             int indent = leadingWhitespace(line).length();
-            if (indent <= node.indent) {
+            if (indent < node.indent || (indent == node.indent && !trimmed.startsWith("-"))) {
                 break;
             }
             index++;
