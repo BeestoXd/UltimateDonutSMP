@@ -73,7 +73,8 @@ public class FeatureManager {
         LUNAR_TEAM_VIEW("LUNAR_TEAM_VIEW", "ʟᴜɴᴀʀ ᴛᴇᴀᴍ ᴠɪᴇᴡ", "ʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇ ᴏᴠᴇʀʟᴀʏ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ.", "LEATHER_HELMET", null),
         OPTIMIZATION("OPTIMIZATION", "ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ", "ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴏɴɪᴛᴏʀ ᴀɴᴅ ᴀᴅᴀᴘᴛɪᴠᴇ ᴛᴀѕᴋ ѕᴋɪᴘᴘɪɴɢ.", "REDSTONE", null),
         MAINTENANCE("MAINTENANCE", "ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ", "ѕᴇᴀᴍʟᴇѕѕ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕʏѕᴛᴇᴍ ᴡɪᴛʜ ʟᴏʙʙʏ ʀᴇᴅɪʀᴇᴄᴛɪᴏɴ.", "REDSTONE_LAMP", "MAINTENANCE"),
-        HIDE("HIDE", "Hide", "Persistent player identity scrambling and configured disguises.", "NAME_TAG", "HIDE");
+        HIDE("HIDE", "Hide", "Persistent player identity scrambling and configured disguises.", "NAME_TAG", "HIDE"),
+        FRIENDS("FRIENDS", "ꜰʀɪᴇɴᴅѕ", "ᴘʟᴀʏᴇʀ ꜰʀɪᴇɴᴅѕ/ꜰᴏʟʟᴏᴡѕ ѕʏѕᴛᴇᴍ.", "PLAYER_HEAD", "FRIEND");
 
         private final String configKey;
         private final String displayName;
@@ -217,6 +218,7 @@ public class FeatureManager {
             case "hide", "disguise" -> new Feature[]{Feature.HIDE};
             case "cuboid" -> new Feature[]{Feature.CUBOIDS};
             case "amethysttool" -> new Feature[]{Feature.AMETHYST_TOOLS};
+            case "friends", "friend" -> new Feature[]{Feature.FRIENDS};
             default -> new Feature[0];
         };
     }

@@ -34,6 +34,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private EconomyManager economyManager;
     private ChatManager chatManager;
     private IgnoreManager ignoreManager;
+    private FriendsManager friendsManager;
     private PrivateMessageManager privateMessageManager;
     private TeamManager teamManager;
     private HomeManager homeManager;
@@ -129,6 +130,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         economyManager = new EconomyManager(this);
         chatManager = new ChatManager(this);
         ignoreManager = new IgnoreManager(this);
+        friendsManager = new FriendsManager(this);
         privateMessageManager = new PrivateMessageManager(this);
         teamManager = new TeamManager(this);
         teamManager.loadAll();
@@ -600,6 +602,12 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
 
         setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
+        
+        FriendsCommand friendsCommand = new FriendsCommand(this);
+        setExecutor("friends", friendsCommand, FeatureManager.Feature.FRIENDS);
+        setExecutor("friend", friendsCommand, FeatureManager.Feature.FRIENDS);
+        setTabCompleter("friends", new FriendsTabCompleter(this));
+        setTabCompleter("friend", new FriendsTabCompleter(this));
         setExecutor("help", new HelpCommand(this), FeatureManager.Feature.HELP);
         setExecutor("servers", new ServersCommand(this), FeatureManager.Feature.NETWORK_SERVERS);
 
@@ -886,6 +894,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public IgnoreManager getIgnoreManager() {
         return ignoreManager;
+    }
+
+    public FriendsManager getFriendsManager() {
+        return friendsManager;
     }
 
     public PrivateMessageManager getPrivateMessageManager() {

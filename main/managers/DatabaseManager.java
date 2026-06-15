@@ -291,6 +291,23 @@ public class DatabaseManager {
         execute("CREATE INDEX IF NOT EXISTS idx_player_ignores_owner ON player_ignores(owner_uuid)");
         execute("CREATE INDEX IF NOT EXISTS idx_player_ignores_ignored ON player_ignores(ignored_uuid)");
         execute(
+            "CREATE TABLE IF NOT EXISTS player_friends (" +
+            "  follower_uuid TEXT NOT NULL," +
+            "  followed_uuid TEXT NOT NULL," +
+            "  followed_name_snapshot TEXT," +
+            "  transactions_enabled INTEGER NOT NULL DEFAULT 0," +
+            "  messages_enabled INTEGER NOT NULL DEFAULT 1," +
+            "  payments_enabled INTEGER NOT NULL DEFAULT 1," +
+            "  activity_enabled INTEGER NOT NULL DEFAULT 1," +
+            "  tpa_auto_accept_enabled INTEGER NOT NULL DEFAULT 0," +
+            "  teleport_requests_enabled INTEGER NOT NULL DEFAULT 1," +
+            "  created_at INTEGER NOT NULL," +
+            "  PRIMARY KEY (follower_uuid, followed_uuid)" +
+            ")"
+        );
+        execute("CREATE INDEX IF NOT EXISTS idx_player_friends_follower ON player_friends(follower_uuid)");
+        execute("CREATE INDEX IF NOT EXISTS idx_player_friends_followed ON player_friends(followed_uuid)");
+        execute(
             "CREATE TABLE IF NOT EXISTS teams (" +
             "  name TEXT PRIMARY KEY," +
             "  leader_uuid TEXT," +
@@ -979,6 +996,108 @@ public class DatabaseManager {
             plugin.getLogger().log(Level.WARNING, "Failed to remove ignored player " + ignoredUuid + " for " + ownerUuid, e);
         }
         return false;
+    }
+
+    public List<com.bx.ultimateDonutSmp.models.FollowEntry> loadFollowsByFollower(UUID followerUuid) {
+        List<com.bx.ultimateDonutSmp.models.FollowEntry> follows = new ArrayList<>();
+        if (followerUuid == null) return follows;
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM player_friends WHERE follower_uuid = ?")) {
+            ps.setString(1, followerUuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    follows.add(mapFollowRow(rs));
+                }
+            }
+        } catch (SQLException | IllegalArgumentException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to load follows for " + followerUuid, e);
+        }
+        return follows;
+    }
+
+    public List<com.bx.ultimateDonutSmp.models.FollowEntry> loadFollowsByFollowed(UUID followedUuid) {
+        List<com.bx.ultimateDonutSmp.models.FollowEntry> follows = new ArrayList<>();
+        if (followedUuid == null) return follows;
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM player_friends WHERE followed_uuid = ?")) {
+            ps.setString(1, followedUuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    follows.add(mapFollowRow(rs));
+                }
+            }
+        } catch (SQLException | IllegalArgumentException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to load followers for " + followedUuid, e);
+        }
+        return follows;
+    }
+
+    public boolean addFollow(UUID follower, UUID followed, String followedName, long createdAt) {
+        if (follower == null || followed == null) return false;
+        try (PreparedStatement ps = connection.prepareStatement(
+                "REPLACE INTO player_friends (follower_uuid, followed_uuid, followed_name_snapshot, created_at) " +
+                "VALUES (?, ?, ?, ?)")) {
+            ps.setString(1, follower.toString());
+            ps.setString(2, followed.toString());
+            ps.setString(3, followedName);
+            ps.setLong(4, createdAt);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to add follow relationship", e);
+        }
+        return false;
+    }
+
+    public boolean removeFollow(UUID follower, UUID followed) {
+        if (follower == null || followed == null) return false;
+        try (PreparedStatement ps = connection.prepareStatement(
+                "DELETE FROM player_friends WHERE follower_uuid = ? AND followed_uuid = ?")) {
+            ps.setString(1, follower.toString());
+            ps.setString(2, followed.toString());
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to remove follow relationship", e);
+        }
+        return false;
+    }
+
+    public boolean updateFollowSettings(UUID follower, UUID followed, boolean transactions, boolean messages, boolean payments, boolean activity, boolean tpaAutoAccept, boolean teleportRequests) {
+        if (follower == null || followed == null) return false;
+        try (PreparedStatement ps = connection.prepareStatement(
+                "UPDATE player_friends SET transactions_enabled = ?, messages_enabled = ?, payments_enabled = ?, " +
+                "activity_enabled = ?, tpa_auto_accept_enabled = ?, teleport_requests_enabled = ? " +
+                "WHERE follower_uuid = ? AND followed_uuid = ?")) {
+            ps.setInt(1, transactions ? 1 : 0);
+            ps.setInt(2, messages ? 1 : 0);
+            ps.setInt(3, payments ? 1 : 0);
+            ps.setInt(4, activity ? 1 : 0);
+            ps.setInt(5, tpaAutoAccept ? 1 : 0);
+            ps.setInt(6, teleportRequests ? 1 : 0);
+            ps.setString(7, follower.toString());
+            ps.setString(8, followed.toString());
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to update follow settings", e);
+        }
+        return false;
+    }
+
+    private com.bx.ultimateDonutSmp.models.FollowEntry mapFollowRow(ResultSet rs) throws SQLException {
+        return new com.bx.ultimateDonutSmp.models.FollowEntry(
+                UUID.fromString(rs.getString("follower_uuid")),
+                UUID.fromString(rs.getString("followed_uuid")),
+                rs.getString("followed_name_snapshot"),
+                rs.getInt("transactions_enabled") != 0,
+                rs.getInt("messages_enabled") != 0,
+                rs.getInt("payments_enabled") != 0,
+                rs.getInt("activity_enabled") != 0,
+                rs.getInt("tpa_auto_accept_enabled") != 0,
+                rs.getInt("teleport_requests_enabled") != 0,
+                rs.getLong("created_at")
+        );
     }
 
     public String getLatestPunishmentTargetName(UUID uuid) {

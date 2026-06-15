@@ -130,9 +130,11 @@ public class PlayerJoinQuitListener implements Listener {
             }
         }
 
-        // Load player data
         plugin.getPlayerDataManager().loadOrCreate(player);
         plugin.getIgnoreManager().loadPlayer(player.getUniqueId());
+        if (plugin.getFriendsManager() != null) {
+            plugin.getFriendsManager().handleJoin(player);
+        }
         if (player.getAddress() != null && player.getAddress().getAddress() != null) {
             plugin.getDatabaseManager().savePlayerIpAddress(
                     player.getUniqueId(),
@@ -266,6 +268,9 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getChatManager().clearPlayerState(player.getUniqueId());
         plugin.getPrivateMessageManager().clearPlayer(player.getUniqueId());
         plugin.getIgnoreManager().unloadPlayer(player.getUniqueId());
+        if (plugin.getFriendsManager() != null) {
+            plugin.getFriendsManager().handleQuit(player);
+        }
         if (plugin.getHideManager() != null) {
             plugin.getHideManager().handleQuit(player.getUniqueId());
         }
