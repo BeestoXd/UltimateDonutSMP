@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.UUID;
@@ -181,6 +182,16 @@ public class PlayerJoinQuitListener implements Listener {
         }
         if (plugin.getDuelManager() != null) {
             plugin.getDuelManager().handleJoin(player);
+        }
+
+        if (!player.hasPlayedBefore()) {
+            boolean spawnOnFirstJoin = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN", true);
+            if (spawnOnFirstJoin && plugin.getSpawnManager().hasSpawn()) {
+                Location spawn = plugin.getSpawnManager().getSpawnLocation();
+                if (spawn != null) {
+                    plugin.getSpigotScheduler().teleport(player, spawn);
+                }
+            }
         }
 
         // Hide join message (optional, uncomment to suppress)
