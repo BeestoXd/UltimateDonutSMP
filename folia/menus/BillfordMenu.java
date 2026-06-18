@@ -100,7 +100,7 @@ public class BillfordMenu extends BaseMenu {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
                     "&cɴᴏ ʙɪʟʟꜰᴏʀᴅ ᴛʀᴀᴅᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ",
-                    List.of("&7ᴀᴅᴅ ᴇɴᴛʀɪᴇѕ ɪɴѕɪᴅᴇ &fbillford.yml &7ᴛᴏ ᴇɴᴀʙʟᴇ ᴛʜᴇ ѕʏѕᴛᴇᴍ.")
+                    List.of("&7ᴀᴅᴅ ᴇɴᴛʀɪᴇѕ ɪɴѕɪᴅᴇ &fʙɪʟʟꜰᴏʀᴅ.ʏᴍʟ &7ᴛᴏ ᴇɴᴀʙʟᴇ ᴛʜᴇ ѕʏѕᴛᴇᴍ.")
             ));
             return;
         }
@@ -149,13 +149,15 @@ public class BillfordMenu extends BaseMenu {
         rewardPlaceholders.put(
                 "{money_line}",
                 currentTrade.moneyBonus() > 0
-                        ? "&7ᴍᴏɴᴇʏ ʙᴏɴᴜѕ: &a$" + NumberUtils.format(currentTrade.moneyBonus())
+                        ? "&7" + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                        + " Bonus: " + plugin.getCurrencyManager().formatMoney(currentTrade.moneyBonus())
                         : ""
         );
         rewardPlaceholders.put(
                 "{shard_line}",
                 currentTrade.shardBonus() > 0
-                        ? "&7ѕʜᴀʀᴅ ʙᴏɴᴜѕ: &#A303F9+" + currentTrade.shardBonus()
+                        ? "&7" + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                        + " Bonus: +" + plugin.getCurrencyManager().formatShards(currentTrade.shardBonus())
                         : ""
         );
 
@@ -208,7 +210,7 @@ public class BillfordMenu extends BaseMenu {
                 "{status_line}",
                 limitReached
                         ? "&c&lʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ."
-                        : "&aʏᴏᴜ ᴄᴀɴ ᴛʀᴀᴅᴇ &f" + Math.max(0, currentTrade.tradeLimit() - playerCount) + " &aᴍᴏʀᴇ ᴛɪᴍᴇ(ѕ)."
+                        : "&aʏᴏᴜ ᴄᴀɴ ᴛʀᴀᴅᴇ &f" + Math.max(0, currentTrade.tradeLimit() - playerCount) + " &aᴍᴏʀᴇ ᴛɪᴍᴇ(s)."
         );
 
         List<String> infoLore = currentTrade.tradeLimit() > 0
@@ -368,7 +370,9 @@ public class BillfordMenu extends BaseMenu {
                 }
                 var depositResult = plugin.getEconomyManager().deposit(player, liveTrade.moneyBonus(), EconomyReason.BILLFORD_REWARD);
                 if (!depositResult.success()) {
-                    fail(player, "BILLFORD.BUSY", "&cʙɪʟʟꜰᴏʀᴅ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ ᴍᴏɴᴇʏ ʀᴇᴡᴀʀᴅ.");
+                    fail(player, "BILLFORD.BUSY", "&cʙɪʟʟꜰᴏʀᴅ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴇ "
+                            + plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                            + " ʀᴇᴡᴀʀᴅ.");
                     return;
                 }
             }
@@ -379,8 +383,10 @@ public class BillfordMenu extends BaseMenu {
                     "BILLFORD.TRADE-COMPLETED",
                     "{reward}", liveTrade.rewardQuantity() + "x " + formatName(liveTrade.rewardMaterial().name()),
                     "{money_bonus}", NumberUtils.format(liveTrade.moneyBonus()),
+                    "{money_bonus_formatted}", plugin.getCurrencyManager().formatMoney(liveTrade.moneyBonus()),
                     "{shard_bonus}",
                     liveTrade.shardBonus() > 0 ? String.valueOf(liveTrade.shardBonus()) : "0",
+                    "{shard_bonus_formatted}", plugin.getCurrencyManager().formatShards(liveTrade.shardBonus()),
                     "{next_rotation}", manager.getFormattedCountdown()
             );
             player.sendMessage(ColorUtils.toComponent(success));

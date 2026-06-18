@@ -5,7 +5,6 @@ import com.bx.ultimateDonutSmp.managers.CrateManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 public class CrateEditorMenu extends BaseMenu {
-
-    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
 
     private final String crateId;
     private final Set<Integer> lockedSlots = new HashSet<>();
@@ -65,8 +62,8 @@ public class CrateEditorMenu extends BaseMenu {
 
         if (!instructionsSent) {
             instructionsSent = true;
-            player.sendMessage(ColorUtils.toComponent("&8[&bᴄʀᴀᴛᴇѕ&8] &7ᴄʟɪᴄᴋ ɪᴛᴇᴍ ᴅɪ ɪɴᴠᴇɴᴛᴏʀʏ ᴋᴀᴍᴜ ᴜɴᴛᴜᴋ ᴍᴇᴍɪʟɪʜ ᴛᴇᴍᴘʟᴀᴛᴇ, ʟᴀʟᴜ ᴋʟɪᴋ ѕʟᴏᴛ ᴄʀᴀᴛᴇ ᴜɴᴛᴜᴋ ᴍᴇɴᴀʀᴜʜ ᴀᴛᴀᴜ ᴍᴇɴɢɢᴀɴᴛɪɴʏᴀ."));
-            player.sendMessage(ColorUtils.toComponent("&8[&bᴄʀᴀᴛᴇѕ&8] &7ᴋʟɪᴋ ѕʟᴏᴛ ʀᴇᴡᴀʀᴅ ᴛᴀɴᴘᴀ ᴛᴇᴍᴘʟᴀᴛᴇ ᴛᴇʀᴘɪʟɪʜ ᴜɴᴛᴜᴋ ᴍᴇɴɢʜᴀᴘᴜѕ ʀᴇᴡᴀʀᴅ ɪᴛᴇᴍ ᴅᴀʀɪ ѕʟᴏᴛ ɪᴛᴜ."));
+            player.sendMessage(ColorUtils.toComponent("&8[&bᴄʀᴀᴛᴇѕ&8] &7ᴄʟɪᴄᴋ ᴀɴ ɪᴛᴇᴍ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ᴛᴏ ѕᴇʟᴇᴄᴛ ɪᴛ ᴀѕ ᴀ ᴛᴇᴍᴘʟᴀᴛᴇ, ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴀ ᴄʀᴀᴛᴇ ѕʟᴏᴛ ᴛᴏ ᴘʟᴀᴄᴇ ᴏʀ ʀᴇᴘʟᴀᴄᴇ ɪᴛ."));
+            player.sendMessage(ColorUtils.toComponent("&8[&bᴄʀᴀᴛᴇѕ&8] &7ᴄʟɪᴄᴋ ᴀ ʀᴇᴡᴀʀᴅ ѕʟᴏᴛ ᴡɪᴛʜ ɴᴏ ѕᴇʟᴇᴄᴛᴇᴅ ᴛᴇᴍᴘʟᴀᴛᴇ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴛʜᴇ ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ ꜰʀᴏᴍ ᴛʜᴀᴛ ѕʟᴏᴛ."));
         }
     }
 
@@ -94,7 +91,7 @@ public class CrateEditorMenu extends BaseMenu {
             }
 
             if (lockedSlots.contains(rawSlot)) {
-                player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕʟᴏᴛ ᴄᴏɴᴛᴀɪɴѕ ᴀ ɴᴏɴ-ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ. ᴇᴅɪᴛ ɪᴛ ɪɴ crates.yml ɪꜰ ɴᴇᴇᴅᴇᴅ."));
+                player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕʟᴏᴛ ᴄᴏɴᴛᴀɪɴѕ ᴀ ɴᴏɴ-ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ. ᴇᴅɪᴛ ɪᴛ ɪɴ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ɪꜰ ɴᴇᴇᴅᴇᴅ."));
                 return;
             }
 
@@ -171,8 +168,8 @@ public class CrateEditorMenu extends BaseMenu {
     }
 
     private String readableItemName(ItemStack item) {
-        if (item.hasItemMeta() && item.getItemMeta() != null && item.getItemMeta().displayName() != null) {
-            return ColorUtils.strip(LEGACY_SERIALIZER.serialize(item.getItemMeta().displayName()).replace('\u00A7', '&'));
+        if (item.hasItemMeta() && item.getItemMeta() != null && item.getItemMeta().hasDisplayName()) {
+            return ColorUtils.strip(item.getItemMeta().getDisplayName().replace('\u00A7', '&'));
         }
         return prettyMaterial(item.getType());
     }

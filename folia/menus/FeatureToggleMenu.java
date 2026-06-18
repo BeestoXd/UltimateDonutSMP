@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
-import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
@@ -151,7 +150,7 @@ public class FeatureToggleMenu extends BaseMenu {
             return;
         }
 
-        Material material = ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", active ? "ARROW" : "GRAY_DYE"));
+        Material material = ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", active ? "ARROW" : "BARRIER"));
         String displayName = menus().getString(path + ".DISPLAY-NAME", "&b" + prettify(key));
         List<String> lore = menus().getStringList(path + ".LORE");
         Map<String, String> placeholders = Map.of(
@@ -215,8 +214,12 @@ public class FeatureToggleMenu extends BaseMenu {
     }
 
     private static String prettify(String key) {
-        String lower = key.toLowerCase(Locale.ROOT).replace('_', ' ');
-        return ColorUtils.toSmallCaps(lower.substring(0, 1).toUpperCase(Locale.ROOT) + lower.substring(1));
+        return switch (key.toUpperCase(Locale.ROOT)) {
+            case "PREVIOUS" -> "ᴘʀᴇᴠɪᴏᴜѕ";
+            case "NEXT" -> "ɴᴇxᴛ";
+            case "CLOSE" -> "ᴄʟᴏѕᴇ";
+            default -> key.toLowerCase(Locale.ROOT).replace('_', ' ');
+        };
     }
 
     private FileConfiguration menus() {

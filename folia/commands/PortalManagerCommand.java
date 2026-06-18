@@ -81,7 +81,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleInfo(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
             sendMessage(sender, message("PORTALMANAGER.INFO-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ɪɴꜰᴏ <id>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " info <id>"));
             return;
         }
 
@@ -189,7 +189,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleSetCuboid(CommandSender sender, String label, String[] args) {
         if (args.length != 3) {
             sendMessage(sender, message("PORTALMANAGER.SETCUBOID-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴄᴜʙᴏɪᴅ <id> <cuboid>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " setcuboid <id> <cuboid>"));
             return;
         }
 
@@ -214,7 +214,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleSetDestination(CommandSender sender, String label, String[] args) {
         if (args.length != 3) {
             sendMessage(sender, message("PORTALMANAGER.SETDESTINATION-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " setdestination <id> <rtp_selector>"));
             return;
         }
 
@@ -239,7 +239,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleSetDisplay(CommandSender sender, String label, String[] args) {
         if (args.length < 3) {
             sendMessage(sender, message("PORTALMANAGER.SETDISPLAY-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <display name...>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " setdisplay <id> <display name...>"));
             return;
         }
 
@@ -251,7 +251,7 @@ public class PortalManagerCommand implements CommandExecutor {
         String displayName = String.join(" ", Arrays.copyOfRange(args, 2, args.length)).trim();
         if (displayName.isBlank()) {
             sendMessage(sender, message("PORTALMANAGER.SETDISPLAY-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <display name...>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " setdisplay <id> <display name...>"));
             return;
         }
 
@@ -264,7 +264,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleToggle(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
             sendMessage(sender, message("PORTALMANAGER.TOGGLE-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ᴛᴏɢɢʟᴇ <id>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " toggle <id>"));
             return;
         }
 
@@ -285,7 +285,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleSetPriority(CommandSender sender, String label, String[] args) {
         if (args.length != 3) {
             sendMessage(sender, message("PORTALMANAGER.SETPRIORITY-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴘʀɪᴏʀɪᴛʏ <id> <number>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " setpriority <id> <number>"));
             return;
         }
 
@@ -312,7 +312,7 @@ public class PortalManagerCommand implements CommandExecutor {
     private void handleSetHologramHere(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
             sendMessage(sender, message("PORTALMANAGER.SETHOLOGRAMHERE-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛʜᴏʟᴏɢʀᴀᴍʜᴇʀᴇ <id>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " sethologramhere <id>"));
             return;
         }
 

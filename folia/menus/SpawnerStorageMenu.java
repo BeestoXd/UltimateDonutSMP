@@ -63,8 +63,8 @@ public class SpawnerStorageMenu extends BaseMenu {
             ItemStack display = new ItemStack(entry.getMaterial(), (int) Math.max(1, Math.min(entry.getAmount(), entry.getMaterial().getMaxStackSize())));
             var meta = display.getItemMeta();
             if (meta != null) {
-                meta.displayName(ColorUtils.toComponent("&b" + plugin.getWorthManager().prettifyMaterial(entry.getMaterial())));
-                meta.lore(ColorUtils.toComponentList(List.of(
+                meta.setDisplayName(ColorUtils.toComponent("&b" + plugin.getWorthManager().prettifyMaterial(entry.getMaterial())));
+                meta.setLore(ColorUtils.toComponentList(List.of(
                         "&7ѕᴛᴏʀᴇᴅ: &f" + NumberUtils.format(entry.getAmount()),
                         "",
                         "&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ᴄᴏʟʟᴇᴄᴛ ᴏɴᴇ ѕᴛᴀᴄᴋ",
@@ -81,7 +81,13 @@ public class SpawnerStorageMenu extends BaseMenu {
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 2, ItemUtils.createItem(Material.HOPPER, "&aᴄᴏʟʟᴇᴄᴛ ᴀʟʟ", List.of("&7ᴍᴏᴠᴇ ᴀʟʟ ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ ᴛᴏ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ.")));
         set(lastRow + 3, ItemUtils.createItem(Material.DISPENSER, "&6ᴅʀᴏᴘ ʟᴏᴏᴛ", List.of("&7ᴅʀᴏᴘ ᴀʟʟ ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ ᴏɴ ᴛʜᴇ ɢʀᴏᴜɴᴅ.")));
-        set(lastRow + 4, ItemUtils.createItem(Material.GOLD_INGOT, "&eѕᴇʟʟ ᴀʟʟ", List.of("&7ѕᴇʟʟ ᴀʟʟ ѕᴇʟʟᴀʙʟᴇ ʟᴏᴏᴛ ꜰᴏʀ ᴍᴏɴᴇʏ.")));
+        set(lastRow + 4, ItemUtils.createItem(
+                Material.GOLD_INGOT,
+                "&eѕᴇʟʟ ᴀʟʟ",
+                List.of("&7ѕᴇʟʟ ᴀʟʟ ѕᴇʟʟᴀʙʟᴇ ʟᴏᴏᴛ ꜰᴏʀ "
+                        + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                        + ".")
+        ));
         set(lastRow + 5, ItemUtils.createItem(Material.SPAWNER, "&bѕᴘᴀᴡɴᴇʀ ɪɴꜰᴏ", List.of(
                 "&7ᴛʏᴘᴇ: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey()),
                 "&7ѕᴛᴀᴄᴋ: &f" + NumberUtils.format(instance.getStackAmount()),

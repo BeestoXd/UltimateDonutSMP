@@ -156,14 +156,31 @@ public class AntiEspManager {
     }
 
     private boolean hasLineOfSight(Player player, Location target) {
-        Vector direction = target.toVector().subtract(player.getEyeLocation().toVector());
+        World world = player.getWorld();
+        Location eye = player.getEyeLocation();
+
+        double bx = target.getBlockX();
+        double by = target.getBlockY();
+        double bz = target.getBlockZ();
+
+        double ex = eye.getX();
+        double ey = eye.getY();
+        double ez = eye.getZ();
+
+        // Find a target point slightly inside the block face facing the player to prevent corner-clipping of adjacent blocks
+        double tx = ex < bx ? bx + 0.1 : (ex > bx + 1.0 ? bx + 0.9 : bx + 0.5);
+        double ty = ey < by ? by + 0.1 : (ey > by + 1.0 ? by + 0.9 : by + 0.5);
+        double tz = ez < bz ? bz + 0.1 : (ez > bz + 1.0 ? bz + 0.9 : bz + 0.5);
+
+        Location traceTarget = new Location(world, tx, ty, tz);
+        Vector direction = traceTarget.toVector().subtract(eye.toVector());
         double distance = direction.length();
         if (distance <= 0D) {
             return true;
         }
 
-        RayTraceResult rayTrace = player.getWorld().rayTraceBlocks(
-                player.getEyeLocation(),
+        RayTraceResult rayTrace = world.rayTraceBlocks(
+                eye,
                 direction.normalize(),
                 distance,
                 FluidCollisionMode.NEVER,

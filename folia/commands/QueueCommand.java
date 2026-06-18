@@ -34,7 +34,10 @@ public class QueueCommand implements CommandExecutor {
 
         String subcommand = args[0].toLowerCase();
         switch (subcommand) {
-            case "join" -> plugin.getDuelManager().joinQueue(player);
+            case "join" -> plugin.getDuelManager().joinQueue(
+                    player,
+                    args.length > 1 ? plugin.getDuelManager().parseMapSelection(args[1]) : null
+            );
             case "leave" -> plugin.getDuelManager().leaveState(player);
             default -> new DuelQueueMenu(plugin).open(player);
         }

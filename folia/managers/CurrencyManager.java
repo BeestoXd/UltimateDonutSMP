@@ -14,7 +14,7 @@ public class CurrencyManager {
     public enum CurrencyType {
         MONEY("MONEY", "dollar", "dollars", "$", "&a", "&a", 2,
                 "{symbol_color}{symbol}{color}{amount}", "{symbol_color}{symbol}{color}{amount_short}"),
-        SHARDS("SHARDS", "Shard", "Shards", "\u2605", "&#A303F9", "&#A303F9", 0,
+        SHARDS("SHARDS", "Shard", "Shards", "★", "&#A303F9", "&#A303F9", 0,
                 "{symbol_color}{symbol} {color}{amount} {name}", "{symbol_color}{symbol} {color}{amount_short} {name}");
 
         private final String configKey;
@@ -59,7 +59,7 @@ public class CurrencyManager {
     }
 
     public void reload() {
-        // currency values are read live from config.
+        // Values are read live from config so existing reload flow only needs a hook point.
     }
 
     public String formatMoney(double amount) {

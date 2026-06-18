@@ -24,6 +24,9 @@ public class ScoreboardTask implements Runnable {
     }
 
     public static void start(UltimateDonutSmp plugin) {
+        if (!plugin.getScoreboardManager().isRuntimeSupported()) {
+            return;
+        }
         plugin.getFoliaScheduler().runGlobalTimer(new ScoreboardTask(plugin), 2L, 2L);
     }
 }

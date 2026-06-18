@@ -3,9 +3,13 @@ package com.bx.ultimateDonutSmp.utils;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.permissions.Permissible;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public final class PermissionUtils {
+
+    private static final Charset WINDOWS_1252 = Charset.forName("Windows-1252");
 
     private PermissionUtils() {
     }
@@ -34,7 +38,6 @@ public final class PermissionUtils {
         if (permissions == null || permissions.length == 0) {
             return false;
         }
-
         for (String permission : permissions) {
             if (has(permissible, permission)) {
                 return true;
@@ -43,15 +46,90 @@ public final class PermissionUtils {
         return false;
     }
 
+    public static boolean hasExact(Permissible permissible, String permission) {
+        if (permissible == null || permission == null || permission.isBlank()) {
+            return false;
+        }
+
+        String normalized = normalizePermissionNode(permission);
+        boolean matchedTrue = false;
+        for (PermissionAttachmentInfo info : permissible.getEffectivePermissions()) {
+            String normalizedGranted = normalizePermissionNode(info.getPermission());
+            if (!normalizedGranted.equals(normalized)) {
+                continue;
+            }
+            if (!info.getValue()) {
+                return false;
+            }
+            matchedTrue = true;
+        }
+        return matchedTrue;
+    }
+
+    public static int resolveHighestExactNumberedPermission(Permissible permissible, String prefix, int maxValue) {
+        if (permissible == null || prefix == null || prefix.isBlank() || maxValue < 1) {
+            return 0;
+        }
+
+        String normalizedPrefix = normalizePermissionNode(prefix);
+        for (int value = maxValue; value >= 1; value--) {
+            if (hasExact(permissible, normalizedPrefix + value)) {
+                return value;
+            }
+        }
+        return 0;
+    }
+
     public static String normalizePermissionNode(String permission) {
         if (permission == null || permission.isBlank()) {
             return "";
         }
 
-        String value = permission.trim().toLowerCase(Locale.ROOT);
+        String value = normalizeRawPermissionNode(permission.trim().toLowerCase(Locale.ROOT));
+        String repaired = normalizeRawPermissionNode(repairMojibake(permission.trim()).toLowerCase(Locale.ROOT));
+        if (scoreNormalizedPermission(repaired) < scoreNormalizedPermission(value)) {
+            return repaired;
+        }
+        return value;
+    }
+
+    private static String normalizeRawPermissionNode(String value) {
         StringBuilder normalized = new StringBuilder(value.length());
         value.codePoints().forEach(codePoint -> normalized.appendCodePoint(normalizeCodePoint(codePoint)));
         return normalized.toString();
+    }
+
+    private static String repairMojibake(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        try {
+            return new String(value.getBytes(WINDOWS_1252), StandardCharsets.UTF_8);
+        } catch (RuntimeException ignored) {
+            return value;
+        }
+    }
+
+    private static int scoreNormalizedPermission(String value) {
+        if (value == null || value.isBlank()) {
+            return Integer.MAX_VALUE;
+        }
+
+        int score = 0;
+        for (int index = 0; index < value.length(); index++) {
+            char character = value.charAt(index);
+            if ((character >= 'a' && character <= 'z')
+                    || (character >= '0' && character <= '9')
+                    || character == '.'
+                    || character == '-'
+                    || character == '_'
+                    || character == '*') {
+                continue;
+            }
+            score++;
+        }
+        return score;
     }
 
     private static boolean hasEffectivePermissionAlias(Permissible permissible, String normalizedPermission) {
@@ -76,7 +154,6 @@ public final class PermissionUtils {
         if (!granted.endsWith(".*")) {
             return false;
         }
-
         String prefix = granted.substring(0, granted.length() - 1);
         return requested.startsWith(prefix);
     }

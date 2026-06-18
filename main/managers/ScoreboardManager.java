@@ -112,7 +112,6 @@ public class ScoreboardManager {
         playerBoards.remove(uuid);
     }
 
-    /** Called every tick, only updates text without recreating entries. */
     public void update(Player player) {
         if (!runtimeSupported) {
             playerBoards.remove(player.getUniqueId());
@@ -139,8 +138,7 @@ public class ScoreboardManager {
     }
 
     private void updateText(Player player, Scoreboard board, Objective obj) {
-        List<String> titles = plugin.getConfigManager().getScoreboard()
-                .getStringList("SCOREBOARD.TITLE");
+        List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
         if (!titles.isEmpty()) {
             String title = titles.get(titleIndex % titles.size());
             obj.setDisplayName(ColorUtils.toComponent(title, player));
@@ -448,9 +446,10 @@ public class ScoreboardManager {
             return;
         }
 
-        List<String> titles = plugin.getConfigManager().getScoreboard()
-                .getStringList("SCOREBOARD.TITLE");
-        if (!titles.isEmpty()) titleIndex = (titleIndex + 1) % titles.size();
+        List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
+        if (!titles.isEmpty()) {
+            titleIndex = (titleIndex + 1) % titles.size();
+        }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             update(player);
@@ -488,4 +487,3 @@ public class ScoreboardManager {
         }
     }
 }
-

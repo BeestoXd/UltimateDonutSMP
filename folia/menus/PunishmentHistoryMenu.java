@@ -31,7 +31,7 @@ import java.util.UUID;
 public class PunishmentHistoryMenu extends BaseMenu {
 
     private static final String MENU_PATH = "PUNISHMENT-HISTORY-MENU";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ᴍᴍᴍ ᴅ ʏʏʏʏ, ʜʜ:ᴍᴍ:ѕѕ", Locale.US);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy, HH:mm:ss", Locale.US);
 
     private static final int BACK_SLOT = 45;
     private static final int FILTER_STATE_SLOT = 46;
@@ -285,7 +285,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
                         "&7ʀᴇᴍᴏᴠᴇᴅ ʙʏ: &f{removed_by}",
                         "&7ʀᴇᴍᴏᴠᴀʟ ʀᴇᴀѕᴏɴ: &f{removal_reason}",
                         "&7ʀᴇᴍᴏᴠᴇᴅ ᴀᴛ: &f{removed_at}",
-                        "&7ɪᴅ: &f#{id}"
+                        "&7ID: &f#{id}"
                 )
         );
 
@@ -325,17 +325,17 @@ public class PunishmentHistoryMenu extends BaseMenu {
 
         String removedBy = safeText(record.getRemovedByNameSnapshot());
         String removalReason = safeText(record.getRemovalReason());
-        String removedAt = formatOptionalTimestamp(record.getRemovedAt(), "ɴ/ᴀ");
+        String removedAt = formatOptionalTimestamp(record.getRemovedAt(), "N/A");
 
         if (state == PunishmentState.EXPIRED) {
-            if (removedBy.equals("ɴ/ᴀ")) {
+            if (removedBy.equals("N/A")) {
                 removedBy = "System";
             }
-            if (removalReason.equals("ɴ/ᴀ")) {
+            if (removalReason.equals("N/A")) {
                 removalReason = "Expired";
             }
-            if (removedAt.equals("ɴ/ᴀ")) {
-                removedAt = formatOptionalTimestamp(record.getExpiresAt(), "ɴ/ᴀ");
+            if (removedAt.equals("N/A")) {
+                removedAt = formatOptionalTimestamp(record.getExpiresAt(), "N/A");
             }
         }
 
@@ -401,7 +401,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
     }
 
     private String safeText(String value) {
-        return value == null || value.isBlank() ? "ɴ/ᴀ" : value;
+        return value == null || value.isBlank() ? "N/A" : value;
     }
 
     private List<String> defaultIfEmpty(List<String> configured, List<String> fallback) {

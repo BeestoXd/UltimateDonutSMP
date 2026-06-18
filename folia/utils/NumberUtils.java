@@ -6,9 +6,16 @@ import java.util.Locale;
 
 public class NumberUtils {
 
+    public interface DurationFormatter {
+        String formatTime(long totalSeconds);
+        String formatTimeLong(long totalSeconds);
+        String formatCountdown(long totalSeconds);
+    }
+
     private static final DecimalFormat COMMA_FMT;
     private static final DecimalFormat SHORT_FMT;
     private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T", "Q"};
+    private static volatile DurationFormatter durationFormatter;
 
     static {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -16,7 +23,7 @@ public class NumberUtils {
         SHORT_FMT = new DecimalFormat("#,##0.##", symbols);
     }
 
-    /** Format with commas: 1234567 → 1,234,567 */
+    /** Format with commas: 1234567 â†’ 1,234,567 */
     public static String format(double number) {
         return COMMA_FMT.format(number);
     }
@@ -48,7 +55,7 @@ public class NumberUtils {
         return sign + SHORT_FMT.format(absolute) + SHORT_SUFFIXES[suffixIndex];
     }
 
-    /** Parse a number string with optional K/m/b/t suffix */
+    /** Parse a number string with optional K/M/B/T suffix */
     public static double parse(String input) {
         if (input == null || input.isBlank()) throw new NumberFormatException("Empty input");
         String clean = input.trim().replace(",", "").replace("_", "").toUpperCase(Locale.US);
@@ -69,8 +76,16 @@ public class NumberUtils {
         }
     }
 
-    /** Format seconds as readable time: 3665 → "1h 1m" */
+    public static void setDurationFormatter(DurationFormatter formatter) {
+        durationFormatter = formatter;
+    }
+
+    /** Format seconds as readable time: 3665 â†’ "1h 1m" */
     public static String formatTime(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatTime(totalSeconds);
+        }
         long h = totalSeconds / 3600;
         long m = (totalSeconds % 3600) / 60;
         long s = totalSeconds % 60;
@@ -79,8 +94,12 @@ public class NumberUtils {
         return s + "s";
     }
 
-    /** Format seconds with days: 90061 → "1d 1h 1m" */
+    /** Format seconds with days: 90061 â†’ "1d 1h 1m" */
     public static String formatTimeLong(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatTimeLong(totalSeconds);
+        }
         long d = totalSeconds / 86400;
         long h = (totalSeconds % 86400) / 3600;
         long m = (totalSeconds % 3600) / 60;
@@ -90,6 +109,10 @@ public class NumberUtils {
 
     /** Format remaining seconds for countdown display */
     public static String formatCountdown(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatCountdown(totalSeconds);
+        }
         long m = totalSeconds / 60;
         long s = totalSeconds % 60;
         if (m > 0) return m + "m " + s + "s";

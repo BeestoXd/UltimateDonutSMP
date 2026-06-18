@@ -47,7 +47,7 @@ public class BountyCommand implements CommandExecutor {
             return;
         }
 
-        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(args[1]);
+        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(player, args[1]);
         if (targetUuid == null) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BOUNTY.PLAYER-NOT-EXIST")));
             return;
@@ -87,7 +87,7 @@ public class BountyCommand implements CommandExecutor {
             return;
         }
 
-        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(args[1]);
+        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(player, args[1]);
         if (targetUuid == null) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BOUNTY.PLAYER-NOT-EXIST")));
             return;

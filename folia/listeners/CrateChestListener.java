@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.CrateManager;
+import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.menus.CrateGachaMenu;
 import com.bx.ultimateDonutSmp.menus.CrateRewardMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -29,6 +30,9 @@ public class CrateChestListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CRATES)) {
+            return;
+        }
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
         }
@@ -41,7 +45,7 @@ public class CrateChestListener implements Listener {
             event.setCancelled(true);
 
             if (!plugin.getCrateManager().isBindableBlock(clickedBlock.getType())) {
-                player.sendMessage(ColorUtils.toComponent("&cɪɴᴠᴀʟɪᴅ ʙʟᴏᴄᴋ. ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ, ᴛʀᴀᴘᴘᴇᴅ ᴄʜᴇѕᴛ, ʙᴀʀʀᴇʟ, ᴏʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ."));
+                player.sendMessage(ColorUtils.toComponent("&cɪɴᴠᴀʟɪᴅ ʙʟᴏᴄᴋ. ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ, ᴛʀᴀᴘᴘᴇᴅ ᴄʜᴇѕᴛ, ʙᴀʀʀᴇʟ, ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ, ᴏʀ ѕʜᴜʟᴋᴇʀ ʙᴏx."));
                 return;
             }
 
@@ -148,6 +152,9 @@ public class CrateChestListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CRATES)) {
+            return;
+        }
         Block block = event.getBlock();
         if (plugin.getCrateManager().getBoundCrateId(block) == null) {
             return;
@@ -160,11 +167,17 @@ public class CrateChestListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CRATES)) {
+            return;
+        }
         filterBoundCrates(event.blockList().iterator());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CRATES)) {
+            return;
+        }
         filterBoundCrates(event.blockList().iterator());
     }
 

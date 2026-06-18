@@ -103,7 +103,7 @@ public class HomeMenu extends BaseMenu {
 
         String teleportState = team == null ? "NO_TEAM" : (team.hasHome() ? "HAS_HOME" : "NO_HOME");
         Map<String, String> teleportPlaceholders = new HashMap<>();
-        teleportPlaceholders.put("world", team != null && team.hasHome() ? friendlyWorldName(team.getHome()) : "Overworld");
+        teleportPlaceholders.put("world", team != null && team.hasHome() ? friendlyWorldName(team.getHome()) : "ᴏᴠᴇʀᴡᴏʀʟᴅ");
 
         set(TEAM_TELEPORT_SLOT, ItemUtils.createItem(
                 material("HOME-MENU.TEAM_HOME.TELEPORT.MATERIALS." + teleportState, Material.WHITE_BANNER),
@@ -308,12 +308,12 @@ public class HomeMenu extends BaseMenu {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("name", slotLabel(globalIndex));
         placeholders.put("slot", slotLabel(globalIndex));
-        placeholders.put("world", "Overworld");
+        placeholders.put("world", "ᴏᴠᴇʀᴡᴏʀʟᴅ");
         return placeholders;
     }
 
     private String slotLabel(int index) {
-        return "Home " + (index + 1);
+        return "ʜᴏᴍᴇ " + (index + 1);
     }
 
     private String defaultHomeName(int index) {
@@ -321,13 +321,13 @@ public class HomeMenu extends BaseMenu {
     }
 
     private String friendlyWorldName(Location location) {
-        if (location == null || location.getWorld() == null) return "Overworld";
+        if (location == null || location.getWorld() == null) return "ᴏᴠᴇʀᴡᴏʀʟᴅ";
 
         World.Environment environment = location.getWorld().getEnvironment();
         return switch (environment) {
-            case NETHER -> "Nether";
-            case THE_END -> "End";
-            default -> "Overworld";
+            case NETHER -> "ɴᴇᴛʜᴇʀ";
+            case THE_END -> "ᴇɴᴅ";
+            default -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
         };
     }
 
@@ -394,7 +394,7 @@ public class HomeMenu extends BaseMenu {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(ColorUtils.toComponent(" "));
+            meta.setDisplayName(ColorUtils.toComponent(" "));
             item.setItemMeta(meta);
         }
         return item;

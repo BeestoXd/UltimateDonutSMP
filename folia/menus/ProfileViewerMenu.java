@@ -131,7 +131,7 @@ public class ProfileViewerMenu extends BaseMenu {
 
             set(slot, ItemUtils.createItem(
                     ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE")),
-                    section.getString("DISPLAY-NAME", "&b" + key),
+                    plugin.getCurrencyManager().applyStaticPlaceholders(section.getString("DISPLAY-NAME", "&b" + key)),
                     lore
             ));
         }
@@ -251,12 +251,12 @@ public class ProfileViewerMenu extends BaseMenu {
     private String resolveStatValue(String key) {
         PlayerData data = snapshot.getPlayerData();
         if (data == null) {
-            return "ɴᴏ ᴅᴀᴛᴀ";
+            return "No data";
         }
 
         return switch (key.toUpperCase(Locale.ROOT)) {
-            case "MONEY" -> "$" + NumberUtils.formatNice(data.getMoney());
-            case "SHARDS" -> NumberUtils.format(data.getShards());
+            case "MONEY" -> plugin.getCurrencyManager().formatMoneyCompact(data.getMoney());
+            case "SHARDS" -> plugin.getCurrencyManager().formatShardsCompact(data.getShards());
             case "KILLS" -> NumberUtils.format(data.getKills());
             case "DEATHS" -> NumberUtils.format(data.getDeaths());
             case "PLAYTIME" -> NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds());
@@ -265,8 +265,8 @@ public class ProfileViewerMenu extends BaseMenu {
             case "MOBS_KILLED" -> NumberUtils.format(data.getMobsKilled());
             case "KILL_STREAK" -> NumberUtils.format(data.getKillStreak());
             case "HIGHEST_KILL_STREAK" -> NumberUtils.format(data.getHighestKillStreak());
-            case "MONEY_SPENT" -> "$" + NumberUtils.formatNice(data.getMoneySpent());
-            case "MONEY_MADE" -> "$" + NumberUtils.formatNice(data.getMoneyMade());
+            case "MONEY_SPENT" -> plugin.getCurrencyManager().formatMoneyCompact(data.getMoneySpent());
+            case "MONEY_MADE" -> plugin.getCurrencyManager().formatMoneyCompact(data.getMoneyMade());
             default -> "ᴜɴᴋɴᴏᴡɴ";
         };
     }
@@ -284,8 +284,8 @@ public class ProfileViewerMenu extends BaseMenu {
 
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
         meta.setOwningPlayer(offlinePlayer);
-        meta.displayName(ColorUtils.toComponent(displayName));
-        meta.lore(ColorUtils.toComponentList(lore));
+        meta.setDisplayName(ColorUtils.toComponent(displayName));
+        meta.setLore(ColorUtils.toComponentList(lore));
         item.setItemMeta(meta);
         return item;
     }
@@ -331,15 +331,15 @@ public class ProfileViewerMenu extends BaseMenu {
 
     private String statusLabel(ProfileSnapshot snapshot) {
         if (!snapshot.isOnline()) {
-            return "Offline";
+            return "ᴏꜰꜰʟɪɴᴇ";
         }
-        return snapshot.isAfk() ? "ᴏɴʟɪɴᴇ (ᴀꜰᴋ)" : "Online";
+        return snapshot.isAfk() ? "ᴏɴʟɪɴᴇ (ᴀꜰᴋ)" : "ᴏɴʟɪɴᴇ";
     }
 
     private String currentLocationSummary(ProfileSnapshot snapshot) {
         Location location = snapshot.getCurrentLocation();
         if (location == null || location.getWorld() == null) {
-            return "Unavailable";
+            return "ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ";
         }
         return friendlyWorldName(location)
                 + " "
@@ -355,9 +355,9 @@ public class ProfileViewerMenu extends BaseMenu {
 
         World.Environment environment = location.getWorld().getEnvironment();
         return switch (environment) {
-            case NETHER -> "Nether";
-            case THE_END -> "End";
-            default -> "Overworld";
+            case NETHER -> "ɴᴇᴛʜᴇʀ";
+            case THE_END -> "ᴇɴᴅ";
+            default -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
         };
     }
 

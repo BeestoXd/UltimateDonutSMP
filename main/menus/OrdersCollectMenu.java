@@ -58,7 +58,7 @@ public class OrdersCollectMenu extends BaseMenu {
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
                 ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 8, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
 
         if (claims.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
@@ -105,7 +105,6 @@ public class OrdersCollectMenu extends BaseMenu {
             return;
         }
         if (slot == lastRow + 8) {
-            player.closeInventory();
             return;
         }
 
@@ -171,6 +170,7 @@ public class OrdersCollectMenu extends BaseMenu {
     private String resolveFailureMessage(OrdersManager.ClaimResult result) {
         return switch (result.reason()) {
             case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cᴏʀᴅᴇʀѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
+            case CLAIMS_DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIMS_DISABLED", "&cᴏʀᴅᴇʀѕ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
             case CLAIM_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_NOT_FOUND", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.");
             case NOT_OWNER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_YOUR_CLAIM", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.");
             case ALREADY_CLAIMED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_ALREADY_CLAIMED", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ.");

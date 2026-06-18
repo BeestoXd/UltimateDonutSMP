@@ -88,7 +88,7 @@ public class OrdersSearchItemMenu extends BaseMenu {
         set(lastRow + 7, hasNextPage(results.size(), itemsPerPage)
                 ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 8, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
 
         if (results.isEmpty()) {
             int emptySlot = Math.max(0, Math.min(itemsPerPage - 1, itemsPerPage / 2));
@@ -147,7 +147,6 @@ public class OrdersSearchItemMenu extends BaseMenu {
             return;
         }
         if (slot == lastRow + 8) {
-            player.closeInventory();
             return;
         }
 

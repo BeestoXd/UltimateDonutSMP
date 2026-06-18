@@ -61,7 +61,7 @@ public class ServerInfoMenu extends BaseMenu {
 
         PageDefinition pageDefinition = getCurrentPage();
         if (pageDefinition == null) {
-            setFallbackItem("&cɴᴏ ѕᴇʀᴠᴇʀ ɪɴꜰᴏ ᴘᴀɢᴇѕ", "&7ᴄᴏɴꜰɪɢᴜʀᴇ ѕᴇʀᴠᴇʀ-ɪɴꜰᴏ-ᴍᴇɴᴜ ꜰɪʀѕᴛ.");
+            setFallbackItem("&cɴᴏ ѕᴇʀᴠᴇʀ ɪɴꜰᴏ ᴘᴀɢᴇѕ", "&7ᴄᴏɴꜰɪɢᴜʀᴇ SERVER-INFO-MENU ꜰɪʀѕᴛ.");
             return;
         }
 
@@ -69,7 +69,7 @@ public class ServerInfoMenu extends BaseMenu {
         for (ButtonDefinition button : pageDefinition.buttons()) {
             if (slotActions.containsKey(button.slot())) {
                 plugin.getLogger().warning("Skipping duplicated Server Info slot " + button.slot()
-                        + " on page " + page + ".");
+                        + " ᴏɴ ᴘᴀɢᴇ " + page + ".");
                 continue;
             }
 
@@ -139,7 +139,7 @@ public class ServerInfoMenu extends BaseMenu {
     }
 
     private void renderNavigation() {
-        int reservedBack = plugin.getConfigManager().getMenus().getInt(NAVIGATION_PATH + ".BACK-SLOT", inventory.getSize() - 9);
+        int reservedBack = plugin.getConfigManager().getMenus().getInt(NAVIGATION_PATH + ".ʙᴀᴄᴋ-ѕʟᴏᴛ", inventory.getSize() - 9);
         int reservedInfo = plugin.getConfigManager().getMenus().getInt(NAVIGATION_PATH + ".PAGE-INFO-SLOT", inventory.getSize() - 5);
         int reservedNext = plugin.getConfigManager().getMenus().getInt(NAVIGATION_PATH + ".NEXT-SLOT", inventory.getSize() - 1);
 
@@ -151,8 +151,8 @@ public class ServerInfoMenu extends BaseMenu {
             backSlot = reservedBack;
             set(backSlot, ItemUtils.createItem(
                     navMaterial,
-                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".BACK-BUTTON", "&aʙᴀᴄᴋ"),
-                    plugin.getConfigManager().getMenus().getStringList(GLOBAL_PAGE_PATH + ".BACK-LORE")
+                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".ʙᴀᴄᴋ-ʙᴜᴛᴛᴏɴ", "&aʙᴀᴄᴋ"),
+                    plugin.getConfigManager().getMenus().getStringList(GLOBAL_PAGE_PATH + ".ʙᴀᴄᴋ-ʟᴏʀᴇ")
             ));
         }
 
@@ -169,8 +169,8 @@ public class ServerInfoMenu extends BaseMenu {
             nextSlot = reservedNext;
             set(nextSlot, ItemUtils.createItem(
                     navMaterial,
-                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".NEXT-BUTTON", "&aɴᴇxᴛ"),
-                    plugin.getConfigManager().getMenus().getStringList(GLOBAL_PAGE_PATH + ".NEXT-LORE")
+                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".ɴᴇxᴛ-ʙᴜᴛᴛᴏɴ", "&aɴᴇxᴛ"),
+                    plugin.getConfigManager().getMenus().getStringList(GLOBAL_PAGE_PATH + ".ɴᴇxᴛ-ʟᴏʀᴇ")
             ));
         }
     }
@@ -234,8 +234,8 @@ public class ServerInfoMenu extends BaseMenu {
                     normalizeSize(plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 27)),
                     legacyButtons
             ));
-            loadedPages.add(createDefaultGettingStartedPage());
-            loadedPages.add(createDefaultCommandsPage());
+            loadedPages.add(createDefaultGettingStartedPage(plugin));
+            loadedPages.add(createDefaultCommandsPage(plugin));
         }
         return loadedPages;
     }
@@ -255,20 +255,20 @@ public class ServerInfoMenu extends BaseMenu {
             ConfigurationSection buttonSection = buttonsSection.getConfigurationSection(key);
             if (buttonSection == null) {
                 plugin.getLogger().warning("Skipping " + buttonsSection.getCurrentPath() + "." + key
-                        + " because it is not a section.");
+                        + " ʙᴇᴄᴀᴜѕᴇ ɪᴛ ɪѕ ɴᴏᴛ ᴀ ѕᴇᴄᴛɪᴏɴ.");
                 continue;
             }
 
             int slot = buttonSection.getInt("SLOT", -1);
             if (slot < 0 || slot >= inventorySize) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " because slot " + slot + " is outside menu size " + inventorySize + ".");
+                        + " because slot " + slot + " ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴍᴇɴᴜ ѕɪᴢᴇ " + inventorySize + ".");
                 continue;
             }
 
             if (slot == reservedBack || slot == reservedInfo || slot == reservedNext) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " because slot " + slot + " is reserved for page navigation.");
+                        + " because slot " + slot + " ɪѕ ʀᴇѕᴇʀᴠᴇᴅ ꜰᴏʀ ᴘᴀɢᴇ ɴᴀᴠɪɢᴀᴛɪᴏɴ.");
                 continue;
             }
 
@@ -281,22 +281,22 @@ public class ServerInfoMenu extends BaseMenu {
             Material material = Material.matchMaterial(rawMaterial.trim().toUpperCase(Locale.ROOT));
             if (material == null) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " because MATERIAL '" + rawMaterial + "' is invalid.");
+                        + " because MATERIAL '" + rawMaterial + "' ɪѕ ɪɴᴠᴀʟɪᴅ.");
                 continue;
             }
 
             buttons.add(new ButtonDefinition(
                     slot,
                     material,
-                    buttonSection.getString("NAME", prettifyKey(key)),
-                    buttonSection.getStringList("LORE"),
-                    resolveAction(key, buttonSection)
+                    plugin.getCurrencyManager().applyStaticPlaceholders(buttonSection.getString("NAME", prettifyKey(key))),
+                    plugin.getCurrencyManager().applyStaticPlaceholders(buttonSection.getStringList("LORE")),
+                    resolveAction(plugin, key, buttonSection)
             ));
         }
         return buttons;
     }
 
-    private static ButtonAction resolveAction(String key, ConfigurationSection buttonSection) {
+    private static ButtonAction resolveAction(UltimateDonutSmp plugin, String key, ConfigurationSection buttonSection) {
         String configuredCommand = firstNonBlank(
                 sanitizeCommand(buttonSection.getString("COMMAND")),
                 sanitizeCommand(buttonSection.getString("ACTION.VALUE"))
@@ -307,7 +307,7 @@ public class ServerInfoMenu extends BaseMenu {
 
         List<String> configuredMessages = buttonSection.getStringList("CLICK-MESSAGE");
         if (!configuredMessages.isEmpty()) {
-            return ButtonAction.info(configuredMessages);
+            return ButtonAction.info(plugin.getCurrencyManager().applyStaticPlaceholders(configuredMessages));
         }
 
         return switch (key.toUpperCase(Locale.ROOT)) {
@@ -329,7 +329,8 @@ public class ServerInfoMenu extends BaseMenu {
                     "&7ʙᴜɪʟᴅ ʏᴏᴜʀ ʙᴀѕᴇ, ɢᴇᴀʀ ᴜᴘ, ᴀɴᴅ ᴜѕᴇ &f/spawn &7ᴏʀ &f/rtp &7ᴛᴏ ʙᴇɢɪɴ ᴇxᴘʟᴏʀɪɴɢ."
             ));
             case "ECONOMY" -> ButtonAction.info(List.of(
-                    "&7ᴇᴀʀɴ ᴍᴏɴᴇʏ ᴡɪᴛʜ &f/sell &7ᴀɴᴅ ᴛʀᴀᴅᴇ ʙᴇᴛᴛᴇʀ ɢᴇᴀʀ ᴛʜʀᴏᴜɢʜ &f/auctionhouse&7."
+                    "&7ᴇᴀʀɴ " + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                            + " ᴡɪᴛʜ &f/sell &7ᴀɴᴅ ᴛʀᴀᴅᴇ ʙᴇᴛᴛᴇʀ ɢᴇᴀʀ ᴛʜʀᴏᴜɢʜ &f/auctionhouse&7."
             ));
             default -> ButtonAction.info(List.of("&7ᴛʜɪѕ ʙᴜᴛᴛᴏɴ ɪѕ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴᴀʟ ᴏɴʟʏ."));
         };
@@ -404,7 +405,7 @@ public class ServerInfoMenu extends BaseMenu {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "ɪɴꜰᴏ" : ColorUtils.toSmallCaps(builder.toString());
+        return builder.isEmpty() ? "Info" : builder.toString();
     }
 
     private enum ActionType {
@@ -412,7 +413,8 @@ public class ServerInfoMenu extends BaseMenu {
         INFO
     }
 
-    private static PageDefinition createDefaultGettingStartedPage() {
+    private static PageDefinition createDefaultGettingStartedPage(UltimateDonutSmp plugin) {
+        String moneyPlural = plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
         return new PageDefinition(
                 "2",
                 "&8ɢᴇᴛᴛɪɴɢ ѕᴛᴀʀᴛᴇᴅ",
@@ -436,7 +438,7 @@ public class ServerInfoMenu extends BaseMenu {
                         new ButtonDefinition(
                                 11,
                                 Material.GOLD_INGOT,
-                                "&#00A4FCᴍᴀᴋᴇ ᴍᴏɴᴇʏ",
+                                "&#00A4FCᴍᴀᴋᴇ " + moneyPlural,
                                 List.of(
                                         "&fѕᴇʟʟ ʙʟᴏᴄᴋѕ, ᴏʀᴇѕ, ᴀɴᴅ ᴅʀᴏᴘѕ ᴡɪᴛʜ",
                                         "&b/sell &fᴏʀ ʟɪѕᴛ ɪᴛᴇᴍѕ ɪɴ &b/auctionhouse&f.",
@@ -513,7 +515,8 @@ public class ServerInfoMenu extends BaseMenu {
         );
     }
 
-    private static PageDefinition createDefaultCommandsPage() {
+    private static PageDefinition createDefaultCommandsPage(UltimateDonutSmp plugin) {
+        String moneyPlural = plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
         return new PageDefinition(
                 "3",
                 "&8ᴜѕᴇꜰᴜʟ ᴄᴏᴍᴍᴀɴᴅѕ",
@@ -537,7 +540,7 @@ public class ServerInfoMenu extends BaseMenu {
                                 "&#00A4FCѕᴇʟʟ",
                                 List.of(
                                         "&fᴛᴜʀɴ ꜰᴀʀᴍᴇᴅ ᴏʀ ᴍɪɴᴇᴅ ɪᴛᴇᴍѕ",
-                                        "&fɪɴᴛᴏ ǫᴜɪᴄᴋ ᴍᴏɴᴇʏ.",
+                                        "&fɪɴᴛᴏ ǫᴜɪᴄᴋ " + moneyPlural + ".",
                                         "",
                                         "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/sell"
                                 ),
@@ -565,7 +568,7 @@ public class ServerInfoMenu extends BaseMenu {
                                 "&#00A4FCʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ",
                                 List.of(
                                         "&fᴄʜᴇᴄᴋ ᴡʜᴏ ɪѕ ʟᴇᴀᴅɪɴɢ ɪɴ",
-                                        "&fᴍᴏɴᴇʏ, ᴋɪʟʟѕ, ᴀɴᴅ ᴍᴏʀᴇ.",
+                                        "&f" + moneyPlural + ", kills, and more.",
                                         "",
                                         "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/leaderboards"
                                 ),

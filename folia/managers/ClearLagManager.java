@@ -20,7 +20,8 @@ public class ClearLagManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CLEAR_LAG)
+                && plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.ENABLED", true);
     }
 
     public int getIntervalMinutes() {
@@ -54,11 +55,7 @@ public class ClearLagManager {
                 if (clearAnimals() && entity instanceof Animals) remove = true;
                 if (clearMonsters() && entity instanceof Monster) remove = true;
                 if (remove && !(entity instanceof Player)) {
-                    plugin.getFoliaScheduler().runEntity(entity, () -> {
-                        if (entity.isValid()) {
-                            entity.remove();
-                        }
-                    });
+                    entity.remove();
                     count++;
                 }
             }
@@ -79,13 +76,13 @@ public class ClearLagManager {
     }
 
     private void broadcastToSubscribedPlayers(String message) {
-        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerData data = plugin.getPlayerDataManager().get(player);
             if (data != null && !data.isClearEntitiesMessagesEnabled()) {
-                return;
+                continue;
             }
 
             player.sendMessage(ColorUtils.toComponent(message));
-        });
+        }
     }
 }

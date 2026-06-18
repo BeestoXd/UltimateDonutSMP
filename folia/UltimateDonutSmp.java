@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp;
 
 import com.bx.ultimateDonutSmp.amethyst.*;
 import com.bx.ultimateDonutSmp.api.EconomyExpansion;
+import com.bx.ultimateDonutSmp.api.HideExpansion;
 import com.bx.ultimateDonutSmp.commands.*;
 import com.bx.ultimateDonutSmp.hooks.VaultEconomyHook;
 import com.bx.ultimateDonutSmp.listeners.*;
@@ -24,57 +25,63 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private FoliaScheduler foliaScheduler;
 
     // ── Managers ──────────────────────────────────────────────────────────────
-    private ConfigManager      configManager;
-    private CurrencyManager    currencyManager;
-    private FeatureManager     featureManager;
-    private DatabaseManager    databaseManager;
-    private PlayerDataManager  playerDataManager;
-    private EconomyManager     economyManager;
-    private ChatManager        chatManager;
-    private IgnoreManager      ignoreManager;
+    private ConfigManager configManager;
+    private LanguageManager languageManager;
+    private CurrencyManager currencyManager;
+    private FeatureManager featureManager;
+    private DatabaseManager databaseManager;
+    private PlayerDataManager playerDataManager;
+    private EconomyManager economyManager;
+    private ChatManager chatManager;
+    private IgnoreManager ignoreManager;
+    private FriendsManager friendsManager;
     private PrivateMessageManager privateMessageManager;
-    private TeamManager        teamManager;
-    private HomeManager        homeManager;
-    private BountyManager      bountyManager;
-    private WarpManager        warpManager;
-    private CuboidManager      cuboidManager;
-    private SpawnManager       spawnManager;
-    private CombatManager      combatManager;
+    private TeamManager teamManager;
+    private HomeManager homeManager;
+    private BountyManager bountyManager;
+    private WarpManager warpManager;
+    private CuboidManager cuboidManager;
+    private SpawnManager spawnManager;
+    private CombatManager combatManager;
     private FastCrystalManager fastCrystalManager;
-    private TPAManager         tpaManager;
-    private ShardManager       shardManager;
-    private ClearLagManager    clearLagManager;
-    private CrateManager       crateManager;
+    private TPAManager tpaManager;
+    private ShardManager shardManager;
+    private ClearLagManager clearLagManager;
+    private CrateManager crateManager;
     private CrateVisualManager crateVisualManager;
-    private KeyAllManager      keyAllManager;
-    private AFKManager         afkManager;
-    private HoverStatsManager  hoverStatsManager;
-    private WorthManager       worthManager;
-    private ShopManager        shopManager;
-    private OrdersManager      ordersManager;
-    private DuelManager        duelManager;
-    private FfaManager         ffaManager;
+    private KeyAllManager keyAllManager;
+    private AFKManager afkManager;
+    private HoverStatsManager hoverStatsManager;
+    private WorthManager worthManager;
+    private ShopManager shopManager;
+    private OrdersManager ordersManager;
+    private EnchantmentsManager enchantmentsManager;
+    private FilterManager filterManager;
+    private DuelManager duelManager;
+    private FfaManager ffaManager;
     private AuctionHouseManager auctionHouseManager;
-    private BillfordManager    billfordManager;
+    private BillfordManager billfordManager;
     private LeaderboardManager leaderboardManager;
-    private ScoreboardManager  scoreboardManager;
-    private TablistManager     tablistManager;
-    private TeleportManager    teleportManager;
-    private RTPManager         rtpManager;
-    private RTPZoneManager     rtpZoneManager;
-    private PortalManager      portalManager;
+    private ScoreboardManager scoreboardManager;
+    private TablistManager tablistManager;
+    private TeleportManager teleportManager;
+    private RTPManager rtpManager;
+    private RTPZoneManager rtpZoneManager;
+    private PortalManager portalManager;
     private AmethystToolsManager amethystToolsManager;
-    private EnderChestManager  enderChestManager;
-    private FreezeManager      freezeManager;
-    private GodModeManager     godModeManager;
-    private InvseeManager      invseeManager;
+    private EnderChestManager enderChestManager;
+    private FreezeManager freezeManager;
+    private GodModeManager godModeManager;
+    private InvseeManager invseeManager;
     private ProfileViewerManager profileViewerManager;
-    private PunishmentManager  punishmentManager;
-    private StatsWipeManager  statsWipeManager;
-    private SpawnerManager    spawnerManager;
+    private PunishmentManager punishmentManager;
+    private StatsWipeManager statsWipeManager;
+    private ServerWipeManager serverWipeManager;
+    private SpawnerManager spawnerManager;
+    private AntiEspManager antiEspManager;
     private SpawnStashManager spawnStashManager;
     private FakePlayerManager fakePlayerManager;
-    private AntiEspManager    antiEspManager;
+    private HideManager hideManager;
     private NetworkStatusManager networkStatusManager;
     private RedisManager redisManager;
     private MaintenanceManager maintenanceManager;
@@ -83,8 +90,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private StaffModeManager staffModeManager;
     private DiscordWebhookManager discordWebhookManager;
     private LunarRichPresenceManager lunarRichPresenceManager;
-    private OptimizationManager optimizationManager;
     private LuckPermsTablistRefreshBridge luckPermsTablistRefreshBridge;
+    private SkinsRestorerTablistRefreshBridge skinsRestorerTablistRefreshBridge;
+    private OptimizationManager optimizationManager;
+    private CrashProtectionManager crashProtectionManager;
+    private AnvilModerationManager anvilModerationManager;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -100,11 +110,14 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         foliaScheduler = new FoliaScheduler(this);
 
-        // 1. config & database (no dependencies)
+        // 1. Config & database (no dependencies)
         ColorUtils.init();
 
-        configManager   = new ConfigManager(this);
+        configManager = new ConfigManager(this);
         configManager.loadAll();
+        languageManager = new LanguageManager(this);
+        languageManager.load();
+        crashProtectionManager = new CrashProtectionManager(this);
         currencyManager = new CurrencyManager(this);
         featureManager = new FeatureManager(this);
         optimizationManager = new OptimizationManager(this);
@@ -112,43 +125,48 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
+        serverWipeManager = new ServerWipeManager(this);
+        serverWipeManager.recoverOrRecreatePendingWorlds();
 
-        // 2. data managers (depend on DB / config)
+        // 2. Data managers (depend on DB / config)
         playerDataManager = new PlayerDataManager(this);
-        economyManager    = new EconomyManager(this);
-        chatManager       = new ChatManager(this);
-        ignoreManager     = new IgnoreManager(this);
+        economyManager = new EconomyManager(this);
+        chatManager = new ChatManager(this);
+        ignoreManager = new IgnoreManager(this);
+        friendsManager = new FriendsManager(this);
         privateMessageManager = new PrivateMessageManager(this);
-        teamManager       = new TeamManager(this);
+        teamManager = new TeamManager(this);
         teamManager.loadAll();
-        homeManager       = new HomeManager(this);
-        bountyManager     = new BountyManager(this);
+        homeManager = new HomeManager(this);
+        bountyManager = new BountyManager(this);
         bountyManager.loadAll();
-        warpManager       = new WarpManager(this);
+        warpManager = new WarpManager(this);
         warpManager.loadAll();
-        cuboidManager     = new CuboidManager(this);
+        cuboidManager = new CuboidManager(this);
         cuboidManager.loadAll();
 
         spawnManager = new SpawnManager(this);
         spawnManager.load();
 
-        // 3. gameplay managers
-        combatManager   = new CombatManager(this);
+        // 3. Gameplay managers
+        combatManager = new CombatManager(this);
         fastCrystalManager = new FastCrystalManager(this);
-        tpaManager      = new TPAManager(this);
-        shardManager    = new ShardManager(this);
+        tpaManager = new TPAManager(this);
+        shardManager = new ShardManager(this);
         amethystToolsManager = new AmethystToolsManager(this);
         clearLagManager = new ClearLagManager(this);
-        crateManager    = new CrateManager(this);
+        crateManager = new CrateManager(this);
         crateVisualManager = new CrateVisualManager(this);
-        keyAllManager   = new KeyAllManager(this);
-        afkManager      = new AFKManager(this);
+        keyAllManager = new KeyAllManager(this);
+        afkManager = new AFKManager(this);
         hoverStatsManager = new HoverStatsManager(this);
-        worthManager    = new WorthManager(this);
-        shopManager     = new ShopManager(this);
-        ordersManager   = new OrdersManager(this);
-        duelManager     = new DuelManager(this);
-        ffaManager      = new FfaManager(this);
+        worthManager = new WorthManager(this);
+        shopManager = new ShopManager(this);
+        filterManager = new FilterManager(this);
+        ordersManager = new OrdersManager(this);
+        enchantmentsManager = new EnchantmentsManager(this);
+        duelManager = new DuelManager(this);
+        ffaManager = new FfaManager(this);
         auctionHouseManager = new AuctionHouseManager(this);
         billfordManager = new BillfordManager(this);
         billfordManager.load();
@@ -160,11 +178,13 @@ public final class UltimateDonutSmp extends JavaPlugin {
         invseeManager = new InvseeManager(this);
         profileViewerManager = new ProfileViewerManager(this);
         punishmentManager = new PunishmentManager(this);
+        anvilModerationManager = new AnvilModerationManager(this);
+        anvilModerationManager.load();
         statsWipeManager = new StatsWipeManager(this);
         spawnerManager = new SpawnerManager(this);
+        antiEspManager = new AntiEspManager(this);
         spawnStashManager = new SpawnStashManager(this);
         fakePlayerManager = new FakePlayerManager(this);
-        antiEspManager = new AntiEspManager(this);
         redisManager = new RedisManager(this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         networkStatusManager = new NetworkStatusManager(this);
@@ -172,40 +192,44 @@ public final class UltimateDonutSmp extends JavaPlugin {
         networkStaffAlertManager = new NetworkStaffAlertManager(this);
         maintenanceManager = new MaintenanceManager(this);
         maintenanceManager.initializeRedisListener();
+        duelManager.initializeCrossServer();
         discordWebhookManager = new DiscordWebhookManager(this);
         initializeLunarRichPresenceManager();
 
-        // 4. display managers
+        // 4. Display managers
         scoreboardManager = new ScoreboardManager(this);
-        tablistManager    = new TablistManager(this);
-        teleportManager   = new TeleportManager(this);
-        rtpManager        = new RTPManager(this);
-        rtpZoneManager    = new RTPZoneManager(this);
-        portalManager     = new PortalManager(this);
+        tablistManager = new TablistManager(this);
+        hideManager = new HideManager(this);
+        hideManager.loadAll();
+        teleportManager = new TeleportManager(this);
+        rtpManager = new RTPManager(this);
+        rtpZoneManager = new RTPZoneManager(this);
+        portalManager = new PortalManager(this);
         portalManager.loadAll();
         initializeLuckPermsTablistRefreshBridge();
+        initializeSkinsRestorerTablistRefreshBridge();
 
-        // 5. listeners
+        // 5. Listeners
         registerListeners();
 
         // 6. Commands
         registerCommands();
 
-        // 6.5 optional integrations
+        // 6.5 Optional integrations
         registerVaultEconomyProvider();
 
-        // 7. background tasks
+        // 7. Background tasks
         ScoreboardTask.start(this);
         TablistTask.start(this);
-        ShardTask.start(this);        // passive "everywhere" shards (per minute)
-        ShardCuboidTask.start(this);  // spawn cuboid countdown + reward (per second)
+        ShardTask.start(this); // passive "everywhere" shards (per minute)
+        ShardCuboidTask.start(this); // spawn cuboid countdown + reward (per second)
         RTPZoneTask.start(this);
         ClearLagTask.start(this);
         KeyAllTask.start(this);
         AutoSaveTask.start(this);
         AFKCheckTask.start(this);
         LunarTeammatesTask.start(this);
-        BillfordTask.start(this);     // billford trade rotation check (every 30 s)
+        BillfordTask.start(this); // Billford trade rotation check (every 30 s)
         OrdersExpiryTask.start(this);
         AuctionHouseExpiryTask.start(this);
         AmethystToolsTask.start(this);
@@ -213,9 +237,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
         DuelMatchTask.start(this);
         FfaMatchTask.start(this);
 
-        // 8. placeholderapi expansion
+        // 8. PlaceholderAPI expansion
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new EconomyExpansion(this).register();
+            new HideExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
         }
 
@@ -228,6 +253,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        boolean suppressWipeSaves = serverWipeManager != null
+                && serverWipeManager.shouldSuppressShutdownSaves();
         if (teleportManager != null) {
             teleportManager.restoreAllRtpChunkThrottles();
         }
@@ -235,7 +262,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
             getServer().getOnlinePlayers().forEach(worthManager::clearWorthDisplay);
         }
 
-        if (enderChestManager != null) {
+        if (enderChestManager != null && !suppressWipeSaves) {
             enderChestManager.shutdown();
         }
         if (freezeManager != null) {
@@ -253,6 +280,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (antiEspManager != null) {
             antiEspManager.shutdown();
         }
+        if (spawnStashManager != null) {
+            spawnStashManager.shutdown();
+        }
+        if (fakePlayerManager != null) {
+            fakePlayerManager.shutdown();
+        }
+        if (hideManager != null) {
+            hideManager.shutdown();
+        }
         if (networkStatusManager != null) {
             networkStatusManager.shutdown();
         }
@@ -262,11 +298,14 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (networkStaffAlertManager != null) {
             networkStaffAlertManager.shutdown();
         }
-        if (lunarRichPresenceManager != null) {
-            lunarRichPresenceManager.shutdown();
-        }
         if (luckPermsTablistRefreshBridge != null) {
             luckPermsTablistRefreshBridge.shutdown();
+        }
+        if (skinsRestorerTablistRefreshBridge != null) {
+            skinsRestorerTablistRefreshBridge.shutdown();
+        }
+        if (lunarRichPresenceManager != null) {
+            lunarRichPresenceManager.shutdown();
         }
         if (optimizationManager != null) {
             optimizationManager.shutdown();
@@ -280,13 +319,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (ffaManager != null) {
             ffaManager.shutdown();
         }
-        if (spawnStashManager != null) {
-            spawnStashManager.shutdown();
-        }
-        if (fakePlayerManager != null) {
-            fakePlayerManager.shutdown();
-        }
-        if (spawnerManager != null) {
+        if (spawnerManager != null && !suppressWipeSaves) {
             spawnerManager.shutdown();
         }
         if (crateManager != null) {
@@ -305,8 +338,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
             portalManager.shutdown();
         }
 
-        // save all online players and close DB
-        if (playerDataManager != null) {
+        // Save all online players and close DB
+        if (playerDataManager != null && !suppressWipeSaves) {
             playerDataManager.saveAll();
         }
         if (databaseManager != null) {
@@ -404,6 +437,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new SpawnerVisibilityListener(this), this);
         pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
+        pm.registerEvents(new AnvilModerationListener(this), this);
     }
 
     private void registerCommands() {
@@ -424,7 +458,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("unignore", ignoreCommand, FeatureManager.Feature.IGNORE);
         setTabCompleter("unignore", ignoreTabCompleter);
         MessageCommand messageCommand = new MessageCommand(this);
-        MessageTabCompleter messageTabCompleter = new MessageTabCompleter();
+        MessageTabCompleter messageTabCompleter = new MessageTabCompleter(this);
         setExecutor("msg", messageCommand, FeatureManager.Feature.MESSAGING);
         setTabCompleter("msg", messageTabCompleter);
         setExecutor("reply", messageCommand, FeatureManager.Feature.MESSAGING);
@@ -473,11 +507,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("crate", crateCmd, FeatureManager.Feature.CRATES);
         setExecutor("crates", crateCmd, FeatureManager.Feature.CRATES);
         setExecutor("keys", crateCmd, FeatureManager.Feature.CRATES);
+        setTabCompleter("crate", crateCmd);
+        setTabCompleter("crates", crateCmd);
+        setTabCompleter("keys", crateCmd);
 
         // Shop / Sell / Worth
         setExecutor("shop", new ShopCommand(this), FeatureManager.Feature.SHOP);
         setExecutor("orders", new OrdersCommand(this), FeatureManager.Feature.ORDERS);
         setExecutor("duel", new DuelCommand(this), FeatureManager.Feature.DUELS);
+        setExecutor("create", new CreateCommand(this), FeatureManager.Feature.DUELS);
         setExecutor("queue", new QueueCommand(this), FeatureManager.Feature.DUELS);
         setExecutor("leave", new LeaveCommand(this));
         setExecutor("draw", new DrawCommand(this), FeatureManager.Feature.DUELS);
@@ -487,6 +525,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("ffaarena", new FfaArenaCommand(this), FeatureManager.Feature.FFA);
         setExecutor("auctionhouse", new AuctionHouseCommand(this), FeatureManager.Feature.AUCTION_HOUSE);
         setExecutor("enderchest", new EnderChestCommand(this), FeatureManager.Feature.ENDER_CHEST);
+        setExecutor("ecsee", new EcseeCommand(this), FeatureManager.Feature.ENDER_CHEST);
         SellCommand sellCmd = new SellCommand(this);
         setExecutor("sell", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
@@ -503,9 +542,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("playtime", new PlaytimeCommand(this), FeatureManager.Feature.STATS);
         LeaderboardCommand lbCmd = new LeaderboardCommand(this);
         setExecutor("leaderboard", lbCmd, FeatureManager.Feature.LEADERBOARDS);
-        getServer().getPluginManager().registerEvents(lbCmd, this);
         setExecutor("freeze", new FreezeCommand(this));
         setExecutor("fly", new FlyCommand(this));
+        setExecutor("kill", new KillCommand(this));
         setExecutor("heal", new HealCommand(this));
         setExecutor("feed", new FeedCommand(this));
         registerGodModeCommand(new GodModeCommand(this));
@@ -572,6 +611,13 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
 
         setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
+        setExecutor("safety", new SafetyCommand(this), FeatureManager.Feature.SAFETY);
+
+        FriendsCommand friendsCommand = new FriendsCommand(this);
+        setExecutor("friends", friendsCommand, FeatureManager.Feature.FRIENDS);
+        setExecutor("friend", friendsCommand, FeatureManager.Feature.FRIENDS);
+        setTabCompleter("friends", new FriendsTabCompleter(this));
+        setTabCompleter("friend", new FriendsTabCompleter(this));
         setExecutor("help", new HelpCommand(this), FeatureManager.Feature.HELP);
         setExecutor("servers", new ServersCommand(this), FeatureManager.Feature.NETWORK_SERVERS);
 
@@ -580,6 +626,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("spawner", new SpawnerCommand(this), FeatureManager.Feature.SPAWNERS);
         setExecutor("spawnstash", new SpawnStashCommand(this), FeatureManager.Feature.SPAWN_STASH);
         setExecutor("fakeplayer", new FakePlayerCommand(this), FeatureManager.Feature.STAFF_MODE);
+        HideCommand hideCommand = new HideCommand(this);
+        setExecutor("hide", hideCommand, FeatureManager.Feature.HIDE);
+        setExecutor("disguise", hideCommand, FeatureManager.Feature.HIDE);
+        setTabCompleter("hide", hideCommand);
+        setTabCompleter("disguise", hideCommand);
 
         // Admin
         setExecutor("clearlag", new ClearLagCommand(this), FeatureManager.Feature.CLEAR_LAG);
@@ -593,6 +644,13 @@ public final class UltimateDonutSmp extends JavaPlugin {
         MaintenanceCommand maintenanceCommand = new MaintenanceCommand(this);
         setExecutor("maintenance", maintenanceCommand, FeatureManager.Feature.MAINTENANCE);
         setTabCompleter("maintenance", maintenanceCommand);
+        ServerWipeCommand serverWipeCommand = new ServerWipeCommand(this);
+        setExecutor("serverwipe", serverWipeCommand);
+        setTabCompleter("serverwipe", serverWipeCommand);
+
+        AnvilModerationCommand anvilModCommand = new AnvilModerationCommand(this);
+        setExecutor("amod", anvilModCommand);
+        setTabCompleter("amod", anvilModCommand);
     }
 
     private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
@@ -611,6 +669,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
         command.setExecutor(featureExecutor);
         if (executor instanceof TabCompleter) {
             command.setTabCompleter(featureExecutor);
+        }
+    }
+
+    private void registerGodModeCommand(GodModeCommand executor) {
+        PluginCommand command = getCommand("god");
+        if (command != null) {
+            command.setExecutor(executor);
+            return;
+        }
+
+        if (!executor.registerDynamically()) {
+            getLogger().warning("Command missing from plugin.yml and dynamic registration failed: god");
         }
     }
 
@@ -653,18 +723,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         return true;
     }
 
-    private void registerGodModeCommand(GodModeCommand executor) {
-        PluginCommand command = getCommand("god");
-        if (command != null) {
-            command.setExecutor(executor);
-            return;
-        }
-
-        if (!executor.registerDynamically()) {
-            getLogger().warning("Command missing from plugin.yml and dynamic registration failed: god");
-        }
-    }
-
     private void registerVaultEconomyProvider() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return;
@@ -674,18 +732,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
                 net.milkbowl.vault.economy.Economy.class,
                 new VaultEconomyHook(this),
                 this,
-                ServicePriority.Highest
-        );
+                ServicePriority.Highest);
         getLogger().info("Vault economy provider registered.");
     }
 
     public void initializeLunarRichPresenceManager() {
-        if (!configManager.getConfig().getBoolean("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", true)) {
+        if (!featureManager.isEnabled(FeatureManager.Feature.LUNAR_RICH_PRESENCE)
+                || !configManager.getConfig().getBoolean("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", true)) {
             return;
         }
 
         if (!isClassAvailable("com.lunarclient.apollo.Apollo")) {
-            getLogger().warning("Lunar Rich Presence is enabled, but the Apollo plugin/api is not installed.");
+            getLogger().warning("Lunar Rich Presence is enabled, but the Apollo plugin/API is not installed.");
             return;
         }
 
@@ -698,7 +756,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     private void initializeLuckPermsTablistRefreshBridge() {
-        if (!isClassAvailable("net.luckperms.api.LuckPermsProvider")) {
+        if (getServer().getPluginManager().getPlugin("LuckPerms") == null
+                && !isClassAvailable("net.luckperms.api.LuckPermsProvider")) {
             return;
         }
 
@@ -707,7 +766,23 @@ public final class UltimateDonutSmp extends JavaPlugin {
             luckPermsTablistRefreshBridge.start();
         } catch (Throwable error) {
             luckPermsTablistRefreshBridge = null;
-            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize LuckPerms tablist refresh bridge.", error);
+            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize LuckPerms tablist refresh bridge.",
+                    error);
+        }
+    }
+
+    private void initializeSkinsRestorerTablistRefreshBridge() {
+        if (!isClassAvailable("net.skinsrestorer.api.SkinsRestorerProvider")) {
+            return;
+        }
+
+        try {
+            skinsRestorerTablistRefreshBridge = new SkinsRestorerTablistRefreshBridge(this);
+            skinsRestorerTablistRefreshBridge.start();
+        } catch (Throwable error) {
+            skinsRestorerTablistRefreshBridge = null;
+            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize SkinsRestorer tablist refresh bridge.",
+                    error);
         }
     }
 
@@ -727,6 +802,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
             teleportManager.restoreAllRtpChunkThrottles();
         }
         configManager.reload();
+        languageManager.reload();
+        crashProtectionManager.reload();
         currencyManager.reload();
         optimizationManager.reload();
         warpManager.loadAll();
@@ -750,20 +827,25 @@ public final class UltimateDonutSmp extends JavaPlugin {
         staffModeManager.reload();
         invseeManager.reload();
         configManager.reloadSpawners();
+        configManager.reloadSpawnStash();
         configManager.reloadNetwork();
         configManager.reloadDatabase();
         configManager.reloadDiscord();
-        configManager.reloadSpawnStash();
         spawnerManager.reload();
-        spawnStashManager.reload();
         antiEspManager.reload();
         antiEspManager.refreshAllPlayers();
+        spawnStashManager.reload();
+        fakePlayerManager.reload();
+        hideManager.reload();
         networkStatusManager.reload();
         networkStaffChatManager.reload();
         networkStaffAlertManager.reload();
         discordWebhookManager.reload();
         if (maintenanceManager != null) {
             maintenanceManager.load();
+        }
+        if (anvilModerationManager != null) {
+            anvilModerationManager.load();
         }
         leaderboardManager.invalidateAll();
         scoreboardManager.updateAll();
@@ -781,74 +863,289 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
     }
 
-    public static UltimateDonutSmp getInstance() { return instance; }
+    public static UltimateDonutSmp getInstance() {
+        return instance;
+    }
 
-    public NamespacedKey getKey(String key) { return new NamespacedKey(this, key); }
-    public FoliaScheduler getFoliaScheduler() { return foliaScheduler; }
+    public NamespacedKey getKey(String key) {
+        return new NamespacedKey(this, key);
+    }
+
+    public FoliaScheduler getFoliaScheduler() {
+        return foliaScheduler;
+    }
 
     // ── Getters ───────────────────────────────────────────────────────────────
 
-    public ConfigManager      getConfigManager()      { return configManager; }
-    public CurrencyManager    getCurrencyManager()    { return currencyManager; }
-    public FeatureManager     getFeatureManager()     { return featureManager; }
-    public DatabaseManager    getDatabaseManager()    { return databaseManager; }
-    public PlayerDataManager  getPlayerDataManager()  { return playerDataManager; }
-    public EconomyManager     getEconomyManager()     { return economyManager; }
-    public ChatManager        getChatManager()        { return chatManager; }
-    public IgnoreManager      getIgnoreManager()      { return ignoreManager; }
-    public PrivateMessageManager getPrivateMessageManager() { return privateMessageManager; }
-    public TeamManager        getTeamManager()        { return teamManager; }
-    public HomeManager        getHomeManager()        { return homeManager; }
-    public BountyManager      getBountyManager()      { return bountyManager; }
-    public WarpManager        getWarpManager()        { return warpManager; }
-    public CuboidManager      getCuboidManager()      { return cuboidManager; }
-    public SpawnManager       getSpawnManager()       { return spawnManager; }
-    public CombatManager      getCombatManager()      { return combatManager; }
-    public FastCrystalManager getFastCrystalManager() { return fastCrystalManager; }
-    public TPAManager         getTPAManager()         { return tpaManager; }
-    public ShardManager       getShardManager()       { return shardManager; }
-    public ClearLagManager    getClearLagManager()    { return clearLagManager; }
-    public CrateManager       getCrateManager()       { return crateManager; }
-    public CrateVisualManager getCrateVisualManager() { return crateVisualManager; }
-    public KeyAllManager      getKeyAllManager()      { return keyAllManager; }
-    public AFKManager         getAFKManager()         { return afkManager; }
-    public HoverStatsManager  getHoverStatsManager()  { return hoverStatsManager; }
-    public WorthManager       getWorthManager()       { return worthManager; }
-    public ShopManager        getShopManager()        { return shopManager; }
-    public OrdersManager      getOrdersManager()      { return ordersManager; }
-    public DuelManager        getDuelManager()        { return duelManager; }
-    public FfaManager         getFfaManager()         { return ffaManager; }
-    public AuctionHouseManager getAuctionHouseManager() { return auctionHouseManager; }
-    public BillfordManager    getBillfordManager()    { return billfordManager; }
-    public LeaderboardManager getLeaderboardManager() { return leaderboardManager; }
-    public ScoreboardManager  getScoreboardManager()  { return scoreboardManager; }
-    public TablistManager     getTablistManager()     { return tablistManager; }
-    public TeleportManager    getTeleportManager()    { return teleportManager; }
-    public RTPManager         getRtpManager()         { return rtpManager; }
-    public RTPZoneManager     getRtpZoneManager()     { return rtpZoneManager; }
-    public PortalManager      getPortalManager()      { return portalManager; }
-    public AmethystToolsManager getAmethystToolsManager() { return amethystToolsManager; }
-    public EnderChestManager  getEnderChestManager()  { return enderChestManager; }
-    public FreezeManager getFreezeManager() { return freezeManager; }
-    public GodModeManager getGodModeManager() { return godModeManager; }
-    public StaffModeManager getStaffModeManager() { return staffModeManager; }
-    public InvseeManager getInvseeManager() { return invseeManager; }
-    public ProfileViewerManager getProfileViewerManager() { return profileViewerManager; }
-    public PunishmentManager getPunishmentManager() { return punishmentManager; }
-    public StatsWipeManager  getStatsWipeManager() { return statsWipeManager; }
-    public SpawnerManager    getSpawnerManager()    { return spawnerManager; }
-    public SpawnStashManager getSpawnStashManager() { return spawnStashManager; }
-    public FakePlayerManager getFakePlayerManager() { return fakePlayerManager; }
-    public AntiEspManager    getAntiEspManager()    { return antiEspManager; }
-    public NetworkStatusManager getNetworkStatusManager() { return networkStatusManager; }
-    public RedisManager getRedisManager() { return redisManager; }
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public LanguageManager getLanguageManager() {
+        return languageManager;
+    }
+
+    public CurrencyManager getCurrencyManager() {
+        return currencyManager;
+    }
+
+    public FeatureManager getFeatureManager() {
+        return featureManager;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public PlayerDataManager getPlayerDataManager() {
+        return playerDataManager;
+    }
+
+    public EconomyManager getEconomyManager() {
+        return economyManager;
+    }
+
+    public ChatManager getChatManager() {
+        return chatManager;
+    }
+
+    public IgnoreManager getIgnoreManager() {
+        return ignoreManager;
+    }
+
+    public FriendsManager getFriendsManager() {
+        return friendsManager;
+    }
+
+    public PrivateMessageManager getPrivateMessageManager() {
+        return privateMessageManager;
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    public HomeManager getHomeManager() {
+        return homeManager;
+    }
+
+    public BountyManager getBountyManager() {
+        return bountyManager;
+    }
+
+    public WarpManager getWarpManager() {
+        return warpManager;
+    }
+
+    public CuboidManager getCuboidManager() {
+        return cuboidManager;
+    }
+
+    public SpawnManager getSpawnManager() {
+        return spawnManager;
+    }
+
+    public SpawnStashManager getSpawnStashManager() {
+        return spawnStashManager;
+    }
+
+    public FakePlayerManager getFakePlayerManager() {
+        return fakePlayerManager;
+    }
+
+    public HideManager getHideManager() {
+        return hideManager;
+    }
+
+    public CombatManager getCombatManager() {
+        return combatManager;
+    }
+
+    public FastCrystalManager getFastCrystalManager() {
+        return fastCrystalManager;
+    }
+
+    public TPAManager getTPAManager() {
+        return tpaManager;
+    }
+
+    public ShardManager getShardManager() {
+        return shardManager;
+    }
+
+    public ClearLagManager getClearLagManager() {
+        return clearLagManager;
+    }
+
+    public CrateManager getCrateManager() {
+        return crateManager;
+    }
+
+    public CrateVisualManager getCrateVisualManager() {
+        return crateVisualManager;
+    }
+
+    public KeyAllManager getKeyAllManager() {
+        return keyAllManager;
+    }
+
+    public AFKManager getAFKManager() {
+        return afkManager;
+    }
+
+    public HoverStatsManager getHoverStatsManager() {
+        return hoverStatsManager;
+    }
+
+    public WorthManager getWorthManager() {
+        return worthManager;
+    }
+
+    public ShopManager getShopManager() {
+        return shopManager;
+    }
+
+    public OrdersManager getOrdersManager() {
+        return ordersManager;
+    }
+
+    public EnchantmentsManager getEnchantmentsManager() {
+        return enchantmentsManager;
+    }
+
+    public FilterManager getFilterManager() {
+        return filterManager;
+    }
+
+    public DuelManager getDuelManager() {
+        return duelManager;
+    }
+
+    public FfaManager getFfaManager() {
+        return ffaManager;
+    }
+
+    public AuctionHouseManager getAuctionHouseManager() {
+        return auctionHouseManager;
+    }
+
+    public BillfordManager getBillfordManager() {
+        return billfordManager;
+    }
+
+    public LeaderboardManager getLeaderboardManager() {
+        return leaderboardManager;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public TablistManager getTablistManager() {
+        return tablistManager;
+    }
+
+    public TeleportManager getTeleportManager() {
+        return teleportManager;
+    }
+
+    public RTPManager getRtpManager() {
+        return rtpManager;
+    }
+
+    public RTPZoneManager getRtpZoneManager() {
+        return rtpZoneManager;
+    }
+
+    public PortalManager getPortalManager() {
+        return portalManager;
+    }
+
+    public AmethystToolsManager getAmethystToolsManager() {
+        return amethystToolsManager;
+    }
+
+    public EnderChestManager getEnderChestManager() {
+        return enderChestManager;
+    }
+
+    public FreezeManager getFreezeManager() {
+        return freezeManager;
+    }
+
+    public GodModeManager getGodModeManager() {
+        return godModeManager;
+    }
+
+    public StaffModeManager getStaffModeManager() {
+        return staffModeManager;
+    }
+
+    public InvseeManager getInvseeManager() {
+        return invseeManager;
+    }
+
+    public ProfileViewerManager getProfileViewerManager() {
+        return profileViewerManager;
+    }
+
+    public PunishmentManager getPunishmentManager() {
+        return punishmentManager;
+    }
+
+    public AnvilModerationManager getAnvilModerationManager() {
+        return anvilModerationManager;
+    }
+
+    public StatsWipeManager getStatsWipeManager() {
+        return statsWipeManager;
+    }
+
+    public ServerWipeManager getServerWipeManager() {
+        return serverWipeManager;
+    }
+
+    public SpawnerManager getSpawnerManager() {
+        return spawnerManager;
+    }
+
+    public AntiEspManager getAntiEspManager() {
+        return antiEspManager;
+    }
+
+    public NetworkStatusManager getNetworkStatusManager() {
+        return networkStatusManager;
+    }
+
+    public RedisManager getRedisManager() {
+        return redisManager;
+    }
 
     public MaintenanceManager getMaintenanceManager() {
         return maintenanceManager;
     }
-    public NetworkStaffChatManager getNetworkStaffChatManager() { return networkStaffChatManager; }
-    public NetworkStaffAlertManager getNetworkStaffAlertManager() { return networkStaffAlertManager; }
-    public DiscordWebhookManager getDiscordWebhookManager() { return discordWebhookManager; }
-    public LunarRichPresenceManager getLunarRichPresenceManager() { return lunarRichPresenceManager; }
-    public OptimizationManager getOptimizationManager() { return optimizationManager; }
+
+    public NetworkStaffChatManager getNetworkStaffChatManager() {
+        return networkStaffChatManager;
+    }
+
+    public NetworkStaffAlertManager getNetworkStaffAlertManager() {
+        return networkStaffAlertManager;
+    }
+
+    public DiscordWebhookManager getDiscordWebhookManager() {
+        return discordWebhookManager;
+    }
+
+    public LunarRichPresenceManager getLunarRichPresenceManager() {
+        return lunarRichPresenceManager;
+    }
+
+    public OptimizationManager getOptimizationManager() {
+        return optimizationManager;
+    }
+
+    public CrashProtectionManager getCrashProtectionManager() {
+        return crashProtectionManager;
+    }
 }

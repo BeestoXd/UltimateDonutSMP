@@ -9,28 +9,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.stream.Collectors;
 
-public class LeaderboardCommand implements CommandExecutor, Listener {
+public class LeaderboardCommand implements CommandExecutor {
 
     private final UltimateDonutSmp plugin;
 
     public LeaderboardCommand(UltimateDonutSmp plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onBaltop(PlayerCommandPreprocessEvent event) {
-        if (!event.getMessage().trim().equalsIgnoreCase("/baltop")) {
-            return;
-        }
-
-        event.setCancelled(true);
-        onCommand(event.getPlayer(), null, "baltop", new String[0]);
     }
 
     @Override

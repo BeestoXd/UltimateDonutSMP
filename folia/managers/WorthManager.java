@@ -6,9 +6,6 @@ import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.models.WorthResult;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -91,6 +88,13 @@ public class WorthManager {
             String sourceKey
     ) {}
 
+    public record SellWorthEntry(
+            Material material,
+            int amount,
+            double totalWorth,
+            SellCategory category
+    ) {}
+
     private record DirectWorthData(
             double worth,
             String sourceKey,
@@ -131,6 +135,16 @@ public class WorthManager {
 
     public WorthResult resolveWorth(ItemStack item) {
         return resolveWorth(item, 0, true, new HashSet<>());
+    }
+
+    public List<SellWorthEntry> resolveSellWorthEntries(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return List.of();
+        }
+
+        List<SellWorthEntry> entries = new ArrayList<>();
+        collectSellWorthEntries(item, 1, 0, true, new HashSet<>(), entries);
+        return List.copyOf(entries);
     }
 
     public SellCategory getSellCategory(ItemStack item) {
@@ -246,22 +260,21 @@ public class WorthManager {
     public void syncWorthDisplay(Player player) {
         boolean enabled = isWorthDisplayEnabled(player);
 
-        Inventory inventory = player.getInventory();
-        for (int slot = 0; slot < inventory.getSize(); slot++) {
-            ItemStack current = inventory.getItem(slot);
-            ItemStack updated = updateWorthDisplay(current, enabled);
-            if (updated != current) {
-                inventory.setItem(slot, updated);
-            }
-        }
+        syncInventoryWorthDisplay(player.getInventory(), enabled);
 
         ItemStack cursor = player.getItemOnCursor();
         ItemStack updatedCursor = updateWorthDisplay(cursor, enabled);
         if (updatedCursor != cursor) {
             player.setItemOnCursor(updatedCursor);
         }
+    }
 
-        mergePlayerStorageStacks(player);
+    public void syncWorthDisplay(Player player, Inventory inventory) {
+        if (player == null) {
+            return;
+        }
+
+        syncInventoryWorthDisplay(inventory, isWorthDisplayEnabled(player));
     }
 
     public ItemStack applyWorthDisplayForPlayer(Player player, ItemStack item) {
@@ -269,6 +282,24 @@ public class WorthManager {
             return item;
         }
         return updateWorthDisplay(item, isWorthDisplayEnabled(player));
+    }
+
+    public void stripStorageWorthDisplayForNativePickup(Player player) {
+        if (player == null) {
+            return;
+        }
+
+        Inventory inventory = player.getInventory();
+        ItemStack[] storage = player.getInventory().getStorageContents();
+
+        for (int slot = 0; slot < storage.length; slot++) {
+            ItemStack current = storage[slot];
+            ItemStack stripped = stripWorthDisplay(current);
+            if (stripped != current) {
+                storage[slot] = stripped;
+                inventory.setItem(slot, stripped);
+            }
+        }
     }
 
     public void mergeStorageStacksForNativeBehavior(Player player) {
@@ -318,6 +349,20 @@ public class WorthManager {
         }
     }
 
+    private void syncInventoryWorthDisplay(Inventory inventory, boolean enabled) {
+        if (inventory == null) {
+            return;
+        }
+
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            ItemStack current = inventory.getItem(slot);
+            ItemStack updated = updateWorthDisplay(current, enabled);
+            if (updated != current) {
+                inventory.setItem(slot, updated);
+            }
+        }
+    }
+
     public ItemStack stripWorthDisplay(ItemStack item) {
         if (item == null || item.getType().isAir()) {
             return item;
@@ -340,10 +385,10 @@ public class WorthManager {
         }
 
         PersistentDataContainer updatedContainer = updatedMeta.getPersistentDataContainer();
-        List<Component> originalLore = readOriginalLore(updatedMeta);
+        List<String> originalLore = readOriginalLore(updatedMeta);
         updatedContainer.remove(worthDisplayAppliedKey);
         updatedContainer.remove(worthDisplayOriginalLoreKey);
-        updatedMeta.lore(originalLore);
+        updatedMeta.setLore(originalLore);
         updated.setItemMeta(updatedMeta);
         return updated;
     }
@@ -358,16 +403,18 @@ public class WorthManager {
         double displayWorth = shouldUseUnitWorthDisplay(item) ? worthResult.unitWorth() : worthResult.totalWorth();
         return replaceWorthPlaceholders(
                 getWorthLoreFormat(),
-                NumberUtils.formatNice(displayWorth),
-                NumberUtils.formatNice(worthResult.unitWorth()),
+                plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, displayWorth),
+                plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.unitWorth()),
                 String.valueOf(item == null ? 0 : item.getAmount()),
-                itemName
+                itemName,
+                plugin.getCurrencyManager().formatMoney(displayWorth),
+                plugin.getCurrencyManager().formatMoney(worthResult.unitWorth())
         );
     }
 
     public String prettifyMaterial(Material material) {
         if (material == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
 
         String[] tokens = material.name().toLowerCase(Locale.US).split("_");
@@ -381,7 +428,7 @@ public class WorthManager {
             }
             builder.append(Character.toUpperCase(token.charAt(0))).append(token.substring(1));
         }
-        return ColorUtils.toSmallCaps(builder.toString());
+        return builder.toString();
     }
 
     private WorthResult resolveWorth(ItemStack item, int depth, boolean allowNestedExpansion, Set<Integer> visitedContainers) {
@@ -394,6 +441,7 @@ public class WorthManager {
 
         DirectWorthData directWorth = resolveDirectWorth(item);
         if (isContainerWorthEnabled()
+                && allowNestedExpansion
                 && isSupportedContainer(item)
                 && depth < getMaxContainerDepth()) {
             double contentsWorth = resolveContainerContentsWorth(item, depth + 1, allowNestedExpansion, visitedContainers);
@@ -474,6 +522,97 @@ public class WorthManager {
         } finally {
             visitedContainers.remove(containerIdentity);
         }
+    }
+
+    private void collectSellWorthEntries(
+            ItemStack item,
+            int amountMultiplier,
+            int depth,
+            boolean allowNestedExpansion,
+            Set<Integer> visitedContainers,
+            List<SellWorthEntry> entries
+    ) {
+        if (item == null || item.getType().isAir() || amountMultiplier <= 0) {
+            return;
+        }
+        if (isBlockedItem(item)) {
+            return;
+        }
+
+        boolean container = isSupportedContainer(item);
+        DirectWorthData directWorth = resolveDirectWorth(item);
+        if (directWorth != null
+                && (!container || !isContainerWorthEnabled() || shouldIncludeContainerBasePrice())) {
+            SellCategory category = resolveSellCategory(directWorth, item);
+            if (category != null && directWorth.worth() > 0) {
+                int amount = multiplyAmount(item.getAmount(), amountMultiplier);
+                entries.add(new SellWorthEntry(
+                        item.getType(),
+                        amount,
+                        directWorth.worth() * item.getAmount() * amountMultiplier,
+                        category
+                ));
+            }
+        }
+
+        if (!isContainerWorthEnabled()
+                || !container
+                || !allowNestedExpansion
+                || depth >= getMaxContainerDepth()) {
+            return;
+        }
+
+        collectContainerSellWorthEntries(
+                item,
+                multiplyAmount(item.getAmount(), amountMultiplier),
+                depth + 1,
+                allowNestedExpansion && allowNestedContainers(),
+                visitedContainers,
+                entries
+        );
+    }
+
+    private void collectContainerSellWorthEntries(
+            ItemStack item,
+            int amountMultiplier,
+            int depth,
+            boolean allowNestedExpansion,
+            Set<Integer> visitedContainers,
+            List<SellWorthEntry> entries
+    ) {
+        if (!(item.getItemMeta() instanceof BlockStateMeta blockStateMeta)) {
+            return;
+        }
+
+        BlockState blockState = blockStateMeta.getBlockState();
+        if (!(blockState instanceof Container container)) {
+            return;
+        }
+
+        int containerIdentity = buildContainerIdentity(item);
+        if (!visitedContainers.add(containerIdentity)) {
+            return;
+        }
+
+        try {
+            for (ItemStack content : container.getInventory().getContents()) {
+                collectSellWorthEntries(content, amountMultiplier, depth, allowNestedExpansion, visitedContainers, entries);
+            }
+        } finally {
+            visitedContainers.remove(containerIdentity);
+        }
+    }
+
+    private SellCategory resolveSellCategory(DirectWorthData directWorth, ItemStack item) {
+        if (directWorth != null && directWorth.categoryKey() != null && !directWorth.categoryKey().isBlank()) {
+            return SellCategory.fromConfigKey(directWorth.categoryKey()).orElse(null);
+        }
+        return getSellCategory(item);
+    }
+
+    private int multiplyAmount(int amount, int multiplier) {
+        long result = (long) amount * multiplier;
+        return result > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result;
     }
 
     private int buildContainerIdentity(ItemStack item) {
@@ -759,14 +898,14 @@ public class WorthManager {
             return item;
         }
 
-        List<Component> currentLore = meta.lore();
-        List<Component> originalLore = readOriginalLore(meta);
+        List<String> currentLore = meta.getLore();
+        List<String> originalLore = readOriginalLore(meta);
         if (originalLore == null) {
             originalLore = currentLore;
         }
         originalLore = stripExistingWorthLore(originalLore);
 
-        List<Component> desiredLore = originalLore == null ? new ArrayList<>() : new ArrayList<>(originalLore);
+        List<String> desiredLore = originalLore == null ? new ArrayList<>() : new ArrayList<>(originalLore);
         desiredLore.add(ColorUtils.toComponent(loreLine));
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -788,7 +927,7 @@ public class WorthManager {
         PersistentDataContainer updatedContainer = updatedMeta.getPersistentDataContainer();
         updatedContainer.set(worthDisplayAppliedKey, PersistentDataType.BYTE, (byte) 1);
         updatedContainer.set(worthDisplayOriginalLoreKey, PersistentDataType.STRING, serializedOriginalLore);
-        updatedMeta.lore(desiredLore);
+        updatedMeta.setLore(desiredLore);
         updated.setItemMeta(updatedMeta);
         return updated;
     }
@@ -797,7 +936,7 @@ public class WorthManager {
         return item != null && plugin.getAmethystToolsManager().isAmethystTool(item);
     }
 
-    private List<Component> readOriginalLore(ItemMeta meta) {
+    private List<String> readOriginalLore(ItemMeta meta) {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         String stored = container.get(worthDisplayOriginalLoreKey, PersistentDataType.STRING);
         if (stored != null) {
@@ -805,10 +944,10 @@ public class WorthManager {
         }
 
         if (!container.has(worthDisplayAppliedKey, PersistentDataType.BYTE)) {
-            return meta.lore();
+            return meta.getLore();
         }
 
-        List<Component> currentLore = meta.lore();
+        List<String> currentLore = meta.getLore();
         if (currentLore == null || currentLore.isEmpty()) {
             return null;
         }
@@ -816,7 +955,7 @@ public class WorthManager {
         return new ArrayList<>(currentLore.subList(0, currentLore.size() - 1));
     }
 
-    private String serializeLore(List<Component> lore) {
+    private String serializeLore(List<String> lore) {
         if (lore == null) {
             return NULL_LORE;
         }
@@ -825,14 +964,13 @@ public class WorthManager {
         }
 
         List<String> encoded = new ArrayList<>();
-        for (Component component : lore) {
-            String json = GsonComponentSerializer.gson().serialize(component);
-            encoded.add(Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8)));
+        for (String line : lore) {
+            encoded.add(Base64.getEncoder().encodeToString((line == null ? "" : line).getBytes(StandardCharsets.UTF_8)));
         }
         return String.join(LORE_SEPARATOR, encoded);
     }
 
-    private List<Component> deserializeLore(String serialized) {
+    private List<String> deserializeLore(String serialized) {
         if (serialized == null) {
             return null;
         }
@@ -843,23 +981,22 @@ public class WorthManager {
             return new ArrayList<>();
         }
 
-        List<Component> lore = new ArrayList<>();
+        List<String> lore = new ArrayList<>();
         for (String token : serialized.split(LORE_SEPARATOR, -1)) {
-            String json = new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8);
-            lore.add(GsonComponentSerializer.gson().deserialize(json));
+            lore.add(new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8));
         }
         return lore;
     }
 
-    private List<Component> stripExistingWorthLore(List<Component> lore) {
+    private List<String> stripExistingWorthLore(List<String> lore) {
         if (lore == null || lore.isEmpty()) {
             return lore;
         }
 
         Pattern worthLorePattern = buildWorthLorePattern();
-        List<Component> sanitized = new ArrayList<>();
+        List<String> sanitized = new ArrayList<>();
         boolean changed = false;
-        for (Component line : lore) {
+        for (String line : lore) {
             if (isWorthLoreLine(line, worthLorePattern)) {
                 changed = true;
                 continue;
@@ -869,8 +1006,8 @@ public class WorthManager {
         return changed ? sanitized : lore;
     }
 
-    private boolean isWorthLoreLine(Component line, Pattern worthLorePattern) {
-        String plain = PlainTextComponentSerializer.plainText().serialize(line);
+    private boolean isWorthLoreLine(String line, Pattern worthLorePattern) {
+        String plain = ColorUtils.strip(line);
         if (containsBrokenWorthPlaceholder(plain)) {
             return true;
         }
@@ -892,10 +1029,14 @@ public class WorthManager {
             String totalPrice,
             String unitPrice,
             String amount,
-            String itemName
+            String itemName,
+            String totalPriceFormatted,
+            String unitPriceFormatted
     ) {
         String resolved = replacePlaceholderVariants(format, "price", totalPrice);
+        resolved = replacePlaceholderVariants(resolved, "price_formatted", totalPriceFormatted);
         resolved = replacePlaceholderVariants(resolved, "unit_price", unitPrice);
+        resolved = replacePlaceholderVariants(resolved, "unit_price_formatted", unitPriceFormatted);
         resolved = replacePlaceholderVariants(resolved, "amount", amount);
         return replacePlaceholderVariants(resolved, "item", itemName);
     }
@@ -920,7 +1061,7 @@ public class WorthManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a$%price%")
+                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a{price_formatted}")
         );
     }
 
@@ -935,17 +1076,7 @@ public class WorthManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7ᴡᴏʀᴛʜ: &a$%price%";
-        }
-        if (format.contains("$")) {
-            return format;
-        }
-
-        for (String placeholder : List.of("%price%", "${price}", "{price}")) {
-            int index = format.indexOf(placeholder);
-            if (index >= 0) {
-                return format.substring(0, index) + "$" + format.substring(index);
-            }
+            return "&7ᴡᴏʀᴛʜ: &a{price_formatted}";
         }
 
         return format;
@@ -955,7 +1086,9 @@ public class WorthManager {
         String format = stripColorCodes(getWorthLoreFormat());
         List<String> placeholders = List.of(
                 "%unit_price%", "${unit_price}", "{unit_price}",
+                "%unit_price_formatted%", "${unit_price_formatted}", "{unit_price_formatted}",
                 "%price%", "${price}", "{price}",
+                "%price_formatted%", "${price_formatted}", "{price_formatted}",
                 "%amount%", "${amount}", "{amount}",
                 "%item%", "${item}", "{item}"
         );

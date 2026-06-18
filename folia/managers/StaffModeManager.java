@@ -85,7 +85,8 @@ public class StaffModeManager {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean("STAFF-MODE.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_MODE)
+                && getConfig().getBoolean("STAFF-MODE.ENABLED", true);
     }
 
     public boolean shouldPersistOnQuit() {
@@ -175,7 +176,7 @@ public class StaffModeManager {
     }
 
     public boolean isInStaffMode(UUID uuid) {
-        return uuid != null && activeStates.containsKey(uuid);
+        return isEnabled() && uuid != null && activeStates.containsKey(uuid);
     }
 
     public boolean isVanished(UUID uuid) {
@@ -573,17 +574,17 @@ public class StaffModeManager {
     }
 
     public String getLocalServerDisplayName() {
-        return plugin.getConfigManager().getNetwork().getString("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "Local");
+        return plugin.getConfigManager().getNetwork().getString("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "ʟᴏᴄᴀʟ");
     }
 
     public String getPlayerStatusSummary(Player player) {
         if (player == null) {
-            return "Offline";
+            return "ᴏꜰꜰʟɪɴᴇ";
         }
         if (plugin.getAFKManager().isAfk(player.getUniqueId())) {
-            return "Online (AFK)";
+            return "ᴏɴʟɪɴᴇ (ᴀꜰᴋ)";
         }
-        return "Online";
+        return "ᴏɴʟɪɴᴇ";
     }
 
     public int getMenuRefreshSlot(String menuKey) {

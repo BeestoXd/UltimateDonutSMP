@@ -2,7 +2,8 @@ package com.bx.ultimateDonutSmp.utils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
-import net.kyori.adventure.text.Component;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 
 public final class PlayerSettingUtils {
@@ -17,15 +18,15 @@ public final class PlayerSettingUtils {
 
     public static void sendActionBar(UltimateDonutSmp plugin, Player player, String text) {
         if (!hotbarMessagesEnabled(plugin, player)) return;
-        player.sendActionBar(ColorUtils.toComponent(text, player));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, ColorUtils.toBaseComponents(text, player));
     }
 
-    public static void sendActionBar(UltimateDonutSmp plugin, Player player, Component component) {
+    public static void sendActionBar(UltimateDonutSmp plugin, Player player, BaseComponent... component) {
         if (!hotbarMessagesEnabled(plugin, player)) return;
-        player.sendActionBar(component);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
     }
 
     public static void clearActionBar(Player player) {
-        player.sendActionBar(Component.empty());
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, ColorUtils.toBaseComponents(""));
     }
 }

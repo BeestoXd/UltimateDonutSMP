@@ -4,13 +4,11 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Locale;
 import java.util.UUID;
 
 public class PlaytimeCommand implements CommandExecutor {
@@ -36,21 +34,21 @@ public class PlaytimeCommand implements CommandExecutor {
                 return true;
             }
             target = player;
-            requestedName = player.getName();
+            requestedName = plugin.getHideManager().publicName(player);
         } else {
             requestedName = args[0];
-            target = findOnlinePlayer(requestedName);
+            target = plugin.getHideManager().findOnlinePlayer(sender, requestedName);
         }
 
-        PlayerData data = resolvePlayerData(target, requestedName);
+        PlayerData data = resolvePlayerData(sender, target, requestedName);
         if (data == null) {
             sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return true;
         }
 
         String targetName = target != null
-                ? target.getName()
-                : resolveStoredName(data, requestedName);
+                ? plugin.getHideManager().publicName(target)
+                : plugin.getHideManager().publicName(data.getUuid(), resolveStoredName(data, requestedName));
         long seconds = target != null
                 ? data.getTotalPlaytimeSeconds()
                 : data.getPlaytimeSeconds();
@@ -80,13 +78,13 @@ public class PlaytimeCommand implements CommandExecutor {
         return true;
     }
 
-    private PlayerData resolvePlayerData(Player target, String requestedName) {
+    private PlayerData resolvePlayerData(CommandSender viewer, Player target, String requestedName) {
         if (target != null) {
             PlayerData cached = plugin.getPlayerDataManager().get(target);
             return cached != null ? cached : plugin.getDatabaseManager().loadPlayer(target.getUniqueId());
         }
 
-        UUID uuid = plugin.getDatabaseManager().findPlayerUuidByUsername(requestedName);
+        UUID uuid = plugin.getHideManager().findKnownPlayerUuid(viewer, requestedName);
         return uuid == null ? null : plugin.getDatabaseManager().loadPlayer(uuid);
     }
 
@@ -114,22 +112,4 @@ public class PlaytimeCommand implements CommandExecutor {
         return "server";
     }
 
-    private Player findOnlinePlayer(String input) {
-        if (input == null || input.isBlank()) {
-            return null;
-        }
-
-        Player exact = Bukkit.getPlayerExact(input);
-        if (exact != null) {
-            return exact;
-        }
-
-        String expected = input.toLowerCase(Locale.ROOT);
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getName().toLowerCase(Locale.ROOT).equals(expected)) {
-                return player;
-            }
-        }
-        return null;
-    }
 }

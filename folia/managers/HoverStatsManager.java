@@ -5,11 +5,10 @@ import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import org.bukkit.configuration.ConfigurationSection;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -20,9 +19,6 @@ import java.util.Map;
 public class HoverStatsManager {
 
     private static final String DEFAULT_CHAT_FORMAT = "&f%prefix%%player%&7: &f%message%";
-    private static final String NAME_TOKEN = "__UDS_HOVER_NAME__";
-    private static final String SENDER_TOKEN = "__UDS_HOVER_SENDER__";
-    private static final String MESSAGE_TOKEN = "__UDS_HOVER_MESSAGE__";
 
     private final UltimateDonutSmp plugin;
 
@@ -34,28 +30,20 @@ public class HoverStatsManager {
         return plugin.getChatManager().isClickableNameEnabled();
     }
 
-    public Component buildChatComponent(Player speaker, String prefix, String rawMessage, String chatFormat) {
+    public BaseComponent[] buildChatComponent(Player speaker, String prefix, String rawMessage, String chatFormat) {
         String format = (chatFormat == null || chatFormat.isBlank()) ? DEFAULT_CHAT_FORMAT : chatFormat;
         format = format.replace("%nick%", "%player%").replace("<nick>", "%player%");
-        String displayName = resolveDisplayName(speaker);
-        HoverEvent<Component> hover = buildHover(speaker, prefix);
-        ClickEvent click = buildClick(speaker);
-        Component messageComponent = buildMessageComponent(speaker, rawMessage);
 
+        String displayName = resolveDisplayName(speaker);
         String resolvedFormat = format.replace("%prefix%", prefix == null ? "" : prefix);
         int playerIndex = resolvedFormat.indexOf("%player%");
         int messageIndex = resolvedFormat.indexOf("%message%");
 
         if (playerIndex < 0 || messageIndex < 0 || playerIndex > messageIndex) {
-            String legacyTemplate = resolvedFormat
+            String fallback = resolvedFormat
                     .replace("%player%", displayName)
-                    .replace("%message%", MESSAGE_TOKEN);
-            Component component = ColorUtils.toComponent(legacyTemplate);
-            component = replaceMessageToken(component, messageComponent);
-            if (isEnabled()) {
-                component = applyEvents(component, hover, click);
-            }
-            return component;
+                    .replace("%message%", rawMessage == null ? "" : rawMessage);
+            return ColorUtils.toBaseComponents(fallback, speaker);
         }
 
         String beforePlayer = resolvedFormat.substring(0, playerIndex);
@@ -63,46 +51,30 @@ public class HoverStatsManager {
         String afterMessage = resolvedFormat.substring(messageIndex + "%message%".length())
                 .replace("%player%", displayName);
 
-        if (!isEnabled()) {
-            String template = beforePlayer + displayName + betweenPlayerAndMessage + MESSAGE_TOKEN + afterMessage;
-            return replaceMessageToken(ColorUtils.toComponent(template), messageComponent);
-        }
+        TextComponent root = new TextComponent();
+        HoverEvent hover = isEnabled() ? buildHover(speaker, prefix) : null;
+        ClickEvent click = isEnabled() ? buildClick(speaker) : null;
 
-        String applyTo = resolveApplyTo();
-
-        Component component;
-        if ("SENDER".equalsIgnoreCase(applyTo)) {
-            String template = SENDER_TOKEN + betweenPlayerAndMessage + MESSAGE_TOKEN + afterMessage;
-            component = ColorUtils.toComponent(template);
-
-            String senderText = beforePlayer + displayName;
-            Component senderComponent = applyEvents(ColorUtils.toComponent(senderText), hover, click);
-
-            component = component.replaceText(TextReplacementConfig.builder()
-                    .matchLiteral(SENDER_TOKEN)
-                    .replacement(senderComponent)
-                    .build());
+        if (isEnabled() && "SENDER".equalsIgnoreCase(resolveApplyTo())) {
+            TextComponent senderComponent = ColorUtils.toBaseComponent(beforePlayer + displayName, speaker);
+            applyEvents(senderComponent, hover, click);
+            root.addExtra(senderComponent);
         } else {
-            String template = beforePlayer + NAME_TOKEN + betweenPlayerAndMessage + MESSAGE_TOKEN + afterMessage;
-            component = ColorUtils.toComponent(template);
-            Component nameComponent = ColorUtils.toComponent(displayName);
-            if (hover != null) {
-                nameComponent = nameComponent.hoverEvent(hover);
+            append(root, ColorUtils.toBaseComponents(beforePlayer, speaker));
+            TextComponent nameComponent = ColorUtils.toBaseComponent(displayName, speaker);
+            if (isEnabled()) {
+                applyEvents(nameComponent, hover, click);
             }
-            if (click != null) {
-                nameComponent = nameComponent.clickEvent(click);
-            }
-
-            component = component.replaceText(TextReplacementConfig.builder()
-                    .matchLiteral(NAME_TOKEN)
-                    .replacement(nameComponent)
-                    .build());
+            root.addExtra(nameComponent);
         }
 
-        return replaceMessageToken(component, messageComponent);
+        append(root, ColorUtils.toBaseComponents(betweenPlayerAndMessage, speaker));
+        append(root, buildMessageComponent(speaker, rawMessage));
+        append(root, ColorUtils.toBaseComponents(afterMessage, speaker));
+        return new BaseComponent[]{root};
     }
 
-    public HoverEvent<Component> buildHover(Player speaker, String prefix) {
+    public HoverEvent buildHover(Player speaker, String prefix) {
         List<String> hoverLines = getHoverLines();
         if (hoverLines.isEmpty()) {
             return null;
@@ -121,9 +93,9 @@ public class HoverStatsManager {
             if (!hoverText.isEmpty()) {
                 hoverText.append("\n");
             }
-            hoverText.append(ColorUtils.colorize(replacePlaceholders(line, placeholders), speaker));
+            hoverText.append(replacePlaceholders(line, placeholders));
         }
-        return HoverEvent.showText(ColorUtils.toComponent(hoverText.toString()));
+        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, ColorUtils.toBaseComponents(hoverText.toString(), speaker));
     }
 
     public ClickEvent buildClick(Player speaker) {
@@ -132,8 +104,8 @@ public class HoverStatsManager {
             return null;
         }
         return clickAction.type() == ChatManager.ClickActionType.SUGGEST_COMMAND
-                ? ClickEvent.suggestCommand(clickAction.command())
-                : ClickEvent.runCommand(clickAction.command());
+                ? new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, clickAction.command())
+                : new ClickEvent(ClickEvent.Action.RUN_COMMAND, clickAction.command());
     }
 
     private List<String> getHoverLines() {
@@ -145,11 +117,11 @@ public class HoverStatsManager {
         return List.of(
                 "%prefix%%player%",
                 "&7&m----------",
-                "&aᴍᴏɴᴇʏ: &f%money%",
+                "{money_color}{money_name_plural}: &f%money_formatted%",
                 "&cᴋɪʟʟѕ: &f%kills%",
                 "&eᴘʟᴀʏᴛɪᴍᴇ: &f%playtime%",
                 "&6ᴅᴇᴀᴛʜѕ: &f%deaths%",
-                "&dѕʜᴀʀᴅѕ: &f%shards%",
+                "{shards_color}{shards_name_plural}: &f%shards_formatted%",
                 "&7&m----------",
                 "&7ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕᴛᴀᴛѕ"
         );
@@ -168,19 +140,39 @@ public class HoverStatsManager {
         placeholders.put("%prefix%", prefix == null ? "" : prefix);
         placeholders.put("%luckperms_prefix%", prefix == null ? "" : prefix);
         placeholders.put("%team%", teamName);
-        placeholders.put("%money%", data != null ? NumberUtils.formatNice(data.getMoney()) : "0");
+        double money = data != null ? data.getMoney() : 0D;
+        long shards = data != null ? data.getShards() : 0L;
+        placeholders.put("%money%", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, money));
         placeholders.put("%money_raw%", data != null ? NumberUtils.format(data.getMoney()) : "0");
+        placeholders.put("%money_formatted%", plugin.getCurrencyManager().formatMoneyCompact(money));
+        placeholders.put("{money_color}", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY));
+        placeholders.put("{money_symbol}", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY));
+        placeholders.put("{money_name}", plugin.getCurrencyManager().name(CurrencyManager.CurrencyType.MONEY, money));
+        placeholders.put("{money_name_plural}", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.MONEY));
         placeholders.put("%kills%", String.valueOf(data != null ? data.getKills() : 0));
         placeholders.put("%deaths%", String.valueOf(data != null ? data.getDeaths() : 0));
         placeholders.put("%playtime%", data != null ? NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds()) : "0s");
-        placeholders.put("%shards%", String.valueOf(data != null ? data.getShards() : 0));
+        placeholders.put("%shards%", String.valueOf(shards));
+        placeholders.put("%shards_formatted%", plugin.getCurrencyManager().formatShards(shards));
+        placeholders.put("{shards_color}", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.SHARDS));
+        placeholders.put("{shards_symbol}", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS));
+        placeholders.put("{shards_name}", plugin.getCurrencyManager().name(CurrencyManager.CurrencyType.SHARDS, shards));
+        placeholders.put("{shards_name_plural}", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS));
         placeholders.put("%blocks_placed%", String.valueOf(data != null ? data.getBlocksPlaced() : 0));
         placeholders.put("%blocks_broken%", String.valueOf(data != null ? data.getBlocksBroken() : 0));
         placeholders.put("%mobs_killed%", String.valueOf(data != null ? data.getMobsKilled() : 0));
         placeholders.put("%killstreak%", String.valueOf(data != null ? data.getKillStreak() : 0));
         placeholders.put("%highest_killstreak%", String.valueOf(data != null ? data.getHighestKillStreak() : 0));
-        placeholders.put("%money_made%", data != null ? NumberUtils.formatNice(data.getMoneyMade()) : "0");
-        placeholders.put("%money_spent%", data != null ? NumberUtils.formatNice(data.getMoneySpent()) : "0");
+        placeholders.put("%money_made%", plugin.getCurrencyManager().formatCompactAmount(
+                CurrencyManager.CurrencyType.MONEY,
+                data != null ? data.getMoneyMade() : 0D
+        ));
+        placeholders.put("%money_made_formatted%", plugin.getCurrencyManager().formatMoneyCompact(data != null ? data.getMoneyMade() : 0D));
+        placeholders.put("%money_spent%", plugin.getCurrencyManager().formatCompactAmount(
+                CurrencyManager.CurrencyType.MONEY,
+                data != null ? data.getMoneySpent() : 0D
+        ));
+        placeholders.put("%money_spent_formatted%", plugin.getCurrencyManager().formatMoneyCompact(data != null ? data.getMoneySpent() : 0D));
         return placeholders;
     }
 
@@ -193,6 +185,9 @@ public class HoverStatsManager {
     }
 
     private String resolveDisplayName(Player player) {
+        if (plugin.getHideManager() != null && plugin.getHideManager().isHidden(player.getUniqueId())) {
+            return plugin.getHideManager().publicName(player);
+        }
         if (!ColorUtils.hasPAPI()) {
             return player.getName();
         }
@@ -209,21 +204,13 @@ public class HoverStatsManager {
         }
     }
 
-    private Component replaceMessageToken(Component component, Component messageComponent) {
-        return component.replaceText(TextReplacementConfig.builder()
-                .matchLiteral(MESSAGE_TOKEN)
-                .replacement(messageComponent)
-                .build());
-    }
-
-    private Component applyEvents(Component component, HoverEvent<Component> hover, ClickEvent click) {
+    private void applyEvents(TextComponent component, HoverEvent hover, ClickEvent click) {
         if (hover != null) {
-            component = component.hoverEvent(hover);
+            component.setHoverEvent(hover);
         }
         if (click != null) {
-            component = component.clickEvent(click);
+            component.setClickEvent(click);
         }
-        return component;
     }
 
     private String resolveApplyTo() {
@@ -234,10 +221,10 @@ public class HoverStatsManager {
         return config.getString("CHAT-FORMAT.HOVER-STATS.APPLY-TO", "NAME");
     }
 
-    private Component buildMessageComponent(Player speaker, String rawMessage) {
+    private BaseComponent[] buildMessageComponent(Player speaker, String rawMessage) {
         String messageColor = plugin.getChatManager().resolveMessageColor(speaker);
-        Component probe = ColorUtils.toComponent((messageColor == null || messageColor.isBlank() ? "&f" : messageColor) + "x");
-        return Component.text(rawMessage == null ? "" : rawMessage).style(probe.style());
+        String prefix = messageColor == null || messageColor.isBlank() ? "&f" : messageColor;
+        return TextComponent.fromLegacyText(ColorUtils.colorize(prefix) + (rawMessage == null ? "" : rawMessage));
     }
 
     private String resolvePrefix(Player player, String fallbackPrefix) {
@@ -257,6 +244,12 @@ public class HoverStatsManager {
             return prefix;
         } catch (Exception ignored) {
             return "";
+        }
+    }
+
+    private void append(TextComponent root, BaseComponent[] components) {
+        for (BaseComponent component : components) {
+            root.addExtra(component);
         }
     }
 }

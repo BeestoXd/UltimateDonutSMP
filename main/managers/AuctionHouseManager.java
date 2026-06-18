@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.models.AuctionClaim;
 import com.bx.ultimateDonutSmp.models.AuctionListing;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.models.PlayerPreference;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -35,6 +36,8 @@ import java.util.logging.Level;
 
 public class AuctionHouseManager {
 
+    private static final int MAX_PERMISSION_VALUE = 100;
+
     public enum AuctionSort {
         NEWEST,
         OLDEST,
@@ -60,6 +63,7 @@ public class AuctionHouseManager {
         NO_PLAYER_DATA,
         NO_ITEM,
         INVALID_ITEM,
+        UNSAFE_ITEM,
         INVALID_PRICE,
         NO_MONEY,
         MAX_LISTINGS_REACHED,
@@ -99,8 +103,13 @@ public class AuctionHouseManager {
             boolean success,
             CreateFailureReason reason,
             AuctionListing listing,
-            double listingFee
-    ) {}
+            double listingFee,
+            CrashProtectionManager.ValidationResult safetyResult
+    ) {
+        public CreateListingResult(boolean success, CreateFailureReason reason, AuctionListing listing, double listingFee) {
+            this(success, reason, listing, listingFee, null);
+        }
+    }
 
     public record PurchaseListingResult(
             boolean success,
@@ -123,6 +132,10 @@ public class AuctionHouseManager {
     private final UltimateDonutSmp plugin;
     private final Set<UUID> activeTransactions = new HashSet<>();
     private final java.util.Map<UUID, Long> lastClickTimes = new java.util.HashMap<>();
+    private final java.util.Map<UUID, PlayerPreference> preferenceCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Set<UUID> awaitingSearch = new HashSet<>();
+    private final java.util.Map<UUID, String> searchQueries = new java.util.HashMap<>();
+    private final Set<UUID> navigating = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     public AuctionHouseManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -132,6 +145,14 @@ public class AuctionHouseManager {
 
     public void reload() {
         validateConfiguration();
+        preferenceCache.clear();
+        awaitingSearch.clear();
+        searchQueries.clear();
+    }
+
+    public void prepareForServerWipe() {
+        activeTransactions.clear();
+        lastClickTimes.clear();
     }
 
     public boolean isEnabled() {
@@ -191,6 +212,150 @@ public class AuctionHouseManager {
             sorts.addAll(List.of(AuctionSort.NEWEST, AuctionSort.PRICE_LOWEST, AuctionSort.PRICE_HIGHEST));
         }
         return List.copyOf(sorts);
+    }
+
+    public PlayerPreference getPreference(UUID uuid) {
+        return preferenceCache.computeIfAbsent(uuid, k -> loadPreference(k));
+    }
+
+    public synchronized PlayerPreference loadPreference(UUID uuid) {
+        try (PreparedStatement ps = connection().prepareStatement(
+                "SELECT * FROM player_auction_preferences WHERE player_uuid = ? LIMIT 1")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new PlayerPreference(
+                            uuid,
+                            rs.getInt("fast_buy_enabled") == 1,
+                            rs.getInt("fast_sell_enabled") == 1,
+                            rs.getInt("last_duration_hours"),
+                            rs.getString("last_category"),
+                            rs.getDouble("last_price")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to load player preferences for " + uuid, e);
+        }
+        return new PlayerPreference(uuid);
+    }
+
+    public synchronized void savePreference(PlayerPreference pref) {
+        preferenceCache.put(pref.playerId(), pref);
+        plugin.getSpigotScheduler().runAsync(() -> {
+            try (PreparedStatement ps = connection().prepareStatement(
+                    "REPLACE INTO player_auction_preferences (player_uuid, fast_buy_enabled, fast_sell_enabled, last_duration_hours, last_category, last_price) " +
+                    "VALUES (?,?,?,?,?,?)")) {
+                ps.setString(1, pref.playerId().toString());
+                ps.setInt(2, pref.fastBuyEnabled() ? 1 : 0);
+                ps.setInt(3, pref.fastSellEnabled() ? 1 : 0);
+                ps.setInt(4, pref.lastDurationHours());
+                ps.setString(5, pref.lastCategory());
+                ps.setDouble(6, pref.lastPrice());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to save player preferences for " + pref.playerId(), e);
+            }
+        });
+    }
+
+    public boolean hasPendingSearchInput(UUID uuid) {
+        return awaitingSearch.contains(uuid);
+    }
+
+    public void beginSearch(Player player) {
+        awaitingSearch.add(player.getUniqueId());
+        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                "AUCTION_HOUSE.SEARCH_PROMPT",
+                "&6&lAuctionHouse &8» &eType an item name in chat to search the auction house."
+        )));
+        player.closeInventory();
+    }
+
+    public void handlePendingSearchInput(Player player, String query) {
+        awaitingSearch.remove(player.getUniqueId());
+        if (query == null || query.isBlank() || query.equalsIgnoreCase("cancel")) {
+            searchQueries.remove(player.getUniqueId());
+        } else {
+            searchQueries.put(player.getUniqueId(), query);
+        }
+        plugin.getSpigotScheduler().runEntity(player, () -> {
+            new com.bx.ultimateDonutSmp.menus.AuctionHouseBrowseMenu(plugin, 1, getDefaultSort()).open(player);
+        });
+    }
+
+    public String getSearchQuery(UUID uuid) {
+        return searchQueries.getOrDefault(uuid, "");
+    }
+
+    public void clearSearchQuery(UUID uuid) {
+        searchQueries.remove(uuid);
+    }
+
+    public void setSearchQuery(UUID uuid, String query) {
+        if (query == null || query.isBlank() || query.equalsIgnoreCase("cancel")) {
+            searchQueries.remove(uuid);
+        } else {
+            searchQueries.put(uuid, query);
+        }
+    }
+
+    public void startNavigating(UUID uuid) {
+        navigating.add(uuid);
+    }
+
+    public boolean stopNavigating(UUID uuid) {
+        return navigating.remove(uuid);
+    }
+
+    public List<AuctionListing> getActiveListings(AuctionSort sort, String categoryFilter, String searchQuery) {
+        List<AuctionListing> listings = getActiveListings(sort);
+        if (categoryFilter != null && !categoryFilter.equalsIgnoreCase("ALL")) {
+            listings.removeIf(listing -> !matchesCategory(listing, categoryFilter));
+        }
+        if (searchQuery != null && !searchQuery.isBlank()) {
+            String cleanQuery = searchQuery.toLowerCase().trim();
+            listings.removeIf(listing -> {
+                String displayName = describeItem(listing.item()).toLowerCase();
+                String typeName = listing.item().getType().name().toLowerCase().replace('_', ' ');
+                return !displayName.contains(cleanQuery) && !typeName.contains(cleanQuery);
+            });
+        }
+        return listings;
+    }
+
+    private boolean matchesCategory(AuctionListing listing, String category) {
+        Material type = listing.item().getType();
+        String name = type.name();
+
+        return switch (category.toUpperCase(Locale.US)) {
+            case "ALL" -> true;
+            case "BLOCKS" -> type.isBlock();
+            case "TOOLS" -> name.endsWith("_AXE") || name.endsWith("_PICKAXE") || name.endsWith("_SHOVEL")
+                    || name.endsWith("_HOE") || type == Material.SHEARS || type == Material.FLINT_AND_STEEL
+                    || type == Material.FISHING_ROD;
+            case "FOOD" -> type.isEdible();
+            case "COMBAT" -> name.endsWith("_SWORD") || name.endsWith("_AXE") || name.endsWith("_HELMET")
+                    || name.endsWith("_CHESTPLATE") || name.endsWith("_LEGGINGS") || name.endsWith("_BOOTS")
+                    || name.endsWith("_BOW") || type == Material.CROSSBOW || type == Material.TRIDENT
+                    || type == Material.SHIELD;
+            case "POTIONS" -> type == Material.POTION || type == Material.SPLASH_POTION
+                    || type == Material.LINGERING_POTION || type == Material.TIPPED_ARROW;
+            case "BOOKS" -> type == Material.BOOK || type == Material.WRITABLE_BOOK
+                    || type == Material.WRITTEN_BOOK || type == Material.ENCHANTED_BOOK
+                    || type == Material.KNOWLEDGE_BOOK;
+            case "INGREDIENTS" -> type == Material.BLAZE_POWDER || type == Material.BLAZE_ROD
+                    || type == Material.GUNPOWDER || type == Material.STRING || type == Material.SPIDER_EYE
+                    || type == Material.FERMENTED_SPIDER_EYE || type == Material.GLISTERING_MELON_SLICE
+                    || type == Material.GHAST_TEAR || type == Material.MAGMA_CREAM || type == Material.RABBIT_FOOT
+                    || type == Material.PHANTOM_MEMBRANE || type == Material.SUGAR || type == Material.REDSTONE
+                    || type == Material.GLOWSTONE_DUST || type == Material.NETHER_WART;
+            case "UTILITIES" -> type == Material.ENDER_CHEST || type == Material.CHEST || type == Material.BARREL
+                    || type == Material.SHULKER_BOX || name.endsWith("_SHULKER_BOX") || type == Material.ELYTRA
+                    || type == Material.LEAD || type == Material.NAME_TAG || type == Material.COMPASS
+                    || type == Material.RECOVERY_COMPASS || type == Material.CLOCK;
+            default -> false;
+        };
     }
 
     public boolean beginAction(UUID uuid) {
@@ -348,21 +513,29 @@ public class AuctionHouseManager {
         return hours * 60L * 60L * 1000L;
     }
 
-    private int getMaxActiveListings(Player player) {
+    public int getMaxActiveListings(Player player) {
         int defaultValue = Math.max(1, config().getInt("SETTINGS.MAX_ACTIVE_LISTINGS_DEFAULT", 5));
-        ConfigurationSection limitsSection = config().getConfigurationSection("SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION");
-        if (limitsSection == null || player == null) {
+        if (player == null) {
             return defaultValue;
         }
 
-        int resolved = defaultValue;
-        for (String permission : limitsSection.getKeys(false)) {
-            if (!PermissionUtils.has(player, permission)) {
-                continue;
+        int resolvedByPermission = 0;
+        ConfigurationSection limitsSection = config().getConfigurationSection("SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION");
+        if (limitsSection != null) {
+            for (String permission : limitsSection.getKeys(false)) {
+                if (!PermissionUtils.hasExact(player, permission)) {
+                    continue;
+                }
+                resolvedByPermission = Math.max(resolvedByPermission, Math.max(1, limitsSection.getInt(permission, defaultValue)));
             }
-            resolved = Math.max(resolved, limitsSection.getInt(permission, defaultValue));
         }
-        return resolved;
+
+        resolvedByPermission = Math.max(resolvedByPermission, PermissionUtils.resolveHighestExactNumberedPermission(
+                player, "ultimatedonutsmp.auctionhouse.", MAX_PERMISSION_VALUE));
+        resolvedByPermission = Math.max(resolvedByPermission, PermissionUtils.resolveHighestExactNumberedPermission(
+                player, "ultimatedonutsmp.auctionhouse.limit.", MAX_PERMISSION_VALUE));
+
+        return resolvedByPermission > 0 ? resolvedByPermission : defaultValue;
     }
 
     private long getClickCooldownMillis() {
@@ -387,6 +560,10 @@ public class AuctionHouseManager {
     }
 
     public synchronized CreateListingResult createListing(Player seller, double price) {
+        return createListing(seller, price, "ALL", (int) (getListingDurationMillis() / 3600000L));
+    }
+
+    public synchronized CreateListingResult createListing(Player seller, double price, String category, int durationHours) {
         if (!isEnabled()) {
             return new CreateListingResult(false, CreateFailureReason.DISABLED, null, 0D);
         }
@@ -413,6 +590,17 @@ public class AuctionHouseManager {
         if (!isListable(listedItem)) {
             return new CreateListingResult(false, CreateFailureReason.INVALID_ITEM, null, 0D);
         }
+        CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                .validateForStorage(listedItem, CrashProtectionManager.Context.AUCTION_HOUSE);
+        if (!safetyResult.allowed()) {
+            plugin.getCrashProtectionManager().logBlockedItem(
+                    seller.getName() + "/" + seller.getUniqueId(),
+                    listedItem,
+                    CrashProtectionManager.Context.AUCTION_HOUSE,
+                    safetyResult
+            );
+            return new CreateListingResult(false, CreateFailureReason.UNSAFE_ITEM, null, 0D, safetyResult);
+        }
 
         double listingFee = getListingFee();
         if (listingFee > 0 && !plugin.getEconomyManager().has(seller, listingFee)) {
@@ -420,7 +608,7 @@ public class AuctionHouseManager {
         }
 
         long now = System.currentTimeMillis();
-        long expiresAt = now + getListingDurationMillis();
+        long expiresAt = now + ((long) durationHours * 60L * 60L * 1000L);
         double tax = calculateTax(price);
 
         long listingId = insertListing(
@@ -430,7 +618,8 @@ public class AuctionHouseManager {
                 tax,
                 listedItem,
                 now,
-                expiresAt
+                expiresAt,
+                category
         );
         if (listingId <= 0L) {
             return new CreateListingResult(false, CreateFailureReason.DATABASE_ERROR, null, listingFee);
@@ -676,7 +865,7 @@ public class AuctionHouseManager {
         return true;
     }
 
-    private int countActiveListings(UUID sellerUuid) {
+    public int countActiveListings(UUID sellerUuid) {
         try (PreparedStatement ps = connection().prepareStatement(
                 "SELECT COUNT(*) FROM auction_listings WHERE seller_uuid = ? AND status = ? AND expires_at > ?")) {
             ps.setString(1, sellerUuid.toString());
@@ -700,12 +889,13 @@ public class AuctionHouseManager {
             double tax,
             ItemStack item,
             long createdAt,
-            long expiresAt
+            long expiresAt,
+            String category
     ) {
         try (PreparedStatement ps = connection().prepareStatement(
                 "INSERT INTO auction_listings " +
-                        "(seller_uuid, seller_name, buyer_uuid, status, price, tax, item_data, created_at, expires_at, sold_at, cancelled_at, expired_at) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                        "(seller_uuid, seller_name, buyer_uuid, status, price, tax, item_data, created_at, expires_at, sold_at, cancelled_at, expired_at, category) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 Statement.RETURN_GENERATED_KEYS
         )) {
             ps.setString(1, sellerUuid.toString());
@@ -720,6 +910,7 @@ public class AuctionHouseManager {
             ps.setLong(10, 0L);
             ps.setLong(11, 0L);
             ps.setLong(12, 0L);
+            ps.setString(13, category);
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -984,9 +1175,13 @@ public class AuctionHouseManager {
             return;
         }
 
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isTransactionMessageBlocked(buyer.getUniqueId(), seller.getUniqueId())) {
+            return;
+        }
+
         String message = plugin.getConfigManager().getMessage(
                 "AUCTION_HOUSE.ITEM_SOLD",
-                "{buyer}", buyer.getName(),
+                "{buyer}", plugin.getHideManager().publicName(buyer),
                 "{item}", describeItem(listing.item()),
                 "{price}", NumberUtils.format(listing.price()),
                 "{price_formatted}", plugin.getCurrencyManager().formatMoney(listing.price()),
@@ -1012,7 +1207,22 @@ public class AuctionHouseManager {
                       expires_at INTEGER NOT NULL,
                       sold_at INTEGER DEFAULT 0,
                       cancelled_at INTEGER DEFAULT 0,
-                      expired_at INTEGER DEFAULT 0
+                      expired_at INTEGER DEFAULT 0,
+                      category TEXT DEFAULT 'ALL'
+                    )
+                    """);
+            try {
+                plugin.getDatabaseManager().executeSchema(statement, "ALTER TABLE auction_listings ADD COLUMN category TEXT DEFAULT 'ALL'");
+            } catch (Exception ignored) {
+            }
+            plugin.getDatabaseManager().executeSchema(statement, """
+                    CREATE TABLE IF NOT EXISTS player_auction_preferences (
+                      player_uuid TEXT PRIMARY KEY,
+                      fast_buy_enabled INTEGER DEFAULT 0,
+                      fast_sell_enabled INTEGER DEFAULT 0,
+                      last_duration_hours INTEGER DEFAULT 48,
+                      last_category TEXT DEFAULT 'ALL',
+                      last_price REAL DEFAULT 0.0
                     )
                     """);
             plugin.getDatabaseManager().executeSchema(statement, """
@@ -1040,8 +1250,27 @@ public class AuctionHouseManager {
         if (item == null) {
             return null;
         }
+        CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                .validateForStorage(item, CrashProtectionManager.Context.DATABASE_LOAD);
+        if (!safetyResult.allowed()) {
+            plugin.getCrashProtectionManager().logBlockedItem(
+                    "auction listing #" + rs.getLong("id"),
+                    item,
+                    CrashProtectionManager.Context.DATABASE_LOAD,
+                    safetyResult
+            );
+            return null;
+        }
 
         String buyerUuid = rs.getString("buyer_uuid");
+        String category = "ALL";
+        try {
+            category = rs.getString("category");
+            if (category == null) {
+                category = "ALL";
+            }
+        } catch (SQLException ignored) {
+        }
         return new AuctionListing(
                 rs.getLong("id"),
                 UUID.fromString(rs.getString("seller_uuid")),
@@ -1055,16 +1284,34 @@ public class AuctionHouseManager {
                 rs.getLong("expires_at"),
                 rs.getLong("sold_at"),
                 rs.getLong("cancelled_at"),
-                rs.getLong("expired_at")
+                rs.getLong("expired_at"),
+                category
         );
     }
 
     private AuctionClaim mapClaim(ResultSet rs) throws SQLException {
+        AuctionClaim.ClaimType claimType = AuctionClaim.ClaimType.fromDatabase(rs.getString("claim_type"));
         ItemStack item = deserializeItem(rs.getString("item_data"));
+        if (claimType == AuctionClaim.ClaimType.ITEM && item == null) {
+            return null;
+        }
+        if (item != null) {
+            CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                    .validateForStorage(item, CrashProtectionManager.Context.DATABASE_LOAD);
+            if (!safetyResult.allowed()) {
+                plugin.getCrashProtectionManager().logBlockedItem(
+                        "auction claim #" + rs.getLong("id"),
+                        item,
+                        CrashProtectionManager.Context.DATABASE_LOAD,
+                        safetyResult
+                );
+                return null;
+            }
+        }
         return new AuctionClaim(
                 rs.getLong("id"),
                 UUID.fromString(rs.getString("owner_uuid")),
-                AuctionClaim.ClaimType.fromDatabase(rs.getString("claim_type")),
+                claimType,
                 rs.getLong("source_listing_id"),
                 rs.getDouble("money_amount"),
                 item,

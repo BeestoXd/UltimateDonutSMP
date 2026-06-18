@@ -56,7 +56,7 @@ public class EnderChestCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().getMessage(
                             "COMMAND-DISABLED",
-                            "&cᴛʜᴇ /enderchest ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴅɪѕᴀʙʟᴇᴅ."
+                            "&cᴛʜᴇ /enderchest command ɪѕ ᴅɪѕᴀʙʟᴇᴅ."
                     )
             ));
             return true;

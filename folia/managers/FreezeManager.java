@@ -67,7 +67,8 @@ public class FreezeManager {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean("FREEZE.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.FREEZE)
+                && getConfig().getBoolean("FREEZE.ENABLED", true);
     }
 
     public boolean shouldPersistOnQuit() {
@@ -399,7 +400,7 @@ public class FreezeManager {
 
         String status = getConfig().getString(
                 result.active() ? "FREEZE.STATUS_ON" : "FREEZE.STATUS_OFF",
-                result.active() ? "&a&lᴏɴ" : "&c&lᴏꜰꜰ"
+                result.active() ? "&a&lON" : "&c&lOFF"
         );
         String template = getConfig().getString(
                 "FREEZE.MESSAGE",

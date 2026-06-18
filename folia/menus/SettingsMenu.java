@@ -72,7 +72,7 @@ public class SettingsMenu extends BaseMenu {
         switch (key) {
             case "PAY_ALERTS" -> {
                 data.setPayAlertsEnabled(!data.isPayAlertsEnabled());
-                sendToggleMessage(player, "ᴘᴀʏ ᴀʟᴇʀᴛѕ", data.isPayAlertsEnabled());
+                sendToggleMessage(player, "Pay alerts", data.isPayAlertsEnabled());
             }
             case "HOTBAR_MESSAGES" -> {
                 data.setHotbarMessagesEnabled(!data.isHotbarMessagesEnabled());
@@ -101,7 +101,7 @@ public class SettingsMenu extends BaseMenu {
             }
             case "KEY_ALL_NOTIFICATIONS" -> {
                 data.setKeyAllNotificationsEnabled(!data.isKeyAllNotificationsEnabled());
-                sendToggleMessage(player, "ᴋᴇʏ-ᴀʟʟ ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴѕ", data.isKeyAllNotificationsEnabled());
+                sendToggleMessage(player, "Key-All notifications", data.isKeyAllNotificationsEnabled());
             }
             case "DUEL_REQUESTS" -> {
                 data.setDuelRequestsEnabled(!data.isDuelRequestsEnabled());
@@ -138,7 +138,7 @@ public class SettingsMenu extends BaseMenu {
                 if (data.isAutoTpaHereEnabled()) {
                     plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
                 }
-                sendToggleMessage(player, "ᴛᴘᴀ ʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ", data.isAutoTpaHereEnabled());
+                sendToggleMessage(player, "TPA here auto-accept", data.isAutoTpaHereEnabled());
             }
             case "TPA_HERE_REQUESTS" -> {
                 data.setTpaHereRequestsEnabled(!data.isTpaHereRequestsEnabled());
@@ -201,12 +201,12 @@ public class SettingsMenu extends BaseMenu {
             }
             case "TOTEM_PARTICLES" -> {
                 data.setTotemParticlesEnabled(!data.isTotemParticlesEnabled());
-                sendToggleMessage(player, "ᴛᴏᴛᴇᴍ ᴘᴀʀᴛɪᴄʟᴇѕ", data.isTotemParticlesEnabled());
+                sendToggleMessage(player, "Totem particles", data.isTotemParticlesEnabled());
             }
             case "FAST_CRYSTALS" -> {
                 data.setFastCrystalsEnabled(!data.isFastCrystalsEnabled());
                 plugin.getFastCrystalManager().applyCrystalCooldown(player);
-                sendToggleMessage(player, "ꜰᴀѕᴛ ᴄʀʏѕᴛᴀʟѕ", data.isFastCrystalsEnabled());
+                sendToggleMessage(player, "Fast crystals", data.isFastCrystalsEnabled());
             }
             case "NIGHT_VISION" -> toggleNightVision(player);
             default -> {

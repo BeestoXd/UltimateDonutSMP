@@ -1,7 +1,8 @@
 package com.bx.ultimateDonutSmp.utils;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import com.bx.ultimateDonutSmp.managers.LanguageManager;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -28,55 +29,6 @@ public class ColorUtils {
         hasPAPI = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 
-    public static String toSmallCaps(String text) {
-        if (text == null || text.isEmpty()) {
-            return text;
-        }
-
-        StringBuilder builder = new StringBuilder(text.length());
-        for (int i = 0; i < text.length(); i++) {
-            if (text.regionMatches(true, i, "currency", 0, "currency".length())) {
-                builder.append(text, i, i + "currency".length());
-                i += "currency".length() - 1;
-                continue;
-            }
-            builder.append(toSmallCapsChar(text.charAt(i)));
-        }
-        return builder.toString();
-    }
-
-    private static char toSmallCapsChar(char ch) {
-        return switch (Character.toLowerCase(ch)) {
-            case 'a' -> 'ᴀ';
-            case 'b' -> 'ʙ';
-            case 'c' -> 'ᴄ';
-            case 'd' -> 'ᴅ';
-            case 'e' -> 'ᴇ';
-            case 'f' -> 'ꜰ';
-            case 'g' -> 'ɢ';
-            case 'h' -> 'ʜ';
-            case 'i' -> 'ɪ';
-            case 'j' -> 'ᴊ';
-            case 'k' -> 'ᴋ';
-            case 'l' -> 'ʟ';
-            case 'm' -> 'ᴍ';
-            case 'n' -> 'ɴ';
-            case 'o' -> 'ᴏ';
-            case 'p' -> 'ᴘ';
-            case 'q' -> 'ǫ';
-            case 'r' -> 'ʀ';
-            case 's' -> 'ѕ';
-            case 't' -> 'ᴛ';
-            case 'u' -> 'ᴜ';
-            case 'v' -> 'ᴠ';
-            case 'w' -> 'ᴡ';
-            case 'x' -> 'x';
-            case 'y' -> 'ʏ';
-            case 'z' -> 'ᴢ';
-            default -> ch;
-        };
-    }
-
     public static String translateHex(String text) {
         if (text == null) {
             return "";
@@ -96,6 +48,10 @@ public class ColorUtils {
             return "";
         }
 
+        return applyColors(LanguageManager.translateBuiltInText(text));
+    }
+
+    private static String applyColors(String text) {
         String result = translateTaggedGradients(text);
         result = translateTaggedHex(result);
         return translateHex(result).replace('&', SECTION_CHAR);
@@ -106,14 +62,14 @@ public class ColorUtils {
             return "";
         }
 
-        String result = text;
+        String result = LanguageManager.translateBuiltInText(text);
         if (hasPAPI && player != null) {
             try {
                 result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, result);
             } catch (Exception ignored) {
             }
         }
-        return colorize(result);
+        return applyColors(result);
     }
 
     public static String colorizeOffline(String text, OfflinePlayer player) {
@@ -121,32 +77,60 @@ public class ColorUtils {
             return "";
         }
 
-        String result = text;
+        String result = LanguageManager.translateBuiltInText(text);
         if (hasPAPI && player != null) {
             try {
                 result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, result);
             } catch (Exception ignored) {
             }
         }
-        return colorize(result);
+        return applyColors(result);
     }
 
-    public static Component toComponent(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(colorize(text));
+    public static String toComponent(String text) {
+        return colorize(text);
     }
 
-    public static Component toComponent(String text, Player player) {
-        return LegacyComponentSerializer.legacySection().deserialize(colorize(text, player));
+    public static String toComponent(String text, Player player) {
+        return colorize(text, player);
     }
 
-    public static String toLegacyString(Component component) {
-        return component == null ? "" : LegacyComponentSerializer.legacySection().serialize(component);
+    public static String toLegacyString(String component) {
+        return component == null ? "" : component;
     }
 
-    public static List<Component> toComponentList(List<String> lines) {
-        List<Component> list = new ArrayList<>();
+    public static List<String> toComponentList(List<String> lines) {
+        return colorizeList(lines);
+    }
+
+    public static BaseComponent[] toBaseComponents(String text) {
+        return TextComponent.fromLegacyText(colorize(text));
+    }
+
+    public static BaseComponent[] toBaseComponents(String text, Player player) {
+        return TextComponent.fromLegacyText(colorize(text, player));
+    }
+
+    public static TextComponent toBaseComponent(String text) {
+        TextComponent component = new TextComponent();
+        for (BaseComponent part : toBaseComponents(text)) {
+            component.addExtra(part);
+        }
+        return component;
+    }
+
+    public static TextComponent toBaseComponent(String text, Player player) {
+        TextComponent component = new TextComponent();
+        for (BaseComponent part : toBaseComponents(text, player)) {
+            component.addExtra(part);
+        }
+        return component;
+    }
+
+    public static List<String> toComponentList(List<String> lines, Player player) {
+        List<String> list = new ArrayList<>();
         for (String line : lines) {
-            list.add(toComponent(line));
+            list.add(toComponent(line, player));
         }
         return list;
     }
@@ -173,6 +157,7 @@ public class ColorUtils {
         }
 
         return text.replaceAll("&#[A-Fa-f0-9]{6}", "")
+                .replaceAll("(?i)\\u00A7x(?:\\u00A7[0-9A-F]){6}", "")
                 .replaceAll("[\\u00A7&][0-9A-FK-ORa-fk-or]", "");
     }
 

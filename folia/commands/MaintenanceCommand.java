@@ -61,7 +61,7 @@ public class MaintenanceCommand implements CommandExecutor, TabCompleter {
                 String lobby = mm.getLobbyServer();
                 sender.sendMessage(ColorUtils.toComponent("&d&lᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕᴛᴀᴛᴜѕ:"));
                 sender.sendMessage(ColorUtils.toComponent("  &fᴀᴄᴛɪᴠᴇ: " + (active ? "&aʏᴇѕ" : "&cɴᴏ")));
-                sender.sendMessage(ColorUtils.toComponent("  &fʟᴏʙʙʏ ѕᴇʀᴠᴇ r: &b" + lobby));
+                sender.sendMessage(ColorUtils.toComponent("  &fʟᴏʙʙʏ ѕᴇʀᴠᴇʀ: &b" + lobby));
             }
             case "setlobby" -> {
                 if (args.length < 2) {

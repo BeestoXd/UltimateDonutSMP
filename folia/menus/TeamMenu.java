@@ -195,7 +195,7 @@ public class TeamMenu extends BaseMenu {
         lore.add((online
                 ? menus().getString(MENU_PATH + ".PLAYER-BUTTON.ONLINE-SYMBOL", "&a■")
                 : menus().getString(MENU_PATH + ".PLAYER-BUTTON.OFFLINE-SYMBOL", "&4■"))
-                + "&7 " + (online ? "Online" : "Offline"));
+                + "&7 " + (online ? "ᴏɴʟɪɴᴇ" : "ᴏꜰꜰʟɪɴᴇ"));
         if (team.isLeader(memberUuid)) {
             lore.add("&6ʟᴇᴀᴅᴇʀ");
         }
@@ -212,11 +212,11 @@ public class TeamMenu extends BaseMenu {
         String path = MENU_PATH + ".SEARCH-BUTTON";
         List<String> lore = new ArrayList<>(menus().getStringList(path + ".LORE"));
         if (searchQuery == null || searchQuery.isBlank()) {
-            lore.removeIf(line -> line.toLowerCase().contains("ɪɴ ᴅᴇᴠᴇʟᴏᴘᴍᴇɴᴛ"));
+            lore.removeIf(line -> line.toLowerCase().contains("in development"));
             lore.add("&7ᴄᴜʀʀᴇɴᴛ: &fɴᴏɴᴇ");
             lore.add("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛʏᴘᴇ ᴀ ѕᴇᴀʀᴄʜ.");
         } else {
-            lore.removeIf(line -> line.toLowerCase().contains("ɪɴ ᴅᴇᴠᴇʟᴏᴘᴍᴇɴᴛ"));
+            lore.removeIf(line -> line.toLowerCase().contains("in development"));
             lore.add("&7ᴄᴜʀʀᴇɴᴛ: &f" + searchQuery);
             lore.add("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ ѕᴇᴀʀᴄʜ.");
             lore.add("&7ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴇᴀʀ ѕᴇᴀʀᴄʜ.");
@@ -282,8 +282,8 @@ public class TeamMenu extends BaseMenu {
         if (page > 0) {
             set(47, ItemUtils.createItem(
                     material,
-                    menus.getString(globalPath + ".BACK-BUTTON", "&aʙᴀᴄᴋ"),
-                    menus.getStringList(globalPath + ".BACK-LORE")
+                    menus.getString(globalPath + ".ʙᴀᴄᴋ-ʙᴜᴛᴛᴏɴ", "&aʙᴀᴄᴋ"),
+                    menus.getStringList(globalPath + ".ʙᴀᴄᴋ-ʟᴏʀᴇ")
             ));
         }
 
@@ -297,19 +297,19 @@ public class TeamMenu extends BaseMenu {
         if (page < totalPages - 1) {
             set(51, ItemUtils.createItem(
                     material,
-                    menus.getString(globalPath + ".NEXT-BUTTON", "&aɴᴇxᴛ"),
-                    menus.getStringList(globalPath + ".NEXT-LORE")
+                    menus.getString(globalPath + ".ɴᴇxᴛ-ʙᴜᴛᴛᴏɴ", "&aɴᴇxᴛ"),
+                    menus.getStringList(globalPath + ".ɴᴇxᴛ-ʟᴏʀᴇ")
             ));
         }
     }
 
     private void renderHomeButton(Player player, Team team) {
-        String path = MENU_PATH + ".HOME-BUTTON";
+        String path = MENU_PATH + ".ʜᴏᴍᴇ-ʙᴜᴛᴛᴏɴ";
         String loreLine;
         if (!plugin.getTeamManager().canVisitHome(team, player.getUniqueId())) {
             loreLine = plugin.getConfigManager().getMessage("TEAM.NO-VISIT-HOME-PERMISSION");
         } else if (team.hasHome()) {
-            loreLine = menus().getString(path + ".HOME-LORE", "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ");
+            loreLine = menus().getString(path + ".ʜᴏᴍᴇ-ʟᴏʀᴇ", "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ");
         } else {
             loreLine = menus().getString(path + ".NO-HOME-LORE", "&fѕᴇᴛ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ ᴡɪᴛʜ /home");
         }
@@ -327,8 +327,8 @@ public class TeamMenu extends BaseMenu {
     private void renderPvpButton(Team team) {
         String path = MENU_PATH + ".PVP-BUTTON";
         String state = team.isFriendlyFireEnabled()
-                ? menus().getString(path + ".ON-STATE", "&a&lᴏɴ")
-                : menus().getString(path + ".OFF-STATE", "&c&lᴏꜰꜰ");
+                ? menus().getString(path + ".ON-STATE", "&a&lON")
+                : menus().getString(path + ".OFF-STATE", "&c&lOFF");
 
         set(
                 menus().getInt(path + ".SLOT", 53),
@@ -429,7 +429,7 @@ public class TeamMenu extends BaseMenu {
                         });
             }
         },
-        ALPHABETICAL("Alphabetical") {
+        ALPHABETICAL("ᴀʟᴘʜᴀʙᴇᴛɪᴄᴀʟ") {
             @Override
             Comparator<UUID> comparator(Team team) {
                 return Comparator.comparing(uuid -> {

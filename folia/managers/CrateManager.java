@@ -7,11 +7,11 @@ import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.block.Block;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -34,8 +34,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 public class CrateManager {
-
-    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
 
     private final UltimateDonutSmp plugin;
     private final Map<String, CrateDefinition> crates = new LinkedHashMap<>();
@@ -87,30 +85,30 @@ public class CrateManager {
     public ActionResult createCrate(String crateId) {
         String normalized = normalizeCrateId(crateId);
         if (normalized == null || !normalized.matches("[a-z0-9_-]+")) {
-            return new ActionResult(false, "&cᴄʀᴀᴛᴇ ɪᴅ ᴍᴀʏ ᴏɴʟʏ ᴄᴏɴᴛᴀɪɴ ʟᴏᴡᴇʀᴄᴀѕᴇ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, '-' ᴀɴᴅ '_'.");
+            return new ActionResult(false, "&cᴄʀᴀᴛᴇ ID ᴍᴀʏ ᴏɴʟʏ ᴄᴏɴᴛᴀɪɴ ʟᴏᴡᴇʀᴄᴀѕᴇ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, '-' ᴀɴᴅ '_'.");
         }
         if (crates.containsKey(normalized)) {
-            return new ActionResult(false, "&cᴀ ᴄʀᴀᴛᴇ ᴡɪᴛʜ ɪᴅ '&f" + normalized + "&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.");
+            return new ActionResult(false, "&cᴀ ᴄʀᴀᴛᴇ ᴡɪᴛʜ ID '&f" + normalized + "&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.");
         }
 
         FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
         String path = "CRATES." + normalized;
         cratesConfig.set(path + ".ENABLED", true);
         cratesConfig.set(path + ".DISPLAY.MATERIAL", Material.CHEST.name());
-        cratesConfig.set(path + ".DISPLAY.DISPLAY-NAME", "&f" + prettifyId(normalized) + " ᴄʀᴀᴛᴇ");
+        cratesConfig.set(path + ".DISPLAY.DISPLAY-NAME", "&f" + prettifyId(normalized) + " Crate");
         cratesConfig.set(path + ".DISPLAY.LORE", List.of(
                 "&7ᴋᴇʏѕ: &f{keys}",
                 "&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ ᴀɴᴅ ᴄʜᴏᴏѕᴇ 1 ʀᴇᴡᴀʀᴅ."
         ));
         cratesConfig.set(path + ".KEY-ITEM.MATERIAL", Material.TRIPWIRE_HOOK.name());
-        cratesConfig.set(path + ".KEY-ITEM.DISPLAY-NAME", "&f" + prettifyId(normalized) + " ᴋᴇʏ");
+        cratesConfig.set(path + ".KEY-ITEM.DISPLAY-NAME", "&f" + prettifyId(normalized) + " Key");
         cratesConfig.set(path + ".KEY-ITEM.LORE", List.of(
                 "&7ᴏᴘᴇɴѕ ᴛʜᴇ &f" + prettifyId(normalized) + " ᴄʀᴀᴛᴇ&7."
         ));
         cratesConfig.set(path + ".OPEN-TYPE", OpenType.CHOOSE_ONE.name());
         cratesConfig.set(path + ".PERMISSION", "");
         cratesConfig.set(path + ".BROADCAST-ON-CLAIM", false);
-        cratesConfig.set(path + ".MENU.OPEN-TITLE", "&8" + prettifyId(normalized) + " ᴄʀᴀᴛᴇ");
+        cratesConfig.set(path + ".MENU.OPEN-TITLE", "&8" + prettifyId(normalized) + " Crate");
         cratesConfig.set(path + ".MENU.CONFIRM-TITLE", "&8ᴄᴏɴꜰɪʀᴍ ʀᴇᴡᴀʀᴅ");
         cratesConfig.set(path + ".MENU.SIZE", 27);
         cratesConfig.set(path + ".MENU.FILLER", Material.BLACK_STAINED_GLASS_PANE.name());
@@ -121,7 +119,7 @@ public class CrateManager {
         cratesConfig.createSection(path + ".REWARDS");
 
         if (!plugin.getConfigManager().saveCrates()) {
-            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ crates.yml ᴡʜɪʟᴇ ᴄʀᴇᴀᴛɪɴɢ ᴛʜᴀᴛ ᴄʀᴀᴛᴇ.");
+            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ᴡʜɪʟᴇ ᴄʀᴇᴀᴛɪɴɢ ᴛʜᴀᴛ ᴄʀᴀᴛᴇ.");
         }
 
         reload();
@@ -137,7 +135,7 @@ public class CrateManager {
         FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
         cratesConfig.set("CRATES." + crate.id(), null);
         if (!plugin.getConfigManager().saveCrates()) {
-            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ crates.yml ᴡʜɪʟᴇ ᴅᴇʟᴇᴛɪɴɢ ᴛʜᴀᴛ ᴄʀᴀᴛᴇ.");
+            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ᴡʜɪʟᴇ ᴅᴇʟᴇᴛɪɴɢ ᴛʜᴀᴛ ᴄʀᴀᴛᴇ.");
         }
 
         plugin.getDatabaseManager().deleteCrateKeyBalances(crate.id());
@@ -160,7 +158,7 @@ public class CrateManager {
         cratesConfig.set(path + ".OPEN-TYPE", openType.name());
 
         if (!plugin.getConfigManager().saveCrates()) {
-            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ crates.yml ᴡʜɪʟᴇ ᴜᴘᴅᴀᴛɪɴɢ ᴄʀᴀᴛᴇ ᴛʏᴘᴇ.");
+            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ᴡʜɪʟᴇ ᴜᴘᴅᴀᴛɪɴɢ ᴄʀᴀᴛᴇ ᴛʏᴘᴇ.");
         }
 
         reload();
@@ -236,7 +234,7 @@ public class CrateManager {
 
         rewardsSection.set(rewardKey, null);
         if (!plugin.getConfigManager().saveCrates()) {
-            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ crates.yml ᴡʜɪʟᴇ ʀᴇᴍᴏᴠɪɴɢ ᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ.");
+            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ᴡʜɪʟᴇ ʀᴇᴍᴏᴠɪɴɢ ᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ.");
         }
 
         reload();
@@ -247,7 +245,8 @@ public class CrateManager {
         return material == Material.CHEST
                 || material == Material.TRAPPED_CHEST
                 || material == Material.BARREL
-                || material == Material.ENDER_CHEST;
+                || material == Material.ENDER_CHEST
+                || Tag.SHULKER_BOXES.isTagged(material);
     }
 
     public void startPendingBind(UUID uuid, String crateId) {
@@ -466,6 +465,12 @@ public class CrateManager {
         pendingBindCrates.clear();
     }
 
+    public void prepareForServerWipe() {
+        activeSessions.clear();
+        pendingBindCrates.clear();
+        keyBalanceCache.clear();
+    }
+
     public ClaimResult claimSelectedReward(Player player) {
         if (player == null) {
             return new ClaimResult(false, FailureReason.NO_PLAYER_DATA, "&cᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ.", null, null, 0);
@@ -497,6 +502,12 @@ public class CrateManager {
             preparedItem = createGrantItem(player, crate, reward);
             ItemStack rewardItem = preparedItem;
             if (rewardItem == null || rewardItem.getType().isAir()) {
+                return new ClaimResult(false, FailureReason.INVALID_REWARD,
+                        "&cᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴠᴀʟɪᴅ.", crate, reward, getKeyBalance(player, crate.id()));
+            }
+            if (!plugin.getCrashProtectionManager()
+                    .validateOrNotify(player, rewardItem, CrashProtectionManager.Context.CRATES)
+                    .allowed()) {
                 return new ClaimResult(false, FailureReason.INVALID_REWARD,
                         "&cᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴠᴀʟɪᴅ.", crate, reward, getKeyBalance(player, crate.id()));
             }
@@ -537,7 +548,7 @@ public class CrateManager {
 
         clearSession(player.getUniqueId());
         if (shouldBroadcastClaim(crate, reward)) {
-            Bukkit.broadcast(ColorUtils.toComponent(buildClaimBroadcast(player, crate, reward)));
+            Bukkit.broadcastMessage(ColorUtils.toComponent(buildClaimBroadcast(player, crate, reward)));
         }
 
         return new ClaimResult(true, null,
@@ -643,6 +654,13 @@ public class CrateManager {
             return "reward";
         }
 
+        if (reward.grant().type() == GrantType.MONEY) {
+            return ColorUtils.strip(plugin.getCurrencyManager().formatMoney(reward.grant().moneyAmount()));
+        }
+        if (reward.grant().type() == GrantType.SHARDS) {
+            return ColorUtils.strip(plugin.getCurrencyManager().formatShards(reward.grant().shardAmount()));
+        }
+
         String stripped = ColorUtils.strip(reward.display().displayName());
         if (stripped == null || stripped.isBlank()) {
             stripped = ColorUtils.strip(reward.grant().item().displayName());
@@ -660,8 +678,8 @@ public class CrateManager {
 
         var meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(ColorUtils.toComponent(applyPlaceholders(display.displayName(), player, crate, null)));
-            meta.lore(ColorUtils.toComponentList(applyPlaceholders(display.lore(), player, crate, null)));
+            meta.setDisplayName(ColorUtils.toComponent(applyPlaceholders(display.displayName(), player, crate, null)));
+            meta.setLore(ColorUtils.toComponentList(applyPlaceholders(display.lore(), player, crate, null)));
             item.setItemMeta(meta);
         }
         return item;
@@ -671,8 +689,8 @@ public class CrateManager {
         ItemStack item = createDisplayItem(reward.display(), reward.display().amount());
         var meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(ColorUtils.toComponent(applyPlaceholders(reward.display().displayName(), player, crate, reward)));
-            meta.lore(ColorUtils.toComponentList(applyPlaceholders(reward.display().lore(), player, crate, reward)));
+            meta.setDisplayName(ColorUtils.toComponent(applyPlaceholders(reward.display().displayName(), player, crate, reward)));
+            meta.setLore(ColorUtils.toComponentList(applyPlaceholders(reward.display().lore(), player, crate, reward)));
             item.setItemMeta(meta);
         }
         return item;
@@ -700,13 +718,26 @@ public class CrateManager {
         }
 
         int keys = player == null || crate == null ? 0 : getKeyBalance(player, crate.id());
-        return text
+        String result = text
                 .replace("{crate}", crate == null ? "crate" : getReadableCrateName(crate))
                 .replace("{crate_id}", crate == null ? "" : crate.id())
                 .replace("{reward}", reward == null ? "reward" : getReadableRewardName(reward))
                 .replace("{reward_id}", reward == null ? "" : reward.id())
                 .replace("{keys}", String.valueOf(keys))
                 .replace("{player}", player == null ? "" : player.getName());
+
+        if (reward != null) {
+            GrantDefinition grant = reward.grant();
+            result = result
+                    .replace("{money_amount}", NumberUtils.format(grant.moneyAmount()))
+                    .replace("{money_formatted}", plugin.getCurrencyManager().formatMoney(grant.moneyAmount()))
+                    .replace("{money_short_formatted}", plugin.getCurrencyManager().formatMoneyCompact(grant.moneyAmount()))
+                    .replace("{shards_amount}", String.valueOf(grant.shardAmount()))
+                    .replace("{shards_formatted}", plugin.getCurrencyManager().formatShards(grant.shardAmount()))
+                    .replace("{shards_short_formatted}", plugin.getCurrencyManager().formatShardsCompact(grant.shardAmount()));
+        }
+
+        return result;
     }
 
     public List<String> applyPlaceholders(List<String> lines, Player player, CrateDefinition crate, CrateReward reward) {
@@ -907,6 +938,23 @@ public class CrateManager {
             storedItem.setAmount(1);
         }
 
+        CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                .validateForStorage(storedItem, CrashProtectionManager.Context.CRATES);
+        if (!safetyResult.allowed()) {
+            plugin.getCrashProtectionManager().logBlockedItem(
+                    "crate " + crate.id() + " slot " + slot,
+                    storedItem,
+                    CrashProtectionManager.Context.CRATES,
+                    safetyResult
+            );
+            return new ActionResult(false, plugin.getConfigManager().getMessageOrDefault(
+                    "CRASH_PROTECTION.ITEM_BLOCKED",
+                    "&cThat item cannot be used here because its data looks unsafe. &7Context: &f{context}&7. Reason: &f{reason}",
+                    "{context}", CrashProtectionManager.Context.CRATES.displayName(),
+                    "{reason}", safetyResult.reason()
+            ));
+        }
+
         String serializedItemData;
         try {
             serializedItemData = ItemSerializationUtils.serialize(storedItem);
@@ -931,7 +979,7 @@ public class CrateManager {
         writeItemReward(cratesConfig, basePath, slot, storedItem, serializedItemData, amethystDuration);
 
         if (!plugin.getConfigManager().saveCrates()) {
-            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ crates.yml ᴡʜɪʟᴇ ᴜᴘᴅᴀᴛɪɴɢ ᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ.");
+            return new ActionResult(false, "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ᴡʜɪʟᴇ ᴜᴘᴅᴀᴛɪɴɢ ᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ.");
         }
 
         reload();
@@ -984,14 +1032,14 @@ public class CrateManager {
     }
 
     private String serializeDisplayName(ItemMeta meta, Material material) {
-        if (meta == null || meta.displayName() == null) {
+        if (meta == null || !meta.hasDisplayName()) {
             return "&f" + prettifyId(material.name());
         }
-        return serializeComponent(meta.displayName());
+        return serializeComponent(meta.getDisplayName());
     }
 
     private List<String> serializeDisplayLore(ItemMeta meta) {
-        if (meta == null || meta.lore() == null || meta.lore().isEmpty()) {
+        if (meta == null || !meta.hasLore() || meta.getLore() == null || meta.getLore().isEmpty()) {
             return List.of("&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.");
         }
 
@@ -1004,12 +1052,12 @@ public class CrateManager {
     }
 
     private List<String> serializeActualLore(ItemMeta meta) {
-        if (meta == null || meta.lore() == null || meta.lore().isEmpty()) {
+        if (meta == null || !meta.hasLore() || meta.getLore() == null || meta.getLore().isEmpty()) {
             return List.of();
         }
 
         List<String> lore = new ArrayList<>();
-        for (Component component : meta.lore()) {
+        for (String component : meta.getLore()) {
             String serialized = serializeComponent(component);
             if (isPreviewLoreLine(serialized)) {
                 continue;
@@ -1031,11 +1079,11 @@ public class CrateManager {
         return enchantments;
     }
 
-    private String serializeComponent(Component component) {
+    private String serializeComponent(String component) {
         if (component == null) {
             return "";
         }
-        return LEGACY_SERIALIZER.serialize(component).replace('\u00A7', '&');
+        return component.replace('\u00A7', '&');
     }
 
     private void stripPreviewLore(ItemStack item) {
@@ -1044,12 +1092,12 @@ public class CrateManager {
         }
 
         ItemMeta meta = item.getItemMeta();
-        if (meta == null || meta.lore() == null || meta.lore().isEmpty()) {
+        if (meta == null || !meta.hasLore() || meta.getLore() == null || meta.getLore().isEmpty()) {
             return;
         }
 
-        List<Component> filteredLore = new ArrayList<>();
-        for (Component component : meta.lore()) {
+        List<String> filteredLore = new ArrayList<>();
+        for (String component : meta.getLore()) {
             if (component == null) {
                 continue;
             }
@@ -1060,13 +1108,13 @@ public class CrateManager {
             filteredLore.add(component);
         }
 
-        meta.lore(filteredLore.isEmpty() ? null : filteredLore);
+        meta.setLore(filteredLore.isEmpty() ? null : filteredLore);
         item.setItemMeta(meta);
     }
 
     private boolean isPreviewLoreLine(String line) {
         String stripped = ColorUtils.strip(line).trim();
-        if (stripped.regionMatches(true, 0, "Worth:", 0, "Worth:".length())) {
+        if (stripped.regionMatches(true, 0, "ᴡᴏʀᴛʜ:", 0, "Worth:".length())) {
             return false;
         }
         return stripped.equalsIgnoreCase("Choose this reward.");
@@ -1220,7 +1268,11 @@ public class CrateManager {
             );
             case MONEY -> new GrantDefinition(
                     type,
-                    new DisplayItem(Material.SUNFLOWER, "&eᴍᴏɴᴇʏ ʀᴇᴡᴀʀᴅ", List.of(), 1, List.of()),
+                    new DisplayItem(Material.SUNFLOWER,
+                            plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY)
+                                    + plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY)
+                                    + " Reward",
+                            List.of(), 1, List.of()),
                     section.getDouble("AMOUNT", 0D),
                     0L,
                     List.of(),
@@ -1230,7 +1282,11 @@ public class CrateManager {
             );
             case SHARDS -> new GrantDefinition(
                     type,
-                    new DisplayItem(Material.AMETHYST_SHARD, "&#A303F9ѕʜᴀʀᴅ ʀᴇᴡᴀʀᴅ", List.of(), 1, List.of()),
+                    new DisplayItem(Material.AMETHYST_SHARD,
+                            plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.SHARDS)
+                                    + plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.SHARDS)
+                                    + " Reward",
+                            List.of(), 1, List.of()),
                     0D,
                     Math.max(0L, section.getLong("AMOUNT", 0L)),
                     List.of(),
@@ -1355,7 +1411,7 @@ public class CrateManager {
 
         return new GachaSettings(
                 section.getString("TITLE", gachaDefaults.title()),
-                parseMaterial(section.getString("FILLER"), gachaDefaults.filler(), "ᴄʀᴀᴛᴇ ɢᴀᴄʜᴀ ꜰɪʟʟᴇʀ"),
+                parseMaterial(section.getString("FILLER"), gachaDefaults.filler(), "crate gacha filler"),
                 previewSlots,
                 section.getInt("POINTER-SLOT", gachaDefaults.pointerSlot()),
                 Math.max(12, section.getInt("TOTAL-STEPS", gachaDefaults.totalSteps())),
@@ -1433,7 +1489,7 @@ public class CrateManager {
 
     private String prettifyId(String raw) {
         if (raw == null || raw.isBlank()) {
-            return "ᴄʀᴀᴛᴇ";
+            return "Crate";
         }
 
         String normalized = raw.replace('-', ' ').replace('_', ' ');
@@ -1451,7 +1507,7 @@ public class CrateManager {
                 builder.append(part.substring(1).toLowerCase(Locale.US));
             }
         }
-        return builder.isEmpty() ? "ᴄʀᴀᴛᴇ" : ColorUtils.toSmallCaps(builder.toString());
+        return builder.isEmpty() ? "Crate" : builder.toString();
     }
 
     public enum GrantType {

@@ -77,13 +77,19 @@ public class CombatManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getConfigManager().getConfig()
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.COMBAT)
+                && plugin.getConfigManager().getConfig()
                 .getBoolean("COMBAT-MANAGER.ENABLED", true);
     }
 
     public int getCooldownSeconds() {
         return plugin.getConfigManager().getConfig()
                 .getInt("COMBAT-MANAGER.COOLDOWN", 16);
+    }
+
+    public boolean isKillOnLogoutEnabled() {
+        return plugin.getConfigManager().getConfig()
+                .getBoolean("COMBAT-MANAGER.KILL-ON-LOGOUT", false);
     }
 
     public boolean isBlockedCommand(String command) {

@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,13 +35,21 @@ public class BountyMenu extends BaseMenu {
     private boolean hasPreviousPage;
     private boolean hasNextPage;
     private boolean descending = true;
+    private String searchQuery;
 
     public BountyMenu(UltimateDonutSmp plugin) {
+        this(plugin, 0, null, true);
+    }
+
+    public BountyMenu(UltimateDonutSmp plugin, int page, String searchQuery, boolean descending) {
         super(
                 plugin,
                 plugin.getConfigManager().getMenus().getString("BOUNTIES-MENU.TITLE", "&8ʙᴏᴜɴᴛɪᴇѕ"),
                 plugin.getConfigManager().getMenus().getInt("BOUNTIES-MENU.SIZE", 54)
         );
+        this.page = page;
+        this.searchQuery = searchQuery;
+        this.descending = descending;
     }
 
     @Override
@@ -53,6 +62,16 @@ public class BountyMenu extends BaseMenu {
         int maxItems = menus.getInt("BOUNTIES-MENU.MAX-ITEMS-PER-PAGE", 45);
 
         List<Bounty> allBounties = new ArrayList<>(plugin.getBountyManager().getAllBounties());
+        if (searchQuery != null && !searchQuery.isBlank()) {
+            String lowerQuery = searchQuery.toLowerCase(java.util.Locale.ROOT);
+            allBounties = allBounties.stream()
+                    .filter(bounty -> {
+                        String name = plugin.getBountyManager().getDisplayName(bounty.getTargetUuid());
+                        return name.toLowerCase(java.util.Locale.ROOT).contains(lowerQuery);
+                    })
+                    .toList();
+        }
+
         Comparator<Bounty> comparator = Comparator.comparingDouble(Bounty::getAmount);
         if (descending) {
             comparator = comparator.reversed();
@@ -63,6 +82,9 @@ public class BountyMenu extends BaseMenu {
         totalPages = Math.max(1, (int) Math.ceil(allBounties.size() / (double) maxItems));
         if (page >= totalPages) {
             page = totalPages - 1;
+        }
+        if (page < 0) {
+            page = 0;
         }
 
         int startIndex = page * maxItems;
@@ -79,11 +101,12 @@ public class BountyMenu extends BaseMenu {
 
         buildRefreshButton(menus);
         buildSortButton();
+        buildSearchButton(menus);
         buildPageButtons(menus, allBounties.size());
     }
 
     @Override
-    public void handleClick(int slot, Player player) {
+    public void handleClick(int slot, Player player, ClickType clickType) {
         int refreshSlot = plugin.getConfigManager().getMenus().getInt("BOUNTIES-MENU.REFRESH-BUTTON.SLOT", 49);
 
         if (slot == refreshSlot) {
@@ -97,6 +120,27 @@ public class BountyMenu extends BaseMenu {
             page = 0;
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             build(player);
+            return;
+        }
+
+        int searchSlot = plugin.getConfigManager().getMenus().getInt("BOUNTIES-MENU.SEARCH-BUTTON.SLOT", 51);
+        if (slot == searchSlot) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            if (clickType.isRightClick()) {
+                searchQuery = null;
+                page = 0;
+                build(player);
+            } else {
+                org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getMenus()
+                        .getConfigurationSection("BOUNTIES-MENU.SEARCH_SIGN");
+                com.bx.ultimateDonutSmp.utils.SignInputUtil.openFromConfig(plugin, player, config, text -> {
+                    if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
+                        new BountyMenu(plugin, page, searchQuery, descending).open(player);
+                    } else {
+                        new BountyMenu(plugin, 0, text.trim(), descending).open(player);
+                    }
+                });
+            }
             return;
         }
 
@@ -136,7 +180,8 @@ public class BountyMenu extends BaseMenu {
         Bounty bounty = displayedBounties.get(slot);
         String msg = plugin.getConfigManager().getMessage("BOUNTY.PLAYER-HAS-BOUNTY",
                 "{player}", plugin.getBountyManager().getDisplayName(bounty.getTargetUuid()),
-                "{amount}", NumberUtils.format(bounty.getAmount()));
+                "{amount}", NumberUtils.format(bounty.getAmount()),
+                "{amount_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount()));
         player.sendMessage(ColorUtils.toComponent(msg));
     }
 
@@ -146,7 +191,8 @@ public class BountyMenu extends BaseMenu {
                 .replace("{player}", playerName);
         List<String> lore = menus.getStringList("BOUNTIES-MENU.BOUNTY-BUTTON.LORE").stream()
                 .map(line -> line.replace("{player}", playerName)
-                        .replace("{price}", NumberUtils.format(bounty.getAmount())))
+                        .replace("{price}", NumberUtils.format(bounty.getAmount()))
+                        .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount())))
                 .toList();
 
         Material material = ItemUtils.parseMaterial(
@@ -182,6 +228,24 @@ public class BountyMenu extends BaseMenu {
                 "&aѕᴏʀᴛ",
                 List.of("&fᴄᴜʀʀᴇɴᴛʟʏ: &7" + sortState)
         ));
+    }
+
+    private void buildSearchButton(FileConfiguration menus) {
+        String path = "BOUNTIES-MENU.SEARCH-BUTTON";
+        Material material = ItemUtils.parseMaterial(menus.getString(path + ".MATERIAL", "OAK_SIGN"));
+        String name = menus.getString(path + ".NAME", "&aSEARCH");
+        List<String> rawLore = menus.getStringList(path + ".LORE");
+        if (rawLore.isEmpty()) {
+            rawLore = List.of(
+                    "&fClick to search"
+            );
+        }
+        String displayQuery = (searchQuery == null || searchQuery.isEmpty()) ? "None" : searchQuery;
+        List<String> lore = rawLore.stream()
+                .map(line -> line.replace("{query}", displayQuery))
+                .toList();
+        int slot = menus.getInt(path + ".SLOT", 51);
+        set(slot, ItemUtils.createItem(material, name, lore));
     }
 
     private void buildPageButtons(FileConfiguration menus, int totalItems) {

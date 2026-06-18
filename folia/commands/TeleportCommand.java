@@ -136,7 +136,7 @@ public class TeleportCommand implements CommandExecutor {
             plugin.getFoliaScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.sendMessage(ColorUtils.toComponent(
-                            message("TELEPORT.HERE", "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7%player% tᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ")
+                            message("TELEPORT.HERE", "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7%player% ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ")
                                     .replace("%player%", targetName),
                             player
                     ));

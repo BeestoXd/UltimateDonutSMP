@@ -309,17 +309,33 @@ public class KeyAllManager {
             return;
         }
 
-        for (String command : readCommandRewards()) {
-            if (command == null || command.isBlank()) {
-                continue;
-            }
+        List<String> commands = readCommandRewards();
+        if (commands.isEmpty()) {
+            return;
+        }
 
-            String resolved = resolveCommandReward(command, player, reward);
-            if (resolved.isBlank()) {
-                continue;
+        boolean randomize = plugin.getConfigManager().getConfig().getBoolean("KEY-ALL.RANDOM-COMMANDS", false);
+        if (randomize) {
+            String command = commands.get(random.nextInt(commands.size()));
+            if (command != null && !command.isBlank()) {
+                String resolved = resolveCommandReward(command, player, reward);
+                if (!resolved.isBlank()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+                }
             }
+        } else {
+            for (String command : commands) {
+                if (command == null || command.isBlank()) {
+                    continue;
+                }
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+                String resolved = resolveCommandReward(command, player, reward);
+                if (resolved.isBlank()) {
+                    continue;
+                }
+
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+            }
         }
     }
 

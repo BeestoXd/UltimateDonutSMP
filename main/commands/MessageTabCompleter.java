@@ -1,6 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
-import org.bukkit.Bukkit;
+import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -13,6 +13,12 @@ import java.util.List;
 
 public class MessageTabCompleter implements TabCompleter {
 
+    private final UltimateDonutSmp plugin;
+
+    public MessageTabCompleter(UltimateDonutSmp plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (alias.equalsIgnoreCase("reply") || alias.equalsIgnoreCase("r") || args.length != 1) {
@@ -20,11 +26,14 @@ public class MessageTabCompleter implements TabCompleter {
         }
 
         List<String> completions = new ArrayList<>();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (sender instanceof Player senderPlayer && player.getUniqueId().equals(senderPlayer.getUniqueId())) {
+        for (String name : plugin.getHideManager().onlineNames(sender)) {
+            Player player = plugin.getHideManager().findOnlinePlayer(sender, name);
+            if (player != null
+                    && sender instanceof Player senderPlayer
+                    && player.getUniqueId().equals(senderPlayer.getUniqueId())) {
                 continue;
             }
-            completions.add(player.getName());
+            completions.add(name);
         }
         List<String> matches = new ArrayList<>();
         StringUtil.copyPartialMatches(args[0], completions, matches);

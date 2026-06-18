@@ -253,12 +253,17 @@ public class RTPManager {
             }
         }
 
-        return switch (worldName.toLowerCase(Locale.ROOT)) {
-            case "world" -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
-            case "world_nether" -> "ɴᴇᴛʜᴇʀ";
-            case "world_the_end" -> "ᴛʜᴇ ᴇɴᴅ";
-            default -> worldName;
-        };
+        String lower = worldName.toLowerCase(Locale.ROOT);
+        if (lower.equalsIgnoreCase(getLoadedNormalWorldName())) {
+            return "Overworld";
+        }
+        if (lower.equalsIgnoreCase(getLoadedNetherWorldName())) {
+            return "Nether";
+        }
+        if (lower.equalsIgnoreCase(getLoadedEndWorldName())) {
+            return "The End";
+        }
+        return worldName;
     }
 
     public boolean queueMenuTeleport(Player player, RTPDestination destination) {
@@ -329,22 +334,25 @@ public class RTPManager {
             selectors.add(destination.worldName());
         }
 
-        if (isWorldAvailable("world")
-                && hasWorldSearchSettings("world")
-                && !isDeniedWorld("world")
-                && !isConfiguredDestinationDisabled("world")) {
+        String normalWorld = getLoadedNormalWorldName();
+        if (isWorldAvailable(normalWorld)
+                && hasWorldSearchSettings(normalWorld)
+                && !isDeniedWorld(normalWorld)
+                && !isConfiguredDestinationDisabled(normalWorld)) {
             selectors.add("overworld");
         }
-        if (isWorldAvailable("world_nether")
-                && hasWorldSearchSettings("world_nether")
-                && !isDeniedWorld("world_nether")
-                && !isConfiguredDestinationDisabled("world_nether")) {
+        String netherWorld = getLoadedNetherWorldName();
+        if (isWorldAvailable(netherWorld)
+                && hasWorldSearchSettings(netherWorld)
+                && !isDeniedWorld(netherWorld)
+                && !isConfiguredDestinationDisabled(netherWorld)) {
             selectors.add("nether");
         }
-        if (isWorldAvailable("world_the_end")
-                && hasWorldSearchSettings("world_the_end")
-                && !isDeniedWorld("world_the_end")
-                && !isConfiguredDestinationDisabled("world_the_end")) {
+        String endWorld = getLoadedEndWorldName();
+        if (isWorldAvailable(endWorld)
+                && hasWorldSearchSettings(endWorld)
+                && !isDeniedWorld(endWorld)
+                && !isConfiguredDestinationDisabled(endWorld)) {
             selectors.add("end");
         }
 
@@ -1428,9 +1436,9 @@ public class RTPManager {
         }
 
         return switch (trimmed.toLowerCase(Locale.ROOT)) {
-            case "overworld" -> "world";
-            case "nether" -> "world_nether";
-            case "end", "the_end", "the-end" -> "world_the_end";
+            case "overworld" -> getLoadedNormalWorldName();
+            case "nether" -> getLoadedNetherWorldName();
+            case "end", "the_end", "the-end" -> getLoadedEndWorldName();
             default -> trimmed;
         };
     }
@@ -1482,6 +1490,21 @@ public class RTPManager {
                 return worlds.getConfigurationSection(key);
             }
         }
+
+        World worldObj = Bukkit.getWorld(worldName);
+        if (worldObj != null) {
+            if (worldObj.getEnvironment() == World.Environment.NETHER) {
+                ConfigurationSection fallback = worlds.getConfigurationSection("world_nether");
+                if (fallback != null) return fallback;
+            } else if (worldObj.getEnvironment() == World.Environment.THE_END) {
+                ConfigurationSection fallback = worlds.getConfigurationSection("world_the_end");
+                if (fallback != null) return fallback;
+            } else {
+                ConfigurationSection fallback = worlds.getConfigurationSection("world");
+                if (fallback != null) return fallback;
+            }
+        }
+
         return null;
     }
 
@@ -1522,6 +1545,36 @@ public class RTPManager {
             warn("Failed to load RTP world '" + folderWorldName + "': " + exception.getMessage());
             return null;
         }
+    }
+
+    private String getLoadedNetherWorldName() {
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getEnvironment() == World.Environment.NETHER) {
+                return world.getName();
+            }
+        }
+        return "world_nether";
+    }
+
+    private String getLoadedEndWorldName() {
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getEnvironment() == World.Environment.THE_END) {
+                return world.getName();
+            }
+        }
+        return "world_the_end";
+    }
+
+    private String getLoadedNormalWorldName() {
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getEnvironment() == World.Environment.NORMAL) {
+                String name = world.getName();
+                if (!name.equalsIgnoreCase("afk") && !name.equalsIgnoreCase("duels") && !name.equalsIgnoreCase("lobby")) {
+                    return name;
+                }
+            }
+        }
+        return "world";
     }
 
     private boolean isWorldAvailable(String worldName) {
@@ -1583,9 +1636,9 @@ public class RTPManager {
                 .replace('ᴀ', 'a')
                 .replace('ѕ', 's');
         return switch (ascii.toLowerCase(Locale.ROOT)) {
-            case "overworld", "world" -> "world";
-            case "nether", "world_nether" -> "world_nether";
-            case "end", "the_end", "the-end", "world_the_end" -> "world_the_end";
+            case "overworld", "world" -> getLoadedNormalWorldName();
+            case "nether", "world_nether" -> getLoadedNetherWorldName();
+            case "end", "the_end", "the-end", "world_the_end" -> getLoadedEndWorldName();
             default -> trimmed;
         };
     }

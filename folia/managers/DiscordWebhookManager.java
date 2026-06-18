@@ -51,7 +51,7 @@ public class DiscordWebhookManager {
     }
 
     public void reload() {
-        // configuration is read on each send so reload only exists for lifecycle symmetry.
+        // Configuration is read on each send so reload only exists for lifecycle symmetry.
     }
 
     private Map<String, String> basePunishmentPlaceholders(PunishmentRecord record) {

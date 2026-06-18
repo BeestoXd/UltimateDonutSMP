@@ -45,6 +45,8 @@ public class ConfigManager {
             "freeze.yml",
             "auction-house.yml",
             "orders.yml",
+            "enchantments.yml",
+            "filter.yml",
             "duels.yml",
             "ffa.yml",
             "crates.yml",
@@ -52,8 +54,11 @@ public class ConfigManager {
             "spawn-stash.yml",
             "network.yml",
             "staff-mode.yml",
+            "hide.yml",
             "database.yml",
-            "discord.yml"
+            "server-wipe.yml",
+            "discord.yml",
+            "anvil-moderation.yml"
     );
 
     private static final DateTimeFormatter BACKUP_TIMESTAMP_FORMAT =
@@ -86,8 +91,13 @@ public class ConfigManager {
     private FileConfiguration spawnStash;
     private FileConfiguration network;
     private FileConfiguration staffMode;
+    private FileConfiguration hide;
     private FileConfiguration database;
+    private FileConfiguration serverWipe;
     private FileConfiguration discord;
+    private FileConfiguration anvilModeration;
+    private FileConfiguration enchantments;
+    private FileConfiguration filter;
 
     public ConfigManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -127,8 +137,13 @@ public class ConfigManager {
         spawnStash   = load("spawn-stash.yml", spawnStash);
         network      = load("network.yml", network);
         staffMode    = load("staff-mode.yml", staffMode);
+        hide         = load("hide.yml", hide);
         database     = load("database.yml", database);
+        serverWipe   = load("server-wipe.yml", serverWipe);
         discord      = load("discord.yml", discord);
+        anvilModeration = load("anvil-moderation.yml", anvilModeration);
+        enchantments = load("enchantments.yml", enchantments);
+        filter       = load("filter.yml", filter);
     }
 
     private void syncBundledConfigurations() {
@@ -1930,30 +1945,40 @@ public class ConfigManager {
     // ── Getters ────────────────────────────────────────────────────────────────
 
     public FileConfiguration getConfig()        { return config; }
-    public FileConfiguration getMessages()      { return messages; }
-    public FileConfiguration getDeathMessages() { return deathMessages; }
-    public FileConfiguration getMenus()         { return menus; }
+    public FileConfiguration getMessages()      { return localized("MESSAGES", messages); }
+    public FileConfiguration getDeathMessages() { return localized("DEATH_MESSAGES", deathMessages); }
+    public FileConfiguration getMenus()         { return localized("MENUS", menus); }
     public FileConfiguration getScoreboard()    { return scoreboard; }
     public FileConfiguration getShop()          { return shop; }
     public FileConfiguration getSounds()        { return sounds; }
-    public FileConfiguration getBillford()      { return billford; }
-    public FileConfiguration getRtp()           { return rtp; }
-    public FileConfiguration getWorth()         { return worth; }
-    public FileConfiguration getAmethystTools() { return amethystTools; }
-    public FileConfiguration getEnderChest()    { return enderChest; }
-    public FileConfiguration getInvsee()        { return invsee; }
-    public FileConfiguration getFreeze()        { return freeze; }
-    public FileConfiguration getAuctionHouse()  { return auctionHouse; }
-    public FileConfiguration getOrders()        { return orders; }
-    public FileConfiguration getDuels()         { return duels; }
-    public FileConfiguration getFfa()           { return ffa; }
-    public FileConfiguration getCrates()        { return crates; }
-    public FileConfiguration getSpawners()      { return spawners; }
-    public FileConfiguration getSpawnStash()    { return spawnStash; }
-    public FileConfiguration getNetwork()       { return network; }
-    public FileConfiguration getStaffMode()     { return staffMode; }
+    public FileConfiguration getBillford()      { return localized("CONFIG.BILLFORD", billford); }
+    public FileConfiguration getRtp()           { return localized("CONFIG.RTP", rtp); }
+    public FileConfiguration getWorth()         { return localized("CONFIG.WORTH", worth); }
+    public FileConfiguration getAmethystTools() { return localized("CONFIG.AMETHYST_TOOLS", amethystTools); }
+    public FileConfiguration getEnderChest()    { return localized("CONFIG.ENDER_CHEST", enderChest); }
+    public FileConfiguration getInvsee()        { return localized("CONFIG.INVSEE", invsee); }
+    public FileConfiguration getFreeze()        { return localized("CONFIG.FREEZE", freeze); }
+    public FileConfiguration getAuctionHouse()  { return localized("CONFIG.AUCTION_HOUSE", auctionHouse); }
+    public FileConfiguration getOrders()        { return localized("CONFIG.ORDERS", orders); }
+    public FileConfiguration getOrdersConfig()  { return getOrders(); }
+    public FileConfiguration getDuels()         { return localized("CONFIG.DUELS", duels); }
+    public FileConfiguration getFfa()           { return localized("CONFIG.FFA", ffa); }
+    public FileConfiguration getCrates()        { return localized("CONFIG.CRATES", crates); }
+    public FileConfiguration getSpawners()      { return localized("CONFIG.SPAWNERS", spawners); }
+    public FileConfiguration getSpawnStash()    { return localized("CONFIG.SPAWN_STASH", spawnStash); }
+    public FileConfiguration getNetwork()       { return localized("CONFIG.NETWORK", network); }
+    public FileConfiguration getStaffMode()     { return localized("CONFIG.STAFF_MODE", staffMode); }
+    public FileConfiguration getHide()          { return hide; }
     public FileConfiguration getDatabase()      { return database; }
+    public FileConfiguration getServerWipe()    { return localized("CONFIG.SERVER_WIPE", serverWipe); }
     public FileConfiguration getDiscord()       { return discord; }
+    public FileConfiguration getAnvilModeration() { return anvilModeration; }
+    public FileConfiguration getEnchantments()  { return enchantments; }
+    public FileConfiguration getFilter()        { return filter; }
+
+    public FileConfiguration getLegacyMessages() { return messages; }
+    public FileConfiguration getLegacyDeathMessages() { return deathMessages; }
+    public FileConfiguration getLegacyMenus() { return menus; }
 
     public void reloadShop() { shop = load("shop.yml", shop); }
     public void reloadMenus() { menus = load("menus.yml", menus); }
@@ -1972,8 +1997,12 @@ public class ConfigManager {
     public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml", spawnStash); }
     public void reloadNetwork() { network = load("network.yml", network); }
     public void reloadStaffMode() { staffMode = load("staff-mode.yml", staffMode); }
+    public void reloadHide() { hide = load("hide.yml", hide); }
     public void reloadDatabase() { database = load("database.yml", database); }
     public void reloadDiscord() { discord = load("discord.yml", discord); }
+    public void reloadAnvilModeration() { anvilModeration = load("anvil-moderation.yml", anvilModeration); }
+    public void reloadEnchantments() { enchantments = load("enchantments.yml", enchantments); }
+    public void reloadFilter() { filter = load("filter.yml", filter); }
     public boolean saveConfig() { return save("config.yml", config); }
     public boolean saveDuels() { return save("duels.yml", duels); }
     public boolean saveFfa() { return save("ffa.yml", ffa); }
@@ -1982,11 +2011,17 @@ public class ConfigManager {
     public boolean saveDatabase() { return save("database.yml", database); }
     public boolean saveNetwork() { return save("network.yml", network); }
     public boolean saveDiscord() { return save("discord.yml", discord); }
+    public boolean saveAnvilModeration() { return save("anvil-moderation.yml", anvilModeration); }
 
     // ── Convenience helpers ────────────────────────────────────────────────────
 
     public String getMessage(String path) {
-        return messages.getString(path, "&cᴍᴇѕѕᴀɢᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ: " + path);
+        String legacy = messages.getString(path);
+        LanguageManager languageManager = plugin == null ? null : plugin.getLanguageManager();
+        if (languageManager != null) {
+            return languageManager.message(path, legacy);
+        }
+        return legacy == null ? "&cMissing message: " + path : legacy;
     }
 
     public String getMessage(String path, String... placeholders) {
@@ -1998,7 +2033,12 @@ public class ConfigManager {
     }
 
     public String getMessageOrDefault(String path, String fallback) {
-        return messages.getString(path, fallback);
+        String legacy = messages.getString(path);
+        LanguageManager languageManager = plugin == null ? null : plugin.getLanguageManager();
+        if (languageManager != null) {
+            return languageManager.text("MESSAGES." + path, legacy, fallback);
+        }
+        return legacy == null ? fallback : legacy;
     }
 
     public String getMessageOrDefault(String path, String fallback, String... placeholders) {
@@ -2015,6 +2055,13 @@ public class ConfigManager {
 
     public boolean isCommandEnabled(String key) {
         return FeatureManager.isCommandEnabled(config, key);
+    }
+
+    private FileConfiguration localized(String rootPath, FileConfiguration legacy) {
+        if (plugin == null || plugin.getLanguageManager() == null) {
+            return legacy;
+        }
+        return plugin.getLanguageManager().localize(rootPath, legacy);
     }
 
     private boolean save(String name, FileConfiguration configuration) {
@@ -2035,6 +2082,161 @@ public class ConfigManager {
             plugin.getLogger().log(Level.WARNING, "Failed to save " + file.getPath(), e);
         }
         return false;
+    }
+
+    public boolean syncResource(String name, File targetFile) {
+        File backupDirectory = new File(
+                new File(plugin.getDataFolder(), "config-backups"),
+                LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT)
+        );
+
+        YamlConfiguration bundledDefault;
+        try {
+            bundledDefault = loadBundledYaml(name);
+        } catch (IOException | InvalidConfigurationException | IllegalArgumentException e) {
+            plugin.getLogger().log(Level.WARNING, "Skipping configuration sync for missing or invalid bundled resource: " + name, e);
+            return false;
+        }
+
+        if (!targetFile.exists()) {
+            return copyBundledResource(name, targetFile, false);
+        }
+
+        YamlConfiguration current;
+        try {
+            current = loadYamlFile(targetFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            invalidConfigurations.add(name);
+            plugin.getLogger().log(Level.SEVERE,
+                    "Skipping configuration sync for invalid YAML without replacing the original file: "
+                            + targetFile.getPath(),
+                    e);
+            backupExistingFile(targetFile, backupDirectory);
+            return false;
+        }
+
+        TextFileContent currentText;
+        try {
+            currentText = readTextFile(targetFile);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to read configuration for line-preserving sync: "
+                    + targetFile.getPath(), e);
+            return false;
+        }
+
+        int mergedPaths = mergeBundledDefaults(name, currentText.lines(), current, bundledDefault);
+        if (mergedPaths == 0) {
+            return true;
+        }
+
+        try {
+            validateYamlLines(currentText.lines());
+            if (!backupExistingFile(targetFile, backupDirectory)) {
+                plugin.getLogger().warning("Skipped configuration sync because backup creation failed: "
+                        + targetFile.getPath());
+                return false;
+            }
+            writeTextFileAtomically(targetFile, currentText);
+            plugin.getLogger().info("Added " + mergedPaths + " missing bundled default path(s) to " + name + ".");
+            return true;
+        } catch (IOException | InvalidConfigurationException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to save synced configuration " + targetFile.getPath(), e);
+            return false;
+        }
+    }
+
+    public boolean syncGeneratedDefaults(
+            String name,
+            File targetFile,
+            YamlConfiguration defaults,
+            String backupFolderName
+    ) {
+        if (defaults == null) {
+            return false;
+        }
+
+        File backupDirectory = new File(
+                new File(plugin.getDataFolder(), backupFolderName),
+                LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT)
+        );
+        TextFileContent defaultText = textContent(defaults.saveToString(), "\n");
+
+        if (!targetFile.exists()) {
+            try {
+                writeTextFileAtomically(targetFile, defaultText);
+                return true;
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.WARNING,
+                        "Failed to create generated configuration " + targetFile.getPath(), e);
+                return false;
+            }
+        }
+
+        YamlConfiguration current;
+        try {
+            current = loadYamlFile(targetFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            plugin.getLogger().log(Level.SEVERE,
+                    "Skipping generated configuration sync for invalid YAML without replacing the original file: "
+                            + targetFile.getPath(),
+                    e);
+            backupExistingFile(targetFile, backupDirectory);
+            return false;
+        }
+
+        TextFileContent currentText;
+        try {
+            currentText = readTextFile(targetFile);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING,
+                    "Failed to read generated configuration for line-preserving sync: "
+                            + targetFile.getPath(),
+                    e);
+            return false;
+        }
+
+        int mergedPaths = mergeBundledDefaults(
+                name,
+                currentText.lines(),
+                defaultText.lines(),
+                current,
+                defaults
+        );
+        if (mergedPaths == 0) {
+            return true;
+        }
+
+        try {
+            validateYamlLines(currentText.lines());
+            if (!backupExistingFile(targetFile, backupDirectory)) {
+                plugin.getLogger().warning("Skipped generated configuration sync because backup creation failed: "
+                        + targetFile.getPath());
+                return false;
+            }
+            writeTextFileAtomically(targetFile, currentText);
+            plugin.getLogger().info("Added " + mergedPaths + " missing generated default path(s) to " + name + ".");
+            return true;
+        } catch (IOException | InvalidConfigurationException e) {
+            plugin.getLogger().log(Level.WARNING,
+                    "Failed to save synced generated configuration " + targetFile.getPath(),
+                    e);
+            return false;
+        }
+    }
+
+    private TextFileContent textContent(String content, String defaultLineSeparator) {
+        String lineSeparator = detectLineSeparator(content);
+        if (lineSeparator.equals(System.lineSeparator()) && !content.contains("\n") && !content.contains("\r")) {
+            lineSeparator = defaultLineSeparator;
+        }
+        boolean trailingLineSeparator = content.endsWith("\r\n")
+                || content.endsWith("\n")
+                || content.endsWith("\r");
+        List<String> lines = new ArrayList<>(Arrays.asList(content.split("\\r\\n|\\n|\\r", -1)));
+        if (trailingLineSeparator && !lines.isEmpty()) {
+            lines.remove(lines.size() - 1);
+        }
+        return new TextFileContent(lines, lineSeparator, trailingLineSeparator);
     }
 
     private static final class SyncResult {

@@ -9,9 +9,9 @@ import com.bx.ultimateDonutSmp.models.SpawnStashTypeDefinition;
 import com.bx.ultimateDonutSmp.models.SpawnerInstance;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -616,16 +616,19 @@ public class SpawnStashManager {
 
     private void sendClickableAlert(Player recipient, Player target, List<String> lines) {
         String command = "/tp " + target.getName();
-        Component hover = ColorUtils.toComponent(message(
+        String hover = message(
                 "ALERT-HOVER",
                 "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}",
                 "{player}", target.getName()
-        ));
+        );
         for (String line : lines) {
-            Component component = ColorUtils.toComponent(line)
-                    .clickEvent(ClickEvent.runCommand(command))
-                    .hoverEvent(HoverEvent.showText(hover));
-            recipient.sendMessage(component);
+            TextComponent component = ColorUtils.toBaseComponent(line);
+            component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+            component.setHoverEvent(new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    ColorUtils.toBaseComponents(hover)
+            ));
+            recipient.spigot().sendMessage(component);
         }
     }
 
@@ -683,25 +686,37 @@ public class SpawnStashManager {
     }
 
     private void giveSpawnerClaim(Player player, SpawnerInstance instance) {
-        ItemStack item = plugin.getSpawnerManager().createSpawnerItem(instance.getMobTypeKey(), instance.getStackAmount());
-        if (item == null) {
-            return;
+        long remaining = instance.getStackAmount();
+        long totalGiven = 0;
+        List<ItemStack> items = new ArrayList<>();
+        while (remaining > 0) {
+            int amount = (int) Math.min(64, remaining);
+            ItemStack item = plugin.getSpawnerManager().createSpawnerItem(instance.getMobTypeKey(), amount);
+            if (item != null) {
+                items.add(item);
+                totalGiven += amount;
+            }
+            remaining -= amount;
         }
 
-        Map<Integer, ItemStack> leftovers = player.getInventory().addItem(item);
-        if (!leftovers.isEmpty()) {
-            leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
+        boolean anyLeftovers = false;
+        for (ItemStack item : items) {
+            Map<Integer, ItemStack> leftovers = player.getInventory().addItem(item);
+            if (!leftovers.isEmpty()) {
+                anyLeftovers = true;
+                leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
+            }
         }
 
         String typeName = ColorUtils.strip(plugin.getSpawnerManager().getTypeDisplayName(instance.getMobTypeKey()));
-        String messagePath = leftovers.isEmpty() ? "SPAWNER-CLAIMED" : "SPAWNER-CLAIMED-DROPPED";
-        String fallback = leftovers.isEmpty()
+        String messagePath = !anyLeftovers ? "SPAWNER-CLAIMED" : "SPAWNER-CLAIMED-DROPPED";
+        String fallback = !anyLeftovers
                 ? "&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a ꜰʀᴏᴍ ѕᴘᴀᴡɴѕᴛᴀѕʜ."
                 : "&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a. &7ɪɴᴠᴇɴᴛᴏʀʏ ꜰᴜʟʟ, ɪᴛᴇᴍ ᴅʀᴏᴘᴘᴇᴅ.";
         player.sendMessage(ColorUtils.toComponent(message(
                 messagePath,
                 fallback,
-                "{amount}", String.valueOf(instance.getStackAmount()),
+                "{amount}", String.valueOf(totalGiven),
                 "{spawner}", typeName
         )));
     }

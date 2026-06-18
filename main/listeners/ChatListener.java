@@ -43,12 +43,21 @@ public class ChatListener implements Listener {
             return;
         }
 
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().hasPendingSearchInput(player.getUniqueId())) {
+            event.setCancelled(true);
+            plugin.getSpigotScheduler().runEntity(player, () ->
+                    plugin.getFriendsManager().handlePendingSearchInput(player, rawMessage));
+            return;
+        }
+
         if (plugin.getOrdersManager() != null && plugin.getOrdersManager().hasPendingInput(player.getUniqueId())) {
             event.setCancelled(true);
             plugin.getSpigotScheduler().runEntity(player, () ->
                     plugin.getOrdersManager().handlePendingInput(player, rawMessage));
             return;
         }
+
+
 
         PunishmentRecord activeMute = plugin.getPunishmentManager()
                 .getActiveRecord(player.getUniqueId(), PunishmentType.MUTE)

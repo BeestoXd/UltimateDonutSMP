@@ -61,7 +61,16 @@ public class OrdersCommand implements CommandExecutor {
 
         switch (subcommand) {
             case "my" -> new OrdersMyOrdersMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort()).open(player);
-            case "collect" -> new OrdersCollectMenu(plugin, 1).open(player);
+            case "collect" -> {
+                if (!plugin.getOrdersManager().isClaimsEnabled()) {
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                            "ORDERS.CLAIMS_DISABLED",
+                            "&cᴏʀᴅᴇʀѕ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
+                    )));
+                    return true;
+                }
+                new OrdersCollectMenu(plugin, 1).open(player);
+            }
             default -> new OrdersBrowseMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort(), "ALL").open(player);
         }
 

@@ -54,10 +54,24 @@ public class TPACommand implements CommandExecutor {
             return;
         }
 
-        Player target = Bukkit.getPlayerExact(args[0]);
+        Player target = plugin.getHideManager().findOnlinePlayer(player, args[0]);
         if (target == null || target.equals(player)) {
             send(player, target == null ? "&cPlayer not online."
                     : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
+            return;
+        }
+
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isTeleportRequestBlocked(player.getUniqueId(), target.getUniqueId())) {
+            send(player, "&c" + target.getName() + " has disabled teleport requests from you.");
+            return;
+        }
+
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isTpaAutoAcceptEnabled(player.getUniqueId(), target.getUniqueId())) {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
+                plugin.getTeleportManager().queue(player, target.getLocation(), "TPA", null);
+                send(player, plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-ACCEPTED", "{player}", target.getName()));
+                target.sendMessage(ColorUtils.toComponent("&7Auto-accepted teleport request from &b" + player.getName() + "&7."));
+            });
             return;
         }
 
@@ -69,8 +83,8 @@ public class TPACommand implements CommandExecutor {
                 return;
             }
 
-            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", target.getName()));
-            send(player, "&7Your /tpa request was stored in &b" + target.getName()
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", publicName(target)));
+            send(player, "&7Your /tpa request was stored in &b" + publicName(target)
                     + "&7's queue &8(#" + queuePosition + "&8).");
             SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
             return;
@@ -83,9 +97,9 @@ public class TPACommand implements CommandExecutor {
                 return;
             }
 
-            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", target.getName()));
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", publicName(target)));
             if (queuePosition > 1) {
-                send(player, "&7Your /tpa request was stored in &b" + target.getName()
+                send(player, "&7Your /tpa request was stored in &b" + publicName(target)
                         + "&7's auto-accept queue &8(#" + queuePosition + "&8).");
             }
             SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
@@ -97,7 +111,7 @@ public class TPACommand implements CommandExecutor {
             sendAlreadySent(player, target);
             return;
         }
-        send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", target.getName()));
+        send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", publicName(target)));
         SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
         sendIncomingRequest(player, target, false);
     }
@@ -108,10 +122,24 @@ public class TPACommand implements CommandExecutor {
             return;
         }
 
-        Player target = Bukkit.getPlayerExact(args[0]);
+        Player target = plugin.getHideManager().findOnlinePlayer(player, args[0]);
         if (target == null || target.equals(player)) {
             send(player, target == null ? "&cPlayer not online."
                     : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
+            return;
+        }
+
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isTeleportRequestBlocked(player.getUniqueId(), target.getUniqueId())) {
+            send(player, "&c" + target.getName() + " has disabled teleport requests from you.");
+            return;
+        }
+
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isTpaAutoAcceptEnabled(player.getUniqueId(), target.getUniqueId())) {
+            plugin.getSpigotScheduler().runEntity(target, () -> {
+                plugin.getTeleportManager().queue(target, player.getLocation(), "TPA", null);
+                send(player, plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-HERE-ACCEPTED", "{player}", target.getName()));
+                target.sendMessage(ColorUtils.toComponent("&7Auto-accepted teleport request from &b" + player.getName() + "&7."));
+            });
             return;
         }
 
@@ -123,8 +151,8 @@ public class TPACommand implements CommandExecutor {
                 return;
             }
 
-            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", target.getName()));
-            send(player, "&7Your /tpahere request was added to &b" + target.getName()
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", publicName(target)));
+            send(player, "&7Your /tpahere request was added to &b" + publicName(target)
                     + "&7's queue &8(#" + queuePosition + "&8).");
             SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
             return;
@@ -137,9 +165,9 @@ public class TPACommand implements CommandExecutor {
                 return;
             }
 
-            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", target.getName()));
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", publicName(target)));
             if (queuePosition > 1) {
-                send(player, "&7Your /tpahere request was added to &b" + target.getName()
+                send(player, "&7Your /tpahere request was added to &b" + publicName(target)
                         + "&7's auto-accept queue &8(#" + queuePosition + "&8).");
             }
             SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
@@ -151,7 +179,7 @@ public class TPACommand implements CommandExecutor {
             sendAlreadySent(player, target);
             return;
         }
-        send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", target.getName()));
+        send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", publicName(target)));
         SoundUtils.play(player, plugin.getConfigManager().getSound("TPA.REQUEST-SENT"));
         sendIncomingRequest(player, target, true);
     }
@@ -187,7 +215,7 @@ public class TPACommand implements CommandExecutor {
     }
 
     private void sendAlreadySent(Player player, Player target) {
-        send(player, plugin.getConfigManager().getMessage("TPA.ALREADY-SENT", "{player}", target.getName()));
+        send(player, plugin.getConfigManager().getMessage("TPA.ALREADY-SENT", "{player}", publicName(target)));
     }
 
     private void send(Player player, String message) {
@@ -195,7 +223,8 @@ public class TPACommand implements CommandExecutor {
     }
 
     private void sendIncomingRequest(Player requester, Player target, boolean tpaHere) {
-        String requesterName = requester.getName();
+        String requesterName = plugin.getHideManager().plainPublicName(requester);
+        String requesterDisplayName = publicName(requester);
         UUID requesterUuid = requester.getUniqueId();
 
         plugin.getSpigotScheduler().runEntity(target, () -> {
@@ -207,7 +236,7 @@ public class TPACommand implements CommandExecutor {
 
             String messagePath = tpaHere ? "TPA.REQUEST-HERE-RECEIVED" : "TPA.REQUEST-RECEIVED";
             TextComponent requestMsg = ColorUtils.toBaseComponent(
-                    plugin.getConfigManager().getMessage(messagePath, "{player}", requesterName));
+                    plugin.getConfigManager().getMessage(messagePath, "{player}", requesterDisplayName));
             requestMsg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + requesterName));
             target.spigot().sendMessage(requestMsg);
 
@@ -235,5 +264,9 @@ public class TPACommand implements CommandExecutor {
         }
 
         new TpaConfirmMenu(plugin, requesterName, tpaHere).open(target);
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager().publicName(player);
     }
 }

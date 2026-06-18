@@ -3,9 +3,9 @@ package com.bx.ultimateDonutSmp.commands;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.utils.AttributeUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -70,7 +70,7 @@ public class HealCommand implements CommandExecutor {
     }
 
     private void heal(Player target) {
-        AttributeInstance maxHealth = target.getAttribute(Attribute.MAX_HEALTH);
+        AttributeInstance maxHealth = AttributeUtils.getMaxHealthAttribute(target);
         target.setHealth(maxHealth == null ? 20D : maxHealth.getValue());
         target.setFireTicks(0);
         target.setFallDistance(0F);

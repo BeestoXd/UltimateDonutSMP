@@ -66,7 +66,11 @@ public class OrdersEditMenu extends BaseMenu {
                 List.of(
                         "&7ID: &f#" + order.id(),
                         "&7ᴏᴡɴᴇʀ: &f" + order.ownerName(),
-                        "&7ѕᴛᴀᴛᴜѕ: &f" + order.status().name(),
+                        OrdersMenuSupport.tr("&7ѕᴛᴀᴛᴜѕ: &f") + plugin.getLanguageManager().display(
+                                "ORDER_STATUSES",
+                                order.status().name(),
+                                order.status().name()
+                        ),
                         "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + manager.prettifyCategory(order.categoryKey())
                 )
         ));

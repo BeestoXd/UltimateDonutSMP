@@ -91,7 +91,7 @@ public class TeamEditMenu extends BaseMenu {
                 member.canUseTeamChat()
         );
 
-        String kickPath = MENU_PATH + ".KICK-BUTTON";
+        String kickPath = MENU_PATH + ".ᴋɪᴄᴋ-ʙᴜᴛᴛᴏɴ";
         set(
                 menus().getInt(kickPath + ".SLOT", 11),
                 ItemUtils.createItem(
@@ -101,7 +101,7 @@ public class TeamEditMenu extends BaseMenu {
                 )
         );
 
-        String backPath = MENU_PATH + ".BACK-BUTTON";
+        String backPath = MENU_PATH + ".ʙᴀᴄᴋ-ʙᴜᴛᴛᴏɴ";
         set(
                 menus().getInt(backPath + ".SLOT", 18),
                 ItemUtils.createItem(
@@ -173,8 +173,8 @@ public class TeamEditMenu extends BaseMenu {
     private void renderToggleButton(String key, Material fallbackMaterial, String targetName, boolean enabled) {
         String path = MENU_PATH + "." + key;
         String state = enabled
-                ? menus().getString(path + ".ON-STATE", "&a&lᴏɴ")
-                : menus().getString(path + ".OFF-STATE", "&c&lᴏꜰꜰ");
+                ? menus().getString(path + ".ON-STATE", "&a&lON")
+                : menus().getString(path + ".OFF-STATE", "&c&lOFF");
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("player", targetName);
         placeholders.put("state", state);

@@ -3,9 +3,7 @@ package com.bx.ultimateDonutSmp.commands;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.ChatManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -47,7 +45,7 @@ public class ChatCommand implements CommandExecutor {
         }
 
         return switch (args[0].toLowerCase(Locale.ROOT)) {
-            case "mute" -> handlemute(sender);
+            case "mute" -> handleMute(sender);
             case "unmute" -> handleUnmute(sender);
             case "delay" -> handleDelay(sender, args, label);
             case "clear" -> handleClear(sender);
@@ -58,13 +56,13 @@ public class ChatCommand implements CommandExecutor {
         };
     }
 
-    private boolean handlemute(CommandSender sender) {
+    private boolean handleMute(CommandSender sender) {
         if (!hasAccess(sender, MUTE_PERMISSION)) {
             send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
 
-        plugin.getChatManager().setGlobalChatmuted(true, true);
+        plugin.getChatManager().setGlobalChatMuted(true, true);
         broadcast(message("MUTED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴍᴜᴛᴇᴅ."), sender);
         return true;
     }
@@ -75,7 +73,7 @@ public class ChatCommand implements CommandExecutor {
             return true;
         }
 
-        plugin.getChatManager().setGlobalChatmuted(false, true);
+        plugin.getChatManager().setGlobalChatMuted(false, true);
         broadcast(message("UNMUTED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴜɴᴍᴜᴛᴇᴅ."), sender);
         return true;
     }
@@ -87,7 +85,7 @@ public class ChatCommand implements CommandExecutor {
         }
 
         if (args.length < 2) {
-            send(sender, "&cᴜѕᴀɢᴇ: /" + label + " ᴅᴇʟᴀʏ <seconds|off>");
+            send(sender, "&cᴜѕᴀɢᴇ: /" + label + " delay <seconds|off>");
             return true;
         }
 
@@ -142,7 +140,7 @@ public class ChatCommand implements CommandExecutor {
         if (lines.isEmpty()) {
             lines = List.of(
                     "",
-                    "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(ᴄᴏᴍᴍᴀɴᴅѕ)",
+                    "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(Commands)",
                     "",
                     "&f/chat mute &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
                     "&f/chat unmute &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
@@ -158,8 +156,7 @@ public class ChatCommand implements CommandExecutor {
     }
 
     private void broadcast(String message, CommandSender sender) {
-        Component component = ColorUtils.toComponent(message);
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(component));
+        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(ColorUtils.toComponent(message, player)));
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(ColorUtils.colorize(message));

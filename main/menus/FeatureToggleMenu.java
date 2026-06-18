@@ -150,7 +150,7 @@ public class FeatureToggleMenu extends BaseMenu {
             return;
         }
 
-        Material material = ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", active ? "ARROW" : "GRAY_DYE"));
+        Material material = ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", active ? "ARROW" : "BARRIER"));
         String displayName = menus().getString(path + ".DISPLAY-NAME", "&b" + prettify(key));
         List<String> lore = menus().getStringList(path + ".LORE");
         Map<String, String> placeholders = Map.of(
@@ -184,7 +184,7 @@ public class FeatureToggleMenu extends BaseMenu {
         placeholders.put("feature_key", feature.configKey());
         placeholders.put("description", feature.description());
         placeholders.put("state", plugin.getFeatureManager().statusText(feature));
-        placeholders.put("raw_state", plugin.getFeatureManager().isEnabled(feature) ? "enabled" : "disabled");
+        placeholders.put("raw_state", plugin.getFeatureManager().isEnabled(feature) ? "ᴇɴᴀʙʟᴇᴅ" : "ᴅɪѕᴀʙʟᴇᴅ");
         return placeholders;
     }
 
@@ -214,8 +214,12 @@ public class FeatureToggleMenu extends BaseMenu {
     }
 
     private static String prettify(String key) {
-        String lower = key.toLowerCase(Locale.ROOT).replace('_', ' ');
-        return lower.substring(0, 1).toUpperCase(Locale.ROOT) + lower.substring(1);
+        return switch (key.toUpperCase(Locale.ROOT)) {
+            case "PREVIOUS" -> "ᴘʀᴇᴠɪᴏᴜѕ";
+            case "NEXT" -> "ɴᴇxᴛ";
+            case "CLOSE" -> "ᴄʟᴏѕᴇ";
+            default -> key.toLowerCase(Locale.ROOT).replace('_', ' ');
+        };
     }
 
     private FileConfiguration menus() {

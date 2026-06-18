@@ -428,13 +428,14 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + publicName(requester) + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " ʜᴀѕ &aᴛᴘᴀ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
+                "&7" + publicName(target) + " ʜᴀѕ &aᴛᴘᴀ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
-        plugin.getSpigotScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
+        plugin.getSpigotScheduler().runEntity(target, () ->
+                target.performCommand("tpaccept " + plainPublicName(requester)));
 
         long delayTicks = Math.max(20L, getTpaCooldownTicks() + 20L);
         plugin.getSpigotScheduler().runEntityLater(target, () -> processNextAutoTpa(targetUuid), delayTicks);
@@ -489,13 +490,14 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + publicName(requester) + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " ʜᴀѕ &aᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
+                "&7" + publicName(target) + " ʜᴀѕ &aᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
-        plugin.getSpigotScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
+        plugin.getSpigotScheduler().runEntity(target, () ->
+                target.performCommand("tpaccept " + plainPublicName(requester)));
 
         long delayTicks = Math.max(20L, getTpaCooldownTicks() + 20L);
         plugin.getSpigotScheduler().runEntityLater(target, () -> processNextAutoTpaHere(targetUuid), delayTicks);
@@ -541,7 +543,7 @@ public class TPAManager {
         }
 
         Player target = Bukkit.getPlayer(request.target());
-        String targetName = target != null ? target.getName() : "ᴛʜɪѕ ᴘʟᴀʏᴇʀ";
+        String targetName = target != null ? publicName(target) : "ᴛʜɪѕ ᴘʟᴀʏᴇʀ";
         String requestType = request.tpaHere() ? "/tpahere" : "/tpa";
         requester.sendMessage(ColorUtils.toComponent(
                 "&7ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + targetName + "&7 ᴡᴀѕ ᴄʟᴇᴀʀᴇᴅ ʙᴇᴄᴀᴜѕᴇ " + reason
@@ -569,15 +571,15 @@ public class TPAManager {
             return false;
         }
 
-        String command = "tpaccept " + requester.getName();
+        String command = "tpaccept " + plainPublicName(requester);
         String requestType = tpaHere ? "/tpahere" : "/tpa";
         String autoName = tpaHere ? "tpahere auto-accept" : "tpa auto-accept";
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ ᴘᴇɴᴅɪɴɢ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ ᴘᴇɴᴅɪɴɢ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + publicName(requester) + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " ʜᴀѕ &a" + autoName + "&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
+                "&7" + publicName(target) + " ʜᴀѕ &a" + autoName + "&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
         plugin.getSpigotScheduler().runEntity(target, () -> target.performCommand(command));
@@ -599,15 +601,15 @@ public class TPAManager {
         if (request.tpaHere()) {
             plugin.getTeleportManager().queue(target, requester.getLocation(), "TPA", null);
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.ACCEPTED-HERE",
-                    "{player}", requester.getName())));
+                    "{player}", publicName(requester))));
             requester.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-HERE-ACCEPTED",
-                    "{player}", target.getName())));
+                    "{player}", publicName(target))));
         } else {
             plugin.getTeleportManager().queue(requester, target.getLocation(), "TPA", null);
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.ACCEPTED",
-                    "{player}", requester.getName())));
+                    "{player}", publicName(requester))));
             requester.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-ACCEPTED",
-                    "{player}", target.getName())));
+                    "{player}", publicName(target))));
         }
 
         SoundUtils.play(target, plugin.getConfigManager().getSound("TPA.CONFIRM"));
@@ -683,5 +685,13 @@ public class TPAManager {
     private long getTpaCooldownTicks() {
         int seconds = plugin.getConfigManager().getConfig().getInt("TELEPORT-COOLDOWN.TPA", 5);
         return seconds * 20L;
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
+    }
+
+    private String plainPublicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().plainPublicName(player);
     }
 }

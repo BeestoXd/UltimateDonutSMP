@@ -3,11 +3,9 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
-import net.kyori.adventure.title.Title;
-import org.bukkit.Location;
+import com.bx.ultimateDonutSmp.utils.TitleUtils;
 import org.bukkit.entity.Player;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +36,8 @@ public class RTPZoneManager {
     }
 
     public void reloadSettings() {
-        enabled = plugin.getConfigManager().getConfig().getBoolean("RTP-ZONE.ENABLED", true);
+        enabled = plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP_ZONE)
+                && plugin.getConfigManager().getConfig().getBoolean("RTP-ZONE.ENABLED", true);
         cuboidName = plugin.getConfigManager().getConfig().getString("RTP-ZONE.CUBOID", "");
         countdownSeconds = Math.max(1, plugin.getConfigManager().getConfig().getInt("RTP-ZONE.EVERY", 30));
         titleTemplate = plugin.getConfigManager().getConfig().getString("RTP-ZONE.TITLE", "&c&lʀᴛᴘ ᴢᴏɴᴇ");
@@ -66,6 +65,12 @@ public class RTPZoneManager {
     }
 
     public void tick(Player player) {
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP)
+                || !plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP_ZONE)) {
+            clearState(player);
+            return;
+        }
+
         if (plugin.getDuelManager() != null) {
             UUID uuid = player.getUniqueId();
             if (plugin.getDuelManager().isInDuel(uuid) || plugin.getDuelManager().isTransitioning(uuid)) {
@@ -88,7 +93,7 @@ public class RTPZoneManager {
         UUID uuid = player.getUniqueId();
         if (!cuboid.contains(player.getLocation())) {
             if (countdowns.containsKey(uuid)) {
-                player.clearTitle();
+                TitleUtils.clearTitle(player);
                 clearState(uuid);
                 SoundUtils.play(player, cancelledSound);
                 if (cancelledMessage != null && !cancelledMessage.isBlank()) {
@@ -104,7 +109,7 @@ public class RTPZoneManager {
 
         int remaining = countdowns.getOrDefault(uuid, countdownSeconds + 1) - 1;
         if (remaining <= 0) {
-            player.clearTitle();
+            TitleUtils.clearTitle(player);
             clearState(uuid);
             teleportPlayer(player);
             return;
@@ -116,7 +121,7 @@ public class RTPZoneManager {
 
     public void clearState(Player player) {
         if (player != null) {
-            player.clearTitle();
+            TitleUtils.clearTitle(player);
             clearState(player.getUniqueId());
         }
     }
@@ -168,11 +173,7 @@ public class RTPZoneManager {
         String title = titleTemplate.replace("%countdown%", countdown);
         String subtitle = subtitleTemplate.replace("%countdown%", countdown);
 
-        player.showTitle(Title.title(
-                ColorUtils.toComponent(title, player),
-                ColorUtils.toComponent(subtitle, player),
-                Title.Times.times(Duration.ZERO, Duration.ofMillis(1200), Duration.ofMillis(150))
-        ));
+        TitleUtils.sendTitle(player, ColorUtils.colorize(title, player), ColorUtils.colorize(subtitle, player), 0, 24, 3);
         SoundUtils.play(player, countdownSound);
     }
 }

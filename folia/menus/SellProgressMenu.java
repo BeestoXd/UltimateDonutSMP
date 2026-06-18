@@ -1,10 +1,10 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -131,8 +131,8 @@ public class SellProgressMenu extends BaseMenu {
                 .map(line -> line
                         .replace("{next_multiplier}", nextMultiplier)
                         .replace("{porcentage}", String.valueOf(percentage))
-                        .replace("{current_earned}", NumberUtils.formatNice(currentEarned))
-                        .replace("{next_goal}", NumberUtils.formatNice(nextGoal))
+                        .replace("{current_earned}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, currentEarned))
+                        .replace("{next_goal}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, nextGoal))
                         .replace("{porcentage_level}", progressBar))
                 .toList();
     }

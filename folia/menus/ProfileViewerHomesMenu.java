@@ -171,7 +171,7 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         List<String> lore = menus().getStringList(lorePath);
         if (lore.isEmpty()) {
             lore = valid
-                    ? List.of("&7ᴡᴏʀʟᴅ: &f{world}", "&7X: &f{x} &7Y: &f{y} &7Z: &f{z}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ")
+                    ? List.of("&7ᴡᴏʀʟᴅ: &f{world}", "&7x: &f{x} &7ʏ: &f{y} &7ᴢ: &f{z}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ")
                     : List.of("&7ᴛʜɪѕ ʜᴏᴍᴇ ᴘᴏɪɴᴛѕ ᴛᴏ ᴀɴ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ᴡᴏʀʟᴅ.");
         }
 
@@ -268,7 +268,7 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         }
 
         Location location = home.getLocation();
-        String world = "Unavailable";
+        String world = "ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ";
         int x = 0;
         int y = 0;
         int z = 0;
@@ -301,14 +301,14 @@ public class ProfileViewerHomesMenu extends BaseMenu {
 
     private String friendlyWorldName(Location location) {
         if (location == null || location.getWorld() == null) {
-            return "Unavailable";
+            return "ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ";
         }
 
         World.Environment environment = location.getWorld().getEnvironment();
         return switch (environment) {
-            case NETHER -> "Nether";
-            case THE_END -> "End";
-            default -> "Overworld";
+            case NETHER -> "ɴᴇᴛʜᴇʀ";
+            case THE_END -> "ᴇɴᴅ";
+            default -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
         };
     }
 

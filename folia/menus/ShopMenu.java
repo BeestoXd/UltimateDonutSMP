@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -126,8 +127,8 @@ public class ShopMenu extends BaseMenu {
         for (ShopManager.ShopCategory category : categories) {
             set(category.slot(), ItemUtils.createItem(
                     category.material(),
-                    category.displayName(),
-                    category.lore()
+                    plugin.getCurrencyManager().applyStaticPlaceholders(category.displayName()),
+                    plugin.getCurrencyManager().applyStaticPlaceholders(category.lore())
             ));
             slotCategories.put(category.slot(), category);
         }
@@ -188,16 +189,69 @@ public class ShopMenu extends BaseMenu {
     }
 
     private ItemStack createShopItem(ShopManager.ShopItem item) {
-        List<String> lore = new ArrayList<>(item.lore());
+        List<String> lore = item.lore().stream()
+                .map(line -> replaceShopItemCurrencyPlaceholders(line, item))
+                .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
         if (!lore.isEmpty()) {
             lore.add("");
         }
 
-        String currencyLabel = item.currency() == ShopManager.Currency.SHARD ? "&5ѕʜᴀʀᴅѕ" : "&aᴍᴏɴᴇʏ";
+        com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType currencyType = item.currency() == ShopManager.Currency.SHARD
+                ? com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS
+                : com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY;
+        String currencyLabel = plugin.getCurrencyManager().color(currencyType)
+                + plugin.getCurrencyManager().plural(currencyType);
         lore.add("&7ᴄᴜʀʀᴇɴᴄʏ: " + currencyLabel);
         lore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴏᴏѕᴇ ǫᴜᴀɴᴛɪᴛʏ");
 
-        return ItemUtils.createItem(item.material(), item.displayName(), lore);
+        return ItemUtils.createItem(
+                item.material(),
+                plugin.getCurrencyManager().applyStaticPlaceholders(item.displayName()),
+                plugin.getCurrencyManager().applyStaticPlaceholders(lore)
+        );
+    }
+
+    private String replaceShopItemCurrencyPlaceholders(String line, ShopManager.ShopItem item) {
+        com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType currencyType = item.currency() == ShopManager.Currency.SHARD
+                ? com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS
+                : com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY;
+        double price = item.currency() == ShopManager.Currency.SHARD
+                ? Math.round(item.pricePerUnit())
+                : item.pricePerUnit();
+        String formattedPrice = plugin.getCurrencyManager().format(currencyType, price);
+        String rawPrice = plugin.getCurrencyManager().formatAmount(currencyType, price);
+        String result = plugin.getCurrencyManager().applyStaticPlaceholders(line)
+                .replace("{price_formatted}", formattedPrice)
+                .replace("%price_formatted%", formattedPrice)
+                .replace("${price_formatted}", formattedPrice)
+                .replace("${price}", formattedPrice)
+                .replace("{price}", rawPrice)
+                .replace("%price%", rawPrice);
+
+        String normalizedLine = normalizePriceLabel(line);
+        if ((normalizedLine.contains("buy price:") || normalizedLine.contains("harga beli:")) && !line.contains("{price")) {
+            int colonIndex = line.indexOf(':');
+            if (colonIndex >= 0) {
+                return line.substring(0, colonIndex + 1) + " " + formattedPrice;
+            }
+        }
+        return result;
+    }
+
+    private String normalizePriceLabel(String value) {
+        return (value == null ? "" : value.toLowerCase(Locale.ROOT))
+                .replace('ʙ', 'b')
+                .replace('ᴜ', 'u')
+                .replace('ʏ', 'y')
+                .replace('ᴘ', 'p')
+                .replace('ʀ', 'r')
+                .replace('ɪ', 'i')
+                .replace('ᴄ', 'c')
+                .replace('ᴇ', 'e')
+                .replace('ʜ', 'h')
+                .replace('ᴀ', 'a')
+                .replace('ɢ', 'g')
+                .replace('ʟ', 'l');
     }
 
     private void buildBackButton() {

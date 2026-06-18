@@ -27,7 +27,7 @@ public class ShardCuboidTask implements Runnable {
 
     private void tickPlayer(Player player, ShardManager shardManager) {
         UUID uuid = player.getUniqueId();
-        shardManager.drainPendingMovement(uuid);
+        int movedBlocks = shardManager.drainPendingMovement(uuid);
         ShardManager.ShardCuboidConfig current = shardManager.findMatchingShardCuboid(player);
         String previousId = shardManager.getLastMatchedCuboid(uuid);
 
@@ -39,8 +39,8 @@ public class ShardCuboidTask implements Runnable {
             handleLeave(uuid, previousId, shardManager);
             shardManager.setLastMatchedCuboid(uuid, null);
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
-                    "ɴᴏɴᴇ",
-                    "ᴏᴜᴛѕɪᴅᴇ",
+                    "None",
+                    "Outside",
                     "-",
                     0,
                     false
@@ -54,13 +54,40 @@ public class ShardCuboidTask implements Runnable {
 
         shardManager.setLastMatchedCuboid(uuid, current.id());
         ShardManager.ShardCuboidProgress progress = shardManager.getOrCreateProgress(uuid, current);
+        shardManager.addMovementToProgress(uuid, current, movedBlocks);
 
         if (current.isWorldExcluded(player.getWorld().getName())) {
             PlayerSettingUtils.sendActionBar(plugin, player, current.excludedWorldMessage());
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
                     current.cuboidName(),
                     "EXCLUDED_WORLD",
-                    "ᴅɪѕᴀʙʟᴇᴅ",
+                    "Disabled",
+                    progress.getRemainingSeconds(),
+                    true
+            ));
+            return;
+        }
+
+        if (plugin.getAFKManager() != null && plugin.getAFKManager().isAfk(uuid)) {
+            PlayerSettingUtils.sendActionBar(plugin, player,
+                    shardManager.replaceCommonPlaceholders(current.afkPausedMessage(), current, progress.getRemainingSeconds(), 0, 1, progress));
+            shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
+                    current.cuboidName(),
+                    "AFK",
+                    "AFK",
+                    progress.getRemainingSeconds(),
+                    true
+            ));
+            return;
+        }
+
+        if (progress.getRemainingSeconds() <= 1 && progress.getMovementThisCycle() < current.minimumMovementBlocks()) {
+            PlayerSettingUtils.sendActionBar(plugin, player,
+                    shardManager.replaceCommonPlaceholders(current.pausedMessage(), current, progress.getRemainingSeconds(), 0, 1, progress));
+            shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
+                    current.cuboidName(),
+                    "PAUSED",
+                    "Paused",
                     progress.getRemainingSeconds(),
                     true
             ));

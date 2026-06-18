@@ -83,6 +83,11 @@ public class OrdersSelectItemMenu extends BaseMenu {
                 List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ᴄᴀᴛᴇɢᴏʀʏ ꜰɪʟᴛᴇʀ")
         ));
         set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ᴛʜᴇ ɪᴛᴇᴍ ᴄᴀᴛᴀʟᴏɢ")));
+        set(lastRow + 4, ItemUtils.createItem(
+                Material.SPYGLASS,
+                "&bѕᴇᴀʀᴄʜ",
+                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴀʀᴄʜ ʙʏ ɴᴀᴍᴇ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ")
+        ));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
                 "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(entries.size(), itemsPerPage),
@@ -91,7 +96,7 @@ public class OrdersSelectItemMenu extends BaseMenu {
         set(lastRow + 7, hasNextPage(entries.size(), itemsPerPage)
                 ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 8, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
 
         if (entries.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
@@ -139,6 +144,15 @@ public class OrdersSelectItemMenu extends BaseMenu {
             new OrdersSelectItemMenu(plugin, page, categoryFilter, editOrderId, editNavigation).open(player);
             return;
         }
+        if (slot == lastRow + 4) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            if (isEditMode()) {
+                plugin.getOrdersManager().promptEditOrderSearchInput(player, editOrderId, editNavigation);
+            } else {
+                plugin.getOrdersManager().promptOrderSearchInput(player);
+            }
+            return;
+        }
         if (slot == lastRow + 7) {
             if (hasNextPage(entries.size(), itemsPerPage)) {
                 SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
@@ -147,7 +161,6 @@ public class OrdersSelectItemMenu extends BaseMenu {
             return;
         }
         if (slot == lastRow + 8) {
-            player.closeInventory();
             return;
         }
 
@@ -234,6 +247,11 @@ public class OrdersSelectItemMenu extends BaseMenu {
                 ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ѕᴇʀᴠᴇʀ ᴍᴀᴛᴇʀɪᴀʟѕ")));
+        set(lastRow + 4, ItemUtils.createItem(
+                Material.SPYGLASS,
+                "&bѕᴇᴀʀᴄʜ",
+                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴀʀᴄʜ ʙʏ ɴᴀᴍᴇ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ")
+        ));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
                 "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(entries.size(), itemsPerPage),
@@ -245,7 +263,7 @@ public class OrdersSelectItemMenu extends BaseMenu {
         set(lastRow + 7, hasNextPage(entries.size(), itemsPerPage)
                 ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 8, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
 
         if (entries.isEmpty()) {
             set(Math.min(lastRow - 1, getServerMaterialsFirstResultSlot() + Math.max(0, getServerMaterialsItemsPerPage() / 2)), ItemUtils.createItem(
@@ -290,6 +308,15 @@ public class OrdersSelectItemMenu extends BaseMenu {
             new OrdersSelectItemMenu(plugin, page, categoryFilter, editOrderId, editNavigation).open(player);
             return;
         }
+        if (slot == lastRow + 4) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            if (isEditMode()) {
+                plugin.getOrdersManager().promptEditOrderSearchInput(player, editOrderId, editNavigation);
+            } else {
+                plugin.getOrdersManager().promptOrderSearchInput(player);
+            }
+            return;
+        }
         if (slot == lastRow + 7) {
             if (hasNextPage(entries.size(), itemsPerPage)) {
                 SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
@@ -298,7 +325,6 @@ public class OrdersSelectItemMenu extends BaseMenu {
             return;
         }
         if (slot == lastRow + 8) {
-            player.closeInventory();
             return;
         }
 

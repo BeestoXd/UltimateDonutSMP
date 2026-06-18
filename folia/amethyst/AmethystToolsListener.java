@@ -3,13 +3,12 @@ package com.bx.ultimateDonutSmp.amethyst;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.PlayerDataManager;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShardManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -91,7 +90,7 @@ public class AmethystToolsListener implements Listener {
         ConfigurationSection cfg = manager.getToolSection(AmethystToolType.DRILL);
         int radius = cfg != null ? cfg.getInt("RADIUS", 1) : 1;
 
-        Set<Material> disabled = manager.getdisabledBlocks();
+        Set<Material> disabled = manager.getDisabledBlocks();
         if (disabled.contains(origin.getType())) {
             return;
         }
@@ -244,51 +243,36 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
-        Inventory containerInventory;
-        try {
-            org.bukkit.block.Container container = (org.bukkit.block.Container) clicked.getState();
-            containerInventory = container.getInventory();
-        } catch (ClassCastException e) {
+        if (!(clicked.getState() instanceof org.bukkit.block.Container container)) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("SELL-NO-CHEST")));
             return;
         }
 
-        ShopManager shopManager = plugin.getShopManager();
-        PlayerDataManager playerDataManager = plugin.getPlayerDataManager();
-        PlayerData data = playerDataManager.get(player);
-        if (data == null) {
-            return;
-        }
+        Inventory containerInventory = container.getInventory();
+        ShopManager.SellResult result = plugin.getShopManager().sellInventoryContents(
+                player,
+                containerInventory,
+                0,
+                containerInventory.getSize(),
+                EconomyReason.AMETHYST_SELL,
+                false
+        );
 
-        double total = 0D;
-        int soldSlots = 0;
-
-        for (int i = 0; i < containerInventory.getSize(); i++) {
-            ItemStack slotItem = containerInventory.getItem(i);
-            if (slotItem == null || slotItem.getType().isAir()) {
-                continue;
-            }
-
-            double unitWorth = shopManager.getWorth(slotItem);
-            if (unitWorth <= 0D) {
-                continue;
-            }
-
-            total += unitWorth * slotItem.getAmount();
-            containerInventory.setItem(i, null);
-            soldSlots++;
-        }
-
-        if (soldSlots == 0) {
+        if (result.status() == ShopManager.SellStatus.NO_SELLABLE_ITEMS) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("SELL-EMPTY")));
             return;
         }
+        if (result.status() == ShopManager.SellStatus.TRANSACTION_FAILED) {
+            player.sendMessage(ColorUtils.toComponent(manager.getMessage("SELL-FAILED")));
+            return;
+        }
 
-        plugin.getEconomyManager().deposit(player, total, EconomyReason.AMETHYST_SELL);
         manager.spawnAmethystParticles(clicked.getLocation().add(0.5, 1, 0.5));
         SoundUtils.play(player, manager.getSound("USE"));
         player.sendMessage(ColorUtils.toComponent(
-                manager.getMessage("SELL-SUCCESS", "{amount}", NumberUtils.formatNice(total))));
+                manager.getMessage("SELL-SUCCESS",
+                        "{amount}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, result.totalPayout()),
+                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(result.totalPayout()))));
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {

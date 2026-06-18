@@ -22,7 +22,7 @@ public class TpaConfirmMenu extends BaseMenu {
                 plugin,
                 plugin.getConfigManager().getMenus()
                         .getString("TPA-CONFIRM-MENU.TITLE", "&8ᴄᴏɴꜰɪʀᴍ ᴛᴘᴀ {here}")
-                        .replace("{here}", tpaHere ? "ʜᴇʀᴇ" : ""),
+                        .replace("{here}", tpaHere ? "Here" : ""),
                 plugin.getConfigManager().getMenus().getInt("TPA-CONFIRM-MENU.SIZE", 27)
         );
         this.requesterName = requesterName;

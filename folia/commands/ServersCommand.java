@@ -57,10 +57,10 @@ public class ServersCommand implements CommandExecutor {
         sender.sendMessage("ɴᴇᴛᴡᴏʀᴋ ѕᴇʀᴠᴇʀ ѕᴛᴀᴛᴜѕ:");
         for (ServerStatusSnapshot snapshot : plugin.getNetworkStatusManager().getOrderedSnapshots()) {
             sender.sendMessage("- " + snapshot.displayName()
-                    + " | " + (snapshot.online() ? "ᴏɴʟɪɴᴇ" : "ᴏꜰꜰʟɪɴᴇ")
+                    + " | " + (snapshot.online() ? "ONLINE" : "OFFLINE")
                     + " | ᴘʟᴀʏᴇʀѕ=" + snapshot.playerCount()
-                    + " | ѕᴏꜰᴛᴡᴀʀᴇ=" + snapshot.softwareLabel()
-                    + " | ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ=" + snapshot.performanceLabel());
+                    + " | software=" + snapshot.softwareLabel()
+                    + " | performance=" + snapshot.performanceLabel());
         }
         return true;
     }

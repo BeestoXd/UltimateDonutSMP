@@ -55,6 +55,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private WorthManager worthManager;
     private ShopManager shopManager;
     private OrdersManager ordersManager;
+    private EnchantmentsManager enchantmentsManager;
+    private FilterManager filterManager;
     private DuelManager duelManager;
     private FfaManager ffaManager;
     private AuctionHouseManager auctionHouseManager;
@@ -92,6 +94,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private SkinsRestorerTablistRefreshBridge skinsRestorerTablistRefreshBridge;
     private OptimizationManager optimizationManager;
     private CrashProtectionManager crashProtectionManager;
+    private AnvilModerationManager anvilModerationManager;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -159,7 +162,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         hoverStatsManager = new HoverStatsManager(this);
         worthManager = new WorthManager(this);
         shopManager = new ShopManager(this);
+        filterManager = new FilterManager(this);
         ordersManager = new OrdersManager(this);
+        enchantmentsManager = new EnchantmentsManager(this);
         duelManager = new DuelManager(this);
         ffaManager = new FfaManager(this);
         auctionHouseManager = new AuctionHouseManager(this);
@@ -173,6 +178,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         invseeManager = new InvseeManager(this);
         profileViewerManager = new ProfileViewerManager(this);
         punishmentManager = new PunishmentManager(this);
+        anvilModerationManager = new AnvilModerationManager(this);
+        anvilModerationManager.load();
         statsWipeManager = new StatsWipeManager(this);
         spawnerManager = new SpawnerManager(this);
         antiEspManager = new AntiEspManager(this);
@@ -430,6 +437,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new SpawnerVisibilityListener(this), this);
         pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
+        pm.registerEvents(new AnvilModerationListener(this), this);
     }
 
     private void registerCommands() {
@@ -536,6 +544,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("leaderboard", lbCmd, FeatureManager.Feature.LEADERBOARDS);
         setExecutor("freeze", new FreezeCommand(this));
         setExecutor("fly", new FlyCommand(this));
+        setExecutor("kill", new KillCommand(this));
         setExecutor("heal", new HealCommand(this));
         setExecutor("feed", new FeedCommand(this));
         registerGodModeCommand(new GodModeCommand(this));
@@ -602,7 +611,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
 
         setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
-        
+        setExecutor("safety", new SafetyCommand(this), FeatureManager.Feature.SAFETY);
+
         FriendsCommand friendsCommand = new FriendsCommand(this);
         setExecutor("friends", friendsCommand, FeatureManager.Feature.FRIENDS);
         setExecutor("friend", friendsCommand, FeatureManager.Feature.FRIENDS);
@@ -637,6 +647,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ServerWipeCommand serverWipeCommand = new ServerWipeCommand(this);
         setExecutor("serverwipe", serverWipeCommand);
         setTabCompleter("serverwipe", serverWipeCommand);
+
+        AnvilModerationCommand anvilModCommand = new AnvilModerationCommand(this);
+        setExecutor("amod", anvilModCommand);
+        setTabCompleter("amod", anvilModCommand);
     }
 
     private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
@@ -830,6 +844,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (maintenanceManager != null) {
             maintenanceManager.load();
         }
+        if (anvilModerationManager != null) {
+            anvilModerationManager.load();
+        }
         leaderboardManager.invalidateAll();
         scoreboardManager.updateAll();
         tablistManager.updateAll();
@@ -992,6 +1009,14 @@ public final class UltimateDonutSmp extends JavaPlugin {
         return ordersManager;
     }
 
+    public EnchantmentsManager getEnchantmentsManager() {
+        return enchantmentsManager;
+    }
+
+    public FilterManager getFilterManager() {
+        return filterManager;
+    }
+
     public DuelManager getDuelManager() {
         return duelManager;
     }
@@ -1066,6 +1091,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public PunishmentManager getPunishmentManager() {
         return punishmentManager;
+    }
+
+    public AnvilModerationManager getAnvilModerationManager() {
+        return anvilModerationManager;
     }
 
     public StatsWipeManager getStatsWipeManager() {

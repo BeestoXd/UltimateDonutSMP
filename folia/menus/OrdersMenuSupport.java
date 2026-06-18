@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.LanguageManager;
 import com.bx.ultimateDonutSmp.managers.OrdersManager;
 import com.bx.ultimateDonutSmp.models.Order;
 import com.bx.ultimateDonutSmp.models.OrderCollectionClaim;
@@ -27,14 +28,18 @@ final class OrdersMenuSupport {
     ) {
         List<String> extraLore = new ArrayList<>();
         extraLore.add("");
-        extraLore.add("&7ᴏᴡɴᴇʀ: &f" + order.ownerName());
-        extraLore.add("&7ѕᴛᴀᴛᴜѕ: &f" + order.status().name());
-        extraLore.add("&7ᴘʀᴏɢʀᴇѕѕ: &e" + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity());
-        extraLore.add("&7ᴘʀɪᴄᴇ ᴇᴀᴄʜ: " + plugin.getCurrencyManager().formatMoney(order.priceEach()));
-        extraLore.add("&7ᴘᴀɪᴅ ѕᴏ ꜰᴀʀ: " + plugin.getCurrencyManager().formatMoney(order.paidAmount()));
-        extraLore.add("&7ᴇѕᴄʀᴏᴡ ʟᴇꜰᴛ: " + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()));
-        extraLore.add("&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis())));
-        extraLore.add("&7ᴏʀᴅᴇʀ ID: &f#" + order.id());
+        extraLore.add(tr("&7ᴏᴡɴᴇʀ: &f") + order.ownerName());
+        extraLore.add(tr("&7ѕᴛᴀᴛᴜѕ: &f") + plugin.getLanguageManager().display(
+                "ORDER_STATUSES",
+                order.status().name(),
+                order.status().name()
+        ));
+        extraLore.add(tr("&7ᴘʀᴏɢʀᴇѕѕ: &e") + order.deliveredQuantity() + "&7/&e" + order.requestedQuantity());
+        extraLore.add(tr("&7ᴘʀɪᴄᴇ ᴇᴀᴄʜ: ") + plugin.getCurrencyManager().formatMoney(order.priceEach()));
+        extraLore.add(tr("&7ᴘᴀɪᴅ ѕᴏ ꜰᴀʀ: ") + plugin.getCurrencyManager().formatMoney(order.paidAmount()));
+        extraLore.add(tr("&7ᴇѕᴄʀᴏᴡ ʟᴇꜰᴛ: ") + plugin.getCurrencyManager().formatMoney(order.escrowRemaining()));
+        extraLore.add(tr("&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f") + manager.formatRemaining(order.secondsRemaining(System.currentTimeMillis())));
+        extraLore.add(tr("&7ᴏʀᴅᴇʀ ID: &f#") + order.id());
         extraLore.add("");
         extraLore.add(ownedByViewer ? "&eᴄʟɪᴄᴋ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴏʀᴅᴇʀ" : "&eᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴅᴇʟɪᴠᴇʀʏ ᴏᴘᴛɪᴏɴѕ");
         return decorateItem(plugin, order.requestedItem(), manager.describeItem(order.requestedItem()), extraLore);
@@ -50,8 +55,8 @@ final class OrdersMenuSupport {
                     Material.SUNFLOWER,
                     "&aᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ",
                     List.of(
-                            "&7ᴀᴍᴏᴜɴᴛ: " + plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
-                            "&7ᴏʀᴅᴇʀ: &f#" + claim.orderId(),
+                            tr("&7ᴀᴍᴏᴜɴᴛ: ") + plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
+                            tr("&7ᴏʀᴅᴇʀ: &f#") + claim.orderId(),
                             "",
                             "&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ"
                     )
@@ -61,8 +66,8 @@ final class OrdersMenuSupport {
         List<String> extraLore = new ArrayList<>();
         extraLore.add("");
         extraLore.add("&7ᴄʟᴀɪᴍ ᴛʏᴘᴇ: &fᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍ");
-        extraLore.add("&7ᴏʀᴅᴇʀ: &f#" + claim.orderId());
-        extraLore.add("&7ᴄʀᴇᴀᴛᴇᴅ: &f" + NumberUtils.formatTimeLong(Math.max(0L,
+        extraLore.add(tr("&7ᴏʀᴅᴇʀ: &f#") + claim.orderId());
+        extraLore.add(tr("&7ᴄʀᴇᴀᴛᴇᴅ: &f") + NumberUtils.formatTimeLong(Math.max(0L,
                 (System.currentTimeMillis() - claim.createdAt()) / 1000L)));
         extraLore.add("");
         extraLore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ");
@@ -86,18 +91,32 @@ final class OrdersMenuSupport {
         }
 
         List<String> combinedLore = new ArrayList<>();
-        if (meta.hasLore() && meta.lore() != null) {
-            for (net.kyori.adventure.text.Component line : meta.lore()) {
+        com.bx.ultimateDonutSmp.models.ItemKey key = com.bx.ultimateDonutSmp.models.ItemKey.fromStack(source);
+        List<String> enchantLines = key.enchantLoreLines("&7- &d");
+        if (!enchantLines.isEmpty()) {
+            combinedLore.add(ColorUtils.toLegacyString("&bRequired Enchantments:"));
+            for (String line : enchantLines) {
+                combinedLore.add(ColorUtils.toLegacyString(line));
+            }
+            combinedLore.add("");
+        }
+
+        if (meta.hasLore() && meta.getLore() != null) {
+            for (String line : meta.getLore()) {
                 combinedLore.add(ColorUtils.toLegacyString(line));
             }
         }
         combinedLore.addAll(extraLore);
 
         if (!meta.hasDisplayName() && fallbackDisplayName != null && !fallbackDisplayName.isBlank()) {
-            meta.displayName(ColorUtils.toComponent("&b" + fallbackDisplayName));
+            meta.setDisplayName(ColorUtils.toComponent("&b" + fallbackDisplayName));
         }
-        meta.lore(ColorUtils.toComponentList(combinedLore));
+        meta.setLore(ColorUtils.toComponentList(combinedLore));
         display.setItemMeta(meta);
         return display;
+    }
+
+    static String tr(String text) {
+        return LanguageManager.translateBuiltInText(text);
     }
 }

@@ -31,7 +31,7 @@ public class SpawnCommand implements CommandExecutor {
             return true;
         }
 
-        if (plugin.getSpawnManager().hasMenuDefinition(SpawnManager.AreaType.SPAWN)) {
+        if (plugin.getSpawnManager().shouldOpenMenu(SpawnManager.AreaType.SPAWN)) {
             new SpawnMenu(plugin).open(player);
             return true;
         }

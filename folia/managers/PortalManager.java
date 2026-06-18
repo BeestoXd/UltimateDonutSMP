@@ -423,7 +423,8 @@ public class PortalManager {
     }
 
     public boolean isSystemEnabled() {
-        return plugin.getConfigManager().getConfig().getBoolean("PORTAL-SYSTEM.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.PORTALS)
+                && plugin.getConfigManager().getConfig().getBoolean("PORTAL-SYSTEM.ENABLED", true);
     }
 
     public void clearPlayerState(UUID playerId) {
@@ -538,7 +539,7 @@ public class PortalManager {
         for (int i = 0; i < entityIds.size(); i++) {
             Entity entity = Bukkit.getEntity(entityIds.get(i));
             if (entity instanceof TextDisplay display && entity.isValid()) {
-                display.text(ColorUtils.toComponent(lines.get(i)));
+                display.setText(ColorUtils.toComponent(lines.get(i)));
             }
         }
     }
@@ -558,7 +559,7 @@ public class PortalManager {
             String line = lines.get(i);
             Location lineLocation = baseLocation.clone().subtract(0D, i * lineSpacing, 0D);
             TextDisplay display = baseLocation.getWorld().spawn(lineLocation, TextDisplay.class, textDisplay -> {
-                textDisplay.text(ColorUtils.toComponent(line));
+                textDisplay.setText(ColorUtils.toComponent(line));
                 configureHologramDisplay(textDisplay);
                 textDisplay.addScoreboardTag(HOLOGRAM_TAG);
                 textDisplay.getPersistentDataContainer().set(
@@ -642,9 +643,9 @@ public class PortalManager {
         int minZ = Math.min(cuboid.z1(), cuboid.z2());
         int maxZ = Math.max(cuboid.z1(), cuboid.z2());
 
-        double x = (minX + maxX + 1) / 2.0d;
+        double x = (minX + maxX + 1) / 2.0D;
         double y = maxY + getHologramOffsetY();
-        double z = (minZ + maxZ + 1) / 2.0d;
+        double z = (minZ + maxZ + 1) / 2.0D;
         return new Location(world, x, y, z);
     }
 
@@ -993,7 +994,7 @@ public class PortalManager {
                 warn("Portal '" + portal.id() + "' references missing cuboid '" + portal.cuboidName() + "'.");
             }
             if (!isDestinationUsable(portal)) {
-                warn("Portal '" + portal.id() + "' has unavailable destination '" + portal.destinationValue() + "'.");
+                warn("Portal '" + portal.id() + "' ʜᴀѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '" + portal.destinationValue() + "'.");
             }
         }
     }
@@ -1006,4 +1007,3 @@ public class PortalManager {
         plugin.getLogger().warning("[PortalManager] " + message);
     }
 }
-

@@ -1,8 +1,8 @@
 package com.bx.ultimateDonutSmp.models;
 
+import com.bx.ultimateDonutSmp.utils.AttributeUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -74,9 +74,7 @@ public class FfaPlayerSnapshot {
         }
 
         PlayerInventory inventory = player.getInventory();
-        double maxHealth = player.getAttribute(Attribute.MAX_HEALTH) == null
-                ? 20D
-                : player.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double maxHealth = AttributeUtils.getMaxHealth(player);
 
         return new FfaPlayerSnapshot(
                 inventory.getStorageContents(),

@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.hooks;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -25,7 +24,7 @@ public class VaultEconomyHook extends AbstractEconomy {
 
     @Override
     public String getName() {
-        return plugin.getPluginMeta().getName();
+        return plugin.getDescription().getName();
     }
 
     @Override
@@ -40,17 +39,17 @@ public class VaultEconomyHook extends AbstractEconomy {
 
     @Override
     public String format(double amount) {
-        return "$" + NumberUtils.format(amount);
+        return plugin.getCurrencyManager().formatMoney(amount);
     }
 
     @Override
     public String currencyNamePlural() {
-        return "dollars";
+        return plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
     }
 
     @Override
     public String currencyNameSingular() {
-        return "dollar";
+        return plugin.getCurrencyManager().singular(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
     }
 
     @Override
@@ -119,7 +118,7 @@ public class VaultEconomyHook extends AbstractEconomy {
     public EconomyResponse withdrawPlayer(String playerName, double amount) {
         var account = plugin.getEconomyManager().resolveAccount(playerName);
         if (account == null) {
-            return failureResponse(amount, 0D, "ᴘʟᴀʏᴇʀ ᴀᴄᴄᴏᴜɴᴛ ɴᴏᴛ ꜰᴏᴜɴᴅ.");
+            return failureResponse(amount, 0D, "Player account not found.");
         }
 
         var result = plugin.getEconomyManager().withdraw(account, amount, EconomyReason.AUCTION_PURCHASE);
@@ -145,7 +144,7 @@ public class VaultEconomyHook extends AbstractEconomy {
     public EconomyResponse depositPlayer(String playerName, double amount) {
         var account = plugin.getEconomyManager().resolveAccount(playerName);
         if (account == null) {
-            return failureResponse(amount, 0D, "ᴘʟᴀʏᴇʀ ᴀᴄᴄᴏᴜɴᴛ ɴᴏᴛ ꜰᴏᴜɴᴅ.");
+            return failureResponse(amount, 0D, "Player account not found.");
         }
 
         var result = plugin.getEconomyManager().deposit(account, amount, EconomyReason.SELL_PAYOUT);
@@ -271,6 +270,6 @@ public class VaultEconomyHook extends AbstractEconomy {
     }
 
     private EconomyResponse bankUnsupported() {
-        return new EconomyResponse(0D, 0D, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "ʙᴀɴᴋ ѕᴜᴘᴘᴏʀᴛ ɪѕ ɴᴏᴛ ɪᴍᴘʟᴇᴍᴇɴᴛᴇᴅ.");
+        return new EconomyResponse(0D, 0D, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Bank support is not implemented.");
     }
 }

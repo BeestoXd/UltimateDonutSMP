@@ -3,6 +3,10 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.models.ItemKey;
+import com.bx.ultimateDonutSmp.utils.SignInputUtil;
+import com.bx.ultimateDonutSmp.menus.EnchantSelectMenu;
+import com.bx.ultimateDonutSmp.menus.OrdersNewMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersBrowseMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersEditMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersInventoryItemMenu;
@@ -115,6 +119,7 @@ public class OrdersManager {
         NO_PENDING_ORDER,
         NO_PLAYER_DATA,
         INVALID_ITEM,
+        UNSAFE_ITEM,
         INVALID_QUANTITY,
         INVALID_PRICE,
         TOTAL_TOO_HIGH,
@@ -145,6 +150,7 @@ public class OrdersManager {
 
     public enum ClaimFailureReason {
         DISABLED,
+        CLAIMS_DISABLED,
         CLAIM_NOT_FOUND,
         NOT_OWNER,
         ALREADY_CLAIMED,
@@ -188,8 +194,13 @@ public class OrdersManager {
             boolean success,
             CreateFailureReason reason,
             Order order,
-            double creationFee
-    ) {}
+            double creationFee,
+            CrashProtectionManager.ValidationResult safetyResult
+    ) {
+        public CreateOrderResult(boolean success, CreateFailureReason reason, Order order, double creationFee) {
+            this(success, reason, order, creationFee, null);
+        }
+    }
 
     public record DeliveryPreview(
             boolean success,
@@ -229,7 +240,7 @@ public class OrdersManager {
     private final UltimateDonutSmp plugin;
     private final Set<UUID> activeTransactions = new HashSet<>();
     private final Map<UUID, Long> lastClickTimes = new HashMap<>();
-    private final Map<UUID, PendingOrderCreation> pendingCreations = new HashMap<>();
+    private final Map<UUID, NewOrderSession> pendingCreations = new HashMap<>();
     private final Map<UUID, PendingSearchInput> pendingSearchInputs = new HashMap<>();
     private final Map<UUID, PendingOrderEdit> pendingEdits = new HashMap<>();
     private final Map<String, List<OrderCatalogEntry>> catalogByCategory = new LinkedHashMap<>();
@@ -246,9 +257,109 @@ public class OrdersManager {
         validateConfiguration();
     }
 
+    public void prepareForServerWipe() {
+        activeTransactions.clear();
+        lastClickTimes.clear();
+        pendingCreations.clear();
+        pendingSearchInputs.clear();
+        pendingEdits.clear();
+    }
+
     public boolean isEnabled() {
         return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.ORDERS)
                 && config().getBoolean("SETTINGS.ENABLED", true);
+    }
+
+    public boolean isClaimsEnabled() {
+        return config().getBoolean("DELIVERY.CLAIMS_ENABLED", true);
+    }
+
+    public void processAutoClaims(Player player) {
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+        if (isClaimsEnabled()) {
+            return;
+        }
+
+        plugin.getFoliaScheduler().runAsync(() -> {
+            List<OrderCollectionClaim> unclaimed = getUnclaimedClaims(player.getUniqueId());
+            if (unclaimed.isEmpty()) {
+                return;
+            }
+
+            for (OrderCollectionClaim claim : unclaimed) {
+                if (!player.isOnline()) {
+                    break;
+                }
+
+                if (claim.refundClaim()) {
+                    plugin.getFoliaScheduler().runAsync(() -> {
+                        synchronized (this) {
+                            OrderCollectionClaim fresh = getClaim(claim.id());
+                            if (fresh == null || fresh.claimed()) {
+                                return;
+                            }
+                            if (markClaimClaimed(claim.id(), player.getUniqueId(), System.currentTimeMillis())) {
+                                plugin.getFoliaScheduler().runEntity(player, () -> {
+                                    PlayerData ownerData = getPlayerData(player);
+                                    if (ownerData != null) {
+                                        var depositResult = plugin.getEconomyManager().deposit(player, claim.moneyAmount(), EconomyReason.ORDER_REFUND);
+                                        if (depositResult.success()) {
+                                            clearEscrowRemaining(claim.orderId());
+                                            ownerData.setMoneySpent(Math.max(0D, ownerData.getMoneySpent() - claim.moneyAmount()));
+                                            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                                                    "ORDERS.AUTO_CLAIM_REFUND",
+                                                    "&a[Orders] Automatically claimed refund of &f{amount}&a.",
+                                                    "{amount}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount())
+                                            )));
+                                        } else {
+                                            plugin.getFoliaScheduler().runAsync(() -> reopenClaim(claim.id()));
+                                        }
+                                    } else {
+                                        plugin.getFoliaScheduler().runAsync(() -> reopenClaim(claim.id()));
+                                    }
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    if (isMissingItem(claim.item())) {
+                        continue;
+                    }
+                    plugin.getFoliaScheduler().runEntity(player, () -> {
+                        if (!player.isOnline()) {
+                            return;
+                        }
+                        if (canFitItem(player, claim.item())) {
+                            plugin.getFoliaScheduler().runAsync(() -> {
+                                synchronized (this) {
+                                    OrderCollectionClaim fresh = getClaim(claim.id());
+                                    if (fresh == null || fresh.claimed()) {
+                                        return;
+                                    }
+                                    if (markClaimClaimed(claim.id(), player.getUniqueId(), System.currentTimeMillis())) {
+                                        plugin.getFoliaScheduler().runEntity(player, () -> {
+                                            if (canFitItem(player, claim.item())) {
+                                                player.getInventory().addItem(claim.item());
+                                                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                                                        "ORDERS.AUTO_CLAIM_ITEM",
+                                                        "&a[Orders] Automatically claimed completed order item: &f{item}&a x{amount}.",
+                                                        "{item}", claim.item().getType().name(),
+                                                        "{amount}", String.valueOf(claim.item().getAmount())
+                                                )));
+                                            } else {
+                                                plugin.getFoliaScheduler().runAsync(() -> reopenClaim(claim.id()));
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public String getBrowseTitle() {
@@ -570,51 +681,11 @@ public class OrdersManager {
         lastClickTimes.put(uuid, System.currentTimeMillis());
     }
 
-    public void promptOrderQuantityInput(Player player, OrderCatalogEntry entry) {
-        if (player == null || entry == null) {
-            return;
-        }
 
-        pendingSearchInputs.remove(player.getUniqueId());
-        pendingEdits.remove(player.getUniqueId());
-        pendingCreations.put(player.getUniqueId(), PendingOrderCreation.start(entry));
-        player.closeInventory();
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                "ORDERS.PROMPT_QUANTITY",
-                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeMaterial(entry.material())
-        )));
-    }
 
-    public boolean promptOrderQuantityInput(Player player, ItemStack item) {
-        return promptOrderQuantityInput(player, item, resolveCategoryForMaterial(item == null ? null : item.getType()));
-    }
 
-    public boolean promptOrderQuantityInput(Player player, ItemStack item, String categoryKey) {
-        if (player == null) {
-            return false;
-        }
 
-        pendingSearchInputs.remove(player.getUniqueId());
-        pendingEdits.remove(player.getUniqueId());
-        ItemStack requestedItem = prepareRequestedItem(item);
-        if (requestedItem == null || !isOrderable(requestedItem.getType())) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                    "ORDERS.ITEM_BLOCKED",
-                    "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ."
-            )));
-            return false;
-        }
 
-        pendingCreations.put(player.getUniqueId(), PendingOrderCreation.start(requestedItem, normalizeCategory(categoryKey)));
-        player.closeInventory();
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                "ORDERS.PROMPT_QUANTITY",
-                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeItem(requestedItem)
-        )));
-        return true;
-    }
 
     public void promptOrderSearchInput(Player player) {
         if (player == null) {
@@ -625,10 +696,35 @@ public class OrdersManager {
         pendingEdits.remove(player.getUniqueId());
         pendingSearchInputs.put(player.getUniqueId(), PendingSearchInput.newOrder());
         player.closeInventory();
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                "ORDERS.PROMPT_SEARCH",
-                "&7ᴇɴᴛᴇʀ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ѕᴇᴀʀᴄʜ ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ."
-        )));
+
+        org.bukkit.configuration.ConfigurationSection configSection = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("SEARCH_SIGN");
+        SignInputUtil.openFromConfig(plugin, player, configSection, text -> {
+            if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
+                pendingSearchInputs.remove(player.getUniqueId());
+                new OrdersBrowseMenu(plugin, 1, getDefaultSort(), "ALL").open(player);
+            } else {
+                handleSearchInput(player, text);
+            }
+        });
+    }
+
+    public void promptOrdersMenuSearch(Player player, OrderSort sortMode, String categoryFilter, boolean isMyOrders) {
+        if (player == null) {
+            return;
+        }
+        player.closeInventory();
+
+        org.bukkit.configuration.ConfigurationSection configSection = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("SEARCH_SIGN");
+        SignInputUtil.openFromConfig(plugin, player, configSection, text -> {
+            String query = (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) ? "" : text.trim();
+            plugin.getFoliaScheduler().runEntity(player, () -> {
+                if (isMyOrders) {
+                    new com.bx.ultimateDonutSmp.menus.OrdersMyOrdersMenu(plugin, 1, sortMode, query).open(player);
+                } else {
+                    new com.bx.ultimateDonutSmp.menus.OrdersBrowseMenu(plugin, 1, sortMode, categoryFilter, query).open(player);
+                }
+            });
+        });
     }
 
     public void promptEditOrderSearchInput(Player player, long orderId, OrderEditNavigation navigation) {
@@ -647,10 +743,16 @@ public class OrdersManager {
         pendingEdits.remove(player.getUniqueId());
         pendingSearchInputs.put(player.getUniqueId(), PendingSearchInput.editOrder(orderId, navigation));
         player.closeInventory();
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                "ORDERS.PROMPT_SEARCH",
-                "&7á´‡É´á´›á´‡Ê€ á´€É´ Éªá´›á´‡á´ á´Ê€ á´„á´€á´›á´‡É¢á´Ê€Ê Ñ•á´‡á´€Ê€á´„Êœ ÉªÉ´ á´„Êœá´€á´›. á´›Êá´˜á´‡ &cá´„á´€É´á´„á´‡ÊŸ&7 á´›á´ á´€Ê™á´Ê€á´›."
-        )));
+
+        org.bukkit.configuration.ConfigurationSection configSection = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("SEARCH_SIGN");
+        SignInputUtil.openFromConfig(plugin, player, configSection, text -> {
+            if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
+                pendingSearchInputs.remove(player.getUniqueId());
+                openEditOrderMenu(player, orderId, navigation);
+            } else {
+                handleSearchInput(player, text);
+            }
+        });
     }
 
     public boolean hasPendingInput(UUID uuid) {
@@ -662,22 +764,26 @@ public class OrdersManager {
             return true;
         }
 
-        PendingOrderCreation pending = pendingCreations.get(uuid);
-        return pending != null && !pending.readyForConfirmation();
+        Player player = org.bukkit.Bukkit.getPlayer(uuid);
+        if (player != null && player.hasMetadata(SignInputUtil.META_SIGN_INPUT)) {
+            return true;
+        }
+
+        return false;
     }
 
     public PendingOrderCreationSnapshot getPendingCreation(UUID uuid) {
-        PendingOrderCreation pending = pendingCreations.get(uuid);
-        if (pending == null || !pending.readyForConfirmation()) {
+        NewOrderSession pending = pendingCreations.get(uuid);
+        if (pending == null || pending.getChosenItem() == null) {
             return null;
         }
 
         return new PendingOrderCreationSnapshot(
-                pending.requestedItem().clone(),
-                pending.categoryKey(),
-                pending.quantity(),
-                pending.priceEach(),
-                roundCurrency(pending.quantity() * pending.priceEach())
+                pending.getChosenItem().clone(),
+                pending.getCategoryKey(),
+                pending.getAmount(),
+                pending.getPriceEach(),
+                roundCurrency(pending.getAmount() * pending.getPriceEach())
         );
     }
 
@@ -688,6 +794,19 @@ public class OrdersManager {
         pendingSearchInputs.remove(uuid);
         pendingEdits.remove(uuid);
         pendingCreations.remove(uuid);
+    }
+
+    public void updateDraftItem(UUID uuid, ItemStack item) {
+        NewOrderSession session = getOrCreateNewOrderSession(uuid);
+        session.setChosenItem(item);
+    }
+
+    public NewOrderSession getOrCreateNewOrderSession(UUID uuid) {
+        return pendingCreations.computeIfAbsent(uuid, k -> new NewOrderSession(null, "ALL"));
+    }
+
+    public void openNewOrderMenu(Player player) {
+        new OrdersNewMenu(plugin).open(player);
     }
 
     public void handlePendingInput(Player player, String rawInput) {
@@ -706,30 +825,6 @@ public class OrdersManager {
             handleEditInput(player, pendingEdit, input);
             return;
         }
-
-        PendingOrderCreation pending = pendingCreations.get(player.getUniqueId());
-        if (pending == null) {
-            return;
-        }
-
-        if (input.equalsIgnoreCase("cancel")) {
-            pendingCreations.remove(player.getUniqueId());
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                    "ORDERS.INPUT_CANCELLED",
-                    "&7ᴏʀᴅᴇʀ ᴄʀᴇᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟʟᴇᴅ."
-            )));
-            new OrdersBrowseMenu(plugin, 1, getDefaultSort(), "ALL").open(player);
-            return;
-        }
-
-        if (pending.step() == PendingStep.QUANTITY) {
-            handleQuantityInput(player, pending, input);
-            return;
-        }
-
-        if (pending.step() == PendingStep.PRICE) {
-            handlePriceInput(player, pending, input);
-        }
     }
 
     public synchronized CreateOrderResult createOrder(Player player) {
@@ -737,25 +832,36 @@ public class OrdersManager {
             return new CreateOrderResult(false, CreateFailureReason.DISABLED, null, 0D);
         }
 
-        PendingOrderCreation pending = pendingCreations.get(player.getUniqueId());
-        if (pending == null || !pending.readyForConfirmation()) {
+        NewOrderSession pending = pendingCreations.get(player.getUniqueId());
+        if (pending == null || pending.getChosenItem() == null || pending.getAmount() <= 0 || pending.getPriceEach() <= 0D) {
             return new CreateOrderResult(false, CreateFailureReason.NO_PENDING_ORDER, null, 0D);
         }
 
-        ItemStack requestedItem = prepareRequestedItem(pending.requestedItem());
+        ItemStack requestedItem = prepareRequestedItem(pending.getChosenItem());
         if (requestedItem == null || !isOrderable(requestedItem.getType())) {
             return new CreateOrderResult(false, CreateFailureReason.INVALID_ITEM, null, 0D);
         }
+        CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                .validateForStorage(requestedItem, CrashProtectionManager.Context.ORDERS);
+        if (!safetyResult.allowed()) {
+            plugin.getCrashProtectionManager().logBlockedItem(
+                    player.getName() + "/" + player.getUniqueId(),
+                    requestedItem,
+                    CrashProtectionManager.Context.ORDERS,
+                    safetyResult
+            );
+            return new CreateOrderResult(false, CreateFailureReason.UNSAFE_ITEM, null, 0D, safetyResult);
+        }
 
-        if (pending.quantity() <= 0) {
+        if (pending.getAmount() <= 0) {
             return new CreateOrderResult(false, CreateFailureReason.INVALID_QUANTITY, null, 0D);
         }
 
-        if (pending.priceEach() < getMinPriceEach() || pending.priceEach() > getMaxPriceEach()) {
+        if (pending.getPriceEach() < getMinPriceEach() || pending.getPriceEach() > getMaxPriceEach()) {
             return new CreateOrderResult(false, CreateFailureReason.INVALID_PRICE, null, 0D);
         }
 
-        double totalBudget = roundCurrency(pending.quantity() * pending.priceEach());
+        double totalBudget = roundCurrency(pending.getAmount() * pending.getPriceEach());
         if (totalBudget <= 0D || totalBudget > getMaxTotalBudget()) {
             return new CreateOrderResult(false, CreateFailureReason.TOTAL_TOO_HIGH, null, 0D);
         }
@@ -796,9 +902,9 @@ public class OrdersManager {
                 player.getUniqueId(),
                 player.getName(),
                 requestedItem,
-                pending.categoryKey(),
-                pending.quantity(),
-                pending.priceEach(),
+                pending.getCategoryKey(),
+                pending.getAmount(),
+                pending.getPriceEach(),
                 totalBudget,
                 now,
                 expiresAt
@@ -826,7 +932,17 @@ public class OrdersManager {
             OrderEditNavigation navigation
     ) {
         if (editOrderId <= 0L) {
-            return promptOrderQuantityInput(player, item, categoryKey);
+            NewOrderSession session = getOrCreateNewOrderSession(player.getUniqueId());
+            session.setChosenItem(item);
+            if (categoryKey != null) {
+                session.setCategoryKey(normalizeCategory(categoryKey));
+            }
+            if (item != null && plugin.getEnchantmentsManager().hasOptionsFor(item.getType())) {
+                new EnchantSelectMenu(plugin, player, item.getType()).open(player);
+            } else {
+                new OrdersNewMenu(plugin).open(player);
+            }
+            return true;
         }
 
         EditOrderResult result = updateOrderItem(player, editOrderId, item, categoryKey);
@@ -863,9 +979,23 @@ public class OrdersManager {
 
         pendingCreations.remove(player.getUniqueId());
         pendingSearchInputs.remove(player.getUniqueId());
-        pendingEdits.put(player.getUniqueId(), new PendingOrderEdit(orderId, EditField.QUANTITY, navigation));
+        PendingOrderEdit pendingEdit = new PendingOrderEdit(orderId, EditField.QUANTITY, navigation);
+        pendingEdits.put(player.getUniqueId(), pendingEdit);
         player.closeInventory();
-        resendEditQuantityPrompt(player, validation.order());
+
+        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("AMOUNT_SIGN");
+        SignInputUtil.openFromConfig(plugin, player, config, text -> {
+            if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
+                pendingEdits.remove(player.getUniqueId());
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                        "ORDERS.EDIT_CANCELLED",
+                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                )));
+                openEditOrderMenu(player, orderId, navigation);
+            } else {
+                handleEditQuantityInput(player, pendingEdit, text);
+            }
+        });
     }
 
     public void promptEditOrderPriceInput(
@@ -886,9 +1016,23 @@ public class OrdersManager {
 
         pendingCreations.remove(player.getUniqueId());
         pendingSearchInputs.remove(player.getUniqueId());
-        pendingEdits.put(player.getUniqueId(), new PendingOrderEdit(orderId, EditField.PRICE, navigation));
+        PendingOrderEdit pendingEdit = new PendingOrderEdit(orderId, EditField.PRICE, navigation);
+        pendingEdits.put(player.getUniqueId(), pendingEdit);
         player.closeInventory();
-        resendEditPricePrompt(player, validation.order());
+
+        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("PRICE_SIGN");
+        SignInputUtil.openFromConfig(plugin, player, config, text -> {
+            if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
+                pendingEdits.remove(player.getUniqueId());
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                        "ORDERS.EDIT_CANCELLED",
+                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                )));
+                openEditOrderMenu(player, orderId, navigation);
+            } else {
+                handleEditPriceInput(player, pendingEdit, text);
+            }
+        });
     }
 
     public synchronized EditOrderResult updateOrderItem(Player player, long orderId, ItemStack item, String categoryKey) {
@@ -911,7 +1055,7 @@ public class OrdersManager {
                 "UPDATE orders SET requested_item_data = ?, requested_material_key = ?, category_key = ? " +
                         "WHERE id = ? AND owner_uuid = ? AND status = ? AND delivered_quantity = 0")) {
             ps.setString(1, serializedItem);
-            ps.setString(2, requestedItem.getType().name());
+            ps.setString(2, ItemKey.fromStack(requestedItem).serialize());
             ps.setString(3, normalizeCategory(categoryKey));
             ps.setLong(4, orderId);
             ps.setString(5, player.getUniqueId().toString());
@@ -1014,7 +1158,7 @@ public class OrdersManager {
             return "ᴜɴᴋɴᴏᴡɴ ɪᴛᴇᴍ";
         }
 
-        return describeMaterial(item.getType());
+        return ItemKey.fromStack(item).displayName();
     }
 
     public String formatRemaining(long seconds) {
@@ -1632,16 +1776,39 @@ public class OrdersManager {
         return EditFailureReason.DATABASE_ERROR;
     }
 
+
+
     private void resendEditQuantityPrompt(Player player, Order order) {
+        PendingOrderEdit pendingEdit = pendingEdits.get(player.getUniqueId());
+        if (pendingEdit == null) {
+            return;
+        }
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_EDIT_QUANTITY",
                 "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: &e{quantity}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
                 "{order_id}", String.valueOf(order.id()),
                 "{quantity}", String.valueOf(order.requestedQuantity())
         )));
+        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("AMOUNT_SIGN");
+        SignInputUtil.openFromConfig(plugin, player, config, text -> {
+            if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
+                pendingEdits.remove(player.getUniqueId());
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                        "ORDERS.EDIT_CANCELLED",
+                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                )));
+                openEditOrderMenu(player, order.id(), pendingEdit.navigation());
+            } else {
+                handleEditQuantityInput(player, pendingEdit, text);
+            }
+        });
     }
 
     private void resendEditPricePrompt(Player player, Order order) {
+        PendingOrderEdit pendingEdit = pendingEdits.get(player.getUniqueId());
+        if (pendingEdit == null) {
+            return;
+        }
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_EDIT_PRICE",
                 "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: {price_formatted}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
@@ -1649,6 +1816,19 @@ public class OrdersManager {
                 "{price}", NumberUtils.format(order.priceEach()),
                 "{price_formatted}", plugin.getCurrencyManager().formatMoney(order.priceEach())
         )));
+        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("PRICE_SIGN");
+        SignInputUtil.openFromConfig(plugin, player, config, text -> {
+            if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
+                pendingEdits.remove(player.getUniqueId());
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                        "ORDERS.EDIT_CANCELLED",
+                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                )));
+                openEditOrderMenu(player, order.id(), pendingEdit.navigation());
+            } else {
+                handleEditPriceInput(player, pendingEdit, text);
+            }
+        });
     }
 
     private OrderEditNavigation normalizeNavigation(
@@ -1679,95 +1859,13 @@ public class OrdersManager {
         ).open(player);
     }
 
-    private void handleQuantityInput(Player player, PendingOrderCreation pending, String input) {
-        int quantity;
-        try {
-            quantity = Math.toIntExact(NumberUtils.parseLong(input));
-        } catch (RuntimeException exception) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                    "ORDERS.INVALID_QUANTITY",
-                    "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0."
-            )));
-            resendQuantityPrompt(player, pending.requestedItem());
-            return;
-        }
 
-        if (quantity <= 0 || quantity > getMaxQuantityPerOrder()) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                    "ORDERS.QUANTITY_OUT_OF_RANGE",
-                    "&cǫᴜᴀɴᴛɪᴛʏ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {max}.",
-                    "{max}", String.valueOf(getMaxQuantityPerOrder())
-            )));
-            resendQuantityPrompt(player, pending.requestedItem());
-            return;
-        }
 
-        pendingCreations.put(player.getUniqueId(), pending.withQuantity(quantity));
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                "ORDERS.PROMPT_PRICE",
-                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeItem(pending.requestedItem())
-        )));
-    }
 
-    private void handlePriceInput(Player player, PendingOrderCreation pending, String input) {
-        double priceEach;
-        try {
-            priceEach = NumberUtils.parse(input);
-        } catch (NumberFormatException exception) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                    "ORDERS.INVALID_PRICE",
-                    "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ."
-            )));
-            resendPricePrompt(player, pending.requestedItem());
-            return;
-        }
 
-        double normalizedPrice = roundCurrency(priceEach);
-        double totalBudget = roundCurrency(normalizedPrice * pending.quantity());
-        if (normalizedPrice < getMinPriceEach() || normalizedPrice > getMaxPriceEach()) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                    "ORDERS.PRICE_OUT_OF_RANGE",
-                    "&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f{min_formatted}&c ᴀɴᴅ &f{max_formatted}&c.",
-                    "{min}", NumberUtils.format(getMinPriceEach()),
-                    "{min_formatted}", plugin.getCurrencyManager().formatMoney(getMinPriceEach()),
-                    "{max}", NumberUtils.format(getMaxPriceEach()),
-                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach())
-            )));
-            resendPricePrompt(player, pending.requestedItem());
-            return;
-        }
 
-        if (totalBudget <= 0D || totalBudget > getMaxTotalBudget()) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                    "ORDERS.TOTAL_TOO_HIGH",
-                    "&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f{max_formatted}&c.",
-                    "{max}", NumberUtils.format(getMaxTotalBudget()),
-                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget())
-            )));
-            resendPricePrompt(player, pending.requestedItem());
-            return;
-        }
 
-        pendingCreations.put(player.getUniqueId(), pending.withPriceEach(normalizedPrice));
-        new OrdersNewMenu(plugin).open(player);
-    }
 
-    private void resendQuantityPrompt(Player player, ItemStack item) {
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                "ORDERS.PROMPT_QUANTITY",
-                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeItem(item)
-        )));
-    }
-
-    private void resendPricePrompt(Player player, ItemStack item) {
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                "ORDERS.PROMPT_PRICE",
-                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
-                "{item}", describeItem(item)
-        )));
-    }
 
     private FileConfiguration config() {
         return plugin.getConfigManager().getOrders();
@@ -2021,6 +2119,9 @@ public class OrdersManager {
         if (!isEnabled()) {
             return new ClaimResult(false, ClaimFailureReason.DISABLED, null);
         }
+        if (!isClaimsEnabled()) {
+            return new ClaimResult(false, ClaimFailureReason.CLAIMS_DISABLED, null);
+        }
 
         OrderCollectionClaim claim = getClaim(claimId);
         if (claim == null) {
@@ -2116,35 +2217,30 @@ public class OrdersManager {
         categoryOrder.clear();
         categoryOrder.add("ALL");
 
-        ConfigurationSection categoriesSection = config().getConfigurationSection("CATEGORY_FILTERS");
-        if (categoriesSection == null) {
+        FilterManager fm = plugin.getFilterManager();
+        if (fm == null) {
             catalogByCategory.put("BLOCKS", List.of(new OrderCatalogEntry("BLOCKS", Material.STONE)));
             categoryOrder.add("BLOCKS");
             return;
         }
 
         Set<Material> globallySeen = EnumSet.noneOf(Material.class);
-        for (String preferredCategory : DEFAULT_CATEGORY_ORDER) {
-            if (preferredCategory.equals("ALL") || !categoriesSection.contains(preferredCategory)) {
-                continue;
-            }
-            List<OrderCatalogEntry> entries = parseCategoryEntries(preferredCategory, categoriesSection, globallySeen);
-            if (!entries.isEmpty()) {
-                catalogByCategory.put(preferredCategory, entries);
-                categoryOrder.add(preferredCategory);
-            }
-        }
-
-        for (String key : categoriesSection.getKeys(false)) {
+        for (String key : fm.categoryNames()) {
             String normalized = key.trim().toUpperCase(Locale.US);
-            if (normalized.equals("ALL") || categoryOrder.contains(normalized)) {
+            if (normalized.equals("ALL")) {
                 continue;
             }
-
-            List<OrderCatalogEntry> entries = parseCategoryEntries(normalized, categoriesSection, globallySeen);
+            List<OrderCatalogEntry> entries = new ArrayList<>();
+            for (Material mat : fm.resolve(key)) {
+                if (isOrderable(mat) && globallySeen.add(mat)) {
+                    entries.add(new OrderCatalogEntry(normalized, mat));
+                }
+            }
             if (!entries.isEmpty()) {
                 catalogByCategory.put(normalized, entries);
-                categoryOrder.add(normalized);
+                if (!categoryOrder.contains(normalized)) {
+                    categoryOrder.add(normalized);
+                }
             }
         }
 
@@ -2206,15 +2302,15 @@ public class OrdersManager {
         return Math.max(1, config().getInt("DELIVERY.MAX_DELIVER_PER_CLICK", 64));
     }
 
-    private int getMaxQuantityPerOrder() {
+    public int getMaxQuantityPerOrder() {
         return Math.max(1, config().getInt("SETTINGS.MAX_QUANTITY_PER_ORDER", 2304));
     }
 
-    private double getMinPriceEach() {
+    public double getMinPriceEach() {
         return Math.max(0.01D, config().getDouble("PRICING.MIN_PRICE_EACH", 10D));
     }
 
-    private double getMaxPriceEach() {
+    public double getMaxPriceEach() {
         return Math.max(getMinPriceEach(), config().getDouble("PRICING.MAX_PRICE_EACH", 250_000_000D));
     }
 
@@ -2261,8 +2357,16 @@ public class OrdersManager {
             return null;
         }
 
+        String matPart = rawMaterial.trim().toUpperCase(Locale.US);
+        if (matPart.startsWith("BOOK|")) {
+            return Material.ENCHANTED_BOOK;
+        }
+        if (matPart.contains("|")) {
+            matPart = matPart.split("\\|")[0];
+        }
+
         try {
-            Material material = Material.valueOf(rawMaterial.trim().toUpperCase(Locale.US));
+            Material material = Material.valueOf(matPart);
             return isModernMaterial(material) ? material : null;
         } catch (IllegalArgumentException exception) {
             return null;
@@ -2322,7 +2426,7 @@ public class OrdersManager {
             ps.setString(1, ownerUuid.toString());
             ps.setString(2, ownerName);
             ps.setString(3, serializeItem(requestedItem));
-            ps.setString(4, requestedItem.getType().name());
+            ps.setString(4, ItemKey.fromStack(requestedItem).serialize());
             ps.setString(5, normalizeCategory(categoryKey));
             ps.setString(6, OrderStatus.ACTIVE.name());
             ps.setInt(7, requestedQuantity);
@@ -2436,6 +2540,11 @@ public class OrdersManager {
 
                 conn.commit();
                 conn.setAutoCommit(originalAutoCommit);
+
+                Player owner = org.bukkit.Bukkit.getPlayer(liveOrder.ownerUuid());
+                if (owner != null && owner.isOnline()) {
+                    processAutoClaims(owner);
+                }
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
@@ -2554,6 +2663,11 @@ public class OrdersManager {
 
                 conn.commit();
                 conn.setAutoCommit(originalAutoCommit);
+
+                Player owner = org.bukkit.Bukkit.getPlayer(order.ownerUuid());
+                if (owner != null && owner.isOnline()) {
+                    processAutoClaims(owner);
+                }
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
@@ -2708,14 +2822,8 @@ public class OrdersManager {
             return false;
         }
 
-        normalizedStack.setAmount(1);
-        normalizedRequested.setAmount(1);
-        try {
-            return ItemSerializationUtils.serialize(normalizedStack).equals(ItemSerializationUtils.serialize(normalizedRequested));
-        } catch (java.io.IOException exception) {
-            plugin.getLogger().warning("Failed to compare order item data: " + summarizeException(exception));
-            return false;
-        }
+        ItemKey key = ItemKey.fromStack(normalizedRequested);
+        return key.matches(normalizedStack);
     }
 
     private ItemStack normalizeForOrderMatch(ItemStack item) {
@@ -2824,10 +2932,12 @@ public class OrdersManager {
         Material material = parseMaterial(materialKey);
         DeserializedItem deserialized = deserializeOrderItem(rs.getString("requested_item_data"), material);
         ItemStack requestedItem = deserialized.item();
-        if (requestedItem == null && material != null) {
-            requestedItem = new ItemStack(material);
-            requestedItem.setAmount(1);
-            repairOrderItemData(orderId, requestedItem, deserialized.failureReason());
+        if (requestedItem == null && materialKey != null) {
+            ItemKey key = ItemKey.deserialize(materialKey);
+            if (key != null) {
+                requestedItem = key.buildIcon();
+                repairOrderItemData(orderId, requestedItem, deserialized.failureReason());
+            }
         } else if (requestedItem != null) {
             requestedItem.setAmount(1);
         }
@@ -2898,7 +3008,7 @@ public class OrdersManager {
         }
     }
 
-    private double roundCurrency(double amount) {
+    public double roundCurrency(double amount) {
         return Math.round(amount * 100D) / 100D;
     }
 
@@ -3025,33 +3135,55 @@ public class OrdersManager {
         READY
     }
 
-    private record PendingOrderCreation(
-            ItemStack requestedItem,
-            String categoryKey,
-            int quantity,
-            double priceEach,
-            PendingStep step
-    ) {
-        private static PendingOrderCreation start(OrderCatalogEntry entry) {
-            return start(entry.createPreviewItem(), entry.categoryKey());
+        public static class NewOrderSession {
+        private ItemStack chosenItem;
+        private String categoryKey;
+        private int amount;
+        private double priceEach;
+
+        public NewOrderSession(ItemStack chosenItem, String categoryKey) {
+            this.chosenItem = chosenItem != null ? chosenItem.clone() : null;
+            if (this.chosenItem != null) {
+                this.chosenItem.setAmount(1);
+            }
+            this.categoryKey = categoryKey;
+            this.amount = 0;
+            this.priceEach = 0.0;
         }
 
-        private static PendingOrderCreation start(ItemStack requestedItem, String categoryKey) {
-            ItemStack storedItem = requestedItem.clone();
-            storedItem.setAmount(1);
-            return new PendingOrderCreation(storedItem, categoryKey, 0, 0D, PendingStep.QUANTITY);
+        public ItemStack getChosenItem() {
+            return chosenItem;
         }
 
-        private PendingOrderCreation withQuantity(int quantity) {
-            return new PendingOrderCreation(requestedItem.clone(), categoryKey, quantity, 0D, PendingStep.PRICE);
+        public void setChosenItem(ItemStack chosenItem) {
+            this.chosenItem = chosenItem != null ? chosenItem.clone() : null;
+            if (this.chosenItem != null) {
+                this.chosenItem.setAmount(1);
+            }
         }
 
-        private PendingOrderCreation withPriceEach(double priceEach) {
-            return new PendingOrderCreation(requestedItem.clone(), categoryKey, quantity, priceEach, PendingStep.READY);
+        public String getCategoryKey() {
+            return categoryKey;
         }
 
-        private boolean readyForConfirmation() {
-            return step == PendingStep.READY && quantity > 0 && priceEach > 0D;
+        public void setCategoryKey(String categoryKey) {
+            this.categoryKey = categoryKey;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public void setAmount(int amount) {
+            this.amount = amount;
+        }
+
+        public double getPriceEach() {
+            return priceEach;
+        }
+
+        public void setPriceEach(double priceEach) {
+            this.priceEach = priceEach;
         }
     }
 }

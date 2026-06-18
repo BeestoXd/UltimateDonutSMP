@@ -3,19 +3,19 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -797,10 +797,13 @@ public class FakePlayerManager {
         String command = "/tp " + target.getName();
         String hover = message("ALERT-HOVER", "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}", "{player}", target.getName());
         for (String line : lines) {
-            Component component = ColorUtils.toComponent(line)
-                    .clickEvent(ClickEvent.runCommand(command))
-                    .hoverEvent(HoverEvent.showText(ColorUtils.toComponent(hover)));
-            recipient.sendMessage(component);
+            TextComponent component = ColorUtils.toBaseComponent(line);
+            component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+            component.setHoverEvent(new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    ColorUtils.toBaseComponents(hover)
+            ));
+            recipient.spigot().sendMessage(component);
         }
     }
 

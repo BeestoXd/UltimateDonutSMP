@@ -136,7 +136,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
         target.setGameMode(mode);
 
         String modeName = displayName(mode);
-        send(sender, "GAMEMODE.MESSAGE", "&d%player% &7ɪѕ ɴᴏᴡ ɪɴ &e%mode% mᴏᴅᴇ",
+        send(sender, "GAMEMODE.MESSAGE", "&d%player% &7ɪѕ ɴᴏᴡ ɪɴ &e%mode% ᴍᴏᴅᴇ",
                 "%player%", target.getName(),
                 "%mode%", modeName,
                 "%sender%", senderName(sender));

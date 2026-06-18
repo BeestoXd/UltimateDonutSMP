@@ -1,9 +1,9 @@
 package com.bx.ultimateDonutSmp.utils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class PaymentUtils {
@@ -21,12 +21,16 @@ public final class PaymentUtils {
             return false;
         }
 
-        Player target = Bukkit.getPlayerExact(targetName);
+        Player target = plugin.getHideManager().findOnlinePlayer(sender, targetName);
         if (target == null) {
             sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return false;
         }
 
+        if (target.getUniqueId().equals(sender.getUniqueId())) {
+            sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BALANCE.PAY.CANT-PAY-SELF")));
+            return false;
+        }
         PlayerData senderData = plugin.getPlayerDataManager().get(sender);
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
         if (targetData == null) {
@@ -35,6 +39,10 @@ public final class PaymentUtils {
         }
         if (!targetData.isPaymentsEnabled()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BALANCE.PAY.TARGET-DISABLED-PAYMENTS")));
+            return false;
+        }
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isPaymentBlocked(sender.getUniqueId(), target.getUniqueId())) {
+            sender.sendMessage(ColorUtils.toComponent("&c" + target.getName() + " has disabled payments from you."));
             return false;
         }
         if (senderData == null) {
@@ -54,15 +62,19 @@ public final class PaymentUtils {
 
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.PAY.SUCCESS-SENDER",
-                "{player}", target.getName(),
-                "{amount}", NumberUtils.formatNice(amount),
-                "{amount_full}", NumberUtils.format(amount))));
+                "{player}", plugin.getHideManager().publicName(target),
+                "{amount}", compactMoneyAmount(plugin, amount),
+                "{amount_full}", fullMoneyAmount(plugin, amount),
+                "{money}", plugin.getCurrencyManager().formatMoneyCompact(amount),
+                "{money_full}", fullMoney(plugin, amount))));
         if (targetData.isPayAlertsEnabled()) {
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.PAY.SUCCESS-RECEIVER",
-                    "{player}", sender.getName(),
-                    "{amount}", NumberUtils.formatNice(amount),
-                    "{amount_full}", NumberUtils.format(amount))));
+                    "{player}", plugin.getHideManager().publicName(sender),
+                    "{amount}", compactMoneyAmount(plugin, amount),
+                    "{amount_full}", fullMoneyAmount(plugin, amount),
+                    "{money}", plugin.getCurrencyManager().formatMoneyCompact(amount),
+                    "{money_full}", fullMoney(plugin, amount))));
         }
         return true;
     }
@@ -77,12 +89,16 @@ public final class PaymentUtils {
             return false;
         }
 
-        Player target = Bukkit.getPlayerExact(targetName);
+        Player target = plugin.getHideManager().findOnlinePlayer(sender, targetName);
         if (target == null) {
             sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return false;
         }
 
+        if (target.getUniqueId().equals(sender.getUniqueId())) {
+            sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("SHARD_PAY.CANT-PAY-SELF")));
+            return false;
+        }
         PlayerData senderData = plugin.getPlayerDataManager().get(sender);
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
         if (targetData == null) {
@@ -91,6 +107,10 @@ public final class PaymentUtils {
         }
         if (!targetData.isPaymentsEnabled()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("SHARD_PAY.TARGET-DISABLED-PAYMENTS")));
+            return false;
+        }
+        if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isPaymentBlocked(sender.getUniqueId(), target.getUniqueId())) {
+            sender.sendMessage(ColorUtils.toComponent("&c" + target.getName() + " has disabled payments from you."));
             return false;
         }
         if (senderData == null || !senderData.hasShards(amount)) {
@@ -103,14 +123,28 @@ public final class PaymentUtils {
 
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "SHARD_PAY.SUCCESS-SENDER",
-                "{player}", target.getName(),
-                "{amount}", String.valueOf(amount))));
+                "{player}", plugin.getHideManager().publicName(target),
+                "{amount}", String.valueOf(amount),
+                "{shards}", plugin.getCurrencyManager().formatShards(amount))));
         if (targetData.isPayAlertsEnabled()) {
             target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "SHARD_PAY.SUCCESS-RECEIVER",
-                    "{player}", sender.getName(),
-                    "{amount}", String.valueOf(amount))));
+                    "{player}", plugin.getHideManager().publicName(sender),
+                    "{amount}", String.valueOf(amount),
+                    "{shards}", plugin.getCurrencyManager().formatShards(amount))));
         }
         return true;
+    }
+
+    private static String compactMoneyAmount(UltimateDonutSmp plugin, double amount) {
+        return plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private static String fullMoneyAmount(UltimateDonutSmp plugin, double amount) {
+        return plugin.getCurrencyManager().formatAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private static String fullMoney(UltimateDonutSmp plugin, double amount) {
+        return plugin.getCurrencyManager().format(CurrencyManager.CurrencyType.MONEY, amount, false);
     }
 }

@@ -13,6 +13,9 @@ public class RTPZoneTask implements Runnable {
 
     @Override
     public void run() {
+        if (plugin.getRtpZoneManager() == null) {
+            return;
+        }
         plugin.getFoliaScheduler().forEachOnlinePlayer((Player player) -> plugin.getRtpZoneManager().tick(player));
     }
 

@@ -55,20 +55,20 @@ public class HomeManager {
     }
 
     public int getMaxHomes(Player player) {
-        int defaultHomes = plugin.getConfigManager().getConfig().getInt("SETTINGS.HOME-DEFAULT", 5);
-        int homesByAmountPermission = resolveHighestPermissionValue(player, "ultimatedonutsmp.homes.");
-        int pagesByPermission = resolveHighestPermissionValue(player, "ultimatedonutsmp.homes.page.");
+        int defaultHomes = Math.max(1, plugin.getConfigManager().getConfig().getInt("SETTINGS.HOME-DEFAULT", 5));
+        int homesByAmountPermission = PermissionUtils.resolveHighestExactNumberedPermission(
+                player, "ultimatedonutsmp.homes.", MAX_PERMISSION_VALUE);
+        int pagesByPermission = PermissionUtils.resolveHighestExactNumberedPermission(
+                player, "ultimatedonutsmp.homes.page.", MAX_PERMISSION_VALUE);
         int homesByPagePermission = pagesByPermission * HOMES_PER_PAGE;
+        int permissionHomes = Math.max(homesByAmountPermission, homesByPagePermission);
 
-        return Math.max(defaultHomes, Math.max(homesByAmountPermission, homesByPagePermission));
+        return permissionHomes > 0 ? permissionHomes : defaultHomes;
     }
 
     public int getMaxHomePages(Player player) {
         int maxHomes = getMaxHomes(player);
-        int pagesByHomes = Math.max(1, (int) Math.ceil(maxHomes / (double) HOMES_PER_PAGE));
-        int pagesByPermission = resolveHighestPermissionValue(player, "ultimatedonutsmp.homes.page.");
-
-        return Math.max(1, Math.max(pagesByHomes, pagesByPermission));
+        return Math.max(1, (int) Math.ceil(maxHomes / (double) HOMES_PER_PAGE));
     }
 
     public boolean canSetHome(Player player) {
@@ -180,13 +180,6 @@ public class HomeManager {
         player.sendMessage(ColorUtils.toComponent(
                 plugin.getConfigManager().getMessage("HOME.RENAME-SUCCESS", "{name}", input)));
         new HomeMenu(plugin).open(player);
-    }
-
-    private int resolveHighestPermissionValue(Player player, String prefix) {
-        for (int i = MAX_PERMISSION_VALUE; i >= 1; i--) {
-            if (PermissionUtils.has(player, prefix + i)) return i;
-        }
-        return 0;
     }
 
     private boolean isValidHomeName(String input) {

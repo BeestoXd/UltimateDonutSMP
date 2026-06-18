@@ -1,8 +1,8 @@
 package com.bx.ultimateDonutSmp.models;
 
 public enum PunishmentFilterState {
-    ALL("ᴀʟʟ"),
-    ACTIVE("ᴀᴄᴛɪᴠᴇ"),
+    ALL("All"),
+    ACTIVE("Active"),
     INACTIVE("ɪɴᴀᴄᴛɪᴠᴇ");
 
     private final String displayName;

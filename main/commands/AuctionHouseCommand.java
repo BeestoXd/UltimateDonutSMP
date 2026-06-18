@@ -1,19 +1,21 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
-
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.AuctionHouseManager;
+import com.bx.ultimateDonutSmp.models.PlayerPreference;
 import com.bx.ultimateDonutSmp.menus.AuctionHouseBrowseMenu;
-import com.bx.ultimateDonutSmp.menus.AuctionHouseClaimsMenu;
-import com.bx.ultimateDonutSmp.menus.AuctionHouseMyListingsMenu;
+import com.bx.ultimateDonutSmp.menus.PlayerAuctionGui;
+import com.bx.ultimateDonutSmp.menus.SellGui;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class AuctionHouseCommand implements CommandExecutor {
 
@@ -32,6 +34,7 @@ public class AuctionHouseCommand implements CommandExecutor {
 
         AuctionHouseManager manager = plugin.getAuctionHouseManager();
         String subcommand = args.length == 0 ? "" : args[0].toLowerCase();
+
         if (subcommand.equals("reload")) {
             if (!PermissionUtils.has(player, "ultimatedonutsmp.admin.auctionhouse")) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
@@ -84,61 +87,78 @@ public class AuctionHouseCommand implements CommandExecutor {
                     return true;
                 }
 
-                AuctionHouseManager.CreateListingResult result = manager.createListing(player, price);
-                if (!result.success()) {
-                    player.sendMessage(ColorUtils.toComponent(resolveCreateFailure(result)));
-                    SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.FAIL"));
-                    return true;
-                }
+                PlayerPreference pref = manager.getPreference(player.getUniqueId());
+                boolean fastSell = (pref != null && pref.fastSellEnabled() &&
+                        (player.hasPermission("ultimatedonutsmp.auctionhouse.fastsell") || player.hasPermission("donutauction.fastsell")));
 
-                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
-                        "AUCTION_HOUSE.LISTING_CREATED",
-                        "{listing_id}", String.valueOf(result.listing().id()),
-                        "{item}", manager.describeItem(result.listing().item()),
-                        "{price}", NumberUtils.format(result.listing().price()),
-                        "{price_formatted}", plugin.getCurrencyManager().formatMoney(result.listing().price()),
-                        "{fee}", NumberUtils.format(result.listingFee()),
-                        "{fee_formatted}", plugin.getCurrencyManager().formatMoney(result.listingFee()),
-                        "{expires}", manager.formatRemaining(result.listing().secondsRemaining(System.currentTimeMillis()))
-                )));
-                SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));
-                new AuctionHouseMyListingsMenu(plugin, 1, manager.getDefaultSort()).open(player);
+                if (fastSell) {
+                    // Instant listing
+                    int duration = pref.lastDurationHours();
+                    String category = pref.lastCategory();
+                    AuctionHouseManager.CreateListingResult result = manager.createListing(player, price, category, duration);
+
+                    if (!result.success()) {
+                        player.sendMessage(ColorUtils.toComponent(resolveCreateFailure(result)));
+                        SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.FAIL"));
+                        return true;
+                    }
+
+                    pref.lastPrice(price);
+                    manager.savePreference(pref);
+
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
+                            "AUCTION_HOUSE.LISTING_CREATED",
+                            "{listing_id}", String.valueOf(result.listing().id()),
+                            "{item}", manager.describeItem(result.listing().item()),
+                            "{price}", NumberUtils.format(result.listing().price()),
+                            "{price_formatted}", plugin.getCurrencyManager().formatMoney(result.listing().price()),
+                            "{fee}", NumberUtils.format(result.listingFee()),
+                            "{fee_formatted}", plugin.getCurrencyManager().formatMoney(result.listingFee()),
+                            "{expires}", manager.formatRemaining(result.listing().secondsRemaining(System.currentTimeMillis()) * 1000L)
+                    )));
+                    SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));
+                    new PlayerAuctionGui(plugin, 1).open(player);
+                } else {
+                    // GUI-based listing flow (with anti-duplication holding)
+                    ItemStack handItem = player.getInventory().getItemInMainHand();
+                    if (handItem == null || handItem.getType().isAir()) {
+                        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
+                                "AUCTION_HOUSE.NO_ITEM_IN_HAND",
+                                "&cʜᴏʟᴅ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ʟɪѕᴛ ɪɴ ʏᴏᴜʀ ᴍᴀɪɴ ʜᴀɴᴅ."
+                        )));
+                        return true;
+                    }
+
+                    ItemStack toSell = handItem.clone();
+                    player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                    player.updateInventory();
+
+                    new SellGui(plugin, toSell, price).open(player);
+                }
             }
-            case "my" -> new AuctionHouseMyListingsMenu(plugin, 1, manager.getDefaultSort()).open(player);
-            case "claims" -> new AuctionHouseClaimsMenu(plugin, 1).open(player);
-            case "cancel" -> {
-                if (args.length < 2) {
-                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
-                            "AUCTION_HOUSE.CANCEL_USAGE",
-                            "&cᴜѕᴀɢᴇ: /ah cancel <listingId>"
-                    )));
-                    return true;
+            case "my", "claims", "cancel" -> {
+                new PlayerAuctionGui(plugin, 1).open(player);
+            }
+            case "limit" -> {
+                int activeCount = manager.countActiveListings(player.getUniqueId());
+                int maxListings = manager.getMaxActiveListings(player);
+                player.sendMessage(ColorUtils.colorize("&6Listing Limit: &e" + activeCount + "&7/&e" + maxListings));
+            }
+            case "fastbuy" -> {
+                PlayerPreference pref = manager.getPreference(player.getUniqueId());
+                if (pref != null) {
+                    pref.fastBuyEnabled(!pref.fastBuyEnabled());
+                    manager.savePreference(pref);
+                    player.sendMessage(ColorUtils.colorize("&6&lAuctionHouse &8» &eFast Buy has been " + (pref.fastBuyEnabled() ? "&aenabled" : "&cdisabled") + "&e."));
                 }
-
-                long listingId;
-                try {
-                    listingId = Long.parseLong(args[1]);
-                } catch (NumberFormatException exception) {
-                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
-                            "AUCTION_HOUSE.INVALID_LISTING_ID",
-                            "&cɪɴᴠᴀʟɪᴅ ʟɪѕᴛɪɴɢ ɪᴅ."
-                    )));
-                    return true;
+            }
+            case "fastsell" -> {
+                PlayerPreference pref = manager.getPreference(player.getUniqueId());
+                if (pref != null) {
+                    pref.fastSellEnabled(!pref.fastSellEnabled());
+                    manager.savePreference(pref);
+                    player.sendMessage(ColorUtils.colorize("&6&lAuctionHouse &8» &eFast Sell has been " + (pref.fastSellEnabled() ? "&aenabled" : "&cdisabled") + "&e."));
                 }
-
-                AuctionHouseManager.CancelListingResult result = manager.cancelListing(player, listingId);
-                if (!result.success()) {
-                    player.sendMessage(ColorUtils.toComponent(resolveCancelFailure(result)));
-                    SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.FAIL"));
-                    return true;
-                }
-
-                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
-                        "AUCTION_HOUSE.LISTING_CANCELLED",
-                        "{listing_id}", String.valueOf(listingId),
-                        "{item}", manager.describeItem(result.listing().item())
-                )));
-                SoundUtils.play(player, plugin.getConfigManager().getSound("AUCTION_HOUSE.SUCCESS"));
             }
             default -> new AuctionHouseBrowseMenu(plugin, 1, manager.getDefaultSort()).open(player);
         }
@@ -158,6 +178,12 @@ public class AuctionHouseCommand implements CommandExecutor {
                     "AUCTION_HOUSE.ITEM_BLOCKED",
                     "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʟɪѕᴛᴇᴅ ɪɴ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ."
             );
+            case UNSAFE_ITEM -> plugin.getConfigManager().getMessageOrDefault(
+                    "CRASH_PROTECTION.ITEM_BLOCKED",
+                    "&cThat item cannot be used here because its data looks unsafe. &7Context: &f{context}&7. Reason: &f{reason}",
+                    "{context}", "Auction House",
+                    "{reason}", result.safetyResult() == null ? "unsafe item data" : result.safetyResult().reason()
+            );
             case INVALID_PRICE -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.PRICE_OUT_OF_RANGE",
                     "&cᴛʜᴀᴛ ᴘʀɪᴄᴇ ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴛʜᴇ ᴀʟʟᴏᴡᴇᴅ ʀᴀɴɢᴇ."
@@ -172,25 +198,6 @@ public class AuctionHouseCommand implements CommandExecutor {
                     "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ."
             );
             case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ʟɪѕᴛɪɴɢ. ᴛʀʏ ᴀɢᴀɪɴ.";
-        };
-    }
-
-    private String resolveCancelFailure(AuctionHouseManager.CancelListingResult result) {
-        return switch (result.reason()) {
-            case DISABLED -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.DISABLED");
-            case LISTING_NOT_FOUND -> plugin.getConfigManager().getMessage(
-                    "AUCTION_HOUSE.LISTING_NOT_FOUND",
-                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ."
-            );
-            case NOT_OWNER -> plugin.getConfigManager().getMessage(
-                    "AUCTION_HOUSE.NOT_YOUR_LISTING",
-                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ."
-            );
-            case NOT_ACTIVE -> plugin.getConfigManager().getMessage(
-                    "AUCTION_HOUSE.LISTING_NOT_ACTIVE",
-                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ."
-            );
-            case DATABASE_ERROR -> "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴀɴᴄᴇʟ ᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ʀɪɢʜᴛ ɴᴏᴡ.";
         };
     }
 }

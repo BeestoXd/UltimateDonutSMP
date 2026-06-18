@@ -135,16 +135,29 @@ public class TpaQueueMenu extends BaseMenu {
     }
 
     private void buildNavigation(int totalItems, int totalPages) {
-        Map<String, String> placeholders = Map.of(
+        buildButton("PREVIOUS", hasPreviousPage, Map.of(
                 "page", String.valueOf(page + 1),
                 "previous_page", String.valueOf(Math.max(1, page)),
                 "next_page", String.valueOf(Math.min(totalPages, page + 2)),
                 "total_pages", String.valueOf(totalPages),
                 "total", String.valueOf(totalItems)
-        );
-        buildButton("PREVIOUS", hasPreviousPage, placeholders);
-        buildButton("RANDOM", totalItems > 0, placeholders);
-        buildButton("NEXT", hasNextPage, placeholders);
+        ));
+
+        buildButton("RANDOM", totalItems > 0, Map.of(
+                "page", String.valueOf(page + 1),
+                "previous_page", String.valueOf(Math.max(1, page)),
+                "next_page", String.valueOf(Math.min(totalPages, page + 2)),
+                "total_pages", String.valueOf(totalPages),
+                "total", String.valueOf(totalItems)
+        ));
+
+        buildButton("NEXT", hasNextPage, Map.of(
+                "page", String.valueOf(page + 1),
+                "previous_page", String.valueOf(Math.max(1, page)),
+                "next_page", String.valueOf(Math.min(totalPages, page + 2)),
+                "total_pages", String.valueOf(totalPages),
+                "total", String.valueOf(totalItems)
+        ));
     }
 
     private void buildButton(String key, boolean active, Map<String, String> placeholders) {

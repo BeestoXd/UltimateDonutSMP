@@ -38,7 +38,8 @@ public class ShardsCommand implements CommandExecutor {
             PlayerData data = plugin.getPlayerDataManager().get(player);
             if (data == null) return true;
             String msg = plugin.getConfigManager().getMessage("BALANCE.YOUR-SHARDS",
-                    "{amount}", String.valueOf(data.getShards()));
+                    "{amount}", String.valueOf(data.getShards()),
+                    "{shards}", plugin.getCurrencyManager().formatShards(data.getShards()));
             player.sendMessage(ColorUtils.toComponent(msg));
         } else {
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
@@ -47,7 +48,8 @@ public class ShardsCommand implements CommandExecutor {
             if (data == null) { player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.")); return true; }
             String msg = plugin.getConfigManager().getMessage("BALANCE.OTHER-SHARDS",
                     "{player}", target.getName() != null ? target.getName() : args[0],
-                    "{amount}", String.valueOf(data.getShards()));
+                    "{amount}", String.valueOf(data.getShards()),
+                    "{shards}", plugin.getCurrencyManager().formatShards(data.getShards()));
             player.sendMessage(ColorUtils.toComponent(msg));
         }
         return true;
@@ -95,7 +97,7 @@ public class ShardsCommand implements CommandExecutor {
                 shardManager.getEverywhereRecentMovementWindowSeconds()
         );
         boolean inShardCuboid = shardManager.isInShardCuboid(target);
-        boolean disableWhileInShardCuboid = shardManager.isEverywheredisabledWhileInShardCuboid();
+        boolean disableWhileInShardCuboid = shardManager.isEverywhereDisabledWhileInShardCuboid();
         boolean booster = shardManager.hasBooster(target.getUniqueId());
         int multiplier = shardManager.getMultiplier(target.getUniqueId());
         ShardManager.EverywhereEligibilityResult eligibility = shardManager.getEverywhereEligibility(target);
@@ -104,7 +106,7 @@ public class ShardsCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent("&#A303F9ѕʜᴀʀᴅѕ ᴇᴠᴇʀʏᴡʜᴇʀᴇ &7ꜰᴏʀ &b" + target.getName()));
         sender.sendMessage(ColorUtils.toComponent("&7ᴇɴᴀʙʟᴇᴅ: " + yesNo(shardManager.isEverywhereEnabled())));
         sender.sendMessage(ColorUtils.toComponent("&7ᴇʟɪɢɪʙʟᴇ ɴᴏᴡ: " + eligibilityColor(eligibility) + formatEligibility(eligibility)));
-        sender.sendMessage(ColorUtils.toComponent("&7ʀᴇǫᴜɪʀᴇᴅ ᴘᴇʀᴍɪѕѕɪᴏɴ: &f" + (requiredPermission != null ? requiredPermission : "<none>")));
+        sender.sendMessage(ColorUtils.toComponent("&7ʀᴇǫᴜɪʀᴇᴅ ᴘᴇʀᴍɪѕѕɪᴏɴ: &f" + (requiredPermission != null ? requiredPermission : "<ɴᴏɴᴇ>")));
         sender.sendMessage(ColorUtils.toComponent("&7ʜᴀѕ ᴘᴇʀᴍɪѕѕɪᴏɴ: " + yesNo(hasPermission)));
         sender.sendMessage(ColorUtils.toComponent("&7ᴡᴏʀʟᴅ: &f" + target.getWorld().getName()));
         sender.sendMessage(ColorUtils.toComponent("&7ᴡᴏʀʟᴅ ᴇxᴄʟᴜᴅᴇᴅ: " + yesNo(excludedWorld)));
@@ -113,7 +115,7 @@ public class ShardsCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent("&7ᴅɪѕᴀʙʟᴇ ɪɴ ѕʜᴀʀᴅ ᴄᴜʙᴏɪᴅ: " + yesNo(disableWhileInShardCuboid)));
         sender.sendMessage(ColorUtils.toComponent("&7ɪɴ ѕʜᴀʀᴅ ᴄᴜʙᴏɪᴅ: " + yesNo(inShardCuboid)));
         sender.sendMessage(ColorUtils.toComponent("&7ɪɴᴛᴇʀᴠᴀʟ: &f" + shardManager.getEverywhereEveryMinutes() + " ᴍɪɴᴜᴛᴇ(ѕ)"));
-        sender.sendMessage(ColorUtils.toComponent("&7ᴀᴍᴏᴜɴᴛ: &#A303F9" + shardManager.getEverywhereAmount()));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴀᴍᴏᴜɴᴛ: " + plugin.getCurrencyManager().formatShards(shardManager.getEverywhereAmount())));
         sender.sendMessage(ColorUtils.toComponent("&7ʙᴏᴏѕᴛᴇʀ ᴀᴄᴛɪᴠᴇ: " + yesNo(booster)));
         sender.sendMessage(ColorUtils.toComponent("&7ᴍᴜʟᴛɪᴘʟɪᴇʀ: &f" + multiplier + "x"));
 
@@ -121,7 +123,9 @@ public class ShardsCommand implements CommandExecutor {
             long secondsSinceMovement = plugin.getAFKManager().getSecondsSinceLastMovement(target.getUniqueId());
             sender.sendMessage(ColorUtils.toComponent("&7ᴍᴏᴠᴇᴍᴇɴᴛ ᴡɪɴᴅᴏᴡ: &f" + shardManager.getEverywhereRecentMovementWindowSeconds() + "s"));
             sender.sendMessage(ColorUtils.toComponent("&7ѕᴇᴄᴏɴᴅѕ ѕɪɴᴄᴇ ᴍᴏᴠᴇᴍᴇɴᴛ: &f" + secondsSinceMovement));
-            sender.sendMessage(ColorUtils.toComponent("&7ᴄᴜʀʀᴇɴᴛ ѕʜᴀʀᴅѕ: &#A303F9" + getCurrentShards(target)));
+            sender.sendMessage(ColorUtils.toComponent("&7ᴄᴜʀʀᴇɴᴛ "
+                    + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
+                    + ": " + plugin.getCurrencyManager().formatShards(getCurrentShards(target))));
         }
 
         sender.sendMessage(ColorUtils.toComponent("&8&m--------------------------------"));
@@ -142,11 +146,11 @@ public class ShardsCommand implements CommandExecutor {
 
     private String formatEligibility(ShardManager.EverywhereEligibilityResult result) {
         return switch (result) {
-            case ELIGIBLE -> "Eligible";
+            case ELIGIBLE -> "ᴇʟɪɢɪʙʟᴇ";
             case DISABLED -> "ᴅɪѕᴀʙʟᴇᴅ";
             case NO_PERMISSION -> "ɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ";
             case EXCLUDED_WORLD -> "ᴇxᴄʟᴜᴅᴇᴅ ᴡᴏʀʟᴅ";
-            case AFK -> "AFK";
+            case AFK -> "ᴀꜰᴋ";
             case NO_RECENT_MOVEMENT -> "ɴᴏ ʀᴇᴄᴇɴᴛ ᴍᴏᴠᴇᴍᴇɴᴛ";
             case IN_SHARD_CUBOID -> "ɪɴ ѕʜᴀʀᴅ ᴄᴜʙᴏɪᴅ";
         };

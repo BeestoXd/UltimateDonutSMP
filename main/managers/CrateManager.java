@@ -465,6 +465,12 @@ public class CrateManager {
         pendingBindCrates.clear();
     }
 
+    public void prepareForServerWipe() {
+        activeSessions.clear();
+        pendingBindCrates.clear();
+        keyBalanceCache.clear();
+    }
+
     public ClaimResult claimSelectedReward(Player player) {
         if (player == null) {
             return new ClaimResult(false, FailureReason.NO_PLAYER_DATA, "&cᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ.", null, null, 0);
@@ -496,6 +502,12 @@ public class CrateManager {
             preparedItem = createGrantItem(player, crate, reward);
             ItemStack rewardItem = preparedItem;
             if (rewardItem == null || rewardItem.getType().isAir()) {
+                return new ClaimResult(false, FailureReason.INVALID_REWARD,
+                        "&cᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴠᴀʟɪᴅ.", crate, reward, getKeyBalance(player, crate.id()));
+            }
+            if (!plugin.getCrashProtectionManager()
+                    .validateOrNotify(player, rewardItem, CrashProtectionManager.Context.CRATES)
+                    .allowed()) {
                 return new ClaimResult(false, FailureReason.INVALID_REWARD,
                         "&cᴛʜᴀᴛ ʀᴇᴡᴀʀᴅ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴠᴀʟɪᴅ.", crate, reward, getKeyBalance(player, crate.id()));
             }
@@ -924,6 +936,23 @@ public class CrateManager {
                 return new ActionResult(false, "&cExpired Amethyst items cannot be used as crate rewards.");
             }
             storedItem.setAmount(1);
+        }
+
+        CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                .validateForStorage(storedItem, CrashProtectionManager.Context.CRATES);
+        if (!safetyResult.allowed()) {
+            plugin.getCrashProtectionManager().logBlockedItem(
+                    "crate " + crate.id() + " slot " + slot,
+                    storedItem,
+                    CrashProtectionManager.Context.CRATES,
+                    safetyResult
+            );
+            return new ActionResult(false, plugin.getConfigManager().getMessageOrDefault(
+                    "CRASH_PROTECTION.ITEM_BLOCKED",
+                    "&cThat item cannot be used here because its data looks unsafe. &7Context: &f{context}&7. Reason: &f{reason}",
+                    "{context}", CrashProtectionManager.Context.CRATES.displayName(),
+                    "{reason}", safetyResult.reason()
+            ));
         }
 
         String serializedItemData;

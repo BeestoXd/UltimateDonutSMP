@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PrivateMessageManager {
 
-    private static final String BYPASS_DISABLED_PERMISSION = "ultimatedonutsmp.message.bypass-ᴅɪѕᴀʙʟᴇᴅ";
+    private static final String BYPASS_DISABLED_PERMISSION = "ultimatedonutsmp.message.bypass-disabled";
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, UUID> replyTargets = new ConcurrentHashMap<>();
@@ -30,6 +30,11 @@ public class PrivateMessageManager {
         }
 
         String senderName = sender instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ";
+        if (sender instanceof Player publicSender) {
+            senderName = plugin.getHideManager().publicName(publicSender);
+        }
+        String targetName = plugin.getHideManager().publicName(target);
+
         if (sender instanceof Player player) {
             if (player.getUniqueId().equals(target.getUniqueId())) {
                 send(sender, configuredMessage(
@@ -45,8 +50,13 @@ public class PrivateMessageManager {
                 send(sender, applyPlaceholders(configuredMessage(
                         "MESSAGES.PLAYER_BLOCKED",
                         "IGNORE.MESSAGE-BLOCKED-SENDER",
-                        "&c%player% hᴀѕ ʙʟᴏᴄᴋᴇᴅ ʏᴏᴜ."
-                ), target.getName(), message));
+                        "&c%player% ʜᴀѕ ʙʟᴏᴄᴋᴇᴅ ʏᴏᴜ."
+                ), targetName, message));
+                return false;
+            }
+
+            if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isMessageBlocked(player.getUniqueId(), target.getUniqueId())) {
+                send(sender, ColorUtils.colorize("&c%player% has disabled private messages from you.").replace("%player%", targetName));
                 return false;
             }
         }
@@ -55,8 +65,8 @@ public class PrivateMessageManager {
             send(sender, applyPlaceholders(configuredMessage(
                     "MESSAGES.PMS_DISABLED",
                     null,
-                    "&c%player% hᴀѕ ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴅɪѕᴀʙʟᴇᴅ."
-            ), target.getName(), message));
+                    "&c%player% ʜᴀѕ ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴅɪѕᴀʙʟᴇᴅ."
+            ), targetName, message));
             return false;
         }
 
@@ -71,7 +81,7 @@ public class PrivateMessageManager {
                 "&d(ꜰʀᴏᴍ &a%player%&d) %message%"
         );
 
-        send(sender, applyPlaceholders(sentFormat, target.getName(), message));
+        send(sender, applyPlaceholders(sentFormat, targetName, message));
         target.sendMessage(ColorUtils.toComponent(applyPlaceholders(receivedFormat, senderName, message), target));
 
         if (sender instanceof Player player) {

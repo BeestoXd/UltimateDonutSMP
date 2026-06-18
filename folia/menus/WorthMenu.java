@@ -37,7 +37,7 @@ public class WorthMenu extends BaseMenu {
                         .thenComparing(entry -> entry.material().name())
         ),
         NAME_A_TO_Z(
-                "ɴᴀᴍᴇ ᴀ ᴛᴏ ᴢ",
+                "Name A to Z",
                 Material.NAME_TAG,
                 Comparator.comparing(entry -> entry.material().name())
         );
@@ -133,8 +133,8 @@ public class WorthMenu extends BaseMenu {
                     "&b" + plugin.getWorthManager().prettifyMaterial(entry.material()),
                     List.of(
                             "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + formatCategory(entry.categoryKey()),
-                            "&7ᴡᴏʀᴛʜ: &a$" + NumberUtils.formatNice(entry.unitWorth()),
-                            "&7ѕᴛᴀᴄᴋ x64: &a$" + NumberUtils.formatNice(entry.unitWorth() * 64),
+                            "&7ᴡᴏʀᴛʜ: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth()),
+                            "&7ѕᴛᴀᴄᴋ x64: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth() * 64),
                             "",
                             "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇɴᴅ ᴡᴏʀᴛʜ ɪɴꜰᴏ ɪɴ ᴄʜᴀᴛ"
                     )
@@ -207,7 +207,7 @@ public class WorthMenu extends BaseMenu {
         WorthManager.WorthBrowserEntry entry = entries.get(entryIndex);
         player.sendMessage(ColorUtils.toComponent(
                 "&7" + plugin.getWorthManager().prettifyMaterial(entry.material())
-                        + " &7ɪѕ ᴡᴏʀᴛʜ &a$" + NumberUtils.formatNice(entry.unitWorth())
+                        + " &7ɪѕ ᴡᴏʀᴛʜ " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth())
                         + " &8(" + formatCategory(entry.categoryKey()) + "&8)"
         ));
     }

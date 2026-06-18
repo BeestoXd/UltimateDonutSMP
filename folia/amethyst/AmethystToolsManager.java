@@ -1,12 +1,11 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -104,6 +103,10 @@ public class AmethystToolsManager {
         return item;
     }
 
+    public boolean isEnabled() {
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.AMETHYST_TOOLS);
+    }
+
     public boolean hasAmethystMetadata(ItemStack item) {
         return item != null
                 && item.hasItemMeta()
@@ -111,7 +114,7 @@ public class AmethystToolsManager {
     }
 
     public boolean isAmethystTool(ItemStack item) {
-        return hasAmethystMetadata(item);
+        return isEnabled() && hasAmethystMetadata(item);
     }
 
     public boolean hasValidSignature(ItemStack item) {
@@ -287,7 +290,7 @@ public class AmethystToolsManager {
             return false;
         }
 
-        List<Component> lore = meta.lore();
+        List<String> lore = meta.getLore();
         if (lore == null || lore.isEmpty()) {
             return false;
         }
@@ -295,16 +298,15 @@ public class AmethystToolsManager {
         long remaining = getRemainingSeconds(item);
         String timeStr = remaining > 0 ? NumberUtils.formatTimeLong(remaining) : "&cᴇxᴘɪʀᴇᴅ";
 
-        PlainTextComponentSerializer plain = PlainTextComponentSerializer.plainText();
         boolean foundSelfDestruct = false;
-        List<Component> newLore = new ArrayList<>(lore);
-        Component replacement = ColorUtils.toComponent("&#BDC3C7" + timeStr);
-        String replacementPlain = plain.serialize(replacement);
+        List<String> newLore = new ArrayList<>(lore);
+        String replacement = ColorUtils.toComponent("&#BDC3C7" + timeStr);
+        String replacementPlain = ColorUtils.strip(replacement);
         boolean changed = false;
 
         for (int i = 0; i < newLore.size(); i++) {
-            String lineText = plain.serialize(newLore.get(i));
-            if (lineText.contains("ѕᴇʟꜰ ᴅᴇѕᴛʀᴜᴄᴛ")) {
+            String lineText = ColorUtils.strip(newLore.get(i));
+            if (lineText.contains("Self Destruct")) {
                 foundSelfDestruct = true;
                 continue;
             }
@@ -323,7 +325,7 @@ public class AmethystToolsManager {
             return false;
         }
 
-        meta.lore(newLore);
+        meta.setLore(newLore);
         item.setItemMeta(meta);
         return true;
     }
@@ -540,7 +542,7 @@ public class AmethystToolsManager {
             return;
         }
 
-        String toolName = type != null ? type.getDisplayName() : "ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ";
+        String toolName = type != null ? type.getDisplayName() : "Amethyst Tool";
 
         SoundUtils.play(player, getSound("EXPIRE"));
         spawnAmethystParticles(player.getLocation().add(0, 1, 0));
@@ -576,7 +578,7 @@ public class AmethystToolsManager {
         if (msgs == null) {
             return key;
         }
-        String prefix = msgs.getString("PREFIX", "&#9B59B6[ᴀᴍᴇᴛʜʏѕᴛ] &r");
+        String prefix = msgs.getString("PREFIX", "&#9B59B6[Amethyst] &r");
         String raw = msgs.getString(key, key);
         return raw.replace("{prefix}", prefix);
     }
@@ -659,7 +661,7 @@ public class AmethystToolsManager {
         return Math.max(1L, section.getLong("BOOSTER-DURATION", 86400L));
     }
 
-    public Set<Material> getdisabledBlocks() {
+    public Set<Material> getDisabledBlocks() {
         return parseMaterialSet(getToolSection(AmethystToolType.DRILL), "DISABLED-BLOCKS");
     }
 

@@ -505,7 +505,7 @@ public class EconomyManager {
     }
 
     private double roundCurrency(double amount) {
-        return Math.round(amount * 100D) / 100d;
+        return Math.round(amount * 100D) / 100D;
     }
 
     private EconomyTransactionResult failure(

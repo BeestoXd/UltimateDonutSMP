@@ -23,16 +23,31 @@ public final class ItemSerializationUtils {
     }
 
     public static String serialize(ItemStack item) throws IOException {
-        byte[] serializedBytes = serializeAsBytes(item);
+        byte[] serializedBytes = serializeToBytes(item);
         if (serializedBytes != null) {
             return BYTE_SERIALIZATION_PREFIX + Base64.getEncoder().encodeToString(serializedBytes);
         }
+        return Base64.getEncoder().encodeToString(serializeToLegacyBytes(item));
+    }
 
+    public static byte[] serializeToBytes(ItemStack item) throws IOException {
+        byte[] serializedBytes = serializeAsBytes(item);
+        if (serializedBytes != null) {
+            return serializedBytes;
+        }
+        return serializeToLegacyBytes(item);
+    }
+
+    public static int serializedByteSize(ItemStack item) throws IOException {
+        return serializeToBytes(item).length;
+    }
+
+    private static byte[] serializeToLegacyBytes(ItemStack item) throws IOException {
         ByteArrayOutputStream outputBytes = new ByteArrayOutputStream();
         try (BukkitObjectOutputStream output = new BukkitObjectOutputStream(outputBytes)) {
             output.writeObject(item);
         }
-        return Base64.getEncoder().encodeToString(outputBytes.toByteArray());
+        return outputBytes.toByteArray();
     }
 
     public static ItemStack deserialize(String encoded) throws IOException, ClassNotFoundException {

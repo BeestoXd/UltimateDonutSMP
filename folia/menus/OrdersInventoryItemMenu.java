@@ -54,7 +54,7 @@ public class OrdersInventoryItemMenu extends BaseMenu {
                 )
         ));
         set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ ᴛᴏ ᴏʀᴅᴇʀѕ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴏʀᴅᴇʀ ʙᴏᴀʀᴅ")));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 8, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
     }
 
     public void handleInventoryClick(InventoryClickEvent event) {
@@ -117,7 +117,6 @@ public class OrdersInventoryItemMenu extends BaseMenu {
         }
 
         if (slot == lastRow + 8) {
-            player.closeInventory();
             return;
         }
 

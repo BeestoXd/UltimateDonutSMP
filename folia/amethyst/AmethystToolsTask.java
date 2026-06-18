@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,6 +21,9 @@ public class AmethystToolsTask implements Runnable {
 
     @Override
     public void run() {
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.AMETHYST_TOOLS)) {
+            return;
+        }
         plugin.getFoliaScheduler().forEachOnlinePlayer(this::checkInventory);
     }
 

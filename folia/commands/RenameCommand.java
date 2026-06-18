@@ -67,7 +67,7 @@ public class RenameCommand implements CommandExecutor {
 
         String newName = String.join(" ", args);
         if (isResetRequest(args)) {
-            meta.displayName(null);
+            meta.setDisplayName(null);
             item.setItemMeta(meta);
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
@@ -79,7 +79,7 @@ public class RenameCommand implements CommandExecutor {
             return true;
         }
 
-        meta.displayName(ColorUtils.toComponent(newName, player));
+        meta.setDisplayName(ColorUtils.toComponent(newName, player));
         item.setItemMeta(meta);
         player.sendMessage(ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault("RENAME.SUCCESS", "&7ɴᴇᴡ ɴᴀᴍᴇ: &f%name%", "%name%", newName),

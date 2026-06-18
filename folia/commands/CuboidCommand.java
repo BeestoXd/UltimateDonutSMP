@@ -259,6 +259,6 @@ public class CuboidCommand implements CommandExecutor {
     }
 
     private void sendUsage(CommandSender sender) {
-        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /cuboid <wand|create <name>|delete <name>|list|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|ʀᴇʟᴏᴀᴅ>"));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /cuboid <wand|create <name>|ᴅᴇʟᴇᴛᴇ <name>|ʟɪѕᴛ|ʙɪɴᴅ <cuboid> <spawn|shard|rtp-zone> <true|false>|ʀᴇʟᴏᴀᴅ>"));
     }
 }

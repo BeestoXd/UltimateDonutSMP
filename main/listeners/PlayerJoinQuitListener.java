@@ -72,12 +72,12 @@ public class PlayerJoinQuitListener implements Listener {
                 boolean useProxy = plugin.getConfigManager().getNetwork().getBoolean("MAINTENANCE.USE_PROXY", true);
                 String notAllowedMsg = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.NOT_ALLOWED", "&d[Maintenance] &cThis server is currently in maintenance. Redirecting to lobby...");
                 player.sendMessage(ColorUtils.toComponent(notAllowedMsg));
-                
+
                 if (useProxy) {
                     String lobby = plugin.getMaintenanceManager().getLobbyServer();
                     plugin.getMaintenanceManager().sendToLobby(player, lobby);
                     event.setJoinMessage(null);
-                    
+
                     Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         if (player.isOnline()) {
                             String kickMessage = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cThis server is in maintenance and no lobby is available.");
@@ -102,7 +102,7 @@ public class PlayerJoinQuitListener implements Listener {
                             );
                         }
                     }
-                    
+
                     String lobbyWorld = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.LOBBY_WORLD", "world");
                     org.bukkit.World world = Bukkit.getWorld(lobbyWorld);
                     if (world != null) {
@@ -192,6 +192,11 @@ public class PlayerJoinQuitListener implements Listener {
                     plugin.getSpigotScheduler().teleport(player, spawn);
                 }
             }
+        }
+        if (plugin.getOrdersManager() != null) {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
+                plugin.getOrdersManager().processAutoClaims(player);
+            });
         }
 
         // Hide join message (optional, uncomment to suppress)

@@ -84,14 +84,14 @@ public class NetworkStaffAlertManager {
         if (message.length() > maxLength) {
             sender.sendMessage(ColorUtils.toComponent(message(
                     "HELPOP.MESSAGE_TOO_LONG",
-                    "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
         }
 
         if (!checkCooldown(sender, helpopCooldowns, cooldownSeconds("NETWORK.HELPOP_COOLDOWN_SECONDS", 30),
-                "HELPOP.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%s ʙᴇꜰᴏʀᴇ ᴜѕɪɴɢ ʜᴇʟᴘᴏᴘ ᴀɢᴀɪɴ.")) {
+                "HELPOP.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ᴜѕɪɴɢ ʜᴇʟᴘᴏᴘ ᴀɢᴀɪɴ.")) {
             return;
         }
 
@@ -145,14 +145,14 @@ public class NetworkStaffAlertManager {
         if (reason.length() > maxLength) {
             reporter.sendMessage(ColorUtils.toComponent(message(
                     "REPORT.MESSAGE_TOO_LONG",
-                    "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
         }
 
         if (!checkCooldown(reporter, reportCooldowns, cooldownSeconds("NETWORK.REPORT_COOLDOWN_SECONDS", 60),
-                "REPORT.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%s ʙᴇꜰᴏʀᴇ ʀᴇᴘᴏʀᴛɪɴɢ ᴀɢᴀɪɴ.")) {
+                "REPORT.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ʀᴇᴘᴏʀᴛɪɴɢ ᴀɢᴀɪɴ.")) {
             return;
         }
 
@@ -368,11 +368,15 @@ public class NetworkStaffAlertManager {
     }
 
     private boolean isHelpopEnabled() {
-        return isNetworkEnabled() && getNetworkConfig().getBoolean("NETWORK.HELPOP_ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_ALERTS)
+                && isNetworkEnabled()
+                && getNetworkConfig().getBoolean("NETWORK.HELPOP_ENABLED", true);
     }
 
     private boolean isReportEnabled() {
-        return isNetworkEnabled() && getNetworkConfig().getBoolean("NETWORK.REPORT_ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_ALERTS)
+                && isNetworkEnabled()
+                && getNetworkConfig().getBoolean("NETWORK.REPORT_ENABLED", true);
     }
 
     private boolean shouldWarnSenderOnRedisError() {
@@ -439,7 +443,7 @@ public class NetworkStaffAlertManager {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "Local" : builder.toString();
+        return builder.isEmpty() ? "ʟᴏᴄᴀʟ" : builder.toString();
     }
 
     private String message(String path, String fallback, String... placeholders) {

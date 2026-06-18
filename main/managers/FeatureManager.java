@@ -74,7 +74,8 @@ public class FeatureManager {
         OPTIMIZATION("OPTIMIZATION", "ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ", "ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴏɴɪᴛᴏʀ ᴀɴᴅ ᴀᴅᴀᴘᴛɪᴠᴇ ᴛᴀѕᴋ ѕᴋɪᴘᴘɪɴɢ.", "REDSTONE", null),
         MAINTENANCE("MAINTENANCE", "ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ", "ѕᴇᴀᴍʟᴇѕѕ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕʏѕᴛᴇᴍ ᴡɪᴛʜ ʟᴏʙʙʏ ʀᴇᴅɪʀᴇᴄᴛɪᴏɴ.", "REDSTONE_LAMP", "MAINTENANCE"),
         HIDE("HIDE", "Hide", "Persistent player identity scrambling and configured disguises.", "NAME_TAG", "HIDE"),
-        FRIENDS("FRIENDS", "ꜰʀɪᴇɴᴅѕ", "ᴘʟᴀʏᴇʀ ꜰʀɪᴇɴᴅѕ/ꜰᴏʟʟᴏᴡѕ ѕʏѕᴛᴇᴍ.", "PLAYER_HEAD", "FRIEND");
+        FRIENDS("FRIENDS", "ꜰʀɪᴇɴᴅѕ", "ᴘʟᴀʏᴇʀ ꜰʀɪᴇɴᴅѕ/ꜰᴏʟʟᴏᴡѕ ѕʏѕᴛᴇᴍ.", "PLAYER_HEAD", "FRIEND"),
+        SAFETY("SAFETY", "ѕᴀꜰᴇᴛʏ", "ѕᴀꜰᴇᴛʏ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ɪɴꜰᴏ.", "BOOK", "SAFETY");
 
         private final String configKey;
         private final String displayName;
@@ -219,6 +220,7 @@ public class FeatureManager {
             case "cuboid" -> new Feature[]{Feature.CUBOIDS};
             case "amethysttool" -> new Feature[]{Feature.AMETHYST_TOOLS};
             case "friends", "friend" -> new Feature[]{Feature.FRIENDS};
+            case "safety" -> new Feature[]{Feature.SAFETY};
             default -> new Feature[0];
         };
     }

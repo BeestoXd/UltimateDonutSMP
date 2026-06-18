@@ -4,10 +4,9 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -107,14 +106,10 @@ public class CuboidWandListener implements Listener {
             return false;
         }
 
-        String displayName = meta.displayName() == null
-                ? ""
-                : PlainTextComponentSerializer.plainText().serialize(meta.displayName()).trim();
+        String displayName = ColorUtils.strip(meta.getDisplayName()).trim();
         String wandName = ColorUtils.strip(WAND_NAME).trim();
-        if (displayName.equalsIgnoreCase(wandName) || displayName.equalsIgnoreCase("Cuboid Wand")) {
-            return true;
-        }
-        return displayName.contains("ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ");
+        return displayName.equalsIgnoreCase(wandName)
+                || displayName.equalsIgnoreCase("Cuboid Wand");
     }
 
     public static String getWandName() {
@@ -149,11 +144,15 @@ public class CuboidWandListener implements Listener {
         removeWandFromInventory(player);
         player.sendMessage(ColorUtils.toComponent("&aѕᴇʟᴇᴄᴛɪᴏɴ ᴄᴏᴍᴘʟᴇᴛᴇ. &7ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ."));
 
-        Component guideMessage = ColorUtils.toComponent("&eѕᴛᴇᴘ 3/3 &7ᴛʏᴘᴇ ")
-                .append(ColorUtils.toComponent("&f/cuboid create <name>")
-                        .clickEvent(ClickEvent.suggestCommand("/cuboid create "))
-                        .hoverEvent(HoverEvent.showText(ColorUtils.toComponent("&7ᴄʟɪᴄᴋ ᴛᴏ ᴀᴜᴛᴏꜰɪʟʟ ᴛʜᴇ ᴄʀᴇᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅ."))));
-        player.sendMessage(guideMessage);
+        TextComponent guideMessage = ColorUtils.toBaseComponent("&eѕᴛᴇᴘ 3/3 &7ᴛʏᴘᴇ ");
+        TextComponent commandPart = ColorUtils.toBaseComponent("&f/cuboid create <name>");
+        commandPart.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/cuboid create "));
+        commandPart.setHoverEvent(new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                ColorUtils.toBaseComponents("&7ᴄʟɪᴄᴋ ᴛᴏ ᴀᴜᴛᴏꜰɪʟʟ ᴛʜᴇ ᴄʀᴇᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅ.")
+        ));
+        guideMessage.addExtra(commandPart);
+        player.spigot().sendMessage(guideMessage);
     }
 
     private void removeWandFromInventory(Player player) {

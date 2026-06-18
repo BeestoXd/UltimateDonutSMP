@@ -2,13 +2,10 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Locale;
 
 public class PingCommand implements CommandExecutor {
 
@@ -43,7 +40,7 @@ public class PingCommand implements CommandExecutor {
             return true;
         }
 
-        Player target = findOnlinePlayer(args[0]);
+        Player target = plugin.getHideManager().findOnlinePlayer(sender, args[0]);
         if (target == null) {
             sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
             return true;
@@ -54,7 +51,7 @@ public class PingCommand implements CommandExecutor {
                         "PING.OTHER",
                         "&e%player%'ѕ &7ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ",
                         "%player%",
-                        target.getName(),
+                        plugin.getHideManager().publicName(target),
                         "%ping%",
                         String.valueOf(target.getPing())
                 )
@@ -62,22 +59,4 @@ public class PingCommand implements CommandExecutor {
         return true;
     }
 
-    private Player findOnlinePlayer(String input) {
-        if (input == null || input.isBlank()) {
-            return null;
-        }
-
-        Player exact = Bukkit.getPlayerExact(input);
-        if (exact != null) {
-            return exact;
-        }
-
-        String expected = input.toLowerCase(Locale.ROOT);
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getName().toLowerCase(Locale.ROOT).equals(expected)) {
-                return player;
-            }
-        }
-        return null;
-    }
 }

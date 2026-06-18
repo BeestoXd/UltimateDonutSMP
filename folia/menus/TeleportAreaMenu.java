@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.menus;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -9,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +20,11 @@ import java.util.Map;
 
 public abstract class TeleportAreaMenu extends BaseMenu {
 
+    private static final String DELETE_AREA_PERMISSION = "ultimatedonutsmp.admin.teleportareas.delete";
+
     private final Map<Integer, SpawnManager.TeleportArea> slotAreas = new HashMap<>();
     private boolean randomEnabled;
+    private int unsetBarrierSlot = -1;
 
     protected TeleportAreaMenu(UltimateDonutSmp plugin, String title, int size) {
         super(plugin, title, normalizeSize(size));
@@ -40,10 +46,12 @@ public abstract class TeleportAreaMenu extends BaseMenu {
         fill(Material.GRAY_STAINED_GLASS_PANE);
         slotAreas.clear();
         randomEnabled = false;
+        unsetBarrierSlot = -1;
 
-        List<SpawnManager.TeleportArea> areas = plugin.getSpawnManager().getValidAreas(getAreaType());
+        List<SpawnManager.TeleportArea> areas = plugin.getSpawnManager().getMenuAreas(getAreaType());
         if (areas.isEmpty()) {
-            set(inventory.getSize() / 2, ItemUtils.createItem(
+            unsetBarrierSlot = inventory.getSize() / 2;
+            set(unsetBarrierSlot, ItemUtils.createItem(
                     Material.BARRIER,
                     getEmptyTitle(),
                     List.of(getEmptyLore())
@@ -51,22 +59,44 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             return;
         }
 
+        int randomAreaCount = 0;
         for (SpawnManager.TeleportArea area : areas) {
+            Location destination = plugin.getSpawnManager().resolveDestination(area);
+            if (destination == null) {
+                continue;
+            }
+
+            randomAreaCount++;
+            List<String> lore = replaceAreaPlaceholders(area.lore(), area);
+            if (canDeleteArea(player, area)) {
+                lore.add("&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ");
+            }
+
             set(area.slot(), ItemUtils.createItem(
                     area.material(),
                     replaceAreaPlaceholders(area.displayName(), area),
-                    replaceAreaPlaceholders(area.lore(), area)
+                    lore
             ));
             slotAreas.put(area.slot(), area);
         }
 
-        if (areas.size() > 1) {
-            buildRandomButton(areas.size());
+        if (randomAreaCount == 0) {
+            unsetBarrierSlot = inventory.getSize() / 2;
+            set(unsetBarrierSlot, ItemUtils.createItem(
+                    Material.BARRIER,
+                    "&cʟᴏᴄᴀᴛɪᴏɴ ɴᴏᴛ ѕᴇᴛ",
+                    List.of("&7ѕᴇᴛ ᴛʜɪѕ " + getLocationLabel() + " ʟᴏᴄᴀᴛɪᴏɴ ꜰɪʀѕᴛ.")
+            ));
+            return;
+        }
+
+        if (randomAreaCount > 1) {
+            buildRandomButton(randomAreaCount);
         }
     }
 
     @Override
-    public void handleClick(int slot, Player player) {
+    public void handleClick(int slot, Player player, ClickType clickType) {
         if (randomEnabled && slot == getRandomSlot()) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             SpawnManager.TeleportArea randomArea = plugin.getSpawnManager().getRandomArea(getAreaType());
@@ -78,13 +108,36 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             return;
         }
 
+        if (slot == unsetBarrierSlot) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ " + getLocationLabel() + " ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
+            return;
+        }
+
         SpawnManager.TeleportArea area = slotAreas.get(slot);
         if (area == null) {
             return;
         }
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+        if (canDeleteArea(player, area) && clickType.isRightClick()) {
+            deleteArea(player, area);
+            return;
+        }
+
         queueTeleport(player, area);
+    }
+
+    private void deleteArea(Player player, SpawnManager.TeleportArea area) {
+        SpawnManager.AreaDeleteResult result = plugin.getSpawnManager().deleteMenuArea(area);
+        if (!result.success()) {
+            player.sendMessage(ColorUtils.toComponent("&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ " + getLocationLabel()
+                    + " ᴀʀᴇᴀ: &f" + result.message()));
+            return;
+        }
+
+        player.sendMessage(ColorUtils.toComponent("&a" + result.message()));
+        build(player);
     }
 
     private void buildRandomButton(int areaCount) {
@@ -107,12 +160,22 @@ public abstract class TeleportAreaMenu extends BaseMenu {
     private void queueTeleport(Player player, SpawnManager.TeleportArea area) {
         Location destination = plugin.getSpawnManager().resolveDestination(area);
         if (destination == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ ᴀʀᴇᴀ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ᴠᴀʟɪᴅ ᴛᴇʟᴇᴘᴏʀᴛ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ."));
+            player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ " + getLocationLabel() + " ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
             return;
         }
 
         player.closeInventory();
         plugin.getTeleportManager().queue(player, destination, getTeleportType(), null);
+    }
+
+    private String getLocationLabel() {
+        return getAreaType() == SpawnManager.AreaType.AFK ? "ᴀꜰᴋ" : "ѕᴘᴀᴡɴ";
+    }
+
+    private boolean canDeleteArea(Player player, SpawnManager.TeleportArea area) {
+        return (PermissionUtils.has(player, DELETE_AREA_PERMISSION)
+                || PermissionUtils.has(player, "ultimatedonutsmp.admin"))
+                && plugin.getSpawnManager().isStoredMenuArea(area);
     }
 
     private int getRandomSlot() {

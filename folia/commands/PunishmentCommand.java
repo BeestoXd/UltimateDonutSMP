@@ -151,7 +151,7 @@ public class PunishmentCommand implements CommandExecutor {
         plugin.getDiscordWebhookManager().sendPunishment(record);
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.CREATED",
-                "&aᴄʀᴇᴀᴛᴇᴅ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏʀ &b{player}&a. ɪᴅ: &f#{id}",
+                "&aᴄʀᴇᴀᴛᴇᴅ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏʀ &b{player}&a. ID: &f#{id}",
                 "{type}", plugin.getPunishmentManager().getDisplayType(record),
                 "{player}", target.name(),
                 "{id}", String.valueOf(record.getId())
@@ -208,7 +208,7 @@ public class PunishmentCommand implements CommandExecutor {
 
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.REMOVED",
-                "&aʀᴇᴍᴏᴠᴇᴅ ᴀᴄᴛɪᴠᴇ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ(ѕ) ꜰᴏʀ &b{player}&a.",
+                "&aʀᴇᴍᴏᴠᴇᴅ ᴀᴄᴛɪᴠᴇ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ(s) ꜰᴏʀ &b{player}&a.",
                 "{type}", type.name(),
                 "{player}", target.name()
         ));
@@ -221,7 +221,7 @@ public class PunishmentCommand implements CommandExecutor {
         }
 
         switch (type) {
-            case BAN, BLACKLIST, KICK -> onlineTarget.kick(ColorUtils.toComponent(buildPunishmentMessage(record)));
+            case BAN, BLACKLIST, KICK -> onlineTarget.kickPlayer(ColorUtils.toComponent(buildPunishmentMessage(record)));
             case WARN -> onlineTarget.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "PUNISHMENTS.WARN-RECEIVED",
@@ -324,7 +324,7 @@ public class PunishmentCommand implements CommandExecutor {
         String normalizedLabel = label.toLowerCase(Locale.ROOT);
         String fallback = USAGE_MESSAGES.getOrDefault(normalizedLabel, "&cᴜѕᴀɢᴇ: /" + normalizedLabel + " <player> [reason]");
         send(sender, plugin.getConfigManager().getMessageOrDefault(
-                "PUNISHMENTS.USAGE-" + normalizedLabel.toUpperCase(Locale.ROOT),
+                "ᴘᴜɴɪѕʜᴍᴇɴᴛѕ.ᴜѕᴀɢᴇ-" + normalizedLabel.toUpperCase(Locale.ROOT),
                 fallback
         ));
     }

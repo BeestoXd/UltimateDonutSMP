@@ -69,7 +69,8 @@ public class InvseeManager {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean("INVSEE.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.INVSEE)
+                && getConfig().getBoolean("INVSEE.ENABLED", true);
     }
 
     public boolean requiresOnlineTarget() {

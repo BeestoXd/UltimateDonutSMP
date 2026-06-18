@@ -5,20 +5,17 @@ import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
-import com.destroystokyo.paper.profile.PlayerProfile;
-import io.papermc.paper.connection.PlayerConfigurationConnection;
-import io.papermc.paper.connection.PlayerConnection;
-import io.papermc.paper.connection.PlayerLoginConnection;
-import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.UUID;
 
@@ -31,12 +28,19 @@ public class PlayerJoinQuitListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onValidateLogin(PlayerConnectionValidateLoginEvent event) {
-        if (!event.isAllowed()) {
+    public void onLogin(PlayerLoginEvent event) {
+        if (plugin.getServerWipeManager() != null && plugin.getServerWipeManager().isMaintenanceMode()) {
+            event.disallow(
+                    PlayerLoginEvent.Result.KICK_OTHER,
+                    ColorUtils.colorize(plugin.getServerWipeManager().getMaintenanceMessage())
+            );
+            return;
+        }
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
         }
 
-        UUID uuid = resolveLoginUuid(event.getConnection());
+        UUID uuid = event.getPlayer().getUniqueId();
         if (uuid == null) {
             return;
         }
@@ -45,7 +49,7 @@ public class PlayerJoinQuitListener implements Listener {
                 .getActiveRecord(uuid, PunishmentType.BLACKLIST)
                 .orElse(null);
         if (blacklist != null) {
-            event.kickMessage(ColorUtils.toComponent(kickMessage(blacklist)));
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ColorUtils.colorize(kickMessage(blacklist)));
             return;
         }
 
@@ -53,22 +57,8 @@ public class PlayerJoinQuitListener implements Listener {
                 .getActiveRecord(uuid, PunishmentType.BAN)
                 .orElse(null);
         if (ban != null) {
-            event.kickMessage(ColorUtils.toComponent(kickMessage(ban)));
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ColorUtils.colorize(kickMessage(ban)));
         }
-    }
-
-    private UUID resolveLoginUuid(PlayerConnection connection) {
-        if (connection instanceof PlayerConfigurationConnection configurationConnection) {
-            return configurationConnection.getProfile().getId();
-        }
-        if (connection instanceof PlayerLoginConnection loginConnection) {
-            PlayerProfile profile = loginConnection.getAuthenticatedProfile();
-            if (profile == null) {
-                profile = loginConnection.getUnsafeProfile();
-            }
-            return profile == null ? null : profile.getId();
-        }
-        return null;
     }
 
     @EventHandler
@@ -82,13 +72,13 @@ public class PlayerJoinQuitListener implements Listener {
                 boolean useProxy = plugin.getConfigManager().getNetwork().getBoolean("MAINTENANCE.USE_PROXY", true);
                 String notAllowedMsg = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.NOT_ALLOWED", "&d[Maintenance] &cThis server is currently in maintenance. Redirecting to lobby...");
                 player.sendMessage(ColorUtils.toComponent(notAllowedMsg));
-                
+
                 if (useProxy) {
                     String lobby = plugin.getMaintenanceManager().getLobbyServer();
                     plugin.getMaintenanceManager().sendToLobby(player, lobby);
                     event.setJoinMessage(null);
-                    
-                    plugin.getFoliaScheduler().runEntityLater(player, () -> {
+
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         if (player.isOnline()) {
                             String kickMessage = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cThis server is in maintenance and no lobby is available.");
                             player.kickPlayer(ColorUtils.colorize(kickMessage));
@@ -112,11 +102,15 @@ public class PlayerJoinQuitListener implements Listener {
                             );
                         }
                     }
-                    
+
                     String lobbyWorld = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.LOBBY_WORLD", "world");
                     org.bukkit.World world = Bukkit.getWorld(lobbyWorld);
                     if (world != null) {
-                        plugin.getFoliaScheduler().teleport(player, world.getSpawnLocation());
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                            if (player.isOnline()) {
+                                player.teleport(world.getSpawnLocation());
+                            }
+                        }, 1L);
                     }
                 }
                 return;
@@ -126,21 +120,22 @@ public class PlayerJoinQuitListener implements Listener {
             }
         } else if (plugin.getMaintenanceManager() != null) {
             String localServerId = plugin.getConfigManager().getNetwork().getString("NETWORK.LOCAL_SERVER_ID", "local");
-            Location savedLoc = plugin.getDatabaseManager().getMaintenanceLocation(player.getUniqueId(), localServerId);
+            org.bukkit.Location savedLoc = plugin.getDatabaseManager().getMaintenanceLocation(player.getUniqueId(), localServerId);
             if (savedLoc != null) {
-                plugin.getFoliaScheduler().teleport(player, savedLoc).thenAccept(success -> {
-                    if (success) {
-                        plugin.getFoliaScheduler().runAsync(() -> {
-                            plugin.getDatabaseManager().deleteMaintenanceLocation(player.getUniqueId(), localServerId);
-                        });
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (player.isOnline()) {
+                        player.teleport(savedLoc);
+                        plugin.getDatabaseManager().deleteMaintenanceLocation(player.getUniqueId(), localServerId);
                     }
-                });
+                }, 1L);
             }
         }
 
-        // load player data
         plugin.getPlayerDataManager().loadOrCreate(player);
         plugin.getIgnoreManager().loadPlayer(player.getUniqueId());
+        if (plugin.getFriendsManager() != null) {
+            plugin.getFriendsManager().handleJoin(player);
+        }
         if (player.getAddress() != null && player.getAddress().getAddress() != null) {
             plugin.getDatabaseManager().savePlayerIpAddress(
                     player.getUniqueId(),
@@ -149,18 +144,23 @@ public class PlayerJoinQuitListener implements Listener {
             );
         }
         plugin.getKeyAllManager().handleJoin(player);
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().handleJoin(player,
+                    message -> player.sendMessage(ColorUtils.toComponent(message, player)));
+        }
 
-        // load homes
+        // Load homes
         plugin.getHomeManager().loadHomes(player);
 
-        // setup scoreboard
+        // Setup scoreboard
         plugin.getScoreboardManager().setupPlayer(player);
 
-        // update tablist name
+        // Update tablist name
         plugin.getTablistManager().updateTablistName(player);
         plugin.getTablistManager().update(player);
+        plugin.getTablistManager().refreshSkinHeads(player);
 
-        // track for AFK
+        // Track for AFK
         plugin.getAFKManager().trackPlayer(player);
         plugin.getShardManager().syncBooster(player);
         plugin.getAmethystToolsManager().sanitizePlayerInventory(player, true);
@@ -173,7 +173,7 @@ public class PlayerJoinQuitListener implements Listener {
             plugin.getLunarRichPresenceManager().handleJoin(player);
         }
 
-        // initialize cuboid-shard countdown so the player cannot receive shards
+        // Initialize cuboid-shard countdown so the player cannot receive shards
         // the instant they join – they must wait the full interval first.
         plugin.getShardManager().initCountdown(player.getUniqueId());
         plugin.getRtpZoneManager().clearState(player.getUniqueId());
@@ -193,9 +193,34 @@ public class PlayerJoinQuitListener implements Listener {
                 }
             }
         }
+        if (plugin.getOrdersManager() != null) {
+            plugin.getFoliaScheduler().runEntity(player, () -> {
+                plugin.getOrdersManager().processAutoClaims(player);
+            });
+        }
 
-        // hide join message (optional, uncomment to suppress)
+        // Hide join message (optional, uncomment to suppress)
         // event.joinMessage(null);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) {
+        refreshHiddenNametag(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onRespawn(PlayerRespawnEvent event) {
+        refreshHiddenNametag(event.getPlayer());
+    }
+
+    private void refreshHiddenNametag(Player player) {
+        if (plugin.getHideManager() == null) {
+            return;
+        }
+        var state = plugin.getHideManager().getState(player.getUniqueId());
+        if (plugin.getHideManager().usesObfuscatedText(state)) {
+            plugin.getHideManager().refreshNametag(player);
+        }
     }
 
     @EventHandler
@@ -216,33 +241,34 @@ public class PlayerJoinQuitListener implements Listener {
             plugin.getFfaManager().handleQuit(player);
         }
 
-        // clear combat tag
+        // Clear combat tag
         plugin.getCombatManager().clearTag(player.getUniqueId());
 
-        // cancel any pending teleport
+        // Cancel any pending teleport
         plugin.getTeleportManager().cancel(player.getUniqueId());
 
-        // remove pending tpa requests
+        // Remove pending TPA requests
         plugin.getTPAManager().removeRequest(player.getUniqueId());
         plugin.getTPAManager().clearQueuedRequestsForTarget(player.getUniqueId());
         plugin.getTPAManager().cancelRequestsByRequester(player.getUniqueId());
 
-        // remove temporary worth lore before the inventory is persisted by the server
+        // Remove temporary worth lore before the inventory is persisted by the server
         plugin.getWorthManager().clearWorthDisplay(player);
 
-        // save and unload player data
+        // Save and unload player data
         plugin.getPlayerDataManager().unload(player.getUniqueId());
 
-        // unload homes
+        // Unload homes
         plugin.getHomeManager().unloadHomes(player.getUniqueId());
 
-        // remove scoreboard
+        // Remove scoreboard
         plugin.getScoreboardManager().removePlayer(player.getUniqueId());
+        plugin.getTablistManager().removePlayer(player.getUniqueId());
 
-        // remove afk tracking
+        // Remove AFK tracking
         plugin.getAFKManager().removePlayer(player.getUniqueId());
 
-        // clean up cuboid-shard countdown state
+        // Clean up cuboid-shard countdown state
         plugin.getShardManager().removeCountdown(player.getUniqueId());
         plugin.getShardManager().clearBoosterCache(player.getUniqueId());
         plugin.getRtpZoneManager().clearState(player.getUniqueId());
@@ -258,8 +284,14 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getChatManager().clearPlayerState(player.getUniqueId());
         plugin.getPrivateMessageManager().clearPlayer(player.getUniqueId());
         plugin.getIgnoreManager().unloadPlayer(player.getUniqueId());
+        if (plugin.getFriendsManager() != null) {
+            plugin.getFriendsManager().handleQuit(player);
+        }
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().handleQuit(player.getUniqueId());
+        }
 
-        // remove team chat
+        // Remove team chat
         plugin.getTeamManager().setTeamChat(player.getUniqueId(), false);
         plugin.getTeamManager().clearSearchState(player.getUniqueId());
     }

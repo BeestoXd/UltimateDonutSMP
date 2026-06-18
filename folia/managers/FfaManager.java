@@ -5,17 +5,17 @@ import com.bx.ultimateDonutSmp.models.FfaArena;
 import com.bx.ultimateDonutSmp.models.FfaMatch;
 import com.bx.ultimateDonutSmp.models.FfaPlayerSnapshot;
 import com.bx.ultimateDonutSmp.models.FfaStats;
+import com.bx.ultimateDonutSmp.utils.AttributeUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.LocationUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
-import net.kyori.adventure.title.Title;
+import com.bx.ultimateDonutSmp.utils.TitleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
@@ -31,7 +31,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -147,7 +146,8 @@ public class FfaManager {
     }
 
     public boolean isEnabled() {
-        return config().getBoolean("SETTINGS.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.FFA)
+                && config().getBoolean("SETTINGS.ENABLED", true);
     }
 
     public boolean shouldBlockCommands() {
@@ -761,8 +761,8 @@ public class FfaManager {
             arenaSnapshots.put(matchId, arenaSnapshot);
         }
 
-        send(first, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a.");
-        send(second, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a.");
+        send(first, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a.");
+        send(second, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a.");
         return true;
     }
 
@@ -902,7 +902,7 @@ public class FfaManager {
         waitingPlayers.add(uuid);
         waitingArenaEntries.put(uuid, new WaitingArenaEntry(
                 arena,
-                player.getName(),
+                publicName(player),
                 snapshot,
                 arenaSnapshot,
                 waitingSpawn
@@ -966,7 +966,7 @@ public class FfaManager {
                 first.getUniqueId(),
                 entry.playerName(),
                 second.getUniqueId(),
-                second.getName()
+                publicName(second)
         );
         match.putSnapshot(first.getUniqueId(), entry.snapshot());
         match.putSnapshot(second.getUniqueId(), secondSnapshot);
@@ -993,7 +993,7 @@ public class FfaManager {
             clearMatchSpawnProtection(second.getUniqueId());
         }, 1L);
 
-        send(first, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
+        send(first, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
         send(second, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + entry.playerName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
         send(first, "&7ᴜѕᴇ &f/leave &7ᴛᴏ ѕᴜʀʀᴇɴᴅᴇʀ.");
         send(second, "&7ᴜѕᴇ &f/leave &7ᴛᴏ ѕᴜʀʀᴇɴᴅᴇʀ.");
@@ -1762,7 +1762,7 @@ public class FfaManager {
         waitingPlayers.add(uuid);
         waitingArenaEntries.put(uuid, new WaitingArenaEntry(
                 arena,
-                player.getName(),
+                publicName(player),
                 snapshot,
                 arenaSnapshot,
                 waitingLocation.clone()
@@ -1831,9 +1831,7 @@ public class FfaManager {
         player.resetPlayerTime();
         player.resetPlayerWeather();
 
-        double maxHealth = player.getAttribute(Attribute.MAX_HEALTH) == null
-                ? 20D
-                : player.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double maxHealth = AttributeUtils.getMaxHealth(player);
         player.setHealth(Math.min(maxHealth, Math.max(1D, snapshot.getHealth())));
         player.updateInventory();
     }
@@ -2038,7 +2036,7 @@ public class FfaManager {
             arena.setEnabled(false);
             arena.setState(FfaArena.ArenaState.DISABLED);
             saveArena(arena);
-            plugin.getLogger().warning("ᴅɪѕᴀʙʟᴇᴅ FFA arena " + arena.getId() + " because auto-repair failed.");
+            plugin.getLogger().warning("Disabled FFA arena " + arena.getId() + " because auto-repair failed.");
             return;
         }
 
@@ -2306,7 +2304,7 @@ public class FfaManager {
         arena.setEnabled(false);
         arena.setState(FfaArena.ArenaState.DISABLED);
         saveArena(arena);
-        plugin.getLogger().warning("ᴅɪѕᴀʙʟᴇᴅ FFA arena " + arena.getId() + " because reset failed.");
+        plugin.getLogger().warning("Disabled FFA arena " + arena.getId() + " because reset failed.");
     }
 
     private void resumeWaitingArena(FfaArena arena, FfaMatch recentlyResetMatch) {
@@ -2583,7 +2581,7 @@ public class FfaManager {
         if (state == null) {
             transitionTitles.remove(player.getUniqueId());
             transitioningPlayers.remove(player.getUniqueId());
-            player.clearTitle();
+            TitleUtils.clearTitle(player);
             clearTemporaryVanish(player);
             return;
         }
@@ -2597,7 +2595,7 @@ public class FfaManager {
         player.setCollidable(state.collidable());
         transitionTitles.remove(player.getUniqueId());
         transitioningPlayers.remove(player.getUniqueId());
-        player.clearTitle();
+        TitleUtils.clearTitle(player);
         clearTemporaryVanish(player);
     }
 
@@ -2624,11 +2622,7 @@ public class FfaManager {
         }
 
         long stayMillis = Math.max(1000L, getReturnDelayTicks() * 50L);
-        player.showTitle(Title.title(
-                ColorUtils.toComponent(state.title()),
-                ColorUtils.toComponent(state.subtitle()),
-                Title.Times.times(Duration.ZERO, Duration.ofMillis(stayMillis), Duration.ZERO)
-        ));
+        TitleUtils.sendTitle(player, state.title(), state.subtitle(), 0, (int) Math.max(1L, stayMillis / 50L), 0);
     }
 
     private void applyTemporaryVanish(Player hidden) {
@@ -2664,9 +2658,7 @@ public class FfaManager {
             return;
         }
 
-        double maxHealth = player.getAttribute(Attribute.MAX_HEALTH) == null
-                ? 20D
-                : player.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double maxHealth = AttributeUtils.getMaxHealth(player);
         player.setHealth(maxHealth);
         player.setFoodLevel(20);
         player.setSaturation(20F);
@@ -3077,8 +3069,8 @@ public class FfaManager {
         if (world == null) {
             return null;
         }
-        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0d + 0.5D;
-        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0d + 0.5D;
+        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0D + 0.5D;
+        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0D + 0.5D;
         return new Location(world, centerX, snapshot.maxY() + 1.0D, centerZ, 0F, 0F);
     }
 
@@ -3120,7 +3112,7 @@ public class FfaManager {
 
     private String formatDuration(long totalSeconds) {
         long safeSeconds = Math.max(0L, totalSeconds);
-        long minutes = safeSeconds / 60l;
+        long minutes = safeSeconds / 60L;
         long seconds = safeSeconds % 60L;
         return minutes + "m " + seconds + "s";
     }
@@ -3914,8 +3906,8 @@ public class FfaManager {
             return null;
         }
 
-        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0d + 0.5D;
-        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0d + 0.5D;
+        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0D + 0.5D;
+        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0D + 0.5D;
         Location current = player.getLocation();
         double deltaX = current.getX() - centerX;
         double deltaZ = current.getZ() - centerZ;
@@ -4500,7 +4492,7 @@ public class FfaManager {
 
     private String prettifyId(String id) {
         if (id == null || id.isBlank()) {
-            return "ᴀʀᴇɴᴀ";
+            return "Arena";
         }
 
         String[] parts = id.replace('-', ' ').replace('_', ' ').split("\\s+");
@@ -4517,7 +4509,7 @@ public class FfaManager {
                 builder.append(part.substring(1).toLowerCase(Locale.ROOT));
             }
         }
-        return builder.isEmpty() ? "ᴀʀᴇɴᴀ" : ColorUtils.toSmallCaps(builder.toString());
+        return builder.isEmpty() ? "Arena" : builder.toString();
     }
 
     private FileConfiguration config() {
@@ -4588,6 +4580,10 @@ public class FfaManager {
         if (sender != null && message != null && !message.isBlank()) {
             sender.sendMessage(ColorUtils.toComponent(message));
         }
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
     }
 
     private void play(Player player, String soundPath) {

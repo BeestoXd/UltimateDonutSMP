@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.commands;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -62,10 +63,14 @@ public class SetMoneyCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.ADMIN.SET-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", NumberUtils.formatNice(result.afterBalance()),
-                "{amount_full}", NumberUtils.format(result.afterBalance()),
-                "{previous_balance}", NumberUtils.formatNice(result.beforeBalance()),
-                "{previous_balance_full}", NumberUtils.format(result.beforeBalance())
+                "{amount}", compactAmount(result.afterBalance()),
+                "{amount_full}", fullAmount(result.afterBalance()),
+                "{money}", plugin.getCurrencyManager().formatMoneyCompact(result.afterBalance()),
+                "{money_full}", fullMoney(result.afterBalance()),
+                "{previous_balance}", compactAmount(result.beforeBalance()),
+                "{previous_balance_full}", fullAmount(result.beforeBalance()),
+                "{previous_balance_money}", plugin.getCurrencyManager().formatMoneyCompact(result.beforeBalance()),
+                "{previous_balance_money_full}", fullMoney(result.beforeBalance())
         )));
 
         Player targetPlayer = Bukkit.getPlayer(result.targetUuid());
@@ -73,13 +78,29 @@ public class SetMoneyCommand implements CommandExecutor {
             targetPlayer.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.ADMIN.SET-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", NumberUtils.formatNice(result.afterBalance()),
-                    "{amount_full}", NumberUtils.format(result.afterBalance()),
-                    "{previous_balance}", NumberUtils.formatNice(result.beforeBalance()),
-                    "{previous_balance_full}", NumberUtils.format(result.beforeBalance())
+                    "{amount}", compactAmount(result.afterBalance()),
+                    "{amount_full}", fullAmount(result.afterBalance()),
+                    "{money}", plugin.getCurrencyManager().formatMoneyCompact(result.afterBalance()),
+                    "{money_full}", fullMoney(result.afterBalance()),
+                    "{previous_balance}", compactAmount(result.beforeBalance()),
+                    "{previous_balance_full}", fullAmount(result.beforeBalance()),
+                    "{previous_balance_money}", plugin.getCurrencyManager().formatMoneyCompact(result.beforeBalance()),
+                    "{previous_balance_money_full}", fullMoney(result.beforeBalance())
             )));
         }
 
         return true;
+    }
+
+    private String compactAmount(double amount) {
+        return plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private String fullAmount(double amount) {
+        return plugin.getCurrencyManager().formatAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private String fullMoney(double amount) {
+        return plugin.getCurrencyManager().format(CurrencyManager.CurrencyType.MONEY, amount, false);
     }
 }

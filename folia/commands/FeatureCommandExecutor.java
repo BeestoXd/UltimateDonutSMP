@@ -30,7 +30,7 @@ public class FeatureCommandExecutor implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         for (FeatureManager.Feature feature : requiredFeatures) {
             if (feature != null && !plugin.getFeatureManager().isEnabled(feature)) {
-                plugin.getFeatureManager().senddisabledMessage(sender, feature, label);
+                plugin.getFeatureManager().sendDisabledMessage(sender, feature, label);
                 return true;
             }
         }

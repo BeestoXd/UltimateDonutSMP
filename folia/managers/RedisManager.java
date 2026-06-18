@@ -6,7 +6,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.params.SetParams;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class RedisManager {
 
@@ -86,13 +90,102 @@ public class RedisManager {
             return true;
         } catch (Exception exception) {
             connected = false;
-            logFailure("Redis publish failed: " + exception.getMessage());
+            logFailure("ʀᴇᴅɪѕ ᴘᴜʙʟɪѕʜ ꜰᴀɪʟᴇᴅ: " + exception.getMessage());
             return false;
         }
     }
 
+    public boolean setIfAbsent(String key, String value, long ttlSeconds) {
+        if (key == null || key.isBlank() || value == null) {
+            return false;
+        }
+        return withJedis(jedis -> {
+            SetParams params = SetParams.setParams().nx();
+            if (ttlSeconds > 0L) {
+                params.ex(ttlSeconds);
+            }
+            return "OK".equalsIgnoreCase(jedis.set(key, value, params));
+        }, false);
+    }
+
+    public boolean setex(String key, String value, long ttlSeconds) {
+        if (key == null || key.isBlank() || value == null || ttlSeconds <= 0L) {
+            return false;
+        }
+        return withJedis(jedis -> {
+            jedis.setex(key, ttlSeconds, value);
+            return true;
+        }, false);
+    }
+
+    public String get(String key) {
+        if (key == null || key.isBlank()) {
+            return null;
+        }
+        return withJedis(jedis -> jedis.get(key), null);
+    }
+
+    public long del(String... keys) {
+        if (keys == null || keys.length == 0) {
+            return 0L;
+        }
+        return withJedis(jedis -> jedis.del(keys), 0L);
+    }
+
+    public boolean expire(String key, long ttlSeconds) {
+        if (key == null || key.isBlank() || ttlSeconds <= 0L) {
+            return false;
+        }
+        return withJedis(jedis -> jedis.expire(key, ttlSeconds) > 0L, false);
+    }
+
+    public boolean zadd(String key, double score, String member) {
+        if (key == null || key.isBlank() || member == null || member.isBlank()) {
+            return false;
+        }
+        return withJedis(jedis -> jedis.zadd(key, score, member) >= 0L, false);
+    }
+
+    public long zrem(String key, String... members) {
+        if (key == null || key.isBlank() || members == null || members.length == 0) {
+            return 0L;
+        }
+        return withJedis(jedis -> jedis.zrem(key, members), 0L);
+    }
+
+    public List<String> zrange(String key, long start, long stop) {
+        if (key == null || key.isBlank()) {
+            return List.of();
+        }
+        return withJedis(jedis -> jedis.zrange(key, start, stop), Collections.emptyList());
+    }
+
+    public List<String> zrangeByScore(String key, double min, double max) {
+        if (key == null || key.isBlank()) {
+            return List.of();
+        }
+        return withJedis(jedis -> jedis.zrangeByScore(key, min, max), Collections.emptyList());
+    }
+
+    public boolean hset(String key, Map<String, String> values) {
+        if (key == null || key.isBlank() || values == null || values.isEmpty()) {
+            return false;
+        }
+        return withJedis(jedis -> {
+            jedis.hset(key, values);
+            return true;
+        }, false);
+    }
+
+    public Map<String, String> hgetAll(String key) {
+        if (key == null || key.isBlank()) {
+            return Map.of();
+        }
+        return withJedis(jedis -> jedis.hgetAll(key), Map.of());
+    }
+
     public void subscribe(String channel, Consumer<String> messageConsumer) {
-        Objects.requireNonNull(messageConsumer, "messageConsumer");
+        Objects.requireNonNull(messageConsumer, "ᴍᴇѕѕᴀɢᴇᴄᴏɴѕᴜᴍᴇʀ");
 
         synchronized (lifecycleLock) {
             String normalizedChannel = normalizeChannel(channel);
@@ -121,6 +214,28 @@ public class RedisManager {
     public void stopSubscriber() {
         synchronized (lifecycleLock) {
             stopSubscriber(true);
+        }
+    }
+
+    private <T> T withJedis(Function<Jedis, T> operation, T fallback) {
+        if (!isEnabled() || operation == null) {
+            return fallback;
+        }
+
+        JedisPool currentPool = pool;
+        if (currentPool == null) {
+            return fallback;
+        }
+
+        try (Jedis jedis = currentPool.getResource()) {
+            T result = operation.apply(jedis);
+            connected = true;
+            lastFailureMessage = "";
+            return result;
+        } catch (Exception exception) {
+            connected = false;
+            logFailure("Redis operation failed: " + exception.getMessage());
+            return fallback;
         }
     }
 
@@ -203,7 +318,7 @@ public class RedisManager {
             } catch (Exception exception) {
                 connected = false;
                 if (subscriberRunning.get()) {
-                    logFailure("Redis subscriber failed: " + exception.getMessage());
+                    logFailure("ʀᴇᴅɪѕ ѕᴜʙѕᴄʀɪʙᴇʀ ꜰᴀɪʟᴇᴅ: " + exception.getMessage());
                     sleepBeforeReconnect();
                 }
             } finally {
@@ -252,7 +367,7 @@ public class RedisManager {
             lastFailureMessage = "";
         } catch (Exception exception) {
             connected = false;
-            logFailure("Redis connection failed: " + exception.getMessage());
+            logFailure("ʀᴇᴅɪѕ ᴄᴏɴɴᴇᴄᴛɪᴏɴ ꜰᴀɪʟᴇᴅ: " + exception.getMessage());
         }
     }
 

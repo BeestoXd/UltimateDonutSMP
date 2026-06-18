@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.CrateManager;
+import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.menus.CrateEditorMenu;
 import com.bx.ultimateDonutSmp.menus.CrateGachaMenu;
 import com.bx.ultimateDonutSmp.menus.CrateRewardMenu;
@@ -15,18 +16,29 @@ import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-public class CrateCommand implements CommandExecutor {
+public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private static final String ADMIN_PERMISSION = "ultimatedonutsmp.admin.crate";
     private static final String RELOAD_PERMISSION = "ultimatedonutsmp.admin.crate.reload";
     private static final String KEYALL_PERMISSION = "ultimatedonutsmp.admin.crate.keyall";
     private static final int TARGET_BLOCK_DISTANCE = 6;
+    private static final List<String> PLAYER_SUBCOMMANDS = List.of("keys", "open");
+    private static final List<String> ADMIN_SUBCOMMANDS = List.of(
+            "create", "delete", "type", "key", "take", "set", "add", "edit", "remove", "bind", "unbind", "info"
+    );
+    private static final List<String> OPEN_TYPE_COMPLETIONS = List.of("choose_one", "gacha");
+    private static final List<String> AMOUNT_COMPLETIONS = List.of("1", "5", "10", "25", "64");
+    private static final List<String> SLOT_COMPLETIONS = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
     private final UltimateDonutSmp plugin;
 
@@ -72,6 +84,64 @@ public class CrateCommand implements CommandExecutor {
             case "info" -> handleInfo(sender);
             default -> sendCrateUsage(sender, label);
         };
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (!command.getName().equalsIgnoreCase("crate")
+                || !plugin.getConfigManager().isCommandEnabled("CRATE")) {
+            return Collections.emptyList();
+        }
+
+        if (args.length == 1) {
+            return partialMatches(args[0], availableSubcommands(sender));
+        }
+
+        String subcommand = args[0].toLowerCase(Locale.ROOT);
+        if (args.length == 2) {
+            return switch (subcommand) {
+                case "delete", "type", "add", "edit", "remove" -> hasAdminPermission(sender)
+                        ? partialMatches(args[1], crateIds())
+                        : Collections.emptyList();
+                case "open" -> partialMatches(args[1], crateIds());
+                case "keyall" -> hasKeyAllPermission(sender)
+                        ? partialMatches(args[1], crateIds())
+                        : Collections.emptyList();
+                case "key", "take", "set" -> hasAdminPermission(sender)
+                        ? partialMatches(args[1], targetNames())
+                        : Collections.emptyList();
+                case "bind" -> hasAdminPermission(sender)
+                        ? partialMatches(args[1], bindTargets())
+                        : Collections.emptyList();
+                default -> Collections.emptyList();
+            };
+        }
+
+        if (args.length == 3) {
+            return switch (subcommand) {
+                case "type" -> hasAdminPermission(sender)
+                        ? partialMatches(args[2], OPEN_TYPE_COMPLETIONS)
+                        : Collections.emptyList();
+                case "key", "take", "set" -> hasAdminPermission(sender)
+                        ? partialMatches(args[2], crateIds())
+                        : Collections.emptyList();
+                case "keyall" -> hasKeyAllPermission(sender)
+                        ? partialMatches(args[2], AMOUNT_COMPLETIONS)
+                        : Collections.emptyList();
+                case "add", "edit", "remove" -> hasAdminPermission(sender)
+                        ? partialMatches(args[2], SLOT_COMPLETIONS)
+                        : Collections.emptyList();
+                default -> Collections.emptyList();
+            };
+        }
+
+        if (args.length == 4 && List.of("key", "take", "set").contains(subcommand)) {
+            return hasAdminPermission(sender)
+                    ? partialMatches(args[3], AMOUNT_COMPLETIONS)
+                    : Collections.emptyList();
+        }
+
+        return Collections.emptyList();
     }
 
     private boolean handleCratesCommand(CommandSender sender, String label, String[] args) {
@@ -271,7 +341,7 @@ public class CrateCommand implements CommandExecutor {
                 balance = plugin.getCrateManager().getKeyBalance(target.uuid(), crate.id());
             }
             case SET -> balance = plugin.getCrateManager().setKeys(target.uuid(), crate.id(), amount);
-            default -> throw new IllegalStateException("ᴜɴᴇxᴘᴇᴄᴛᴇᴅ ᴠᴀʟᴜᴇ: " + mode);
+            default -> throw new IllegalStateException("Unexpected value: " + mode);
         }
 
         if (!success) {
@@ -317,7 +387,7 @@ public class CrateCommand implements CommandExecutor {
         int granted = plugin.getKeyAllManager().grantCrateKeys(crate.id(), amount, false);
         sender.sendMessage(ColorUtils.toComponent("&aɢʀᴀɴᴛᴇᴅ &f" + amount + "x "
                 + plugin.getCrateManager().getReadableCrateName(crate)
-                + "&a ᴋᴇʏ(ѕ) ᴛᴏ &f" + granted + "&a ᴏɴʟɪɴᴇ ᴘʟᴀʏᴇʀ(ѕ)."));
+                + "&a ᴋᴇʏ(s) ᴛᴏ &f" + granted + "&a ᴏɴʟɪɴᴇ ᴘʟᴀʏᴇʀ(s)."));
         return true;
     }
 
@@ -404,7 +474,7 @@ public class CrateCommand implements CommandExecutor {
 
         plugin.getCrateManager().startPendingBind(player.getUniqueId(), crate.id());
         player.sendMessage(ColorUtils.toComponent("&aʙɪɴᴅ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ ꜰᴏʀ &f" + crate.id() + "&a."));
-        player.sendMessage(ColorUtils.toComponent("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ, ᴛʀᴀᴘᴘᴇᴅ ᴄʜᴇѕᴛ, ʙᴀʀʀᴇʟ, ᴏʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ᴛᴏ ʙɪɴᴅ ɪᴛ."));
+        player.sendMessage(ColorUtils.toComponent("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ, ᴛʀᴀᴘᴘᴇᴅ ᴄʜᴇѕᴛ, ʙᴀʀʀᴇʟ, ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ, ᴏʀ ѕʜᴜʟᴋᴇʀ ʙᴏx ᴛᴏ ʙɪɴᴅ ɪᴛ."));
         return true;
     }
 
@@ -467,7 +537,7 @@ public class CrateCommand implements CommandExecutor {
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(crateId);
         player.sendMessage(ColorUtils.toComponent("&8&m-------- &bᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ &8&m--------"));
         player.sendMessage(ColorUtils.toComponent("&7ʟᴏᴄᴀᴛɪᴏɴ: &f" + formatBlockLocation(target)));
-        player.sendMessage(ColorUtils.toComponent("&7ᴄʀᴀᴛᴇ ɪᴅ: &f" + crateId));
+        player.sendMessage(ColorUtils.toComponent("&7ᴄʀᴀᴛᴇ ID: &f" + crateId));
         player.sendMessage(ColorUtils.toComponent("&7ᴅɪѕᴘʟᴀʏ: &f" + plugin.getCrateManager().getReadableCrateName(crate)));
         player.sendMessage(ColorUtils.toComponent("&8&m-------------------------------"));
         return true;
@@ -528,6 +598,70 @@ public class CrateCommand implements CommandExecutor {
 
         new KeysMenu(plugin).open(player);
         return true;
+    }
+
+    private List<String> availableSubcommands(CommandSender sender) {
+        List<String> completions = new ArrayList<>(PLAYER_SUBCOMMANDS);
+        if (hasAdminPermission(sender)) {
+            completions.addAll(ADMIN_SUBCOMMANDS);
+        }
+        if (hasReloadPermission(sender)) {
+            completions.add("reload");
+        }
+        if (hasKeyAllPermission(sender)) {
+            completions.add("keyall");
+        }
+        return completions;
+    }
+
+    private boolean hasAdminPermission(CommandSender sender) {
+        return PermissionUtils.has(sender, ADMIN_PERMISSION);
+    }
+
+    private boolean hasReloadPermission(CommandSender sender) {
+        return hasAdminPermission(sender) || PermissionUtils.has(sender, RELOAD_PERMISSION);
+    }
+
+    private boolean hasKeyAllPermission(CommandSender sender) {
+        return hasAdminPermission(sender) || PermissionUtils.has(sender, KEYALL_PERMISSION);
+    }
+
+    private List<String> crateIds() {
+        List<String> ids = new ArrayList<>();
+        for (CrateManager.CrateDefinition crate : plugin.getCrateManager().getCrates()) {
+            ids.add(crate.id());
+        }
+        ids.sort(String.CASE_INSENSITIVE_ORDER);
+        return ids;
+    }
+
+    private List<String> bindTargets() {
+        List<String> completions = crateIds();
+        completions.add("cancel");
+        return completions;
+    }
+
+    private List<String> targetNames() {
+        List<String> names = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            names.add(player.getName());
+        }
+        for (PlayerData data : plugin.getPlayerDataManager().getAll()) {
+            if (data.getUsername() != null && !data.getUsername().isBlank()) {
+                names.add(data.getUsername());
+            }
+        }
+        return names.stream()
+                .distinct()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
+    }
+
+    private List<String> partialMatches(String token, List<String> completions) {
+        List<String> matches = new ArrayList<>();
+        StringUtil.copyPartialMatches(token, completions, matches);
+        matches.sort(String.CASE_INSENSITIVE_ORDER);
+        return matches;
     }
 
     private record ResolvedTarget(UUID uuid, String name) {

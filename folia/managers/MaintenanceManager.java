@@ -2,13 +2,13 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -74,17 +74,17 @@ public class MaintenanceManager {
         return plugin.getConfigManager().getNetwork().getString("MAINTENANCE.LOBBY_SERVER", "lobby");
     }
 
-    public void setLobbyServer(String lobbyServer) {
-        this.customLobbyServer = lobbyServer;
-        save();
-    }
-
     public boolean isUseProxy() {
         return plugin.getConfigManager().getNetwork().getBoolean("MAINTENANCE.USE_PROXY", true);
     }
 
     public String getLobbyWorld() {
         return plugin.getConfigManager().getNetwork().getString("MAINTENANCE.LOBBY_WORLD", "world");
+    }
+
+    public void setLobbyServer(String lobbyServer) {
+        this.customLobbyServer = lobbyServer;
+        save();
     }
 
     public void initializeRedisListener() {
@@ -140,11 +140,11 @@ public class MaintenanceManager {
                 String worldName = getLobbyWorld();
                 World world = Bukkit.getWorld(worldName);
                 if (world != null) {
-                    plugin.getFoliaScheduler().teleport(player, world.getSpawnLocation());
+                    player.teleport(world.getSpawnLocation());
                 } else {
                     Location defaultSpawn = plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.SPAWN);
                     if (defaultSpawn != null) {
-                        plugin.getFoliaScheduler().teleport(player, defaultSpawn);
+                        player.teleport(defaultSpawn);
                     }
                 }
             }
@@ -152,7 +152,7 @@ public class MaintenanceManager {
 
         // Kick players who failed to transfer after 2 seconds (only in proxy mode)
         if (useProxy) {
-            plugin.getFoliaScheduler().runGlobalLater(() -> {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 String kickMessage = config.getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cThis server is in maintenance and no lobby is available.");
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (!player.hasPermission(bypassPerm)) {
@@ -222,24 +222,19 @@ public class MaintenanceManager {
         String titleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_TITLE", "&a&lServer Online");
         String subtitleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_SUBTITLE", "&7Sending you back in %seconds% seconds...");
 
-        final ScheduledTask[] taskHolder = new ScheduledTask[1];
-        taskHolder[0] = plugin.getFoliaScheduler().runEntityTimer(player, new Runnable() {
+        new BukkitRunnable() {
             int countdown = delaySeconds;
 
             @Override
             public void run() {
                 if (!player.isOnline()) {
-                    if (taskHolder[0] != null) {
-                        taskHolder[0].cancel();
-                    }
+                    cancel();
                     return;
                 }
 
                 if (countdown <= 0) {
                     sendToLobby(player, targetServerId);
-                    if (taskHolder[0] != null) {
-                        taskHolder[0].cancel();
-                    }
+                    cancel();
                     return;
                 }
 
@@ -252,6 +247,6 @@ public class MaintenanceManager {
 
                 countdown--;
             }
-        }, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L);
     }
 }

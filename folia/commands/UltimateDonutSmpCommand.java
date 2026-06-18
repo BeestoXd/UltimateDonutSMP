@@ -59,8 +59,8 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        switch (args[0].toLowerCase()) {
-            case "reload" -> handleReload(sender, label);
+        switch (args[0].toLowerCase(Locale.ROOT)) {
+            case "reload" -> handleReload(sender);
             case "statswipe" -> handleStatsWipe(sender, label, args);
             case "optimize", "optimization" -> handleOptimize(sender, label, args);
             case "setup" -> handleSetup(sender, label, args);
@@ -71,7 +71,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private void handleReload(CommandSender sender, String label) {
+    private void handleReload(CommandSender sender) {
         if (!PermissionUtils.has(sender, RELOAD_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴘʟᴜɢɪɴ ѕᴇᴛᴛɪɴɢѕ."));
             return;
@@ -141,7 +141,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
     private void handleOptimize(CommandSender sender, String label, String[] args) {
         if (!PermissionUtils.has(sender, OPTIMIZE_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴ ᴛᴏ ᴜꜱᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴛᴏᴏʟꜱ."));
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴛᴏᴏʟѕ."));
             return;
         }
 
@@ -189,350 +189,12 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void handleSetupApply(CommandSender sender, String label, String[] args) {
-        if (args.length < 4 || !args[2].equalsIgnoreCase("single-paper") || !args[3].equalsIgnoreCase("confirm")) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " setup apply single-paper confirm"));
-            return;
-        }
-
-        try {
-            FileConfiguration config = plugin.getConfigManager().getConfig();
-            FileConfiguration database = plugin.getConfigManager().getDatabase();
-            FileConfiguration network = plugin.getConfigManager().getNetwork();
-            FileConfiguration discord = plugin.getConfigManager().getDiscord();
-
-            config.set("SETTINGS.SPAWN-MENU", true);
-            config.set("SETTINGS.AFK-MENU", true);
-            config.set("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", false);
-
-            database.set("DATABASE.TYPE", "SQLITE");
-            database.set("DATABASE.SQLITE.FILE", "data/data.db");
-            database.set("REDIS.ENABLED", false);
-
-            network.set("NETWORK.LOCAL_SERVER_ID", "local");
-            network.set("NETWORK.LOCAL_DISPLAY_NAME", "Local");
-            network.set("NETWORK-STATUS.LOCAL-SERVER-ID", "local");
-            network.set("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "Local");
-            network.set("NETWORK-STATUS.SERVERS", null);
-            network.set("NETWORK-STATUS.SERVERS.local.DISPLAY", "Local");
-            network.set("NETWORK-STATUS.SERVERS.local.SOURCE.TYPE", "LOCAL");
-
-            discord.set("WEBHOOKS.ENABLED", false);
-
-            boolean saved = plugin.getConfigManager().saveConfig()
-                    & plugin.getConfigManager().saveDatabase()
-                    & plugin.getConfigManager().saveNetwork()
-                    & plugin.getConfigManager().saveDiscord();
-            if (!saved) {
-                sender.sendMessage(ColorUtils.toComponent("&cѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴘʀᴇѕᴇᴛ ᴡᴀѕ ᴀᴘᴘʟɪᴇᴅ ɪɴ ᴍᴇᴍᴏʀʏ, ʙᴜᴛ ᴏɴᴇ ᴏʀ ᴍᴏʀᴇ ꜰɪʟᴇѕ ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ."));
-                return;
-            }
-
-            plugin.reloadAllPluginConfigurations();
-            sender.sendMessage(ColorUtils.toComponent("&aѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ ᴀᴘᴘʟɪᴇᴅ."));
-            sender.sendMessage(ColorUtils.toComponent("&7ɴᴇxᴛ: ᴜѕᴇ &f/" + label + " setup setspawn &7ᴀɴᴅ &f/" + label + " setup setafk&7."));
-            sender.sendMessage(ColorUtils.toComponent("&eʀᴇѕᴛᴀʀᴛ ᴛʜᴇ ѕᴇʀᴠᴇʀ ʙᴇꜰᴏʀᴇ ɢᴏɪɴɢ ʟɪᴠᴇ ѕᴏ ѕᴛᴏʀᴀɢᴇ ᴄʜᴀɴɢᴇѕ ᴀʀᴇ ꜰᴜʟʟʏ ᴀᴘᴘʟɪᴇᴅ."));
-        } catch (Exception exception) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to apply single-paper setup preset.", exception);
-            sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʟʏ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ ꜰᴏʀ ᴅᴇᴛᴀɪʟѕ."));
-        }
-    }
-
-    private void handleSetupLocation(CommandSender sender, boolean spawn) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ ʟᴏᴄᴀᴛɪᴏɴѕ."));
-            return;
-        }
-
-        Location location = player.getLocation();
-        try {
-            if (spawn) {
-                SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setSpawnLocation(location);
-                if (!result.success()) {
-                    plugin.getLogger().warning("Failed to save setup spawn location at "
-                            + describeLocation(location) + ": " + result.message());
-                    sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ: &f" + result.message()));
-                    return;
-                }
-                sender.sendMessage(ColorUtils.toComponent("&aѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ѕᴀᴠᴇᴅ ᴀᴛ &f" + describeLocation(location) + "&a."));
-            } else {
-                SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setAfkLocation(location);
-                if (!result.success()) {
-                    plugin.getLogger().warning("Failed to save setup AFK location at "
-                            + describeLocation(location) + ": " + result.message());
-                    sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ: &f" + result.message()));
-                    return;
-                }
-                sender.sendMessage(ColorUtils.toComponent("&aᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ѕᴀᴠᴇᴅ ᴀᴛ &f" + describeLocation(location) + "&a."));
-            }
-        } catch (Exception exception) {
-            plugin.getLogger().log(Level.WARNING, "Failed to save setup location at " + describeLocation(location), exception);
-            sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ʟᴏᴄᴀᴛɪᴏɴ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ ꜰᴏʀ ᴅᴇᴛᴀɪʟѕ."));
-        }
-    }
-
-    private void sendSetupStatus(CommandSender sender, String label) {
-        FileConfiguration database = plugin.getConfigManager().getDatabase();
-        FileConfiguration discord = plugin.getConfigManager().getDiscord();
-
-        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴜᴅѕ ѕᴇᴛᴜᴘ ѕᴛᴀᴛᴜѕ &8&m----------"));
-        sendCheck(sender, isJava21OrNewer(), "ᴊᴀᴠᴀ 21+", System.getProperty("java.version", "ᴜɴᴋɴᴏᴡɴ"));
-        sendCheck(sender, isFoliaOrPaperLikeServer(), "ꜰᴏʟɪᴀ/ᴘᴀᴘᴇʀ ѕᴇʀᴠᴇʀ", plugin.getServer().getName());
-        sendCheck(sender, isDatabaseConnected(), "ᴅᴀᴛᴀʙᴀѕᴇ", database.getString("DATABASE.TYPE", "SQLITE"));
-        sendCheck(sender, isRedisReadyForSingleServer(database), "ʀᴇᴅɪѕ", redisDetail(database));
-        sendCheck(sender, isDiscordWebhookReady(discord), "ᴅɪѕᴄᴏʀᴅ ᴡᴇʙʜᴏᴏᴋ", discordWebhookDetail(discord));
-        sendCheck(sender, plugin.getSpawnManager().hasSpawn(), "ѕᴘᴀᴡɴ", "ᴜѕᴇ /" + label + " setup setspawn");
-        sendCheck(sender, plugin.getSpawnManager().hasAfk(), "ᴀꜰᴋ", "ᴜѕᴇ /" + label + " setup setafk");
-        sendCheck(sender, !availableRtpWorlds().isEmpty(), "ʀᴛᴘ ᴡᴏʀʟᴅѕ", String.join(", ", availableRtpWorlds()));
-        sendCheck(sender, true, "ᴏᴘᴛɪᴏɴᴀʟ ɪɴᴛᴇɢʀᴀᴛɪᴏɴѕ", optionalIntegrationDetail());
-        sender.sendMessage(ColorUtils.toComponent("&7ᴘʀᴇѕᴇᴛ: &f/" + label + " setup apply single-paper confirm"));
-        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴏᴍᴍᴀɴᴅѕ: &f/" + label + " setup commands [category] [page]"));
-    }
-
-    private void handleSetupCommands(CommandSender sender, String label, String[] args) {
-        String category = args.length >= 3 ? args[2].toLowerCase(Locale.ROOT) : "all";
-        if (!COMMAND_CATEGORIES.contains(category)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀᴛᴇɢᴏʀʏ. ᴀᴠᴀɪʟᴀʙʟᴇ: &f" + String.join(", ", COMMAND_CATEGORIES)));
-            return;
-        }
-
-        int page = args.length >= 4 ? parsePage(args[3]) : 1;
-        List<CommandEntry> entries = commandEntries(category, label);
-        if (entries.isEmpty()) {
-            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴄᴏᴍᴍᴀɴᴅѕ ꜰᴏᴜɴᴅ ꜰᴏʀ ᴄᴀᴛᴇɢᴏʀʏ: &f" + category));
-            return;
-        }
-
-        int totalPages = Math.max(1, (int) Math.ceil(entries.size() / (double) COMMANDS_PER_PAGE));
-        page = Math.max(1, Math.min(page, totalPages));
-        int start = (page - 1) * COMMANDS_PER_PAGE;
-        int end = Math.min(entries.size(), start + COMMANDS_PER_PAGE);
-
-        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴜᴅѕ ᴄᴏᴍᴍᴀɴᴅѕ &8(&f" + category + " " + page + "/" + totalPages + "&8) &8&m----------"));
-        for (int index = start; index < end; index++) {
-            CommandEntry entry = entries.get(index);
-            sender.sendMessage(ColorUtils.toComponent("&f" + entry.usage() + " &8- &7" + entry.description()));
-        }
-        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴀᴛᴇɢᴏʀɪᴇѕ: &f" + String.join("&7, &f", COMMAND_CATEGORIES)));
-    }
-
-    private List<CommandEntry> commandEntries(String category, String label) {
-        if (category.equals("setup")) {
-            return List.of(
-                    new CommandEntry("/" + label + " setup [status]", "ѕʜᴏᴡ ѕᴇᴛᴜᴘ ᴄʜᴇᴄᴋʟɪѕᴛ"),
-                    new CommandEntry("/" + label + " setup apply single-paper confirm", "ᴀᴘᴘʟʏ ᴛʜᴇ ѕɪɴɢʟᴇ-ѕᴇʀᴠᴇʀ ᴘʀᴇѕᴇᴛ"),
-                    new CommandEntry("/" + label + " setup setspawn", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ѕᴘᴀᴡɴ"),
-                    new CommandEntry("/" + label + " setup setafk", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ᴀꜰᴋ"),
-                    new CommandEntry("/" + label + " setup commands [category] [page]", "ʙʀᴏᴡѕᴇ ᴄᴏᴍᴍᴀɴᴅ ᴜѕᴀɢᴇ")
-            );
-        }
-
-        Map<String, Map<String, Object>> commandMap = plugin.getDescription().getCommands();
-        List<String> commandNames = commandNamesForCategory(category, commandMap.keySet());
-        List<CommandEntry> entries = new ArrayList<>();
-        for (String commandName : commandNames) {
-            Map<String, Object> details = commandMap.get(commandName);
-            if (details == null || !plugin.getFeatureManager().isCommandFeatureEnabled(commandName)) {
-                continue;
-            }
-
-            String usage = String.valueOf(details.getOrDefault("usage", "/" + commandName));
-            String description = String.valueOf(details.getOrDefault("description", "ɴᴏ ᴅᴇѕᴄʀɪᴘᴛɪᴏɴ"));
-            String aliases = formatAliases(details.get("aliases"));
-            if (!aliases.isBlank()) {
-                description += " (ᴀʟɪᴀѕᴇѕ: " + aliases + ")";
-            }
-            entries.add(new CommandEntry(usage, description));
-        }
-        return entries;
-    }
-
-    private List<String> commandNamesForCategory(String category, Collection<String> allCommandNames) {
-        if (category.equals("all")) {
-            return new ArrayList<>(allCommandNames);
-        }
-
-        return switch (category) {
-            case "starter" -> List.of(
-                    "spawn", "afk", "home", "homes", "sethome", "delhome", "renamehome",
-                    "rtp", "warp", "tpa", "tpahere", "tpaccept", "tpadeny", "tpacancel",
-                    "settings", "stats", "ping", "playtime", "social", "discord", "twitter",
-                    "store", "rules", "help", "servers"
-            );
-            case "economy" -> List.of(
-                    "balance", "pay", "addmoney", "removemoney", "setmoney", "shards", "shardpay",
-                    "addshards", "removeshards", "setshards",
-                    "shop", "sell", "sellhand", "sellall", "sellhistory", "worth"
-            );
-            case "market" -> List.of(
-                    "auctionhouse", "orders", "billford", "bounty", "crate", "crates", "keys", "spawner"
-            );
-            case "pvp" -> List.of(
-                    "duel", "queue", "leave", "draw", "arena", "ffa", "ffastats", "ffaarena"
-            );
-            case "staff" -> List.of(
-                    "staffmode", "stafflist", "staffchat", "helpop", "report", "freeze", "fly",
-                    "heal", "feed", "gamemode", "randomteleport", "teleport", "alts", "vanish",
-                    "invsee", "profileviewer", "punishments", "ban", "tempban", "mute", "tempmute",
-                    "warn", "kick", "blacklist", "unban", "unmute", "unblacklist", "findplayer", "rename"
-            );
-            case "admin" -> List.of(
-                    "ultimatedonutsmp", "clearlag", "cuboid", "setwarp", "delwarp", "warpmanager",
-                    "portalmanager", "amethysttool", "arena", "ffaarena", "crate", "spawner",
-                    "shop", "orders", "auctionhouse", "enderchest", "freeze", "staffmode", "invsee", "worth"
-            );
-            default -> List.of();
-        };
-    }
-
-    private String formatAliases(Object rawAliases) {
-        if (rawAliases instanceof Collection<?> aliases) {
-            return aliases.stream()
-                    .map(String::valueOf)
-                    .reduce((left, right) -> left + ", " + right)
-                    .orElse("");
-        }
-        if (rawAliases instanceof String alias && !alias.isBlank()) {
-            return alias;
-        }
-        return "";
-    }
-
-    private void sendCheck(CommandSender sender, boolean ok, String label, String detail) {
-        String state = ok ? "&aᴏᴋ" : "&eᴄʜᴇᴄᴋ";
-        String value = detail == null || detail.isBlank() ? "-" : detail;
-        sender.sendMessage(ColorUtils.toComponent("&8- " + state + " &f" + label + " &8- &7" + value));
-    }
-
-    private boolean isJava21OrNewer() {
-        String version = System.getProperty("java.version", "");
-        String normalized = version.startsWith("1.") ? version.substring(2) : version;
-        int dotIndex = normalized.indexOf('.');
-        String major = dotIndex >= 0 ? normalized.substring(0, dotIndex) : normalized;
-        try {
-            return Integer.parseInt(major) >= 21;
-        } catch (NumberFormatException ignored) {
-            return false;
-        }
-    }
-
-    private boolean isFoliaOrPaperLikeServer() {
-        String serverName = plugin.getServer().getName().toLowerCase(Locale.ROOT);
-        return serverName.contains("folia")
-                || serverName.contains("paper")
-                || serverName.contains("purpur")
-                || serverName.contains("pufferfish");
-    }
-
-    private boolean isDatabaseConnected() {
-        Connection connection = plugin.getDatabaseManager() == null ? null : plugin.getDatabaseManager().getConnection();
-        if (connection == null) {
-            return false;
-        }
-
-        try {
-            return !connection.isClosed();
-        } catch (SQLException ignored) {
-            return false;
-        }
-    }
-
-    private boolean isRedisReadyForSingleServer(FileConfiguration database) {
-        return !database.getBoolean("REDIS.ENABLED", false)
-                || (plugin.getRedisManager() != null && plugin.getRedisManager().isConnected());
-    }
-
-    private String redisDetail(FileConfiguration database) {
-        if (!database.getBoolean("REDIS.ENABLED", false)) {
-            return "ᴅɪѕᴀʙʟᴇᴅ ꜰᴏʀ ѕɪɴɢʟᴇ-ѕᴇʀᴠᴇʀ ѕᴇᴛᴜᴘ";
-        }
-        return plugin.getRedisManager() != null && plugin.getRedisManager().isConnected()
-                ? "ᴇɴᴀʙʟᴇᴅ ᴀɴᴅ ᴄᴏɴɴᴇᴄᴛᴇᴅ"
-                : "ᴇɴᴀʙʟᴇᴅ ʙᴜᴛ ɴᴏᴛ ᴄᴏɴɴᴇᴄᴛᴇᴅ";
-    }
-
-    private boolean isDiscordWebhookReady(FileConfiguration discord) {
-        ConfigurationSection root = discord.getConfigurationSection("WEBHOOKS");
-        if (root == null || !root.getBoolean("ENABLED", true)) {
-            return true;
-        }
-
-        String url = root.getString("URL", "");
-        return !url.isBlank() && !DEFAULT_WEBHOOK_PLACEHOLDER.equalsIgnoreCase(url);
-    }
-
-    private String discordWebhookDetail(FileConfiguration discord) {
-        ConfigurationSection root = discord.getConfigurationSection("WEBHOOKS");
-        if (root == null || !root.getBoolean("ENABLED", true)) {
-            return "ᴅɪѕᴀʙʟᴇᴅ";
-        }
-
-        String url = root.getString("URL", "");
-        if (url.isBlank() || DEFAULT_WEBHOOK_PLACEHOLDER.equalsIgnoreCase(url)) {
-            return "ᴇɴᴀʙʟᴇᴅ ᴡɪᴛʜ ᴘʟᴀᴄᴇʜᴏʟᴅᴇʀ ᴜʀʟ";
-        }
-        return "ᴇɴᴀʙʟᴇᴅ";
-    }
-
-    private List<String> availableRtpWorlds() {
-        ConfigurationSection worlds = plugin.getConfigManager().getRtp().getConfigurationSection("WORLD-SETTINGS");
-        if (worlds == null) {
-            return List.of();
-        }
-
-        List<String> loaded = new ArrayList<>();
-        for (String worldName : worlds.getKeys(false)) {
-            World world = Bukkit.getWorld(worldName);
-            if (world != null) {
-                loaded.add(world.getName());
-            }
-        }
-        loaded.sort(String.CASE_INSENSITIVE_ORDER);
-        return loaded;
-    }
-
-    private String optionalIntegrationDetail() {
-        List<String> installed = new ArrayList<>();
-        List<String> missing = new ArrayList<>();
-        for (String pluginName : List.of("PlaceholderAPI", "LuckPerms", "Vault", "ProtocolLib", "Apollo", "NickPlus")) {
-            if (plugin.getServer().getPluginManager().getPlugin(pluginName) == null) {
-                missing.add(pluginName);
-            } else {
-                installed.add(pluginName);
-            }
-        }
-
-        String installedText = installed.isEmpty() ? "ɴᴏɴᴇ ɪɴѕᴛᴀʟʟᴇᴅ" : "ɪɴѕᴛᴀʟʟᴇᴅ: " + String.join(", ", installed);
-        if (missing.isEmpty()) {
-            return installedText;
-        }
-        return installedText + "; ᴏᴘᴛɪᴏɴᴀʟ ᴍɪѕѕɪɴɢ: " + String.join(", ", missing);
-    }
-
-    private String describeLocation(Location location) {
-        if (location == null || location.getWorld() == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
-        }
-        return location.getWorld().getName()
-                + " " + location.getBlockX()
-                + ", " + location.getBlockY()
-                + ", " + location.getBlockZ();
-    }
-
-    private int parsePage(String raw) {
-        try {
-            return Math.max(1, Integer.parseInt(raw));
-        } catch (NumberFormatException ignored) {
-            return 1;
-        }
-    }
-
     private void handleFeatures(CommandSender sender, String label, String[] args) {
         if (!PermissionUtils.has(sender, FEATURES_PERMISSION)) {
             sender.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "FEATURES.NO-PERMISSION",
-                            "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇꜱ."
+                            "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ."
                     )
             ));
             return;
@@ -597,7 +259,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault(
                         "FEATURES.TOGGLED",
-                        "&a{feature} ɪꜱ ɴᴏᴡ {state}.",
+                        "&a{feature} ɪѕ ɴᴏᴡ {state}.",
                         "{feature}", feature.displayName(),
                         "{feature_key}", feature.configKey(),
                         "{state}", plugin.getFeatureManager().statusText(feature)
@@ -605,16 +267,359 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         ));
     }
 
-    private void sendFeatureUsage(CommandSender sender, String label) {
-        sender.sendMessage(ColorUtils.toComponent("&cᴜꜱᴀɢᴇ: /" + label + " features [list|toggle|enable|disable] [feature]"));
+    private void handleSetupApply(CommandSender sender, String label, String[] args) {
+        if (args.length < 4 || !args[2].equalsIgnoreCase("single-paper") || !args[3].equalsIgnoreCase("confirm")) {
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ"));
+            return;
+        }
+
+        try {
+            FileConfiguration config = plugin.getConfigManager().getConfig();
+            FileConfiguration database = plugin.getConfigManager().getDatabase();
+            FileConfiguration network = plugin.getConfigManager().getNetwork();
+            FileConfiguration discord = plugin.getConfigManager().getDiscord();
+
+            config.set("SETTINGS.SPAWN-MENU", true);
+            config.set("SETTINGS.AFK-MENU", true);
+            config.set("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", false);
+
+            database.set("DATABASE.TYPE", "SQLITE");
+            database.set("DATABASE.SQLITE.FILE", "data/data.db");
+            database.set("REDIS.ENABLED", false);
+
+            network.set("NETWORK.LOCAL_SERVER_ID", "local");
+            network.set("NETWORK.LOCAL_DISPLAY_NAME", "ʟᴏᴄᴀʟ");
+            network.set("NETWORK-STATUS.LOCAL-SERVER-ID", "local");
+            network.set("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "ʟᴏᴄᴀʟ");
+            network.set("NETWORK-STATUS.SERVERS", null);
+            network.set("NETWORK-STATUS.SERVERS.local.DISPLAY", "ʟᴏᴄᴀʟ");
+            network.set("NETWORK-STATUS.SERVERS.local.SOURCE.TYPE", "LOCAL");
+
+            discord.set("WEBHOOKS.ENABLED", false);
+
+            boolean saved = plugin.getConfigManager().saveConfig()
+                    & plugin.getConfigManager().saveDatabase()
+                    & plugin.getConfigManager().saveNetwork()
+                    & plugin.getConfigManager().saveDiscord();
+            if (!saved) {
+                sender.sendMessage(ColorUtils.toComponent("&cѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ᴘʀᴇѕᴇᴛ ᴡᴀѕ ᴀᴘᴘʟɪᴇᴅ ɪɴ ᴍᴇᴍᴏʀʏ, ʙᴜᴛ ᴏɴᴇ ᴏʀ ᴍᴏʀᴇ ꜰɪʟᴇѕ ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ."));
+                return;
+            }
+
+            plugin.reloadAllPluginConfigurations();
+            sender.sendMessage(ColorUtils.toComponent("&aѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ ᴀᴘᴘʟɪᴇᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&7ɴᴇxᴛ: ᴜѕᴇ &f/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ &7ᴀɴᴅ &f/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ&7."));
+            sender.sendMessage(ColorUtils.toComponent("&eʀᴇѕᴛᴀʀᴛ ᴛʜᴇ ѕᴇʀᴠᴇʀ ʙᴇꜰᴏʀᴇ ɢᴏɪɴɢ ʟɪᴠᴇ ѕᴏ ѕᴛᴏʀᴀɢᴇ ᴄʜᴀɴɢᴇѕ ᴀʀᴇ ꜰᴜʟʟʏ ᴀᴘᴘʟɪᴇᴅ."));
+        } catch (Exception exception) {
+            plugin.getLogger().log(Level.SEVERE, "ꜰᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ.", exception);
+            sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʟʏ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ ꜰᴏʀ ᴅᴇᴛᴀɪʟѕ."));
+        }
+    }
+
+    private void handleSetupLocation(CommandSender sender, boolean spawn) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ ʟᴏᴄᴀᴛɪᴏɴѕ."));
+            return;
+        }
+
+        Location location = player.getLocation();
+        if (spawn) {
+            SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setSpawnLocation(location);
+            if (!result.success()) {
+                plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ ѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ "
+                        + describeLocation(location) + ": " + result.message());
+                sender.sendMessage(ColorUtils.toComponent("&cѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ѕᴀᴠᴇᴅ: &f" + result.message()));
+                return;
+            }
+            sender.sendMessage(ColorUtils.toComponent("&aѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ѕᴀᴠᴇᴅ ᴀᴛ &f" + describeLocation(location)
+                    + "&a. &7ᴀʀᴇᴀ &f" + result.areaId() + " &7ѕʟᴏᴛ &f" + result.slot() + "&7."));
+            return;
+        }
+
+        SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setAfkLocation(location);
+        if (!result.success()) {
+            plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ AFK ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ "
+                    + describeLocation(location) + ": " + result.message());
+            sender.sendMessage(ColorUtils.toComponent("&cᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ѕᴀᴠᴇᴅ: &f" + result.message()));
+            return;
+        }
+        sender.sendMessage(ColorUtils.toComponent("&aᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ѕᴀᴠᴇᴅ ᴀᴛ &f" + describeLocation(location)
+                + "&a. &7ᴀʀᴇᴀ &f" + result.areaId() + " &7ѕʟᴏᴛ &f" + result.slot() + "&7."));
+    }
+
+    private void sendSetupStatus(CommandSender sender, String label) {
+        FileConfiguration config = plugin.getConfigManager().getConfig();
+        FileConfiguration database = plugin.getConfigManager().getDatabase();
+        FileConfiguration discord = plugin.getConfigManager().getDiscord();
+
+        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴜʟᴛɪᴍᴀᴛᴇᴅᴏɴᴜᴛѕᴍᴘ ѕᴇᴛᴜᴘ &8&m----------"));
+        sendCheck(sender, isJava21OrNewer(), "ᴊᴀᴠᴀ",
+                System.getProperty("java.version", "unknown") + " (ᴊᴀᴠᴀ 21+ ʀᴇǫᴜɪʀᴇᴅ)");
+        sendCheck(sender, isPaperLikeServer(), "ѕᴇʀᴠᴇʀ",
+                plugin.getServer().getName() + " " + plugin.getServer().getBukkitVersion());
+        sendCheck(sender, isDatabaseConnected(), "ѕᴛᴏʀᴀɢᴇ",
+                database.getString("DATABASE.TYPE", "SQLITE").toUpperCase(Locale.ROOT) + " ᴄᴏɴꜰɪɢᴜʀᴇᴅ");
+        sendCheck(sender, isRedisReadyForSingleServer(database), "ʀᴇᴅɪѕ",
+                redisDetail(database));
+        sendCheck(sender, isDiscordWebhookReady(discord), "ᴅɪѕᴄᴏʀᴅ ᴡᴇʙʜᴏᴏᴋ",
+                discordWebhookDetail(discord));
+        sendCheck(sender, plugin.getSpawnManager().hasSpawn(), "ѕᴘᴀᴡɴ",
+                plugin.getSpawnManager().hasSpawn() ? "ʀᴇᴀᴅʏ" : "ᴜѕᴇ /" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ");
+        sendCheck(sender, plugin.getSpawnManager().hasAfk(), "ᴀꜰᴋ",
+                plugin.getSpawnManager().hasAfk() ? "ʀᴇᴀᴅʏ" : "ᴜѕᴇ /" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ");
+        List<String> rtpWorlds = availableRtpWorlds();
+        sendCheck(sender, plugin.getRtpManager().isEnabled()
+                        && !rtpWorlds.isEmpty(),
+                "ʀᴛᴘ ᴡᴏʀʟᴅѕ",
+                rtpWorlds.isEmpty() ? "ɴᴏ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʀᴛᴘ ᴡᴏʀʟᴅѕ ᴀʀᴇ ʟᴏᴀᴅᴇᴅ" : String.join(", ", rtpWorlds));
+        sendCheck(sender, true, "ᴏᴘᴛɪᴏɴᴀʟ ɪɴᴛᴇɢʀᴀᴛɪᴏɴѕ", optionalIntegrationDetail());
+        sender.sendMessage(ColorUtils.toComponent("&7ᴘʀᴇѕᴇᴛ: &f/" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ"));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴏᴍᴍᴀɴᴅѕ: &f/" + label + " ѕᴇᴛᴜᴘ ᴄᴏᴍᴍᴀɴᴅѕ [category] [page]"));
+    }
+
+    private void handleSetupCommands(CommandSender sender, String label, String[] args) {
+        String category = args.length >= 3 ? args[2].toLowerCase(Locale.ROOT) : "all";
+        if (!COMMAND_CATEGORIES.contains(category)) {
+            sender.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀᴛᴇɢᴏʀʏ. ᴀᴠᴀɪʟᴀʙʟᴇ: &f" + String.join(", ", COMMAND_CATEGORIES)));
+            return;
+        }
+
+        int page = args.length >= 4 ? parsePage(args[3]) : 1;
+        List<CommandEntry> entries = commandEntries(category, label);
+        if (entries.isEmpty()) {
+            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴄᴏᴍᴍᴀɴᴅѕ ꜰᴏᴜɴᴅ ꜰᴏʀ ᴄᴀᴛᴇɢᴏʀʏ: &f" + category));
+            return;
+        }
+
+        int totalPages = Math.max(1, (int) Math.ceil(entries.size() / (double) COMMANDS_PER_PAGE));
+        page = Math.max(1, Math.min(page, totalPages));
+        int start = (page - 1) * COMMANDS_PER_PAGE;
+        int end = Math.min(entries.size(), start + COMMANDS_PER_PAGE);
+
+        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴜᴅѕ ᴄᴏᴍᴍᴀɴᴅѕ &8(&f" + category + " " + page + "/" + totalPages + "&8) &8&m----------"));
+        for (int index = start; index < end; index++) {
+            CommandEntry entry = entries.get(index);
+            sender.sendMessage(ColorUtils.toComponent("&f" + entry.usage() + " &8- &7" + entry.description()));
+        }
+        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴀᴛᴇɢᴏʀɪᴇѕ: &f" + String.join("&7, &f", COMMAND_CATEGORIES)));
+    }
+
+    private List<CommandEntry> commandEntries(String category, String label) {
+        if (category.equals("setup")) {
+            return List.of(
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ [status]", "ѕʜᴏᴡ ѕᴇᴛᴜᴘ ᴄʜᴇᴄᴋʟɪѕᴛ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ", "ᴀᴘᴘʟʏ ᴛʜᴇ ѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ᴘʀᴇѕᴇᴛ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ѕᴘᴀᴡɴ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ᴀꜰᴋ"),
+                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ᴄᴏᴍᴍᴀɴᴅѕ [category] [page]", "ʙʀᴏᴡѕᴇ ᴄᴏᴍᴍᴀɴᴅ ᴜѕᴀɢᴇ")
+            );
+        }
+
+        Map<String, Map<String, Object>> commandMap = plugin.getDescription().getCommands();
+        List<String> commandNames = commandNamesForCategory(category, commandMap.keySet());
+        List<CommandEntry> entries = new ArrayList<>();
+        for (String commandName : commandNames) {
+            Map<String, Object> details = commandMap.get(commandName);
+            if (details == null) {
+                continue;
+            }
+
+            String usage = String.valueOf(details.getOrDefault("usage", "/" + commandName));
+            String description = String.valueOf(details.getOrDefault("description", "ɴᴏ ᴅᴇѕᴄʀɪᴘᴛɪᴏɴ"));
+            String aliases = formatAliases(details.get("aliases"));
+            if (!aliases.isBlank()) {
+                description += " (ᴀʟɪᴀѕᴇѕ: " + aliases + ")";
+            }
+            if (!plugin.getFeatureManager().isCommandFeatureEnabled(commandName)) {
+                continue;
+            }
+            entries.add(new CommandEntry(usage, description));
+        }
+        return entries;
     }
 
     private void sendFeatureList(CommandSender sender) {
-        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇꜱ &8&m----------"));
+        sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ &8&m----------"));
         for (FeatureManager.Feature feature : plugin.getFeatureManager().getFeatures()) {
             sender.sendMessage(ColorUtils.toComponent("&f" + feature.configKey()
                     + " &8- " + plugin.getFeatureManager().statusText(feature)
                     + " &8- &7" + feature.displayName()));
+        }
+    }
+
+    private List<String> commandNamesForCategory(String category, Collection<String> allCommandNames) {
+        if (category.equals("all")) {
+            return new ArrayList<>(allCommandNames);
+        }
+
+        return switch (category) {
+            case "starter" -> List.of(
+                    "spawn", "afk", "home", "homes", "sethome", "delhome", "renamehome",
+                    "rtp", "warp", "tpa", "tpahere", "tpaccept", "tpadeny", "tpacancel",
+                    "settings", "stats", "ping", "playtime", "social", "discord", "twitter",
+                    "store", "rules", "help", "servers"
+            );
+            case "economy" -> List.of(
+                    "balance", "pay", "addmoney", "removemoney", "setmoney", "shards", "shardpay",
+                    "addshards", "removeshards", "setshards",
+                    "shop", "sell", "sellhand", "sellall", "sellhistory", "worth"
+            );
+            case "market" -> List.of(
+                    "auctionhouse", "orders", "billford", "bounty", "crate", "crates", "keys", "spawner"
+            );
+            case "pvp" -> List.of(
+                    "duel", "queue", "leave", "draw", "arena", "ffa", "ffastats", "ffaarena"
+            );
+            case "staff" -> List.of(
+                    "staffmode", "stafflist", "staffchat", "helpop", "report", "freeze", "fly",
+                    "heal", "feed", "gamemode", "randomteleport", "teleport", "alts", "vanish",
+                    "invsee", "profileviewer", "punishments", "ban", "tempban", "mute", "tempmute",
+                    "warn", "kick", "blacklist", "unban", "unmute", "unblacklist", "findplayer", "rename"
+            );
+            case "admin" -> List.of(
+                    "ultimatedonutsmp", "clearlag", "cuboid", "setwarp", "delwarp", "warpmanager",
+                    "portalmanager", "amethysttool", "arena", "ffaarena", "crate", "spawner",
+                    "shop", "orders", "auctionhouse", "enderchest", "freeze", "staffmode", "invsee", "worth"
+            );
+            default -> List.of();
+        };
+    }
+
+    private String formatAliases(Object rawAliases) {
+        if (rawAliases instanceof Collection<?> aliases) {
+            return aliases.stream()
+                    .map(String::valueOf)
+                    .reduce((left, right) -> left + ", " + right)
+                    .orElse("");
+        }
+        if (rawAliases instanceof String alias && !alias.isBlank()) {
+            return alias;
+        }
+        return "";
+    }
+
+    private void sendCheck(CommandSender sender, boolean ok, String label, String detail) {
+        String state = ok ? "&aᴏᴋ" : "&eᴄʜᴇᴄᴋ";
+        sender.sendMessage(ColorUtils.toComponent("&8- " + state + " &f" + label + " &8- &7" + detail));
+    }
+
+    private boolean isJava21OrNewer() {
+        String version = System.getProperty("java.version", "");
+        String normalized = version.startsWith("1.") ? version.substring(2) : version;
+        int dotIndex = normalized.indexOf('.');
+        String major = dotIndex >= 0 ? normalized.substring(0, dotIndex) : normalized;
+        try {
+            return Integer.parseInt(major) >= 21;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
+    }
+
+    private boolean isPaperLikeServer() {
+        String serverName = plugin.getServer().getName().toLowerCase(Locale.ROOT);
+        return serverName.contains("paper") || serverName.contains("purpur") || serverName.contains("pufferfish");
+    }
+
+    private boolean isDatabaseConnected() {
+        Connection connection = plugin.getDatabaseManager() == null ? null : plugin.getDatabaseManager().getConnection();
+        if (connection == null) {
+            return false;
+        }
+
+        try {
+            return !connection.isClosed();
+        } catch (SQLException ignored) {
+            return false;
+        }
+    }
+
+    private boolean isRedisReadyForSingleServer(FileConfiguration database) {
+        return !database.getBoolean("REDIS.ENABLED", false)
+                || (plugin.getRedisManager() != null && plugin.getRedisManager().isConnected());
+    }
+
+    private String redisDetail(FileConfiguration database) {
+        if (!database.getBoolean("REDIS.ENABLED", false)) {
+            return "ᴅɪѕᴀʙʟᴇᴅ ꜰᴏʀ ѕɪɴɢʟᴇ-ѕᴇʀᴠᴇʀ ѕᴇᴛᴜᴘ";
+        }
+        return plugin.getRedisManager() != null && plugin.getRedisManager().isConnected()
+                ? "ᴇɴᴀʙʟᴇᴅ ᴀɴᴅ ᴄᴏɴɴᴇᴄᴛᴇᴅ"
+                : "ᴇɴᴀʙʟᴇᴅ ʙᴜᴛ ɴᴏᴛ ᴄᴏɴɴᴇᴄᴛᴇᴅ";
+    }
+
+    private boolean isDiscordWebhookReady(FileConfiguration discord) {
+        ConfigurationSection root = discord.getConfigurationSection("WEBHOOKS");
+        if (root == null || !root.getBoolean("ENABLED", true)) {
+            return true;
+        }
+
+        String url = root.getString("URL", "");
+        return !url.isBlank() && !DEFAULT_WEBHOOK_PLACEHOLDER.equalsIgnoreCase(url);
+    }
+
+    private String discordWebhookDetail(FileConfiguration discord) {
+        ConfigurationSection root = discord.getConfigurationSection("WEBHOOKS");
+        if (root == null || !root.getBoolean("ENABLED", true)) {
+            return "ᴅɪѕᴀʙʟᴇᴅ";
+        }
+
+        String url = root.getString("URL", "");
+        if (url.isBlank() || DEFAULT_WEBHOOK_PLACEHOLDER.equalsIgnoreCase(url)) {
+            return "ᴇɴᴀʙʟᴇᴅ ᴡɪᴛʜ ᴘʟᴀᴄᴇʜᴏʟᴅᴇʀ URL";
+        }
+        return "ᴇɴᴀʙʟᴇᴅ";
+    }
+
+    private List<String> availableRtpWorlds() {
+        ConfigurationSection worlds = plugin.getConfigManager().getRtp().getConfigurationSection("WORLD-SETTINGS");
+        if (worlds == null) {
+            return List.of();
+        }
+
+        List<String> loaded = new ArrayList<>();
+        for (String worldName : worlds.getKeys(false)) {
+            World world = Bukkit.getWorld(worldName);
+            if (world != null) {
+                loaded.add(world.getName());
+            }
+        }
+        loaded.sort(String.CASE_INSENSITIVE_ORDER);
+        return loaded;
+    }
+
+    private String optionalIntegrationDetail() {
+        List<String> installed = new ArrayList<>();
+        List<String> missing = new ArrayList<>();
+        for (String pluginName : List.of("PlaceholderAPI", "LuckPerms", "Vault", "ProtocolLib", "Apollo", "NickPlus")) {
+            if (plugin.getServer().getPluginManager().getPlugin(pluginName) == null) {
+                missing.add(pluginName);
+            } else {
+                installed.add(pluginName);
+            }
+        }
+
+        String installedText = installed.isEmpty() ? "ɴᴏɴᴇ ɪɴѕᴛᴀʟʟᴇᴅ" : "ɪɴѕᴛᴀʟʟᴇᴅ: " + String.join(", ", installed);
+        if (missing.isEmpty()) {
+            return installedText;
+        }
+        return installedText + "; ᴏᴘᴛɪᴏɴᴀʟ ᴍɪѕѕɪɴɢ: " + String.join(", ", missing);
+    }
+
+    private String describeLocation(Location location) {
+        if (location == null || location.getWorld() == null) {
+            return "ᴜɴᴋɴᴏᴡɴ";
+        }
+        return location.getWorld().getName()
+                + " " + location.getBlockX()
+                + ", " + location.getBlockY()
+                + ", " + location.getBlockZ();
+    }
+
+    private int parsePage(String raw) {
+        try {
+            return Math.max(1, Integer.parseInt(raw));
+        } catch (NumberFormatException ignored) {
+            return 1;
         }
     }
 
@@ -626,7 +631,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ &8&m----------"));
         sender.sendMessage(ColorUtils.toComponent("&7ᴇɴᴀʙʟᴇᴅ: &f" + optimizationManager.isEnabled()
                 + " &8| &7ѕᴛᴀᴛᴇ: " + optimizationManager.getLoadState().display()));
-        sender.sendMessage(ColorUtils.toComponent("&7ᴛᴘѕ: &f" + optimizationManager.formatMetric(optimizationManager.getLastTps())
+        sender.sendMessage(ColorUtils.toComponent("&7TPS: &f" + optimizationManager.formatMetric(optimizationManager.getLastTps())
                 + " &8| &7ᴍѕᴘᴛ: &f" + optimizationManager.formatMetric(optimizationManager.getLastMspt())));
         sender.sendMessage(ColorUtils.toComponent("&7ᴍᴇᴍᴏʀʏ: &f" + optimizationManager.getUsedMemoryMb()
                 + "ᴍʙ&8/&f" + optimizationManager.getMaxMemoryMb() + "MB"));
@@ -640,19 +645,15 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender sender, String label) {
-        if (ROOT_COMPLETIONS.contains("setup")) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <reload|statswipe|optimize|setup|features>"));
-            return;
-        }
-        if (label != null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜꜱᴀɢᴇ: /" + label + " <reload|statswipe|optimize|features>"));
-            return;
-        }
-        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <reload|statswipe|optimize>"));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <reload|statswipe|optimize|setup|features>"));
     }
 
     private void sendSetupUsage(CommandSender sender, String label) {
-        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " setup <status|apply|setspawn|setafk|commands>"));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴜᴘ <status|apply|setspawn|setafk|commands>"));
+    }
+
+    private void sendFeatureUsage(CommandSender sender, String label) {
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " features [list|toggle|enable|disable] [feature]"));
     }
 
     private String message(String key, String fallback) {

@@ -6,14 +6,12 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.IgnoreManager;
 import com.bx.ultimateDonutSmp.models.IgnoreEntry;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 public class IgnoreCommand implements CommandExecutor {
@@ -129,9 +127,9 @@ public class IgnoreCommand implements CommandExecutor {
             return null;
         }
 
-        Player online = findOnlinePlayer(input);
+        Player online = plugin.getHideManager().findOnlinePlayer(owner, input);
         if (online != null) {
-            return new ResolvedTarget(online.getUniqueId(), online.getName());
+            return new ResolvedTarget(online.getUniqueId(), plugin.getHideManager().plainPublicName(online));
         }
 
         for (IgnoreEntry entry : plugin.getIgnoreManager().getIgnoredPlayers(owner.getUniqueId())) {
@@ -141,28 +139,14 @@ public class IgnoreCommand implements CommandExecutor {
             }
         }
 
-        UUID uuid = plugin.getDatabaseManager().findPlayerUuidByUsername(input);
+        UUID uuid = plugin.getHideManager().findKnownPlayerUuid(owner, input);
         if (uuid == null) {
             return null;
         }
 
         String name = plugin.getDatabaseManager().getLastKnownUsername(uuid);
-        return new ResolvedTarget(uuid, name == null || name.isBlank() ? input : name);
-    }
-
-    private Player findOnlinePlayer(String input) {
-        Player exact = Bukkit.getPlayerExact(input);
-        if (exact != null) {
-            return exact;
-        }
-
-        String expected = input.toLowerCase(Locale.ROOT);
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getName().toLowerCase(Locale.ROOT).equals(expected)) {
-                return player;
-            }
-        }
-        return null;
+        String fallback = name == null || name.isBlank() ? input : name;
+        return new ResolvedTarget(uuid, plugin.getHideManager().plainPublicName(uuid, fallback));
     }
 
     private void send(CommandSender sender, String message) {

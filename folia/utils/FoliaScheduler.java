@@ -23,6 +23,11 @@ public final class FoliaScheduler {
         this.plugin = plugin;
     }
 
+    public boolean isFolia() {
+        return true;
+    }
+
+
     public ScheduledTask runGlobal(Runnable runnable) {
         return Bukkit.getGlobalRegionScheduler().run(plugin, task -> runnable.run());
     }

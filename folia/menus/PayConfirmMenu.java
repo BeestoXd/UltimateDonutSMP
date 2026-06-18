@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PaymentUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Bukkit;
@@ -62,8 +61,8 @@ public class PayConfirmMenu extends BaseMenu {
                 List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛʜɪѕ ᴘᴀʏᴍᴇɴᴛ.")));
 
         String amountText = paymentType == PaymentType.MONEY
-                ? "&a$" + NumberUtils.format(moneyAmount)
-                : "&#A303F9" + shardAmount + " Shards";
+                ? plugin.getCurrencyManager().formatMoney(moneyAmount)
+                : plugin.getCurrencyManager().formatShards(shardAmount);
 
         set(13, createTargetItem(List.of(
                 "&7ᴛᴀʀɢᴇᴛ: &f" + targetName,

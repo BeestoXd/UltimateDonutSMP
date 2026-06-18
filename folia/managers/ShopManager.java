@@ -8,12 +8,8 @@ import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -158,10 +154,34 @@ public class ShopManager {
             boolean maxed
     ) {}
 
-    public record SellResult(double totalPayout, Set<SellCategory> leveledUpCategories) {
+    public enum SellStatus {
+        SUCCESS,
+        NO_SELLABLE_ITEMS,
+        TRANSACTION_FAILED
+    }
+
+    public record SellResult(SellStatus status, double totalPayout, Set<SellCategory> leveledUpCategories) {
         public boolean hasSales() {
-            return totalPayout > 0;
+            return status == SellStatus.SUCCESS;
         }
+
+        public boolean transactionFailed() {
+            return status == SellStatus.TRANSACTION_FAILED;
+        }
+    }
+
+    private record PendingSellHistory(
+            Material material,
+            int amount,
+            double payout
+    ) {}
+
+    private static final class PendingSale {
+        private final Map<SellCategory, Double> currentProgress = new EnumMap<>(SellCategory.class);
+        private final EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
+        private final List<PendingSellHistory> history = new ArrayList<>();
+        private final List<Integer> soldSlots = new ArrayList<>();
+        private double totalPayout;
     }
 
     public record PurchaseResult(
@@ -412,9 +432,12 @@ public class ShopManager {
         }
 
         if (item.giveItem()) {
+            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
             ItemStack stack = createPurchasedItem(item, preview.quantity());
             player.getInventory().addItem(stack).values().forEach(left ->
                     player.getWorld().dropItemNaturally(player.getLocation(), left));
+            plugin.getWorthManager().syncWorthDisplay(player);
+            player.updateInventory();
         }
 
         if (preview.currency() != Currency.SHARD) {
@@ -608,7 +631,7 @@ public class ShopManager {
         for (ItemStack current : storage) {
             if (current == null || current.getType().isAir()) {
                 remaining -= simulated.getMaxStackSize();
-            } else if (canStack(current, singleItem)) {
+            } else if (canStack(plugin.getWorthManager().stripWorthDisplay(current), singleItem)) {
                 remaining -= Math.max(0, current.getMaxStackSize() - current.getAmount());
             }
 
@@ -661,8 +684,8 @@ public class ShopManager {
                     double worth = getWorth(item.material());
                     if (worth > item.pricePerUnit()) {
                         plugin.getLogger().warning("Potential shop arbitrage detected for " + item.material().name()
-                                + " in " + category.menuSection() + ": buy $" + NumberUtils.format(item.pricePerUnit())
-                                + " but worth $" + NumberUtils.format(worth) + ".");
+                                + " in " + category.menuSection() + ": buy " + plugin.getCurrencyManager().formatMoney(item.pricePerUnit())
+                                + " but worth " + plugin.getCurrencyManager().formatMoney(worth) + ".");
                     }
                 }
             }
@@ -717,14 +740,14 @@ public class ShopManager {
             return item;
         }
 
-        List<Component> currentLore = meta.lore();
-        List<Component> originalLore = readOriginalLore(meta);
+        List<String> currentLore = meta.getLore();
+        List<String> originalLore = readOriginalLore(meta);
         if (originalLore == null) {
             originalLore = currentLore;
         }
         originalLore = stripExistingWorthLore(originalLore);
 
-        List<Component> desiredLore = originalLore == null ? new ArrayList<>() : new ArrayList<>(originalLore);
+        List<String> desiredLore = originalLore == null ? new ArrayList<>() : new ArrayList<>(originalLore);
         desiredLore.add(ColorUtils.toComponent(loreLine));
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -746,12 +769,12 @@ public class ShopManager {
         PersistentDataContainer updatedContainer = updatedMeta.getPersistentDataContainer();
         updatedContainer.set(worthDisplayAppliedKey, PersistentDataType.BYTE, (byte) 1);
         updatedContainer.set(worthDisplayOriginalLoreKey, PersistentDataType.STRING, serializedOriginalLore);
-        updatedMeta.lore(desiredLore);
+        updatedMeta.setLore(desiredLore);
         updated.setItemMeta(updatedMeta);
         return updated;
     }
 
-    private List<Component> readOriginalLore(ItemMeta meta) {
+    private List<String> readOriginalLore(ItemMeta meta) {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         String stored = container.get(worthDisplayOriginalLoreKey, PersistentDataType.STRING);
         if (stored != null) {
@@ -759,10 +782,10 @@ public class ShopManager {
         }
 
         if (!container.has(worthDisplayAppliedKey, PersistentDataType.BYTE)) {
-            return meta.lore();
+            return meta.getLore();
         }
 
-        List<Component> currentLore = meta.lore();
+        List<String> currentLore = meta.getLore();
         if (currentLore == null || currentLore.isEmpty()) {
             return null;
         }
@@ -770,7 +793,7 @@ public class ShopManager {
         return new ArrayList<>(currentLore.subList(0, currentLore.size() - 1));
     }
 
-    private String serializeLore(List<Component> lore) {
+    private String serializeLore(List<String> lore) {
         if (lore == null) {
             return NULL_LORE;
         }
@@ -779,14 +802,13 @@ public class ShopManager {
         }
 
         List<String> encoded = new ArrayList<>();
-        for (Component component : lore) {
-            String json = GsonComponentSerializer.gson().serialize(component);
-            encoded.add(Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8)));
+        for (String line : lore) {
+            encoded.add(Base64.getEncoder().encodeToString((line == null ? "" : line).getBytes(StandardCharsets.UTF_8)));
         }
         return String.join(LORE_SEPARATOR, encoded);
     }
 
-    private List<Component> deserializeLore(String serialized) {
+    private List<String> deserializeLore(String serialized) {
         if (serialized == null) {
             return null;
         }
@@ -797,10 +819,9 @@ public class ShopManager {
             return new ArrayList<>();
         }
 
-        List<Component> lore = new ArrayList<>();
+        List<String> lore = new ArrayList<>();
         for (String token : serialized.split(LORE_SEPARATOR, -1)) {
-            String json = new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8);
-            lore.add(GsonComponentSerializer.gson().deserialize(json));
+            lore.add(new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8));
         }
         return lore;
     }
@@ -825,15 +846,15 @@ public class ShopManager {
                 .replace("{" + key + "}", value);
     }
 
-    private List<Component> stripExistingWorthLore(List<Component> lore) {
+    private List<String> stripExistingWorthLore(List<String> lore) {
         if (lore == null || lore.isEmpty()) {
             return lore;
         }
 
         Pattern worthLorePattern = buildWorthLorePattern();
-        List<Component> sanitized = new ArrayList<>();
+        List<String> sanitized = new ArrayList<>();
         boolean changed = false;
-        for (Component line : lore) {
+        for (String line : lore) {
             if (isWorthLoreLine(line, worthLorePattern)) {
                 changed = true;
                 continue;
@@ -843,17 +864,13 @@ public class ShopManager {
         return changed ? sanitized : lore;
     }
 
-    private boolean isWorthLoreLine(Component line, Pattern worthLorePattern) {
-        String plain = PlainTextComponentSerializer.plainText().serialize(line);
+    private boolean isWorthLoreLine(String line, Pattern worthLorePattern) {
+        String plain = ColorUtils.strip(line);
         if (containsBrokenWorthPlaceholder(plain)) {
             return true;
         }
 
         return worthLorePattern.matcher(plain).matches();
-    }
-
-    private boolean containsBrokenWorthPlaceholder(Component line) {
-        return containsBrokenWorthPlaceholder(PlainTextComponentSerializer.plainText().serialize(line));
     }
 
     private boolean containsBrokenWorthPlaceholder(String plain) {
@@ -1007,56 +1024,87 @@ public class ShopManager {
     }
 
     public SellResult sellInventoryContents(Player player, Inventory inventory, int startInclusive, int endExclusive) {
-        if (inventory == null) {
-            return new SellResult(0, Set.of());
+        return sellInventoryContents(
+                player,
+                inventory,
+                startInclusive,
+                endExclusive,
+                EconomyReason.SELL_PAYOUT,
+                true
+        );
+    }
+
+    public SellResult sellInventoryContents(
+            Player player,
+            Inventory inventory,
+            int startInclusive,
+            int endExclusive,
+            EconomyReason reason,
+            boolean sendFeedback
+    ) {
+        if (player == null || inventory == null) {
+            return emptySale();
         }
 
-        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
-        progress.putAll(getSellProgress(player.getUniqueId()));
+        PendingSale sale = createPendingSale(player);
+        int firstSlot = Math.max(0, startInclusive);
+        int lastSlot = Math.min(inventory.getSize(), Math.max(firstSlot, endExclusive));
 
-        EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
-        List<Integer> soldSlots = new ArrayList<>();
-        double totalPayout = 0;
-
-        for (int slot = startInclusive; slot < endExclusive; slot++) {
+        for (int slot = firstSlot; slot < lastSlot; slot++) {
             ItemStack item = inventory.getItem(slot);
             if (item == null || item.getType().isAir()) {
                 continue;
             }
 
-            double unitWorth = getWorth(item);
-            if (unitWorth < 0) {
+            double payout = collectSellWorthEntries(item, sale);
+            if (payout <= 0) {
                 continue;
             }
 
-            SellCategory category = getSellCategory(item);
-            if (category == null) {
-                continue;
+            sale.totalPayout += payout;
+            sale.soldSlots.add(slot);
+        }
+
+        return executeSale(player, sale, reason, sendFeedback, () -> {
+            for (int slot : sale.soldSlots) {
+                inventory.setItem(slot, null);
             }
+        });
+    }
 
-            double baseTotal = unitWorth * item.getAmount();
-            double payout = baseTotal * getCurrentSellMultiplier(progress, category);
-            totalPayout += payout;
-            earnedByCategory.merge(category, baseTotal, Double::sum);
-            soldSlots.add(slot);
+    private PendingSale createPendingSale(Player player) {
+        PendingSale sale = new PendingSale();
+        sale.currentProgress.putAll(getSellProgress(player.getUniqueId()));
+        return sale;
+    }
 
-            plugin.getDatabaseManager().addSellHistory(
-                    player.getUniqueId(),
-                    item.getType().name(),
-                    item.getAmount(),
-                    payout
-            );
+    private SellResult emptySale() {
+        return new SellResult(SellStatus.NO_SELLABLE_ITEMS, 0, Set.of());
+    }
+
+    private SellResult failedSale() {
+        return new SellResult(SellStatus.TRANSACTION_FAILED, 0, Set.of());
+    }
+
+    private SellResult executeSale(
+            Player player,
+            PendingSale sale,
+            EconomyReason reason,
+            boolean sendFeedback,
+            Runnable removeSoldItems
+    ) {
+        if (sale.totalPayout <= 0) {
+            return emptySale();
         }
 
-        if (totalPayout <= 0) {
-            return new SellResult(0, Set.of());
+        EconomyReason resolvedReason = reason == null ? EconomyReason.SELL_PAYOUT : reason;
+        var depositResult = plugin.getEconomyManager().deposit(player, sale.totalPayout, resolvedReason);
+        if (!depositResult.success()) {
+            return failedSale();
         }
 
-        for (int slot : soldSlots) {
-            inventory.setItem(slot, null);
-        }
-
-        return finishSale(player, progress, earnedByCategory, totalPayout);
+        removeSoldItems.run();
+        return commitSale(player, sale, sendFeedback);
     }
 
     private String getWorthLoreFormat() {
@@ -1073,7 +1121,7 @@ public class ShopManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a$%price%")
+                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a{price_formatted}")
         );
     }
 
@@ -1088,17 +1136,7 @@ public class ShopManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7ᴡᴏʀᴛʜ: &a$%price%";
-        }
-        if (format.contains("$")) {
-            return format;
-        }
-
-        for (String placeholder : List.of("%price%", "${price}", "{price}")) {
-            int index = format.indexOf(placeholder);
-            if (index >= 0) {
-                return format.substring(0, index) + "$" + format.substring(index);
-            }
+            return "&7ᴡᴏʀᴛʜ: &a{price_formatted}";
         }
 
         return format;
@@ -1108,7 +1146,9 @@ public class ShopManager {
         String format = stripColorCodes(getWorthLoreFormat());
         List<String> placeholders = List.of(
                 "%unit_price%", "${unit_price}", "{unit_price}",
+                "%unit_price_formatted%", "${unit_price_formatted}", "{unit_price_formatted}",
                 "%price%", "${price}", "{price}",
+                "%price_formatted%", "${price_formatted}", "{price_formatted}",
                 "%amount%", "${amount}", "{amount}",
                 "%item%", "${item}", "{item}"
         );
@@ -1162,15 +1202,10 @@ public class ShopManager {
     }
 
     public double sellInventory(Player player, boolean handOnly) {
-        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
-        progress.putAll(getSellProgress(player.getUniqueId()));
-
-        EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
-        double totalPayout = 0;
+        PendingSale sale = createPendingSale(player);
         ItemStack[] contents = handOnly
                 ? new ItemStack[]{player.getInventory().getItemInMainHand()}
                 : player.getInventory().getContents();
-        List<Integer> toRemove = new ArrayList<>();
 
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
@@ -1178,87 +1213,99 @@ public class ShopManager {
                 continue;
             }
 
-            double unitWorth = getWorth(item);
-            if (unitWorth < 0) {
+            double payout = collectSellWorthEntries(item, sale);
+            if (payout <= 0) {
                 continue;
             }
 
-            SellCategory category = getSellCategory(item);
-            if (category == null) {
-                continue;
-            }
-
-            double baseTotal = unitWorth * item.getAmount();
-            double payout = baseTotal * getCurrentSellMultiplier(progress, category);
-            totalPayout += payout;
-            earnedByCategory.merge(category, baseTotal, Double::sum);
-
-            plugin.getDatabaseManager().addSellHistory(
-                    player.getUniqueId(),
-                    item.getType().name(),
-                    item.getAmount(),
-                    payout
-            );
-            toRemove.add(i);
+            sale.totalPayout += payout;
+            sale.soldSlots.add(i);
         }
 
-        if (totalPayout > 0) {
+        SellResult result = executeSale(player, sale, EconomyReason.SELL_PAYOUT, true, () -> {
             if (handOnly) {
                 player.getInventory().setItemInMainHand(null);
             } else {
-                for (int slot : toRemove) {
+                for (int slot : sale.soldSlots) {
                     player.getInventory().setItem(slot, null);
                 }
             }
+        });
 
-            finishSale(player, progress, earnedByCategory, totalPayout);
+        return result.hasSales() ? result.totalPayout() : 0;
+    }
+
+    private double collectSellWorthEntries(ItemStack item, PendingSale sale) {
+        List<WorthManager.SellWorthEntry> entries = plugin.getWorthManager().resolveSellWorthEntries(item);
+        if (entries.isEmpty()) {
+            return 0;
         }
 
+        double totalPayout = 0;
+        for (WorthManager.SellWorthEntry entry : entries) {
+            double payout = entry.totalWorth() * getCurrentSellMultiplier(sale.currentProgress, entry.category());
+            if (payout <= 0) {
+                continue;
+            }
+
+            totalPayout += payout;
+            sale.earnedByCategory.merge(entry.category(), entry.totalWorth(), Double::sum);
+            sale.history.add(new PendingSellHistory(entry.material(), entry.amount(), payout));
+        }
         return totalPayout;
     }
 
-    private SellResult finishSale(
-            Player player,
-            Map<SellCategory, Double> currentProgress,
-            Map<SellCategory, Double> earnedByCategory,
-            double totalPayout
-    ) {
+    private SellResult commitSale(Player player, PendingSale sale, boolean sendFeedback) {
         EnumSet<SellCategory> leveledUpCategories = EnumSet.noneOf(SellCategory.class);
 
-        for (var entry : earnedByCategory.entrySet()) {
+        for (PendingSellHistory historyEntry : sale.history) {
+            plugin.getDatabaseManager().addSellHistory(
+                    player.getUniqueId(),
+                    historyEntry.material().name(),
+                    historyEntry.amount(),
+                    historyEntry.payout()
+            );
+        }
+
+        for (var entry : sale.earnedByCategory.entrySet()) {
             SellCategory category = entry.getKey();
-            double before = currentProgress.getOrDefault(category, 0D);
+            double before = sale.currentProgress.getOrDefault(category, 0D);
             double after = before + entry.getValue();
             if (getCompletedLevels(after, getSellProgressLevels())
                     > getCompletedLevels(before, getSellProgressLevels())) {
                 leveledUpCategories.add(category);
             }
 
-            currentProgress.put(category, after);
+            sale.currentProgress.put(category, after);
             plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), category, entry.getValue());
         }
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
-        var depositResult = plugin.getEconomyManager().deposit(player, totalPayout, EconomyReason.SELL_PAYOUT);
-        if (data != null && depositResult.success()) {
-            data.addMoneyMade(totalPayout);
+        if (data != null) {
+            data.addMoneyMade(sale.totalPayout);
         }
 
-        sendSellFeedback(player, totalPayout);
+        if (sendFeedback) {
+            sendSellFeedback(player, sale.totalPayout);
+        }
         if (!leveledUpCategories.isEmpty()) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("SELL.LEVEL-UP"));
         }
 
         return new SellResult(
-                totalPayout,
+                SellStatus.SUCCESS,
+                sale.totalPayout,
                 leveledUpCategories.isEmpty() ? Set.of() : EnumSet.copyOf(leveledUpCategories)
         );
     }
 
     private void sendSellFeedback(Player player, double totalPayout) {
         String sellMsg = plugin.getConfigManager().getConfig()
-                .getString("SETTINGS.SELL-MESSAGE", "&a+$%price%")
-                .replace("%price%", NumberUtils.formatNice(totalPayout));
+                .getString("SETTINGS.SELL-MESSAGE", "&a+{price_formatted}")
+                .replace("%price%", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
+                .replace("%price_formatted%", plugin.getCurrencyManager().formatMoney(totalPayout))
+                .replace("{price}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
+                .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(totalPayout));
         PlayerSettingUtils.sendActionBar(plugin, player, sellMsg);
     }
 

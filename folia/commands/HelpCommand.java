@@ -45,8 +45,9 @@ public class HelpCommand implements CommandExecutor {
         sendHelpLine(player, "SELL", "&b/sell &7- ѕᴇʟʟ ʏᴏᴜʀ ɪᴛᴇᴍѕ");
         sendHelpLine(player, "CRATE", "&b/crates &7- ᴏᴘᴇɴ ᴛʜᴇ ᴄʀᴀᴛᴇѕ ᴍᴇɴᴜ");
         player.sendMessage(ColorUtils.toComponent("&b/balance &7- ᴄʜᴇᴄᴋ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ"));
-        sendHelpLine(player, "SHARDS", "&b/shards &7- ᴄʜᴇᴄᴋ ʏᴏᴜʀ ѕʜᴀʀᴅѕ");
-        player.sendMessage(ColorUtils.toComponent("&b/bounty &7- ᴠɪᴇᴡ ʙᴏᴜɴᴛɪᴇѕ"));
+        sendHelpLine(player, "SHARDS", "&b/shards &7- ᴄʜᴇᴄᴋ ʏᴏᴜʀ "
+                + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS));
+        sendHelpLine(player, "BOUNTY", "&b/bounty &7- ᴠɪᴇᴡ ʙᴏᴜɴᴛɪᴇѕ");
         sendHelpLine(player, "STATS", "&b/stats &7- ᴠɪᴇᴡ ʏᴏᴜʀ ѕᴛᴀᴛѕ");
         sendHelpLine(player, "LEADERBOARDS", "&b/leaderboard &7- ᴠɪᴇᴡ ᴛᴏᴘ ᴘʟᴀʏᴇʀѕ");
         sendHelpLine(player, "SETTINGS", "&b/settings &7- ᴘʟᴀʏᴇʀ ѕᴇᴛᴛɪɴɢѕ");

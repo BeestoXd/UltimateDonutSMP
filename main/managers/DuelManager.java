@@ -229,7 +229,7 @@ public class DuelManager {
     }
 
     public String getCreateTitle(Player target) {
-        String name = target == null ? "Player" : target.getName();
+        String name = target == null ? "Player" : publicName(target);
         return config().getString("GUI.CREATE.TITLE", "&8ᴄʀᴇᴀᴛᴇ ᴅᴜᴇʟ -> {player}")
                 .replace("{player}", name);
     }
@@ -872,18 +872,18 @@ public class DuelManager {
         long expiresAt = System.currentTimeMillis() + (getRequestTimeoutSeconds() * 1000L);
         DuelRequest request = new DuelRequest(
                 challenger.getUniqueId(),
-                challenger.getName(),
+                plainPublicName(challenger),
                 target.getUniqueId(),
-                target.getName(),
+                plainPublicName(target),
                 resolvedSelection,
                 resolvedPrivacyMode,
                 expiresAt
         );
         requestsByTarget.put(target.getUniqueId(), request);
 
-        send(challenger, "&aѕᴇɴᴛ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + target.getName() + "&a.");
-        send(target, "&e" + challenger.getName() + " &fʜᴀѕ ᴄʜᴀʟʟᴇɴɢᴇᴅ ʏᴏᴜ ᴛᴏ ᴀ ᴅᴜᴇʟ.");
-        send(target, "&7ᴜѕᴇ &f/duel accept " + challenger.getName() + " &7ᴏʀ &f/duel deny " + challenger.getName() + "&7.");
+        send(challenger, "&aѕᴇɴᴛ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + publicName(target) + "&a.");
+        send(target, "&e" + publicName(challenger) + " &fʜᴀѕ ᴄʜᴀʟʟᴇɴɢᴇᴅ ʏᴏᴜ ᴛᴏ ᴀ ᴅᴜᴇʟ.");
+        send(target, "&7ᴜѕᴇ &f/duel accept " + publicName(challenger) + " &7ᴏʀ &f/duel deny " + publicName(challenger) + "&7.");
         play(challenger, "DUELS.REQUEST-SENT");
         play(target, "DUELS.REQUEST-RECEIVED");
         return true;
@@ -900,8 +900,7 @@ public class DuelManager {
             send(target, "&cᴛʜᴀᴛ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ʜᴀѕ ᴇxᴘɪʀᴇᴅ.");
             return false;
         }
-        if (challengerName != null && !challengerName.isBlank()
-                && !request.challengerName().equalsIgnoreCase(challengerName.trim())) {
+        if (!matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
             send(target, "&cʏᴏᴜʀ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ɪѕ ꜰʀᴏᴍ &f" + request.challengerName() + "&c.");
             return false;
         }
@@ -939,8 +938,7 @@ public class DuelManager {
             send(target, "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ.");
             return false;
         }
-        if (challengerName != null && !challengerName.isBlank()
-                && !request.challengerName().equalsIgnoreCase(challengerName.trim())) {
+        if (!matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
             send(target, "&cʏᴏᴜʀ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ɪѕ ꜰʀᴏᴍ &f" + request.challengerName() + "&c.");
             return false;
         }
@@ -948,7 +946,7 @@ public class DuelManager {
         requestsByTarget.remove(target.getUniqueId());
         Player challenger = Bukkit.getPlayer(request.challengerUuid());
         if (challenger != null) {
-            send(challenger, "&c" + target.getName() + " ᴅᴇɴɪᴇᴅ ʏᴏᴜʀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ.");
+            send(challenger, "&c" + publicName(target) + " ᴅᴇɴɪᴇᴅ ʏᴏᴜʀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ.");
         }
         send(target, "&eᴅᴇɴɪᴇᴅ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + request.challengerName() + "&e.");
         return true;
@@ -1044,8 +1042,8 @@ public class DuelManager {
         if (match.getDrawRequester() == null) {
             match.setDrawRequester(requester);
             match.setDrawRequestExpiresAt(System.currentTimeMillis() + (getDrawTimeoutSeconds() * 1000L));
-            send(player, "&eᴅʀᴀᴡ ʀᴇǫᴜᴇѕᴛ ѕᴇɴᴛ ᴛᴏ &f" + opponent.getName() + "&e.");
-            send(opponent, "&e" + player.getName() + " &fʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀ ᴅʀᴀᴡ. ᴜѕᴇ &f/draw &fᴛᴏ ᴀᴄᴄᴇᴘᴛ.");
+            send(player, "&eᴅʀᴀᴡ ʀᴇǫᴜᴇѕᴛ ѕᴇɴᴛ ᴛᴏ &f" + publicName(opponent) + "&e.");
+            send(opponent, "&e" + publicName(player) + " &fʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀ ᴅʀᴀᴡ. ᴜѕᴇ &f/draw &fᴛᴏ ᴀᴄᴄᴇᴘᴛ.");
             return true;
         }
 
@@ -1190,7 +1188,7 @@ public class DuelManager {
         finishMatch(match, winnerUuid, victimUuid, "DEATH", false, loot, true);
 
         if (winner != null) {
-            send(winner, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + victim.getName() + "&a.");
+            send(winner, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + publicName(victim) + "&a.");
         }
         send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + match.getOpponentName(victimUuid) + "&c.");
         return true;
@@ -1214,8 +1212,8 @@ public class DuelManager {
         finishMatch(match, attacker.getUniqueId(), victim.getUniqueId(), "PVP_KILL", false, loot, true);
         PlayerRespawnListener.scheduleChainmailKit(plugin, victim, getReturnDelayTicks() + 2L);
 
-        send(attacker, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + victim.getName() + "&a.");
-        send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + attacker.getName() + "&c.");
+        send(attacker, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + publicName(victim) + "&a.");
+        send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + publicName(attacker) + "&c.");
         return true;
     }
 
@@ -1339,8 +1337,8 @@ public class DuelManager {
         match.setEndsAt(now + (getMatchDurationSeconds() * 1000L));
         sendCountdownStart(first);
         sendCountdownStart(second);
-        send(first, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a.");
-        send(second, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a.");
+        send(first, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a.");
+        send(second, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a.");
         playCountdownStartSound(first);
         playCountdownStartSound(second);
     }
@@ -1511,13 +1509,13 @@ public class DuelManager {
         if (winner != null && loser != null) {
             storeTransitionTitle(
                     winner.getUniqueId(),
-                    formatResultTitle("victory", winner.getName(), loser.getName(), "&e&lᴠɪᴄᴛᴏʀʏ!"),
-                    formatResultSubtitle("victory", winner.getName(), loser.getName(), "&e" + winner.getName() + " &fᴡᴏɴ ᴛʜᴇ ᴍᴀᴛᴄʜ!")
+                    formatResultTitle("victory", publicName(winner), publicName(loser), "&e&lᴠɪᴄᴛᴏʀʏ!"),
+                    formatResultSubtitle("victory", publicName(winner), publicName(loser), "&e" + publicName(winner) + " &fᴡᴏɴ ᴛʜᴇ ᴍᴀᴛᴄʜ!")
             );
             storeTransitionTitle(
                     loser.getUniqueId(),
-                    formatResultTitle("defeat", loser.getName(), winner.getName(), "&c&lᴅᴇꜰᴇᴀᴛ!"),
-                    formatResultSubtitle("defeat", loser.getName(), winner.getName(), "&c" + winner.getName() + " &fᴡᴏɴ ᴛʜɪѕ ᴍᴀᴛᴄʜ!")
+                    formatResultTitle("defeat", publicName(loser), publicName(winner), "&c&lᴅᴇꜰᴇᴀᴛ!"),
+                    formatResultSubtitle("defeat", publicName(loser), publicName(winner), "&c" + publicName(winner) + " &fᴡᴏɴ ᴛʜɪѕ ᴍᴀᴛᴄʜ!")
             );
             play(winner, "DUELS.VICTORY");
             play(loser, "DUELS.DEFEAT");
@@ -1725,8 +1723,21 @@ public class DuelManager {
             return;
         }
 
+        int blockedItems = 0;
         for (ItemStack item : loot) {
             if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+                continue;
+            }
+            CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                    .validateForStorage(item, CrashProtectionManager.Context.DUELS);
+            if (!safetyResult.allowed()) {
+                blockedItems++;
+                plugin.getCrashProtectionManager().logBlockedItem(
+                        "duel loot match #" + matchId,
+                        item,
+                        CrashProtectionManager.Context.DUELS,
+                        safetyResult
+                );
                 continue;
             }
             createClaim(winnerUuid, matchId, defeatedName, item.clone());
@@ -1888,6 +1899,20 @@ public class DuelManager {
         if (first == null || second == null || resolvedArena == null || resolvedArena.arena() == null) {
             return;
         }
+        boolean firstInventorySafe = validatePlayerInventoryForDuel(first);
+        boolean secondInventorySafe = validatePlayerInventoryForDuel(second);
+        if (!firstInventorySafe || !secondInventorySafe) {
+            if (firstInventorySafe) {
+                send(first, "&cThe duel could not start because your opponent has unsafe item data.");
+            }
+            if (secondInventorySafe) {
+                send(second, "&cThe duel could not start because your opponent has unsafe item data.");
+            }
+            if (resolvedArena.generatedWorldName() != null && !resolvedArena.generatedWorldName().isBlank()) {
+                worldManager.cleanupGeneratedWorld(resolvedArena.generatedWorldName());
+            }
+            return;
+        }
 
         DuelArena arena = resolvedArena.arena();
         long matchId = insertMatch(type, arena, first.getUniqueId(), second.getUniqueId(), resolvedArena.selection(),
@@ -1907,9 +1932,9 @@ public class DuelManager {
                 arena,
                 resolvedArena.selection(),
                 first.getUniqueId(),
-                first.getName(),
+                publicName(first),
                 second.getUniqueId(),
-                second.getName(),
+                publicName(second),
                 getCountdownSeconds(),
                 resolvedArena.biomeKey(),
                 resolvedArena.generatedWorldName(),
@@ -1938,8 +1963,8 @@ public class DuelManager {
         preparePlayerForMatch(first, arena.getSpawn1(), arena);
         preparePlayerForMatch(second, arena.getSpawn2(), arena);
 
-        send(first, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
-        send(second, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
+        send(first, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
+        send(second, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
         play(first, "DUELS.MATCH-FOUND");
         play(second, "DUELS.MATCH-FOUND");
     }
@@ -2218,7 +2243,7 @@ public class DuelManager {
         long now = System.currentTimeMillis();
         Map<String, String> values = new HashMap<>();
         values.put("uuid", uuid);
-        values.put("name", player.getName());
+        values.put("name", plainPublicName(player));
         values.put("serverId", getLocalServerId());
         values.put("map", (selection == null ? DuelMapSelection.randomStatic() : selection).serialize());
         values.put("queuedAt", Long.toString(now));
@@ -3141,6 +3166,41 @@ public class DuelManager {
         }
     }
 
+    private boolean validatePlayerInventoryForDuel(Player player) {
+        if (player == null || !player.isOnline()) {
+            return false;
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        if (!validateDuelItems(player, inventory.getStorageContents())) {
+            return false;
+        }
+        if (!validateDuelItems(player, inventory.getArmorContents())) {
+            return false;
+        }
+        if (!validateDuelItems(player, new ItemStack[]{inventory.getItemInOffHand(), player.getItemOnCursor()})) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateDuelItems(Player player, ItemStack[] items) {
+        if (items == null) {
+            return true;
+        }
+        for (ItemStack item : items) {
+            if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+                continue;
+            }
+            if (!plugin.getCrashProtectionManager()
+                    .validateOrNotify(player, item, CrashProtectionManager.Context.DUELS)
+                    .allowed()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean shouldHandleAsCustomLethalPvP(Player attacker, Player victim, double finalDamage) {
         if (attacker == null || victim == null || finalDamage <= 0D) {
             return false;
@@ -3843,7 +3903,19 @@ public class DuelManager {
         }
 
         try {
-            return ItemSerializationUtils.deserialize(encoded);
+            ItemStack item = ItemSerializationUtils.deserialize(encoded);
+            CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                    .validateForStorage(item, CrashProtectionManager.Context.DATABASE_LOAD);
+            if (!safetyResult.allowed()) {
+                plugin.getCrashProtectionManager().logBlockedItem(
+                        "duel claim item data",
+                        item,
+                        CrashProtectionManager.Context.DATABASE_LOAD,
+                        safetyResult
+                );
+                return null;
+            }
+            return item;
         } catch (IllegalArgumentException | java.io.IOException | ClassNotFoundException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to deserialize duel item", e);
             return null;
@@ -4153,6 +4225,29 @@ public class DuelManager {
     }
 
     private record TransitionTitleState(String title, String subtitle) {
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
+    }
+
+    private String plainPublicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().plainPublicName(player);
+    }
+
+    private boolean matchesIdentity(Player viewer, UUID subjectUuid, String publicSnapshot, String input) {
+        if (input == null || input.isBlank()) {
+            return true;
+        }
+        String candidate = input.trim();
+        if (publicSnapshot != null && publicSnapshot.equalsIgnoreCase(candidate)) {
+            return true;
+        }
+        Player subject = Bukkit.getPlayer(subjectUuid);
+        return subject != null
+                && plugin.getHideManager() != null
+                && plugin.getHideManager().canSeeRealIdentity(viewer)
+                && subject.getName().equalsIgnoreCase(candidate);
     }
 
     private record GeneratedInventorySnapshot(

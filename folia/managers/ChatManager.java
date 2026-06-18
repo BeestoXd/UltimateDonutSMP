@@ -4,7 +4,6 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -121,11 +120,11 @@ public class ChatManager {
         return fallback;
     }
 
-    public boolean isGlobalChatmuted() {
+    public boolean isGlobalChatMuted() {
         return config().getBoolean(CHAT_ROOT + ".GLOBAL-CHAT-MUTED", false);
     }
 
-    public void setGlobalChatmuted(boolean muted, boolean persist) {
+    public void setGlobalChatMuted(boolean muted, boolean persist) {
         config().set(CHAT_ROOT + ".GLOBAL-CHAT-MUTED", muted);
         if (persist) {
             plugin.getConfigManager().saveConfig();
@@ -161,7 +160,7 @@ public class ChatManager {
         }
     }
 
-    public boolean ismuteBypassed(Player player) {
+    public boolean isMuteBypassed(Player player) {
         return player != null && PermissionUtils.has(player, "ultimatedonutsmp.staff.chat.bypass.mute");
     }
 
@@ -266,7 +265,7 @@ public class ChatManager {
         int clearLines = Math.max(1, config().getInt(CHAT_ROOT + ".CLEAR-LINES", 150));
         for (Player player : Bukkit.getOnlinePlayers()) {
             for (int i = 0; i < clearLines; i++) {
-                player.sendMessage(Component.empty());
+                player.sendMessage("");
             }
         }
     }
@@ -488,9 +487,12 @@ public class ChatManager {
             return template == null ? "" : template;
         }
 
+        String publicName = plugin.getHideManager() == null
+                ? player.getName()
+                : plugin.getHideManager().plainPublicName(player);
         return template
-                .replace("<player>", player.getName())
-                .replace("%player%", player.getName())
+                .replace("<player>", publicName)
+                .replace("%player%", publicName)
                 .replace("%uuid%", player.getUniqueId().toString());
     }
 

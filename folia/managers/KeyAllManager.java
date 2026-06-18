@@ -25,7 +25,9 @@ public class KeyAllManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getConfigManager().getConfig().getBoolean("KEY-ALL.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.KEY_ALL)
+                && plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CRATES)
+                && plugin.getConfigManager().getConfig().getBoolean("KEY-ALL.ENABLED", true);
     }
 
     public int getEveryMinutes() {
@@ -62,17 +64,17 @@ public class KeyAllManager {
         }
 
         long cycleSeconds = getCycleSeconds();
-        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerData data = plugin.getPlayerDataManager().get(player);
             if (data == null) {
-                return;
+                continue;
             }
 
             initializeCountdown(data, cycleSeconds, true);
             long remaining = data.getKeyAllRemainingSeconds();
             if (remaining > 1L) {
                 data.setKeyAllRemainingSeconds(remaining - 1L);
-                return;
+                continue;
             }
 
             SelectedKeyReward reward = plugin.getCrateManager() == null ? null : selectConfiguredReward();
@@ -83,7 +85,7 @@ public class KeyAllManager {
 
             notifyPlayer(player, reward);
             executeConfiguredCommands(player, reward);
-        });
+        }
     }
 
     public int grantCrateKeys(String crateId, int amount, boolean resetTimerAfter) {
@@ -105,21 +107,15 @@ public class KeyAllManager {
 
         int granted = 0;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            plugin.getFoliaScheduler().runEntity(player, () -> {
-                if (!player.isOnline()) {
-                    return;
+            plugin.getCrateManager().addKeys(player.getUniqueId(), reward.crateId(), reward.amount());
+            if (resetTimerAfter) {
+                PlayerData data = plugin.getPlayerDataManager().get(player);
+                if (data != null) {
+                    data.setKeyAllRemainingSeconds(getCycleSeconds());
                 }
-
-                plugin.getCrateManager().addKeys(player.getUniqueId(), reward.crateId(), reward.amount());
-                if (resetTimerAfter) {
-                    PlayerData data = plugin.getPlayerDataManager().get(player);
-                    if (data != null) {
-                        data.setKeyAllRemainingSeconds(getCycleSeconds());
-                    }
-                }
-                notifyPlayer(player, reward);
-                executeConfiguredCommands(player, reward);
-            });
+            }
+            notifyPlayer(player, reward);
+            executeConfiguredCommands(player, reward);
             granted++;
         }
         return granted;
@@ -313,17 +309,33 @@ public class KeyAllManager {
             return;
         }
 
-        for (String command : readCommandRewards()) {
-            if (command == null || command.isBlank()) {
-                continue;
-            }
+        List<String> commands = readCommandRewards();
+        if (commands.isEmpty()) {
+            return;
+        }
 
-            String resolved = resolveCommandReward(command, player, reward);
-            if (resolved.isBlank()) {
-                continue;
+        boolean randomize = plugin.getConfigManager().getConfig().getBoolean("KEY-ALL.RANDOM-COMMANDS", false);
+        if (randomize) {
+            String command = commands.get(random.nextInt(commands.size()));
+            if (command != null && !command.isBlank()) {
+                String resolved = resolveCommandReward(command, player, reward);
+                if (!resolved.isBlank()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+                }
             }
+        } else {
+            for (String command : commands) {
+                if (command == null || command.isBlank()) {
+                    continue;
+                }
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+                String resolved = resolveCommandReward(command, player, reward);
+                if (resolved.isBlank()) {
+                    continue;
+                }
+
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+            }
         }
     }
 
@@ -339,7 +351,7 @@ public class KeyAllManager {
                 .replace("{uuid}", player.getUniqueId().toString())
                 .replace("{crate}", reward == null ? "" : reward.crateId())
                 .replace("{crate_id}", reward == null ? "" : reward.crateId())
-                .replace("{crate_name}", reward == null ? "crate" : reward.displayName())
+                .replace("{crate_name}", reward == null ? "ᴄʀᴀᴛᴇ" : reward.displayName())
                 .replace("{amount}", String.valueOf(reward == null ? 1 : reward.amount()));
     }
 

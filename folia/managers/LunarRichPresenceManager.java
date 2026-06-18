@@ -212,8 +212,14 @@ public class LunarRichPresenceManager {
         int teamMaxSize = Math.max(teamSize, plugin.getConfigManager().getConfig().getInt("TEAM.LIMIT-MEMBERS", 10));
 
         String money = data != null ? NumberUtils.format(data.getMoney()) : "0";
-        String moneyNice = data != null ? NumberUtils.formatNice(data.getMoney()) : "0";
+        String moneyNice = plugin.getCurrencyManager().formatCompactAmount(
+                CurrencyManager.CurrencyType.MONEY,
+                data != null ? data.getMoney() : 0D
+        );
         String shards = data != null ? String.valueOf(data.getShards()) : "0";
+        String moneyFormatted = plugin.getCurrencyManager().formatMoney(data != null ? data.getMoney() : 0D);
+        String moneyShortFormatted = plugin.getCurrencyManager().formatMoneyCompact(data != null ? data.getMoney() : 0D);
+        String shardsFormatted = plugin.getCurrencyManager().formatShards(data != null ? data.getShards() : 0L);
         String kills = data != null ? String.valueOf(data.getKills()) : "0";
         String deaths = data != null ? String.valueOf(data.getDeaths()) : "0";
         String playtime = data != null ? NumberUtils.formatTimeLong(data.getTotalPlaytimeSeconds()) : "0s";
@@ -232,7 +238,16 @@ public class LunarRichPresenceManager {
         result = result.replace("%economy_team%", teamName);
         result = result.replace("%economy_money%", money);
         result = result.replace("%economy_nicestMoney%", moneyNice);
+        result = result.replace("%economy_money_formatted%", moneyFormatted);
+        result = result.replace("%economy_money_short_formatted%", moneyShortFormatted);
+        result = result.replace("%economy_money_symbol%", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY));
+        result = result.replace("%economy_money_name%", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY));
+        result = result.replace("%economy_money_name_plural%", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.MONEY));
         result = result.replace("%economy_shards%", shards);
+        result = result.replace("%economy_shards_formatted%", shardsFormatted);
+        result = result.replace("%economy_shards_symbol%", plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS));
+        result = result.replace("%economy_shards_name%", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.SHARDS));
+        result = result.replace("%economy_shards_name_plural%", plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS));
         result = result.replace("%economy_kills%", kills);
         result = result.replace("%economy_deaths%", deaths);
         result = result.replace("%economy_playtime%", playtime);
@@ -332,7 +347,8 @@ public class LunarRichPresenceManager {
     }
 
     private boolean isConfiguredEnabled() {
-        return getConfig().getBoolean(PATH + ".ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.LUNAR_RICH_PRESENCE)
+                && getConfig().getBoolean(PATH + ".ENABLED", true);
     }
 
     private FileConfiguration getConfig() {

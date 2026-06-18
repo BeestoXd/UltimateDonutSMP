@@ -36,7 +36,7 @@ public class AFKCommand implements CommandExecutor {
             return true;
         }
 
-        if (plugin.getSpawnManager().hasMenuDefinition(SpawnManager.AreaType.AFK)) {
+        if (plugin.getSpawnManager().shouldOpenMenu(SpawnManager.AreaType.AFK)) {
             new AfkMenu(plugin).open(player);
             return true;
         }

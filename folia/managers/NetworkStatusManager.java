@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.ServerStatusSnapshot;
-import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -91,7 +90,8 @@ public class NetworkStatusManager {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean(ROOT_PATH + ".ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.NETWORK_SERVERS)
+                && getConfig().getBoolean(ROOT_PATH + ".ENABLED", true);
     }
 
     public boolean hasConfiguredServers() {
@@ -235,7 +235,7 @@ public class NetworkStatusManager {
             return;
         }
 
-        if (!Bukkit.isGlobalTickThread()) {
+        if (!Bukkit.isPrimaryThread()) {
             plugin.getFoliaScheduler().runGlobal(this::refreshLocalSnapshots);
             return;
         }
@@ -314,14 +314,14 @@ public class NetworkStatusManager {
 
         boolean online = Boolean.parseBoolean(properties.getProperty("online", "false"));
         int players = parseInt(properties.getProperty("players"), 0);
-        String software = properties.getProperty("software", "ɴ/ᴀ");
-        String performance = properties.getProperty("performance", "ɴ/ᴀ");
+        String software = properties.getProperty("software", "N/A");
+        String performance = properties.getProperty("performance", "N/A");
         long timestamp = parseLong(properties.getProperty("timestamp"), System.currentTimeMillis());
 
         if (!online) {
             players = 0;
-            software = "ɴ/ᴀ";
-            performance = "ɴ/ᴀ";
+            software = "N/A";
+            performance = "N/A";
         }
 
         return new ServerStatusSnapshot(
@@ -399,7 +399,7 @@ public class NetworkStatusManager {
             endpointServer.setExecutor(endpointExecutor);
             endpointServer.start();
         } catch (IOException exception) {
-            plugin.getLogger().warning("Failed to start network status endpoint on "
+            plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴛᴀʀᴛ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀᴛᴜѕ ᴇɴᴅᴘᴏɪɴᴛ ᴏɴ "
                     + host + ":" + port + path + " (" + exception.getMessage() + ").");
             stopEndpointServer();
         }
@@ -460,9 +460,9 @@ public class NetworkStatusManager {
         return new StringBuilder()
                 .append("serverId=").append(safeSnapshot.serverId()).append('\n')
                 .append("displayName=").append(safeSnapshot.displayName()).append('\n')
-                .append("ᴏɴʟɪɴᴇ=").append(safeSnapshot.online()).append('\n')
-                .append("ᴘʟᴀʏᴇʀѕ=").append(safeSnapshot.playerCount()).append('\n')
-                .append("ѕᴏꜰᴛᴡᴀʀᴇ=").append(safeSnapshot.softwareLabel()).append('\n')
+                .append("online=").append(safeSnapshot.online()).append('\n')
+                .append("players=").append(safeSnapshot.playerCount()).append('\n')
+                .append("software=").append(safeSnapshot.softwareLabel()).append('\n')
                 .append("performance=").append(safeSnapshot.performanceLabel()).append('\n')
                 .append("timestamp=").append(safeSnapshot.lastUpdatedAt()).append('\n')
                 .toString();
@@ -471,8 +471,9 @@ public class NetworkStatusManager {
     private ServerStatusSnapshot createLocalSnapshot(String serverId, String displayName) {
         String software = plugin.getServer().getName()
                 + " " + plugin.getServer().getBukkitVersion()
-                + " (ᴍᴄ: " + plugin.getServer().getMinecraftVersion() + ")";
-        double[] tpsValues = plugin.getServer().getTPS();
+                + " (MC: " + plugin.getServer().getVersion() + ")";
+        double tps = plugin.getOptimizationManager() == null ? 20.0D : plugin.getOptimizationManager().getLastTps();
+        double[] tpsValues = new double[]{tps};
 
         return new ServerStatusSnapshot(
                 serverId,
@@ -488,7 +489,7 @@ public class NetworkStatusManager {
 
     private String formatPerformance(double[] tpsValues) {
         if (tpsValues == null || tpsValues.length < 3) {
-            return "ɴ/ᴀ";
+            return "N/A";
         }
 
         return String.format(
@@ -594,7 +595,7 @@ public class NetworkStatusManager {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "ᴜɴᴋɴᴏᴡɴ" : ColorUtils.toSmallCaps(builder.toString());
+        return builder.isEmpty() ? "ᴜɴᴋɴᴏᴡɴ" : builder.toString();
     }
 
     private int parseInt(String value, int fallback) {

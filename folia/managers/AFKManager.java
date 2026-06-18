@@ -23,7 +23,8 @@ public class AFKManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getConfigManager().getConfig()
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.AFK)
+                && plugin.getConfigManager().getConfig()
                 .getBoolean("AFK-SYSTEM.ENABLED", true);
     }
 

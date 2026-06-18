@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.commands;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -61,8 +62,10 @@ public class RemoveMoneyCommand implements CommandExecutor {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     key,
                     "{player}", result.displayName(),
-                    "{balance}", NumberUtils.formatNice(result.beforeBalance()),
-                    "{balance_full}", NumberUtils.format(result.beforeBalance())
+                    "{balance}", compactAmount(result.beforeBalance()),
+                    "{balance_full}", fullAmount(result.beforeBalance()),
+                    "{balance_money}", plugin.getCurrencyManager().formatMoneyCompact(result.beforeBalance()),
+                    "{balance_money_full}", fullMoney(result.beforeBalance())
             )));
             return true;
         }
@@ -70,10 +73,14 @@ public class RemoveMoneyCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                 "BALANCE.ADMIN.REMOVE-MONEY-SUCCESS",
                 "{player}", result.displayName(),
-                "{amount}", NumberUtils.formatNice(result.amount()),
-                "{amount_full}", NumberUtils.format(result.amount()),
-                "{balance}", NumberUtils.formatNice(result.afterBalance()),
-                "{balance_full}", NumberUtils.format(result.afterBalance())
+                "{amount}", compactAmount(result.amount()),
+                "{amount_full}", fullAmount(result.amount()),
+                "{money}", plugin.getCurrencyManager().formatMoneyCompact(result.amount()),
+                "{money_full}", fullMoney(result.amount()),
+                "{balance}", compactAmount(result.afterBalance()),
+                "{balance_full}", fullAmount(result.afterBalance()),
+                "{balance_money}", plugin.getCurrencyManager().formatMoneyCompact(result.afterBalance()),
+                "{balance_money_full}", fullMoney(result.afterBalance())
         )));
 
         Player targetPlayer = Bukkit.getPlayer(result.targetUuid());
@@ -81,13 +88,29 @@ public class RemoveMoneyCommand implements CommandExecutor {
             targetPlayer.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
                     "BALANCE.ADMIN.REMOVE-MONEY-RECEIVED",
                     "{admin}", sender.getName(),
-                    "{amount}", NumberUtils.formatNice(result.amount()),
-                    "{amount_full}", NumberUtils.format(result.amount()),
-                    "{balance}", NumberUtils.formatNice(result.afterBalance()),
-                    "{balance_full}", NumberUtils.format(result.afterBalance())
+                    "{amount}", compactAmount(result.amount()),
+                    "{amount_full}", fullAmount(result.amount()),
+                    "{money}", plugin.getCurrencyManager().formatMoneyCompact(result.amount()),
+                    "{money_full}", fullMoney(result.amount()),
+                    "{balance}", compactAmount(result.afterBalance()),
+                    "{balance_full}", fullAmount(result.afterBalance()),
+                    "{balance_money}", plugin.getCurrencyManager().formatMoneyCompact(result.afterBalance()),
+                    "{balance_money_full}", fullMoney(result.afterBalance())
             )));
         }
 
         return true;
+    }
+
+    private String compactAmount(double amount) {
+        return plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private String fullAmount(double amount) {
+        return plugin.getCurrencyManager().formatAmount(CurrencyManager.CurrencyType.MONEY, amount);
+    }
+
+    private String fullMoney(double amount) {
+        return plugin.getCurrencyManager().format(CurrencyManager.CurrencyType.MONEY, amount, false);
     }
 }

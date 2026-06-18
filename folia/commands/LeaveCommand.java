@@ -38,7 +38,7 @@ public class LeaveCommand implements CommandExecutor {
             }
         }
 
-        player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɴ ᴀ ᴅᴜᴇʟ ᴏʀ ꜰꜰᴀ ᴀʀᴇɴᴀ/match."));
+        player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɴ ᴀ ᴅᴜᴇʟ ᴏʀ ꜰꜰᴀ ᴀʀᴇɴᴀ/ᴍᴀᴛᴄʜ."));
         return true;
     }
 }

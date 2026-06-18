@@ -1,19 +1,27 @@
 package com.bx.ultimateDonutSmp.utils;
 
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
-import net.kyori.adventure.text.Component;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
+import java.net.URI;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 public class ItemUtils {
 
@@ -23,13 +31,13 @@ public class ItemUtils {
         if (meta == null) return item;
 
         if (displayName != null && !displayName.isEmpty()) {
-            meta.displayName(ColorUtils.toComponent(displayName));
+            meta.setDisplayName(ColorUtils.colorize(displayName));
         } else {
-            meta.displayName(Component.empty());
+            meta.setDisplayName("");
         }
 
         if (lore != null && !lore.isEmpty()) {
-            meta.lore(ColorUtils.toComponentList(lore));
+            meta.setLore(ColorUtils.colorizeList(lore));
         }
 
         item.setItemMeta(meta);
@@ -41,32 +49,120 @@ public class ItemUtils {
     }
 
     public static ItemStack createPlayerHead(OfflinePlayer player, String displayName, List<String> lore) {
+        return createPlayerHead(player, null, displayName, lore);
+    }
+
+    public static ItemStack createPlayerHead(
+            OfflinePlayer player,
+            String textureValue,
+            String displayName,
+            List<String> lore
+    ) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta rawMeta = item.getItemMeta();
         if (!(rawMeta instanceof SkullMeta meta)) {
             return createItem(Material.PLAYER_HEAD, displayName, lore);
         }
 
-        meta.setOwningPlayer(player);
+        if (!applyTextureProfile(meta, player, textureValue)) {
+            meta.setOwningPlayer(player);
+        }
         if (displayName != null && !displayName.isEmpty()) {
-            meta.displayName(ColorUtils.toComponent(displayName));
+            meta.setDisplayName(ColorUtils.colorize(displayName));
         } else {
-            meta.displayName(Component.empty());
+            meta.setDisplayName("");
         }
 
         if (lore != null && !lore.isEmpty()) {
-            meta.lore(ColorUtils.toComponentList(lore));
+            meta.setLore(ColorUtils.colorizeList(lore));
         }
 
         item.setItemMeta(meta);
         return item;
     }
 
+    private static boolean applyTextureProfile(SkullMeta meta, OfflinePlayer fallback, String textureValue) {
+        TextureProfileData data = decodeTextureProfile(textureValue);
+        if (data == null) {
+            return false;
+        }
+
+        try {
+            UUID profileId = data.profileId() != null
+                    ? data.profileId()
+                    : UUID.nameUUIDFromBytes(("uds-head:" + textureValue).getBytes(StandardCharsets.UTF_8));
+            String profileName = data.profileName();
+            if (profileName == null || profileName.isBlank() || profileName.length() > 16) {
+                profileName = fallback == null ? null : fallback.getName();
+            }
+
+            PlayerProfile profile = Bukkit.createPlayerProfile(profileId, profileName);
+            PlayerTextures textures = profile.getTextures();
+            textures.setSkin(data.skinUrl());
+            profile.setTextures(textures);
+            meta.setOwnerProfile(profile);
+            return true;
+        } catch (RuntimeException | LinkageError ignored) {
+            return false;
+        }
+    }
+
+    private static TextureProfileData decodeTextureProfile(String textureValue) {
+        if (textureValue == null || textureValue.isBlank()) {
+            return null;
+        }
+
+        try {
+            byte[] decoded;
+            try {
+                decoded = Base64.getDecoder().decode(textureValue);
+            } catch (IllegalArgumentException ignored) {
+                decoded = Base64.getUrlDecoder().decode(textureValue);
+            }
+            JsonObject root = JsonParser.parseString(new String(decoded, StandardCharsets.UTF_8))
+                    .getAsJsonObject();
+            JsonObject textures = root.getAsJsonObject("textures");
+            JsonObject skin = textures == null ? null : textures.getAsJsonObject("SKIN");
+            if (skin == null || !skin.has("url")) {
+                return null;
+            }
+
+            URL skinUrl = URI.create(skin.get("url").getAsString()).toURL();
+            UUID profileId = parseProfileUuid(root.has("profileId") ? root.get("profileId").getAsString() : null);
+            String profileName = root.has("profileName") ? root.get("profileName").getAsString() : null;
+            return new TextureProfileData(profileId, profileName, skinUrl);
+        } catch (Exception | LinkageError ignored) {
+            return null;
+        }
+    }
+
+    private static UUID parseProfileUuid(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String compact = value.replace("-", "");
+        if (compact.length() != 32) {
+            return null;
+        }
+        try {
+            return UUID.fromString(compact.substring(0, 8)
+                    + "-" + compact.substring(8, 12)
+                    + "-" + compact.substring(12, 16)
+                    + "-" + compact.substring(16, 20)
+                    + "-" + compact.substring(20));
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
+    }
+
+    private record TextureProfileData(UUID profileId, String profileName, URL skinUrl) {
+    }
+
     public static ItemStack createPlaceholder(Material material) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.empty());
+            meta.setDisplayName("");
             item.setItemMeta(meta);
         }
         return item;
@@ -105,9 +201,7 @@ public class ItemUtils {
             } catch (NumberFormatException e) {
                 continue;
             }
-            Enchantment ench = RegistryAccess.registryAccess()
-                    .getRegistry(RegistryKey.ENCHANTMENT)
-                    .get(NamespacedKey.minecraft(name));
+            Enchantment ench = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(name));
             if (ench != null) {
                 item.addUnsafeEnchantment(ench, level);
             }

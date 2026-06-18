@@ -85,7 +85,7 @@ public class NetworkStaffChatManager {
         if (message.length() > maxLength) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "STAFFCHAT.MESSAGE_TOO_LONG",
-                    "&cѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
@@ -200,7 +200,7 @@ public class NetworkStaffChatManager {
                 getLocalServerId(),
                 getLocalDisplayName(),
                 "",
-                "Server",
+                "ѕᴇʀᴠᴇʀ",
                 status
         );
         markSeen(payload.messageId());
@@ -217,7 +217,7 @@ public class NetworkStaffChatManager {
                 getLocalServerId(),
                 getLocalDisplayName(),
                 "",
-                "Server",
+                "ѕᴇʀᴠᴇʀ",
                 status
         );
         markSeen(payload.messageId());
@@ -350,7 +350,8 @@ public class NetworkStaffChatManager {
     }
 
     private boolean isStaffChatEnabled() {
-        return getNetworkConfig().getBoolean("NETWORK.STAFF_CHAT_ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_CHAT)
+                && getNetworkConfig().getBoolean("NETWORK.STAFF_CHAT_ENABLED", true);
     }
 
     private boolean isJoinLeaveEnabled() {
@@ -395,7 +396,7 @@ public class NetworkStaffChatManager {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "Local" : builder.toString();
+        return builder.isEmpty() ? "ʟᴏᴄᴀʟ" : builder.toString();
     }
 
     private String safe(String value) {

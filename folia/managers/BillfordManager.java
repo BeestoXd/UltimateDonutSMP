@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.menus.BillfordMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -102,7 +103,8 @@ public class BillfordManager {
     }
 
     public boolean isTimeToAdvance() {
-        return nextAdvanceMillis != Long.MAX_VALUE
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.BILLFORD)
+                && nextAdvanceMillis != Long.MAX_VALUE
                 && System.currentTimeMillis() >= nextAdvanceMillis;
     }
 
@@ -149,13 +151,13 @@ public class BillfordManager {
                     .replace("{trade_id}", String.valueOf(currentTradeId))
                     .replace("{countdown}", getFormattedCountdown());
 
-            plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
+            Bukkit.getOnlinePlayers().forEach(player -> {
                 player.sendMessage(ColorUtils.toComponent(raw));
                 SoundUtils.play(player, plugin.getConfigManager().getSound("BILLFORD.ROTATE"));
             });
         }
 
-        plugin.getFoliaScheduler().forEachOnlinePlayer(player -> {
+        Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.getOpenInventory().getTopInventory().getHolder() instanceof BillfordMenu) {
                 player.closeInventory();
             }
@@ -310,9 +312,9 @@ public class BillfordManager {
 
     public String getFormattedCountdown() {
         long totalSeconds = getRemainingSeconds();
-        long days = totalSeconds / 86_400l;
-        long hours = (totalSeconds % 86_400L) / 3_600l;
-        long minutes = (totalSeconds % 3_600L) / 60l;
+        long days = totalSeconds / 86_400L;
+        long hours = (totalSeconds % 86_400L) / 3_600L;
+        long minutes = (totalSeconds % 3_600L) / 60L;
         long seconds = totalSeconds % 60L;
 
         if (days > 0) {

@@ -6,9 +6,16 @@ import java.util.Locale;
 
 public class NumberUtils {
 
+    public interface DurationFormatter {
+        String formatTime(long totalSeconds);
+        String formatTimeLong(long totalSeconds);
+        String formatCountdown(long totalSeconds);
+    }
+
     private static final DecimalFormat COMMA_FMT;
     private static final DecimalFormat SHORT_FMT;
     private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T", "Q"};
+    private static volatile DurationFormatter durationFormatter;
 
     static {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -69,8 +76,16 @@ public class NumberUtils {
         }
     }
 
+    public static void setDurationFormatter(DurationFormatter formatter) {
+        durationFormatter = formatter;
+    }
+
     /** Format seconds as readable time: 3665 â†’ "1h 1m" */
     public static String formatTime(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatTime(totalSeconds);
+        }
         long h = totalSeconds / 3600;
         long m = (totalSeconds % 3600) / 60;
         long s = totalSeconds % 60;
@@ -81,6 +96,10 @@ public class NumberUtils {
 
     /** Format seconds with days: 90061 â†’ "1d 1h 1m" */
     public static String formatTimeLong(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatTimeLong(totalSeconds);
+        }
         long d = totalSeconds / 86400;
         long h = (totalSeconds % 86400) / 3600;
         long m = (totalSeconds % 3600) / 60;
@@ -90,6 +109,10 @@ public class NumberUtils {
 
     /** Format remaining seconds for countdown display */
     public static String formatCountdown(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatCountdown(totalSeconds);
+        }
         long m = totalSeconds / 60;
         long s = totalSeconds % 60;
         if (m > 0) return m + "m " + s + "s";
