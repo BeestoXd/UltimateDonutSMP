@@ -155,7 +155,7 @@ public class DatabaseManager {
         String username = config.getString("DATABASE.MYSQL.USERNAME", "root");
         String password = config.getString("DATABASE.MYSQL.PASSWORD", "");
         String parameters = config.getString("DATABASE.MYSQL.PARAMETERS",
-                "ᴜѕᴇѕѕʟ=ꜰᴀʟѕᴇ&aʟʟᴏᴡᴘᴜʙʟɪᴄᴋᴇʏʀᴇᴛʀɪᴇᴠᴀʟ=ᴛʀᴜᴇ&ѕᴇʀᴠᴇʀᴛɪᴍᴇᴢᴏɴᴇ=ᴜᴛᴄ&cʜᴀʀᴀᴄᴛᴇʀᴇɴᴄᴏᴅɪɴɢ=ᴜᴛꜰ8");
+                "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8");
 
         if (config.getBoolean("DATABASE.MYSQL.CREATE-DATABASE", true)) {
             String serverUrl = "jdbc:mysql://" + host + ":" + port + "/" + appendJdbcParameters(parameters);
