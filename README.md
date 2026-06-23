@@ -2,7 +2,7 @@
   <img src="images/mainn.png" alt="UltimateDonutSmp" width="720">
 </p>
 
-<h1 align="center">UltimateDonutSmp (FREE)</h1>
+<h1 align="center">UltimateDonutSmp</h1>
 
 <p align="center">
   Free Paper, Spigot, and Folia plugin for DonutSMP-style Minecraft servers.
