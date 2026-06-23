@@ -9,7 +9,7 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 $smokeRoot = Join-Path ([IO.Path]::GetTempPath()) "UltimateDonutSmp-server-smoke"
 $cacheRoot = Join-Path $smokeRoot "cache"
 $runsRoot = Join-Path $smokeRoot "runs"
-$userAgent = "UltimateDonutSmp-smoke/1.3.3"
+$userAgent = "UltimateDonutSmp-smoke/1.3"
 $placeholderApiVersion = "2.12.2"
 $placeholderApiJar = Join-Path $cacheRoot "PlaceholderAPI-$placeholderApiVersion.jar"
 
@@ -20,25 +20,25 @@ $matrix = @(
         Name = "paper-1.21.10"
         Project = "paper"
         Version = "1.21.10"
-        Plugin = "UltimateDonutSmp-1.3.3-paper-spigot-1.21.10-26.2.jar"
+        Plugin = "UltimateDonutSmp-1.3-paper-spigot-1.21.10-26.2.jar"
     },
     @{
         Name = "paper-26.2"
         Project = "paper"
         Version = "26.2"
-        Plugin = "UltimateDonutSmp-1.3.3-paper-spigot-1.21.10-26.2.jar"
+        Plugin = "UltimateDonutSmp-1.3-paper-spigot-1.21.10-26.2.jar"
     },
     @{
         Name = "folia-1.21.11"
         Project = "folia"
         Version = "1.21.11"
-        Plugin = "UltimateDonutSmp-1.3.3-folia-1.21.11-26.1.2.jar"
+        Plugin = "UltimateDonutSmp-1.3-folia-1.21.11-26.1.2.jar"
     },
     @{
         Name = "folia-26.1.2"
         Project = "folia"
         Version = "26.1.2"
-        Plugin = "UltimateDonutSmp-1.3.3-folia-1.21.11-26.1.2.jar"
+        Plugin = "UltimateDonutSmp-1.3-folia-1.21.11-26.1.2.jar"
     }
 )
 

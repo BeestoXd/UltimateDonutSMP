@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$userAgent = "UltimateDonutSmp-build/1.3.3"
+$userAgent = "UltimateDonutSmp-build/1.3"
 
 function Invoke-Maven {
     param(
