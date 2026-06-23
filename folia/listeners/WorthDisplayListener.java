@@ -283,7 +283,8 @@ public class WorthDisplayListener implements Listener {
     }
 
     private boolean scheduleWorthDisplayMerge(InventoryClickEvent event, Player player) {
-        if (!(event.getClickedInventory() instanceof PlayerInventory clickedInventory)) {
+        Inventory clickedInventory = event.getClickedInventory();
+        if (clickedInventory == null) {
             return false;
         }
 
@@ -328,18 +329,20 @@ public class WorthDisplayListener implements Listener {
         event.setCancelled(true);
         plugin.getFoliaScheduler().runEntityLater(player, () -> {
             if (!player.isOnline()
-                    || !Objects.equals(clickedInventory.getItem(clickedSlot), expectedCurrent)
-                    || !Objects.equals(player.getItemOnCursor(), expectedCursor)) {
+                    || !isSameItem(clickedInventory.getItem(clickedSlot), expectedCurrent)
+                    || !isSameItem(player.getItemOnCursor(), expectedCursor)) {
                 queueRefresh(player, 1L);
                 return;
             }
 
             ItemStack mergedCurrent = strippedCurrent.clone();
             mergedCurrent.setAmount(strippedCurrent.getAmount() + transferred);
-            clickedInventory.setItem(
-                    clickedSlot,
-                    plugin.getWorthManager().applyWorthDisplayForPlayer(player, mergedCurrent)
-            );
+            
+            ItemStack finalCurrent = (clickedInventory instanceof PlayerInventory)
+                    ? plugin.getWorthManager().applyWorthDisplayForPlayer(player, mergedCurrent)
+                    : mergedCurrent;
+            
+            clickedInventory.setItem(clickedSlot, finalCurrent);
 
             int remaining = strippedCursor.getAmount() - transferred;
             if (remaining <= 0) {
@@ -354,6 +357,21 @@ public class WorthDisplayListener implements Listener {
             player.updateInventory();
         }, 1L);
         return true;
+    }
+
+    private boolean isSameItem(ItemStack a, ItemStack b) {
+        if (a == null || a.getType().isAir()) {
+            return b == null || b.getType().isAir();
+        }
+        if (b == null || b.getType().isAir()) {
+            return false;
+        }
+        if (a.getType() != b.getType() || a.getAmount() != b.getAmount()) {
+            return false;
+        }
+        ItemStack strippedA = plugin.getWorthManager().stripWorthDisplay(a);
+        ItemStack strippedB = plugin.getWorthManager().stripWorthDisplay(b);
+        return strippedA.isSimilar(strippedB);
     }
 
     private boolean isAmethystItem(ItemStack item) {
