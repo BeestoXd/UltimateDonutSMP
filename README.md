@@ -140,12 +140,6 @@ UltimateDonutSmp registers a large command surface. Common entry points include:
 
 The complete command and permission list is available in the packaged plugin metadata and customer documentation.
 
-## Documentation
-
-- [Full feature documentation](docs/fitur-ultimatedonutsmp.md)
-- [Changelog](CHANGELOG.md)
-- Individual system plans are available in the `docs/` directory.
-
 ## Commercial Use
 
 UltimateDonutSmp is proprietary commercial software.
