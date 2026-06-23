@@ -5,13 +5,15 @@
 <h1 align="center">UltimateDonutSmp (FREE)</h1>
 
 <p align="center">
-  Premium Paper, Spigot, and Folia plugin for DonutSMP-style Minecraft servers.
+  Free Paper, Spigot, and Folia plugin for DonutSMP-style Minecraft servers.
   Economy, PvP, marketplace, staff tools, menus, and network utilities in one production-focused plugin.
 </p>
 
 <p align="center">
   <img alt="Java 21" src="https://img.shields.io/badge/Java-21-007396?style=for-the-badge&logo=openjdk&logoColor=white">
   <img alt="Paper, Spigot, and Folia" src="https://img.shields.io/badge/Platform-Paper%20%7C%20Spigot%20%7C%20Folia-2ea44f?style=for-the-badge">
+  <img alt="Free" src="https://img.shields.io/badge/Distribution-Free-green?style=for-the-badge">
+  <img alt="License" src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge">
 </p>
 
 ## Overview
@@ -390,11 +392,11 @@ Additional runtime or configurable permission nodes:
 
 Shop entries, Billford access, amethyst tools, homes, order limits, Auction House limits, portals, tablist badges, and other content may define additional custom permission strings in their configuration files.
 
-## Commercial Use
+## License and Terms
 
-UltimateDonutSmp is proprietary commercial software.
+UltimateDonutSmp is a free, proprietary software.
 
-- The plugin may only be used by authorized customers and maintainers.
+- The plugin is free to use but remains under a proprietary license.
 - Redistribution, resale, sublicensing, public mirroring, or unauthorized sharing is not permitted without written permission.
 
 Copyright (c) 2026 UltimateDonutSmp. All rights reserved.
