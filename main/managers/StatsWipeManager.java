@@ -20,11 +20,11 @@ import java.util.logging.Level;
 public class StatsWipeManager {
 
     public enum WipeTarget {
-        PLAYER_STATS("PLAYER_STATS", "ᴘʟᴀʏᴇʀ ѕᴛᴀᴛѕ", "stats", "playerstats", "player_stats"),
-        TEAM_DOCUMENTS("TEAM_DOCUMENTS", "ᴛᴇᴀᴍ ᴅᴏᴄᴜᴍᴇɴᴛѕ", "teams", "team", "teamdocs", "team_documents"),
-        HOME_DOCUMENTS("HOME_DOCUMENTS", "ʜᴏᴍᴇ ᴅᴏᴄᴜᴍᴇɴᴛѕ", "homes", "home", "homedocs", "home_documents"),
-        BOUNTIES("BOUNTIES", "ʙᴏᴜɴᴛɪᴇѕ", "bounty", "bounties"),
-        SELL_DOCUMENTS("SELL_DOCUMENTS", "ѕᴇʟʟ ᴅᴏᴄᴜᴍᴇɴᴛѕ", "sell", "sellhistory", "sell_history", "selldocuments", "sell_documents");
+        PLAYER_STATS("PLAYER_STATS", "player stats", "stats", "playerstats", "player_stats"),
+        TEAM_DOCUMENTS("TEAM_DOCUMENTS", "team documents", "teams", "team", "teamdocs", "team_documents"),
+        HOME_DOCUMENTS("HOME_DOCUMENTS", "home documents", "homes", "home", "homedocs", "home_documents"),
+        BOUNTIES("BOUNTIES", "bounties", "bounty", "bounties"),
+        SELL_DOCUMENTS("SELL_DOCUMENTS", "sell documents", "sell", "sellhistory", "sell_history", "selldocuments", "sell_documents");
 
         private final String configKey;
         private final String displayName;
@@ -106,10 +106,10 @@ public class StatsWipeManager {
 
     public WipeResult wipeTargets(Set<WipeTarget> targets, String actorName) {
         if (targets == null || targets.isEmpty()) {
-            return new WipeResult(false, false, Map.of(), "No wipe targets selected.");
+            return new WipeResult(false, false, Map.of(), "no wipe targets selected.");
         }
         if (!wipeInProgress.compareAndSet(false, true)) {
-            return new WipeResult(false, true, Map.of(), "A wipe is already in progress.");
+            return new WipeResult(false, true, Map.of(), "a wipe is already in progress.");
         }
 
         EnumSet<WipeTarget> normalizedTargets = EnumSet.copyOf(targets);
@@ -123,7 +123,7 @@ public class StatsWipeManager {
             plugin.getLogger().info("Stats wipe completed by " + actorName + " for targets " + normalizedTargets + ".");
             return new WipeResult(true, false, Map.copyOf(affectedCounts), null);
         } catch (Exception exception) {
-            plugin.getLogger().log(Level.SEVERE, "ѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ ꜰᴏʀ " + normalizedTargets, exception);
+            plugin.getLogger().log(Level.SEVERE, "stats wipe failed for " + normalizedTargets, exception);
             return new WipeResult(false, false, Map.copyOf(affectedCounts), exception.getMessage());
         } finally {
             wipeInProgress.set(false);

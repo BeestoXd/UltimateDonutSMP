@@ -6,9 +6,16 @@ import java.util.Locale;
 
 public class NumberUtils {
 
+    public interface DurationFormatter {
+        String formatTime(long totalSeconds);
+        String formatTimeLong(long totalSeconds);
+        String formatCountdown(long totalSeconds);
+    }
+
     private static final DecimalFormat COMMA_FMT;
     private static final DecimalFormat SHORT_FMT;
-    private static final String[] SHORT_SUFFIXES = {"", "k", "m", "b", "t"};
+    private static final String[] SHORT_SUFFIXES = {"", "K", "M", "B", "T", "Q"};
+    private static volatile DurationFormatter durationFormatter;
 
     static {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
@@ -21,7 +28,7 @@ public class NumberUtils {
         return COMMA_FMT.format(number);
     }
 
-    /** Format with suffix: 1500 -> 1.5k */
+    /** Format with suffix: 1500 -> 1.5K */
     public static String formatNice(double number) {
         if (!Double.isFinite(number)) {
             return "0";
@@ -51,9 +58,10 @@ public class NumberUtils {
     /** Parse a number string with optional K/M/B/T suffix */
     public static double parse(String input) {
         if (input == null || input.isBlank()) throw new NumberFormatException("Empty input");
-        String clean = input.trim().toUpperCase(Locale.US);
+        String clean = input.trim().replace(",", "").replace("_", "").toUpperCase(Locale.US);
         double multiplier = 1;
-        if (clean.endsWith("T")) { multiplier = 1_000_000_000_000D; clean = clean.substring(0, clean.length() - 1); }
+        if (clean.endsWith("Q")) { multiplier = 1_000_000_000_000_000D; clean = clean.substring(0, clean.length() - 1); }
+        else if (clean.endsWith("T")) { multiplier = 1_000_000_000_000D; clean = clean.substring(0, clean.length() - 1); }
         else if (clean.endsWith("B")) { multiplier = 1_000_000_000; clean = clean.substring(0, clean.length() - 1); }
         else if (clean.endsWith("M")) { multiplier = 1_000_000; clean = clean.substring(0, clean.length() - 1); }
         else if (clean.endsWith("K")) { multiplier = 1_000;    clean = clean.substring(0, clean.length() - 1); }
@@ -68,8 +76,16 @@ public class NumberUtils {
         }
     }
 
+    public static void setDurationFormatter(DurationFormatter formatter) {
+        durationFormatter = formatter;
+    }
+
     /** Format seconds as readable time: 3665 â†’ "1h 1m" */
     public static String formatTime(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatTime(totalSeconds);
+        }
         long h = totalSeconds / 3600;
         long m = (totalSeconds % 3600) / 60;
         long s = totalSeconds % 60;
@@ -80,6 +96,10 @@ public class NumberUtils {
 
     /** Format seconds with days: 90061 â†’ "1d 1h 1m" */
     public static String formatTimeLong(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatTimeLong(totalSeconds);
+        }
         long d = totalSeconds / 86400;
         long h = (totalSeconds % 86400) / 3600;
         long m = (totalSeconds % 3600) / 60;
@@ -89,6 +109,10 @@ public class NumberUtils {
 
     /** Format remaining seconds for countdown display */
     public static String formatCountdown(long totalSeconds) {
+        DurationFormatter formatter = durationFormatter;
+        if (formatter != null) {
+            return formatter.formatCountdown(totalSeconds);
+        }
         long m = totalSeconds / 60;
         long s = totalSeconds % 60;
         if (m > 0) return m + "m " + s + "s";

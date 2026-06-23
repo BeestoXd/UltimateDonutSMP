@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -309,17 +310,33 @@ public class KeyAllManager {
             return;
         }
 
-        for (String command : readCommandRewards()) {
-            if (command == null || command.isBlank()) {
-                continue;
-            }
+        List<String> commands = readCommandRewards();
+        if (commands.isEmpty()) {
+            return;
+        }
 
-            String resolved = resolveCommandReward(command, player, reward);
-            if (resolved.isBlank()) {
-                continue;
+        boolean randomize = plugin.getConfigManager().getConfig().getBoolean("KEY-ALL.RANDOM-COMMANDS", false);
+        if (randomize) {
+            String command = commands.get(random.nextInt(commands.size()));
+            if (command != null && !command.isBlank()) {
+                String resolved = resolveCommandReward(command, player, reward);
+                if (!resolved.isBlank()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+                }
             }
+        } else {
+            for (String command : commands) {
+                if (command == null || command.isBlank()) {
+                    continue;
+                }
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+                String resolved = resolveCommandReward(command, player, reward);
+                if (resolved.isBlank()) {
+                    continue;
+                }
+
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+            }
         }
     }
 
@@ -335,7 +352,7 @@ public class KeyAllManager {
                 .replace("{uuid}", player.getUniqueId().toString())
                 .replace("{crate}", reward == null ? "" : reward.crateId())
                 .replace("{crate_id}", reward == null ? "" : reward.crateId())
-                .replace("{crate_name}", reward == null ? "ᴄʀᴀᴛᴇ" : reward.displayName())
+                .replace("{crate_name}", reward == null ? "crate" : reward.displayName())
                 .replace("{amount}", String.valueOf(reward == null ? 1 : reward.amount()));
     }
 
@@ -387,7 +404,7 @@ public class KeyAllManager {
             );
         }
 
-        SoundUtils.play(player, sound);
+        SoundUtils.play(plugin, player, sound, PlayerSettingUtils.SoundChannel.NOTIFICATION);
     }
 
     private List<String> readNotificationMessages() {

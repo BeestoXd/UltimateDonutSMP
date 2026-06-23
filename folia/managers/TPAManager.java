@@ -3,17 +3,20 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.SoundUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Manages /tpa and /tpahere requests.
@@ -23,13 +26,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TPAManager {
 
     private static final long REQUEST_EXPIRY_TICKS = 15 * 60 * 20L;
+    private static final long REQUEST_EXPIRY_MILLIS = REQUEST_EXPIRY_TICKS * 50L;
 
     public record TpaRequest(UUID requester, UUID target, boolean tpaHere, boolean resumeWhenRequestsEnabled) {}
+    public record QueuedTpaRequest(UUID requester, UUID target, boolean tpaHere, long queuedAtMillis, long expiresAtMillis) {
+        public TpaRequest toRequest() {
+            return new TpaRequest(requester, target, tpaHere, false);
+        }
+    }
+    public record TpaQueueEntry(UUID requester, UUID target, boolean tpaHere, int position, long queuedAtMillis, long expiresAtMillis) {}
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, TpaRequest> pendingRequests = new ConcurrentHashMap<>();
     private final Map<UUID, Deque<TpaRequest>> autoTpaQueues = new ConcurrentHashMap<>();
     private final Map<UUID, Deque<TpaRequest>> autoTpaHereQueues = new ConcurrentHashMap<>();
+    private final Map<UUID, Deque<QueuedTpaRequest>> manualTpaQueues = new ConcurrentHashMap<>();
+    private final Map<UUID, Deque<QueuedTpaRequest>> manualTpaHereQueues = new ConcurrentHashMap<>();
     private final Set<UUID> autoTpaWorkers = ConcurrentHashMap.newKeySet();
     private final Set<UUID> autoTpaHereWorkers = ConcurrentHashMap.newKeySet();
 
@@ -99,6 +111,14 @@ public class TPAManager {
         return Math.max(position, 1);
     }
 
+    public int queueManualTPA(Player requester, Player target) {
+        return queueManualRequest(requester, target, false);
+    }
+
+    public int queueManualTPAHere(Player requester, Player target) {
+        return queueManualRequest(requester, target, true);
+    }
+
     public void processQueuedAutoRequests(UUID targetUuid) {
         tryAutoAcceptPendingRequest(targetUuid, false);
         tryAutoAcceptPendingRequest(targetUuid, true);
@@ -122,6 +142,111 @@ public class TPAManager {
         pendingRequests.remove(targetUuid);
     }
 
+    public boolean acceptPendingRequest(Player target) {
+        if (target == null || !target.isOnline()) {
+            return false;
+        }
+
+        TpaRequest request = pendingRequests.remove(target.getUniqueId());
+        if (request == null) {
+            return false;
+        }
+
+        return acceptRequest(target, request);
+    }
+
+    public boolean acceptQueuedRequest(Player target, UUID requesterUuid, boolean tpaHere) {
+        if (target == null || requesterUuid == null || !target.isOnline()) {
+            return false;
+        }
+
+        UUID targetUuid = target.getUniqueId();
+        cleanupExpiredManualQueue(targetUuid, tpaHere);
+
+        Deque<QueuedTpaRequest> queue = manualQueueMap(tpaHere).get(targetUuid);
+        if (queue == null || queue.isEmpty()) {
+            return false;
+        }
+
+        QueuedTpaRequest selected = null;
+        for (QueuedTpaRequest request : queue) {
+            if (request.requester().equals(requesterUuid)) {
+                selected = request;
+                break;
+            }
+        }
+
+        if (selected == null) {
+            return false;
+        }
+
+        queue.remove(selected);
+        if (queue.isEmpty()) {
+            manualQueueMap(tpaHere).remove(targetUuid);
+        }
+
+        if (isExpired(selected)) {
+            return false;
+        }
+
+        return acceptRequest(target, selected.toRequest());
+    }
+
+    public boolean acceptRandomQueuedRequest(Player target, boolean tpaHere) {
+        if (target == null || !target.isOnline()) {
+            return false;
+        }
+
+        UUID targetUuid = target.getUniqueId();
+        cleanupExpiredManualQueue(targetUuid, tpaHere);
+
+        Deque<QueuedTpaRequest> queue = manualQueueMap(tpaHere).get(targetUuid);
+        if (queue == null || queue.isEmpty()) {
+            return false;
+        }
+
+        queue.removeIf(request -> Bukkit.getPlayer(request.requester()) == null);
+        if (queue.isEmpty()) {
+            manualQueueMap(tpaHere).remove(targetUuid);
+            return false;
+        }
+
+        List<QueuedTpaRequest> candidates = new ArrayList<>(queue);
+        QueuedTpaRequest selected = candidates.get(ThreadLocalRandom.current().nextInt(candidates.size()));
+        queue.remove(selected);
+        if (queue.isEmpty()) {
+            manualQueueMap(tpaHere).remove(targetUuid);
+        }
+
+        return acceptRequest(target, selected.toRequest());
+    }
+
+    public List<TpaQueueEntry> getQueuedRequests(UUID targetUuid, boolean tpaHere) {
+        if (targetUuid == null) {
+            return List.of();
+        }
+
+        cleanupExpiredManualQueue(targetUuid, tpaHere);
+        Deque<QueuedTpaRequest> queue = manualQueueMap(tpaHere).get(targetUuid);
+        if (queue == null || queue.isEmpty()) {
+            return List.of();
+        }
+
+        List<TpaQueueEntry> entries = new ArrayList<>();
+        int position = 1;
+        for (QueuedTpaRequest request : queue) {
+            entries.add(new TpaQueueEntry(
+                    request.requester(),
+                    request.target(),
+                    request.tpaHere(),
+                    position++,
+                    request.queuedAtMillis(),
+                    request.expiresAtMillis()
+            ));
+        }
+        return entries;
+    }
+
     public void cancelRequestsByRequester(UUID requesterUuid) {
         pendingRequests.entrySet().removeIf(entry -> entry.getValue().requester().equals(requesterUuid));
         autoTpaQueues.entrySet().removeIf(entry -> {
@@ -132,10 +257,31 @@ public class TPAManager {
             entry.getValue().removeIf(request -> request.requester().equals(requesterUuid));
             return entry.getValue().isEmpty();
         });
+        manualTpaQueues.entrySet().removeIf(entry -> {
+            entry.getValue().removeIf(request -> request.requester().equals(requesterUuid));
+            return entry.getValue().isEmpty();
+        });
+        manualTpaHereQueues.entrySet().removeIf(entry -> {
+            entry.getValue().removeIf(request -> request.requester().equals(requesterUuid));
+            return entry.getValue().isEmpty();
+        });
+    }
+
+    public void clearQueuedRequestsForTarget(UUID targetUuid) {
+        if (targetUuid == null) {
+            return;
+        }
+
+        autoTpaQueues.remove(targetUuid);
+        autoTpaHereQueues.remove(targetUuid);
+        manualTpaQueues.remove(targetUuid);
+        manualTpaHereQueues.remove(targetUuid);
+        autoTpaWorkers.remove(targetUuid);
+        autoTpaHereWorkers.remove(targetUuid);
     }
 
     public void clearAutoTpaHereQueue(UUID targetUuid) {
-        clearAutoTpaHereQueue(targetUuid, "&cᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴡᴀѕ ᴅɪѕᴀʙʟᴇᴅ.");
+        clearAutoTpaHereQueue(targetUuid, "&ctpahere auto-accept&7 was disabled.");
     }
 
     public void clearIncomingRequests(UUID targetUuid, boolean tpaHere, String reason) {
@@ -148,6 +294,34 @@ public class TPAManager {
         if (tpaHere) {
             clearAutoTpaHereQueue(targetUuid, reason);
         }
+        clearManualQueue(targetUuid, tpaHere, reason);
+    }
+
+    private int queueManualRequest(Player requester, Player target, boolean tpaHere) {
+        if (requester == null || target == null || !target.isOnline()) {
+            return -1;
+        }
+
+        UUID targetUuid = target.getUniqueId();
+        UUID requesterUuid = requester.getUniqueId();
+        cleanupExpiredManualQueue(targetUuid, tpaHere);
+        if (hasMatchingRequest(requesterUuid, targetUuid, tpaHere)) {
+            return 0;
+        }
+
+        long now = System.currentTimeMillis();
+        QueuedTpaRequest request = new QueuedTpaRequest(
+                requesterUuid,
+                targetUuid,
+                tpaHere,
+                now,
+                now + REQUEST_EXPIRY_MILLIS
+        );
+
+        Deque<QueuedTpaRequest> queue = manualQueueMap(tpaHere).computeIfAbsent(targetUuid, ignored -> new ArrayDeque<>());
+        queue.offerLast(request);
+        scheduleManualExpiry(request);
+        return queue.size();
     }
 
     private boolean storePendingRequest(TpaRequest request) {
@@ -171,7 +345,13 @@ public class TPAManager {
         if (containsMatchingRequest(autoTpaQueues.get(targetUuid), requesterUuid, tpaHere)) {
             return true;
         }
-        return containsMatchingRequest(autoTpaHereQueues.get(targetUuid), requesterUuid, tpaHere);
+        if (containsMatchingRequest(autoTpaHereQueues.get(targetUuid), requesterUuid, tpaHere)) {
+            return true;
+        }
+        if (containsMatchingQueuedRequest(manualTpaQueues.get(targetUuid), requesterUuid, tpaHere)) {
+            return true;
+        }
+        return containsMatchingQueuedRequest(manualTpaHereQueues.get(targetUuid), requesterUuid, tpaHere);
     }
 
     private boolean containsMatchingRequest(Deque<TpaRequest> queue, UUID requesterUuid, boolean tpaHere) {
@@ -181,6 +361,19 @@ public class TPAManager {
 
         for (TpaRequest request : queue) {
             if (request.requester().equals(requesterUuid) && request.tpaHere() == tpaHere) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsMatchingQueuedRequest(Deque<QueuedTpaRequest> queue, UUID requesterUuid, boolean tpaHere) {
+        if (queue == null) {
+            return false;
+        }
+
+        for (QueuedTpaRequest request : queue) {
+            if (request.requester().equals(requesterUuid) && request.tpaHere() == tpaHere && !isExpired(request)) {
                 return true;
             }
         }
@@ -236,13 +429,14 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + publicName(requester) + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " ʜᴀѕ &aᴛᴘᴀ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
+                "&7" + publicName(target) + " ʜᴀѕ &aᴛᴘᴀ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpa&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
-        plugin.getFoliaScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
+        plugin.getFoliaScheduler().runEntity(target, () ->
+                target.performCommand("tpaccept " + plainPublicName(requester)));
 
         long delayTicks = Math.max(20L, getTpaCooldownTicks() + 20L);
         plugin.getFoliaScheduler().runEntityLater(target, () -> processNextAutoTpa(targetUuid), delayTicks);
@@ -297,13 +491,14 @@ public class TPAManager {
         scheduleExpiry(request);
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + publicName(requester) + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " ʜᴀѕ &aᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
+                "&7" + publicName(target) + " ʜᴀѕ &aᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b/tpahere&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
-        plugin.getFoliaScheduler().runEntity(target, () -> target.performCommand("tpaccept " + requester.getName()));
+        plugin.getFoliaScheduler().runEntity(target, () ->
+                target.performCommand("tpaccept " + plainPublicName(requester)));
 
         long delayTicks = Math.max(20L, getTpaCooldownTicks() + 20L);
         plugin.getFoliaScheduler().runEntityLater(target, () -> processNextAutoTpaHere(targetUuid), delayTicks);
@@ -331,6 +526,17 @@ public class TPAManager {
         }
     }
 
+    private void clearManualQueue(UUID targetUuid, boolean tpaHere, String reason) {
+        Deque<QueuedTpaRequest> queue = manualQueueMap(tpaHere).remove(targetUuid);
+        if (queue == null || queue.isEmpty()) {
+            return;
+        }
+
+        for (QueuedTpaRequest request : queue) {
+            notifyRequesterCleared(request.toRequest(), reason);
+        }
+    }
+
     private void notifyRequesterCleared(TpaRequest request, String reason) {
         Player requester = Bukkit.getPlayer(request.requester());
         if (requester == null) {
@@ -338,7 +544,7 @@ public class TPAManager {
         }
 
         Player target = Bukkit.getPlayer(request.target());
-        String targetName = target != null ? target.getName() : "this player";
+        String targetName = target != null ? publicName(target) : "this player";
         String requestType = request.tpaHere() ? "/tpahere" : "/tpa";
         requester.sendMessage(ColorUtils.toComponent(
                 "&7ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + targetName + "&7 ᴡᴀѕ ᴄʟᴇᴀʀᴇᴅ ʙᴇᴄᴀᴜѕᴇ " + reason
@@ -366,18 +572,51 @@ public class TPAManager {
             return false;
         }
 
-        String command = "tpaccept " + requester.getName();
+        String command = "tpaccept " + plainPublicName(requester);
         String requestType = tpaHere ? "/tpahere" : "/tpa";
         String autoName = tpaHere ? "tpahere auto-accept" : "tpa auto-accept";
 
         target.sendMessage(ColorUtils.toComponent(
-                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ ᴘᴇɴᴅɪɴɢ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + requester.getName() + "&7."
+                "&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛɪɴɢ ᴘᴇɴᴅɪɴɢ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + publicName(requester) + "&7."
         ));
         requester.sendMessage(ColorUtils.toComponent(
-                "&7" + target.getName() + " ʜᴀѕ &a" + autoName + "&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
+                "&7" + publicName(target) + " ʜᴀѕ &a" + autoName + "&7 ᴇɴᴀʙʟᴇᴅ. ʏᴏᴜʀ &b" + requestType + "&7 ʀᴇǫᴜᴇѕᴛ ɪѕ ʙᴇɪɴɢ ᴘʀᴏᴄᴇѕѕᴇᴅ."
         ));
 
         plugin.getFoliaScheduler().runEntity(target, () -> target.performCommand(command));
+        return true;
+    }
+
+    private boolean acceptRequest(Player target, TpaRequest request) {
+        if (target == null || request == null || !target.isOnline()
+                || !target.getUniqueId().equals(request.target())) {
+            return false;
+        }
+
+        Player requester = Bukkit.getPlayer(request.requester());
+        if (requester == null || !requester.isOnline()) {
+            target.sendMessage(ColorUtils.toComponent("&cʀᴇǫᴜᴇѕᴛᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ."));
+            return false;
+        }
+
+        if (request.tpaHere()) {
+            plugin.getTeleportManager().queue(target, requester.getLocation(), "TPA", null);
+            target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.ACCEPTED-HERE",
+                    "{player}", publicName(requester))));
+            requester.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-HERE-ACCEPTED",
+                    "{player}", publicName(target))));
+        } else {
+            plugin.getTeleportManager().queue(requester, target.getLocation(), "TPA", null);
+            target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.ACCEPTED",
+                    "{player}", publicName(requester))));
+            requester.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-ACCEPTED",
+                    "{player}", publicName(target))));
+        }
+
+        SoundUtils.play(plugin, target, plugin.getConfigManager().getSound("TPA.CONFIRM"),
+                PlayerSettingUtils.SoundChannel.NOTIFICATION);
+        SoundUtils.play(plugin, requester, plugin.getConfigManager().getSound("TPA.CONFIRM"),
+                PlayerSettingUtils.SoundChannel.NOTIFICATION);
         return true;
     }
 
@@ -404,8 +643,58 @@ public class TPAManager {
         }
     }
 
+    private void scheduleManualExpiry(QueuedTpaRequest request) {
+        Player target = Bukkit.getPlayer(request.target());
+        Runnable expire = () -> removeQueuedRequest(request);
+        if (target != null && target.isOnline()) {
+            plugin.getFoliaScheduler().runEntityLater(target, expire, REQUEST_EXPIRY_TICKS);
+        } else {
+            plugin.getFoliaScheduler().runGlobalLater(expire, REQUEST_EXPIRY_TICKS);
+        }
+    }
+
+    private void removeQueuedRequest(QueuedTpaRequest request) {
+        Deque<QueuedTpaRequest> queue = manualQueueMap(request.tpaHere()).get(request.target());
+        if (queue == null) {
+            return;
+        }
+
+        queue.remove(request);
+        if (queue.isEmpty()) {
+            manualQueueMap(request.tpaHere()).remove(request.target());
+        }
+    }
+
+    private void cleanupExpiredManualQueue(UUID targetUuid, boolean tpaHere) {
+        Deque<QueuedTpaRequest> queue = manualQueueMap(tpaHere).get(targetUuid);
+        if (queue == null) {
+            return;
+        }
+
+        queue.removeIf(this::isExpired);
+        if (queue.isEmpty()) {
+            manualQueueMap(tpaHere).remove(targetUuid);
+        }
+    }
+
+    private boolean isExpired(QueuedTpaRequest request) {
+        return request.expiresAtMillis() <= System.currentTimeMillis();
+    }
+
+    private Map<UUID, Deque<QueuedTpaRequest>> manualQueueMap(boolean tpaHere) {
+        return tpaHere ? manualTpaHereQueues : manualTpaQueues;
+    }
+
     private long getTpaCooldownTicks() {
         int seconds = plugin.getConfigManager().getConfig().getInt("TELEPORT-COOLDOWN.TPA", 5);
         return seconds * 20L;
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
+    }
+
+    private String plainPublicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().plainPublicName(player);
     }
 }

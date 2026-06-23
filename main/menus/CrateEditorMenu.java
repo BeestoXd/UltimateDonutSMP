@@ -91,7 +91,7 @@ public class CrateEditorMenu extends BaseMenu {
             }
 
             if (lockedSlots.contains(rawSlot)) {
-                player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕʟᴏᴛ ᴄᴏɴᴛᴀɪɴѕ ᴀ ɴᴏɴ-ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ. ᴇᴅɪᴛ ɪᴛ ɪɴ ᴄʀᴀᴛᴇѕ.ʏᴍʟ ɪꜰ ɴᴇᴇᴅᴇᴅ."));
+                player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕʟᴏᴛ ᴄᴏɴᴛᴀɪɴѕ ᴀ ɴᴏɴ-ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ. ᴇᴅɪᴛ ɪᴛ ɪɴ crates.yml ɪꜰ ɴᴇᴇᴅᴇᴅ."));
                 return;
             }
 

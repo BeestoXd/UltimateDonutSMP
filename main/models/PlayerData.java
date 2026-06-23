@@ -43,6 +43,19 @@ public class PlayerData {
     private boolean amethystBreakMessagesEnabled;
     private boolean privateMessagesEnabled;
     private boolean keyAllNotificationsEnabled;
+    private boolean duelRequestsEnabled;
+    private boolean publicChatEnabled;
+    private boolean serverBroadcastsEnabled;
+    private boolean auctionNotificationsEnabled;
+    private boolean explosionParticlesEnabled;
+    private boolean hideAllPlayersEnabled;
+    private boolean notificationSoundsEnabled;
+    private boolean rtpCoordinatesEnabled;
+    private boolean orderNotificationsEnabled;
+    private boolean teamChatVisible;
+    private boolean duelMusicEnabled;
+    private boolean quietSpawnEnabled;
+    private boolean nightVisionEnabled;
     private long keyAllRemainingSeconds;
     private boolean dirty;
 
@@ -86,6 +99,19 @@ public class PlayerData {
         this.amethystBreakMessagesEnabled = true;
         this.privateMessagesEnabled = true;
         this.keyAllNotificationsEnabled = true;
+        this.duelRequestsEnabled = true;
+        this.publicChatEnabled = true;
+        this.serverBroadcastsEnabled = true;
+        this.auctionNotificationsEnabled = true;
+        this.explosionParticlesEnabled = true;
+        this.hideAllPlayersEnabled = false;
+        this.notificationSoundsEnabled = true;
+        this.rtpCoordinatesEnabled = true;
+        this.orderNotificationsEnabled = true;
+        this.teamChatVisible = true;
+        this.duelMusicEnabled = true;
+        this.quietSpawnEnabled = false;
+        this.nightVisionEnabled = false;
         this.keyAllRemainingSeconds = -1L;
         this.dirty = false;
     }
@@ -522,6 +548,123 @@ public class PlayerData {
 
     public void setKeyAllNotificationsEnabled(boolean keyAllNotificationsEnabled) {
         this.keyAllNotificationsEnabled = keyAllNotificationsEnabled;
+        dirty = true;
+    }
+
+    public boolean isDuelRequestsEnabled() {
+        return duelRequestsEnabled;
+    }
+
+    public void setDuelRequestsEnabled(boolean duelRequestsEnabled) {
+        this.duelRequestsEnabled = duelRequestsEnabled;
+        dirty = true;
+    }
+
+    public boolean isPublicChatEnabled() {
+        return publicChatEnabled;
+    }
+
+    public void setPublicChatEnabled(boolean publicChatEnabled) {
+        this.publicChatEnabled = publicChatEnabled;
+        dirty = true;
+    }
+
+    public boolean isServerBroadcastsEnabled() {
+        return serverBroadcastsEnabled;
+    }
+
+    public void setServerBroadcastsEnabled(boolean serverBroadcastsEnabled) {
+        this.serverBroadcastsEnabled = serverBroadcastsEnabled;
+        dirty = true;
+    }
+
+    public boolean isAuctionNotificationsEnabled() {
+        return auctionNotificationsEnabled;
+    }
+
+    public void setAuctionNotificationsEnabled(boolean auctionNotificationsEnabled) {
+        this.auctionNotificationsEnabled = auctionNotificationsEnabled;
+        dirty = true;
+    }
+
+    public boolean isExplosionParticlesEnabled() {
+        return explosionParticlesEnabled;
+    }
+
+    public void setExplosionParticlesEnabled(boolean explosionParticlesEnabled) {
+        this.explosionParticlesEnabled = explosionParticlesEnabled;
+        dirty = true;
+    }
+
+    public boolean isHideAllPlayersEnabled() {
+        return hideAllPlayersEnabled;
+    }
+
+    public void setHideAllPlayersEnabled(boolean hideAllPlayersEnabled) {
+        this.hideAllPlayersEnabled = hideAllPlayersEnabled;
+        dirty = true;
+    }
+
+    public boolean isNotificationSoundsEnabled() {
+        return notificationSoundsEnabled;
+    }
+
+    public void setNotificationSoundsEnabled(boolean notificationSoundsEnabled) {
+        this.notificationSoundsEnabled = notificationSoundsEnabled;
+        dirty = true;
+    }
+
+    public boolean isRtpCoordinatesEnabled() {
+        return rtpCoordinatesEnabled;
+    }
+
+    public void setRtpCoordinatesEnabled(boolean rtpCoordinatesEnabled) {
+        this.rtpCoordinatesEnabled = rtpCoordinatesEnabled;
+        dirty = true;
+    }
+
+    public boolean isOrderNotificationsEnabled() {
+        return orderNotificationsEnabled;
+    }
+
+    public void setOrderNotificationsEnabled(boolean orderNotificationsEnabled) {
+        this.orderNotificationsEnabled = orderNotificationsEnabled;
+        dirty = true;
+    }
+
+    public boolean isTeamChatVisible() {
+        return teamChatVisible;
+    }
+
+    public void setTeamChatVisible(boolean teamChatVisible) {
+        this.teamChatVisible = teamChatVisible;
+        dirty = true;
+    }
+
+    public boolean isDuelMusicEnabled() {
+        return duelMusicEnabled;
+    }
+
+    public void setDuelMusicEnabled(boolean duelMusicEnabled) {
+        this.duelMusicEnabled = duelMusicEnabled;
+        dirty = true;
+    }
+
+    public boolean isQuietSpawnEnabled() {
+        return quietSpawnEnabled;
+    }
+
+    public void setQuietSpawnEnabled(boolean quietSpawnEnabled) {
+        this.quietSpawnEnabled = quietSpawnEnabled;
+        dirty = true;
+    }
+
+    public boolean isNightVisionEnabled() {
+        return nightVisionEnabled;
+    }
+
+    public void setNightVisionEnabled(boolean nightVisionEnabled) {
+        this.nightVisionEnabled = nightVisionEnabled;
         dirty = true;
     }
 

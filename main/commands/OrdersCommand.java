@@ -55,14 +55,47 @@ public class OrdersCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
+            if (plugin.getOrdersBedrockManager() != null
+                    && plugin.getOrdersBedrockManager().openMain(player)) {
+                return true;
+            }
             new OrdersBrowseMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort(), "ALL").open(player);
             return true;
         }
 
         switch (subcommand) {
-            case "my" -> new OrdersMyOrdersMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort()).open(player);
-            case "collect" -> new OrdersCollectMenu(plugin, 1).open(player);
-            default -> new OrdersBrowseMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort(), "ALL").open(player);
+            case "my" -> {
+                if (plugin.getOrdersBedrockManager() == null
+                        || !plugin.getOrdersBedrockManager().openMyOrders(player)) {
+                    new OrdersMyOrdersMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort()).open(player);
+                }
+            }
+            case "collect" -> {
+                if (!plugin.getOrdersManager().isClaimsEnabled()) {
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                            "ORDERS.CLAIMS_DISABLED",
+                            "&cᴏʀᴅᴇʀѕ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
+                    )));
+                    return true;
+                }
+                if (plugin.getOrdersBedrockManager() == null
+                        || !plugin.getOrdersBedrockManager().openCollect(player)) {
+                    new OrdersCollectMenu(plugin, 1).open(player);
+                }
+            }
+            default -> {
+                String query = String.join(" ", args);
+                if (plugin.getOrdersBedrockManager() == null
+                        || !plugin.getOrdersBedrockManager().openMain(player, query)) {
+                    new OrdersBrowseMenu(
+                            plugin,
+                            1,
+                            plugin.getOrdersManager().getUiState(player.getUniqueId()).sort(),
+                            plugin.getOrdersManager().getUiState(player.getUniqueId()).filter(),
+                            query
+                    ).open(player);
+                }
+            }
         }
 
         return true;

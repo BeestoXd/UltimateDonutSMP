@@ -3,7 +3,7 @@ package com.bx.ultimateDonutSmp.models;
 public enum PunishmentFilterState {
     ALL("All"),
     ACTIVE("Active"),
-    INACTIVE("ɪɴᴀᴄᴛɪᴠᴇ");
+    INACTIVE("inactive");
 
     private final String displayName;
 

@@ -1,0 +1,78 @@
+# Hide privacy system: persistent scramble aliases and configured disguises.
+ENABLED: true
+COOLDOWN-SECONDS: 30
+MAX-NAME-LENGTH: 16
+STAFF-MARKER: "&8[&cH&8] "
+
+SCRAMBLE:
+  LENGTH: 10
+  CHARACTERS: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
+  OBFUSCATED: true
+
+# Keys are used by /disguise <alias-key> <skin-key>.
+ALIASES:
+  mrbeast:
+    NAME: "MrBeast"
+    SKIN: mrbeast
+  technoblade:
+    NAME: "Technoblade"
+    SKIN: technoblade
+  dream:
+    NAME: "Dream"
+    SKIN: dream
+  drdonutt:
+    NAME: "DrDonutt"
+    SKIN: drdonutt
+
+# USERNAME is resolved asynchronously through the existing Mojang/SkinsRestorer skin pipeline.
+SKINS:
+  mrbeast:
+    DISPLAY-NAME: "MrBeast"
+    USERNAME: "MrBeast"
+  technoblade:
+    DISPLAY-NAME: "Technoblade"
+    USERNAME: "Technoblade"
+  dream:
+    DISPLAY-NAME: "Dream"
+    USERNAME: "Dream"
+  drdonutt:
+    DISPLAY-NAME: "DrDonutt"
+    USERNAME: "DrDonutt"
+
+GUI:
+  MAIN:
+    TITLE: "&8ʜɪᴅᴇ"
+    SIZE: 27
+  ALIASES:
+    TITLE: "&8select a name - {page}/{pages}"
+    SIZE: 54
+  SKINS:
+    TITLE: "&8ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}"
+    SIZE: 54
+  LIST:
+    TITLE: "&8ʜɪᴅᴅᴇɴ ᴘʟᴀʏᴇʀѕ - {page}/{pages}"
+    SIZE: 54
+
+MESSAGES:
+  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
+  NO-PERMISSION: "&cyou do not have permission."
+  DEPENDENCY-MISSING: "&cʜɪᴅᴇ ʀᴇǫᴜɪʀᴇѕ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴛᴏ ʙᴇ ɪɴѕᴛᴀʟʟᴇᴅ ᴀɴᴅ ᴇɴᴀʙʟᴇᴅ."
+  DISABLED: "&cᴛʜᴇ ʜɪᴅᴇ ꜰᴇᴀᴛᴜʀᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
+  IN-COMBAT: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʜᴀɴɢᴇ ʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ."
+  COOLDOWN: "&cᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀɴɢɪɴɢ ʜɪᴅᴇ ᴀɢᴀɪɴ."
+  ALREADY-HIDDEN: "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴜѕɪɴɢ ᴛʜᴀᴛ ʜɪᴅᴇ ɪᴅᴇɴᴛɪᴛʏ."
+  NOT-HIDDEN: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ."
+  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."
+  INVALID-ALIAS: "&cᴛʜᴀᴛ ᴅɪѕɢᴜɪѕᴇ ᴀʟɪᴀѕ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴏʀ ɪѕ ɪɴᴠᴀʟɪᴅ."
+  INVALID-SKIN: "&cᴜɴᴀʙʟᴇ ᴛᴏ ʀᴇѕᴏʟᴠᴇ ᴛʜᴀᴛ ѕᴋɪɴ ɴᴀᴍᴇ ᴏʀ ᴜʀʟ."
+  SKIN-SEARCHING: "&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7..."
+  ALIAS-IN-USE: "&cᴛʜᴀᴛ ᴀʟɪᴀѕ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴜѕᴇ."
+  SCRAMBLED: "&aʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ɪѕ ɴᴏᴡ ѕᴄʀᴀᴍʙʟᴇᴅ ᴀѕ &f{alias}&a."
+  DISGUISED: "&aʏᴏᴜ ᴀʀᴇ ɴᴏᴡ ᴅɪѕɢᴜɪѕᴇᴅ ᴀѕ &f{alias}&a."
+  REMOVED: "&aʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ."
+  ADMIN-REMOVED: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a."
+  REMOVED-BY-ADMIN: "&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ."
+  STATUS-NONE: "&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &cɪɴᴀᴄᴛɪᴠᴇ"
+  STATUS-ACTIVE: "&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &a{mode} &8- &f{alias}"
+  CHECK: "&bʜɪᴅᴇ ᴄʜᴇᴄᴋ\n&7ʀᴇᴀʟ ɴᴀᴍᴇ: &f{real}\n&7ᴀʟɪᴀѕ: &f{alias}\n&7ᴍᴏᴅᴇ: &f{mode}\n&7ѕᴋɪɴ: &f{skin}"
+  PERMISSION-REMOVED: "&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡᴀѕ ʀᴇᴍᴏᴠᴇᴅ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴘᴇʀᴍɪѕѕɪᴏɴ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ."

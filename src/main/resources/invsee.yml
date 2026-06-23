@@ -1,0 +1,39 @@
+# UDS setup: Staff inventory viewer permissions, layout, refresh behavior, and messages.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Inventory viewer permissions, edit rules, notifications, and logging.
+INVSEE:
+  ENABLED: true # Enables or disables invsee.
+  TITLE: "&8inventory of {player}" # Sets the title text shown for this menu or prompt.
+  REQUIRE-ONLINE: true # Configures the require online option.
+  ALLOW-EDIT: false # Configures the allow edit option.
+  ALLOW-SELF-VIEW: false # Configures the allow self view option.
+  NOTIFY-TARGET: false # Configures the notify target option.
+  LOG-USAGE: true # Configures the log usage option.
+  FREEZE-ON-LOGOUT: true # Configures the freeze on logout option.
+  AUTO-REFRESH-TICKS: 10 # Sets how often this task or update runs.
+  VIEW-PERMISSION: "ultimatedonutsmp.staff.invsee" # Sets the permission node required for this action.
+  MODIFY-PERMISSION: "ultimatedonutsmp.staff.invsee.modify" # Sets the permission node required for this action.
+  ADMIN-PERMISSION: "ultimatedonutsmp.admin.invsee" # Sets the permission node required for this action.
+
+# UDS setup: Slot layout and fixed UI positions for this menu.
+LAYOUT:
+  SIZE: 54 # Sets the inventory size in slots.
+  ARMOR-SLOTS: [0, 1, 2, 3] # Configures the armor slots option.
+  OFFHAND-SLOT: 4 # Sets the inventory slot used by this item.
+  SUMMARY-SLOT: 6 # Sets the inventory slot used by this item.
+  STATUS-SLOT: 8 # Sets the inventory slot used by this item.
+  MAIN-INVENTORY-START: 18 # Configures the main inventory start option.
+  HOTBAR-START: 45 # Configures the hotbar start option.
+
+# UDS setup: Configure MESSAGES options for this file.
+MESSAGES:
+  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  FEATURE-DISABLED: "&cᴛʜᴇ ɪɴᴠѕᴇᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  PLAYER-NOT-ONLINE: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  SELF-VIEW-DISABLED: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠѕᴇᴇ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
+  EDIT-CONFLICT: "&eᴀɴᴏᴛʜᴇʀ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴇᴅɪᴛɪɴɢ &f{target}&e. ᴏᴘᴇɴᴇᴅ ɪɴ ʀᴇᴀᴅ-ᴏɴʟʏ ᴍᴏᴅᴇ." # Sets the message text for this response.
+  TARGET-LOGGED-OUT: "&eᴛʜɪѕ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ɴᴏᴡ ᴀ ꜰʀᴏᴢᴇɴ ѕɴᴀᴘѕʜᴏᴛ ʙᴇᴄᴀᴜѕᴇ &f{target}&e ʟᴏɢɢᴇᴅ ᴏᴜᴛ." # Sets the message text for this response.
+  TARGET-NOTIFY: "&eʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ʙᴇɪɴɢ ᴠɪᴇᴡᴇᴅ ʙʏ &f{viewer}&e ɪɴ &f{mode}&e ᴍᴏᴅᴇ." # Sets the message text for this response.
+  RELOAD-SUCCESS: "&aɪɴᴠѕᴇᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.

@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -85,7 +86,7 @@ public class ChatCommand implements CommandExecutor {
         }
 
         if (args.length < 2) {
-            send(sender, "&cᴜѕᴀɢᴇ: /" + label + " delay <seconds|off>");
+            send(sender, "&cᴜѕᴀɢᴇ: /" + label + " ᴅᴇʟᴀʏ <seconds|off>");
             return true;
         }
 
@@ -140,12 +141,12 @@ public class ChatCommand implements CommandExecutor {
         if (lines.isEmpty()) {
             lines = List.of(
                     "",
-                    "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(Commands)",
+                    "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(ᴄᴏᴍᴍᴀɴᴅѕ)",
                     "",
-                    "&f/chat mute &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
-                    "&f/chat unmute &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
-                    "&f/chat delay (time) &7- ᴛᴏ ᴀᴅᴅ ᴅᴇʟᴀʏ ᴛᴏ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
-                    "&f/chat clear &7- ᴛᴏ ᴄʟᴇᴀʀ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/chat ᴍᴜᴛᴇ &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/chat ᴜɴᴍᴜᴛᴇ &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/chat ᴅᴇʟᴀʏ (ᴛɪᴍᴇ) &7- ᴛᴏ ᴀᴅᴅ ᴅᴇʟᴀʏ ᴛᴏ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/chat ᴄʟᴇᴀʀ &7- ᴛᴏ ᴄʟᴇᴀʀ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
                     ""
             );
         }
@@ -156,7 +157,13 @@ public class ChatCommand implements CommandExecutor {
     }
 
     private void broadcast(String message, CommandSender sender) {
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(ColorUtils.toComponent(message, player)));
+        Bukkit.getOnlinePlayers().stream()
+                .filter(player -> PlayerSettingUtils.notificationEnabled(
+                        plugin,
+                        player,
+                        PlayerSettingUtils.NotificationChannel.SERVER_BROADCAST
+                ))
+                .forEach(player -> player.sendMessage(ColorUtils.toComponent(message, player)));
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(ColorUtils.colorize(message));
@@ -190,6 +197,6 @@ public class ChatCommand implements CommandExecutor {
     }
 
     private String message(String key, String fallback) {
-        return plugin.getConfigManager().getMessages().getString("ᴄʜᴀᴛ-ᴍᴀɴᴀɢᴇʀ." + key, fallback);
+        return plugin.getConfigManager().getMessages().getString("CHAT-MANAGER." + key, fallback);
     }
 }

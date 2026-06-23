@@ -1,0 +1,357 @@
+# UDS setup: Crate opening behavior and editable crate reward definitions.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+SETTINGS:
+  LIST-MENU:
+    TITLE: "&8ᴄʀᴀᴛᴇѕ" # Sets the title text shown for this menu or prompt.
+    SIZE: 27 # Sets the inventory size in slots.
+    FILLER: "GRAY_STAINED_GLASS_PANE" # Configures the filler option.
+    CONTENT-SLOTS: [10, 11, 12, 13, 14, 15, 16] # Configures the content slots option.
+    EMPTY-SLOT: 13 # Sets the inventory slot used by this item.
+    EMPTY:
+      MATERIAL: "BARRIER" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&cɴᴏ ᴄʀᴀᴛᴇѕ" # Sets the display name shown to players.
+      LORE:
+        - "&7ɴᴏ ᴄʀᴀᴛᴇѕ ᴀʀᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ."
+    CLOSE-BUTTON:
+      SLOT: 26 # Sets the inventory slot used by this item.
+      MATERIAL: "BARRIER" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&cᴄʟᴏѕᴇ" # Sets the display name shown to players.
+      LORE:
+        - "&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ."
+
+  CONFIRM-MENU:
+    SIZE: 27 # Sets the inventory size in slots.
+    FILLER: "GRAY_STAINED_GLASS_PANE" # Configures the filler option.
+    PREVIEW-SLOT: 13 # Sets the inventory slot used by this item.
+    CONFIRM-SLOT: 15 # Sets the inventory slot used by this item.
+    CONFIRM-BUTTON:
+      MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&aᴄᴏɴꜰɪʀᴍ" # Sets the display name shown to players.
+      LORE:
+        - "&7ᴄʟᴀɪᴍ &f{reward}&7 ꜰʀᴏᴍ"
+        - "&b{crate}&7."
+    CANCEL-BUTTON:
+      SLOT: 11 # Sets the inventory slot used by this item.
+      MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&cᴄᴀɴᴄᴇʟ" # Sets the display name shown to players.
+      LORE:
+        - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ʀᴇᴡᴀʀᴅ ʟɪѕᴛ."
+
+  HOLOGRAM:
+    OFFSET-Y: 1.6 # Configures the offset y option.
+    VIEW-DISTANCE: 24.0 # Configures the view distance option.
+    UPDATE-TICKS: 20 # Sets how often this task or update runs.
+    LINES:
+      - "{crate}"
+      - "&7right-click to open"
+    KEY-LINE: "&7keys: &f{keys}" # Configures the key line option.
+
+  PREVIEW:
+    ENABLED: true # Enables or disables the floating items preview.
+    OFFSET-Y: 1.25 # The vertical offset above the crate block for the preview item.
+    CYCLE-INTERVAL-TICKS: 40 # Cycle to the next reward item every 2 seconds.
+    ROTATION-SPEED: 4.0 # Rotation speed factor in degrees per tick.
+    HOVER-AMPLITUDE: 0.08 # Maximum vertical distance to float up and down.
+    HOVER-SPEED: 0.08 # Speed/frequency of the floating motion.
+
+  PARTICLES:
+    ENABLED: true # Enables or disables particles.
+    TYPE: "ENCHANT" # Selects the mode or type used by this option.
+    COUNT: 4 # Configures the count option.
+
+  GACHA:
+    TITLE: "&8rolling reward" # Sets the title text shown for this menu or prompt.
+    FILLER: "BLACK_STAINED_GLASS_PANE" # Configures the filler option.
+    PREVIEW-SLOTS: [10, 11, 12, 13, 14, 15, 16] # Configures the preview slots option.
+    POINTER-SLOT: 13 # Sets the inventory slot used by this item.
+    TOTAL-STEPS: 38 # Configures the total steps option.
+    TICK-INTERVAL: 2 # Sets how often this task or update runs.
+
+# UDS setup: Crate definitions, keys, animations, rewards, and editor-managed content.
+CRATES:
+  common:
+    ENABLED: true # Enables or disables common.
+    OPEN-TYPE: "CHOOSE_ONE" # Selects the mode or type used by this option.
+    DISPLAY:
+      MATERIAL: "CHEST" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&fcommon crate" # Sets the display name shown to players.
+      LORE:
+        - "&7keys: &f{keys}"
+        - "&aclick to open and choose 1 reward."
+    KEY-ITEM:
+      MATERIAL: "TRIPWIRE_HOOK" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&fcommon key" # Sets the display name shown to players.
+      LORE:
+        - "&7opens the &fcommon crate&7."
+    PERMISSION: "" # Sets the permission node required for this action.
+    BROADCAST-ON-CLAIM: false # Configures the broadcast on claim option.
+    MENU:
+      OPEN-TITLE: "&8ᴄʜᴏᴏѕᴇ 1 ʀᴇᴡᴀʀᴅ" # Sets the title text shown for this menu or prompt.
+      CONFIRM-TITLE: "&8ᴄᴏɴꜰɪʀᴍ ʀᴇᴡᴀʀᴅ" # Sets the title text shown for this menu or prompt.
+      SIZE: 27 # Sets the inventory size in slots.
+      FILLER: "BLACK_STAINED_GLASS_PANE" # Configures the filler option.
+      BACK-SLOT: 26 # Sets the inventory slot used by this item.
+      BACK-BUTTON:
+        MATERIAL: "BARRIER" # Sets the Bukkit material used here.
+        DISPLAY-NAME: "&cʙᴀᴄᴋ" # Sets the display name shown to players.
+        LORE:
+          - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."
+    REWARDS:
+      iron_helmet:
+        SLOT: 10 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "IRON_HELMET" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&firon helmet" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "IRON_HELMET" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      iron_chestplate:
+        SLOT: 11 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "IRON_CHESTPLATE" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&firon chestplate" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "IRON_CHESTPLATE" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      iron_leggings:
+        SLOT: 12 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "IRON_LEGGINGS" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&firon leggings" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "IRON_LEGGINGS" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      iron_boots:
+        SLOT: 13 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "IRON_BOOTS" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&firon boots" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "IRON_BOOTS" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      iron_sword:
+        SLOT: 14 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "IRON_SWORD" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&firon sword" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "IRON_SWORD" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      money:
+        SLOT: 15 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "SUNFLOWER" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&e$5,000" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "COMMAND" # Selects the mode or type used by this option.
+          COMMANDS:
+            - "addmoney {player} 5000"
+
+  rare:
+    ENABLED: true # Enables or disables rare.
+    OPEN-TYPE: "CHOOSE_ONE" # Selects the mode or type used by this option.
+    DISPLAY:
+      MATERIAL: "BARREL" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&#37BFF9rare crate" # Sets the display name shown to players.
+      LORE:
+        - "&7keys: &f{keys}"
+        - "&aclick to open and choose 1 reward."
+    KEY-ITEM:
+      MATERIAL: "TRIPWIRE_HOOK" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&#37BFF9rare key" # Sets the display name shown to players.
+      LORE:
+        - "&7opens the &brare crate&7."
+    PERMISSION: "" # Sets the permission node required for this action.
+    BROADCAST-ON-CLAIM: false # Configures the broadcast on claim option.
+    MENU:
+      OPEN-TITLE: "&8ʀᴀʀᴇ ᴄʀᴀᴛᴇ" # Sets the title text shown for this menu or prompt.
+      CONFIRM-TITLE: "&8ᴄᴏɴꜰɪʀᴍ ʀᴀʀᴇ ʀᴇᴡᴀʀᴅ" # Sets the title text shown for this menu or prompt.
+      SIZE: 27 # Sets the inventory size in slots.
+      FILLER: "BLACK_STAINED_GLASS_PANE" # Configures the filler option.
+      BACK-SLOT: 26 # Sets the inventory slot used by this item.
+      BACK-BUTTON:
+        MATERIAL: "BARRIER" # Sets the Bukkit material used here.
+        DISPLAY-NAME: "&cʙᴀᴄᴋ" # Sets the display name shown to players.
+        LORE:
+          - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."
+    REWARDS:
+      diamond_helmet:
+        SLOT: 10 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "DIAMOND_HELMET" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&bdiamond helmet" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "DIAMOND_HELMET" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      diamond_chestplate:
+        SLOT: 11 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "DIAMOND_CHESTPLATE" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&bdiamond chestplate" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "DIAMOND_CHESTPLATE" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      diamond_leggings:
+        SLOT: 12 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "DIAMOND_LEGGINGS" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&bdiamond leggings" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "DIAMOND_LEGGINGS" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      diamond_boots:
+        SLOT: 13 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "DIAMOND_BOOTS" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&bdiamond boots" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "DIAMOND_BOOTS" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      diamond_sword:
+        SLOT: 14 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "DIAMOND_SWORD" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&bdiamond sword" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "DIAMOND_SWORD" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      money:
+        SLOT: 15 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "SUNFLOWER" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&e$15,000" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "COMMAND" # Selects the mode or type used by this option.
+          COMMANDS:
+            - "addmoney {player} 15000"
+
+  epic:
+    ENABLED: true # Enables or disables epic.
+    OPEN-TYPE: "CHOOSE_ONE" # Selects the mode or type used by this option.
+    DISPLAY:
+      MATERIAL: "ENDER_CHEST" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&#A303F9epic crate" # Sets the display name shown to players.
+      LORE:
+        - "&7keys: &f{keys}"
+        - "&aclick to open and choose 1 reward."
+    KEY-ITEM:
+      MATERIAL: "TRIPWIRE_HOOK" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&#A303F9epic key" # Sets the display name shown to players.
+      LORE:
+        - "&7opens the &5epic crate&7."
+    PERMISSION: "" # Sets the permission node required for this action.
+    BROADCAST-ON-CLAIM: true # Configures the broadcast on claim option.
+    MENU:
+      OPEN-TITLE: "&8ᴇᴘɪᴄ ᴄʀᴀᴛᴇ" # Sets the title text shown for this menu or prompt.
+      CONFIRM-TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴇᴘɪᴄ ʀᴇᴡᴀʀᴅ" # Sets the title text shown for this menu or prompt.
+      SIZE: 27 # Sets the inventory size in slots.
+      FILLER: "BLACK_STAINED_GLASS_PANE" # Configures the filler option.
+      BACK-SLOT: 26 # Sets the inventory slot used by this item.
+      BACK-BUTTON:
+        MATERIAL: "BARRIER" # Sets the Bukkit material used here.
+        DISPLAY-NAME: "&cʙᴀᴄᴋ" # Sets the display name shown to players.
+        LORE:
+          - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."
+    REWARDS:
+      netherite_helmet:
+        SLOT: 10 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "NETHERITE_HELMET" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&5netherite helmet" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "NETHERITE_HELMET" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      netherite_chestplate:
+        SLOT: 11 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "NETHERITE_CHESTPLATE" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&5netherite chestplate" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "NETHERITE_CHESTPLATE" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      netherite_leggings:
+        SLOT: 12 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "NETHERITE_LEGGINGS" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&5netherite leggings" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "NETHERITE_LEGGINGS" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      netherite_boots:
+        SLOT: 13 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "NETHERITE_BOOTS" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&5netherite boots" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "NETHERITE_BOOTS" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      netherite_sword:
+        SLOT: 14 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "NETHERITE_SWORD" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&5netherite sword" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "ITEM" # Selects the mode or type used by this option.
+          MATERIAL: "NETHERITE_SWORD" # Sets the Bukkit material used here.
+          AMOUNT: 1 # Sets the item amount used by this option.
+      money:
+        SLOT: 15 # Sets the inventory slot used by this item.
+        DISPLAY:
+          MATERIAL: "SUNFLOWER" # Sets the Bukkit material used here.
+          DISPLAY-NAME: "&e$50,000" # Sets the display name shown to players.
+          LORE:
+            - "&7choose this reward."
+        GRANT:
+          TYPE: "COMMAND" # Selects the mode or type used by this option.
+          COMMANDS:
+            - "addmoney {player} 50000"

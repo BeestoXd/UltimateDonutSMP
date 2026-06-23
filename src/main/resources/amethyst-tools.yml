@@ -1,0 +1,261 @@
+# UDS setup: Amethyst tool abilities, upgrade behavior, GUI text, and related messages.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# ═══════════════════════════════════════════════════════
+#   Amethyst Tools Configuration - UltimateDonutSmp
+# ═══════════════════════════════════════════════════════
+
+# UDS setup: Amethyst tool ability settings, cooldowns, costs, and upgrades.
+AMETHYST-TOOLS:
+
+  # Worlds where amethyst tools are completely disabled
+  EXCLUDED-WORLDS:
+    - duels
+
+  # ── Particles ─────────────────────────────────────────
+  PARTICLES:
+    ENABLED: true # Enables or disables particles.
+    TYPE: BLOCK # Selects the mode or type used by this option.
+    BLOCK-MATERIAL: PURPLE_CONCRETE_POWDER # Sets the Bukkit material used here.
+    COUNT: 12 # Configures the count option.
+    SPREAD: 0.4 # Configures the spread option.
+
+  # ── Sounds ────────────────────────────────────────────
+  SOUNDS:
+    USE:     "minecraft:block.amethyst_block.hit|1.0|1.2" # Configures the use option.
+    EXPIRE:  "minecraft:entity.lightning_bolt.impact|0.5|2.0" # Configures the expire option.
+    BREAK:   "minecraft:block.amethyst_block.break|1.0|0.8" # Configures the break option.
+    ACTIVATE: "minecraft:block.amethyst_block.resonate|1.0|1.0" # Configures the activate option.
+
+  SECURITY:
+    REQUIRE-ITEM-ID: true # Sets the identifier used to link this configuration.
+    BIND-TO-OWNER: false # Configures the bind to owner option.
+    CLICK-COOLDOWN-MS: 250 # Sets the cooldown before this action can run again.
+    BLOCK-HOPPER-PICKUP: true # Configures the block hopper pickup option.
+
+  # ── Amethyst Drill ────────────────────────────────────
+  DRILL:
+    MATERIAL: NETHERITE_PICKAXE # Sets the Bukkit material used here.
+    NAME: "&#9B59B6&lamethyst drill" # Sets the name text used here.
+    LORE:
+      - "&#BDC3C7breaks &d9 blocks &7per strike"
+      - "&#BDC3C7powered by amethyst energy"
+      - ""
+      - "&#9B59B6✦ self destruct"
+      - "&#BDC3C7{time}"
+    ENCHANTMENTS:
+      - "efficiency:5"
+      - "unbreaking:3"
+      - "fortune:3"
+    RADIUS: 1 # Sets the radius used for this check or effect.
+    DISABLED-BLOCKS:
+      - DIRT
+      - GRASS_BLOCK
+      - COARSE_DIRT
+      - ROOTED_DIRT
+      - PODZOL
+      - SAND
+      - RED_SAND
+      - GRAVEL
+      - SPAWNER
+      - BEDROCK
+      - OBSIDIAN
+      - CRYING_OBSIDIAN
+      - END_PORTAL_FRAME
+      - FARMLAND
+      - SOUL_SAND
+      - SOUL_SOIL
+    DURATION: 86400 # Sets how long this behavior lasts.
+    SHARD-SHOP:
+      ENABLED: false # Enable to add this tool to /shardshop.
+      SLOT: 0
+      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
+      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      MIN-QUANTITY: 1
+      MAX-QUANTITY: 1
+      DEFAULT-QUANTITY: 1
+      HIDE-QUANTITY-BUTTONS: true
+
+  # ── Amethyst Tree Chopper ─────────────────────────────
+  CHOPPER:
+    MATERIAL: NETHERITE_AXE # Sets the Bukkit material used here.
+    NAME: "&#9B59B6&lamethyst tree chopper" # Sets the name text used here.
+    LORE:
+      - "&#BDC3C7chops entire trees &dinstantly"
+      - "&#BDC3C7vein-style breaking"
+      - ""
+      - "&#9B59B6✦ self destruct"
+      - "&#BDC3C7{time}"
+    ENCHANTMENTS:
+      - "efficiency:10"
+      - "unbreaking:3"
+    MAX-LOGS: 128 # Sets the allowed limit for this option.
+    LOG-BLOCKS:
+      - OAK_LOG
+      - SPRUCE_LOG
+      - BIRCH_LOG
+      - JUNGLE_LOG
+      - ACACIA_LOG
+      - DARK_OAK_LOG
+      - CHERRY_LOG
+      - MANGROVE_LOG
+      - CRIMSON_STEM
+      - WARPED_STEM
+      - STRIPPED_OAK_LOG
+      - STRIPPED_SPRUCE_LOG
+      - STRIPPED_BIRCH_LOG
+      - STRIPPED_JUNGLE_LOG
+      - STRIPPED_ACACIA_LOG
+      - STRIPPED_DARK_OAK_LOG
+      - STRIPPED_CHERRY_LOG
+      - STRIPPED_MANGROVE_LOG
+      - STRIPPED_CRIMSON_STEM
+      - STRIPPED_WARPED_STEM
+    DURATION: 86400 # Sets how long this behavior lasts.
+    SHARD-SHOP:
+      ENABLED: false # Enable to add this tool to /shardshop.
+      SLOT: 1
+      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
+      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      MIN-QUANTITY: 1
+      MAX-QUANTITY: 1
+      DEFAULT-QUANTITY: 1
+      HIDE-QUANTITY-BUTTONS: true
+
+  # ── Amethyst Sell Axe ─────────────────────────────────
+  SELL-AXE:
+    MATERIAL: NETHERITE_AXE # Sets the Bukkit material used here.
+    NAME: "&#9B59B6&lamethyst sell axe" # Sets the name text used here.
+    LORE:
+      - "&#BDC3C7instantly sells all items in a chest"
+      - "&#BDC3C7right-click a chest to sell"
+      - ""
+      - "&#9B59B6✦ self destruct"
+      - "&#BDC3C7{time}"
+    ENCHANTMENTS:
+      - "efficiency:5"
+      - "unbreaking:3"
+    DURATION: 86400 # Sets how long this behavior lasts.
+    SHARD-SHOP:
+      ENABLED: false # Enable to add this tool to /shardshop.
+      SLOT: 2
+      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
+      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      MIN-QUANTITY: 1
+      MAX-QUANTITY: 1
+      DEFAULT-QUANTITY: 1
+      HIDE-QUANTITY-BUTTONS: true
+
+  # ── Amethyst Shovel ───────────────────────────────────
+  SHOVEL:
+    MATERIAL: NETHERITE_SHOVEL # Sets the Bukkit material used here.
+    NAME: "&#9B59B6&lamethyst shovel" # Sets the name text used here.
+    LORE:
+      - "&#BDC3C7breaks &d9 blocks &7per strike"
+      - "&#BDC3C7only for soft terrain blocks"
+      - ""
+      - "&#9B59B6✦ self destruct"
+      - "&#BDC3C7{time}"
+    ENCHANTMENTS:
+      - "efficiency:5"
+      - "unbreaking:3"
+      - "fortune:3"
+    RADIUS: 1 # Sets the radius used for this check or effect.
+    ALLOWED-BLOCKS:
+      - DIRT
+      - GRASS_BLOCK
+      - COARSE_DIRT
+      - PODZOL
+      - ROOTED_DIRT
+      - GRAVEL
+      - SAND
+      - RED_SAND
+      - CLAY
+      - SOUL_SAND
+      - SOUL_SOIL
+      - FARMLAND
+      - DIRT_PATH
+      - SNOW
+      - SNOW_BLOCK
+      - POWDER_SNOW
+      - MUD
+    DURATION: 86400 # Sets how long this behavior lasts.
+    SHARD-SHOP:
+      ENABLED: false # Enable to add this tool to /shardshop.
+      SLOT: 3
+      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
+      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      MIN-QUANTITY: 1
+      MAX-QUANTITY: 1
+      DEFAULT-QUANTITY: 1
+      HIDE-QUANTITY-BUTTONS: true
+
+  # ── Amethyst Bucket ───────────────────────────────────
+  BUCKET:
+    MATERIAL: BUCKET # Sets the Bukkit material used here.
+    NAME: "&#9B59B6&lamethyst bucket" # Sets the name text used here.
+    LORE:
+      - "&#BDC3C7drains &d27 water blocks &7at once"
+      - "&#BDC3C7right-click water to drain"
+      - ""
+      - "&#9B59B6✦ self destruct"
+      - "&#BDC3C7{time}"
+    DRAIN-RADIUS: 1 # Sets the radius used for this check or effect.
+    MAX-DRAIN: 27 # Sets the allowed limit for this option.
+    DURATION: 86400 # Sets how long this behavior lasts.
+    SHARD-SHOP:
+      ENABLED: false # Enable to add this tool to /shardshop.
+      SLOT: 4
+      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
+      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      MIN-QUANTITY: 1
+      MAX-QUANTITY: 1
+      DEFAULT-QUANTITY: 1
+      HIDE-QUANTITY-BUTTONS: true
+
+  # ── Shard Booster ─────────────────────────────────────
+  SHARD-BOOSTER:
+    MATERIAL: POTION # Sets the Bukkit material used here.
+    NAME: "&#9B59B6&lshard booster" # Sets the name text used here.
+    LORE:
+      - "&#BDC3C7&d4x &7shard multiplier"
+      - "&#BDC3C7duration: &d60 minutes"
+      - ""
+      - "&#BDC3C7drink to &dactivate"
+      - ""
+      - "&#9B59B6✦ self destruct"
+      - "&#BDC3C7{time}"
+    BOOSTER-DURATION: 3600 # Sets how long this behavior lasts.
+    DURATION: 3600 # Sets how long this behavior lasts.
+    SHARD-SHOP:
+      ENABLED: false # Enable to add this tool to /shardshop.
+      SLOT: 5
+      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
+      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      MIN-QUANTITY: 1
+      MAX-QUANTITY: 1
+      DEFAULT-QUANTITY: 1
+      HIDE-QUANTITY-BUTTONS: true
+
+# ── Messages ──────────────────────────────────────────────────────────────────
+# UDS setup: Messages sent by the amethyst tools system.
+AMETHYST-MESSAGES:
+  PREFIX: "&#9B59B6[ᴀᴍᴇᴛʜʏѕᴛ] &r" # Sets the text format used by this option.
+  EXPIRED:           "{prefix}&#BDC3C7ʏᴏᴜʀ &d{tool} &7ʜᴀѕ &cᴇxᴘɪʀᴇᴅ &7ᴀɴᴅ ѕᴇʟꜰ-ᴅᴇѕᴛʀᴜᴄᴛᴇᴅ!" # Configures the expired option.
+  EXCLUDED-WORLD:    "{prefix}&#BDC3C7ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟѕ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ." # Sets the world name used by this option.
+  DRILL-BREAK:       "{prefix}&#BDC3C7&dᴀᴍᴇᴛʜʏѕᴛ ᴅʀɪʟʟ &7ʙʀᴏᴋᴇ &d{count} &7ʙʟᴏᴄᴋѕ." # Configures the drill break option.
+  CHOP-BREAK:        "{prefix}&#BDC3C7&dᴀᴍᴇᴛʜʏѕᴛ ᴛʀᴇᴇ ᴄʜᴏᴘᴘᴇʀ &7ᴄʜᴏᴘᴘᴇᴅ &d{count} &7ʟᴏɢѕ." # Configures the chop break option.
+  SELL-SUCCESS:      "{prefix}&#BDC3C7ѕᴏʟᴅ ᴀʟʟ ᴄʜᴇѕᴛ ᴄᴏɴᴛᴇɴᴛѕ ꜰᴏʀ &a${amount}&7." # Configures the sell success option.
+  SELL-EMPTY:        "{prefix}&#BDC3C7ᴛʜᴀᴛ ᴄʜᴇѕᴛ ɪѕ ᴇᴍᴘᴛʏ ᴏʀ ʜᴀѕ ɴᴏ ѕᴇʟʟᴀʙʟᴇ ɪᴛᴇᴍѕ." # Configures the sell empty option.
+  SELL-FAILED:       "{prefix}&#BDC3C7ᴛʜᴇ ѕᴀʟᴇ ꜰᴀɪʟᴇᴅ. ɴᴏ ɪᴛᴇᴍѕ ᴡᴇʀᴇ ʀᴇᴍᴏᴠᴇᴅ." # Configures the sell transaction failure response.
+  SELL-NO-CHEST:     "{prefix}&#BDC3C7ʏᴏᴜ ᴍᴜѕᴛ ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ." # Configures the sell no chest option.
+  BUCKET-DRAIN:      "{prefix}&#BDC3C7ᴅʀᴀɪɴᴇᴅ &d{count} &7ᴡᴀᴛᴇʀ ʙʟᴏᴄᴋѕ." # Configures the bucket drain option.
+  BUCKET-NO-WATER:   "{prefix}&#BDC3C7ɴᴏ ᴡᴀᴛᴇʀ ʙʟᴏᴄᴋѕ ꜰᴏᴜɴᴅ ɴᴇᴀʀʙʏ." # Configures the bucket no water option.
+  BOOSTER-ACTIVATED: "{prefix}&#BDC3C7&dѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ &7ᴀᴄᴛɪᴠᴀᴛᴇᴅ! &d4x &7ѕʜᴀʀᴅѕ ꜰᴏʀ &d60 ᴍɪɴᴜᴛᴇѕ&7." # Configures the booster activated option.
+  BOOSTER-ALREADY:   "{prefix}&#BDC3C7ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ!" # Configures the booster already option.
+  NO-PERMISSION:     "{prefix}&#BDC3C7you do not have permission to use this item." # Sets the permission node required for this action.
+  WRONG-OWNER:       "{prefix}&#BDC3C7ᴛʜɪѕ ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ ɪѕ ʙᴏᴜɴᴅ ᴛᴏ ᴀɴᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀ." # Configures the wrong owner option.
+  GIVE-SUCCESS:      "{prefix}&#BDC3C7ɢᴀᴠᴇ &d{type} &7ᴛᴏ &d{player}&7." # Configures the give success option.
+  GIVE-USAGE:        "{prefix}&#BDC3C7ᴜѕᴀɢᴇ: &d/amethysttool ɢɪᴠᴇ <player> <type> [ᴅᴜʀᴀᴛɪᴏɴ_ѕᴇᴄᴏɴᴅѕ]" # Configures the give usage option.
+  GIVE-INVALID-TYPE: "{prefix}&#BDC3C7ɪɴᴠᴀʟɪᴅ ᴛᴏᴏʟ ᴛʏᴘᴇ. ᴛʏᴘᴇѕ: ᴅʀɪʟʟ, ᴄʜᴏᴘᴘᴇʀ, ѕᴇʟʟ_ᴀxᴇ, ѕʜᴏᴠᴇʟ, ʙᴜᴄᴋᴇᴛ, ѕʜᴀʀᴅ_ʙᴏᴏѕᴛᴇʀ" # Selects the mode or type used by this option.
+  RELOAD-SUCCESS:    "{prefix}&#BDC3C7ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ." # Configures the reload success option.

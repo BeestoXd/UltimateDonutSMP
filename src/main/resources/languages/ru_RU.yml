@@ -1,0 +1,3990 @@
+META:
+  NAME: Русский
+ORDERS:
+  DISABLED: "&cЗаказы сейчас отключены."
+  RELOADED: "&aКонфигурация заказов перезагружена."
+  ORDER_NOT_FOUND: "&cЭтот заказ больше не существует."
+  ORDER_NOT_ACTIVE: "&cЭтот заказ больше не активен."
+  CANNOT_DELIVER_OWN: "&cНельзя доставлять предметы в собственный заказ."
+  NO_MATCHING_ITEMS: "&cПодходящие предметы не найдены."
+  ORDER_FULL: "&cЭтот заказ уже выполнен."
+  DELIVERY_SUCCESS: "&aДоставлено &e{quantity} {item}&a, получено &a{payout}&a."
+  CANCELLED: "&eЗаказ #{order_id} отменён. Остаток депозита доступен для получения."
+  BATCH_COLLECTED: "&aПолучено заявок: {claims} ({items} предметов, возврат {refund}). &cОшибок: {failed}."
+  GUI:
+    MAIN:
+      TITLE: "&8Заказы"
+    MY_ORDERS:
+      TITLE: "&8Заказы -> Мои заказы"
+    SELECT_ITEM:
+      TITLE: "&8Заказы -> Выбор предмета"
+    SEARCH_ITEM:
+      TITLE: "&8Заказы -> Поиск предмета"
+    INVENTORY_ITEM:
+      TITLE: "&8Заказы -> Выбор предмета"
+    NEW_ORDER:
+      TITLE: "&8Заказы -> Новый заказ"
+    EDIT_ORDER:
+      TITLE: "&8Заказы -> Изменить заказ"
+    DEPOSIT:
+      TITLE: "&8Заказы -> Доставка предметов"
+    CONFIRM:
+      TITLE: "&8Заказы -> Подтвердить доставку"
+    DELETE:
+      TITLE: "&8Заказы -> Отменить заказ"
+    COLLECT:
+      TITLE: "&8Заказы -> Получить"
+  BEDROCK:
+    MAIN:
+      TITLE: "Заказы"
+      CONTENT: "Просмотр открытых заказов."
+      SEARCHING: "Поиск: {query}"
+    MY:
+      TITLE: "Мои заказы"
+      CONTENT: "Выберите заказ для управления."
+    COLLECT:
+      TITLE: "Получить"
+      CONTENT: "Ожидающие заявки: {count}"
+    SEARCH:
+      TITLE: "Поиск заказов"
+      INPUT: "Предмет, владелец или категория"
+    ITEMS:
+      TITLE: "Выбор предмета"
+      CONTENT: "Выберите предмет для заказа."
+    NEW:
+      TITLE: "Новый заказ"
+      AMOUNT: "Количество"
+      PRICE: "Цена за предмет"
+    DELIVERY:
+      TITLE: "Доставка предметов"
+      AMOUNT: "Количество (макс. {max})"
+    CANCEL:
+      TITLE: "Отменить заказ"
+      CONTENT: "Отменить заказ #{id}? Остаток депозита будет возвращён."
+    BUTTON:
+      SEARCH: "Поиск"
+      NEW: "Новый заказ"
+      MY: "Мои заказы"
+      COLLECT: "Получить"
+      BACK: "Назад"
+      COLLECT_ALL: "Получить всё"
+      DROP_ITEMS: "Выбросить предметы"
+      COLLECT_ORDER: "Получить этот заказ"
+      CANCEL_ORDER: "Отменить заказ"
+      CONFIRM: "Подтвердить"
+COMMON:
+  ENABLED: Включено
+  DISABLED: Отключено
+  ACTIVE: Активный
+  INACTIVE: Неактивный
+TIME:
+  SEPARATOR: ' '
+  UNITS:
+    DAY_SHORT: д
+    HOUR_SHORT: ч
+    MINUTE_SHORT: м
+    SECOND_SHORT: с
+DISPLAY:
+  STATUSES:
+    ACTIVE: Активный
+    SOLD: Продано
+    CANCELLED: Отменено
+    EXPIRED: Срок действия истек
+  SORTS:
+    NEWEST: Сначала новые
+    PRICE_LOWEST: 'Цена: по возрастанию'
+    PRICE_HIGHEST: 'Цена: по убыванию'
+    EXPIRING_SOON: Скоро истекают
+    OLDEST: Сначала старые
+  ORDER_SORTS:
+    MOST_PAID: Самая высокая оплата
+    MOST_DELIVERED: Больше всего доставлено
+    RECENTLY_LISTED: Недавно размещённые
+    MOST_MONEY_PER_ITEM: Самая высокая оплата за предмет
+  ORDER_STATUSES:
+    ACTIVE: Активен
+    FILLED: Выполнен
+    EXPIRED: Истёк
+    CANCELLED: Отменён
+MENUS:
+  GLOBAL:
+    PAGE-MENU:
+      NEXT-BUTTON: '&aДалее'
+      BACK-BUTTON: '&aНазад'
+      FIRST-PAGE-BUTTON: '&aПервая страница'
+      LAST-PAGE-BUTTON: '&aПоследняя страница'
+      NEXT-LORE:
+      - '&fᴄʟɪᴄᴋ ᴛᴏ ɢᴏ ᴛᴏ ᴛʜᴇ ɴᴇxᴛ ᴘᴀɢᴇ'
+      BACK-LORE:
+      - '&fᴄʟɪᴄᴋ ᴛᴏ ɢᴏ ᴛᴏ ᴛʜᴇ ᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ'
+      FIRST-PAGE-LORE:
+      - '&fᴊᴜᴍᴘ ᴛᴏ ᴛʜᴇ ꜰɪʀѕᴛ ᴘᴀɢᴇ'
+      LAST-PAGE-LORE:
+      - '&fᴊᴜᴍᴘ ᴛᴏ ᴛʜᴇ ʟᴀѕᴛ ᴘᴀɢᴇ'
+  COMMON:
+    PREVIOUS:
+      NAME: '&aПредыдущая страница'
+      LORE:
+      - '&7Перейти на страницу &f{page}'
+    NEXT:
+      NAME: '&aСледующая страница'
+      LORE:
+      - '&7Перейти на страницу &f{page}'
+    REFRESH:
+      NAME: '&eОбновить'
+    CLOSE:
+      NAME: '&cЗакрыть'
+      LORE:
+      - '&7Закрыть это меню'
+    PAGE:
+      NAME: '&eСтраница {page}&7/&e{pages}'
+  AUCTION_HOUSE:
+    BROWSE:
+      REFRESH_LORE:
+      - '&7Обновить активные объявления'
+      SORT_NAME: '&aСортировка: &f{sort}'
+      SORT_LORE:
+      - '&7Нажмите, чтобы переключить режим сортировки'
+      MY_LISTINGS_NAME: '&bМои лоты'
+      MY_LISTINGS_LORE:
+      - '&7Просмотр ваших активных объявлений'
+      CLAIMS_NAME: '&dПолучение'
+      CLAIMS_LORE:
+      - '&7Заявить о проданных деньгах и возвращенных товарах'
+      PAGE_LORE:
+      - '&7Активные объявления: &f{count}'
+      CLOSE_LORE:
+      - '&7Закрыть аукционный дом'
+      EMPTY_NAME: '&cНет активных лотов'
+      EMPTY_LORE:
+      - '&7Используйте &f/ah, продайте <price> &7, чтобы создать его.'
+    MY_LISTINGS:
+      BACK_NAME: '&bВернуться на рынок'
+      BACK_LORE:
+      - '&7Вернуться на основной рынок'
+      REFRESH_LORE:
+      - '&7Обновите активные объявления'
+      SORT_NAME: '&aСортировка: &f{sort}'
+      SORT_LORE:
+      - '&7Нажмите, чтобы переключить режим сортировки'
+      CLAIMS_NAME: '&dПолучение'
+      CLAIMS_LORE:
+      - '&7Откройте очередь претензий'
+      PAGE_LORE:
+      - '&7Ваши активные объявления: &f{count}'
+      EMPTY_NAME: '&cНет активных лотов'
+      EMPTY_LORE:
+      - '&7Используйте &f/ah для продажи <price> &7, чтобы создать свой первый листинг.'
+    CLAIMS:
+      BACK_NAME: '&bВернуться на рынок'
+      BACK_LORE:
+      - '&7Вернуться в аукционный дом'
+      MY_LISTINGS_NAME: '&bМои лоты'
+      MY_LISTINGS_LORE:
+      - '&7Управляйте своими активными объявлениями'
+      REFRESH_LORE:
+      - '&7Обновите очередь заявок.'
+      PAGE_LORE:
+      - '&7Ожидающие претензии: &f{count}'
+      EMPTY_NAME: '&cНет ожидающих получений'
+      EMPTY_LORE:
+      - '&7Проданные выплаты и возвращенные товары будут отображаться здесь.'
+    LISTING:
+      TITLE: '&8Аукцион #{id}'
+      BACK_NAME: '&cНазад'
+      BACK_LORE:
+      - '&7Возврат в предыдущее меню'
+      NOT_FOUND_NAME: '&cЛот не найден'
+      NOT_FOUND_LORE:
+      - '&7Этого объявления больше не существует.'
+      INFO_NAME: '&bИнформация о лоте'
+      INFO_LORE:
+      - '&7ɪᴅ: &f#{id}'
+      - '&7Продавец: &f{seller}'
+      - '&7Статус: &f{status}'
+      - '&7Цена: {price}'
+      TIMING_NAME: '&eВремя'
+      TIMING_LORE:
+      - '&7Создано: &f{created}'
+      - '&7Осталось времени: &f{time}'
+      - '&7Выплата продавцу: {payout}'
+      UNAVAILABLE_NAME: '&cЛот недоступен'
+      UNAVAILABLE_LORE:
+      - '&7Это объявление больше не активно.'
+      CANCEL_NAME: '&cОтменить лот'
+      CANCEL_LORE:
+      - '&7Переместите это объявление в очередь претензий.'
+      - ''
+      - '&eНажмите, чтобы отменить'
+      BUY_NAME: '&aКупить лот'
+      BUY_LORE:
+      - '&7Цена: {price}'
+      - '&7ɪᴛᴇᴍ: &f{item}'
+      - ''
+      - '&eНажмите, чтобы купить'
+    ENTRY:
+      LISTING_LORE:
+      - ''
+      - '&7Продавец: &f{seller}'
+      - '&7Цена: {price}'
+      - '&7Вы получаете: {payout}'
+      - '&7Осталось времени: &f{time}'
+      - '&7Идентификатор листинга: &f#{id}'
+      - ''
+      MANAGE: '&eНажмите для управления'
+      BUY: '&eНажмите для покупки'
+      MONEY_CLAIM_NAME: Получение {money_color}{money_name}
+      MONEY_CLAIM_LORE:
+      - '&7ᴀᴍᴏᴜɴᴛ: {amount}'
+      - '&7Исходный список: &f#{id}'
+      - ''
+      - '&eНажмите, чтобы подать заявку'
+      ITEM_CLAIM_LORE:
+      - ''
+      - '&7Тип претензии: &fВозвращенный товар'
+      - '&7Исходный список: &f#{id}'
+      - '&7Создано: &f{created}'
+      - ''
+      - '&eНажмите, чтобы подать заявку'
+      MISSING_NAME: '&cПредмет отсутствует'
+      MISSING_LORE:
+      - '&7Эта запись не содержит данных об элементе.'
+  TEAM-MENUS:
+    TEAM:
+      TITLE: '&8ᴛᴇᴀᴍ'
+      PLAYER-BUTTON:
+        LORE: '&fᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ'
+      SEARCH-BUTTON:
+        TITLE: '&#6BF18Dѕᴇᴀʀᴄʜ'
+        LORE:
+        - '&fѕᴇᴀʀᴄʜ ꜰᴏʀ ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀѕ'
+        - '&cɪɴ ᴅᴇᴠᴇʟᴏᴘᴍᴇɴᴛ.'
+      SORT-BUTTON:
+        TITLE: '&aѕᴏʀᴛ'
+      REFRESH-BUTTON:
+        TITLE: '&#6BF18Dᴛᴇᴀᴍ {team_name}'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ'
+        - '&7ᴀᴅᴅ ᴜᴘ ᴛᴏ {max_members} ᴍᴇᴍʙᴇʀѕ'
+      HOME-BUTTON:
+        TITLE: '&#6BF18Dᴛᴇᴀᴍ ʜᴏᴍᴇ'
+        HOME-LORE: '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ''ѕ ʜᴏᴍᴇ'
+        NO-HOME-LORE: '&fѕᴇᴛ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ ᴡɪᴛʜ /home'
+      PVP-BUTTON:
+        TITLE: '&#6BF18Dᴘᴠᴘ'
+        ON-STATE: '&a&lᴏɴ'
+        OFF-STATE: '&c&lᴏꜰꜰ'
+        LORE: '&fᴄᴜʀʀᴇɴᴛʟʏ: {state}'
+    TEAM-EDIT-MEMBER:
+      TITLE: '&8ᴇᴅɪᴛ {player}'
+      EDIT-HOME-BUTTON:
+        TITLE: '&#6BF18Dᴇᴅɪᴛ ʜᴏᴍᴇ'
+        ON-STATE: '&a&lᴏɴ'
+        OFF-STATE: '&c&lᴏꜰꜰ'
+        LORE:
+        - '&fʟᴇᴛ {player} ѕᴇᴛ ᴀɴᴅ ʀᴇᴍᴏᴠᴇ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ'
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {state}'
+      KICK-BUTTON:
+        TITLE: '&#6BF18Dᴋɪᴄᴋ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴋɪᴄᴋ {player}'
+      MANAGE-TEAMMATES-BUTTON:
+        TITLE: '&#6BF18Dᴍᴀɴᴀɢᴇ ᴛᴇᴀᴍᴍᴀᴛᴇѕ'
+        ON-STATE: '&a&lᴏɴ'
+        OFF-STATE: '&c&lᴏꜰꜰ'
+        LORE:
+        - '&fʟᴇᴛ {player} ɪɴᴠɪᴛᴇ ᴀɴᴅ ᴋɪᴄᴋ ᴛᴇᴀᴍᴍᴀᴛᴇѕ'
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {state}'
+      PVP-BUTTON:
+        TITLE: '&#6BF18Dᴘᴠᴘ'
+        ON-STATE: '&a&lᴏɴ'
+        OFF-STATE: '&c&lᴏꜰꜰ'
+        LORE:
+        - '&fʟᴇᴛ {player} ᴛᴜʀɴ ᴏɴ ᴀɴᴅ ᴏꜰꜰ ᴛᴇᴀᴍ ᴘᴠᴘ'
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {state}'
+      VISIT-HOME-BUTTON:
+        TITLE: '&#6BF18Dᴠɪѕɪᴛ ᴛᴇᴀᴍ ʜᴏᴍᴇ'
+        ON-STATE: '&a&lᴏɴ'
+        OFF-STATE: '&c&lᴏꜰꜰ'
+        LORE:
+        - '&fʟᴇᴛ {player} ɢᴏ ᴛᴏ ᴛᴇᴀᴍ ʜᴏᴍᴇ'
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {state}'
+      TEAM-CHAT-BUTTON:
+        TITLE: '&#6BF18Dᴛᴇᴀᴍ ᴄʜᴀᴛ'
+        ON-STATE: '&a&lᴏɴ'
+        OFF-STATE: '&c&lᴏꜰꜰ'
+        LORE:
+        - '&fʟᴇᴛ {player} ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ'
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {state}'
+      BACK-BUTTON:
+        TITLE: '&cʙᴀᴄᴋ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ʀᴇᴛᴜʀɴ'
+    TEAM-KICK-MEMBER:
+      TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴋɪᴄᴋɪɴɢ {player}'
+      CANCEL-BUTTON:
+        TITLE: '&#FC0000ᴄᴀɴᴄᴇʟ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ'
+      CONFIRM-BUTTON:
+        TITLE: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴋɪᴄᴋ {player}'
+    TEAM-DISBAND:
+      TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴅɪѕʙᴀɴᴅɪɴɢ ᴛᴇᴀᴍ'
+      CANCEL-BUTTON:
+        TITLE: '&#FC0000ᴄᴀɴᴄᴇʟ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ'
+      CONFIRM-BUTTON:
+        TITLE: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ'
+  HOME-MENU-LEGACY:
+    TITLE: '&8ʜᴏᴍᴇѕ'
+    TELEPORT:
+      HOME-1:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 1'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ'
+      HOME-2:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 2'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ'
+      HOME-3:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 3'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ'
+      HOME-4:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 4'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ'
+      HOME-5:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 5'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ'
+    CREATE:
+      HOME-1:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 1'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+      HOME-2:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 2'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+      HOME-3:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 3'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+      HOME-4:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 4'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+      HOME-5:
+        DISPLAY-NAME:
+          NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
+          USED: '&bʜᴏᴍᴇ 5'
+        LORE:
+          NO-USED: '&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ'
+          USED: '&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+  HOME-MENU:
+    TITLE: '&8ʜᴏᴍᴇѕ'
+    TELEPORT:
+      HOME-1:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&7ᴡᴏʀʟᴅ: &f{world}'
+          - '&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ'
+      HOME-2:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&7ᴡᴏʀʟᴅ: &f{world}'
+          - '&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ'
+      HOME-3:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&7ᴡᴏʀʟᴅ: &f{world}'
+          - '&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ'
+      HOME-4:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&7ᴡᴏʀʟᴅ: &f{world}'
+          - '&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ'
+      HOME-5:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&7ᴡᴏʀʟᴅ: &f{world}'
+          - '&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ'
+    CREATE:
+      HOME-1:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʀᴇɴᴀᴍᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+          - '&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ'
+      HOME-2:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʀᴇɴᴀᴍᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+          - '&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ'
+      HOME-3:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʀᴇɴᴀᴍᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+          - '&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ'
+      HOME-4:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʀᴇɴᴀᴍᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+          - '&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ'
+      HOME-5:
+        DISPLAY-NAME:
+          NO-USED: '&7{slot}'
+          USED: '&b{name}'
+        LORE:
+          NO-USED:
+          - '&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ.'
+          USED:
+          - '&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʀᴇɴᴀᴍᴇ ᴛʜɪѕ ʜᴏᴍᴇ'
+          - '&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ'
+  CONFIRM-MENU:
+    TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴅᴇʟᴇᴛᴇ'
+    CONFIRM-BUTTON:
+      DISPLAY-NAME: '&aᴄᴏɴꜰɪʀᴍ'
+      LORE:
+      - '&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ'
+    CANCEL-BUTTON:
+      DISPLAY-NAME: '&4ᴄᴀɴᴄᴇʟ'
+  STATS-MENU:
+    TITLE: '&8{username} ѕᴛᴀᴛѕ'
+    BUTTONS:
+      MONEY:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ'
+        LORE:
+        - '&7{value}'
+      SHARDS:
+        DISPLAY-NAME: '&#6BF18Dѕʜᴀʀᴅѕ'
+        LORE:
+        - '&7{value}'
+      KILLS:
+        DISPLAY-NAME: '&#6BF18Dᴋɪʟʟѕ'
+        LORE:
+        - '&7{value}'
+      DEATHS:
+        DISPLAY-NAME: '&#6BF18Dᴅᴇᴀᴛʜѕ'
+        LORE:
+        - '&7{value}'
+      PLAYTIME:
+        DISPLAY-NAME: '&#6BF18Dᴘʟᴀʏᴛɪᴍᴇ'
+        LORE:
+        - '&7{value}'
+      BLOCKS_PLACED:
+        DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ'
+        LORE:
+        - '&7{value}'
+      BLOCKS_BROKEN:
+        DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ'
+        LORE:
+        - '&7{value}'
+      MOBS_KILLED:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏʙѕ ᴋɪʟʟᴇᴅ'
+        LORE:
+        - '&7{value}'
+      KILL_STREAK:
+        DISPLAY-NAME: '&#6BF18Dᴋɪʟʟ ѕᴛʀᴇᴀᴋ'
+        LORE:
+        - '&7{value}'
+      HIGHEST_KILL_STREAK:
+        DISPLAY-NAME: '&#6BF18Dʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ'
+        LORE:
+        - '&7{value}'
+      MONEY_SPENT:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ'
+        LORE:
+        - '&7{value}'
+      MONEY_MADE:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /sell'
+        LORE:
+        - '&7{value}'
+  SETTINGS-MENU:
+    TITLE: '&8ѕᴇᴛᴛɪɴɢѕ'
+    BUTTONS:
+      PAY_ALERTS:
+        DISPLAY-NAME: '&#6BF18Dᴘᴀʏ ᴀʟᴇʀᴛѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      HOTBAR_MESSAGES:
+        DISPLAY-NAME: '&#6BF18Dʜᴏᴛʙᴀʀ ѕᴇʀᴠᴇʀ ᴍᴇѕѕᴀɢᴇѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      CLEAR_ENTITIES_MESSAGES:
+        DISPLAY-NAME: '&#6BF18Dᴄʟᴇᴀʀ ᴇɴᴛɪᴛɪᴇѕ ᴍᴇѕѕᴀɢᴇѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      BOUNTY_ALERTS:
+        DISPLAY-NAME: '&#6BF18Dʙᴏᴜɴᴛʏ ᴀʟᴇʀᴛѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      AMETHYST_BREAK_MESSAGES:
+        DISPLAY-NAME: '&#6BF18Dᴀᴍᴇᴛʜʏѕᴛ ʙʀᴇᴀᴋ ᴍᴇѕѕᴀɢᴇѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      KEY_ALL_NOTIFICATIONS:
+        DISPLAY-NAME: '&#6BF18Dᴋᴇʏ-ᴀʟʟ ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      CHAINMAIL_ON_RESPAWN:
+        DISPLAY-NAME: '&#6BF18Dᴄʜᴀɪɴᴍᴀɪʟ ᴏɴ ʀᴇѕᴘᴀᴡɴ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      SCOREBOARD_VISIBILITY:
+        DISPLAY-NAME: '&#6BF18Dѕᴄᴏʀᴇʙᴏᴀʀᴅ ᴠɪѕɪʙɪʟɪᴛʏ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      TPA_CONFIRM_MENUS:
+        DISPLAY-NAME: '&#6BF18Dᴛᴘᴀ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      LUNAR_TEAMMATES:
+        DISPLAY-NAME: '&#6BF18Dʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      TPA_REQUESTS:
+        DISPLAY-NAME: '&#6BF18Dᴛᴘᴀ ʀᴇϫᴜᴇѕᴛѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      TPA_HERE_REQUESTS:
+        DISPLAY-NAME: '&#6BF18Dᴛᴘᴀ ʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      TEAM_INVITES:
+        DISPLAY-NAME: '&#6BF18Dᴛᴇᴀᴍ ɪɴᴠɪᴛᴇѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      PAYMENTS:
+        DISPLAY-NAME: '&#6BF18Dᴘᴀʏᴍᴇɴᴛѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      TEAM_CHAT:
+        DISPLAY-NAME: '&#6BF18Dᴛᴇᴀᴍ ᴄʜᴀᴛ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      DISABLE_MOB_SPAWN:
+        DISPLAY-NAME: '&#6BF18Dᴅɪѕᴀʙʟᴇ ᴍᴏʙ ѕᴘᴀᴡɴѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      DISABLE_PHANTOM_SPAWN:
+        DISPLAY-NAME: '&#6BF18Dᴅɪѕᴀʙʟᴇ ᴘʜᴀɴᴛᴏᴍ ѕᴘᴀᴡɴ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      PAY_CONFIRM_MENUS:
+        DISPLAY-NAME: '&#6BF18Dᴘᴀʏ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      TP_AUTO:
+        DISPLAY-NAME: '&#6BF18Dᴛᴘ ᴀᴜᴛᴏ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      TOTEM_PARTICLES:
+        DISPLAY-NAME: '&#6BF18Dᴛᴏᴛᴇᴍ ᴘᴀʀᴛɪᴄʟᴇѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      DUEL_REQUESTS:
+        DISPLAY-NAME: '&#6BF18Dᴅᴜᴇʟ ʀᴇϫᴜᴇѕᴛѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      FAST_CRYSTALS:
+        DISPLAY-NAME: '&#6BF18Dꜰᴀѕᴛ ᴄʀʏѕᴛᴀʟѕ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+      WORTH_DISPLAY:
+        DISPLAY-NAME: '&#6BF18Dᴡᴏʀᴛʜ ᴅɪѕᴘʟᴀʏ'
+        LORE:
+        - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
+  LEADERBOARDS-MENU:
+    TITLE: '&8ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ'
+    TYPE-MENU:
+      TITLE: '&8{type}'
+      BUTTON:
+        DISPLAY-NAME: '&#6BF18D{player}'
+        LORE: '&f{type}: &7{value} &#6BF18D(#{position})'
+    BUTTONS:
+      MONEY:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏɴᴇʏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      SHARDS:
+        DISPLAY-NAME: '&#6BF18Dѕʜᴀʀᴅѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕʜᴀʀᴅѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      KILLS:
+        DISPLAY-NAME: '&#6BF18Dᴋɪʟʟѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴋɪʟʟѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DEATHS:
+        DISPLAY-NAME: '&#6BF18Dᴅᴇᴀᴛʜѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴅᴇᴀᴛʜѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      PLAYTIME:
+        DISPLAY-NAME: '&#6BF18Dᴘʟᴀʏᴛɪᴍᴇ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴘʟᴀʏᴛɪᴍᴇ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      BLOCKS_PLACED:
+        DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      BLOCKS_BROKEN:
+        DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      MOBS_KILLED:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏʙѕ ᴋɪʟʟᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏʙѕ ᴋɪʟʟᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      KILL_STREAK:
+        DISPLAY-NAME: '&#6BF18Dᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      HIGHEST_KILL_STREAK:
+        DISPLAY-NAME: '&#6BF18Dʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      MONEY_SPENT:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      MONEY_MADE:
+        DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /sell'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /sell ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+  PROGRESS-MENU:
+    WORKING-BUTTON:
+      TITLE: '&eᴡᴏʀᴋɪɴɢ'
+      LORE:
+      - '{porcentage_level} &f{next_multiplier} {porcentage}%'
+      - '&7{current_earned}/{next_goal}'
+    COMPLETED-BUTTON:
+      TITLE: '&aᴄᴏᴍᴘʟᴇᴛᴇᴅ'
+      LORE:
+      - '{porcentage_level} &f{next_multiplier} {porcentage}%'
+      - '&7{current_earned}/{next_goal}'
+  SELL-MENU:
+    TITLE: '&8ᴘʟᴀᴄᴇ ɪᴛᴇᴍѕ ɪɴ ʜᴇʀᴇ ᴛᴏ ѕᴇʟʟ'
+    MULTIPLIER-TITLE: '&8ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀѕ'
+    CROPS-BUTTON:
+      TITLE: '&#6BF18Dᴄʀᴏᴘѕ'
+      LORE:
+      - '&7ѕᴇʟʟ ᴄʀᴏᴘѕ ᴀɴᴅ ꜰᴀʀᴍɪɴɢ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    ORES-BUTTON:
+      TITLE: '&#6BF18Dᴏʀᴇѕ'
+      LORE:
+      - '&7ѕᴇʟʟ ᴏʀᴇѕ ᴀɴᴅ ᴍɪɴɪɴɢ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    MOBS-BUTTON:
+      TITLE: '&#6BF18Dᴍᴏʙѕ'
+      LORE:
+      - '&7ѕᴇʟʟ ᴍᴏʙ ᴅʀᴏᴘѕ ᴀɴᴅ ᴄᴏᴍʙᴀᴛ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    NATURAL-BUTTON:
+      TITLE: '&#6BF18Dɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ'
+      LORE:
+      - '&7ѕᴇʟʟ ɴᴀᴛᴜʀᴀʟ ᴍᴀᴛᴇʀɪᴀʟѕ ᴀɴᴅ ᴛʀᴇᴇѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    ARMOR-AND-TOOLS-BUTTON:
+      TITLE: '&#6BF18Dᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ'
+      LORE:
+      - '&7ѕᴇʟʟ ᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    FISH-BUTTON:
+      TITLE: '&#6BF18Dꜰɪѕʜ'
+      LORE:
+      - '&7ѕᴇʟʟ ꜰɪѕʜ ᴀɴᴅ ᴏᴛʜᴇʀ ꜰɪѕʜɪɴɢ ʟᴏᴏᴛ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    BOOK-BUTTON:
+      TITLE: '&#6BF18Dᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ'
+      LORE:
+      - '&7ѕᴇʟʟ ʙᴏᴏᴋѕ ᴀɴᴅ ᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    POTIONS-BUTTON:
+      TITLE: '&#6BF18Dᴘᴏᴛɪᴏɴѕ'
+      LORE:
+      - '&7ѕᴇʟʟ ᴘᴏᴛɪᴏɴѕ ᴀɴᴅ ʙʀᴇᴡɪɴɢ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+    BLOCKS-BUTTON:
+      TITLE: '&#6BF18Dʙʟᴏᴄᴋѕ'
+      LORE:
+      - '&7ѕᴇʟʟ ʙʟᴏᴄᴋѕ ᴀɴᴅ ᴘʟᴀᴄᴇᴀʙʟᴇ ɪᴛᴇᴍѕ ᴛᴏ'
+      - '&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!'
+      - ''
+      - '&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}'
+      - '{porcentage_level} &#6BF18D{porcentage} %'
+  WORTH-MENU:
+    TITLE: '&8ɪᴛᴇᴍ ᴘʀɪᴄᴇѕ'
+    FORMAT: '&7ᴡᴏʀᴛʜ: &a${price}'
+    SORT-BUTTON:
+      TITLE: '&aѕᴏʀᴛ'
+  TPA-CONFIRM-MENU:
+    TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴛᴘᴀ {here}'
+    BUTTONS:
+      CANCEL:
+        NAME: '&cᴄᴀɴᴄᴇʟ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ'
+      CONFIRM:
+        NAME: '&aᴄᴏɴꜰɪʀᴍ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ'
+      PLAYER:
+        NAME: '&#00FC00ᴘʟᴀʏᴇʀ'
+        LORE:
+        - '&7{player}'
+      LOCATION:
+        NAME: '&#6BF18Dʟᴏᴄᴀᴛɪᴏɴ'
+        LORE:
+        - '&7{world}'
+      REGION:
+        NAME: '&#6BF18Dʀᴇɢɪᴏɴ'
+        LORE:
+        - '&7ɴᴀ ᴇᴀѕᴛ (&#0069D6${ping}ᴍѕ&7)'
+  BOUNTIES-MENU:
+    TITLE: '&8ʙᴏᴜɴᴛɪᴇѕ'
+    BOUNTY-BUTTON:
+      NAME: '&#6BF18D{player}'
+      LORE:
+      - '&fʙᴏᴜɴᴛʏ: &7${price}'
+    REFRESH-BUTTON:
+      NAME: '&#6BF18Dʙᴏᴜɴᴛɪᴇѕ'
+      LORE:
+      - '&fᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ'
+      - ''
+      - '&7ѕᴇᴛ ᴀ ʙᴏᴜɴᴛʏ ᴜѕɪɴɢ ᴛʜɪѕ:'
+      - '&7/bounty добавить (игрок) (количество)'
+    SEARCH-BUTTON:
+      NAME: '&aПОИСК'
+      LORE:
+      - '&fНажмите, чтобы начать поиск'
+    SEARCH_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - Поиск
+      - ''
+      input-line: 0
+  BOUNTY-CONFIRM-MENU:
+    TITLE: '&8ᴄᴏɴꜰɪʀᴍ ʙᴏᴜɴᴛʏ'
+    CANCEL-BUTTON:
+      NAME: '&#FC0000ᴄᴀɴᴄᴇʟ'
+      LORE:
+      - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴛʜᴇ ʙᴏᴜɴᴛʏ ᴀᴅᴅɪɴɢ!'
+    PLAYER-BUTTON:
+      NAME: '&#00FC00{player}'
+      LORE:
+      - '&fʏᴏᴜ''ʀᴇ ɢᴏɪɴɢ ᴛᴏ ѕᴇᴛ &#00FC00{amount}'
+    CONFIRM-BUTTON:
+      NAME: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+      LORE:
+      - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛᴏ ᴀᴅᴅ {amount} ʙᴏᴜɴᴛʏ!'
+  SELL-HISTORY-MENU:
+    TITLE: '&8ѕᴇʟʟ ʜɪѕᴛᴏʀʏ'
+    BUTTONS:
+      SORT:
+        NAME: '&aѕᴏʀᴛ'
+        LORE:
+        - '&fᴄʟɪᴄᴋ ᴛᴏ ѕᴏʀᴛ'
+        - ''
+        - '&7({sort_state})'
+      MATERIAL-ITEM:
+        LORE:
+        - '&fᴛᴏᴛᴀʟ ᴘʀɪᴄᴇ: &a{price}'
+        - '&fᴛᴏᴛᴀʟ ᴀᴍᴏᴜɴᴛ: {amount}'
+  BILLFORD-MENU:
+    TITLE: '&8ʙɪʟʟꜰᴏʀᴅ'
+    TRADE-BUTTON:
+      MATERIAL:
+        NAME: '&atrade with billford'
+        LORE:
+        - ''
+    CONFIRM-TRADE-BUTTON:
+      NAME: '&8ᴛʀᴀᴅᴇ'
+      LORE:
+      - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛʜᴇ ᴛʀᴀᴅᴇ'
+      - ''
+      - '&7(ʏᴏᴜ ɴᴇᴇᴅ ᴛʜᴇ ɪᴛᴇᴍѕ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ)'
+  PURCHASE-SHOP-MENU:
+    TITLE: '&8ᴄᴏɴꜰɪʀᴍᴀᴛɪᴏɴ ᴍᴇɴᴜ'
+    BUTTONS:
+      CANCEL:
+        NAME: '&cᴄᴀɴᴄᴇʟ'
+        LORE: '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ'
+      CONFIRM:
+        NAME: '&aᴄᴏɴꜰɪʀᴍ'
+        LORE: '&fᴄʟɪᴄᴋ ᴛᴏ ʙᴜʏ'
+      QUANTITY_ADJUST:
+        ADD:
+          ADD_1:
+            NAME: '&aᴀᴅᴅ 1'
+          ADD_10:
+            NAME: '&aᴀᴅᴅ 10'
+          SET_64:
+            NAME: '&aѕᴇᴛ ᴛᴏ 64'
+        REMOVE:
+          REMOVE_1:
+            NAME: '&cʀᴇᴍᴏᴠᴇ 1'
+          REMOVE_10:
+            NAME: '&cʀᴇᴍᴏᴠᴇ 10'
+          REMOVE_64:
+            NAME: '&cʀᴇᴍᴏᴠᴇ 64'
+  PAY-CONFIRM-MENU:
+    TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴘᴀʏᴍᴇɴᴛ'
+    CONFIRM-BUTTON:
+      TITLE: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+      LORE:
+      - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛᴏ ᴘᴀʏ {amount}!'
+    CANCEL-BUTTON:
+      TITLE: '&#FC0000ᴄᴀɴᴄᴇʟ'
+      LORE:
+      - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ'
+    PLAYER-BUTTON:
+      TITLE: '&#00FC00{player}'
+  AFK-MENU:
+    TITLE: '&8ᴀꜰᴋ ᴀʀᴇᴀѕ'
+    RANDOM-BUTTON:
+      DISPLAY-NAME: '&#A303F9ᴀꜰᴋ'
+      LORE:
+      - '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴀ ʀᴀɴᴅᴏᴍ ᴀꜰᴋ ᴀʀᴇᴀ'
+  SPAWN-MENU:
+    TITLE: '&8ѕᴘᴀᴡɴ ᴀʀᴇᴀѕ'
+    RANDOM-BUTTON:
+      DISPLAY-NAME: '&#00A4FCѕᴘᴀᴡɴ'
+      LORE:
+      - '&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴀ ʀᴀɴᴅᴏᴍ ѕᴘᴀᴡɴ ᴀʀᴇᴀ'
+  PROFILE-VIEWER-MENU:
+    TITLE: '&8{username}''ѕ ᴘʀᴏꜰɪʟᴇ'
+    BUTTONS:
+      SUMMARY:
+        DISPLAY-NAME: '&#6BF18D{username}'
+        LORE:
+        - '&7ѕᴛᴀᴛᴜѕ: &f{status}'
+        - '&7ᴛᴇᴀᴍ: &f{team}'
+        - '&7ʜᴏᴍᴇѕ: &f{homes}'
+        - '&7ᴀꜰᴋ: &f{afk}'
+        - '&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} ({x}, {y}, {z})'
+      HOMES:
+        DISPLAY-NAME: '&#6BF18Dʜᴏᴍᴇѕ'
+        LORE:
+        - '&7ᴠɪᴇᴡ ᴀɴᴅ ɴᴀᴠɪɢᴀᴛᴇ ᴛʜʀᴏᴜɢʜ ᴛʜɪѕ ᴘʟᴀʏᴇʀ''ѕ ʜᴏᴍᴇѕ'
+        - '&7ʜᴏᴍᴇѕ ѕᴀᴠᴇᴅ: &f{homes}'
+        - '&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ'
+      CURRENT-LOCATION:
+        DISPLAY-NAME: '&#6BF18Dᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ'
+        DISPLAY-NAME-OFFLINE: '&cᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ'
+        LORE:
+        - '&7{world} ({x}, {y}, {z})'
+        - '&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ'
+        LORE-OFFLINE:
+        - '&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ ʀɪɢʜᴛ ɴᴏᴡ.'
+      PUNISHMENTS:
+        DISPLAY-NAME: '&#6BF18Dᴘᴜɴɪѕʜᴍᴇɴᴛѕ'
+        LORE:
+        - '&7ᴠɪᴇᴡ ᴛʜɪѕ ᴘʟᴀʏᴇʀ''ѕ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ'
+        - '&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ'
+      REFRESH:
+        DISPLAY-NAME: '&#6BF18Dʀᴇꜰʀᴇѕʜ'
+        LORE:
+        - '&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ''ѕ ᴘʀᴏꜰɪʟᴇ'
+  PROFILE-VIEWER-HOMES-MENU:
+    TITLE: '&8{username}''ѕ ʜᴏᴍᴇѕ'
+    HOME-BUTTON:
+      DISPLAY-NAME: '&b{name}'
+      LORE:
+      - '&7ᴡᴏʀʟᴅ: &f{world}'
+      - '&7x: &f{x} &7ʏ: &f{y} &7ᴢ: &f{z}'
+      - '&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ'
+    INVALID-HOME-BUTTON:
+      DISPLAY-NAME: '&c{name}'
+      LORE:
+      - '&7ᴛʜɪѕ ʜᴏᴍᴇ ᴘᴏɪɴᴛѕ ᴛᴏ ᴀɴ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ᴡᴏʀʟᴅ.'
+    EMPTY-BUTTON:
+      DISPLAY-NAME: '&cɴᴏ ʜᴏᴍᴇѕ'
+      LORE:
+      - '&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ʜᴀѕ ɴᴏ ʜᴏᴍᴇѕ ѕᴀᴠᴇᴅ.'
+    BACK-BUTTON:
+      DISPLAY-NAME: '&cʙᴀᴄᴋ'
+      LORE:
+      - '&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴍᴀɪɴ ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ'
+    REFRESH-BUTTON:
+      DISPLAY-NAME: '&#6BF18Dʀᴇꜰʀᴇѕʜ'
+      LORE:
+      - '&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ''ѕ ʜᴏᴍᴇѕ'
+  PUNISHMENT-HISTORY-MENU:
+    TITLE: '&8ᴘᴜɴɪѕʜᴍᴇɴᴛѕ ({player})'
+    BUTTONS:
+      BACK:
+        DISPLAY-NAME: '&cʙᴀᴄᴋ'
+        LORE:
+        - '&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴘʀᴇᴠɪᴏᴜѕ ᴍᴇɴᴜ'
+      FILTER-STATE:
+        DISPLAY-NAME: '&#6BF18Dѕᴛᴀᴛᴇ ꜰɪʟᴛᴇʀ'
+        LORE:
+        - '&7ᴄᴜʀʀᴇɴᴛ: &f{state_filter}'
+        - '&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ'
+      FILTER-TYPE:
+        DISPLAY-NAME: '&#6BF18Dᴛʏᴘᴇ ꜰɪʟᴛᴇʀ'
+        LORE:
+        - '&7ᴄᴜʀʀᴇɴᴛ: &f{type_filter}'
+        - '&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ'
+      REFRESH:
+        DISPLAY-NAME: '&#6BF18Dʀᴇꜰʀᴇѕʜ'
+        LORE:
+        - '&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ''ѕ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ'
+    PUNISHMENT-ITEM:
+      DISPLAY-NAME: '{status_color}{type}'
+      LORE:
+      - '&7ʀᴇᴀѕᴏɴ: &f{reason}'
+      - '&7ɪѕѕᴜᴇᴅ ʙʏ: &f{issuer}'
+      - '&7ᴅᴀᴛᴇ: &f{issued_at}'
+      - '&7ᴇxᴘɪʀᴇѕ: &f{expires_at}'
+      - '&7ѕᴛᴀᴛᴜѕ: {status_color}{status}'
+      - '&7ʀᴇᴍᴏᴠᴇᴅ ʙʏ: &f{removed_by}'
+      - '&7ʀᴇᴍᴏᴠᴀʟ ʀᴇᴀѕᴏɴ: &f{removal_reason}'
+      - '&7ʀᴇᴍᴏᴠᴇᴅ ᴀᴛ: &f{removed_at}'
+      - '&7ɪᴅ: &f#{id}'
+      - ''
+      - '&cЩелкните правой кнопкой мыши, удерживая клавишу ѕʜɪꜰᴛ.'
+    EMPTY-BUTTON:
+      DISPLAY-NAME: '&cɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ'
+      LORE:
+      - '&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ʜᴀѕ ɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅѕ.'
+  STATS-WIPE-MENU:
+    TITLE: '&8ѕᴛᴀᴛѕ ᴡɪᴘᴇ'
+    STATUS:
+      DISPLAY-NAME: '&cᴡɪᴘᴇ ɪɴ ᴘʀᴏɢʀᴇѕѕ'
+      LORE:
+      - '&7ᴀɴᴏᴛʜᴇʀ ᴡɪᴘᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ʀᴜɴɴɪɴɢ.'
+      - '&7ᴡᴀɪᴛ ꜰᴏʀ ɪᴛ ᴛᴏ ꜰɪɴɪѕʜ, ᴛʜᴇɴ ʀᴇꜰʀᴇѕʜ.'
+    BUTTONS:
+      PLAYER_STATS:
+        DISPLAY-NAME: '&#6BF18Dᴘʟᴀʏᴇʀ ѕᴛᴀᴛѕ'
+        LORE:
+        - '&7ᴘʟᴀʏᴇʀѕ ᴡɪᴛʜ ᴛʀᴀᴄᴋᴇᴅ ѕᴛᴀᴛѕ: &f{count}'
+        - '&cʀᴇѕᴇᴛ ᴋɪʟʟѕ, ᴅᴇᴀᴛʜѕ, ᴘʟᴀʏᴛɪᴍᴇ,'
+        - '&cʙʟᴏᴄᴋѕ, ᴍᴏʙѕ, ѕᴛʀᴇᴀᴋѕ, ᴀɴᴅ ᴍᴏɴᴇʏ ꜰʟᴏᴡ ѕᴛᴀᴛѕ.'
+      TEAM_DOCUMENTS:
+        DISPLAY-NAME: '&#6BF18Dᴛᴇᴀᴍ ᴅᴏᴄᴜᴍᴇɴᴛѕ'
+        LORE:
+        - '&7ᴛᴇᴀᴍѕ ѕᴛᴏʀᴇᴅ: &f{count}'
+        - '&cᴅᴇʟᴇᴛᴇ ᴀʟʟ ᴛᴇᴀᴍѕ ᴀɴᴅ ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀѕ.'
+      HOME_DOCUMENTS:
+        DISPLAY-NAME: '&#6BF18Dʜᴏᴍᴇ ᴅᴏᴄᴜᴍᴇɴᴛѕ'
+        LORE:
+        - '&7ʜᴏᴍᴇѕ ѕᴛᴏʀᴇᴅ: &f{count}'
+        - '&cᴅᴇʟᴇᴛᴇ ᴀʟʟ ѕᴀᴠᴇᴅ ᴘʟᴀʏᴇʀ ʜᴏᴍᴇѕ.'
+      BOUNTIES:
+        DISPLAY-NAME: '&#6BF18Dʙᴏᴜɴᴛɪᴇѕ'
+        LORE:
+        - '&7ᴀᴄᴛɪᴠᴇ ʙᴏᴜɴᴛɪᴇѕ: &f{count}'
+        - '&cᴅᴇʟᴇᴛᴇ ᴀʟʟ ᴀᴄᴛɪᴠᴇ ʙᴏᴜɴᴛɪᴇѕ.'
+      SELL_DOCUMENTS:
+        DISPLAY-NAME: '&#6BF18Dѕᴇʟʟ ᴅᴏᴄᴜᴍᴇɴᴛѕ'
+        LORE:
+        - '&7ѕᴇʟʟ ᴅᴏᴄѕ ѕᴛᴏʀᴇᴅ: &f{count}'
+        - '&cᴅᴇʟᴇᴛᴇ ѕᴇʟʟ ʜɪѕᴛᴏʀʏ ᴀɴᴅ ѕᴇʟʟ ᴘʀᴏɢʀᴇѕѕ.'
+      REFRESH:
+        DISPLAY-NAME: '&#6BF18Dʀᴇꜰʀᴇѕʜ'
+        LORE:
+        - '&7ᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ ᴡɪᴘᴇ ᴄᴏᴜɴᴛѕ.'
+      CLOSE:
+        DISPLAY-NAME: '&cᴄʟᴏѕᴇ'
+        LORE:
+        - '&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ.'
+  FEATURE-TOGGLE-MENU:
+    TITLE: '&8ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ'
+    DEFAULTS:
+      DISPLAY-NAME: '&#6BF18D{feature}'
+      LORE:
+      - '&7{description}'
+      - ''
+      - '&7ѕᴛᴀᴛᴜѕ: {state}'
+      - '&7ᴋᴇʏ: &f{feature_key}'
+      - ''
+      - '&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴏɢɢʟᴇ.'
+    BUTTONS:
+      PREVIOUS:
+        DISPLAY-NAME: '&aᴘʀᴇᴠɪᴏᴜѕ'
+        LORE:
+        - '&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{previous_page}&7.'
+      CLOSE:
+        DISPLAY-NAME: '&cᴄʟᴏѕᴇ'
+        LORE:
+        - '&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ.'
+      NEXT:
+        DISPLAY-NAME: '&aɴᴇxᴛ'
+        LORE:
+        - '&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{next_page}&7.'
+  STATS-WIPE-CONFIRM-MENU:
+    TITLE: '&8ᴄᴏɴꜰɪʀᴍ {target}'
+    BUTTONS:
+      TARGET:
+        DISPLAY-NAME: '&#6BF18D{target}'
+        LORE:
+        - '&7ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}'
+        - '&cᴛʜɪѕ ᴀᴄᴛɪᴏɴ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜɴᴅᴏɴᴇ.'
+        - '&7ᴄʟɪᴄᴋ ᴄᴏɴꜰɪʀᴍ ᴏɴʟʏ ɪꜰ ʏᴏᴜ ᴀʀᴇ ѕᴜʀᴇ.'
+      CANCEL:
+        DISPLAY-NAME: '&cᴄᴀɴᴄᴇʟ'
+        LORE:
+        - '&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ᴍᴇɴᴜ.'
+      CONFIRM:
+        DISPLAY-NAME: '&aᴄᴏɴꜰɪʀᴍ'
+        LORE:
+        - '&7ʀᴜɴ ᴡɪᴘᴇ ꜰᴏʀ &f{target}&7.'
+        - '&7ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}'
+  CONFIRM-KILL-MENU:
+    TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴋɪʟʟ'
+    CONFIRM-BUTTON:
+      TITLE: '&aᴄᴏɴꜰɪʀᴍ'
+      LORE:
+      - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ѕᴜɪᴄɪᴅᴇ.'
+    CANCEL-BUTTON:
+      TITLE: '&cᴄᴀɴᴄᴇʟ'
+      LORE:
+      - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴀɴᴅ ʟɪᴠᴇ.'
+    SKULL-BUTTON:
+      TITLE: '&cᴋɪʟʟ ʏᴏᴜʀѕᴇʟꜰ'
+      LORE:
+      - '&7ᴀʀᴇ ʏᴏᴜ ѕᴜʀᴇ ʏᴏᴜ ᴡᴀɴᴛ'
+      - '&7ᴛᴏ ᴇɴᴅ ʏᴏᴜʀ ʟɪꜰᴇ?'
+CONFIG:
+  AUCTION_HOUSE:
+    GUI:
+      BROWSE:
+        TITLE: '&8Аукцион'
+        SEARCH_SIGN:
+          lines:
+          - ''
+          - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+          - Поиск
+          - ''
+          input-line: 0
+        SHULKER:
+          ITEM_COUNT_LORE: '&bɪᴛᴇᴍѕ ɪɴѕɪᴅᴇ: &3{count}'
+          PREVIEW_LORE: '&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴘʀᴇᴠɪᴇᴡ'
+        CONTROLS:
+          PREVIOUS:
+            NAME: '&fᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ'
+            LORE: ['&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}']
+          SORT:
+            NAME: '&fᴘʀɪᴄᴇ ѕᴏʀᴛ'
+            LORE: ['&7ᴄᴜʀʀᴇɴᴛ: &e{sort}', '&8ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ']
+          FILTER:
+            NAME: '&fꜰɪʟᴛᴇʀ'
+            LORE: ['&7ᴄᴀᴛᴇɢᴏʀʏ: &e{category}', '&8ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ ᴄᴀᴛᴇɢᴏʀʏ']
+          REFRESH:
+            NAME: '&fᴀᴜᴄᴛɪᴏɴ'
+            LORE: ['&7ʀᴇꜰʀᴇѕʜ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ']
+          SEARCH:
+            NAME: '&fѕᴇᴀʀᴄʜ'
+            LORE: ['&7ᴄᴜʀʀᴇɴᴛ: &e{search}', '&8ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴀʀᴄʜ', '&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴇᴀʀ']
+          PLAYER_ITEMS:
+            NAME: '&fʏᴏᴜʀ ɪᴛᴇᴍѕ'
+            LORE: ['&7ᴠɪᴇᴡ ᴀᴄᴛɪᴠᴇ, ѕᴏʟᴅ, ᴇxᴘɪʀᴇᴅ, ᴀɴᴅ ᴄᴀɴᴄᴇʟʟᴇᴅ ʟɪѕᴛɪɴɢѕ']
+          NEXT:
+            NAME: '&fɴᴇxᴛ ᴘᴀɢᴇ'
+            LORE: ['&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}']
+          FILLER:
+            NAME: '&7 '
+      MY_LISTINGS:
+        TITLE: '&8Мои аукционы'
+      CLAIMS:
+        TITLE: '&8Получение с аукциона'
+      CATEGORIES:
+        ALL:
+          NAME: 'ᴀʟʟ'
+        BLOCKS:
+          NAME: 'ʙʟᴏᴄᴋѕ'
+        TOOLS:
+          NAME: 'ᴛᴏᴏʟѕ'
+        FOOD:
+          NAME: 'ꜰᴏᴏᴅ'
+        COMBAT:
+          NAME: 'ᴄᴏᴍʙᴀᴛ'
+        POTIONS:
+          NAME: 'ᴘᴏᴛɪᴏɴѕ'
+        BOOKS:
+          NAME: 'ʙᴏᴏᴋѕ'
+        INGREDIENTS:
+          NAME: 'ɪɴɢʀᴇᴅɪᴇɴᴛѕ'
+        UTILITIES:
+          NAME: 'ᴜᴛɪʟɪᴛɪᴇѕ'
+      SORT_NAMES:
+        NEWEST:
+          NAME: 'ɴᴇᴡᴇѕᴛ'
+        OLDEST:
+          NAME: 'ᴏʟᴅᴇѕᴛ'
+        PRICE_LOWEST:
+          NAME: 'ᴘʀɪᴄᴇ ʟᴏᴡᴇѕᴛ'
+        PRICE_HIGHEST:
+          NAME: 'ᴘʀɪᴄᴇ ʜɪɢʜᴇѕᴛ'
+        EXPIRING_SOON:
+          NAME: 'ᴇxᴘɪʀɪɴɢ ѕᴏᴏɴ'
+      TEXT:
+        UNLIMITED:
+          NAME: 'ᴜɴʟɪᴍɪᴛᴇᴅ'
+        ENABLED:
+          NAME: '&aᴇɴᴀʙʟᴇᴅ'
+        DISABLED:
+          NAME: '&cᴅɪѕᴀʙʟᴇᴅ'
+        FAST_BUY:
+          NAME: 'ꜰᴀѕᴛ ʙᴜʏ'
+        FAST_SELL:
+          NAME: 'ꜰᴀѕᴛ ѕᴇʟʟ'
+        NONE:
+          NAME: 'ɴᴏɴᴇ'
+        SELECTED:
+          NAME: '&aѕᴇʟᴇᴄᴛᴇᴅ'
+        CLICK_TO_SELECT:
+          NAME: '&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ'
+        EXPIRED:
+          NAME: 'ᴇxᴘɪʀᴇᴅ'
+        DURATION_WEEK:
+          NAME: '{value} ᴡᴇᴇᴋ'
+        DURATION_WEEKS:
+          NAME: '{value} ᴡᴇᴇᴋѕ'
+        DURATION_DAY:
+          NAME: '{value} ᴅᴀʏ'
+        DURATION_DAYS:
+          NAME: '{value} ᴅᴀʏѕ'
+        DURATION_HOUR:
+          NAME: '{value} ʜᴏᴜʀ'
+        DURATION_HOURS:
+          NAME: '{value} ʜᴏᴜʀѕ'
+      FILTER:
+        TITLE: '&8ᴄᴀᴛᴇɢᴏʀʏ ꜰɪʟᴛᴇʀ'
+        CATEGORY:
+          NAME: '{category}'
+          LORE: ['{state}']
+        CLEAR:
+          NAME: '&cᴄʟᴇᴀʀ ꜰɪʟᴛᴇʀ'
+          LORE: ['&7ѕʜᴏᴡ ᴀʟʟ ʟɪѕᴛɪɴɢѕ']
+      CONFIRM_PURCHASE:
+        TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴘᴜʀᴄʜᴀѕᴇ'
+        CONFIRM:
+          NAME: '&aᴄᴏɴꜰɪʀᴍ ᴘᴜʀᴄʜᴀѕᴇ'
+          LORE: ['&7ᴘʀɪᴄᴇ: {price}', '&eᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀѕᴇ']
+        CANCEL:
+          NAME: '&cᴄᴀɴᴄᴇʟ'
+          LORE: ['&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ']
+      SELL:
+        TITLE: '&8ѕᴇʟʟ ɪᴛᴇᴍ'
+        SUMMARY:
+          NAME: '&6ʟɪѕᴛɪɴɢ ѕᴜᴍᴍᴀʀʏ'
+          LORE: ['&7ᴘʀɪᴄᴇ: {price}', '&7ᴅᴜʀᴀᴛɪᴏɴ: &f{duration}', '&7ᴄᴀᴛᴇɢᴏʀʏ: &f{category}']
+        DURATION:
+          NAME: '{duration}'
+          LORE: ['{state}']
+        CATEGORY:
+          NAME: '{category}'
+          LORE: ['{state}']
+        CONFIRM:
+          NAME: '&aᴄᴏɴꜰɪʀᴍ ʟɪѕᴛɪɴɢ'
+          LORE: ['&7ᴘʀɪᴄᴇ: {price}', '&7ᴅᴜʀᴀᴛɪᴏɴ: &f{duration}', '&eᴄʟɪᴄᴋ ᴛᴏ ʟɪѕᴛ']
+        CANCEL:
+          NAME: '&cᴄᴀɴᴄᴇʟ'
+          LORE: ['&7ʀᴇᴛᴜʀɴ ᴛʜᴇ ɪᴛᴇᴍ ᴡɪᴛʜᴏᴜᴛ ʟɪѕᴛɪɴɢ']
+      PLAYER_ITEMS:
+        LISTING:
+          BASE_LORE: ['', '&7ᴘʀɪᴄᴇ: {price}', '&7ѕᴛᴀᴛᴜѕ: &f{status}']
+          ACTIVE_LORE: ['&7ᴛɪᴍᴇ ʀᴇᴍᴀɪɴɪɴɢ: &f{time}', '&eᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴛʜɪѕ ʟɪѕᴛɪɴɢ.']
+          SOLD_LORE: ['&aѕᴏʟᴅ ᴛᴏ ᴀɴᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀ.']
+          CANCELLED_LORE: ['&cᴄᴀɴᴄᴇʟʟᴇᴅ.']
+          EXPIRED_LORE: ['&cᴇxᴘɪʀᴇᴅ.']
+        STATUS:
+          ACTIVE:
+            NAME: 'ᴀᴄᴛɪᴠᴇ'
+          SOLD:
+            NAME: 'ѕᴏʟᴅ'
+          EXPIRED:
+            NAME: 'ᴇxᴘɪʀᴇᴅ'
+          CANCELLED:
+            NAME: 'ᴄᴀɴᴄᴇʟʟᴇᴅ'
+        CONTROLS:
+          PREVIOUS:
+            NAME: '&fᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ'
+            LORE: ['&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}']
+          BACK:
+            NAME: '&fʙᴀᴄᴋ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ'
+            LORE: ['&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʙʀᴏᴡѕᴇʀ']
+          REFRESH:
+            NAME: '&fʀᴇꜰʀᴇѕʜ'
+            LORE: ['&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴀᴜᴄᴛɪᴏɴ ʜɪѕᴛᴏʀʏ']
+          PAGE:
+            NAME: '&fᴘᴀɢᴇ {page}/{pages}'
+            LORE: ['&7ᴇɴᴛʀɪᴇѕ: &f{count}']
+          NEXT:
+            NAME: '&fɴᴇxᴛ ᴘᴀɢᴇ'
+            LORE: ['&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}']
+          FILLER:
+            NAME: '&7 '
+      SHULKER_PREVIEW:
+        TITLE: '&8ᴘʀᴇᴠɪᴇᴡ: {item}'
+        BACK:
+          NAME: '&fʙᴀᴄᴋ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ'
+          LORE: ['&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʙʀᴏᴡѕᴇʀ']
+      LISTING:
+        TITLE: '&8ᴀᴜᴄᴛɪᴏɴ #{id}'
+    RESTRICTIONS:
+      BLOCKED_IF_HAS_LORE_CONTAINS: []
+  BILLFORD:
+    ANNOUNCE_MESSAGE: '&6&l[billford] &etrade has rotated! &7new trade is live. &bnext
+      change in &f{countdown}&b.'
+    GUI:
+      TITLE: '&8&lʙɪʟʟꜰᴏʀᴅ &7ᴛʀᴀᴅᴇ'
+      INPUT_NAME: '&f{item}'
+      INPUT_LORE:
+      - '&7ᴄᴏѕᴛ: &f{amount} x &e{item}'
+      - ''
+      - '&8ᴍᴜѕᴛ ᴀʟʀᴇᴀᴅʏ ʙᴇ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ.'
+      REWARD_NAME: '&aʀᴇᴡᴀʀᴅ'
+      REWARD_LORE:
+      - '&7ʀᴇᴡᴀʀᴅ: &a{amount} x &f{item}'
+      - '{money_line}'
+      - '{shard_line}'
+      - ''
+      - '&8ɢʀᴀɴᴛᴇᴅ ᴡʜᴇɴ ᴛʜᴇ ᴛʀᴀᴅᴇ ѕᴜᴄᴄᴇᴇᴅѕ.'
+      COUNTDOWN_NAME: '&e{trade_name}'
+      COUNTDOWN_LORE:
+      - '&7ɴᴇxᴛ ʀᴏᴛᴀᴛɪᴏɴ: &b{countdown}'
+      - ''
+      - '&8ᴛʀᴀᴅᴇ &f{trade_id} &8ᴏꜰ &f{trade_count}'
+      INFO_NAME: '&6ᴛʀᴀᴅᴇ ɪɴꜰᴏ'
+      INFO_LIMITED_LORE:
+      - '&7ᴛʀᴀᴅᴇѕ: &f{used} &7/ &f{limit}'
+      - '{status_line}'
+      INFO_UNLIMITED_LORE:
+      - '&7ᴛʀᴀᴅᴇѕ ᴅᴏɴᴇ: &f{used}'
+      - '&aᴜɴʟɪᴍɪᴛᴇᴅ ᴛʀᴀᴅᴇѕ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ.'
+      CONFIRM_BUTTON:
+        NAME: '&a&lᴄᴏɴꜰɪʀᴍ ᴛʀᴀᴅᴇ'
+        LORE:
+        - '&7ʙʀɪɴɢ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ,'
+        - '&7ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴛᴏ ᴇxᴄʜᴀɴɢᴇ ᴛʜᴇᴍ.'
+        - ''
+        - '&a&lᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ'
+      LIMIT_BUTTON:
+        NAME: '&c&lʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ'
+        LORE:
+        - '&cʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ᴜѕᴇᴅ ᴛʜɪѕ ᴅᴇᴀʟ ᴇɴᴏᴜɢʜ'
+        - '&cꜰᴏʀ ᴛʜᴇ ᴄᴜʀʀᴇɴᴛ ʀᴏᴛᴀᴛɪᴏɴ.'
+        - '&7ᴄᴏᴍᴇ ʙᴀᴄᴋ ᴀꜰᴛᴇʀ ᴛʜᴇ ɴᴇxᴛ ʀᴇꜰʀᴇѕʜ.'
+  RTP:
+    MESSAGES:
+      DISABLED: '&cʀᴛᴘ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+      COOLDOWN: '&cʏᴏᴜ ᴄᴀɴ''ᴛ ʀᴛᴘ ꜰᴏʀ ᴀɴᴏᴛʜᴇʀ {remaining}ѕ.'
+      MAX-PLAYERS: '&cᴛᴏᴏ ᴍᴀɴʏ ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ᴜѕɪɴɢ ʀᴛᴘ ʀɪɢʜᴛ ɴᴏᴡ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.'
+      WORLD-NOT-EXIST: '&cᴛʜᴇ ᴡᴏʀʟᴅ ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ.'
+      SEARCHING: '&aѕᴇᴀʀᴄʜɪɴɢ ꜰᴏʀ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ɪɴ {world}...'
+      TP-WARNING: '&eᴅᴏ ɴᴏᴛ ᴍᴏᴠᴇ ꜰᴏʀ &b{countdown}&e ѕᴇᴄᴏɴᴅѕ ᴏʀ ᴛʜᴇ ᴛᴇʟᴇᴘᴏʀᴛ ᴡɪʟʟ
+        ʙᴇ ᴄᴀɴᴄᴇʟᴇᴅ.'
+      SEARCH-ACTIONBAR: '&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ'
+      SEARCH-FOUND-ACTIONBAR: '&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ɪɴ {world}! &7ᴘʀᴇᴘᴀʀɪɴɢ ᴛᴇʟᴇᴘᴏʀᴛ...'
+      SAFE-LOCATION-FOUND: '&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ᴀᴛ: x:{x} ʏ:{y} ᴢ:{z}'
+      MAX-ATTEMPTS: '&cНе удалось найти безопасное местоположение ʀᴛᴘ. &7Попытки:
+        &f{attempts}/{max_attempts} &8| &7Образцы: &f{samples}/{max_samples}'
+      DESTINATION-DISABLED: '&cᴛʜɪѕ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+      UNSAFE-LOCATION: '&cᴛʜᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ x:{x} ʏ:{y} ᴢ:{z} ᴡᴀѕ ʀᴇᴊᴇᴄᴛᴇᴅ: {reason}'
+    RTP-MENU:
+      TITLE: '&8ʀᴛᴘ ᴍᴇɴᴜ'
+      BUTTONS:
+        OVERWORLD:
+          DISPLAY-NAME: '&#4B72FFᴏᴠᴇʀᴡᴏʀʟᴅ'
+          LORE:
+          - '&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ'
+          - ''
+          - '&7ᴘʟᴀʏᴇʀѕ: &b{players}'
+          - '&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}'
+          - '&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ'
+        NETHER:
+          DISPLAY-NAME: '&#FF6B3Dɴᴇᴛʜᴇʀ'
+          LORE:
+          - '&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ'
+          - ''
+          - '&7ᴘʟᴀʏᴇʀѕ: &b{players}'
+          - '&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}'
+          - '&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ'
+        THE_END:
+          DISPLAY-NAME: '&#F3E38Aᴛʜᴇ ᴇɴᴅ'
+          LORE:
+          - '&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ'
+          - ''
+          - '&7ᴘʟᴀʏᴇʀѕ: &b{players}'
+          - '&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}'
+          - '&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ'
+  AMETHYST_TOOLS:
+    AMETHYST-TOOLS:
+      DRILL:
+        NAME: '&#9B59B6&lamethyst drill'
+        LORE:
+        - '&#BDC3C7breaks &d9 blocks &7per strike'
+        - '&#BDC3C7powered by amethyst energy'
+        - ''
+        - '&#9B59B6✦ self destruct'
+        - '&#BDC3C7{time}'
+        DISABLED-BLOCKS:
+        - ГРЯЗЬ
+        - grass_block
+        - coarse_dirt
+        - КОРНЕВАЯ_dirt
+        - ПОДЗОЛ
+        - ПЕСОК
+        - red_sand
+        - ГРАВИЙ
+        - СПВНЕР
+        - КОРЕНЬ
+        - ОБСИДИАН
+        - crying_obsidian
+        - end_portal_frame
+        - СЕЛЬСКОХОЗЯЙСТВЕННЫЕ ЗЕМЛИ
+        - soul_sand
+        - soul_soil
+      CHOPPER:
+        NAME: '&#9B59B6&lamethyst tree chopper'
+        LORE:
+        - '&#BDC3C7chops entire trees &dinstantly'
+        - '&#BDC3C7vein-style breaking'
+        - ''
+        - '&#9B59B6✦ self destruct'
+        - '&#BDC3C7{time}'
+      SELL-AXE:
+        NAME: '&#9B59B6&lamethyst sell axe'
+        LORE:
+        - '&#BDC3C7instantly sells all items in a chest'
+        - '&#BDC3C7right-click a chest to sell'
+        - ''
+        - '&#9B59B6✦ self destruct'
+        - '&#BDC3C7{time}'
+      SHOVEL:
+        NAME: '&#9B59B6&lamethyst shovel'
+        LORE:
+        - '&#BDC3C7breaks &d9 blocks &7per strike'
+        - '&#BDC3C7only for soft terrain blocks'
+        - ''
+        - '&#9B59B6✦ self destruct'
+        - '&#BDC3C7{time}'
+      BUCKET:
+        NAME: '&#9B59B6&lamethyst bucket'
+        LORE:
+        - '&#BDC3C7drains &d27 water blocks &7at once'
+        - '&#BDC3C7right-click water to drain'
+        - ''
+        - '&#9B59B6✦ self destruct'
+        - '&#BDC3C7{time}'
+      SHARD-BOOSTER:
+        NAME: '&#9B59B6&lshard booster'
+        LORE:
+        - '&#BDC3C7&d4x &7shard multiplier'
+        - '&#BDC3C7duration: &d60 minutes'
+        - ''
+        - '&#BDC3C7drink to &dactivate'
+        - ''
+        - '&#9B59B6✦ self destruct'
+        - '&#BDC3C7{time}'
+    AMETHYST-MESSAGES:
+      PREFIX: '&#9B59B6[ᴀᴍᴇᴛʜʏѕᴛ] &r'
+      EXPIRED: '{prefix}&#BDC3C7ʏᴏᴜʀ &d{tool} &7ʜᴀѕ &cᴇxᴘɪʀᴇᴅ &7ᴀɴᴅ ѕᴇʟꜰ-ᴅᴇѕᴛʀᴜᴄᴛᴇᴅ!'
+      EXCLUDED-WORLD: '{prefix}&#BDC3C7ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟѕ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ.'
+      DRILL-BREAK: '{prefix}&#BDC3C7&dᴀᴍᴇᴛʜʏѕᴛ ᴅʀɪʟʟ &7ʙʀᴏᴋᴇ &d{count} &7ʙʟᴏᴄᴋѕ.'
+      CHOP-BREAK: '{prefix}&#BDC3C7&dᴀᴍᴇᴛʜʏѕᴛ ᴛʀᴇᴇ ᴄʜᴏᴘᴘᴇʀ &7ᴄʜᴏᴘᴘᴇᴅ &d{count} &7ʟᴏɢѕ.'
+      SELL-SUCCESS: '{prefix}&#BDC3C7ѕᴏʟᴅ ᴀʟʟ ᴄʜᴇѕᴛ ᴄᴏɴᴛᴇɴᴛѕ ꜰᴏʀ &a${amount}&7.'
+      SELL-EMPTY: '{prefix}&#BDC3C7ᴛʜᴀᴛ ᴄʜᴇѕᴛ ɪѕ ᴇᴍᴘᴛʏ ᴏʀ ʜᴀѕ ɴᴏ ѕᴇʟʟᴀʙʟᴇ ɪᴛᴇᴍѕ.'
+      SELL-FAILED: '{prefix}&#BDC3C7ᴛʜᴇ ѕᴀʟᴇ ꜰᴀɪʟᴇᴅ. ɴᴏ ɪᴛᴇᴍѕ ᴡᴇʀᴇ ʀᴇᴍᴏᴠᴇᴅ.'
+      SELL-NO-CHEST: '{prefix}&#BDC3C7ʏᴏᴜ ᴍᴜѕᴛ ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ.'
+      BUCKET-DRAIN: '{prefix}&#BDC3C7ᴅʀᴀɪɴᴇᴅ &d{count} &7ᴡᴀᴛᴇʀ ʙʟᴏᴄᴋѕ.'
+      BUCKET-NO-WATER: '{prefix}&#BDC3C7ɴᴏ ᴡᴀᴛᴇʀ ʙʟᴏᴄᴋѕ ꜰᴏᴜɴᴅ ɴᴇᴀʀʙʏ.'
+      BOOSTER-ACTIVATED: '{prefix}&#BDC3C7&dѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ &7ᴀᴄᴛɪᴠᴀᴛᴇᴅ! &d4x &7ѕʜᴀʀᴅѕ
+        ꜰᴏʀ &d60 ᴍɪɴᴜᴛᴇѕ&7.'
+      BOOSTER-ALREADY: '{prefix}&#BDC3C7ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ!'
+      NO-PERMISSION: '{prefix}&#BDC3C7you do not have permission to use this item.'
+      WRONG-OWNER: '{prefix}&#BDC3C7ᴛʜɪѕ ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ ɪѕ ʙᴏᴜɴᴅ ᴛᴏ ᴀɴᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀ.'
+      GIVE-SUCCESS: '{prefix}&#BDC3C7ɢᴀᴠᴇ &d{type} &7ᴛᴏ &d{player} &7.'
+      GIVE-USAGE: '{prefix}&#BDC3C7ᴜѕᴀɢᴇ: &d/amethysttool дать <player> <type> [ᴅᴜʀᴀᴛɪᴏɴ_ѕᴇᴄᴏɴᴅѕ]'
+      GIVE-INVALID-TYPE: '{prefix}&#BDC3C7ɪɴᴠᴀʟɪᴅ ᴛᴏᴏʟ ᴛʏᴘᴇ. ᴛʏᴘᴇѕ: БУРА, ИЗМЕЛЬЧИТЕЛЬ,
+        ПРОДАЖА_ТОПОР, ЛОПАТА, ВЕДРО, ѕʜᴀʀᴅ_ʙᴏᴏѕᴛᴇʀ.'
+      RELOAD-SUCCESS: '{prefix}&#BDC3C7ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ.'
+  ENDER_CHEST:
+    ENDER-CHEST:
+      TITLE: '&5ender chest'
+      ECSEE:
+        TITLE: '&8ender chest of &f{player}'
+    MESSAGES:
+      FEATURE-DISABLED: '&cᴛʜᴇ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ 6 ʀᴏᴡѕ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.'
+      COMMAND-DISABLED: '&cᴛʜᴇ /enderchest команда ɪѕ ᴅɪѕᴀʙʟᴇᴅ.'
+      NO-PERMISSION: '&cyou do not have permission to use this command.'
+      OPEN-FAILED: '&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ.'
+      SAVE-FAILED: '&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴄᴏɴᴛᴀᴄᴛ ѕᴛᴀꜰꜰ.'
+      RELOAD-SUCCESS: '&aᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+      ECSEE-PLAYER-ONLY: ᴘʟᴀʏᴇʀ ᴏɴʟʏ.
+      ECSEE-DISABLED: '&cᴛʜᴇ /ecsee ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.'
+      ECSEE-NO-PERMISSION: '&cyou do not have permission to use this command.'
+      ECSEE-USAGE: '&cᴜѕᴀɢᴇ: /ecsee <player>'
+      ECSEE-PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ &f{player} &cᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+      ECSEE-OPEN-FAILED: '&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ &f{target}''ѕ &cᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ
+        ᴀɢᴀɪɴ.'
+  INVSEE:
+    INVSEE:
+      TITLE: '&8inventory of {player}'
+    MESSAGES:
+      NO-PERMISSION: '&cyou do not have permission.'
+      FEATURE-DISABLED: '&cᴛʜᴇ ɪɴᴠѕᴇᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.'
+      PLAYER-NOT-ONLINE: '&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ.'
+      PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+      SELF-VIEW-DISABLED: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠѕᴇᴇ ʏᴏᴜʀѕᴇʟꜰ.'
+      EDIT-CONFLICT: '&eᴀɴᴏᴛʜᴇʀ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴇᴅɪᴛɪɴɢ &f{target}&e. ᴏᴘᴇɴᴇᴅ
+        ɪɴ ʀᴇᴀᴅ-ᴏɴʟʏ ᴍᴏᴅᴇ.'
+      TARGET-LOGGED-OUT: '&eᴛʜɪѕ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ɴᴏᴡ ᴀ ꜰʀᴏᴢᴇɴ ѕɴᴀᴘѕʜᴏᴛ ʙᴇᴄᴀᴜѕᴇ &f{target}&e
+        ʟᴏɢɢᴇᴅ ᴏᴜᴛ.'
+      TARGET-NOTIFY: '&eʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ʙᴇɪɴɢ ᴠɪᴇᴡᴇᴅ ʙʏ &f{viewer}&e ɪɴ &f{mode}&e
+        ᴍᴏᴅᴇ.'
+      RELOAD-SUCCESS: '&aɪɴᴠѕᴇᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+  FREEZE:
+    FREEZE:
+      STATUS_ON: '&a&lon'
+      STATUS_OFF: '&c&loff'
+      MESSAGE: '&bfreeze &a%player% &7is now %status%'
+      QUIT_MESSAGE: '&c[freeze] &4%player% &cleft while frozen on &4%server%'
+    MESSAGES:
+      NO-PERMISSION: '&cyou do not have permission.'
+      FEATURE-DISABLED: '&cᴛʜᴇ ꜰʀᴇᴇᴢᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.'
+      PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+      TARGET-OFFLINE: '&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ.'
+      TARGET-EXEMPT: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ.'
+      SELF-TARGET: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ʏᴏᴜʀѕᴇʟꜰ.'
+      COMMAND-BLOCKED: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴡʜɪʟᴇ ꜰʀᴏᴢᴇɴ.'
+      STILL-FROZEN: '&cʏᴏᴜ ᴀʀᴇ ѕᴛɪʟʟ ꜰʀᴏᴢᴇɴ. ᴡᴀɪᴛ ꜰᴏʀ ѕᴛᴀꜰꜰ ɪɴѕᴛʀᴜᴄᴛɪᴏɴѕ.'
+      UNFROZEN: '&aʏᴏᴜ ᴀʀᴇ ɴᴏ ʟᴏɴɢᴇʀ ꜰʀᴏᴢᴇɴ.'
+      RELOAD-SUCCESS: '&aꜰʀᴇᴇᴢᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+  ORDERS:
+    GUI:
+      MAIN:
+        TITLE: '&8ᴏʀᴅᴇʀѕ'
+      MY_ORDERS:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ᴍʏ ᴏʀᴅᴇʀѕ'
+      NEW_ORDER:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ɴᴇᴡ ᴏʀᴅᴇʀ'
+      SELECT_ITEM:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ѕᴇʟᴇᴄᴛ ɪᴛᴇᴍ'
+      SEARCH_ITEM:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ'
+      INVENTORY_ITEM:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ᴄʜᴏᴏѕᴇ ɪᴛᴇᴍ'
+      EDIT_ORDER:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ᴇᴅɪᴛ ᴏʀᴅᴇʀ'
+      DELIVER_CONFIRM:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟɪᴠᴇʀ'
+      COLLECT:
+        TITLE: '&8ᴏʀᴅᴇʀѕ -> ᴄᴏʟʟᴇᴄᴛ'
+    SEARCH_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - search
+      - ''
+    AMOUNT_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - amount
+      - ''
+    PRICE_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - price
+      - ''
+  DUELS:
+    COMMAND_BLOCK:
+      MESSAGE: '&cВы не можете использовать эту команду во время дуэли.'
+    CROSS_SERVER:
+      PROXY_SERVER_NAME: местный
+    START-COUNTDOWN:
+      MESSAGES:
+        '5': '&a5'
+        '4': '&a4'
+        '3': '&a3'
+        '2': '&a2'
+        '1': '&a1'
+      START-MESSAGE: '&amatch started!'
+    RESULT-TITLES:
+      victory:
+        title: '&e&lvictory!'
+        subtitle: '&e<player> &fwon the match!'
+      defeat:
+        title: '&c&ldefeat!'
+        subtitle: '&c<opponent> &fwon this match!'
+      draw:
+        title: '&e&ldraw!'
+        subtitle: '&ftime''s up - no winner.'
+        message: '&e[timer] &ftime limit reached! match ended as a &edraw &f- streaks
+          unchanged.'
+    GUI:
+      QUEUE:
+        TITLE: '&8ᴄᴀѕᴜᴀʟ ǫᴜᴇᴜᴇ'
+      CREATE:
+        TITLE: '&8ᴄʀᴇᴀᴛᴇ ᴅᴜᴇʟ -> {player}'
+      CLAIMS:
+        TITLE: '&8ᴅᴜᴇʟ ᴄʟᴀɪᴍѕ'
+  CRATES:
+    SETTINGS:
+      LIST-MENU:
+        TITLE: '&8ᴄʀᴀᴛᴇѕ'
+        EMPTY:
+          DISPLAY-NAME: '&cɴᴏ ᴄʀᴀᴛᴇѕ'
+          LORE:
+          - '&7ɴᴏ ᴄʀᴀᴛᴇѕ ᴀʀᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ.'
+        CLOSE-BUTTON:
+          DISPLAY-NAME: '&cᴄʟᴏѕᴇ'
+          LORE:
+          - '&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ.'
+      CONFIRM-MENU:
+        CONFIRM-BUTTON:
+          DISPLAY-NAME: '&aᴄᴏɴꜰɪʀᴍ'
+          LORE:
+          - '&7ᴄʟᴀɪᴍ &f{reward}&7 ꜰʀᴏᴍ'
+          - '&b{crate}&7.'
+        CANCEL-BUTTON:
+          DISPLAY-NAME: '&cᴄᴀɴᴄᴇʟ'
+          LORE:
+          - '&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ʀᴇᴡᴀʀᴅ ʟɪѕᴛ.'
+      HOLOGRAM:
+        LINES:
+        - '{crate}'
+        - '&7right-click to open'
+      GACHA:
+        TITLE: '&8rolling reward'
+  SPAWNERS:
+    GUI:
+      STORAGE:
+        TITLE: '&8{mob} ѕᴘᴀᴡɴᴇʀѕ - {page}/{max_page}'
+      PANEL:
+        TITLE: '&8ѕᴘᴀᴡɴᴇʀѕ - {world}'
+      WORLD_LIST:
+        TITLE: '&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ'
+  SPAWN_STASH:
+    MESSAGES:
+      USAGE:
+      - '&8&m----------- &dѕᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------'
+      - '&f/{label} &7- ѕᴘᴀᴡɴ ʀᴀɴᴅᴏᴍ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+      - '&f/{label} <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+      - '&f/{label} ѕᴘᴀᴡɴ <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+      - '&f/{label} ʟɪѕᴛ &7- ʟɪѕᴛ ᴀᴄᴛɪᴠᴇ/configured ѕᴛᴀѕʜᴇѕ'
+      - '&f/{label} удалить <id|nearest|all> &7- ʀᴏʟʟʙᴀᴄᴋ ѕᴛᴀѕʜᴇѕ'
+      - '&f/{label} ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴ-ѕᴛᴀѕʜ.ʏᴍʟ'
+      SPAWNED: '&aѕᴘᴀᴡɴᴇᴅ ѕᴛᴀѕʜ #{type} ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ. &7(ɪᴅ: {id})'
+      REMOVED: '&aʀᴇᴍᴏᴠᴇᴅ ѕᴛᴀѕʜ &f#{id}&a.'
+      REMOVED-ALL: '&aʀᴇᴍᴏᴠᴇᴅ &f{count}&a ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ(ᴇѕ).'
+      EXPIRED: '&7ѕᴘᴀᴡɴѕᴛᴀѕʜ #{id} ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ᴡᴀѕ ʀᴏʟʟᴇᴅ ʙᴀᴄᴋ.'
+      RELOADED: '&aѕᴘᴀᴡɴѕᴛᴀѕʜ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ.'
+      DISABLED: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+      PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+      NO-PERMISSION: '&cyou do not have permission.'
+      NO-ACTIVE: '&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ.'
+      BLOCKED-BREAK: '&cᴛʜɪѕ ѕᴛᴀѕʜ ɪѕ ᴘʀᴏᴛᴇᴄᴛᴇᴅ. ᴜѕᴇ &f/spawnstash удалить ближайший
+        &cᴛᴏ ʀᴏʟʟʙᴀᴄᴋ ɪᴛ.'
+      SPAWNER-CLAIMED: '&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a ꜰʀᴏᴍ ѕᴘᴀᴡɴѕᴛᴀѕʜ.'
+      SPAWNER-CLAIMED-DROPPED: '&aᴄʟᴀɪᴍᴇᴅ &f{amount} x {spawner}&a. &7ɪɴᴠᴇɴᴛᴏʀʏ ꜰᴜʟʟ,
+        ɪᴛᴇᴍ ᴅʀᴏᴘᴘᴇᴅ.'
+      INVALID-TYPE: '&cᴜɴᴋɴᴏᴡɴ ѕᴛᴀѕʜ ᴛʏᴘᴇ ''&f{type}&c''. ᴜѕᴇ &f/spawnstash список&c.'
+      INVALID-CONFIG: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: &f{reason}&c.'
+      ALERT:
+      - '&8[&dѕᴘᴀᴡɴѕᴛᴀѕʜ&8] &f{player} &7ᴛʀɪɢɢᴇʀᴇᴅ &d{reason}&7 ᴏɴ ѕᴛᴀѕʜ &f#{id}&7
+        (&f{type}&7)'
+      - '&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}'
+      ALERT-HOVER: '&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}'
+  NETWORK:
+    NETWORK:
+      SERVER_STATUS: '&6%server% &eis now %status%&e.'
+    MAINTENANCE:
+      MESSAGES:
+        ENTERING: '&d[ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ] &7ѕᴇʀᴠᴇʀ ɪѕ ᴇɴᴛᴇʀɪɴɢ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ. ᴍᴏᴠɪɴɢ ʏᴏᴜ ᴛᴏ
+          ᴛʜᴇ ʟᴏʙʙʏ...'
+        BYPASS_JOIN: '&d[ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ] &7ʏᴏᴜ ᴊᴏɪɴᴇᴅ ᴡʜɪʟᴇ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ᴀᴄᴛɪᴠᴇ.'
+        NOT_ALLOWED: '&d[ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ] &cᴛʜɪѕ ѕᴇʀᴠᴇʀ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ɪɴ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ. ʀᴇᴅɪʀᴇᴄᴛɪɴɢ
+          ᴛᴏ ʟᴏʙʙʏ...'
+        KICK_FALLBACK: '&cᴛʜɪѕ ѕᴇʀᴠᴇʀ ɪѕ ɪɴ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴀɴᴅ ɴᴏ ʟᴏʙʙʏ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.'
+        RECONNECTING_TITLE: '&a&lѕᴇʀᴠᴇʀ ᴏɴʟɪɴᴇ'
+        RECONNECTING_SUBTITLE: '&7ѕᴇɴᴅɪɴɢ ʏᴏᴜ ʙᴀᴄᴋ ɪɴ %seconds% ѕᴇᴄᴏɴᴅѕ...'
+  STAFF_MODE:
+    STAFF-MODE:
+      VANISH-ACTIONBAR:
+        MESSAGE: '&avanished &7>> &fyou are hidden from regular players'
+    FAKE-PLAYER:
+      MESSAGES:
+        NO-PERMISSION: '&cyou do not have permission.'
+        PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+        DEPENDENCY-MISSING: '&cᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ɪѕ ʀᴇϫᴜɪʀᴇᴅ ꜰᴏʀ /fakeplayer. ɪɴѕᴛᴀʟʟ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ
+          ᴀɴᴅ ʀᴇѕᴛᴀʀᴛ ᴛʜᴇ ѕᴇʀᴠᴇʀ.'
+        DISABLED: '&cꜰᴀᴋᴇᴘʟᴀʏᴇʀ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+        INVALID-LOCATION: '&cᴜɴᴀʙʟᴇ ᴛᴏ ѕᴘᴀᴡɴ ᴀ ꜰᴀᴋᴇᴘʟᴀʏᴇʀ ᴀᴛ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ.'
+        SKIN-LOOKUP: '&7ᴄʜᴇᴄᴋɪɴɢ ѕᴋɪɴ ᴅᴀᴛᴀ...'
+        SKIN-NOT-READY: '&cѕᴋɪɴ ᴅᴀᴛᴀ ꜰᴏʀ &f{player}&c ɪѕ ɴᴏᴛ ʀᴇᴀᴅʏ. ʀᴇᴀᴘᴘʟʏ ʏᴏᴜʀ ѕᴋɪɴ
+          ᴏʀ ʀᴇᴊᴏɪɴ, ᴛʜᴇɴ ᴛʀʏ ᴀɢᴀɪɴ.'
+        SPAWNED: '&aꜰᴀᴋᴇᴘʟᴀʏᴇʀ &f{fakeplayer}&a ѕᴘᴀᴡɴᴇᴅ ꜰᴏʀ &f{ttl}ѕ&a.'
+        ALERT:
+        - '&8[&cꜰᴀᴋᴇᴘʟᴀʏᴇʀ&8] &f{player} &7ᴛʀᴀᴄᴋᴇᴅ ʙᴀɪᴛ &f{fakeplayer}&7 ᴛʜʀᴏᴜɢʜ ʙʟᴏᴄᴋѕ.'
+        - '&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}'
+        ALERT-HOVER: '&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}'
+    ITEMS:
+      VANISH:
+        ENABLED:
+          NAME: '&avanished'
+          LORE:
+          - '&7click to disable vanish'
+        DISABLED:
+          NAME: '&7unvanished'
+          LORE:
+          - '&7click to enable vanish'
+      FREEZE:
+        NAME: '&bfreeze player'
+        LORE:
+        - '&7right-click a player to freeze them'
+        - '&7left-click to see frozen players'
+      STAFF_LIST:
+        NAME: '&estaff list'
+        LORE:
+        - '&7click to view online staff members'
+      BETTER_VIEW:
+        NAME: '&ebetter view'
+        LORE:
+        - '&7click to toggle better view mode'
+      RANDOM_TELEPORT:
+        NAME: '&erandom teleport'
+        LORE:
+        - '&7click to teleport to a random player'
+    MENUS:
+      STAFF-LIST:
+        TITLE: '&8ᴏɴʟɪɴᴇ ѕᴛᴀꜰꜰ'
+        EMPTY-NAME: '&cɴᴏ ѕᴛᴀꜰꜰ ᴏɴʟɪɴᴇ'
+        EMPTY-LORE:
+        - '&7ɴᴏ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴏɴʟɪɴᴇ.'
+      FROZEN-PLAYERS:
+        TITLE: '&8ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ'
+        EMPTY-NAME: '&aɴᴏ ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ'
+        EMPTY-LORE:
+        - '&7ᴛʜᴇʀᴇ ᴀʀᴇ ɴᴏ ᴀᴄᴛɪᴠᴇ ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ.'
+    MESSAGES:
+      NO-PERMISSION: '&cyou do not have permission.'
+      FEATURE-DISABLED: '&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+      PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+      ENABLED: '&aѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ.'
+      DISABLED: '&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴅɪѕᴀʙʟᴇᴅ.'
+      ENABLED-ACTIONBAR: '&aѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ'
+      DISABLED-ACTIONBAR: '&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴅɪѕᴀʙʟᴇᴅ'
+      VANISH-ON: '&aᴠᴀɴɪѕʜ ᴇɴᴀʙʟᴇᴅ.'
+      VANISH-OFF: '&cᴠᴀɴɪѕʜ ᴅɪѕᴀʙʟᴇᴅ.'
+      BETTER-VIEW-ON: '&aʙᴇᴛᴛᴇʀ ᴠɪᴇᴡ ᴇɴᴀʙʟᴇᴅ.'
+      BETTER-VIEW-OFF: '&cʙᴇᴛᴛᴇʀ ᴠɪᴇᴡ ᴅɪѕᴀʙʟᴇᴅ.'
+      RANDOM-TELEPORT-NO-TARGET: '&cɴᴏ ᴇʟɪɢɪʙʟᴇ ᴘʟᴀʏᴇʀ ꜰᴏᴜɴᴅ.'
+      RANDOM-TELEPORT-SUCCESS: '&eᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &f{player}&e.'
+      RESTORE-FAILED: '&cѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʀᴇѕᴛᴏʀᴇ ꜰᴀɪʟᴇᴅ. ᴄᴏɴᴛᴀᴄᴛ ᴀɴ ᴀᴅᴍɪɴ.'
+      RECOVERED-AFTER-RESTART: '&eѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴡᴀѕ ᴅɪѕᴀʙʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴛʜᴇ ѕᴇʀᴠᴇʀ ʀᴇѕᴛᴀʀᴛᴇᴅ.
+        ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ᴡᴀѕ ʀᴇѕᴛᴏʀᴇᴅ.'
+      TOOL-LOCKED: '&cʏᴏᴜʀ ѕᴛᴀꜰꜰ ᴛᴏᴏʟѕ ᴀʀᴇ ʟᴏᴄᴋᴇᴅ ᴡʜɪʟᴇ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪѕ ᴀᴄᴛɪᴠᴇ.'
+      RELOAD-SUCCESS: '&aѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+  SERVER_WIPE:
+    MESSAGES:
+      MAINTENANCE: '&cСервер готовит сброс сезона. Попробуйте еще раз после перезагрузки.'
+      KICK: '&cᴀ Начинается сброс сезона. Сервер будет перезапущен в ближайшее время.'
+  WORTH:
+    DISPLAY:
+      FORMAT: '&7Стоимость: &a$${price}'
+    BROWSER:
+      TITLE: '&8Цены на предметы'
+  HIDE:
+    GUI:
+      MAIN:
+        TITLE: '&8ʜɪᴅᴇ'
+      ALIASES:
+        TITLE: '&8select a name - {page}/{pages}'
+      SKINS:
+        TITLE: '&8ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}'
+      LIST:
+        TITLE: '&8ʜɪᴅᴅᴇɴ ᴘʟᴀʏᴇʀѕ - {page}/{pages}'
+    MESSAGES:
+      PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+      NO-PERMISSION: '&cyou do not have permission.'
+      DEPENDENCY-MISSING: '&cʜɪᴅᴇ ʀᴇǫᴜɪʀᴇѕ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴛᴏ ʙᴇ ɪɴѕᴛᴀʟʟᴇᴅ ᴀɴᴅ ᴇɴᴀʙʟᴇᴅ.'
+      DISABLED: '&cᴛʜᴇ ʜɪᴅᴇ ꜰᴇᴀᴛᴜʀᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+      IN-COMBAT: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʜᴀɴɢᴇ ʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ.'
+      COOLDOWN: '&cᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀɴɢɪɴɢ ʜɪᴅᴇ ᴀɢᴀɪɴ.'
+      ALREADY-HIDDEN: '&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴜѕɪɴɢ ᴛʜᴀᴛ ʜɪᴅᴇ ɪᴅᴇɴᴛɪᴛʏ.'
+      NOT-HIDDEN: '&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ.'
+      PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+      INVALID-ALIAS: '&cᴛʜᴀᴛ ᴅɪѕɢᴜɪѕᴇ ᴀʟɪᴀѕ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴏʀ ɪѕ ɪɴᴠᴀʟɪᴅ.'
+      INVALID-SKIN: '&cᴜɴᴀʙʟᴇ ᴛᴏ ʀᴇѕᴏʟᴠᴇ ᴛʜᴀᴛ ѕᴋɪɴ ɴᴀᴍᴇ ᴏʀ ᴜʀʟ.'
+      SKIN-SEARCHING: '&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7...'
+      ALIAS-IN-USE: '&cᴛʜᴀᴛ ᴀʟɪᴀѕ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴜѕᴇ.'
+      SCRAMBLED: '&aʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ɪѕ ɴᴏᴡ ѕᴄʀᴀᴍʙʟᴇᴅ ᴀѕ &f{alias}&a.'
+      DISGUISED: '&aʏᴏᴜ ᴀʀᴇ ɴᴏᴡ ᴅɪѕɢᴜɪѕᴇᴅ ᴀѕ &f{alias}&a.'
+      REMOVED: '&aʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ.'
+      ADMIN-REMOVED: '&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a.'
+      REMOVED-BY-ADMIN: '&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ.'
+      STATUS-NONE: '&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &cɪɴᴀᴄᴛɪᴠᴇ'
+      STATUS-ACTIVE: '&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &a{mode} &8- &f{alias}'
+      CHECK: |-
+        &bʜɪᴅᴇ ᴄʜᴇᴄᴋ
+        &7ʀᴇᴀʟ ɴᴀᴍᴇ: &f{real}
+        &7ᴀʟɪᴀѕ: &f{alias}
+        &7ᴍᴏᴅᴇ: &f{mode}
+        &7ѕᴋɪɴ: &f{skin}
+      PERMISSION-REMOVED: '&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡᴀѕ ʀᴇᴍᴏᴠᴇᴅ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴘᴇʀᴍɪѕѕɪᴏɴ ɪѕ
+        ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ.'
+  ENCHANTMENTS:
+    messages:
+      select: '&fclick to select'
+      selected: '&aselected'
+      cannot: '&fcannot add this enchantment'
+    gui:
+      title: '&#444444pick enchantments'
+      buttons:
+        cancel:
+          name: '&#39FF14cancel'
+          lore:
+          - '&fclick to return'
+        confirm:
+          name: '&#39FF14confirm'
+          lore:
+          - '&fclick to confirm enchants'
+        page_filler:
+          name: '&7 '
+        filler:
+          displayname: '&7 '
+      sounds:
+        click: {}
+MESSAGES:
+  AUCTION_HOUSE:
+    PLAYERS_ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+    NO_PERMISSION: '&cyou cannot use that auction house action.'
+    INVALID_DURATION: '&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴜʀᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ.'
+    CREATE_DATABASE_ERROR: '&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ʟɪѕᴛɪɴɢ.'
+    CLAIMS_AUTOMATIC: '&eᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴏʟʟᴇᴄᴛᴇᴅ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ.'
+    AUTO_COLLECTED: '&aᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ &f{money} &aᴘᴀʏᴏᴜᴛ(ѕ) ᴀɴᴅ &f{items} &aʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ(ѕ).'
+    LIMIT: '&6ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ: &e{active}&7/&e{limit}'
+    NO_FAST_PERMISSION: '&cyou cannot use that fast-action setting.'
+    FAST_BUY_TOGGLED: '&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eꜰᴀѕᴛ ʙᴜʏ ɪѕ ɴᴏᴡ {state}&e.'
+    FAST_SELL_TOGGLED: '&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eꜰᴀѕᴛ ѕᴇʟʟ ɪѕ ɴᴏᴡ {state}&e.'
+    SEARCH_CANCELLED: '&7ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴇᴀʀᴄʜ ᴄᴀɴᴄᴇʟʟᴇᴅ.'
+    ACTION_IN_PROGRESS: '&cАукцион ещё обрабатывает ваше предыдущее действие.'
+    CLICK_COOLDOWN: '&cПодождите немного.'
+    PLAYER_DATA_UNAVAILABLE: '&cНе удалось загрузить данные игрока.'
+    PURCHASE_DATABASE_ERROR: '&cСейчас не удалось завершить покупку.'
+    CANCEL_DATABASE_ERROR: '&cСейчас не удалось отменить лот.'
+    CLAIM_DATABASE_ERROR: '&cСейчас не удалось завершить получение.'
+    DISABLED: '&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    SELL_USAGE: '&cᴜѕᴀɢᴇ: /ah продать <price>'
+    CANCEL_USAGE: '&cᴜѕᴀɢᴇ: /ah отменить <listingId>'
+    INVALID_PRICE: '&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1,5ᴍ.'
+    INVALID_LISTING_ID: '&cɪɴᴠᴀʟɪᴅ ʟɪѕᴛɪɴɢ ɪᴅ.'
+    NO_ADMIN_PERMISSION: '&cyou do not have permission to reload auction house settings.'
+    RELOADED: '&aᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+    NO_ITEM_IN_HAND: '&cʜᴏʟᴅ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ʟɪѕᴛ ɪɴ ʏᴏᴜʀ ᴍᴀɪɴ ʜᴀɴᴅ.'
+    ITEM_BLOCKED: '&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʟɪѕᴛᴇᴅ ɪɴ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ.'
+    PRICE_OUT_OF_RANGE: '&cᴛʜᴀᴛ ᴘʀɪᴄᴇ ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴛʜᴇ ᴀʟʟᴏᴡᴇᴅ ʀᴀɴɢᴇ.'
+    NO_MONEY_FOR_FEE: '&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ᴛᴏ ᴘᴀʏ ᴛʜᴇ ʟɪѕᴛɪɴɢ ꜰᴇᴇ.'
+    MAX_LISTINGS_REACHED: '&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ.'
+    LISTING_CREATED: '&aʟɪѕᴛɪɴɢ ᴄʀᴇᴀᴛᴇᴅ! &7#{listing_id} &f{item} &7ꜰᴏʀ &a${price}&7.
+      ꜰᴇᴇ: &a${fee}&7. ᴇxᴘɪʀᴇѕ ɪɴ &f{expires}&7.'
+    LISTING_CANCELLED: '&eʟɪѕᴛɪɴɢ #{listing_id} &f({item}) &eʜᴀѕ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ʏᴏᴜʀ
+      ᴄʟᴀɪᴍ ٫ᴜᴇᴜᴇ.'
+    LISTING_NOT_FOUND: '&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.'
+    LISTING_NOT_ACTIVE: '&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.'
+    NOT_YOUR_LISTING: '&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.'
+    CANNOT_BUY_OWN: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʙᴜʏ ʏᴏᴜʀ ᴏᴡɴ ʟɪѕᴛɪɴɢ.'
+    NOT_ENOUGH_MONEY: '&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ.'
+    FULL_INVENTORY: '&cʏᴏᴜ ɴᴇᴇᴅ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕᴘᴀᴄᴇ ᴛᴏ ʙᴜʏ ᴛʜᴀᴛ ɪᴛᴇᴍ.'
+    PURCHASE_SUCCESS: '&aᴘᴜʀᴄʜᴀѕᴇᴅ &f{item} &aꜰᴏʀ &a${price} &aꜰʀᴏᴍ &f{seller}&a.'
+    ITEM_SOLD: '&aʏᴏᴜʀ ʟɪѕᴛɪɴɢ ѕᴏʟᴅ! &f{buyer} &aʙᴏᴜɢʜᴛ &f{item} &aꜰᴏʀ &a${price}&a.
+      ᴄʟᴀɪᴍᴀʙʟᴇ ᴘᴀʏᴏᴜᴛ: &a${payout}&a.'
+    CLAIM_NOT_FOUND: '&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.'
+    NOT_YOUR_CLAIM: '&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.'
+    CLAIM_ALREADY_CLAIMED: '&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ.'
+    CLAIM_INVENTORY_FULL: '&cʏᴏᴜ ɴᴇᴇᴅ ᴀ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕʟᴏᴛ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ.'
+    CLAIMED_MONEY: '&aᴄʟᴀɪᴍᴇᴅ &a${amount} &aꜰʀᴏᴍ ʏᴏᴜʀ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴀʟᴇѕ.'
+    CLAIMED_ITEM: '&aᴄʟᴀɪᴍᴇᴅ ʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ: &f{item}&a.'
+    SEARCH_PROMPT: '&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ɴᴀᴍᴇ ɪɴ ᴄʜᴀᴛ ᴛᴏ ѕᴇᴀʀᴄʜ ᴛʜᴇ
+      ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ.'
+  TEAM:
+    NO-TEAM: '&cʏᴏᴜ ᴅᴏɴ''ᴛ ʜᴀᴠᴇ ᴀ ᴛᴇᴀᴍ. ᴛʏᴘᴇ /team создать (имя) ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ.'
+    ALREADY-EXISTS: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ ᴡɪᴛʜ ᴛʜɪѕ ɴᴀᴍᴇ, ɪᴛ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴛᴀᴋᴇɴ.'
+    TEAM-CREATED: '&aᴛᴇᴀᴍ ᴄʀᴇᴀᴛᴇᴅ.'
+    TEAM-DISBANDED: '&7ᴛᴇᴀᴍ ᴅɪѕʙᴀɴᴅᴇᴅ.'
+    ALREADY-IN-TEAM: '&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴀ ᴛᴇᴀᴍ.'
+    NOT-LEADER: '&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴛʜᴇ ʟᴇᴀᴅᴇʀ.'
+    PLAYER-NO-INVITES: '&cᴛʜɪѕ ᴘʟᴀʏᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ᴀᴄᴄᴇᴘᴛ ɪɴᴠɪᴛᴀᴛɪᴏɴѕ.'
+    PLAYER-IN-TEAM: '&c{player} ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴀ ᴛᴇᴀᴍ.'
+    TEAM-FULL: '&cᴛᴇᴀᴍ ʜᴀѕ ʀᴇᴀᴄʜᴇᴅ ᴛʜᴇ ᴍᴀxɪᴍᴜᴍ ᴍᴇᴍʙᴇʀѕ.'
+    INVITE-SENT: '&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴊᴏɪɴ ᴛʜᴇ ᴛᴇᴀᴍ.'
+    NO-PENDING-INVITES: '&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴘᴇɴᴅɪɴɢ ɪɴᴠɪᴛᴇѕ ꜰᴏʀ &6{team} &c.'
+    JOIN-SUCCESS: '&aʏᴏᴜ ʜᴀᴠᴇ ᴊᴏɪɴᴇᴅ ᴛᴏ &e{team}&a.'
+    CANT-KICK-SELF: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴋɪᴄᴋ ʏᴏᴜʀѕᴇʟꜰ!'
+    KICK-SUCCESS: '&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ᴋɪᴄᴋᴇᴅ &7({player}).'
+    KICKED-FROM-TEAM: '&aʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ ꜰʀᴏᴍ ᴛʜᴇ ᴛᴇᴀᴍ.'
+    PLAYER-NOT-IN-TEAM: '&c{player} ɪѕ ɴᴏᴛ ᴀ ᴍᴇᴍʙᴇʀ ᴏꜰ ʏᴏᴜʀ ᴛᴇᴀᴍ.'
+    TEAM-CHAT-ENABLED: '&7ʏᴏᴜ ᴇɴᴀʙʟᴇᴅ ᴛᴇᴀᴍ ᴄʜᴀᴛ.'
+    TEAM-CHAT-DISABLED: '&7ʏᴏᴜ ᴅɪѕᴀʙʟᴇᴅ ᴛᴇᴀᴍ ᴄʜᴀᴛ.'
+    NO-MANAGE-PERMISSION: '&cyou don''t have permission to invite or kick teammates.'
+    NO-EDIT-HOME-PERMISSION: '&cyou don''t have permission to edit the team home.'
+    NO-VISIT-HOME-PERMISSION: '&cyou don''t have permission to visit the team home.'
+    NO-TEAM-CHAT-PERMISSION: '&cyou don''t have permission to use team chat.'
+    NO-PVP-PERMISSION: '&cyou don''t have permission to change team pvp.'
+    TEAM-PVP-ENABLED: '&7ᴛᴇᴀᴍ ᴘᴠᴘ ɪѕ ɴᴏᴡ &aᴇɴᴀʙʟᴇᴅ&7.'
+    TEAM-PVP-DISABLED: '&7ᴛᴇᴀᴍ ᴘᴠᴘ ɪѕ ɴᴏᴡ &cᴅɪѕᴀʙʟᴇᴅ&7.'
+    NO-TEAM-HOME: '&7ʏᴏᴜʀ ᴛᴇᴀᴍ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ʜᴏᴍᴇ.'
+    TEAM-HOME-DELETED: '&7ᴛᴇᴀᴍ ʜᴏᴍᴇ ᴅᴇʟᴇᴛᴇᴅ.'
+    TEAM-HOME-SET: '&7ᴛᴇᴀᴍ ʜᴏᴍᴇ ѕᴇᴛ'
+    TEAM-NOT-EXIST: '&cᴜѕᴇʀ/team ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ.'
+    INVITED-TO-JOIN: '&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ɪɴᴠɪᴛᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ &a{team}&7 ᴛᴇᴀᴍ!'
+    CLICK-TO-JOIN: '&b[ᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ]'
+    HOVER-JOIN: '&eᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ {team} ᴛᴇᴀᴍ.'
+    OR-TYPE-COMMAND: '&7or type &f{command}&7 to join.'
+    JOINED-BROADCAST: '&a{player} &eʜᴀѕ ᴊᴏɪɴᴇᴅ ᴛʜᴇ ᴛᴇᴀᴍ.'
+  CHAT-MANAGER:
+    HELP:
+    - ''
+    - '&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(ᴄᴏᴍᴍᴀɴᴅѕ)'
+    - ''
+    - '&f/chat немой &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.'
+    - '&f/chat включить звук &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.'
+    - '&f/chat задержка (время) &7- ᴛᴏ ᴀᴅᴅ ᴅᴇʟᴀʏ ᴛᴏ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.'
+    - '&f/chat ясно &7- ᴛᴏ ᴄʟᴇᴀʀ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.'
+    - ''
+    MUTED: '&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴍᴜᴛᴇᴅ.'
+    UNMUTED: '&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴜɴᴍᴜᴛᴇᴅ.'
+    DELAY: '&7ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴅᴇʟᴀʏᴇᴅ &a%delay% &7ѕᴇᴄᴏɴᴅѕ ᴀɴᴅ ᴅᴇʟᴀʏ ɪѕ &a%status%'
+    CLEARED: '&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄʟᴇᴀʀᴇᴅ.'
+    NO-PERMISSION: '&cyou do not have permission.'
+    DISABLED: '&cᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    INVALID-DELAY: '&cɪɴᴠᴀʟɪᴅ ᴅᴇʟᴀʏ. ᴜѕᴇ ᴀ ɴᴜᴍʙᴇʀ ʙᴇᴛᴡᴇᴇɴ 0 ᴀɴᴅ {max}.'
+    STATUS-ENABLED: ᴇɴᴀʙʟᴇᴅ
+    STATUS-DISABLED: ᴅɪѕᴀʙʟᴇᴅ
+    GLOBAL-MUTED-BLOCK: '&cɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴍᴜᴛᴇᴅ.'
+    GLOBAL-DELAY-BLOCK: '&cʏᴏᴜ ᴍᴜѕᴛ ᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀᴛᴛɪɴɢ ᴀɢᴀɪɴ.'
+  IGNORE:
+    ADDED: '&7%player% &cʜᴀѕ ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.'
+    REMOVED: '&7%player% &cʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.'
+    USAGE: '&cᴜѕᴀɢᴇ: /ignore <player|list>'
+    UNIGNORE-USAGE: '&cᴜѕᴀɢᴇ: /unignore <player>'
+    PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+    NO-PERMISSION: '&cyou do not have permission.'
+    DISABLED: '&cɪɢɴᴏʀᴇ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    CANNOT-IGNORE-SELF: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɢɴᴏʀᴇ ʏᴏᴜʀѕᴇʟꜰ.'
+    PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+    NOT-IGNORED: '&7%player% &cɪѕ ɴᴏᴛ ɪɴ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.'
+    LIST-EMPTY: '&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɢɴᴏʀɪɴɢ ᴀɴʏᴏɴᴇ.'
+    LIST-HEADER: '&8&m-------- &cɪɢɴᴏʀᴇᴅ ᴘʟᴀʏᴇʀѕ &7(%count%) &8&m--------'
+    LIST-ENTRY: '&8- &7%player%'
+    MESSAGE-BLOCKED-SENDER: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ %player%.'
+    ERROR: '&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ.'
+  PRIVATE_MESSAGES:
+    PM_ENABLED: '&aᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴇɴᴀʙʟᴇᴅ'
+    PM_DISABLED: '&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴅɪѕᴀʙʟᴇᴅ'
+  MESSAGES:
+    CANNOT_MESSAGE_SELF: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!'
+    PLAYER_BLOCKED: '&c%player% ʜᴀѕ ʙʟᴏᴄᴋᴇᴅ ʏᴏᴜ.'
+    PMS_DISABLED: '&c%player% ʜᴀѕ ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕѕᴀɢᴇѕ ᴅɪѕᴀʙʟᴇᴅ.'
+    NO_CONVERSATION: '&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ
+      ɪѕ ᴏꜰꜰʟɪɴᴇ.'
+    SENDER_FORMAT: '&d(ᴛᴏ &a%player%&d) %message%'
+    RECEIVER_FORMAT: '&d(ꜰʀᴏᴍ &a%player%&d) %message%'
+    USAGE: '&cᴜѕᴀɢᴇ: /msg <player> <message>'
+    REPLY_USAGE: '&cᴜѕᴀɢᴇ: /reply <message>'
+    PLAYER_NOT_ONLINE: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.'
+    PLAYER_ONLY_REPLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /reply.'
+    PLAYER_ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+    NO_PERMISSION: '&cyou do not have permission.'
+    DISABLED: '&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+  PRIVATE-MESSAGE:
+    USAGE: '&cᴜѕᴀɢᴇ: /msg <player> <message>'
+    REPLY-USAGE: '&cᴜѕᴀɢᴇ: /reply <message>'
+    PLAYER-ONLY-REPLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /reply.'
+    NO-PERMISSION: '&cyou do not have permission.'
+    DISABLED: '&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    PLAYER-NOT-ONLINE: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.'
+    CANNOT-MESSAGE-SELF: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!'
+    NO-REPLY-TARGET: '&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ
+      ɪѕ ᴏꜰꜰʟɪɴᴇ.'
+    SENT: '&d(ᴛᴏ &a%player%&d) %message%'
+    RECEIVED: '&d(ꜰʀᴏᴍ &a%player%&d) %message%'
+    PM-ENABLED: '&aᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴇɴᴀʙʟᴇᴅ'
+    PM-DISABLED: '&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴅɪѕᴀʙʟᴇᴅ'
+  TPAUTO:
+    ENABLED: '&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏɴ ᴛᴘᴀᴜᴛᴏ.'
+    DISABLED: '&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏꜰꜰ ᴛᴘᴀᴜᴛᴏ.'
+  TPAHEREAUTO:
+    ENABLED: '&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏɴ ᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ.'
+    DISABLED: '&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏꜰꜰ ᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ.'
+  PHANTOM:
+    ENABLED: '&7ʏᴏᴜ ᴅɪѕᴀʙʟᴇᴅ ᴘʜᴀɴᴛᴏᴍѕ ѕᴘᴀᴡɴɪɴɢ ᴄʟᴏѕᴇ ᴛᴏ ʏᴏᴜ'
+    DISABLED: '&7ʏᴏᴜ ᴇɴᴀʙʟᴇᴅ ᴘʜᴀɴᴛᴏᴍѕ ѕᴘᴀᴡɴɪɴɢ ᴄʟᴏѕᴇ ᴛᴏ ʏᴏᴜ'
+  CLEAR-LAG:
+    COUNTDOWN: '&7ᴇɴᴛɪᴛɪᴇѕ ᴡɪʟʟ ʙᴇ ʀᴇᴍᴏᴠᴇᴅ ɪɴ &b{seconds} &7ѕᴇᴄᴏɴᴅѕ.'
+    SUCCESS: '&7ᴛᴏᴛᴀʟ ᴏꜰ &b{total} &7ᴇɴᴛɪᴛɪᴇѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄʟᴇᴀʀᴇᴅ.'
+  TELEPORT:
+    SUCCESS: '&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ'
+    COUNTDOWN: '&7ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ ɪɴ &b{seconds}&7 ѕᴇᴄᴏɴᴅѕ'
+    WARNING: '&eᴅᴏ ɴᴏᴛ ᴍᴏᴠᴇ ꜰᴏʀ &b{seconds}&e ѕᴇᴄᴏɴᴅѕ. ɪꜰ ʏᴏᴜ ᴍᴏᴠᴇ, ᴛʜᴇ ᴛᴇʟᴇᴘᴏʀᴛ ᴡɪʟʟ
+      ʙᴇ ᴄᴀɴᴄᴇʟᴇᴅ.'
+    CANCELED: '&cᴛᴇʟᴇᴘᴏʀᴛ ᴄᴀɴᴄᴇʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ʏᴏᴜ ᴍᴏᴠᴇᴅ.'
+    TO_PLAYER: '&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ %player%'
+    HERE: '&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7%player% ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ'
+    HERE_TARGET: '&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%'
+    ALL: '&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴀʟʟ ᴘʟᴀʏᴇʀѕ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ'
+    ALL_TARGET: '&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%'
+    POSITION: '&7ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ: &d%x%,%y%,%z% &7(%world%)'
+    TOP: '&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ ᴛʜᴇ ʜɪɢʜᴇѕᴛ ᴘᴏѕɪᴛɪᴏɴ'
+  SHARD-BOOSTER:
+    ACTIVATED: '&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ ʏᴏᴜʀ &5ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ &aꜰᴏʀ 24 дюйма.'
+    ALREADY-ACTIVATED: '&cʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ.'
+    EXPIRED: '&cʏᴏᴜʀ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ ʜᴀѕ ᴇxᴘɪʀᴇᴅ.'
+  TPA:
+    INVITE-SENT: '&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ.'
+    INVITE-HERE-SENT: '&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜ.'
+    ALREADY-SENT: '&cʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ѕᴇɴᴛ ᴛʜᴇ ʀᴇϫᴜᴇѕᴛ ᴛᴏ &6{player}.'
+    REQUEST-RECEIVED: '&e[&d&lᴛᴘᴀ ʀᴇϫᴜᴇѕᴛ&e] &eʏᴏᴜ ʜᴀᴠᴇ ᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a&l{player}&e.
+      &a&l(ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴄᴇᴘᴛ)'
+    REQUEST-HERE-RECEIVED: '&e[&d&l?????? ᴛᴘᴀʜᴇʀᴇ&e] &e?? ???????? ?????? ?? &a&l{player}&e
+      ????????????????? ? ????. &a&l(???????, ????? ???????)'
+    NO-REQUEST: '&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴛᴘᴀ ᴇϫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}.'
+    NO-SENT-REQUESTS: '&cᴛʜɪѕ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ᴅᴏᴇѕᴛ ɴᴏᴛ ᴇxɪѕᴛ.'
+    CANCELLED-REQUESTS: '&7ʏᴏᴜ ᴄᴀɴᴄᴇʟᴇᴅ ʏᴏᴜʀ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ.'
+    NO-REQUEST-HERE: '&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴛᴘᴀʜᴇʀᴇ ʀᴇϫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}.'
+    ACCEPTED: '&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛʜᴇ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}.'
+    ACCEPTED-HERE: '&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛʜᴇ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}.'
+    YOUR-REQUEST-ACCEPTED: '&a{player} ʜᴀѕ ᴀᴄᴄᴇᴘᴛᴇᴅ ʏᴏᴜʀ ᴛᴘᴀ ʀᴇϫᴜᴇѕᴛ.'
+    YOUR-REQUEST-HERE-ACCEPTED: '&a{player} ʜᴀѕ ᴀᴄᴄᴇᴘᴛᴇᴅ ʏᴏᴜʀ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ.'
+    CANNOT-INVITE-YOURSELF: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠɪᴛᴇ ʏᴏᴜʀѕᴇʟꜰ!'
+    NOT-ACCEPTING-REQUESTS: '&cᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴄᴄᴇᴘᴛɪɴɢ ʀᴇǫᴜᴇѕᴛѕ.'
+  HOME:
+    NAME-PROMPT: '&7ᴛʏᴘᴇ ᴛʜᴇ ʜᴏᴍᴇ ɴᴀᴍᴇ ɪɴ ᴄʜᴀᴛ ꜰᴏʀ &b{name}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ &7ᴛᴏ
+      ᴀʙᴏʀᴛ.'
+    SET: '&7ʜᴏᴍᴇ ѕᴇᴛ'
+    DELETED: '&7ʜᴏᴍᴇ ᴅᴇʟᴇᴛᴇᴅ'
+    RENAME-PROMPT: '&7ᴛʏᴘᴇ ᴛʜᴇ ɴᴇᴡ ɴᴀᴍᴇ ꜰᴏʀ &b{name}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ &7ᴛᴏ
+      ᴀʙᴏʀᴛ.'
+    RENAME-SUCCESS: '&7ʏᴏᴜ ʀᴇɴᴀᴍᴇ ʏᴏᴜʀ ʜᴏᴍᴇ ᴛᴏ &b{name}'
+    INVALID-NAME: '&cɪɴᴠᴀʟɪᴅ ʜᴏᴍᴇ ɴᴀᴍᴇ. ᴅᴏ ɴᴏᴛ ᴜѕᴇ ѕᴘᴀᴄᴇѕ.'
+    ALREADY-EXISTS: '&cᴀ ʜᴏᴍᴇ ᴡɪᴛʜ ᴛʜᴀᴛ ɴᴀᴍᴇ ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.'
+    CANCELLED: '&7ʜᴏᴍᴇ ɪɴᴘᴜᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ.'
+  WARP:
+    PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴡᴀʀᴘ ᴄᴏᴍᴍᴀɴᴅ.'
+    USAGE: '&cᴜѕᴀɢᴇ: /warp [имя]'
+    LIST-HEADER: '&8&m---------------- &bᴡᴀʀᴘѕ &7({count}) &8&m----------------'
+    LIST-ENTRY: '&7- &b{name}'
+    LIST-EMPTY: '&cɴᴏ ᴡᴀʀᴘѕ ᴀᴠᴀɪʟᴀʙʟᴇ.'
+    NOT-FOUND: '&cᴡᴀʀᴘ ''&e{name}&c'' ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+    NOT-FOUND-SUGGESTION: '&7ᴅɪᴅ ʏᴏᴜ ᴍᴇᴀɴ: &b{suggestions}'
+    CREATED: '&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ.'
+    DELETED: '&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ.'
+    ALREADY-EXISTS: '&cᴡᴀʀᴘ ''&e{name}&c'' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.'
+    INVALID-NAME: '&cɪɴᴠᴀʟɪᴅ ᴡᴀʀᴘ ɴᴀᴍᴇ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ.'
+  WARPMANAGER:
+    USAGE: '&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [ɴᴀᴍᴇ]'
+    CREATE-USAGE: '&cᴜѕᴀɢᴇ: /warpmanager создать <name>'
+    DELETE-USAGE: '&cᴜѕᴀɢᴇ: /warpmanager удалить <name>'
+    CREATE-USAGE-ALIAS: '&cᴜѕᴀɢᴇ: /setwarp <name>'
+    DELETE-USAGE-ALIAS: '&cᴜѕᴀɢᴇ: /delwarp <name>'
+    NO-PERMISSION: '&cyou do not have permission to manage warps.'
+    CREATE-PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘѕ.'
+    CREATE-FAILED: '&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘ ''&e{name}&c''.'
+  PORTAL:
+    LIST-EMPTY: '&cɴᴏ ᴘᴏʀᴛᴀʟѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʏᴇᴛ.'
+    ENTERED: '&dᴇɴᴛᴇʀɪɴɢ {portal}&7...'
+    INVALID-CUBOID: '&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴄᴏʀʀᴇᴄᴛʟʏ ʀɪɢʜᴛ ɴᴏᴡ.'
+    INVALID-DESTINATION: '&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.'
+    NO-PERMISSION: '&cyou do not have permission to use this portal.'
+    IN-COMBAT: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴘᴏʀᴛᴀʟѕ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ.'
+    TELEPORT-IN-PROGRESS: '&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.'
+    STATUS-READY: '&aʀᴇᴀᴅʏ'
+    STATUS-DISABLED: '&cᴅɪѕᴀʙʟᴇᴅ'
+    STATUS-INVALID-CUBOID: '&eɪɴᴠᴀʟɪᴅ ᴄᴜʙᴏɪᴅ'
+    STATUS-INVALID-DESTINATION: '&eɪɴᴠᴀʟɪᴅ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ'
+  PORTALMANAGER:
+    USAGE: '&cᴜѕᴀɢᴇ: /portalmanager <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>'
+    NO-PERMISSION: '&cyou do not have permission to manage portals.'
+    PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+    CREATE-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager создать <id> <cuboid> <rtp_selector>'
+    DELETE-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager удалить <id>'
+    INFO-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager информация <id>'
+    SETCUBOID-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴄᴜʙᴏɪᴅ <id> <cuboid>'
+    SETDESTINATION-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager установить пункт назначения <id>
+      <rtp_selector>'
+    SETDISPLAY-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <display name...>'
+    TOGGLE-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager переключить <id>'
+    SETPRIORITY-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴘʀɪᴏʀɪᴛʏ <id> <number>'
+    SETHOLOGRAMHERE-USAGE: '&cᴜѕᴀɢᴇ: /portalmanager поставил голограмму здесь <id>'
+    INVALID-ID: '&cɪɴᴠᴀʟɪᴅ ᴘᴏʀᴛᴀʟ ɪᴅ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ.'
+    INVALID-CUBOID: '&cᴄᴜʙᴏɪᴅ ''&e{cuboid}&c'' ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ.'
+    INVALID-DESTINATION: '&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ''&e{destination}&c'' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.'
+    INVALID-PRIORITY: '&cᴘʀɪᴏʀɪᴛʏ ᴍᴜѕᴛ ʙᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ.'
+    NOT-FOUND: '&cᴘᴏʀᴛᴀʟ ''&e{id}&c'' ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+    ALREADY-EXISTS: '&cᴘᴏʀᴛᴀʟ ''&e{id}&c'' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.'
+    CREATED: '&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ.'
+    UPDATED: '&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ.'
+    HOLOGRAM-UPDATED: '&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴏʟᴏɢʀᴀᴍ ʜᴀѕ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ.'
+    DELETED: '&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ.'
+    TOGGLED: '&aᴘᴏʀᴛᴀʟ &d{id} &aɪѕ ɴᴏᴡ &f{state}&a.'
+    LIST-HEADER: '&8&m---------------- &dᴘᴏʀᴛᴀʟѕ &7({count}) &8&m----------------'
+    LIST-ENTRY: '&7- &d{id} &8[&f{state}&8] &7ᴄᴜʙᴏɪᴅ=&f{cuboid} &7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ=&f{destination}'
+    INFO-HEADER: '&8&m---------------- &dᴘᴏʀᴛᴀʟ: &f{id} &8&m----------------'
+    INFO-DISPLAY: '&7ᴅɪѕᴘʟᴀʏ: &f{display}'
+    INFO-STATE: '&7ѕᴛᴀᴛᴇ: &f{state}'
+    INFO-CUBOID: '&7ᴄᴜʙᴏɪᴅ: &f{cuboid}'
+    INFO-DESTINATION: '&7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ: &f{destination}'
+    INFO-WORLD: '&7ʀᴇѕᴏʟᴠᴇᴅ ᴡᴏʀʟᴅ: &f{world}'
+    INFO-PRIORITY: '&7ᴘʀɪᴏʀɪᴛʏ: &f{priority}'
+    INFO-COOLDOWN: '&7ᴛʀɪɢɢᴇʀ ᴄᴏᴏʟᴅᴏᴡɴ: &f{cooldown}ᴍѕ'
+    INFO-PERMISSION: '&7permission: &f{permission}'
+    INFO-HOLOGRAM: '&7ʜᴏʟᴏɢʀᴀᴍ: &f{hologram}'
+  WORTH:
+    DEFAULT: '&b1 {item} &7ɪѕ ɴᴏᴡ &a${price}'
+    HAND-ITEM: '&b{amount} {item} &7ɪѕ ɴᴏᴡ &a${total}'
+    NO-SELLABLE: '&cᴛʜɪѕ ɪᴛᴇᴍ ɪѕ ɴᴏᴛ ѕᴇʟʟᴀʙʟᴇ.'
+    CONTAINER-BREAKDOWN: '&7ʙᴀѕᴇ: &f${base} &8| &7ᴄᴏɴᴛᴇɴᴛѕ: &f${contents}'
+    RELOADED: '&aᴡᴏʀᴛʜ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+    NO-ADMIN-PERMISSION: '&cyou do not have permission to reload worth settings.'
+  BOUNTY:
+    NEW: '&aᴀ ɴᴇᴡ ʙᴏᴜɴᴛʏ ᴏꜰ ${price} ʜᴀѕ ʙᴇᴇɴ ᴘʟᴀᴄᴇᴅ ᴏɴ {player}!'
+    INCREASED: '&aᴛʜᴇ ʙᴏᴜɴᴛʏ ꜰᴏʀ {player} ʜᴀѕ ʙᴇᴇɴ ɪɴᴄʀᴇᴀѕᴇᴅ ʙʏ ${price}!'
+    ALERT: '&aʏᴏᴜ ʜᴀᴠᴇ ᴀ ɴᴇᴡ ʙᴏᴜɴᴛʏ ꜰʀᴏᴍ {who} ꜰᴏʀ ${price}'
+    CLAIM-SUCCESS: '&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &b${amount}&7 ꜰᴏʀ ᴋɪʟʟɪɴɢ &c{player}&7.'
+    PLAYER-NOT-EXIST: '&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ.'
+    PLAYER-HAS-BOUNTY: '&b{player} &7ʜᴀѕ ᴀ ʙᴏᴜɴᴛʏ ᴏꜰ &c${amount}'
+    NO-BOUNTY: '&cᴛʜᴇ ᴜѕᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ʙᴏᴜɴᴛʏ.'
+    CANT-SELF-BOUNTY: '&cʏᴏᴜ ᴄᴀɴ''ᴛ ᴅᴏ ᴛʜɪѕ ʏᴏᴜʀѕᴇʟꜰ.'
+    MINIMUM-PRICE: '&cᴍɪɴɪᴍᴜᴍ ᴘʀɪᴄᴇ ɪѕ $1,00.'
+  BILLFORD:
+    REQUIRED_CONTENTS: '&cʏᴏᴜ ᴅᴏɴ''ᴛ ʜᴀᴠᴇ ᴀʟʟ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ꜰᴏʀ ᴛʜɪѕ ᴛʀᴀᴅᴇ.'
+    FULL-INVENTORY: '&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ꜰᴜʟʟ! ꜰʀᴇᴇ ᴜᴘ ᴀ ѕʟᴏᴛ ʙᴇꜰᴏʀᴇ ᴄᴏɴꜰɪʀᴍɪɴɢ ᴛʜᴇ
+      ᴛʀᴀᴅᴇ.'
+    TRADE-COMPLETED: '&aᴛʀᴀᴅᴇ ᴄᴏᴍᴘʟᴇᴛᴇ! ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &f{reward}&a. &7ѕʜᴀʀᴅѕ: &#A303F9{shard_bonus}&7,
+      ᴍᴏɴᴇʏ: &a${money_bonus}&7. &8ɴᴇxᴛ ʀᴇꜰʀᴇѕʜ ɪɴ &f{next_rotation}&8.'
+    LIMIT-REACHED: '&cʏᴏᴜ''ᴠᴇ ʀᴇᴀᴄʜᴇᴅ ᴛʜᴇ ᴛʀᴀᴅᴇ ʟɪᴍɪᴛ ꜰᴏʀ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ. ᴄᴏᴍᴇ ʙᴀᴄᴋ
+      ᴀꜰᴛᴇʀ ᴛʜᴇ ɴᴇxᴛ ᴛʀᴀᴅᴇ ᴄʜᴀɴɢᴇ!'
+    CLICK-COOLDOWN: '&cѕʟᴏᴡ ᴅᴏᴡɴ. ʙɪʟʟꜰᴏʀᴅ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴄʟɪᴄᴋ.'
+    TRADE-CHANGED: '&eʙɪʟʟꜰᴏʀᴅ ʀᴏᴛᴀᴛᴇᴅ ᴛᴏ ᴀ ɴᴇᴡ ᴏꜰꜰᴇʀ ᴡʜɪʟᴇ ʏᴏᴜ ʜᴀᴅ ᴛʜᴇ ᴍᴇɴᴜ ᴏᴘᴇɴ.
+      &7ɴᴇxᴛ ᴄʜᴀɴɢᴇ ɪɴ &b{countdown}&7.'
+    BUSY: '&cʙɪʟʟꜰᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴄʟɪᴄᴋ.'
+    NOT-CONFIGURED: '&cʙɪʟʟꜰᴏʀᴅ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴛʀᴀᴅᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʀɪɢʜᴛ ɴᴏᴡ.'
+    NO-PERMISSION: '&cyou need &f{permission} &cto use billford.'
+  BALANCE:
+    YOUR-BALANCE: '&7ʏᴏᴜ ʜᴀᴠᴇ &a${amount}&7.'
+    OTHER-BALANCE: '&b{player} &7ʜᴀѕ &a${amount}&7.'
+    YOUR-SHARDS: '&7ʏᴏᴜʀ ѕʜᴀʀᴅѕ: &#A303F9{amount}'
+    OTHER-SHARDS: '&7{player} ѕʜᴀʀᴅѕ: &#A303F9{amount}'
+    ADMIN:
+      INVALID-AMOUNT: '&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ
+        ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1,5ᴍ, 2ʙ)'
+      MUST-BE-POSITIVE: '&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ.'
+      MUST-BE-NON-NEGATIVE: '&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴢᴇʀᴏ ᴏʀ ᴘᴏѕɪᴛɪᴠᴇ.'
+      PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+      TARGET-NOT-ENOUGH-MONEY: '&c{player} ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ. ᴄᴜʀʀᴇɴᴛ ʙᴀʟᴀɴᴄᴇ:
+        &f${balance}&c.'
+      ADD-MONEY-SUCCESS: '&aᴀᴅᴅᴇᴅ &f${amount} &aᴛᴏ &b{player} &a. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&a.'
+      ADD-MONEY-RECEIVED: '&a{admin} ᴀᴅᴅᴇᴅ &f${amount} &aᴛᴏ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ:
+        &f${balance}&a.'
+      REMOVE-MONEY-SUCCESS: '&aʀᴇᴍᴏᴠᴇᴅ &f${amount} &aꜰʀᴏᴍ &b{player} &a. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ:
+        &f${balance}&a.'
+      REMOVE-MONEY-RECEIVED: '&c{admin} ʀᴇᴍᴏᴠᴇᴅ &f${amount} &cꜰʀᴏᴍ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ. ɴᴇᴡ
+        ʙᴀʟᴀɴᴄᴇ: &f${balance}&c.'
+      SET-MONEY-SUCCESS: '&aѕᴇᴛ &b{player}&a''ѕ ʙᴀʟᴀɴᴄᴇ ᴛᴏ &f${amount}&a. ᴘʀᴇᴠɪᴏᴜѕ
+        ʙᴀʟᴀɴᴄᴇ: &f${previous_balance}&a.'
+      SET-MONEY-RECEIVED: '&e{admin} ѕᴇᴛ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ ᴛᴏ &f${amount}&e. ᴘʀᴇᴠɪᴏᴜѕ ʙᴀʟᴀɴᴄᴇ:
+        &f${previous_balance}&e.'
+    PAY:
+      CANT-PAY-SELF: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴘᴀʏ ʏᴏᴜʀѕᴇʟꜰ.'
+      INVALID-AMOUNT: '&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ
+        ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1,5ᴍ, 2ʙ)'
+      MUST-BE-POSITIVE: '&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ.'
+      NOT-ENOUGH-MONEY: '&cʏᴏᴜ ᴅᴏɴ''ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ.'
+      TRANSACTION-ERROR: '&cᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ ᴅᴜʀɪɴɢ ᴛʀᴀɴѕᴀᴄᴛɪᴏɴ. ʏᴏᴜʀ ᴍᴏɴᴇʏ ʜᴀѕ ʙᴇᴇɴ
+        ʀᴇꜰᴜɴᴅᴇᴅ.'
+      PLAYER-NOT-ONLINE: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.'
+      TARGET-PROFILE-NOT-FOUND: '&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+      SUCCESS-SENDER: '&7ʏᴏᴜ ᴘᴀɪᴅ &b{player} &a${amount}&7.'
+      SUCCESS-RECEIVER: '&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &a${amount}&7 ꜰʀᴏᴍ &b{player}&7.'
+      TARGET-DISABLED-PAYMENTS: '&cᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴘʟᴀʏᴇʀ ʜᴀѕ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛѕ ᴅɪѕᴀʙʟᴇᴅ.'
+  SHARD_PAY:
+    CANT-PAY-SELF: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴘᴀʏ ʏᴏᴜʀѕᴇʟꜰ.'
+    INVALID-AMOUNT: '&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ ʙ
+      ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1,5ᴍ, 2ʙ)'
+    MUST-BE-POSITIVE: '&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ.'
+    NOT-ENOUGH-SHARDS: '&cʏᴏᴜ ᴅᴏɴ''ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ѕʜᴀʀᴅѕ.'
+    TARGET-PROFILE-NOT-FOUND: '&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+    TARGET-DISABLED-PAYMENTS: '&cᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴘʟᴀʏᴇʀ ʜᴀѕ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛѕ ᴅɪѕᴀʙʟᴇᴅ.'
+    SUCCESS-SENDER: '&7ʏᴏᴜ ᴘᴀɪᴅ &b{player} &#A303F9{amount} &7 ѕʜᴀʀᴅѕ.'
+    SUCCESS-RECEIVER: '&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &#A303F9{amount} &7 ѕʜᴀʀᴅѕ ꜰʀᴏᴍ &b{player}&7.'
+  FINDPLAYER:
+    AFK: '&7{player} ɪɴ ᴛʜᴇ &#A303F9ᴀꜰᴋ'
+    RTP_ZONE: '&7{player} ɪɴ ᴛʜᴇ &cʀᴛᴘᴢᴏɴᴇ'
+    SPAWN: '&7{player} ɪɴ ᴛʜᴇ &bѕᴘᴀᴡɴ'
+    OVERWORLD: '&7{player} в ɪɴ ᴛʜᴇ &bᴏᴠᴇʀᴡᴏʀʟᴅ &7(&b{biome}&7)'
+    NETHER: '&7{player} в ɪɴ ᴛʜᴇ &bɴᴇᴛʜᴇʀ &7(&b{biome}&7)'
+    THE_END: '&7{player} ɪɴ ᴛʜᴇ &bᴛʜᴇ ᴇɴᴅ &7(&b{biome}&7)'
+    UNKNOWN: '&7{player} в ᴛʜᴇ &b{world}'
+  PUNISHMENTS:
+    PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+    NO-PERMISSION: '&cyou do not have permission to view punishment history.'
+    NO-CREATE-PERMISSION: '&cyou do not have permission to create punishments.'
+    NO-REMOVE-PERMISSION: '&cyou do not have permission to remove punishments.'
+    NO-DELETE-PERMISSION: '&cyou do not have permission to delete punishment history
+      records.'
+    USAGE: '&cᴜѕᴀɢᴇ: /punishments <player>'
+    USAGE-BAN: '&cᴜѕᴀɢᴇ: /ban <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-TEMPBAN: '&cᴜѕᴀɢᴇ: /tempban <player> <time> [ʀᴇᴀѕᴏɴ] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ,
+      2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)'
+    USAGE-MUTE: '&cᴜѕᴀɢᴇ: /mute <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-TEMPMUTE: '&cᴜѕᴀɢᴇ: /tempmute <player> <time> [ʀᴇᴀѕᴏɴ] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ,
+      2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)'
+    USAGE-WARN: '&cᴜѕᴀɢᴇ: /warn <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-KICK: '&cᴜѕᴀɢᴇ: /kick <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-BLACKLIST: '&cᴜѕᴀɢᴇ: /blacklist <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-UNBAN: '&cᴜѕᴀɢᴇ: /unban <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-PARDON: '&cᴜѕᴀɢᴇ: /pardon <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-UNMUTE: '&cᴜѕᴀɢᴇ: /unmute <player> [ʀᴇᴀѕᴏɴ]'
+    USAGE-UNBLACKLIST: '&cᴜѕᴀɢᴇ: /unblacklist <player> [ʀᴇᴀѕᴏɴ]'
+    NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+    TARGET-OFFLINE: '&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ.'
+    INVALID-DURATION: '&cɪɴᴠᴀʟɪᴅ ᴛɪᴍᴇ. ᴜѕᴇ ᴠᴀʟᴜᴇѕ ʟɪᴋᴇ 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ ᴄᴏᴍʙɪɴᴇ:
+      5ᴅ 15ᴍ 30ѕ.'
+    CREATE-FAILED: '&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ.'
+    DELETE-FAILED: '&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ #{id}.'
+    CREATED: '&aᴄʀᴇᴀᴛᴇᴅ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏʀ &b{player} &a. Идентификатор: &f#{id}'
+    DELETED-RECORD: '&aᴅᴇʟᴇᴛᴇᴅ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅ &f#{id}&a.'
+    REMOVED: '&aʀᴇᴍᴏᴠᴇᴅ ᴀᴄᴛɪᴠᴇ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ(ѕ) ꜰᴏʀ &b{player}&a.'
+    NO-ACTIVE: '&cɴᴏ ᴀᴄᴛɪᴠᴇ {type} ᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏᴜɴᴅ ꜰᴏʀ {player}.'
+    WARN-RECEIVED: '&cᴡᴀʀɴɪɴɢ: &f{reason}'
+    MUTE-RECEIVED: '&cʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ. ʀᴇᴀѕᴏɴ: &f{reason}'
+    MUTED-CHAT: '&cʏᴏᴜ ᴀʀᴇ ᴍᴜᴛᴇᴅ. ʀᴇᴀѕᴏɴ: &f{reason}&7. ᴇxᴘɪʀᴇѕ: &f{expires}'
+    BAN-KICK: |-
+      &cʏᴏᴜ ᴀʀᴇ ʙᴀɴɴᴇᴅ ꜰʀᴏᴍ ᴛʜɪѕ ѕᴇʀᴠᴇʀ.
+      &7ʀᴇᴀѕᴏɴ: &f{reason}
+      &7ᴇxᴘɪʀᴇѕ: &f{expires}
+    BLACKLIST-KICK: |-
+      &cʏᴏᴜ ᴀʀᴇ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ꜰʀᴏᴍ ᴛʜɪѕ ѕᴇʀᴠᴇʀ.
+      &7ʀᴇᴀѕᴏɴ: &f{reason}
+    BAN: |-
+      &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ!
+      &8&m----------------------------
+      &7ʀᴇᴀѕᴏɴ: &f%reason%
+      &7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%
+      &7ʙᴀɴɴᴇᴅ ʙʏ: &f%issuer%
+      &8&m----------------------------
+      &7ᴀᴘᴘᴇᴀʟ ᴀᴛ: &fdiscord.example.space
+    KICK: |-
+      &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ!
+      &8&m----------------------------
+      &7ʀᴇᴀѕᴏɴ: &f%reason%
+      &7ᴋɪᴄᴋᴇᴅ ʙʏ: &f%issuer%
+      &8&m----------------------------
+      &7ʏᴏᴜ ᴍᴀʏ ʀᴇᴄᴏɴɴᴇᴄᴛ
+    MUTE: |-
+      &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ!
+      &8&m----------------------------
+      &7ʀᴇᴀѕᴏɴ: &f%reason%
+      &7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%
+      &7ᴍᴜᴛᴇᴅ ʙʏ: &f%issuer%
+      &8&m----------------------------
+      &7ʏᴏᴜ ᴄᴀɴɴᴏᴛ ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ
+    BLACKLIST: |-
+      &4&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ!
+      &8&m----------------------------
+      &7ʀᴇᴀѕᴏɴ: &f%reason%
+      &7ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ʙʏ: &f%issuer%
+      &8&m----------------------------
+      &4ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴊᴏɪɴ ᴛʜᴇ ѕᴇʀᴠᴇʀ
+  SOCIAL:
+    DISCORD:
+    - ''
+    - '&fᴊᴏɪɴ ᴏᴜʀ ᴅɪѕᴄᴏʀᴅ: &#6BF18Ddiscord.example.space'
+    - ''
+    TWITTER:
+    - ''
+    - '&fꜰᴏʟʟᴏᴡ ᴏɴ x: &#6BF18D@ᴇʟᴏɴᴍᴜѕᴋ'
+    - ''
+    STORE:
+    - ''
+    - '&fᴠɪѕɪᴛ ᴏᴜʀ ѕᴛᴏʀᴇ: &#6BF18Dstore.example.space'
+    - ''
+  CRASH_PROTECTION:
+    ITEM_BLOCKED: '&cЭтот элемент нельзя использовать здесь, поскольку его данные
+      выглядят небезопасно. &7Контекст: &f{context}&7. Причина: &f{reason}'
+  ORDERS:
+    DISABLED: '&cᴏʀᴅᴇʀѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    NO_ADMIN_PERMISSION: '&cyou do not have permission to reload orders settings.'
+    RELOADED: '&aᴏʀᴅᴇʀѕ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+    PROMPT_SEARCH: '&7ᴇɴᴛᴇʀ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ѕᴇᴀʀᴄʜ ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ
+      ᴀʙᴏʀᴛ.'
+    SEARCH_EMPTY: '&cᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ɴᴀᴍᴇ ᴛᴏ ѕᴇᴀʀᴄʜ.'
+    PROMPT_QUANTITY: '&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ٫ᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7
+      ᴛᴏ ᴀʙᴏʀᴛ.'
+    PROMPT_PRICE: '&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7
+      ᴛᴏ ᴀʙᴏʀᴛ.'
+    INPUT_CANCELLED: '&7ᴏʀᴅᴇʀ ᴄʀᴇᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟʟᴇᴅ.'
+    PROMPT_EDIT_QUANTITY: '&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ٫ᴜᴀɴᴛɪᴛʏ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ:
+      &e{quantity}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.'
+    PROMPT_EDIT_PRICE: '&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ:
+      {price_formatted}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.'
+    EDIT_CANCELLED: '&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ.'
+    EDIT_UPDATED: '&aᴏʀᴅᴇʀ #{order_id} ᴜᴘᴅᴀᴛᴇᴅ. ɴᴇᴡ ʙᴜᴅɢᴇᴛ: {budget_formatted}.'
+    EDIT_ITEM_UPDATED: '&aᴏʀᴅᴇʀ #{order_id} ɪᴛᴇᴍ ᴜᴘᴅᴀᴛᴇᴅ ᴛᴏ &f{item}&a.'
+    EDIT_LOCKED: '&cᴛʜɪѕ ᴏʀᴅᴇʀ ᴀʟʀᴇᴀᴅʏ ʜᴀѕ ᴅᴇʟɪᴠᴇʀɪᴇѕ, ѕᴏ ɪᴛ ᴄᴀɴɴᴏᴛ ʙᴇ ᴇᴅɪᴛᴇᴅ.'
+    NO_PENDING_ORDER: '&cᴛʜᴇʀᴇ ɪѕ ɴᴏ ᴘᴇɴᴅɪɴɢ ᴏʀᴅᴇʀ ᴅʀᴀꜰᴛ ᴛᴏ ᴄᴏɴꜰɪʀᴍ.'
+    ITEM_BLOCKED: '&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ.'
+    INVALID_QUANTITY: '&cɪɴᴠᴀʟɪᴅ ٫ᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0.'
+    QUANTITY_OUT_OF_RANGE: '&cǫᴜᴀɴᴛɪᴛʏ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {max}.'
+    INVALID_PRICE: '&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1,5ᴍ.'
+    PRICE_OUT_OF_RANGE: '&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f${min}&c ᴀɴᴅ &f${max}&c.'
+    TOTAL_TOO_HIGH: '&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f${max}&c.'
+    NOT_ENOUGH_MONEY: '&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ꜰᴏʀ ᴛʜᴀᴛ ᴏʀᴅᴇʀ.'
+    MAX_ACTIVE_REACHED: '&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀ ʟɪᴍɪᴛ.'
+    CREATED: '&aᴏʀᴅᴇʀ ᴄʀᴇᴀᴛᴇᴅ! &7#{order_id} &fꜰᴏʀ &e{quantity} {item}&7 ᴀᴛ &a${price_each}
+      &7ᴇᴀᴄʜ. ʙᴜᴅɢᴇᴛ ʟᴏᴄᴋᴇᴅ: &a${budget}&7.'
+    ORDER_NOT_FOUND: '&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.'
+    ORDER_NOT_ACTIVE: '&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.'
+    NOT_YOUR_ORDER: '&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.'
+    CANNOT_DELIVER_OWN: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ ᴛᴏ ʏᴏᴜʀ ᴏᴡɴ ᴏʀᴅᴇʀ.'
+    NO_MATCHING_ITEMS: '&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ᴛᴏ ᴅᴇʟɪᴠᴇʀ.'
+    ORDER_FULL: '&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ꜰᴜʟʟ.'
+    DELIVERY_SUCCESS: '&aᴅᴇʟɪᴠᴇʀᴇᴅ &e{quantity} {item} &a ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ &a${payout}&a.'
+    CANCELLED: '&eᴏʀᴅᴇʀ #{order_id} &eʜᴀѕ ʙᴇᴇɴ ᴄʟᴏѕᴇᴅ. ʀᴇᴍᴀɪɴɪɴɢ ᴇѕᴄʀᴏᴡ ᴡᴀѕ ᴍᴏᴠᴇᴅ
+      ᴛᴏ ʏᴏᴜʀ ᴄᴏʟʟᴇᴄᴛ ᴜᴇᴜᴇ.'
+    CLAIM_NOT_FOUND: '&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.'
+    CLAIMS_DISABLED: '&cᴏʀᴅᴇʀѕ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    NOT_YOUR_CLAIM: '&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.'
+    CLAIM_ALREADY_CLAIMED: '&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ.'
+    CLAIM_INVENTORY_FULL: '&cʏᴏᴜ ɴᴇᴇᴅ ᴀ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕʟᴏᴛ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ.'
+    CLAIMED_REFUND: '&aᴄʟᴀɪᴍᴇᴅ ᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ ᴏꜰ &a${amount}&a.'
+    CLAIMED_ITEM: '&aᴄʟᴀɪᴍᴇᴅ ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍ: &f{item}&a.'
+  STATS-WIPE:
+    NO-PERMISSION: '&cyou do not have permission to use stats wipe.'
+    PLAYER-ONLY-GUI: '&cᴏᴘᴇɴ ᴛʜᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ɢᴜɪ ɪɴ-ɢᴀᴍᴇ, ᴏʀ ᴜѕᴇ /uds ѕᴛᴀᴛѕᴡɪᴘᴇ <target>
+      ᴄᴏɴꜰɪʀᴍ.'
+    INVALID-TARGET: '&cɪɴᴠᴀʟɪᴅ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ᴛᴀʀɢᴇᴛ. ᴀᴠᴀɪʟᴀʙʟᴇ: {targets}'
+    DIRECT-USAGE: '&cᴜѕᴇ /uds прокрутка статистики <target> ᴄᴏɴꜰɪʀᴍ ᴛᴏ ʀᴜɴ ᴅɪʀᴇᴄᴛʟʏ,
+      ᴏʀ /uds проведите статистику ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ɢᴜɪ.'
+    BUSY: '&cᴀ ᴡɪᴘᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ.'
+    FAILED: '&cѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ: {error}'
+    SUCCESS: '&aᴡɪᴘᴇ ᴄᴏᴍᴘʟᴇᴛᴇ: &f{target}&a. ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}&a.'
+  STAFF:
+    NO_PERMISSION_OTHERS: '&c&lᴇʀʀᴏʀ &7» &cʏᴏᴜ ᴅᴏɴ''ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴏᴛʜᴇʀ
+      ᴘʟᴀʏᴇʀѕ'' ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!'
+    TOGGLE_ERROR: '&c&lᴇʀʀᴏʀ &7» &cꜰᴀɪʟᴇᴅ ᴛᴏ ᴛᴏɢɢʟᴇ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!'
+    STATUS_ENABLED: '&aᴇɴᴀʙʟᴇᴅ'
+    STATUS_DISABLED: '&cᴅɪѕᴀʙʟᴇᴅ'
+    ICON_ENABLED: '&a✓'
+    ICON_DISABLED: '&c✗'
+    STATE_ACTIVE: '&aᴀᴄᴛɪᴠᴇ'
+    STATE_INACTIVE: '&cɪɴᴀᴄᴛɪᴠᴇ'
+    SELF_TOGGLE: '&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status%&7!'
+    SELF_STATUS: '&7ѕᴛᴀᴛᴜѕ: %icon% %status%'
+    OTHER_TOGGLE: '&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%&7!'
+    TARGET_NOTIFY: '&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» ʏᴏᴜʀ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ %status% &7ʙʏ &e%staff%&7!'
+    BROADCAST: '&8[&6ѕᴛᴀꜰꜰ&8] &e%staff% &7ʜᴀѕ %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%'
+    ACTIVATION_MESSAGES:
+    - '&7&m------------------------------'
+    - '&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ'
+    - '&7• ɪɴᴠᴇɴᴛᴏʀʏ ᴄʟᴇᴀʀᴇᴅ ᴀɴᴅ ѕᴀᴠᴇᴅ'
+    - '&7• ɢᴀᴍᴇ ᴍᴏᴅᴇ ѕᴇᴛ ᴛᴏ ᴄʀᴇᴀᴛɪᴠᴇ'
+    - '&7• ꜰʟɪɢʜᴛ ᴇɴᴀʙʟᴇᴅ'
+    - '&7• ᴜѕᴇ &e/vanish &7ᴛᴏ ʙᴇᴄᴏᴍᴇ ɪɴᴠɪѕɪʙʟᴇ'
+    - '&7&m------------------------------'
+  FLY:
+    ENABLED: '&a✈ &7ꜰʟɪɢʜᴛ ᴍᴏᴅᴇ &aᴀᴄᴛɪᴠᴀᴛᴇᴅ'
+    DISABLED: '&c✗ &7ꜰʟɪɢʜᴛ ᴍᴏᴅᴇ &cᴅᴇᴀᴄᴛɪᴠᴀᴛᴇᴅ'
+  FLYSPEED:
+    SET: '&aꜰʟʏ ѕᴘᴇᴇᴅ ѕᴇᴛ ᴛᴏ &f{speed}&a.'
+    INVALID: '&cɪɴᴠᴀʟɪᴅ ѕᴘᴇᴇᴅ. ᴘʟᴇᴀѕᴇ ᴇɴᴛᴇʀ ᴀ ɴᴜᴍʙᴇʀ ꜰʀᴏᴍ 1 ᴛᴏ 10.'
+  WALKSPEED:
+    SET: '&aᴡᴀʟᴋ ѕᴘᴇᴇᴅ ѕᴇᴛ ᴛᴏ &f{speed}&a.'
+    INVALID: '&cɪɴᴠᴀʟɪᴅ ѕᴘᴇᴇᴅ. ᴘʟᴇᴀѕᴇ ᴇɴᴛᴇʀ ᴀ ɴᴜᴍʙᴇʀ ꜰʀᴏᴍ 1 ᴛᴏ 10.'
+  HEAL:
+    SELF: '&a♡ &7ʏᴏᴜʀ ʜᴇᴀʟᴛʜ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴛᴏʀᴇᴅ!'
+    OTHER: '&8[&cʜᴇᴀʟ&8] &7ʏᴏᴜ ʜᴇᴀʟᴇᴅ &d%player%'
+    NOTIFY: '&8[&cʜᴇᴀʟ&8] &d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴇᴀʟᴛʜ'
+  FEED:
+    SELF: '&7ʏᴏᴜʀ ʜᴜɴɢᴇʀ ʜᴀѕ ʙᴇᴇɴ ѕᴀᴛɪѕꜰɪᴇᴅ!'
+    OTHER: '&8[&6ꜰᴇᴇᴅ&8] &7ʏᴏᴜ ꜰᴇᴅ &d%player%'
+    NOTIFY: '&8[&6ꜰᴇᴇᴅ&8] &d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴜɴɢᴇʀ'
+  GOD:
+    ENABLED: '&aɢᴏᴅ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ.'
+    DISABLED: '&cɢᴏᴅ ᴍᴏᴅᴇ ᴅɪѕᴀʙʟᴇᴅ.'
+    OTHER: '&7ɢᴏᴅ ᴍᴏᴅᴇ ꜰᴏʀ &e%player% &7ᴡᴀѕ %status%&7.'
+    NOTIFY: '&e%sender% &7ѕᴇᴛ ʏᴏᴜʀ ɢᴏᴅ ᴍᴏᴅᴇ ᴛᴏ %status%&7.'
+    STATUS_ENABLED: '&aᴇɴᴀʙʟᴇᴅ'
+    STATUS_DISABLED: '&cᴅɪѕᴀʙʟᴇᴅ'
+    NO_PERMISSION: '&cyou do not have permission.'
+    USAGE: '&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]'
+    CONSOLE_USAGE: '&cᴜѕᴀɢᴇ: /%label% <player>'
+    PLAYER_NOT_ONLINE: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.'
+  GAMEMODE:
+    MESSAGE: '&d%player% &7ɪѕ ɴᴏᴡ ɪɴ &e%mode% ᴍᴏᴅᴇ'
+    TARGET_MESSAGE: '&7ʏᴏᴜʀ ɢᴀᴍᴇᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴄʜᴀɴɢᴇᴅ ᴛᴏ &e%mode% &7ʙʏ &d%sender%'
+    NO_PERMISSION: '&cyou do not have permission.'
+    NO_PERMISSION_OTHERS: '&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʜᴀɴɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ''
+      ɢᴀᴍᴇᴍᴏᴅᴇ.'
+    PLAYER_ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ ᴡɪᴛʜᴏᴜᴛ ᴀ ᴛᴀʀɢᴇᴛ.'
+    PLAYER_NOT_ONLINE: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.'
+    INVALID_MODE: '&cɪɴᴠᴀʟɪᴅ ɢᴀᴍᴇᴍᴏᴅᴇ. ᴜѕᴇ ѕᴜʀᴠɪᴠᴀʟ, ᴄʀᴇᴀᴛɪᴠᴇ, ᴀᴅᴠᴇɴᴛᴜʀᴇ, ᴏʀ ѕᴘᴇᴄᴛᴀᴛᴏʀ.'
+    USAGE: '&cᴜѕᴀɢᴇ: /%label% <survival|creative|adventure|spectator> [ᴘʟᴀʏᴇʀ]'
+    USAGE_SHORT: '&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]'
+    DISABLED: '&cɢᴀᴍᴇᴍᴏᴅᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+  RANDOMTP:
+    SUCCESS: '&8[&dʀᴛᴘ&8] &7ʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &e%player%'
+    NOTIFY: '&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!'
+    NO_PLAYERS: '&c✖ &7ɴᴏ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ'
+  RENAME:
+    NO_ITEM: '&c✖ &7ʏᴏᴜ ᴍᴜѕᴛ ʜᴏʟᴅ ᴀɴ ɪᴛᴇᴍ ᴛᴏ ʀᴇɴᴀᴍᴇ ɪᴛ'
+    META_ERROR: '&c⚠ &7ᴛʜɪѕ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʀᴇɴᴀᴍᴇᴅ'
+    STAFFMODE_BLOCKED: '&c✖ &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪᴛᴇᴍѕ ᴄᴀɴɴᴏᴛ ʙᴇ ʀᴇɴᴀᴍᴇᴅ'
+    RESET_SUCCESS: '&8[&aʀᴇɴᴀᴍᴇ&8] &7ɪᴛᴇᴍ ɴᴀᴍᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴇᴛ'
+    SUCCESS: '&8[&aʀᴇɴᴀᴍᴇ&8] &7ɴᴇᴡ ɴᴀᴍᴇ: &f%name%'
+  PING:
+    SELF: '&7ʏᴏᴜʀ ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ'
+    OTHER: '&e%player%''ѕ &7ᴘɪɴɢ и &b%ping%ᴍѕ'
+  PLAYTIME:
+    MESSAGE: '&a%time% &eᴘʟᴀʏɪɴɢ ᴏɴ &a%server%'
+    OTHER: '&e%player% &7ʜᴀѕ ᴘʟᴀʏᴇᴅ ꜰᴏʀ &a%time% &7ᴏɴ &a%server%'
+  STAFFCHAT:
+    NO_PERMISSION: '&cyou do not have permission to use staff chat.'
+    USAGE: '&cᴜѕᴀɢᴇ: /staffchat <message>'
+    FORMAT: '&8[&6ѕᴛᴀꜰꜰᴄʜᴀᴛ&8] &e%player%&7: %message%'
+    DISABLED: '&cɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    MESSAGE_TOO_LONG: '&cѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.'
+    REDIS_UNAVAILABLE: '&eѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ
+      ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ.'
+  HELPOP:
+    NO_PERMISSION: '&cyou do not have permission to reϫuest staff assistance.'
+    PLAYER_ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʜᴇʟᴘᴏᴘ.'
+    USAGE: '&cᴜѕᴀɢᴇ: /helpop <message>'
+    DISABLED: '&cʜᴇʟᴘᴏᴘ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    MESSAGE_TOO_LONG: '&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.'
+    COOLDOWN: '&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ᴜѕɪɴɢ ʜᴇʟᴘᴏᴘ ᴀɢᴀɪɴ.'
+    REDIS_UNAVAILABLE: '&eʏᴏᴜʀ ʀᴇ٫ᴜᴇѕᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ
+      ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ.'
+    FORMAT:
+    - ''
+    - '&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ'
+    - '     &9ʀᴇᴀѕᴏɴ: &b%message%'
+    - ''
+    CONFIRMATION: '&aʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ.'
+  REPORT:
+    NO_PERMISSION: '&cyou do not have permission to report players.'
+    PLAYER_ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʀᴇᴘᴏʀᴛ.'
+    USAGE: '&cᴜѕᴀɢᴇ: /report <player> <reason>'
+    DISABLED: '&cʀᴇᴘᴏʀᴛѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+    PLAYER_NOT_FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+    CANNOT_REPORT_SELF: '&cʏᴏᴜ ᴄᴀɴ''ᴛ ʀᴇᴘᴏʀᴛ ʏᴏᴜʀѕᴇʟꜰ!'
+    MESSAGE_TOO_LONG: '&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.'
+    COOLDOWN: '&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ʀᴇᴘᴏʀᴛɪɴɢ ᴀɢᴀɪɴ.'
+    REDIS_UNAVAILABLE: '&eʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ
+      ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ.'
+    FORMAT:
+    - ''
+    - '&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%'
+    - '     &9ʀᴇᴀѕᴏɴ: &b%reason%'
+    - ''
+    CONFIRMATION: '&aʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ.'
+  ALTS:
+    USAGE: '&cᴜѕᴀɢᴇ: /alts <player>'
+    NOT_FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+    NO_DATA: '&cɴᴏ ɪᴘ ʜɪѕᴛᴏʀʏ ꜰᴏᴜɴᴅ ꜰᴏʀ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ.'
+    NONE: '&7ɴᴏ ᴀʟᴛᴇʀɴᴀᴛᴇ ᴀᴄᴄᴏᴜɴᴛѕ ꜰᴏᴜɴᴅ.'
+    HEADER: '&8[&6ᴀʟᴛѕ&8] &e%player%'
+    KNOWN_IPS: '&7ᴋɴᴏᴡɴ ɪᴘѕ: &f%ips%'
+    ENTRY: '&8- &e%player% &7[%status%&7] &fѕʜᴀʀᴇᴅ: %ips%'
+  FRIENDS:
+    NO_PERMISSION: '&cyou do not have permission.'
+    USAGE: '&cᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]'
+    PLAYER_NOT_FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+  SAFETY:
+    BOOK-TITLE: ѕᴀꜰᴇᴛʏ ɢᴜɪᴅᴇ
+    BOOK-AUTHOR: ѕᴇʀᴠᴇʀ
+    NO-PERMISSION: '&cyou do not have permission.'
+    RELOAD-SUCCESS: '&aѕᴀꜰᴇᴛʏ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+    GIVE-SUCCESS-SENDER: '&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ɢᴀᴠᴇ ѕᴀꜰᴇᴛʏ ʙᴏᴏᴋ ᴛᴏ {player}.'
+    GIVE-SUCCESS-RECEIVER: '&aʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ ᴛʜᴇ ѕᴀꜰᴇᴛʏ ʙᴏᴏᴋ.'
+    USAGE: '&cᴜѕᴀɢᴇ: /safety [ʀᴇʟᴏᴀᴅ|ᴀᴅᴅ <player>|ɢɪᴠᴇ <player>]'
+    BOOK-PAGES:
+    - |
+      &0⚠ ᴡᴀᴛᴄʜ ᴏᴜᴛ!
+
+      ꜰᴀᴋᴇ ᴅɪѕᴄᴏʀᴅѕ ᴏʀ
+      ᴍᴏᴅѕ ᴄᴀɴ ѕᴛᴇᴀʟ ʏᴏᴜʀ
+      ᴀᴄᴄᴏᴜɴᴛ.
+
+      ᴛʜᴇ ᴏɴʟʏ ᴏꜰꜰɪᴄɪᴀʟ
+      ᴅɪѕᴄᴏʀᴅ ᴄᴀɴ ʙᴇ ꜰᴏᴜɴᴅ
+      ᴜѕɪɴɢ &1/discord&0.
+
+      ɴᴇᴠᴇʀ ᴅᴏᴡɴʟᴏᴀᴅ ꜰɪʟᴇѕ
+      ᴏʀ ᴍᴏᴅѕ ꜰʀᴏᴍ ʀᴀɴᴅᴏᴍ
+      ᴘᴇᴏᴘʟᴇ.
+  ANVILMOD:
+    NO-PERMISSION: '&cyou do not have permission.'
+    USAGE: '&cᴜѕᴀɢᴇ: /amod <add|reload> [ᴡᴏʀᴅ]'
+    ADDED: '&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ᴀᴅᴅᴇᴅ ''&e{word}&a'' ᴛᴏ ʙᴀɴɴᴇᴅ ᴡᴏʀᴅѕ.'
+    ALREADY-EXISTS: '&cᴛʜᴀᴛ ᴡᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ʙᴀɴɴᴇᴅ ʟɪѕᴛ.'
+    RELOADED: '&aᴀɴᴠɪʟ ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.'
+DEATH_MESSAGES:
+  MESSAGES:
+    PREFIX: '&c☠ '
+    BLOCK-EXPLOSION: '{player} ɢᴏᴛ ʙʟᴏᴡɴ ᴛᴏ ᴘɪᴇᴄᴇѕ'
+    CONTACT: '{player}'
+    DROWNING:
+      NORMAL: '{player} ᴅʀᴏᴡɴᴇᴅ!'
+      PVP: '{player} ??????, ??????? ???????? ?? {killer}'
+    ENTITY-ATTACK: '{player} ᴡᴀѕ ѕʟᴀɪɴ ʙʏ {killer}'
+    FALL:
+      NORMAL: '{player}'
+      PVP: '{player} ᴡᴀѕ ᴅᴏᴏᴍᴇᴅ ᴛᴏ ꜰᴀʟʟ ʙʏ {killer}'
+    FALLING-BLOCK: '{player}'
+    FIRE:
+      NORMAL: '{player} ᴡᴇɴᴛ ᴜᴘ ɪɴ ꜰʟᴀᴍᴇѕ'
+      PVP: '{player} ????? ? ????? ?? ????? ??? ? {killer}'
+    FIRE-TICK:
+      NORMAL: '{player} ᴅᴇᴀᴛʜ'
+      PVP: '{player} ᴡᴀѕ ʙᴜʀɴᴛ ᴛᴏ ᴀ ᴄʀɪѕᴘ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}'
+    LAVA:
+      NORMAL: '{player}'
+      PVP: '{player} ????????? ????????? ? ????, ??????? ???????? ?? {killer}'
+    LIGHTNING: '{player}'
+    POISON: '{player}'
+    PROJECTILE:
+      NORMAL: '{player} ᴡᴀѕ ѕʜᴏᴛ'
+      PVP: '{player} ᴡᴀѕ ѕʜᴏᴛ ʙʏ {killer}'
+    STARVATION: '{player} ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
+    SUFFOCATION: '{player} ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ'
+    SUICIDE: '{player}'
+    THORNS: '{player}'
+    VOID:
+      NORMAL: '{player} ꜰᴇʟʟ ᴏᴜᴛ ᴏꜰ ᴛʜᴇ ᴡᴏʀʟᴅ'
+      PVP: '{player} ??? ??????? ? ??????? ??????? {killer}'
+    WITHER: '{player}'
+    ENTITY-EXPLOSION:
+      NORMAL: '{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ'
+      PVP: '{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ ʙʏ {killer}'
+    DEFAULT: '{player}'
+  SETTINGS: {}
+BUILTIN:
+  f644b07bb7d7194c2190: '&7(Попытки: &f'
+  39f0408258ee4724d5ba: '&7-> &e'
+  87e6bf17dbcf8c2635b6: '&7После: &f'
+  a68e9b2d2fcac8f13535: '&7[&b'
+  8867bfe2c4f3110916f6: '&7[&b%team_name%&7]'
+  0ce8f9d6123297acb27d: '&7ϫueue=&f'
+  8af63cc508dbd8a10caa: '&7is worth &a$'
+  9113edf68dc721f077ad: '&7region=&f'
+  77ee13fd7da7ee7a1dd4: '&7ready=&f'
+  ce7ef14aa4c40e279201: '&7return=&f'
+  2ea2efbc38885c6620d0: '&7rollback=&f'
+  8870d09a002a483fe894: '&7slot &f'
+  d4093460b3c783e2d0ab: '&7state=&f'
+  03f7d7ba6fe4edd8c46f: '&7claimed &f'
+  8862dc0497985c7d535b: '&7configured=&f'
+  9e14ddfc3f2acdda844d: '&7enabled=&f'
+  d672b425bdf5dc8a6314: '&7or &f/duel отрицать'
+  757115b658b2a438f634: '&7pos1=&f'
+  b4971fc2dbf2be237b59: '&7pos2=&f'
+  405eb1a83ba8610d169f: '&7from &b'
+  f541904b910256c3b35c: '&8(&7scoreboard=&f'
+  975ff24dae2d587e2a15: '&8(&f{attempts} проверяет&8)'
+  a3cec2e64a42efc6b13a: '&8(&f{attempts}/{max_attempts}&8)'
+  edcf8c57b87761e907b3: '&8[&b%team_name%&8]'
+  56d85cc977e8ec86f5b2: '&8[&d%team_name%&8]'
+  dc1557ddc5b3866681dc: '&8| &7Награды: &f'
+  d2cb483bac7070e294a5: '&8| &7Блоки ящиков: &f'
+  921793d84bbc302dbe6c: '&8| &7Сундуки Эндера: &f'
+  dd0623f32d0db34b735b: '&8| &7Дома: &f'
+  9ab56ca32307dfa96bfb: '&8| &7Заказы: &f'
+  d94eebac828ec71881cb: '&8| &7pvp-записи: &f'
+  0e72062d477163f474a1: '&8| &7Команды: &f'
+  258d2ea6836917f4f0cf: '&8| &7radius &f'
+  627aab8503096d873834: '&8| &7by &f'
+  c079de4fff87a573fe06: '&8| &7mspt: &f'
+  2c7336ac8a91777de78f: '&8| &7ttl &f'
+  7fa23c5fbb8baab47510: '&8| &a/draw to accept'
+  3cf7d5bd24e5984c1c5e: '&8| &dtype'
+  6e3113d663568d76b67e: '&8| &etime left: &f'
+  050de506497b1ba3461b: '&a'
+  49af453523380c8f7a51: '&a='
+  3975bb49c8b0800dfa3c: '&ahas been created.'
+  36ad3e0c7d0a4794b4a1: '&ahas been deleted.'
+  a5e2a66fca0d048e881c: '&aset for &f'
+  ddb4ce639260a9bd4cef: '&amore time(s).'
+  1bab421be3780dc123cc: '&amore time(s).'
+  dccfc2adf65ef0de9ba2: '&cexpired.'
+  3769be6d7e7177583013: '&ehas been sent to your duel claims.'
+  fa44782041828cb87396: '&f'
+  61d7eec6a6c9d11f8d99: '&fx'
+  f3946e6130951410e3ae: '&fhas reϫuested a draw. use &f/draw &fto accept.'
+  4f6f035e8a0f716c99c8: '&fhas challenged you to a duel.'
+  b6c6b134161811c9a4be: '&fwon this match!'
+  ac1487ddaad0c35648ce: '&fwon the match!'
+  e2361d61c346b630023a: <type> &7- spawn a bait stash
+  6c8f25d0c18fbdc456cd: '[&b%team_name%]'
+  b6f0c4139fbbf5a25659: '[&d%team_name%]'
+  6c0bdec14d249552d44b: создать <crate> &7- create a crate
+  e9cad36f99dc562a7f9f: удалить <crate> &7- delete a crate
+  d17732f9b82f2fd3b583: имеет &a
+  84fff984ba917d96f1b2: включено &aавтоматическое принятие tpa&7. Ваш запрос &b/tpa&7
+    обрабатывается.
+  c7ebbfbf5e8b3f862aef: включено &aавтоматическое принятие tpahere&7. Ваш запрос &b/tpahere&7
+    обрабатывается.
+  6f85bea4f47bba24cba1: list &7- list active/configured stashes
+  ce95f5f513d28c2b721d: перезагрузить &7- reload spawn-stash.yml
+  436821e7b47185f696d0: удалить <id|nearest|all> &7- rollback stashes
+  85b4d997723b4947e150: настройка setafk&7.
+  797cc4f1d0d7142915ab: настройка setspawn &7and &f/
+  8c09c1dfc24c095eb9c3: осколки для &f
+  b71bd3ef58710a477cb0: spawn <type> &7- spawn a bait stash
+  33678c43591388a83992: give <player> <type> [сумма] &7- give a spawner item
+  4f615c6ab583bf90164d: remove <crate> <slot> &7- remove a reward
+  98cc0b57f68f791f2fe8: reward in slot &f
+  6796ebbb532cbdf59971: bind <crate|cancel> &7- bind a crate chest
+  280f05f9bb6415d6020f: has &a
+  d0ff6a4f4954d7f9d3a4: has &atpa auto-accept&7 enabled. your &b/tpa&7 request is
+    being processed.
+  d24a8e799edfd86fcfdc: has &atpahere auto-accept&7 enabled. your &b/tpahere&7 request
+    is being processed.
+  6bcc8a5dddf15a8dadd6: set <player> <crate> <amount> &7- set key balance
+  532248f9ea8f47ddd841: setpos <id> &euntuk set pusat arena combat.
+  f752cfabea4219230f02: setup setspawn &7and &f/
+  e429ccf6dfb3ac647a7e: 'area: &f'
+  f447a6fc5924dd71e3a8: add <crate> [slot] &7- add reward by gui or hand
+  2fc4f5819ff76160d51b: edit <crate> [slot] &7- edit reward by gui or hand
+  de18746aadae03afb3d9: key <player> <crate> <amount> &7- give keys
+  a09a3f404c36d27fdb01: keyall <crate> <amount> &7- grant keys to online players
+  f611e51641ed6ebf3061: open <crate> &7- open a crate directly
+  e969f79d7e1f42d238e2: type <crate> <choose_one|gacha> &7- set crate type
+  fef567638f22cb64901b: take <player> <crate> <amount> &7- remove keys
+  115620d253b205d50f22: with &f/sell &7and trade better gear through &f/auctionhouse&7.
+  76a96b56c02df387cfec: ${price}x &lshards
+  7ffe6140f6316a2a89ae: '&#00A4FCrtp guide'
+  925060ac7d172cff446c: '&#00A4FCrules'
+  854cff6825829572e612: '&#00A4FChomes'
+  0605202a1a61c42d27a5: '&#00A4FCleaderboards'
+  3ac968fb978bc28c3af2: '&#00A4FCshop'
+  cc824fa170a057892235: '&#00A4FCsell'
+  69bf0213567ded65472a: '&#00A4FCsettings'
+  ba74da6d17d7212e49c3: '&#00A4FCsocial и media'
+  550037cfede95c94415a: '&#00A4FCspawn #'
+  ca493c24a18dbd83970c: '&#00A4FCstart here'
+  d9681c6d3db918f1fc04: '&#00A4FCcombat tips'
+  0e47c84ac4383215dc82: '&#00A4FCcommand: &f/leaderboards'
+  7d39d590a0e5a2223695: '&#00A4FCcommand: &f/media'
+  9b0e9aefc1cee7d47b7e: '&#00A4FCcommand: &f/rtp'
+  0f202205711ef4ec995d: '&#00A4FCcommand: &f/rules'
+  d1b626e386bf4baf0d0e: '&#00A4FCcommand: &f/sell'
+  d7295eb39db6544d5d0d: '&#00A4FCcommand: &f/settings'
+  177255070e1866d9d8d6: '&#00A4FCcommand: &f/shop'
+  629a575e8e7aa4882d0b: '&#00A4FCcommand: &f/spawn'
+  8a1aa4c9922f002b073b: '&#00A4FCmake'
+  8a37a5d0fedf02591df1: '&#00A4FCmake money'
+  33d5e33005dbbcebd8a9: '&#00A4FCopen: &f/home'
+  fba316d15243e97883ec: '&#00A4FCopen: &f/team'
+  4e6704a3d63c8439cf80: '&#00A4FCtip: &favoid risky fights'
+  3c6be9adbe3e1b172456: '&#00A4FCtip: &fkeep rare loot to trade.'
+  410e009dc07b408565ba: '&#00A4FCtip: &fonly teleport to'
+  39bc53dc081ff3c66046: '&#00A4FCteleport requests'
+  4fd8864a677dfbfe2033: '&#00A4FCteams'
+  5843da02d818bf76f8ad: '&#00A4FC⚑ &fteam: &#00A4FC'
+  f2b6a3739909328c8728: '&#00FC00$ &fmoney: &a$'
+  957e3214f13b051b5799: '&#37BFF9+'
+  43ebba1c4e738571cf9a: '&#6BF18D'
+  699a1771c0efa43a8b37: '&#9B59B6[Аметист] &r'
+  f99c404d59b90caf896c: '&#A303F9'
+  939ae9aa044944599aae: '&#A303F9+{shards} shard'
+  02457852d9cbcd023eea: '&#A303F9you received %amount% shard &7(total: &#A303F9%total%&7)'
+  1051ac66a370696ebe38: '&#A303F9you received %amount% shard &8[everywhere] &7(total:
+    &#A303F9%total%&7)'
+  a474e8f0510d915cfd99: '&#A303F9you received %amount% shards &7(&ax%multiplier%&7)
+    &7(total: &#A303F9%total%&7)'
+  9e49359616b93bc29b78: '&#A303F9you received %amount% shards &7(&ax%multiplier%&7)
+    &8[everywhere] &7(total: &#A303F9%total%&7)'
+  08d5c8b556c394211b78: '&#A303F9shard reward'
+  81de377058d4f63e12d5: '&#A303F9shards everywhere &7for &b'
+  dfe471e38024f31f16ca: '&#A303F9afk #'
+  699469b0c8983d3c794b: '&#A303F9★ &fshards: &#A303F9'
+  a617db830f383d597b93: '&#BDC3C7'
+  7953a3c4b4ebc808dc51: '&#F97603☠ &fdeaths: &#F97603'
+  50fc11cb8ad6e39772a5: '&#FC0000⚔ &fkills: &#FC0000'
+  a4d7259cc01ca0e39896: '&#FCE300⌚ &fplaytime: &#FCE300'
+  ae6cab948efe6bfcd8de: |-
+    &4&lyou have been blacklisted!
+    &8&m----------------------------
+    &7reason: &f%reason%
+    &7blacklisted by: &f%issuer%
+    &8&m----------------------------
+    &4you cannot join the server
+  e4b55377e146954c7e26: '&6&l[Биллфорд] &etrade rotated! &7next change in &b{countdown}&7.'
+  8f2929db061025549858: '&6Предварительный просмотр очистки сервера'
+  5bb503360e7210800b8a: '&6inventory of &f'
+  e806d52703527d49b1e9: '&6deaths: &f%deaths%'
+  aa6b8af173757ad9b9b8: '&6performance: %performance%'
+  e1dda02e3a02571bbd20: '&6ffa info &7for &f'
+  216103560b1af1d60e89: '&7 - &f'
+  1007024b5a8dbf864980: '&7 включен. Ваш &b'
+  e1adbd6ecc6847700c2e: '&7 запрос от &f'
+  4244ab4398787d60084f: Запрос &7 обрабатывается.
+  59165e731165f7772026: '&7 запрос к &f'
+  bcb473a4ab4fdb4756e8: '&7 был очищен, поскольку'
+  c005adb24f2bbb5e0fc3: '&7 request to &f'
+  b2692d5e38b79a07f140: '&7 request from &f'
+  a07ab205d21998318746: '&7 enabled. your &b'
+  67ec35675e483e8272c5: '&7 key balance is now &f'
+  be6841e12877b4477a2c: '&7 from &b'
+  c6cca3a9c9a15a5eec3b: '&7&m-------- &bhelp &7&m--------'
+  2128625bba798274c455: '&7&m----------'
+  7a98eefce328a3ae51c3: '&7&m---------- &bserver rules &7&m----------'
+  69b39a601de5e02e4afb: '&7&m------------------'
+  1c9d50247a477af8f7c3: '&7&m---------------------'
+  e76635728e744d037909: '&7&m-----------------------------------'
+  d01e658449b77e2d4734: Очередь автоматического принятия &7 &8(#
+  669242b0ec8f77ef880a: Очередь &7 &8(#
+  93c9a68a658c726e00d6: '&7, &b'
+  346bee94d2c31302278e: '&7, &f'
+  ed1db2e028ffc26ddf6e: '&7, Примеры: &f'
+  01d6e3287d50da07176e: '&7- &f'
+  74a92792789fb10b5fb0: '&7- &fno hunger: &a'
+  268746b356a91f93f46e: '&7- &fno weather: &a'
+  c77a3f94807d3916dca5: '&7- &fno fall damage: &a'
+  1832c8bad5eccd6eeed6: '&7- &falways morning: &a'
+  64deb029a41d218f9d71: '&7/&e'
+  045067f1ea20955f6eee: '&7/&f'
+  81c95ab9a6bdbffbd476: '&71. &fno cheating or hacking'
+  91432c133ddc129c3c23: '&72. &fbe respectful to other players'
+  a4330ce64fe32c127121: '&73. &fno griefing at spawn'
+  6861f5ec0808b635c218: '&74. &fno use of exploits or duplication'
+  ad9189b2b2b1a00727c6: '&75. &fhave fun!'
+  9334f9b665b91bdbd979: '&7Аукционы: &f'
+  ba04ee4b12283198e2f6: '&7Автоматический прием запроса &b/tpa&7 от &f'
+  5cd7b5cd7407990acda7: '&7Автоматический прием запроса &b/tpahere&7 от &f'
+  965f5a0a53aaaa8532a3: '&7Ожидание автоматического принятия &b'
+  05d1a5b91c3b9f12b6b0: '&7Лучшая серия: &f'
+  e3c9d37cb09a3d554f67: '&7Выберите карту, чтобы отправить запрос на дуэль.'
+  009a05ef8e9ec72a8d47: '&7Нажмите, чтобы присоединиться к очереди на дуэль.'
+  789d5e17cd20abe3199f: '&7Нажмите, чтобы выйти из очереди на дуэль.'
+  ede3d9a315bc1661110d: '&7Нажмите, чтобы просмотреть этот пакет добычи.'
+  46971c0f9626940e8cf8: '&7Настройте арены или включите случайные биомы.'
+  6c29e1113f81288c9e4c: '&7Настройте арены очереди или включите случайные биомы.'
+  2f5404c789c91bc071c7: '&7Дуэль с прямым приглашением.'
+  182348d0b2458605900d: '&7Розыгрыши: &f'
+  9a63507ff21439b78fe1: '&7Включите vanilla_pool.runtime_generation.'
+  38ffbd2b48062023a771: '&7Срок действия истекает: &f{expires}'
+  3a35a7caccb64a1d9299: '&7id: &f#'
+  01730e5fdeab6c76cc61: '&7Клавиши: &f'
+  c6bedc48e5f925980f3c: '&7Здесь будет отображаться добыча, полученная за победы в
+    дуэлях.'
+  0490f5adeb7aac042aa8: '&7Потери: &f'
+  512dc7bb5acba609b2c9: '&7Карта: &f'
+  75e02c6d3d4a2f8d39de: '&7Соответствие: &f#'
+  91fed95f69306d4d2d55: '&7Режим: &fАрена очереди по умолчанию'
+  8735de1c20d8c46e0ba0: '&7Режим: &fПлоская биомная арена'
+  672d35ff0786d724fdaf: '&7Режим: &fГенерация vanilla отключена'
+  fe4106765c01d20caa4c: '&7Никнейм: &f{player}'
+  3b682568a491267a775e: '&7Карта не выбрана.'
+  b559feacd592f5b4db5f: '&7Только члены одной команды могут принять участие в этой
+    дуэли.'
+  ccc0452ee863b195f1b7: '&7Откройте пакеты заявок на дуэльную добычу.'
+  2ac84f362949bcb9b626: '&7Игроки в очереди: &f'
+  8a9cbc62547f0d88c6cd: '&7Игроки: &f'
+  03705cd52fed57070bd1: '&7Конфиденциальность: &f'
+  6ea63a768ab1574a651b: '&7Очередь: &f#{position}'
+  ffff66fa41a744c8ecad: '&7Здесь будут отображаться запросы, отправленные, пока этот
+    параметр был отключен.'
+  67854ea05223531a8d05: '&7Сброс создателей мира: &f'
+  d7c2d7dd963c64895fba: '&7Возврат в меню очереди.'
+  576e7df1bf80f9fc94b4: '&7Выбрано: &f'
+  329358e0cc6b811da15f: '&7Очистка сервера: &f'
+  db77abbfc185891bac14: '&7Сохраненные элементы: &f'
+  6faf995b7cadce4705a9: '&7Последовательность: &f'
+  1412227822bc979445ea: '&7Запрос tpa отклонен.'
+  1aa60756dbface3c90d0: '&7tps: &f'
+  0753f42fa4d1523b0184: '&7Цель: &f'
+  c34b2ef9ef6577f575b6: '&7Этого игрока больше нет в сети.'
+  e484dd4a0d12b0b61d26: '&7Использует настроенную пользовательскую карту дуэлей.'
+  9cfea04890cf5f7e3d01: '&7Использует доступную настроенную дуэльную арену.'
+  87ca8a08adaa04013613: '&7Использует облегченную генерируемую плоскую местность.'
+  ea0fbdb44940f5f4e43b: '&7Победы: &f'
+  793ee7d98c932cb007b0: '&7Миры: &f'
+  73a5af4e91720dff87b4: '&7x: &f{x} &7y: &f{y} &7z: &f{z}'
+  06a6d82b575f37902f9f: '&7Ваш &b'
+  0f291dc973c59f0150bb: '&7Ваш запрос /tpa был сохранен в &b'
+  8211eeb10e1aae68df6d: '&7Ваш запрос /tpahere был добавлен в &b'
+  95ecda145eebcf5e7a2e: '&7Ваш запрос на телепортацию был отклонен.'
+  787e9855242755c7dd5e: '&7ϫuantity: &e'
+  29fb579fec6e9551b866: '&7ϫuantity: &f'
+  608302b46b564de48a37: '&7go to page &f'
+  8978f56956389989bf6f: '&7interval: &f'
+  1df432de35dd6818754d: '&7id: &f#{id}'
+  8f8fb7d597d2e98d7741: '&7item: &f'
+  e867cc546fdb0207ba88: '&7night vision &aenabled&7.'
+  96915ea3773ad7fbec27: '&7night vision &cdisabled&7.'
+  c3b97ff39c0c6cd875ca: '&7next reward in %time%'
+  677d3d9510269896d1f9: '&7next shard in &#A303F9%time%'
+  6bb9e385da39ba3e0472: '&7next: use &f/'
+  f7be34cbbef097a7543e: '&7new name: &f%name%'
+  1109d50d57c0e3acf97b: '&7no orderable items matched &f'
+  cfbe44d5dc275ea5172d: '&7no team member matched &f'
+  3ee1e6c307e7611015cf: '&7right click: &fprevious sort'
+  04c95cc9aa008024bd15: '&7required permission: &f'
+  28efe8565bf9b227b70b: '&7requested item: &f'
+  456b6ff8c44a1245dd12: '&7region {region}'
+  89c7791cc4faf6e16289: '&7remaining after this: &e'
+  7b879e9db3bde1ff4fb3: '&7refreshing status for &f'
+  8b38ebab4c474f45089d: '&7you bought &e{quantity} {item-name}&7 for &5{amount} shards'
+  e09fc0c0ef380a90ec31: '&7you bought &e{quantity} {item-name}&7 for &a${amount}'
+  f695f380bee96b455016: '&7you bought &e{quantity} {item-name}&7 for {price_formatted}'
+  0f362d6146a97f5dacaa: '&7you healed &d%player%'
+  aa625c3206d3f3b413c1: '&7you claimed &f'
+  20d2263722e898b5e04f: '&7you only need to meet &fone&7 of the listed requirements.'
+  a0af840c3ada4a330211: '&7you fed &d%player%'
+  f210b24b82ae047d8040: '&7your &b'
+  ea1fc2655f469ccace3c: '&7your ping is &b%ping%мs'
+  6850da5b6aa7cb8bfec1: '&7base: &f{base_formatted} &8| &7contents: &f{contents_formatted}'
+  dfe0b285e29679d9e8d5: '&7build your base, gear up, and use &f/spawn &7or &f/rtp
+    &7to begin exploring.'
+  b09bcaf19e36ee280ae6: '&7homes saved: &f'
+  7a447163567483bcbdbd: '&7homes: &f'
+  51553dd2a494a55857cf: '&7left click: &fnext sort'
+  087dad3db924861d36ab: '&7left-click a chest, trapped chest, barrel, ender chest,
+    or shulker box to bind it.'
+  6498e9d2f4012a661661: '&7location: &f'
+  2baa20d5404dc6377c61: '&7shard bonus: &#A303F9+'
+  1c7d8c708d75d554e9f2: '&7scoreboard is now &aenabled&7.'
+  d04316a360a0bc16e33b: '&7scoreboard is now &cdisabled&7.'
+  7a059d18bf2e703d5f30: '&7server: &f'
+  fbc8d119747f9c092636: '&7search: &f'
+  1031afd7e6ec7fce4fee: '&7searching team members for &f'
+  89f3eaf2a7ddbe34e8b0: '&7seconds since movement: &f'
+  599614ad9117e53c7815: '&7set duel arenas first with &f/arena&7.'
+  fb4d93449d869266ef93: '&7skipped task runs: &f'
+  70fabb46a21ef06c0892: '&7source: &fserver materials'
+  e9c2bf52d7a178bacebd: '&7source: &fserver.jar'
+  f8b61e9bee138f437123: '&7spawners in world: &f'
+  d667ca05e1a21b0d9fa2: '&7start with &f/rtp &7to find land away from spawn.'
+  1fe0146cb4b1f70aedb5: '&7stack x64:'
+  52d5d53ae51937f1b8e7: '&7stack x64: &a$'
+  ab76dd450563279eba1b: '&7stack: &f'
+  9f4c20a89980112fe720: '&7status: &f'
+  1d7858baaf8a95c36e76: '&7step 1: left click a block to set &aposition 1'
+  366bc601652278171773: '&7step 2: right click a block to set &bposition 2'
+  ca9e08e23f08e8d6ec23: '&7step 3: use &f/cuboid создать <name> &7to save'
+  6f1a0b2ba681b530a2f5: '&7stored items: &f'
+  c002cf6ad7cf4326d3b1: '&7stored loot: &f'
+  cb81144f39c333e1444e: '&7stored: &f'
+  1bc439ac2e7a8f22f54e: '&7arena id: &f'
+  46878709f6c747cc1ccd: '&7allowed: &f'
+  31f2d8ea0a0f214d2c72: '&7active stashes: &f'
+  0706a16abe2d871fb7ca: '&7add entries inside &fbillford.yml &7to enable the system.'
+  69e5800cae309aa1a7d4: '&7add entries inside &fbillford.yml &7to enable the system.'
+  d75632622ac986547856: '&7amount: &#A303F9'
+  f00b6d0175e989c01901: '&7amount: &a'
+  98bea5941045600a4b32: '&7auto-accepting &b/tpa&7 reϫuest from &f'
+  f1a890825e26137bed62: '&7auto-accepting &b/tpahere&7 reϫuest from &f'
+  aace0a51ff220635cd0c: '&7auto-accepting pending &b'
+  727cb0015926c69b03c5: '&7available items: &f'
+  58ac7b22bdb3856051dc: '&7afk: &f'
+  f0bfb9a42be69a766365: '&7after building a base, save it with &f/sethome&7.'
+  9ab682ea0af641138c00: '&7crate id: &f'
+  9381ae784497c03650f1: '&7crate id: &f'
+  71aac2e2b3186b8237c6: '&7create one with the &anew order &7button.'
+  a821fe4a7946ef84e262: '&7created: &f'
+  0d573b7bd033cb883495: '&7check back after the next rotation.'
+  0405888a97a485c9cd5a: '&7click to challenge &f'
+  361d05fd890c046acc54: '&7click to claim {reward}.'
+  bebb7035d118bd0789a9: '&7claim type: &fdelivered item'
+  dd1817764f9cccea9045: '&7categories: &f'
+  eef12357d6f936bcc4ee: '&7category: &f'
+  3708e09cea7773e92fa9: '&7configure СЕРВЕР-ИНФО-МЕНЮ first.'
+  f45ea2c4f54b9f309cdd: '&7configure servers-menu and network.yml first.'
+  73461e9e5a5da84c1815: '&7collected: &e'
+  1494e1a9618e812a6da0: '&7commands: &f/'
+  e80ec12fd92388456698: '&7coords: &f'
+  d2b6cdcf1962d536d28a: '&7coords: &funavailable'
+  f8524056fd5a3f91500a: '&7currency: &f'
+  a115b2e509bdb751155b: '&7current ϫuantity: &f'
+  123bb3c595079f5f6135: '&7current shards: &#A303F9'
+  b45355236a541d5325bf: '&7current page: &f'
+  62a2d2bdc672e85f9e40: '&7current filter: &f'
+  f05a0e5c8e9d227d25ae: '&7current: &e'
+  ed91b97fd41859b2cb3a: '&7current: &f'
+  a402a74f65fb3dca308e: '&7current: &fnone'
+  2256821feb2df5b49c5c: '&7cuboids: &b'
+  71644ce1bb630c16597a: '&7display: &f'
+  e2d1e2a3802fac4678ab: '&7deliver ϫuantity: &e'
+  f9e79b8f33eba2ad7fd8: '&7delivered: &e'
+  bfc50a204927c7b86398: '&7defeated player: &f'
+  32dbd44ab9d3bb82af2b: '&7duration: &f'
+  a3f18144561cb6a8ef86: '&7enable ٫ueue with &f/arena очередь <id> true&7, then set
+    &fpos1 &7and &fpos2&7.'
+  3b4a5e4da4541857a8fd: '&7enable ٫ueue with &f/arena очередь <id> true&7, then set
+    &fpos1 &7and &fpos2&7.'
+  ec8ed3963b00bfe3da12: '&7enabled: &f'
+  1b4c992b8e1f5c068dff: '&7entries shown: &f'
+  93c18f71c8d95a6754bc: '&7entries: &f'
+  dadab7422c9e843ae22c: '&7earn money with &f/sell &7and trade better gear through
+    &f/auctionhouse&7.'
+  40cc716d9d187b8a71dc: '&7keys: &f'
+  217844e86b0605bfed29: '&7keys: &f{keys}'
+  0efc0f9dc828680b9ded: '&7managed spawners: &f'
+  b45af74b453247cb9d90: '&7match: &f#'
+  fc573924224683f13c92: '&7matches: &f'
+  e352ad17d0a00feed842: '&7memory: &f'
+  ecae5e3eb4d025b1e21f: '&7money bonus: &a$'
+  f5a16883d3bca802fde6: '&7mode: &f'
+  7cde078f9ad94bd0c267: '&7movement window: &f'
+  7afc7dddd465efbc619f: '&7multiplier: &f'
+  7ad9e4a3bae58a0809ac: '&7order id: &f#'
+  35ece1e3b705ea8b5fa7: '&7order: &f#'
+  fb8dcce4e783df3c6c10: '&7opens the &f'
+  b9a50f18cb6d32a12be7: '&7owner: &f'
+  925b340f65876088f8f1: '&7preset: &f/'
+  26ad3b58db11c2d8aafd: '&7progress: &e'
+  3935f50a8ce0d4690de4: '&7player commands: &f/crates &7and &f/keys'
+  ba362eebf604078b1746: '&7player: &f'
+  4ed6ae5af73746dbd99f: '&7page: &f'
+  d5b92c6e0a84fdccf4bf: '&7payments are now &aenabled&7.'
+  63ce72cbb98fdad316e7: '&7payments are now &cdisabled&7.'
+  2dab961bad243ce3f4d6: '&7pending claims: &f'
+  6d8205beded64171ac8c: '&7position: &f#'
+  12fa81f18331f003ed9f: '&7time left: &f'
+  02f272b0f4be84c79f6c: '&7try a name like &fshulker&7, &foak&7, or &fblocks&7.'
+  da5c4d5b403ade3d69cc: '&7type a team member name in chat to search. type &ccancel
+    &7to abort or &cclear &7to reset the filter.'
+  6b816460956a47dbf886: '&7type a team member name in chat to search. type &ccancel
+    &7to abort.'
+  10418d04b074bf657942: '&7type a team member name or &ccancel&7.'
+  23e289b9983667b76c10: '&7type: &f'
+  45dd2369f85d7a3389bd: '&7this duel loot package no longer exists.'
+  09e5e54b0f2d64f5aa60: '&7this order no longer exists.'
+  193468491980c6d628ca: '&7target: &f'
+  9f90528711852f4a1a4d: '&7team: &f'
+  02ba0d8026e1e0a7a941: '&7tps: &f'
+  f518d960bcfb0403155a: '&7usage: &f/'
+  d9c62d7bef70f0c5a5dd: '&7use &f/arena setpos1 <id> &7and &f/arena setpos2 <id>'
+  592a9557654fc68438c6: '&7use &f/crates &7to open crates and &f/keys &7to view your
+    keys.'
+  3ab30d2a4a29b32dd220: '&7use &f/duel принять'
+  9ea339959430ea40c7f5: '&7use &f/leave &7to leave the arena.'
+  2a7e49f5374ae75185d4: '&7use &f/leave &7to surrender.'
+  1d36a62ac8acd5d4bb62: '&7use &f/tpa <player> &7to reϫuest teleporting to them.'
+  811211b95a29aa0e9b47: '&7use &f/tpahere <player> &7if you want them to come to you.'
+  918161436a1d7bf1eb88: '&7value: &f'
+  cdb8c4089c641c1782d3: '&7world excluded:'
+  be17e38c5224c017543b: '&7world: &f'
+  cf4db3278ccab9e7afbe: '&7worth: &a$'
+  68f3cb6647326bb02284: '&7worth: &a$%price%'
+  4663dc4f1066b7bf29e2: '&7worth: &a{price_formatted}'
+  134c22be9a9d6f7af327: '&7fix ПРАВИЛА-МЕНЮ.КНОПКИ to use the gui.'
+  79429cbdf762e0a05e83: '&7fix servers-menu.servers first.'
+  77c4dd8e8d1b85595418: '&7fix this help page or use the legacy chat fallback.'
+  0d0860e2762fcb90b070: '&7frozen by: &f'
+  da951b3d5eaccc7603ee: '&7flight for &e'
+  09b6442ff6ef46650a60: '&7for: &f'
+  60a04e8f29a4432b7ee3: '&8&m-------- &bcrate chest &8&m--------'
+  0e4645253a04bbe19e81: '&8&m---------- &boptimization &8&m----------'
+  6315f6d0d7a80c4f6361: '&8&m---------- &bultimatedonutsmp setup &8&m----------'
+  2daa51c03918ee025c18: '&8&m---------- &buds setup status &8&m----------'
+  12a1e3ca62a43fcb4b8b: '&8&m---------- &buds commands &8(&f'
+  242781765539a8b7de21: '&8&m---------- &bfeature toggles &8&m----------'
+  781f67dd51e9f6b80e88: '&8&m---------- &bfeature toggles &8&m----------'
+  277d9736db1f2605059a: '&8&m----------- &bspawner info &8&m-----------'
+  00d763da13883ca20b65: '&8&m----------- &bcrate admin &8&m-----------'
+  f086be6752f7d46b5d45: '&8&m----------- &dspawner &8&m-----------'
+  b3489eb10bafc0245a73: '&8&m---------------------'
+  55c96d1590a804f1456e: '&8&m-------------------------------'
+  586281b883a406807243: '&8&m--------------------------------'
+  7b489caa5f69c644a730: '&8&m----------------------------------'
+  511ceb85d1ea4b3f4eeb: '&8(&f{attempts} проверяет&8)'
+  6d4214c4bee17b94df07: '&8(&f{attempts}/{max_attempts}&8)'
+  bd00fd97dea21c335881: '&8) &8&m----------'
+  68463bb1ffddbcb1faba: '&8, &7lunar=&f'
+  c0798ac51a6e82717bbe: '&8, &7tablist=&f'
+  4902c6fdf497a0c86629: '&8Аукцион №'
+  695388b4f9df6d90a2d0: '&8Удалить доступно в предварительном просмотре.'
+  b3a74b280812572e62e3: '&8Выбрать карту дуэли'
+  28560369e43ec651f680: '&8[&a+&8] &a%player% &7joined &b%server%'
+  1097cbf293c16a2bfc22: '&8[&b'
+  e2821a2d929b0e8272dc: '&8[&bcrates&8] &7click item di inventory kamu untuk memilih
+    template, lalu klik slot crate untuk menaruh atau menggantinya.'
+  c00d7776b2419e528d53: '&8[&bcrates&8] &7click a reward slot with no selected template
+    to remove the item reward from that slot.'
+  6812ea0356de1717f9ff: '&8[&bcrates&8] &7click an item in your inventory to select
+    it as a template, then click a crate slot to place or replace it.'
+  9c68362a943e59a4a6d2: '&8[&bcrates&8] &7klik slot reward tanpa template terpilih
+    untuk menghapus reward item dari slot itu.'
+  8f08824e71a6f3ae4e10: '&8[&bcrates&8] &f'
+  180a81d6158a4e5bacd4: '&8[&c-&8] &a%player% &7left &b%server%'
+  f772797820dd75085276: '&8] &7%player%&8: &f%message%'
+  1227dbd53010c073f354: '&8{players}/200'
+  f7e37d94ca075cfaa6d3: '&8{type} очередь'
+  d2cb9522749be1cc6b75: '&a'
+  5035e5911b2502b3b51d: '&a in &f'
+  ee488af4ef4be66ab511: '&a items from this spawner.'
+  f9b905da863f17a8c8cc: '&a items for'
+  e1dc58bb52d87a4a2dbe: '&a items for &f$'
+  17a815f35546bb023d67: '&a stored items on the ground.'
+  26e48508068fdd9be7d6: '&a key(s) to &f'
+  90a50ac35d4d5221f5cc: '&a key(s) to &f'
+  0c7364d8495f58a4d360: '&a on arena &f'
+  7d2a09e8b436e9cdf55b: '&a online player(s).'
+  ce7d5bddaf0ebee87df0: '&a online player(s).'
+  28af19e1984cc82eb6ee: '&a to &f'
+  9a32b7adecbd1ddf7af3: '&a to chest at &f'
+  4a14d4708997351f7306: '&a with a default key config.'
+  8855d2453e7d4eec8766: '&a from &f'
+  62fe943c0b2afc80f035: '&a from crate &f'
+  4bddfe744071d7e0b0c3: '&a for &f'
+  793b26b86d6d9d7a4019: '&a for crate &f'
+  8220636caca011d0b1f4: '&a$'
+  b9a9735c2f3a7ac98015: '&a&lon'
+  2661f4ada41306f83d78: '&a&lfight!'
+  e06659dbc4761725804a: '&a+$%price%'
+  6b0aaf3ee74fdd87133f: '&a+{price_formatted}'
+  f0401b53623e62aaeef3: '&a, its key balances, and bound crate chests.'
+  7122733c51b6ad52d87a: '&a.'
+  fda2c368d3ef886b0825: '&a. &7Баланс: &f'
+  8a0bf2769f3dc2b3a756: '&a. &7До: &f'
+  2518f4f624c790dcc550: '&a. &7area &f'
+  090603aa6fac648aea85: '&a. &7combat area dan rollback akan dibangun otomatis dari
+    titik ini.'
+  378fff8b5a167cafa646: '&a. balance: &f'
+  897c7ee91f0621e2034e: '&a. click a crate slot to place it.'
+  76bfae8cab082b6bf11c: '&a. this now acts as spawn 1 and rollback anchor.'
+  d8e478b5d2f9e0dc2b87: '&a. this now acts as spawn 2 and rollback anchor.'
+  93609516bcf8b4797a58: '&aОбнаружена межсерверная дуэль. Готовлю матч...'
+  5eec68952ddd859faa35: '&aОбнаружена межсерверная дуэль. Перенос на матч-сервер...'
+  fe85b54f917869cb0fa1: '&aВыбрано в данный момент.'
+  325c02ea0fa1faf73833: '&aПрисоединяйтесь к обычной очереди'
+  7b2775c182abd82b6b2a: '&aСледующая страница'
+  11205d371144a19e8866: '&aПредыдущая страница'
+  4cd2ab7345bb3843b719: '&aПроверка пройдена. Консоль может запустить подготовку /serverwipe.'
+  0ca91c519b580f620150: '&aВаши фрагменты были обновлены пользователем &f'
+  c5e780c242e48cf7faac: '&a{feature} is now {state}.'
+  48fa35f34212cda88fe3: '&a{feature} is now {state}.'
+  22a6a1c14d1261867ceb: '&agranted &f'
+  c8a1601b41e0b033d6ce: '&agave &f'
+  094dfd7451c0246075be: '&anext page'
+  f26cbed5d20a46ec14c4: '&anew order'
+  c7a275c8f7bf66ee00d1: '&anormal'
+  e146c9b4edee609ca78f: '&areloaded duel arenas and config.'
+  2051f2182565e2680173: '&areloaded ffa arenas and config.'
+  ff0cd4d1e658df271171: '&aremoved reward in slot &f'
+  678270bcc9294c37ad7e: '&aremoved active &f{type} &apunishment(s) for &b{player}&a.'
+  f251f848b15eb2677e7e: '&aremoved crate binding from &f'
+  82282ef3ecdf6cc2d742: '&ayes'
+  6394c098911501af54b8: '&ayou received &f'
+  3b1483d1b58e5e2fbc2f: '&ayou received the &6cuboid wand&a. &7set both positions
+    to continue.'
+  aec0179a5e26cbaf4266: '&ayou can trade &f'
+  bacd5488b5b285619e68: '&ayou defeated &f'
+  2e5f7b530631b7946592: '&ayour health has been restored!'
+  5a965b8c8d07d1d76b2e: '&abind mode enabled for &f'
+  9c9dcc5c8533d6eac2ed: '&abound crate &f'
+  da84794780b0949f477f: '&alive sync'
+  e27a19cab3b5045f9bff: '&asingle paper setup preset applied.'
+  c3c764a98ee930108ec9: '&asingle-paper setup preset applied.'
+  640a724478ba473ae916: '&ashop config reloaded.'
+  fc248a4ce5ef3c8d46b8: '&asent a duel request to &f'
+  b216039e6ea7ad333072: '&aselection complete. &7cuboid wand removed from your inventory.'
+  2af672e007cd89a052f5: '&aselected &f'
+  3d4ec4b5076bb6d64053: '&asearch'
+  90681a02ff54da817af5: '&asearching for safe location in {world}...'
+  8f6beb57ef82aa205164: '&asecond position set at &f'
+  f4d4456c52812dbcf443: '&aset return location for arena &f'
+  dd6170ce354a29c8dc65: '&aset crate &f'
+  4e6d3dc09d5587909778: '&aset pos 1 for arena &f'
+  c20978655284627520cc: '&aset pos 2 for arena &f'
+  c3b90e19cc4e7ef8b6d5: '&aset ffa arena center for &f'
+  f3fabdc237def0c4a714: '&asort: &f'
+  7284c87845948fca00eb: '&asold &f'
+  75ae458b588226bebd3f: '&aspawn location saved at &f'
+  7b59df020fcf77a7bc6d: '&aspawner removed.'
+  68d9e2a8a4b1f8360c90: '&aspawner settings reloaded.'
+  b986a91e75b2f4bcc71e: '&aspawner stack updated to &f'
+  a35b1bcce89cc5e7ba17: '&aall configuration files have been reloaded.'
+  7ab5915650de00851d96: '&aafk location saved at &f'
+  b0f528e99b092e21b8e3: '&acrate bind mode cancelled.'
+  708cff719b793c37249d: '&acrate settings reloaded.'
+  5443ebbeb216639bebb0: '&acreated &f{type} &apunishment for &b{player}&a. id: &f#{id}'
+  80ec221663d4eb81dfa8: '&acreated crate &f'
+  ce981883320c7c6675ea: '&acreated duel arena &f'
+  16d42efdbe8d31ea69c6: '&acreated ffa arena &f'
+  d47808563f525c9ed95d: '&aclick to open and choose 1 ​​reward.'
+  d4692dd6f0218c441bde: '&aclaim all'
+  b0a8cbdae1ae03a28748: '&aclaimed duel loot from &f'
+  6e3fc8d1b73eb54fea22: '&aclaimed escrow refund of {amount_formatted}&a.'
+  ba56b34d064d3c2113ee: '&aconfirm delivery'
+  c906bf06d1706152fac6: '&aconfirm order'
+  56375df5859c3246df07: '&acollect all'
+  b365f5d48780cb2177b8: '&acollected &f'
+  9e25a055525f61db7329: '&acombat started against &f'
+  a8a69b814ae35ab82a0a: '&acuboid &b'
+  7182ac34a73af7900b3a: '&adropped &f'
+  a9d0838047bece8df445: '&adeliver items'
+  fe1d7c2aae29f121fda4: '&adelivered &e{quantity} {item}&a and received {payout_formatted}&a.'
+  60bb8b92e4ca2c8c6095: '&adeleted crate &f'
+  5e1f6c0448c891ce9e54: '&adeleted duel arena &f'
+  0ab16107a93355b5e993: '&adeleted ffa arena &f'
+  ef993e587c9caa573dd5: '&aduel started against &f'
+  88520f5640a3aedff8d0: '&aduel found against &f'
+  b5c9b3c648dea8ef97a0: '&aduels config reloaded.'
+  b51596ab3271f3b2f21c: '&aenabled duel arena &f'
+  08e042d97e602d9c3ee6: '&aenabled ffa arena &f'
+  1a2c318bd73816d367bc: '&aescrow refund'
+  b551cd2e234475d53eda: '&ajoined the casual duel ٫ueue.'
+  67f98e21df1c581034aa: '&amoney'
+  1c8285a9fc72c4345f1b: '&amoney: &f%money%'
+  2666d5f3c0709fd7f8da: '&aon'
+  625c252ae7e02455cf89: '&aonline'
+  7cd33dcd88c4eaab436b: '&aorder created! &7#{order_id} &ffor &e{quantity} {item}&7
+    at {price_each_formatted} &7each. budget locked: {budget_formatted}&7.'
+  d60855dfbd27056128f9: '&aok'
+  bf658dc26f39985b9788: '&aoptimization runtime counters reset.'
+  cf58e5630e69aa228bcf: '&aoptimization settings reloaded.'
+  db69dccea84fce79782e: '&apicked up &f'
+  859a91922c2192da0f2a: '&aprevious page'
+  facfa7ced608a88f5ff8: '&aplayers: &a%players% online'
+  f008b58b955b7353dea7: '&aplayers: &a%players% online'
+  c3477fa8dffab7425093: '&aplaced &f'
+  9f42aabb60f398160bf5: '&atrue'
+  462605df1c962a91ac52: '&ateleported to spawner at &f'
+  e6eceafdc278cd10cc7e: '&ateleported to ffa arena &f'
+  e7f15ed2a97a97758e98: '&atemporary spawner registered.'
+  87862e8d1aec2c4544cc: '&atemporary spawner removed.'
+  74a6795553c59e770a2c: '&aultimatedonutsmp configuration reloaded.'
+  3d9c707c1f7693233a62: '&aupdated ٫ueue status for &f'
+  5444425106fd6b0e00cf: '&aupdated crate chest at &f'
+  3f3161ba8813a61d9d07: '&aupdated display name for arena &f'
+  7f4c765afaabe488b8a1: '&aupdated display name for ffa arena &f'
+  1b24d2f5054f53e306a2: '&a■'
+  455c59b2d066e713ea75: '&afight!'
+  2f2047c39e46fef5eedb: '&afirst position set at &f'
+  d67f092be5cd3af6d73d: '&aflight mode activated'
+  0702dffb2a82a3c6169e: '&affa restarted against &f'
+  93d9483d9e9c4d74a03e: '&affa resumed against &f'
+  9371135ebcf3dc18e79f: '&affa started against &f'
+  3d9b5ef7fb3864aaf544: '&affa arena &f'
+  dbbe677157314f0569a8: '&affa config reloaded.'
+  d41449e6263dcb766cf1: '&b'
+  ca032482e498e6998856: '&b%server%'
+  6a22bf738894cbbc30b9: '&b&lchat manager &7(Команды)'
+  09d79db2608efab316ca: '&b/balance &7- check your balance'
+  7520bc0d8a1ea4b6c10b: '&b/billford &7- special trade'
+  b5304c3ba7e33656aeee: '&b/bounty &7- view bounties'
+  835b8009f82e1377daea: '&b/crates &7- open the crates menu'
+  42525de378bfb3f4142d: '&b/discord &7- discord link'
+  956c89ba717cce571d58: '&b/home &7- teleport to your home'
+  5d41ac4aa4e5ec722e29: '&b/leaderboard &7- view top players'
+  5d4193ea4ed8280ff706: '&b/media &7- view media rank requirements'
+  f65d6c028262eecf8d5e: '&b/rtp &7- random teleport'
+  f7442cc2300c4a554e27: '&b/rules &7- view server rules'
+  ead2136806666eca8dcd: '&b/sell &7- sell your items'
+  8de3cb32549259df17ba: '&b/sell &for list items in &b/auctionhouse&f.'
+  9eb475d93e63e7c1a6cc: '&b/settings &7- player settings'
+  26734e50c4814d20cfec: '&b/shards &7- check your'
+  49e748d7e9df86b4356b: '&b/shards &7- check your shards'
+  979ea0b7d9aec00e3211: '&b/shop &7- open the shop'
+  1189aad6b858837159e6: '&b/spawn &7- teleport to spawn'
+  40670e75c3657ee2112a: '&b/stats &7- view your stats'
+  f40bbfc96ecd808e28c4: '&b/team &7- manage your team'
+  6f85f00bbbd059c41fca: '&b/tpa &7- reϫuest teleport to a player'
+  19399f12b326a7031b9e: '&b/tpahere <player>&f.'
+  76a0bcbe1f238735d8ac: '&bКонфиденциальность: &f'
+  6f626b871885901a05b9: '&bВыбрать карту'
+  d059f5759e2be7ffc09a: '&b{feature}'
+  20b4d5c5dbb74a854cd1: '&b{player}'
+  1ce36334a42684eb591f: '&b{username}'
+  1d08246cb08f95f84b09: '&bnew search'
+  2ce963cf4e474179467e: '&brandom arena'
+  e490a3f74fe4156ee052: '&brecent deliveries'
+  ba931fa4ded2e1cacb4a: '&brefresh'
+  21248fbc0e551bb7a0bd: '&bback to board'
+  c4bd3cecd806681807a8: '&bback to orders'
+  0bc57674ae80cdb0aacf: '&bhelp pages'
+  8ab571b24e9d55685b7b: '&bhomes'
+  fa76c9ef45381d632754: '&bleft-click to update the team home'
+  51fdee5cf703611b0321: '&bspawn'
+  00ac654668eb5f4cad3e: '&bspawner info'
+  e89e47922b4ccb3da4ad: '&bstatus: %status%'
+  c939880cbf4b79b85768: '&bchange item'
+  9dd5676393299e1f5408: '&bchoose from inventory'
+  d92a6787a3f41dea8bb0: '&bcurrent location'
+  b6a000f79e295b1f66c9: '&bdelivery preview'
+  08ca83699fc8de84018e: '&bmy orders'
+  45570c97ada57e76acb2: '&border info'
+  28e4011bbb925572c580: '&border details'
+  3c6ed2b12674777a429c: '&bpunishments'
+  50046a4a22370ec2df49: '&bworth browser'
+  996759a7877cc684af15: '&bfilter: &f'
+  ef9d5f1f8123b6c9e371: '&c'
+  40b06c81608055b4d503: '&c is not valid for this crate menu.'
+  89165933bfd462b3a1cc: '&c%player% has blocked you.'
+  d6537893922149f3be71: '&c%player% has private messages disabled.'
+  a543c4b0c49af01ede5f: '&c&lrtp zone'
+  6a8dfc3e1de27f6885c0: |-
+    &c&lyou have been banned!
+    &8&m----------------------------
+    &7reason: &f%reason%
+    &7expires: &f%nicest_expiration%
+    &7banned by: &f%issuer%
+    &8&m----------------------------
+    &7appeal at: &fdiscord.example.space
+  cdb04f0c9929b15a7ab8: |-
+    &c&lyou have been kicked!
+    &8&m----------------------------
+    &7reason: &f%reason%
+    &7kicked by: &f%issuer%
+    &8&m----------------------------
+    &7you may reconnect
+  69e43f973abc074327c0: |-
+    &c&lyou have been muted!
+    &8&m----------------------------
+    &7reason: &f%reason%
+    &7expires: &f%nicest_expiration%
+    &7muted by: &f%issuer%
+    &8&m----------------------------
+    &7you cannot speak in chat
+  753e3ae375cbcb4a752c: '&c&lyou''re currently frozen!'
+  e733ec8f4d852f615dbc: '&c&llimit reached this rotation.'
+  c511c356a9d743468207: '&c&lerror &7>> &cyou don''t have permission to manage other
+    players'' staff mode!'
+  f121af0caa3fd4103e19: '&c&lerror &7>> &cfailed to toggle staff mode!'
+  97b5139e5b6c3ded760e: '&c&loff'
+  8e2e749b69a4d94f06f8: '&c'' not found.'
+  eab66816f78cc809a2b2: '&c'' already exists.'
+  1e27fc30fdeca656f0e6: '&c'' must be online.'
+  fbdf2c15271c44268eaf: '&c'' was not found.'
+  52aeee2b66f297077eff: '&c''.'
+  6692852a393abc03e4b4: '&c).'
+  6716a497f987c58adfcc: '&c-'
+  806f6368dede43b4ad86: '&c.'
+  d66abbb6d942827f5d5d: '&c/'
+  d12a5bd46edad141b9d5: '&cСумма должна быть действительным числом.'
+  1b5027c924f41a4b4253: '&cСумма должна быть больше нуля.'
+  5670885372f15c0e0a1a: '&cСумма должна быть равна нулю или больше.'
+  b6103232a52f05d3a495: '&cНе удалось забрать эту добычу прямо сейчас.'
+  0cf00e752e5468b91479: '&cНе удалось удалить заявку на дуэль прямо сейчас.'
+  f2478a172d07f0b575ca: '&cНе удалось начать межсерверную дуэль, поскольку арена недоступна.'
+  360065c709f3979e10b6: '&cДуэль отменена, поскольку один игрок больше не доступен.'
+  1ff9e6975eb07346f62b: '&cДуэль отменена, поскольку один игрок прекратил подготовку.'
+  6b075d2a959c3395334a: '&cДуэли в настоящее время отключены.'
+  96d5cab743be40671ded: '&cПредметы из аметиста с истекшим сроком годности нельзя
+    использовать в качестве награды в ящиках.'
+  b4e22355679e7e4691c7: '&cНе удалось сохранить config.yml.'
+  f117562619f3eb6b3102: '&cНе удалось сериализовать этот предмет для получения награды
+    за ящик.'
+  5dba194e96ae90acd144: '&cДуэли только для друзей могут быть нацелены только на членов
+    вашей команды.'
+  c56e286d154841ce457c: '&cДуэли только для друзей требуют, чтобы оба игрока были
+    в одной команде.'
+  89fa0273b7210398746f: '&cПокинуть очередь'
+  6d286cbc27c885285df2: '&cОтсутствует ключ языка:'
+  fa7b5443635e42014534: '&cВ данный момент арена для дуэлей в биоме недоступна.'
+  b9639b80b7012307a2b5: '&cДуэльных карт нет.'
+  de84b9a17265204a9393: '&cНет ожидающих рассмотрения претензий'
+  53962bf273fa4c596325: '&cНет разрешения.'
+  e7fa74a6c79996dbd2c8: '&cНет доступных карт очередей'
+  133539422c544a3af4bf: '&cНет запросов в очереди'
+  ab5c40615fa505a7d377: '&cТолько консоль сервера может выполнить это разрушительное
+    действие.'
+  b503925d3edcd63d8ff7: '&cНе удалось загрузить данные игрока.'
+  b62943893361686d7a50: '&cИгрок не найден.'
+  fb6d9d871a67e5be64ad: '&cИгрок не онлайн.'
+  765ed03efb9fc1d28a90: '&cНе удалось совершить покупку, поскольку не удалось доставить
+    вознаграждение.'
+  5d4b723a0cb7d4e566bb: '&cЗапрашивающий больше не в сети.'
+  639dc6ff765ee67dcf15: '&ctpahere, автоматическое принятие&7 отключено.'
+  747c32da44db1da748d4: '&cОфлайн-режим'
+  947447d608f76d588c39: '&cЭтот аметист имеет неверные метаданные и не может быть
+    использован в качестве награды в ящике.'
+  decd04e0c7d2c1545300: '&cЭтого заявления о дуэли больше не существует.'
+  3756ca10cdcfd5946942: '&cЭта дуэльная карта недоступна.'
+  6be5364342151f8c96ec: '&cЭтот игрок не принимает запросы на дуэль.'
+  baa77723b76d97d2312f: '&cЭтого игрока нет в сети.'
+  02c55e5cced4f07cbf80: '&cЭтот запрос в очереди больше не доступен.'
+  3fef3526ed0e3cd03094: '&cДуэль не началась, так как у вашего противника небезопасные
+    данные о предметах.'
+  8c0399103c6a30b12a4b: '&cНет запросов в очереди, которые можно было бы принять.'
+  1161b4adfe4be95ba25e: '&cНеизвестная команда администратора сегмента.'
+  12b535faecf1834e0f82: '&cИспользование: /'
+  064a6c0534e86d33cccf: '&cИспользование: /create друзья <player> [карта]'
+  f37e8140d698691b1b7b: '&cИспользование: /create пригласить <player> [карта]'
+  924fe3ce777c5cd594d1: '&cУ вас нет разрешения на проверку очистки сервера.'
+  f00038ba65f1f4471ba7: '&cВаша дуэльная арена готовится.'
+  e857a26465083a0c9747: '&c[Заморозить] &4%player% &cleft while frozen on &4%server%'
+  668035e73c3259866e10: '&cqueue arenas exist but are not ready yet.'
+  8ecacc7ebb703543ad31: '&cinvalid ϫuantity.'
+  a697b924138bb97b49ee: '&cinvalid block. left-click a chest, trapped chest, barrel,
+    ender chest, or shulker box.'
+  f59000a7f841ea92cf51: '&cinvalid block. left-click a chest, trapped chest, barrel,
+    or ender chest.'
+  1d10045da43ec623f1e6: '&cinvalid delay.'
+  6542c5aa3020bb7fc8b8: '&cinvalid price format.'
+  c5e4d99f607bfb410678: '&cinvalid price.'
+  deaab87b6e913b59e330: '&cnetwork server status is currently disabled.'
+  ce650fe3c7cf2dee9477: '&cno'
+  64877acd8dfac93d329b: '&cno items in this category'
+  2c4476331f005f9d2489: '&cno results'
+  48439a416eacbc3033c0: '&cno ready ٫ueue arenas are configured yet.'
+  9f9dda01f053e9452eef: '&cno ready arena'
+  297b8c638b5bc3dbdb27: '&cno ready ffa arenas are configured yet.'
+  de381b7cc581d8325b89: '&cno reward was found in slot &f'
+  8c4c1f38b55e7b787900: '&cno rtp destinations'
+  255acbf22b25fa7d997b: '&cno billford trade configured'
+  a699fd72e0f3bbc04175: '&cno leaderboard data'
+  95adbf583e459c570952: '&cno shop categories'
+  5c92fe49029129ee45b7: '&cno server info pages'
+  8466ce315ed7ea93a904: '&cno servers are configured for the servers menu.'
+  992e9642e62222fd785f: '&cno servers configured'
+  b8a3977a3ed56c6a5f90: '&cno spawn areas'
+  81388caa1d29fca4e388: '&cno active crate session was found.'
+  8c33b3ea62c1aee3c1f4: '&cno active orders'
+  f939e2de5714cc09e0b5: '&cno available items'
+  e152ba956c04b096311a: '&cno afk areas'
+  901eb35b90d40e076902: '&cno commands found for category: &f'
+  4b310ea92774f48c8daf: '&cno duel arena is available right now.'
+  7f1a4976d9025b4a4eff: '&cno duel arenas configured.'
+  359a99f07aabe5d3dea1: '&cno members found'
+  396aa99d93d3474d4fc4: '&cno orders yet'
+  581b5c619dd456662901: '&cno other players available for random teleport'
+  22971e1005920e908e83: '&cno other players online.'
+  763acb125fe3d3a3ddfc: '&cno pending claims'
+  6c1a0ea979ed28ddbbea: '&cno pending order'
+  6ecbd88431abf19fd418: '&cno permission.'
+  35a11d5d0ba73a7b5a6a: '&cno usable rules buttons'
+  c8a4998ee12bd5da601b: '&cno usable help buttons'
+  9de43ab8188d524b6a3f: '&cno usable server buttons'
+  80ac60f2cd2422a7c4b7: '&cno valid area is available right now.'
+  aa5efee79492bd9c51c1: '&cno ffa arenas configured.'
+  0611230ef51e8b76557f: '&cnothing here'
+  d3b71bec24d9bcd7f48c: '&cnothing to collect'
+  dd09392b436532c51174: '&crtp is disabled.'
+  f615ce0fcb7407085340: '&crtp cancelled because you left the zone.'
+  637c335e36831c6f2e91: '&crtp command is currently disabled.'
+  e4828dcea34ad987e1a4: '&crules command is currently disabled.'
+  b6feccaa2aa36324f553: '&cyou no longer have a key for'
+  6a9080a8347afc1eb3e4: '&cyou have no pending duel request.'
+  a4c1cd699d34d030832e: '&cyou lost the duel against &f'
+  1f87d7da855dd7f22ca7: '&cyou are not in a duel or ٫ueue.'
+  054b08942830ebf751f1: '&cyou are not in a duel or ffa arena/match.'
+  851463bf8dba8c46ba4b: '&cyou are not in a duel or ffa arena/match.'
+  a63b7db8929f1cfb9fe9: '&cyou are not inside an ffa arena or match.'
+  37e703765813433ed471: '&cyou are not part of the team.'
+  09c8165bfc5bfe09848e: '&cyou are still finishing your previous ffa session.'
+  d4362e3abe9d56923787: '&cyou are already in a duel.'
+  c4b15bd483c2bbed5da7: '&cyou are already in the ٫ueue.'
+  542763c7e2434f8a3dc9: '&cyou are already in ffa.'
+  b16a8eba19e3c78946ec: '&cyou are already inside an ffa arena.'
+  8323a38cc0758213867f: '&cyou are afk. move to resume shard gain'
+  a2bbc7c2efceb0d58bce: '&cyou already have a pending duel reϫuest.'
+  fa08a4885ff8f89ad8f7: '&cyou can only reϫuest a draw during an active duel.'
+  d063a95395d51eae7c2f: '&cyou can only stack the same spawner type onto this block.'
+  750171d97a9f69dd866c: '&cyou can''t do this yourself!'
+  a04c5630ae8486f35ed8: '&cyou can''t use this in combat.'
+  f82395f5111ebc138dc5: '&cyou can''t use this command in your current status.'
+  ed97324156d40c8479cc: '&cyou can''t use this command in combat.'
+  19979f2a6e1bfa0580b3: '&cyou cannot rename staff mode items.'
+  52eff623e1b72d32048d: '&cyou cannot repeat the same message!'
+  08f1e754cb5edb7176c9: '&cyou cannot rtp in this world.'
+  3ac4113a9c6dda85021c: '&cyou cannot create another home right now.'
+  49a292be95bde155a455: '&cyou cannot duel yourself.'
+  ca9a4d85f94dc2591269: '&cyou cannot edit the team home.'
+  c10505da9c5e13f51c11: '&cyou cannot join ffa while another teleport is pending.'
+  b0ae6c0a417c2f3aa6bf: '&cyou cannot join ffa while combat tagged.'
+  4115d213c887981b6a8c: '&cyou cannot join ffa while using the duel system.'
+  3b1376795333aa9fe711: '&cyou cannot teleport yourself to ourself.'
+  5b5ed6a3545c127f50ef: '&cyou cannot use duels while inside the ffa system.'
+  98d1c30468ff978c57d2: '&cyou cannot use that command during a duel.'
+  1f21d3e58c987b0f32d9: '&cyou cannot use that command during ffa.'
+  4eb58795897d3708685a: '&cyou cannot visit the team home.'
+  d445630ea2c37114f8d6: '&cyou do not have any'
+  1b1df1d3298e97e21db5: '&cyou do not have access to that spawner.'
+  d5895d3bd5820f050b7c: '&cyou do not have enough'
+  54e375d34200cbc8c07b: '&cyou do not have enough money for that change.'
+  1e0bbc9e4da72d3e121e: '&cyou do not have permission to give spawners.'
+  33e0d6bbe4aa8ead623d: '&cyou do not have permission to inspect shards everywhere.'
+  84787161801259d621c6: '&cyou do not have permission to inspect crate chests.'
+  e6c2ed957ac870bbbd4f: '&cyou do not have permission to reload shop settings.'
+  ab8ad56aa49a708dd2ee: '&cyou do not have permission to reload sawners.'
+  743d5c93626ed1661984: '&cyou do not have permission to reload crate settings.'
+  540d46eea27b8e0127bb: '&cyou do not have permission to reload duels.'
+  b76a70b3247280ff72c2: '&cyou do not have permission to reload plugin settings.'
+  fa2eab8c681b32190dbb: '&cyou do not have permission to reload ffa.'
+  a600de4e38e5f8e6a467: '&cyou do not have permission to remove spawners.'
+  c590b5a56e8fc19bc187: '&cyou do not have permission to run crate key-all.'
+  3f7b491a979fd439df6b: '&cyou do not have permission to bind crate chests.'
+  89611990c8f8836910f6: '&cyou do not have permission to break that spawner.'
+  1db51718915857b1bfbd: '&cyou do not have permission to buy this item.'
+  1b3d8d8992a87903e0f2: '&cyou do not have permission to create crates.'
+  9c1093492aadfcd2e0b4: '&cyou do not have permission to change crate types.'
+  f52edf77dd2e1994694c: '&cyou do not have permission to delete crates.'
+  ddc7d3b29253c4662271: '&cyou do not have permission to manage duel arenas.'
+  4f0f145b7377125302f7: '&cyou do not have permission to manage feature toggles.'
+  eccee69dde46f6a782b3: '&cyou do not have permission to manage ffa arenas.'
+  9690388730dec64d4f08: '&cyou do not have permission to modify crate rewards.'
+  08c98a1a11e409b63c17: '&cyou do not have permission to modify crate keys.'
+  055e22bf4e19a7b64a85: '&cyou do not have permission to open this crate.'
+  17c9beee7209500b0bba: '&cyou do not have permission to open the spawner admin panel.'
+  01684165a9f9034038be: '&cyou do not have permission to open the spawner panel.'
+  92cc6221517a917dea45: '&cyou do not have permission to unbind crate chests.'
+  bae0b33236350b449396: '&cyou do not have permission to use /servers.'
+  0d2e2643ae8cf12e1612: '&cyou do not have permission to use setup tools.'
+  154d54dfbf970a229278: '&cyou do not have permission to use optimization tools.'
+  23575a6cc8db9a74747b: '&cyou do not have permission to view player profiles.'
+  cf44ee33044dc4c5ee27: '&cyou do not have permission to view this crate.'
+  8336dee80675c334d2a8: '&cyou do not have permission to manage feature toggles.'
+  134cc7a6cf0f548ce065: '&cyou do not have permission to use optimization tools.'
+  75db2051326204368478: '&cyou do not own that spawner.'
+  707410a0857ac84c59f3: '&cyou don''t have enough'
+  f075e5f5c3a7dcefddd8: '&cyou don''t have permissions to do this.'
+  1c3d17a87c7411ccf96e: '&cyou must be in staff mode to use /vanish.'
+  b5b65e10136d179aeae2: '&cyou must hold an item to rename it'
+  37245da79ba90f89d4f0: '&cyou must specify an arena id.'
+  7031c53729cbe3d65108: '&cyou''ve reached your home limit or the home already exists
+    at this name.'
+  6ccc41404761259956cb: '&cyou''ve reached the trade limit for this rotation.'
+  edf03598e4da3efcca28: '&cyour inventory is too full to receive the reward.'
+  a843225467a5cd998e34: '&cyour inventory is full.'
+  25833bc3b300ec1f4f28: '&cyour inventory is full. clear space before claiming this
+    reward.'
+  63c8dc3c6cac5397f7a4: '&cyour request is too long. max: %max% characters.'
+  3b850b0cccf02702375d: '&cyour report reason is too long. max: %max% characters.'
+  6157f0d7a588a04ffb2e: '&cyour rtp is already in progress.'
+  3535ba9e8acd412bf8b0: '&cyour draw reϫuest expired.'
+  562d88e5c996f094249f: '&cyour duel request could not start because no arena is available.'
+  5045599210b865eb75a1: '&cyour duel reϫuest to &f'
+  898f0489f337b8118c74: '&cyour duel reϫuest was cleared.'
+  207d09d93c775c263d6b: '&cyour duel reϫuest from &f'
+  1f66ac1d2b969456af9e: '&cyour message is too long! (max: %max%)'
+  ca796baa738358aa76e3: '&cyour message is too short! (min: %min%)'
+  7b357d67b12fe6aed193: '&cyour message contains characters that are not allowed on
+    this server.'
+  5801e26feef3715ebb6c: '&cyour opponent is no longer online.'
+  171e61a8d6404a151649: '&cyour player data could not be loaded.'
+  60f84b7c6c3a2783c018: '&cyour player data could not be loaded. try again in a moment.'
+  28cd1538a316170d30bd: '&cyour player data could not be loaded. try again.'
+  d032a439e6a4a271c030: '&cyour pending duel request is from &f'
+  9a0a4d73f4ea508598d8: '&cbillford could not complete the'
+  bc7ad9a8843c789caed1: '&cbillford could not complete the money reward.'
+  516e03bd68c5187649db: '&cbillford trade is not configured right now.'
+  5e1c7a712f325c1bfa11: '&chelp command is currently disabled.'
+  060fe9983683649d763a: '&chold a managed spawner item to stack.'
+  599712f7c6e65439c00a: '&chold an item to check its worth.'
+  100c775048ad1338fda7: '&chold the item you want to save in your main hand first.'
+  bb264bb400fc2886906c: '&chome ''&e'
+  d8ba5f701c3050e40d0c: '&chome not found.'
+  49ad70b944928482eae5: '&clinks are not allowed in the chat!'
+  5a08a0997d64a7ab4420: '&cleaderboards are currently disabled.'
+  ab412b365f0a09856157: '&clocation not set'
+  f56f5526c9fe9e28d945: '&clocked'
+  371d9cd534f4af00319f: '&clook at a bound crate chest first.'
+  3957f0021fa2acb28966: '&clook at a crate chest first.'
+  bb6182c8822c170e4daf: '&clook at a managed spawner to inspect it.'
+  72f1a126594c33e53edc: '&clook at a managed spawner to remove it.'
+  45479c4c04b8707b4a93: '&csingle paper preset was applied in memory, but one or more
+    files failed to save. check console.'
+  4c68ecb6655b867a0be8: '&csingle-paper preset was applied in memory, but one or more
+    files failed to save. check console.'
+  cb4c3bfcf20888a8e429: '&cshard reward cancelled &7(left %cuboid% zone)'
+  820658f327075503d057: '&cshard reward cancelled &7(left %cuboid% zone)'
+  56ec6520540183a49d9f: '&cshards are disabled in this world'
+  13d6b5c9155c35d48a23: '&cslot &f'
+  637039647c167563b6b8: '&cslot must be a valid number, for example &f10&c.'
+  534db73cefdb709ae1bc: '&cslow down for a moment.'
+  4b76a1a244e68fe3f11a: '&cslow down. billford is still checking your last trade.'
+  af2cf42b89318fa024d1: '&cservers menu is currently disabled.'
+  7bb272867fbdf5bf3b12: '&cselect both positions first using &f/cuboid палочка&c.'
+  68a5ea5eeb880da3d0da: '&cselect a reward first.'
+  ebf544ad0ae50f317953: '&cselect an item from your inventory first.'
+  253d6f927295580636b3: '&csearch ϫuery cannot be empty.'
+  d3366a6471d3f6323864: '&csettings command is currently disabled.'
+  b251ad96d24fad1c27df: '&csocial commands are currently disabled.'
+  5a4b434c437b96c25c4f: '&cspawn location is not set.'
+  9c2458a960836d23f14c: '&cspawn location could not be saved: &f'
+  9dfccd38987c98aabe0c: '&cspawnstash config is invalid: {reason}.'
+  340f93775fe25e01631e: '&cspawner not found'
+  e90c1ff30b79f113b2dd: '&cspawner not found.'
+  467a9cfa3485222e34e3: '&cspawner system is currently disabled.'
+  e403be3c9599daa920ad: '&cspawner amount must be positive.'
+  216971de2978dec36381: '&cstaff chat message is too long. max: %max% characters.'
+  8932a683d9ba8a12bf97: '&ca crate with id ''&f'
+  da17205fcd5c480bceab: '&ca crate with id ''&f'
+  999d5490b8c559387737: '&call interactions remain blocked.'
+  0d1b949f068b84038e8f: '&call interactions are blocked.'
+  d19b45a041b60abe0d0e: '&camount must be greater than zero.'
+  ec031a5f11380a0b5d01: '&camount must be a positive integer.'
+  9a2e13618ab9ecc4e32b: '&camount must be a valid positive number.'
+  52e23be2fc32c15e52b2: '&camount must be zero or a positive integer.'
+  b7aa44311416bf4959a0: '&cauction house could not save your listing. try again.'
+  89b503d06c0b2f4e6bf8: '&cauction house could not cancel that listing right now.'
+  8e7e51cdea382629f8c0: '&cafk location is not set.'
+  1ee1278593f83e216b92: '&cafk location could not be saved: &f'
+  27ecf805b0de953c7754: '&cafk command is currently disabled.'
+  a75ef1d8052180bdba69: '&ccritical'
+  6dd1318f79ffca50348c: '&ccrate ''&f'
+  86bfa18f29d7508a9691: '&ccrate id may only contain lowercase letters, numbers, ''-''
+    and ''_''.'
+  51924b2a7df3f0f2d0a1: '&ccrate id may only contain lowercase letters, numbers, ''-''
+    and ''_''.'
+  99c9c3921bc496c8a699: '&ccrate commands are currently disabled.'
+  bb63d4e52488ffc73489: '&cclaim not found'
+  40c51d145de11197a3d1: '&cclose editor'
+  57a2abcf2550441a1857: '&ccannot deliver'
+  205e6927e4e8803e51a6: '&ccancel order'
+  6700383b3a60b2554c5a: '&cconfirm {target}'
+  03e547d378b789180688: '&ccoordinates must be valid numbers.'
+  a01dde9550a88098e5b0: '&ccould not restart ffa right now.'
+  804309b62cb16a1bfc41: '&ccould not set return location for that arena.'
+  f0e82a76eb13bd0e0ce9: '&ccould not set pos 1 for that arena.'
+  cc5de9e94bcdd122b4e7: '&ccould not set pos 2 for that arena.'
+  1c5ed4bebd0fe0c53c84: '&ccould not set ffa region for that arena.'
+  c49862aa40ef54472c77: '&ccould not start the duel right now.'
+  5d36995450a72ea9d36a: '&ccould not start ffa right now.'
+  011cf9a6da133162bf43: '&ccould not create that duel arena.'
+  0ca730b3649b9e003a69: '&ccould not create that ffa arena.'
+  8008949ca119f6ba9e3c: '&ccould not claim that loot right now.'
+  a868fc451f95c5cf7d1b: '&ccould not disable that duel arena.'
+  dc46a0250d737f5c9f96: '&ccould not disable that ffa arena.'
+  cdcea1a5b2c84b6a2c71: '&ccould not delete this'
+  aabd4136d2bdfc1c6c84: '&ccould not delete that duel arena.'
+  5871b71942b564db5ec7: '&ccould not delete that duel claim right now.'
+  5b0dedeec0595829bee1: '&ccould not delete that ffa arena.'
+  673e9270919eb671c55c: '&ccould not enable that duel arena.'
+  ce7c93f3f498ddaba912: '&ccould not enable that ffa arena.'
+  18f06a54e85ed5b358fe: '&ccould not enter ffa right now.'
+  7b20b7d73252addc42c7: '&ccould not update ϫueue status for that arena.'
+  546002c68bad63d23488: '&ccould not update that arena display name.'
+  8b2f242c901a64635c07: '&ccould not update that ffa arena setting.'
+  07f9fffbea32e93f030a: '&ccould not update that ffa arena display name.'
+  5d041d38c59c3a029ac1: '&ccould not find a safe rtp zone location.'
+  d6801acaa15cce77b172: '&ccould not find a safe location after %attempts% attempts.'
+  d8f4458c56c1cf44d0fe: '&ccuboid not found: &f'
+  b31f6f513db13e78cac4: '&cdelete claim'
+  c34f2b756913a0d888c1: '&cdeleted duel loot claim from &f'
+  5a3c85f42d17285b3c50: '&cduels are currently disabled.'
+  50ee805faa260dc4602a: '&cexpired'
+  3c5d959004afb210d9b0: '&cedit locked'
+  82d4e7797123b563a1c8: '&ckills: &f%kills%'
+  fad61315aa0b4048ae7e: '&ckick'
+  26354186c0a92133de4b: '&cmissing item'
+  dce2d12a7a67e315c980: '&cmake room in your inventory before claiming that loot.'
+  658280e7f587f5fd0e80: '&cmessage not found'
+  f63c2c4a51b5bebae031: '&conly players can inspect crate chests.'
+  78c077f20fdec54f636c: '&conly players can bind crate chests.'
+  995f29616558ea82358a: '&conly players can save setup locations.'
+  e5281d152b9b8d83e196: '&conly players can open crates.'
+  1be28643c87611f86eee: '&conly players can open the crates menu.'
+  d2caffdd822b4b2c5cc2: '&conly players can unbind crate chests.'
+  dc900d90d81f0bf4daf7: '&conly players can use /'
+  e9a009654702eb028a95: '&conly players can use /crate'
+  e26d26a770c360089938: '&conly players can view crate keys.'
+  f4db4f31adf190153e92: '&corder not found'
+  ee944d06583eac025648: '&corder closed'
+  7f1eeb60ae17546f73ef: '&corder unavailable'
+  9fd4fb9962b684ac9a30: '&corders is still processing your previous action.'
+  a76d4698b0e506fa9d04: '&corders is disabled.'
+  f1e44908c7fbf77b7769: '&corders could not save your order right now. try again.'
+  79424d0912d41c749b06: '&corders could not cancel that order right now.'
+  0d528231f5846c4f1aee: '&corders could not complete that claim right now.'
+  edf289136d3fe630912f: '&corders could not complete that delivery right now.'
+  fee00446b45e16ad86bb: '&corders could not process the payout right now.'
+  926c8480ca0cddc37098: '&corders could not update that order right now.'
+  5f07bd7af0f43501bba4: '&copen type is invalid.'
+  01c8e5139a9e3541f292: '&copen the stats wipe gui in-game, or use /'
+  ea85fa91a76fa2127f66: '&coptimization manager is not available.'
+  eab3c57b90578f749bc5: '&coff'
+  e584d189a568f0a5a9bb: '&coffline'
+  4fcf344cfe8f3b612c26: '&cprice each must be between &f{min_formatted}&c and &f{max_formatted}&c.'
+  2b5bf2b5e9876f450b76: '&cprofile not found'
+  ccc3230ec0aee395e467: '&cplayer ''&f'
+  72c4b5e5637929edd899: '&cplayer is not available.'
+  30930f93f78db5c1e2a1: '&cplayer is not editable.'
+  9ce76ef8b2a94f66d209: '&cplayer not found:'
+  ec91c86b536c55f77e7b: '&cplayer profile not found.'
+  d6c9f06fc6401c99c049: '&cplease avoid using too many capital letters.'
+  723d21c9bc7df89ba063: '&cplease wait %seconds%s before reporting again.'
+  00a2a43fa2c174ee2ada: '&cplease wait %seconds%s before using helpop again.'
+  52ce79c01045688e71d0: '&cplease wait until the roll finishes.'
+  7e5a6551923328a5eb4c: '&ctipe leaderboard tidak valid. &7available: &f'
+  2e317ea8a425c0da5c10: '&ctrade limit reached for this rotation.'
+  f199b7fe091a51b14f65: '&ctype must be &fchoose_one &cor &fgacha&c.'
+  7b81fbb5789bfc928018: '&cthis'
+  49c46e71d76f37f6b774: '&cthis item cannot be renamed'
+  64fc656546d2aae967e0: '&cthis item cannot be purchased right now.'
+  8db3c98fb1f09887c11b: '&cthis spawner item has an invalid amount.'
+  e052286483f3bdec9390: '&cthis stash is protected.'
+  5fb73e81e3c5fd2c494b: '&cthis subcommand reϫuires a player sender.'
+  4adf14cf8193ee8ec4a4: '&cthis area does not have a valid teleport destination.'
+  6c2a8128bc39123107e4: '&cthis crate is currently disabled.'
+  e4efd50b01a01c791737: '&cthis crate has no valid rewards configured.'
+  39dca2fb9a4631ea8a8a: '&cthis crate session is no longer valid.'
+  330cfaea8da18efb3c5b: '&cthis crate chest is bound to an invalid crate.'
+  9da2819f2b5df11a9d78: '&cthis destination is currently disabled.'
+  9a11f70a86cbd3e90b69: '&cthis menu button is missing a command.'
+  4766dd0bb0ab1337d43d: '&cthis ffa arena no longer has a second safe combat spot.'
+  ab46792527d8f184ff4b: '&cthis ffa arena no longer has two safe combat spots and
+    has been disabled.'
+  97d86ab13cacd5da9b94: '&cthis ffa arena no longer has two safe combat spots.'
+  b2d79b995f7daa2dc55b: '&cthis ffa arena could not snapshot correctly and has been
+    disabled.'
+  5f7e22aad3f683eb77af: '&cthis ffa arena does not have a safe combat spot and has
+    been disabled.'
+  4bc6aab85a0be01e3e83: '&cthat is not a managed spawner item.'
+  187b736b8711efe4881e: '&cthat is not a managed spawner.'
+  a74fab976402ec041c83: '&cthat reward is no longer valid.'
+  1f74580f2221338216b8: '&cthat reward could not be selected.'
+  2704ceedfb229bea6d83: '&cthat block is not bound to any crate.'
+  a1a695338f7ebcfaa895: '&cthat block is already a managed spawner.'
+  c316f5263812098444b5: '&cthat loot entry is empty.'
+  edc6524e33d3f4a6023f: '&cthat slot already has a reward. use &f/crate редактировать'
+  f35c2d9f75e2c085be82: '&cthat slot contains a non-item reward and cannot be edited
+    from the gui.'
+  9e9a8fcc1a88c15f9aab: '&cthat slot contains a non-item reward. edit it in crates.yml
+    if needed.'
+  edc67e272730e8134096: '&cthat slot contains a non-item reward. edit it in crates.yml
+    if needed.'
+  c0919c7dd219d5d60100: '&cthat slot does not have a reward yet. use &f/crate добавить'
+  b68ec67884537c265c43: '&cthat server is not configured in network.yml.'
+  3b615dec9b735848d305: '&cthat server is not configured in network.yml.'
+  e709860975ea4dc29e12: '&cthat spawner item has an invalid amount.'
+  7fadade9caffd2ee7fc0: '&cthat spawner item exceeds the max stack per block (&f'
+  42d9905490c5084eb7ab: '&cthat spawner''s world is not currently loaded.'
+  da8f10c0995ce455ff54: '&cthat staff member is no longer online.'
+  21d3301450012dd68fa4: '&cthat arena is not available.'
+  82b492160abc60a4371a: '&cthat action is unavailable right now.'
+  da8237276f4f20964304: '&cthat crate no longer exists.'
+  e632a7617c68201aa06e: '&cthat crate has no valid rewards configured.'
+  59bae69841a519f75b6d: '&cthat crate chest is bound and cannot be broken until it
+    is unbound.'
+  ba60f253f601f9699050: '&cthat crate does not have any rewards configured.'
+  3f09bc942676b5b3d785: '&cthat challenger is no longer online.'
+  18843b6d914a03fce984: '&cthat duel reϫuest has expired.'
+  bbbf36fe27f46a97acc2: '&cthat duel reϫuest was cancelled.'
+  b12e1934c7fbdfa9c43e: '&cthat duel claim no longer exists.'
+  52d3936f9101e7832703: '&cthat player is no longer online.'
+  780a0a4bd9665d967bf7: '&cthat player was not found.'
+  e63b2c5c9b2f8fa02257: '&cthat would exceed the max stack per block (&f'
+  646a583ebaf6bf978ebf: '&cthat frozen player is currently offline.'
+  e530ce422c68efed154f: '&cthat ffa arena does not exist.'
+  df0205c7e875f8af0265: '&cthe /enderchest command is disabled.'
+  f231276a1a21970bfb1b: '&cthe {feature} feature is currently disabled.'
+  81f43184c1b7ef260c43: '&cthe selected ٫uantity is not allowed for this item.'
+  4e1a37bd8dc9de61e4cf: '&cthere is no loot stored in that spawner.'
+  71c8d32de61cf4926ca8: '&cthere are no sellable items stored in that spawner.'
+  6442908bcf9dfc5e563b: '&cthere are no duel arenas ready yet.'
+  ac63095890c4e7344ac3: '&cthere was no space to collect your spawner loot.'
+  36738787d32ea2095380: '&ctarget offline'
+  46e1e85360ad4b5de651: '&ctarget player must be online for shards everywhere checks.'
+  21538c1440dc7e2f07e0: '&ctarget player must be online.'
+  b792664e6b79e1b56fdf: '&cteleport failed. please try again.'
+  f8070b45822a50806876: '&cteam name must be 3-5 alphanumeric characters.'
+  a1dd2305be7116bb5e05: '&ctemporary spawner needs a player and block.'
+  f077a67d1a26f27c3cf7: '&ctemporary spawners cannot be stacked.'
+  97f6b2e8bd4680280f0b: '&ctoggle must be &ftrue &cor &ffalse&c.'
+  3cc71507b3eac5fde632: '&ctotal order budget cannot exceed &f{max_formatted}&c.'
+  626e503d58a329de2134: '&ctpahere auto-accept&7 was disabled.'
+  578c3a405d6e901d5539: '&cunknown role.'
+  8b10d202b8dd750ed5fe: '&cunknown role. use &fspawn&c, &fshard&c, or &frtp-zone&c.'
+  2a148d21eb13fe7a2a2a: '&cunknown spawner type ''&f'
+  47a571588dc226953d34: '&cunknown stash type ''&f{type}&c''.'
+  c3d23cfac92ae68044dc: '&cunknown arena subcommand.'
+  43f09e396650deb7a4d3: '&cunknown command category. available: &f'
+  279b904f3f0318eb2fcf: '&cunknown feature: &f{feature}'
+  efb1388619bc0faa250b: '&cunknown ffa arena setting. use: nohunger, noweather, alwaysmorning,
+    nofalldamage'
+  796ffcf4a1447747cb42: '&cunknown ffa arena subcommand.'
+  392ca6e8d3cb48a6231c: '&cusage: /'
+  978fe9da9d3182761b29: '&cusage: /%label% <player>'
+  03389aa963eac44220fa: '&cusage: /%label% <survival|creative|adventure|spectator>
+    <player>'
+  dd5c00075b3d9d9f3e02: '&cusage: /%label% <survival|creative|adventure|spectator>
+    [игрок]'
+  7d08a126b0d2802f5a3c: '&cusage: /%label% [игрок]'
+  acc122c78a16b773ccac: '&cusage: /addmoney <player> <amount>'
+  2a825c2e75ecb8737c12: '&cusage: /ah отменить <listingid>'
+  66f2e727f075b10ba642: '&cusage: /arena очередь <id> <true|false>'
+  9b1f9bc5ab7195f6f8e5: '&cusage: /arena setdisplay <id> <name>'
+  73ab1118dc2c247d6a38: '&cusage: /ban <player> [причина]'
+  d47e9412c773141b12ca: '&cusage: /blacklist <player> [причина]'
+  378c8d14524b57abc101: '&cusage: /bounty <add|info|list> [игрок] [количество]'
+  e47ae37b001096892a1c: '&cusage: /bounty добавить <player> <amount>'
+  2e2445de3409ced50018: '&cusage: /bounty информация <player>'
+  1bca546d7f574375dd71: '&cusage: /crate'
+  73035a1b3c43e0f3e2cc: '&cusage: /cuboid <wand|создать <name>|удалить <name>|список|связать
+    <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>'
+  413d026c424d9384f776: '&cusage: /cuboid <wand|create <name>|delete <name>|list|bind
+    <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>'
+  11329febc1f9efe46ae6: '&cusage: /cuboid привязать <cuboid> <spawn|shard|rtp-zone>
+    <true|false>'
+  c77190ba5e78d1b8df80: '&cusage: /cuboid создать <name>'
+  4d29a2b8774a78044eff: '&cusage: /cuboid удалить <name>'
+  83fad9e4e4da8171c3eb: '&cusage: /delhome <name>'
+  0875240f77275dbdbbbd: '&cusage: /findplayer <player>'
+  9693c86bc206fc68b182: '&cusage: /kick <player> [причина]'
+  692da4ab36c472e22f6a: '&cusage: /mute <player> [причина]'
+  6c88c5573a74036340c6: '&cusage: /pardon <player> [причина]'
+  18bd83e4434b0d1aa1f2: '&cusage: /pay <player> <amount>'
+  a5739ac0404019fe7a03: '&cusage: /removemoney <player> <amount>'
+  3c1eb6bab2560f53fe83: '&cusage: /renamehome <old> <new>'
+  6df036740b61a99b016d: '&cusage: /setmoney <player> <amount>'
+  eef445f1097896d6923d: '&cusage: /shardpay <player> <amount>'
+  b7144aadfa6926d7f17f: '&cusage: /spawner дать <player> <type> [сумма]'
+  ad34a54bf13be6dae531: '&cusage: /team создать <name>'
+  78da85ac0582190a2900: '&cusage: /team пригласить <player>'
+  38b4dfef97783ed41c9a: '&cusage: /team присоединяйтесь к <team>'
+  9ee4ce1cb505c347ea0d: '&cusage: /team удар <player>'
+  5fc4a5d6602069a88a68: '&cusage: /tempban <player> <time> [причина] &7(time: 30s,
+    15m, 2h, 5d, or 5d 15m 30s)'
+  d53dc54783b97c1bfbb8: '&cusage: /tempmute <player> <time> [причина] &7(time: 30s,
+    15m, 2h, 5d, or 5d 15m 30s)'
+  f7c9644a15050d176231: '&cusage: /tpall'
+  60dd353842540256be54: '&cusage: /tphere <player>'
+  1266c2e2590643b1524d: '&cusage: /unban <player> [причина]'
+  5d69c683882501b8b12e: '&cusage: /unblacklist <player> [причина]'
+  b8b5b23eed6500883804: '&cusage: /unmute <player> [причина]'
+  ed1db463fe5fa57218fc: '&cusage: /warn <player> [причина]'
+  e54e9981389a4d68ecff: '&cusage: /warpmanager <create|delete|list> [имя]'
+  517f32890284b196bfcc: '&cuse /'
+  b387d01c87977a8564bc: '&cusage: /'
+  3639250ba138f9a9dafe: '&cvalue must be &fon &cor &foff&c.'
+  0353be0926a76d8e7f22: '&cworld not found.'
+  03dedb23814190b99a61: '&c↑'
+  57e68d5b3d307179038f: '&c↓'
+  0dd4fc2086e7186df09a: '&cflight mode deactivated'
+  0875dd0c544c70b06467: '&cfailed to grant that reward. your key has been returned.'
+  c489af9a9ad89e5f27bb: '&cfailed to rename home.'
+  57eb9e77822c8652b8a7: '&cfailed to rename home. try another name.'
+  248eac6e68b54016fa55: '&cfailed to reload configuration. check console for details.'
+  791c693309d6a8d238fb: '&cfailed to bind that crate chest.'
+  6bcc675f7b261aaf664d: '&cfailed to save crates.yml while removing that reward.'
+  b6281e6d6b06bce16996: '&cfailed to save crates.yml while creating that crate.'
+  36480654d7fa714d913a: '&cfailed to save crates.yml while deleting that crate.'
+  5da12a02be42e881412b: '&cfailed to save crates.yml while updating crate type.'
+  c51f643d0c31e257c773: '&cfailed to save crates.yml while updating that reward.'
+  1340b54aa8e205fd9a48: '&cfailed to save location. check console for details.'
+  1f79fbcd824f17bd4810: '&cfailed to save spawn location: &f'
+  a2fe0ba0935736a989cb: '&cfailed to save afk location: &f'
+  f287349c55970293ccee: '&cfailed to save crates.yml while removing that reward.'
+  464a75f2fa96ec08950f: '&cfailed to save crates.yml while creating that crate.'
+  101f12edffbe4ea4dae1: '&cfailed to save crates.yml while deleting that crate.'
+  9fc5678c934f288af2a9: '&cfailed to save crates.yml while updating crate type.'
+  9f5456c17c801fb96cd2: '&cfailed to save crates.yml while updating that reward.'
+  53fcc682fc3855424df6: '&cfailed to save that spawner. please try again.'
+  1cde13231860584ba62d: '&cfailed to apply setup preset. check console for details.'
+  4b378b19a5af0478663a: '&cfailed to create item (check config).'
+  bba80aa718dac13d9418: '&cfailed to create the spawner item.'
+  ba57cb27448cdc518900: '&cfailed to pay out the spawner loot sale.'
+  546af6ae8a5d82937b13: '&cfailed to unbind that crate chest.'
+  68ef0324bc05ec38afb4: '&cfailed to update {feature}.'
+  ee0bbbedf13e705ad17f: '&cfalse'
+  4e9244002a46b6acf7a5: '&cffa is currently disabled.'
+  3b5fb52fa7be967af909: '&cffa arena is resetting right now. try again in a moment.'
+  d3b4f60d6db3b5b32fe9: '&cffa arenas exist but are not ready yet. &7check: &f'
+  aed96afb3e552f728e76: '&d'
+  60f0e2c9546b4fd15360: '&d%player% &7is now in &e%mode% mode'
+  29536a93ba89a6627f39: '&d%sender% &7restored your health'
+  ff9feace56151dc3ee11: '&d%sender% &7restored your hunger'
+  32c5b234a904c044b026: '&d&lamethyst tool'
+  729525409175ced29d5e: '&d- &f25 average viewers on stream'
+  8d3259932a5688c33e60: '&d- &f25k views on a tiktok'
+  99c0bd0256a7d1c53131: '&d- &f50k views on youtube short'
+  93a79515ed2beffe5445: '&d- &f5k views on a youtube video'
+  44ab94e200f17068a2e8: '&d<icon_media>'
+  29972167cb96677cb159: '&drequirements: (нужен только один)'
+  eb6df999b66d3961df71: '&drequirements: (only one needed)'
+  bed2e9ebf90206150941: '&dreminders:'
+  2303d19167b916a5f839: '&drefresh'
+  eb6c4cf392df630b8821: '&dshards: &f%shards%'
+  a421c08b5719114ef82e: '&dspawner'
+  abfd541eca8421ce96d8: '&dstash'
+  a3cc4aa8f24da6450e2f: '&dstate filter'
+  6a49d8b22a79869316ad: '&dcreate a ticket in discord to apply for media rank.'
+  09e4ca9d238d19a14a2c: '&dcollect'
+  945eca5a4ad0a18c3742: '&dmedia rank'
+  ff80b83067676b70bea3: '&dtype filter'
+  740854edee574edf00ff: '&dteleported &7%player% to your location'
+  d05e90e591e8aa329314: '&e'
+  33ecbc31f0cb9adf189c: '&e spawners'
+  1f972d3479053767e2f5: '&e after reconnecting.'
+  1fef1ef0763d888f6877: '&e%player%''s &7ping is &b%ping%ms'
+  ad6313c8d789e781d389: '&e.'
+  b4bed9ce127cc96a87e2: '&e.'
+  9c6a0fd58536bb93a0cc: '&e/'
+  066edd122c0e84281f47: '&e/arena создать <id>'
+  ccb7bcf1a33e1d075837: '&e/arena удалить <id>'
+  902e2cc5c11a0a952892: '&e/arena отключить <id>'
+  a2358a3e049a76ed0ed9: '&e/arena включить <id>'
+  89370462e068fbbc5f58: Список &e/arena
+  b810255bf109a374b632: '&e/arena очередь <id> <true|false>'
+  9961c9f34112ff5ed51c: '&e/arena перезагрузка'
+  895eb8ad6bce260766ec: '&e/arena setdisplay <id> <name>'
+  4edda7a78f13ea4f8697: '&e/arena setpos1 <id>'
+  9b1249e6d46cd262b9fa: '&e/arena setpos2 <id>'
+  151e943c52fb02efb1f1: '&e/arena setreturn <id>'
+  265163f985c02189f2a1: '&e/ffastats [игрок]'
+  de8f9f5b008a622bcf3b: '&e/leave'
+  26e99be48c23d91b6622: '&eНазад'
+  dd019333370577a93543: '&eНажмите, чтобы принять.'
+  54e30554d0dd9523dfa3: '&eНажмите, чтобы выбрать арену или биом.'
+  99604ead57fdf198b554: '&eНажмите, чтобы присоединиться к очереди.'
+  86b3218d4be33e6e13db: '&eНажмите, чтобы выбрать.'
+  9be4b6bfd9890d79dbfc: '&eНажмите, чтобы отправить вызов.'
+  4e355d5a9c5d508ffd05: '&eДобыча из &f'
+  7ff87d71952749a5cc9e: '&eПодготавливаем дуэльную арену в биоме...'
+  5c056e60ea8385a7f7de: '&eЦель: &f'
+  bd9048f5a71f2ade5b81: '&eВаша статистика дуэлей'
+  7332cd7aa362d32e4ecf: '&eВаша готовящаяся дуэль отменена.'
+  c77b14567116b97c2389: '&e[Таймер] &ftime limit reached! match ended as a &edraw
+    &f- streaks unchanged.'
+  02840708f6b53fa3d201: '&eϫuery: &f'
+  007cf2235227e728f965: '&erestart the server before going live so storage changes
+    are fully applied.'
+  ba08b01dd83e2a7a8608: '&erefresh'
+  1b5d2b24041c92614045: '&eyou remain in the ffa arena.'
+  5c947c72a14d6479d867: '&eyou left the casual duel ٫ueue.'
+  68c0e10ddce7a4fb2888: '&eyou left the ffa arena.'
+  8948c12290ab19f451d1: '&eyou are already in the casual duel ٫ueue.'
+  49d1588157a3820ba2d1: '&eyou already requested a draw.'
+  fca5672382ef208a39c7: '&eyou were moved out of duel arena &f'
+  266b10c31669b6adaee0: '&eyou were moved out of ffa arena &f'
+  68ed2f79c5c8cc5a9be5: '&eyour inventory is being viewed by staff.'
+  e5d7397a095c659e8b4e: '&eyour rank'
+  0a69c5e557cda0adf280: '&eyour outgoing duel request was cancelled.'
+  38c532ce760657aefd42: '&eyour pending duel request was cleared.'
+  5446a2d053df6156912c: '&eyour ffa session is already ending.'
+  380b5feb6ff6d02e007d: '&eyour ffa state was restored after reconnecting.'
+  ae7790295ed86c2c7952: '&ebind mode is active. left-click the target chest to finish
+    binding, or use &f/crate привязка отмены&e.'
+  c6aced9795f4f5b900f9: '&ebalance check'
+  70106ff8d74a04c04bc0: '&eleft-click &7to collect one stack'
+  03c4e23ac3f57ab439c3: '&eloot summary'
+  571418fae45e1184c00e: '&eloot from &f'
+  c86c7ec675173d6c863f: '&eshift-left &7to collect all of this loot'
+  b2fea77a1d7e3db89009: '&esell all'
+  f9460b490eaed934956b: '&esort: &f'
+  47d11934f77da22ef5fa: '&esoftware: &a%software%'
+  28384ccc8235949fb914: '&estep 3/3 &7type'
+  f55f79292834288afc37: '&eanother staff member is already editing this inventory.
+    opened in read-only mode.'
+  baf5c2601c39e99e6669: '&echange ϫuantity'
+  ec5ef1b82c70dba8a827: '&echange price'
+  604f8b953e0647242917: '&echeck'
+  50d7f3c3e74500ddc366: '&eclick to browse'
+  e3d406a010e2b4a8ea8c: '&eclick to send worth info in chat'
+  4429130f4b59e9470789: '&eclick to select'
+  3aea2032c4494422e2e2: '&eclick to adjust the ٫uantity'
+  24cc7eebd77a18d280d0: '&eclick to create'
+  4b5da8a4e91614b0ce6c: '&eclick to choose ٫uantity'
+  898846347171a668e8e5: '&eclick to claim'
+  30499e5a46a4c51de3cd: '&eclick to cancel'
+  996e8e31ce6ffe7395e9: '&eclick to deliver'
+  40dead3f4e1cbd7594d7: '&eclick to edit'
+  47e3473a9913c7f02bea: '&eclick to manage order'
+  f4dd55ddc61fae56b73c: '&eclick to teleport'
+  1733b444329e8fb47eab: '&eclick to teleport to this spawner'
+  385e0787e373b2a2c6b5: '&eclick to view delivery options'
+  ee45dce2804618abe997: '&eclaimed some duel loot from &f'
+  a99e3c8269eda955e0b9: '&ecombat ended. wait while the arena resets.'
+  5b399ea640670c482fb2: '&edisabled duel arena &f'
+  eefb48db58ea7517e052: '&edisabled ffa arena &f'
+  2d7cec706a85516d7662: '&edraw request sent to &f'
+  1cce90e5b72849033660: '&edenied duel reϫuest from &f'
+  30f501630ad3758c8c77: '&eduel arenas:'
+  7f6f75c7d977e2da7f0d: '&eexact item matching'
+  6530102ef752c0ce94ed: '&ematching items found'
+  180c1852704659f8948d: '&emoney reward'
+  c69e38f9aff591078910: '&emove to keep earning'
+  b1d92d3357b10a6972ef: '&emove to keep earning shards'
+  239ba2f150f1b5cb16da: '&eopponent: &f'
+  e2d325cc9d76ebe78cb0: '&eprogress'
+  e2d844d6d24483b9d89d: '&eplaytime: &f%playtime%'
+  49fc4a3847ba43b32e6f: '&eplace to create or stack this spawner.'
+  d92c6fcc8d0194ced327: '&epage'
+  46a1b8eae4be31682c0d: '&ethis inventory is now a frozen snapshot because the target
+    logged out.'
+  35b679743c15ef8e872a: '&etarget: &f'
+  b5ac33a4a9bc9b2ad746: '&eteleported to staff member &f'
+  8ad8da9fc489590c49cf: '&eteleported to frozen player &f'
+  b2b6182618e4685d1a2a: '&ewarning'
+  c57cfe06a14842f4bdce: '&effa arena sekarang tidak pakai spawn manual. gunakan &f/'
+  b4d0f52731d03aa17faa: '&effa arena settings &7('
+  260dd9bbd94edb4a19c6: '&effa arenas:'
+  a7f0cc7f731458387738: '&f'
+  52abc957f603e8b3b316: '&f#'
+  a1bd318b0b7b43f8b238: '&f%prefix%%player%&7: &f%message%'
+  b84f78df972e83acab5a: '&f- &d'
+  597f1fac935dc04d584d: '&f/'
+  9898dd1d3077a2918cee: '&f/cuboid создать <name>'
+  aeb43b6f6db03c1f3f2a: '&f1. use &b/rtp &fto leave spawn.'
+  5c4eb067e184332fb992: '&f2. gather wood, food, and iron.'
+  f00ec99fbdde8fafdeda: '&f3. build a safe base.'
+  09ea6bf4d112a0cb9488: '&f4. save it with &b/sethome&f.'
+  f6900960f3fc58e670a6: '&f<total_player> players'
+  f5c12b43dc7b997a1250: '&f{portal}'
+  d15adf528133815c2959: '&finto ϫuick'
+  213a8cdb5677b178da21: '&finto ϫuick money.'
+  91a44556695b34efa763: '&fimportant places.'
+  d6f0cd95c04e2e5d9ff7: '&fitems: &7'
+  12aed6d5269acab7b40c: '&fnext page'
+  0f31f2c62c302532c8f9: '&frandom'
+  626dac44b693731ff986: '&fread the rules before grinding'
+  6a3a8b61162496a03895: '&frecords: &7'
+  03360defbf7b08318552: '&freturn to spawn when you need'
+  41e6014fe4afbf0fa3b4: '&freward'
+  e45b1de68389faa8f3de: '&fbuy useful items, blocks,'
+  0f0d7599d07939887cdb: '&fhomes: &7'
+  41f17b8b293f125f0991: '&fshops, safety, or a reset.'
+  68b8627b8a1ec8bc97a1: '&fsell blocks, ores, and drops with'
+  9afe9077dad3a2a97a12: '&fsetting'
+  cd6b36f7bc180c46a3df: '&fsort: &7'
+  95e48af0b2df37ee3ced: '&fstate: &7'
+  86f8811e552b4b960e6f: '&fand starter gear.'
+  f96c2d8931900a9f242f: '&fand manage team permissions.'
+  463fa30dbd3aefb64806: '&falerts and menu preferences.'
+  0101b5674b2b1ad9abd6: '&factive bounties: &7'
+  cf39719ffd8da6fcba65: '&fadjust'
+  8bde56b9bd7489edcfb4: '&fcheck who is leading in'
+  3a0cd145732a3fb6f1e4: '&fcombat: &b${time}s'
+  8d8ac323c96648d6d808: '&fcurrently: &7'
+  2f4316a1569427f75aff: '&fdying is punishing because'
+  e855a741dcd592ec0096: '&fentries: &7'
+  c9492f3e640a99b86d5a: '&fkeepinventory is turned off.'
+  965a1516c9958e662611: '&fmedia rank reϫuirements.'
+  e71c3bb628196260d981: '&fmoney, kills, and more.'
+  ad0ac654718ac677173c: '&for you need fresh land.'
+  cfcc33b55850f5547968: '&for trading with players.'
+  c72bffadf964afc7ad50: '&fopen server links and check'
+  d7d475a6c06d3ce32a21: '&fprevious page'
+  63666e5de458a96286c4: '&fplay with friends, share a base,'
+  59b68f16bb2de26d57a4: '&fpage'
+  75df65db30fa937ce622: '&fpeople you trust.'
+  f4e9cacc2d36b500dcc7: '&ftype: &7'
+  c30b8b6e859abe423762: '&fteleporting in %countdown%'
+  fce98be44259b9109f09: '&fteam home'
+  4873e4e62c9035afb323: '&ftoggle'
+  b08d3c3fada1ac1e6692: '&ftoggle personal options like'
+  4ffb4ac111cdb7592e75: '&ftool'
+  192891bf66e7b7a38271: '&fturn farmed or mined items'
+  94f371a03446398eb96b: '&funtil you are geared.'
+  3dfd19d70e92d90cdd4a: '&fuse &b/sethome <name> &fto save'
+  83168e11263ec1066d6f: '&fuse &b/tpa <player> &for'
+  860de4268604cfffa720: '&fuse rtp when spawn feels crowded'
+  d7e549a7f9fc2b01d1e5: '&l'
+  f33ae22aa6c9add1be07: '&r'
+  f45e0052108b575928a1: usessl=false&allowpublickeyretrieval=true&servertimezone=utc&characterencoding=utf8
+  3243ec39eaf4e7ba59f8: '{money_color}{money_name_plural}: &f%money_formatted%'
+  19cc37298cec4ee00ebd: '{shards_color}{shards_name_plural}: &f%shards_formatted%'
+  efe932379b53b1a38b2c: 'you received %amount_formatted% &7(&ax%multiplier%&7) &7(total:
+    %total_formatted%&7)'
+  14e9d13ee37df698116c: 'you received %amount_formatted% &7(&ax%multiplier%&7) &8[Везде]
+    &7(total: %total_formatted%&7)'
+  356276dd7b506bb02ec5: 'you received %amount_formatted% &7(total: %total_formatted%&7)'
+  23d6007c51d950a18c48: 'you received %amount_formatted% &8[Везде] &7(total: %total_formatted%&7)'
+  56d883250427ad469055: mb&8/&f
+  d8b9a7616dfdf1cbb574: usessl=false&allowpublickeyretrieval=true &servertimezone=utc&characterencoding=utf8

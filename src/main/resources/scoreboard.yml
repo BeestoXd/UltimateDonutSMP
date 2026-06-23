@@ -1,0 +1,25 @@
+# UDS setup: Sidebar scoreboard enable state, title, update rate, and display lines.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Scoreboard title, update interval, worlds, and displayed lines.
+SCOREBOARD:
+  ENABLED: true # Enables or disables scoreboard.
+  TITLE-UPDATE-TICKS: 2 # Sets how often this task or update runs.
+  TEAM: "&#00A4FC🪓 &fteam &#00A4FC%economy_team%     " # Configures the team option.
+  SHARD-BOOSTER: "&#A303F9⚡ &fbooster &#A303F9%economy_booster_countdown%     " # Configures the shard booster option.
+  SHARD-CUBOID: "&#A303F9⌛ &fshards &#A303F9%economy_shard_cuboid_display%     " # Configures the shard cuboid option.
+  TITLE:
+    - "&#0069d6&le&#0374da&lc&#067fdf&lo&#0a8be3&ln&#0d96e7&lo&#10a1ec&lm&#13acf0&ly&#17b8f4&ls&#1ac3f9&lm&#1dcefd&lp"
+  LINES:
+    - ""
+    - "&#00FC00&l$ &fmoney &#00FC00%economy_nicestMoney%     "
+    - "&#A303F9★ &fshards &#A303F9%economy_shards_short%     "
+    - "&#FC0000🗡 &fkills &#FC0000%economy_kills%      "
+    - "&#F97603☠ &fdeaths &#F97603%economy_deaths%   "
+    - "&#00A4FC⌛ &fkeyall &#00A4FC%economy_keyall_countdown%"
+    - "&#FCE300⌚ &fplaytime &#FCE300%economy_playtime%   "
+    - "{team}"
+    - "{shard_cuboid}"
+    - "{shard_booster}"
+    - ""
+    - "&7na east &7(&#0069D6%economy_ping%ms&7)"

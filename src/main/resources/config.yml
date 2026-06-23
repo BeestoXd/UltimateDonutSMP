@@ -1,0 +1,593 @@
+# UDS setup: Core UltimateDonutSMP systems, feature toggles, global limits, and command switches.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Global language used for player-facing plugin text.
+LANGUAGE:
+  ACTIVE: "en_US"
+  FALLBACK: "en_US"
+
+FEATURES:
+  HIDE: true
+  SAFETY:
+    ENABLED: true
+
+# UDS setup: Saved global locations used by spawn, AFK, and location-based systems.
+LOCATIONS:
+  SPAWN-LOCATION: "" # Configures the spawn location option.
+  AFK-LOCATION: "" # Configures the afk location option.
+
+# UDS setup: Portal behavior, combat blocking, holograms, and per-portal overrides.
+PORTAL-SYSTEM:
+  ENABLED: true # Enables or disables portal system.
+  BLOCK-IN-COMBAT: true # Configures the block in combat option.
+  DEFAULT-TRIGGER-COOLDOWN-MS: 1500 # Sets the cooldown before this action can run again.
+  POST-TELEPORT-GRACE-MS: 2000 # Configures the post teleport grace ms option.
+  HOLOGRAM:
+    ENABLED: true # Enables or disables hologram.
+    DEFAULT-REGION: "na east" # Sets the default value used when none is selected.
+    DEFAULT-SERVER-ID: "" # Sets the default value used when none is selected.
+    # Optional per-portal overrides. Keys must match /portalmanager portal ids.
+    # Use SERVER-ID values from network.yml -> NETWORK-STATUS.SERVERS.
+    PORTALS:
+      # overworld_na:
+      #   REGION: "NA East"
+      #   SERVER-ID: "smp-na"
+      #   LINES:
+      #     - "&#55FF55{portal}"
+      #     - "&7Region &#55FF55{region}"
+      #     - ""
+      #     - "&#55FF55<total_player> Players"
+      # overworld_eu:
+      #   REGION: "EU West"
+      #   SERVER-ID: "smp-eu"
+      #   LINES:
+      #     - "&#55AAFF{portal}"
+      #     - "&7Region &#55AAFF{region}"
+      #     - ""
+      #     - "&#55AAFF<total_player> Players"
+    OFFSET-Y: 1.2 # Configures the offset y option.
+    SET-HERE-OFFSET-Y: 1.6 # Configures the set here offset y option.
+    LINE-SPACING: 0.27 # Configures the line spacing option.
+    UPDATE-TICKS: 40 # Sets how often this task or update runs.
+    LINES:
+      - "&f{portal}"
+      - "&7region {region}"
+      - ""
+      - "&f<total_player> players"
+
+# Settings
+# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+SETTINGS:
+  RESPAWN-ON-BED: false # Configures the respawn on bed option.
+  TELEPORT-SPAWN-ON-FIRST-JOIN: true # Configures teleport to spawn on first join.
+  CHAINMAIL-ON-RESPAWN: true # Configures the chainmail on respawn option.
+  CHAINMAIL-RESPAWN-ITEMS:
+    - MATERIAL: STONE_SWORD
+      AMOUNT: 1
+    - MATERIAL: CHAINMAIL_HELMET
+      NAME: "&echainmail helmet"
+      AMOUNT: 1
+    - MATERIAL: CHAINMAIL_CHESTPLATE
+      NAME: "&echainmail chestplate"
+      AMOUNT: 1
+    - MATERIAL: CHAINMAIL_LEGGINGS
+      NAME: "&echainmail leggings"
+      AMOUNT: 1
+    - MATERIAL: CHAINMAIL_BOOTS
+      NAME: "&echainmail boots"
+      AMOUNT: 1
+    - MATERIAL: COOKED_BEEF
+      AMOUNT: 16
+  HOME-DEFAULT: 5 # Configures the home default option.
+  SHARDS-PER-KILL: 1 # Configures the shards per kill option.
+  SHARDS-PER-KILL-MIN: "" # Optional inclusive minimum; blank keeps the legacy SHARDS-PER-KILL value.
+  SHARDS-PER-KILL-MAX: "" # Optional inclusive maximum; blank keeps the legacy SHARDS-PER-KILL value.
+  SHARDS-KILL-MESSAGE: "&#A303F9+{shards} shard" # Configures the shards kill message option.
+  MONEY-PER-DEFAULT: 1000.0 # Configures the money per default option.
+  SELL-MESSAGE: "&a+$%price%" # Configures the sell message option.
+  SPAWN-MENU: true # Configures the spawn menu option.
+  AFK-MENU: true # Configures the afk menu option.
+  WORTH-DEFAULT-VALUE: 1.0 # Sets the economy value used by this option.
+  # Player Settings
+  MOB-SPAWN-RADIUS: 50 # Sets the radius used for this check or effect.
+  PHANTOM-SPAWN-RADIUS: 40 # Sets the radius used for this check or effect.
+
+# UDS setup: Limits unsafe item metadata before UDS stores or reloads item data.
+CRASH-PROTECTION:
+  ENABLED: true # Enables or disables crash protection.
+  MAX-SERIALIZED-BYTES: 65536 # Sets the allowed limit for this option.
+  MAX-DISPLAY-NAME-LENGTH: 256 # Sets the allowed limit for this option.
+  MAX-LORE-LINES: 80 # Sets the allowed limit for this option.
+  MAX-LORE-LINE-LENGTH: 512 # Sets the allowed limit for this option.
+  MAX-BOOK-PAGES: 50 # Sets the allowed limit for this option.
+  MAX-BOOK-PAGE-LENGTH: 1024 # Sets the allowed limit for this option.
+  MAX-BOOK-TOTAL-CHARS: 16384 # Sets the allowed limit for this option.
+  MAX-PERSISTENT-DATA-KEYS: 64 # Sets the allowed limit for this option.
+  MAX-CONTAINER-DEPTH: 1 # Sets the allowed limit for this option.
+  MAX-NESTED-CONTAINER-ITEMS: 54 # Sets the allowed limit for this option.
+  BLOCK-NESTED-CONTAINERS: true # Configures the block nested containers option.
+
+# UDS setup: Chat format, clickable names, filters, caps/repeat/link checks, and delays.
+CHAT:
+  FORMAT-ENABLED: true # Set false to let another plugin handle public chat formatting.
+  FORMAT: "%player%: %message%" # Sets the text format used by this option.
+  MESSAGE-COLORS:
+    default: "&f" # Sets the default value used when none is selected.
+    owner: "&#0000FF" # Configures the owner option.
+  CLICKABLE-NAME:
+    ENABLED: true # Enables or disables clickable name.
+    HOVER-TEXT:
+      - "%luckperms_prefix%%player%"
+      - "&7&m----------"
+      - "&#00FC00&l$ &fmoney &#00FC00%economy_money%"
+      - "&#FC0000⚔ &fkills &#FC0000%economy_kills%"
+      - "&#FCE300⌚ &fplaytime &#FCE300%economy_playtime%"
+      - "&#F97603☠ &fdeaths &#F97603%economy_deaths%"
+      - "&#A303F9★ &fshards &#A303F9%economy_shards_short%"
+      - "&7&m----------"
+      - "&7click to view stats"
+    SUGGEST-COMMAND: "/msg <player> " # Sets the command executed or suggested here.
+  GLOBAL-CHAT-MUTED: false # Configures the global chat muted option.
+  GLOBAL-CHAT-DELAY-ENABLED: false # Enables or disables chat.
+  GLOBAL-CHAT-DELAY: 3 # Configures the global chat delay option.
+  MAX-DELAY-SECONDS: 30 # Sets the allowed limit for this option.
+  CLEAR-LINES: 150 # Configures the clear lines option.
+  FILTER:
+    ENABLED: true # Enables or disables filter.
+    BLOCK-MESSAGE: "&7please avoid using inappropriate words." # Configures the block message option.
+    WORDS:
+      - "fuck"
+      - "shit"
+      - "bitch"
+    LANGUAGE:
+      ENABLED: false # Enables or disables language.
+      ALLOWED-ALPHABETS:
+        - "LATIN"
+        - "NUMBERS"
+        - "SYMBOLS"
+      BLOCK-MESSAGE: "&cyour message contains characters that are not allowed on this server." # Configures the block message option.
+    CAPS:
+      ENABLED: false # Enables or disables caps.
+      PERCENTAGE: 70 # Configures the percentage option.
+      MIN-LENGTH: 5 # Sets the allowed limit for this option.
+      BLOCK-MESSAGE: "&cplease avoid using too many capital letters." # Configures the block message option.
+    ANTI-REPEAT:
+      ENABLED: false # Enables or disables anti repeat.
+      BLOCK-MESSAGE: "&cyou cannot repeat the same message!" # Configures the block message option.
+    ANTI-LINK:
+      ENABLED: false # Enables or disables anti link.
+      ALLOWED:
+        - "google.com"
+        - "youtube.com"
+      BLOCK-MESSAGE: "&clinks are not allowed in the chat!" # Configures the block message option.
+    LENGTH:
+      MIN:
+        ENABLED: false # Enables or disables min.
+        VALUE: 1 # Sets the economy value used by this option.
+        BLOCK-MESSAGE: "&cyour message is too short! (min: %min%)" # Configures the block message option.
+      MAX:
+        ENABLED: false # Enables or disables max.
+        VALUE: 100 # Sets the economy value used by this option.
+        BLOCK-MESSAGE: "&cyour message is too long! (max: %max%)" # Configures the block message option.
+
+# UDS setup: AFK detection timing, locations, cuboid integration, and AFK messages.
+AFK-SYSTEM:
+  ENABLED: true # Enables or disables afk system.
+  TIME: 180 # Configures the time option.
+  SPAWN-CUBOID-NAME: "spawn" # Sets the name text used here.
+  AFK-CUBOID-NAME: "" # Sets the name text used here.
+  MESSAGE: "&7you have been moved to the AFK area for being inactive in the spawn." # Configures the message option.
+
+# UDS setup: Maps systems such as spawn or AFK to named cuboid regions.
+CUBOID-BINDS:
+  SPAWN: [] # Configures the spawn option.
+  AFK: [] # Configures the afk option.
+
+# UDS setup: Controls optional worth text shown on items.
+WORTH-LORE:
+  ENABLED: true # Enables or disables worth lore.
+  FORMAT: "&7worth: &a$%price%" # Sets the text format used by this option.
+
+# UDS setup: Adjusts end crystal damage behavior when enabled.
+END-CRYSTAL:
+  ENABLED: false # Enables or disables end crystal.
+  DAMAGE: 2.0 # Configures the damage option.
+
+# UDS setup: Controls crystal placement/break cooldowns and valid placement bases.
+FAST-CRYSTALS:
+  ENABLED: true # Enables or disables fast crystals.
+  DEFAULT-PLAYER-STATE: true # Sets the default value used when none is selected.
+  EXCLUDED-WORLDS:
+    - "duels"
+
+  PLACE:
+    ENABLED-COOLDOWN-TICKS: 0 # Sets the cooldown before this action can run again.
+    DISABLED-COOLDOWN-TICKS: 8 # Sets the cooldown before this action can run again.
+    DEBOUNCE-MS: 40 # Configures the debounce ms option.
+    REQUIRE-VALID-BASE: true # Configures the require valid base option.
+    VALID-BASES:
+      - "OBSIDIAN"
+      - "BEDROCK"
+    REQUIRE-AIR-ABOVE: true # Configures the require air above option.
+    REQUIRE-AIR-TWO-ABOVE: true # Configures the require air two above option.
+
+  BREAK:
+    CLEAR-COOLDOWN-AFTER-HIT: true # Sets the cooldown before this action can run again.
+  
+# UDS setup: Adjusts respawn anchor damage behavior when enabled.
+RESPAWN-ANCHOR:
+  ENABLED: false # Enables or disables respawn anchor.
+  DAMAGE: 2.0 # Configures the damage option.
+
+# UDS setup: Custom ender chest rows, access rules, save timing, and display title.
+ENDER-CHEST:
+  SIX-ROW: true # Configures the six row option.
+
+# Lunar client modules
+# UDS setup: Lunar Client integration settings such as rich presence and team view.
+LUNAR-CLIENT:
+  RICH-PRESENCE:
+    # Requires the official Lunar Client Apollo plugin and a public server listed in Lunar ServerMappings.
+    ENABLED: true # Enables or disables rich presence.
+    UPDATE: 1 # Configures the update option.
+    PLAYER-STATE: "playing" # Configures the player state option.
+    GAME-STATE: "playing" # Configures the game state option.
+    GAME-NAME: "economy" # Sets the name text used here.
+    VARIANT: "%economy_username% ($%economy_nicestMoney%)" # Configures the variant option.
+    WORLD-NAME: "economy" # Sets the world name used by this option.
+    SUB-SERVER-NAME: "SMP" # Sets the name text used here.
+    TEAM-CURRENT-SIZE: "{team_size}" # Sets the inventory size in slots.
+    TEAM-MAX-SIZE: "{team_max_size}" # Sets the inventory size in slots.
+    MAX-FIELD-LENGTH: 128 # Sets the allowed limit for this option.
+  TEAM-VIEW:
+    ENABLED: true # Enables or disables team view.
+    UPDATE: 20 # Configures the update option.
+
+# UDS setup: Shard earning, boosters, menus, drops, cuboids, and passive generation.
+SHARDS:
+  # Legacy spawn shard settings. These are still used as a fallback when SHARDS.CUBOIDS.REGIONS is empty.
+  EVERY: 1 # Configures the every option.
+  AMOUNT: 1 # Sets the item amount used by this option.
+  COUNTDOWN: "&7next shard in &#A303F9%time%" # Configures the countdown option.
+  RECEIVED: "&#A303F9you received %amount% shard &7(total: &#A303F9%total%&7)" # Configures the received option.
+  RECEIVED-BOOSTED: "&#A303F9you received %amount% shards &7(&ax%multiplier%&7) &7(total: &#A303F9%total%&7)" # Configures the received boosted option.
+  CANCELLED-MESSAGE: "&cshard reward cancelled &7(left %cuboid% zone)" # Configures the cancelled message option.
+  RESET-ON-LEAVE: true # Configures the reset on leave option.
+
+  # Configurable shard cuboids. The cuboid area itself should already exist via /cuboid save <name>.
+  CUBOIDS:
+    REGIONS:
+      spawn:
+        ENABLED: false # Enables or disables spawn.
+        BOUND: false # Configures the bound option.
+        PRIORITY: 100 # Configures the priority option.
+        CUBOID: "" # Configures the cuboid option.
+        WORLD: "world" # Sets the world name used by this option.
+        LOCATION: "" # Configures the location option.
+        RADIUS: 16 # Sets the radius used for this check or effect.
+        INTERVAL: 60 # Sets how often this task or update runs.
+        AMOUNT: 1 # Sets the item amount used by this option.
+        COUNTDOWN-MESSAGE: "&7next shard in &#A303F9%time%" # Configures the countdown message option.
+        REWARD-MESSAGE: "&#A303F9you received %amount% shard &7(total: &#A303F9%total%&7)" # Configures the reward message option.
+        BOOSTED-REWARD-MESSAGE: "&#A303F9you received %amount% shards &7(&ax%multiplier%&7) &7(total: &#A303F9%total%&7)" # Configures the boosted reward message option.
+        LEAVE-MESSAGE: "&cshard reward cancelled &7(left %cuboid% zone)" # Configures the leave message option.
+        AFK-TIME: 120 # Configures the afk time option.
+        AFK-CUBOID: "" # Configures the afk cuboid option.
+        AFK-LOCATION: "" # Configures the afk location option.
+        AFK-MESSAGE: "&7you have been moved to the AFK area for being inactive in the shard zone." # Configures the afk message option.
+        TELEPORT-ON-AFK: true # Configures the teleport on afk option.
+        EXCLUDED-WORLDS:
+          - "duels"
+        RECENT-MOVEMENT-WINDOW: 15 # Configures the recent movement window option.
+        MIN-MOVEMENT-BLOCKS: 5 # Sets the allowed limit for this option.
+        RESET-ON-LEAVE: true # Configures the reset on leave option.
+        PAUSED-MESSAGE: "&emove to keep earning shards &7(%movement%/%required_movement%)" # Configures the paused message option.
+        AFK-PAUSED-MESSAGE: "&cyou are AFK. move to resume shard gain" # Configures the afk paused message option.
+        EXCLUDED-WORLD-MESSAGE: "&cshards are disabled in this world" # Configures the excluded world message option.
+
+  # Passive "everywhere" reward (ShardTask, runs every minute)
+  EVERYWHERE:
+    ENABLED: false # Enables or disables everywhere.
+    EVERY: 3 # Configures the every option.
+    AMOUNT: 1 # Sets the item amount used by this option.
+    REQUIRED-PERMISSION: "ultimatedonutsmp.shards.everywhere" # Sets the permission node required for this action.
+    RECENT-MOVEMENT-WINDOW: 15 # Configures the recent movement window option.
+    DISABLE-WHILE-IN-SHARD-CUBOID: false # Configures the disable while in shard cuboid option.
+    RECEIVED: "&#A303F9you received %amount% shard &8[everywhere] &7(total: &#A303F9%total%&7)" # Configures the received option.
+    RECEIVED-BOOSTED: "&#A303F9you received %amount% shards &7(&ax%multiplier%&7) &8[everywhere] &7(total: &#A303F9%total%&7)" # Configures the received boosted option.
+    EXCLUDED-WORLDS:
+      - "duels"
+
+  # Multiplies both cuboid and everywhere shards while active.
+  BOOSTER-MULTIPLIER: 4 # Configures the booster multiplier option.
+
+# UDS setup: Scheduled key-all rewards, notifications, and reward commands/items.
+KEY-ALL:
+  ENABLED: true # Enables or disables key all.
+  EVERY: 60 # Configures the every option.
+  COMMANDS:
+    - ""
+  RANDOM-COMMANDS: false # If true, runs only one random command from the COMMANDS list instead of all.
+  TYPE: "RANDOM" # Selects the mode or type used by this option.
+  RANDOM:
+    KEYS:
+      common: 60 # Configures the common option.
+      rare: 30 # Configures the rare option.
+      epic: 10 # Configures the epic option.
+  ONE-KEY-ONLY:
+    KEY: "common" # Configures the key option.
+  NOTIFICATION:
+    ENABLED: true # Enables or disables notification.
+    MESSAGE:
+      - ""
+      - "&#00A4FCkey-all reward!"
+      - "&fyou received &b{amount}x {crate}&f key."
+      - ""
+
+# UDS setup: Team limits, naming rules, homes, chat, invites, and team PvP settings.
+TEAM:
+  NAME-MIN-LENGTH: 3 # Configures the name min length option.
+  NAME-MAX-LENGTH: 5 # Configures the name max length option.
+  LIMIT-MEMBERS: 10 # Configures the limit members option.
+
+# UDS setup: Leaderboard formatting, refresh behavior, holograms, and stat categories.
+LEADERBOARD:
+  UPDATE: 10 # Configures the update option.
+  NPC-REFRESH: 1 # Configures the npc refresh option.
+
+# UDS setup: Tablist header/footer, sorting, placeholders, groups, and refresh behavior.
+TABLIST:
+  ENABLED: true # Enables or disables tablist.
+  LUCKPERMS-PRIORITY: true # Configures the luckperms priority option.
+  SHOW-TEAM-NAME: true # Sets the name text used here.
+  ICON-MEDIA: "\U0001F4F9" # Configures the icon media option.
+  MEDIA-ICON-FORMAT: "&d<icon_media>" # Sets the text format used by this option.
+  MEDIA-PLUS-FORMAT: "&#37BFF9+" # Sets the text format used by this option.
+  MEDIA-BADGE-FORMAT: "<media_icon_badge><media_plus_badge>" # Sets the text format used by this option.
+  MEDIA-BADGE-PERMISSION: "rank.media" # Sets the permission node required for this action.
+  MEDIA-PLUS-PERMISSION: "rank.media.plus" # Sets the permission node required for this action.
+  MEDIA-BADGE-INCLUDE-PERMISSION: "rank.media.include" # Sets the permission node required for this action.
+  NAME-FORMAT: "<media_badge>&f<nick>%team_suffix%" # Sets the text format used by this option.
+  HEADER:
+    - ''
+    - '<#00ADFC>&lserver name</#00FCFC>'
+    - '&f%online% players'
+    - ''
+  FOOTER:
+    - ''
+    - '   &#37BFF9/discord  /guide  /store   '
+    - ''
+
+# UDS setup: Performance-related toggles and cleanup/monitoring behavior.
+OPTIMIZATION:
+  ENABLED: true # Enables or disables optimization.
+  MONITOR-INTERVAL-TICKS: 100 # Sets how often this task or update runs.
+  TPS-WARN-THRESHOLD: 18.5 # Configures the tps warn threshold option.
+  TPS-CRITICAL-THRESHOLD: 16.0 # Configures the tps critical threshold option.
+  MSPT-WARN-THRESHOLD: 45.0 # Configures the mspt warn threshold option.
+  MSPT-CRITICAL-THRESHOLD: 55.0 # Configures the mspt critical threshold option.
+  RECOVERY-SAMPLES: 3 # Configures the recovery samples option.
+  LOG-STATE-CHANGES: true # Configures the log state changes option.
+  ADAPTIVE-TASKS:
+    SCOREBOARD:
+      ENABLED: true # Enables or disables scoreboard.
+      WARN-MIN-INTERVAL-TICKS: 4 # Sets how often this task or update runs.
+      CRITICAL-MIN-INTERVAL-TICKS: 10 # Sets how often this task or update runs.
+    TABLIST:
+      ENABLED: true # Enables or disables tablist.
+      WARN-MIN-INTERVAL-TICKS: 80 # Sets how often this task or update runs.
+      CRITICAL-MIN-INTERVAL-TICKS: 140 # Sets how often this task or update runs.
+    LUNAR-TEAMMATES:
+      ENABLED: true # Enables or disables lunar teammates.
+      WARN-MIN-INTERVAL-TICKS: 40 # Sets how often this task or update runs.
+      CRITICAL-MIN-INTERVAL-TICKS: 100 # Sets how often this task or update runs.
+
+# UDS setup: Entity cleanup timing, exclusions, warnings, and cleanup scope.
+CLEAR-LAG:
+  ENABLED: true # Enables or disables clear lag.
+  EVERY: 5 # Configures the every option.
+  ANIMALS: true # Configures the animals option.
+  MONSTERS: true # Configures the monsters option.
+  DROPPED-ITEMS: true # Configures the dropped items option.
+  EXCLUDED-WORLDS:
+    - "duels"
+    
+# UDS setup: Combat timer, blocked commands, tagging, and combat feedback.
+COMBAT-MANAGER:
+  ENABLED: true # Enables or disables combat manager.
+  COOLDOWN: 16 # Sets the cooldown before this action can run again.
+  KILL-ON-LOGOUT: false # Configures the kill on logout option.
+  ACTION-BAR: "&fcombat: &b${time}s" # Configures the action bar option.
+  # Get combat on:
+  MOBS: false # If true, damage from mobs also puts players into combat.
+  ENDER-CRYSTAL: true # Configures the ender crystal option.
+  ENDER-PEARL: true # Configures the ender pearl option.
+  RESPAWN-ANCHOR: true # Configures the respawn anchor option.
+  ANTI-STASIS-CHAMBER:
+    ENABLED: true # Enables or disables anti stasis chamber.
+    MAX-DISTANCE: 500 # Sets the allowed limit for this option.
+    PREVENT-WORLD-CHANGE: true # Configures the prevent world change option.
+  BLOCK-MESSAGE: "&cyou can't use this command in your current status." # Configures the block message option.
+  BLOCK-COMMANDS:
+    - "/spawn"
+    - "/afk"
+    - "/rtp"
+    - "/homes"
+    - "/tpa"
+  EXCLUDED-WORLDS:
+    - "duels"
+
+# UDS setup: RTP zone cuboid behavior, countdowns, titles, and teleport search area.
+RTP-ZONE:
+  ENABLED: true # Enables or disables rtp zone.
+  CUBOID: "" # Configures the cuboid option.
+  EVERY: 30 # Configures the every option.
+  TITLE-FADE-OUT-TICKS: 10 # Sets how long the RTP title fades after a player leaves the zone.
+  TITLE: "&c&lrtp zone" # Sets the title text shown for this menu or prompt.
+  SUB-TITLE: "&fteleporting in %countdown%" # Sets the title text shown for this menu or prompt.
+  CANCELLED-MESSAGE: "&crtp cancelled because you left the zone." # Configures the cancelled message option.
+  FAILED-MESSAGE: "&ccould not find a safe rtp zone location." # Configures the failed message option.
+  SUCCESS-MESSAGE: "" # Configures the success message option.
+  WORLD:
+    NAME: "world" # Sets the name text used here.
+    CENTER-X: 0 # Configures the center x option.
+    CENTER-Z: 0 # Configures the center z option.
+    MIN-RADIUS: 500 # Sets the allowed limit for this option.
+    MAX-RADIUS: 2000 # Sets the allowed limit for this option.
+
+# UDS setup: Cooldown durations for teleport-based commands.
+TELEPORT-COOLDOWN:
+  HOME: 5 # Configures the home option.
+  TEAM-HOME: 5 # Configures the team home option.
+  SPAWN: 5 # Configures the spawn option.
+  AFK: 5 # Configures the afk option.
+  TPA: 5 # Configures the tpa option.
+  WARP: 5 # Configures the warp option.
+  RTP: 5 # Configures the rtp option.
+
+# UDS setup: Bounty limits, taxes, menus, and reward handling.
+BOUNTY:
+  EXCLUDED-WORLDS:
+    - "duels"
+
+# UDS setup: Amethyst tool ability settings, cooldowns, costs, and upgrades.
+AMETHYST-TOOLS:
+  EXCLUDED-WORLDS:
+    - "duels"
+  PICKAXE:
+    PARTICLE: 
+      NAME: "falling_dust" # Sets the name text used here.
+      MATERIAL: "PURPLE_CONCRETE_POWDER" # Sets the Bukkit material used here.
+      AMOUNT: 10 # Sets the item amount used by this option.
+    DISABLED-BLOCKS:
+      - "GRASS_BLOCK"
+      - "DIRT_PATH"
+      - "DIRT"
+      - "COARSE_DIRT"
+      - "ROOTED_DIRT"
+      - "CLAY"
+      - "FARMLAND"
+      - "SAND"
+      - "RED_SAND"
+      - "GRAVEL"
+      - "SPAWNER"
+    NAME: "&#A303F9amethyst pickaxe" # Sets the name text used here.
+    LORE:
+      - "&79 blocks per break"
+      - "&8self destruct"
+      - "&8{time}"
+    ENCHANTMENTS:
+      - "MENDING:1"
+      - "EFFICIENCY:5"
+      - "UNBREAKING:3"
+  AXE:
+    PARTICLE:
+      NAME: "falling_dust" # Sets the name text used here.
+      MATERIAL: "PURPLE_CONCRETE_POWDER" # Sets the Bukkit material used here.
+      AMOUNT: 10 # Sets the item amount used by this option.
+    NAME: "&#A303F9amethyst axe" # Sets the name text used here.
+    LORE:
+      - "&7breaks trees instantly"
+      - "&8self destruct"
+      - "&8{time}"
+    ENCHANTMENTS:
+      - "MENDING:1"
+      - "EFFICIENCY:5"
+      - "UNBREAKING:3"
+      - "SILK_TOUCH:1"
+  SELLAXE:
+    PARTICLE:
+      NAME: "falling_dust" # Sets the name text used here.
+      MATERIAL: "PURPLE_CONCRETE_POWDER" # Sets the Bukkit material used here.
+      AMOUNT: 10 # Sets the item amount used by this option.
+    NAME: "&#A303F9amethyst sell axe" # Sets the name text used here.
+    LORE:
+      - "&7instantly sells all items in a chest"
+      - "&8self destruct"
+      - "&8{time}"
+    ENCHANTMENTS:
+      - "MENDING:1"
+      - "EFFICIENCY:5"
+      - "UNBREAKING:3"
+  SHOVEL:
+    PARTICLE:
+      NAME: "falling_dust" # Sets the name text used here.
+      MATERIAL: "PURPLE_CONCRETE_POWDER" # Sets the Bukkit material used here.
+      AMOUNT: 10 # Sets the item amount used by this option.
+    ALLOWED-BLOCKS:
+      - "GRASS_BLOCK"
+      - "DIRT_PATH"
+      - "DIRT"
+      - "COARSE_DIRT"
+      - "ROOTED_DIRT"
+      - "CLAY"
+      - "FARMLAND"
+      - "SAND"
+      - "RED_SAND"
+      - "GRAVEL"
+    NAME: "&#A303F9amethyst shovel" # Sets the name text used here.
+    LORE:
+      - "&79 blocks per break"
+      - "&8self destruct"
+      - "&8{time}"
+    ENCHANTMENTS:
+      - "MENDING:1"
+      - "EFFICIENCY:5"
+      - "UNBREAKING:3"
+  BUCKET:
+    PARTICLE:
+      NAME: "falling_dust" # Sets the name text used here.
+      MATERIAL: "PURPLE_CONCRETE_POWDER" # Sets the Bukkit material used here.
+      AMOUNT: 10 # Sets the item amount used by this option.
+    NAME: "&#A303F9amethyst bucket" # Sets the name text used here.
+    LORE:
+      - "&7drains 27 water at once"
+      - "&8self destruct"
+      - "&8{time}"
+    ENCHANTMENTS: [] # Configures the enchantments option.
+  BOOSTER:
+    PARTICLE:
+      NAME: "falling_dust" # Sets the name text used here.
+      MATERIAL: "PURPLE_CONCRETE_POWDER" # Sets the Bukkit material used here.
+      AMOUNT: 10 # Sets the item amount used by this option.
+    NAME: "&#A303F9shard booster" # Sets the name text used here.
+    LORE:
+      - "&74x shard production for 24 hours"
+      - "&8self destruct"
+      - "&8{time}"
+    ENCHANTMENTS: [] # Configures the enchantments option.
+
+# UDS setup: Command registration, descriptions, usage, and aliases.
+COMMANDS:
+  CHAT: true # Configures the chat option.
+  IGNORE: true # Configures the ignore option.
+  MESSAGE: true # Configures the message option.
+  BOUNTY: true # Configures the bounty option.
+  CUBOID: true # Configures the cuboid option.
+  AFK: true # Configures the afk option.
+  SHARDS: true # Configures the shards option.
+  WARP: true # Configures the warp option.
+  TEAM: true # Configures the team option.
+  BILLFORD: true # Configures the billford option.
+  HOME: true # Configures the home option.
+  LEADERBOARDS: true # Configures the leaderboards option.
+  NIGHT-VISION: true # Configures the night vision option.
+  PHANTOM: true # Configures the phantom option.
+  RTP: true # Configures the rtp option.
+  SELL: true # Configures the sell option.
+  SETTINGS: true # Configures the settings option.
+  SHOP: true # Configures the shop option.
+  ENDERCHEST: true # Configures the enderchest option.
+  GAMEMODE: true # Configures the gamemode option.
+  SOCIAL: true # Configures the social option.
+  SPAWN: true # Configures the spawn option.
+  SPAWN-STASH: true # Configures the spawn stash option.
+  STATS: true # Configures the stats option.
+  TPA: true # Configures the tpa option.
+  TPAUTO: true # Configures the tpauto option.
+  FINDPLAYER: true # Configures the findplayer option.
+  CRATE: true # Configures the crate option.
+  SHARDPAY: false # Configures the shardpay option.
+  RULES: true # Configures the rules option.
+  HELP: true # Configures the help option.
+  SERVERS: true # Configures the servers option.

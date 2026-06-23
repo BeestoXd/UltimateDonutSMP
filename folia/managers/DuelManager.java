@@ -4,36 +4,51 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.listeners.PlayerRespawnListener;
 import com.bx.ultimateDonutSmp.models.DuelArena;
 import com.bx.ultimateDonutSmp.models.DuelClaim;
+import com.bx.ultimateDonutSmp.models.DuelMapSelection;
 import com.bx.ultimateDonutSmp.models.DuelMatch;
+import com.bx.ultimateDonutSmp.models.DuelPrivacyMode;
 import com.bx.ultimateDonutSmp.models.DuelRequest;
 import com.bx.ultimateDonutSmp.models.DuelStats;
+import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.utils.AttributeUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.utils.LocationUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
+import com.bx.ultimateDonutSmp.utils.TitleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
@@ -44,18 +59,23 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
-import net.kyori.adventure.title.Title;
 
 public class DuelManager {
 
     public enum ArenaSetting {
-        NO_HUNGER("ɴᴏ ʜᴜɴɢᴇʀ"),
-        NO_WEATHER("ɴᴏ ᴡᴇᴀᴛʜᴇʀ"),
-        ALWAYS_MORNING("ᴀʟᴡᴀʏѕ ᴍᴏʀɴɪɴɢ"),
-        NO_FALL_DAMAGE("ɴᴏ ꜰᴀʟʟ ᴅᴀᴍᴀɢᴇ");
+        ALLOW_ITEM_DROP("allow item drop"),
+        ALLOW_BLOCK_BREAK("allow block break"),
+        ALLOW_BLOCK_PLACE("allow block place"),
+        ALLOW_BUCKET_USE("allow bucket use"),
+        NO_HUNGER("no hunger"),
+        NO_WEATHER("no weather"),
+        ALWAYS_MORNING("always morning"),
+        NO_FALL_DAMAGE("no fall damage");
 
         private final String displayName;
 
@@ -68,29 +88,65 @@ public class DuelManager {
         }
     }
 
+    public record DuelMapOption(DuelMapSelection selection, String displayName, String description) {
+    }
+
+    private record ResolvedArena(
+            DuelArena arena,
+            DuelMapSelection selection,
+            String biomeKey,
+            String generatedWorldName,
+            DuelWorldManager.TerrainMode generatedTerrainMode
+    ) {
+    }
+
+    private record CrossQueueEntry(UUID uuid, String name, String serverId, DuelMapSelection selection, long queuedAt) {
+    }
+
+    private record PendingCrossServerMatch(String matchId, UUID firstUuid, String firstName,
+                                           UUID secondUuid, String secondName,
+                                           DuelMapSelection selection, long expiresAt) {
+    }
+
+    private static final String TERRAIN_MODE_SETTINGS_PATH = "MAP_SOURCES.RANDOM_BIOMES.TERRAIN_MODE_SETTINGS";
+
     private final UltimateDonutSmp plugin;
+    private final DuelWorldManager worldManager;
     private final Map<String, DuelArena> arenas = new HashMap<>();
     private final Map<UUID, DuelRequest> requestsByTarget = new HashMap<>();
     private final LinkedHashSet<UUID> queue = new LinkedHashSet<>();
+    private final Map<UUID, DuelMapSelection> queueSelections = new HashMap<>();
     private final Map<Long, DuelMatch> activeMatches = new HashMap<>();
     private final Map<UUID, Long> activeMatchIds = new HashMap<>();
     private final Set<String> reservedArenaIds = new HashSet<>();
     private final Map<UUID, PendingRespawnState> pendingRespawns = new HashMap<>();
     private final Map<UUID, DuelStats> statsCache = new HashMap<>();
     private final Map<Long, ArenaSnapshot> arenaSnapshots = new HashMap<>();
+    private final Set<UUID> preparingDuelPlayers = new HashSet<>();
     private final Set<UUID> transitioningPlayers = new HashSet<>();
     private final Map<UUID, TransitionPlayerState> transitionStates = new HashMap<>();
     private final Map<UUID, TransitionTitleState> transitionTitles = new HashMap<>();
+    private final Map<UUID, Integer> borderEscapeTicks = new HashMap<>();
+    private final Map<Long, Map<UUID, GeneratedInventorySnapshot>> generatedMatchInventorySnapshots = new HashMap<>();
+    private final Map<Long, Map<BlockKey, String>> generatedBlockSnapshots = new HashMap<>();
+    private final Map<String, PendingCrossServerMatch> pendingCrossServerMatches = new HashMap<>();
+    private final Set<String> seenCrossServerMessages = new HashSet<>();
+    private boolean crossServerSubscribed = false;
+    private String crossServerSubscribedChannel = "";
     private long tickCounter = 0L;
 
     public DuelManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+        this.worldManager = new DuelWorldManager(plugin);
         ensureTables();
         reload();
     }
 
     public void reload() {
         loadArenas();
+        worldManager.ensureFlatPool();
+        worldManager.ensureVanillaPool();
+        initializeCrossServer();
         syncArenaRulesForAllOccupants();
     }
 
@@ -99,21 +155,70 @@ public class DuelManager {
     }
 
     public void shutdown() {
+        for (DuelMatch match : activeMatches.values()) {
+            if (match.usesGeneratedWorld()) {
+                worldManager.cleanupGeneratedWorld(match.getGeneratedWorldName());
+            }
+        }
         requestsByTarget.clear();
         queue.clear();
+        queueSelections.clear();
         activeMatches.clear();
         activeMatchIds.clear();
         reservedArenaIds.clear();
         pendingRespawns.clear();
         arenaSnapshots.clear();
+        preparingDuelPlayers.clear();
         transitioningPlayers.clear();
         transitionStates.clear();
         transitionTitles.clear();
+        borderEscapeTicks.clear();
+        generatedMatchInventorySnapshots.clear();
+        generatedBlockSnapshots.clear();
+        pendingCrossServerMatches.clear();
+        seenCrossServerMessages.clear();
+        unsubscribeCrossServer();
+        worldManager.shutdownFlatPool();
+        worldManager.shutdownVanillaPool();
         showAllVanishedPlayers();
     }
 
+    public void initializeCrossServer() {
+        if (plugin.getRedisManager() == null) {
+            return;
+        }
+
+        if (!isCrossServerEnabled()) {
+            unsubscribeCrossServer();
+            return;
+        }
+
+        String channel = getCrossServerChannel();
+        if (crossServerSubscribed && channel.equals(crossServerSubscribedChannel)) {
+            return;
+        }
+
+        unsubscribeCrossServer();
+        plugin.getRedisManager().subscribe(channel, this::handleCrossServerPayload);
+        crossServerSubscribed = true;
+        crossServerSubscribedChannel = channel;
+    }
+
     public boolean isEnabled() {
-        return config().getBoolean("SETTINGS.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.DUELS)
+                && config().getBoolean("SETTINGS.ENABLED", true);
+    }
+
+    public boolean isVanillaBiomeTerrainMode() {
+        return worldManager.isVanillaTerrainMode();
+    }
+
+    public boolean isFlatBiomeTerrainMode() {
+        return worldManager.isFlatTerrainMode();
+    }
+
+    public boolean isVanillaRuntimeGenerationEnabled() {
+        return worldManager.isVanillaRuntimeGenerationEnabled();
     }
 
     public String getQueueTitle() {
@@ -125,7 +230,7 @@ public class DuelManager {
     }
 
     public String getCreateTitle(Player target) {
-        String name = target == null ? "Player" : target.getName();
+        String name = target == null ? "Player" : publicName(target);
         return config().getString("GUI.CREATE.TITLE", "&8ᴄʀᴇᴀᴛᴇ ᴅᴜᴇʟ -> {player}")
                 .replace("{player}", name);
     }
@@ -212,9 +317,12 @@ public class DuelManager {
     }
 
     public boolean areOpponents(UUID first, UUID second) {
+        if (first == null || second == null || first.equals(second)) {
+            return false;
+        }
         DuelMatch match = getActiveMatch(first);
         return match != null && match.getStatus() != DuelMatch.MatchStatus.FINISHED
-                && match.isParticipant(second);
+                && second.equals(match.getOpponent(first));
     }
 
     public boolean canModifyArena(Player player) {
@@ -225,8 +333,45 @@ public class DuelManager {
         DuelMatch match = getActiveMatch(player.getUniqueId());
         return match != null
                 && match.getStatus() == DuelMatch.MatchStatus.ACTIVE
-                && match.getArena().hasRollbackRegion()
-                && arenaSnapshots.containsKey(match.getId());
+                && (match.usesGeneratedWorld()
+                || (match.getArena().hasRollbackRegion() && arenaSnapshots.containsKey(match.getId())));
+    }
+
+    public void recordGeneratedBlockChange(Player player, Block block) {
+        if (player == null || block == null) {
+            return;
+        }
+        DuelMatch match = getActiveMatch(player.getUniqueId());
+        recordGeneratedBlockChange(match, block);
+    }
+
+    public void recordGeneratedBlockChange(Block block) {
+        if (block == null || block.getWorld() == null) {
+            return;
+        }
+        String worldName = block.getWorld().getName();
+        for (DuelMatch match : activeMatches.values()) {
+            if (match != null
+                    && match.usesGeneratedWorld()
+                    && worldName.equalsIgnoreCase(match.getGeneratedWorldName())) {
+                recordGeneratedBlockChange(match, block);
+                return;
+            }
+        }
+    }
+
+    private void recordGeneratedBlockChange(DuelMatch match, Block block) {
+        if (match == null || !match.usesGeneratedWorld() || block == null || block.getWorld() == null) {
+            return;
+        }
+        if (!block.getWorld().getName().equalsIgnoreCase(match.getGeneratedWorldName())) {
+            return;
+        }
+
+        BlockKey key = new BlockKey(block.getWorld().getName(), block.getX(), block.getY(), block.getZ());
+        generatedBlockSnapshots
+                .computeIfAbsent(match.getId(), ignored -> new LinkedHashMap<>())
+                .putIfAbsent(key, block.getBlockData().getAsString());
     }
 
     public boolean shouldBypassGlobalCombat(Player attacker, Player victim) {
@@ -250,7 +395,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "SELECT match_id, defeated_name, item_data, created_at FROM duel_claims WHERE player_uuid = ? ORDER BY created_at DESC, id ASC")) {
+                "select match_id, defeated_name, item_data, created_at from duel_claims where player_uuid = ? order by created_at desc, id asc")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 Map<Long, ClaimAccumulator> groupedClaims = new LinkedHashMap<>();
@@ -342,7 +487,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement deleteOne = connection().prepareStatement(
-                "DELETE FROM duel_claims WHERE id = ? AND player_uuid = ?")) {
+                "delete from duel_claims where id = ? and player_uuid = ?")) {
             for (Long rowId : claimedRowIds) {
                 deleteOne.setLong(1, rowId);
                 deleteOne.setString(2, player.getUniqueId().toString());
@@ -350,13 +495,13 @@ public class DuelManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to delete duel claim package " + matchId, e);
-            send(player, "&cCould not claim that loot right now.");
+            send(player, "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ʟᴏᴏᴛ ʀɪɢʜᴛ ɴᴏᴡ.");
             return false;
         }
 
         play(player, "DUELS.CLAIM");
         String defeatedName = claim.defeatedName() == null || claim.defeatedName().isBlank()
-                ? "ᴜɴᴋɴᴏᴡɴ"
+                ? "unknown"
                 : claim.defeatedName();
         if (remainingCount > 0) {
             send(player, "&eᴄʟᴀɪᴍᴇᴅ ѕᴏᴍᴇ ᴅᴜᴇʟ ʟᴏᴏᴛ ꜰʀᴏᴍ &f" + defeatedName + "&e. "
@@ -380,23 +525,23 @@ public class DuelManager {
 
         int deletedRows;
         try (PreparedStatement deletePackage = connection().prepareStatement(
-                "DELETE FROM duel_claims WHERE match_id = ? AND player_uuid = ?")) {
+                "delete from duel_claims where match_id = ? and player_uuid = ?")) {
             deletePackage.setLong(1, matchId);
             deletePackage.setString(2, player.getUniqueId().toString());
             deletedRows = deletePackage.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to delete duel claim package " + matchId, e);
-            send(player, "&cCould not delete that duel claim right now.");
+            send(player, "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴅᴇʟᴇᴛᴇ ᴛʜᴀᴛ ᴅᴜᴇʟ ᴄʟᴀɪᴍ ʀɪɢʜᴛ ɴᴏᴡ.");
             return false;
         }
 
         if (deletedRows <= 0) {
-            send(player, "&cThat duel claim no longer exists.");
+            send(player, "&cᴛʜᴀᴛ ᴅᴜᴇʟ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.");
             return false;
         }
 
         String defeatedName = claim.defeatedName() == null || claim.defeatedName().isBlank()
-                ? "ᴜɴᴋɴᴏᴡɴ"
+                ? "unknown"
                 : claim.defeatedName();
         send(player, "&cᴅᴇʟᴇᴛᴇᴅ ᴅᴜᴇʟ ʟᴏᴏᴛ ᴄʟᴀɪᴍ ꜰʀᴏᴍ &f" + defeatedName + "&c.");
         return true;
@@ -406,6 +551,78 @@ public class DuelManager {
         List<DuelArena> values = new ArrayList<>(arenas.values());
         values.sort(Comparator.comparing(DuelArena::getId, String.CASE_INSENSITIVE_ORDER));
         return values;
+    }
+
+    public List<DuelMapOption> getSelectableMapOptions(boolean queueOnly) {
+        List<DuelMapOption> options = new ArrayList<>();
+        List<DuelArena> staticArenas = queueOnly ? getReadyQueueArenas() : getReadyEnabledArenas();
+        if (!staticArenas.isEmpty()) {
+            options.add(new DuelMapOption(
+                    DuelMapSelection.randomStatic(),
+                    "random arena",
+                    "use any available configured duel arena."
+            ));
+            for (DuelArena arena : staticArenas) {
+                options.add(new DuelMapOption(
+                        DuelMapSelection.staticArena(arena.getId()),
+                        arena.getDisplayName(),
+                        "arena id: " + arena.getId()
+                ));
+            }
+        }
+
+        if (worldManager.isRandomBiomesEnabled()) {
+            List<Biome> biomes = worldManager.getSelectableBiomes();
+            if (!biomes.isEmpty()) {
+                options.add(new DuelMapOption(
+                        DuelMapSelection.randomBiome(),
+                        "random biome",
+                        "generate a fresh duel world using a random configured biome."
+                ));
+                for (Biome biome : biomes) {
+                    String key = worldManager.biomeKey(biome);
+                    options.add(new DuelMapOption(
+                            DuelMapSelection.biome(key),
+                            worldManager.prettifyBiomeKey(key),
+                            "biome: " + key
+                    ));
+                }
+            }
+        }
+        return options;
+    }
+
+    public DuelMapSelection parseMapSelection(String raw) {
+        DuelMapSelection selection = DuelMapSelection.parse(raw);
+        if (selection.type() != DuelMapSelection.Type.BIOME) {
+            return selection;
+        }
+        Optional<Biome> biome = worldManager.resolveBiome(selection.value());
+        return biome.map(value -> DuelMapSelection.biome(worldManager.biomeKey(value))).orElse(selection);
+    }
+
+    public List<String> getMapSelectionSuggestions(boolean queueOnly) {
+        List<String> suggestions = new ArrayList<>();
+        suggestions.add("random");
+        suggestions.add("random_biome");
+        for (DuelMapOption option : getSelectableMapOptions(queueOnly)) {
+            DuelMapSelection selection = option.selection();
+            switch (selection.type()) {
+                case STATIC_ARENA -> suggestions.add("arena:" + selection.value());
+                case BIOME -> suggestions.add("biome:" + selection.value());
+                case RANDOM_STATIC -> {
+                    if (!suggestions.contains("random")) {
+                        suggestions.add("random");
+                    }
+                }
+                case RANDOM_BIOME -> {
+                    if (!suggestions.contains("random_biome")) {
+                        suggestions.add("random_biome");
+                    }
+                }
+            }
+        }
+        return suggestions.stream().distinct().toList();
     }
 
     public DuelArena getArena(String id) {
@@ -431,6 +648,10 @@ public class DuelManager {
         }
 
         return switch (setting) {
+            case ALLOW_ITEM_DROP -> arena.isAllowItemDrop();
+            case ALLOW_BLOCK_BREAK -> arena.isAllowBlockBreak();
+            case ALLOW_BLOCK_PLACE -> arena.isAllowBlockPlace();
+            case ALLOW_BUCKET_USE -> arena.isAllowBucketUse();
             case NO_HUNGER -> arena.isNoHunger();
             case NO_WEATHER -> arena.isNoWeather();
             case ALWAYS_MORNING -> arena.isAlwaysMorning();
@@ -475,6 +696,10 @@ public class DuelManager {
                 true,
                 true,
                 false,
+                true,
+                true,
+                true,
+                false,
                 false,
                 false,
                 false
@@ -496,7 +721,7 @@ public class DuelManager {
             return true;
         }
 
-        try (PreparedStatement ps = connection().prepareStatement("DELETE FROM duel_arenas WHERE id = ?")) {
+        try (PreparedStatement ps = connection().prepareStatement("delete from duel_arenas where id = ?")) {
             ps.setString(1, arena.getId());
             ps.executeUpdate();
             return true;
@@ -590,6 +815,15 @@ public class DuelManager {
     }
 
     public boolean sendChallenge(Player challenger, Player target, String arenaId) {
+        return sendChallenge(
+                challenger,
+                target,
+                arenaId == null || arenaId.isBlank() ? DuelMapSelection.randomStatic() : DuelMapSelection.staticArena(arenaId),
+                DuelPrivacyMode.INVITE_ONLY
+        );
+    }
+
+    public boolean sendChallenge(Player challenger, Player target, DuelMapSelection mapSelection, DuelPrivacyMode privacyMode) {
         if (!isEnabled()) {
             send(challenger, "&cᴅᴜᴇʟѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
             return false;
@@ -604,7 +838,23 @@ public class DuelManager {
         if (!canEnterDuel(challenger, true) || !canEnterDuel(target, false)) {
             return false;
         }
+        if (!isAcceptingDuelRequests(target)) {
+            send(challenger, "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴄᴄᴇᴘᴛɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛѕ.");
+            return false;
+        }
 
+        DuelPrivacyMode resolvedPrivacyMode = privacyMode == null ? DuelPrivacyMode.INVITE_ONLY : privacyMode;
+        if (!canUsePrivacyMode(challenger, target, resolvedPrivacyMode, true)) {
+            return false;
+        }
+
+        DuelMapSelection resolvedSelection = mapSelection == null ? DuelMapSelection.randomStatic() : mapSelection;
+        if (!isSelectionAvailable(resolvedSelection, false)) {
+            send(challenger, "&cᴛʜᴀᴛ ᴅᴜᴇʟ ᴍᴀᴘ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ.");
+            return false;
+        }
+
+        String arenaId = resolvedSelection.type() == DuelMapSelection.Type.STATIC_ARENA ? resolvedSelection.value() : null;
         String preferredArenaId = normalizeArenaId(arenaId);
         if (preferredArenaId != null) {
             DuelArena arena = getArena(preferredArenaId);
@@ -612,7 +862,7 @@ public class DuelManager {
                 send(challenger, "&cᴛʜᴀᴛ ᴀʀᴇɴᴀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ.");
                 return false;
             }
-        } else if (getReadyEnabledArenas().isEmpty()) {
+        } else if (resolvedSelection.type() == DuelMapSelection.Type.RANDOM_STATIC && getReadyEnabledArenas().isEmpty()) {
             send(challenger, "&cᴛʜᴇʀᴇ ᴀʀᴇ ɴᴏ ᴅᴜᴇʟ ᴀʀᴇɴᴀѕ ʀᴇᴀᴅʏ ʏᴇᴛ.");
             return false;
         }
@@ -623,17 +873,18 @@ public class DuelManager {
         long expiresAt = System.currentTimeMillis() + (getRequestTimeoutSeconds() * 1000L);
         DuelRequest request = new DuelRequest(
                 challenger.getUniqueId(),
-                challenger.getName(),
+                plainPublicName(challenger),
                 target.getUniqueId(),
-                target.getName(),
-                preferredArenaId,
+                plainPublicName(target),
+                resolvedSelection,
+                resolvedPrivacyMode,
                 expiresAt
         );
         requestsByTarget.put(target.getUniqueId(), request);
 
-        send(challenger, "&aѕᴇɴᴛ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + target.getName() + "&a.");
-        send(target, "&e" + challenger.getName() + " &fʜᴀѕ ᴄʜᴀʟʟᴇɴɢᴇᴅ ʏᴏᴜ ᴛᴏ ᴀ ᴅᴜᴇʟ.");
-        send(target, "&7ᴜѕᴇ &f/duel accept " + challenger.getName() + " &7ᴏʀ &f/duel deny " + challenger.getName() + "&7.");
+        send(challenger, "&aѕᴇɴᴛ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &f" + publicName(target) + "&a.");
+        send(target, "&e" + publicName(challenger) + " &fʜᴀѕ ᴄʜᴀʟʟᴇɴɢᴇᴅ ʏᴏᴜ ᴛᴏ ᴀ ᴅᴜᴇʟ.");
+        send(target, "&7ᴜѕᴇ &f/duel ᴀᴄᴄᴇᴘᴛ " + publicName(challenger) + " &7ᴏʀ &f/duel ᴅᴇɴʏ " + publicName(challenger) + "&7.");
         play(challenger, "DUELS.REQUEST-SENT");
         play(target, "DUELS.REQUEST-RECEIVED");
         return true;
@@ -650,8 +901,7 @@ public class DuelManager {
             send(target, "&cᴛʜᴀᴛ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ʜᴀѕ ᴇxᴘɪʀᴇᴅ.");
             return false;
         }
-        if (challengerName != null && !challengerName.isBlank()
-                && !request.challengerName().equalsIgnoreCase(challengerName.trim())) {
+        if (!matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
             send(target, "&cʏᴏᴜʀ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ɪѕ ꜰʀᴏᴍ &f" + request.challengerName() + "&c.");
             return false;
         }
@@ -668,14 +918,18 @@ public class DuelManager {
             return false;
         }
 
-        DuelArena arena = findAvailableArena(request.arenaId(), false);
-        if (arena == null) {
+        if (!canUsePrivacyMode(challenger, target, request.privacyMode(), true)) {
+            return false;
+        }
+
+        ResolvedArena resolvedArena = resolveArena(request.mapSelection(), false);
+        if (resolvedArena == null) {
             send(target, "&cɴᴏ ᴅᴜᴇʟ ᴀʀᴇɴᴀ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ.");
             send(challenger, "&cʏᴏᴜʀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴛᴀʀᴛ ʙᴇᴄᴀᴜѕᴇ ɴᴏ ᴀʀᴇɴᴀ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.");
             return false;
         }
 
-        startMatch(challenger, target, arena, DuelMatch.MatchType.DIRECT);
+        startMatch(challenger, target, resolvedArena, DuelMatch.MatchType.DIRECT, request.privacyMode(), getLocalServerId());
         return true;
     }
 
@@ -685,8 +939,7 @@ public class DuelManager {
             send(target, "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ.");
             return false;
         }
-        if (challengerName != null && !challengerName.isBlank()
-                && !request.challengerName().equalsIgnoreCase(challengerName.trim())) {
+        if (!matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
             send(target, "&cʏᴏᴜʀ ᴘᴇɴᴅɪɴɢ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ɪѕ ꜰʀᴏᴍ &f" + request.challengerName() + "&c.");
             return false;
         }
@@ -694,18 +947,23 @@ public class DuelManager {
         requestsByTarget.remove(target.getUniqueId());
         Player challenger = Bukkit.getPlayer(request.challengerUuid());
         if (challenger != null) {
-            send(challenger, "&c" + target.getName() + " denied your duel request.");
+            send(challenger, "&c" + publicName(target) + " ᴅᴇɴɪᴇᴅ ʏᴏᴜʀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ.");
         }
         send(target, "&eᴅᴇɴɪᴇᴅ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &f" + request.challengerName() + "&e.");
         return true;
     }
 
     public boolean joinQueue(Player player) {
+        return joinQueue(player, DuelMapSelection.randomStatic());
+    }
+
+    public boolean joinQueue(Player player, DuelMapSelection mapSelection) {
         if (!isEnabled()) {
             send(player, "&cᴅᴜᴇʟѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
             return false;
         }
-        if (getReadyQueueArenas().isEmpty()) {
+        DuelMapSelection resolvedSelection = mapSelection == null ? DuelMapSelection.randomStatic() : mapSelection;
+        if (!isSelectionAvailable(resolvedSelection, true)) {
             send(player, buildQueueUnavailableMessage());
             return false;
         }
@@ -719,6 +977,8 @@ public class DuelManager {
 
         removeRequestsFor(player.getUniqueId(), false);
         queue.add(player.getUniqueId());
+        queueSelections.put(player.getUniqueId(), resolvedSelection);
+        publishCrossServerQueueJoin(player, resolvedSelection);
         send(player, "&aᴊᴏɪɴᴇᴅ ᴛʜᴇ ᴄᴀѕᴜᴀʟ ᴅᴜᴇʟ ǫᴜᴇᴜᴇ.");
         play(player, "DUELS.QUEUE-JOIN");
         attemptQueueMatchmaking();
@@ -731,7 +991,14 @@ public class DuelManager {
         }
 
         UUID uuid = player.getUniqueId();
+        if (preparingDuelPlayers.contains(uuid)) {
+            preparingDuelPlayers.remove(uuid);
+            send(player, "&eʏᴏᴜʀ ᴘʀᴇᴘᴀʀɪɴɢ ᴅᴜᴇʟ ʜᴀѕ ʙᴇᴇɴ ᴄᴀɴᴄᴇʟʟᴇᴅ.");
+            return true;
+        }
         if (queue.remove(uuid)) {
+            queueSelections.remove(uuid);
+            removeCrossServerQueueEntry(uuid);
             send(player, "&eʏᴏᴜ ʟᴇꜰᴛ ᴛʜᴇ ᴄᴀѕᴜᴀʟ ᴅᴜᴇʟ ǫᴜᴇᴜᴇ.");
             return true;
         }
@@ -776,8 +1043,8 @@ public class DuelManager {
         if (match.getDrawRequester() == null) {
             match.setDrawRequester(requester);
             match.setDrawRequestExpiresAt(System.currentTimeMillis() + (getDrawTimeoutSeconds() * 1000L));
-            send(player, "&eᴅʀᴀᴡ ʀᴇǫᴜᴇѕᴛ ѕᴇɴᴛ ᴛᴏ &f" + opponent.getName() + "&e.");
-            send(opponent, "&e" + player.getName() + " &fʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀ ᴅʀᴀᴡ. ᴜѕᴇ &f/draw &fᴛᴏ ᴀᴄᴄᴇᴘᴛ.");
+            send(player, "&eᴅʀᴀᴡ ʀᴇǫᴜᴇѕᴛ ѕᴇɴᴛ ᴛᴏ &f" + publicName(opponent) + "&e.");
+            send(opponent, "&e" + publicName(player) + " &fʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀ ᴅʀᴀᴡ. ᴜѕᴇ &f/draw &fᴛᴏ ᴀᴄᴄᴇᴘᴛ.");
             return true;
         }
 
@@ -796,6 +1063,11 @@ public class DuelManager {
         if (secondPulse) {
             expireRequests();
             cleanupQueue();
+            initializeCrossServer();
+            worldManager.ensureFlatPool();
+            worldManager.ensureVanillaPool();
+            attemptCrossServerMatchmaking();
+            attemptPendingCrossServerMatches();
             attemptQueueMatchmaking();
         }
 
@@ -812,6 +1084,8 @@ public class DuelManager {
             if (match.getStatus() != DuelMatch.MatchStatus.ACTIVE) {
                 continue;
             }
+
+            enforceArenaBorder(match);
 
             if (match.getDrawRequester() != null && now >= match.getDrawRequestExpiresAt()) {
                 UUID requester = match.getDrawRequester();
@@ -831,6 +1105,68 @@ public class DuelManager {
         }
     }
 
+    public void handleArenaBorderMove(PlayerMoveEvent event) {
+        if (event == null || event.getTo() == null) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        DuelMatch match = getActiveMatch(player.getUniqueId());
+        if (match == null || !match.usesGeneratedWorld() || !worldManager.isBorderEnabled()) {
+            return;
+        }
+
+        if (!"PUSH_BACK".equals(worldManager.getBorderAction())) {
+            return;
+        }
+
+        if (isInsideGeneratedArenaBorder(match, event.getTo())) {
+            borderEscapeTicks.remove(player.getUniqueId());
+            return;
+        }
+
+        if (isInsideGeneratedArenaBorder(match, event.getFrom())) {
+            event.setTo(event.getFrom());
+        } else {
+            pushPlayerBackToArena(player, match);
+        }
+    }
+
+    public boolean isCommandAllowedDuringMatch(String rawCommand) {
+        if (!config().getBoolean("COMMAND_BLOCK.ENABLED", true)) {
+            return true;
+        }
+
+        String raw = normalizeCommandPattern(rawCommand);
+        if (raw.isBlank()) {
+            return true;
+        }
+
+        String mode = config().getString("COMMAND_BLOCK.MODE", "ALLOWLIST").trim().toUpperCase(Locale.ROOT);
+        if ("BLOCKLIST".equals(mode)) {
+            for (String blocked : commandPatterns("COMMAND_BLOCK.BLOCKLIST", List.of("/tpa", "/home", "/spawn", "/rtp"))) {
+                if (matchesCommandPattern(raw, blocked)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        for (String allowed : commandPatterns("COMMAND_BLOCK.ALLOWLIST", List.of("/duel", "/draw", "/leave", "/queue", "/create"))) {
+            if (matchesCommandPattern(raw, allowed)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getCommandBlockedMessage() {
+        return config().getString(
+                "COMMAND_BLOCK.MESSAGE",
+                "&cyou cannot use that command during a duel."
+        );
+    }
+
     public boolean handleDuelDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         DuelMatch match = getActiveMatch(victim.getUniqueId());
@@ -843,14 +1179,17 @@ public class DuelManager {
         Player winner = winnerUuid == null ? null : Bukkit.getPlayer(winnerUuid);
         List<ItemStack> loot = copyLoot(event.getDrops());
 
-        event.deathMessage(null);
+        event.setDeathMessage(null);
         event.getDrops().clear();
         event.setDroppedExp(0);
+        if (match.usesGeneratedWorld()) {
+            event.setKeepInventory(true);
+        }
 
         finishMatch(match, winnerUuid, victimUuid, "DEATH", false, loot, true);
 
         if (winner != null) {
-            send(winner, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + victim.getName() + "&a.");
+            send(winner, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + publicName(victim) + "&a.");
         }
         send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + match.getOpponentName(victimUuid) + "&c.");
         return true;
@@ -874,8 +1213,8 @@ public class DuelManager {
         finishMatch(match, attacker.getUniqueId(), victim.getUniqueId(), "PVP_KILL", false, loot, true);
         PlayerRespawnListener.scheduleChainmailKit(plugin, victim, getReturnDelayTicks() + 2L);
 
-        send(attacker, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + victim.getName() + "&a.");
-        send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + attacker.getName() + "&c.");
+        send(attacker, "&aʏᴏᴜ ᴅᴇꜰᴇᴀᴛᴇᴅ &f" + publicName(victim) + "&a.");
+        send(victim, "&cʏᴏᴜ ʟᴏѕᴛ ᴛʜᴇ ᴅᴜᴇʟ ᴀɢᴀɪɴѕᴛ &f" + publicName(attacker) + "&c.");
         return true;
     }
 
@@ -959,6 +1298,8 @@ public class DuelManager {
 
         pendingRespawns.remove(player.getUniqueId());
         queue.remove(player.getUniqueId());
+        queueSelections.remove(player.getUniqueId());
+        removeCrossServerQueueEntry(player.getUniqueId());
         requestsByTarget.remove(player.getUniqueId());
         removeOutgoingRequest(player.getUniqueId());
 
@@ -987,14 +1328,18 @@ public class DuelManager {
             return;
         }
 
+        if (match.usesGeneratedWorld()) {
+            rememberGeneratedInventorySnapshot(match, first, second);
+        }
+
         match.setStatus(DuelMatch.MatchStatus.ACTIVE);
         long now = System.currentTimeMillis();
         match.setStartedAt(now);
         match.setEndsAt(now + (getMatchDurationSeconds() * 1000L));
         sendCountdownStart(first);
         sendCountdownStart(second);
-        send(first, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a.");
-        send(second, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a.");
+        send(first, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a.");
+        send(second, "&aᴅᴜᴇʟ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a.");
         playCountdownStartSound(first);
         playCountdownStartSound(second);
     }
@@ -1006,11 +1351,7 @@ public class DuelManager {
 
         ConfigurationSection countdown = config().getConfigurationSection("START-COUNTDOWN");
         if (countdown == null || !countdown.getBoolean("ENABLED", true)) {
-            player.showTitle(Title.title(
-                    ColorUtils.toComponent("&e" + remaining),
-                    ColorUtils.toComponent("&7ᴅᴜᴇʟ ѕᴛᴀʀᴛѕ ѕᴏᴏɴ"),
-                    Title.Times.times(Duration.ZERO, Duration.ofMillis(750), Duration.ofMillis(250))
-            ));
+            TitleUtils.sendTitle(player, "&e" + remaining, "&7ᴅᴜᴇʟ ѕᴛᴀʀᴛѕ ѕᴏᴏɴ", 0, 15, 5);
             return;
         }
 
@@ -1020,11 +1361,7 @@ public class DuelManager {
             title = "&e" + remaining;
         }
 
-        player.showTitle(Title.title(
-                ColorUtils.toComponent(title),
-                ColorUtils.toComponent(""),
-                Title.Times.times(Duration.ZERO, Duration.ofMillis(1000), Duration.ZERO)
-        ));
+        TitleUtils.sendTitle(player, title, "", 0, 20, 0);
 
         ConfigurationSection messages = countdown.getConfigurationSection("MESSAGES");
         String message = messages == null ? null : messages.getString(String.valueOf(remaining));
@@ -1042,25 +1379,17 @@ public class DuelManager {
 
         ConfigurationSection countdown = config().getConfigurationSection("START-COUNTDOWN");
         if (countdown == null || !countdown.getBoolean("ENABLED", true)) {
-            player.showTitle(Title.title(
-                    ColorUtils.toComponent("&aꜰɪɢʜᴛ!"),
-                    ColorUtils.toComponent("&7ᴅᴇꜰᴇᴀᴛ ʏᴏᴜʀ ᴏᴘᴘᴏɴᴇɴᴛ"),
-                    Title.Times.times(Duration.ZERO, Duration.ofMillis(1250), Duration.ofMillis(500))
-            ));
+            TitleUtils.sendTitle(player, "&aꜰɪɢʜᴛ!", "&7ᴅᴇꜰᴇᴀᴛ ʏᴏᴜʀ ᴏᴘᴘᴏɴᴇɴᴛ", 0, 25, 10);
             return;
         }
 
         ConfigurationSection titles = countdown.getConfigurationSection("TITLES");
         String title = titles == null ? null : titles.getString("0");
         if (title == null) {
-            title = "&a&lꜰɪɢʜᴛ!";
+            title = "&a&lfight!";
         }
 
-        player.showTitle(Title.title(
-                ColorUtils.toComponent(title),
-                ColorUtils.toComponent(""),
-                Title.Times.times(Duration.ZERO, Duration.ofMillis(1200), Duration.ofMillis(150))
-        ));
+        TitleUtils.sendTitle(player, title, "", 0, 24, 3);
 
         String startMessage = countdown.getString("START-MESSAGE", "");
         if (!startMessage.isBlank()) {
@@ -1076,7 +1405,7 @@ public class DuelManager {
 
         String sound = plugin.getConfigManager().getSound("DUELS.START-COUNTDOWN.PER-SECOND." + remaining);
         if (sound != null && !sound.isBlank()) {
-            SoundUtils.play(player, sound);
+            SoundUtils.play(plugin, player, sound, PlayerSettingUtils.SoundChannel.DUEL);
         }
     }
 
@@ -1089,7 +1418,7 @@ public class DuelManager {
         if (countdown != null && countdown.getBoolean("SOUNDS.ENABLED", true)) {
             String sound = plugin.getConfigManager().getSound("DUELS.START-COUNTDOWN.START-SOUND");
             if (sound != null && !sound.isBlank()) {
-                SoundUtils.play(player, sound);
+                SoundUtils.play(plugin, player, sound, PlayerSettingUtils.SoundChannel.DUEL);
                 return;
             }
         }
@@ -1101,18 +1430,18 @@ public class DuelManager {
         Player first = Bukkit.getPlayer(match.getPlayerOneUuid());
         Player second = Bukkit.getPlayer(match.getPlayerTwoUuid());
         if (first != null && first.isOnline()) {
-            String text = "&eᴏᴘᴘᴏɴᴇɴᴛ: &f" + match.getPlayerTwoName() + " &8| &eᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + formatDuration(remainingSeconds);
+            String text = "&eopponent: &f" + match.getPlayerTwoName() + " &8| &etime left: &f" + formatDuration(remainingSeconds);
             if (match.getDrawRequester() != null && !match.getDrawRequester().equals(first.getUniqueId())) {
-                text += " &8| &a/draw ᴛᴏ ᴀᴄᴄᴇᴘᴛ";
+                text += " &8| &a/draw to accept";
             }
-            first.sendActionBar(ColorUtils.toComponent(text));
+            com.bx.ultimateDonutSmp.utils.PlayerSettingUtils.sendActionBar(plugin, first, text);
         }
         if (second != null && second.isOnline()) {
-            String text = "&eᴏᴘᴘᴏɴᴇɴᴛ: &f" + match.getPlayerOneName() + " &8| &eᴛɪᴍᴇ ʟᴇꜰᴛ: &f" + formatDuration(remainingSeconds);
+            String text = "&eopponent: &f" + match.getPlayerOneName() + " &8| &etime left: &f" + formatDuration(remainingSeconds);
             if (match.getDrawRequester() != null && !match.getDrawRequester().equals(second.getUniqueId())) {
-                text += " &8| &a/draw ᴛᴏ ᴀᴄᴄᴇᴘᴛ";
+                text += " &8| &a/draw to accept";
             }
-            second.sendActionBar(ColorUtils.toComponent(text));
+            com.bx.ultimateDonutSmp.utils.PlayerSettingUtils.sendActionBar(plugin, second, text);
         }
     }
 
@@ -1148,6 +1477,8 @@ public class DuelManager {
         activeMatchIds.remove(match.getPlayerOneUuid());
         activeMatchIds.remove(match.getPlayerTwoUuid());
         reservedArenaIds.remove(match.getArena().getId());
+        borderEscapeTicks.remove(match.getPlayerOneUuid());
+        borderEscapeTicks.remove(match.getPlayerTwoUuid());
 
         Player winner = winnerUuid == null ? null : Bukkit.getPlayer(winnerUuid);
         Player loser = loserUuid == null ? null : Bukkit.getPlayer(loserUuid);
@@ -1162,32 +1493,42 @@ public class DuelManager {
 
         updateMatchRecord(match, winnerUuid, loserUuid, endReason);
 
-        if (winnerUuid != null && !loot.isEmpty()) {
-            storeLootClaimPackage(winnerUuid, winner, match.getId(), resolveParticipantName(match, loserUuid), loot);
+        List<ItemStack> claimLoot = loot == null ? List.of() : loot;
+        if (match.usesGeneratedWorld()) {
+            restoreGeneratedInventory(match, match.getPlayerOneUuid(),
+                    match.getPlayerOneUuid().equals(loserUuid) ? claimLoot : List.of());
+            restoreGeneratedInventory(match, match.getPlayerTwoUuid(),
+                    match.getPlayerTwoUuid().equals(loserUuid) ? claimLoot : List.of());
+            cleanupGeneratedTransientEntities(match);
+            generatedMatchInventorySnapshots.remove(match.getId());
+        }
+
+        if (winnerUuid != null && !claimLoot.isEmpty()) {
+            storeLootClaimPackage(winnerUuid, winner, match.getId(), resolveParticipantName(match, loserUuid), claimLoot);
         }
 
         if (winner != null && loser != null) {
             storeTransitionTitle(
                     winner.getUniqueId(),
-                    formatResultTitle("victory", winner.getName(), loser.getName(), "&e&lᴠɪᴄᴛᴏʀʏ!"),
-                    formatResultSubtitle("victory", winner.getName(), loser.getName(), "&e" + winner.getName() + " &fᴡᴏɴ ᴛʜᴇ ᴍᴀᴛᴄʜ!")
+                    formatResultTitle("victory", publicName(winner), publicName(loser), "&e&lvictory!"),
+                    formatResultSubtitle("victory", publicName(winner), publicName(loser), "&e" + publicName(winner) + " &fwon the match!")
             );
             storeTransitionTitle(
                     loser.getUniqueId(),
-                    formatResultTitle("defeat", loser.getName(), winner.getName(), "&c&lᴅᴇꜰᴇᴀᴛ!"),
-                    formatResultSubtitle("defeat", loser.getName(), winner.getName(), "&c" + winner.getName() + " &fᴡᴏɴ ᴛʜɪѕ ᴍᴀᴛᴄʜ!")
+                    formatResultTitle("defeat", publicName(loser), publicName(winner), "&c&ldefeat!"),
+                    formatResultSubtitle("defeat", publicName(loser), publicName(winner), "&c" + publicName(winner) + " &fwon this match!")
             );
             play(winner, "DUELS.VICTORY");
             play(loser, "DUELS.DEFEAT");
         } else if (!cancelled) {
             Player first = Bukkit.getPlayer(match.getPlayerOneUuid());
             Player second = Bukkit.getPlayer(match.getPlayerTwoUuid());
-            String drawTitle = formatResultTitle("draw", null, null, "&e&lᴅʀᴀᴡ!");
+            String drawTitle = formatResultTitle("draw", null, null, "&e&ldraw!");
             String drawSubtitle = formatResultSubtitle(
                     "draw",
                     null,
                     null,
-                    "TIMEOUT".equalsIgnoreCase(endReason) ? "&fᴛɪᴍᴇ'ѕ ᴜᴘ - ɴᴏ ᴡɪɴɴᴇʀ." : "&7ɴᴏ ᴏɴᴇ ᴡᴏɴ ᴛʜɪѕ ᴅᴜᴇʟ"
+                    "TIMEOUT".equalsIgnoreCase(endReason) ? "&ftime's up - no winner." : "&7no one won this duel"
             );
             if (first != null) {
                 storeTransitionTitle(first.getUniqueId(), drawTitle, drawSubtitle);
@@ -1201,7 +1542,7 @@ public class DuelManager {
                         "draw",
                         null,
                         null,
-                        "&e[Timer] &fᴛɪᴍᴇ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ! ᴍᴀᴛᴄʜ ᴇɴᴅᴇᴅ ᴀѕ ᴀ &eᴅʀᴀᴡ &f- ѕᴛʀᴇᴀᴋѕ ᴜɴᴄʜᴀɴɢᴇᴅ."
+                        "&e[timer] &ftime limit reached! match ended as a &edraw &f- streaks unchanged."
                 );
                 if (first != null && !timeoutMessage.isBlank()) {
                     send(first, timeoutMessage);
@@ -1251,7 +1592,18 @@ public class DuelManager {
             teleportAfterDelay(match.getPlayerTwoUuid(), resolveReturnLocation(match, match.getPlayerTwoUuid()), delayTicks, true);
         }
 
-        plugin.getFoliaScheduler().runGlobalLater(() -> rollbackArena(match.getId()), delayTicks + 1L);
+        if (match.usesGeneratedWorld()) {
+            plugin.getFoliaScheduler().runGlobalLater(
+                    () -> {
+                        rollbackGeneratedArena(match);
+                        cleanupGeneratedTransientEntities(match);
+                        worldManager.cleanupGeneratedWorld(match.getGeneratedWorldName());
+                    },
+                    delayTicks + 40L
+            );
+        } else {
+            plugin.getFoliaScheduler().runGlobalLater(() -> rollbackArena(match.getId()), delayTicks + 1L);
+        }
     }
 
     private void teleportAfterDelay(UUID uuid, Location location, long delayTicks, boolean clearTransition) {
@@ -1294,9 +1646,7 @@ public class DuelManager {
             return;
         }
 
-        if (player.getAttribute(Attribute.MAX_HEALTH) != null) {
-            player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
-        }
+        player.setHealth(AttributeUtils.getMaxHealth(player));
         player.setFoodLevel(20);
         player.setSaturation(20F);
         player.setFireTicks(0);
@@ -1326,25 +1676,21 @@ public class DuelManager {
         }
 
         long delayMillis = Math.max(1000L, getReturnDelayTicks() * 50L);
-        player.showTitle(Title.title(
-                ColorUtils.toComponent(state.title()),
-                ColorUtils.toComponent(state.subtitle()),
-                Title.Times.times(Duration.ZERO, Duration.ofMillis(delayMillis), Duration.ZERO)
-        ));
+        TitleUtils.sendTitle(player, state.title(), state.subtitle(), 0, (int) Math.max(1L, delayMillis / 50L), 0);
     }
 
     private String formatResultTitle(String key, String playerName, String opponentName, String fallback) {
-        String raw = config().getString("RESULT-TITLES." + key + ".title", fallback);
+        String raw = config().getString("RESULT-TITLES." + key + ".TITLE", fallback);
         return applyResultPlaceholders(raw, playerName, opponentName);
     }
 
     private String formatResultSubtitle(String key, String playerName, String opponentName, String fallback) {
-        String raw = config().getString("RESULT-TITLES." + key + ".subtitle", fallback);
+        String raw = config().getString("RESULT-TITLES." + key + ".SUBTITLE", fallback);
         return applyResultPlaceholders(raw, playerName, opponentName);
     }
 
     private String formatResultMessage(String key, String playerName, String opponentName, String fallback) {
-        String raw = config().getString("RESULT-TITLES." + key + ".message", fallback);
+        String raw = config().getString("RESULT-TITLES." + key + ".MESSAGE", fallback);
         return applyResultPlaceholders(raw, playerName, opponentName);
     }
 
@@ -1378,8 +1724,21 @@ public class DuelManager {
             return;
         }
 
+        int blockedItems = 0;
         for (ItemStack item : loot) {
             if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+                continue;
+            }
+            CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                    .validateForStorage(item, CrashProtectionManager.Context.DUELS);
+            if (!safetyResult.allowed()) {
+                blockedItems++;
+                plugin.getCrashProtectionManager().logBlockedItem(
+                        "duel loot match #" + matchId,
+                        item,
+                        CrashProtectionManager.Context.DUELS,
+                        safetyResult
+                );
                 continue;
             }
             createClaim(winnerUuid, matchId, defeatedName, item.clone());
@@ -1397,7 +1756,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "INSERT INTO duel_claims (player_uuid, match_id, defeated_name, item_data, created_at) VALUES (?,?,?,?,?)")) {
+                "insert into duel_claims (player_uuid, match_id, defeated_name, item_data, created_at) values (?,?,?,?,?)")) {
             ps.setString(1, playerUuid.toString());
             ps.setLong(2, matchId);
             ps.setString(3, defeatedName == null ? "" : defeatedName);
@@ -1419,15 +1778,12 @@ public class DuelManager {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null || !player.isOnline() || isInDuel(uuid)) {
                 queue.remove(uuid);
+                queueSelections.remove(uuid);
+                removeCrossServerQueueEntry(uuid);
             }
         }
 
         while (queue.size() >= 2) {
-            DuelArena arena = findAvailableArena(null, true);
-            if (arena == null) {
-                return;
-            }
-
             List<UUID> available = new ArrayList<>(queue);
             if (available.size() < 2) {
                 return;
@@ -1440,22 +1796,132 @@ public class DuelManager {
             if (first == null || second == null || !first.isOnline() || !second.isOnline()) {
                 queue.remove(firstUuid);
                 queue.remove(secondUuid);
+                queueSelections.remove(firstUuid);
+                queueSelections.remove(secondUuid);
+                removeCrossServerQueueEntry(firstUuid);
+                removeCrossServerQueueEntry(secondUuid);
                 continue;
+            }
+
+            DuelMapSelection selection = queueSelections.getOrDefault(firstUuid, DuelMapSelection.randomStatic());
+            if (selection.usesGeneratedWorld()) {
+                queue.remove(firstUuid);
+                queue.remove(secondUuid);
+                queueSelections.remove(firstUuid);
+                queueSelections.remove(secondUuid);
+                removeCrossServerQueueEntry(firstUuid);
+                removeCrossServerQueueEntry(secondUuid);
+                prepareGeneratedQueueMatch(firstUuid, secondUuid, selection);
+                continue;
+            }
+
+            ResolvedArena resolvedArena = resolveArena(selection, true);
+            if (resolvedArena == null) {
+                return;
             }
 
             queue.remove(firstUuid);
             queue.remove(secondUuid);
-            startMatch(first, second, arena, DuelMatch.MatchType.QUEUE);
+            queueSelections.remove(firstUuid);
+            queueSelections.remove(secondUuid);
+            removeCrossServerQueueEntry(firstUuid);
+            removeCrossServerQueueEntry(secondUuid);
+            startMatch(first, second, resolvedArena, DuelMatch.MatchType.QUEUE, DuelPrivacyMode.INVITE_ONLY, getLocalServerId());
         }
     }
 
-    private void startMatch(Player first, Player second, DuelArena arena, DuelMatch.MatchType type) {
-        if (first == null || second == null || arena == null) {
+    private void prepareGeneratedQueueMatch(UUID firstUuid, UUID secondUuid, DuelMapSelection selection) {
+        if (firstUuid == null || secondUuid == null) {
             return;
         }
 
-        long matchId = insertMatch(type, arena, first.getUniqueId(), second.getUniqueId());
+        preparingDuelPlayers.add(firstUuid);
+        preparingDuelPlayers.add(secondUuid);
+        send(Bukkit.getPlayer(firstUuid), "&eᴘʀᴇᴘᴀʀɪɴɢ ᴅᴜᴇʟ ʙɪᴏᴍᴇ ᴀʀᴇɴᴀ...");
+        send(Bukkit.getPlayer(secondUuid), "&eᴘʀᴇᴘᴀʀɪɴɢ ᴅᴜᴇʟ ʙɪᴏᴍᴇ ᴀʀᴇɴᴀ...");
+
+        scheduleGeneratedQueuePreparation(firstUuid, secondUuid, selection, 1L);
+    }
+
+    private void scheduleGeneratedQueuePreparation(UUID firstUuid, UUID secondUuid, DuelMapSelection selection, long delayTicks) {
+        plugin.getFoliaScheduler().runGlobalLater(() -> {
+            Player first = Bukkit.getPlayer(firstUuid);
+            Player second = Bukkit.getPlayer(secondUuid);
+            if (!preparingDuelPlayers.contains(firstUuid) || !preparingDuelPlayers.contains(secondUuid)) {
+                preparingDuelPlayers.remove(firstUuid);
+                preparingDuelPlayers.remove(secondUuid);
+                send(first, "&cᴅᴜᴇʟ ᴄᴀɴᴄᴇʟʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴏɴᴇ ᴘʟᴀʏᴇʀ ʟᴇꜰᴛ ᴘʀᴇᴘᴀʀᴀᴛɪᴏɴ.");
+                send(second, "&cᴅᴜᴇʟ ᴄᴀɴᴄᴇʟʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴏɴᴇ ᴘʟᴀʏᴇʀ ʟᴇꜰᴛ ᴘʀᴇᴘᴀʀᴀᴛɪᴏɴ.");
+                return;
+            }
+
+            if (!canStartPreparedDuel(first) || !canStartPreparedDuel(second)) {
+                preparingDuelPlayers.remove(firstUuid);
+                preparingDuelPlayers.remove(secondUuid);
+                send(first, "&cᴅᴜᴇʟ ᴄᴀɴᴄᴇʟʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴏɴᴇ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ.");
+                send(second, "&cᴅᴜᴇʟ ᴄᴀɴᴄᴇʟʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴏɴᴇ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ.");
+                return;
+            }
+
+            ResolvedArena resolvedArena = resolveArena(selection, true);
+            if (resolvedArena == null) {
+                if (worldManager.canPrepareGeneratedArenas()) {
+                    scheduleGeneratedQueuePreparation(firstUuid, secondUuid, selection, 20L);
+                    return;
+                }
+
+                preparingDuelPlayers.remove(firstUuid);
+                preparingDuelPlayers.remove(secondUuid);
+                send(first, "&cɴᴏ ᴅᴜᴇʟ ʙɪᴏᴍᴇ ᴀʀᴇɴᴀ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ.");
+                send(second, "&cɴᴏ ᴅᴜᴇʟ ʙɪᴏᴍᴇ ᴀʀᴇɴᴀ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ.");
+                return;
+            }
+
+            preparingDuelPlayers.remove(firstUuid);
+            preparingDuelPlayers.remove(secondUuid);
+            startMatch(first, second, resolvedArena, DuelMatch.MatchType.QUEUE, DuelPrivacyMode.INVITE_ONLY, getLocalServerId());
+        }, delayTicks);
+    }
+
+    private boolean canStartPreparedDuel(Player player) {
+        if (player == null || !player.isOnline()) {
+            return false;
+        }
+
+        UUID uuid = player.getUniqueId();
+        if (isInDuel(uuid) || isInQueue(uuid)) {
+            return false;
+        }
+        return plugin.getFfaManager() == null || !plugin.getFfaManager().isBusy(uuid);
+    }
+
+    private void startMatch(Player first, Player second, ResolvedArena resolvedArena, DuelMatch.MatchType type,
+                            DuelPrivacyMode privacyMode, String hostServerId) {
+        if (first == null || second == null || resolvedArena == null || resolvedArena.arena() == null) {
+            return;
+        }
+        boolean firstInventorySafe = validatePlayerInventoryForDuel(first);
+        boolean secondInventorySafe = validatePlayerInventoryForDuel(second);
+        if (!firstInventorySafe || !secondInventorySafe) {
+            if (firstInventorySafe) {
+                send(first, "&cᴛʜᴇ ᴅᴜᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴛᴀʀᴛ ʙᴇᴄᴀᴜѕᴇ ʏᴏᴜʀ ᴏᴘᴘᴏɴᴇɴᴛ ʜᴀѕ ᴜɴѕᴀꜰᴇ ɪᴛᴇᴍ ᴅᴀᴛᴀ.");
+            }
+            if (secondInventorySafe) {
+                send(second, "&cᴛʜᴇ ᴅᴜᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴛᴀʀᴛ ʙᴇᴄᴀᴜѕᴇ ʏᴏᴜʀ ᴏᴘᴘᴏɴᴇɴᴛ ʜᴀѕ ᴜɴѕᴀꜰᴇ ɪᴛᴇᴍ ᴅᴀᴛᴀ.");
+            }
+            if (resolvedArena.generatedWorldName() != null && !resolvedArena.generatedWorldName().isBlank()) {
+                worldManager.cleanupGeneratedWorld(resolvedArena.generatedWorldName());
+            }
+            return;
+        }
+
+        DuelArena arena = resolvedArena.arena();
+        long matchId = insertMatch(type, arena, first.getUniqueId(), second.getUniqueId(), resolvedArena.selection(),
+                resolvedArena.biomeKey(), resolvedArena.generatedWorldName(), privacyMode, hostServerId);
         if (matchId <= 0L) {
+            if (resolvedArena.generatedWorldName() != null && !resolvedArena.generatedWorldName().isBlank()) {
+                worldManager.cleanupGeneratedWorld(resolvedArena.generatedWorldName());
+            }
             send(first, "&cᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴛᴀʀᴛ ᴛʜᴇ ᴅᴜᴇʟ ʀɪɢʜᴛ ɴᴏᴡ.");
             send(second, "&cᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴛᴀʀᴛ ᴛʜᴇ ᴅᴜᴇʟ ʀɪɢʜᴛ ɴᴏᴡ.");
             return;
@@ -1465,11 +1931,16 @@ public class DuelManager {
                 matchId,
                 type,
                 arena,
+                resolvedArena.selection(),
                 first.getUniqueId(),
-                first.getName(),
+                publicName(first),
                 second.getUniqueId(),
-                second.getName(),
-                getCountdownSeconds()
+                publicName(second),
+                getCountdownSeconds(),
+                resolvedArena.biomeKey(),
+                resolvedArena.generatedWorldName(),
+                privacyMode,
+                hostServerId
         );
         match.setReturnLocation(first.getUniqueId(), first.getLocation());
         match.setReturnLocation(second.getUniqueId(), second.getLocation());
@@ -1481,7 +1952,7 @@ public class DuelManager {
         transitioningPlayers.remove(first.getUniqueId());
         transitioningPlayers.remove(second.getUniqueId());
 
-        if (arena.hasRollbackRegion()) {
+        if (!match.usesGeneratedWorld() && arena.hasRollbackRegion()) {
             ArenaSnapshot snapshot = captureArenaSnapshot(arena);
             if (snapshot != null) {
                 arenaSnapshots.put(matchId, snapshot);
@@ -1493,8 +1964,8 @@ public class DuelManager {
         preparePlayerForMatch(first, arena.getSpawn1(), arena);
         preparePlayerForMatch(second, arena.getSpawn2(), arena);
 
-        send(first, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
-        send(second, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
+        send(first, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
+        send(second, "&aᴅᴜᴇʟ ꜰᴏᴜɴᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
         play(first, "DUELS.MATCH-FOUND");
         play(second, "DUELS.MATCH-FOUND");
     }
@@ -1584,6 +2055,12 @@ public class DuelManager {
             }
             return false;
         }
+        if (preparingDuelPlayers.contains(uuid)) {
+            if (selfFeedback) {
+                send(player, "&cʏᴏᴜʀ ᴅᴜᴇʟ ᴀʀᴇɴᴀ ɪѕ ᴘʀᴇᴘᴀʀɪɴɢ.");
+            }
+            return false;
+        }
         if (isInQueue(uuid)) {
             if (selfFeedback) {
                 send(player, "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ǫᴜᴇᴜᴇ.");
@@ -1603,6 +2080,509 @@ public class DuelManager {
             return false;
         }
         return true;
+    }
+
+    private boolean canUsePrivacyMode(Player challenger, Player target, DuelPrivacyMode privacyMode, boolean selfFeedback) {
+        if (privacyMode != DuelPrivacyMode.FRIENDS_ONLY) {
+            return true;
+        }
+        if (challenger == null || target == null || plugin.getTeamManager() == null) {
+            if (selfFeedback && challenger != null) {
+                send(challenger, "&cꜰʀɪᴇɴᴅѕ-ᴏɴʟʏ ᴅᴜᴇʟѕ ʀᴇǫᴜɪʀᴇ ʙᴏᴛʜ ᴘʟᴀʏᴇʀѕ ᴛᴏ ʙᴇ ɪɴ ᴛʜᴇ ѕᴀᴍᴇ ᴛᴇᴀᴍ.");
+            }
+            return false;
+        }
+        boolean teammates = plugin.getTeamManager().areTeammates(challenger.getUniqueId(), target.getUniqueId());
+        if (!teammates && selfFeedback) {
+            send(challenger, "&cꜰʀɪᴇɴᴅѕ-ᴏɴʟʏ ᴅᴜᴇʟѕ ᴄᴀɴ ᴏɴʟʏ ᴛᴀʀɢᴇᴛ ᴍᴇᴍʙᴇʀѕ ᴏꜰ ʏᴏᴜʀ ᴛᴇᴀᴍ.");
+        }
+        return teammates;
+    }
+
+    private boolean isAcceptingDuelRequests(Player target) {
+        if (target == null || plugin.getPlayerDataManager() == null) {
+            return true;
+        }
+        PlayerData data = plugin.getPlayerDataManager().get(target);
+        return data == null || data.isDuelRequestsEnabled();
+    }
+
+    private void enforceArenaBorder(DuelMatch match) {
+        if (match == null || !match.usesGeneratedWorld() || !worldManager.isBorderEnabled()) {
+            return;
+        }
+        enforceArenaBorderFor(match, match.getPlayerOneUuid());
+        enforceArenaBorderFor(match, match.getPlayerTwoUuid());
+    }
+
+    private void enforceArenaBorderFor(DuelMatch match, UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+
+        if (isInsideGeneratedArenaBorder(match, player.getLocation())) {
+            borderEscapeTicks.remove(uuid);
+            return;
+        }
+
+        int ticks = borderEscapeTicks.merge(uuid, 1, Integer::sum);
+        if (ticks >= worldManager.getBorderGraceTicks()) {
+            String fallback = worldManager.getBorderFallbackAction();
+            if ("DRAW".equals(fallback)) {
+                finishMatch(match, null, null, "BOUNDARY_ESCAPE", false, List.of(), true);
+                return;
+            }
+            if ("FORFEIT".equals(fallback)) {
+                handleForfeit(player, "BOUNDARY_ESCAPE", true);
+                return;
+            }
+        }
+
+        if ("PUSH_BACK".equals(worldManager.getBorderAction()) && (ticks == 1 || ticks % 10 == 0)) {
+            pushPlayerBackToArena(player, match);
+        }
+    }
+
+    private boolean isInsideGeneratedArenaBorder(DuelMatch match, Location location) {
+        if (match == null || location == null || location.getWorld() == null) {
+            return false;
+        }
+        if (!location.getWorld().getName().equals(match.getGeneratedWorldName())) {
+            return false;
+        }
+        WorldBorder border = location.getWorld().getWorldBorder();
+        return border == null || border.isInside(location);
+    }
+
+    private void pushPlayerBackToArena(Player player, DuelMatch match) {
+        Location destination = resolveArenaStayLocation(match, player.getUniqueId());
+        if (destination == null || destination.getWorld() == null) {
+            return;
+        }
+        plugin.getFoliaScheduler().teleport(player, destination);
+    }
+
+    private boolean isSelectionAvailable(DuelMapSelection selection, boolean queueOnly) {
+        DuelMapSelection resolved = selection == null ? DuelMapSelection.randomStatic() : selection;
+        return switch (resolved.type()) {
+            case RANDOM_STATIC -> !getReadyArenas(queueOnly).isEmpty();
+            case STATIC_ARENA -> {
+                DuelArena arena = getArena(resolved.value());
+                yield arena != null && arena.isEnabled() && arena.isReady() && (!queueOnly || arena.isQueueEnabled());
+            }
+            case RANDOM_BIOME -> worldManager.isRandomBiomesEnabled() && !worldManager.getSelectableBiomes().isEmpty();
+            case BIOME -> worldManager.isRandomBiomesEnabled()
+                    && worldManager.resolveBiome(resolved.value())
+                    .filter(biome -> worldManager.getSelectableBiomes().contains(biome))
+                    .isPresent();
+        };
+    }
+
+    private List<DuelArena> getReadyArenas(boolean queueOnly) {
+        return queueOnly ? getReadyQueueArenas() : getReadyEnabledArenas();
+    }
+
+    private ResolvedArena resolveArena(DuelMapSelection selection, boolean queueArena) {
+        DuelMapSelection resolved = selection == null ? DuelMapSelection.randomStatic() : selection;
+        if (resolved.usesGeneratedWorld()) {
+            DuelWorldManager.GeneratedArena generatedArena = worldManager.createGeneratedArena(resolved);
+            if (generatedArena == null) {
+                return null;
+            }
+            applyGeneratedTerrainSettings(generatedArena.arena(), generatedArena.terrainMode());
+            return new ResolvedArena(
+                    generatedArena.arena(),
+                    generatedArena.selection(),
+                    generatedArena.biomeKey(),
+                    generatedArena.worldName(),
+                    generatedArena.terrainMode()
+            );
+        }
+
+        String preferredArenaId = resolved.type() == DuelMapSelection.Type.STATIC_ARENA ? normalizeArenaId(resolved.value()) : null;
+        DuelArena arena = findAvailableArena(preferredArenaId, queueArena);
+        if (arena == null) {
+            return null;
+        }
+        DuelMapSelection actualSelection = preferredArenaId == null
+                ? DuelMapSelection.staticArena(arena.getId())
+                : DuelMapSelection.staticArena(preferredArenaId);
+        return new ResolvedArena(arena, actualSelection, "", "", null);
+    }
+
+    private String getLocalServerId() {
+        String configured = config().getString("CROSS_SERVER.LOCAL_SERVER_ID", "");
+        if (configured == null || configured.isBlank()) {
+            configured = plugin.getConfigManager().getNetwork().getString("NETWORK.LOCAL_SERVER_ID", "local");
+        }
+        return configured == null || configured.isBlank() ? "local" : configured.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private boolean isCrossServerEnabled() {
+        return config().getBoolean("CROSS_SERVER.ENABLED", false)
+                && plugin.getRedisManager() != null
+                && plugin.getRedisManager().isEnabled();
+    }
+
+    private void unsubscribeCrossServer() {
+        if (plugin.getRedisManager() != null && crossServerSubscribed) {
+            plugin.getRedisManager().unsubscribe(crossServerSubscribedChannel.isBlank()
+                    ? getCrossServerChannel()
+                    : crossServerSubscribedChannel);
+        }
+        crossServerSubscribed = false;
+        crossServerSubscribedChannel = "";
+    }
+
+    private void publishCrossServerQueueJoin(Player player, DuelMapSelection selection) {
+        if (!isCrossServerEnabled() || player == null) {
+            return;
+        }
+
+        String uuid = player.getUniqueId().toString();
+        long now = System.currentTimeMillis();
+        Map<String, String> values = new HashMap<>();
+        values.put("uuid", uuid);
+        values.put("name", plainPublicName(player));
+        values.put("serverId", getLocalServerId());
+        values.put("map", (selection == null ? DuelMapSelection.randomStatic() : selection).serialize());
+        values.put("queuedAt", Long.toString(now));
+
+        String dataKey = getCrossQueueDataKey(player.getUniqueId());
+        plugin.getRedisManager().hset(dataKey, values);
+        plugin.getRedisManager().expire(dataKey, getCrossServerStaleQueueSeconds());
+        plugin.getRedisManager().zadd(getCrossQueueKey(), now, uuid);
+    }
+
+    private void removeCrossServerQueueEntry(UUID uuid) {
+        if (!isCrossServerEnabled() || uuid == null) {
+            return;
+        }
+        String key = uuid.toString();
+        plugin.getRedisManager().zrem(getCrossQueueKey(), key);
+        plugin.getRedisManager().del(getCrossQueueDataKey(uuid));
+    }
+
+    private void attemptCrossServerMatchmaking() {
+        if (!isCrossServerEnabled()) {
+            return;
+        }
+        if (!plugin.getRedisManager().setIfAbsent(getCrossLockKey(), getLocalServerId(), 3L)) {
+            return;
+        }
+
+        List<CrossQueueEntry> entries = loadCrossQueueEntries();
+        if (entries.size() < 2) {
+            return;
+        }
+
+        for (int i = 0; i < entries.size(); i++) {
+            CrossQueueEntry first = entries.get(i);
+            for (int j = i + 1; j < entries.size(); j++) {
+                CrossQueueEntry second = entries.get(j);
+                if (first.uuid().equals(second.uuid())) {
+                    continue;
+                }
+                if (first.serverId().equals(getLocalServerId()) && second.serverId().equals(getLocalServerId())) {
+                    continue;
+                }
+
+                DuelMapSelection selection = first.selection() == null ? DuelMapSelection.randomStatic() : first.selection();
+                if (!isSelectionAvailable(selection, true)) {
+                    continue;
+                }
+
+                String matchId = UUID.randomUUID().toString();
+                PendingCrossServerMatch pendingMatch = new PendingCrossServerMatch(
+                        matchId,
+                        first.uuid(),
+                        first.name(),
+                        second.uuid(),
+                        second.name(),
+                        selection,
+                        System.currentTimeMillis() + getCrossTransferTimeoutMillis()
+                );
+                pendingCrossServerMatches.put(matchId, pendingMatch);
+
+                removeCrossServerQueueEntry(first.uuid());
+                removeCrossServerQueueEntry(second.uuid());
+                removeLocalQueueEntry(first.uuid());
+                removeLocalQueueEntry(second.uuid());
+                publishTransferRequest(pendingMatch, first);
+                publishTransferRequest(pendingMatch, second);
+                return;
+            }
+        }
+    }
+
+    private List<CrossQueueEntry> loadCrossQueueEntries() {
+        List<String> members = plugin.getRedisManager().zrange(getCrossQueueKey(), 0, 24);
+        List<CrossQueueEntry> entries = new ArrayList<>();
+        long staleBefore = System.currentTimeMillis() - (getCrossServerStaleQueueSeconds() * 1000L);
+        for (String member : members) {
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(member);
+            } catch (IllegalArgumentException exception) {
+                plugin.getRedisManager().zrem(getCrossQueueKey(), member);
+                continue;
+            }
+
+            Map<String, String> values = plugin.getRedisManager().hgetAll(getCrossQueueDataKey(uuid));
+            CrossQueueEntry entry = parseCrossQueueEntry(values);
+            if (entry == null || entry.queuedAt() < staleBefore) {
+                removeCrossServerQueueEntry(uuid);
+                continue;
+            }
+            entries.add(entry);
+        }
+        return entries;
+    }
+
+    private CrossQueueEntry parseCrossQueueEntry(Map<String, String> values) {
+        if (values == null || values.isEmpty()) {
+            return null;
+        }
+        try {
+            UUID uuid = UUID.fromString(values.getOrDefault("uuid", ""));
+            String name = values.getOrDefault("name", "Player");
+            String serverId = values.getOrDefault("serverId", "").trim().toLowerCase(Locale.ROOT);
+            long queuedAt = Long.parseLong(values.getOrDefault("queuedAt", "0"));
+            if (serverId.isBlank()) {
+                return null;
+            }
+            return new CrossQueueEntry(uuid, name, serverId, parseMapSelection(values.get("map")), queuedAt);
+        } catch (IllegalArgumentException exception) {
+            return null;
+        }
+    }
+
+    private void publishTransferRequest(PendingCrossServerMatch match, CrossQueueEntry entry) {
+        if (match == null || entry == null) {
+            return;
+        }
+
+        if (entry.serverId().equals(getLocalServerId())) {
+            Player player = Bukkit.getPlayer(entry.uuid());
+            if (player != null) {
+                send(player, "&aᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴜᴇʟ ꜰᴏᴜɴᴅ. ᴘʀᴇᴘᴀʀɪɴɢ ᴍᴀᴛᴄʜ...");
+            }
+            return;
+        }
+
+        Map<String, String> payload = new HashMap<>();
+        payload.put("type", "TRANSFER_REQUEST");
+        payload.put("messageId", UUID.randomUUID().toString());
+        payload.put("sourceServerId", getLocalServerId());
+        payload.put("targetServerId", entry.serverId());
+        payload.put("hostServerId", getLocalServerId());
+        payload.put("hostProxyServerName", getCrossProxyServerName());
+        payload.put("matchId", match.matchId());
+        payload.put("playerUuid", entry.uuid().toString());
+        payload.put("playerName", entry.name());
+        payload.put("playerOneUuid", match.firstUuid().toString());
+        payload.put("playerOneName", match.firstName());
+        payload.put("playerTwoUuid", match.secondUuid().toString());
+        payload.put("playerTwoName", match.secondName());
+        payload.put("map", match.selection().serialize());
+        payload.put("createdAt", Long.toString(System.currentTimeMillis()));
+        plugin.getRedisManager().publish(getCrossServerChannel(), serializeProperties(payload));
+    }
+
+    private void handleCrossServerPayload(String rawPayload) {
+        Map<String, String> payload = deserializeProperties(rawPayload);
+        String messageId = payload.getOrDefault("messageId", "");
+        if (messageId.isBlank() || !seenCrossServerMessages.add(messageId)) {
+            return;
+        }
+        if (seenCrossServerMessages.size() > 1000) {
+            seenCrossServerMessages.clear();
+        }
+
+        String type = payload.getOrDefault("type", "").trim().toUpperCase(Locale.ROOT);
+        if (!"TRANSFER_REQUEST".equals(type)) {
+            return;
+        }
+        if (!getLocalServerId().equals(payload.getOrDefault("targetServerId", "").trim().toLowerCase(Locale.ROOT))) {
+            return;
+        }
+
+        UUID playerUuid;
+        try {
+            playerUuid = UUID.fromString(payload.getOrDefault("playerUuid", ""));
+        } catch (IllegalArgumentException exception) {
+            return;
+        }
+
+        Player player = Bukkit.getPlayer(playerUuid);
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+
+        removeLocalQueueEntry(playerUuid);
+        removeCrossServerQueueEntry(playerUuid);
+        send(player, "&aᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴜᴇʟ ꜰᴏᴜɴᴅ. ᴛʀᴀɴѕꜰᴇʀʀɪɴɢ ᴛᴏ ᴍᴀᴛᴄʜ ѕᴇʀᴠᴇʀ...");
+        transferPlayerToProxyServer(player, payload.getOrDefault("hostProxyServerName", getCrossProxyServerName()));
+    }
+
+    private void attemptPendingCrossServerMatches() {
+        if (pendingCrossServerMatches.isEmpty()) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        List<String> completed = new ArrayList<>();
+        for (PendingCrossServerMatch match : new ArrayList<>(pendingCrossServerMatches.values())) {
+            if (now >= match.expiresAt()) {
+                completed.add(match.matchId());
+                continue;
+            }
+
+            Player first = Bukkit.getPlayer(match.firstUuid());
+            Player second = Bukkit.getPlayer(match.secondUuid());
+            if (first == null || second == null || !first.isOnline() || !second.isOnline()) {
+                continue;
+            }
+
+            if (!canEnterDuel(first, true) || !canEnterDuel(second, false)) {
+                completed.add(match.matchId());
+                continue;
+            }
+
+            ResolvedArena resolvedArena = resolveArena(match.selection(), true);
+            if (resolvedArena == null) {
+                if (worldManager.canPrepareGeneratedArenas()) {
+                    continue;
+                }
+                completed.add(match.matchId());
+                send(first, "&cᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴜᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴛᴀʀᴛ ʙᴇᴄᴀᴜѕᴇ ɴᴏ ᴀʀᴇɴᴀ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.");
+                send(second, "&cᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴜᴇʟ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴛᴀʀᴛ ʙᴇᴄᴀᴜѕᴇ ɴᴏ ᴀʀᴇɴᴀ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.");
+                continue;
+            }
+
+            removeLocalQueueEntry(first.getUniqueId());
+            removeLocalQueueEntry(second.getUniqueId());
+            startMatch(first, second, resolvedArena, DuelMatch.MatchType.QUEUE, DuelPrivacyMode.INVITE_ONLY, getLocalServerId());
+            completed.add(match.matchId());
+        }
+        completed.forEach(pendingCrossServerMatches::remove);
+    }
+
+    private void removeLocalQueueEntry(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+        queue.remove(uuid);
+        queueSelections.remove(uuid);
+    }
+
+    private void transferPlayerToProxyServer(Player player, String serverName) {
+        if (player == null || serverName == null || serverName.isBlank()) {
+            return;
+        }
+
+        try {
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(byteStream);
+            out.writeUTF("Connect");
+            out.writeUTF(serverName);
+            player.sendPluginMessage(plugin, "BungeeCord", byteStream.toByteArray());
+        } catch (IOException exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to send duel proxy transfer request for " + player.getName(), exception);
+        }
+    }
+
+    private String serializeProperties(Map<String, String> values) {
+        Properties properties = new Properties();
+        if (values != null) {
+            values.forEach((key, value) -> properties.setProperty(key, value == null ? "" : value));
+        }
+        StringWriter writer = new StringWriter();
+        try {
+            properties.store(writer, "ultimatedonutsmp duel cross-server payload");
+        } catch (IOException ignored) {
+        }
+        return writer.toString();
+    }
+
+    private Map<String, String> deserializeProperties(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return Map.of();
+        }
+        Properties properties = new Properties();
+        try {
+            properties.load(new StringReader(raw));
+        } catch (IOException exception) {
+            return Map.of();
+        }
+        Map<String, String> result = new HashMap<>();
+        for (String name : properties.stringPropertyNames()) {
+            result.put(name, properties.getProperty(name, ""));
+        }
+        return result;
+    }
+
+    private String getCrossServerChannel() {
+        return config().getString("CROSS_SERVER.REDIS_CHANNEL", "ultimatedonutsmp:duels");
+    }
+
+    private String getCrossKeyPrefix() {
+        String prefix = config().getString("CROSS_SERVER.KEY_PREFIX", "uds:duels:");
+        return prefix == null || prefix.isBlank() ? "uds:duels:" : prefix.trim();
+    }
+
+    private String getCrossQueueKey() {
+        return getCrossKeyPrefix() + "queue";
+    }
+
+    private String getCrossLockKey() {
+        return getCrossKeyPrefix() + "match-lock";
+    }
+
+    private String getCrossQueueDataKey(UUID uuid) {
+        return getCrossKeyPrefix() + "queue:" + uuid;
+    }
+
+    private long getCrossServerStaleQueueSeconds() {
+        return Math.max(5L, config().getLong("CROSS_SERVER.STALE_QUEUE_TIMEOUT_SECONDS", 45L));
+    }
+
+    private long getCrossTransferTimeoutMillis() {
+        return Math.max(5L, config().getLong("CROSS_SERVER.TRANSFER_TIMEOUT_SECONDS", 20L)) * 1000L;
+    }
+
+    private String getCrossProxyServerName() {
+        String configured = config().getString("CROSS_SERVER.PROXY_SERVER_NAME", "");
+        return configured == null || configured.isBlank() ? getLocalServerId() : configured.trim();
+    }
+
+    private List<String> commandPatterns(String path, List<String> defaults) {
+        List<String> configured = config().getStringList(path);
+        List<String> source = configured.isEmpty() ? defaults : configured;
+        List<String> patterns = new ArrayList<>();
+        for (String value : source) {
+            String normalized = normalizeCommandPattern(value);
+            if (!normalized.isBlank()) {
+                patterns.add(normalized);
+            }
+        }
+        return patterns;
+    }
+
+    private String normalizeCommandPattern(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        String normalized = value.trim().toLowerCase(Locale.ROOT);
+        return normalized.startsWith("/") ? normalized : "/" + normalized;
+    }
+
+    private boolean matchesCommandPattern(String raw, String pattern) {
+        if (raw == null || pattern == null || pattern.isBlank()) {
+            return false;
+        }
+        return raw.equals(pattern) || raw.startsWith(pattern + " ");
     }
 
     private DuelArena findAvailableArena(String preferredArenaId, boolean queueArena) {
@@ -1661,6 +2641,8 @@ public class DuelManager {
             }
         }
         queue.removeAll(toRemove);
+        toRemove.forEach(queueSelections::remove);
+        toRemove.forEach(this::removeCrossServerQueueEntry);
     }
 
     private boolean removeOutgoingRequest(UUID challengerUuid) {
@@ -1784,7 +2766,7 @@ public class DuelManager {
 
     private String resolveParticipantName(DuelMatch match, UUID uuid) {
         if (match == null || uuid == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
         if (uuid.equals(match.getPlayerOneUuid())) {
             return match.getPlayerOneName();
@@ -1792,7 +2774,7 @@ public class DuelManager {
         if (uuid.equals(match.getPlayerTwoUuid())) {
             return match.getPlayerTwoName();
         }
-        return "ᴜɴᴋɴᴏᴡɴ";
+        return "unknown";
     }
 
     private boolean canFullyFit(PlayerInventory inventory, ItemStack item) {
@@ -1823,7 +2805,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "SELECT id, defeated_name, item_data, created_at FROM duel_claims WHERE player_uuid = ? AND match_id = ? ORDER BY id ASC")) {
+                "select id, defeated_name, item_data, created_at from duel_claims where player_uuid = ? and match_id = ? order by id asc")) {
             ps.setString(1, playerUuid.toString());
             ps.setLong(2, matchId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -1865,6 +2847,300 @@ public class DuelManager {
         return loot;
     }
 
+    private void rememberGeneratedInventorySnapshot(DuelMatch match, Player first, Player second) {
+        if (match == null || !match.usesGeneratedWorld()) {
+            return;
+        }
+
+        Map<UUID, GeneratedInventorySnapshot> snapshots = new HashMap<>();
+        if (first != null) {
+            snapshots.put(first.getUniqueId(), snapshotInventory(first));
+        }
+        if (second != null) {
+            snapshots.put(second.getUniqueId(), snapshotInventory(second));
+        }
+        generatedMatchInventorySnapshots.put(match.getId(), snapshots);
+    }
+
+    private GeneratedInventorySnapshot snapshotInventory(Player player) {
+        if (player == null) {
+            return GeneratedInventorySnapshot.empty();
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        return new GeneratedInventorySnapshot(
+                cloneContents(inventory.getStorageContents()),
+                cloneContents(inventory.getArmorContents()),
+                cloneItem(inventory.getItemInOffHand()),
+                cloneItem(player.getItemOnCursor())
+        );
+    }
+
+    private void sanitizeGeneratedInventory(DuelMatch match, UUID uuid) {
+        if (match == null || !match.usesGeneratedWorld() || uuid == null) {
+            return;
+        }
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+
+        GeneratedInventorySnapshot snapshot = getGeneratedInventorySnapshot(match, uuid);
+        if (snapshot == null) {
+            return;
+        }
+
+        List<ItemStack> remaining = snapshot.copyItems();
+        PlayerInventory inventory = player.getInventory();
+
+        ItemStack[] storage = inventory.getStorageContents();
+        boolean[] preservedStorage = preserveSnapshotSlots(storage, snapshot.storage(), remaining);
+        trimContentsToSnapshot(storage, remaining, preservedStorage);
+        inventory.setStorageContents(storage);
+
+        ItemStack[] armor = inventory.getArmorContents();
+        boolean[] preservedArmor = preserveSnapshotSlots(armor, snapshot.armor(), remaining);
+        trimContentsToSnapshot(armor, remaining, preservedArmor);
+        inventory.setArmorContents(armor);
+
+        ItemStack[] offHand = new ItemStack[]{inventory.getItemInOffHand()};
+        boolean[] preservedOffHand = preserveSnapshotSlots(offHand, new ItemStack[]{snapshot.offHand()}, remaining);
+        trimContentsToSnapshot(offHand, remaining, preservedOffHand);
+        inventory.setItemInOffHand(offHand[0]);
+
+        ItemStack[] cursor = new ItemStack[]{player.getItemOnCursor()};
+        boolean[] preservedCursor = preserveSnapshotSlots(cursor, new ItemStack[]{snapshot.cursor()}, remaining);
+        trimContentsToSnapshot(cursor, remaining, preservedCursor);
+        player.setItemOnCursor(cursor[0]);
+
+        player.updateInventory();
+    }
+
+    private void restoreGeneratedInventory(DuelMatch match, UUID uuid) {
+        restoreGeneratedInventory(match, uuid, List.of());
+    }
+
+    private void restoreGeneratedInventory(DuelMatch match, UUID uuid, List<ItemStack> removedItems) {
+        if (match == null || !match.usesGeneratedWorld() || uuid == null) {
+            return;
+        }
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+
+        GeneratedInventorySnapshot snapshot = getGeneratedInventorySnapshot(match, uuid);
+        if (snapshot == null) {
+            return;
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        List<ItemStack> remainingRemovedItems = cloneItemList(removedItems);
+        inventory.setStorageContents(fitContentsWithoutRemovedItems(
+                snapshot.storage(),
+                inventory.getStorageContents().length,
+                remainingRemovedItems
+        ));
+        inventory.setArmorContents(fitContentsWithoutRemovedItems(
+                snapshot.armor(),
+                inventory.getArmorContents().length,
+                remainingRemovedItems
+        ));
+        inventory.setItemInOffHand(cloneItemWithoutRemovedItems(snapshot.offHand(), remainingRemovedItems));
+        player.setItemOnCursor(cloneItemWithoutRemovedItems(snapshot.cursor(), remainingRemovedItems));
+        player.updateInventory();
+    }
+
+    private ItemStack[] fitContentsWithoutRemovedItems(ItemStack[] source, int targetLength, List<ItemStack> remainingRemovedItems) {
+        int length = Math.max(0, targetLength);
+        ItemStack[] fitted = new ItemStack[length];
+        if (source == null) {
+            return fitted;
+        }
+        for (int index = 0; index < Math.min(source.length, fitted.length); index++) {
+            fitted[index] = cloneItemWithoutRemovedItems(source[index], remainingRemovedItems);
+        }
+        return fitted;
+    }
+
+    private ItemStack cloneItemWithoutRemovedItems(ItemStack item, List<ItemStack> remainingRemovedItems) {
+        ItemStack clone = cloneItem(item);
+        if (clone == null) {
+            return null;
+        }
+
+        int removedAmount = consumeAllowedAmount(remainingRemovedItems, clone, clone.getAmount());
+        int restoredAmount = clone.getAmount() - removedAmount;
+        if (restoredAmount <= 0) {
+            return null;
+        }
+
+        clone.setAmount(restoredAmount);
+        return clone;
+    }
+
+    private List<ItemStack> cloneItemList(List<ItemStack> source) {
+        List<ItemStack> clones = new ArrayList<>();
+        if (source == null) {
+            return clones;
+        }
+        for (ItemStack item : source) {
+            ItemStack clone = cloneItem(item);
+            if (clone != null) {
+                clones.add(clone);
+            }
+        }
+        return clones;
+    }
+
+    private GeneratedInventorySnapshot getGeneratedInventorySnapshot(DuelMatch match, UUID uuid) {
+        Map<UUID, GeneratedInventorySnapshot> snapshots = generatedMatchInventorySnapshots.get(match.getId());
+        if (snapshots == null) {
+            return null;
+        }
+        return snapshots.get(uuid);
+    }
+
+    private boolean[] preserveSnapshotSlots(ItemStack[] contents, ItemStack[] snapshotContents, List<ItemStack> remaining) {
+        if (contents == null) {
+            return new boolean[0];
+        }
+
+        boolean[] preserved = new boolean[contents.length];
+        for (int index = 0; index < contents.length; index++) {
+            ItemStack current = contents[index];
+            ItemStack original = snapshotContents != null && index < snapshotContents.length ? snapshotContents[index] : null;
+            if (current == null || current.getType().isAir() || current.getAmount() <= 0
+                    || original == null || original.getType().isAir() || original.getAmount() <= 0
+                    || !isGeneratedSnapshotCompatible(original, current)) {
+                continue;
+            }
+
+            int allowedAmount = Math.min(current.getAmount(), original.getAmount());
+            int consumed = consumeAllowedAmount(remaining, current, allowedAmount);
+            if (consumed <= 0) {
+                contents[index] = null;
+                continue;
+            }
+
+            ItemStack clone = current.clone();
+            clone.setAmount(consumed);
+            contents[index] = clone;
+            preserved[index] = true;
+        }
+        return preserved;
+    }
+
+    private void trimContentsToSnapshot(ItemStack[] contents, List<ItemStack> remaining, boolean[] preserved) {
+        if (contents == null) {
+            return;
+        }
+
+        for (int index = 0; index < contents.length; index++) {
+            if (preserved != null && index < preserved.length && preserved[index]) {
+                continue;
+            }
+
+            ItemStack item = contents[index];
+            if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+                continue;
+            }
+
+            int allowedAmount = consumeAllowedAmount(remaining, item, item.getAmount());
+            if (allowedAmount <= 0) {
+                contents[index] = null;
+                continue;
+            }
+            if (allowedAmount < item.getAmount()) {
+                ItemStack clone = item.clone();
+                clone.setAmount(allowedAmount);
+                contents[index] = clone;
+            }
+        }
+    }
+
+    private int consumeAllowedAmount(List<ItemStack> remaining, ItemStack item, int requestedAmount) {
+        if (remaining == null || remaining.isEmpty() || item == null || item.getType().isAir() || requestedAmount <= 0) {
+            return 0;
+        }
+
+        int allowedAmount = 0;
+        for (int index = 0; index < remaining.size() && allowedAmount < requestedAmount; ) {
+            ItemStack allowed = remaining.get(index);
+            if (allowed == null || allowed.getType().isAir() || allowed.getAmount() <= 0) {
+                remaining.remove(index);
+                continue;
+            }
+            if (!isGeneratedSnapshotCompatible(allowed, item)) {
+                index++;
+                continue;
+            }
+
+            int taken = Math.min(requestedAmount - allowedAmount, allowed.getAmount());
+            allowedAmount += taken;
+            int leftover = allowed.getAmount() - taken;
+            if (leftover <= 0) {
+                remaining.remove(index);
+            } else {
+                allowed.setAmount(leftover);
+                index++;
+            }
+        }
+        return allowedAmount;
+    }
+
+    private boolean isGeneratedSnapshotCompatible(ItemStack allowed, ItemStack item) {
+        if (allowed == null || item == null || allowed.getType().isAir() || item.getType().isAir()) {
+            return false;
+        }
+        if (allowed.getType() != item.getType()) {
+            return false;
+        }
+        if (allowed.isSimilar(item)) {
+            return true;
+        }
+        return isSimilarIgnoringDamage(allowed, item);
+    }
+
+    private boolean isSimilarIgnoringDamage(ItemStack first, ItemStack second) {
+        ItemStack firstClone = first.clone();
+        ItemStack secondClone = second.clone();
+        clearDamage(firstClone);
+        clearDamage(secondClone);
+        return firstClone.isSimilar(secondClone);
+    }
+
+    private void clearDamage(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof Damageable damageable) {
+            damageable.setDamage(0);
+            item.setItemMeta(meta);
+        }
+    }
+
+    private ItemStack[] cloneContents(ItemStack[] contents) {
+        if (contents == null) {
+            return new ItemStack[0];
+        }
+        ItemStack[] clones = new ItemStack[contents.length];
+        for (int index = 0; index < contents.length; index++) {
+            clones[index] = cloneItem(contents[index]);
+        }
+        return clones;
+    }
+
+    private ItemStack cloneItem(ItemStack item) {
+        if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+            return null;
+        }
+        return item.clone();
+    }
+
     private List<ItemStack> copyLoot(List<ItemStack> drops) {
         List<ItemStack> loot = new ArrayList<>();
         if (drops == null) {
@@ -1889,6 +3165,41 @@ public class DuelManager {
             }
             destination.add(item.clone());
         }
+    }
+
+    private boolean validatePlayerInventoryForDuel(Player player) {
+        if (player == null || !player.isOnline()) {
+            return false;
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        if (!validateDuelItems(player, inventory.getStorageContents())) {
+            return false;
+        }
+        if (!validateDuelItems(player, inventory.getArmorContents())) {
+            return false;
+        }
+        if (!validateDuelItems(player, new ItemStack[]{inventory.getItemInOffHand(), player.getItemOnCursor()})) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateDuelItems(Player player, ItemStack[] items) {
+        if (items == null) {
+            return true;
+        }
+        for (ItemStack item : items) {
+            if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+                continue;
+            }
+            if (!plugin.getCrashProtectionManager()
+                    .validateOrNotify(player, item, CrashProtectionManager.Context.DUELS)
+                    .allowed()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean shouldHandleAsCustomLethalPvP(Player attacker, Player victim, double finalDamage) {
@@ -1972,13 +3283,46 @@ public class DuelManager {
                 block.setBlockData(data, false);
             } catch (IllegalArgumentException exception) {
                 plugin.getLogger().log(Level.WARNING,
-                        "Failed to restore duel arena block at "
+                        "failed to restore duel arena block at "
                                 + blockSnapshot.x() + "," + blockSnapshot.y() + "," + blockSnapshot.z(),
                         exception);
             }
         }
 
         cleanupTransientEntities(snapshot, world);
+    }
+
+    private void rollbackGeneratedArena(DuelMatch match) {
+        if (match == null || !match.usesGeneratedWorld()) {
+            return;
+        }
+
+        Map<BlockKey, String> snapshots = generatedBlockSnapshots.remove(match.getId());
+        if (snapshots == null || snapshots.isEmpty()) {
+            return;
+        }
+
+        World world = Bukkit.getWorld(match.getGeneratedWorldName());
+        if (world == null) {
+            return;
+        }
+
+        for (Map.Entry<BlockKey, String> entry : snapshots.entrySet()) {
+            BlockKey key = entry.getKey();
+            if (key == null || !world.getName().equalsIgnoreCase(key.worldName())) {
+                continue;
+            }
+            Block block = world.getBlockAt(key.x(), key.y(), key.z());
+            try {
+                BlockData data = Bukkit.createBlockData(entry.getValue());
+                block.setBlockData(data, false);
+            } catch (IllegalArgumentException exception) {
+                plugin.getLogger().log(Level.WARNING,
+                        "failed to restore generated duel block at "
+                                + key.x() + "," + key.y() + "," + key.z(),
+                        exception);
+            }
+        }
     }
 
     private void cleanupTransientEntities(ArenaSnapshot snapshot, World world) {
@@ -1991,26 +3335,51 @@ public class DuelManager {
                 continue;
             }
 
-            String typeName = entity.getType().name();
-            if (typeName.equals("ITEM")
-                    || typeName.equals("EXPERIENCE_ORB")
-                    || typeName.equals("ARROW")
-                    || typeName.equals("SPECTRAL_ARROW")
-                    || typeName.equals("TRIDENT")
-                    || typeName.equals("EGG")
-                    || typeName.equals("ENDER_PEARL")
-                    || typeName.equals("SNOWBALL")
-                    || typeName.equals("POTION")
-                    || typeName.equals("SPLASH_POTION")
-                    || typeName.equals("THROWN_POTION")
-                    || typeName.equals("LINGERING_POTION")
-                    || typeName.equals("AREA_EFFECT_CLOUD")
-                    || typeName.equals("FALLING_BLOCK")
-                    || typeName.equals("PRIMED_TNT")
-                    || typeName.equals("TNT")) {
+            if (isTransientDuelEntity(entity)) {
                 entity.remove();
             }
         }
+    }
+
+    private void cleanupGeneratedTransientEntities(DuelMatch match) {
+        if (match == null || !match.usesGeneratedWorld()) {
+            return;
+        }
+
+        World world = Bukkit.getWorld(match.getGeneratedWorldName());
+        if (world == null) {
+            return;
+        }
+
+        for (Entity entity : world.getEntities()) {
+            if (!(entity instanceof Player) && isTransientDuelEntity(entity)) {
+                entity.remove();
+            }
+        }
+    }
+
+    private boolean isTransientDuelEntity(Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+
+        String typeName = entity.getType().name();
+        return typeName.equals("ITEM")
+                || typeName.equals("EXPERIENCE_ORB")
+                || typeName.equals("ARROW")
+                || typeName.equals("SPECTRAL_ARROW")
+                || typeName.equals("TRIDENT")
+                || typeName.equals("EGG")
+                || typeName.equals("ENDER_PEARL")
+                || typeName.equals("SNOWBALL")
+                || typeName.equals("POTION")
+                || typeName.equals("SPLASH_POTION")
+                || typeName.equals("THROWN_POTION")
+                || typeName.equals("LINGERING_POTION")
+                || typeName.equals("AREA_EFFECT_CLOUD")
+                || typeName.equals("FALLING_BLOCK")
+                || typeName.equals("PRIMED_TNT")
+                || typeName.equals("TNT");
     }
 
     private void prepareTransition(UUID uuid) {
@@ -2069,7 +3438,7 @@ public class DuelManager {
         player.resetPlayerTime();
         player.resetPlayerWeather();
         transitionTitles.remove(player.getUniqueId());
-        player.clearTitle();
+        TitleUtils.clearTitle(player);
         clearTemporaryVanish(player);
         transitioningPlayers.remove(player.getUniqueId());
     }
@@ -2083,7 +3452,11 @@ public class DuelManager {
             if (viewer.getUniqueId().equals(hidden.getUniqueId())) {
                 continue;
             }
-            viewer.hidePlayer(plugin, hidden);
+            plugin.getPlayerVisibilityManager().hide(
+                    viewer,
+                    hidden,
+                    PlayerVisibilityManager.Reason.DUEL
+            );
         }
     }
 
@@ -2096,7 +3469,11 @@ public class DuelManager {
             if (viewer.getUniqueId().equals(shown.getUniqueId())) {
                 continue;
             }
-            viewer.showPlayer(plugin, shown);
+            plugin.getPlayerVisibilityManager().show(
+                    viewer,
+                    shown,
+                    PlayerVisibilityManager.Reason.DUEL
+            );
         }
     }
 
@@ -2108,7 +3485,7 @@ public class DuelManager {
 
     private String formatDuration(long totalSeconds) {
         long safeSeconds = Math.max(0L, totalSeconds);
-        long minutes = safeSeconds / 60l;
+        long minutes = safeSeconds / 60L;
         long seconds = safeSeconds % 60L;
         return minutes + "m " + seconds + "s";
     }
@@ -2148,6 +3525,11 @@ public class DuelManager {
                       id INTEGER PRIMARY KEY AUTOINCREMENT,
                       match_type TEXT NOT NULL,
                       arena_id TEXT NOT NULL,
+                      map_source VARCHAR(191) DEFAULT '',
+                      biome_key VARCHAR(191) DEFAULT '',
+                      world_name VARCHAR(191) DEFAULT '',
+                      host_server_id VARCHAR(191) DEFAULT '',
+                      privacy_mode VARCHAR(191) DEFAULT 'INVITE_ONLY',
                       player_one_uuid TEXT NOT NULL,
                       player_two_uuid TEXT NOT NULL,
                       winner_uuid TEXT,
@@ -2175,7 +3557,12 @@ public class DuelManager {
 
         ensureArenaColumn("region_pos1_data", "TEXT");
         ensureArenaColumn("region_pos2_data", "TEXT");
-        ensureClaimColumn("defeated_name", "TEXT DEFAULT ''");
+        ensureMatchColumn("map_source", "varchar(191) default ''");
+        ensureMatchColumn("biome_key", "varchar(191) default ''");
+        ensureMatchColumn("world_name", "varchar(191) default ''");
+        ensureMatchColumn("host_server_id", "varchar(191) default ''");
+        ensureMatchColumn("privacy_mode", "varchar(191) default 'invite_only'");
+        ensureClaimColumn("defeated_name", "text default ''");
     }
 
     private void ensureArenaColumn(String columnName, String definition) {
@@ -2193,7 +3580,7 @@ public class DuelManager {
         }
 
         try (Statement st = connection().createStatement()) {
-            plugin.getDatabaseManager().executeSchema(st, "ALTER TABLE duel_arenas ADD COLUMN " + columnName + " " + definition);
+            plugin.getDatabaseManager().executeSchema(st, "alter table duel_arenas add column " + columnName + " " + definition);
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to add duel_arenas column " + columnName, e);
         }
@@ -2214,9 +3601,30 @@ public class DuelManager {
         }
 
         try (Statement st = connection().createStatement()) {
-            plugin.getDatabaseManager().executeSchema(st, "ALTER TABLE duel_claims ADD COLUMN " + columnName + " " + definition);
+            plugin.getDatabaseManager().executeSchema(st, "alter table duel_claims add column " + columnName + " " + definition);
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to add duel_claims column " + columnName, e);
+        }
+    }
+
+    private void ensureMatchColumn(String columnName, String definition) {
+        if (connection() == null) {
+            return;
+        }
+
+        try {
+            if (plugin.getDatabaseManager().hasColumn("duel_matches", columnName)) {
+                return;
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to inspect duel_matches schema", e);
+            return;
+        }
+
+        try (Statement st = connection().createStatement()) {
+            plugin.getDatabaseManager().executeSchema(st, "alter table duel_matches add column " + columnName + " " + definition);
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to add duel_matches column " + columnName, e);
         }
     }
 
@@ -2236,6 +3644,7 @@ public class DuelManager {
     }
 
     private void loadArenas() {
+        worldManager.loadConfiguredStaticWorlds();
         Map<String, DuelArena> previousArenas = new HashMap<>(arenas);
         arenas.clear();
         if (connection() == null) {
@@ -2243,7 +3652,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "SELECT id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled FROM duel_arenas");
+                "select id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled from duel_arenas");
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 String arenaId = rs.getString("id");
@@ -2258,6 +3667,10 @@ public class DuelManager {
                         rs.getInt("enabled") == 1,
                         rs.getInt("queue_enabled") == 1,
                         false,
+                        true,
+                        true,
+                        true,
+                        false,
                         false,
                         false,
                         false
@@ -2271,7 +3684,7 @@ public class DuelManager {
                 arenas.put(arena.getId(), arena);
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to load duel arenas", e);
+            plugin.getLogger().log(Level.WARNING, "failed to load duel arenas", e);
         }
 
         synchronizeArenaSettingsConfig();
@@ -2290,6 +3703,10 @@ public class DuelManager {
         target.setRegionPos2(loaded.getRegionPos2());
         target.setEnabled(loaded.isEnabled());
         target.setQueueEnabled(loaded.isQueueEnabled());
+        target.setAllowItemDrop(loaded.isAllowItemDrop());
+        target.setAllowBlockBreak(loaded.isAllowBlockBreak());
+        target.setAllowBlockPlace(loaded.isAllowBlockPlace());
+        target.setAllowBucketUse(loaded.isAllowBucketUse());
         target.setNoHunger(loaded.isNoHunger());
         target.setNoWeather(loaded.isNoWeather());
         target.setAlwaysMorning(loaded.isAlwaysMorning());
@@ -2314,8 +3731,8 @@ public class DuelManager {
                 existingData == null ? null : existingData.regionPos2Data());
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "REPLACE INTO duel_arenas (id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?)")) {
+                "replace into duel_arenas (id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled) " +
+                        "values (?,?,?,?,?,?,?,?,?)")) {
             ps.setString(1, arena.getId());
             ps.setString(2, arena.getDisplayName());
             ps.setString(3, spawn1Data);
@@ -2337,7 +3754,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "SELECT spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data FROM duel_arenas WHERE id = ?")) {
+                "select spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data from duel_arenas where id = ?")) {
             ps.setString(1, arenaId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
@@ -2370,7 +3787,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "SELECT wins, losses, draws, current_streak, best_streak FROM duel_stats WHERE player_uuid = ?")) {
+                "select wins, losses, draws, current_streak, best_streak from duel_stats where player_uuid = ?")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -2396,7 +3813,7 @@ public class DuelManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "REPLACE INTO duel_stats (player_uuid, wins, losses, draws, current_streak, best_streak) VALUES (?,?,?,?,?,?)")) {
+                "replace into duel_stats (player_uuid, wins, losses, draws, current_streak, best_streak) values (?,?,?,?,?,?)")) {
             ps.setString(1, uuid.toString());
             ps.setInt(2, stats.getWins());
             ps.setInt(3, stats.getLosses());
@@ -2409,21 +3826,30 @@ public class DuelManager {
         }
     }
 
-    private long insertMatch(DuelMatch.MatchType type, DuelArena arena, UUID firstUuid, UUID secondUuid) {
+    private long insertMatch(DuelMatch.MatchType type, DuelArena arena, UUID firstUuid, UUID secondUuid,
+                             DuelMapSelection mapSelection, String biomeKey, String worldName,
+                             DuelPrivacyMode privacyMode, String hostServerId) {
         if (connection() == null) {
             return -1L;
         }
 
         try (PreparedStatement ps = connection().prepareStatement("""
-                INSERT INTO duel_matches (match_type, arena_id, player_one_uuid, player_two_uuid, status, started_at)
-                VALUES (?,?,?,?,?,?)
+                INSERT INTO duel_matches (match_type, arena_id, map_source, biome_key, world_name, host_server_id, privacy_mode,
+                                          player_one_uuid, player_two_uuid, status, started_at)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)
                 """, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, type.name());
             ps.setString(2, arena.getId());
-            ps.setString(3, firstUuid.toString());
-            ps.setString(4, secondUuid.toString());
-            ps.setString(5, DuelMatch.MatchStatus.COUNTDOWN.name());
-            ps.setLong(6, 0L);
+            DuelMapSelection resolvedSelection = mapSelection == null ? DuelMapSelection.randomStatic() : mapSelection;
+            ps.setString(3, resolvedSelection.matchSourceName());
+            ps.setString(4, biomeKey == null ? "" : biomeKey);
+            ps.setString(5, worldName == null ? "" : worldName);
+            ps.setString(6, hostServerId == null ? "" : hostServerId);
+            ps.setString(7, (privacyMode == null ? DuelPrivacyMode.INVITE_ONLY : privacyMode).name());
+            ps.setString(8, firstUuid.toString());
+            ps.setString(9, secondUuid.toString());
+            ps.setString(10, DuelMatch.MatchStatus.COUNTDOWN.name());
+            ps.setLong(11, 0L);
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
@@ -2472,7 +3898,12 @@ public class DuelManager {
     }
 
     private String serializeItem(ItemStack item) {
-        return Base64.getEncoder().encodeToString(item.serializeAsBytes());
+        try {
+            return ItemSerializationUtils.serialize(item);
+        } catch (java.io.IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to serialize duel item", e);
+            return "";
+        }
     }
 
     private ItemStack deserializeItem(String encoded) {
@@ -2481,8 +3912,20 @@ public class DuelManager {
         }
 
         try {
-            return ItemStack.deserializeBytes(Base64.getDecoder().decode(encoded));
-        } catch (IllegalArgumentException e) {
+            ItemStack item = ItemSerializationUtils.deserialize(encoded);
+            CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                    .validateForStorage(item, CrashProtectionManager.Context.DATABASE_LOAD);
+            if (!safetyResult.allowed()) {
+                plugin.getCrashProtectionManager().logBlockedItem(
+                        "duel claim item data",
+                        item,
+                        CrashProtectionManager.Context.DATABASE_LOAD,
+                        safetyResult
+                );
+                return null;
+            }
+            return item;
+        } catch (IllegalArgumentException | java.io.IOException | ClassNotFoundException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to deserialize duel item", e);
             return null;
         }
@@ -2497,7 +3940,7 @@ public class DuelManager {
 
     private String prettifyId(String id) {
         if (id == null || id.isBlank()) {
-            return "ᴀʀᴇɴᴀ";
+            return "Arena";
         }
         String[] parts = id.replace('-', ' ').replace('_', ' ').split("\\s+");
         StringBuilder builder = new StringBuilder();
@@ -2513,7 +3956,7 @@ public class DuelManager {
                 builder.append(part.substring(1).toLowerCase(Locale.ROOT));
             }
         }
-        return builder.isEmpty() ? "ᴀʀᴇɴᴀ" : ColorUtils.toSmallCaps(builder.toString());
+        return builder.isEmpty() ? "Arena" : builder.toString();
     }
 
     private String buildQueueUnavailableMessage() {
@@ -2525,13 +3968,13 @@ public class DuelManager {
         }
 
         if (!queueEnabledNotReady.isEmpty()) {
-            return "&cǫᴜᴇᴜᴇ ᴀʀᴇɴᴀѕ ᴇxɪѕᴛ ʙᴜᴛ ᴀʀᴇ ɴᴏᴛ ʀᴇᴀᴅʏ ʏᴇᴛ. "
-                    + "&7ᴜѕᴇ &f/arena setpos1 <id> &7ᴀɴᴅ &f/arena setpos2 <id> "
-                    + "&7ꜰᴏʀ: &f" + String.join("&7, &f", queueEnabledNotReady) + "&7.";
+            return "&cqueue arenas exist but are not ready yet. "
+                    + "&7use &f/arena setpos1 <id> &7and &f/arena setpos2 <id> "
+                    + "&7for: &f" + String.join("&7, &f", queueEnabledNotReady) + "&7.";
         }
 
-        return "&cɴᴏ ʀᴇᴀᴅʏ ǫᴜᴇᴜᴇ ᴀʀᴇɴᴀѕ ᴀʀᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʏᴇᴛ. "
-                + "&7ᴇɴᴀʙʟᴇ ǫᴜᴇᴜᴇ ᴡɪᴛʜ &f/arena queue <id> true&7, ᴛʜᴇɴ ѕᴇᴛ &fᴘᴏѕ1 &7ᴀɴᴅ &fᴘᴏѕ2&7.";
+        return "&cno ready queue arenas are configured yet. "
+                + "&7enable queue with &f/arena queue <id> true&7, then set &fpos1 &7and &fpos2&7.";
     }
 
     private void synchronizeArenaSettingsConfig() {
@@ -2540,7 +3983,7 @@ public class DuelManager {
             return;
         }
 
-        boolean changed = false;
+        boolean changed = ensureGeneratedTerrainSettingsEntry(duelConfig);
         for (DuelArena arena : arenas.values()) {
             if (arena == null) {
                 continue;
@@ -2554,6 +3997,24 @@ public class DuelManager {
         }
     }
 
+    private boolean ensureGeneratedTerrainSettingsEntry(FileConfiguration duelConfig) {
+        if (duelConfig == null) {
+            return false;
+        }
+
+        boolean changed = false;
+        for (DuelWorldManager.TerrainMode terrainMode : DuelWorldManager.TerrainMode.values()) {
+            for (ArenaSetting setting : ArenaSetting.values()) {
+                String path = getTerrainModeSettingPath(terrainMode, setting);
+                if (!duelConfig.contains(path)) {
+                    duelConfig.set(path, defaultArenaSettingValue(setting));
+                    changed = true;
+                }
+            }
+        }
+        return changed;
+    }
+
     private boolean ensureArenaSettingsEntry(FileConfiguration duelConfig, DuelArena arena) {
         if (duelConfig == null || arena == null) {
             return false;
@@ -2563,7 +4024,7 @@ public class DuelManager {
         for (ArenaSetting setting : ArenaSetting.values()) {
             String path = getArenaSettingPath(arena.getId(), setting);
             if (!duelConfig.contains(path)) {
-                duelConfig.set(path, false);
+                duelConfig.set(path, defaultArenaSettingValue(setting));
                 changed = true;
             }
         }
@@ -2575,19 +4036,67 @@ public class DuelManager {
             return;
         }
 
-        arena.setNoHunger(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_HUNGER), false));
-        arena.setNoWeather(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_WEATHER), false));
-        arena.setAlwaysMorning(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.ALWAYS_MORNING), false));
-        arena.setNoFallDamage(duelConfig.getBoolean(getArenaSettingPath(arena.getId(), ArenaSetting.NO_FALL_DAMAGE), false));
+        for (ArenaSetting setting : ArenaSetting.values()) {
+            setArenaSetting(arena, setting, duelConfig.getBoolean(
+                    getArenaSettingPath(arena.getId(), setting),
+                    defaultArenaSettingValue(setting)
+            ));
+        }
+    }
+
+    private void applyGeneratedTerrainSettings(DuelArena arena, DuelWorldManager.TerrainMode terrainMode) {
+        if (arena == null || terrainMode == null) {
+            return;
+        }
+
+        FileConfiguration duelConfig = config();
+        for (ArenaSetting setting : ArenaSetting.values()) {
+            setArenaSetting(arena, setting, duelConfig.getBoolean(
+                    getTerrainModeSettingPath(terrainMode, setting),
+                    defaultArenaSettingValue(setting)
+            ));
+        }
     }
 
     private String getArenaSettingPath(String arenaId, ArenaSetting setting) {
-        return "ARENA_SETTINGS." + normalizeArenaId(arenaId) + "." + switch (setting) {
+        return "ARENA_SETTINGS." + normalizeArenaId(arenaId) + "." + getArenaSettingKey(setting);
+    }
+
+    private String getTerrainModeSettingPath(DuelWorldManager.TerrainMode terrainMode, ArenaSetting setting) {
+        return TERRAIN_MODE_SETTINGS_PATH + "." + terrainMode.name() + "." + getArenaSettingKey(setting);
+    }
+
+    private String getArenaSettingKey(ArenaSetting setting) {
+        return switch (setting) {
+            case ALLOW_ITEM_DROP -> "ALLOW_ITEM_DROP";
+            case ALLOW_BLOCK_BREAK -> "ALLOW_BLOCK_BREAK";
+            case ALLOW_BLOCK_PLACE -> "ALLOW_BLOCK_PLACE";
+            case ALLOW_BUCKET_USE -> "ALLOW_BUCKET_USE";
             case NO_HUNGER -> "NO_HUNGER";
             case NO_WEATHER -> "NO_WEATHER";
             case ALWAYS_MORNING -> "ALWAYS_MORNING";
             case NO_FALL_DAMAGE -> "NO_FALL_DAMAGE";
         };
+    }
+
+    private boolean defaultArenaSettingValue(ArenaSetting setting) {
+        return switch (setting) {
+            case ALLOW_BLOCK_BREAK, ALLOW_BLOCK_PLACE, ALLOW_BUCKET_USE -> true;
+            case ALLOW_ITEM_DROP, NO_HUNGER, NO_WEATHER, ALWAYS_MORNING, NO_FALL_DAMAGE -> false;
+        };
+    }
+
+    private void setArenaSetting(DuelArena arena, ArenaSetting setting, boolean enabled) {
+        switch (setting) {
+            case ALLOW_ITEM_DROP -> arena.setAllowItemDrop(enabled);
+            case ALLOW_BLOCK_BREAK -> arena.setAllowBlockBreak(enabled);
+            case ALLOW_BLOCK_PLACE -> arena.setAllowBlockPlace(enabled);
+            case ALLOW_BUCKET_USE -> arena.setAllowBucketUse(enabled);
+            case NO_HUNGER -> arena.setNoHunger(enabled);
+            case NO_WEATHER -> arena.setNoWeather(enabled);
+            case ALWAYS_MORNING -> arena.setAlwaysMorning(enabled);
+            case NO_FALL_DAMAGE -> arena.setNoFallDamage(enabled);
+        }
     }
 
     private ArenaRegionBounds resolveArenaRegionBounds(DuelArena arena) {
@@ -2675,7 +4184,18 @@ public class DuelManager {
         if (player == null) {
             return;
         }
-        SoundUtils.play(player, plugin.getConfigManager().getSound(path));
+        PlayerSettingUtils.SoundChannel channel;
+        if (path != null && (path.contains("REQUEST") || path.contains("QUEUE-JOIN"))) {
+            channel = PlayerSettingUtils.SoundChannel.NOTIFICATION;
+        } else if (path != null && (path.contains("MATCH-FOUND")
+                || path.contains("MATCH-START")
+                || path.contains("VICTORY")
+                || path.contains("DEFEAT"))) {
+            channel = PlayerSettingUtils.SoundChannel.DUEL;
+        } else {
+            channel = PlayerSettingUtils.SoundChannel.GAMEPLAY;
+        }
+        SoundUtils.play(plugin, player, plugin.getConfigManager().getSound(path), channel);
     }
 
     private record PendingRespawnState(Location respawnLocation, Location returnLocation, long delayTicks) {
@@ -2700,7 +4220,7 @@ public class DuelManager {
         }
 
         private String defeatedName() {
-            return defeatedName == null || defeatedName.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : defeatedName;
+            return defeatedName == null || defeatedName.isBlank() ? "unknown" : defeatedName;
         }
 
         private long createdAt() {
@@ -2725,6 +4245,64 @@ public class DuelManager {
     }
 
     private record TransitionTitleState(String title, String subtitle) {
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
+    }
+
+    private String plainPublicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().plainPublicName(player);
+    }
+
+    private boolean matchesIdentity(Player viewer, UUID subjectUuid, String publicSnapshot, String input) {
+        if (input == null || input.isBlank()) {
+            return true;
+        }
+        String candidate = input.trim();
+        if (publicSnapshot != null && publicSnapshot.equalsIgnoreCase(candidate)) {
+            return true;
+        }
+        Player subject = Bukkit.getPlayer(subjectUuid);
+        return subject != null
+                && plugin.getHideManager() != null
+                && plugin.getHideManager().canSeeRealIdentity(viewer)
+                && subject.getName().equalsIgnoreCase(candidate);
+    }
+
+    private record GeneratedInventorySnapshot(
+            ItemStack[] storage,
+            ItemStack[] armor,
+            ItemStack offHand,
+            ItemStack cursor
+    ) {
+        private static GeneratedInventorySnapshot empty() {
+            return new GeneratedInventorySnapshot(new ItemStack[0], new ItemStack[0], null, null);
+        }
+
+        private List<ItemStack> copyItems() {
+            List<ItemStack> items = new ArrayList<>();
+            addItems(items, storage);
+            addItems(items, armor);
+            addItems(items, new ItemStack[]{offHand});
+            addItems(items, new ItemStack[]{cursor});
+            return items;
+        }
+
+        private static void addItems(List<ItemStack> destination, ItemStack[] source) {
+            if (destination == null || source == null) {
+                return;
+            }
+            for (ItemStack item : source) {
+                if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+                    continue;
+                }
+                destination.add(item.clone());
+            }
+        }
+    }
+
+    private record BlockKey(String worldName, int x, int y, int z) {
     }
 
     private record StoredArenaLocationData(

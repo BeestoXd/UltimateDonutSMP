@@ -17,8 +17,27 @@ public record AuctionListing(
         long expiresAt,
         long soldAt,
         long cancelledAt,
-        long expiredAt
+        long expiredAt,
+        String category
 ) {
+
+    public AuctionListing(
+            long id,
+            UUID sellerUuid,
+            String sellerName,
+            UUID buyerUuid,
+            Status status,
+            double price,
+            double tax,
+            ItemStack item,
+            long createdAt,
+            long expiresAt,
+            long soldAt,
+            long cancelledAt,
+            long expiredAt
+    ) {
+        this(id, sellerUuid, sellerName, buyerUuid, status, price, tax, item, createdAt, expiresAt, soldAt, cancelledAt, expiredAt, "ALL");
+    }
 
     public enum Status {
         ACTIVE,

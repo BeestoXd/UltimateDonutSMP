@@ -7,13 +7,13 @@ import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
-import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
 
@@ -24,12 +24,13 @@ public class ChatListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onChat(AsyncChatEvent event) {
+    public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         ChatManager chatManager = plugin.getChatManager();
 
-        // extract plain text
-        String rawMessage = PlainTextComponentSerializer.plainText().serialize(event.message());
+        String rawMessage = event.getMessage();
+
+
 
         if (plugin.getHomeManager().hasPendingInput(player.getUniqueId())) {
             event.setCancelled(true);
@@ -52,17 +53,19 @@ public class ChatListener implements Listener {
             return;
         }
 
-        PunishmentRecord activemute = plugin.getPunishmentManager()
+
+
+        PunishmentRecord activeMute = plugin.getPunishmentManager()
                 .getActiveRecord(player.getUniqueId(), PunishmentType.MUTE)
                 .orElse(null);
-        if (activemute != null) {
+        if (activeMute != null) {
             event.setCancelled(true);
             plugin.getFoliaScheduler().runEntity(player, () ->
-                    player.sendMessage(ColorUtils.toComponent(mutedChatMessage(activemute))));
+                    player.sendMessage(ColorUtils.toComponent(mutedChatMessage(activeMute))));
             return;
         }
 
-        // team chat check
+        // Team chat check
         if (plugin.getTeamManager().isTeamChatEnabled(player.getUniqueId())) {
             event.setCancelled(true);
             Team team = plugin.getTeamManager().getTeam(player);
@@ -83,14 +86,20 @@ public class ChatListener implements Listener {
             var component = plugin.getHoverStatsManager().buildChatComponent(player, "", rawMessage, teamFormat);
             for (java.util.UUID uuid : team.getMemberUuids()) {
                 Player member = Bukkit.getPlayer(uuid);
-                if (member != null) {
-                    plugin.getFoliaScheduler().runEntity(member, () -> member.sendMessage(component));
+                if (member != null
+                        && (member.getUniqueId().equals(player.getUniqueId())
+                        || PlayerSettingUtils.notificationEnabled(
+                        plugin,
+                        member,
+                        PlayerSettingUtils.NotificationChannel.TEAM_CHAT
+                ))) {
+                    plugin.getFoliaScheduler().runEntity(member, () -> member.spigot().sendMessage(component));
                 }
             }
             return;
         }
 
-        if (chatManager.isGlobalChatmuted() && !chatManager.ismuteBypassed(player)) {
+        if (chatManager.isGlobalChatMuted() && !chatManager.isMuteBypassed(player)) {
             event.setCancelled(true);
             plugin.getFoliaScheduler().runEntity(player, () -> player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
@@ -120,17 +129,29 @@ public class ChatListener implements Listener {
             return;
         }
 
+        if (!chatManager.isFormatEnabled()) {
+            chatManager.trackAcceptedGlobalMessage(player, rawMessage);
+            return;
+        }
+
         event.setCancelled(true);
 
-        String chatFormat = chatManager.isFormatEnabled()
-                ? chatManager.getChatFormat()
-                : "%player%: %message%";
+        String chatFormat = chatManager.getChatFormat();
         String prefix = getLuckPermsPrefix(player);
         var chatComponent = plugin.getHoverStatsManager()
                 .buildChatComponent(player, prefix, rawMessage, chatFormat);
 
         final var finalMsg = chatComponent;
-        plugin.getFoliaScheduler().forEachOnlinePlayer(p -> p.sendMessage(finalMsg));
+        plugin.getFoliaScheduler().forEachOnlinePlayer(recipient -> {
+            if (recipient.getUniqueId().equals(player.getUniqueId())
+                    || PlayerSettingUtils.notificationEnabled(
+                    plugin,
+                    recipient,
+                    PlayerSettingUtils.NotificationChannel.PUBLIC_CHAT
+            )) {
+                recipient.spigot().sendMessage(finalMsg);
+            }
+        });
         chatManager.trackAcceptedGlobalMessage(player, rawMessage);
     }
 
@@ -168,6 +189,6 @@ public class ChatListener implements Listener {
 
     private String formatIssuer(PunishmentRecord record) {
         String issuer = record.getIssuerNameSnapshot();
-        return issuer == null || issuer.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : issuer;
+        return issuer == null || issuer.isBlank() ? "unknown" : issuer;
     }
 }

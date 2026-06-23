@@ -151,6 +151,9 @@ public class WorthManager {
         if (item == null || item.getType().isAir()) {
             return null;
         }
+        if (isBlockedItem(item)) {
+            return null;
+        }
 
         Material material = item.getType();
         if (FISH_CATEGORY_OVERRIDES.contains(material)) {
@@ -217,7 +220,7 @@ public class WorthManager {
                 }
 
                 Material material = matchMaterial(key);
-                if (material == null || material.isAir() || !seenMaterials.add(material)) {
+                if (material == null || material.isAir() || isBlockedMaterial(material) || !seenMaterials.add(material)) {
                     continue;
                 }
 
@@ -236,7 +239,7 @@ public class WorthManager {
     }
 
     public String getBrowserTitle() {
-        return plugin.getConfigManager().getWorth().getString("BROWSER.TITLE", "&8ɪᴛᴇᴍ ᴘʀɪᴄᴇѕ");
+        return plugin.getConfigManager().getWorth().getString("BROWSER.TITLE", "&8item prices");
     }
 
     public int getBrowserSize() {
@@ -397,7 +400,7 @@ public class WorthManager {
         }
 
         String itemName = prettifyMaterial(item == null ? null : item.getType());
-        double displayWorth = shouldUseUnitWorthDisplay(item) ? worthResult.unitWorth() : worthResult.totalWorth();
+        double displayWorth = getDisplayWorth(worthResult);
         return replaceWorthPlaceholders(
                 getWorthLoreFormat(),
                 plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, displayWorth),
@@ -432,6 +435,9 @@ public class WorthManager {
         if (item == null || item.getType().isAir()) {
             return WorthResult.unsellable();
         }
+        if (isBlockedItem(item)) {
+            return WorthResult.unsellable();
+        }
 
         DirectWorthData directWorth = resolveDirectWorth(item);
         if (isContainerWorthEnabled()
@@ -450,7 +456,7 @@ public class WorthManager {
                             totalUnitWorth * item.getAmount(),
                             baseWorth,
                             contentsWorth,
-                            "CONTAINER",
+                            "container",
                             item.getType().name(),
                             directWorth == null ? "" : directWorth.categoryKey()
                     );
@@ -527,6 +533,9 @@ public class WorthManager {
             List<SellWorthEntry> entries
     ) {
         if (item == null || item.getType().isAir() || amountMultiplier <= 0) {
+            return;
+        }
+        if (isBlockedItem(item)) {
             return;
         }
 
@@ -617,6 +626,34 @@ public class WorthManager {
                 && blockStateMeta.getBlockState() instanceof Container;
     }
 
+    private boolean isBlockedItem(ItemStack item) {
+        return item != null && isBlockedMaterial(item.getType());
+    }
+
+    private boolean isBlockedMaterial(Material material) {
+        if (material == null || material.isAir()) {
+            return false;
+        }
+
+        for (String rawMaterial : plugin.getConfigManager().getWorth().getStringList("BLOCK-ITEMS")) {
+            if (rawMaterial == null || rawMaterial.isBlank()) {
+                continue;
+            }
+
+            Material blockedMaterial;
+            try {
+                blockedMaterial = matchMaterial(rawMaterial.trim());
+            } catch (IllegalArgumentException exception) {
+                continue;
+            }
+
+            if (material == blockedMaterial) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isContainerWorthEnabled() {
         return plugin.getConfigManager().getWorth().getBoolean("CONTAINER.ENABLED", true);
     }
@@ -635,6 +672,9 @@ public class WorthManager {
 
     private DirectWorthData resolveDirectWorth(ItemStack item) {
         if (item == null || item.getType().isAir()) {
+            return null;
+        }
+        if (isBlockedItem(item)) {
             return null;
         }
 
@@ -789,8 +829,8 @@ public class WorthManager {
         return data != null && data.isWorthDisplayEnabled();
     }
 
-    private boolean shouldUseUnitWorthDisplay(ItemStack item) {
-        return item != null && item.getMaxStackSize() > 1;
+    static double getDisplayWorth(WorthResult worthResult) {
+        return worthResult.totalWorth();
     }
 
     private boolean mergePlayerStorageStacks(Player player) {
@@ -1021,7 +1061,7 @@ public class WorthManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a{price_formatted}")
+                        .getString("WORTH-LORE.FORMAT", "&7worth: &a{price_formatted}")
         );
     }
 
@@ -1036,7 +1076,7 @@ public class WorthManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7ᴡᴏʀᴛʜ: &a{price_formatted}";
+            return "&7worth: &a{price_formatted}";
         }
 
         return format;

@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,6 +51,8 @@ public class ChatListener implements Listener {
             return;
         }
 
+
+
         PunishmentRecord activeMute = plugin.getPunishmentManager()
                 .getActiveRecord(player.getUniqueId(), PunishmentType.MUTE)
                 .orElse(null);
@@ -81,7 +84,13 @@ public class ChatListener implements Listener {
             var component = plugin.getHoverStatsManager().buildChatComponent(player, "", rawMessage, teamFormat);
             for (java.util.UUID uuid : team.getMemberUuids()) {
                 Player member = Bukkit.getPlayer(uuid);
-                if (member != null) {
+                if (member != null
+                        && (member.getUniqueId().equals(player.getUniqueId())
+                        || PlayerSettingUtils.notificationEnabled(
+                        plugin,
+                        member,
+                        PlayerSettingUtils.NotificationChannel.TEAM_CHAT
+                ))) {
                     plugin.getSpigotScheduler().runEntity(member, () -> member.spigot().sendMessage(component));
                 }
             }
@@ -118,17 +127,29 @@ public class ChatListener implements Listener {
             return;
         }
 
+        if (!chatManager.isFormatEnabled()) {
+            chatManager.trackAcceptedGlobalMessage(player, rawMessage);
+            return;
+        }
+
         event.setCancelled(true);
 
-        String chatFormat = chatManager.isFormatEnabled()
-                ? chatManager.getChatFormat()
-                : "%player%: %message%";
+        String chatFormat = chatManager.getChatFormat();
         String prefix = getLuckPermsPrefix(player);
         var chatComponent = plugin.getHoverStatsManager()
                 .buildChatComponent(player, prefix, rawMessage, chatFormat);
 
         final var finalMsg = chatComponent;
-        plugin.getSpigotScheduler().forEachOnlinePlayer(p -> p.spigot().sendMessage(finalMsg));
+        plugin.getSpigotScheduler().forEachOnlinePlayer(recipient -> {
+            if (recipient.getUniqueId().equals(player.getUniqueId())
+                    || PlayerSettingUtils.notificationEnabled(
+                    plugin,
+                    recipient,
+                    PlayerSettingUtils.NotificationChannel.PUBLIC_CHAT
+            )) {
+                recipient.spigot().sendMessage(finalMsg);
+            }
+        });
         chatManager.trackAcceptedGlobalMessage(player, rawMessage);
     }
 
@@ -166,6 +187,6 @@ public class ChatListener implements Listener {
 
     private String formatIssuer(PunishmentRecord record) {
         String issuer = record.getIssuerNameSnapshot();
-        return issuer == null || issuer.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : issuer;
+        return issuer == null || issuer.isBlank() ? "unknown" : issuer;
     }
 }

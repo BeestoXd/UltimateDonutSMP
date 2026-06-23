@@ -3,10 +3,13 @@ package com.bx.ultimateDonutSmp.listeners;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.NightVisionUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +27,7 @@ public class PlayerRespawnListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
@@ -34,12 +37,28 @@ public class PlayerRespawnListener implements Listener {
                 && plugin.getFfaManager() != null
                 && plugin.getFfaManager().consumeRespawn(player, event);
 
-        // teleport to spawn if set
-        if (!duelRespawnHandled && !ffaRespawnHandled && plugin.getSpawnManager().hasSpawn()) {
-            event.setRespawnLocation(plugin.getSpawnManager().getSpawnLocation());
+        if (!duelRespawnHandled && !ffaRespawnHandled) {
+            Location respawnLocation = plugin.getSpawnManager().getSpawnLocation();
+            if (respawnLocation == null) {
+                respawnLocation = plugin.getSpawnManager().makeSafeDestination(event.getRespawnLocation());
+            }
+            if (respawnLocation != null) {
+                Location finalRespawnLocation = respawnLocation.clone();
+                event.setRespawnLocation(finalRespawnLocation);
+                plugin.getFoliaScheduler().runEntityLater(player, () -> {
+                    if (player.isOnline() && shouldSnapToRespawnLocation(player.getLocation(), finalRespawnLocation)) {
+                        plugin.getFoliaScheduler().teleport(player, finalRespawnLocation);
+                    }
+                }, 1L);
+            }
         }
 
         plugin.getStaffModeManager().handleRespawn(player);
+        plugin.getFoliaScheduler().runEntityLater(
+                player,
+                () -> NightVisionUtils.restoreIfEnabled(plugin, player),
+                1L
+        );
 
         if (!ffaRespawnHandled) {
             if (plugin.getStaffModeManager().isInStaffMode(player.getUniqueId())) {
@@ -47,6 +66,16 @@ public class PlayerRespawnListener implements Listener {
             }
             scheduleChainmailKit(plugin, player, 2L);
         }
+    }
+
+    private boolean shouldSnapToRespawnLocation(Location current, Location expected) {
+        if (current == null || expected == null || current.getWorld() == null || expected.getWorld() == null) {
+            return false;
+        }
+        if (!current.getWorld().equals(expected.getWorld())) {
+            return true;
+        }
+        return current.distanceSquared(expected) > 0.36D;
     }
 
     public static void scheduleChainmailKit(UltimateDonutSmp plugin, Player player, long delayTicks) {

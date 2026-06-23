@@ -56,7 +56,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleCreate(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cᴜѕᴀɢᴇ: /team create <name>");
+            send(player, "&cᴜѕᴀɢᴇ: /team ᴄʀᴇᴀᴛᴇ <name>");
             return;
         }
 
@@ -94,7 +94,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleInvite(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cᴜѕᴀɢᴇ: /team invite <player>");
+            send(player, "&cᴜѕᴀɢᴇ: /team ɪɴᴠɪᴛᴇ <player>");
             return;
         }
 
@@ -118,24 +118,28 @@ public class TeamCommand implements CommandExecutor {
             return;
         }
 
-        Player target = Bukkit.getPlayerExact(args[1]);
+        Player target = plugin.getHideManager().findOnlinePlayer(player, args[1]);
         if (target == null) {
             send(player, "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.");
             return;
         }
 
+        if (target.getUniqueId().equals(player.getUniqueId())) {
+            send(player, plugin.getConfigManager().getMessage("TEAM.CANNOT-INVITE-YOURSELF"));
+            return;
+        }
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
         if (targetData != null && !targetData.isTeamInvitesEnabled()) {
             send(player, plugin.getConfigManager().getMessage("TEAM.PLAYER-NO-INVITES"));
             return;
         }
         if (plugin.getTeamManager().isInTeam(target)) {
-            send(player, plugin.getConfigManager().getMessage("TEAM.PLAYER-IN-TEAM", "{player}", target.getName()));
+            send(player, plugin.getConfigManager().getMessage("TEAM.PLAYER-IN-TEAM", "{player}", publicName(target)));
             return;
         }
 
         plugin.getTeamManager().sendInvite(player, target);
-        send(player, plugin.getConfigManager().getMessage("TEAM.INVITE-SENT", "{player}", target.getName()));
+        send(player, plugin.getConfigManager().getMessage("TEAM.INVITE-SENT", "{player}", publicName(target)));
 
         String joinCommand = "/team join " + team.getName();
         TextComponent inviteMessage = ColorUtils.toBaseComponent(
@@ -153,7 +157,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleJoin(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cᴜѕᴀɢᴇ: /team join <team>");
+            send(player, "&cᴜѕᴀɢᴇ: /team ᴊᴏɪɴ <team>");
             return;
         }
         if (plugin.getTeamManager().isInTeam(player)) {
@@ -178,7 +182,7 @@ public class TeamCommand implements CommandExecutor {
         send(player, plugin.getConfigManager().getMessage("TEAM.JOIN-SUCCESS", "{team}", resolvedTeamName));
 
         if (team != null) {
-            String broadcast = plugin.getConfigManager().getMessage("TEAM.JOINED-BROADCAST", "{player}", player.getName());
+            String broadcast = plugin.getConfigManager().getMessage("TEAM.JOINED-BROADCAST", "{player}", publicName(player));
             for (UUID memberUuid : team.getMemberUuids()) {
                 Player member = Bukkit.getPlayer(memberUuid);
                 if (member != null && !member.getUniqueId().equals(player.getUniqueId())) {
@@ -206,7 +210,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleKick(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "&cᴜѕᴀɢᴇ: /team kick <player>");
+            send(player, "&cᴜѕᴀɢᴇ: /team ᴋɪᴄᴋ <player>");
             return;
         }
 
@@ -224,7 +228,7 @@ public class TeamCommand implements CommandExecutor {
             return;
         }
 
-        UUID targetUuid = resolvePlayerUuid(args[1]);
+        UUID targetUuid = resolvePlayerUuid(player, args[1]);
         if (targetUuid == null) {
             send(player, plugin.getConfigManager().getMessage("TEAM.TEAM-NOT-EXIST"));
             return;
@@ -324,14 +328,18 @@ public class TeamCommand implements CommandExecutor {
                 : plugin.getConfigManager().getMessage("TEAM.TEAM-PVP-DISABLED"));
     }
 
-    private UUID resolvePlayerUuid(String name) {
-        Player online = Bukkit.getPlayerExact(name);
+    private UUID resolvePlayerUuid(Player viewer, String name) {
+        Player online = plugin.getHideManager().findOnlinePlayer(viewer, name);
         if (online != null) {
             return online.getUniqueId();
         }
 
         UUID storedUuid = plugin.getDatabaseManager().findPlayerUuidByUsername(name);
         if (storedUuid != null) {
+            if (plugin.getHideManager().isHidden(storedUuid)
+                    && !plugin.getHideManager().canSeeRealIdentity(viewer)) {
+                return null;
+            }
             return storedUuid;
         }
 
@@ -342,5 +350,9 @@ public class TeamCommand implements CommandExecutor {
 
     private void send(Player player, String message) {
         player.sendMessage(ColorUtils.toComponent(message));
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager().publicName(player);
     }
 }

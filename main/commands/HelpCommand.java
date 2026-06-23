@@ -36,25 +36,25 @@ public class HelpCommand implements CommandExecutor {
 
     private void sendLegacyHelp(Player player) {
         player.sendMessage(ColorUtils.toComponent("&7&m-------- &bʜᴇʟᴘ &7&m--------"));
-        sendHelpLine(player, "TEAM", "&b/team &7- ᴍᴀɴᴀɢᴇ ʏᴏᴜʀ ᴛᴇᴀᴍ");
-        sendHelpLine(player, "HOME", "&b/home &7- ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ");
-        sendHelpLine(player, "SPAWN", "&b/spawn &7- ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ѕᴘᴀᴡɴ");
-        sendHelpLine(player, "RTP", "&b/rtp &7- ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ");
-        sendHelpLine(player, "TPA", "&b/tpa &7- ʀᴇǫᴜᴇѕᴛ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴀ ᴘʟᴀʏᴇʀ");
-        sendHelpLine(player, "SHOP", "&b/shop &7- ᴏᴘᴇɴ ᴛʜᴇ ѕʜᴏᴘ");
-        sendHelpLine(player, "SELL", "&b/sell &7- ѕᴇʟʟ ʏᴏᴜʀ ɪᴛᴇᴍѕ");
-        sendHelpLine(player, "CRATE", "&b/crates &7- ᴏᴘᴇɴ ᴛʜᴇ ᴄʀᴀᴛᴇѕ ᴍᴇɴᴜ");
+        sendHelpLine(player, "team", "&b/team &7- manage your team");
+        sendHelpLine(player, "home", "&b/home &7- teleport to your home");
+        sendHelpLine(player, "spawn", "&b/spawn &7- teleport to spawn");
+        sendHelpLine(player, "rtp", "&b/rtp &7- random teleport");
+        sendHelpLine(player, "tpa", "&b/tpa &7- request teleport to a player");
+        sendHelpLine(player, "shop", "&b/shop &7- open the shop");
+        sendHelpLine(player, "sell", "&b/sell &7- sell your items");
+        sendHelpLine(player, "crate", "&b/crates &7- open the crates menu");
         player.sendMessage(ColorUtils.toComponent("&b/balance &7- ᴄʜᴇᴄᴋ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ"));
-        sendHelpLine(player, "SHARDS", "&b/shards &7- ᴄʜᴇᴄᴋ ʏᴏᴜʀ "
+        sendHelpLine(player, "shards", "&b/shards &7- check your "
                 + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS));
-        sendHelpLine(player, "BOUNTY", "&b/bounty &7- ᴠɪᴇᴡ ʙᴏᴜɴᴛɪᴇѕ");
-        sendHelpLine(player, "STATS", "&b/stats &7- ᴠɪᴇᴡ ʏᴏᴜʀ ѕᴛᴀᴛѕ");
-        sendHelpLine(player, "LEADERBOARDS", "&b/leaderboard &7- ᴠɪᴇᴡ ᴛᴏᴘ ᴘʟᴀʏᴇʀѕ");
-        sendHelpLine(player, "SETTINGS", "&b/settings &7- ᴘʟᴀʏᴇʀ ѕᴇᴛᴛɪɴɢѕ");
-        sendHelpLine(player, "BILLFORD", "&b/billford &7- ѕᴘᴇᴄɪᴀʟ ᴛʀᴀᴅᴇ");
-        sendHelpLine(player, "SOCIAL", "&b/discord &7- ᴅɪѕᴄᴏʀᴅ ʟɪɴᴋ");
-        sendHelpLine(player, "SOCIAL", "&b/media &7- ᴠɪᴇᴡ ᴍᴇᴅɪᴀ ʀᴀɴᴋ ʀᴇǫᴜɪʀᴇᴍᴇɴᴛѕ");
-        sendHelpLine(player, "RULES", "&b/rules &7- ᴠɪᴇᴡ ѕᴇʀᴠᴇʀ ʀᴜʟᴇѕ");
+        sendHelpLine(player, "bounty", "&b/bounty &7- view bounties");
+        sendHelpLine(player, "stats", "&b/stats &7- view your stats");
+        sendHelpLine(player, "leaderboards", "&b/leaderboard &7- view top players");
+        sendHelpLine(player, "settings", "&b/settings &7- player settings");
+        sendHelpLine(player, "billford", "&b/billford &7- special trade");
+        sendHelpLine(player, "social", "&b/discord &7- discord link");
+        sendHelpLine(player, "social", "&b/media &7- view media rank requirements");
+        sendHelpLine(player, "rules", "&b/rules &7- view server rules");
         player.sendMessage(ColorUtils.toComponent("&7&m---------------------"));
     }
 

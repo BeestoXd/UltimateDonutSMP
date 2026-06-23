@@ -136,7 +136,7 @@ public class SellHistoryMenu extends BaseMenu {
                 "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
                 List.of(
                         "&fᴇɴᴛʀɪᴇѕ: &7" + NumberUtils.format(totalItems),
-                        "&fѕᴏʀᴛ: &7" + (sortByPrice ? "ʜɪɢʜᴇѕᴛ ᴘʀɪᴄᴇ" : "Newest")
+                        "&fѕᴏʀᴛ: &7" + (sortByPrice ? "ʜɪɢʜᴇѕᴛ ᴘʀɪᴄᴇ" : "ɴᴇᴡᴇѕᴛ")
                 )
         ));
 

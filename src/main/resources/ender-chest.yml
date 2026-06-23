@@ -1,0 +1,38 @@
+# UDS setup: Custom ender chest size, permissions, save timing, and messages.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Custom ender chest rows, access rules, save timing, and display title.
+ENDER-CHEST:
+  ENABLED: true # Enables or disables ender chest.
+  DEFAULT-ROWS: 6 # Sets the default value used when none is selected.
+  TITLE: "&5ender chest" # Sets the title text shown for this menu or prompt.
+  INTERCEPT-VANILLA-OPEN: true # Configures the intercept vanilla open option.
+  VANILLA-EFFECTS: true # Configures the vanilla effects option.
+  MANUAL-SOUNDS: false # Configures the manual sounds option.
+  OPEN-SOUND: "minecraft:block.ender_chest.open|1.0|1.0" # Configures the open sound option.
+  CLOSE-SOUND: "minecraft:block.ender_chest.close|1.0|1.0" # Configures the close sound option.
+  ALLOW-COMMAND: true # Sets the command executed or suggested here.
+  COMMAND-REQUIRES-PERMISSION: false # Sets the permission node required for this action.
+  PERMISSION: "ultimatedonutsmp.enderchest" # Sets the permission node required for this action.
+  AUTO-SAVE-TICKS: 1200 # Sets how often this task or update runs.
+  ECSEE:
+    ENABLED: true # Enables or disables read-only Ender Chest inspection.
+    TITLE: "&8Ender Chest of &f{player}" # Supports {player} and {target}.
+    PERMISSION: "ultimatedonutsmp.admin.ecsee" # Permission required to inspect Ender Chests.
+    LOG-USAGE: true # Logs each successful inspection to the server console.
+    AUTO-REFRESH-TICKS: 10 # Refreshes online targets while their custom Ender Chest is open.
+
+# UDS setup: Configure MESSAGES options for this file.
+MESSAGES:
+  ECSEE-PLAYER-ONLY: "ᴘʟᴀʏᴇʀ ᴏɴʟʏ."
+  ECSEE-DISABLED: "&cᴛʜᴇ /ecsee ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴅɪѕᴀʙʟᴇᴅ."
+  ECSEE-NO-PERMISSION: "&cyou do not have permission to use this command."
+  ECSEE-USAGE: "&cᴜѕᴀɢᴇ: /ecsee <player>"
+  ECSEE-PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ &f{player} &cᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."
+  ECSEE-OPEN-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ &f{target}'ѕ &cᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ."
+  FEATURE-DISABLED: "&cᴛʜᴇ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ 6 ʀᴏᴡѕ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  COMMAND-DISABLED: "&cᴛʜᴇ /enderchest ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission to use this command." # Sets the message text for this response.
+  OPEN-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ." # Sets the message text for this response.
+  SAVE-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴄᴏɴᴛᴀᴄᴛ ѕᴛᴀꜰꜰ." # Sets the message text for this response.
+  RELOAD-SUCCESS: "&aᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.

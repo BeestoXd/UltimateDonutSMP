@@ -66,9 +66,9 @@ public class FfaCommand implements CommandExecutor {
     private void sendUsage(CommandSender sender, String label) {
         sender.sendMessage(ColorUtils.toComponent("&e/" + label));
         sender.sendMessage(ColorUtils.toComponent("&e/leave"));
-        sender.sendMessage(ColorUtils.toComponent("&e/ffastats [player]"));
+        sender.sendMessage(ColorUtils.toComponent("&e/ffastats [ᴘʟᴀʏᴇʀ]"));
         if (PermissionUtils.has(sender, "ultimatedonutsmp.admin.ffa")) {
-            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " reload"));
+            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " ʀᴇʟᴏᴀᴅ"));
             sender.sendMessage(ColorUtils.toComponent("&e/" + label + " ᴀʀᴇɴᴀ <subcommand>"));
         }
     }

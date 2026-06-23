@@ -98,8 +98,8 @@ public class FreezeCommand implements CommandExecutor {
 
         String path = freezeManager.hasKnownPlayer(args[0]) ? "TARGET-OFFLINE" : "PLAYER-NOT-FOUND";
         String fallback = freezeManager.hasKnownPlayer(args[0])
-                ? "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ."
-                : "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.";
+                ? "&cthat player must be online."
+                : "&cplayer not found.";
         sender.sendMessage(ColorUtils.toComponent(freezeManager.getMessage(path, fallback)));
         return true;
     }

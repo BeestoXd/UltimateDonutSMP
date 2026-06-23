@@ -74,11 +74,11 @@ public class LeaderboardPlaceholderResolver {
 
     private String resolveEntryName(LeaderboardManager.@Nullable LeaderboardEntry entry) {
         if (entry == null || entry.playerData() == null) {
-            return "ɴᴏɴᴇ";
+            return "none";
         }
 
         String username = entry.playerData().getUsername();
-        return username == null || username.isBlank() ? "ᴜɴᴋɴᴏᴡɴ" : username;
+        return username == null || username.isBlank() ? "unknown" : username;
     }
 
     private boolean isPositiveInteger(String input) {

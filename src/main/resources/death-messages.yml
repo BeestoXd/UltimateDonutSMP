@@ -1,0 +1,48 @@
+# UDS setup: Death message formatting and custom death text.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+SETTINGS:
+  RADIUS: true # Sets the radius used for this check or effect.
+  CHUNKS: 5 # Configures the chunks option.
+
+# UDS setup: Configure MESSAGES options for this file.
+MESSAGES:
+  ENABLED: true # Sets the death message text for this case.
+  PREFIX: "&c☠ " # Sets the death message text for this case.
+  BLOCK-EXPLOSION: "{player} ɢᴏᴛ ʙʟᴏᴡɴ ᴛᴏ ᴘɪᴇᴄᴇѕ" # Sets the death message text for this case.
+  CONTACT: "{player} ᴡᴀѕ ᴘʀɪᴄᴋᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ" # Sets the death message text for this case.
+  DROWNING:
+    NORMAL: "{player} ᴅʀᴏᴡɴᴇᴅ!" # Sets the death message text for this case.
+    PVP: "{player} ᴅʀᴏᴡɴᴇᴅ ᴡʜɪʟѕᴛ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}" # Sets the death message text for this case.
+  ENTITY-ATTACK: "{player} ᴡᴀѕ ѕʟᴀɪɴ ʙʏ {killer}" # Sets the death message text for this case.
+  FALL:
+    NORMAL: "{player} ʜɪᴛ ᴛʜᴇ ɢʀᴏᴜɴᴅ ᴛᴏᴏ ʜᴀʀᴅ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ᴅᴏᴏᴍᴇᴅ ᴛᴏ ꜰᴀʟʟ ʙʏ {killer}" # Sets the death message text for this case.
+  FALLING-BLOCK: "{player} ɢᴏᴛ ꜰʀᴇᴀᴋɪɴɢ ѕǫᴜᴀѕʜᴇᴅ ʙʏ ᴀ ʙʟᴏᴄᴋ" # Sets the death message text for this case.
+  FIRE:
+    NORMAL: "{player} ᴡᴇɴᴛ ᴜᴘ ɪɴ ꜰʟᴀᴍᴇѕ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀʟᴋᴇᴅ ɪɴᴛᴏ ᴀ ꜰɪʀᴇ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}" # Sets the death message text for this case.
+  FIRE-TICK:
+    NORMAL: "{player} ʙᴜʀɴᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ʙᴜʀɴᴛ ᴛᴏ ᴀ ᴄʀɪѕᴘ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}" # Sets the death message text for this case.
+  LAVA:
+    NORMAL: "{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ" # Sets the death message text for this case.
+    PVP: "{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ ᴡʜɪʟᴇ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}" # Sets the death message text for this case.
+  LIGHTNING: "{player} ɢᴏᴛ ʟɪᴛ ᴛʜᴇ ʜᴇʟʟ ᴜᴘ ʙʏ ᴀ ʟɪɢʜᴛɴɪɴɢ" # Sets the death message text for this case.
+  POISON: "{player} ᴡᴀѕ ᴘᴏɪѕᴏɴᴇᴅ" # Sets the death message text for this case.
+  PROJECTILE:
+    NORMAL: "{player} ᴡᴀѕ ѕʜᴏᴛ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ѕʜᴏᴛ ʙʏ {killer}" # Sets the death message text for this case.
+  STARVATION: "{player} ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ" # Sets the death message text for this case.
+  SUFFOCATION: "{player} ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ" # Sets the death message text for this case.
+  SUICIDE: "{player} ᴛᴏᴏᴋ ʜɪѕ ᴏᴡɴ ʟɪꜰᴇ ʟɪᴋᴇ ᴀ ᴘᴇᴀѕᴀɴᴛ" # Sets the death message text for this case.
+  THORNS: "{player} ᴋɪʟʟᴇᴅ ᴛʜᴇᴍѕᴇʟꜰ ʙʏ ᴛʀʏɪɴɢ ᴛᴏ ᴋɪʟʟ ѕᴏᴍᴇᴏɴᴇ" # Sets the death message text for this case.
+  VOID:
+    NORMAL: "{player} ꜰᴇʟʟ ᴏᴜᴛ ᴏꜰ ᴛʜᴇ ᴡᴏʀʟᴅ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ᴋɴᴏᴄᴋᴇᴅ ɪɴᴛᴏ ᴛʜᴇ ᴠᴏɪᴅ ʙʏ {killer}" # Sets the death message text for this case.
+  WITHER: "{player} ᴡɪᴛʜᴇʀᴇᴅ ᴀᴡᴀʏ" # Sets the death message text for this case.
+  ENTITY-EXPLOSION:
+    NORMAL: "{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ ʙʏ {killer}" # Sets the death message text for this case.
+  DEFAULT: "{player} ᴅɪᴇᴅ" # Sets the death message text for this case.

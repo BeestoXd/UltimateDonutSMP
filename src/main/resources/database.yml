@@ -1,0 +1,44 @@
+# UDS setup: Persistent storage and Redis connection settings.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Database engine, file path, host, credentials, and pool settings.
+DATABASE:
+  # SQLITE, MYSQL, or MONGODB.
+  # Redis is intentionally separate and is only used for cross-server messaging.
+  TYPE: "SQLITE" # Selects the mode or type used by this option.
+
+  SQLITE:
+    FILE: "data/data.db" # Sets the database connection value for this field.
+
+  MYSQL:
+    HOST: "localhost" # Sets the database connection value for this field.
+    PORT: 3306 # Sets the database connection value for this field.
+    DATABASE: "ultimatedonutsmp" # Sets the database connection value for this field.
+    USERNAME: "root" # Sets the database connection value for this field.
+    PASSWORD: "" # Sets the database connection value for this field.
+    CREATE-DATABASE: true # Configures the create database option.
+    PARAMETERS: "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8" # Configures the parameters option.
+
+  MONGODB:
+    # MongoDB uses a local SQLite runtime cache for compatibility with existing JDBC-backed systems,
+    # then syncs table snapshots to MongoDB. Prefer MYSQL for active multi-server shared player data.
+    URI: "mongodb://localhost:27017" # Configures the uri option.
+    DATABASE: "ultimatedonutsmp" # Sets the database connection value for this field.
+    CACHE-FILE: "data/mongodb-cache.db" # Configures the cache file option.
+    SYNC-ON-AUTOSAVE: true # Configures the sync on autosave option.
+
+# UDS setup: Redis connection and pub/sub settings for network features.
+REDIS:
+  ENABLED: false # Enables or disables redis.
+  HOST: "localhost" # Sets the database connection value for this field.
+  PORT: 6379 # Sets the database connection value for this field.
+  TIMEOUT: 2000 # Configures the timeout option.
+  PASSWORD: "" # Sets the database connection value for this field.
+  DATABASE: 0 # Sets the database connection value for this field.
+  MAX-TOTAL: 50 # Sets the allowed limit for this option.
+  MAX-IDLE: 10 # Sets the allowed limit for this option.
+  MIN-IDLE: 5 # Sets the allowed limit for this option.
+  TEST-ON-BORROW: false # Configures the test on borrow option.
+  TEST-ON-RETURN: false # Configures the test on return option.
+  TEST-WHILE-IDLE: false # Configures the test while idle option.
+  RECONNECT-DELAY-MS: 5000 # Configures the reconnect delay ms option.

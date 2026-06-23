@@ -7,148 +7,112 @@ import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
+import java.util.Locale;
 
 public class OrdersMyOrdersMenu extends BaseMenu {
 
-    private final int page;
     private final OrderSort sortMode;
+    private final String query;
 
-    public OrdersMyOrdersMenu(UltimateDonutSmp plugin, int page, OrderSort sortMode) {
-        super(plugin, plugin.getOrdersManager().getMyOrdersTitle(), plugin.getOrdersManager().getMyOrdersSize());
-        this.page = Math.max(1, page);
+    public OrdersMyOrdersMenu(UltimateDonutSmp plugin, int ignoredPage, OrderSort sortMode) {
+        this(plugin, ignoredPage, sortMode, "");
+    }
+
+    public OrdersMyOrdersMenu(UltimateDonutSmp plugin, int ignoredPage, OrderSort sortMode, String query) {
+        super(plugin, plugin.getOrdersManager().getMyOrdersTitle(), 27);
         this.sortMode = sortMode == null ? plugin.getOrdersManager().getDefaultSort() : sortMode;
+        this.query = query == null ? "" : query.trim();
     }
 
     @Override
     public void build(Player player) {
         clear();
-        fill(Material.GRAY_STAINED_GLASS_PANE);
+        List<Order> orders = visibleOrders(player);
+        int backSlot = OrdersMenuSupport.slot(plugin, "GUI.MY_ORDERS.BUTTONS.BACK.SLOT", 25);
+        int newSlot = OrdersMenuSupport.slot(plugin, "GUI.MY_ORDERS.BUTTONS.NEW.SLOT", 26);
 
-        List<Order> orders = plugin.getOrdersManager().getOrdersForOwner(player.getUniqueId(), sortMode);
-        int itemsPerPage = plugin.getOrdersManager().getMyOrdersItemsPerPage();
-        int startIndex = (page - 1) * itemsPerPage;
-        int endIndex = Math.min(orders.size(), startIndex + itemsPerPage);
-
-        for (int slot = 0; slot < itemsPerPage && slot < inventory.getSize() - 9; slot++) {
-            int orderIndex = startIndex + slot;
-            if (orderIndex >= endIndex) {
+        int displayIndex = 0;
+        for (Order order : orders) {
+            while (displayIndex == backSlot || displayIndex == newSlot) {
+                displayIndex++;
+            }
+            if (displayIndex >= inventory.getSize()) {
                 break;
             }
-
-            set(slot, OrdersMenuSupport.createOrderDisplay(
+            set(displayIndex++, OrdersMenuSupport.createOrderDisplay(
                     plugin,
                     plugin.getOrdersManager(),
-                    orders.get(orderIndex),
+                    order,
                     true
             ));
         }
 
-        int lastRow = inventory.getSize() - 9;
-        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ ᴛᴏ ʙᴏᴀʀᴅ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀѕ")));
-        set(lastRow + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
-                : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 2, ItemUtils.createItem(
-                Material.HOPPER,
-                "&aѕᴏʀᴛ: &f" + sortMode.displayName(),
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ ᴍᴏᴅᴇ")
+        set(backSlot, OrdersMenuSupport.button(
+                plugin, "GUI.MY_ORDERS.BUTTONS.BACK", "ORDERS.GUI.MY_ORDERS.BACK",
+                Material.ARROW, "&cʙᴀᴄᴋ", List.of("&fʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀѕ")
         ));
-        set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴏʀᴅᴇʀѕ")));
-        set(lastRow + 4, ItemUtils.createItem(Material.EMERALD, "&aɴᴇᴡ ᴏʀᴅᴇʀ", List.of("&7ᴄʀᴇᴀᴛᴇ ᴀ ɴᴇᴡ ʙᴜʏ ᴏʀᴅᴇʀ")));
-        set(lastRow + 5, ItemUtils.createItem(Material.ENDER_CHEST, "&dᴄᴏʟʟᴇᴄᴛ", List.of("&7ᴄᴏʟʟᴇᴄᴛ ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍѕ ᴀɴᴅ ʀᴇꜰᴜɴᴅѕ")));
-        set(lastRow + 7, hasNextPage(orders.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
-                : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
+        set(newSlot, OrdersMenuSupport.button(
+                plugin, "GUI.MY_ORDERS.BUTTONS.NEW", "ORDERS.GUI.MY_ORDERS.NEW",
+                Material.MAP, "&aɴᴇᴡ ᴏʀᴅᴇʀ", List.of("&fᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ɴᴇᴡ ᴏʀᴅᴇʀ")
+        ));
 
         if (orders.isEmpty()) {
-            set(inventory.getSize() / 2, ItemUtils.createItem(
+            set(13, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ᴏʀᴅᴇʀѕ ʏᴇᴛ",
-                    List.of("&7ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ꜰɪʀѕᴛ ʙᴜʏ ᴏʀᴅᴇʀ ꜰʀᴏᴍ ᴛʜᴇ ʙᴏᴀʀᴅ.")
+                    OrdersMenuSupport.text(plugin, "ORDERS.GUI.MY_ORDERS.EMPTY.NAME", "&cɴᴏ ᴏʀᴅᴇʀѕ ʏᴇᴛ"),
+                    OrdersMenuSupport.list(plugin, "ORDERS.GUI.MY_ORDERS.EMPTY.LORE", List.of("&7ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ꜰɪʀѕᴛ ʙᴜʏ ᴏʀᴅᴇʀ."))
             ));
         }
     }
 
     @Override
-    public void handleClick(int slot, Player player) {
-        int lastRow = inventory.getSize() - 9;
+    public void handleClick(int slot, Player player, ClickType clickType) {
+        int backSlot = OrdersMenuSupport.slot(plugin, "GUI.MY_ORDERS.BUTTONS.BACK.SLOT", 25);
+        int newSlot = OrdersMenuSupport.slot(plugin, "GUI.MY_ORDERS.BUTTONS.NEW.SLOT", 26);
+        if (slot == backSlot) {
+            click(player);
+            var state = plugin.getOrdersManager().getUiState(player.getUniqueId());
+            new OrdersBrowseMenu(plugin, state.page() + 1, state.sort(), state.filter(), state.search()).open(player);
+            return;
+        }
+        if (slot == newSlot) {
+            click(player);
+            plugin.getOrdersManager().openNewOrderMenu(player);
+            return;
+        }
+
+        List<Order> orders = visibleOrders(player);
+        int displayIndex = 0;
+        for (Order order : orders) {
+            while (displayIndex == backSlot || displayIndex == newSlot) {
+                displayIndex++;
+            }
+            if (displayIndex == slot) {
+                click(player);
+                new OrdersEditMenu(plugin, order.id(), true, 1, sortMode, "ALL").open(player);
+                return;
+            }
+            displayIndex++;
+        }
+    }
+
+    private List<Order> visibleOrders(Player player) {
         List<Order> orders = plugin.getOrdersManager().getOrdersForOwner(player.getUniqueId(), sortMode);
-        int itemsPerPage = plugin.getOrdersManager().getMyOrdersItemsPerPage();
+        if (query.isBlank()) {
+            return orders;
+        }
+        String normalized = query.toLowerCase(Locale.ROOT);
+        return orders.stream()
+                .filter(order -> plugin.getOrdersManager().describeItem(order.requestedItem())
+                        .toLowerCase(Locale.ROOT).contains(normalized)
+                        || order.requestedMaterialKey().toLowerCase(Locale.ROOT).contains(normalized))
+                .toList();
+    }
 
-        if (slot == lastRow) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersBrowseMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort(), "ALL").open(player);
-            return;
-        }
-        if (slot == lastRow + 1) {
-            if (page > 1) {
-                SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-                new OrdersMyOrdersMenu(plugin, page - 1, sortMode).open(player);
-            }
-            return;
-        }
-        if (slot == lastRow + 2) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersMyOrdersMenu(plugin, 1, nextSort(sortMode)).open(player);
-            return;
-        }
-        if (slot == lastRow + 3) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersMyOrdersMenu(plugin, page, sortMode).open(player);
-            return;
-        }
-        if (slot == lastRow + 4) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersSelectItemMenu(plugin, 1, "ALL").open(player);
-            return;
-        }
-        if (slot == lastRow + 5) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersCollectMenu(plugin, 1).open(player);
-            return;
-        }
-        if (slot == lastRow + 7) {
-            if (hasNextPage(orders.size(), itemsPerPage)) {
-                SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-                new OrdersMyOrdersMenu(plugin, page + 1, sortMode).open(player);
-            }
-            return;
-        }
-        if (slot == lastRow + 8) {
-            player.closeInventory();
-            return;
-        }
-
-        if (slot < 0 || slot >= itemsPerPage) {
-            return;
-        }
-
-        int orderIndex = ((page - 1) * itemsPerPage) + slot;
-        if (orderIndex >= orders.size()) {
-            return;
-        }
-
+    private void click(Player player) {
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        new OrdersEditMenu(plugin, orders.get(orderIndex).id(), true, page, sortMode, "ALL").open(player);
-    }
-
-    private int getTotalPages(int totalItems, int itemsPerPage) {
-        return Math.max(1, (int) Math.ceil(totalItems / (double) itemsPerPage));
-    }
-
-    private boolean hasNextPage(int totalItems, int itemsPerPage) {
-        return page < getTotalPages(totalItems, itemsPerPage);
-    }
-
-    private OrderSort nextSort(OrderSort current) {
-        List<OrderSort> sorts = plugin.getOrdersManager().getAllowedSorts();
-        int index = sorts.indexOf(current);
-        if (index < 0) {
-            return plugin.getOrdersManager().getDefaultSort();
-        }
-        return sorts.get((index + 1) % sorts.size());
     }
 }

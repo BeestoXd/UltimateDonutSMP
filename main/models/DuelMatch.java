@@ -22,10 +22,15 @@ public class DuelMatch {
     private final long id;
     private final MatchType type;
     private final DuelArena arena;
+    private final DuelMapSelection mapSelection;
     private final UUID playerOneUuid;
     private final UUID playerTwoUuid;
     private final String playerOneName;
     private final String playerTwoName;
+    private final String biomeKey;
+    private final String generatedWorldName;
+    private final DuelPrivacyMode privacyMode;
+    private final String hostServerId;
     private final Map<UUID, Location> returnLocations = new HashMap<>();
     private MatchStatus status;
     private int countdownSecondsRemaining;
@@ -34,17 +39,26 @@ public class DuelMatch {
     private UUID drawRequester;
     private long drawRequestExpiresAt;
 
-    public DuelMatch(long id, MatchType type, DuelArena arena,
+    public DuelMatch(long id, MatchType type, DuelArena arena, DuelMapSelection mapSelection,
                      UUID playerOneUuid, String playerOneName,
                      UUID playerTwoUuid, String playerTwoName,
-                     int countdownSecondsRemaining) {
+                     int countdownSecondsRemaining,
+                     String biomeKey,
+                     String generatedWorldName,
+                     DuelPrivacyMode privacyMode,
+                     String hostServerId) {
         this.id = id;
         this.type = type;
         this.arena = arena;
+        this.mapSelection = mapSelection == null ? DuelMapSelection.randomStatic() : mapSelection;
         this.playerOneUuid = playerOneUuid;
         this.playerOneName = playerOneName;
         this.playerTwoUuid = playerTwoUuid;
         this.playerTwoName = playerTwoName;
+        this.biomeKey = biomeKey == null ? "" : biomeKey;
+        this.generatedWorldName = generatedWorldName == null ? "" : generatedWorldName;
+        this.privacyMode = privacyMode == null ? DuelPrivacyMode.INVITE_ONLY : privacyMode;
+        this.hostServerId = hostServerId == null ? "" : hostServerId;
         this.status = MatchStatus.COUNTDOWN;
         this.countdownSecondsRemaining = Math.max(0, countdownSecondsRemaining);
         this.startedAt = 0L;
@@ -63,6 +77,30 @@ public class DuelMatch {
 
     public DuelArena getArena() {
         return arena;
+    }
+
+    public DuelMapSelection getMapSelection() {
+        return mapSelection;
+    }
+
+    public String getBiomeKey() {
+        return biomeKey;
+    }
+
+    public String getGeneratedWorldName() {
+        return generatedWorldName;
+    }
+
+    public boolean usesGeneratedWorld() {
+        return !generatedWorldName.isBlank();
+    }
+
+    public DuelPrivacyMode getPrivacyMode() {
+        return privacyMode;
+    }
+
+    public String getHostServerId() {
+        return hostServerId;
     }
 
     public UUID getPlayerOneUuid() {
@@ -154,7 +192,7 @@ public class DuelMatch {
         if (playerTwoUuid.equals(uuid)) {
             return playerOneName;
         }
-        return "ᴜɴᴋɴᴏᴡɴ";
+        return "unknown";
     }
 
     public void setReturnLocation(UUID uuid, Location location) {

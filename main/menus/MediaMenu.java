@@ -34,7 +34,7 @@ public class MediaMenu extends BaseMenu {
 
         if (lore.isEmpty()) {
             lore = List.of(
-                    "&dʀᴇǫᴜɪʀᴇᴍᴇɴᴛѕ: (only one needed)",
+                    "&dʀᴇǫᴜɪʀᴇᴍᴇɴᴛѕ: (ᴏɴʟʏ ᴏɴᴇ ɴᴇᴇᴅᴇᴅ)",
                     "&d- &f25 ᴀᴠᴇʀᴀɢᴇ ᴠɪᴇᴡᴇʀѕ ᴏɴ ѕᴛʀᴇᴀᴍ",
                     "&d- &f5ᴋ ᴠɪᴇᴡѕ ᴏɴ ᴀ ʏᴏᴜᴛᴜʙᴇ ᴠɪᴅᴇᴏ",
                     "&d- &f25ᴋ ᴠɪᴇᴡѕ ᴏɴ ᴀ ᴛɪᴋᴛᴏᴋ",
@@ -76,7 +76,7 @@ public class MediaMenu extends BaseMenu {
             return rawSize;
         }
 
-        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + MENU_PATH + ".SIZE value '" + rawSize
+        plugin.getLogger().warning("invalid " + MENU_PATH + ".SIZE value '" + rawSize
                 + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ 27.");
         return 27;
     }
@@ -88,7 +88,7 @@ public class MediaMenu extends BaseMenu {
         }
 
         int fallback = Math.min(13, inventorySize - 1);
-        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + BUTTON_PATH + ".SLOT value '" + slot
+        plugin.getLogger().warning("invalid " + BUTTON_PATH + ".SLOT value '" + slot
                 + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ ѕʟᴏᴛ " + fallback + ".");
         return fallback;
     }
@@ -101,7 +101,7 @@ public class MediaMenu extends BaseMenu {
             return material;
         }
 
-        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + BUTTON_PATH + ".MATERIAL value '" + rawMaterial
+        plugin.getLogger().warning("invalid " + BUTTON_PATH + ".MATERIAL value '" + rawMaterial
                 + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ ᴘɪɴᴋ_ᴅʏᴇ.");
         return Material.PINK_DYE;
     }

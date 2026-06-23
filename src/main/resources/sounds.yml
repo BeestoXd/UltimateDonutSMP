@@ -1,0 +1,129 @@
+# UDS setup: Sound effects played by commands, menus, and feature actions.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Sounds used by menu actions.
+MENUS:
+  BUTTON-CLICK: "minecraft:ui.button.click|1.0|1.0" # Sets the sound played for this event.
+  PAGE-TURN: "minecraft:item.book.page_turn|2.0|0.1" # Sets the sound played for this event.
+
+# UDS setup: Spawn command and spawn menu sounds.
+SPAWN:
+  SLIME-JUMP: "minecraft:entity.slime.jump|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Sell command and sell menu sounds.
+SELL:
+  LEVEL-UP: "minecraft:entity.player.levelup|1.0|2.0" # Sets the sound played for this event.
+
+# UDS setup: Amethyst tool sounds.
+AMETHYST:
+  EXPIRED: "minecraft:entity.item.break|1.0|1.0" # Sets the sound played for this event.
+  BREAK: "minecraft:block.amethyst_block.break|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Booster activation and feedback sounds.
+BOOSTER:
+  ERROR: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+  SUCCESS: "minecraft:entity.player.levelup|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Shard earning, boosters, menus, drops, cuboids, and passive generation.
+SHARDS:
+  REWARD: "minecraft:entity.experience_orb.pickup|0.85|1.35" # Sets the sound played for this event.
+  REWARD-BOOSTED: "minecraft:entity.player.levelup|0.85|1.45" # Sets the sound played for this event.
+  CANCELLED: "minecraft:entity.villager.no|0.8|1.1" # Sets the sound played for this event.
+
+# UDS setup: Command registration, descriptions, usage, and aliases.
+COMMANDS:
+  ERROR: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Bucket-related action sounds.
+BUCKET:
+  FILL: "minecraft:item.bucket.fill|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Auto-TPA sounds.
+TPAUTO:
+  ACTIVATE: "minecraft:block.beacon.activate|1.0|1.0" # Sets the sound played for this event.
+  DEACTIVATE: "minecraft:block.beacon.deactivate|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: TPA request and response sounds.
+TPA:
+  REQUEST-RECEIVED: "minecraft:block.note_block.chime|1.0|1.0" # Sets the sound played for this event.
+  REQUEST-SENT: "minecraft:block.note_block.bit|1.0|1.0" # Sets the sound played for this event.
+  REQUEST-SENT-EXTRA: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
+  NO-REQUEST: "minecraft:entity.ender_pearl.throw|1.0|1.0" # Sets the sound played for this event.
+  CONFIRM: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Teleport countdown and completion sounds.
+TELEPORT:
+  SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
+  COUNTDOWN: "minecraft:entity.enderman.teleport|1.0|1.0" # Sets the sound played for this event.
+  CANCELLED: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: RTP zone cuboid behavior, countdowns, titles, and teleport search area.
+RTP-ZONE:
+  COUNTDOWN: "minecraft:block.note_block.hat|0.9|1.5" # Sets the sound played for this event.
+  CANCELLED: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Random teleport sounds.
+RTP:
+  SEARCH-START: "minecraft:block.note_block.pling|0.9|1.1" # Sets the sound played for this event.
+  SEARCH-TICK: "minecraft:block.note_block.hat|0.5|1.6" # Sets the sound played for this event.
+  SEARCH-FOUND: "minecraft:entity.experience_orb.pickup|1.0|1.35" # Sets the sound played for this event.
+  SEARCH-FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Shop interaction sounds.
+SHOP:
+  NO-MONEY: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+  BUY-SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Drill tool sounds.
+DRILL:
+  ITEM-BREAK: "minecraft:entity.item.break|1.0|1.0" # Sets the sound played for this event.
+  AMETHYST-BREAK: "minecraft:block.amethyst_block.break|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Billford shop entries, prices, stock, and rotation content.
+BILLFORD:
+  OPEN: "minecraft:entity.villager.trade|1.0|1.1" # Sets the sound played for this event.
+  ROTATE: "minecraft:block.beacon.activate|0.8|1.2" # Sets the sound played for this event.
+  SUCCESS: "minecraft:entity.player.levelup|1.0|1.5" # Sets the sound played for this event.
+  FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Auction House sounds or messages for this feature.
+AUCTION_HOUSE:
+  SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.2" # Sets the sound played for this event.
+  FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Orders sounds or messages for this feature.
+ORDERS:
+  SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.2" # Sets the sound played for this event.
+  FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Duel sounds or messages for this feature.
+DUELS:
+  CLICK: "minecraft:ui.button.click|1.0|1.0" # Sets the sound played for this event.
+  REQUEST-SENT: "minecraft:entity.experience_orb.pickup|1.0|1.2" # Sets the sound played for this event.
+  REQUEST-RECEIVED: "minecraft:block.note_block.pling|1.0|1.0" # Sets the sound played for this event.
+  QUEUE-JOIN: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
+  START-COUNTDOWN:
+    PER-SECOND:
+      5: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
+      4: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
+      3: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
+      2: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
+      1: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
+    START-SOUND: "minecraft:entity.firework_rocket.blast|1.0|1.0" # Sets the sound played for this event.
+  MATCH-FOUND: "minecraft:block.beacon.activate|1.0|1.1" # Sets the sound played for this event.
+  MATCH-START: "minecraft:entity.player.levelup|1.0|1.0" # Sets the sound played for this event.
+  VICTORY: "minecraft:ui.toast.challenge_complete|1.0|1.0" # Sets the sound played for this event.
+  DEFEAT: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+  CLAIM: "minecraft:entity.item.pickup|1.0|1.0" # Sets the sound played for this event.
+
+# UDS setup: Scheduled key-all rewards, notifications, and reward commands/items.
+KEY-ALL:
+  REWARD: "minecraft:entity.player.levelup|1.0|1.1" # Sets the sound played for this event.
+
+# UDS setup: Crate definitions, keys, animations, rewards, and editor-managed content.
+CRATES:
+  OPEN: "minecraft:block.ender_chest.open|1.0|1.05" # Sets the sound played for this event.
+  CLAIM: "minecraft:entity.player.levelup|1.0|1.25" # Sets the sound played for this event.
+  NO-KEY: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
+  SPIN-TICK: "minecraft:block.note_block.hat|0.55|1.55" # Sets the sound played for this event.
+  SPIN-END: "minecraft:entity.experience_orb.pickup|1.0|1.35" # Sets the sound played for this event.

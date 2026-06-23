@@ -102,7 +102,7 @@ public class FfaArenaCommand implements CommandExecutor {
         }
         if (subcommand.equals("setdisplay")) {
             if (args.length < 3) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + baseLabel + " setdisplay <id> <name>"));
+                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + baseLabel + " ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <name>"));
                 return true;
             }
             StringBuilder builder = new StringBuilder();
@@ -188,13 +188,13 @@ public class FfaArenaCommand implements CommandExecutor {
     private void sendUsage(CommandSender sender, String baseLabel) {
         sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " create <id>"));
         sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " delete <id>"));
-        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " setpos <id>"));
-        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " setdisplay <id> <name>"));
-        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ѕᴇᴛᴛɪɴɢѕ <id> [setting] [on|off]"));
-        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " enable <id>"));
-        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " disable <id>"));
-        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " list"));
-        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " reload"));
+        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ѕᴇᴛᴘᴏѕ <id>"));
+        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <name>"));
+        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ѕᴇᴛᴛɪɴɢѕ <id> [ѕᴇᴛᴛɪɴɢ] [ᴏɴ|ᴏꜰꜰ]"));
+        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ᴇɴᴀʙʟᴇ <id>"));
+        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ᴅɪѕᴀʙʟᴇ <id>"));
+        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ʟɪѕᴛ"));
+        sender.sendMessage(ColorUtils.toComponent("&e/" + baseLabel + " ʀᴇʟᴏᴀᴅ"));
     }
 
     private void sendSettingsOverview(CommandSender sender, FfaArena arena) {

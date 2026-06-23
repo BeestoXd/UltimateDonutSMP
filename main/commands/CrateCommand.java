@@ -176,16 +176,16 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage(ColorUtils.toComponent("&8&m----------- &bᴄʀᴀᴛᴇ ᴀᴅᴍɪɴ &8&m-----------"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " create <crate> &7- ᴄʀᴇᴀᴛᴇ ᴀ ᴄʀᴀᴛᴇ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " delete <crate> &7- ᴅᴇʟᴇᴛᴇ ᴀ ᴄʀᴀᴛᴇ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴄʀᴇᴀᴛᴇ <crate> &7- ᴄʀᴇᴀᴛᴇ ᴀ ᴄʀᴀᴛᴇ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴅᴇʟᴇᴛᴇ <crate> &7- ᴅᴇʟᴇᴛᴇ ᴀ ᴄʀᴀᴛᴇ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴛʏᴘᴇ <crate> <choose_one|gacha> &7- ѕᴇᴛ ᴄʀᴀᴛᴇ ᴛʏᴘᴇ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴏᴘᴇɴ <crate> &7- ᴏᴘᴇɴ ᴀ ᴄʀᴀᴛᴇ ᴅɪʀᴇᴄᴛʟʏ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴋᴇʏ <player> <crate> <amount> &7- ɢɪᴠᴇ ᴋᴇʏѕ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴛᴀᴋᴇ <player> <crate> <amount> &7- ʀᴇᴍᴏᴠᴇ ᴋᴇʏѕ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ѕᴇᴛ <player> <crate> <amount> &7- ѕᴇᴛ ᴋᴇʏ ʙᴀʟᴀɴᴄᴇ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴋᴇʏᴀʟʟ <crate> <amount> &7- ɢʀᴀɴᴛ ᴋᴇʏѕ ᴛᴏ ᴏɴʟɪɴᴇ ᴘʟᴀʏᴇʀѕ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴀᴅᴅ <crate> [slot] &7- ᴀᴅᴅ ʀᴇᴡᴀʀᴅ ʙʏ ɢᴜɪ ᴏʀ ʜᴀɴᴅ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴇᴅɪᴛ <crate> [slot] &7- ᴇᴅɪᴛ ʀᴇᴡᴀʀᴅ ʙʏ ɢᴜɪ ᴏʀ ʜᴀɴᴅ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴀᴅᴅ <crate> [ѕʟᴏᴛ] &7- ᴀᴅᴅ ʀᴇᴡᴀʀᴅ ʙʏ ɢᴜɪ ᴏʀ ʜᴀɴᴅ"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴇᴅɪᴛ <crate> [ѕʟᴏᴛ] &7- ᴇᴅɪᴛ ʀᴇᴡᴀʀᴅ ʙʏ ɢᴜɪ ᴏʀ ʜᴀɴᴅ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʀᴇᴍᴏᴠᴇ <crate> <slot> &7- ʀᴇᴍᴏᴠᴇ ᴀ ʀᴇᴡᴀʀᴅ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʙɪɴᴅ <crate|cancel> &7- ʙɪɴᴅ ᴀ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ"));
         sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴜɴʙɪɴᴅ &7- ᴜɴʙɪɴᴅ ᴛʜᴇ ʟᴏᴏᴋᴇᴅ-ᴀᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ"));
@@ -387,7 +387,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         int granted = plugin.getKeyAllManager().grantCrateKeys(crate.id(), amount, false);
         sender.sendMessage(ColorUtils.toComponent("&aɢʀᴀɴᴛᴇᴅ &f" + amount + "x "
                 + plugin.getCrateManager().getReadableCrateName(crate)
-                + "&a ᴋᴇʏ(s) ᴛᴏ &f" + granted + "&a ᴏɴʟɪɴᴇ ᴘʟᴀʏᴇʀ(s)."));
+                + "&a ᴋᴇʏ(ѕ) ᴛᴏ &f" + granted + "&a ᴏɴʟɪɴᴇ ᴘʟᴀʏᴇʀ(ѕ)."));
         return true;
     }
 
@@ -403,7 +403,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " " + mode.commandName + " <crate> [slot]"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " " + mode.commandName + " <crate> [ѕʟᴏᴛ]"));
             return true;
         }
 
@@ -537,7 +537,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(crateId);
         player.sendMessage(ColorUtils.toComponent("&8&m-------- &bᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ &8&m--------"));
         player.sendMessage(ColorUtils.toComponent("&7ʟᴏᴄᴀᴛɪᴏɴ: &f" + formatBlockLocation(target)));
-        player.sendMessage(ColorUtils.toComponent("&7ᴄʀᴀᴛᴇ ID: &f" + crateId));
+        player.sendMessage(ColorUtils.toComponent("&7ᴄʀᴀᴛᴇ ɪᴅ: &f" + crateId));
         player.sendMessage(ColorUtils.toComponent("&7ᴅɪѕᴘʟᴀʏ: &f" + plugin.getCrateManager().getReadableCrateName(crate)));
         player.sendMessage(ColorUtils.toComponent("&8&m-------------------------------"));
         return true;

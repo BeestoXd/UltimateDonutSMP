@@ -121,6 +121,6 @@ public class FfaMatch {
         if (playerTwoUuid.equals(uuid)) {
             return playerOneName;
         }
-        return "ᴜɴᴋɴᴏᴡɴ";
+        return "unknown";
     }
 }

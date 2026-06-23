@@ -1,0 +1,521 @@
+# ==============================================================================
+# UltimateDonutSmp Enchantment GUI Options Configuration
+# ==============================================================================
+# This file defines the eligible enchantments per item group, their slots, and pages,
+# along with messages and GUI layouts for the enchantment selection menu.
+# Keep indentation with spaces; reload via plugin config commands.
+
+# ── Messages Configuration ────────────────────────────────────────────────────
+# Hover-lore texts appended to enchantment icons inside the selection GUI.
+messages:
+  select: "&fClick to select"
+  selected: "&aSelected"
+  cannot: "&fCannot add this enchantment"
+
+
+# ── GUI Settings ──────────────────────────────────────────────────────────────
+# Configuration for the enchantment selection menu layout, size, and buttons.
+gui:
+  title: "&#444444pick enchantments"
+  rows: 6
+    # Map standard action buttons to GUI slots (0-53).
+  slots:
+    item: 0
+    cancel: 46
+    prev: 45
+    next: 53
+    confirm: 52
+    # Define material, name, and lore for standard buttons.
+  buttons:
+    cancel:
+      material: RED_STAINED_GLASS_PANE
+      name: "&#39FF14cancel"
+      lore: ["&fClick to return"]
+    confirm:
+      material: LIME_STAINED_GLASS_PANE
+      name: "&#39FF14confirm"
+      lore: ["&fClick to confirm enchants"]
+    page_filler:
+      enabled: false
+      material: GRAY_STAINED_GLASS_PANE
+      name: "&7 "
+    filler:
+      enabled: true
+      slots: "1,9,10"
+      material: GRAY_STAINED_GLASS_PANE
+      displayname: "&7 "
+    # Custom sound triggers on button clicks.
+  sounds:
+    click:
+      name: BLOCK_ENCHANTMENT_TABLE_USE
+      volume: 1.0
+      pitch: 1.0
+
+
+# ── Item Groups & Eligible Enchantments ───────────────────────────────────────
+# Format:
+#   <key>: { enchantment: "minecraft_name;level", slot: GUI_slot, page: page_number }
+# Slots range from 0 to 53. Page numbering starts at 1.
+
+# Helmets eligible enchantments:
+helmet:
+  protection1: { enchantment: "protection;1", slot: 2, page: 1 }
+  protection2: { enchantment: "protection;2", slot: 3, page: 1 }
+  protection3: { enchantment: "protection;3", slot: 4, page: 1 }
+  protection4: { enchantment: "protection;4", slot: 5, page: 1 }
+
+  fire_protection1: { enchantment: "fire_protection;1", slot: 11, page: 1 }
+  fire_protection2: { enchantment: "fire_protection;2", slot: 12, page: 1 }
+  fire_protection3: { enchantment: "fire_protection;3", slot: 13, page: 1 }
+  fire_protection4: { enchantment: "fire_protection;4", slot: 14, page: 1 }
+
+  mending1: { enchantment: "mending;1", slot: 18, page: 1 }
+  mending201: { enchantment: "mending;1", slot: 18, page: 2 }
+
+  thorns1: { enchantment: "thorns;1", slot: 11, page: 2 }
+  thorns2: { enchantment: "thorns;2", slot: 12, page: 2 }
+  thorns3: { enchantment: "thorns;3", slot: 13, page: 2 }
+
+  blast_protection1: { enchantment: "blast_protection;1", slot: 20, page: 1 }
+  blast_protection2: { enchantment: "blast_protection;2", slot: 21, page: 1 }
+  blast_protection3: { enchantment: "blast_protection;3", slot: 22, page: 1 }
+  blast_protection4: { enchantment: "blast_protection;4", slot: 23, page: 1 }
+
+  respiration1: { enchantment: "respiration;1", slot: 38, page: 1 }
+  respiration2: { enchantment: "respiration;2", slot: 39, page: 1 }
+  respiration3: { enchantment: "respiration;3", slot: 40, page: 1 }
+
+  aqua_affinity1: { enchantment: "aqua_affinity;1", slot: 2, page: 2 }
+
+  projectile_protection1: { enchantment: "projectile_protection;1", slot: 29, page: 1 }
+  projectile_protection2: { enchantment: "projectile_protection;2", slot: 30, page: 1 }
+  projectile_protection3: { enchantment: "projectile_protection;3", slot: 31, page: 1 }
+  projectile_protection4: { enchantment: "projectile_protection;4", slot: 32, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  unbreaking201: { enchantment: "unbreaking;1", slot: 17, page: 2 }
+  unbreaking202: { enchantment: "unbreaking;2", slot: 26, page: 2 }
+  unbreaking203: { enchantment: "unbreaking;3", slot: 35, page: 2 }
+
+  binding_curse1: { enchantment: "binding_curse;1", slot: 29, page: 2 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 20, page: 2 }
+
+
+# Chestplates eligible enchantments:
+chestplate:
+  protection1: { enchantment: "protection;1", slot: 2, page: 1 }
+  protection2: { enchantment: "protection;2", slot: 3, page: 1 }
+  protection3: { enchantment: "protection;3", slot: 4, page: 1 }
+  protection4: { enchantment: "protection;4", slot: 5, page: 1 }
+
+  fire_protection1: { enchantment: "fire_protection;1", slot: 11, page: 1 }
+  fire_protection2: { enchantment: "fire_protection;2", slot: 12, page: 1 }
+  fire_protection3: { enchantment: "fire_protection;3", slot: 13, page: 1 }
+  fire_protection4: { enchantment: "fire_protection;4", slot: 14, page: 1 }
+
+  mending1: { enchantment: "mending;1", slot: 18, page: 1 }
+  mending201: { enchantment: "mending;1", slot: 18, page: 2 }
+
+  thorns1: { enchantment: "thorns;1", slot: 38, page: 1 }
+  thorns2: { enchantment: "thorns;2", slot: 39, page: 1 }
+  thorns3: { enchantment: "thorns;3", slot: 40, page: 1 }
+
+  blast_protection1: { enchantment: "blast_protection;1", slot: 20, page: 1 }
+  blast_protection2: { enchantment: "blast_protection;2", slot: 21, page: 1 }
+  blast_protection3: { enchantment: "blast_protection;3", slot: 22, page: 1 }
+  blast_protection4: { enchantment: "blast_protection;4", slot: 23, page: 1 }
+
+  projectile_protection1: { enchantment: "projectile_protection;1", slot: 29, page: 1 }
+  projectile_protection2: { enchantment: "projectile_protection;2", slot: 30, page: 1 }
+  projectile_protection3: { enchantment: "projectile_protection;3", slot: 31, page: 1 }
+  projectile_protection4: { enchantment: "projectile_protection;4", slot: 32, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  unbreaking201: { enchantment: "unbreaking;1", slot: 17, page: 2 }
+  unbreaking202: { enchantment: "unbreaking;2", slot: 26, page: 2 }
+  unbreaking203: { enchantment: "unbreaking;3", slot: 35, page: 2 }
+
+  binding_curse1: { enchantment: "binding_curse;1", slot: 2, page: 2 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 11, page: 2 }
+
+
+# Leggings eligible enchantments:
+leggings:
+  protection1: { enchantment: "protection;1", slot: 2, page: 1 }
+  protection2: { enchantment: "protection;2", slot: 3, page: 1 }
+  protection3: { enchantment: "protection;3", slot: 4, page: 1 }
+  protection4: { enchantment: "protection;4", slot: 5, page: 1 }
+
+  fire_protection1: { enchantment: "fire_protection;1", slot: 11, page: 1 }
+  fire_protection2: { enchantment: "fire_protection;2", slot: 12, page: 1 }
+  fire_protection3: { enchantment: "fire_protection;3", slot: 13, page: 1 }
+  fire_protection4: { enchantment: "fire_protection;4", slot: 14, page: 1 }
+
+  mending1: { enchantment: "mending;1", slot: 18, page: 1 }
+  mending201: { enchantment: "mending;1", slot: 18, page: 2 }
+
+  swift_sneak1: { enchantment: "swift_sneak;1", slot: 38, page: 1 }
+  swift_sneak2: { enchantment: "swift_sneak;2", slot: 39, page: 1 }
+  swift_sneak3: { enchantment: "swift_sneak;3", slot: 40, page: 1 }
+
+  thorns1: { enchantment: "thorns;1", slot: 2, page: 2 }
+  thorns2: { enchantment: "thorns;2", slot: 3, page: 2 }
+  thorns3: { enchantment: "thorns;3", slot: 4, page: 2 }
+
+  blast_protection1: { enchantment: "blast_protection;1", slot: 20, page: 1 }
+  blast_protection2: { enchantment: "blast_protection;2", slot: 21, page: 1 }
+  blast_protection3: { enchantment: "blast_protection;3", slot: 22, page: 1 }
+  blast_protection4: { enchantment: "blast_protection;4", slot: 23, page: 1 }
+
+  projectile_protection1: { enchantment: "projectile_protection;1", slot: 29, page: 1 }
+  projectile_protection2: { enchantment: "projectile_protection;2", slot: 30, page: 1 }
+  projectile_protection3: { enchantment: "projectile_protection;3", slot: 31, page: 1 }
+  projectile_protection4: { enchantment: "projectile_protection;4", slot: 32, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  unbreaking201: { enchantment: "unbreaking;1", slot: 17, page: 2 }
+  unbreaking202: { enchantment: "unbreaking;2", slot: 26, page: 2 }
+  unbreaking203: { enchantment: "unbreaking;3", slot: 35, page: 2 }
+
+  binding_curse1: { enchantment: "binding_curse;1", slot: 11, page: 2 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 20, page: 2 }
+
+
+# Boots eligible enchantments:
+boots:
+  protection1: { enchantment: "protection;1", slot: 2, page: 1 }
+  protection2: { enchantment: "protection;2", slot: 3, page: 1 }
+  protection3: { enchantment: "protection;3", slot: 4, page: 1 }
+  protection4: { enchantment: "protection;4", slot: 5, page: 1 }
+
+  fire_protection1: { enchantment: "fire_protection;1", slot: 11, page: 1 }
+  fire_protection2: { enchantment: "fire_protection;2", slot: 12, page: 1 }
+  fire_protection3: { enchantment: "fire_protection;3", slot: 13, page: 1 }
+  fire_protection4: { enchantment: "fire_protection;4", slot: 14, page: 1 }
+
+  mending1: { enchantment: "mending;1", slot: 18, page: 1 }
+  mending201: { enchantment: "mending;1", slot: 18, page: 2 }
+
+  swift_sneak1: { enchantment: "swift_sneak;1", slot: 38, page: 1 }
+  swift_sneak2: { enchantment: "swift_sneak;2", slot: 39, page: 1 }
+  swift_sneak3: { enchantment: "swift_sneak;3", slot: 40, page: 1 }
+
+  thorns1: { enchantment: "thorns;1", slot: 11, page: 2 }
+  thorns2: { enchantment: "thorns;2", slot: 12, page: 2 }
+  thorns3: { enchantment: "thorns;3", slot: 13, page: 2 }
+
+  soul_speed1: { enchantment: "soul_speed;1", slot: 2, page: 2 }
+  soul_speed2: { enchantment: "soul_speed;2", slot: 3, page: 2 }
+  soul_speed3: { enchantment: "soul_speed;3", slot: 4, page: 2 }
+
+  frost_walker1: { enchantment: "frost_walker;1", slot: 29, page: 2 }
+  frost_walker2: { enchantment: "frost_walker;2", slot: 30, page: 2 }
+
+  depth_strider1: { enchantment: "depth_strider;1", slot: 20, page: 2 }
+  depth_strider2: { enchantment: "depth_strider;2", slot: 21, page: 2 }
+  depth_strider3: { enchantment: "depth_strider;3", slot: 22, page: 2 }
+
+  blast_protection1: { enchantment: "blast_protection;1", slot: 29, page: 1 }
+  blast_protection2: { enchantment: "blast_protection;2", slot: 30, page: 1 }
+  blast_protection3: { enchantment: "blast_protection;3", slot: 31, page: 1 }
+  blast_protection4: { enchantment: "blast_protection;4", slot: 32, page: 1 }
+
+  projectile_protection1: { enchantment: "projectile_protection;1", slot: 38, page: 1 }
+  projectile_protection2: { enchantment: "projectile_protection;2", slot: 39, page: 1 }
+  projectile_protection3: { enchantment: "projectile_protection;3", slot: 40, page: 1 }
+  projectile_protection4: { enchantment: "projectile_protection;4", slot: 41, page: 1 }
+
+  feather_falling1: { enchantment: "feather_falling;1", slot: 20, page: 1 }
+  feather_falling2: { enchantment: "feather_falling;2", slot: 21, page: 1 }
+  feather_falling3: { enchantment: "feather_falling;3", slot: 22, page: 1 }
+  feather_falling4: { enchantment: "feather_falling;4", slot: 23, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  unbreaking201: { enchantment: "unbreaking;1", slot: 17, page: 2 }
+  unbreaking202: { enchantment: "unbreaking;2", slot: 26, page: 2 }
+  unbreaking203: { enchantment: "unbreaking;3", slot: 35, page: 2 }
+
+  binding_curse1: { enchantment: "binding_curse;1", slot: 39, page: 2 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 38, page: 2 }
+
+
+
+# Elytra eligible enchantments:
+elytra:
+
+
+  mending1: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  binding_curse1: { enchantment: "binding_curse;1", slot: 11, page: 1 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 2, page: 1 }
+
+
+
+# Bows eligible enchantments:
+bow:
+
+  power1: { enchantment: "power;1", slot: 2, page: 1 }
+  power2: { enchantment: "power;2", slot: 3, page: 1 }
+  power3: { enchantment: "power;3", slot: 4, page: 1 }
+  power4: { enchantment: "power;4", slot: 5, page: 1 }
+  power5: { enchantment: "power;5", slot: 6, page: 1 }
+
+  punch1: { enchantment: "punch;1", slot: 11, page: 1 }
+  punch2: { enchantment: "punch;2", slot: 12, page: 1 }
+
+  flame: { enchantment: "flame;1", slot: 20, page: 1 }
+  infinity: { enchantment: "infinity;1", slot: 29, page: 1 }
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 38, page: 1 }
+
+
+
+
+# Crossbows eligible enchantments:
+crossbow:
+
+  multishot: { enchantment: "multishot;1", slot: 2, page: 1 }
+
+
+  quick_charge1: { enchantment: "quick_charge;1", slot: 11, page: 1 }
+  quick_charge2: { enchantment: "quick_charge;2", slot: 12, page: 1 }
+  quick_charge3: { enchantment: "quick_charge;3", slot: 13, page: 1 }
+
+  piercing1: { enchantment: "piercing;1", slot: 20, page: 1 }
+  piercing2: { enchantment: "piercing;2", slot: 21, page: 1 }
+  piercing3: { enchantment: "piercing;3", slot: 22, page: 1 }
+  piercing4: { enchantment: "piercing;4", slot: 23, page: 1 }
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 29, page: 1 }
+
+
+# Fishing Rods eligible enchantments:
+fishing_rod:
+
+
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  luck_of_the_sea1: { enchantment: "luck_of_the_sea;1", slot: 2, page: 1 }
+  luck_of_the_sea2: { enchantment: "luck_of_the_sea;2", slot: 3, page: 1 }
+  luck_of_the_sea3: { enchantment: "luck_of_the_sea;3", slot: 4, page: 1 }
+
+  lure1: { enchantment: "lure;1", slot: 11, page: 1 }
+  lure2: { enchantment: "lure;2", slot: 12, page: 1 }
+  lure3: { enchantment: "lure;3", slot: 13, page: 1 }
+
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 20, page: 1 }
+
+
+# Shovels eligible enchantments:
+shovel:
+
+
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  efficiency1: { enchantment: "efficiency;1", slot: 2, page: 1 }
+  efficiency2: { enchantment: "efficiency;2", slot: 3, page: 1 }
+  efficiency3: { enchantment: "efficiency;3", slot: 4, page: 1 }
+  efficiency4: { enchantment: "efficiency;4", slot: 5, page: 1 }
+  efficiency5: { enchantment: "efficiency;5", slot: 6, page: 1 }
+
+  fortune1: { enchantment: "fortune;1", slot: 11, page: 1 }
+  fortune2: { enchantment: "fortune;2", slot: 12, page: 1 }
+  fortune3: { enchantment: "fortune;3", slot: 13, page: 1 }
+
+  silktouch: { enchantment: "silk_touch;1", slot: 20, page: 1 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 29, page: 1 }
+
+
+# Pickaxes eligible enchantments:
+pickaxe:
+
+
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  efficiency1: { enchantment: "efficiency;1", slot: 2, page: 1 }
+  efficiency2: { enchantment: "efficiency;2", slot: 3, page: 1 }
+  efficiency3: { enchantment: "efficiency;3", slot: 4, page: 1 }
+  efficiency4: { enchantment: "efficiency;4", slot: 5, page: 1 }
+  efficiency5: { enchantment: "efficiency;5", slot: 6, page: 1 }
+
+  fortune1: { enchantment: "fortune;1", slot: 11, page: 1 }
+  fortune2: { enchantment: "fortune;2", slot: 12, page: 1 }
+  fortune3: { enchantment: "fortune;3", slot: 13, page: 1 }
+
+  silktouch: { enchantment: "silk_touch;1", slot: 20, page: 1 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 29, page: 1 }
+
+
+# Axes eligible enchantments:
+axe:
+
+
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+  mending201: { enchantment: "mending;1", slot: 18, page: 2 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  unbreaking201: { enchantment: "unbreaking;1", slot: 17, page: 2 }
+  unbreaking202: { enchantment: "unbreaking;2", slot: 26, page: 2 }
+  unbreaking203: { enchantment: "unbreaking;3", slot: 35, page: 2 }
+
+  sharp1: { enchantment: "sharpness;1", slot: 2, page: 1 }
+  sharp2: { enchantment: "sharpness;2", slot: 3, page: 1 }
+  sharp3: { enchantment: "sharpness;3", slot: 4, page: 1 }
+  sharp4: { enchantment: "sharpness;4", slot: 5, page: 1 }
+  sharp5: { enchantment: "sharpness;5", slot: 6, page: 1 }
+
+  efficiency1: { enchantment: "efficiency;1", slot: 11, page: 1 }
+  efficiency2: { enchantment: "efficiency;2", slot: 12, page: 1 }
+  efficiency3: { enchantment: "efficiency;3", slot: 13, page: 1 }
+  efficiency4: { enchantment: "efficiency;4", slot: 14, page: 1 }
+  efficiency5: { enchantment: "efficiency;5", slot: 15, page: 1 }
+
+  Smite1: { enchantment: "smite;1", slot: 38, page: 1 }
+  Smite2: { enchantment: "smite;2", slot: 39, page: 1 }
+  Smite3: { enchantment: "smite;3", slot: 40, page: 1 }
+  Smite4: { enchantment: "smite;4", slot: 41, page: 1 }
+  Smite5: { enchantment: "smite;5", slot: 42, page: 1 }
+
+  bane1: { enchantment: "bane_of_arthropods;1", slot: 2, page: 2 }
+  bane2: { enchantment: "bane_of_arthropods;2", slot: 3, page: 2 }
+  bane3: { enchantment: "bane_of_arthropods;3", slot: 4, page: 2 }
+  bane4: { enchantment: "bane_of_arthropods;4", slot: 5, page: 2 }
+  bane5: { enchantment: "bane_of_arthropods;5", slot: 6, page: 2 }
+
+  fortune1: { enchantment: "fortune;1", slot: 20, page: 1 }
+  fortune2: { enchantment: "fortune;2", slot: 21, page: 1 }
+  fortune3: { enchantment: "fortune;3", slot: 22, page: 1 }
+
+  silktouch: { enchantment: "silk_touch;1", slot: 29, page: 1 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 11, page: 2 }
+
+
+# Hoes eligible enchantments:
+hoe:
+
+
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+
+  efficiency1: { enchantment: "efficiency;1", slot: 2, page: 1 }
+  efficiency2: { enchantment: "efficiency;2", slot: 3, page: 1 }
+  efficiency3: { enchantment: "efficiency;3", slot: 4, page: 1 }
+  efficiency4: { enchantment: "efficiency;4", slot: 5, page: 1 }
+  efficiency5: { enchantment: "efficiency;5", slot: 6, page: 1 }
+
+
+  fortune1: { enchantment: "fortune;1", slot: 11, page: 1 }
+  fortune2: { enchantment: "fortune;2", slot: 12, page: 1 }
+  fortune3: { enchantment: "fortune;3", slot: 13, page: 1 }
+
+  silktouch: { enchantment: "silk_touch;1", slot: 20, page: 1 }
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 29, page: 1 }
+
+
+# Shields eligible enchantments:
+shield:
+
+
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 2, page: 1 }
+
+
+# Swords eligible enchantments:
+sword:
+
+
+  mending: { enchantment: "mending;1", slot: 18, page: 1 }
+  mending201: { enchantment: "mending;1", slot: 18, page: 2 }
+
+  unbreaking1: { enchantment: "unbreaking;1", slot: 17, page: 1 }
+  unbreaking2: { enchantment: "unbreaking;2", slot: 26, page: 1 }
+  unbreaking3: { enchantment: "unbreaking;3", slot: 35, page: 1 }
+
+  unbreaking201: { enchantment: "unbreaking;1", slot: 17, page: 2 }
+  unbreaking202: { enchantment: "unbreaking;2", slot: 26, page: 2 }
+  unbreaking203: { enchantment: "unbreaking;3", slot: 35, page: 2 }
+
+  looting1: { enchantment: "looting;1", slot: 11, page: 1 }
+  looting2: { enchantment: "looting;2", slot: 12, page: 1 }
+  looting3: { enchantment: "looting;3", slot: 13, page: 1 }
+
+  sweeping_edge1: { enchantment: "sweeping_edge;1", slot: 20, page: 1 }
+  sweeping_edge2: { enchantment: "sweeping_edge;2", slot: 21, page: 1 }
+  sweeping_edge3: { enchantment: "sweeping_edge;3", slot: 22, page: 1 }
+
+  knockback1: { enchantment: "knockback;1", slot: 29, page: 1 }
+  knockback2: { enchantment: "knockback;2", slot: 30, page: 1 }
+
+  fire_aspect1: { enchantment: "fire_aspect;1", slot: 38, page: 1 }
+  fire_aspect2: { enchantment: "fire_aspect;2", slot: 39, page: 1 }
+
+  sharp1: { enchantment: "sharpness;1", slot: 2, page: 1 }
+  sharp2: { enchantment: "sharpness;2", slot: 3, page: 1 }
+  sharp3: { enchantment: "sharpness;3", slot: 4, page: 1 }
+  sharp4: { enchantment: "sharpness;4", slot: 5, page: 1 }
+  sharp5: { enchantment: "sharpness;5", slot: 6, page: 1 }
+
+
+  Smite1: { enchantment: "smite;1", slot: 2, page: 2 }
+  Smite2: { enchantment: "smite;2", slot: 3, page: 2 }
+  Smite3: { enchantment: "smite;3", slot: 4, page: 2 }
+  Smite4: { enchantment: "smite;4", slot: 5, page: 2 }
+  Smite5: { enchantment: "smite;5", slot: 6, page: 2 }
+
+  bane1: { enchantment: "bane_of_arthropods;1", slot: 11, page: 2 }
+  bane2: { enchantment: "bane_of_arthropods;2", slot: 12, page: 2 }
+  bane3: { enchantment: "bane_of_arthropods;3", slot: 13, page: 2 }
+  bane4: { enchantment: "bane_of_arthropods;4", slot: 14, page: 2 }
+  bane5: { enchantment: "bane_of_arthropods;5", slot: 15, page: 2 }
+
+  vanishing_curse1: { enchantment: "vanishing_curse;1", slot: 20, page: 2 }

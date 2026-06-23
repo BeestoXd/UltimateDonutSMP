@@ -64,8 +64,8 @@ public class InvseeCommand implements CommandExecutor {
                     ? "PLAYER-NOT-ONLINE"
                     : "PLAYER-NOT-FOUND";
             String fallback = plugin.getInvseeManager().requiresOnlineTarget() || knownPlayer
-                    ? "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ."
-                    : "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.";
+                    ? "&cthat player must be online."
+                    : "&cplayer not found.";
             viewer.sendMessage(ColorUtils.toComponent(
                     plugin.getInvseeManager().formatMessage(path, fallback, "{player}", args[0], "{target}", args[0])
             ));

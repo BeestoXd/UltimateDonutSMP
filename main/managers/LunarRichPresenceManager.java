@@ -207,7 +207,7 @@ public class LunarRichPresenceManager {
         }
 
         Team team = plugin.getTeamManager().getTeam(player);
-        String teamName = team != null ? team.getName().toUpperCase() : "ɴᴏɴᴇ";
+        String teamName = team != null ? team.getName().toUpperCase() : "none";
         int teamSize = getTeamSize(player);
         int teamMaxSize = Math.max(teamSize, plugin.getConfigManager().getConfig().getInt("TEAM.LIMIT-MEMBERS", 10));
 

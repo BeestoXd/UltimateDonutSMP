@@ -8,6 +8,7 @@ import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -50,18 +51,28 @@ public class BountyManager {
         return bounties.values();
     }
 
-    public UUID resolvePlayerUuid(String input) {
+    public UUID resolvePlayerUuid(CommandSender viewer, String input) {
         if (input == null || input.isBlank()) {
             return null;
         }
 
-        Player online = Bukkit.getPlayerExact(input);
+        Player online = plugin.getHideManager().findOnlinePlayer(viewer, input);
         if (online != null) {
             return online.getUniqueId();
+        }
+        var hiddenState = plugin.getHideManager().findState(input);
+        if (hiddenState != null
+                && (hiddenState.alias().equalsIgnoreCase(input)
+                || plugin.getHideManager().canSeeRealIdentity(viewer))) {
+            return hiddenState.playerUuid();
         }
 
         UUID storedUuid = plugin.getDatabaseManager().findPlayerUuidByUsername(input);
         if (storedUuid != null) {
+            if (plugin.getHideManager().isHidden(storedUuid)
+                    && !plugin.getHideManager().canSeeRealIdentity(viewer)) {
+                return null;
+            }
             return storedUuid;
         }
 
@@ -75,12 +86,12 @@ public class BountyManager {
 
     public String getDisplayName(UUID playerUuid) {
         if (playerUuid == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
 
         Player online = Bukkit.getPlayer(playerUuid);
         if (online != null) {
-            return online.getName();
+            return plugin.getHideManager().publicName(online);
         }
 
         String offlineName = Bukkit.getOfflinePlayer(playerUuid).getName();
@@ -93,7 +104,7 @@ public class BountyManager {
             return storedName;
         }
 
-        return "ᴜɴᴋɴᴏᴡɴ";
+        return "unknown";
     }
 
     public PlacementResult placeBounty(Player placer, UUID targetUuid, double amount) {
@@ -139,7 +150,7 @@ public class BountyManager {
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
         if (targetData == null || targetData.isBountyAlertsEnabled()) {
             String msg = plugin.getConfigManager().getMessage("BOUNTY.ALERT",
-                    "{who}", placer.getName(),
+                    "{who}", plugin.getHideManager().publicName(placer),
                     "{price}", NumberUtils.format(amount),
                     "{price_formatted}", plugin.getCurrencyManager().formatMoney(amount));
             target.sendMessage(ColorUtils.toComponent(msg));

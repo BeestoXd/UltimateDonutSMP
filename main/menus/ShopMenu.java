@@ -1,13 +1,16 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
+import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -21,33 +24,40 @@ import java.util.Set;
 public class ShopMenu extends BaseMenu {
 
     private final boolean mainMenu;
+    private final boolean favoritesMenu;
     private final String menuSection;
     private final Map<Integer, ShopManager.ShopCategory> slotCategories = new HashMap<>();
     private final Map<Integer, ShopManager.ShopItem> slotItems = new HashMap<>();
+    private final Map<Integer, ShopManager.AuctionQuote> slotQuotes = new HashMap<>();
     private int page;
     private int totalPages = 1;
     private boolean hasPreviousPage;
     private boolean hasNextPage;
 
     public ShopMenu(UltimateDonutSmp plugin) {
-        this(plugin, null, 0);
+        this(plugin, null, 0, false);
     }
 
     public ShopMenu(UltimateDonutSmp plugin, String menuSection) {
-        this(plugin, menuSection, 0);
+        this(plugin, menuSection, 0, false);
     }
 
     public ShopMenu(UltimateDonutSmp plugin, String menuSection, int page) {
+        this(plugin, menuSection, page, false);
+    }
+
+    public ShopMenu(UltimateDonutSmp plugin, boolean favoritesMenu, int page) {
+        this(plugin, null, page, favoritesMenu);
+    }
+
+    private ShopMenu(UltimateDonutSmp plugin, String menuSection, int page, boolean favoritesMenu) {
         super(
                 plugin,
-                menuSection == null
-                        ? plugin.getConfigManager().getShop().getString("CATEGORIES.MENU-TITLE", "&8ѕʜᴏᴘ")
-                        : plugin.getConfigManager().getShop().getString(menuSection + ".TITLE", "&8ѕʜᴏᴘ"),
-                normalizeSize(menuSection == null
-                        ? plugin.getConfigManager().getShop().getInt("CATEGORIES.MENU-SIZE", 27)
-                        : plugin.getConfigManager().getShop().getInt(menuSection + ".SIZE", 27))
+                resolveTitle(plugin, menuSection, favoritesMenu),
+                resolveSize(plugin, menuSection, favoritesMenu)
         );
-        this.mainMenu = menuSection == null;
+        this.mainMenu = menuSection == null && !favoritesMenu;
+        this.favoritesMenu = favoritesMenu;
         this.menuSection = menuSection;
         this.page = Math.max(0, page);
     }
@@ -58,58 +68,29 @@ public class ShopMenu extends BaseMenu {
         fill(Material.GRAY_STAINED_GLASS_PANE);
         slotCategories.clear();
         slotItems.clear();
+        slotQuotes.clear();
 
         if (mainMenu) {
-            buildMainMenu();
+            buildMainMenu(player);
         } else {
-            buildCategoryMenu();
+            buildItemsMenu(player);
         }
     }
 
     @Override
-    public void handleClick(int slot, Player player) {
+    public void handleClick(int slot, Player player, ClickType clickType) {
         if (mainMenu) {
-            ShopManager.ShopCategory category = slotCategories.get(slot);
-            if (category == null) {
-                return;
-            }
-
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new ShopMenu(plugin, category.menuSection(), 0).open(player);
+            handleMainClick(slot, player);
             return;
         }
 
         if (slot == getBackSlot()) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            click(player);
             new ShopMenu(plugin).open(player);
             return;
         }
 
-        if (slot == getFirstPageSlot() && hasPreviousPage) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-            page = 0;
-            build(player);
-            return;
-        }
-
-        if (slot == getPreviousPageSlot() && hasPreviousPage) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-            page--;
-            build(player);
-            return;
-        }
-
-        if (slot == getNextPageSlot() && hasNextPage) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-            page++;
-            build(player);
-            return;
-        }
-
-        if (slot == getLastPageSlot() && hasNextPage) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-            page = totalPages - 1;
-            build(player);
+        if (handlePageClick(slot, player)) {
             return;
         }
 
@@ -118,11 +99,81 @@ public class ShopMenu extends BaseMenu {
             return;
         }
 
-        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        new PurchaseShopMenu(plugin, item, menuSection, page).open(player);
+        if (favoritesEnabled() && clickType.isShiftClick()) {
+            boolean favorite = plugin.getShopManager().toggleFavorite(player.getUniqueId(), item);
+            player.sendMessage(ColorUtils.toComponent(text(
+                    favorite ? "SHOP-GUI.MESSAGES.FAVORITE-ADDED" : "SHOP-GUI.MESSAGES.FAVORITE-REMOVED",
+                    favorite ? "&aᴀᴅᴅᴇᴅ &f{item}&a ᴛᴏ ѕʜᴏᴘ ꜰᴀᴠᴏʀɪᴛᴇѕ." : "&eʀᴇᴍᴏᴠᴇᴅ &f{item}&e ꜰʀᴏᴍ ѕʜᴏᴘ ꜰᴀᴠᴏʀɪᴛᴇѕ.",
+                    "{item}", itemName(item)
+            )));
+            click(player);
+            build(player);
+            return;
+        }
+
+        ShopManager.AuctionQuote quote = slotQuotes.get(slot);
+        if (clickType.isRightClick() && quote != null) {
+            click(player);
+            new ConfirmPurchaseGui(
+                    plugin,
+                    quote.listing(),
+                    ignored -> reopenCurrent(player)
+            ).open(player);
+            return;
+        }
+
+        click(player);
+        if (favoritesMenu) {
+            new PurchaseShopMenu(plugin, item, item.menuSection(), page, true).open(player);
+        } else {
+            new PurchaseShopMenu(plugin, item, menuSection, page).open(player);
+        }
     }
 
-    private void buildMainMenu() {
+    private void handleMainClick(int slot, Player player) {
+        int favoritesSlot = config().getInt("SHOP-GUI.FAVORITES.BUTTON.SLOT", 26);
+        if (favoritesEnabled() && slot == favoritesSlot) {
+            click(player);
+            new ShopMenu(plugin, true, 0).open(player);
+            return;
+        }
+
+        ShopManager.ShopCategory category = slotCategories.get(slot);
+        if (category != null) {
+            click(player);
+            new ShopMenu(plugin, category.menuSection(), 0).open(player);
+        }
+    }
+
+    private boolean handlePageClick(int slot, Player player) {
+        if (slot == getFirstPageSlot() && hasPreviousPage) {
+            click(player);
+            page = 0;
+            build(player);
+            return true;
+        }
+        if (slot == getPreviousPageSlot() && hasPreviousPage) {
+            click(player);
+            page--;
+            build(player);
+            return true;
+        }
+        if (slot == getNextPageSlot() && hasNextPage) {
+            click(player);
+            page++;
+            build(player);
+            return true;
+        }
+        if (slot == getLastPageSlot() && hasNextPage) {
+            click(player);
+            page = totalPages - 1;
+            build(player);
+            return true;
+        }
+        return false;
+    }
+
+    private void buildMainMenu(Player player) {
         List<ShopManager.ShopCategory> categories = plugin.getShopManager().loadCategories();
         for (ShopManager.ShopCategory category : categories) {
             set(category.slot(), ItemUtils.createItem(
@@ -136,21 +187,38 @@ public class ShopMenu extends BaseMenu {
         if (categories.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ѕʜᴏᴘ ᴄᴀᴛᴇɢᴏʀɪᴇѕ",
-                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ᴋᴀᴛᴇɢᴏʀɪ ѕʜᴏᴘ ʏᴀɴɢ ᴀᴋᴛɪꜰ.")
+                    text("SHOP-GUI.EMPTY.CATEGORIES.NAME", "&cɴᴏ ѕʜᴏᴘ ᴄᴀᴛᴇɢᴏʀɪᴇѕ"),
+                    textList("SHOP-GUI.EMPTY.CATEGORIES.LORE", List.of("&7ɴᴏ ᴇɴᴀʙʟᴇᴅ ᴄᴀᴛᴇɢᴏʀɪᴇѕ ᴀʀᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ."))
             ));
+        }
+
+        if (favoritesEnabled()) {
+            buildFavoritesControl(player);
         }
     }
 
-    private void buildCategoryMenu() {
-        List<ShopManager.ShopItem> items = plugin.getShopManager().loadMenuItems(menuSection);
+    private void buildFavoritesControl(Player player) {
+        String path = "SHOP-GUI.FAVORITES.BUTTON";
+        int count = plugin.getShopManager().getPreference(player.getUniqueId()).favorites().size();
+        set(config().getInt(path + ".SLOT", 26), ItemUtils.createItem(
+                ItemUtils.parseMaterial(config().getString(path + ".MATERIAL", "NETHER_STAR")),
+                replace(config().getString(path + ".NAME", "&dꜰᴀᴠᴏʀɪᴛᴇ ɪᴛᴇᴍѕ"), "{count}", String.valueOf(count)),
+                replace(config().getStringList(path + ".LORE"), "{count}", String.valueOf(count))
+        ));
+    }
+
+    private void buildItemsMenu(Player player) {
+        List<ShopManager.ShopItem> items = favoritesMenu
+                ? plugin.getShopManager().loadFavoriteItems(player.getUniqueId())
+                : plugin.getShopManager().loadMenuItems(menuSection);
         buildBackButton();
 
         if (items.isEmpty()) {
+            String emptyPath = favoritesMenu ? "SHOP-GUI.EMPTY.FAVORITES" : "SHOP-GUI.EMPTY.ITEMS";
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ɪᴛᴇᴍѕ ɪɴ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ",
-                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ɪᴛᴇᴍ ѕʜᴏᴘ ʏᴀɴɢ ᴀᴋᴛɪꜰ ᴅɪ ᴋᴀᴛᴇɢᴏʀɪ ɪɴɪ.")
+                    config().getString(emptyPath + ".NAME", favoritesMenu ? "&cɴᴏ ꜰᴀᴠᴏʀɪᴛᴇ ɪᴛᴇᴍѕ" : "&cɴᴏ ѕʜᴏᴘ ɪᴛᴇᴍѕ"),
+                    config().getStringList(emptyPath + ".LORE")
             ));
             return;
         }
@@ -169,26 +237,35 @@ public class ShopMenu extends BaseMenu {
         hasPreviousPage = page > 0;
         hasNextPage = page < totalPages - 1;
 
-        if (canUseConfiguredSlots(items, contentSlots)) {
+        if (!favoritesMenu && canUseConfiguredSlots(items, contentSlots)) {
             for (ShopManager.ShopItem item : items) {
-                set(item.slot(), createShopItem(item));
-                slotItems.put(item.slot(), item);
+                renderItem(player, item.slot(), item);
             }
         } else {
             int startIndex = page * itemsPerPage;
             int endIndex = Math.min(startIndex + itemsPerPage, items.size());
             for (int index = startIndex; index < endIndex; index++) {
-                int slot = contentSlots[index - startIndex];
-                ShopManager.ShopItem item = items.get(index);
-                set(slot, createShopItem(item));
-                slotItems.put(slot, item);
+                renderItem(player, contentSlots[index - startIndex], items.get(index));
             }
         }
 
         buildPageButtons(items.size());
     }
 
-    private ItemStack createShopItem(ShopManager.ShopItem item) {
+    private void renderItem(Player player, int slot, ShopManager.ShopItem item) {
+        ShopManager.AuctionQuote quote = plugin.getShopManager().findBestAuctionQuote(player, item);
+        set(slot, createShopItem(player, item, quote));
+        slotItems.put(slot, item);
+        if (quote != null) {
+            slotQuotes.put(slot, quote);
+        }
+    }
+
+    private ItemStack createShopItem(
+            Player player,
+            ShopManager.ShopItem item,
+            ShopManager.AuctionQuote quote
+    ) {
         List<String> lore = item.lore().stream()
                 .map(line -> replaceShopItemCurrencyPlaceholders(line, item))
                 .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
@@ -196,13 +273,16 @@ public class ShopMenu extends BaseMenu {
             lore.add("");
         }
 
-        com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType currencyType = item.currency() == ShopManager.Currency.SHARD
-                ? com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS
-                : com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY;
-        String currencyLabel = plugin.getCurrencyManager().color(currencyType)
-                + plugin.getCurrencyManager().plural(currencyType);
-        lore.add("&7ᴄᴜʀʀᴇɴᴄʏ: " + currencyLabel);
-        lore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴏᴏѕᴇ ǫᴜᴀɴᴛɪᴛʏ");
+        boolean favoritesEnabled = favoritesEnabled();
+        boolean favorite = favoritesEnabled
+                && plugin.getShopManager().isFavorite(player.getUniqueId(), item);
+        for (String line : config().getStringList("SHOP-GUI.ITEM.LORE")) {
+            if (!favoritesEnabled
+                    && (line.contains("{favorite_line}") || line.contains("{favorite_action}"))) {
+                continue;
+            }
+            lore.add(replaceShopGuiPlaceholders(line, item, quote, favorite));
+        }
 
         return ItemUtils.createItem(
                 item.material(),
@@ -211,10 +291,58 @@ public class ShopMenu extends BaseMenu {
         );
     }
 
+    private String replaceShopGuiPlaceholders(
+            String line,
+            ShopManager.ShopItem item,
+            ShopManager.AuctionQuote quote,
+            boolean favorite
+    ) {
+        CurrencyManager.CurrencyType currencyType = currencyType(item);
+        double shopPrice = item.currency() == ShopManager.Currency.SHARD
+                ? Math.round(item.pricePerUnit())
+                : item.pricePerUnit();
+        String auctionLine = quote == null
+                ? config().getString("SHOP-GUI.ITEM.NO-AUCTION", "&8ʙᴇѕᴛ ᴀᴜᴄᴛɪᴏɴ: ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ")
+                : replace(
+                        config().getString(
+                                "SHOP-GUI.ITEM.AUCTION",
+                                "&7ʙᴇѕᴛ ᴀᴜᴄᴛɪᴏɴ: {auction_price} &8({auction_amount} ɪᴛᴇᴍѕ)"
+                        ),
+                        "{auction_price}", plugin.getCurrencyManager().formatMoney(quote.listing().price()),
+                        "{auction_unit_price}", plugin.getCurrencyManager().formatMoney(quote.unitPrice()),
+                        "{auction_amount}", String.valueOf(quote.listing().item().getAmount())
+                );
+        String favoriteLine = config().getString(
+                favorite ? "SHOP-GUI.ITEM.FAVORITE-ON" : "SHOP-GUI.ITEM.FAVORITE-OFF",
+                favorite ? "&d★ ꜰᴀᴠᴏʀɪᴛᴇ" : "&7☆ ɴᴏᴛ ꜰᴀᴠᴏʀɪᴛᴇᴅ"
+        );
+        String favoriteAction = favoritesEnabled()
+                ? config().getString("SHOP-GUI.ITEM.FAVORITE-ACTION", "&dѕʜɪꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴏɢɢʟᴇ ꜰᴀᴠᴏʀɪᴛᴇ")
+                : "";
+        String auctionAction = config().getString(
+                quote == null ? "SHOP-GUI.ITEM.NO-AUCTION-ACTION" : "SHOP-GUI.ITEM.AUCTION-ACTION",
+                quote == null ? "" : "&bʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʙᴜʏ ᴛʜᴇ ʙᴇѕᴛ ᴀᴜᴄᴛɪᴏɴ"
+        );
+        return replace(
+                line,
+                "{shop_price}", plugin.getCurrencyManager().format(currencyType, shopPrice),
+                "{shop_unit_price}", plugin.getCurrencyManager().format(currencyType, shopPrice),
+                "{auction_line}", auctionLine,
+                "{auction_action}", auctionAction,
+                "{favorite_line}", favoriteLine,
+                "{favorite_action}", favoriteAction,
+                "{item}", itemName(item)
+        );
+    }
+
+    private CurrencyManager.CurrencyType currencyType(ShopManager.ShopItem item) {
+        return item.currency() == ShopManager.Currency.SHARD
+                ? CurrencyManager.CurrencyType.SHARDS
+                : CurrencyManager.CurrencyType.MONEY;
+    }
+
     private String replaceShopItemCurrencyPlaceholders(String line, ShopManager.ShopItem item) {
-        com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType currencyType = item.currency() == ShopManager.Currency.SHARD
-                ? com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS
-                : com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY;
+        CurrencyManager.CurrencyType currencyType = currencyType(item);
         double price = item.currency() == ShopManager.Currency.SHARD
                 ? Math.round(item.pricePerUnit())
                 : item.pricePerUnit();
@@ -228,7 +356,8 @@ public class ShopMenu extends BaseMenu {
                 .replace("{price}", rawPrice)
                 .replace("%price%", rawPrice);
 
-        if (line.toLowerCase(Locale.US).contains("ʙᴜʏ ᴘʀɪᴄᴇ:") && !line.contains("{price")) {
+        String normalizedLine = normalizePriceLabel(line);
+        if ((normalizedLine.contains("buy price:") || normalizedLine.contains("harga beli:")) && !line.contains("{price")) {
             int colonIndex = line.indexOf(':');
             if (colonIndex >= 0) {
                 return line.substring(0, colonIndex + 1) + " " + formattedPrice;
@@ -237,13 +366,27 @@ public class ShopMenu extends BaseMenu {
         return result;
     }
 
+    private String normalizePriceLabel(String value) {
+        return (value == null ? "" : value.toLowerCase(Locale.ROOT))
+                .replace('b', 'b')
+                .replace('u', 'u')
+                .replace('y', 'y')
+                .replace('p', 'p')
+                .replace('r', 'r')
+                .replace('i', 'i')
+                .replace('c', 'c')
+                .replace('e', 'e')
+                .replace('h', 'h')
+                .replace('a', 'a')
+                .replace('g', 'g')
+                .replace('l', 'l');
+    }
+
     private void buildBackButton() {
-        ConfigurationSection backButton = plugin.getConfigManager().getShop()
-                .getConfigurationSection("BACK-BUTTON");
+        ConfigurationSection backButton = config().getConfigurationSection("BACK-BUTTON");
         if (backButton == null) {
             return;
         }
-
         set(getBackSlot(), ItemUtils.createItem(
                 ItemUtils.parseMaterial(backButton.getString("MATERIAL", "RED_STAINED_GLASS_PANE")),
                 backButton.getString("DISPLAY-NAME", "&cʙᴀᴄᴋ"),
@@ -270,8 +413,11 @@ public class ShopMenu extends BaseMenu {
 
         set(getPageInfoSlot(), ItemUtils.createItem(
                 Material.BOOK,
-                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
-                List.of("&fɪᴛᴇᴍѕ: &7" + totalItems)
+                text("SHOP-GUI.PAGE.NAME", "&eᴘᴀɢᴇ {page}&7/&e{pages}",
+                        "{page}", String.valueOf(page + 1),
+                        "{pages}", String.valueOf(totalPages)),
+                List.of(text("SHOP-GUI.PAGE.ITEMS", "&fɪᴛᴇᴍѕ: &7{items}",
+                        "{items}", String.valueOf(totalItems)))
         ));
 
         if (hasNextPage) {
@@ -292,12 +438,10 @@ public class ShopMenu extends BaseMenu {
         if (totalPages > 1 || items.isEmpty()) {
             return false;
         }
-
         Set<Integer> validSlots = new HashSet<>();
         for (int slot : contentSlots) {
             validSlots.add(slot);
         }
-
         Set<Integer> usedSlots = new HashSet<>();
         for (ShopManager.ShopItem item : items) {
             if (!validSlots.contains(item.slot()) || !usedSlots.add(item.slot())) {
@@ -308,8 +452,7 @@ public class ShopMenu extends BaseMenu {
     }
 
     private int getConfiguredItemsPerPage(int contentSlotCount) {
-        return plugin.getConfigManager().getShop()
-                .getInt(menuSection + ".ITEMS-PER-PAGE", contentSlotCount);
+        return config().getInt(menuPath() + ".ITEMS-PER-PAGE", contentSlotCount);
     }
 
     private int[] getContentSlots() {
@@ -321,38 +464,114 @@ public class ShopMenu extends BaseMenu {
         reserved.add(getPageInfoSlot());
         reserved.add(getNextPageSlot());
         reserved.add(getLastPageSlot());
-
         for (int slot = 0; slot < inventory.getSize(); slot++) {
             if (!reserved.contains(slot)) {
                 slots.add(slot);
             }
         }
-
         return slots.stream().mapToInt(Integer::intValue).toArray();
     }
 
+    private String menuPath() {
+        return favoritesMenu ? "SHOP-GUI.FAVORITES.MENU" : menuSection;
+    }
+
     private int getBackSlot() {
-        return plugin.getConfigManager().getShop().getInt(menuSection + ".BACK-BUTTON-SLOT", inventory.getSize() - 9);
+        return config().getInt(menuPath() + ".BACK-BUTTON-SLOT", inventory.getSize() - 9);
     }
 
     private int getFirstPageSlot() {
-        return plugin.getConfigManager().getShop().getInt(menuSection + ".FIRST-PAGE-SLOT", inventory.getSize() - 8);
+        return config().getInt(menuPath() + ".FIRST-PAGE-SLOT", inventory.getSize() - 8);
     }
 
     private int getPreviousPageSlot() {
-        return plugin.getConfigManager().getShop().getInt(menuSection + ".PREVIOUS-PAGE-SLOT", inventory.getSize() - 7);
+        return config().getInt(menuPath() + ".PREVIOUS-PAGE-SLOT", inventory.getSize() - 7);
     }
 
     private int getPageInfoSlot() {
-        return plugin.getConfigManager().getShop().getInt(menuSection + ".PAGE-INFO-SLOT", inventory.getSize() - 5);
+        return config().getInt(menuPath() + ".PAGE-INFO-SLOT", inventory.getSize() - 5);
     }
 
     private int getNextPageSlot() {
-        return plugin.getConfigManager().getShop().getInt(menuSection + ".NEXT-PAGE-SLOT", inventory.getSize() - 3);
+        return config().getInt(menuPath() + ".NEXT-PAGE-SLOT", inventory.getSize() - 3);
     }
 
     private int getLastPageSlot() {
-        return plugin.getConfigManager().getShop().getInt(menuSection + ".LAST-PAGE-SLOT", inventory.getSize() - 2);
+        return config().getInt(menuPath() + ".LAST-PAGE-SLOT", inventory.getSize() - 2);
+    }
+
+    private void reopenCurrent(Player player) {
+        if (favoritesMenu) {
+            new ShopMenu(plugin, true, page).open(player);
+        } else {
+            new ShopMenu(plugin, menuSection, page).open(player);
+        }
+    }
+
+    private void click(Player player) {
+        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+    }
+
+    private String itemName(ShopManager.ShopItem item) {
+        String display = ColorUtils.strip(item.displayName());
+        return display == null || display.isBlank()
+                ? plugin.getWorthManager().prettifyMaterial(item.material())
+                : display;
+    }
+
+    private FileConfiguration config() {
+        return plugin.getConfigManager().getShop();
+    }
+
+    private boolean favoritesEnabled() {
+        return plugin.getShopManager().areFavoritesEnabled();
+    }
+
+    private String text(String path, String fallback, String... replacements) {
+        String value = config().getString(path, fallback);
+        return replace(value, replacements);
+    }
+
+    private List<String> textList(String path, List<String> fallback, String... replacements) {
+        List<String> value = config().isList(path) ? config().getStringList(path) : fallback;
+        return replace(value, replacements);
+    }
+
+    private String replace(String value, String... replacements) {
+        String resolved = value == null ? "" : value;
+        for (int index = 0; index + 1 < replacements.length; index += 2) {
+            resolved = resolved.replace(replacements[index], replacements[index + 1]);
+        }
+        return resolved;
+    }
+
+    private List<String> replace(List<String> values, String... replacements) {
+        List<String> resolved = new ArrayList<>();
+        for (String value : values) {
+            resolved.add(replace(value, replacements));
+        }
+        return resolved;
+    }
+
+    private static String resolveTitle(UltimateDonutSmp plugin, String menuSection, boolean favoritesMenu) {
+        FileConfiguration config = plugin.getConfigManager().getShop();
+        if (favoritesMenu) {
+            return config.getString("SHOP-GUI.FAVORITES.MENU.TITLE", "&8ꜰᴀᴠᴏʀɪᴛᴇ ѕʜᴏᴘ ɪᴛᴇᴍѕ");
+        }
+        if (menuSection == null) {
+            return config.getString("CATEGORIES.MENU-TITLE", "&8ѕʜᴏᴘ");
+        }
+        return config.getString(menuSection + ".TITLE", "&8ѕʜᴏᴘ");
+    }
+
+    private static int resolveSize(UltimateDonutSmp plugin, String menuSection, boolean favoritesMenu) {
+        FileConfiguration config = plugin.getConfigManager().getShop();
+        int configured = favoritesMenu
+                ? config.getInt("SHOP-GUI.FAVORITES.MENU.SIZE", 54)
+                : menuSection == null
+                ? config.getInt("CATEGORIES.MENU-SIZE", 27)
+                : config.getInt(menuSection + ".SIZE", 27);
+        return normalizeSize(configured);
     }
 
     private static int normalizeSize(int configuredSize) {

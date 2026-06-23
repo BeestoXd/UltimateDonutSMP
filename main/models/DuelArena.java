@@ -13,6 +13,10 @@ public class DuelArena {
     private Location regionPos2;
     private boolean enabled;
     private boolean queueEnabled;
+    private boolean allowItemDrop;
+    private boolean allowBlockBreak;
+    private boolean allowBlockPlace;
+    private boolean allowBucketUse;
     private boolean noHunger;
     private boolean noWeather;
     private boolean alwaysMorning;
@@ -27,6 +31,10 @@ public class DuelArena {
                      Location regionPos2,
                      boolean enabled,
                      boolean queueEnabled,
+                     boolean allowItemDrop,
+                     boolean allowBlockBreak,
+                     boolean allowBlockPlace,
+                     boolean allowBucketUse,
                      boolean noHunger,
                      boolean noWeather,
                      boolean alwaysMorning,
@@ -40,6 +48,10 @@ public class DuelArena {
         this.regionPos2 = cloneLocation(regionPos2);
         this.enabled = enabled;
         this.queueEnabled = queueEnabled;
+        this.allowItemDrop = allowItemDrop;
+        this.allowBlockBreak = allowBlockBreak;
+        this.allowBlockPlace = allowBlockPlace;
+        this.allowBucketUse = allowBucketUse;
         this.noHunger = noHunger;
         this.noWeather = noWeather;
         this.alwaysMorning = alwaysMorning;
@@ -112,6 +124,38 @@ public class DuelArena {
 
     public void setQueueEnabled(boolean queueEnabled) {
         this.queueEnabled = queueEnabled;
+    }
+
+    public boolean isAllowItemDrop() {
+        return allowItemDrop;
+    }
+
+    public void setAllowItemDrop(boolean allowItemDrop) {
+        this.allowItemDrop = allowItemDrop;
+    }
+
+    public boolean isAllowBlockBreak() {
+        return allowBlockBreak;
+    }
+
+    public void setAllowBlockBreak(boolean allowBlockBreak) {
+        this.allowBlockBreak = allowBlockBreak;
+    }
+
+    public boolean isAllowBlockPlace() {
+        return allowBlockPlace;
+    }
+
+    public void setAllowBlockPlace(boolean allowBlockPlace) {
+        this.allowBlockPlace = allowBlockPlace;
+    }
+
+    public boolean isAllowBucketUse() {
+        return allowBucketUse;
+    }
+
+    public void setAllowBucketUse(boolean allowBucketUse) {
+        this.allowBucketUse = allowBucketUse;
     }
 
     public boolean isNoHunger() {

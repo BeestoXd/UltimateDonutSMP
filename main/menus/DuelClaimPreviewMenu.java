@@ -37,7 +37,7 @@ public class DuelClaimPreviewMenu extends BaseMenu {
                     List.of("&7ᴛʜɪѕ ᴅᴜᴇʟ ʟᴏᴏᴛ ᴘᴀᴄᴋᴀɢᴇ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.")
             ));
             set(45, ItemUtils.createItem(Material.ARROW, "&aʙᴀᴄᴋ"));
-            set(53, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
+            set(53, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ"));
             return;
         }
 
@@ -54,7 +54,7 @@ public class DuelClaimPreviewMenu extends BaseMenu {
         }
 
         String defeatedName = claim.defeatedName() == null || claim.defeatedName().isBlank()
-                ? "ᴜɴᴋɴᴏᴡɴ"
+                ? "unknown"
                 : claim.defeatedName();
 
         set(45, ItemUtils.createItem(Material.ARROW, "&aʙᴀᴄᴋ"));
@@ -83,7 +83,7 @@ public class DuelClaimPreviewMenu extends BaseMenu {
                         "&7ᴛʜɪѕ ᴀᴄᴛɪᴏɴ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜɴᴅᴏɴᴇ."
                 )
         ));
-        set(53, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
+        set(53, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ"));
     }
 
     @Override
@@ -112,7 +112,8 @@ public class DuelClaimPreviewMenu extends BaseMenu {
             return;
         }
         if (slot == 53) {
-            player.closeInventory();
+            SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
+            new DuelClaimMenu(plugin, returnPage).open(player);
         }
     }
 }

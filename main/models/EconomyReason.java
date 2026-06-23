@@ -6,6 +6,7 @@ public enum EconomyReason {
     ADMIN_SET,
     PLAYER_PAY,
     SHOP_PURCHASE,
+    SHOP_REFUND,
     SELL_PAYOUT,
     AUCTION_LISTING_FEE,
     AUCTION_PURCHASE,

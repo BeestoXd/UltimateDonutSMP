@@ -39,7 +39,7 @@ public class WarpManagerCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendMessage(sender, message("WARPMANAGER.USAGE", "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [name]"));
+            sendMessage(sender, message("WARPMANAGER.USAGE", "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [ɴᴀᴍᴇ]"));
             return true;
         }
 
@@ -48,7 +48,7 @@ public class WarpManagerCommand implements CommandExecutor {
             case "create" -> handleCreate(sender, args, true);
             case "delete" -> handleDelete(sender, args, true);
             case "list" -> handleList(sender);
-            default -> sendMessage(sender, message("WARPMANAGER.USAGE", "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [name]"));
+            default -> sendMessage(sender, message("WARPMANAGER.USAGE", "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [ɴᴀᴍᴇ]"));
         }
         return true;
     }
@@ -84,7 +84,7 @@ public class WarpManagerCommand implements CommandExecutor {
 
         if (args.length != 2) {
             sendMessage(sender, managerCommand
-                    ? message("WARPMANAGER.CREATE-USAGE", "&cᴜѕᴀɢᴇ: /warpmanager create <name>")
+                    ? message("WARPMANAGER.CREATE-USAGE", "&cᴜѕᴀɢᴇ: /warpmanager ᴄʀᴇᴀᴛᴇ <name>")
                     : message("WARPMANAGER.CREATE-USAGE-ALIAS", "&cᴜѕᴀɢᴇ: /setwarp <name>"));
             return;
         }
@@ -125,7 +125,7 @@ public class WarpManagerCommand implements CommandExecutor {
 
         if (args.length != 2) {
             sendMessage(sender, managerCommand
-                    ? message("WARPMANAGER.DELETE-USAGE", "&cᴜѕᴀɢᴇ: /warpmanager delete <name>")
+                    ? message("WARPMANAGER.DELETE-USAGE", "&cᴜѕᴀɢᴇ: /warpmanager ᴅᴇʟᴇᴛᴇ <name>")
                     : message("WARPMANAGER.DELETE-USAGE-ALIAS", "&cᴜѕᴀɢᴇ: /delwarp <name>"));
             return;
         }

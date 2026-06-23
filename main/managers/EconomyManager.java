@@ -471,7 +471,7 @@ public class EconomyManager {
 
     private String resolveDisplayName(UUID uuid, String fallbackName) {
         if (uuid == null) {
-            return fallbackName != null && !fallbackName.isBlank() ? fallbackName : "ᴜɴᴋɴᴏᴡɴ";
+            return fallbackName != null && !fallbackName.isBlank() ? fallbackName : "unknown";
         }
 
         Player onlinePlayer = Bukkit.getPlayer(uuid);

@@ -26,7 +26,7 @@ public class WarpCommand implements CommandExecutor {
         }
 
         if (args.length > 1) {
-            sendMessage(sender, message("WARP.USAGE", "&cᴜѕᴀɢᴇ: /warp [name]"));
+            sendMessage(sender, message("WARP.USAGE", "&cᴜѕᴀɢᴇ: /warp [ɴᴀᴍᴇ]"));
             return true;
         }
 

@@ -36,18 +36,18 @@ public class BountyCommand implements CommandExecutor {
         switch (args[0].toLowerCase()) {
             case "add", "set" -> handleAdd(player, args);
             case "info" -> handleInfo(player, args);
-            default -> player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty <add|info|list> [player] [amount]"));
+            default -> player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty <add|info|list> [ᴘʟᴀʏᴇʀ] [ᴀᴍᴏᴜɴᴛ]"));
         }
         return true;
     }
 
     private void handleAdd(Player player, String[] args) {
         if (args.length < 3) {
-            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty add <player> <amount>"));
+            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty ᴀᴅᴅ <player> <amount>"));
             return;
         }
 
-        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(args[1]);
+        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(player, args[1]);
         if (targetUuid == null) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BOUNTY.PLAYER-NOT-EXIST")));
             return;
@@ -83,11 +83,11 @@ public class BountyCommand implements CommandExecutor {
 
     private void handleInfo(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty info <player>"));
+            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /bounty ɪɴꜰᴏ <player>"));
             return;
         }
 
-        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(args[1]);
+        UUID targetUuid = plugin.getBountyManager().resolvePlayerUuid(player, args[1]);
         if (targetUuid == null) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BOUNTY.PLAYER-NOT-EXIST")));
             return;

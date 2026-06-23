@@ -23,7 +23,8 @@ public class AFKManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getConfigManager().getConfig()
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.AFK)
+                && plugin.getConfigManager().getConfig()
                 .getBoolean("AFK-SYSTEM.ENABLED", true);
     }
 
@@ -105,7 +106,7 @@ public class AFKManager {
     public void sendToAfk(Player player) {
         sendToAfk(player, resolveAutomaticAfkLocation(), plugin.getConfigManager().getConfig()
                 .getString("AFK-SYSTEM.MESSAGE",
-                        "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ᴛʜᴇ ᴀꜰᴋ ᴀʀᴇᴀ ꜰᴏʀ ʙᴇɪɴɢ ɪɴᴀᴄᴛɪᴠᴇ ɪɴ ᴛʜᴇ ѕᴘᴀᴡɴ."));
+                        "&7you have been moved to the afk area for being inactive in the spawn."));
     }
 
     public Location resolveAutomaticAfkLocation() {

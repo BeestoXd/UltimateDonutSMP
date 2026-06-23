@@ -72,7 +72,7 @@ public class PunishmentManager {
 
     public String resolveTargetName(UUID uuid) {
         if (uuid == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
 
         Player online = Bukkit.getPlayer(uuid);
@@ -319,7 +319,7 @@ public class PunishmentManager {
             return uuid.toString().substring(0, 8);
         }
 
-        return fallbackToConsole ? "ᴄᴏɴѕᴏʟᴇ" : "ᴜɴᴋɴᴏᴡɴ";
+        return fallbackToConsole ? "console" : "unknown";
     }
 
     private Long normalizeTimestamp(Long timestamp) {

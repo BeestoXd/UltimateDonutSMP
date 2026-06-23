@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
+import com.bx.ultimateDonutSmp.managers.MaintenanceManager;
 import com.bx.ultimateDonutSmp.managers.OptimizationManager;
 import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import com.bx.ultimateDonutSmp.managers.StatsWipeManager;
@@ -41,7 +42,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     private static final String DEFAULT_WEBHOOK_PLACEHOLDER = "https://discord.com/api/webhooks/your_webhook_here";
     private static final int COMMANDS_PER_PAGE = 8;
 
-    private static final List<String> ROOT_COMPLETIONS = List.of("reload", "statswipe", "optimize", "setup", "features");
+    private static final List<String> ROOT_COMPLETIONS = List.of("reload", "statswipe", "optimize", "setup", "features", "maintenance");
     private static final List<String> SETUP_COMPLETIONS = List.of("status", "apply", "setspawn", "setafk", "commands");
     private static final List<String> COMMAND_CATEGORIES = List.of("all", "starter", "economy", "market", "pvp", "staff", "admin", "setup");
 
@@ -64,6 +65,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             case "optimize", "optimization" -> handleOptimize(sender, label, args);
             case "setup" -> handleSetup(sender, label, args);
             case "features" -> handleFeatures(sender, label, args);
+            case "maintenance" -> handleMaintenance(sender, label, args);
             default -> sendUsage(sender, label);
         }
         return true;
@@ -79,7 +81,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             plugin.reloadAllPluginConfigurations();
             sender.sendMessage(ColorUtils.toComponent("&aᴜʟᴛɪᴍᴀᴛᴇᴅᴏɴᴜᴛѕᴍᴘ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ."));
         } catch (Exception exception) {
-            plugin.getLogger().log(Level.SEVERE, "ꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴜʟᴛɪᴍᴀᴛᴇᴅᴏɴᴜᴛѕᴍᴘ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ.", exception);
+            plugin.getLogger().log(Level.SEVERE, "failed to reload ultimatedonutsmp configuration.", exception);
             sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ ꜰᴏʀ ᴅᴇᴛᴀɪʟѕ."));
         }
     }
@@ -123,7 +125,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         }
         if (!result.success()) {
             String error = result.errorMessage() == null || result.errorMessage().isBlank()
-                    ? "ᴜɴᴋɴᴏᴡɴ ᴇʀʀᴏʀ"
+                    ? "unknown error"
                     : result.errorMessage();
             sender.sendMessage(ColorUtils.toComponent(message("FAILED",
                     "&cѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ: {error}")
@@ -163,7 +165,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
                 optimizationManager.resetStats();
                 sender.sendMessage(ColorUtils.toComponent("&aᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ʀᴜɴᴛɪᴍᴇ ᴄᴏᴜɴᴛᴇʀѕ ʀᴇѕᴇᴛ."));
             }
-            default -> sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴏᴘᴛɪᴍɪᴢᴇ [status|reload|reset]"));
+            default -> sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴏᴘᴛɪᴍɪᴢᴇ [ѕᴛᴀᴛᴜѕ|ʀᴇʟᴏᴀᴅ|ʀᴇѕᴇᴛ]"));
         }
     }
 
@@ -277,8 +279,8 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             FileConfiguration network = plugin.getConfigManager().getNetwork();
             FileConfiguration discord = plugin.getConfigManager().getDiscord();
 
-            config.set("SETTINGS.SPAWN-MENU", false);
-            config.set("SETTINGS.AFK-MENU", false);
+            config.set("SETTINGS.SPAWN-MENU", true);
+            config.set("SETTINGS.AFK-MENU", true);
             config.set("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", false);
 
             database.set("DATABASE.TYPE", "SQLITE");
@@ -286,17 +288,17 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             database.set("REDIS.ENABLED", false);
 
             network.set("NETWORK.LOCAL_SERVER_ID", "local");
-            network.set("NETWORK.LOCAL_DISPLAY_NAME", "ʟᴏᴄᴀʟ");
+            network.set("NETWORK.LOCAL_DISPLAY_NAME", "local");
             network.set("NETWORK-STATUS.LOCAL-SERVER-ID", "local");
-            network.set("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "ʟᴏᴄᴀʟ");
+            network.set("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "local");
             network.set("NETWORK-STATUS.SERVERS", null);
-            network.set("NETWORK-STATUS.SERVERS.local.DISPLAY", "ʟᴏᴄᴀʟ");
-            network.set("NETWORK-STATUS.SERVERS.local.SOURCE.TYPE", "LOCAL");
+            network.set("NETWORK-STATUS.SERVERS.LOCAL.DISPLAY", "local");
+            network.set("NETWORK-STATUS.SERVERS.LOCAL.SOURCE.TYPE", "LOCAL");
 
             discord.set("WEBHOOKS.ENABLED", false);
 
-            plugin.saveConfig();
-            boolean saved = plugin.getConfigManager().saveDatabase()
+            boolean saved = plugin.getConfigManager().saveConfig()
+                    & plugin.getConfigManager().saveDatabase()
                     & plugin.getConfigManager().saveNetwork()
                     & plugin.getConfigManager().saveDiscord();
             if (!saved) {
@@ -309,7 +311,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ColorUtils.toComponent("&7ɴᴇxᴛ: ᴜѕᴇ &f/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ &7ᴀɴᴅ &f/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ&7."));
             sender.sendMessage(ColorUtils.toComponent("&eʀᴇѕᴛᴀʀᴛ ᴛʜᴇ ѕᴇʀᴠᴇʀ ʙᴇꜰᴏʀᴇ ɢᴏɪɴɢ ʟɪᴠᴇ ѕᴏ ѕᴛᴏʀᴀɢᴇ ᴄʜᴀɴɢᴇѕ ᴀʀᴇ ꜰᴜʟʟʏ ᴀᴘᴘʟɪᴇᴅ."));
         } catch (Exception exception) {
-            plugin.getLogger().log(Level.SEVERE, "ꜰᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ.", exception);
+            plugin.getLogger().log(Level.SEVERE, "failed to apply single paper setup preset.", exception);
             sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʟʏ ѕᴇᴛᴜᴘ ᴘʀᴇѕᴇᴛ. ᴄʜᴇᴄᴋ ᴄᴏɴѕᴏʟᴇ ꜰᴏʀ ᴅᴇᴛᴀɪʟѕ."));
         }
     }
@@ -324,7 +326,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         if (spawn) {
             SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setSpawnLocation(location);
             if (!result.success()) {
-                plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ ѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ "
+                plugin.getLogger().warning("failed to save setup spawn location at "
                         + describeLocation(location) + ": " + result.message());
                 sender.sendMessage(ColorUtils.toComponent("&cѕᴘᴀᴡɴ ʟᴏᴄᴀᴛɪᴏɴ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ѕᴀᴠᴇᴅ: &f" + result.message()));
                 return;
@@ -336,7 +338,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
         SpawnManager.SetupLocationResult result = plugin.getSpawnManager().setAfkLocation(location);
         if (!result.success()) {
-            plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ѕᴇᴛᴜᴘ AFK ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ "
+            plugin.getLogger().warning("failed to save setup AFK location at "
                     + describeLocation(location) + ": " + result.message());
             sender.sendMessage(ColorUtils.toComponent("&cᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ѕᴀᴠᴇᴅ: &f" + result.message()));
             return;
@@ -351,28 +353,28 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         FileConfiguration discord = plugin.getConfigManager().getDiscord();
 
         sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴜʟᴛɪᴍᴀᴛᴇᴅᴏɴᴜᴛѕᴍᴘ ѕᴇᴛᴜᴘ &8&m----------"));
-        sendCheck(sender, isJava21OrNewer(), "ᴊᴀᴠᴀ",
-                System.getProperty("java.version", "unknown") + " (ᴊᴀᴠᴀ 21+ ʀᴇǫᴜɪʀᴇᴅ)");
-        sendCheck(sender, isPaperLikeServer(), "ѕᴇʀᴠᴇʀ",
+        sendCheck(sender, isJava21OrNewer(), "java",
+                System.getProperty("java.version", "unknown") + " (java 21+ required)");
+        sendCheck(sender, isPaperLikeServer(), "server",
                 plugin.getServer().getName() + " " + plugin.getServer().getBukkitVersion());
-        sendCheck(sender, isDatabaseConnected(), "ѕᴛᴏʀᴀɢᴇ",
-                database.getString("DATABASE.TYPE", "SQLITE").toUpperCase(Locale.ROOT) + " ᴄᴏɴꜰɪɢᴜʀᴇᴅ");
-        sendCheck(sender, isRedisReadyForSingleServer(database), "ʀᴇᴅɪѕ",
+        sendCheck(sender, isDatabaseConnected(), "storage",
+                database.getString("DATABASE.TYPE", "SQLITE").toUpperCase(Locale.ROOT) + " configured");
+        sendCheck(sender, isRedisReadyForSingleServer(database), "redis",
                 redisDetail(database));
-        sendCheck(sender, isDiscordWebhookReady(discord), "ᴅɪѕᴄᴏʀᴅ ᴡᴇʙʜᴏᴏᴋ",
+        sendCheck(sender, isDiscordWebhookReady(discord), "discord webhook",
                 discordWebhookDetail(discord));
-        sendCheck(sender, plugin.getSpawnManager().hasSpawn(), "ѕᴘᴀᴡɴ",
-                plugin.getSpawnManager().hasSpawn() ? "ʀᴇᴀᴅʏ" : "ᴜѕᴇ /" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ");
-        sendCheck(sender, plugin.getSpawnManager().hasAfk(), "ᴀꜰᴋ",
-                plugin.getSpawnManager().hasAfk() ? "ʀᴇᴀᴅʏ" : "ᴜѕᴇ /" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ");
+        sendCheck(sender, plugin.getSpawnManager().hasSpawn(), "spawn",
+                plugin.getSpawnManager().hasSpawn() ? "ready" : "use /" + label + " setup setspawn");
+        sendCheck(sender, plugin.getSpawnManager().hasAfk(), "afk",
+                plugin.getSpawnManager().hasAfk() ? "ready" : "use /" + label + " setup setafk");
         List<String> rtpWorlds = availableRtpWorlds();
         sendCheck(sender, plugin.getRtpManager().isEnabled()
                         && !rtpWorlds.isEmpty(),
-                "ʀᴛᴘ ᴡᴏʀʟᴅѕ",
-                rtpWorlds.isEmpty() ? "ɴᴏ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʀᴛᴘ ᴡᴏʀʟᴅѕ ᴀʀᴇ ʟᴏᴀᴅᴇᴅ" : String.join(", ", rtpWorlds));
-        sendCheck(sender, true, "ᴏᴘᴛɪᴏɴᴀʟ ɪɴᴛᴇɢʀᴀᴛɪᴏɴѕ", optionalIntegrationDetail());
+                "rtp worlds",
+                rtpWorlds.isEmpty() ? "no configured rtp worlds are loaded" : String.join(", ", rtpWorlds));
+        sendCheck(sender, true, "optional integrations", optionalIntegrationDetail());
         sender.sendMessage(ColorUtils.toComponent("&7ᴘʀᴇѕᴇᴛ: &f/" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ"));
-        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴏᴍᴍᴀɴᴅѕ: &f/" + label + " ѕᴇᴛᴜᴘ ᴄᴏᴍᴍᴀɴᴅѕ [category] [page]"));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴄᴏᴍᴍᴀɴᴅѕ: &f/" + label + " ѕᴇᴛᴜᴘ ᴄᴏᴍᴍᴀɴᴅѕ [ᴄᴀᴛᴇɢᴏʀʏ] [ᴘᴀɢᴇ]"));
     }
 
     private void handleSetupCommands(CommandSender sender, String label, String[] args) {
@@ -405,11 +407,11 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     private List<CommandEntry> commandEntries(String category, String label) {
         if (category.equals("setup")) {
             return List.of(
-                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ [status]", "ѕʜᴏᴡ ѕᴇᴛᴜᴘ ᴄʜᴇᴄᴋʟɪѕᴛ"),
-                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ᴀᴘᴘʟʏ ѕɪɴɢʟᴇ-ᴘᴀᴘᴇʀ ᴄᴏɴꜰɪʀᴍ", "ᴀᴘᴘʟʏ ᴛʜᴇ ѕɪɴɢʟᴇ ᴘᴀᴘᴇʀ ᴘʀᴇѕᴇᴛ"),
-                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛѕᴘᴀᴡɴ", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ѕᴘᴀᴡɴ"),
-                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ѕᴇᴛᴀꜰᴋ", "ѕᴀᴠᴇ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ ᴀѕ ᴀꜰᴋ"),
-                    new CommandEntry("/" + label + " ѕᴇᴛᴜᴘ ᴄᴏᴍᴍᴀɴᴅѕ [category] [page]", "ʙʀᴏᴡѕᴇ ᴄᴏᴍᴍᴀɴᴅ ᴜѕᴀɢᴇ")
+                    new CommandEntry("/" + label + " setup [status]", "show setup checklist"),
+                    new CommandEntry("/" + label + " setup apply single-paper confirm", "apply the single paper preset"),
+                    new CommandEntry("/" + label + " setup setspawn", "save your current location as spawn"),
+                    new CommandEntry("/" + label + " setup setafk", "save your current location as afk"),
+                    new CommandEntry("/" + label + " setup commands [category] [page]", "browse command usage")
             );
         }
 
@@ -423,10 +425,10 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             }
 
             String usage = String.valueOf(details.getOrDefault("usage", "/" + commandName));
-            String description = String.valueOf(details.getOrDefault("description", "ɴᴏ ᴅᴇѕᴄʀɪᴘᴛɪᴏɴ"));
+            String description = String.valueOf(details.getOrDefault("description", "no description"));
             String aliases = formatAliases(details.get("aliases"));
             if (!aliases.isBlank()) {
-                description += " (ᴀʟɪᴀѕᴇѕ: " + aliases + ")";
+                description += " (aliases: " + aliases + ")";
             }
             if (!plugin.getFeatureManager().isCommandFeatureEnabled(commandName)) {
                 continue;
@@ -459,6 +461,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             );
             case "economy" -> List.of(
                     "balance", "pay", "addmoney", "removemoney", "setmoney", "shards", "shardpay",
+                    "addshards", "removeshards", "setshards",
                     "shop", "sell", "sellhand", "sellall", "sellhistory", "worth"
             );
             case "market" -> List.of(
@@ -496,7 +499,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendCheck(CommandSender sender, boolean ok, String label, String detail) {
-        String state = ok ? "&aᴏᴋ" : "&eᴄʜᴇᴄᴋ";
+        String state = ok ? "&aok" : "&echeck";
         sender.sendMessage(ColorUtils.toComponent("&8- " + state + " &f" + label + " &8- &7" + detail));
     }
 
@@ -537,11 +540,11 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
     private String redisDetail(FileConfiguration database) {
         if (!database.getBoolean("REDIS.ENABLED", false)) {
-            return "ᴅɪѕᴀʙʟᴇᴅ ꜰᴏʀ ѕɪɴɢʟᴇ-ѕᴇʀᴠᴇʀ ѕᴇᴛᴜᴘ";
+            return "disabled for single-server setup";
         }
         return plugin.getRedisManager() != null && plugin.getRedisManager().isConnected()
-                ? "ᴇɴᴀʙʟᴇᴅ ᴀɴᴅ ᴄᴏɴɴᴇᴄᴛᴇᴅ"
-                : "ᴇɴᴀʙʟᴇᴅ ʙᴜᴛ ɴᴏᴛ ᴄᴏɴɴᴇᴄᴛᴇᴅ";
+                ? "enabled and connected"
+                : "enabled but not connected";
     }
 
     private boolean isDiscordWebhookReady(FileConfiguration discord) {
@@ -557,14 +560,14 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     private String discordWebhookDetail(FileConfiguration discord) {
         ConfigurationSection root = discord.getConfigurationSection("WEBHOOKS");
         if (root == null || !root.getBoolean("ENABLED", true)) {
-            return "ᴅɪѕᴀʙʟᴇᴅ";
+            return "disabled";
         }
 
         String url = root.getString("URL", "");
         if (url.isBlank() || DEFAULT_WEBHOOK_PLACEHOLDER.equalsIgnoreCase(url)) {
-            return "ᴇɴᴀʙʟᴇᴅ ᴡɪᴛʜ ᴘʟᴀᴄᴇʜᴏʟᴅᴇʀ URL";
+            return "enabled with placeholder URL";
         }
-        return "ᴇɴᴀʙʟᴇᴅ";
+        return "enabled";
     }
 
     private List<String> availableRtpWorlds() {
@@ -595,16 +598,16 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        String installedText = installed.isEmpty() ? "ɴᴏɴᴇ ɪɴѕᴛᴀʟʟᴇᴅ" : "ɪɴѕᴛᴀʟʟᴇᴅ: " + String.join(", ", installed);
+        String installedText = installed.isEmpty() ? "none installed" : "installed: " + String.join(", ", installed);
         if (missing.isEmpty()) {
             return installedText;
         }
-        return installedText + "; ᴏᴘᴛɪᴏɴᴀʟ ᴍɪѕѕɪɴɢ: " + String.join(", ", missing);
+        return installedText + "; optional missing: " + String.join(", ", missing);
     }
 
     private String describeLocation(Location location) {
         if (location == null || location.getWorld() == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
         return location.getWorld().getName()
                 + " " + location.getBlockX()
@@ -628,17 +631,17 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ColorUtils.toComponent("&8&m---------- &bᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ &8&m----------"));
         sender.sendMessage(ColorUtils.toComponent("&7ᴇɴᴀʙʟᴇᴅ: &f" + optimizationManager.isEnabled()
                 + " &8| &7ѕᴛᴀᴛᴇ: " + optimizationManager.getLoadState().display()));
-        sender.sendMessage(ColorUtils.toComponent("&7TPS: &f" + optimizationManager.formatMetric(optimizationManager.getLastTps())
+        sender.sendMessage(ColorUtils.toComponent("&7ᴛᴘѕ: &f" + optimizationManager.formatMetric(optimizationManager.getLastTps())
                 + " &8| &7ᴍѕᴘᴛ: &f" + optimizationManager.formatMetric(optimizationManager.getLastMspt())));
         sender.sendMessage(ColorUtils.toComponent("&7ᴍᴇᴍᴏʀʏ: &f" + optimizationManager.getUsedMemoryMb()
-                + "ᴍʙ&8/&f" + optimizationManager.getMaxMemoryMb() + "MB"));
+                + "mb&8/&f" + optimizationManager.getMaxMemoryMb() + "ᴍʙ"));
         sender.sendMessage(ColorUtils.toComponent("&7ѕᴋɪᴘᴘᴇᴅ ᴛᴀѕᴋ ʀᴜɴѕ: &f"
                 + optimizationManager.getTotalSkippedRuns()
                 + " &8(&7ѕᴄᴏʀᴇʙᴏᴀʀᴅ=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.SCOREBOARD)
                 + "&8, &7ᴛᴀʙʟɪѕᴛ=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.TABLIST)
                 + "&8, &7ʟᴜɴᴀʀ=&f" + optimizationManager.getSkippedRuns(OptimizationManager.OptimizedTask.LUNAR_TEAMMATES)
                 + "&8)"));
-        sender.sendMessage(ColorUtils.toComponent("&7ᴜѕᴀɢᴇ: &f/" + label + " ᴏᴘᴛɪᴍɪᴢᴇ [status|reload|reset]"));
+        sender.sendMessage(ColorUtils.toComponent("&7ᴜѕᴀɢᴇ: &f/" + label + " ᴏᴘᴛɪᴍɪᴢᴇ [ѕᴛᴀᴛᴜѕ|ʀᴇʟᴏᴀᴅ|ʀᴇѕᴇᴛ]"));
     }
 
     private void sendUsage(CommandSender sender, String label) {
@@ -650,7 +653,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendFeatureUsage(CommandSender sender, String label) {
-        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " features [list|toggle|enable|disable] [feature]"));
+        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ꜰᴇᴀᴛᴜʀᴇѕ [ʟɪѕᴛ|ᴛᴏɢɢʟᴇ|ᴇɴᴀʙʟᴇ|ᴅɪѕᴀʙʟᴇ] [ꜰᴇᴀᴛᴜʀᴇ]"));
     }
 
     private String message(String key, String fallback) {
@@ -665,7 +668,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         return Arrays.stream(StatsWipeManager.WipeTarget.values())
                 .map(StatsWipeManager.WipeTarget::getDisplayName)
                 .reduce((left, right) -> left + ", " + right)
-                .orElse("ᴘʟᴀʏᴇʀ ѕᴛᴀᴛѕ");
+                .orElse("player stats");
     }
 
     @Override
@@ -681,6 +684,21 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
 
         if (root.equals("features")) {
             return completeFeatures(args);
+        }
+
+        if (root.equals("maintenance")) {
+            if (args.length == 2) {
+                return partialMatches(args[1], List.of("on", "off", "status", "setlobby"));
+            }
+            if (args.length == 3 && args[1].equalsIgnoreCase("setlobby")) {
+                List<String> servers = new ArrayList<>();
+                ConfigurationSection sec = plugin.getConfigManager().getNetwork().getConfigurationSection("NETWORK-STATUS.SERVERS");
+                if (sec != null) {
+                    servers.addAll(sec.getKeys(false));
+                }
+                return partialMatches(args[2], servers);
+            }
+            return List.of();
         }
 
         if (root.equals("statswipe")) {
@@ -743,6 +761,60 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         return options.stream()
                 .filter(option -> option.toLowerCase(Locale.ROOT).startsWith(normalized))
                 .toList();
+    }
+
+    private void handleMaintenance(CommandSender sender, String label, String[] args) {
+        if (!sender.hasPermission("ultimatedonutsmp.admin.maintenance")) {
+            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ."));
+            return;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ <on|off|status|setlobby [server]>"));
+            return;
+        }
+
+        MaintenanceManager mm = plugin.getMaintenanceManager();
+        if (mm == null) {
+            sender.sendMessage(ColorUtils.toComponent("&cᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴀɴᴀɢᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ."));
+            return;
+        }
+
+        switch (args[1].toLowerCase(Locale.ROOT)) {
+            case "on", "start", "enable" -> {
+                if (mm.isMaintenanceActive()) {
+                    sender.sendMessage(ColorUtils.toComponent("&eᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴀᴄᴛɪᴠᴇ."));
+                    return;
+                }
+                mm.startMaintenance();
+                sender.sendMessage(ColorUtils.toComponent("&aᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴇɴᴀʙʟᴇᴅ. ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ʙᴇɪɴɢ ʀᴇᴅɪʀᴇᴄᴛᴇᴅ."));
+            }
+            case "off", "stop", "disable" -> {
+                if (!mm.isMaintenanceActive()) {
+                    sender.sendMessage(ColorUtils.toComponent("&eᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ɴᴏᴛ ᴀᴄᴛɪᴠᴇ."));
+                    return;
+                }
+                mm.stopMaintenance();
+                sender.sendMessage(ColorUtils.toComponent("&aᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴅɪѕᴀʙʟᴇᴅ. ʀᴇᴄᴏɴɴᴇᴄᴛ ѕɪɢɴᴀʟ ѕᴇɴᴛ."));
+            }
+            case "status" -> {
+                boolean active = mm.isMaintenanceActive();
+                String lobby = mm.getLobbyServer();
+                sender.sendMessage(ColorUtils.toComponent("&d&lᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕᴛᴀᴛᴜѕ:"));
+                sender.sendMessage(ColorUtils.toComponent("  &fᴀᴄᴛɪᴠᴇ: " + (active ? "&aʏᴇѕ" : "&cɴᴏ")));
+                sender.sendMessage(ColorUtils.toComponent("  &fʟᴏʙʙʏ ѕᴇʀᴠᴇʀ: &b" + lobby));
+            }
+            case "setlobby" -> {
+                if (args.length < 3) {
+                    sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕᴇᴛʟᴏʙʙʏ <server>"));
+                    return;
+                }
+                String lobby = args[2];
+                mm.setLobbyServer(lobby);
+                sender.sendMessage(ColorUtils.toComponent("&aʟᴏʙʙʏ ѕᴇʀᴠᴇʀ ѕᴇᴛ ᴛᴏ &b" + lobby + "&a."));
+            }
+            default -> sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ <on|off|status|setlobby [server]>"));
+        }
     }
 
     private record CommandEntry(String usage, String description) {

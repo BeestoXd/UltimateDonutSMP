@@ -1,0 +1,21 @@
+{
+  "name": "ultimatedonutsmp-discord-bot-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "deploy": "node src/deploy-commands.js",
+    "start": "node src/index.js",
+    "check": "node --check src/index.js && node --check src/deploy-commands.js && node --check src/register-commands.js && node --check src/database.js && node --check src/embeds.js && node --check src/format.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7",
+    "mongodb": "^6.13.0",
+    "mysql2": "^3.12.0"
+  }
+}

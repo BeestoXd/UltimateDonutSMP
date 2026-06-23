@@ -13,7 +13,7 @@ public record WorthResult(
 ) {
 
     public static WorthResult unsellable() {
-        return new WorthResult(false, false, -1, -1, 0, 0, "UNSELLABLE", "", "");
+        return new WorthResult(false, false, -1, -1, 0, 0, "unsellable", "", "");
     }
 
     public boolean hasContainerContentsWorth() {

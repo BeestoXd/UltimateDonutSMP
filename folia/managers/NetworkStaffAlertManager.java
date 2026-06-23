@@ -84,14 +84,14 @@ public class NetworkStaffAlertManager {
         if (message.length() > maxLength) {
             sender.sendMessage(ColorUtils.toComponent(message(
                     "HELPOP.MESSAGE_TOO_LONG",
-                    "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
         }
 
         if (!checkCooldown(sender, helpopCooldowns, cooldownSeconds("NETWORK.HELPOP_COOLDOWN_SECONDS", 30),
-                "HELPOP.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%s ʙᴇꜰᴏʀᴇ ᴜѕɪɴɢ ʜᴇʟᴘᴏᴘ ᴀɢᴀɪɴ.")) {
+                "HELPOP.COOLDOWN", "&cplease wait %seconds%s before using helpop again.")) {
             return;
         }
 
@@ -111,7 +111,7 @@ public class NetworkStaffAlertManager {
         markSeen(payload.messageId());
         broadcastPayload(payload);
         publishPayloadAsync(payload, helpopChannel, sender, "HELPOP.REDIS_UNAVAILABLE",
-                "&eʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ.");
+                "&eyour request was delivered locally, but redis is unavailable for cross-server delivery.");
 
         sender.sendMessage(ColorUtils.toComponent(message(
                 "HELPOP.CONFIRMATION",
@@ -145,14 +145,14 @@ public class NetworkStaffAlertManager {
         if (reason.length() > maxLength) {
             reporter.sendMessage(ColorUtils.toComponent(message(
                     "REPORT.MESSAGE_TOO_LONG",
-                    "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% cʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
         }
 
         if (!checkCooldown(reporter, reportCooldowns, cooldownSeconds("NETWORK.REPORT_COOLDOWN_SECONDS", 60),
-                "REPORT.COOLDOWN", "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%s ʙᴇꜰᴏʀᴇ ʀᴇᴘᴏʀᴛɪɴɢ ᴀɢᴀɪɴ.")) {
+                "REPORT.COOLDOWN", "&cplease wait %seconds%s before reporting again.")) {
             return;
         }
 
@@ -174,7 +174,7 @@ public class NetworkStaffAlertManager {
         markSeen(payload.messageId());
         broadcastPayload(payload);
         publishPayloadAsync(payload, reportChannel, reporter, "REPORT.REDIS_UNAVAILABLE",
-                "&eʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ.");
+                "&eyour report was delivered locally, but redis is unavailable for cross-server delivery.");
 
         reporter.sendMessage(ColorUtils.toComponent(message(
                 "REPORT.CONFIRMATION",
@@ -368,11 +368,15 @@ public class NetworkStaffAlertManager {
     }
 
     private boolean isHelpopEnabled() {
-        return isNetworkEnabled() && getNetworkConfig().getBoolean("NETWORK.HELPOP_ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_ALERTS)
+                && isNetworkEnabled()
+                && getNetworkConfig().getBoolean("NETWORK.HELPOP_ENABLED", true);
     }
 
     private boolean isReportEnabled() {
-        return isNetworkEnabled() && getNetworkConfig().getBoolean("NETWORK.REPORT_ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_ALERTS)
+                && isNetworkEnabled()
+                && getNetworkConfig().getBoolean("NETWORK.REPORT_ENABLED", true);
     }
 
     private boolean shouldWarnSenderOnRedisError() {
@@ -439,7 +443,7 @@ public class NetworkStaffAlertManager {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "Local" : builder.toString();
+        return builder.isEmpty() ? "local" : builder.toString();
     }
 
     private String message(String path, String fallback, String... placeholders) {
@@ -478,7 +482,7 @@ public class NetworkStaffAlertManager {
         return List.of(
                 "",
                 "&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ",
-                "     &9ʀᴇᴀѕᴏɴ: &b%message%",
+                "     &9reason: &b%message%",
                 ""
         );
     }
@@ -487,7 +491,7 @@ public class NetworkStaffAlertManager {
         return List.of(
                 "",
                 "&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%",
-                "     &9ʀᴇᴀѕᴏɴ: &b%reason%",
+                "     &9reason: &b%reason%",
                 ""
         );
     }

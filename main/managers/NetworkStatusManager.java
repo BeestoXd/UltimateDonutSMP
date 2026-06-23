@@ -113,7 +113,7 @@ public class NetworkStatusManager {
     public ServerStatusSnapshot getSnapshot(String serverId) {
         String normalizedId = normalizeId(serverId);
         if (normalizedId.isEmpty()) {
-            return ServerStatusSnapshot.offline("unknown", "ᴜɴᴋɴᴏᴡɴ");
+            return ServerStatusSnapshot.offline("unknown", "unknown");
         }
 
         ServerStatusSnapshot snapshot = snapshots.get(normalizedId);
@@ -399,7 +399,7 @@ public class NetworkStatusManager {
             endpointServer.setExecutor(endpointExecutor);
             endpointServer.start();
         } catch (IOException exception) {
-            plugin.getLogger().warning("ꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴛᴀʀᴛ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀᴛᴜѕ ᴇɴᴅᴘᴏɪɴᴛ ᴏɴ "
+            plugin.getLogger().warning("failed to start network status endpoint on "
                     + host + ":" + port + path + " (" + exception.getMessage() + ").");
             stopEndpointServer();
         }
@@ -447,7 +447,7 @@ public class NetworkStatusManager {
 
     private void sendEndpointResponse(HttpExchange exchange, int statusCode, String body) throws IOException {
         byte[] bytes = (body == null ? "" : body).getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
+        exchange.getResponseHeaders().set("CONTENT-TYPE", "text/plain; charset=utf-8");
         exchange.sendResponseHeaders(statusCode, bytes.length);
         exchange.getResponseBody().write(bytes);
     }
@@ -578,7 +578,7 @@ public class NetworkStatusManager {
     private String prettifyId(String value) {
         String normalized = normalizeId(value);
         if (normalized.isEmpty()) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
 
         String[] parts = normalized.split("[-_\\s]+");
@@ -595,7 +595,7 @@ public class NetworkStatusManager {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "ᴜɴᴋɴᴏᴡɴ" : builder.toString();
+        return builder.isEmpty() ? "unknown" : builder.toString();
     }
 
     private int parseInt(String value, int fallback) {

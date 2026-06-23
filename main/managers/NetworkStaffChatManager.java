@@ -200,7 +200,7 @@ public class NetworkStaffChatManager {
                 getLocalServerId(),
                 getLocalDisplayName(),
                 "",
-                "ѕᴇʀᴠᴇʀ",
+                "server",
                 status
         );
         markSeen(payload.messageId());
@@ -217,7 +217,7 @@ public class NetworkStaffChatManager {
                 getLocalServerId(),
                 getLocalDisplayName(),
                 "",
-                "ѕᴇʀᴠᴇʀ",
+                "server",
                 status
         );
         markSeen(payload.messageId());
@@ -288,9 +288,9 @@ public class NetworkStaffChatManager {
         }
 
         String fallback = switch (payload.type()) {
-            case StaffChatPayload.TYPE_STAFF_JOIN -> "&8[&a+&8] &a%player% &7ᴊᴏɪɴᴇᴅ &b%server%";
-            case StaffChatPayload.TYPE_STAFF_LEAVE -> "&8[&c-&8] &a%player% &7ʟᴇꜰᴛ &b%server%";
-            case StaffChatPayload.TYPE_SERVER_STATUS -> "&6%server% &eɪѕ ɴᴏᴡ %status%&e.";
+            case StaffChatPayload.TYPE_STAFF_JOIN -> "&8[&a+&8] &a%player% &7joined &b%server%";
+            case StaffChatPayload.TYPE_STAFF_LEAVE -> "&8[&c-&8] &a%player% &7left &b%server%";
+            case StaffChatPayload.TYPE_SERVER_STATUS -> "&6%server% &eis now %status%&e.";
             default -> "";
         };
 
@@ -396,7 +396,7 @@ public class NetworkStaffChatManager {
                 builder.append(part.substring(1));
             }
         }
-        return builder.isEmpty() ? "ʟᴏᴄᴀʟ" : builder.toString();
+        return builder.isEmpty() ? "local" : builder.toString();
     }
 
     private String safe(String value) {

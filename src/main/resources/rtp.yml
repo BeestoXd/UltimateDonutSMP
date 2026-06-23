@@ -1,0 +1,136 @@
+# UDS setup: Random teleport behavior, search safety, denied worlds, and RTP menu layout.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# You can enable/disable this feature
+# UDS setup: Master enable flag for this feature file.
+ENABLED: true # Enables or disables rtp.
+
+# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+SETTINGS:
+  # Max players searching or waiting for RTP simultaneously. Values below 1 are treated as 1.
+  PLAYERS-IN-RTP: 1 # Configures the players in rtp option.
+  # Max tries to find a valid RTP location before failing. Values below 32 use 32.
+  MAX-ATTEMPTS: 64 # Sets the allowed limit for this option.
+  # Max chunk samples to inspect while looking for a valid location. Values below 64 use 64.
+  MAX-CHUNK-SAMPLES: 128 # Sets the allowed limit for this option.
+  # Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 8 use 8.
+  ATTEMPT-INTERVAL-TICKS: 8 # Sets how often this task or update runs.
+  # Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS.
+  GENERATE-CHUNKS: false # Configures the generate chunks option.
+  # Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot.
+  GENERATE-FALLBACK-CHUNKS: true # Configures the generate fallback chunks option.
+  # Chunk samples to try before limited fallback generation starts.
+  GENERATE-FALLBACK-AFTER-SAMPLES: 48 # Configures the generate fallback after samples option.
+  # Maximum fallback chunks allowed to generate during one RTP search. Set 0 to disable generation fallback.
+  MAX-GENERATE-FALLBACK-SAMPLES: 32 # Sets the allowed limit for this option.
+  # If chunk generation is disabled, allow loading already-generated chunks from disk.
+  LOAD-GENERATED-CHUNKS: true # Configures the load generated chunks option.
+  # If random samples cannot be prepared, try already-loaded chunks as a fallback.
+  FALLBACK-TO-LOADED-CHUNKS: true # Configures the fallback to loaded chunks option.
+  LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32 # Configures the loaded chunk fallback after samples option.
+  # Preload generated chunks around the RTP destination before teleporting to reduce post-teleport ping spikes.
+  PRELOAD-TELEPORT-CHUNKS: true # Configures the preload teleport chunks option.
+  # Chunk radius to preload around the destination. Values are clamped between 0 and 3.
+  PRELOAD-RADIUS: 1 # Sets the radius used for this check or effect.
+  # How many destination chunks to preload per tick.
+  PRELOAD-CHUNKS-PER-TICK: 1 # Configures the preload chunks per tick option.
+  # Maximum ticks to spend preloading before teleport continues anyway.
+  PRELOAD-MAX-TICKS: 40 # Sets how often this task or update runs.
+  # Temporarily lower player chunk send distance after RTP to avoid a large client chunk burst.
+  POST-TELEPORT-CHUNK-THROTTLE: true # Configures the post teleport chunk throttle option.
+  # Temporary per-player view distance after RTP. Values below 2 use 2.
+  POST-TELEPORT-VIEW-DISTANCE: 4 # Configures the post teleport view distance option.
+  # Temporary per-player simulation distance after RTP. Values below 2 use 2.
+  POST-TELEPORT-SIMULATION-DISTANCE: 4 # Configures the post teleport simulation distance option.
+  # Ticks before the player's original view/simulation distance is restored after RTP.
+  POST-TELEPORT-THROTTLE-TICKS: 80 # Sets how often this task or update runs.
+
+# UDS setup: Configure MESSAGES options for this file.
+MESSAGES:
+  # General RTP messages
+  DISABLED: "&cʀᴛᴘ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  COOLDOWN: "&cʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴛᴘ ꜰᴏʀ ᴀɴᴏᴛʜᴇʀ {remaining}ѕ." # Sets the message text for this response.
+  MAX-PLAYERS: "&cᴛᴏᴏ ᴍᴀɴʏ ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ᴜѕɪɴɢ ʀᴛᴘ ʀɪɢʜᴛ ɴᴏᴡ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ." # Sets the message text for this response.
+  WORLD-NOT-EXIST: "&cᴛʜᴇ ᴡᴏʀʟᴅ ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
+  # RTP process messages
+  SEARCHING: "&aѕᴇᴀʀᴄʜɪɴɢ ꜰᴏʀ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ɪɴ {world}..." # Sets the message text for this response.
+  TP-WARNING: "&eᴅᴏ ɴᴏᴛ ᴍᴏᴠᴇ ꜰᴏʀ &b{countdown}&e ѕᴇᴄᴏɴᴅѕ ᴏʀ ᴛʜᴇ ᴛᴇʟᴇᴘᴏʀᴛ ᴡɪʟʟ ʙᴇ ᴄᴀɴᴄᴇʟᴇᴅ." # Sets the message text for this response.
+  SEARCH-ACTIONBAR: "&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ" # Sets the message text for this response.
+  SEARCH-FOUND-ACTIONBAR: "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ɪɴ {world}! &7ᴘʀᴇᴘᴀʀɪɴɢ ᴛᴇʟᴇᴘᴏʀᴛ..." # Sets the message text for this response.
+  SEARCH-FOUND-ACTIONBAR-HIDDEN: "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ɪɴ {world}! &7ᴘʀᴇᴘᴀʀɪɴɢ ᴛᴇʟᴇᴘᴏʀᴛ..."
+  SAFE-LOCATION-FOUND: "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ᴀᴛ: x:{x} ʏ:{y} ᴢ:{z}" # Sets the message text for this response.
+  SAFE-LOCATION-FOUND-HIDDEN: "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ."
+  MAX-ATTEMPTS: "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʀᴛᴘ ʟᴏᴄᴀᴛɪᴏɴ. &7ᴀᴛᴛᴇᴍᴘᴛѕ: &f{attempts}/{max_attempts} &8| &7ѕᴀᴍᴘʟᴇѕ: &f{samples}/{max_samples}" # Sets the message text for this response.
+  # Menu messages
+  DESTINATION-DISABLED: "&cᴛʜɪѕ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  # Safety check messages (for debugging)
+  UNSAFE-LOCATION: "&cᴛʜᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀᴛ x:{x} ʏ:{y} ᴢ:{z} ᴡᴀѕ ʀᴇᴊᴇᴄᴛᴇᴅ: {reason}" # Sets the message text for this response.
+
+# Deny worlds from rtp command
+# UDS setup: World names where this feature is blocked.
+DENIED-WORLDS:
+  - afk
+
+# UDS setup: Per-world search radius, center, and safety settings.
+WORLD-SETTINGS:
+  world:
+    MAX-RADIUS: 5000 # Sets the allowed limit for this option.
+    MIN-RADIUS: 500 # Sets the allowed limit for this option.
+    CENTER-X: 0 # Configures the center x option.
+    CENTER-Z: 0 # Configures the center z option.
+    COOLDOWN: 30 # Sets the cooldown before this action can run again.
+  world_nether:
+    MAX-RADIUS: 500 # Sets the allowed limit for this option.
+    MIN-RADIUS: 50 # Sets the allowed limit for this option.
+    CENTER-X: 0 # Configures the center x option.
+    CENTER-Z: 0 # Configures the center z option.
+    COOLDOWN: 30 # Sets the cooldown before this action can run again.
+  world_the_end:
+    MAX-RADIUS: 2000 # Sets the allowed limit for this option.
+    MIN-RADIUS: 150 # Sets the allowed limit for this option.
+    CENTER-X: 0 # Configures the center x option.
+    CENTER-Z: 0 # Configures the center z option.
+    COOLDOWN: 30 # Sets the cooldown before this action can run again.
+
+# UDS setup: Random teleport menu layout.
+RTP-MENU:
+  TITLE: "&8ʀᴛᴘ ᴍᴇɴᴜ" # Sets the title text shown for this menu or prompt.
+  SIZE: 27 # Sets the inventory size in slots.
+  PLACEHOLDER: true # Configures the placeholder option.
+  BUTTONS:
+    OVERWORLD:
+      DISPLAY-NAME: "&#4B72FFᴏᴠᴇʀᴡᴏʀʟᴅ" # Sets the display name shown to players.
+      MATERIAL: "GRASS_BLOCK" # Sets the Bukkit material used here.
+      SLOT: 11 # Sets the inventory slot used by this item.
+      WORLD: "world" # Sets the world name used by this option.
+      ENABLED: true # Enables or disables overworld.
+      LORE:
+        - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ"
+        - ""
+        - "&7ᴘʟᴀʏᴇʀѕ: &b{players}"
+        - "&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}"
+        - "&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ"
+    NETHER:
+      DISPLAY-NAME: "&#FF6B3Dɴᴇᴛʜᴇʀ" # Sets the display name shown to players.
+      MATERIAL: "NETHERRACK" # Sets the Bukkit material used here.
+      SLOT: 13 # Sets the inventory slot used by this item.
+      WORLD: "world_nether" # Sets the world name used by this option.
+      ENABLED: true # Enables or disables nether.
+      LORE:
+        - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ"
+        - ""
+        - "&7ᴘʟᴀʏᴇʀѕ: &b{players}"
+        - "&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}"
+        - "&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ"
+    THE_END:
+      DISPLAY-NAME: "&#F3E38Aᴛʜᴇ ᴇɴᴅ" # Sets the display name shown to players.
+      MATERIAL: "END_STONE" # Sets the Bukkit material used here.
+      SLOT: 15 # Sets the inventory slot used by this item.
+      WORLD: "world_the_end" # Sets the world name used by this option.
+      ENABLED: true # Enables or disables the end.
+      LORE:
+        - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ"
+        - ""
+        - "&7ᴘʟᴀʏᴇʀѕ: &b{players}"
+        - "&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}"
+        - "&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ"

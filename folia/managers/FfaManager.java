@@ -5,17 +5,17 @@ import com.bx.ultimateDonutSmp.models.FfaArena;
 import com.bx.ultimateDonutSmp.models.FfaMatch;
 import com.bx.ultimateDonutSmp.models.FfaPlayerSnapshot;
 import com.bx.ultimateDonutSmp.models.FfaStats;
+import com.bx.ultimateDonutSmp.utils.AttributeUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.LocationUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
-import net.kyori.adventure.title.Title;
+import com.bx.ultimateDonutSmp.utils.TitleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
@@ -31,7 +31,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -48,10 +47,10 @@ import java.util.logging.Level;
 public class FfaManager {
 
     public enum ArenaSetting {
-        NO_HUNGER("No Hunger"),
-        NO_WEATHER("No Weather"),
-        ALWAYS_MORNING("Always Morning"),
-        NO_FALL_DAMAGE("No Fall Damage");
+        NO_HUNGER("no hunger"),
+        NO_WEATHER("no weather"),
+        ALWAYS_MORNING("always morning"),
+        NO_FALL_DAMAGE("no fall damage");
 
         private final String displayName;
 
@@ -147,7 +146,8 @@ public class FfaManager {
     }
 
     public boolean isEnabled() {
-        return config().getBoolean("SETTINGS.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.FFA)
+                && config().getBoolean("SETTINGS.ENABLED", true);
     }
 
     public boolean shouldBlockCommands() {
@@ -387,7 +387,7 @@ public class FfaManager {
             return true;
         }
 
-        try (PreparedStatement ps = connection().prepareStatement("DELETE FROM ffa_arenas WHERE id = ?")) {
+        try (PreparedStatement ps = connection().prepareStatement("delete from ffa_arenas where id = ?")) {
             ps.setString(1, arena.getId());
             ps.executeUpdate();
             return true;
@@ -535,7 +535,7 @@ public class FfaManager {
 
         UUID uuid = player.getUniqueId();
         if (waitingPlayers.contains(uuid) || waitingArenaEntries.containsKey(uuid)) {
-            cancelWaitingEntry(uuid, "&eʏᴏᴜ ʟᴇꜰᴛ ᴛʜᴇ ꜰꜰᴀ ᴀʀᴇɴᴀ.", true);
+            cancelWaitingEntry(uuid, "&eyou left the ffa arena.", true);
             return true;
         }
 
@@ -761,8 +761,8 @@ public class FfaManager {
             arenaSnapshots.put(matchId, arenaSnapshot);
         }
 
-        send(first, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a.");
-        send(second, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + first.getName() + "&a.");
+        send(first, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a.");
+        send(second, "&aᴄᴏᴍʙᴀᴛ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(first) + "&a.");
         return true;
     }
 
@@ -902,7 +902,7 @@ public class FfaManager {
         waitingPlayers.add(uuid);
         waitingArenaEntries.put(uuid, new WaitingArenaEntry(
                 arena,
-                player.getName(),
+                publicName(player),
                 snapshot,
                 arenaSnapshot,
                 waitingSpawn
@@ -942,7 +942,7 @@ public class FfaManager {
         Location firstSpawn = keepFirstCurrentPosition ? null : resolveWaitingParticipantMatchStartLocation(first, entry);
         Location secondSpawn = findArenaJoinSpawn(entry.arena());
         if ((!keepFirstCurrentPosition && firstSpawn == null) || secondSpawn == null) {
-            cancelWaitingEntry(firstUuid, "&cᴛʜɪѕ ꜰꜰᴀ ᴀʀᴇɴᴀ ɴᴏ ʟᴏɴɢᴇʀ ʜᴀѕ ᴀ ѕᴇᴄᴏɴᴅ ѕᴀꜰᴇ ᴄᴏᴍʙᴀᴛ ѕᴘᴏᴛ.", true);
+            cancelWaitingEntry(firstUuid, "&cthis ffa arena no longer has a second safe combat spot.", true);
             entry.arena().setEnabled(false);
             entry.arena().setState(FfaArena.ArenaState.DISABLED);
             saveArena(entry.arena());
@@ -966,7 +966,7 @@ public class FfaManager {
                 first.getUniqueId(),
                 entry.playerName(),
                 second.getUniqueId(),
-                second.getName()
+                publicName(second)
         );
         match.putSnapshot(first.getUniqueId(), entry.snapshot());
         match.putSnapshot(second.getUniqueId(), secondSnapshot);
@@ -993,7 +993,7 @@ public class FfaManager {
             clearMatchSpawnProtection(second.getUniqueId());
         }, 1L);
 
-        send(first, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + second.getName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
+        send(first, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + publicName(second) + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
         send(second, "&aꜰꜰᴀ ѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f" + entry.playerName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + entry.arena().getDisplayName() + "&a.");
         send(first, "&7ᴜѕᴇ &f/leave &7ᴛᴏ ѕᴜʀʀᴇɴᴅᴇʀ.");
         send(second, "&7ᴜѕᴇ &f/leave &7ᴛᴏ ѕᴜʀʀᴇɴᴅᴇʀ.");
@@ -1036,8 +1036,8 @@ public class FfaManager {
         Location firstSpawn = keepCurrentPositions ? null : resolveWaitingReentryLocation(firstEntry, null);
         Location secondSpawn = keepCurrentPositions ? null : resolveWaitingReentryLocation(secondEntry, firstSpawn);
         if (!keepCurrentPositions && (firstSpawn == null || secondSpawn == null)) {
-            cancelWaitingEntry(firstUuid, "&cᴛʜɪѕ ꜰꜰᴀ ᴀʀᴇɴᴀ ɴᴏ ʟᴏɴɢᴇʀ ʜᴀѕ ᴛᴡᴏ ѕᴀꜰᴇ ᴄᴏᴍʙᴀᴛ ѕᴘᴏᴛѕ.", true);
-            cancelWaitingEntry(secondUuid, "&cᴛʜɪѕ ꜰꜰᴀ ᴀʀᴇɴᴀ ɴᴏ ʟᴏɴɢᴇʀ ʜᴀѕ ᴛᴡᴏ ѕᴀꜰᴇ ᴄᴏᴍʙᴀᴛ ѕᴘᴏᴛѕ.", true);
+            cancelWaitingEntry(firstUuid, "&cthis ffa arena no longer has two safe combat spots.", true);
+            cancelWaitingEntry(secondUuid, "&cthis ffa arena no longer has two safe combat spots.", true);
             arena.setEnabled(false);
             arena.setState(FfaArena.ArenaState.DISABLED);
             saveArena(arena);
@@ -1094,8 +1094,8 @@ public class FfaManager {
         }, 1L);
 
         String restartMessage = keepCurrentPositions
-                ? "&aꜰꜰᴀ ʀᴇѕᴜᴍᴇᴅ ᴀɢᴀɪɴѕᴛ &f"
-                : "&aꜰꜰᴀ ʀᴇѕᴛᴀʀᴛᴇᴅ ᴀɢᴀɪɴѕᴛ &f";
+                ? "&affa resumed against &f"
+                : "&affa restarted against &f";
         send(first, restartMessage + secondEntry.playerName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
         send(second, restartMessage + firstEntry.playerName() + "&a ᴏɴ ᴀʀᴇɴᴀ &f" + arena.getDisplayName() + "&a.");
         send(first, "&7ᴜѕᴇ &f/leave &7ᴛᴏ ѕᴜʀʀᴇɴᴅᴇʀ.");
@@ -1632,7 +1632,7 @@ public class FfaManager {
         Location exitingReturn = resolveExitLocation(match, exitingUuid, endReason);
         finishParticipant(match, exitingUuid, respawnParticipant ? exitingUuid : null, delayTicks, exitingReturn);
 
-        if (!preserveRemainingParticipant(match, remainingUuid, arenaSnapshot, null, "&eʏᴏᴜ ʀᴇᴍᴀɪɴ ɪɴ ᴛʜᴇ ꜰꜰᴀ ᴀʀᴇɴᴀ.") && remainingUuid != null) {
+        if (!preserveRemainingParticipant(match, remainingUuid, arenaSnapshot, null, "&eyou remain in the ffa arena.") && remainingUuid != null) {
             finishParticipant(match, remainingUuid, null, delayTicks);
         }
         queuePendingReset(match, System.currentTimeMillis());
@@ -1664,14 +1664,14 @@ public class FfaManager {
                     match.getPlayerOneUuid(),
                     arenaSnapshot,
                     null,
-                    "&eᴄᴏᴍʙᴀᴛ ᴇɴᴅᴇᴅ. ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴛʜᴇ ᴀʀᴇɴᴀ ʀᴇѕᴇᴛѕ."
+                    "&ecombat ended. wait while the arena resets."
             );
             boolean preservedSecond = preserveRemainingParticipant(
                     match,
                     match.getPlayerTwoUuid(),
                     arenaSnapshot,
                     null,
-                    "&eᴄᴏᴍʙᴀᴛ ᴇɴᴅᴇᴅ. ᴡᴀɪᴛ ᴡʜɪʟᴇ ᴛʜᴇ ᴀʀᴇɴᴀ ʀᴇѕᴇᴛѕ."
+                    "&ecombat ended. wait while the arena resets."
             );
             if (!preservedFirst) {
                 finishParticipant(match, match.getPlayerOneUuid(), respawnParticipantUuid, delayTicks);
@@ -1762,7 +1762,7 @@ public class FfaManager {
         waitingPlayers.add(uuid);
         waitingArenaEntries.put(uuid, new WaitingArenaEntry(
                 arena,
-                player.getName(),
+                publicName(player),
                 snapshot,
                 arenaSnapshot,
                 waitingLocation.clone()
@@ -1831,9 +1831,7 @@ public class FfaManager {
         player.resetPlayerTime();
         player.resetPlayerWeather();
 
-        double maxHealth = player.getAttribute(Attribute.MAX_HEALTH) == null
-                ? 20D
-                : player.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double maxHealth = AttributeUtils.getMaxHealth(player);
         player.setHealth(Math.min(maxHealth, Math.max(1D, snapshot.getHealth())));
         player.updateInventory();
     }
@@ -2038,7 +2036,7 @@ public class FfaManager {
             arena.setEnabled(false);
             arena.setState(FfaArena.ArenaState.DISABLED);
             saveArena(arena);
-            plugin.getLogger().warning("ᴅɪѕᴀʙʟᴇᴅ FFA arena " + arena.getId() + " because auto-repair failed.");
+            plugin.getLogger().warning("Disabled FFA arena " + arena.getId() + " because auto-repair failed.");
             return;
         }
 
@@ -2306,7 +2304,7 @@ public class FfaManager {
         arena.setEnabled(false);
         arena.setState(FfaArena.ArenaState.DISABLED);
         saveArena(arena);
-        plugin.getLogger().warning("ᴅɪѕᴀʙʟᴇᴅ FFA arena " + arena.getId() + " because reset failed.");
+        plugin.getLogger().warning("Disabled FFA arena " + arena.getId() + " because reset failed.");
     }
 
     private void resumeWaitingArena(FfaArena arena, FfaMatch recentlyResetMatch) {
@@ -2583,7 +2581,7 @@ public class FfaManager {
         if (state == null) {
             transitionTitles.remove(player.getUniqueId());
             transitioningPlayers.remove(player.getUniqueId());
-            player.clearTitle();
+            TitleUtils.clearTitle(player);
             clearTemporaryVanish(player);
             return;
         }
@@ -2597,7 +2595,7 @@ public class FfaManager {
         player.setCollidable(state.collidable());
         transitionTitles.remove(player.getUniqueId());
         transitioningPlayers.remove(player.getUniqueId());
-        player.clearTitle();
+        TitleUtils.clearTitle(player);
         clearTemporaryVanish(player);
     }
 
@@ -2624,17 +2622,17 @@ public class FfaManager {
         }
 
         long stayMillis = Math.max(1000L, getReturnDelayTicks() * 50L);
-        player.showTitle(Title.title(
-                ColorUtils.toComponent(state.title()),
-                ColorUtils.toComponent(state.subtitle()),
-                Title.Times.times(Duration.ZERO, Duration.ofMillis(stayMillis), Duration.ZERO)
-        ));
+        TitleUtils.sendTitle(player, state.title(), state.subtitle(), 0, (int) Math.max(1L, stayMillis / 50L), 0);
     }
 
     private void applyTemporaryVanish(Player hidden) {
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (!viewer.getUniqueId().equals(hidden.getUniqueId())) {
-                viewer.hidePlayer(plugin, hidden);
+                plugin.getPlayerVisibilityManager().hide(
+                        viewer,
+                        hidden,
+                        PlayerVisibilityManager.Reason.FFA
+                );
             }
         }
     }
@@ -2642,7 +2640,11 @@ public class FfaManager {
     private void clearTemporaryVanish(Player shown) {
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (!viewer.getUniqueId().equals(shown.getUniqueId())) {
-                viewer.showPlayer(plugin, shown);
+                plugin.getPlayerVisibilityManager().show(
+                        viewer,
+                        shown,
+                        PlayerVisibilityManager.Reason.FFA
+                );
             }
         }
     }
@@ -2664,9 +2666,7 @@ public class FfaManager {
             return;
         }
 
-        double maxHealth = player.getAttribute(Attribute.MAX_HEALTH) == null
-                ? 20D
-                : player.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double maxHealth = AttributeUtils.getMaxHealth(player);
         player.setHealth(maxHealth);
         player.setFoodLevel(20);
         player.setSaturation(20F);
@@ -3077,14 +3077,14 @@ public class FfaManager {
         if (world == null) {
             return null;
         }
-        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0d + 0.5D;
-        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0d + 0.5D;
+        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0D + 0.5D;
+        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0D + 0.5D;
         return new Location(world, centerX, snapshot.maxY() + 1.0D, centerZ, 0F, 0F);
     }
 
     private String resolveParticipantName(FfaMatch match, UUID uuid) {
         if (match == null || uuid == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
         if (uuid.equals(match.getPlayerOneUuid())) {
             return match.getPlayerOneName();
@@ -3092,7 +3092,7 @@ public class FfaManager {
         if (uuid.equals(match.getPlayerTwoUuid())) {
             return match.getPlayerTwoName();
         }
-        return "ᴜɴᴋɴᴏᴡɴ";
+        return "unknown";
     }
 
     private boolean hasUsableTotem(Player player) {
@@ -3102,12 +3102,12 @@ public class FfaManager {
     }
 
     private String formatResultTitle(String key, String playerName, String opponentName, String fallback) {
-        String raw = config().getString("RESULT-TITLES." + key + ".title", fallback);
+        String raw = config().getString("RESULT-TITLES." + key + ".TITLE", fallback);
         return applyResultPlaceholders(raw, playerName, opponentName);
     }
 
     private String formatResultSubtitle(String key, String playerName, String opponentName, String fallback) {
-        String raw = config().getString("RESULT-TITLES." + key + ".subtitle", fallback);
+        String raw = config().getString("RESULT-TITLES." + key + ".SUBTITLE", fallback);
         return applyResultPlaceholders(raw, playerName, opponentName);
     }
 
@@ -3120,7 +3120,7 @@ public class FfaManager {
 
     private String formatDuration(long totalSeconds) {
         long safeSeconds = Math.max(0L, totalSeconds);
-        long minutes = safeSeconds / 60l;
+        long minutes = safeSeconds / 60L;
         long seconds = safeSeconds % 60L;
         return minutes + "m " + seconds + "s";
     }
@@ -3134,7 +3134,7 @@ public class FfaManager {
         }
 
         if (!notReady.isEmpty()) {
-            return "&cꜰꜰᴀ ᴀʀᴇɴᴀѕ ᴇxɪѕᴛ ʙᴜᴛ ᴀʀᴇ ɴᴏᴛ ʀᴇᴀᴅʏ ʏᴇᴛ. &7ᴄʜᴇᴄᴋ: &f" + String.join("&7, &f", notReady) + "&7.";
+            return "&cffa arenas exist but are not ready yet. &7check: &f" + String.join("&7, &f", notReady) + "&7.";
         }
         boolean hasResettingArena = false;
         for (FfaArena arena : getArenas()) {
@@ -3144,9 +3144,9 @@ public class FfaManager {
             }
         }
         if (hasResettingArena) {
-            return "&cꜰꜰᴀ ᴀʀᴇɴᴀ ɪѕ ʀᴇѕᴇᴛᴛɪɴɢ ʀɪɢʜᴛ ɴᴏᴡ. ᴛʀʏ ᴀɢᴀɪɴ ɪɴ ᴀ ᴍᴏᴍᴇɴᴛ.";
+            return "&cffa arena is resetting right now. try again in a moment.";
         }
-        return "&cɴᴏ ʀᴇᴀᴅʏ ꜰꜰᴀ ᴀʀᴇɴᴀѕ ᴀʀᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʏᴇᴛ.";
+        return "&cno ready ffa arenas are configured yet.";
     }
 
     private boolean hasArenaOccupants(String arenaId) {
@@ -3678,7 +3678,7 @@ public class FfaManager {
             } catch (IllegalArgumentException exception) {
                 success = false;
                 plugin.getLogger().log(Level.WARNING,
-                        "Failed to restore FFA arena block at "
+                        "failed to restore ffa arena block at "
                                 + blockSnapshot.x() + "," + blockSnapshot.y() + "," + blockSnapshot.z(),
                         exception);
             }
@@ -3914,8 +3914,8 @@ public class FfaManager {
             return null;
         }
 
-        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0d + 0.5D;
-        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0d + 0.5D;
+        double centerX = ((double) snapshot.minX() + snapshot.maxX()) / 2.0D + 0.5D;
+        double centerZ = ((double) snapshot.minZ() + snapshot.maxZ()) / 2.0D + 0.5D;
         Location current = player.getLocation();
         double deltaX = current.getX() - centerX;
         double deltaZ = current.getZ() - centerZ;
@@ -4240,16 +4240,16 @@ public class FfaManager {
     private void ensureArenaSettingColumns(Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             if (!plugin.getDatabaseManager().hasColumn("ffa_arenas", "no_hunger")) {
-                plugin.getDatabaseManager().executeSchema(statement, "ALTER TABLE ffa_arenas ADD COLUMN no_hunger INTEGER DEFAULT 0");
+                plugin.getDatabaseManager().executeSchema(statement, "alter table ffa_arenas add column no_hunger integer default 0");
             }
             if (!plugin.getDatabaseManager().hasColumn("ffa_arenas", "no_weather")) {
-                plugin.getDatabaseManager().executeSchema(statement, "ALTER TABLE ffa_arenas ADD COLUMN no_weather INTEGER DEFAULT 0");
+                plugin.getDatabaseManager().executeSchema(statement, "alter table ffa_arenas add column no_weather integer default 0");
             }
             if (!plugin.getDatabaseManager().hasColumn("ffa_arenas", "always_morning")) {
-                plugin.getDatabaseManager().executeSchema(statement, "ALTER TABLE ffa_arenas ADD COLUMN always_morning INTEGER DEFAULT 0");
+                plugin.getDatabaseManager().executeSchema(statement, "alter table ffa_arenas add column always_morning integer default 0");
             }
             if (!plugin.getDatabaseManager().hasColumn("ffa_arenas", "no_fall_damage")) {
-                plugin.getDatabaseManager().executeSchema(statement, "ALTER TABLE ffa_arenas ADD COLUMN no_fall_damage INTEGER DEFAULT 0");
+                plugin.getDatabaseManager().executeSchema(statement, "alter table ffa_arenas add column no_fall_damage integer default 0");
             }
         }
     }
@@ -4264,7 +4264,7 @@ public class FfaManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "SELECT id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled, no_hunger, no_weather, always_morning, no_fall_damage FROM ffa_arenas");
+                "select id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled, no_hunger, no_weather, always_morning, no_fall_damage from ffa_arenas");
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 String arenaId = rs.getString("id");
@@ -4329,8 +4329,8 @@ public class FfaManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "REPLACE INTO ffa_arenas (id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled, no_hunger, no_weather, always_morning, no_fall_damage) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                "replace into ffa_arenas (id, display_name, spawn1_data, spawn2_data, return_data, region_pos1_data, region_pos2_data, enabled, queue_enabled, no_hunger, no_weather, always_morning, no_fall_damage) " +
+                        "values (?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
             ps.setString(1, arena.getId());
             ps.setString(2, arena.getDisplayName());
             ps.setString(3, LocationUtils.serialize(arena.getSpawn1()));
@@ -4356,7 +4356,7 @@ public class FfaManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "SELECT wins, losses, draws, matches_played, current_streak, best_streak FROM ffa_stats WHERE player_uuid = ?")) {
+                "select wins, losses, draws, matches_played, current_streak, best_streak from ffa_stats where player_uuid = ?")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -4383,7 +4383,7 @@ public class FfaManager {
         }
 
         try (PreparedStatement ps = connection().prepareStatement(
-                "REPLACE INTO ffa_stats (player_uuid, wins, losses, draws, matches_played, current_streak, best_streak, updated_at) VALUES (?,?,?,?,?,?,?,?)")) {
+                "replace into ffa_stats (player_uuid, wins, losses, draws, matches_played, current_streak, best_streak, updated_at) values (?,?,?,?,?,?,?,?)")) {
             ps.setString(1, uuid.toString());
             ps.setInt(2, stats.getWins());
             ps.setInt(3, stats.getLosses());
@@ -4500,7 +4500,7 @@ public class FfaManager {
 
     private String prettifyId(String id) {
         if (id == null || id.isBlank()) {
-            return "ᴀʀᴇɴᴀ";
+            return "Arena";
         }
 
         String[] parts = id.replace('-', ' ').replace('_', ' ').split("\\s+");
@@ -4517,7 +4517,7 @@ public class FfaManager {
                 builder.append(part.substring(1).toLowerCase(Locale.ROOT));
             }
         }
-        return builder.isEmpty() ? "ᴀʀᴇɴᴀ" : ColorUtils.toSmallCaps(builder.toString());
+        return builder.isEmpty() ? "Arena" : builder.toString();
     }
 
     private FileConfiguration config() {
@@ -4588,6 +4588,10 @@ public class FfaManager {
         if (sender != null && message != null && !message.isBlank()) {
             sender.sendMessage(ColorUtils.toComponent(message));
         }
+    }
+
+    private String publicName(Player player) {
+        return plugin.getHideManager() == null ? player.getName() : plugin.getHideManager().publicName(player);
     }
 
     private void play(Player player, String soundPath) {

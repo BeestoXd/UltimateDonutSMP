@@ -85,7 +85,8 @@ public class StaffModeManager {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean("STAFF-MODE.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_MODE)
+                && getConfig().getBoolean("STAFF-MODE.ENABLED", true);
     }
 
     public boolean shouldPersistOnQuit() {
@@ -113,35 +114,35 @@ public class StaffModeManager {
     }
 
     public String getStaffPermission() {
-        return getConfig().getString("STAFF-MODE.STAFF-PERMISSION", "ultimatedonutsmp.staff.mode");
+        return getConfig().getString("STAFF-MODE.STAFF-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE");
     }
 
     public String getAdminPermission() {
-        return getConfig().getString("STAFF-MODE.ADMIN-PERMISSION", "ultimatedonutsmp.admin.staffmode");
+        return getConfig().getString("STAFF-MODE.ADMIN-PERMISSION", "ULTIMATEDONUTSMP.ADMIN.STAFFMODE");
     }
 
     public String getVanishPermission() {
-        return getConfig().getString("STAFF-MODE.VANISH-PERMISSION", "ultimatedonutsmp.staff.mode.vanish");
+        return getConfig().getString("STAFF-MODE.VANISH-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE.VANISH");
     }
 
     public String getBetterViewPermission() {
-        return getConfig().getString("STAFF-MODE.BETTER-VIEW-PERMISSION", "ultimatedonutsmp.staff.mode.betterview");
+        return getConfig().getString("STAFF-MODE.BETTER-VIEW-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE.BETTERVIEW");
     }
 
     public String getStaffListPermission() {
-        return getConfig().getString("STAFF-MODE.STAFF-LIST-PERMISSION", "ultimatedonutsmp.staff.mode.stafflist");
+        return getConfig().getString("STAFF-MODE.STAFF-LIST-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE.STAFFLIST");
     }
 
     public String getRandomTeleportPermission() {
-        return getConfig().getString("STAFF-MODE.RANDOM-TELEPORT-PERMISSION", "ultimatedonutsmp.staff.mode.randomtp");
+        return getConfig().getString("STAFF-MODE.RANDOM-TELEPORT-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE.RANDOMTP");
     }
 
     public String getSeeVanishedPermission() {
-        return getConfig().getString("STAFF-MODE.SEE-VANISHED-PERMISSION", "ultimatedonutsmp.staff.mode.seevanished");
+        return getConfig().getString("STAFF-MODE.SEE-VANISHED-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE.SEEVANISHED");
     }
 
     public String getOthersPermission() {
-        return getConfig().getString("STAFF-MODE.OTHERS-PERMISSION", "ultimatedonutsmp.staff.mode.others");
+        return getConfig().getString("STAFF-MODE.OTHERS-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE.OTHERS");
     }
 
     public boolean canUse(CommandSender sender) {
@@ -175,7 +176,7 @@ public class StaffModeManager {
     }
 
     public boolean isInStaffMode(UUID uuid) {
-        return uuid != null && activeStates.containsKey(uuid);
+        return isEnabled() && uuid != null && activeStates.containsKey(uuid);
     }
 
     public boolean isVanished(UUID uuid) {
@@ -573,17 +574,17 @@ public class StaffModeManager {
     }
 
     public String getLocalServerDisplayName() {
-        return plugin.getConfigManager().getNetwork().getString("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "Local");
+        return plugin.getConfigManager().getNetwork().getString("NETWORK-STATUS.LOCAL-DISPLAY-NAME", "local");
     }
 
     public String getPlayerStatusSummary(Player player) {
         if (player == null) {
-            return "Offline";
+            return "offline";
         }
         if (plugin.getAFKManager().isAfk(player.getUniqueId())) {
-            return "Online (AFK)";
+            return "online (afk)";
         }
-        return "Online";
+        return "online";
     }
 
     public int getMenuRefreshSlot(String menuKey) {
@@ -625,14 +626,14 @@ public class StaffModeManager {
     }
 
     public ItemStack createRefreshItem(String menuKey) {
-        return ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ ᴛʜɪѕ ᴠɪᴇᴡ."));
+        return ItemUtils.createItem(Material.CLOCK, "&erefresh", List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ ᴛʜɪѕ ᴠɪᴇᴡ."));
     }
 
     public ItemStack createMenuEmptyItem(String menuKey) {
         ConfigurationSection section = menuSection(menuKey);
         return ItemUtils.createItem(
                 parseMaterial(section.getString("EMPTY-MATERIAL", "BARRIER"), Material.BARRIER),
-                section.getString("EMPTY-NAME", "&cɴᴏᴛʜɪɴɢ ʜᴇʀᴇ"),
+                section.getString("EMPTY-NAME", "&cnothing here"),
                 section.getStringList("EMPTY-LORE")
         );
     }
@@ -843,7 +844,7 @@ public class StaffModeManager {
 
         String message = getConfig().getString(
                 "STAFF-MODE.VANISH-ACTIONBAR.MESSAGE",
-                "&aᴠᴀɴɪѕʜᴇᴅ &7>> &fʏᴏᴜ ᴀʀᴇ ʜɪᴅᴅᴇɴ ꜰʀᴏᴍ ʀᴇɢᴜʟᴀʀ ᴘʟᴀʏᴇʀѕ"
+                "&avanished &7>> &fyou are hidden from regular players"
         );
         if (message == null || message.isBlank()) {
             return;
@@ -937,7 +938,7 @@ public class StaffModeManager {
 
         if (notify) {
             String path = active ? "VANISH-ON" : "VANISH-OFF";
-            String fallback = active ? "&aᴠᴀɴɪѕʜ ᴇɴᴀʙʟᴇᴅ." : "&cᴠᴀɴɪѕʜ ᴅɪѕᴀʙʟᴇᴅ.";
+            String fallback = active ? "&avanish enabled." : "&cvanish disabled.";
             player.sendMessage(ColorUtils.toComponent(getMessage(path, fallback), player));
             PlayerSettingUtils.sendActionBar(plugin, player, getMessage(path, fallback));
         }
@@ -959,7 +960,11 @@ public class StaffModeManager {
             if (viewer.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
-            viewer.showPlayer(plugin, player);
+            plugin.getPlayerVisibilityManager().show(
+                    viewer,
+                    player,
+                    PlayerVisibilityManager.Reason.STAFF_VANISH
+            );
         }
     }
 
@@ -1011,7 +1016,11 @@ public class StaffModeManager {
                 continue;
             }
             if (isVanished(target.getUniqueId()) && !canSeeVanished(viewer, target)) {
-                viewer.hidePlayer(plugin, target);
+                plugin.getPlayerVisibilityManager().hide(
+                        viewer,
+                        target,
+                        PlayerVisibilityManager.Reason.STAFF_VANISH
+                );
             }
         }
     }
@@ -1026,9 +1035,17 @@ public class StaffModeManager {
                 continue;
             }
             if (isVanished(target.getUniqueId()) && !canSeeVanished(viewer, target)) {
-                viewer.hidePlayer(plugin, target);
+                plugin.getPlayerVisibilityManager().hide(
+                        viewer,
+                        target,
+                        PlayerVisibilityManager.Reason.STAFF_VANISH
+                );
             } else {
-                viewer.showPlayer(plugin, target);
+                plugin.getPlayerVisibilityManager().show(
+                        viewer,
+                        target,
+                        PlayerVisibilityManager.Reason.STAFF_VANISH
+                );
             }
         }
     }
@@ -1158,6 +1175,12 @@ public class StaffModeManager {
                 || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.view")
                 || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.create")
                 || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.remove")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.ban")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.unban")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.mute")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.unmute")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.blacklist")
+                || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.unblacklist")
                 || PermissionUtils.has(player, "ultimatedonutsmp.staff.punishments.delete");
     }
 

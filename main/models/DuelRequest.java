@@ -7,7 +7,8 @@ public record DuelRequest(
         String challengerName,
         UUID targetUuid,
         String targetName,
-        String arenaId,
+        DuelMapSelection mapSelection,
+        DuelPrivacyMode privacyMode,
         long expiresAt
 ) {
     public boolean isExpired(long now) {

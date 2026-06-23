@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.utils.NightVisionUtils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -21,6 +22,14 @@ public class PlayerSettingEffectsListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onTotemUse(EntityResurrectEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
+
+        if (NightVisionUtils.isEnabled(plugin, player)) {
+            plugin.getFoliaScheduler().runEntityLater(
+                    player,
+                    () -> NightVisionUtils.restoreIfEnabled(plugin, player),
+                    1L
+            );
+        }
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data != null && !data.isTotemParticlesEnabled()) {

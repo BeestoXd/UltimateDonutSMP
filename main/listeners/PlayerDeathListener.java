@@ -28,6 +28,9 @@ public class PlayerDeathListener implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().clearNametag(victim.getUniqueId());
+        }
 
         if (plugin.getDuelManager() != null && plugin.getDuelManager().handleDuelDeath(event)) {
             return;
@@ -53,8 +56,7 @@ public class PlayerDeathListener implements Listener {
                 killerData.addKill();
                 killerData.addKillStreak();
                 if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SHARDS)) {
-                    long shardsPerKill = plugin.getConfigManager().getConfig()
-                            .getLong("SETTINGS.SHARDS-PER-KILL", 1);
+                    long shardsPerKill = plugin.getShardManager().rollKillReward();
                     plugin.getShardManager().giveShards(killer, shardsPerKill, true);
                 }
             }
@@ -67,7 +69,7 @@ public class PlayerDeathListener implements Listener {
                     String msg = plugin.getConfigManager().getMessage("BOUNTY.CLAIM-SUCCESS",
                             "{amount}", NumberUtils.format(amount),
                             "{amount_formatted}", plugin.getCurrencyManager().formatMoney(amount),
-                            "{player}", victim.getName());
+                            "{player}", plugin.getHideManager().publicName(victim));
                     killer.sendMessage(ColorUtils.toComponent(msg));
                 }
             }
@@ -79,7 +81,7 @@ public class PlayerDeathListener implements Listener {
         }
 
         plugin.getCombatManager().clearTag(victim.getUniqueId());
-        plugin.getRtpZoneManager().clearState(victim.getUniqueId());
+        plugin.getRtpZoneManager().clearState(victim);
     }
 
     private String buildDeathMessage(PlayerDeathEvent event, Player victim, Player killer) {
@@ -136,8 +138,8 @@ public class PlayerDeathListener implements Listener {
         };
 
         String msg = template
-                .replace("{player}", victim.getName())
-                .replace("{killer}", killerName != null ? killerName : "ᴜɴᴋɴᴏᴡɴ");
+                .replace("{player}", plugin.getHideManager().publicName(victim))
+                .replace("{killer}", killerName != null ? killerName : "unknown");
 
         return ColorUtils.colorize(prefix + msg);
     }
@@ -170,7 +172,7 @@ public class PlayerDeathListener implements Listener {
 
     private String safeEntityName(Entity entity) {
         if (entity == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
 
         String name = entity.getName();
@@ -178,8 +180,8 @@ public class PlayerDeathListener implements Listener {
     }
 
     private String buildPlayerKillMessage(Player victim, Player killer) {
-        String victimName = victim == null ? "ᴜɴᴋɴᴏᴡɴ" : victim.getName();
-        String killerName = killer == null ? "ᴜɴᴋɴᴏᴡɴ" : killer.getName();
+        String victimName = victim == null ? "unknown" : plugin.getHideManager().publicName(victim);
+        String killerName = killer == null ? "unknown" : plugin.getHideManager().publicName(killer);
         return ColorUtils.colorize("&c\u2620 " + victimName + " \u1D21\u1D00\u0455 \u0455\u029F\u1D00\u026A\u0274 \u0299\u028F " + killerName);
     }
 }

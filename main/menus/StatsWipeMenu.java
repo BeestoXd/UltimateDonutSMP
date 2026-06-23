@@ -67,8 +67,8 @@ public class StatsWipeMenu extends BaseMenu {
         renderCloseButton();
 
         if (plugin.getStatsWipeManager().isWipeInProgress()) {
-            set(menus().getInt(MENU_PATH + ".ѕᴛᴀᴛᴜѕ.ѕʟᴏᴛ", 13), ItemUtils.createItem(
-                    ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".ѕᴛᴀᴛᴜѕ.ᴍᴀᴛᴇʀɪᴀʟ", "BARRIER")),
+            set(menus().getInt(MENU_PATH + ".STATUS.SLOT", 13), ItemUtils.createItem(
+                    ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".STATUS.MATERIAL", "BARRIER")),
                     menus().getString(MENU_PATH + ".STATUS.DISPLAY-NAME", "&cᴡɪᴘᴇ ɪɴ ᴘʀᴏɢʀᴇѕѕ"),
                     menus().getStringList(MENU_PATH + ".STATUS.LORE")
             ));
@@ -119,7 +119,7 @@ public class StatsWipeMenu extends BaseMenu {
     }
 
     private void renderCloseButton() {
-        String path = MENU_PATH + ".ʙᴜᴛᴛᴏɴѕ.ᴄʟᴏѕᴇ";
+        String path = MENU_PATH + ".buttons.close";
         if (!menus().contains(path)) {
             return;
         }

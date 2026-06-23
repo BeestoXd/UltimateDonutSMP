@@ -20,6 +20,9 @@ public class SpawnerVisibilityListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled()) {
+            return;
+        }
         scheduleRefresh(event.getPlayer(), 20L);
     }
 
@@ -30,16 +33,25 @@ public class SpawnerVisibilityListener implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled()) {
+            return;
+        }
         scheduleRefresh(event.getPlayer(), 2L);
     }
 
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled()) {
+            return;
+        }
         scheduleRefresh(event.getPlayer(), 2L);
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled()) {
+            return;
+        }
         if (event.getTo() == null) {
             return;
         }

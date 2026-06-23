@@ -251,7 +251,7 @@ public class ProfileViewerMenu extends BaseMenu {
     private String resolveStatValue(String key) {
         PlayerData data = snapshot.getPlayerData();
         if (data == null) {
-            return "No data";
+            return "ɴᴏ ᴅᴀᴛᴀ";
         }
 
         return switch (key.toUpperCase(Locale.ROOT)) {
@@ -267,7 +267,7 @@ public class ProfileViewerMenu extends BaseMenu {
             case "HIGHEST_KILL_STREAK" -> NumberUtils.format(data.getHighestKillStreak());
             case "MONEY_SPENT" -> plugin.getCurrencyManager().formatMoneyCompact(data.getMoneySpent());
             case "MONEY_MADE" -> plugin.getCurrencyManager().formatMoneyCompact(data.getMoneyMade());
-            default -> "ᴜɴᴋɴᴏᴡɴ";
+            default -> "unknown";
         };
     }
 
@@ -297,7 +297,7 @@ public class ProfileViewerMenu extends BaseMenu {
 
         Location currentLocation = snapshot.getCurrentLocation();
         String worldName = currentLocation == null || currentLocation.getWorld() == null
-                ? "ᴜɴᴋɴᴏᴡɴ"
+                ? "unknown"
                 : friendlyWorldName(currentLocation);
         int x = currentLocation == null ? 0 : currentLocation.getBlockX();
         int y = currentLocation == null ? 0 : currentLocation.getBlockY();
@@ -325,21 +325,21 @@ public class ProfileViewerMenu extends BaseMenu {
 
     private String safeTeamName(ProfileSnapshot snapshot) {
         return snapshot.getTeamName() == null || snapshot.getTeamName().isBlank()
-                ? "ɴᴏɴᴇ"
+                ? "none"
                 : snapshot.getTeamName();
     }
 
     private String statusLabel(ProfileSnapshot snapshot) {
         if (!snapshot.isOnline()) {
-            return "ᴏꜰꜰʟɪɴᴇ";
+            return "offline";
         }
-        return snapshot.isAfk() ? "ᴏɴʟɪɴᴇ (ᴀꜰᴋ)" : "ᴏɴʟɪɴᴇ";
+        return snapshot.isAfk() ? "ᴏɴʟɪɴᴇ (ᴀꜰᴋ)" : "online";
     }
 
     private String currentLocationSummary(ProfileSnapshot snapshot) {
         Location location = snapshot.getCurrentLocation();
         if (location == null || location.getWorld() == null) {
-            return "ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ";
+            return "unavailable";
         }
         return friendlyWorldName(location)
                 + " "
@@ -350,14 +350,14 @@ public class ProfileViewerMenu extends BaseMenu {
 
     private String friendlyWorldName(Location location) {
         if (location == null || location.getWorld() == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
 
         World.Environment environment = location.getWorld().getEnvironment();
         return switch (environment) {
-            case NETHER -> "ɴᴇᴛʜᴇʀ";
-            case THE_END -> "ᴇɴᴅ";
-            default -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
+            case NETHER -> "nether";
+            case THE_END -> "end";
+            default -> "overworld";
         };
     }
 
@@ -373,7 +373,7 @@ public class ProfileViewerMenu extends BaseMenu {
         String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8{username}'ѕ ᴘʀᴏꜰɪʟᴇ");
         String username = plugin.getProfileViewerManager().resolveProfile(uuid)
                 .map(ProfileSnapshot::getUsername)
-                .orElse("ᴜɴᴋɴᴏᴡɴ");
+                .orElse("unknown");
         return template.replace("{username}", username);
     }
 

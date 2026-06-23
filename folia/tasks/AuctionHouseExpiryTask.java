@@ -19,8 +19,11 @@ public class AuctionHouseExpiryTask implements Runnable {
 
     @Override
     public void run() {
-        if (plugin.getAuctionHouseManager() != null) {
-            plugin.getAuctionHouseManager().expireListings();
+        if (plugin.getAuctionHouseManager() != null && plugin.getAuctionHouseManager().isEnabled()) {
+            plugin.getAuctionHouseManager().expireListings().exceptionally(throwable -> {
+                plugin.getLogger().warning("Auction House expiry scan failed: " + throwable.getMessage());
+                return 0;
+            });
         }
     }
 }

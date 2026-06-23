@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.OrdersManager;
+import com.bx.ultimateDonutSmp.models.OrderBatchClaimResult;
 import com.bx.ultimateDonutSmp.models.OrderCollectionClaim;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -15,10 +16,16 @@ import java.util.List;
 public class OrdersCollectMenu extends BaseMenu {
 
     private final int page;
+    private final long orderId;
 
     public OrdersCollectMenu(UltimateDonutSmp plugin, int page) {
+        this(plugin, page, 0L);
+    }
+
+    public OrdersCollectMenu(UltimateDonutSmp plugin, int page, long orderId) {
         super(plugin, plugin.getOrdersManager().getCollectTitle(), plugin.getOrdersManager().getCollectSize());
         this.page = Math.max(1, page);
+        this.orderId = Math.max(0L, orderId);
     }
 
     @Override
@@ -26,7 +33,7 @@ public class OrdersCollectMenu extends BaseMenu {
         clear();
         fill(Material.GRAY_STAINED_GLASS_PANE);
 
-        List<OrderCollectionClaim> claims = plugin.getOrdersManager().getUnclaimedClaims(player.getUniqueId());
+        List<OrderCollectionClaim> claims = getClaims(player);
         int itemsPerPage = plugin.getOrdersManager().getCollectItemsPerPage();
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = Math.min(claims.size(), startIndex + itemsPerPage);
@@ -50,6 +57,10 @@ public class OrdersCollectMenu extends BaseMenu {
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 2, ItemUtils.createItem(Material.WRITABLE_BOOK, "&bᴍʏ ᴏʀᴅᴇʀѕ", List.of("&7ᴠɪᴇᴡ ʏᴏᴜʀ ᴏʀᴅᴇʀѕ")));
         set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴄᴏʟʟᴇᴄᴛ ǫᴜᴇᴜᴇ")));
+        set(lastRow + 4, OrdersMenuSupport.button(
+                plugin, "GUI.COLLECT.BUTTONS.COLLECT_PAGE", "ORDERS.GUI.COLLECT.COLLECT_PAGE",
+                Material.HOPPER, "&aᴄᴏʟʟᴇᴄᴛ ᴘᴀɢᴇ", List.of("&fᴄᴏʟʟᴇᴄᴛ ᴇᴠᴇʀʏ ᴄʟᴀɪᴍ ѕʜᴏᴡɴ ᴏɴ ᴛʜɪѕ ᴘᴀɢᴇ")
+        ));
         set(lastRow + 5, ItemUtils.createItem(
                 Material.BOOK,
                 "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(claims.size(), itemsPerPage),
@@ -58,7 +69,10 @@ public class OrdersCollectMenu extends BaseMenu {
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
                 ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
+        set(lastRow + 8, OrdersMenuSupport.button(
+                plugin, "GUI.COLLECT.BUTTONS.DROP_PAGE", "ORDERS.GUI.COLLECT.DROP_PAGE",
+                Material.DROPPER, "&eᴅʀᴏᴘ ᴘᴀɢᴇ", List.of("&fᴅʀᴏᴘ ɪᴛᴇᴍ ᴄʟᴀɪᴍѕ ѕᴀꜰᴇʟʏ ᴀᴛ ʏᴏᴜʀ ꜰᴇᴇᴛ")
+        ));
 
         if (claims.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
@@ -72,7 +86,7 @@ public class OrdersCollectMenu extends BaseMenu {
     @Override
     public void handleClick(int slot, Player player) {
         int lastRow = inventory.getSize() - 9;
-        List<OrderCollectionClaim> claims = plugin.getOrdersManager().getUnclaimedClaims(player.getUniqueId());
+        List<OrderCollectionClaim> claims = getClaims(player);
         int itemsPerPage = plugin.getOrdersManager().getCollectItemsPerPage();
 
         if (slot == lastRow) {
@@ -83,7 +97,7 @@ public class OrdersCollectMenu extends BaseMenu {
         if (slot == lastRow + 1) {
             if (page > 1) {
                 SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-                new OrdersCollectMenu(plugin, page - 1).open(player);
+                new OrdersCollectMenu(plugin, page - 1, orderId).open(player);
             }
             return;
         }
@@ -94,18 +108,22 @@ public class OrdersCollectMenu extends BaseMenu {
         }
         if (slot == lastRow + 3) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersCollectMenu(plugin, page).open(player);
+            new OrdersCollectMenu(plugin, page, orderId).open(player);
+            return;
+        }
+        if (slot == lastRow + 4) {
+            collectPage(player, false, claims, itemsPerPage);
             return;
         }
         if (slot == lastRow + 7) {
             if (hasNextPage(claims.size(), itemsPerPage)) {
                 SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-                new OrdersCollectMenu(plugin, page + 1).open(player);
+                new OrdersCollectMenu(plugin, page + 1, orderId).open(player);
             }
             return;
         }
         if (slot == lastRow + 8) {
-            player.closeInventory();
+            collectPage(player, true, claims, itemsPerPage);
             return;
         }
 
@@ -154,10 +172,41 @@ public class OrdersCollectMenu extends BaseMenu {
                 )));
             }
             SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.SUCCESS"));
-            new OrdersCollectMenu(plugin, page).open(player);
+            new OrdersCollectMenu(plugin, page, orderId).open(player);
         } finally {
             manager.endAction(player.getUniqueId());
         }
+    }
+
+    private List<OrderCollectionClaim> getClaims(Player player) {
+        return plugin.getOrdersManager().getUnclaimedClaims(player.getUniqueId(), orderId);
+    }
+
+    private void collectPage(
+            Player player,
+            boolean dropItems,
+            List<OrderCollectionClaim> claims,
+            int itemsPerPage
+    ) {
+        int from = Math.min(claims.size(), (page - 1) * itemsPerPage);
+        int to = Math.min(claims.size(), from + itemsPerPage);
+        List<Long> claimIds = claims.subList(from, to).stream()
+                .map(OrderCollectionClaim::id)
+                .toList();
+        OrderBatchClaimResult result = plugin.getOrdersManager().claimBatch(player, claimIds, dropItems);
+        player.sendMessage(ColorUtils.toComponent(OrdersMenuSupport.text(
+                plugin,
+                "ORDERS.BATCH_COLLECTED",
+                "&aᴄᴏʟʟᴇᴄᴛᴇᴅ {claims} ᴄʟᴀɪᴍѕ ({items} ɪᴛᴇᴍѕ, {refund} ʀᴇꜰᴜɴᴅ). &c{failed} ꜰᴀɪʟᴇᴅ.",
+                "{claims}", String.valueOf(result.itemClaims() + result.refundClaims()),
+                "{items}", String.valueOf(result.itemAmount()),
+                "{refund}", plugin.getCurrencyManager().formatMoney(result.refundAmount()),
+                "{failed}", String.valueOf(result.failedClaims())
+        )));
+        SoundUtils.play(player, plugin.getConfigManager().getSound(
+                result.failedClaims() == 0 ? "ORDERS.SUCCESS" : "ORDERS.FAIL"
+        ));
+        new OrdersCollectMenu(plugin, page, orderId).open(player);
     }
 
     private int getTotalPages(int totalItems, int itemsPerPage) {
@@ -171,6 +220,7 @@ public class OrdersCollectMenu extends BaseMenu {
     private String resolveFailureMessage(OrdersManager.ClaimResult result) {
         return switch (result.reason()) {
             case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cᴏʀᴅᴇʀѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
+            case CLAIMS_DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIMS_DISABLED", "&cᴏʀᴅᴇʀѕ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
             case CLAIM_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_NOT_FOUND", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.");
             case NOT_OWNER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_YOUR_CLAIM", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.");
             case ALREADY_CLAIMED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.CLAIM_ALREADY_CLAIMED", "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ.");

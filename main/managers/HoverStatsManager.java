@@ -130,7 +130,7 @@ public class HoverStatsManager {
     private Map<String, String> buildPlaceholders(Player speaker, String prefix, PlayerData data) {
         Map<String, String> placeholders = new LinkedHashMap<>();
         Team team = plugin.getTeamManager().getTeam(speaker.getUniqueId());
-        String teamName = team != null ? team.getName().toUpperCase() : "ɴᴏɴᴇ";
+        String teamName = team != null ? team.getName().toUpperCase() : "none";
         String displayName = resolveDisplayName(speaker);
 
         placeholders.put("%player%", displayName);
@@ -185,6 +185,9 @@ public class HoverStatsManager {
     }
 
     private String resolveDisplayName(Player player) {
+        if (plugin.getHideManager() != null && plugin.getHideManager().isHidden(player.getUniqueId())) {
+            return plugin.getHideManager().publicName(player);
+        }
         if (!ColorUtils.hasPAPI()) {
             return player.getName();
         }

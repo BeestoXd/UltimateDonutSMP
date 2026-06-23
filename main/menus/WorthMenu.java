@@ -37,7 +37,7 @@ public class WorthMenu extends BaseMenu {
                         .thenComparing(entry -> entry.material().name())
         ),
         NAME_A_TO_Z(
-                "Name A to Z",
+                "ɴᴀᴍᴇ ᴀ ᴛᴏ ᴢ",
                 Material.NAME_TAG,
                 Comparator.comparing(entry -> entry.material().name())
         );
@@ -128,16 +128,17 @@ public class WorthMenu extends BaseMenu {
             }
 
             WorthManager.WorthBrowserEntry entry = entries.get(entryIndex);
+            int stackSize = Math.max(1, entry.material().getMaxStackSize());
             ItemStack displayItem = ItemUtils.createItem(
                     entry.material(),
-                    "&b" + plugin.getWorthManager().prettifyMaterial(entry.material()),
-                    List.of(
-                            "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + formatCategory(entry.categoryKey()),
-                            "&7ᴡᴏʀᴛʜ: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth()),
-                            "&7ѕᴛᴀᴄᴋ x64: " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth() * 64),
-                            "",
-                            "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇɴᴅ ᴡᴏʀᴛʜ ɪɴꜰᴏ ɪɴ ᴄʜᴀᴛ"
-                    )
+                    replaceItemPlaceholders(
+                            plugin.getConfigManager().getWorth().getString("BROWSER.ITEM.NAME", "&b{item}"),
+                            entry,
+                            stackSize
+                    ),
+                    plugin.getConfigManager().getWorth().getStringList("BROWSER.ITEM.LORE").stream()
+                            .map(line -> replaceItemPlaceholders(line, entry, stackSize))
+                            .toList()
             );
             set(inventorySlot, displayItem);
         }
@@ -241,5 +242,27 @@ public class WorthMenu extends BaseMenu {
             builder.append(Character.toUpperCase(token.charAt(0))).append(token.substring(1));
         }
         return builder.toString();
+    }
+
+    private String replaceItemPlaceholders(
+            String text,
+            WorthManager.WorthBrowserEntry entry,
+            int stackSize
+    ) {
+        double stackPrice = calculateStackPrice(entry.unitWorth(), stackSize);
+        return (text == null ? "" : text)
+                .replace("{item}", plugin.getWorthManager().prettifyMaterial(entry.material()))
+                .replace("{category}", formatCategory(entry.categoryKey()))
+                .replace("{unit_price}", NumberUtils.format(entry.unitWorth()))
+                .replace("{unit_price_formatted}", plugin.getCurrencyManager().formatMoney(entry.unitWorth()))
+                .replace("{unit_price_compact}", plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth()))
+                .replace("{stack_size}", String.valueOf(stackSize))
+                .replace("{stack_price}", NumberUtils.format(stackPrice))
+                .replace("{stack_price_formatted}", plugin.getCurrencyManager().formatMoney(stackPrice))
+                .replace("{stack_price_compact}", plugin.getCurrencyManager().formatMoneyCompact(stackPrice));
+    }
+
+    public static double calculateStackPrice(double unitPrice, int stackSize) {
+        return Math.max(0D, unitPrice) * Math.max(1, stackSize);
     }
 }

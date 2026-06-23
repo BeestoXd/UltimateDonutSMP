@@ -6,9 +6,11 @@ import com.bx.ultimateDonutSmp.menus.SellMenu;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -20,8 +22,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,16 +85,30 @@ public class WorthDisplayListener implements Listener {
             plugin.getWorthManager().sanitizeInventory(event.getInventory());
         }
 
+        if (isShulkerInventory(event.getInventory())) {
+            queueRefresh(player, 1L);
+            return;
+        }
+
         queueRefresh(player, 1L);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) {
             return;
         }
 
         if (isAmethystItem(event.getCurrentItem()) || isAmethystItem(event.getCursor())) {
+            return;
+        }
+
+        if (scheduleWorthDisplayMerge(event, player)) {
+            return;
+        }
+
+        if (isShulkerInventory(event.getView().getTopInventory())) {
+            queueRefresh(player, 1L);
             return;
         }
 
@@ -104,6 +122,11 @@ public class WorthDisplayListener implements Listener {
         }
 
         if (isAmethystItem(event.getOldCursor())) {
+            return;
+        }
+
+        if (isShulkerInventory(event.getView().getTopInventory())) {
+            queueRefresh(player, 1L);
             return;
         }
 
@@ -133,14 +156,21 @@ public class WorthDisplayListener implements Listener {
         );
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player player) {
             ItemStack current = event.getItem().getItemStack();
-            ItemStack updated = plugin.getWorthManager().applyWorthDisplayForPlayer(player, current);
-            if (updated != current) {
-                event.getItem().setItemStack(updated);
+            if (isAmethystItem(current)) {
+                return;
             }
+
+            ItemStack stripped = plugin.getWorthManager().stripWorthDisplay(current);
+            if (stripped != current) {
+                event.getItem().setItemStack(stripped);
+            }
+
+            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
+            queueRefresh(player, 1L);
         }
     }
 
@@ -213,10 +243,12 @@ public class WorthDisplayListener implements Listener {
 
                 if (player.getGameMode() == GameMode.CREATIVE) {
                     plugin.getWorthManager().clearWorthDisplay(player);
+                    sanitizeOpenShulkerInventory(player);
                     return;
                 }
 
                 plugin.getWorthManager().syncWorthDisplay(player);
+                syncOpenShulkerInventory(player);
             });
         }
     }
@@ -226,6 +258,102 @@ public class WorthDisplayListener implements Listener {
                 && (inventory.getHolder() instanceof Player
                 || inventory.getType() == InventoryType.CRAFTING
                 || inventory.getType() == InventoryType.CREATIVE);
+    }
+
+    private void syncOpenShulkerInventory(Player player) {
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        if (!isShulkerInventory(inventory)) {
+            return;
+        }
+
+        plugin.getWorthManager().syncWorthDisplay(player, inventory);
+    }
+
+    private void sanitizeOpenShulkerInventory(Player player) {
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        if (!isShulkerInventory(inventory)) {
+            return;
+        }
+
+        plugin.getWorthManager().sanitizeInventory(inventory);
+    }
+
+    private boolean isShulkerInventory(Inventory inventory) {
+        return inventory != null && inventory.getType() == InventoryType.SHULKER_BOX;
+    }
+
+    private boolean scheduleWorthDisplayMerge(InventoryClickEvent event, Player player) {
+        if (!(event.getClickedInventory() instanceof PlayerInventory clickedInventory)) {
+            return false;
+        }
+
+        Inventory topInventory = event.getView().getTopInventory();
+        if (topInventory.getHolder() instanceof SellMenu
+                || topInventory.getHolder() instanceof BaseMenu
+                || plugin.getInvseeManager().isInvseeInventory(topInventory)) {
+            return false;
+        }
+
+        ClickType click = event.getClick();
+        if (click != ClickType.LEFT && click != ClickType.RIGHT) {
+            return false;
+        }
+
+        ItemStack current = event.getCurrentItem();
+        ItemStack cursor = event.getCursor();
+        if (current == null || current.getType().isAir()
+                || cursor == null || cursor.getType().isAir()
+                || current.isSimilar(cursor)) {
+            return false;
+        }
+
+        ItemStack strippedCurrent = plugin.getWorthManager().stripWorthDisplay(current);
+        ItemStack strippedCursor = plugin.getWorthManager().stripWorthDisplay(cursor);
+        if (!strippedCurrent.isSimilar(strippedCursor)) {
+            return false;
+        }
+
+        int capacity = strippedCurrent.getMaxStackSize() - strippedCurrent.getAmount();
+        if (capacity <= 0) {
+            return false;
+        }
+
+        int transferred = click == ClickType.RIGHT
+                ? 1
+                : Math.min(capacity, strippedCursor.getAmount());
+        ItemStack expectedCurrent = current.clone();
+        ItemStack expectedCursor = cursor.clone();
+        int clickedSlot = event.getSlot();
+
+        event.setCancelled(true);
+        plugin.getFoliaScheduler().runEntityLater(player, () -> {
+            if (!player.isOnline()
+                    || !Objects.equals(clickedInventory.getItem(clickedSlot), expectedCurrent)
+                    || !Objects.equals(player.getItemOnCursor(), expectedCursor)) {
+                queueRefresh(player, 1L);
+                return;
+            }
+
+            ItemStack mergedCurrent = strippedCurrent.clone();
+            mergedCurrent.setAmount(strippedCurrent.getAmount() + transferred);
+            clickedInventory.setItem(
+                    clickedSlot,
+                    plugin.getWorthManager().applyWorthDisplayForPlayer(player, mergedCurrent)
+            );
+
+            int remaining = strippedCursor.getAmount() - transferred;
+            if (remaining <= 0) {
+                player.setItemOnCursor(null);
+            } else {
+                ItemStack remainingCursor = strippedCursor.clone();
+                remainingCursor.setAmount(remaining);
+                player.setItemOnCursor(
+                        plugin.getWorthManager().applyWorthDisplayForPlayer(player, remainingCursor)
+                );
+            }
+            player.updateInventory();
+        }, 1L);
+        return true;
     }
 
     private boolean isAmethystItem(ItemStack item) {

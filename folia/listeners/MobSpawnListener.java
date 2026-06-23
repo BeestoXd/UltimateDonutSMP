@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.utils.MobSpawnPolicy;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -23,6 +24,10 @@ public class MobSpawnListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onMobSpawn(CreatureSpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        if (MobSpawnPolicy.isVanillaSpawnerSpawn(event.getSpawnReason())) {
+            MobSpawnPolicy.markVanillaSpawnerMob(plugin, entity);
+            return;
+        }
         if (!isNaturalSpawn(event.getSpawnReason())) return;
 
         if (event.getEntityType() == EntityType.PHANTOM) {
@@ -123,13 +128,6 @@ public class MobSpawnListener implements Listener {
     }
 
     private boolean isRemovableHostileMob(LivingEntity entity) {
-        if (!(entity instanceof Monster)) {
-            return false;
-        }
-
-        return switch (entity.getType()) {
-            case PHANTOM, WITHER, ENDER_DRAGON, ELDER_GUARDIAN, WARDEN -> false;
-            default -> true;
-        };
+        return MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(plugin, entity);
     }
 }

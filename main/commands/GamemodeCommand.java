@@ -51,7 +51,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleFixedModeCommand(CommandSender sender, String label, String[] args, GameMode mode) {
         if (args.length > 1) {
-            send(sender, "GAMEMODE.USAGE_SHORT", "&cᴜѕᴀɢᴇ: /%label% [player]", "%label%", label);
+            send(sender, "GAMEMODE.USAGE_SHORT", "&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]", "%label%", label);
             return true;
         }
 
@@ -70,7 +70,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleMainCommand(CommandSender sender, String label, String[] args) {
         if (args.length < 1 || args.length > 2) {
-            send(sender, "GAMEMODE.USAGE", "&cᴜѕᴀɢᴇ: /%label% <survival|creative|adventure|spectator> [player]", "%label%", label);
+            send(sender, "GAMEMODE.USAGE", "&cᴜѕᴀɢᴇ: /%label% <survival|creative|adventure|spectator> [ᴘʟᴀʏᴇʀ]", "%label%", label);
             return true;
         }
 
@@ -100,8 +100,8 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
             }
 
             String fallback = fixedModeCommand
-                    ? "&cᴜѕᴀɢᴇ: /%label% <player>"
-                    : "&cᴜѕᴀɢᴇ: /%label% <survival|creative|adventure|spectator> <player>";
+                    ? "&cusage: /%label% <player>"
+                    : "&cusage: /%label% <survival|creative|adventure|spectator> <player>";
             send(sender, "GAMEMODE.PLAYER_ONLY", fallback, "%label%", label);
             return null;
         }
@@ -195,7 +195,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
     }
 
     private String senderName(CommandSender sender) {
-        return sender instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ";
+        return sender instanceof Player player ? player.getName() : "console";
     }
 
     private String normalizeLabel(String label) {

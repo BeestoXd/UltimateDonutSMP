@@ -1,0 +1,17 @@
+# UDS setup: Destructive season reset behavior. Keep RESET-WORLDS empty until dedicated RTP worlds are ready.
+
+ENABLED: true
+
+# Only direct child world folders with these exact names can be replaced.
+# Main/default, spawn, AFK, warp, portal-source, and bound-crate worlds are always rejected.
+RESET-WORLDS: []
+
+# Extra worlds that must never be accepted even if accidentally added above.
+PROTECTED-WORLDS: []
+
+TOKEN-TTL-SECONDS: 300
+BACKUP-DIRECTORY: "server-wipe-backups"
+
+MESSAGES:
+  MAINTENANCE: "&cᴛʜᴇ ѕᴇʀᴠᴇʀ ɪѕ ᴘʀᴇᴘᴀʀɪɴɢ ᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ. ᴛʀʏ ᴀɢᴀɪɴ ᴀꜰᴛᴇʀ ᴛʜᴇ ʀᴇѕᴛᴀʀᴛ."
+  KICK: "&cᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ ɪѕ ѕᴛᴀʀᴛɪɴɢ. ᴛʜᴇ ѕᴇʀᴠᴇʀ ᴡɪʟʟ ʀᴇѕᴛᴀʀᴛ ѕʜᴏʀᴛʟʏ."

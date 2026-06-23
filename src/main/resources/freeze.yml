@@ -1,0 +1,49 @@
+# UDS setup: Staff freeze behavior, persistence, allowed commands, alerts, and messages.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Configure FREEZE options for this file.
+FREEZE:
+  ENABLED: true # Enables or disables freeze.
+  PERSIST-ON-QUIT: true # Configures the persist on quit option.
+  PERSIST-ON-RESTART: true # Configures the persist on restart option.
+  ALLOW-LOOK: true # Configures the allow look option.
+  ALERT-INTERVAL-TICKS: 100 # Sets how often this task or update runs.
+  LOG-USAGE: true # Configures the log usage option.
+  SERVER-NAME: "survival-01" # Sets the name text used here.
+  STAFF-PERMISSION: "ultimatedonutsmp.staff.freeze" # Sets the permission node required for this action.
+  ALERT-PERMISSION: "ultimatedonutsmp.staff.freeze.alert" # Sets the permission node required for this action.
+  EXEMPT-PERMISSION: "ultimatedonutsmp.staff.freeze.exempt" # Sets the permission node required for this action.
+  ADMIN-PERMISSION: "ultimatedonutsmp.admin.freeze" # Sets the permission node required for this action.
+  ALLOWED-COMMANDS:
+    - "/discord"
+    - "/social"
+    - "/msg"
+    - "/r"
+    - "/helpop"
+
+  STATUS_ON: "&a&lON" # Configures the status on option.
+  STATUS_OFF: "&c&lOFF" # Configures the status off option.
+  MESSAGE: "&bfreeze &a%player% &7is now %status%" # Configures the message option.
+  ALERT:
+    - ""
+    - "&c&lyou're currently frozen!"
+    - ""
+    - "&7- you cannot move or interact"
+    - "&7- staff members are reviewing your actions"
+    - "&7- join our discord for support:"
+    - "&6&ohttps://discord.com"
+    - ""
+  QUIT_MESSAGE: "&c[freeze] &4%player% &cleft while frozen on &4%server%" # Configures the quit message option.
+
+# UDS setup: Configure MESSAGES options for this file.
+MESSAGES:
+  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  FEATURE-DISABLED: "&cᴛʜᴇ ꜰʀᴇᴇᴢᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  TARGET-OFFLINE: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+  TARGET-EXEMPT: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ." # Sets the message text for this response.
+  SELF-TARGET: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
+  COMMAND-BLOCKED: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴡʜɪʟᴇ ꜰʀᴏᴢᴇɴ." # Sets the message text for this response.
+  STILL-FROZEN: "&cʏᴏᴜ ᴀʀᴇ ѕᴛɪʟʟ ꜰʀᴏᴢᴇɴ. ᴡᴀɪᴛ ꜰᴏʀ ѕᴛᴀꜰꜰ ɪɴѕᴛʀᴜᴄᴛɪᴏɴѕ." # Sets the message text for this response.
+  UNFROZEN: "&aʏᴏᴜ ᴀʀᴇ ɴᴏ ʟᴏɴɢᴇʀ ꜰʀᴏᴢᴇɴ." # Sets the message text for this response.
+  RELOAD-SUCCESS: "&aꜰʀᴇᴇᴢᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.

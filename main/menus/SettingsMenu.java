@@ -4,6 +4,8 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.MobSpawnPolicy;
+import com.bx.ultimateDonutSmp.utils.NightVisionUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,8 +15,6 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
@@ -49,6 +49,9 @@ public class SettingsMenu extends BaseMenu {
         if (buttons == null) return;
 
         for (String key : buttons.getKeys(false)) {
+            if (!shouldRenderButton(key)) {
+                continue;
+            }
             ConfigurationSection section = buttons.getConfigurationSection(key);
             if (section == null) continue;
             renderButton(player, data, key, section);
@@ -59,6 +62,7 @@ public class SettingsMenu extends BaseMenu {
     public void handleClick(int slot, Player player) {
         String key = clickableButtons.get(slot);
         if (key == null) return;
+        if (!shouldRenderButton(key)) return;
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data == null) return;
@@ -68,7 +72,7 @@ public class SettingsMenu extends BaseMenu {
         switch (key) {
             case "PAY_ALERTS" -> {
                 data.setPayAlertsEnabled(!data.isPayAlertsEnabled());
-                sendToggleMessage(player, "Pay alerts", data.isPayAlertsEnabled());
+                sendToggleMessage(player, "ᴘᴀʏ ᴀʟᴇʀᴛѕ", data.isPayAlertsEnabled());
             }
             case "HOTBAR_MESSAGES" -> {
                 data.setHotbarMessagesEnabled(!data.isHotbarMessagesEnabled());
@@ -97,7 +101,11 @@ public class SettingsMenu extends BaseMenu {
             }
             case "KEY_ALL_NOTIFICATIONS" -> {
                 data.setKeyAllNotificationsEnabled(!data.isKeyAllNotificationsEnabled());
-                sendToggleMessage(player, "Key-All notifications", data.isKeyAllNotificationsEnabled());
+                sendToggleMessage(player, "ᴋᴇʏ-ᴀʟʟ ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴѕ", data.isKeyAllNotificationsEnabled());
+            }
+            case "DUEL_REQUESTS" -> {
+                data.setDuelRequestsEnabled(!data.isDuelRequestsEnabled());
+                sendToggleMessage(player, "ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛѕ", data.isDuelRequestsEnabled());
             }
             case "TPA_CONFIRM_MENUS" -> {
                 data.setTpaConfirmMenuEnabled(!data.isTpaConfirmMenuEnabled());
@@ -113,9 +121,6 @@ public class SettingsMenu extends BaseMenu {
             }
             case "TPA_REQUESTS" -> {
                 data.setTpaRequestsEnabled(!data.isTpaRequestsEnabled());
-                if (data.isTpaRequestsEnabled()) {
-                    plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
-                }
                 sendToggleMessage(player, "ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ", data.isTpaRequestsEnabled());
             }
             case "TP_AUTO" -> {
@@ -133,13 +138,10 @@ public class SettingsMenu extends BaseMenu {
                 if (data.isAutoTpaHereEnabled()) {
                     plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
                 }
-                sendToggleMessage(player, "TPA here auto-accept", data.isAutoTpaHereEnabled());
+                sendToggleMessage(player, "ᴛᴘᴀ ʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ", data.isAutoTpaHereEnabled());
             }
             case "TPA_HERE_REQUESTS" -> {
                 data.setTpaHereRequestsEnabled(!data.isTpaHereRequestsEnabled());
-                if (data.isTpaHereRequestsEnabled()) {
-                    plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
-                }
                 sendToggleMessage(player, "ᴛᴘᴀ ʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛѕ", data.isTpaHereRequestsEnabled());
             }
             case "TEAM_INVITES" -> {
@@ -199,12 +201,12 @@ public class SettingsMenu extends BaseMenu {
             }
             case "TOTEM_PARTICLES" -> {
                 data.setTotemParticlesEnabled(!data.isTotemParticlesEnabled());
-                sendToggleMessage(player, "Totem particles", data.isTotemParticlesEnabled());
+                sendToggleMessage(player, "ᴛᴏᴛᴇᴍ ᴘᴀʀᴛɪᴄʟᴇѕ", data.isTotemParticlesEnabled());
             }
             case "FAST_CRYSTALS" -> {
                 data.setFastCrystalsEnabled(!data.isFastCrystalsEnabled());
                 plugin.getFastCrystalManager().applyCrystalCooldown(player);
-                sendToggleMessage(player, "Fast crystals", data.isFastCrystalsEnabled());
+                sendToggleMessage(player, "ꜰᴀѕᴛ ᴄʀʏѕᴛᴀʟѕ", data.isFastCrystalsEnabled());
             }
             case "NIGHT_VISION" -> toggleNightVision(player);
             default -> {
@@ -213,6 +215,13 @@ public class SettingsMenu extends BaseMenu {
         }
 
         build(player);
+    }
+
+    private boolean shouldRenderButton(String key) {
+        if (!"DUEL_REQUESTS".equals(key)) {
+            return true;
+        }
+        return plugin.getDuelManager() != null && plugin.getDuelManager().isEnabled();
     }
 
     private void renderButton(Player player, PlayerData data, String key, ConfigurationSection section) {
@@ -247,6 +256,7 @@ public class SettingsMenu extends BaseMenu {
             case "BOUNTY_ALERTS" -> new ButtonState(formatStatus(data.isBountyAlertsEnabled()), true);
             case "AMETHYST_BREAK_MESSAGES" -> new ButtonState(formatStatus(data.isAmethystBreakMessagesEnabled()), true);
             case "KEY_ALL_NOTIFICATIONS" -> new ButtonState(formatStatus(data.isKeyAllNotificationsEnabled()), true);
+            case "DUEL_REQUESTS" -> new ButtonState(formatStatus(data.isDuelRequestsEnabled()), true);
             case "TPA_CONFIRM_MENUS" -> new ButtonState(formatStatus(data.isTpaConfirmMenuEnabled()), true);
             case "CHAINMAIL_ON_RESPAWN" -> new ButtonState(formatStatus(data.isChainmailOnRespawnEnabled()), true);
             case "SCOREBOARD_VISIBILITY" -> new ButtonState(formatStatus(data.isScoreboardVisible()), true);
@@ -267,7 +277,7 @@ public class SettingsMenu extends BaseMenu {
             case "TOTEM_PARTICLES" -> new ButtonState(formatStatus(data.isTotemParticlesEnabled()), true);
             case "FAST_CRYSTALS" -> new ButtonState(formatStatus(data.isFastCrystalsEnabled()), true);
             case "NIGHT_VISION" -> new ButtonState(
-                    formatStatus(player.hasPotionEffect(PotionEffectType.NIGHT_VISION)),
+                    formatStatus(NightVisionUtils.isEnabled(plugin, player)),
                     true
             );
             default -> new ButtonState("&8ᴘʀᴇᴠɪᴇᴡ", false);
@@ -284,13 +294,12 @@ public class SettingsMenu extends BaseMenu {
     }
 
     private void toggleNightVision(Player player) {
-        if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        boolean enabled = NightVisionUtils.toggle(plugin, player);
+        if (!enabled) {
             player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &cᴅɪѕᴀʙʟᴇᴅ&7."));
             return;
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false));
         player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &aᴇɴᴀʙʟᴇᴅ&7."));
     }
 
@@ -303,6 +312,9 @@ public class SettingsMenu extends BaseMenu {
                 continue;
             }
             if (monster.getType() == EntityType.PHANTOM) {
+                continue;
+            }
+            if (MobSpawnPolicy.isVanillaSpawnerMob(plugin, monster)) {
                 continue;
             }
             if (monster.getLocation().distanceSquared(player.getLocation()) > radiusSquared) {

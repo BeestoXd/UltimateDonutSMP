@@ -29,13 +29,18 @@ public class PrivateMessageManager {
             return false;
         }
 
-        String senderName = sender instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ";
+        String senderName = sender instanceof Player player ? player.getName() : "console";
+        if (sender instanceof Player publicSender) {
+            senderName = plugin.getHideManager().publicName(publicSender);
+        }
+        String targetName = plugin.getHideManager().publicName(target);
+
         if (sender instanceof Player player) {
             if (player.getUniqueId().equals(target.getUniqueId())) {
                 send(sender, configuredMessage(
                         "MESSAGES.CANNOT_MESSAGE_SELF",
                         "PRIVATE-MESSAGE.CANNOT-MESSAGE-SELF",
-                        "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!"
+                        "&cyou cannot message yourself!"
                 ));
                 return false;
             }
@@ -45,8 +50,13 @@ public class PrivateMessageManager {
                 send(sender, applyPlaceholders(configuredMessage(
                         "MESSAGES.PLAYER_BLOCKED",
                         "IGNORE.MESSAGE-BLOCKED-SENDER",
-                        "&c%player% ʜᴀѕ ʙʟᴏᴄᴋᴇᴅ ʏᴏᴜ."
-                ), target.getName(), message));
+                        "&c%player% has blocked you."
+                ), targetName, message));
+                return false;
+            }
+
+            if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isMessageBlocked(player.getUniqueId(), target.getUniqueId())) {
+                send(sender, ColorUtils.colorize("&c%player% has disabled private messages from you.").replace("%player%", targetName));
                 return false;
             }
         }
@@ -55,23 +65,23 @@ public class PrivateMessageManager {
             send(sender, applyPlaceholders(configuredMessage(
                     "MESSAGES.PMS_DISABLED",
                     null,
-                    "&c%player% ʜᴀѕ ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴅɪѕᴀʙʟᴇᴅ."
-            ), target.getName(), message));
+                    "&c%player% has private messages disabled."
+            ), targetName, message));
             return false;
         }
 
         String sentFormat = configuredMessage(
                 "MESSAGES.SENDER_FORMAT",
                 "PRIVATE-MESSAGE.SENT",
-                "&d(ᴛᴏ &a%player%&d) %message%"
+                "&d(to &a%player%&d) %message%"
         );
         String receivedFormat = configuredMessage(
                 "MESSAGES.RECEIVER_FORMAT",
                 "PRIVATE-MESSAGE.RECEIVED",
-                "&d(ꜰʀᴏᴍ &a%player%&d) %message%"
+                "&d(from &a%player%&d) %message%"
         );
 
-        send(sender, applyPlaceholders(sentFormat, target.getName(), message));
+        send(sender, applyPlaceholders(sentFormat, targetName, message));
         target.sendMessage(ColorUtils.toComponent(applyPlaceholders(receivedFormat, senderName, message), target));
 
         if (sender instanceof Player player) {

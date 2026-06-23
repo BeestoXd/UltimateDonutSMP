@@ -43,8 +43,8 @@ public class RulesMenu extends BaseMenu {
         int renderedButtons = 0;
         for (RulesButton button : buttons) {
             if (slotButtons.containsKey(button.slot())) {
-                plugin.getLogger().warning("ѕᴋɪᴘᴘɪɴɢ ᴅᴜᴘʟɪᴄᴀᴛᴇ ʀᴜʟᴇѕ ᴍᴇɴᴜ ѕʟᴏᴛ " + button.slot()
-                        + " for button " + button.key() + ".");
+                plugin.getLogger().warning("skipping duplicate rules menu slot " + button.slot()
+                        + " ꜰᴏʀ ʙᴜᴛᴛᴏɴ " + button.key() + ".");
                 continue;
             }
 
@@ -54,7 +54,7 @@ public class RulesMenu extends BaseMenu {
         }
 
         if (renderedButtons == 0) {
-            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ʀᴜʟᴇѕ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx RULES-MENU.BUTTONS ᴛᴏ ᴜѕᴇ ᴛʜᴇ ɢᴜɪ.");
+            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ʀᴜʟᴇѕ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx ʀᴜʟᴇѕ-ᴍᴇɴᴜ.ʙᴜᴛᴛᴏɴѕ ᴛᴏ ᴜѕᴇ ᴛʜᴇ ɢᴜɪ.");
         }
     }
 
@@ -85,7 +85,7 @@ public class RulesMenu extends BaseMenu {
         List<RulesButton> loadedButtons = new ArrayList<>();
 
         if (buttonsSection == null || buttonsSection.getKeys(false).isEmpty()) {
-            plugin.getLogger().warning("ɴᴏ ʙᴜᴛᴛᴏɴѕ ꜰᴏᴜɴᴅ ᴀᴛ " + BUTTONS_PATH + ".");
+            plugin.getLogger().warning("no buttons found at " + BUTTONS_PATH + ".");
             return loadedButtons;
         }
 
@@ -100,21 +100,21 @@ public class RulesMenu extends BaseMenu {
             int slot = buttonSection.getInt("SLOT", -1);
             if (slot < 0 || slot >= inventorySize) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " because slot " + slot + " ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴍᴇɴᴜ ѕɪᴢᴇ " + inventorySize + ".");
+                        + " ʙᴇᴄᴀᴜѕᴇ ѕʟᴏᴛ " + slot + " ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴍᴇɴᴜ ѕɪᴢᴇ " + inventorySize + ".");
                 continue;
             }
 
             String rawMaterial = buttonSection.getString("MATERIAL");
             if (rawMaterial == null || rawMaterial.isBlank()) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " because MATERIAL is missing.");
+                        + " ʙᴇᴄᴀᴜѕᴇ ᴍᴀᴛᴇʀɪᴀʟ ɪѕ ᴍɪѕѕɪɴɢ.");
                 continue;
             }
 
             Material material = Material.matchMaterial(rawMaterial.trim().toUpperCase(Locale.ROOT));
             if (material == null) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " because MATERIAL '" + rawMaterial + "' ɪѕ ɪɴᴠᴀʟɪᴅ.");
+                        + " ʙᴇᴄᴀᴜѕᴇ ᴍᴀᴛᴇʀɪᴀʟ '" + rawMaterial + "' ɪѕ ɪɴᴠᴀʟɪᴅ.");
                 continue;
             }
 
@@ -142,7 +142,7 @@ public class RulesMenu extends BaseMenu {
             return rawSize;
         }
 
-        plugin.getLogger().warning("ɪɴᴠᴀʟɪᴅ " + MENU_PATH + ".SIZE value '" + rawSize
+        plugin.getLogger().warning("invalid " + MENU_PATH + ".SIZE value '" + rawSize
                 + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ 27.");
         return 27;
     }

@@ -18,9 +18,9 @@ import java.util.logging.Level;
 public class OptimizationManager {
 
     public enum LoadState {
-        NORMAL(0, "&aɴᴏʀᴍᴀʟ"),
-        WARN(1, "&eᴡᴀʀɴɪɴɢ"),
-        CRITICAL(2, "&cᴄʀɪᴛɪᴄᴀʟ");
+        NORMAL(0, "&anormal"),
+        WARN(1, "&ewarning"),
+        CRITICAL(2, "&ccritical");
 
         private final int severity;
         private final String display;
@@ -42,7 +42,7 @@ public class OptimizationManager {
     public enum OptimizedTask {
         SCOREBOARD("SCOREBOARD", "Scoreboard"),
         TABLIST("TABLIST", "Tablist"),
-        LUNAR_TEAMMATES("LUNAR-TEAMMATES", "Lunar Team View");
+        LUNAR_TEAMMATES("LUNAR-TEAMMATES", "lunar team view");
 
         private final String configKey;
         private final String displayName;
@@ -91,7 +91,7 @@ public class OptimizationManager {
         reload();
     }
 
-    public synchronized void start() {
+    public void start() {
         shutdown();
         if (!enabled) {
             return;
@@ -105,14 +105,14 @@ public class OptimizationManager {
         sampleServerLoad();
     }
 
-    public synchronized void shutdown() {
+    public void shutdown() {
         if (monitorTask != null) {
             monitorTask.cancel();
             monitorTask = null;
         }
     }
 
-    public synchronized void reload() {
+    public void reload() {
         FileConfiguration config = plugin.getConfigManager().getConfig();
         enabled = config.getBoolean(CONFIG_PATH + ".ENABLED", true);
         logStateChanges = config.getBoolean(CONFIG_PATH + ".LOG-STATE-CHANGES", true);
@@ -138,7 +138,7 @@ public class OptimizationManager {
         }
     }
 
-    public synchronized boolean shouldRun(OptimizedTask task) {
+    public boolean shouldRun(OptimizedTask task) {
         if (task == null || !enabled || loadState == LoadState.NORMAL) {
             return true;
         }
@@ -166,37 +166,37 @@ public class OptimizationManager {
         return false;
     }
 
-    public synchronized void resetStats() {
+    public void resetStats() {
         skippedRuns.clear();
         lastRunMillis.clear();
         recoverySamplesSeen = 0;
     }
 
-    public synchronized boolean isEnabled() {
-        return enabled;
+    public boolean isEnabled() {
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.OPTIMIZATION) && enabled;
     }
 
-    public synchronized LoadState getLoadState() {
+    public LoadState getLoadState() {
         return loadState;
     }
 
-    public synchronized double getLastTps() {
+    public double getLastTps() {
         return lastTps;
     }
 
-    public synchronized double getLastMspt() {
+    public double getLastMspt() {
         return lastMspt;
     }
 
-    public synchronized long getLastSampleMillis() {
+    public long getLastSampleMillis() {
         return lastSampleMillis;
     }
 
-    public synchronized long getSkippedRuns(OptimizedTask task) {
+    public long getSkippedRuns(OptimizedTask task) {
         return skippedRuns.getOrDefault(task, 0L);
     }
 
-    public synchronized long getTotalSkippedRuns() {
+    public long getTotalSkippedRuns() {
         long total = 0L;
         for (long skipped : skippedRuns.values()) {
             total += skipped;
@@ -206,11 +206,11 @@ public class OptimizationManager {
 
     public long getUsedMemoryMb() {
         Runtime runtime = Runtime.getRuntime();
-        return (runtime.totalMemory() - runtime.freeMemory()) / (1024l * 1024L);
+        return (runtime.totalMemory() - runtime.freeMemory()) / (1024L * 1024L);
     }
 
     public long getMaxMemoryMb() {
-        return Runtime.getRuntime().maxMemory() / (1024l * 1024L);
+        return Runtime.getRuntime().maxMemory() / (1024L * 1024L);
     }
 
     public String formatMetric(double value) {
@@ -220,7 +220,7 @@ public class OptimizationManager {
         return String.format(Locale.US, "%.2f", value);
     }
 
-    private synchronized void sampleServerLoad() {
+    private void sampleServerLoad() {
         if (!enabled) {
             lastTps = -1.0D;
             lastMspt = -1.0D;
@@ -278,8 +278,8 @@ public class OptimizationManager {
         if (logStateChanges) {
             plugin.getLogger().info("Optimization state changed from " + previous.name()
                     + " to " + newState.name()
-                    + " (TPS=" + formatMetric(lastTps)
-                    + ", MSPT=" + formatMetric(lastMspt) + ").");
+                    + " (tps=" + formatMetric(lastTps)
+                    + ", mspt=" + formatMetric(lastMspt) + ").");
         }
     }
 
@@ -332,7 +332,7 @@ public class OptimizationManager {
                 samples++;
             }
             if (samples > 0) {
-                return (total / (double) samples) / 1_000_000.0d;
+                return (total / (double) samples) / 1_000_000.0D;
             }
         }
 

@@ -3,11 +3,16 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.amethyst.AmethystToolType;
+import com.bx.ultimateDonutSmp.models.AuctionListing;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.SellCategory;
+import com.bx.ultimateDonutSmp.models.ShopPreference;
+import com.bx.ultimateDonutSmp.storage.ShopPreferenceRepository;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Bukkit;
@@ -37,7 +42,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
+import java.util.logging.Level;
 
 public class ShopManager {
 
@@ -106,7 +116,8 @@ public class ShopManager {
         NO_PERMISSION,
         NO_MONEY,
         NO_SHARDS,
-        INVENTORY_FULL
+        INVENTORY_FULL,
+        REWARD_FAILED
     }
 
     public record ShopCategory(
@@ -152,10 +163,34 @@ public class ShopManager {
             boolean maxed
     ) {}
 
-    public record SellResult(double totalPayout, Set<SellCategory> leveledUpCategories) {
+    public enum SellStatus {
+        SUCCESS,
+        NO_SELLABLE_ITEMS,
+        TRANSACTION_FAILED
+    }
+
+    public record SellResult(SellStatus status, double totalPayout, Set<SellCategory> leveledUpCategories) {
         public boolean hasSales() {
-            return totalPayout > 0;
+            return status == SellStatus.SUCCESS;
         }
+
+        public boolean transactionFailed() {
+            return status == SellStatus.TRANSACTION_FAILED;
+        }
+    }
+
+    private record PendingSellHistory(
+            Material material,
+            int amount,
+            double payout
+    ) {}
+
+    private static final class PendingSale {
+        private final Map<SellCategory, Double> currentProgress = new EnumMap<>(SellCategory.class);
+        private final EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
+        private final List<PendingSellHistory> history = new ArrayList<>();
+        private final List<Integer> soldSlots = new ArrayList<>();
+        private double totalPayout;
     }
 
     public record PurchaseResult(
@@ -179,6 +214,22 @@ public class ShopManager {
         }
     }
 
+    private record ManagedSpawnerReward(String typeKey) {}
+
+    private record RewardDeliveryResult(boolean success, String message, Throwable throwable) {
+        static RewardDeliveryResult ok() {
+            return new RewardDeliveryResult(true, "", null);
+        }
+
+        static RewardDeliveryResult failure(String message) {
+            return new RewardDeliveryResult(false, message == null ? "" : message, null);
+        }
+
+        static RewardDeliveryResult failure(String message, Throwable throwable) {
+            return new RewardDeliveryResult(false, message == null ? "" : message, throwable);
+        }
+    }
+
     public record ShopItem(
             String key,
             String menuSection,
@@ -194,15 +245,27 @@ public class ShopManager {
             int minQuantity,
             int maxQuantity,
             int defaultQuantity,
-            Boolean hideQuantityButtons
-    ) {}
+            Boolean hideQuantityButtons,
+            AmethystToolType amethystToolType,
+            long amethystDurationSeconds
+    ) {
+        public boolean isAmethystToolReward() {
+            return amethystToolType != null;
+        }
+    }
+
+    public record AuctionQuote(AuctionListing listing, double unitPrice) {}
 
     private final UltimateDonutSmp plugin;
+    private final ShopPreferenceRepository preferenceRepository;
+    private final Map<UUID, ShopPreference> preferenceCache = new ConcurrentHashMap<>();
     private final NamespacedKey worthDisplayAppliedKey;
     private final NamespacedKey worthDisplayOriginalLoreKey;
 
     public ShopManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+        this.preferenceRepository = new ShopPreferenceRepository(plugin);
+        this.preferenceRepository.initialize().join();
         this.worthDisplayAppliedKey = new NamespacedKey(plugin, "worth_display_applied");
         this.worthDisplayOriginalLoreKey = new NamespacedKey(plugin, "worth_display_original_lore");
         reload();
@@ -210,6 +273,163 @@ public class ShopManager {
 
     public void reload() {
         validateShopConfiguration();
+    }
+
+    public void shutdown() {
+        preferenceRepository.shutdown();
+        preferenceCache.clear();
+    }
+
+    public CompletableFuture<ShopPreference> loadPreference(UUID playerId) {
+        return preferenceRepository.load(playerId).thenApply(preference -> {
+            Player online = Bukkit.getPlayer(playerId);
+            if (online != null && online.isOnline()) {
+                preferenceCache.put(playerId, preference);
+            }
+            return preference;
+        }).exceptionally(throwable -> {
+            plugin.getLogger().log(Level.WARNING, "Failed to load shop preference for " + playerId, throwable);
+            return getPreference(playerId);
+        });
+    }
+
+    public ShopPreference getPreference(UUID playerId) {
+        return preferenceCache.computeIfAbsent(
+                playerId,
+                ignored -> new ShopPreference(playerId, Set.of())
+        );
+    }
+
+    public boolean areFavoritesEnabled() {
+        return plugin.getConfigManager().getShop()
+                .getBoolean("SHOP-GUI.FAVORITES.ENABLED", true);
+    }
+
+    public boolean toggleFavorite(UUID playerId, ShopItem item) {
+        if (!areFavoritesEnabled()) {
+            return false;
+        }
+        String favoriteId = favoriteId(item);
+        ShopPreference updated = preferenceCache.compute(playerId, (ignored, current) -> {
+            ShopPreference base = current == null
+                    ? new ShopPreference(playerId, Set.of())
+                    : current;
+            return base.withFavorite(favoriteId, !base.favorites().contains(favoriteId));
+        });
+        boolean favorite = updated.favorites().contains(favoriteId);
+        preferenceRepository.setFavorite(playerId, favoriteId, favorite).exceptionally(throwable -> {
+            plugin.getLogger().log(Level.WARNING, "Failed to save shop favorite for " + playerId, throwable);
+            return null;
+        });
+        return favorite;
+    }
+
+    public boolean isFavorite(UUID playerId, ShopItem item) {
+        return getPreference(playerId).favorites().contains(favoriteId(item));
+    }
+
+    public List<ShopItem> loadFavoriteItems(UUID playerId) {
+        Set<String> favorites = getPreference(playerId).favorites();
+        if (favorites.isEmpty()) {
+            return List.of();
+        }
+        return loadAllItems().stream()
+                .filter(item -> favorites.contains(favoriteId(item)))
+                .toList();
+    }
+
+    public List<ShopItem> loadAllItems() {
+        Map<String, ShopItem> items = new java.util.LinkedHashMap<>();
+        for (ShopCategory category : loadCategories()) {
+            for (ShopItem item : loadMenuItems(category.menuSection())) {
+                items.putIfAbsent(favoriteId(item), item);
+            }
+        }
+        return List.copyOf(items.values());
+    }
+
+    public String favoriteId(ShopItem item) {
+        if (item == null) {
+            return "";
+        }
+        return item.menuSection().trim().toUpperCase(Locale.ROOT)
+                + ":"
+                + item.key().trim().toUpperCase(Locale.ROOT);
+    }
+
+    public AuctionQuote findBestAuctionQuote(Player buyer, ShopItem item) {
+        if (buyer == null
+                || item == null
+                || !shouldDeliverConfiguredItem(item)
+                || item.isAmethystToolReward()
+                || !isAuctionPriceEnabled()
+                || plugin.getAuctionHouseManager() == null
+                || !plugin.getAuctionHouseManager().isEnabled()) {
+            return null;
+        }
+        ItemStack desiredItem = createPurchasedItem(item, 1);
+        return findBestAuctionQuote(
+                plugin.getAuctionHouseManager().getActiveListings(AuctionHouseManager.AuctionSort.NEWEST),
+                buyer.getUniqueId(),
+                desiredItem,
+                System.currentTimeMillis()
+        );
+    }
+
+    public static AuctionQuote findBestAuctionQuote(
+            List<AuctionListing> listings,
+            UUID buyerId,
+            ItemStack desiredItem,
+            long now
+    ) {
+        return findBestAuctionQuote(listings, buyerId, desiredItem, now, ItemStack::isSimilar);
+    }
+
+    public static AuctionQuote findBestAuctionQuote(
+            List<AuctionListing> listings,
+            UUID buyerId,
+            ItemStack desiredItem,
+            long now,
+            BiPredicate<ItemStack, ItemStack> similarity
+    ) {
+        if (listings == null || desiredItem == null || isAir(desiredItem.getType())) {
+            return null;
+        }
+        BiPredicate<ItemStack, ItemStack> matcher = similarity == null ? ItemStack::isSimilar : similarity;
+        return listings.stream()
+                .filter(Objects::nonNull)
+                .filter(AuctionListing::active)
+                .filter(listing -> listing.expiresAt() > now)
+                .filter(listing -> buyerId == null || !buyerId.equals(listing.sellerUuid()))
+                .filter(listing -> listing.item() != null
+                        && !isAir(listing.item().getType())
+                        && listing.item().getAmount() > 0
+                        && matcher.test(listing.item(), desiredItem))
+                .map(listing -> new AuctionQuote(
+                        listing,
+                        listing.price() / Math.max(1, listing.item().getAmount())
+                ))
+                .filter(quote -> Double.isFinite(quote.unitPrice()) && quote.unitPrice() >= 0D)
+                .min(Comparator.comparingDouble(AuctionQuote::unitPrice)
+                        .thenComparingDouble(quote -> quote.listing().price())
+                        .thenComparingLong(quote -> quote.listing().createdAt()))
+                .orElse(null);
+    }
+
+    private static boolean isAir(Material material) {
+        return material == null
+                || material == Material.AIR
+                || material == Material.CAVE_AIR
+                || material == Material.VOID_AIR;
+    }
+
+    public boolean isAuctionPriceEnabled() {
+        return plugin.getConfigManager().getShop()
+                .getBoolean("SHOP-GUI.SHOW-AUCTION-PRICE", true);
+    }
+
+    public void cleanupPlayer(UUID playerId) {
+        preferenceCache.remove(playerId);
     }
 
     public List<ShopCategory> loadCategories() {
@@ -297,12 +517,69 @@ public class ShopManager {
                     itemSec.contains("MIN-QUANTITY") ? itemSec.getInt("MIN-QUANTITY") : -1,
                     itemSec.contains("MAX-QUANTITY") ? itemSec.getInt("MAX-QUANTITY") : -1,
                     itemSec.contains("DEFAULT-QUANTITY") ? itemSec.getInt("DEFAULT-QUANTITY") : -1,
-                    itemSec.contains("HIDE-QUANTITY-BUTTONS") ? itemSec.getBoolean("HIDE-QUANTITY-BUTTONS") : null
+                    itemSec.contains("HIDE-QUANTITY-BUTTONS") ? itemSec.getBoolean("HIDE-QUANTITY-BUTTONS") : null,
+                    null,
+                    -1L
             ));
+        }
+
+        if ("SHARD-MENU".equalsIgnoreCase(menuSection)) {
+            items.addAll(loadAmethystShardShopItems(menuSection));
         }
 
         items.sort(Comparator.comparingInt(ShopItem::slot).thenComparing(ShopItem::key, String.CASE_INSENSITIVE_ORDER));
         return List.copyOf(items);
+    }
+
+    private List<ShopItem> loadAmethystShardShopItems(String menuSection) {
+        if (plugin.getAmethystToolsManager() == null || !plugin.getAmethystToolsManager().isEnabled()) {
+            return List.of();
+        }
+
+        List<ShopItem> items = new ArrayList<>();
+        for (AmethystToolType type : AmethystToolType.values()) {
+            ConfigurationSection toolSection = plugin.getAmethystToolsManager().getToolSection(type);
+            ConfigurationSection shopSection = toolSection == null
+                    ? null
+                    : toolSection.getConfigurationSection("SHARD-SHOP");
+            if (toolSection == null || shopSection == null || !shopSection.getBoolean("ENABLED", false)) {
+                continue;
+            }
+
+            long configuredDuration = shopSection.getLong(
+                    "DURATION",
+                    toolSection.getLong("DURATION", 86400L)
+            );
+            long duration = Math.max(1L, configuredDuration);
+            double price = shopSection.getDouble("PRICE-PER-UNIT", 0D);
+            if (!Double.isFinite(price) || price <= 0D) {
+                continue;
+            }
+            List<String> lore = toolSection.getStringList("LORE").stream()
+                    .map(line -> line.replace("{time}", NumberUtils.formatTimeLong(duration)))
+                    .toList();
+
+            items.add(new ShopItem(
+                    "AMETHYST-" + type.getConfigKey(),
+                    menuSection,
+                    ItemUtils.parseMaterial(toolSection.getString("MATERIAL", "STONE")),
+                    toolSection.getString("NAME", type.getDisplayName()),
+                    lore,
+                    shopSection.getInt("SLOT", 0),
+                    price,
+                    Currency.SHARD,
+                    "",
+                    true,
+                    shopSection.getString("PERMISSION", ""),
+                    shopSection.getInt("MIN-QUANTITY", 1),
+                    shopSection.getInt("MAX-QUANTITY", 1),
+                    shopSection.getInt("DEFAULT-QUANTITY", 1),
+                    shopSection.getBoolean("HIDE-QUANTITY-BUTTONS", true),
+                    type,
+                    duration
+            ));
+        }
+        return items;
     }
 
     public ShopRestriction getPurchaseRestriction(ShopItem item) {
@@ -370,8 +647,8 @@ public class ShopManager {
             return failPurchase(item, amount, preview.totalPrice(), PurchaseFailureReason.NO_PLAYER_DATA);
         }
 
+        long shardCost = preview.currency() == Currency.SHARD ? Math.round(preview.totalPrice()) : 0L;
         if (preview.currency() == Currency.SHARD) {
-            long shardCost = Math.round(preview.totalPrice());
             if (!data.removeShards(shardCost)) {
                 return failPurchase(item, amount, preview.totalPrice(), PurchaseFailureReason.NO_SHARDS);
             }
@@ -380,27 +657,180 @@ public class ShopManager {
             if (!withdrawResult.success()) {
                 return failPurchase(item, amount, preview.totalPrice(), PurchaseFailureReason.NO_MONEY);
             }
+        }
+
+        RewardDeliveryResult commandReward = deliverCommandReward(player, item, preview.quantity());
+        if (!commandReward.success()) {
+            refundPurchase(player, data, preview, shardCost);
+            logRewardFailure(player, item, preview, commandReward);
+            return failPurchase(item, preview.quantity(), preview.totalPrice(), PurchaseFailureReason.REWARD_FAILED);
+        }
+
+        RewardDeliveryResult itemReward = deliverItemReward(player, item, preview.quantity());
+        if (!itemReward.success()) {
+            refundPurchase(player, data, preview, shardCost);
+            logRewardFailure(player, item, preview, itemReward);
+            return failPurchase(item, preview.quantity(), preview.totalPrice(), PurchaseFailureReason.REWARD_FAILED);
+        }
+
+        if (preview.currency() != Currency.SHARD) {
             data.addMoneySpent(preview.totalPrice());
         }
 
-        if (item.command() != null && !item.command().isBlank()) {
-            String cmd = item.command()
-                    .replace("{username}", player.getName())
-                    .replace("{player}", player.getName())
-                    .replace("{amount}", String.valueOf(preview.quantity()));
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+        return preview;
+    }
+
+    private RewardDeliveryResult deliverItemReward(Player player, ShopItem item, int quantity) {
+        if (!shouldDeliverConfiguredItem(item)) {
+            return RewardDeliveryResult.ok();
         }
 
-        if (item.giveItem()) {
+        if (item.isAmethystToolReward()) {
+            if (!isAmethystRewardAvailable(item)) {
+                return RewardDeliveryResult.failure("amethyst tools is disabled or the configured tool is unavailable.");
+            }
+
+            List<ItemStack> rewards = new ArrayList<>();
+            for (int index = 0; index < quantity; index++) {
+                ItemStack reward = plugin.getAmethystToolsManager().createTool(
+                        item.amethystToolType(),
+                        player.getUniqueId(),
+                        item.amethystDurationSeconds()
+                );
+                if (reward == null) {
+                    return RewardDeliveryResult.failure(
+                            "failed to create amethyst tool reward: " + item.amethystToolType().name()
+                    );
+                }
+                rewards.add(reward);
+            }
             plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
-            ItemStack stack = createPurchasedItem(item, preview.quantity());
+            for (ItemStack reward : rewards) {
+                player.getInventory().addItem(reward).values().forEach(left ->
+                        player.getWorld().dropItemNaturally(player.getLocation(), left));
+            }
+        } else {
+            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
+            ItemStack stack = createPurchasedItem(item, quantity);
             player.getInventory().addItem(stack).values().forEach(left ->
                     player.getWorld().dropItemNaturally(player.getLocation(), left));
-            plugin.getWorthManager().syncWorthDisplay(player);
-            player.updateInventory();
         }
 
-        return preview;
+        plugin.getWorthManager().syncWorthDisplay(player);
+        player.updateInventory();
+        return RewardDeliveryResult.ok();
+    }
+
+    private RewardDeliveryResult deliverCommandReward(Player player, ShopItem item, int quantity) {
+        if (item == null || item.command() == null || item.command().isBlank()) {
+            return RewardDeliveryResult.ok();
+        }
+
+        ManagedSpawnerReward spawnerReward = parseManagedSpawnerReward(item.command());
+        if (spawnerReward != null) {
+            try {
+                var result = plugin.getSpawnerManager().giveSpawner(player, spawnerReward.typeKey(), quantity);
+                return result.success()
+                        ? RewardDeliveryResult.ok()
+                        : RewardDeliveryResult.failure(result.message());
+            } catch (RuntimeException exception) {
+                return RewardDeliveryResult.failure(
+                        "managed spawner reward threw an exception: " + item.command(),
+                        exception
+                );
+            }
+        }
+
+        String command = resolveShopCommand(player, item.command(), quantity);
+        try {
+            boolean dispatched = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            return dispatched
+                    ? RewardDeliveryResult.ok()
+                    : RewardDeliveryResult.failure("command returned false: " + command);
+        } catch (RuntimeException exception) {
+            return RewardDeliveryResult.failure("command threw an exception: " + command, exception);
+        }
+    }
+
+    private static ManagedSpawnerReward parseManagedSpawnerReward(String command) {
+        if (command == null || command.isBlank()) {
+            return null;
+        }
+
+        String normalized = command.trim();
+        if (normalized.startsWith("/")) {
+            normalized = normalized.substring(1).trim();
+        }
+
+        String[] parts = normalized.split("\\s+");
+        if (parts.length != 5
+                || !parts[0].equalsIgnoreCase("spawner")
+                || !parts[1].equalsIgnoreCase("give")
+                || !isPlayerPlaceholder(parts[2])
+                || !isAmountPlaceholder(parts[4])) {
+            return null;
+        }
+
+        return new ManagedSpawnerReward(parts[3]);
+    }
+
+    static boolean isManagedSpawnerRewardCommand(String command) {
+        return parseManagedSpawnerReward(command) != null;
+    }
+
+    static boolean shouldDeliverConfiguredItem(ShopItem item) {
+        return item != null
+                && item.giveItem()
+                && !isManagedSpawnerRewardCommand(item.command());
+    }
+
+    private static boolean isPlayerPlaceholder(String token) {
+        return token != null
+                && (token.equalsIgnoreCase("{username}") || token.equalsIgnoreCase("{player}"));
+    }
+
+    private static boolean isAmountPlaceholder(String token) {
+        return token != null && token.equalsIgnoreCase("{amount}");
+    }
+
+    private String resolveShopCommand(Player player, String command, int quantity) {
+        return command
+                .replace("{username}", player.getName())
+                .replace("{player}", player.getName())
+                .replace("{amount}", String.valueOf(quantity));
+    }
+
+    private void refundPurchase(Player player, PlayerData data, PurchaseResult purchase, long shardCost) {
+        if (purchase.currency() == Currency.SHARD) {
+            data.addShards(shardCost);
+            return;
+        }
+
+        var refundResult = plugin.getEconomyManager().deposit(player, purchase.totalPrice(), EconomyReason.SHOP_REFUND);
+        if (!refundResult.success()) {
+            plugin.getLogger().warning("[ShopManager] Failed to refund shop purchase for "
+                    + player.getName() + " after reward delivery failed.");
+        }
+    }
+
+    private void logRewardFailure(
+            Player player,
+            ShopItem item,
+            PurchaseResult purchase,
+            RewardDeliveryResult result
+    ) {
+        String message = "[shopmanager] failed to deliver shop reward for "
+                + player.getName()
+                + " item=" + (item == null ? "unknown" : item.key())
+                + " quantity=" + purchase.quantity()
+                + " price=" + purchase.totalPrice()
+                + " currency=" + purchase.currency()
+                + " reason=" + ColorUtils.strip(result.message());
+        if (result.throwable() != null) {
+            plugin.getLogger().log(Level.WARNING, message, result.throwable());
+        } else {
+            plugin.getLogger().warning(message);
+        }
     }
 
     private PurchaseResult validatePurchase(Player player, ShopItem item, int amount) {
@@ -421,6 +851,10 @@ public class ShopManager {
             return failPurchase(item, amount, 0, PurchaseFailureReason.INVALID_ITEM);
         }
 
+        if (item.isAmethystToolReward() && !isAmethystRewardAvailable(item)) {
+            return failPurchase(item, amount, item.pricePerUnit() * amount, PurchaseFailureReason.INVALID_ITEM);
+        }
+
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data == null) {
             return failPurchase(item, amount, item.pricePerUnit() * amount, PurchaseFailureReason.NO_PLAYER_DATA);
@@ -436,7 +870,7 @@ public class ShopManager {
             return failPurchase(item, amount, totalPrice, PurchaseFailureReason.NO_MONEY);
         }
 
-        if (item.giveItem() && !canFitPurchasedItem(player, item, amount)) {
+        if (shouldDeliverConfiguredItem(item) && !canFitPurchasedItem(player, item, amount)) {
             return failPurchase(item, amount, totalPrice, PurchaseFailureReason.INVENTORY_FULL);
         }
 
@@ -476,6 +910,16 @@ public class ShopManager {
     }
 
     private boolean canFitPurchasedItem(Player player, ShopItem item, int amount) {
+        if (item.isAmethystToolReward()) {
+            int emptySlots = 0;
+            for (ItemStack current : player.getInventory().getStorageContents()) {
+                if (current == null || current.getType().isAir()) {
+                    emptySlots++;
+                }
+            }
+            return emptySlots >= amount;
+        }
+
         ItemStack simulated = createPurchasedItem(item, amount);
         ItemStack[] storage = player.getInventory().getStorageContents();
         int remaining = simulated.getAmount();
@@ -496,11 +940,20 @@ public class ShopManager {
         return remaining <= 0;
     }
 
+    private boolean isAmethystRewardAvailable(ShopItem item) {
+        return item != null
+                && item.amethystToolType() != null
+                && plugin.getAmethystToolsManager() != null
+                && plugin.getAmethystToolsManager().isEnabled()
+                && plugin.getAmethystToolsManager().getToolSection(item.amethystToolType()) != null;
+    }
+
     private boolean canStack(ItemStack first, ItemStack second) {
         return first.isSimilar(second) && first.getAmount() < first.getMaxStackSize();
     }
 
     private void validateShopConfiguration() {
+        validateAmethystShardShopConfiguration();
         ConfigurationSection shopConfig = plugin.getConfigManager().getShop();
         ConfigurationSection categoriesSection = shopConfig.getConfigurationSection("CATEGORIES");
         if (categoriesSection == null) {
@@ -526,7 +979,7 @@ public class ShopManager {
             for (ShopItem item : loadMenuItems(category.menuSection())) {
                 if (item.pricePerUnit() < 0) {
                     plugin.getLogger().warning("Shop item " + item.key() + " in " + category.menuSection()
-                            + " has a negative PRICE-PER-UNIT.");
+                            + " has a negative price-per-unit.");
                 }
 
                 if (item.slot() >= 0 && !usedItemSlots.add(item.slot())) {
@@ -542,6 +995,26 @@ public class ShopManager {
                                 + " but worth " + plugin.getCurrencyManager().formatMoney(worth) + ".");
                     }
                 }
+            }
+        }
+    }
+
+    private void validateAmethystShardShopConfiguration() {
+        if (plugin.getAmethystToolsManager() == null) {
+            return;
+        }
+        for (AmethystToolType type : AmethystToolType.values()) {
+            ConfigurationSection toolSection = plugin.getAmethystToolsManager().getToolSection(type);
+            ConfigurationSection shopSection = toolSection == null
+                    ? null
+                    : toolSection.getConfigurationSection("SHARD-SHOP");
+            if (shopSection == null || !shopSection.getBoolean("ENABLED", false)) {
+                continue;
+            }
+            double price = shopSection.getDouble("PRICE-PER-UNIT", 0D);
+            if (!Double.isFinite(price) || price <= 0D) {
+                plugin.getLogger().warning("Amethyst tool " + type.name()
+                        + " is enabled for /shardshop but price-per-unit is not greater than zero.");
             }
         }
     }
@@ -878,41 +1351,87 @@ public class ShopManager {
     }
 
     public SellResult sellInventoryContents(Player player, Inventory inventory, int startInclusive, int endExclusive) {
-        if (inventory == null) {
-            return new SellResult(0, Set.of());
+        return sellInventoryContents(
+                player,
+                inventory,
+                startInclusive,
+                endExclusive,
+                EconomyReason.SELL_PAYOUT,
+                true
+        );
+    }
+
+    public SellResult sellInventoryContents(
+            Player player,
+            Inventory inventory,
+            int startInclusive,
+            int endExclusive,
+            EconomyReason reason,
+            boolean sendFeedback
+    ) {
+        if (player == null || inventory == null) {
+            return emptySale();
         }
 
-        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
-        progress.putAll(getSellProgress(player.getUniqueId()));
+        PendingSale sale = createPendingSale(player);
+        int firstSlot = Math.max(0, startInclusive);
+        int lastSlot = Math.min(inventory.getSize(), Math.max(firstSlot, endExclusive));
 
-        EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
-        List<Integer> soldSlots = new ArrayList<>();
-        double totalPayout = 0;
-
-        for (int slot = startInclusive; slot < endExclusive; slot++) {
+        for (int slot = firstSlot; slot < lastSlot; slot++) {
             ItemStack item = inventory.getItem(slot);
             if (item == null || item.getType().isAir()) {
                 continue;
             }
 
-            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
+            double payout = collectSellWorthEntries(item, sale);
             if (payout <= 0) {
                 continue;
             }
 
-            totalPayout += payout;
-            soldSlots.add(slot);
+            sale.totalPayout += payout;
+            sale.soldSlots.add(slot);
         }
 
-        if (totalPayout <= 0) {
-            return new SellResult(0, Set.of());
+        return executeSale(player, sale, reason, sendFeedback, () -> {
+            for (int slot : sale.soldSlots) {
+                inventory.setItem(slot, null);
+            }
+        });
+    }
+
+    private PendingSale createPendingSale(Player player) {
+        PendingSale sale = new PendingSale();
+        sale.currentProgress.putAll(getSellProgress(player.getUniqueId()));
+        return sale;
+    }
+
+    private SellResult emptySale() {
+        return new SellResult(SellStatus.NO_SELLABLE_ITEMS, 0, Set.of());
+    }
+
+    private SellResult failedSale() {
+        return new SellResult(SellStatus.TRANSACTION_FAILED, 0, Set.of());
+    }
+
+    private SellResult executeSale(
+            Player player,
+            PendingSale sale,
+            EconomyReason reason,
+            boolean sendFeedback,
+            Runnable removeSoldItems
+    ) {
+        if (sale.totalPayout <= 0) {
+            return emptySale();
         }
 
-        for (int slot : soldSlots) {
-            inventory.setItem(slot, null);
+        EconomyReason resolvedReason = reason == null ? EconomyReason.SELL_PAYOUT : reason;
+        var depositResult = plugin.getEconomyManager().deposit(player, sale.totalPayout, resolvedReason);
+        if (!depositResult.success()) {
+            return failedSale();
         }
 
-        return finishSale(player, progress, earnedByCategory, totalPayout);
+        removeSoldItems.run();
+        return commitSale(player, sale, sendFeedback);
     }
 
     private String getWorthLoreFormat() {
@@ -929,7 +1448,7 @@ public class ShopManager {
 
         return normalizeWorthLoreFormat(
                 plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7ᴡᴏʀᴛʜ: &a{price_formatted}")
+                        .getString("WORTH-LORE.FORMAT", "&7worth: &a{price_formatted}")
         );
     }
 
@@ -944,7 +1463,7 @@ public class ShopManager {
 
     private String normalizeWorthLoreFormat(String format) {
         if (format == null || format.isBlank()) {
-            return "&7ᴡᴏʀᴛʜ: &a{price_formatted}";
+            return "&7worth: &a{price_formatted}";
         }
 
         return format;
@@ -1010,15 +1529,10 @@ public class ShopManager {
     }
 
     public double sellInventory(Player player, boolean handOnly) {
-        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
-        progress.putAll(getSellProgress(player.getUniqueId()));
-
-        EnumMap<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
-        double totalPayout = 0;
+        PendingSale sale = createPendingSale(player);
         ItemStack[] contents = handOnly
                 ? new ItemStack[]{player.getInventory().getItemInMainHand()}
                 : player.getInventory().getContents();
-        List<Integer> toRemove = new ArrayList<>();
 
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
@@ -1026,36 +1540,29 @@ public class ShopManager {
                 continue;
             }
 
-            double payout = processSellWorthEntries(player, item, progress, earnedByCategory);
+            double payout = collectSellWorthEntries(item, sale);
             if (payout <= 0) {
                 continue;
             }
 
-            totalPayout += payout;
-            toRemove.add(i);
+            sale.totalPayout += payout;
+            sale.soldSlots.add(i);
         }
 
-        if (totalPayout > 0) {
+        SellResult result = executeSale(player, sale, EconomyReason.SELL_PAYOUT, true, () -> {
             if (handOnly) {
                 player.getInventory().setItemInMainHand(null);
             } else {
-                for (int slot : toRemove) {
+                for (int slot : sale.soldSlots) {
                     player.getInventory().setItem(slot, null);
                 }
             }
+        });
 
-            finishSale(player, progress, earnedByCategory, totalPayout);
-        }
-
-        return totalPayout;
+        return result.hasSales() ? result.totalPayout() : 0;
     }
 
-    private double processSellWorthEntries(
-            Player player,
-            ItemStack item,
-            Map<SellCategory, Double> progress,
-            Map<SellCategory, Double> earnedByCategory
-    ) {
+    private double collectSellWorthEntries(ItemStack item, PendingSale sale) {
         List<WorthManager.SellWorthEntry> entries = plugin.getWorthManager().resolveSellWorthEntries(item);
         if (entries.isEmpty()) {
             return 0;
@@ -1063,58 +1570,58 @@ public class ShopManager {
 
         double totalPayout = 0;
         for (WorthManager.SellWorthEntry entry : entries) {
-            double payout = entry.totalWorth() * getCurrentSellMultiplier(progress, entry.category());
+            double payout = entry.totalWorth() * getCurrentSellMultiplier(sale.currentProgress, entry.category());
             if (payout <= 0) {
                 continue;
             }
 
             totalPayout += payout;
-            earnedByCategory.merge(entry.category(), entry.totalWorth(), Double::sum);
-
-            plugin.getDatabaseManager().addSellHistory(
-                    player.getUniqueId(),
-                    entry.material().name(),
-                    entry.amount(),
-                    payout
-            );
+            sale.earnedByCategory.merge(entry.category(), entry.totalWorth(), Double::sum);
+            sale.history.add(new PendingSellHistory(entry.material(), entry.amount(), payout));
         }
         return totalPayout;
     }
 
-    private SellResult finishSale(
-            Player player,
-            Map<SellCategory, Double> currentProgress,
-            Map<SellCategory, Double> earnedByCategory,
-            double totalPayout
-    ) {
+    private SellResult commitSale(Player player, PendingSale sale, boolean sendFeedback) {
         EnumSet<SellCategory> leveledUpCategories = EnumSet.noneOf(SellCategory.class);
 
-        for (var entry : earnedByCategory.entrySet()) {
+        for (PendingSellHistory historyEntry : sale.history) {
+            plugin.getDatabaseManager().addSellHistory(
+                    player.getUniqueId(),
+                    historyEntry.material().name(),
+                    historyEntry.amount(),
+                    historyEntry.payout()
+            );
+        }
+
+        for (var entry : sale.earnedByCategory.entrySet()) {
             SellCategory category = entry.getKey();
-            double before = currentProgress.getOrDefault(category, 0D);
+            double before = sale.currentProgress.getOrDefault(category, 0D);
             double after = before + entry.getValue();
             if (getCompletedLevels(after, getSellProgressLevels())
                     > getCompletedLevels(before, getSellProgressLevels())) {
                 leveledUpCategories.add(category);
             }
 
-            currentProgress.put(category, after);
+            sale.currentProgress.put(category, after);
             plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), category, entry.getValue());
         }
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
-        var depositResult = plugin.getEconomyManager().deposit(player, totalPayout, EconomyReason.SELL_PAYOUT);
-        if (data != null && depositResult.success()) {
-            data.addMoneyMade(totalPayout);
+        if (data != null) {
+            data.addMoneyMade(sale.totalPayout);
         }
 
-        sendSellFeedback(player, totalPayout);
+        if (sendFeedback) {
+            sendSellFeedback(player, sale.totalPayout);
+        }
         if (!leveledUpCategories.isEmpty()) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("SELL.LEVEL-UP"));
         }
 
         return new SellResult(
-                totalPayout,
+                SellStatus.SUCCESS,
+                sale.totalPayout,
                 leveledUpCategories.isEmpty() ? Set.of() : EnumSet.copyOf(leveledUpCategories)
         );
     }

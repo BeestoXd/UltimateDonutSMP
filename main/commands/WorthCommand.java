@@ -38,7 +38,7 @@ public class WorthCommand implements CommandExecutor {
                     sender.sendMessage(ColorUtils.colorize(
                             plugin.getConfigManager().getMessages().getString(
                                     "WORTH.NO-ADMIN-PERMISSION",
-                                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴡᴏʀᴛʜ ѕᴇᴛᴛɪɴɢѕ."
+                                    "&cyou do not have permission to reload worth settings."
                             )));
                     return true;
                 }
@@ -101,7 +101,7 @@ public class WorthCommand implements CommandExecutor {
         if (worthResult.container() && worthResult.hasContainerContentsWorth()) {
             String breakdown = plugin.getConfigManager().getMessages().getString(
                     "WORTH.CONTAINER-BREAKDOWN",
-                    "&7ʙᴀѕᴇ: &f{base_formatted} &8| &7ᴄᴏɴᴛᴇɴᴛѕ: &f{contents_formatted}"
+                    "&7base: &f{base_formatted} &8| &7contents: &f{contents_formatted}"
             );
             breakdown = breakdown
                     .replace("{base}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, worthResult.baseWorth()))

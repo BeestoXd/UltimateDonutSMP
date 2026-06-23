@@ -47,7 +47,7 @@ public class DuelClaimMenu extends BaseMenu {
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
                 ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ")
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ"));
 
         if (claims.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
@@ -60,7 +60,7 @@ public class DuelClaimMenu extends BaseMenu {
 
     private ItemStack createClaimItem(DuelClaim claim) {
         String defeatedName = claim.defeatedName() == null || claim.defeatedName().isBlank()
-                ? "ᴜɴᴋɴᴏᴡɴ"
+                ? "unknown"
                 : claim.defeatedName();
         return ItemUtils.createItem(
                 Material.CHEST,
@@ -100,7 +100,8 @@ public class DuelClaimMenu extends BaseMenu {
             return;
         }
         if (slot == lastRow + 8) {
-            player.closeInventory();
+            SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
+            new DuelQueueMenu(plugin).open(player);
             return;
         }
 

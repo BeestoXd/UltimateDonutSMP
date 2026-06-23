@@ -91,8 +91,8 @@ public class ServersMenu extends BaseMenu {
         Set<Integer> usedSlots = new HashSet<>();
         for (MenuEntry entry : entries) {
             if (!usedSlots.add(entry.slot())) {
-                plugin.getLogger().warning("Skipping duplicate Servers Menu slot " + entry.slot()
-                        + " for server " + entry.serverId() + ".");
+                plugin.getLogger().warning("skipping duplicate servers menu slot " + entry.slot()
+                        + " ꜰᴏʀ ѕᴇʀᴠᴇʀ " + entry.serverId() + ".");
                 continue;
             }
 
@@ -103,7 +103,7 @@ public class ServersMenu extends BaseMenu {
         }
 
         if (rendered == 0) {
-            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ѕᴇʀᴠᴇʀ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx SERVERS-MENU.SERVERS ꜰɪʀѕᴛ.");
+            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ѕᴇʀᴠᴇʀ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx ѕᴇʀᴠᴇʀѕ-ᴍᴇɴᴜ.ѕᴇʀᴠᴇʀѕ ꜰɪʀѕᴛ.");
         }
     }
 
@@ -171,14 +171,14 @@ public class ServersMenu extends BaseMenu {
             ConfigurationSection serverSection = serversSection.getConfigurationSection(serverId);
             if (serverSection == null) {
                 plugin.getLogger().warning("Skipping " + SERVERS_PATH + "." + serverId
-                        + " because it is not a section.");
+                        + " ʙᴇᴄᴀᴜѕᴇ ɪᴛ ɪѕ ɴᴏᴛ ᴀ ѕᴇᴄᴛɪᴏɴ.");
                 continue;
             }
 
             int slot = serverSection.getInt("SLOT", -1);
             if (slot < 0 || slot >= inventory.getSize()) {
                 plugin.getLogger().warning("Skipping " + serverSection.getCurrentPath()
-                        + " because slot " + slot + " is outside menu size " + inventory.getSize() + ".");
+                        + " ʙᴇᴄᴀᴜѕᴇ ѕʟᴏᴛ " + slot + " ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴍᴇɴᴜ ѕɪᴢᴇ " + inventory.getSize() + ".");
                 continue;
             }
 
@@ -252,8 +252,8 @@ public class ServersMenu extends BaseMenu {
             return material;
         }
 
-        plugin.getLogger().warning("Invalid " + TEMPLATE_PATH + ".MATERIALS." + key
-                + " value '" + raw + "'. Falling back to " + fallback + ".");
+        plugin.getLogger().warning("invalid " + TEMPLATE_PATH + ".MATERIALS." + key
+                + " ᴠᴀʟᴜᴇ '" + raw + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ " + fallback + ".");
         return fallback;
     }
 
@@ -271,7 +271,7 @@ public class ServersMenu extends BaseMenu {
         return List.of(
                 "&8&m---------------------",
                 "&bѕᴛᴀᴛᴜѕ: %status%",
-                "&aᴘʟᴀʏᴇʀѕ: &a%players% oɴʟɪɴᴇ",
+                "&aᴘʟᴀʏᴇʀѕ: &a%players% ᴏɴʟɪɴᴇ",
                 "&eѕᴏꜰᴛᴡᴀʀᴇ: &a%software%",
                 "&6ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ: %performance%",
                 "&8&m---------------------"
@@ -293,8 +293,8 @@ public class ServersMenu extends BaseMenu {
             return rawSize;
         }
 
-        plugin.getLogger().warning("Invalid " + MENU_PATH + ".SIZE value '" + rawSize
-                + "'. Falling back to 27.");
+        plugin.getLogger().warning("invalid " + MENU_PATH + ".SIZE value '" + rawSize
+                + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ 27.");
         return 27;
     }
 

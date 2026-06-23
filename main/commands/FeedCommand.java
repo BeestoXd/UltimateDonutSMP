@@ -30,7 +30,7 @@ public class FeedCommand implements CommandExecutor {
         }
 
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [player]"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [ᴘʟᴀʏᴇʀ]"));
             return true;
         }
 

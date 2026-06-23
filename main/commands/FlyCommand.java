@@ -26,7 +26,7 @@ public class FlyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [player]"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [ᴘʟᴀʏᴇʀ]"));
             return true;
         }
 
@@ -54,7 +54,7 @@ public class FlyCommand implements CommandExecutor {
 
         boolean enabled = toggleFlight(target);
         String path = enabled ? "FLY.ENABLED" : "FLY.DISABLED";
-        String fallback = enabled ? "&aꜰʟɪɢʜᴛ ᴍᴏᴅᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ" : "&cꜰʟɪɢʜᴛ ᴍᴏᴅᴇ ᴅᴇᴀᴄᴛɪᴠᴀᴛᴇᴅ";
+        String fallback = enabled ? "&aflight mode activated" : "&cflight mode deactivated";
         String targetMessage = plugin.getConfigManager().getMessageOrDefault(path, fallback);
         target.sendMessage(ColorUtils.toComponent(targetMessage, target));
 

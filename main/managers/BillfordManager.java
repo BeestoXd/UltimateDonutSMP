@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.BillfordMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -146,14 +147,26 @@ public class BillfordManager {
             String raw = plugin.getConfigManager().getBillford()
                     .getString(
                             "ANNOUNCE_MESSAGE",
-                            "&6&l[Billford] &eᴛʀᴀᴅᴇ ʀᴏᴛᴀᴛᴇᴅ! &7ɴᴇxᴛ ᴄʜᴀɴɢᴇ ɪɴ &b{countdown}&7."
+                            "&6&l[billford] &etrade rotated! &7next change in &b{countdown}&7."
                     )
                     .replace("{trade_id}", String.valueOf(currentTradeId))
                     .replace("{countdown}", getFormattedCountdown());
 
             Bukkit.getOnlinePlayers().forEach(player -> {
+                if (!PlayerSettingUtils.notificationEnabled(
+                        plugin,
+                        player,
+                        PlayerSettingUtils.NotificationChannel.SERVER_BROADCAST
+                )) {
+                    return;
+                }
                 player.sendMessage(ColorUtils.toComponent(raw));
-                SoundUtils.play(player, plugin.getConfigManager().getSound("BILLFORD.ROTATE"));
+                SoundUtils.play(
+                        plugin,
+                        player,
+                        plugin.getConfigManager().getSound("BILLFORD.ROTATE"),
+                        PlayerSettingUtils.SoundChannel.NOTIFICATION
+                );
             });
         }
 
@@ -169,7 +182,7 @@ public class BillfordManager {
         dataConfig.set("next-advance-millis", nextAdvanceMillis);
         dataConfig.set("player-counts", null);
         playerTradeCounts.forEach((uuid, count) ->
-                dataConfig.set("player-counts." + uuid, count));
+                dataConfig.set("PLAYER-COUNTS." + uuid, count));
 
         try {
             dataConfig.save(dataFile);
@@ -328,7 +341,7 @@ public class BillfordManager {
 
     private long computeNext(String startStr) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
             ZoneId zoneId = getRotationZone();
             ZonedDateTime start = LocalDateTime.parse(startStr, formatter).atZone(zoneId);
             ZonedDateTime now = ZonedDateTime.now(zoneId);

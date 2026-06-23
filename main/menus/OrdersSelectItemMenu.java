@@ -1,141 +1,192 @@
 package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.OrdersManager;
+import com.bx.ultimateDonutSmp.models.OrderAlphaSort;
 import com.bx.ultimateDonutSmp.models.OrderCatalogEntry;
+import com.bx.ultimateDonutSmp.models.OrderUiState;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class OrdersSelectItemMenu extends BaseMenu {
 
     private final int page;
     private final String categoryFilter;
+    private final long editOrderId;
+    private final OrdersManager.OrderEditNavigation editNavigation;
 
     public OrdersSelectItemMenu(UltimateDonutSmp plugin, int page, String categoryFilter) {
-        super(plugin, plugin.getOrdersManager().getSelectItemTitle(), plugin.getOrdersManager().getSelectItemSize());
+        this(plugin, page, categoryFilter, 0L, null);
+    }
+
+    public OrdersSelectItemMenu(
+            UltimateDonutSmp plugin,
+            int page,
+            String categoryFilter,
+            long editOrderId,
+            OrdersManager.OrderEditNavigation editNavigation
+    ) {
+        super(plugin, plugin.getOrdersManager().getSelectItemTitle(),
+                plugin.getOrdersManager().getSelectItemSize());
         this.page = Math.max(1, page);
-        this.categoryFilter = plugin.getOrdersManager().normalizeCategory(categoryFilter);
+        this.categoryFilter = plugin.getOrdersManager().normalizeSelectItemCategory(categoryFilter);
+        this.editOrderId = editOrderId;
+        this.editNavigation = editNavigation;
     }
 
     @Override
     public void build(Player player) {
         clear();
         fill(Material.GRAY_STAINED_GLASS_PANE);
-
-        List<OrderCatalogEntry> entries = plugin.getOrdersManager().getCatalogEntries(categoryFilter);
+        OrderUiState state = plugin.getOrdersManager().getUiState(player.getUniqueId());
+        state.itemPage(page - 1);
+        List<OrderCatalogEntry> entries = entries(state);
         int itemsPerPage = plugin.getOrdersManager().getSelectItemItemsPerPage();
-        int startIndex = (page - 1) * itemsPerPage;
-        int endIndex = Math.min(entries.size(), startIndex + itemsPerPage);
+        int start = (page - 1) * itemsPerPage;
+        int end = Math.min(entries.size(), start + itemsPerPage);
 
-        for (int slot = 0; slot < itemsPerPage && slot < inventory.getSize() - 9; slot++) {
-            int entryIndex = startIndex + slot;
-            if (entryIndex >= endIndex) {
-                break;
-            }
-
-            OrderCatalogEntry entry = entries.get(entryIndex);
-            set(slot, ItemUtils.createItem(
-                    entry.material(),
-                    "&b" + plugin.getOrdersManager().describeMaterial(entry.material()),
+        for (int slot = 0; slot < itemsPerPage && start + slot < end; slot++) {
+            OrderCatalogEntry entry = entries.get(start + slot);
+            set(slot, OrdersMenuSupport.decorateItem(
+                    plugin,
+                    entry.createPreviewItem(),
+                    "&b" + entry.displayName(),
                     List.of(
                             "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + plugin.getOrdersManager().prettifyCategory(entry.categoryKey()),
                             "",
-                            "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ"
-                    )
+                            OrdersMenuSupport.text(plugin, "ORDERS.GUI.ITEM.SELECT", "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ")
+                    ),
+                    true
             ));
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ ᴛᴏ ᴏʀᴅᴇʀѕ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴏʀᴅᴇʀ ʙᴏᴀʀᴅ")));
+        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ")));
         set(lastRow + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ᴘᴀɢᴇ " + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 2, ItemUtils.createItem(
-                Material.CHEST,
+        set(lastRow + 2, ItemUtils.createItem(Material.CHEST,
                 "&bꜰɪʟᴛᴇʀ: &f" + plugin.getOrdersManager().prettifyCategory(categoryFilter),
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ᴄᴀᴛᴇɢᴏʀʏ ꜰɪʟᴛᴇʀ")
-        ));
-        set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ", List.of("&7ʀᴇʟᴏᴀᴅ ᴛʜᴇ ɪᴛᴇᴍ ᴄᴀᴛᴀʟᴏɢ")));
-        set(lastRow + 5, ItemUtils.createItem(
-                Material.BOOK,
-                "&eᴘᴀɢᴇ " + page + "&7/&e" + getTotalPages(entries.size(), itemsPerPage),
-                List.of("&7ᴀᴠᴀɪʟᴀʙʟᴇ ɪᴛᴇᴍѕ: &f" + entries.size())
-        ));
-        set(lastRow + 7, hasNextPage(entries.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
+                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ᴄᴀᴛᴇɢᴏʀʏ")));
+        set(lastRow + 3, ItemUtils.createItem(Material.HOPPER,
+                "&eѕᴏʀᴛ: &f" + state.itemSort().name().replace('_', '-'),
+                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴛᴏɢɢʟᴇ ᴀ-ᴢ / ᴢ-ᴀ")));
+        set(lastRow + 4, ItemUtils.createItem(Material.SPYGLASS, "&bѕᴇᴀʀᴄʜ",
+                List.of("&7ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ ɴᴀᴍᴇѕ ᴀɴᴅ ᴄᴀᴛᴇɢᴏʀɪᴇѕ")));
+        set(lastRow + 5, ItemUtils.createItem(Material.BOOK,
+                "&eᴘᴀɢᴇ " + page + "&7/&e" + totalPages(entries.size(), itemsPerPage),
+                List.of("&7ᴀᴠᴀɪʟᴀʙʟᴇ ɪᴛᴇᴍѕ: &f" + entries.size())));
+        set(lastRow + 7, page < totalPages(entries.size(), itemsPerPage)
+                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ᴘᴀɢᴇ " + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴏʀᴅᴇʀѕ")));
 
         if (entries.isEmpty()) {
-            set(inventory.getSize() / 2, ItemUtils.createItem(
-                    Material.BARRIER,
-                    "&cɴᴏ ᴀᴠᴀɪʟᴀʙʟᴇ ɪᴛᴇᴍѕ",
-                    List.of("&7ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀɴʏ ᴏʀᴅᴇʀᴀʙʟᴇ ɪᴛᴇᴍѕ.")
-            ));
+            set(Math.min(itemsPerPage - 1, itemsPerPage / 2),
+                    ItemUtils.createItem(Material.BARRIER, "&cɴᴏ ᴀᴠᴀɪʟᴀʙʟᴇ ɪᴛᴇᴍѕ",
+                            List.of("&7ɴᴏ ᴏʀᴅᴇʀᴀʙʟᴇ ɪᴛᴇᴍѕ ᴇxɪѕᴛ ɪɴ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ.")));
         }
     }
 
     @Override
     public void handleClick(int slot, Player player) {
-        int lastRow = inventory.getSize() - 9;
-        List<OrderCatalogEntry> entries = plugin.getOrdersManager().getCatalogEntries(categoryFilter);
+        OrderUiState state = plugin.getOrdersManager().getUiState(player.getUniqueId());
+        List<OrderCatalogEntry> entries = entries(state);
         int itemsPerPage = plugin.getOrdersManager().getSelectItemItemsPerPage();
+        int lastRow = inventory.getSize() - 9;
 
         if (slot == lastRow) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersBrowseMenu(plugin, 1, plugin.getOrdersManager().getDefaultSort(), "ALL").open(player);
+            if (isEditMode()) {
+                openEditMenu(player);
+            } else {
+                new OrdersNewMenu(plugin).open(player);
+            }
             return;
         }
-        if (slot == lastRow + 1) {
-            if (page > 1) {
-                SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-                new OrdersSelectItemMenu(plugin, page - 1, categoryFilter).open(player);
-            }
+        if (slot == lastRow + 1 && page > 1) {
+            openPage(player, page - 1, categoryFilter);
             return;
         }
         if (slot == lastRow + 2) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersSelectItemMenu(plugin, 1, plugin.getOrdersManager().nextCategory(categoryFilter)).open(player);
+            openPage(player, 1, plugin.getOrdersManager().nextSelectItemCategory(categoryFilter));
             return;
         }
         if (slot == lastRow + 3) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new OrdersSelectItemMenu(plugin, page, categoryFilter).open(player);
+            state.itemSort(state.itemSort() == OrderAlphaSort.A_Z ? OrderAlphaSort.Z_A : OrderAlphaSort.A_Z);
+            plugin.getOrdersManager().saveUiState(state);
+            openPage(player, 1, categoryFilter);
             return;
         }
-        if (slot == lastRow + 7) {
-            if (hasNextPage(entries.size(), itemsPerPage)) {
-                SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
-                new OrdersSelectItemMenu(plugin, page + 1, categoryFilter).open(player);
+        if (slot == lastRow + 4) {
+            if (isEditMode()) {
+                plugin.getOrdersManager().promptEditOrderSearchInput(player, editOrderId, editNavigation);
+            } else {
+                plugin.getOrdersManager().promptOrderSearchInput(player);
             }
             return;
         }
-        if (slot == lastRow + 8) {
-            player.closeInventory();
+        if (slot == lastRow + 7 && page < totalPages(entries.size(), itemsPerPage)) {
+            openPage(player, page + 1, categoryFilter);
             return;
         }
-
         if (slot < 0 || slot >= itemsPerPage) {
             return;
         }
 
-        int entryIndex = ((page - 1) * itemsPerPage) + slot;
-        if (entryIndex >= entries.size()) {
+        int index = ((page - 1) * itemsPerPage) + slot;
+        if (index >= entries.size()) {
             return;
         }
-
-        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        plugin.getOrdersManager().promptOrderQuantityInput(player, entries.get(entryIndex));
+        OrderCatalogEntry entry = entries.get(index);
+        boolean selected = plugin.getOrdersManager().selectOrderItem(
+                player, entry.createPreviewItem(), entry.categoryKey(), editOrderId, editNavigation
+        );
+        SoundUtils.play(player, plugin.getConfigManager().getSound(
+                selected ? "MENUS.BUTTON-CLICK" : "ORDERS.FAIL"
+        ));
     }
 
-    private int getTotalPages(int totalItems, int itemsPerPage) {
-        return Math.max(1, (int) Math.ceil(totalItems / (double) itemsPerPage));
+    private List<OrderCatalogEntry> entries(OrderUiState state) {
+        OrdersManager manager = plugin.getOrdersManager();
+        if (manager.getSelectItemSource() != OrdersManager.SelectItemSource.SERVER_MATERIALS) {
+            return manager.getCatalogEntries(categoryFilter, state.itemSort(), "");
+        }
+        Comparator<OrderCatalogEntry> comparator = Comparator.comparing(
+                OrderCatalogEntry::displayName, String.CASE_INSENSITIVE_ORDER
+        );
+        if (state.itemSort() == OrderAlphaSort.Z_A) {
+            comparator = comparator.reversed();
+        }
+        return manager.getSelectItemCatalogEntries(categoryFilter).stream().sorted(comparator).toList();
     }
 
-    private boolean hasNextPage(int totalItems, int itemsPerPage) {
-        return page < getTotalPages(totalItems, itemsPerPage);
+    private void openPage(Player player, int targetPage, String targetCategory) {
+        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
+        new OrdersSelectItemMenu(
+                plugin, targetPage, targetCategory, editOrderId, editNavigation
+        ).open(player);
+    }
+
+    private boolean isEditMode() {
+        return editOrderId > 0L;
+    }
+
+    private void openEditMenu(Player player) {
+        new OrdersEditMenu(
+                plugin,
+                editOrderId,
+                editNavigation != null && editNavigation.backToMyOrders(),
+                editNavigation == null ? 1 : editNavigation.originPage(),
+                editNavigation == null ? plugin.getOrdersManager().getDefaultSort() : editNavigation.sortMode(),
+                editNavigation == null ? "ALL" : editNavigation.categoryFilter()
+        ).open(player);
+    }
+
+    private int totalPages(int total, int perPage) {
+        return Math.max(1, (int) Math.ceil(total / (double) perPage));
     }
 }

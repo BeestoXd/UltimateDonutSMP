@@ -31,7 +31,7 @@ import java.util.UUID;
 public class PunishmentHistoryMenu extends BaseMenu {
 
     private static final String MENU_PATH = "PUNISHMENT-HISTORY-MENU";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy, HH:mm:ss", Locale.US);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ᴍᴍᴍ ᴅ ʏʏʏʏ, ʜʜ:ᴍᴍ:ѕѕ", Locale.US);
 
     private static final int BACK_SLOT = 45;
     private static final int FILTER_STATE_SLOT = 46;
@@ -285,7 +285,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
                         "&7ʀᴇᴍᴏᴠᴇᴅ ʙʏ: &f{removed_by}",
                         "&7ʀᴇᴍᴏᴠᴀʟ ʀᴇᴀѕᴏɴ: &f{removal_reason}",
                         "&7ʀᴇᴍᴏᴠᴇᴅ ᴀᴛ: &f{removed_at}",
-                        "&7ID: &f#{id}"
+                        "&7ɪᴅ: &f#{id}"
                 )
         );
 
@@ -344,7 +344,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
                 .replace("{type}", plugin.getPunishmentManager().getDisplayType(record))
                 .replace("{reason}", record.getReason())
                 .replace("{issuer}", safeText(record.getIssuerNameSnapshot()))
-                .replace("{issued_at}", formatOptionalTimestamp(record.getIssuedAt(), "ᴜɴᴋɴᴏᴡɴ"))
+                .replace("{issued_at}", formatOptionalTimestamp(record.getIssuedAt(), "unknown"))
                 .replace("{expires_at}", formatOptionalTimestamp(record.getExpiresAt(), "Never"))
                 .replace("{status}", state.getDisplayName())
                 .replace("{removed_by}", removedBy)

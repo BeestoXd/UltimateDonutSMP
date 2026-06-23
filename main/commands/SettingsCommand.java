@@ -1,7 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.menus.SettingsMenu;
+import com.bx.ultimateDonutSmp.menus.PlayerSettingsMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,7 +23,7 @@ public class SettingsCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent("&cѕᴇᴛᴛɪɴɢѕ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
             return true;
         }
-        new SettingsMenu(plugin).open(player);
+        new PlayerSettingsMenu(plugin).open(player);
         return true;
     }
 }

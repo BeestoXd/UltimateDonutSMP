@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp;
 
 import com.bx.ultimateDonutSmp.amethyst.*;
 import com.bx.ultimateDonutSmp.api.EconomyExpansion;
+import com.bx.ultimateDonutSmp.api.HideExpansion;
 import com.bx.ultimateDonutSmp.commands.*;
 import com.bx.ultimateDonutSmp.hooks.VaultEconomyHook;
 import com.bx.ultimateDonutSmp.listeners.*;
@@ -10,6 +11,9 @@ import com.bx.ultimateDonutSmp.tasks.*;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.FoliaScheduler;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -21,169 +25,226 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private FoliaScheduler foliaScheduler;
 
     // ── Managers ──────────────────────────────────────────────────────────────
-    private ConfigManager      configManager;
-    private FeatureManager     featureManager;
-    private DatabaseManager    databaseManager;
-    private PlayerDataManager  playerDataManager;
-    private EconomyManager     economyManager;
-    private ChatManager        chatManager;
-    private IgnoreManager      ignoreManager;
+    private ConfigManager configManager;
+    private LanguageManager languageManager;
+    private CurrencyManager currencyManager;
+    private FeatureManager featureManager;
+    private DatabaseManager databaseManager;
+    private PlayerDataManager playerDataManager;
+    private PlayerVisibilityManager playerVisibilityManager;
+    private ExplosionParticleFilter explosionParticleFilter;
+    private EconomyManager economyManager;
+    private ChatManager chatManager;
+    private IgnoreManager ignoreManager;
+    private FriendsManager friendsManager;
     private PrivateMessageManager privateMessageManager;
-    private TeamManager        teamManager;
-    private HomeManager        homeManager;
-    private BountyManager      bountyManager;
-    private WarpManager        warpManager;
-    private CuboidManager      cuboidManager;
-    private SpawnManager       spawnManager;
-    private CombatManager      combatManager;
+    private TeamManager teamManager;
+    private HomeManager homeManager;
+    private BountyManager bountyManager;
+    private WarpManager warpManager;
+    private CuboidManager cuboidManager;
+    private SpawnManager spawnManager;
+    private CombatManager combatManager;
     private FastCrystalManager fastCrystalManager;
-    private TPAManager         tpaManager;
-    private ShardManager       shardManager;
-    private ClearLagManager    clearLagManager;
-    private CrateManager       crateManager;
+    private TPAManager tpaManager;
+    private ShardManager shardManager;
+    private ClearLagManager clearLagManager;
+    private CrateManager crateManager;
     private CrateVisualManager crateVisualManager;
-    private KeyAllManager      keyAllManager;
-    private AFKManager         afkManager;
-    private HoverStatsManager  hoverStatsManager;
-    private WorthManager       worthManager;
-    private ShopManager        shopManager;
-    private OrdersManager      ordersManager;
-    private DuelManager        duelManager;
-    private FfaManager         ffaManager;
+    private KeyAllManager keyAllManager;
+    private AFKManager afkManager;
+    private HoverStatsManager hoverStatsManager;
+    private WorthManager worthManager;
+    private ShopManager shopManager;
+    private OrdersManager ordersManager;
+    private OrdersBedrockManager ordersBedrockManager;
+    private EnchantmentsManager enchantmentsManager;
+    private FilterManager filterManager;
+    private DuelManager duelManager;
+    private FfaManager ffaManager;
     private AuctionHouseManager auctionHouseManager;
-    private BillfordManager    billfordManager;
+    private BillfordManager billfordManager;
     private LeaderboardManager leaderboardManager;
-    private ScoreboardManager  scoreboardManager;
-    private TablistManager     tablistManager;
-    private TeleportManager    teleportManager;
-    private RTPManager         rtpManager;
-    private RTPZoneManager     rtpZoneManager;
-    private PortalManager      portalManager;
+    private ScoreboardManager scoreboardManager;
+    private TablistManager tablistManager;
+    private TeleportManager teleportManager;
+    private RTPManager rtpManager;
+    private RTPZoneManager rtpZoneManager;
+    private PortalManager portalManager;
     private AmethystToolsManager amethystToolsManager;
-    private EnderChestManager  enderChestManager;
-    private FreezeManager      freezeManager;
-    private InvseeManager      invseeManager;
+    private EnderChestManager enderChestManager;
+    private FreezeManager freezeManager;
+    private GodModeManager godModeManager;
+    private InvseeManager invseeManager;
     private ProfileViewerManager profileViewerManager;
-    private PunishmentManager  punishmentManager;
-    private StatsWipeManager  statsWipeManager;
-    private SpawnerManager    spawnerManager;
-    private AntiEspManager    antiEspManager;
+    private PunishmentManager punishmentManager;
+    private StatsWipeManager statsWipeManager;
+    private ServerWipeManager serverWipeManager;
+    private SpawnerManager spawnerManager;
+    private AntiEspManager antiEspManager;
+    private SpawnStashManager spawnStashManager;
+    private FakePlayerManager fakePlayerManager;
+    private HideManager hideManager;
     private NetworkStatusManager networkStatusManager;
     private RedisManager redisManager;
+    private MaintenanceManager maintenanceManager;
     private NetworkStaffChatManager networkStaffChatManager;
     private NetworkStaffAlertManager networkStaffAlertManager;
     private StaffModeManager staffModeManager;
     private DiscordWebhookManager discordWebhookManager;
     private LunarRichPresenceManager lunarRichPresenceManager;
-    private OptimizationManager optimizationManager;
     private LuckPermsTablistRefreshBridge luckPermsTablistRefreshBridge;
+    private SkinsRestorerTablistRefreshBridge skinsRestorerTablistRefreshBridge;
+    private OptimizationManager optimizationManager;
+    private CrashProtectionManager crashProtectionManager;
+    private AnvilModerationManager anvilModerationManager;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     @Override
     public void onEnable() {
         instance = this;
+
+        printStartupBanner();
+
+        checkPlaceholderApi();
+
         foliaScheduler = new FoliaScheduler(this);
 
-        // 1. config & database (no dependencies)
+        // 1. Config & database (no dependencies)
         ColorUtils.init();
 
-        configManager   = new ConfigManager(this);
+        configManager = new ConfigManager(this);
         configManager.loadAll();
+        languageManager = new LanguageManager(this);
+        languageManager.load();
+        crashProtectionManager = new CrashProtectionManager(this);
+        currencyManager = new CurrencyManager(this);
         featureManager = new FeatureManager(this);
         optimizationManager = new OptimizationManager(this);
         optimizationManager.start();
 
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
+        serverWipeManager = new ServerWipeManager(this);
+        serverWipeManager.recoverOrRecreatePendingWorlds();
 
-        // 2. data managers (depend on DB / config)
+        // 2. Data managers (depend on DB / config)
         playerDataManager = new PlayerDataManager(this);
-        economyManager    = new EconomyManager(this);
-        chatManager       = new ChatManager(this);
-        ignoreManager     = new IgnoreManager(this);
+        playerVisibilityManager = new PlayerVisibilityManager(this);
+        if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            explosionParticleFilter = new ExplosionParticleFilter(this);
+        } else {
+            getLogger().info("ProtocolLib is not installed; packet-based explosion particle filtering is disabled.");
+        }
+        economyManager = new EconomyManager(this);
+        chatManager = new ChatManager(this);
+        ignoreManager = new IgnoreManager(this);
+        friendsManager = new FriendsManager(this);
         privateMessageManager = new PrivateMessageManager(this);
-        teamManager       = new TeamManager(this);
+        teamManager = new TeamManager(this);
         teamManager.loadAll();
-        homeManager       = new HomeManager(this);
-        bountyManager     = new BountyManager(this);
+        homeManager = new HomeManager(this);
+        bountyManager = new BountyManager(this);
         bountyManager.loadAll();
-        warpManager       = new WarpManager(this);
+        warpManager = new WarpManager(this);
         warpManager.loadAll();
-        cuboidManager     = new CuboidManager(this);
+        cuboidManager = new CuboidManager(this);
         cuboidManager.loadAll();
 
         spawnManager = new SpawnManager(this);
         spawnManager.load();
 
-        // 3. gameplay managers
-        combatManager   = new CombatManager(this);
+        // 3. Gameplay managers
+        combatManager = new CombatManager(this);
         fastCrystalManager = new FastCrystalManager(this);
-        tpaManager      = new TPAManager(this);
-        shardManager    = new ShardManager(this);
+        tpaManager = new TPAManager(this);
+        shardManager = new ShardManager(this);
         amethystToolsManager = new AmethystToolsManager(this);
         clearLagManager = new ClearLagManager(this);
-        crateManager    = new CrateManager(this);
+        crateManager = new CrateManager(this);
         crateVisualManager = new CrateVisualManager(this);
-        keyAllManager   = new KeyAllManager(this);
-        afkManager      = new AFKManager(this);
+        keyAllManager = new KeyAllManager(this);
+        afkManager = new AFKManager(this);
         hoverStatsManager = new HoverStatsManager(this);
-        worthManager    = new WorthManager(this);
-        shopManager     = new ShopManager(this);
-        ordersManager   = new OrdersManager(this);
-        duelManager     = new DuelManager(this);
-        ffaManager      = new FfaManager(this);
+        worthManager = new WorthManager(this);
+        shopManager = new ShopManager(this);
+        filterManager = new FilterManager(this);
+        enchantmentsManager = new EnchantmentsManager(this);
+        ordersManager = new OrdersManager(this);
+        if (getServer().getPluginManager().isPluginEnabled("floodgate")) {
+            try {
+                ordersBedrockManager = new OrdersBedrockManager(this);
+            } catch (LinkageError error) {
+                getLogger().warning("Floodgate is present but its API could not be loaded; Orders will use Java GUIs.");
+            }
+        }
+        duelManager = new DuelManager(this);
+        ffaManager = new FfaManager(this);
         auctionHouseManager = new AuctionHouseManager(this);
         billfordManager = new BillfordManager(this);
         billfordManager.load();
         leaderboardManager = new LeaderboardManager(this);
         enderChestManager = new EnderChestManager(this);
         freezeManager = new FreezeManager(this);
+        godModeManager = new GodModeManager();
         staffModeManager = new StaffModeManager(this);
         invseeManager = new InvseeManager(this);
         profileViewerManager = new ProfileViewerManager(this);
         punishmentManager = new PunishmentManager(this);
+        anvilModerationManager = new AnvilModerationManager(this);
+        anvilModerationManager.load();
         statsWipeManager = new StatsWipeManager(this);
         spawnerManager = new SpawnerManager(this);
         antiEspManager = new AntiEspManager(this);
+        spawnStashManager = new SpawnStashManager(this);
+        fakePlayerManager = new FakePlayerManager(this);
         redisManager = new RedisManager(this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         networkStatusManager = new NetworkStatusManager(this);
         networkStaffChatManager = new NetworkStaffChatManager(this);
         networkStaffAlertManager = new NetworkStaffAlertManager(this);
+        ordersManager.initializeNetworkSync();
+        maintenanceManager = new MaintenanceManager(this);
+        maintenanceManager.initializeRedisListener();
+        duelManager.initializeCrossServer();
         discordWebhookManager = new DiscordWebhookManager(this);
         initializeLunarRichPresenceManager();
 
-        // 4. display managers
+        // 4. Display managers
         scoreboardManager = new ScoreboardManager(this);
-        tablistManager    = new TablistManager(this);
-        teleportManager   = new TeleportManager(this);
-        rtpManager        = new RTPManager(this);
-        rtpZoneManager    = new RTPZoneManager(this);
-        portalManager     = new PortalManager(this);
+        tablistManager = new TablistManager(this);
+        hideManager = new HideManager(this);
+        hideManager.loadAll();
+        teleportManager = new TeleportManager(this);
+        rtpManager = new RTPManager(this);
+        rtpZoneManager = new RTPZoneManager(this);
+        portalManager = new PortalManager(this);
         portalManager.loadAll();
         initializeLuckPermsTablistRefreshBridge();
+        initializeSkinsRestorerTablistRefreshBridge();
 
-        // 5. listeners
+        // 5. Listeners
         registerListeners();
 
         // 6. Commands
         registerCommands();
 
-        // 6.5 optional integrations
+        // 6.5 Optional integrations
         registerVaultEconomyProvider();
 
-        // 7. background tasks
+        // 7. Background tasks
         ScoreboardTask.start(this);
         TablistTask.start(this);
-        ShardTask.start(this);        // passive "everywhere" shards (per minute)
-        ShardCuboidTask.start(this);  // spawn cuboid countdown + reward (per second)
+        ShardTask.start(this); // passive "everywhere" shards (per minute)
+        ShardCuboidTask.start(this); // spawn cuboid countdown + reward (per second)
         RTPZoneTask.start(this);
         ClearLagTask.start(this);
         KeyAllTask.start(this);
         AutoSaveTask.start(this);
         AFKCheckTask.start(this);
         LunarTeammatesTask.start(this);
-        BillfordTask.start(this);     // billford trade rotation check (every 30 s)
+        BillfordTask.start(this); // Billford trade rotation check (every 30 s)
         OrdersExpiryTask.start(this);
         AuctionHouseExpiryTask.start(this);
         AmethystToolsTask.start(this);
@@ -191,10 +252,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         DuelMatchTask.start(this);
         FfaMatchTask.start(this);
 
-        // 8. placeholderapi expansion
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        // 8. PlaceholderAPI expansion
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new EconomyExpansion(this).register();
+            new HideExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
+        }
+
+        if (maintenanceManager != null && !maintenanceManager.isMaintenanceActive()) {
+            maintenanceManager.broadcastOnline();
         }
 
         getLogger().info("UltimateDonutSmp enabled successfully.");
@@ -202,11 +268,16 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        boolean suppressWipeSaves = serverWipeManager != null
+                && serverWipeManager.shouldSuppressShutdownSaves();
+        if (teleportManager != null) {
+            teleportManager.restoreAllRtpChunkThrottles();
+        }
         if (worthManager != null) {
             getServer().getOnlinePlayers().forEach(worthManager::clearWorthDisplay);
         }
 
-        if (enderChestManager != null) {
+        if (enderChestManager != null && !suppressWipeSaves) {
             enderChestManager.shutdown();
         }
         if (freezeManager != null) {
@@ -215,11 +286,29 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (staffModeManager != null) {
             staffModeManager.shutdown();
         }
+        if (godModeManager != null) {
+            godModeManager.clearAll();
+        }
         if (invseeManager != null) {
             invseeManager.shutdown();
         }
         if (antiEspManager != null) {
             antiEspManager.shutdown();
+        }
+        if (spawnStashManager != null) {
+            spawnStashManager.shutdown();
+        }
+        if (fakePlayerManager != null) {
+            fakePlayerManager.shutdown();
+        }
+        if (hideManager != null) {
+            hideManager.shutdown();
+        }
+        if (explosionParticleFilter != null) {
+            explosionParticleFilter.shutdown();
+        }
+        if (playerVisibilityManager != null) {
+            playerVisibilityManager.clear();
         }
         if (networkStatusManager != null) {
             networkStatusManager.shutdown();
@@ -230,14 +319,20 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (networkStaffAlertManager != null) {
             networkStaffAlertManager.shutdown();
         }
-        if (lunarRichPresenceManager != null) {
-            lunarRichPresenceManager.shutdown();
-        }
         if (luckPermsTablistRefreshBridge != null) {
             luckPermsTablistRefreshBridge.shutdown();
         }
+        if (skinsRestorerTablistRefreshBridge != null) {
+            skinsRestorerTablistRefreshBridge.shutdown();
+        }
+        if (lunarRichPresenceManager != null) {
+            lunarRichPresenceManager.shutdown();
+        }
         if (optimizationManager != null) {
             optimizationManager.shutdown();
+        }
+        if (ordersManager != null) {
+            ordersManager.shutdown();
         }
         if (redisManager != null) {
             redisManager.shutdown();
@@ -248,7 +343,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (ffaManager != null) {
             ffaManager.shutdown();
         }
-        if (spawnerManager != null) {
+        if (spawnerManager != null && !suppressWipeSaves) {
             spawnerManager.shutdown();
         }
         if (crateManager != null) {
@@ -266,9 +361,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (portalManager != null) {
             portalManager.shutdown();
         }
+        if (auctionHouseManager != null) {
+            auctionHouseManager.shutdown();
+        }
+        if (shopManager != null) {
+            shopManager.shutdown();
+        }
 
-        // save all online players and close DB
-        if (playerDataManager != null) {
+        // Save all online players and close DB
+        if (playerDataManager != null && !suppressWipeSaves) {
             playerDataManager.saveAll();
         }
         if (databaseManager != null) {
@@ -278,7 +379,57 @@ public final class UltimateDonutSmp extends JavaPlugin {
         getLogger().info("UltimateDonutSmp disabled.");
     }
 
+    // ── Startup Banner ─────────────────────────────────────────────────────────
+
+    private void printStartupBanner() {
+        var console = getServer().getConsoleSender();
+        String v = getDescription().getVersion();
+
+        console.sendMessage("");
+        console.sendMessage("§6§l  ██╗   ██╗██╗  ████████╗██╗███╗   ███╗ █████╗ ████████╗███████╗");
+        console.sendMessage("§6§l  ██║   ██║██║  ╚══██╔══╝██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝");
+        console.sendMessage("§6§l  ██║   ██║██║     ██║   ██║██╔████╔██║███████║   ██║   █████╗  ");
+        console.sendMessage("§6§l  ██║   ██║██║     ██║   ██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  ");
+        console.sendMessage("§6§l  ╚██████╔╝███████╗██║   ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗");
+        console.sendMessage("§6§l   ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝");
+        console.sendMessage("");
+        console.sendMessage("§e§l  ██████╗  ██████╗ ███╗   ██╗██╗   ██╗████████╗    ███████╗███╗   ███╗██████╗ ");
+        console.sendMessage("§e§l  ██╔══██╗██╔═══██╗████╗  ██║██║   ██║╚══██╔══╝    ██╔════╝████╗ ████║██╔══██╗");
+        console.sendMessage("§e§l  ██║  ██║██║   ██║██╔██╗ ██║██║   ██║   ██║       ███████╗██╔████╔██║██████╔╝");
+        console.sendMessage("§e§l  ██║  ██║██║   ██║██║╚██╗██║██║   ██║   ██║       ╚════██║██║╚██╔╝██║██╔═══╝ ");
+        console.sendMessage("§e§l  ██████╔╝╚██████╔╝██║ ╚████║╚██████╔╝   ██║       ███████║██║ ╚═╝ ██║██║     ");
+        console.sendMessage("§e§l  ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝    ╚═╝       ╚══════╝╚═╝     ╚═╝╚═╝     ");
+        console.sendMessage("");
+        console.sendMessage("§8  ═══════════════════════════════════════════════════════════════════════════════");
+        console.sendMessage("§7                       §fᴍᴀᴅᴇ ʙʏ §b§lʙᴇᴇѕᴛᴏxᴅ §8| §fᴠᴇʀѕɪᴏɴ §a§l" + v);
+        console.sendMessage("§7                   §fᴅɪѕᴄᴏʀᴅ: §9§nhttps://dsc.gg/hellstarr");
+        console.sendMessage("§8  ═══════════════════════════════════════════════════════════════════════════════");
+        console.sendMessage("");
+        console.sendMessage("§8  ╔═══════════════════════════════════════════════════════════════════════════╗");
+        console.sendMessage("§8  ║                                                                         ║");
+        console.sendMessage("§8  ║  §e§l⚠ §6§lɴᴏᴛᴇ                                                              §8║");
+        console.sendMessage("§8  ║                                                                         ║");
+        console.sendMessage("§8  ║  §fɢᴜʏѕ, ᴘʟᴇᴀѕᴇ ᴅᴏɴᴀᴛᴇ ᴛᴏ ᴛʜɪѕ ᴘʀᴏᴊᴇᴄᴛ ᴏʀ ᴛʜɪѕ ᴘʟᴜɢɪɴ ɪꜰ ʏᴏᴜ ʀᴇᴀʟʟʏ      §8║");
+        console.sendMessage("§8  ║  §fʟɪᴋᴇ ᴛʜɪѕ ᴘʟᴜɢɪɴ, ꜰᴏʀ ᴛʜᴇ ᴅᴏɴᴀᴛɪᴏɴ ʟɪɴᴋ ᴊᴜѕᴛ ᴅᴍ ᴍᴇ ᴏɴ ᴅɪѕᴄᴏʀᴅ,        §8║");
+        console.sendMessage("§8  ║  §fᴀɴᴅ ꜰᴏʀ ᴛʜᴏѕᴇ ᴡʜᴏ ʜᴀᴠᴇ ᴅᴏɴᴀᴛᴇᴅ ᴛᴏ ᴍᴇ, ᴍᴀʏ ɢᴏᴅ ʙʟᴇѕѕ ʏᴏᴜ ᴀɴᴅ ᴍᴀʏ       §8║");
+        console.sendMessage("§8  ║  §fʏᴏᴜ ᴀʟᴡᴀʏѕ ʙᴇ ʜᴇᴀʟᴛʜʏ ᴀɴᴅ ɪ ᴀᴍ ᴠᴇʀʏ ɢʀᴀᴛᴇꜰᴜʟ ꜰᴏʀ ᴛʜᴇ ᴅᴏɴᴀᴛɪᴏɴѕ        §8║");
+        console.sendMessage("§8  ║  §fᴛʜᴀᴛ ʜᴀᴠᴇ ʙᴇᴇɴ ɢɪᴠᴇɴ ᴛᴏ ᴍᴇ §e:)                                       §8║");
+        console.sendMessage("§8  ║                                                                         ║");
+        console.sendMessage("§8  ╚═══════════════════════════════════════════════════════════════════════════╝");
+        console.sendMessage("");
+    }
+
     // ── Registration helpers ──────────────────────────────────────────────────
+
+    private boolean checkPlaceholderApi() {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            return true;
+        }
+
+        getLogger().warning("PlaceholderAPI is unavailable; placeholder expansion and external placeholders are disabled.");
+        getLogger().warning("Core UltimateDonutSmp features will continue with built-in values and fallbacks.");
+        return false;
+    }
 
     private void registerListeners() {
         PluginManager pm = getServer().getPluginManager();
@@ -286,6 +437,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new PlayerDeathListener(this), this);
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new CombatListener(this), this);
+        pm.registerEvents(new GodModeListener(this), this);
         pm.registerEvents(new FastCrystalListener(this), this);
         pm.registerEvents(new PlayerRespawnListener(this), this);
         pm.registerEvents(new PlayerMoveListener(this), this);
@@ -308,179 +460,296 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new SpawnerBlockListener(this), this);
         pm.registerEvents(new SpawnerInteractListener(this), this);
         pm.registerEvents(new SpawnerVisibilityListener(this), this);
+        pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
+        pm.registerEvents(new AnvilModerationListener(this), this);
     }
 
     private void registerCommands() {
-        // team
+        UniversalCommandTabCompleter universalCommandTabCompleter = new UniversalCommandTabCompleter(this);
+        registerFallbackTabCompleters(universalCommandTabCompleter);
+
+        // Team
         TeamCommand teamCmd = new TeamCommand(this);
-        getCommand("team").setExecutor(teamCmd);
+        setExecutor("team", teamCmd, FeatureManager.Feature.TEAMS);
         ChatCommand chatCommand = new ChatCommand(this);
         ChatTabCompleter chatTabCompleter = new ChatTabCompleter();
-        getCommand("chat").setExecutor(chatCommand);
-        getCommand("chat").setTabCompleter(chatTabCompleter);
+        setExecutor("chat", chatCommand, FeatureManager.Feature.CHAT);
+        setTabCompleter("chat", chatTabCompleter);
         IgnoreCommand ignoreCommand = new IgnoreCommand(this);
         IgnoreTabCompleter ignoreTabCompleter = new IgnoreTabCompleter(this);
-        getCommand("ignore").setExecutor(ignoreCommand);
-        getCommand("ignore").setTabCompleter(ignoreTabCompleter);
-        getCommand("unignore").setExecutor(ignoreCommand);
-        getCommand("unignore").setTabCompleter(ignoreTabCompleter);
+        setExecutor("ignore", ignoreCommand, FeatureManager.Feature.IGNORE);
+        setTabCompleter("ignore", ignoreTabCompleter);
+        setExecutor("unignore", ignoreCommand, FeatureManager.Feature.IGNORE);
+        setTabCompleter("unignore", ignoreTabCompleter);
         MessageCommand messageCommand = new MessageCommand(this);
-        MessageTabCompleter messageTabCompleter = new MessageTabCompleter();
-        getCommand("msg").setExecutor(messageCommand);
-        getCommand("msg").setTabCompleter(messageTabCompleter);
-        getCommand("reply").setExecutor(messageCommand);
-        getCommand("reply").setTabCompleter(messageTabCompleter);
-        getCommand("pm").setExecutor(new PrivateMessageToggleCommand(this));
+        MessageTabCompleter messageTabCompleter = new MessageTabCompleter(this);
+        setExecutor("msg", messageCommand, FeatureManager.Feature.MESSAGING);
+        setTabCompleter("msg", messageTabCompleter);
+        setExecutor("reply", messageCommand, FeatureManager.Feature.MESSAGING);
+        setTabCompleter("reply", messageTabCompleter);
+        setExecutor("pm", new PrivateMessageToggleCommand(this), FeatureManager.Feature.MESSAGING);
 
-        // homes
+        // Homes
         HomeCommand homeCmd = new HomeCommand(this);
-        getCommand("home").setExecutor(homeCmd);
-        getCommand("homes").setExecutor(homeCmd);
-        getCommand("sethome").setExecutor(homeCmd);
-        getCommand("delhome").setExecutor(homeCmd);
-        getCommand("renamehome").setExecutor(homeCmd);
+        setExecutor("home", homeCmd, FeatureManager.Feature.HOMES);
+        setExecutor("homes", homeCmd, FeatureManager.Feature.HOMES);
+        setExecutor("sethome", homeCmd, FeatureManager.Feature.HOMES);
+        setExecutor("delhome", homeCmd, FeatureManager.Feature.HOMES);
+        setExecutor("renamehome", homeCmd, FeatureManager.Feature.HOMES);
 
-        // spawn / afk
-        getCommand("spawn").setExecutor(new SpawnCommand(this));
-        getCommand("afk").setExecutor(new AFKCommand(this));
+        // Spawn / AFK
+        setExecutor("spawn", new SpawnCommand(this), FeatureManager.Feature.SPAWN);
+        setExecutor("afk", new AFKCommand(this), FeatureManager.Feature.AFK);
 
-        // teleport
+        // Teleport
         TPACommand tpaCmd = new TPACommand(this);
-        getCommand("tpa").setExecutor(tpaCmd);
-        getCommand("tpahere").setExecutor(tpaCmd);
-        getCommand("tpaccept").setExecutor(tpaCmd);
-        getCommand("tpadeny").setExecutor(tpaCmd);
-        getCommand("tpacancel").setExecutor(tpaCmd);
-        getCommand("tpauto").setExecutor(new TPAutoCommand(this));
-        getCommand("tpahereauto").setExecutor(new TPAHereAutoCommand(this));
+        setExecutor("tpa", tpaCmd, FeatureManager.Feature.TPA);
+        setExecutor("tpahere", tpaCmd, FeatureManager.Feature.TPA);
+        setExecutor("tpaccept", tpaCmd, FeatureManager.Feature.TPA);
+        setExecutor("tpadeny", tpaCmd, FeatureManager.Feature.TPA);
+        setExecutor("tpacancel", tpaCmd, FeatureManager.Feature.TPA);
+        setExecutor("tpauto", new TPAutoCommand(this), FeatureManager.Feature.TPA, FeatureManager.Feature.TPA_AUTO);
+        setExecutor("tpahereauto", new TPAHereAutoCommand(this), FeatureManager.Feature.TPA,
+                FeatureManager.Feature.TPA_AUTO);
 
-        // economy
+        // Economy
         BalanceCommand balCmd = new BalanceCommand(this);
-        getCommand("balance").setExecutor(balCmd);
-        getCommand("pay").setExecutor(new PayCommand(this));
-        getCommand("addmoney").setExecutor(new AddMoneyCommand(this));
-        getCommand("removemoney").setExecutor(new RemoveMoneyCommand(this));
-        getCommand("setmoney").setExecutor(new SetMoneyCommand(this));
+        setExecutor("balance", balCmd);
+        setExecutor("pay", new PayCommand(this));
+        setExecutor("addmoney", new AddMoneyCommand(this));
+        setExecutor("removemoney", new RemoveMoneyCommand(this));
+        setExecutor("setmoney", new SetMoneyCommand(this));
 
         ShardsCommand shardsCmd = new ShardsCommand(this);
-        getCommand("shards").setExecutor(shardsCmd);
-        getCommand("shardpay").setExecutor(new ShardPayCommand(this));
+        setExecutor("shards", shardsCmd, FeatureManager.Feature.SHARDS);
+        setExecutor("shardpay", new ShardPayCommand(this), FeatureManager.Feature.SHARDS);
+        ShardAdminCommand shardAdminCommand = new ShardAdminCommand(this);
+        setExecutor("addshards", shardAdminCommand, FeatureManager.Feature.SHARDS);
+        setExecutor("removeshards", shardAdminCommand, FeatureManager.Feature.SHARDS);
+        setExecutor("setshards", shardAdminCommand, FeatureManager.Feature.SHARDS);
         CrateCommand crateCmd = new CrateCommand(this);
-        getCommand("crate").setExecutor(crateCmd);
-        getCommand("crates").setExecutor(crateCmd);
-        getCommand("keys").setExecutor(crateCmd);
+        setExecutor("crate", crateCmd, FeatureManager.Feature.CRATES);
+        setExecutor("crates", crateCmd, FeatureManager.Feature.CRATES);
+        setExecutor("keys", crateCmd, FeatureManager.Feature.CRATES);
+        setTabCompleter("crate", crateCmd);
+        setTabCompleter("crates", crateCmd);
+        setTabCompleter("keys", crateCmd);
 
-        // shop / sell / worth
-        getCommand("shop").setExecutor(new ShopCommand(this));
-        getCommand("orders").setExecutor(new OrdersCommand(this));
-        getCommand("duel").setExecutor(new DuelCommand(this));
-        getCommand("queue").setExecutor(new QueueCommand(this));
-        getCommand("leave").setExecutor(new LeaveCommand(this));
-        getCommand("draw").setExecutor(new DrawCommand(this));
-        getCommand("arena").setExecutor(new ArenaCommand(this));
-        getCommand("ffa").setExecutor(new FfaCommand(this));
-        getCommand("ffastats").setExecutor(new FfaStatsCommand(this));
-        getCommand("ffaarena").setExecutor(new FfaArenaCommand(this));
-        getCommand("auctionhouse").setExecutor(new AuctionHouseCommand(this));
-        getCommand("enderchest").setExecutor(new EnderChestCommand(this));
+        // Shop / Sell / Worth
+        ShopCommand shopCommand = new ShopCommand(this);
+        setExecutor("shop", shopCommand, FeatureManager.Feature.SHOP);
+        setExecutor("shardshop", shopCommand, FeatureManager.Feature.SHOP, FeatureManager.Feature.SHARDS);
+        setExecutor("orders", new OrdersCommand(this), FeatureManager.Feature.ORDERS);
+        setExecutor("duel", new DuelCommand(this), FeatureManager.Feature.DUELS);
+        setExecutor("create", new CreateCommand(this), FeatureManager.Feature.DUELS);
+        setExecutor("queue", new QueueCommand(this), FeatureManager.Feature.DUELS);
+        setExecutor("leave", new LeaveCommand(this));
+        setExecutor("draw", new DrawCommand(this), FeatureManager.Feature.DUELS);
+        setExecutor("arena", new ArenaCommand(this), FeatureManager.Feature.DUELS);
+        setExecutor("ffa", new FfaCommand(this), FeatureManager.Feature.FFA);
+        setExecutor("ffastats", new FfaStatsCommand(this), FeatureManager.Feature.FFA);
+        setExecutor("ffaarena", new FfaArenaCommand(this), FeatureManager.Feature.FFA);
+        AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(this);
+        setExecutor("auctionhouse", auctionHouseCommand, FeatureManager.Feature.AUCTION_HOUSE);
+        setTabCompleter("auctionhouse", auctionHouseCommand);
+        setExecutor("enderchest", new EnderChestCommand(this), FeatureManager.Feature.ENDER_CHEST);
+        setExecutor("ecsee", new EcseeCommand(this), FeatureManager.Feature.ENDER_CHEST);
         SellCommand sellCmd = new SellCommand(this);
-        getCommand("sell").setExecutor(sellCmd);
-        getCommand("sellhand").setExecutor(sellCmd);
-        getCommand("sellall").setExecutor(sellCmd);
-        getCommand("sellhistory").setExecutor(sellCmd);
-        getCommand("worth").setExecutor(new WorthCommand(this));
+        setExecutor("sell", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellall", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellhistory", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("worth", new WorthCommand(this), FeatureManager.Feature.SELL, FeatureManager.Feature.WORTH);
 
-        // rtp
-        getCommand("rtp").setExecutor(new RTPCommand(this));
+        // RTP
+        setExecutor("rtp", new RTPCommand(this), FeatureManager.Feature.RTP);
 
-        // stats / Leaderboard
-        getCommand("stats").setExecutor(new StatsCommand(this));
-        getCommand("ping").setExecutor(new PingCommand(this));
-        getCommand("playtime").setExecutor(new PlaytimeCommand(this));
+        // Stats / Leaderboard
+        setExecutor("stats", new StatsCommand(this), FeatureManager.Feature.STATS);
+        setExecutor("ping", new PingCommand(this), FeatureManager.Feature.STATS);
+        setExecutor("playtime", new PlaytimeCommand(this), FeatureManager.Feature.STATS);
         LeaderboardCommand lbCmd = new LeaderboardCommand(this);
-        getCommand("leaderboard").setExecutor(lbCmd);
-        getCommand("freeze").setExecutor(new FreezeCommand(this));
-        getCommand("fly").setExecutor(new FlyCommand(this));
-        getCommand("heal").setExecutor(new HealCommand(this));
-        getCommand("feed").setExecutor(new FeedCommand(this));
+        setExecutor("leaderboard", lbCmd, FeatureManager.Feature.LEADERBOARDS);
+        setExecutor("freeze", new FreezeCommand(this));
+        setExecutor("fly", new FlyCommand(this));
+        setExecutor("kill", new KillCommand(this));
+        setExecutor("heal", new HealCommand(this));
+        setExecutor("feed", new FeedCommand(this));
+        registerGodModeCommand(new GodModeCommand(this));
         GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
-        getCommand("gamemode").setExecutor(gamemodeCommand);
-        getCommand("gamemode").setTabCompleter(gamemodeCommand);
-        getCommand("staffmode").setExecutor(new StaffModeCommand(this));
-        getCommand("stafflist").setExecutor(new StaffListCommand(this));
-        getCommand("staffchat").setExecutor(new StaffChatCommand(this));
-        getCommand("helpop").setExecutor(new HelpopCommand(this));
-        getCommand("report").setExecutor(new ReportCommand(this));
-        getCommand("rename").setExecutor(new RenameCommand(this));
-        getCommand("randomteleport").setExecutor(new RandomTeleportCommand(this));
-        getCommand("teleport").setExecutor(new TeleportCommand(this));
-        getCommand("alts").setExecutor(new AltsCommand(this));
-        getCommand("vanish").setExecutor(new VanishCommand(this));
-        getCommand("invsee").setExecutor(new InvseeCommand(this));
-        getCommand("profileviewer").setExecutor(new ProfileViewerCommand(this));
-        getCommand("punishments").setExecutor(new PunishmentHistoryCommand(this));
+        setExecutor("gamemode", gamemodeCommand, FeatureManager.Feature.GAMEMODE);
+        setTabCompleter("gamemode", gamemodeCommand);
+        setExecutor("staffmode", new StaffModeCommand(this));
+        setExecutor("stafflist", new StaffListCommand(this), FeatureManager.Feature.STAFF_MODE);
+        setExecutor("staffchat", new StaffChatCommand(this), FeatureManager.Feature.STAFF_CHAT);
+        setExecutor("helpop", new HelpopCommand(this), FeatureManager.Feature.STAFF_ALERTS);
+        setExecutor("report", new ReportCommand(this), FeatureManager.Feature.STAFF_ALERTS);
+        setExecutor("rename", new RenameCommand(this));
+        setExecutor("randomteleport", new RandomTeleportCommand(this));
+        setExecutor("teleport", new TeleportCommand(this));
+        setExecutor("alts", new AltsCommand(this));
+        setExecutor("vanish", new VanishCommand(this), FeatureManager.Feature.STAFF_MODE);
+        setExecutor("invsee", new InvseeCommand(this));
+        setExecutor("profileviewer", new ProfileViewerCommand(this), FeatureManager.Feature.PROFILE_VIEWER);
+        setExecutor("punishments", new PunishmentHistoryCommand(this), FeatureManager.Feature.PUNISHMENTS);
         PunishmentCommand punishmentCommand = new PunishmentCommand(this);
-        getCommand("ban").setExecutor(punishmentCommand);
-        getCommand("tempban").setExecutor(punishmentCommand);
-        getCommand("mute").setExecutor(punishmentCommand);
-        getCommand("tempmute").setExecutor(punishmentCommand);
-        getCommand("warn").setExecutor(punishmentCommand);
-        getCommand("kick").setExecutor(punishmentCommand);
-        getCommand("blacklist").setExecutor(punishmentCommand);
-        getCommand("unban").setExecutor(punishmentCommand);
-        getCommand("unmute").setExecutor(punishmentCommand);
-        getCommand("unblacklist").setExecutor(punishmentCommand);
+        setExecutor("ban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("tempban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("mute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("tempmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("warn", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("kick", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("blacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("unban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("unmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("unblacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
 
-        // bounty
-        getCommand("bounty").setExecutor(new BountyCommand(this));
+        // Bounty
+        setExecutor("bounty", new BountyCommand(this), FeatureManager.Feature.BOUNTY);
 
-        // warps
+        // Warps
         WarpCommand warpCmd = new WarpCommand(this);
         WarpManagerCommand warpManagerCmd = new WarpManagerCommand(this);
         WarpTabCompleter warpTabCompleter = new WarpTabCompleter(this);
-        getCommand("warp").setExecutor(warpCmd);
-        getCommand("warp").setTabCompleter(warpTabCompleter);
-        getCommand("warpmanager").setExecutor(warpManagerCmd);
-        getCommand("warpmanager").setTabCompleter(warpTabCompleter);
-        getCommand("setwarp").setExecutor(warpManagerCmd);
-        getCommand("setwarp").setTabCompleter(warpTabCompleter);
-        getCommand("delwarp").setExecutor(warpManagerCmd);
-        getCommand("delwarp").setTabCompleter(warpTabCompleter);
+        setExecutor("warp", warpCmd, FeatureManager.Feature.WARPS);
+        setTabCompleter("warp", warpTabCompleter);
+        setExecutor("warpmanager", warpManagerCmd, FeatureManager.Feature.WARPS);
+        setTabCompleter("warpmanager", warpTabCompleter);
+        setExecutor("setwarp", warpManagerCmd, FeatureManager.Feature.WARPS);
+        setTabCompleter("setwarp", warpTabCompleter);
+        setExecutor("delwarp", warpManagerCmd, FeatureManager.Feature.WARPS);
+        setTabCompleter("delwarp", warpTabCompleter);
 
         PortalManagerCommand portalManagerCmd = new PortalManagerCommand(this);
         PortalTabCompleter portalTabCompleter = new PortalTabCompleter(this);
-        getCommand("portalmanager").setExecutor(portalManagerCmd);
-        getCommand("portalmanager").setTabCompleter(portalTabCompleter);
+        setExecutor("portalmanager", portalManagerCmd, FeatureManager.Feature.PORTALS);
+        setTabCompleter("portalmanager", portalTabCompleter);
 
-        // misc toggles
-        getCommand("nightvision").setExecutor(new NightVisionCommand(this));
-        getCommand("phantom").setExecutor(new PhantomCommand(this));
-        getCommand("findplayer").setExecutor(new FindPlayerCommand(this));
-        getCommand("settings").setExecutor(new SettingsCommand(this));
+        // Misc toggles
+        setExecutor("nightvision", new NightVisionCommand(this), FeatureManager.Feature.NIGHT_VISION);
+        setExecutor("phantom", new PhantomCommand(this), FeatureManager.Feature.PHANTOM);
+        setExecutor("findplayer", new FindPlayerCommand(this), FeatureManager.Feature.FIND_PLAYER);
+        setExecutor("settings", new SettingsCommand(this), FeatureManager.Feature.SETTINGS);
 
-        // social / info
+        // Social / info
         SocialCommand socialCmd = new SocialCommand(this);
-        getCommand("discord").setExecutor(socialCmd);
-        getCommand("twitter").setExecutor(socialCmd);
-        getCommand("store").setExecutor(socialCmd);
-        getCommand("social").setExecutor(socialCmd);
+        setExecutor("discord", socialCmd, FeatureManager.Feature.SOCIAL);
+        setExecutor("twitter", socialCmd, FeatureManager.Feature.SOCIAL);
+        setExecutor("store", socialCmd, FeatureManager.Feature.SOCIAL);
+        setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
 
-        getCommand("rules").setExecutor(new RulesCommand(this));
-        getCommand("help").setExecutor(new HelpCommand(this));
-        getCommand("servers").setExecutor(new ServersCommand(this));
+        setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
+        setExecutor("safety", new SafetyCommand(this), FeatureManager.Feature.SAFETY);
 
-        // billford
-        getCommand("billford").setExecutor(new BillfordCommand(this));
-        getCommand("spawner").setExecutor(new SpawnerCommand(this));
+        FriendsCommand friendsCommand = new FriendsCommand(this);
+        setExecutor("friends", friendsCommand, FeatureManager.Feature.FRIENDS);
+        setExecutor("friend", friendsCommand, FeatureManager.Feature.FRIENDS);
+        setTabCompleter("friends", new FriendsTabCompleter(this));
+        setTabCompleter("friend", new FriendsTabCompleter(this));
+        setExecutor("help", new HelpCommand(this), FeatureManager.Feature.HELP);
+        setExecutor("servers", new ServersCommand(this), FeatureManager.Feature.NETWORK_SERVERS);
 
-        // admin
-        getCommand("clearlag").setExecutor(new ClearLagCommand(this));
-        getCommand("cuboid").setExecutor(new CuboidCommand(this));
+        // Billford
+        setExecutor("billford", new BillfordCommand(this), FeatureManager.Feature.BILLFORD);
+        setExecutor("spawner", new SpawnerCommand(this), FeatureManager.Feature.SPAWNERS);
+        setExecutor("spawnstash", new SpawnStashCommand(this), FeatureManager.Feature.SPAWN_STASH);
+        setExecutor("fakeplayer", new FakePlayerCommand(this), FeatureManager.Feature.STAFF_MODE);
+        HideCommand hideCommand = new HideCommand(this);
+        setExecutor("hide", hideCommand, FeatureManager.Feature.HIDE);
+        setExecutor("disguise", hideCommand, FeatureManager.Feature.HIDE);
+        setTabCompleter("hide", hideCommand);
+        setTabCompleter("disguise", hideCommand);
+
+        // Admin
+        setExecutor("clearlag", new ClearLagCommand(this), FeatureManager.Feature.CLEAR_LAG);
+        setExecutor("cuboid", new CuboidCommand(this), FeatureManager.Feature.CUBOIDS);
         AmethystToolCommand amethystToolCommand = new AmethystToolCommand(this);
-        getCommand("amethysttool").setExecutor(amethystToolCommand);
-        getCommand("amethysttool").setTabCompleter(amethystToolCommand);
-        getCommand("ultimatedonutsmp").setExecutor(new UltimateDonutSmpCommand(this));
+        setExecutor("amethysttool", amethystToolCommand, FeatureManager.Feature.AMETHYST_TOOLS);
+        setTabCompleter("amethysttool", amethystToolCommand);
+        UltimateDonutSmpCommand ultimateDonutSmpCommand = new UltimateDonutSmpCommand(this);
+        setExecutor("ultimatedonutsmp", ultimateDonutSmpCommand);
+        setTabCompleter("ultimatedonutsmp", ultimateDonutSmpCommand);
+        MaintenanceCommand maintenanceCommand = new MaintenanceCommand(this);
+        setExecutor("maintenance", maintenanceCommand, FeatureManager.Feature.MAINTENANCE);
+        setTabCompleter("maintenance", maintenanceCommand);
+        ServerWipeCommand serverWipeCommand = new ServerWipeCommand(this);
+        setExecutor("serverwipe", serverWipeCommand);
+        setTabCompleter("serverwipe", serverWipeCommand);
+
+        AnvilModerationCommand anvilModCommand = new AnvilModerationCommand(this);
+        setExecutor("amod", anvilModCommand);
+        setTabCompleter("amod", anvilModCommand);
+    }
+
+    private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
+        PluginCommand command = getCommand(commandName);
+        if (command == null) {
+            getLogger().warning("Command missing from plugin.yml: " + commandName);
+            return;
+        }
+
+        if (requiredFeatures == null || requiredFeatures.length == 0) {
+            command.setExecutor(executor);
+            return;
+        }
+
+        FeatureCommandExecutor featureExecutor = new FeatureCommandExecutor(this, executor, requiredFeatures);
+        command.setExecutor(featureExecutor);
+        if (executor instanceof TabCompleter) {
+            command.setTabCompleter(featureExecutor);
+        }
+    }
+
+    private void registerGodModeCommand(GodModeCommand executor) {
+        PluginCommand command = getCommand("god");
+        if (command != null) {
+            command.setExecutor(executor);
+            return;
+        }
+
+        if (!executor.registerDynamically()) {
+            getLogger().warning("Command missing from plugin.yml and dynamic registration failed: god");
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void setTabCompleter(String commandName, TabCompleter tabCompleter) {
+        PluginCommand pluginCommand = getCommand(commandName);
+        if (pluginCommand == null) {
+            getLogger().warning("Command missing from plugin.yml: " + commandName);
+            return;
+        }
+        pluginCommand.setTabCompleter((sender, tabCommand, alias, args) -> {
+            if (!isTabCompletionFeatureEnabled(tabCommand.getName())) {
+                return java.util.Collections.emptyList();
+            }
+            var completions = tabCompleter.onTabComplete(sender, tabCommand, alias, args);
+            return completions == null ? java.util.Collections.emptyList() : completions;
+        });
+    }
+
+    private void registerFallbackTabCompleters(TabCompleter tabCompleter) {
+        for (String commandName : getDescription().getCommands().keySet()) {
+            PluginCommand command = getCommand(commandName);
+            if (command == null) {
+                getLogger().warning("Command missing from plugin.yml: " + commandName);
+                continue;
+            }
+            command.setTabCompleter(tabCompleter);
+        }
+    }
+
+    private boolean isTabCompletionFeatureEnabled(String commandName) {
+        if (featureManager == null) {
+            return true;
+        }
+        for (FeatureManager.Feature feature : FeatureManager.featuresForCommand(commandName)) {
+            if (feature != null && !featureManager.isEnabled(feature)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void registerVaultEconomyProvider() {
@@ -492,18 +761,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
                 net.milkbowl.vault.economy.Economy.class,
                 new VaultEconomyHook(this),
                 this,
-                ServicePriority.Highest
-        );
+                ServicePriority.Highest);
         getLogger().info("Vault economy provider registered.");
     }
 
     public void initializeLunarRichPresenceManager() {
-        if (!configManager.getConfig().getBoolean("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", true)) {
+        if (!featureManager.isEnabled(FeatureManager.Feature.LUNAR_RICH_PRESENCE)
+                || !configManager.getConfig().getBoolean("LUNAR-CLIENT.RICH-PRESENCE.ENABLED", true)) {
             return;
         }
 
         if (!isClassAvailable("com.lunarclient.apollo.Apollo")) {
-            getLogger().warning("Lunar Rich Presence is enabled, but the Apollo plugin/api is not installed.");
+            getLogger().warning("Lunar Rich Presence is enabled, but the Apollo plugin/API is not installed.");
             return;
         }
 
@@ -516,7 +785,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     private void initializeLuckPermsTablistRefreshBridge() {
-        if (!isClassAvailable("net.luckperms.api.LuckPermsProvider")) {
+        if (getServer().getPluginManager().getPlugin("LuckPerms") == null
+                && !isClassAvailable("net.luckperms.api.LuckPermsProvider")) {
             return;
         }
 
@@ -525,7 +795,23 @@ public final class UltimateDonutSmp extends JavaPlugin {
             luckPermsTablistRefreshBridge.start();
         } catch (Throwable error) {
             luckPermsTablistRefreshBridge = null;
-            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize LuckPerms tablist refresh bridge.", error);
+            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize LuckPerms tablist refresh bridge.",
+                    error);
+        }
+    }
+
+    private void initializeSkinsRestorerTablistRefreshBridge() {
+        if (!isClassAvailable("net.skinsrestorer.api.SkinsRestorerProvider")) {
+            return;
+        }
+
+        try {
+            skinsRestorerTablistRefreshBridge = new SkinsRestorerTablistRefreshBridge(this);
+            skinsRestorerTablistRefreshBridge.start();
+        } catch (Throwable error) {
+            skinsRestorerTablistRefreshBridge = null;
+            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize SkinsRestorer tablist refresh bridge.",
+                    error);
         }
     }
 
@@ -541,7 +827,13 @@ public final class UltimateDonutSmp extends JavaPlugin {
     // ── Static accessor ───────────────────────────────────────────────────────
 
     public void reloadAllPluginConfigurations() {
+        if (teleportManager != null) {
+            teleportManager.restoreAllRtpChunkThrottles();
+        }
         configManager.reload();
+        languageManager.reload();
+        crashProtectionManager.reload();
+        currencyManager.reload();
         optimizationManager.reload();
         warpManager.loadAll();
         spawnManager.load();
@@ -564,16 +856,26 @@ public final class UltimateDonutSmp extends JavaPlugin {
         staffModeManager.reload();
         invseeManager.reload();
         configManager.reloadSpawners();
+        configManager.reloadSpawnStash();
         configManager.reloadNetwork();
         configManager.reloadDatabase();
         configManager.reloadDiscord();
         spawnerManager.reload();
         antiEspManager.reload();
         antiEspManager.refreshAllPlayers();
+        spawnStashManager.reload();
+        fakePlayerManager.reload();
+        hideManager.reload();
         networkStatusManager.reload();
         networkStaffChatManager.reload();
         networkStaffAlertManager.reload();
         discordWebhookManager.reload();
+        if (maintenanceManager != null) {
+            maintenanceManager.load();
+        }
+        if (anvilModerationManager != null) {
+            anvilModerationManager.load();
+        }
         leaderboardManager.invalidateAll();
         scoreboardManager.updateAll();
         tablistManager.updateAll();
@@ -590,66 +892,301 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
     }
 
-    public static UltimateDonutSmp getInstance() { return instance; }
+    public static UltimateDonutSmp getInstance() {
+        return instance;
+    }
 
-    public NamespacedKey getKey(String key) { return new NamespacedKey(this, key); }
-    public FoliaScheduler getFoliaScheduler() { return foliaScheduler; }
+    public NamespacedKey getKey(String key) {
+        return new NamespacedKey(this, key);
+    }
+
+    public FoliaScheduler getFoliaScheduler() {
+        return foliaScheduler;
+    }
 
     // ── Getters ───────────────────────────────────────────────────────────────
 
-    public ConfigManager      getConfigManager()      { return configManager; }
-    public FeatureManager     getFeatureManager()     { return featureManager; }
-    public DatabaseManager    getDatabaseManager()    { return databaseManager; }
-    public PlayerDataManager  getPlayerDataManager()  { return playerDataManager; }
-    public EconomyManager     getEconomyManager()     { return economyManager; }
-    public ChatManager        getChatManager()        { return chatManager; }
-    public IgnoreManager      getIgnoreManager()      { return ignoreManager; }
-    public PrivateMessageManager getPrivateMessageManager() { return privateMessageManager; }
-    public TeamManager        getTeamManager()        { return teamManager; }
-    public HomeManager        getHomeManager()        { return homeManager; }
-    public BountyManager      getBountyManager()      { return bountyManager; }
-    public WarpManager        getWarpManager()        { return warpManager; }
-    public CuboidManager      getCuboidManager()      { return cuboidManager; }
-    public SpawnManager       getSpawnManager()       { return spawnManager; }
-    public CombatManager      getCombatManager()      { return combatManager; }
-    public FastCrystalManager getFastCrystalManager() { return fastCrystalManager; }
-    public TPAManager         getTPAManager()         { return tpaManager; }
-    public ShardManager       getShardManager()       { return shardManager; }
-    public ClearLagManager    getClearLagManager()    { return clearLagManager; }
-    public CrateManager       getCrateManager()       { return crateManager; }
-    public CrateVisualManager getCrateVisualManager() { return crateVisualManager; }
-    public KeyAllManager      getKeyAllManager()      { return keyAllManager; }
-    public AFKManager         getAFKManager()         { return afkManager; }
-    public HoverStatsManager  getHoverStatsManager()  { return hoverStatsManager; }
-    public WorthManager       getWorthManager()       { return worthManager; }
-    public ShopManager        getShopManager()        { return shopManager; }
-    public OrdersManager      getOrdersManager()      { return ordersManager; }
-    public DuelManager        getDuelManager()        { return duelManager; }
-    public FfaManager         getFfaManager()         { return ffaManager; }
-    public AuctionHouseManager getAuctionHouseManager() { return auctionHouseManager; }
-    public BillfordManager    getBillfordManager()    { return billfordManager; }
-    public LeaderboardManager getLeaderboardManager() { return leaderboardManager; }
-    public ScoreboardManager  getScoreboardManager()  { return scoreboardManager; }
-    public TablistManager     getTablistManager()     { return tablistManager; }
-    public TeleportManager    getTeleportManager()    { return teleportManager; }
-    public RTPManager         getRtpManager()         { return rtpManager; }
-    public RTPZoneManager     getRtpZoneManager()     { return rtpZoneManager; }
-    public PortalManager      getPortalManager()      { return portalManager; }
-    public AmethystToolsManager getAmethystToolsManager() { return amethystToolsManager; }
-    public EnderChestManager  getEnderChestManager()  { return enderChestManager; }
-    public FreezeManager getFreezeManager() { return freezeManager; }
-    public StaffModeManager getStaffModeManager() { return staffModeManager; }
-    public InvseeManager getInvseeManager() { return invseeManager; }
-    public ProfileViewerManager getProfileViewerManager() { return profileViewerManager; }
-    public PunishmentManager getPunishmentManager() { return punishmentManager; }
-    public StatsWipeManager  getStatsWipeManager() { return statsWipeManager; }
-    public SpawnerManager    getSpawnerManager()    { return spawnerManager; }
-    public AntiEspManager    getAntiEspManager()    { return antiEspManager; }
-    public NetworkStatusManager getNetworkStatusManager() { return networkStatusManager; }
-    public RedisManager getRedisManager() { return redisManager; }
-    public NetworkStaffChatManager getNetworkStaffChatManager() { return networkStaffChatManager; }
-    public NetworkStaffAlertManager getNetworkStaffAlertManager() { return networkStaffAlertManager; }
-    public DiscordWebhookManager getDiscordWebhookManager() { return discordWebhookManager; }
-    public LunarRichPresenceManager getLunarRichPresenceManager() { return lunarRichPresenceManager; }
-    public OptimizationManager getOptimizationManager() { return optimizationManager; }
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public LanguageManager getLanguageManager() {
+        return languageManager;
+    }
+
+    public CurrencyManager getCurrencyManager() {
+        return currencyManager;
+    }
+
+    public FeatureManager getFeatureManager() {
+        return featureManager;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public PlayerDataManager getPlayerDataManager() {
+        return playerDataManager;
+    }
+
+    public PlayerVisibilityManager getPlayerVisibilityManager() {
+        return playerVisibilityManager;
+    }
+
+    public ExplosionParticleFilter getExplosionParticleFilter() {
+        return explosionParticleFilter;
+    }
+
+    public EconomyManager getEconomyManager() {
+        return economyManager;
+    }
+
+    public ChatManager getChatManager() {
+        return chatManager;
+    }
+
+    public IgnoreManager getIgnoreManager() {
+        return ignoreManager;
+    }
+
+    public FriendsManager getFriendsManager() {
+        return friendsManager;
+    }
+
+    public PrivateMessageManager getPrivateMessageManager() {
+        return privateMessageManager;
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    public HomeManager getHomeManager() {
+        return homeManager;
+    }
+
+    public BountyManager getBountyManager() {
+        return bountyManager;
+    }
+
+    public WarpManager getWarpManager() {
+        return warpManager;
+    }
+
+    public CuboidManager getCuboidManager() {
+        return cuboidManager;
+    }
+
+    public SpawnManager getSpawnManager() {
+        return spawnManager;
+    }
+
+    public SpawnStashManager getSpawnStashManager() {
+        return spawnStashManager;
+    }
+
+    public FakePlayerManager getFakePlayerManager() {
+        return fakePlayerManager;
+    }
+
+    public HideManager getHideManager() {
+        return hideManager;
+    }
+
+    public CombatManager getCombatManager() {
+        return combatManager;
+    }
+
+    public FastCrystalManager getFastCrystalManager() {
+        return fastCrystalManager;
+    }
+
+    public TPAManager getTPAManager() {
+        return tpaManager;
+    }
+
+    public ShardManager getShardManager() {
+        return shardManager;
+    }
+
+    public ClearLagManager getClearLagManager() {
+        return clearLagManager;
+    }
+
+    public CrateManager getCrateManager() {
+        return crateManager;
+    }
+
+    public CrateVisualManager getCrateVisualManager() {
+        return crateVisualManager;
+    }
+
+    public KeyAllManager getKeyAllManager() {
+        return keyAllManager;
+    }
+
+    public AFKManager getAFKManager() {
+        return afkManager;
+    }
+
+    public HoverStatsManager getHoverStatsManager() {
+        return hoverStatsManager;
+    }
+
+    public WorthManager getWorthManager() {
+        return worthManager;
+    }
+
+    public ShopManager getShopManager() {
+        return shopManager;
+    }
+
+    public OrdersManager getOrdersManager() {
+        return ordersManager;
+    }
+
+    public OrdersBedrockManager getOrdersBedrockManager() {
+        return ordersBedrockManager;
+    }
+
+    public EnchantmentsManager getEnchantmentsManager() {
+        return enchantmentsManager;
+    }
+
+    public FilterManager getFilterManager() {
+        return filterManager;
+    }
+
+    public DuelManager getDuelManager() {
+        return duelManager;
+    }
+
+    public FfaManager getFfaManager() {
+        return ffaManager;
+    }
+
+    public AuctionHouseManager getAuctionHouseManager() {
+        return auctionHouseManager;
+    }
+
+    public BillfordManager getBillfordManager() {
+        return billfordManager;
+    }
+
+    public LeaderboardManager getLeaderboardManager() {
+        return leaderboardManager;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public TablistManager getTablistManager() {
+        return tablistManager;
+    }
+
+    public TeleportManager getTeleportManager() {
+        return teleportManager;
+    }
+
+    public RTPManager getRtpManager() {
+        return rtpManager;
+    }
+
+    public RTPZoneManager getRtpZoneManager() {
+        return rtpZoneManager;
+    }
+
+    public PortalManager getPortalManager() {
+        return portalManager;
+    }
+
+    public AmethystToolsManager getAmethystToolsManager() {
+        return amethystToolsManager;
+    }
+
+    public EnderChestManager getEnderChestManager() {
+        return enderChestManager;
+    }
+
+    public FreezeManager getFreezeManager() {
+        return freezeManager;
+    }
+
+    public GodModeManager getGodModeManager() {
+        return godModeManager;
+    }
+
+    public StaffModeManager getStaffModeManager() {
+        return staffModeManager;
+    }
+
+    public InvseeManager getInvseeManager() {
+        return invseeManager;
+    }
+
+    public ProfileViewerManager getProfileViewerManager() {
+        return profileViewerManager;
+    }
+
+    public PunishmentManager getPunishmentManager() {
+        return punishmentManager;
+    }
+
+    public AnvilModerationManager getAnvilModerationManager() {
+        return anvilModerationManager;
+    }
+
+    public StatsWipeManager getStatsWipeManager() {
+        return statsWipeManager;
+    }
+
+    public ServerWipeManager getServerWipeManager() {
+        return serverWipeManager;
+    }
+
+    public SpawnerManager getSpawnerManager() {
+        return spawnerManager;
+    }
+
+    public AntiEspManager getAntiEspManager() {
+        return antiEspManager;
+    }
+
+    public NetworkStatusManager getNetworkStatusManager() {
+        return networkStatusManager;
+    }
+
+    public RedisManager getRedisManager() {
+        return redisManager;
+    }
+
+    public MaintenanceManager getMaintenanceManager() {
+        return maintenanceManager;
+    }
+
+    public NetworkStaffChatManager getNetworkStaffChatManager() {
+        return networkStaffChatManager;
+    }
+
+    public NetworkStaffAlertManager getNetworkStaffAlertManager() {
+        return networkStaffAlertManager;
+    }
+
+    public DiscordWebhookManager getDiscordWebhookManager() {
+        return discordWebhookManager;
+    }
+
+    public LunarRichPresenceManager getLunarRichPresenceManager() {
+        return lunarRichPresenceManager;
+    }
+
+    public OptimizationManager getOptimizationManager() {
+        return optimizationManager;
+    }
+
+    public CrashProtectionManager getCrashProtectionManager() {
+        return crashProtectionManager;
+    }
 }

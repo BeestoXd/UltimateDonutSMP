@@ -371,7 +371,7 @@ public class PortalManager {
 
     public String describeDestination(PortalDefinition portal) {
         if (portal == null) {
-            return "ᴜɴᴋɴᴏᴡɴ";
+            return "unknown";
         }
 
         if (!DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
@@ -994,7 +994,7 @@ public class PortalManager {
                 warn("Portal '" + portal.id() + "' references missing cuboid '" + portal.cuboidName() + "'.");
             }
             if (!isDestinationUsable(portal)) {
-                warn("Portal '" + portal.id() + "' ʜᴀѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '" + portal.destinationValue() + "'.");
+                warn("Portal '" + portal.id() + "' has unavailable destination '" + portal.destinationValue() + "'.");
             }
         }
     }

@@ -39,7 +39,7 @@ public final class PunishmentRecord {
         this.targetUuid = targetUuid;
         this.targetNameSnapshot = targetNameSnapshot == null ? "" : targetNameSnapshot;
         this.type = type == null ? PunishmentType.WARN : type;
-        this.reason = reason == null || reason.isBlank() ? "ɴᴏ ʀᴇᴀѕᴏɴ ѕᴘᴇᴄɪꜰɪᴇᴅ" : reason;
+        this.reason = reason == null || reason.isBlank() ? "no reason specified" : reason;
         this.issuerUuid = issuerUuid;
         this.issuerNameSnapshot = issuerNameSnapshot == null ? "" : issuerNameSnapshot;
         this.issuedAt = issuedAt;

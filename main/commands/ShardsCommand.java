@@ -62,7 +62,7 @@ public class ShardsCommand implements CommandExecutor {
         }
 
         if (args.length < 2 || (!args[1].equalsIgnoreCase("status") && !args[1].equalsIgnoreCase("debug"))) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴇᴠᴇʀʏᴡʜᴇʀᴇ <status|debug> [player]"));
+            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴇᴠᴇʀʏᴡʜᴇʀᴇ <status|debug> [ᴘʟᴀʏᴇʀ]"));
             return true;
         }
 
@@ -106,7 +106,7 @@ public class ShardsCommand implements CommandExecutor {
         sender.sendMessage(ColorUtils.toComponent("&#A303F9ѕʜᴀʀᴅѕ ᴇᴠᴇʀʏᴡʜᴇʀᴇ &7ꜰᴏʀ &b" + target.getName()));
         sender.sendMessage(ColorUtils.toComponent("&7ᴇɴᴀʙʟᴇᴅ: " + yesNo(shardManager.isEverywhereEnabled())));
         sender.sendMessage(ColorUtils.toComponent("&7ᴇʟɪɢɪʙʟᴇ ɴᴏᴡ: " + eligibilityColor(eligibility) + formatEligibility(eligibility)));
-        sender.sendMessage(ColorUtils.toComponent("&7ʀᴇǫᴜɪʀᴇᴅ ᴘᴇʀᴍɪѕѕɪᴏɴ: &f" + (requiredPermission != null ? requiredPermission : "<ɴᴏɴᴇ>")));
+        sender.sendMessage(ColorUtils.toComponent("&7ʀᴇǫᴜɪʀᴇᴅ ᴘᴇʀᴍɪѕѕɪᴏɴ: &f" + (requiredPermission != null ? requiredPermission : "<none>")));
         sender.sendMessage(ColorUtils.toComponent("&7ʜᴀѕ ᴘᴇʀᴍɪѕѕɪᴏɴ: " + yesNo(hasPermission)));
         sender.sendMessage(ColorUtils.toComponent("&7ᴡᴏʀʟᴅ: &f" + target.getWorld().getName()));
         sender.sendMessage(ColorUtils.toComponent("&7ᴡᴏʀʟᴅ ᴇxᴄʟᴜᴅᴇᴅ: " + yesNo(excludedWorld)));
@@ -121,7 +121,7 @@ public class ShardsCommand implements CommandExecutor {
 
         if (debug) {
             long secondsSinceMovement = plugin.getAFKManager().getSecondsSinceLastMovement(target.getUniqueId());
-            sender.sendMessage(ColorUtils.toComponent("&7ᴍᴏᴠᴇᴍᴇɴᴛ ᴡɪɴᴅᴏᴡ: &f" + shardManager.getEverywhereRecentMovementWindowSeconds() + "s"));
+            sender.sendMessage(ColorUtils.toComponent("&7ᴍᴏᴠᴇᴍᴇɴᴛ ᴡɪɴᴅᴏᴡ: &f" + shardManager.getEverywhereRecentMovementWindowSeconds() + "ѕ"));
             sender.sendMessage(ColorUtils.toComponent("&7ѕᴇᴄᴏɴᴅѕ ѕɪɴᴄᴇ ᴍᴏᴠᴇᴍᴇɴᴛ: &f" + secondsSinceMovement));
             sender.sendMessage(ColorUtils.toComponent("&7ᴄᴜʀʀᴇɴᴛ "
                     + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS)
@@ -137,7 +137,7 @@ public class ShardsCommand implements CommandExecutor {
     }
 
     private String yesNo(boolean value) {
-        return value ? "&aʏᴇѕ" : "&cɴᴏ";
+        return value ? "&ayes" : "&cno";
     }
 
     private String eligibilityColor(ShardManager.EverywhereEligibilityResult result) {
@@ -146,13 +146,13 @@ public class ShardsCommand implements CommandExecutor {
 
     private String formatEligibility(ShardManager.EverywhereEligibilityResult result) {
         return switch (result) {
-            case ELIGIBLE -> "ᴇʟɪɢɪʙʟᴇ";
-            case DISABLED -> "ᴅɪѕᴀʙʟᴇᴅ";
-            case NO_PERMISSION -> "ɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ";
-            case EXCLUDED_WORLD -> "ᴇxᴄʟᴜᴅᴇᴅ ᴡᴏʀʟᴅ";
-            case AFK -> "ᴀꜰᴋ";
-            case NO_RECENT_MOVEMENT -> "ɴᴏ ʀᴇᴄᴇɴᴛ ᴍᴏᴠᴇᴍᴇɴᴛ";
-            case IN_SHARD_CUBOID -> "ɪɴ ѕʜᴀʀᴅ ᴄᴜʙᴏɪᴅ";
+            case ELIGIBLE -> "eligible";
+            case DISABLED -> "disabled";
+            case NO_PERMISSION -> "no permission";
+            case EXCLUDED_WORLD -> "excluded world";
+            case AFK -> "afk";
+            case NO_RECENT_MOVEMENT -> "no recent movement";
+            case IN_SHARD_CUBOID -> "in shard cuboid";
         };
     }
 }

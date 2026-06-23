@@ -22,7 +22,7 @@ public class TpaConfirmMenu extends BaseMenu {
                 plugin,
                 plugin.getConfigManager().getMenus()
                         .getString("TPA-CONFIRM-MENU.TITLE", "&8ᴄᴏɴꜰɪʀᴍ ᴛᴘᴀ {here}")
-                        .replace("{here}", tpaHere ? "Here" : ""),
+                        .replace("{here}", tpaHere ? "ʜᴇʀᴇ" : ""),
                 plugin.getConfigManager().getMenus().getInt("TPA-CONFIRM-MENU.SIZE", 27)
         );
         this.requesterName = requesterName;
@@ -54,11 +54,11 @@ public class TpaConfirmMenu extends BaseMenu {
         player.closeInventory();
 
         if (slot == 11) {
-            player.performCommand("tpadeny " + requesterName);
+            player.performCommand("ᴛᴘᴀᴅᴇɴʏ " + requesterName);
             return;
         }
 
-        player.performCommand("tpaccept " + requesterName);
+        player.performCommand("ᴛᴘᴀᴄᴄᴇᴘᴛ " + requesterName);
     }
 
     private ItemStack createRequesterItem(List<String> lore) {

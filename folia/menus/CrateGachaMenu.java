@@ -60,7 +60,7 @@ public class CrateGachaMenu extends BaseMenu {
 
     @Override
     public void handleClick(int slot, Player player, ClickType clickType) {
-        // gacha menu is view-only while spinning.
+        // Gacha menu is view-only while spinning.
     }
 
     @Override

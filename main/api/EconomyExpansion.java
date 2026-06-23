@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * Supported:
  *   %economy_money%                raw money
  *   %economy_nicestMoney%          compact money amount (1,5K, 2,3M, ...)
+ *   %economy_money_short%          compact money amount
  *   %economy_money_formatted%      configured money display
  *   %economy_money_symbol%         configured money symbol
  *   %economy_money_symbol_color%   configured money symbol color
@@ -25,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
  *   %economy_top_money_1_value_short% compact leaderboard value for rank 1
  *   %economy_top_money_1_display%  ready-to-render leaderboard line for rank 1
  *   %economy_shards%               shard count
+ *   %economy_nicestShards%         compact shard count
+ *   %economy_shards_short%         compact shard count
  *   %economy_shards_formatted%     configured shard display
  *   %economy_shards_symbol%        configured shard symbol
  *   %economy_shards_symbol_color%  configured shard symbol color
@@ -33,11 +36,11 @@ import org.jetbrains.annotations.Nullable;
  *   %economy_kills%                kill count
  *   %economy_deaths%               death count
  *   %economy_playtime%             formatted playtime
- *   %economy_team%                 team name (or "ɴᴏɴᴇ")
+ *   %economy_team%                 team name (or "none")
  *   %economy_ping%                 player ping in ms
  *   %economy_username%             player name
  *   %economy_keyall_countdown%     time until next key-all
- *   %economy_booster_countdown%    time until booster expires (or "ɪɴᴀᴄᴛɪᴠᴇ")
+ *   %economy_booster_countdown%    time until booster expires (or "inactive")
  *   %economy_shard_cuboid_display% shard cuboid HUD text for scoreboard/action info
  *   %economy_shard_cuboid_status%  current shard cuboid state
  *   %economy_shard_cuboid_name%    active shard cuboid name
@@ -80,9 +83,9 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         // Booster countdown (needs uuid)
         if (params.equals("booster_countdown")) {
-            if (!offlinePlayer.isOnline()) return "ɪɴᴀᴄᴛɪᴠᴇ";
+            if (!offlinePlayer.isOnline()) return "inactive";
             long secs = plugin.getShardManager().getBoosterRemainingSeconds(offlinePlayer.getUniqueId());
-            return secs > 0 ? NumberUtils.formatCountdown(secs) : "ɪɴᴀᴄᴛɪᴠᴇ";
+            return secs > 0 ? NumberUtils.formatCountdown(secs) : "inactive";
         }
 
         if (params.equals("shard_cuboid_display")) {
@@ -91,12 +94,12 @@ public class EconomyExpansion extends PlaceholderExpansion {
         }
 
         if (params.equals("shard_cuboid_status")) {
-            if (!offlinePlayer.isOnline()) return "ᴏᴜᴛѕɪᴅᴇ";
+            if (!offlinePlayer.isOnline()) return "outside";
             return plugin.getShardManager().getShardCuboidStatus(offlinePlayer.getUniqueId());
         }
 
         if (params.equals("shard_cuboid_name")) {
-            if (!offlinePlayer.isOnline()) return "ɴᴏɴᴇ";
+            if (!offlinePlayer.isOnline()) return "none";
             return plugin.getShardManager().getShardCuboidName(offlinePlayer.getUniqueId());
         }
 
@@ -108,7 +111,9 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         // Username
         if (params.equals("username")) {
-            return offlinePlayer.getName() != null ? offlinePlayer.getName() : "ᴜɴᴋɴᴏᴡɴ";
+            return plugin.getHideManager() == null
+                    ? (offlinePlayer.getName() != null ? offlinePlayer.getName() : "unknown")
+                    : plugin.getHideManager().publicName(offlinePlayer.getUniqueId(), offlinePlayer.getName());
         }
 
         CurrencyManager currencyManager = plugin.getCurrencyManager();
@@ -154,7 +159,7 @@ public class EconomyExpansion extends PlaceholderExpansion {
             String team = offlinePlayer.isOnline()
                     ? plugin.getTeamManager().getTeamName(offlinePlayer.getPlayer())
                     : null;
-            return team != null ? team.toUpperCase() : "ɴᴏɴᴇ";
+            return team != null ? team.toUpperCase() : "none";
         }
 
         // All others require player data
@@ -164,8 +169,12 @@ public class EconomyExpansion extends PlaceholderExpansion {
         }
         if (data == null) {
             return switch (params) {
+                case "nicestMoney", "money_short", "money_amount_short" ->
+                        currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, 0D);
                 case "money_formatted" -> currencyManager.formatMoney(0D);
                 case "money_short_formatted", "nicestMoney_formatted" -> currencyManager.formatMoneyCompact(0D);
+                case "nicestShards", "shards_short", "shards_amount_short" ->
+                        currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, 0D);
                 case "shards_formatted" -> currencyManager.formatShards(0L);
                 case "shards_short_formatted" -> currencyManager.formatShardsCompact(0L);
                 default -> "0";
@@ -174,10 +183,13 @@ public class EconomyExpansion extends PlaceholderExpansion {
 
         return switch (params) {
             case "money" -> NumberUtils.format(data.getMoney());
-            case "nicestMoney" -> currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, data.getMoney());
+            case "nicestMoney", "money_short", "money_amount_short" ->
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, data.getMoney());
             case "money_formatted" -> currencyManager.formatMoney(data.getMoney());
             case "money_short_formatted", "nicestMoney_formatted" -> currencyManager.formatMoneyCompact(data.getMoney());
             case "shards" -> String.valueOf(data.getShards());
+            case "nicestShards", "shards_short", "shards_amount_short" ->
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, data.getShards());
             case "shards_formatted" -> currencyManager.formatShards(data.getShards());
             case "shards_short_formatted" -> currencyManager.formatShardsCompact(data.getShards());
             case "kills" -> String.valueOf(data.getKills());

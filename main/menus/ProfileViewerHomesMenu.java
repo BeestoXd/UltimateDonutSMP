@@ -268,7 +268,7 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         }
 
         Location location = home.getLocation();
-        String world = "ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ";
+        String world = "unavailable";
         int x = 0;
         int y = 0;
         int z = 0;
@@ -283,7 +283,7 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         }
 
         return value
-                .replace("{username}", snapshot == null ? "ᴜɴᴋɴᴏᴡɴ" : snapshot.getUsername())
+                .replace("{username}", snapshot == null ? "unknown" : snapshot.getUsername())
                 .replace("{name}", home.getName())
                 .replace("{world}", world)
                 .replace("{x}", String.valueOf(x))
@@ -301,14 +301,14 @@ public class ProfileViewerHomesMenu extends BaseMenu {
 
     private String friendlyWorldName(Location location) {
         if (location == null || location.getWorld() == null) {
-            return "ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ";
+            return "unavailable";
         }
 
         World.Environment environment = location.getWorld().getEnvironment();
         return switch (environment) {
-            case NETHER -> "ɴᴇᴛʜᴇʀ";
-            case THE_END -> "ᴇɴᴅ";
-            default -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
+            case NETHER -> "nether";
+            case THE_END -> "end";
+            default -> "overworld";
         };
     }
 
@@ -324,7 +324,7 @@ public class ProfileViewerHomesMenu extends BaseMenu {
         String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8{username}'ѕ ʜᴏᴍᴇѕ");
         String username = plugin.getProfileViewerManager().resolveProfile(uuid)
                 .map(ProfileSnapshot::getUsername)
-                .orElse("ᴜɴᴋɴᴏᴡɴ");
+                .orElse("unknown");
         return template.replace("{username}", username);
     }
 

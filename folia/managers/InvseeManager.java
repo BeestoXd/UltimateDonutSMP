@@ -69,7 +69,8 @@ public class InvseeManager {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean("INVSEE.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.INVSEE)
+                && getConfig().getBoolean("INVSEE.ENABLED", true);
     }
 
     public boolean requiresOnlineTarget() {
@@ -97,15 +98,15 @@ public class InvseeManager {
     }
 
     public String getViewPermission() {
-        return getConfig().getString("INVSEE.VIEW-PERMISSION", "ultimatedonutsmp.staff.invsee");
+        return getConfig().getString("INVSEE.VIEW-PERMISSION", "ULTIMATEDONUTSMP.STAFF.INVSEE");
     }
 
     public String getModifyPermission() {
-        return getConfig().getString("INVSEE.MODIFY-PERMISSION", "ultimatedonutsmp.staff.invsee.modify");
+        return getConfig().getString("INVSEE.MODIFY-PERMISSION", "ULTIMATEDONUTSMP.STAFF.INVSEE.MODIFY");
     }
 
     public String getAdminPermission() {
-        return getConfig().getString("INVSEE.ADMIN-PERMISSION", "ultimatedonutsmp.admin.invsee");
+        return getConfig().getString("INVSEE.ADMIN-PERMISSION", "ULTIMATEDONUTSMP.ADMIN.INVSEE");
     }
 
     public boolean canView(Player viewer) {
@@ -300,13 +301,13 @@ public class InvseeManager {
                     "&eʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ʙᴇɪɴɢ ᴠɪᴇᴡᴇᴅ ʙʏ ѕᴛᴀꜰꜰ.",
                     "{viewer}", viewer.getName(),
                     "{player}", viewer.getName(),
-                    "{mode}", editable ? "editable" : "read-only"
+                    "{mode}", editable ? "ᴇᴅɪᴛᴀʙʟᴇ" : "ʀᴇᴀᴅ-ᴏɴʟʏ"
             )));
         }
 
         if (shouldLogUsage()) {
             plugin.getLogger().info(
-                    "Invsee opened: viewer=" + viewer.getName()
+                    "invsee opened: viewer=" + viewer.getName()
                             + " target=" + target.getName()
                             + " mode=" + (editable ? "editable" : "read-only")
             );
@@ -498,21 +499,21 @@ public class InvseeManager {
         String targetName = target == null ? session.getTargetName() : target.getName();
 
         List<String> lore = new ArrayList<>();
-        lore.add("&7ѕᴛᴀᴛᴜѕ: &f" + (session.isFrozen() ? "Frozen Snapshot" : "Live"));
-        lore.add("&7ᴘʟᴀʏᴇʀ: &f" + targetName);
-        lore.add("&7ᴡᴏʀʟᴅ: &f" + (target == null ? "Offline" : target.getWorld().getName()));
+        lore.add("&7status: &f" + (session.isFrozen() ? "frozen snapshot" : "Live"));
+        lore.add("&7player: &f" + targetName);
+        lore.add("&7world: &f" + (target == null ? "Offline" : target.getWorld().getName()));
         if (target != null) {
-            lore.add("&7ᴄᴏᴏʀᴅѕ: &f" + target.getLocation().getBlockX()
+            lore.add("&7coords: &f" + target.getLocation().getBlockX()
                     + ", " + target.getLocation().getBlockY()
                     + ", " + target.getLocation().getBlockZ());
         } else {
-            lore.add("&7ᴄᴏᴏʀᴅѕ: &fᴜɴᴀᴠᴀɪʟᴀʙʟᴇ");
+            lore.add("&7coords: &funavailable");
         }
-        lore.add("&7ᴍᴏᴅᴇ: &f" + (session.isEditable() && !session.isFrozen() ? "Editable" : "Read Only"));
+        lore.add("&7mode: &f" + (session.isEditable() && !session.isFrozen() ? "Editable" : "read only"));
 
         return ItemUtils.createPlayerHead(
                 offlinePlayer,
-                "&6ɪɴᴠᴇɴᴛᴏʀʏ ᴏꜰ &f" + targetName,
+                "&6inventory of &f" + targetName,
                 lore
         );
     }
@@ -524,8 +525,8 @@ public class InvseeManager {
                 ? (editable ? Material.ORANGE_DYE : Material.LIME_DYE)
                 : Material.GRAY_DYE;
         String name = live
-                ? (editable ? "&6ʟɪᴠᴇ ᴇᴅɪᴛ" : "&aʟɪᴠᴇ ѕʏɴᴄ")
-                : "&7ꜰʀᴏᴢᴇɴ ѕɴᴀᴘѕʜᴏᴛ";
+                ? (editable ? "&6live edit" : "&alive sync")
+                : "&7frozen snapshot";
         List<String> lore = live
                 ? editable
                 ? List.of(
@@ -611,7 +612,7 @@ public class InvseeManager {
 
         if (shouldLogUsage()) {
             plugin.getLogger().info(
-                    "Invsee frozen: viewer=" + session.getViewerUuid()
+                    "invsee frozen: viewer=" + session.getViewerUuid()
                             + " target=" + session.getTargetName()
             );
         }
@@ -835,7 +836,7 @@ public class InvseeManager {
     }
 
     private String buildTitle(String targetName) {
-        String template = getConfig().getString("INVSEE.TITLE", "&8ɪɴᴠᴇɴᴛᴏʀʏ ᴏꜰ {player}");
+        String template = getConfig().getString("INVSEE.TITLE", "&8inventory of {player}");
         return template
                 .replace("{player}", targetName)
                 .replace("{target}", targetName);

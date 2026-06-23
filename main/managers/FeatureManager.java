@@ -16,61 +16,66 @@ public class FeatureManager {
     private static final String ROOT = "FEATURES";
 
     public enum Feature {
-        CHAT("CHAT", "ᴄʜᴀᴛ", "ɢʟᴏʙᴀʟ ᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅѕ ᴀɴᴅ ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ᴄᴏɴᴛʀᴏʟѕ.", "WRITABLE_BOOK", "CHAT"),
-        IGNORE("IGNORE", "ɪɢɴᴏʀᴇ", "ᴘʟᴀʏᴇʀ ɪɢɴᴏʀᴇ ᴀɴᴅ ᴜɴɪɢɴᴏʀᴇ ᴄᴏᴍᴍᴀɴᴅѕ.", "BARRIER", "IGNORE"),
-        MESSAGING("MESSAGING", "ᴍᴇѕѕᴀɢɪɴɢ", "ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ, ʀᴇᴘʟɪᴇѕ, ᴀɴᴅ ᴘᴍ ᴛᴏɢɢʟᴇѕ.", "PAPER", "MESSAGE"),
-        BOUNTY("BOUNTY", "ʙᴏᴜɴᴛʏ", "ʙᴏᴜɴᴛʏ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ᴍᴇɴᴜѕ.", "TARGET", "BOUNTY"),
-        CUBOIDS("CUBOIDS", "ᴄᴜʙᴏɪᴅѕ", "ᴄᴜʙᴏɪᴅ ʀᴇɢɪᴏɴ ᴍᴀɴᴀɢᴇᴍᴇɴᴛ ᴀɴᴅ ʙᴏᴜɴᴅ ʀᴇɢɪᴏɴ ʜᴇʟᴘᴇʀѕ.", "WOODEN_AXE", "CUBOID"),
-        AFK("AFK", "ᴀꜰᴋ", "ᴀꜰᴋ ᴄᴏᴍᴍᴀɴᴅ, ᴍᴇɴᴜѕ, ᴀɴᴅ ᴀꜰᴋ ᴍᴏᴠᴇᴍᴇɴᴛ ᴛᴀѕᴋ.", "CLOCK", "AFK"),
-        SHARDS("SHARDS", "ѕʜᴀʀᴅѕ", "ѕʜᴀʀᴅ ʙᴀʟᴀɴᴄᴇѕ, ѕʜᴀʀᴅ ᴘᴀʏ, ᴘᴀѕѕɪᴠᴇ ʀᴇᴡᴀʀᴅѕ, ᴀɴᴅ ѕʜᴀʀᴅ ᴄᴜʙᴏɪᴅѕ.", "AMETHYST_SHARD", "SHARDS"),
-        WARPS("WARPS", "ᴡᴀʀᴘѕ", "ᴡᴀʀᴘ ᴄᴏᴍᴍᴀɴᴅѕ ᴀɴᴅ ᴡᴀʀᴘ ᴍᴀɴᴀɢᴇʀ ᴄᴏᴍᴍᴀɴᴅѕ.", "ENDER_PEARL", "WARP"),
-        TEAMS("TEAMS", "ᴛᴇᴀᴍѕ", "ᴛᴇᴀᴍ ᴄᴏᴍᴍᴀɴᴅ, ᴛᴇᴀᴍ ʜᴏᴍᴇѕ, ᴀɴᴅ ᴛᴇᴀᴍ ᴍᴇɴᴜѕ.", "IRON_HELMET", "TEAM"),
-        BILLFORD("BILLFORD", "ʙɪʟʟꜰᴏʀᴅ", "ʙɪʟʟꜰᴏʀᴅ ᴛʀᴀᴅᴇ ᴍᴇɴᴜ ᴀɴᴅ ʀᴏᴛᴀᴛɪᴏɴ ᴛᴀѕᴋ.", "EMERALD", "BILLFORD"),
-        HOMES("HOMES", "ʜᴏᴍᴇѕ", "ʜᴏᴍᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴀɴᴅ ʜᴏᴍᴇ ᴍᴇɴᴜ.", "LIGHT_BLUE_BED", "HOME"),
-        LEADERBOARDS("LEADERBOARDS", "ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ", "ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴄᴏᴍᴍᴀɴᴅѕ ᴀɴᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴍᴇɴᴜѕ.", "GOLD_INGOT", "LEADERBOARDS"),
-        NIGHT_VISION("NIGHT_VISION", "ɴɪɢʜᴛ ᴠɪѕɪᴏɴ", "ɴɪɢʜᴛ ᴠɪѕɪᴏɴ ᴘʟᴀʏᴇʀ ᴛᴏɢɢʟᴇ ᴄᴏᴍᴍᴀɴᴅ.", "GOLDEN_CARROT", "NIGHT-VISION"),
-        PHANTOM("PHANTOM", "ᴘʜᴀɴᴛᴏᴍ ᴛᴏɢɢʟᴇ", "ᴘʜᴀɴᴛᴏᴍ ѕᴘᴀᴡɴɪɴɢ ᴛᴏɢɢʟᴇ ᴄᴏᴍᴍᴀɴᴅ.", "PHANTOM_MEMBRANE", "PHANTOM"),
-        RTP("RTP", "ʀᴛᴘ", "ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ʀᴛᴘ ᴍᴇɴᴜ.", "COMPASS", "RTP"),
-        RTP_ZONE("RTP_ZONE", "ʀᴛᴘ ᴢᴏɴᴇ", "ᴄᴜʙᴏɪᴅ-ᴛʀɪɢɢᴇʀᴇᴅ ʀᴛᴘ ᴄᴏᴜɴᴛᴅᴏᴡɴ ᴢᴏɴᴇ.", "ENDER_EYE", null),
-        SELL("SELL", "ѕᴇʟʟ", "ѕᴇʟʟ ᴄᴏᴍᴍᴀɴᴅѕ ᴀɴᴅ ѕᴇʟʟ ᴍᴇɴᴜѕ.", "HOPPER", "SELL"),
-        WORTH("WORTH", "ᴡᴏʀᴛʜ", "ᴡᴏʀᴛʜ ʙʀᴏᴡѕᴇʀ ᴀɴᴅ ᴡᴏʀᴛʜ ᴅɪѕᴘʟᴀʏ ʜᴇʟᴘᴇʀѕ.", "EMERALD", "SELL"),
-        SETTINGS("SETTINGS", "ѕᴇᴛᴛɪɴɢѕ", "ᴘʟᴀʏᴇʀ ѕᴇᴛᴛɪɴɢѕ ᴍᴇɴᴜ.", "COMPARATOR", "SETTINGS"),
-        SHOP("SHOP", "ѕʜᴏᴘ", "ѕʜᴏᴘ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ᴘᴜʀᴄʜᴀѕᴇ ᴍᴇɴᴜѕ.", "CHEST", "SHOP"),
-        ENDER_CHEST("ENDER_CHEST", "ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ", "ᴄᴜѕᴛᴏᴍ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ʟɪѕᴛᴇɴᴇʀ.", "ENDER_CHEST", "ENDERCHEST"),
-        GAMEMODE("GAMEMODE", "ɢᴀᴍᴇᴍᴏᴅᴇ", "ѕᴛᴀꜰꜰ ɢᴀᴍᴇᴍᴏᴅᴇ ᴄᴏᴍᴍᴀɴᴅѕ.", "GRASS_BLOCK", "GAMEMODE"),
-        SOCIAL("SOCIAL", "ѕᴏᴄɪᴀʟ", "ᴅɪѕᴄᴏʀᴅ, ᴛᴡɪᴛᴛᴇʀ/x, ѕᴛᴏʀᴇ, ᴀɴᴅ ᴍᴇᴅɪᴀ ᴄᴏᴍᴍᴀɴᴅѕ.", "BOOK", "SOCIAL"),
-        SPAWN("SPAWN", "ѕᴘᴀᴡɴ", "ѕᴘᴀᴡɴ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ѕᴘᴀᴡɴ ᴍᴇɴᴜ.", "BEACON", "SPAWN"),
-        STATS("STATS", "ѕᴛᴀᴛѕ", "ѕᴛᴀᴛѕ, ᴘɪɴɢ, ᴀɴᴅ ᴘʟᴀʏᴛɪᴍᴇ ᴄᴏᴍᴍᴀɴᴅѕ.", "PLAYER_HEAD", "STATS"),
-        TPA("TPA", "ᴛᴘᴀ", "ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ᴄᴏᴍᴍᴀɴᴅѕ ᴀɴᴅ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜ.", "ENDER_PEARL", "TPA"),
-        TPA_AUTO("TPA_AUTO", "ᴛᴘᴀ ᴀᴜᴛᴏ", "ᴛᴘᴀ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ ᴄᴏᴍᴍᴀɴᴅѕ.", "REDSTONE_TORCH", "TPAUTO"),
-        FIND_PLAYER("FIND_PLAYER", "ꜰɪɴᴅ ᴘʟᴀʏᴇʀ", "ѕᴛᴀꜰꜰ ꜰɪɴᴅ ᴘʟᴀʏᴇʀ ᴄᴏᴍᴍᴀɴᴅ.", "SPYGLASS", "FINDPLAYER"),
-        CRATES("CRATES", "ᴄʀᴀᴛᴇѕ", "ᴄʀᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅѕ, ᴍᴇɴᴜѕ, ᴋᴇʏ-ᴀʟʟ, ᴀɴᴅ ᴠɪѕᴜᴀʟ ᴇꜰꜰᴇᴄᴛѕ.", "TRIPWIRE_HOOK", "CRATE"),
-        RULES("RULES", "ʀᴜʟᴇѕ", "ʀᴜʟᴇѕ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ʀᴜʟᴇѕ ᴍᴇɴᴜ.", "BOOKSHELF", "RULES"),
-        HELP("HELP", "ʜᴇʟᴘ", "ʜᴇʟᴘ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ѕᴇʀᴠᴇʀ ɪɴꜰᴏ ᴍᴇɴᴜ.", "KNOWLEDGE_BOOK", "HELP"),
-        NETWORK_SERVERS("NETWORK_SERVERS", "ɴᴇᴛᴡᴏʀᴋ ѕᴇʀᴠᴇʀѕ", "ɴᴇᴛᴡᴏʀᴋ ѕᴇʀᴠᴇʀ ѕᴛᴀᴛᴜѕ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ᴍᴇɴᴜ.", "NETHER_STAR", "SERVERS"),
-        SCOREBOARD("SCOREBOARD", "ѕᴄᴏʀᴇʙᴏᴀʀᴅ", "ѕɪᴅᴇʙᴀʀ ѕᴄᴏʀᴇʙᴏᴀʀᴅ ᴛᴀѕᴋ ᴀɴᴅ ᴅɪѕᴘʟᴀʏ.", "MAP", null),
-        TABLIST("TABLIST", "ᴛᴀʙʟɪѕᴛ", "ᴛᴀʙʟɪѕᴛ ʜᴇᴀᴅᴇʀ, ꜰᴏᴏᴛᴇʀ, ᴀɴᴅ ᴘʟᴀʏᴇʀ ʟɪѕᴛ ɴᴀᴍᴇѕ.", "NAME_TAG", null),
-        AUCTION_HOUSE("AUCTION_HOUSE", "ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ", "ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴍᴍᴀɴᴅѕ, ʟɪѕᴛɪɴɢѕ, ᴄʟᴀɪᴍѕ, ᴀɴᴅ ᴇxᴘɪʀʏ ᴛᴀѕᴋ.", "GOLD_INGOT", null),
-        ORDERS("ORDERS", "ᴏʀᴅᴇʀѕ", "ᴏʀᴅᴇʀѕ ʙᴏᴀʀᴅ ᴄᴏᴍᴍᴀɴᴅѕ, ᴍᴇɴᴜѕ, ᴀɴᴅ ᴇxᴘɪʀʏ ᴛᴀѕᴋ.", "WRITABLE_BOOK", null),
-        DUELS("DUELS", "ᴅᴜᴇʟѕ", "ᴅᴜᴇʟ ᴄᴏᴍᴍᴀɴᴅѕ, ǫᴜᴇᴜᴇѕ, ᴀʀᴇɴᴀѕ, ᴍᴀᴛᴄʜᴇѕ, ᴀɴᴅ ᴛᴀѕᴋѕ.", "DIAMOND_SWORD", null),
-        FFA("FFA", "ꜰꜰᴀ", "ꜰꜰᴀ ᴄᴏᴍᴍᴀɴᴅѕ, ᴀʀᴇɴᴀѕ, ᴍᴀᴛᴄʜᴇѕ, ᴀɴᴅ ᴛᴀѕᴋѕ.", "IRON_SWORD", null),
-        STAFF_MODE("STAFF_MODE", "ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ", "ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴄᴏᴍᴍᴀɴᴅ, ʜᴏᴛʙᴀʀ, ᴠᴀɴɪѕʜ, ᴀɴᴅ ѕᴛᴀꜰꜰ ᴛᴏᴏʟѕ.", "NETHERITE_CHESTPLATE", null),
-        STAFF_CHAT("STAFF_CHAT", "ѕᴛᴀꜰꜰ ᴄʜᴀᴛ", "ѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ.", "ECHO_SHARD", null),
-        STAFF_ALERTS("STAFF_ALERTS", "ѕᴛᴀꜰꜰ ᴀʟᴇʀᴛѕ", "ʜᴇʟᴘᴏᴘ, ʀᴇᴘᴏʀᴛѕ, ᴀɴᴅ ɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴀʟᴇʀᴛѕ.", "BELL", null),
-        FREEZE("FREEZE", "ꜰʀᴇᴇᴢᴇ", "ꜰʀᴇᴇᴢᴇ ᴄᴏᴍᴍᴀɴᴅ, ʟɪѕᴛᴇɴᴇʀѕ, ᴀɴᴅ ꜰʀᴇᴇᴢᴇ ѕᴛᴀᴛᴇ ᴇɴꜰᴏʀᴄᴇᴍᴇɴᴛ.", "PACKED_ICE", null),
-        INVSEE("INVSEE", "ɪɴᴠѕᴇᴇ", "ɪɴᴠᴇɴᴛᴏʀʏ ɪɴѕᴘᴇᴄᴛɪᴏɴ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ѕᴇѕѕɪᴏɴѕ.", "CHEST_MINECART", null),
-        PROFILE_VIEWER("PROFILE_VIEWER", "ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ", "ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ʜᴏᴍᴇѕ ʙʀᴏᴡѕᴇʀ.", "PLAYER_HEAD", null),
-        PUNISHMENTS("PUNISHMENTS", "ᴘᴜɴɪѕʜᴍᴇɴᴛѕ", "ᴘᴜɴɪѕʜᴍᴇɴᴛ ᴄᴏᴍᴍᴀɴᴅѕ, ᴀʟɪᴀѕᴇѕ, ᴀɴᴅ ʜɪѕᴛᴏʀʏ ᴍᴇɴᴜѕ.", "IRON_AXE", null),
-        SPAWNERS("SPAWNERS", "ѕᴘᴀᴡɴᴇʀѕ", "ᴍᴀɴᴀɢᴇᴅ ѕᴘᴀᴡɴᴇʀ ᴄᴏᴍᴍᴀɴᴅѕ, ʟɪѕᴛᴇɴᴇʀѕ, ᴠɪѕɪʙɪʟɪᴛʏ, ᴀɴᴅ ɢᴇɴᴇʀᴀᴛɪᴏɴ.", "SPAWNER", null),
-        CLEAR_LAG("CLEAR_LAG", "ᴄʟᴇᴀʀʟᴀɢ", "ᴄʟᴇᴀʀʟᴀɢ ᴄᴏᴍᴍᴀɴᴅ ᴀɴᴅ ᴄʟᴇᴀɴᴜᴘ ᴛᴀѕᴋ.", "LAVA_BUCKET", null),
-        PORTALS("PORTALS", "ᴘᴏʀᴛᴀʟѕ", "ᴘᴏʀᴛᴀʟ ᴛʀɪɢɢᴇʀѕ, ᴍᴀɴᴀɢᴇʀ ᴄᴏᴍᴍᴀɴᴅ, ᴀɴᴅ ᴘᴏʀᴛᴀʟ ʜᴏʟᴏɢʀᴀᴍѕ.", "END_PORTAL_FRAME", null),
-        AMETHYST_TOOLS("AMETHYST_TOOLS", "ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟѕ", "ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ ᴄᴏᴍᴍᴀɴᴅ, ʟɪѕᴛᴇɴᴇʀ, ᴀɴᴅ ᴇxᴘɪʀʏ ᴛᴀѕᴋ.", "AMETHYST_SHARD", null),
-        COMBAT("COMBAT", "ᴄᴏᴍʙᴀᴛ", "ᴄᴏᴍʙᴀᴛ ᴛᴀɢɢɪɴɢ ʟɪѕᴛᴇɴᴇʀ ᴀɴᴅ ᴄᴏᴍᴍᴀɴᴅ ʙʟᴏᴄᴋɪɴɢ.", "SHIELD", null),
-        FAST_CRYSTALS("FAST_CRYSTALS", "ꜰᴀѕᴛ ᴄʀʏѕᴛᴀʟѕ", "ꜰᴀѕᴛ ᴄʀʏѕᴛᴀʟ ᴘʟᴀᴄᴇᴍᴇɴᴛ/ʙʀᴇᴀᴋɪɴɢ ʙᴇʜᴀᴠɪᴏʀ.", "END_CRYSTAL", null),
-        KEY_ALL("KEY_ALL", "ᴋᴇʏ-ᴀʟʟ", "ᴀᴜᴛᴏᴍᴀᴛɪᴄ ᴄʀᴀᴛᴇ ᴋᴇʏ-ᴀʟʟ ʀᴇᴡᴀʀᴅѕ.", "TRIPWIRE_HOOK", null),
-        LUNAR_RICH_PRESENCE("LUNAR_RICH_PRESENCE", "ʟᴜɴᴀʀ ʀɪᴄʜ ᴘʀᴇѕᴇɴᴄᴇ", "ʟᴜɴᴀʀ ᴄʟɪᴇɴᴛ ʀɪᴄʜ ᴘʀᴇѕᴇɴᴄᴇ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ.", "ENDER_EYE", null),
-        LUNAR_TEAM_VIEW("LUNAR_TEAM_VIEW", "ʟᴜɴᴀʀ ᴛᴇᴀᴍ ᴠɪᴇᴡ", "ʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇ ᴏᴠᴇʀʟᴀʏ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ.", "LEATHER_HELMET", null),
-        OPTIMIZATION("OPTIMIZATION", "ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ", "ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴍɪᴢᴀᴛɪᴏɴ ᴍᴏɴɪᴛᴏʀ ᴀɴᴅ ᴀᴅᴀᴘᴛɪᴠᴇ ᴛᴀѕᴋ ѕᴋɪᴘᴘɪɴɢ.", "REDSTONE", null);
+        CHAT("CHAT", "chat", "global chat commands and moderation controls.", "WRITABLE_BOOK", "CHAT"),
+        IGNORE("IGNORE", "ignore", "player ignore and unignore commands.", "BARRIER", "IGNORE"),
+        MESSAGING("MESSAGING", "messaging", "private messages, replies, and pm toggles.", "PAPER", "MESSAGE"),
+        BOUNTY("BOUNTY", "bounty", "bounty command and menus.", "TARGET", "BOUNTY"),
+        CUBOIDS("CUBOIDS", "cuboids", "cuboid region management and bound region helpers.", "WOODEN_AXE", "CUBOID"),
+        AFK("AFK", "afk", "afk command, menus, and afk movement task.", "CLOCK", "AFK"),
+        SHARDS("SHARDS", "shards", "shard balances, shard pay, passive rewards, and shard cuboids.", "AMETHYST_SHARD", "SHARDS"),
+        WARPS("WARPS", "warps", "warp commands and warp manager commands.", "ENDER_PEARL", "WARP"),
+        TEAMS("TEAMS", "teams", "team command, team homes, and team menus.", "IRON_HELMET", "TEAM"),
+        BILLFORD("BILLFORD", "billford", "billford trade menu and rotation task.", "EMERALD", "BILLFORD"),
+        HOMES("HOMES", "homes", "home commands and home menu.", "LIGHT_BLUE_BED", "HOME"),
+        LEADERBOARDS("LEADERBOARDS", "leaderboards", "leaderboard commands and leaderboard menus.", "GOLD_INGOT", "LEADERBOARDS"),
+        NIGHT_VISION("NIGHT_VISION", "night vision", "night vision player toggle command.", "GOLDEN_CARROT", "NIGHT-VISION"),
+        PHANTOM("PHANTOM", "phantom toggle", "phantom spawning toggle command.", "PHANTOM_MEMBRANE", "PHANTOM"),
+        RTP("RTP", "rtp", "random teleport command and rtp menu.", "COMPASS", "RTP"),
+        RTP_ZONE("RTP_ZONE", "rtp zone", "cuboid-triggered rtp countdown zone.", "ENDER_EYE", null),
+        SELL("SELL", "sell", "sell commands and sell menus.", "HOPPER", "SELL"),
+        WORTH("WORTH", "worth", "worth browser and worth display helpers.", "EMERALD", "SELL"),
+        SETTINGS("SETTINGS", "settings", "player settings menu.", "COMPARATOR", "SETTINGS"),
+        SHOP("SHOP", "shop", "shop command and purchase menus.", "CHEST", "SHOP"),
+        ENDER_CHEST("ENDER_CHEST", "ender chest", "custom ender chest command and listener.", "ENDER_CHEST", "ENDERCHEST"),
+        GAMEMODE("GAMEMODE", "gamemode", "staff gamemode commands.", "GRASS_BLOCK", "GAMEMODE"),
+        SOCIAL("SOCIAL", "social", "discord, twitter/x, store, and media commands.", "BOOK", "SOCIAL"),
+        SPAWN("SPAWN", "spawn", "spawn command and spawn menu.", "BEACON", "SPAWN"),
+        STATS("STATS", "stats", "stats, ping, and playtime commands.", "PLAYER_HEAD", "STATS"),
+        TPA("TPA", "tpa", "teleport request commands and confirm menu.", "ENDER_PEARL", "TPA"),
+        TPA_AUTO("TPA_AUTO", "tpa auto", "tpa auto-accept commands.", "REDSTONE_TORCH", "TPAUTO"),
+        FIND_PLAYER("FIND_PLAYER", "find player", "staff find player command.", "SPYGLASS", "FINDPLAYER"),
+        CRATES("CRATES", "crates", "crate commands, menus, key-all, and visual effects.", "TRIPWIRE_HOOK", "CRATE"),
+        RULES("RULES", "rules", "rules command and rules menu.", "BOOKSHELF", "RULES"),
+        HELP("HELP", "help", "help command and server info menu.", "KNOWLEDGE_BOOK", "HELP"),
+        NETWORK_SERVERS("NETWORK_SERVERS", "network servers", "network server status command and menu.", "NETHER_STAR", "SERVERS"),
+        SCOREBOARD("SCOREBOARD", "scoreboard", "sidebar scoreboard task and display.", "MAP", null),
+        TABLIST("TABLIST", "tablist", "tablist header, footer, and player list names.", "NAME_TAG", null),
+        AUCTION_HOUSE("AUCTION_HOUSE", "auction house", "auction house commands, listings, claims, and expiry task.", "GOLD_INGOT", null),
+        ORDERS("ORDERS", "orders", "orders board commands, menus, and expiry task.", "WRITABLE_BOOK", null),
+        DUELS("DUELS", "duels", "duel commands, queues, arenas, matches, and tasks.", "DIAMOND_SWORD", null),
+        FFA("FFA", "ffa", "ffa commands, arenas, matches, and tasks.", "IRON_SWORD", null),
+        STAFF_MODE("STAFF_MODE", "staff mode", "staff mode command, hotbar, vanish, and staff tools.", "NETHERITE_CHESTPLATE", null),
+        STAFF_CHAT("STAFF_CHAT", "staff chat", "staff chat command and network staff chat.", "ECHO_SHARD", null),
+        STAFF_ALERTS("STAFF_ALERTS", "staff alerts", "helpop, reports, and network staff alerts.", "BELL", null),
+        SPAWN_STASH("SPAWN_STASH", "SpawnStash", "Staff bait stash spawning, alerts, and rollback cleanup.", "CHEST", "SPAWN-STASH"),
+        FREEZE("FREEZE", "freeze", "freeze command, listeners, and freeze state enforcement.", "PACKED_ICE", null),
+        INVSEE("INVSEE", "invsee", "inventory inspection command and sessions.", "CHEST_MINECART", null),
+        PROFILE_VIEWER("PROFILE_VIEWER", "profile viewer", "profile viewer command and homes browser.", "PLAYER_HEAD", null),
+        PUNISHMENTS("PUNISHMENTS", "punishments", "punishment commands, aliases, and history menus.", "IRON_AXE", null),
+        SPAWNERS("SPAWNERS", "spawners", "managed spawner commands, listeners, visibility, and generation.", "SPAWNER", null),
+        CLEAR_LAG("CLEAR_LAG", "clearlag", "clearlag command and cleanup task.", "LAVA_BUCKET", null),
+        PORTALS("PORTALS", "portals", "portal triggers, manager command, and portal holograms.", "END_PORTAL_FRAME", null),
+        AMETHYST_TOOLS("AMETHYST_TOOLS", "amethyst tools", "amethyst tool command, listener, and expiry task.", "AMETHYST_SHARD", null),
+        COMBAT("COMBAT", "combat", "combat tagging listener and command blocking.", "SHIELD", null),
+        FAST_CRYSTALS("FAST_CRYSTALS", "fast crystals", "fast crystal placement/breaking behavior.", "END_CRYSTAL", null),
+        KEY_ALL("KEY_ALL", "key-all", "automatic crate key-all rewards.", "TRIPWIRE_HOOK", null),
+        LUNAR_RICH_PRESENCE("LUNAR_RICH_PRESENCE", "lunar rich presence", "lunar client rich presence integration.", "ENDER_EYE", null),
+        LUNAR_TEAM_VIEW("LUNAR_TEAM_VIEW", "lunar team view", "lunar teammate overlay integration.", "LEATHER_HELMET", null),
+        OPTIMIZATION("OPTIMIZATION", "optimization", "runtime optimization monitor and adaptive task skipping.", "REDSTONE", null),
+        MAINTENANCE("MAINTENANCE", "maintenance", "seamless maintenance system with lobby redirection.", "REDSTONE_LAMP", "MAINTENANCE"),
+        HIDE("HIDE", "Hide", "Persistent player identity scrambling and configured disguises.", "NAME_TAG", "HIDE"),
+        FRIENDS("FRIENDS", "friends", "player friends/follows system.", "PLAYER_HEAD", "FRIEND"),
+        SAFETY("SAFETY", "safety", "safety command and info.", "BOOK", "SAFETY");
 
         private final String configKey;
         private final String displayName;
@@ -174,14 +179,15 @@ public class FeatureManager {
             case "afk" -> new Feature[]{Feature.AFK};
             case "tpa", "tpahere", "tpaccept", "tpadeny", "tpacancel" -> new Feature[]{Feature.TPA};
             case "tpauto", "tpahereauto" -> new Feature[]{Feature.TPA, Feature.TPA_AUTO};
-            case "shards", "shardpay" -> new Feature[]{Feature.SHARDS};
+            case "shards", "shardpay", "addshards", "removeshards", "setshards" -> new Feature[]{Feature.SHARDS};
             case "crate", "crates", "keys" -> new Feature[]{Feature.CRATES};
             case "shop" -> new Feature[]{Feature.SHOP};
+            case "shardshop" -> new Feature[]{Feature.SHOP, Feature.SHARDS};
             case "orders" -> new Feature[]{Feature.ORDERS};
-            case "duel", "queue", "draw", "arena" -> new Feature[]{Feature.DUELS};
+            case "duel", "create", "queue", "draw", "arena" -> new Feature[]{Feature.DUELS};
             case "ffa", "ffastats", "ffaarena" -> new Feature[]{Feature.FFA};
             case "auctionhouse" -> new Feature[]{Feature.AUCTION_HOUSE};
-            case "enderchest" -> new Feature[]{Feature.ENDER_CHEST};
+            case "enderchest", "ecsee" -> new Feature[]{Feature.ENDER_CHEST};
             case "sell", "sellhand", "sellall", "sellhistory" -> new Feature[]{Feature.SELL};
             case "worth" -> new Feature[]{Feature.SELL, Feature.WORTH};
             case "rtp" -> new Feature[]{Feature.RTP};
@@ -189,9 +195,10 @@ public class FeatureManager {
             case "leaderboard" -> new Feature[]{Feature.LEADERBOARDS};
             case "freeze" -> new Feature[]{Feature.FREEZE};
             case "gamemode" -> new Feature[]{Feature.GAMEMODE};
-            case "staffmode", "stafflist", "vanish" -> new Feature[]{Feature.STAFF_MODE};
+            case "staffmode", "stafflist", "vanish", "fakeplayer", "fplayer" -> new Feature[]{Feature.STAFF_MODE};
             case "staffchat" -> new Feature[]{Feature.STAFF_CHAT};
             case "helpop", "report" -> new Feature[]{Feature.STAFF_ALERTS};
+            case "spawnstash", "stash" -> new Feature[]{Feature.SPAWN_STASH};
             case "invsee" -> new Feature[]{Feature.INVSEE};
             case "profileviewer" -> new Feature[]{Feature.PROFILE_VIEWER};
             case "punishments", "ban", "tempban", "mute", "tempmute", "warn", "kick", "blacklist",
@@ -210,8 +217,11 @@ public class FeatureManager {
             case "billford" -> new Feature[]{Feature.BILLFORD};
             case "spawner" -> new Feature[]{Feature.SPAWNERS};
             case "clearlag" -> new Feature[]{Feature.CLEAR_LAG};
+            case "hide", "disguise" -> new Feature[]{Feature.HIDE};
             case "cuboid" -> new Feature[]{Feature.CUBOIDS};
             case "amethysttool" -> new Feature[]{Feature.AMETHYST_TOOLS};
+            case "friends", "friend" -> new Feature[]{Feature.FRIENDS};
+            case "safety" -> new Feature[]{Feature.SAFETY};
             default -> new Feature[0];
         };
     }
@@ -248,7 +258,9 @@ public class FeatureManager {
         }
 
         plugin.getConfigManager().getConfig().set(path(feature), enabled);
-        plugin.saveConfig();
+        if (!plugin.getConfigManager().saveConfig()) {
+            return false;
+        }
         applyRuntimeState(feature);
         return true;
     }
@@ -324,6 +336,11 @@ public class FeatureManager {
                     plugin.getCrateVisualManager().reload();
                 }
             }
+            case ENDER_CHEST -> {
+                if (plugin.getEnderChestManager() != null) {
+                    plugin.getEnderChestManager().reload();
+                }
+            }
             case STAFF_MODE -> {
                 if (!isEnabled(feature) && plugin.getStaffModeManager() != null) {
                     plugin.getStaffModeManager().shutdown();
@@ -380,6 +397,15 @@ public class FeatureManager {
             case STAFF_ALERTS -> {
                 if (plugin.getNetworkStaffAlertManager() != null) {
                     plugin.getNetworkStaffAlertManager().reload();
+                }
+            }
+            case SPAWN_STASH -> {
+                if (plugin.getSpawnStashManager() != null) {
+                    if (isEnabled(feature)) {
+                        plugin.getSpawnStashManager().reload();
+                    } else {
+                        plugin.getSpawnStashManager().shutdown();
+                    }
                 }
             }
             case LUNAR_RICH_PRESENCE -> {

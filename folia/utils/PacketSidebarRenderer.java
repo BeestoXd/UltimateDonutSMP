@@ -9,11 +9,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class PacketSidebarRenderer {
 
@@ -29,9 +29,9 @@ public final class PacketSidebarRenderer {
     }
 
     private final UltimateDonutSmp plugin;
-    private final Map<UUID, SidebarState> states = new HashMap<>();
+    private final Map<UUID, SidebarState> states = new ConcurrentHashMap<>();
 
-    private boolean disabled;
+    private volatile boolean disabled;
     private boolean warned;
     private ClassLoader classLoader;
     private Class<?> setObjectivePacketClass;
@@ -161,7 +161,7 @@ public final class PacketSidebarRenderer {
         return normalized;
     }
 
-    private void ensureInitialized() throws ReflectiveOperationException {
+    private synchronized void ensureInitialized() throws ReflectiveOperationException {
         if (setObjectivePacketClass != null) {
             return;
         }
@@ -706,7 +706,7 @@ public final class PacketSidebarRenderer {
                 }
                 field.setAccessible(true);
                 Object value = field.get(handle);
-                if (value != null && value.getClass().getSimpleName().contains("PacketListener")) {
+                if (value != null && value.getClass().getSimpleName().contains("PACKETLISTENER")) {
                     return value;
                 }
             }
@@ -831,7 +831,7 @@ public final class PacketSidebarRenderer {
         return base + Integer.toHexString(index);
     }
 
-    private void disableWithwarning(Exception exception) {
+    private synchronized void disableWithwarning(Exception exception) {
         disabled = true;
         states.clear();
         if (warned) {

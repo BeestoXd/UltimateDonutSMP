@@ -43,7 +43,7 @@ public class CombatManager {
             }
             long remaining = getRemainingSeconds(uuid);
             String format = plugin.getConfigManager().getConfig()
-                    .getString("COMBAT-MANAGER.ACTION-BAR", "&fᴄᴏᴍʙᴀᴛ: &b${time}ѕ")
+                    .getString("COMBAT-MANAGER.ACTION-BAR", "&fcombat: &b${time}s")
                     .replace("${time}", String.valueOf(remaining));
             PlayerSettingUtils.sendActionBar(plugin, p, ColorUtils.toComponent(format));
         }, 0L, 20L);
@@ -77,13 +77,39 @@ public class CombatManager {
     }
 
     public boolean isEnabled() {
-        return plugin.getConfigManager().getConfig()
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.COMBAT)
+                && plugin.getConfigManager().getConfig()
                 .getBoolean("COMBAT-MANAGER.ENABLED", true);
     }
 
     public int getCooldownSeconds() {
         return plugin.getConfigManager().getConfig()
                 .getInt("COMBAT-MANAGER.COOLDOWN", 16);
+    }
+
+    public boolean isKillOnLogoutEnabled() {
+        return plugin.getConfigManager().getConfig()
+                .getBoolean("COMBAT-MANAGER.KILL-ON-LOGOUT", false);
+    }
+
+    public boolean isMobCombatEnabled() {
+        return plugin.getConfigManager().getConfig()
+                .getBoolean("COMBAT-MANAGER.MOBS", false);
+    }
+
+    public boolean isEnderCrystalCombatEnabled() {
+        return plugin.getConfigManager().getConfig()
+                .getBoolean("COMBAT-MANAGER.ENDER-CRYSTAL", true);
+    }
+
+    public boolean isEnderPearlCombatEnabled() {
+        return plugin.getConfigManager().getConfig()
+                .getBoolean("COMBAT-MANAGER.ENDER-PEARL", true);
+    }
+
+    public boolean isRespawnAnchorCombatEnabled() {
+        return plugin.getConfigManager().getConfig()
+                .getBoolean("COMBAT-MANAGER.RESPAWN-ANCHOR", true);
     }
 
     public boolean isBlockedCommand(String command) {

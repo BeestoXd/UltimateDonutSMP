@@ -3,14 +3,14 @@ package com.bx.ultimateDonutSmp.amethyst;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.PlayerDataManager;
+import com.bx.ultimateDonutSmp.managers.CurrencyManager;
 import com.bx.ultimateDonutSmp.managers.ShardManager;
 import com.bx.ultimateDonutSmp.managers.ShopManager;
 import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -91,7 +91,7 @@ public class AmethystToolsListener implements Listener {
         ConfigurationSection cfg = manager.getToolSection(AmethystToolType.DRILL);
         int radius = cfg != null ? cfg.getInt("RADIUS", 1) : 1;
 
-        Set<Material> disabled = manager.getdisabledBlocks();
+        Set<Material> disabled = manager.getDisabledBlocks();
         if (disabled.contains(origin.getType())) {
             return;
         }
@@ -244,51 +244,36 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
-        Inventory containerInventory;
-        try {
-            org.bukkit.block.Container container = (org.bukkit.block.Container) clicked.getState();
-            containerInventory = container.getInventory();
-        } catch (ClassCastException e) {
+        if (!(clicked.getState() instanceof org.bukkit.block.Container container)) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("SELL-NO-CHEST")));
             return;
         }
 
-        ShopManager shopManager = plugin.getShopManager();
-        PlayerDataManager playerDataManager = plugin.getPlayerDataManager();
-        PlayerData data = playerDataManager.get(player);
-        if (data == null) {
-            return;
-        }
+        Inventory containerInventory = container.getInventory();
+        ShopManager.SellResult result = plugin.getShopManager().sellInventoryContents(
+                player,
+                containerInventory,
+                0,
+                containerInventory.getSize(),
+                EconomyReason.AMETHYST_SELL,
+                false
+        );
 
-        double total = 0D;
-        int soldSlots = 0;
-
-        for (int i = 0; i < containerInventory.getSize(); i++) {
-            ItemStack slotItem = containerInventory.getItem(i);
-            if (slotItem == null || slotItem.getType().isAir()) {
-                continue;
-            }
-
-            double unitWorth = shopManager.getWorth(slotItem);
-            if (unitWorth <= 0D) {
-                continue;
-            }
-
-            total += unitWorth * slotItem.getAmount();
-            containerInventory.setItem(i, null);
-            soldSlots++;
-        }
-
-        if (soldSlots == 0) {
+        if (result.status() == ShopManager.SellStatus.NO_SELLABLE_ITEMS) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("SELL-EMPTY")));
             return;
         }
+        if (result.status() == ShopManager.SellStatus.TRANSACTION_FAILED) {
+            player.sendMessage(ColorUtils.toComponent(manager.getMessage("SELL-FAILED")));
+            return;
+        }
 
-        plugin.getEconomyManager().deposit(player, total, EconomyReason.AMETHYST_SELL);
         manager.spawnAmethystParticles(clicked.getLocation().add(0.5, 1, 0.5));
         SoundUtils.play(player, manager.getSound("USE"));
         player.sendMessage(ColorUtils.toComponent(
-                manager.getMessage("SELL-SUCCESS", "{amount}", NumberUtils.formatNice(total))));
+                manager.getMessage("SELL-SUCCESS",
+                        "{amount}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, result.totalPayout()),
+                        "{amount_formatted}", plugin.getCurrencyManager().formatMoney(result.totalPayout()))));
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {
@@ -366,11 +351,40 @@ public class AmethystToolsListener implements Listener {
 
         ItemStack current = event.getCurrentItem();
         ItemStack cursor = event.getCursor();
-        if (!manager.isAmethystTool(current) && !manager.isAmethystTool(cursor)) {
+        boolean currentIsAmethystTool = manager.isAmethystTool(current);
+        boolean cursorIsAmethystTool = manager.isAmethystTool(cursor);
+        if (!currentIsAmethystTool && !cursorIsAmethystTool) {
             return;
         }
 
-        if (manager.isAmethystTool(current)) {
+        if (currentIsAmethystTool && cursorIsAmethystTool) {
+            event.setCancelled(true);
+            if (player.getGameMode() == GameMode.CREATIVE) {
+                Inventory clickedInventory = event.getClickedInventory();
+                int clickedSlot = event.getSlot();
+                ItemStack currentSnapshot = current.clone();
+                ItemStack cursorSnapshot = cursor.clone();
+
+                manager.suppressVisualSync(player.getUniqueId());
+                plugin.getFoliaScheduler().runEntity(player, () -> {
+                    if (!player.isOnline()) {
+                        return;
+                    }
+
+                    manager.suppressVisualSync(player.getUniqueId());
+                    if (clickedInventory != null
+                            && clickedSlot >= 0
+                            && clickedSlot < clickedInventory.getSize()) {
+                        clickedInventory.setItem(clickedSlot, currentSnapshot.clone());
+                    }
+                    player.setItemOnCursor(cursorSnapshot.clone());
+                    player.updateInventory();
+                });
+            }
+            return;
+        }
+
+        if (currentIsAmethystTool) {
             manager.ensureIdentity(current, event.getClickedInventory() == player.getInventory() ? player.getUniqueId() : null, false);
             if (current.getAmount() > 1) {
                 if (event.getClickedInventory() == player.getInventory()) {
@@ -393,7 +407,7 @@ public class AmethystToolsListener implements Listener {
             }
         }
 
-        if (manager.isAmethystTool(cursor)) {
+        if (cursorIsAmethystTool) {
             manager.ensureIdentity(cursor, player.getUniqueId(), false);
             if (cursor.getAmount() > 1) {
                 manager.sanitizeCursorItem(player, false);
@@ -408,13 +422,6 @@ public class AmethystToolsListener implements Listener {
         }
 
         if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-            if (manager.isAmethystTool(current) || manager.isAmethystTool(cursor)) {
-                event.setCancelled(true);
-                return;
-            }
-        }
-
-        if (manager.isAmethystTool(current) && manager.isAmethystTool(cursor)) {
             event.setCancelled(true);
         }
     }

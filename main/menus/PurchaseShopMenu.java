@@ -13,12 +13,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class PurchaseShopMenu extends BaseMenu {
 
     private final ShopManager.ShopItem item;
     private final String originMenuSection;
     private final int originPage;
+    private final boolean originFavorites;
     private int quantity;
 
     public PurchaseShopMenu(
@@ -26,6 +28,16 @@ public class PurchaseShopMenu extends BaseMenu {
             ShopManager.ShopItem item,
             String originMenuSection,
             int originPage
+    ) {
+        this(plugin, item, originMenuSection, originPage, false);
+    }
+
+    public PurchaseShopMenu(
+            UltimateDonutSmp plugin,
+            ShopManager.ShopItem item,
+            String originMenuSection,
+            int originPage,
+            boolean originFavorites
     ) {
         super(
                 plugin,
@@ -35,6 +47,7 @@ public class PurchaseShopMenu extends BaseMenu {
         this.item = item;
         this.originMenuSection = originMenuSection;
         this.originPage = Math.max(0, originPage);
+        this.originFavorites = originFavorites;
     }
 
     @Override
@@ -63,7 +76,11 @@ public class PurchaseShopMenu extends BaseMenu {
 
         if (slot == getCancelSlot()) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new ShopMenu(plugin, originMenuSection, originPage).open(player);
+            if (originFavorites) {
+                new ShopMenu(plugin, true, originPage).open(player);
+            } else {
+                new ShopMenu(plugin, originMenuSection, originPage).open(player);
+            }
             return;
         }
 
@@ -121,10 +138,26 @@ public class PurchaseShopMenu extends BaseMenu {
     }
 
     private boolean isRedundantPriceLore(String line) {
-        String plain = ColorUtils.strip(line).toLowerCase();
-        return plain.contains("ʙᴜʏ ᴘʀɪᴄᴇ")
+        String plain = normalizePriceLabel(ColorUtils.strip(line));
+        return plain.contains("buy price")
                 || plain.contains("buyprice")
                 || plain.contains("harga beli");
+    }
+
+    private String normalizePriceLabel(String value) {
+        return (value == null ? "" : value.toLowerCase(Locale.ROOT))
+                .replace('b', 'b')
+                .replace('u', 'u')
+                .replace('y', 'y')
+                .replace('p', 'p')
+                .replace('r', 'r')
+                .replace('i', 'i')
+                .replace('c', 'c')
+                .replace('e', 'e')
+                .replace('h', 'h')
+                .replace('a', 'a')
+                .replace('g', 'g')
+                .replace('l', 'l');
     }
 
     private void buildCancelButton() {
@@ -252,6 +285,10 @@ public class PurchaseShopMenu extends BaseMenu {
             case INVALID_QUANTITY -> "&cᴛʜᴇ ѕᴇʟᴇᴄᴛᴇᴅ ǫᴜᴀɴᴛɪᴛʏ ɪѕ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ꜰᴏʀ ᴛʜɪѕ ɪᴛᴇᴍ.";
             case INVALID_ITEM -> "&cᴛʜɪѕ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴘᴜʀᴄʜᴀѕᴇᴅ ʀɪɢʜᴛ ɴᴏᴡ.";
             case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ. ᴛʀʏ ᴀɢᴀɪɴ.";
+            case REWARD_FAILED -> getMenus().getString(
+                    "PURCHASE-SHOP-MENU.MESSAGES.ERROR.REWARD_FAILED",
+                    "&cᴘᴜʀᴄʜᴀѕᴇ ꜰᴀɪʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴛʜᴇ ʀᴇᴡᴀʀᴅ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴅᴇʟɪᴠᴇʀᴇᴅ."
+            );
         };
     }
 

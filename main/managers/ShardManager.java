@@ -23,9 +23,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
 
 public class ShardManager {
+
+    public record KillRewardRange(long min, long max) {}
 
     public enum EverywhereEligibilityResult {
         ELIGIBLE,
@@ -41,6 +45,8 @@ public class ShardManager {
             String id,
             String cuboidName,
             String world,
+            Location rewardLocation,
+            double rewardRadius,
             int priority,
             int intervalSeconds,
             long amountPerInterval,
@@ -61,6 +67,13 @@ public class ShardManager {
             String excludedWorldMessage,
             Set<String> excludedWorlds
     ) {
+        public ShardCuboidConfig {
+            rewardLocation = rewardLocation == null ? null : rewardLocation.clone();
+            rewardRadius = Math.max(0D, rewardRadius);
+            afkLocation = afkLocation == null ? null : afkLocation.clone();
+            excludedWorlds = excludedWorlds == null ? Set.of() : Set.copyOf(excludedWorlds);
+        }
+
         public boolean matches(Player player, CuboidManager cuboidManager) {
             if (player.getWorld() == null) {
                 return false;
@@ -69,7 +82,21 @@ public class ShardManager {
                 return false;
             }
             CuboidManager.Cuboid cuboid = cuboidManager.getCuboid(cuboidName);
-            return cuboid != null && cuboid.contains(player.getLocation());
+            if (cuboid != null && cuboid.contains(player.getLocation())) {
+                return true;
+            }
+            return isInsideRewardRadius(player.getLocation());
+        }
+
+        private boolean isInsideRewardRadius(Location location) {
+            if (rewardLocation == null || rewardRadius <= 0D || location == null || location.getWorld() == null
+                    || rewardLocation.getWorld() == null) {
+                return false;
+            }
+            if (!location.getWorld().getName().equalsIgnoreCase(rewardLocation.getWorld().getName())) {
+                return false;
+            }
+            return location.distanceSquared(rewardLocation) <= rewardRadius * rewardRadius;
         }
 
         public boolean isWorldExcluded(String worldName) {
@@ -148,6 +175,50 @@ public class ShardManager {
                     .replace("{amount_formatted}", plugin.getCurrencyManager().formatShards(amount));
             PlayerSettingUtils.sendActionBar(plugin, player, msg);
         }
+    }
+
+    public long rollKillReward() {
+        FileConfiguration config = plugin.getConfigManager().getConfig();
+        long fallback = Math.max(0L, config.getLong("SETTINGS.SHARDS-PER-KILL", 1L));
+        return rollKillReward(
+                normalizeKillRewardRange(
+                        numericLong(config.get("SETTINGS.SHARDS-PER-KILL-MIN")),
+                        numericLong(config.get("SETTINGS.SHARDS-PER-KILL-MAX")),
+                        fallback
+                ),
+                ThreadLocalRandom.current()
+        );
+    }
+
+    public static KillRewardRange normalizeKillRewardRange(Long configuredMin, Long configuredMax, long fallback) {
+        long safeFallback = Math.max(0L, fallback);
+        long min = Math.max(0L, configuredMin == null ? safeFallback : configuredMin);
+        long max = Math.max(0L, configuredMax == null ? safeFallback : configuredMax);
+        return min <= max ? new KillRewardRange(min, max) : new KillRewardRange(max, min);
+    }
+
+    public static long rollKillReward(KillRewardRange range, RandomGenerator random) {
+        if (range == null) {
+            return 0L;
+        }
+        long min = Math.max(0L, range.min());
+        long max = Math.max(min, range.max());
+        if (min == max) {
+            return min;
+        }
+        RandomGenerator source = random == null ? ThreadLocalRandom.current() : random;
+        if (max < Long.MAX_VALUE) {
+            return source.nextLong(min, max + 1L);
+        }
+        long value;
+        do {
+            value = source.nextLong();
+        } while (value < min);
+        return value;
+    }
+
+    private static Long numericLong(Object value) {
+        return value instanceof Number number ? number.longValue() : null;
     }
 
     public boolean hasBooster(UUID uuid) {
@@ -248,7 +319,7 @@ public class ShardManager {
         cuboidProgress.remove(uuid);
         pendingMovementBlocks.put(uuid, 0);
         lastMatchedCuboid.remove(uuid);
-        hudStates.put(uuid, new ShardCuboidHudState("ɴᴏɴᴇ", "ᴏᴜᴛѕɪᴅᴇ", "-", 0, false));
+        hudStates.put(uuid, new ShardCuboidHudState("none", "outside", "-", 0, false));
     }
 
     public void removeCountdown(UUID uuid) {
@@ -339,7 +410,7 @@ public class ShardManager {
     }
 
     public ShardCuboidHudState getHudState(UUID uuid) {
-        return hudStates.getOrDefault(uuid, new ShardCuboidHudState("ɴᴏɴᴇ", "ᴏᴜᴛѕɪᴅᴇ", "-", 0, false));
+        return hudStates.getOrDefault(uuid, new ShardCuboidHudState("none", "outside", "-", 0, false));
     }
 
     public boolean shouldShowShardCuboidLine(UUID uuid) {
@@ -491,7 +562,7 @@ public class ShardManager {
 
     public String getEverywhereRequiredPermission() {
         return emptyToNull(plugin.getConfigManager().getConfig()
-                .getString("SHARDS.EVERYWHERE.REQUIRED-PERMISSION", "ultimatedonutsmp.shards.everywhere"));
+                .getString("SHARDS.EVERYWHERE.REQUIRED-PERMISSION", "ULTIMATEDONUTSMP.SHARDS.EVERYWHERE"));
     }
 
     public boolean hasEverywherePermission(Player player) {
@@ -558,8 +629,8 @@ public class ShardManager {
                 ? "SHARDS.EVERYWHERE.RECEIVED-BOOSTED"
                 : "SHARDS.EVERYWHERE.RECEIVED";
         String fallback = boosted
-                ? "ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount_formatted% &7(&ax%multiplier%&7) &8[Everywhere] &7(ᴛᴏᴛᴀʟ: %total_formatted%&7)"
-                : "ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount_formatted% &8[Everywhere] &7(ᴛᴏᴛᴀʟ: %total_formatted%&7)";
+                ? "you received %amount_formatted% &7(&ax%multiplier%&7) &8[everywhere] &7(total: %total_formatted%&7)"
+                : "you received %amount_formatted% &8[everywhere] &7(total: %total_formatted%&7)";
 
         return plugin.getConfigManager().getConfig()
                 .getString(path, fallback)
@@ -622,37 +693,42 @@ public class ShardManager {
                 continue;
             }
 
+            Location rewardLocation = parseExplicitLocation(section.getString("LOCATION"));
             boolean bound = section.getBoolean("BOUND", false);
-            if (!bound) {
+            if (!bound && rewardLocation == null) {
                 plugin.getLogger().warning("[ShardManager] Ignoring shard cuboid region '" + key
-                        + "' because it is not bound yet. Use /cuboid bind <cuboid> shard true.");
+                        + "' because it is not bound yet and has no location/RADIUS fallback. "
+                        + "use /cuboid bind <cuboid> shard true or configure location.");
                 continue;
             }
+            String cuboidName = emptyToNull(section.getString("CUBOID"));
 
             ShardCuboidConfig config = new ShardCuboidConfig(
                     key.toLowerCase(Locale.ROOT),
-                    section.getString("CUBOID", key),
+                    cuboidName == null ? key : cuboidName,
                     emptyToNull(section.getString("WORLD")),
+                    rewardLocation,
+                    Math.max(0D, section.getDouble("RADIUS", 0D)),
                     section.getInt("PRIORITY", 0),
                     Math.max(1, section.getInt("INTERVAL", 60)),
                     Math.max(1L, section.getLong("AMOUNT", 1L)),
-                    section.getString("COUNTDOWN-MESSAGE", "&7ɴᴇxᴛ ʀᴇᴡᴀʀᴅ ɪɴ %time%"),
-                    section.getString("REWARD-MESSAGE", "ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount_formatted% &7(ᴛᴏᴛᴀʟ: %total_formatted%&7)"),
-                    section.getString("BOOSTED-REWARD-MESSAGE", "ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount_formatted% &7(&ax%multiplier%&7) &7(ᴛᴏᴛᴀʟ: %total_formatted%&7)"),
-                    section.getString("LEAVE-MESSAGE", "&cѕʜᴀʀᴅ ʀᴇᴡᴀʀᴅ ᴄᴀɴᴄᴇʟʟᴇᴅ &7(ʟᴇꜰᴛ %cuboid% ᴢᴏɴᴇ)"),
+                    section.getString("COUNTDOWN-MESSAGE", "&7next reward in %time%"),
+                    section.getString("REWARD-MESSAGE", "you received %amount_formatted% &7(total: %total_formatted%&7)"),
+                    section.getString("BOOSTED-REWARD-MESSAGE", "you received %amount_formatted% &7(&ax%multiplier%&7) &7(total: %total_formatted%&7)"),
+                    section.getString("LEAVE-MESSAGE", "&cshard reward cancelled &7(left %cuboid% zone)"),
                     Math.max(1, section.getInt("AFK-TIME", cfg.getInt("AFK-SYSTEM.TIME", 180))),
                     emptyToNull(section.getString("AFK-CUBOID")),
                     parseExplicitLocation(section.getString("AFK-LOCATION")),
                     section.getString("AFK-MESSAGE", cfg.getString("AFK-SYSTEM.MESSAGE",
-                            "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ᴛʜᴇ ᴀꜰᴋ ᴀʀᴇᴀ ꜰᴏʀ ʙᴇɪɴɢ ɪɴᴀᴄᴛɪᴠᴇ ɪɴ ᴛʜᴇ ѕʜᴀʀᴅ ᴢᴏɴᴇ.")),
+                            "&7you have been moved to the afk area for being inactive in the shard zone.")),
                     section.getBoolean("TELEPORT-ON-AFK", true),
                     section.getBoolean("RESET-ON-LEAVE", cfg.getBoolean("SHARDS.RESET-ON-LEAVE", true)),
                     Math.max(1, section.getInt("RECENT-MOVEMENT-WINDOW", 15)),
                     Math.max(1, section.getInt("MIN-MOVEMENT-BLOCKS", 5)),
-                    section.getString("PAUSED-MESSAGE", "&eᴍᴏᴠᴇ ᴛᴏ ᴋᴇᴇᴘ ᴇᴀʀɴɪɴɢ "
+                    section.getString("PAUSED-MESSAGE", "&emove to keep earning "
                             + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS)),
-                    section.getString("AFK-PAUSED-MESSAGE", "&cʏᴏᴜ ᴀʀᴇ ᴀꜰᴋ. ᴍᴏᴠᴇ ᴛᴏ ʀᴇѕᴜᴍᴇ ѕʜᴀʀᴅ ɢᴀɪɴ"),
-                    section.getString("EXCLUDED-WORLD-MESSAGE", "&cѕʜᴀʀᴅѕ ᴀʀᴇ ᴅɪѕᴀʙʟᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ"),
+                    section.getString("AFK-PAUSED-MESSAGE", "&cyou are afk. move to resume shard gain"),
+                    section.getString("EXCLUDED-WORLD-MESSAGE", "&cshards are disabled in this world"),
                     section.getStringList("EXCLUDED-WORLDS").stream()
                             .map(world -> world.toLowerCase(Locale.ROOT))
                             .collect(Collectors.toSet())
@@ -670,25 +746,27 @@ public class ShardManager {
                 "legacy-spawn",
                 cfg.getString("AFK-SYSTEM.SPAWN-CUBOID-NAME", "spawn"),
                 null,
+                null,
+                0D,
                 0,
                 Math.max(1, cfg.getInt("SHARDS.EVERY", 1) * 60),
                 Math.max(1L, cfg.getLong("SHARDS.AMOUNT", 1L)),
-                cfg.getString("SHARDS.COUNTDOWN", "&7ɴᴇxᴛ ʀᴇᴡᴀʀᴅ ɪɴ %time%"),
-                cfg.getString("SHARDS.RECEIVED", "ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount_formatted% &7(ᴛᴏᴛᴀʟ: %total_formatted%&7)"),
-                cfg.getString("SHARDS.RECEIVED-BOOSTED", "ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ %amount_formatted% &7(&ax%multiplier%&7) &7(ᴛᴏᴛᴀʟ: %total_formatted%&7)"),
-                cfg.getString("SHARDS.CANCELLED-MESSAGE", "&cѕʜᴀʀᴅ ʀᴇᴡᴀʀᴅ ᴄᴀɴᴄᴇʟʟᴇᴅ &7(ʟᴇꜰᴛ %cuboid% ᴢᴏɴᴇ)"),
+                cfg.getString("SHARDS.COUNTDOWN", "&7next reward in %time%"),
+                cfg.getString("SHARDS.RECEIVED", "you received %amount_formatted% &7(total: %total_formatted%&7)"),
+                cfg.getString("SHARDS.RECEIVED-BOOSTED", "you received %amount_formatted% &7(&ax%multiplier%&7) &7(total: %total_formatted%&7)"),
+                cfg.getString("SHARDS.CANCELLED-MESSAGE", "&cshard reward cancelled &7(left %cuboid% zone)"),
                 Math.max(1, cfg.getInt("AFK-SYSTEM.TIME", 180)),
                 emptyToNull(cfg.getString("AFK-SYSTEM.AFK-CUBOID-NAME")),
                 plugin.getSpawnManager().getAfkLocation(),
                 cfg.getString("AFK-SYSTEM.MESSAGE",
-                        "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ᴛʜᴇ ᴀꜰᴋ ᴀʀᴇᴀ ꜰᴏʀ ʙᴇɪɴɢ ɪɴᴀᴄᴛɪᴠᴇ ɪɴ ᴛʜᴇ ѕᴘᴀᴡɴ."),
+                        "&7you have been moved to the afk area for being inactive in the spawn."),
                 cfg.getBoolean("AFK-SYSTEM.ENABLED", true),
                 cfg.getBoolean("SHARDS.RESET-ON-LEAVE", true),
                 15,
                 5,
-                "&eᴍᴏᴠᴇ ᴛᴏ ᴋᴇᴇᴘ ᴇᴀʀɴɪɴɢ " + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS),
-                "&cʏᴏᴜ ᴀʀᴇ ᴀꜰᴋ. ᴍᴏᴠᴇ ᴛᴏ ʀᴇѕᴜᴍᴇ ѕʜᴀʀᴅ ɢᴀɪɴ",
-                "&cѕʜᴀʀᴅѕ ᴀʀᴇ ᴅɪѕᴀʙʟᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ",
+                "&emove to keep earning " + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS),
+                "&cyou are afk. move to resume shard gain",
+                "&cshards are disabled in this world",
                 Set.of()
         );
     }

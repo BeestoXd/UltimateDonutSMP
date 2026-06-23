@@ -1,0 +1,16 @@
+banned-words:
+  - example
+  - bannedword
+  - inappropriateword
+  - offensivephrase
+  - slur
+# Add more words or phrases to this list as needed.
+
+punishments:
+  - mute %player% 30d Anvil inappropriate content - 1st offense
+  - tempban %player% 7d Anvil inappropriate content - 2nd offense
+  - tempban %player% 14d Anvil inappropriate content - 3rd offense
+  - tempban %player% 30d Anvil inappropriate content - 4th offense
+  - tempban %player% 50d Anvil inappropriate content - 5th offense
+
+players: {}

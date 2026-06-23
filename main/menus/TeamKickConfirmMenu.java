@@ -39,7 +39,7 @@ public class TeamKickConfirmMenu extends BaseMenu {
 
         String targetName = resolveTargetName();
 
-        String cancelPath = MENU_PATH + ".ᴄᴀɴᴄᴇʟ-ʙᴜᴛᴛᴏɴ";
+        String cancelPath = MENU_PATH + ".cancel-button";
         set(
                 menus().getInt(cancelPath + ".SLOT", 11),
                 ItemUtils.createItem(
@@ -49,7 +49,7 @@ public class TeamKickConfirmMenu extends BaseMenu {
                 )
         );
 
-        String confirmPath = MENU_PATH + ".ᴄᴏɴꜰɪʀᴍ-ʙᴜᴛᴛᴏɴ";
+        String confirmPath = MENU_PATH + ".confirm-button";
         set(
                 menus().getInt(confirmPath + ".SLOT", 15),
                 ItemUtils.createItem(

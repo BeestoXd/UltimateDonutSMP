@@ -91,7 +91,7 @@ public class TeamEditMenu extends BaseMenu {
                 member.canUseTeamChat()
         );
 
-        String kickPath = MENU_PATH + ".ᴋɪᴄᴋ-ʙᴜᴛᴛᴏɴ";
+        String kickPath = MENU_PATH + ".kick-button";
         set(
                 menus().getInt(kickPath + ".SLOT", 11),
                 ItemUtils.createItem(
@@ -101,7 +101,7 @@ public class TeamEditMenu extends BaseMenu {
                 )
         );
 
-        String backPath = MENU_PATH + ".ʙᴀᴄᴋ-ʙᴜᴛᴛᴏɴ";
+        String backPath = MENU_PATH + ".back-button";
         set(
                 menus().getInt(backPath + ".SLOT", 18),
                 ItemUtils.createItem(
@@ -173,8 +173,8 @@ public class TeamEditMenu extends BaseMenu {
     private void renderToggleButton(String key, Material fallbackMaterial, String targetName, boolean enabled) {
         String path = MENU_PATH + "." + key;
         String state = enabled
-                ? menus().getString(path + ".ON-STATE", "&a&lON")
-                : menus().getString(path + ".OFF-STATE", "&c&lOFF");
+                ? menus().getString(path + ".ON-STATE", "&a&lᴏɴ")
+                : menus().getString(path + ".OFF-STATE", "&c&lᴏꜰꜰ");
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("player", targetName);
         placeholders.put("state", state);
@@ -196,7 +196,7 @@ public class TeamEditMenu extends BaseMenu {
         }
 
         String storedName = plugin.getDatabaseManager().getLastKnownUsername(targetUuid);
-        return storedName != null ? storedName : "ᴜɴᴋɴᴏᴡɴ";
+        return storedName != null ? storedName : "unknown";
     }
 
     private FileConfiguration menus() {

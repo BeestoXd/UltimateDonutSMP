@@ -103,7 +103,7 @@ public class HomeMenu extends BaseMenu {
 
         String teleportState = team == null ? "NO_TEAM" : (team.hasHome() ? "HAS_HOME" : "NO_HOME");
         Map<String, String> teleportPlaceholders = new HashMap<>();
-        teleportPlaceholders.put("world", team != null && team.hasHome() ? friendlyWorldName(team.getHome()) : "ᴏᴠᴇʀᴡᴏʀʟᴅ");
+        teleportPlaceholders.put("world", team != null && team.hasHome() ? friendlyWorldName(team.getHome()) : "overworld");
 
         set(TEAM_TELEPORT_SLOT, ItemUtils.createItem(
                 material("HOME-MENU.TEAM_HOME.TELEPORT.MATERIALS." + teleportState, Material.WHITE_BANNER),
@@ -308,7 +308,7 @@ public class HomeMenu extends BaseMenu {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("name", slotLabel(globalIndex));
         placeholders.put("slot", slotLabel(globalIndex));
-        placeholders.put("world", "ᴏᴠᴇʀᴡᴏʀʟᴅ");
+        placeholders.put("world", "overworld");
         return placeholders;
     }
 
@@ -321,13 +321,13 @@ public class HomeMenu extends BaseMenu {
     }
 
     private String friendlyWorldName(Location location) {
-        if (location == null || location.getWorld() == null) return "ᴏᴠᴇʀᴡᴏʀʟᴅ";
+        if (location == null || location.getWorld() == null) return "overworld";
 
         World.Environment environment = location.getWorld().getEnvironment();
         return switch (environment) {
-            case NETHER -> "ɴᴇᴛʜᴇʀ";
-            case THE_END -> "ᴇɴᴅ";
-            default -> "ᴏᴠᴇʀᴡᴏʀʟᴅ";
+            case NETHER -> "nether";
+            case THE_END -> "end";
+            default -> "overworld";
         };
     }
 

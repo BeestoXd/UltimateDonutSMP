@@ -30,6 +30,9 @@ public class StaffModeCommand implements CommandExecutor {
 
             plugin.getConfigManager().reload();
             manager.reload();
+            if (plugin.getFakePlayerManager() != null) {
+                plugin.getFakePlayerManager().reload();
+            }
             sender.sendMessage(ColorUtils.toComponent(
                     manager.getMessage("RELOAD-SUCCESS", "&aѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.")
             ));

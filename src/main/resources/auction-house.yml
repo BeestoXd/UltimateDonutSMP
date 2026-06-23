@@ -1,0 +1,300 @@
+# UDS setup: Auction House listing rules, pricing limits, menus, and sorting defaults.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+SETTINGS:
+  ENABLED: true # Enables or disables settings.
+  LISTING_DURATION_HOURS: 48 # Sets how long this behavior lasts.
+  LISTING_DURATIONS_HOURS:
+    - 6
+    - 12
+    - 24
+    - 48
+    - 72
+    - 168
+  MAX_ACTIVE_LISTINGS_DEFAULT: 5 # Sets the allowed limit for this option.
+  # Exact permissions only. Wildcards such as ultimatedonutsmp.auctionhouse.* do not grant numeric limits.
+  # Direct numeric nodes are also supported without listing them here:
+  # - ultimatedonutsmp.auctionhouse.5
+  # - ultimatedonutsmp.auctionhouse.limit.5
+  MAX_ACTIVE_LISTINGS_BY_PERMISSION:
+    ultimatedonutsmp.auctionhouse.limit.5: 5 # Configures the ultimatedonutsmp auctionhouse limit 5 option.
+    ultimatedonutsmp.auctionhouse.limit.10: 10 # Configures the ultimatedonutsmp auctionhouse limit 10 option.
+  CLICK_COOLDOWN_MS: 750 # Sets the cooldown before this action can run again.
+  EXPIRE_CHECK_SECONDS: 30 # Sets the time value in seconds.
+
+CLAIMS:
+  # When disabled, pending payouts and returned items are collected automatically.
+  # Items stay pending when the player's inventory is full.
+  ENABLED: true
+
+# UDS setup: Price floors, caps, fees, escrow limits, and refund behavior.
+PRICING:
+  MIN_PRICE: 100 # Sets the economy value used by this option.
+  MAX_PRICE: 100000000 # Sets the economy value used by this option.
+  LISTING_FEE: 0 # Configures the listing fee option.
+  TAX_PERCENT: 5.0 # Configures the tax percent option.
+
+# UDS setup: Materials, worlds, or item rules blocked from this feature.
+RESTRICTIONS:
+  BLOCKED_MATERIALS:
+    - BEDROCK
+    - BARRIER
+    - COMMAND_BLOCK
+    - CHAIN_COMMAND_BLOCK
+    - REPEATING_COMMAND_BLOCK
+    - STRUCTURE_BLOCK
+    - STRUCTURE_VOID
+    - JIGSAW
+    - LIGHT
+  BLOCKED_IF_HAS_LORE_CONTAINS: [] # Configures the blocked if has lore contains option.
+
+# UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
+GUI:
+  BROWSE:
+    TITLE: "&8ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ" # Sets the title text shown for this menu or prompt.
+    SIZE: 54 # Sets the inventory size in slots.
+    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    SEARCH_SIGN:
+      lines:
+        - ""
+        - "↑↑↑↑↑↑↑↑↑↑↑↑↑"
+        - "ѕᴇᴀʀᴄʜ"
+        - ""
+      input-line: 0
+    SHULKER:
+      ITEM_COUNT_LORE: "&bɪᴛᴇᴍѕ ɪɴѕɪᴅᴇ: &3{count}"
+      PREVIEW_LORE: "&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴘʀᴇᴠɪᴇᴡ"
+    CONTROLS:
+      PREVIOUS:
+        SLOT: 45
+        MATERIAL: ARROW
+        NAME: "&fᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ"
+        LORE: ["&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"]
+      SORT:
+        SLOT: 47
+        MATERIAL: CAULDRON
+        NAME: "&fᴘʀɪᴄᴇ ѕᴏʀᴛ"
+        LORE: ["&7ᴄᴜʀʀᴇɴᴛ: &e{sort}", "&8ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ"]
+      FILTER:
+        SLOT: 48
+        MATERIAL: HOPPER
+        NAME: "&fꜰɪʟᴛᴇʀ"
+        LORE: ["&7ᴄᴀᴛᴇɢᴏʀʏ: &e{category}", "&8ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ ᴄᴀᴛᴇɢᴏʀʏ"]
+      REFRESH:
+        SLOT: 49
+        MATERIAL: ANVIL
+        NAME: "&fᴀᴜᴄᴛɪᴏɴ"
+        LORE: ["&7ʀᴇꜰʀᴇѕʜ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ"]
+      SEARCH:
+        SLOT: 50
+        MATERIAL: OAK_SIGN
+        NAME: "&fѕᴇᴀʀᴄʜ"
+        LORE: ["&7ᴄᴜʀʀᴇɴᴛ: &e{search}", "&8ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴀʀᴄʜ", "&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴇᴀʀ"]
+      PLAYER_ITEMS:
+        SLOT: 51
+        MATERIAL: CHEST
+        NAME: "&fʏᴏᴜʀ ɪᴛᴇᴍѕ"
+        LORE: ["&7ᴠɪᴇᴡ ᴀᴄᴛɪᴠᴇ, ѕᴏʟᴅ, ᴇxᴘɪʀᴇᴅ, ᴀɴᴅ ᴄᴀɴᴄᴇʟʟᴇᴅ ʟɪѕᴛɪɴɢѕ"]
+      NEXT:
+        SLOT: 53
+        MATERIAL: ARROW
+        NAME: "&fɴᴇxᴛ ᴘᴀɢᴇ"
+        LORE: ["&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"]
+      FILLER:
+        MATERIAL: BLACK_STAINED_GLASS_PANE
+        NAME: "&7 "
+  CATEGORIES:
+    ALL:
+      NAME: "ᴀʟʟ"
+      MATERIAL: COMPASS
+    BLOCKS:
+      NAME: "ʙʟᴏᴄᴋѕ"
+      MATERIAL: GRASS_BLOCK
+    TOOLS:
+      NAME: "ᴛᴏᴏʟѕ"
+      MATERIAL: DIAMOND_PICKAXE
+    FOOD:
+      NAME: "ꜰᴏᴏᴅ"
+      MATERIAL: GOLDEN_CARROT
+    COMBAT:
+      NAME: "ᴄᴏᴍʙᴀᴛ"
+      MATERIAL: DIAMOND_SWORD
+    POTIONS:
+      NAME: "ᴘᴏᴛɪᴏɴѕ"
+      MATERIAL: POTION
+    BOOKS:
+      NAME: "ʙᴏᴏᴋѕ"
+      MATERIAL: ENCHANTED_BOOK
+    INGREDIENTS:
+      NAME: "ɪɴɢʀᴇᴅɪᴇɴᴛѕ"
+      MATERIAL: BLAZE_POWDER
+    UTILITIES:
+      NAME: "ᴜᴛɪʟɪᴛɪᴇѕ"
+      MATERIAL: ENDER_CHEST
+  SORT_NAMES:
+    NEWEST:
+      NAME: "ɴᴇᴡᴇѕᴛ"
+    OLDEST:
+      NAME: "ᴏʟᴅᴇѕᴛ"
+    PRICE_LOWEST:
+      NAME: "ᴘʀɪᴄᴇ ʟᴏᴡᴇѕᴛ"
+    PRICE_HIGHEST:
+      NAME: "ᴘʀɪᴄᴇ ʜɪɢʜᴇѕᴛ"
+    EXPIRING_SOON:
+      NAME: "ᴇxᴘɪʀɪɴɢ ѕᴏᴏɴ"
+  TEXT:
+    NONE:
+      NAME: "ɴᴏɴᴇ"
+    SELECTED:
+      NAME: "&aѕᴇʟᴇᴄᴛᴇᴅ"
+    CLICK_TO_SELECT:
+      NAME: "&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ"
+    EXPIRED:
+      NAME: "ᴇxᴘɪʀᴇᴅ"
+    UNLIMITED:
+      NAME: "ᴜɴʟɪᴍɪᴛᴇᴅ"
+    ENABLED:
+      NAME: "&aᴇɴᴀʙʟᴇᴅ"
+    DISABLED:
+      NAME: "&cᴅɪѕᴀʙʟᴇᴅ"
+    FAST_BUY:
+      NAME: "ꜰᴀѕᴛ ʙᴜʏ"
+    FAST_SELL:
+      NAME: "ꜰᴀѕᴛ ѕᴇʟʟ"
+    DURATION_WEEK:
+      NAME: "{value} ᴡᴇᴇᴋ"
+    DURATION_WEEKS:
+      NAME: "{value} ᴡᴇᴇᴋѕ"
+    DURATION_DAY:
+      NAME: "{value} ᴅᴀʏ"
+    DURATION_DAYS:
+      NAME: "{value} ᴅᴀʏѕ"
+    DURATION_HOUR:
+      NAME: "{value} ʜᴏᴜʀ"
+    DURATION_HOURS:
+      NAME: "{value} ʜᴏᴜʀѕ"
+  FILTER:
+    TITLE: "&8ᴄᴀᴛᴇɢᴏʀʏ ꜰɪʟᴛᴇʀ"
+    FIRST_CATEGORY_SLOT: 9
+    CATEGORY:
+      NAME: "{category}"
+      LORE: ["{state}"]
+    CLEAR:
+      SLOT: 22
+      MATERIAL: BARRIER
+      NAME: "&cᴄʟᴇᴀʀ ꜰɪʟᴛᴇʀ"
+      LORE: ["&7ѕʜᴏᴡ ᴀʟʟ ʟɪѕᴛɪɴɢѕ"]
+  CONFIRM_PURCHASE:
+    TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴘᴜʀᴄʜᴀѕᴇ"
+    ITEM:
+      SLOT: 11
+    CONFIRM:
+      SLOT: 15
+      MATERIAL: LIME_STAINED_GLASS_PANE
+      NAME: "&aᴄᴏɴꜰɪʀᴍ ᴘᴜʀᴄʜᴀѕᴇ"
+      LORE: ["&7ᴘʀɪᴄᴇ: {price}", "&eᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀѕᴇ"]
+    CANCEL:
+      SLOT: 22
+      MATERIAL: RED_STAINED_GLASS_PANE
+      NAME: "&cᴄᴀɴᴄᴇʟ"
+      LORE: ["&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ"]
+  SELL:
+    TITLE: "&8ѕᴇʟʟ ɪᴛᴇᴍ"
+    DURATION_START_SLOT: 18
+    CATEGORY_START_SLOT: 27
+    ITEM:
+      SLOT: 4
+    SUMMARY:
+      SLOT: 13
+      MATERIAL: GOLD_INGOT
+      NAME: "&6ʟɪѕᴛɪɴɢ ѕᴜᴍᴍᴀʀʏ"
+      LORE: ["&7ᴘʀɪᴄᴇ: {price}", "&7ᴅᴜʀᴀᴛɪᴏɴ: &f{duration}", "&7ᴄᴀᴛᴇɢᴏʀʏ: &f{category}"]
+    DURATION:
+      NAME: "{duration}"
+      LORE: ["{state}"]
+    CATEGORY:
+      NAME: "{category}"
+      LORE: ["{state}"]
+    CONFIRM:
+      SLOT: 40
+      MATERIAL: LIME_STAINED_GLASS_PANE
+      NAME: "&aᴄᴏɴꜰɪʀᴍ ʟɪѕᴛɪɴɢ"
+      LORE: ["&7ᴘʀɪᴄᴇ: {price}", "&7ᴅᴜʀᴀᴛɪᴏɴ: &f{duration}", "&eᴄʟɪᴄᴋ ᴛᴏ ʟɪѕᴛ"]
+    CANCEL:
+      SLOT: 44
+      MATERIAL: RED_STAINED_GLASS_PANE
+      NAME: "&cᴄᴀɴᴄᴇʟ"
+      LORE: ["&7ʀᴇᴛᴜʀɴ ᴛʜᴇ ɪᴛᴇᴍ ᴡɪᴛʜᴏᴜᴛ ʟɪѕᴛɪɴɢ"]
+  PLAYER_ITEMS:
+    LISTING:
+      BASE_LORE: ["", "&7ᴘʀɪᴄᴇ: {price}", "&7ѕᴛᴀᴛᴜѕ: &f{status}"]
+      ACTIVE_LORE: ["&7ᴛɪᴍᴇ ʀᴇᴍᴀɪɴɪɴɢ: &f{time}", "&eᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴛʜɪѕ ʟɪѕᴛɪɴɢ."]
+      SOLD_LORE: ["&aѕᴏʟᴅ ᴛᴏ ᴀɴᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀ."]
+      CANCELLED_LORE: ["&cᴄᴀɴᴄᴇʟʟᴇᴅ."]
+      EXPIRED_LORE: ["&cᴇxᴘɪʀᴇᴅ."]
+    STATUS:
+      ACTIVE:
+        NAME: "ᴀᴄᴛɪᴠᴇ"
+      SOLD:
+        NAME: "ѕᴏʟᴅ"
+      EXPIRED:
+        NAME: "ᴇxᴘɪʀᴇᴅ"
+      CANCELLED:
+        NAME: "ᴄᴀɴᴄᴇʟʟᴇᴅ"
+    CONTROLS:
+      PREVIOUS:
+        SLOT: 45
+        MATERIAL: ARROW
+        NAME: "&fᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ"
+        LORE: ["&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"]
+      BACK:
+        SLOT: 49
+        MATERIAL: CHEST
+        NAME: "&fʙᴀᴄᴋ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ"
+        LORE: ["&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʙʀᴏᴡѕᴇʀ"]
+      REFRESH:
+        SLOT: 48
+        MATERIAL: ANVIL
+        NAME: "&fʀᴇꜰʀᴇѕʜ"
+        LORE: ["&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴀᴜᴄᴛɪᴏɴ ʜɪѕᴛᴏʀʏ"]
+      PAGE:
+        SLOT: 50
+        MATERIAL: BOOK
+        NAME: "&fᴘᴀɢᴇ {page}/{pages}"
+        LORE: ["&7ᴇɴᴛʀɪᴇѕ: &f{count}"]
+      NEXT:
+        SLOT: 53
+        MATERIAL: ARROW
+        NAME: "&fɴᴇxᴛ ᴘᴀɢᴇ"
+        LORE: ["&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"]
+      FILLER:
+        MATERIAL: BLACK_STAINED_GLASS_PANE
+        NAME: "&7 "
+  SHULKER_PREVIEW:
+    TITLE: "&8ᴘʀᴇᴠɪᴇᴡ: {item}"
+    BACK:
+      SLOT: 49
+      MATERIAL: ARROW
+      NAME: "&fʙᴀᴄᴋ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ"
+      LORE: ["&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʙʀᴏᴡѕᴇʀ"]
+  LISTING:
+    TITLE: "&8ᴀᴜᴄᴛɪᴏɴ #{id}"
+  MY_LISTINGS:
+    TITLE: "&8ᴍʏ ᴀᴜᴄᴛɪᴏɴѕ" # Sets the title text shown for this menu or prompt.
+    SIZE: 54 # Sets the inventory size in slots.
+    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+  CLAIMS:
+    TITLE: "&8ᴀᴜᴄᴛɪᴏɴ ᴄʟᴀɪᴍѕ" # Sets the title text shown for this menu or prompt.
+    SIZE: 54 # Sets the inventory size in slots.
+    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+
+# UDS setup: Default sort options and order used by browsing menus.
+SORTING:
+  DEFAULT: NEWEST # Sets the default value used when none is selected.
+  ALLOWED:
+    - NEWEST
+    - PRICE_LOWEST
+    - PRICE_HIGHEST
+    - EXPIRING_SOON
+    - OLDEST

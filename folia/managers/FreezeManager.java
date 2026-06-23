@@ -67,7 +67,8 @@ public class FreezeManager {
     }
 
     public boolean isEnabled() {
-        return getConfig().getBoolean("FREEZE.ENABLED", true);
+        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.FREEZE)
+                && getConfig().getBoolean("FREEZE.ENABLED", true);
     }
 
     public boolean shouldPersistOnQuit() {
@@ -87,19 +88,19 @@ public class FreezeManager {
     }
 
     public String getStaffPermission() {
-        return getConfig().getString("FREEZE.STAFF-PERMISSION", "ultimatedonutsmp.staff.freeze");
+        return getConfig().getString("FREEZE.STAFF-PERMISSION", "ULTIMATEDONUTSMP.STAFF.FREEZE");
     }
 
     public String getAlertPermission() {
-        return getConfig().getString("FREEZE.ALERT-PERMISSION", "ultimatedonutsmp.staff.freeze.alert");
+        return getConfig().getString("FREEZE.ALERT-PERMISSION", "ULTIMATEDONUTSMP.STAFF.FREEZE.ALERT");
     }
 
     public String getExemptPermission() {
-        return getConfig().getString("FREEZE.EXEMPT-PERMISSION", "ultimatedonutsmp.staff.freeze.exempt");
+        return getConfig().getString("FREEZE.EXEMPT-PERMISSION", "ULTIMATEDONUTSMP.STAFF.FREEZE.EXEMPT");
     }
 
     public String getAdminPermission() {
-        return getConfig().getString("FREEZE.ADMIN-PERMISSION", "ultimatedonutsmp.admin.freeze");
+        return getConfig().getString("FREEZE.ADMIN-PERMISSION", "ULTIMATEDONUTSMP.ADMIN.FREEZE");
     }
 
     public boolean canUse(CommandSender sender) {
@@ -195,7 +196,7 @@ public class FreezeManager {
                 target.getUniqueId(),
                 target.getName(),
                 actor instanceof Player player ? player.getUniqueId() : null,
-                actor instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ",
+                actor instanceof Player player ? player.getName() : "console",
                 System.currentTimeMillis(),
                 getServerName()
         );
@@ -234,7 +235,7 @@ public class FreezeManager {
         }
 
         if (shouldLogUsage()) {
-            String actorName = actor instanceof Player player ? player.getName() : "ᴄᴏɴѕᴏʟᴇ";
+            String actorName = actor instanceof Player player ? player.getName() : "console";
             plugin.getLogger().info("Freeze disabled: target=" + removed.getTargetNameSnapshot() + " actor=" + actorName);
         }
 
@@ -275,7 +276,7 @@ public class FreezeManager {
 
         if (state != null) {
             broadcastStaffMessage(formatText(
-                    getConfig().getString("FREEZE.QUIT_MESSAGE", "&c[Freeze] &4%player% &cʟᴇꜰᴛ ᴡʜɪʟᴇ ꜰʀᴏᴢᴇɴ ᴏɴ &4%server%"),
+                    getConfig().getString("FREEZE.QUIT_MESSAGE", "&c[freeze] &4%player% &cleft while frozen on &4%server%"),
                     state,
                     null
             ));
@@ -399,11 +400,11 @@ public class FreezeManager {
 
         String status = getConfig().getString(
                 result.active() ? "FREEZE.STATUS_ON" : "FREEZE.STATUS_OFF",
-                result.active() ? "&a&lᴏɴ" : "&c&lᴏꜰꜰ"
+                result.active() ? "&a&lon" : "&c&loff"
         );
         String template = getConfig().getString(
                 "FREEZE.MESSAGE",
-                "&bꜰʀᴇᴇᴢᴇ &a%player% &7ɪѕ ɴᴏᴡ %status%"
+                "&bfreeze &a%player% &7is now %status%"
         );
         return formatText(template, result.state(), status);
     }

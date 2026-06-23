@@ -26,17 +26,17 @@ public class ArenaCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sender.sendMessage(ColorUtils.toComponent("&e/arena create <id>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena delete <id>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena setpos1 <id>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena setpos2 <id>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena setreturn <id>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena setdisplay <id> <name>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena enable <id>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena disable <id>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena queue <id> <true|false>"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena list"));
-            sender.sendMessage(ColorUtils.toComponent("&e/arena reload"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ᴄʀᴇᴀᴛᴇ <id>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ᴅᴇʟᴇᴛᴇ <id>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ѕᴇᴛᴘᴏѕ1 <id>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ѕᴇᴛᴘᴏѕ2 <id>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ѕᴇᴛʀᴇᴛᴜʀɴ <id>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <name>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ᴇɴᴀʙʟᴇ <id>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ᴅɪѕᴀʙʟᴇ <id>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ǫᴜᴇᴜᴇ <id> <true|false>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ʟɪѕᴛ"));
+            sender.sendMessage(ColorUtils.toComponent("&e/arena ʀᴇʟᴏᴀᴅ"));
             return true;
         }
 
@@ -109,7 +109,7 @@ public class ArenaCommand implements CommandExecutor {
         }
         if (subcommand.equals("queue")) {
             if (args.length < 3) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /arena queue <id> <true|false>"));
+                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /arena ǫᴜᴇᴜᴇ <id> <true|false>"));
                 return true;
             }
             boolean enabled = Boolean.parseBoolean(args[2]);
@@ -122,7 +122,7 @@ public class ArenaCommand implements CommandExecutor {
         }
         if (subcommand.equals("setdisplay")) {
             if (args.length < 3) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /arena setdisplay <id> <name>"));
+                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /arena ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <name>"));
                 return true;
             }
             StringBuilder builder = new StringBuilder();

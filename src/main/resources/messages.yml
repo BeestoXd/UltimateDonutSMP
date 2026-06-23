@@ -1,0 +1,725 @@
+# UDS setup: Player-facing messages; placeholders and color codes depend on each feature.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Team limits, naming rules, homes, chat, invites, and team PvP settings.
+TEAM:
+  NO-TEAM: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀ ᴛᴇᴀᴍ. ᴛʏᴘᴇ /team ᴄʀᴇᴀᴛᴇ (ɴᴀᴍᴇ) ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ." # Sets the message text for this response.
+  ALREADY-EXISTS: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ ᴡɪᴛʜ ᴛʜɪѕ ɴᴀᴍᴇ, ɪᴛ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴛᴀᴋᴇɴ." # Sets the message text for this response.
+  TEAM-CREATED: "&aᴛᴇᴀᴍ ᴄʀᴇᴀᴛᴇᴅ." # Sets the message text for this response.
+  TEAM-DISBANDED: "&7ᴛᴇᴀᴍ ᴅɪѕʙᴀɴᴅᴇᴅ." # Sets the message text for this response.
+  ALREADY-IN-TEAM: "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴀ ᴛᴇᴀᴍ." # Sets the message text for this response.
+  NOT-LEADER: "&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴛʜᴇ ʟᴇᴀᴅᴇʀ." # Sets the message text for this response.
+  PLAYER-NO-INVITES: "&cᴛʜɪѕ ᴘʟᴀʏᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ᴀᴄᴄᴇᴘᴛ ɪɴᴠɪᴛᴀᴛɪᴏɴѕ." # Sets the message text for this response.
+  PLAYER-IN-TEAM: "&c{player} ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴀ ᴛᴇᴀᴍ." # Sets the message text for this response.
+  TEAM-FULL: "&cᴛᴇᴀᴍ ʜᴀѕ ʀᴇᴀᴄʜᴇᴅ ᴛʜᴇ ᴍᴀxɪᴍᴜᴍ ᴍᴇᴍʙᴇʀѕ." # Sets the message text for this response.
+  INVITE-SENT: "&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴊᴏɪɴ ᴛʜᴇ ᴛᴇᴀᴍ." # Sets the message text for this response.
+  NO-PENDING-INVITES: "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴘᴇɴᴅɪɴɢ ɪɴᴠɪᴛᴇѕ ꜰᴏʀ &6{team}&c." # Sets the message text for this response.
+  JOIN-SUCCESS: "&aʏᴏᴜ ʜᴀᴠᴇ ᴊᴏɪɴᴇᴅ ᴛᴏ &e{team}&a." # Sets the message text for this response.
+  CANT-KICK-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴋɪᴄᴋ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
+  KICK-SUCCESS: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ᴋɪᴄᴋᴇᴅ &7({player})." # Sets the message text for this response.
+  KICKED-FROM-TEAM: "&aʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ ꜰʀᴏᴍ ᴛʜᴇ ᴛᴇᴀᴍ." # Sets the message text for this response.
+  PLAYER-NOT-IN-TEAM: "&c{player} ɪѕ ɴᴏᴛ ᴀ ᴍᴇᴍʙᴇʀ ᴏꜰ ʏᴏᴜʀ ᴛᴇᴀᴍ." # Sets the message text for this response.
+  TEAM-CHAT-ENABLED: "&7ʏᴏᴜ ᴇɴᴀʙʟᴇᴅ ᴛᴇᴀᴍ ᴄʜᴀᴛ." # Sets the message text for this response.
+  TEAM-CHAT-DISABLED: "&7ʏᴏᴜ ᴅɪѕᴀʙʟᴇᴅ ᴛᴇᴀᴍ ᴄʜᴀᴛ." # Sets the message text for this response.
+  NO-MANAGE-PERMISSION: "&cyou don't have permission to invite or kick teammates." # Sets the message text for this response.
+  NO-EDIT-HOME-PERMISSION: "&cyou don't have permission to edit the team home." # Sets the message text for this response.
+  NO-VISIT-HOME-PERMISSION: "&cyou don't have permission to visit the team home." # Sets the message text for this response.
+  NO-TEAM-CHAT-PERMISSION: "&cyou don't have permission to use team chat." # Sets the message text for this response.
+  NO-PVP-PERMISSION: "&cyou don't have permission to change team pvp." # Sets the message text for this response.
+  TEAM-PVP-ENABLED: "&7ᴛᴇᴀᴍ ᴘᴠᴘ ɪѕ ɴᴏᴡ &aᴇɴᴀʙʟᴇᴅ&7." # Sets the message text for this response.
+  TEAM-PVP-DISABLED: "&7ᴛᴇᴀᴍ ᴘᴠᴘ ɪѕ ɴᴏᴡ &cᴅɪѕᴀʙʟᴇᴅ&7." # Sets the message text for this response.
+  NO-TEAM-HOME: "&7ʏᴏᴜʀ ᴛᴇᴀᴍ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ʜᴏᴍᴇ." # Sets the message text for this response.
+  TEAM-HOME-DELETED: "&7ᴛᴇᴀᴍ ʜᴏᴍᴇ ᴅᴇʟᴇᴛᴇᴅ." # Sets the message text for this response.
+  TEAM-HOME-SET: "&7ᴛᴇᴀᴍ ʜᴏᴍᴇ ѕᴇᴛ" # Sets the message text for this response.
+  TEAM-NOT-EXIST: "&cᴜѕᴇʀ/team ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
+  # Added in 3.7
+  INVITED-TO-JOIN: "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ɪɴᴠɪᴛᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ &a{team}&7 ᴛᴇᴀᴍ!" # Sets the message text for this response.
+  CLICK-TO-JOIN: "&b[ᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ]" # Sets the message text for this response.
+  HOVER-JOIN: "&eᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ {team} ᴛᴇᴀᴍ." # Sets the message text for this response.
+  OR-TYPE-COMMAND: "&7or type &f{command}&7 to join." # Sets the message text for this response.
+  JOINED-BROADCAST: "&a{player} &eʜᴀѕ ᴊᴏɪɴᴇᴅ ᴛʜᴇ ᴛᴇᴀᴍ." # Sets the message text for this response.
+
+# UDS setup: Configure CHAT-MANAGER options for this file.
+CHAT-MANAGER:
+  HELP:
+    - ""
+    - "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(ᴄᴏᴍᴍᴀɴᴅѕ)"
+    - ""
+    - "&f/chat ᴍᴜᴛᴇ &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
+    - "&f/chat ᴜɴᴍᴜᴛᴇ &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
+    - "&f/chat ᴅᴇʟᴀʏ (ᴛɪᴍᴇ) &7- ᴛᴏ ᴀᴅᴅ ᴅᴇʟᴀʏ ᴛᴏ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
+    - "&f/chat ᴄʟᴇᴀʀ &7- ᴛᴏ ᴄʟᴇᴀʀ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
+    - ""
+  MUTED: "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴍᴜᴛᴇᴅ." # Sets the message text for this response.
+  UNMUTED: "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴜɴᴍᴜᴛᴇᴅ." # Sets the message text for this response.
+  DELAY: "&7ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴅᴇʟᴀʏᴇᴅ &a%delay% &7ѕᴇᴄᴏɴᴅѕ ᴀɴᴅ ᴅᴇʟᴀʏ ɪѕ &a%status%" # Sets the message text for this response.
+  CLEARED: "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄʟᴇᴀʀᴇᴅ." # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  DISABLED: "&cᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  INVALID-DELAY: "&cɪɴᴠᴀʟɪᴅ ᴅᴇʟᴀʏ. ᴜѕᴇ ᴀ ɴᴜᴍʙᴇʀ ʙᴇᴛᴡᴇᴇɴ 0 ᴀɴᴅ {max}." # Sets the message text for this response.
+  STATUS-ENABLED: "ᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
+  STATUS-DISABLED: "ᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
+  GLOBAL-MUTED-BLOCK: "&cɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴍᴜᴛᴇᴅ." # Sets the message text for this response.
+  GLOBAL-DELAY-BLOCK: "&cʏᴏᴜ ᴍᴜѕᴛ ᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀᴛᴛɪɴɢ ᴀɢᴀɪɴ." # Sets the message text for this response.
+
+# UDS setup: Configure IGNORE options for this file.
+IGNORE:
+  ADDED: "&7%player% &cʜᴀѕ ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
+  REMOVED: "&7%player% &cʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /ignore <player|list>" # Sets the message text for this response.
+  UNIGNORE-USAGE: "&cᴜѕᴀɢᴇ: /unignore <player>" # Sets the message text for this response.
+  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  DISABLED: "&cɪɢɴᴏʀᴇ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  CANNOT-IGNORE-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɢɴᴏʀᴇ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
+  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  NOT-IGNORED: "&7%player% &cɪѕ ɴᴏᴛ ɪɴ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
+  LIST-EMPTY: "&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɢɴᴏʀɪɴɢ ᴀɴʏᴏɴᴇ." # Sets the message text for this response.
+  LIST-HEADER: "&8&m-------- &cɪɢɴᴏʀᴇᴅ ᴘʟᴀʏᴇʀѕ &7(%count%) &8&m--------" # Sets the message text for this response.
+  LIST-ENTRY: "&8- &7%player%" # Sets the message text for this response.
+  MESSAGE-BLOCKED-SENDER: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ %player%." # Sets the message text for this response.
+  ERROR: "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
+
+# UDS setup: Configure PRIVATE_MESSAGES options for this file.
+PRIVATE_MESSAGES:
+  PM_ENABLED: "&aᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
+  PM_DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
+
+# UDS setup: Configure MESSAGES options for this file.
+MESSAGES:
+  CANNOT_MESSAGE_SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
+  PLAYER_BLOCKED: "&c%player% ʜᴀѕ ʙʟᴏᴄᴋᴇᴅ ʏᴏᴜ." # Sets the message text for this response.
+  PMS_DISABLED: "&c%player% ʜᴀѕ ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  NO_CONVERSATION: "&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ." # Sets the message text for this response.
+  SENDER_FORMAT: "&d(ᴛᴏ &a%player%&d) %message%" # Sets the message text for this response.
+  RECEIVER_FORMAT: "&d(ꜰʀᴏᴍ &a%player%&d) %message%" # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /msg <player> <message>" # Sets the message text for this response.
+  REPLY_USAGE: "&cᴜѕᴀɢᴇ: /reply <message>" # Sets the message text for this response.
+  PLAYER_NOT_ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+  PLAYER_ONLY_REPLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /reply." # Sets the message text for this response.
+  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
+  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+
+# UDS setup: Configure PRIVATE-MESSAGE options for this file.
+PRIVATE-MESSAGE:
+  USAGE: "&cᴜѕᴀɢᴇ: /msg <player> <message>" # Sets the message text for this response.
+  REPLY-USAGE: "&cᴜѕᴀɢᴇ: /reply <message>" # Sets the message text for this response.
+  PLAYER-ONLY-REPLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /reply." # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  PLAYER-NOT-ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+  CANNOT-MESSAGE-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
+  NO-REPLY-TARGET: "&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ." # Sets the message text for this response.
+  SENT: "&d(ᴛᴏ &a%player%&d) %message%" # Sets the message text for this response.
+  RECEIVED: "&d(ꜰʀᴏᴍ &a%player%&d) %message%" # Sets the message text for this response.
+  PM-ENABLED: "&aᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
+  PM-DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
+
+# UDS setup: Auto-TPA sounds.
+TPAUTO:
+  ENABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏɴ ᴛᴘᴀᴜᴛᴏ." # Sets the message text for this response.
+  DISABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏꜰꜰ ᴛᴘᴀᴜᴛᴏ." # Sets the message text for this response.
+
+# UDS setup: Configure TPAHEREAUTO options for this file.
+TPAHEREAUTO:
+  ENABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏɴ ᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ." # Sets the message text for this response.
+  DISABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏꜰꜰ ᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ." # Sets the message text for this response.
+
+# UDS setup: Configure PHANTOM options for this file.
+PHANTOM:
+  ENABLED: "&7ʏᴏᴜ ᴅɪѕᴀʙʟᴇᴅ ᴘʜᴀɴᴛᴏᴍѕ ѕᴘᴀᴡɴɪɴɢ ᴄʟᴏѕᴇ ᴛᴏ ʏᴏᴜ" # Sets the message text for this response.
+  DISABLED: "&7ʏᴏᴜ ᴇɴᴀʙʟᴇᴅ ᴘʜᴀɴᴛᴏᴍѕ ѕᴘᴀᴡɴɪɴɢ ᴄʟᴏѕᴇ ᴛᴏ ʏᴏᴜ" # Sets the message text for this response.
+
+# UDS setup: Entity cleanup timing, exclusions, warnings, and cleanup scope.
+CLEAR-LAG:
+  COUNTDOWN: "&7ᴇɴᴛɪᴛɪᴇѕ ᴡɪʟʟ ʙᴇ ʀᴇᴍᴏᴠᴇᴅ ɪɴ &b{seconds} &7ѕᴇᴄᴏɴᴅѕ." # Sets the message text for this response.
+  SUCCESS: "&7ᴛᴏᴛᴀʟ ᴏꜰ &b{total} &7ᴇɴᴛɪᴛɪᴇѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄʟᴇᴀʀᴇᴅ." # Sets the message text for this response.
+
+# UDS setup: Teleport countdown and completion sounds.
+TELEPORT:
+  SUCCESS: "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ" # Sets the message text for this response.
+  COUNTDOWN: "&7ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ ɪɴ &b{seconds}&7 ѕᴇᴄᴏɴᴅѕ" # Sets the message text for this response.
+  WARNING: "&eᴅᴏ ɴᴏᴛ ᴍᴏᴠᴇ ꜰᴏʀ &b{seconds}&e ѕᴇᴄᴏɴᴅѕ. ɪꜰ ʏᴏᴜ ᴍᴏᴠᴇ, ᴛʜᴇ ᴛᴇʟᴇᴘᴏʀᴛ ᴡɪʟʟ ʙᴇ ᴄᴀɴᴄᴇʟᴇᴅ." # Sets the message text for this response.
+  CANCELED: "&cᴛᴇʟᴇᴘᴏʀᴛ ᴄᴀɴᴄᴇʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ʏᴏᴜ ᴍᴏᴠᴇᴅ." # Sets the message text for this response.
+  TO_PLAYER: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ %player%" # Sets the message text for this response.
+  HERE: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7%player% ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ" # Sets the message text for this response.
+  HERE_TARGET: "&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%" # Sets the message text for this response.
+  ALL: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴀʟʟ ᴘʟᴀʏᴇʀѕ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ" # Sets the message text for this response.
+  ALL_TARGET: "&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%" # Sets the message text for this response.
+  POSITION: "&7ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ: &d%x%,%y%,%z% &7(%world%)" # Sets the message text for this response.
+  TOP: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ ᴛʜᴇ ʜɪɢʜᴇѕᴛ ᴘᴏѕɪᴛɪᴏɴ" # Sets the message text for this response.
+
+# UDS setup: Configure SHARD-BOOSTER options for this file.
+SHARD-BOOSTER:
+  ACTIVATED: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ ʏᴏᴜʀ &5ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ &aꜰᴏʀ 24ʜ." # Sets the message text for this response.
+  ALREADY-ACTIVATED: "&cʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ." # Sets the message text for this response.
+  EXPIRED: "&cʏᴏᴜʀ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ ʜᴀѕ ᴇxᴘɪʀᴇᴅ." # Sets the message text for this response.
+
+# UDS setup: TPA request and response sounds.
+TPA:
+  INVITE-SENT: "&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ." # Sets the message text for this response.
+  INVITE-HERE-SENT: "&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
+  ALREADY-SENT: "&cʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ѕᴇɴᴛ ᴛʜᴇ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &6{player}." # Sets the message text for this response.
+  REQUEST-RECEIVED: "&e[&d&lᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ&e] &eʏᴏᴜ ʜᴀᴠᴇ ᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a&l{player}&e. &a&l(ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴄᴇᴘᴛ)" # Sets the message text for this response.
+  REQUEST-HERE-RECEIVED: "&e[&d&lᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ&e] &eʏᴏᴜ ʜᴀᴠᴇ ᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a&l{player}&e ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴛʜᴇᴍ. &a&l(ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴄᴇᴘᴛ)" # Sets the message text for this response.
+  NO-REQUEST: "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
+  NO-SENT-REQUESTS: "&cᴛʜɪѕ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ᴅᴏᴇѕᴛ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
+  CANCELLED-REQUESTS: "&7ʏᴏᴜ ᴄᴀɴᴄᴇʟᴇᴅ ʏᴏᴜʀ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ." # Sets the message text for this response.
+  NO-REQUEST-HERE: "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
+  ACCEPTED: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛʜᴇ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
+  ACCEPTED-HERE: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛʜᴇ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
+  YOUR-REQUEST-ACCEPTED: "&a{player} ʜᴀѕ ᴀᴄᴄᴇᴘᴛᴇᴅ ʏᴏᴜʀ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ." # Sets the message text for this response.
+  YOUR-REQUEST-HERE-ACCEPTED: "&a{player} ʜᴀѕ ᴀᴄᴄᴇᴘᴛᴇᴅ ʏᴏᴜʀ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ." # Sets the message text for this response.
+  # Added in 3.7
+  CANNOT-INVITE-YOURSELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠɪᴛᴇ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
+  NOT-ACCEPTING-REQUESTS: "&cᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴄᴄᴇᴘᴛɪɴɢ ʀᴇǫᴜᴇѕᴛѕ." # Sets the message text for this response.
+
+# UDS setup: Configure HOME options for this file.
+HOME:
+  NAME-PROMPT: "&7ᴛʏᴘᴇ ᴛʜᴇ ʜᴏᴍᴇ ɴᴀᴍᴇ ɪɴ ᴄʜᴀᴛ ꜰᴏʀ &b{name}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ &7ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
+  SET: "&7ʜᴏᴍᴇ ѕᴇᴛ" # Sets the message text for this response.
+  DELETED: "&7ʜᴏᴍᴇ ᴅᴇʟᴇᴛᴇᴅ" # Sets the message text for this response.
+  RENAME-PROMPT: "&7ᴛʏᴘᴇ ᴛʜᴇ ɴᴇᴡ ɴᴀᴍᴇ ꜰᴏʀ &b{name}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ &7ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
+  RENAME-SUCCESS: "&7ʏᴏᴜ ʀᴇɴᴀᴍᴇ ʏᴏᴜʀ ʜᴏᴍᴇ ᴛᴏ &b{name}" # Sets the message text for this response.
+  INVALID-NAME: "&cɪɴᴠᴀʟɪᴅ ʜᴏᴍᴇ ɴᴀᴍᴇ. ᴅᴏ ɴᴏᴛ ᴜѕᴇ ѕᴘᴀᴄᴇѕ." # Sets the message text for this response.
+  ALREADY-EXISTS: "&cᴀ ʜᴏᴍᴇ ᴡɪᴛʜ ᴛʜᴀᴛ ɴᴀᴍᴇ ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ." # Sets the message text for this response.
+  CANCELLED: "&7ʜᴏᴍᴇ ɪɴᴘᴜᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ." # Sets the message text for this response.
+
+# UDS setup: Configure WARP options for this file.
+WARP:
+  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴡᴀʀᴘ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /warp [ɴᴀᴍᴇ]" # Sets the message text for this response.
+  LIST-HEADER: "&8&m---------------- &bᴡᴀʀᴘѕ &7({count}) &8&m----------------" # Sets the message text for this response.
+  LIST-ENTRY: "&7- &b{name}" # Sets the message text for this response.
+  LIST-EMPTY: "&cɴᴏ ᴡᴀʀᴘѕ ᴀᴠᴀɪʟᴀʙʟᴇ." # Sets the message text for this response.
+  NOT-FOUND: "&cᴡᴀʀᴘ '&e{name}&c' ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  NOT-FOUND-SUGGESTION: "&7ᴅɪᴅ ʏᴏᴜ ᴍᴇᴀɴ: &b{suggestions}" # Sets the message text for this response.
+  CREATED: "&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ." # Sets the message text for this response.
+  DELETED: "&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ." # Sets the message text for this response.
+  ALREADY-EXISTS: "&cᴡᴀʀᴘ '&e{name}&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ." # Sets the message text for this response.
+  INVALID-NAME: "&cɪɴᴠᴀʟɪᴅ ᴡᴀʀᴘ ɴᴀᴍᴇ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ." # Sets the message text for this response.
+
+# UDS setup: Configure WARPMANAGER options for this file.
+WARPMANAGER:
+  USAGE: "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [ɴᴀᴍᴇ]" # Sets the message text for this response.
+  CREATE-USAGE: "&cᴜѕᴀɢᴇ: /warpmanager ᴄʀᴇᴀᴛᴇ <name>" # Sets the message text for this response.
+  DELETE-USAGE: "&cᴜѕᴀɢᴇ: /warpmanager ᴅᴇʟᴇᴛᴇ <name>" # Sets the message text for this response.
+  CREATE-USAGE-ALIAS: "&cᴜѕᴀɢᴇ: /setwarp <name>" # Sets the message text for this response.
+  DELETE-USAGE-ALIAS: "&cᴜѕᴀɢᴇ: /delwarp <name>" # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission to manage warps." # Sets the message text for this response.
+  CREATE-PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘѕ." # Sets the message text for this response.
+  CREATE-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘ '&e{name}&c'." # Sets the message text for this response.
+
+# UDS setup: Configure PORTAL options for this file.
+PORTAL:
+  LIST-EMPTY: "&cɴᴏ ᴘᴏʀᴛᴀʟѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʏᴇᴛ." # Sets the message text for this response.
+  ENTERED: "&dᴇɴᴛᴇʀɪɴɢ {portal}&7..." # Sets the message text for this response.
+  INVALID-CUBOID: "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴄᴏʀʀᴇᴄᴛʟʏ ʀɪɢʜᴛ ɴᴏᴡ." # Sets the message text for this response.
+  INVALID-DESTINATION: "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ." # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission to use this portal." # Sets the message text for this response.
+  IN-COMBAT: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴘᴏʀᴛᴀʟѕ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ." # Sets the message text for this response.
+  TELEPORT-IN-PROGRESS: "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ." # Sets the message text for this response.
+  STATUS-READY: "&aʀᴇᴀᴅʏ" # Sets the message text for this response.
+  STATUS-DISABLED: "&cᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
+  STATUS-INVALID-CUBOID: "&eɪɴᴠᴀʟɪᴅ ᴄᴜʙᴏɪᴅ" # Sets the message text for this response.
+  STATUS-INVALID-DESTINATION: "&eɪɴᴠᴀʟɪᴅ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ" # Sets the message text for this response.
+
+# UDS setup: Configure PORTALMANAGER options for this file.
+PORTALMANAGER:
+  USAGE: "&cᴜѕᴀɢᴇ: /portalmanager <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>" # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission to manage portals." # Sets the message text for this response.
+  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
+  CREATE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ᴄʀᴇᴀᴛᴇ <id> <cuboid> <rtp_selector>" # Sets the message text for this response.
+  DELETE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ᴅᴇʟᴇᴛᴇ <id>" # Sets the message text for this response.
+  INFO-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ɪɴꜰᴏ <id>" # Sets the message text for this response.
+  SETCUBOID-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴄᴜʙᴏɪᴅ <id> <cuboid>" # Sets the message text for this response.
+  SETDESTINATION-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>" # Sets the message text for this response.
+  SETDISPLAY-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <display name...>" # Sets the message text for this response.
+  TOGGLE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ᴛᴏɢɢʟᴇ <id>" # Sets the message text for this response.
+  SETPRIORITY-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴘʀɪᴏʀɪᴛʏ <id> <number>" # Sets the message text for this response.
+  SETHOLOGRAMHERE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛʜᴏʟᴏɢʀᴀᴍʜᴇʀᴇ <id>" # Sets the message text for this response.
+  INVALID-ID: "&cɪɴᴠᴀʟɪᴅ ᴘᴏʀᴛᴀʟ ɪᴅ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ." # Sets the message text for this response.
+  INVALID-CUBOID: "&cᴄᴜʙᴏɪᴅ '&e{cuboid}&c' ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
+  INVALID-DESTINATION: "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ." # Sets the message text for this response.
+  INVALID-PRIORITY: "&cᴘʀɪᴏʀɪᴛʏ ᴍᴜѕᴛ ʙᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ." # Sets the message text for this response.
+  NOT-FOUND: "&cᴘᴏʀᴛᴀʟ '&e{id}&c' ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  ALREADY-EXISTS: "&cᴘᴏʀᴛᴀʟ '&e{id}&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ." # Sets the message text for this response.
+  CREATED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ." # Sets the message text for this response.
+  UPDATED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ." # Sets the message text for this response.
+  HOLOGRAM-UPDATED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴏʟᴏɢʀᴀᴍ ʜᴀѕ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ." # Sets the message text for this response.
+  DELETED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ." # Sets the message text for this response.
+  TOGGLED: "&aᴘᴏʀᴛᴀʟ &d{id} &aɪѕ ɴᴏᴡ &f{state}&a." # Sets the message text for this response.
+  LIST-HEADER: "&8&m---------------- &dᴘᴏʀᴛᴀʟѕ &7({count}) &8&m----------------" # Sets the message text for this response.
+  LIST-ENTRY: "&7- &d{id} &8[&f{state}&8] &7ᴄᴜʙᴏɪᴅ=&f{cuboid} &7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ=&f{destination}" # Sets the message text for this response.
+  INFO-HEADER: "&8&m---------------- &dᴘᴏʀᴛᴀʟ: &f{id} &8&m----------------" # Sets the message text for this response.
+  INFO-DISPLAY: "&7ᴅɪѕᴘʟᴀʏ: &f{display}" # Sets the message text for this response.
+  INFO-STATE: "&7ѕᴛᴀᴛᴇ: &f{state}" # Sets the message text for this response.
+  INFO-CUBOID: "&7ᴄᴜʙᴏɪᴅ: &f{cuboid}" # Sets the message text for this response.
+  INFO-DESTINATION: "&7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ: &f{destination}" # Sets the message text for this response.
+  INFO-WORLD: "&7ʀᴇѕᴏʟᴠᴇᴅ ᴡᴏʀʟᴅ: &f{world}" # Sets the message text for this response.
+  INFO-PRIORITY: "&7ᴘʀɪᴏʀɪᴛʏ: &f{priority}" # Sets the message text for this response.
+  INFO-COOLDOWN: "&7ᴛʀɪɢɢᴇʀ ᴄᴏᴏʟᴅᴏᴡɴ: &f{cooldown}ᴍѕ" # Sets the message text for this response.
+  INFO-PERMISSION: "&7permission: &f{permission}" # Sets the message text for this response.
+  INFO-HOLOGRAM: "&7ʜᴏʟᴏɢʀᴀᴍ: &f{hologram}" # Sets the message text for this response.
+
+# UDS setup: Configure WORTH options for this file.
+WORTH:
+  DEFAULT: "&b1 {item} &7ɪѕ ɴᴏᴡ &a${price}" # Sets the message text for this response.
+  HAND-ITEM: "&b{amount} {item} &7ɪѕ ɴᴏᴡ &a${total}" # Sets the message text for this response.
+  NO-SELLABLE: "&cᴛʜɪѕ ɪᴛᴇᴍ ɪѕ ɴᴏᴛ ѕᴇʟʟᴀʙʟᴇ." # Sets the message text for this response.
+  CONTAINER-BREAKDOWN: "&7ʙᴀѕᴇ: &f${base} &8| &7ᴄᴏɴᴛᴇɴᴛѕ: &f${contents}" # Sets the message text for this response.
+  RELOADED: "&aᴡᴏʀᴛʜ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
+  NO-ADMIN-PERMISSION: "&cyou do not have permission to reload worth settings." # Sets the message text for this response.
+
+# UDS setup: Bounty limits, taxes, menus, and reward handling.
+BOUNTY:
+  NEW: "&aᴀ ɴᴇᴡ ʙᴏᴜɴᴛʏ ᴏꜰ ${price} ʜᴀѕ ʙᴇᴇɴ ᴘʟᴀᴄᴇᴅ ᴏɴ {player}!" # Sets the message text for this response.
+  INCREASED: "&aᴛʜᴇ ʙᴏᴜɴᴛʏ ꜰᴏʀ {player} ʜᴀѕ ʙᴇᴇɴ ɪɴᴄʀᴇᴀѕᴇᴅ ʙʏ ${price}!" # Sets the message text for this response.
+  ALERT: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀ ɴᴇᴡ ʙᴏᴜɴᴛʏ ꜰʀᴏᴍ {who} ꜰᴏʀ ${price}" # Sets the message text for this response.
+  CLAIM-SUCCESS: "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &b${amount}&7 ꜰᴏʀ ᴋɪʟʟɪɴɢ &c{player}&7." # Sets the message text for this response.
+  PLAYER-NOT-EXIST: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
+  PLAYER-HAS-BOUNTY: "&b{player} &7ʜᴀѕ ᴀ ʙᴏᴜɴᴛʏ ᴏꜰ &c${amount}" # Sets the message text for this response.
+  NO-BOUNTY: "&cᴛʜᴇ ᴜѕᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ʙᴏᴜɴᴛʏ." # Sets the message text for this response.
+  CANT-SELF-BOUNTY: "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴅᴏ ᴛʜɪѕ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
+  MINIMUM-PRICE: "&cᴍɪɴɪᴍᴜᴍ ᴘʀɪᴄᴇ ɪѕ $1.00." # Sets the message text for this response.
+
+# UDS setup: Billford shop entries, prices, stock, and rotation content.
+BILLFORD:
+  REQUIRED_CONTENTS: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀʟʟ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ꜰᴏʀ ᴛʜɪѕ ᴛʀᴀᴅᴇ." # Sets the message text for this response.
+  FULL-INVENTORY: "&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ꜰᴜʟʟ! ꜰʀᴇᴇ ᴜᴘ ᴀ ѕʟᴏᴛ ʙᴇꜰᴏʀᴇ ᴄᴏɴꜰɪʀᴍɪɴɢ ᴛʜᴇ ᴛʀᴀᴅᴇ." # Sets the message text for this response.
+  TRADE-COMPLETED: "&aᴛʀᴀᴅᴇ ᴄᴏᴍᴘʟᴇᴛᴇ! ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &f{reward}&a. &7ѕʜᴀʀᴅѕ: &#A303F9{shard_bonus}&7, ᴍᴏɴᴇʏ: &a${money_bonus}&7. &8ɴᴇxᴛ ʀᴇꜰʀᴇѕʜ ɪɴ &f{next_rotation}&8." # Sets the message text for this response.
+  LIMIT-REACHED: "&cʏᴏᴜ'ᴠᴇ ʀᴇᴀᴄʜᴇᴅ ᴛʜᴇ ᴛʀᴀᴅᴇ ʟɪᴍɪᴛ ꜰᴏʀ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ. ᴄᴏᴍᴇ ʙᴀᴄᴋ ᴀꜰᴛᴇʀ ᴛʜᴇ ɴᴇxᴛ ᴛʀᴀᴅᴇ ᴄʜᴀɴɢᴇ!" # Sets the message text for this response.
+  CLICK-COOLDOWN: "&cѕʟᴏᴡ ᴅᴏᴡɴ. ʙɪʟʟꜰᴏʀᴅ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴄʟɪᴄᴋ." # Sets the message text for this response.
+  TRADE-CHANGED: "&eʙɪʟʟꜰᴏʀᴅ ʀᴏᴛᴀᴛᴇᴅ ᴛᴏ ᴀ ɴᴇᴡ ᴏꜰꜰᴇʀ ᴡʜɪʟᴇ ʏᴏᴜ ʜᴀᴅ ᴛʜᴇ ᴍᴇɴᴜ ᴏᴘᴇɴ. &7ɴᴇxᴛ ᴄʜᴀɴɢᴇ ɪɴ &b{countdown}&7." # Sets the message text for this response.
+  BUSY: "&cʙɪʟʟꜰᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴄʟɪᴄᴋ." # Sets the message text for this response.
+  NOT-CONFIGURED: "&cʙɪʟʟꜰᴏʀᴅ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴛʀᴀᴅᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʀɪɢʜᴛ ɴᴏᴡ." # Sets the message text for this response.
+  NO-PERMISSION: "&cyou need &f{permission} &cto use billford." # Sets the message text for this response.
+
+# UDS setup: Configure BALANCE options for this file.
+BALANCE:
+  YOUR-BALANCE: "&7ʏᴏᴜ ʜᴀᴠᴇ &a${amount}&7." # Sets the message text for this response.
+  OTHER-BALANCE: "&b{player} &7ʜᴀѕ &a${amount}&7." # Sets the message text for this response.
+  YOUR-SHARDS: "&7ʏᴏᴜʀ ѕʜᴀʀᴅѕ: &#A303F9{amount}" # Sets the message text for this response.
+  OTHER-SHARDS: "&7{player}'ѕ ѕʜᴀʀᴅѕ: &#A303F9{amount}" # Sets the message text for this response.
+  ADMIN:
+    INVALID-AMOUNT: "&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1.5ᴍ, 2ʙ)" # Sets the message text for this response.
+    MUST-BE-POSITIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
+    MUST-BE-NON-NEGATIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴢᴇʀᴏ ᴏʀ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
+    PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+    TARGET-NOT-ENOUGH-MONEY: "&c{player} ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ. ᴄᴜʀʀᴇɴᴛ ʙᴀʟᴀɴᴄᴇ: &f${balance}&c." # Sets the message text for this response.
+    ADD-MONEY-SUCCESS: "&aᴀᴅᴅᴇᴅ &f${amount} &aᴛᴏ &b{player}&a. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&a." # Sets the message text for this response.
+    ADD-MONEY-RECEIVED: "&a{admin} ᴀᴅᴅᴇᴅ &f${amount} &aᴛᴏ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&a." # Sets the message text for this response.
+    REMOVE-MONEY-SUCCESS: "&aʀᴇᴍᴏᴠᴇᴅ &f${amount} &aꜰʀᴏᴍ &b{player}&a. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&a." # Sets the message text for this response.
+    REMOVE-MONEY-RECEIVED: "&c{admin} ʀᴇᴍᴏᴠᴇᴅ &f${amount} &cꜰʀᴏᴍ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&c." # Sets the message text for this response.
+    SET-MONEY-SUCCESS: "&aѕᴇᴛ &b{player}&a'ѕ ʙᴀʟᴀɴᴄᴇ ᴛᴏ &f${amount}&a. ᴘʀᴇᴠɪᴏᴜѕ ʙᴀʟᴀɴᴄᴇ: &f${previous_balance}&a." # Sets the message text for this response.
+    SET-MONEY-RECEIVED: "&e{admin} ѕᴇᴛ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ ᴛᴏ &f${amount}&e. ᴘʀᴇᴠɪᴏᴜѕ ʙᴀʟᴀɴᴄᴇ: &f${previous_balance}&e." # Sets the message text for this response.
+  PAY:
+    CANT-PAY-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴘᴀʏ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
+    INVALID-AMOUNT: "&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1.5ᴍ, 2ʙ)" # Sets the message text for this response.
+    MUST-BE-POSITIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
+    NOT-ENOUGH-MONEY: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ." # Sets the message text for this response.
+    TRANSACTION-ERROR: "&cᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ ᴅᴜʀɪɴɢ ᴛʀᴀɴѕᴀᴄᴛɪᴏɴ. ʏᴏᴜʀ ᴍᴏɴᴇʏ ʜᴀѕ ʙᴇᴇɴ ʀᴇꜰᴜɴᴅᴇᴅ." # Sets the message text for this response.
+    PLAYER-NOT-ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+    TARGET-PROFILE-NOT-FOUND: "&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+    SUCCESS-SENDER: "&7ʏᴏᴜ ᴘᴀɪᴅ &b{player} &a${amount}&7." # Sets the message text for this response.
+    SUCCESS-RECEIVER: "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &a${amount}&7 ꜰʀᴏᴍ &b{player}&7." # Sets the message text for this response.
+    TARGET-DISABLED-PAYMENTS: "&cᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴘʟᴀʏᴇʀ ʜᴀѕ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+
+# UDS setup: Configure SHARD_PAY options for this file.
+SHARD_PAY:
+  CANT-PAY-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴘᴀʏ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
+  INVALID-AMOUNT: "&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1.5ᴍ, 2ʙ)" # Sets the message text for this response.
+  MUST-BE-POSITIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
+  NOT-ENOUGH-SHARDS: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ѕʜᴀʀᴅѕ." # Sets the message text for this response.
+  TARGET-PROFILE-NOT-FOUND: "&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  TARGET-DISABLED-PAYMENTS: "&cᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴘʟᴀʏᴇʀ ʜᴀѕ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  SUCCESS-SENDER: "&7ʏᴏᴜ ᴘᴀɪᴅ &b{player} &#A303F9{amount}&7 ѕʜᴀʀᴅѕ." # Sets the message text for this response.
+  SUCCESS-RECEIVER: "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &#A303F9{amount}&7 ѕʜᴀʀᴅѕ ꜰʀᴏᴍ &b{player}&7." # Sets the message text for this response.
+
+# UDS setup: Configure FINDPLAYER options for this file.
+FINDPLAYER:
+  AFK: "&7{player}'ѕ ɪɴ ᴛʜᴇ &#A303F9ᴀꜰᴋ" # Sets the message text for this response.
+  RTP_ZONE: "&7{player}'ѕ ɪɴ ᴛʜᴇ &cʀᴛᴘᴢᴏɴᴇ" # Sets the message text for this response.
+  SPAWN: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bѕᴘᴀᴡɴ" # Sets the message text for this response.
+  OVERWORLD: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bᴏᴠᴇʀᴡᴏʀʟᴅ &7(&b{biome}&7)" # Sets the message text for this response.
+  NETHER: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bɴᴇᴛʜᴇʀ &7(&b{biome}&7)" # Sets the message text for this response.
+  THE_END: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bᴛʜᴇ ᴇɴᴅ &7(&b{biome}&7)" # Sets the message text for this response.
+  UNKNOWN: "&7{player}'ѕ ɪɴ ᴛʜᴇ &b{world}" # Sets the message text for this response.
+
+# UDS setup: Configure PUNISHMENTS options for this file.
+PUNISHMENTS:
+  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
+  NO-PERMISSION: "&cyou do not have permission to view punishment history." # Sets the message text for this response.
+  NO-CREATE-PERMISSION: "&cyou do not have permission to create punishments." # Sets the message text for this response.
+  NO-REMOVE-PERMISSION: "&cyou do not have permission to remove punishments." # Sets the message text for this response.
+  NO-DELETE-PERMISSION: "&cyou do not have permission to delete punishment history records." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /punishments <player>" # Sets the message text for this response.
+  USAGE-BAN: "&cᴜѕᴀɢᴇ: /ban <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-TEMPBAN: "&cᴜѕᴀɢᴇ: /tempban <player> <time> [ʀᴇᴀѕᴏɴ] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)" # Sets the message text for this response.
+  USAGE-MUTE: "&cᴜѕᴀɢᴇ: /mute <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-TEMPMUTE: "&cᴜѕᴀɢᴇ: /tempmute <player> <time> [ʀᴇᴀѕᴏɴ] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)" # Sets the message text for this response.
+  USAGE-WARN: "&cᴜѕᴀɢᴇ: /warn <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-KICK: "&cᴜѕᴀɢᴇ: /kick <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-BLACKLIST: "&cᴜѕᴀɢᴇ: /blacklist <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-UNBAN: "&cᴜѕᴀɢᴇ: /unban <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-PARDON: "&cᴜѕᴀɢᴇ: /pardon <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-UNMUTE: "&cᴜѕᴀɢᴇ: /unmute <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  USAGE-UNBLACKLIST: "&cᴜѕᴀɢᴇ: /unblacklist <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
+  NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  TARGET-OFFLINE: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+  INVALID-DURATION: "&cɪɴᴠᴀʟɪᴅ ᴛɪᴍᴇ. ᴜѕᴇ ᴠᴀʟᴜᴇѕ ʟɪᴋᴇ 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ ᴄᴏᴍʙɪɴᴇ: 5ᴅ 15ᴍ 30ѕ." # Sets the message text for this response.
+  CREATE-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ." # Sets the message text for this response.
+  DELETE-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ #{id}." # Sets the message text for this response.
+  CREATED: "&aᴄʀᴇᴀᴛᴇᴅ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏʀ &b{player}&a. ɪᴅ: &f#{id}" # Sets the message text for this response.
+  DELETED-RECORD: "&aᴅᴇʟᴇᴛᴇᴅ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅ &f#{id}&a." # Sets the message text for this response.
+  REMOVED: "&aʀᴇᴍᴏᴠᴇᴅ ᴀᴄᴛɪᴠᴇ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ(ѕ) ꜰᴏʀ &b{player}&a." # Sets the message text for this response.
+  NO-ACTIVE: "&cɴᴏ ᴀᴄᴛɪᴠᴇ {type} ᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏᴜɴᴅ ꜰᴏʀ {player}." # Sets the message text for this response.
+  WARN-RECEIVED: "&cᴡᴀʀɴɪɴɢ: &f{reason}" # Sets the message text for this response.
+  MUTE-RECEIVED: "&cʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ. ʀᴇᴀѕᴏɴ: &f{reason}" # Sets the message text for this response.
+  MUTED-CHAT: "&cʏᴏᴜ ᴀʀᴇ ᴍᴜᴛᴇᴅ. ʀᴇᴀѕᴏɴ: &f{reason}&7. ᴇxᴘɪʀᴇѕ: &f{expires}" # Sets the message text for this response.
+  BAN-KICK: "&cʏᴏᴜ ᴀʀᴇ ʙᴀɴɴᴇᴅ ꜰʀᴏᴍ ᴛʜɪѕ ѕᴇʀᴠᴇʀ.\n&7ʀᴇᴀѕᴏɴ: &f{reason}\n&7ᴇxᴘɪʀᴇѕ: &f{expires}" # Sets the message text for this response.
+  BLACKLIST-KICK: "&cʏᴏᴜ ᴀʀᴇ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ꜰʀᴏᴍ ᴛʜɪѕ ѕᴇʀᴠᴇʀ.\n&7ʀᴇᴀѕᴏɴ: &f{reason}" # Sets the message text for this response.
+  BAN: | # Sets the multi-line message text for this response.
+    &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ!
+    &8&m----------------------------
+    &7ʀᴇᴀѕᴏɴ: &f%reason%
+    &7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%
+    &7ʙᴀɴɴᴇᴅ ʙʏ: &f%issuer%
+    &8&m----------------------------
+    &7ᴀᴘᴘᴇᴀʟ ᴀᴛ: &fdiscord.example.space
+  KICK: | # Sets the multi-line message text for this response.
+    &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ!
+    &8&m----------------------------
+    &7ʀᴇᴀѕᴏɴ: &f%reason%
+    &7ᴋɪᴄᴋᴇᴅ ʙʏ: &f%issuer%
+    &8&m----------------------------
+    &7ʏᴏᴜ ᴍᴀʏ ʀᴇᴄᴏɴɴᴇᴄᴛ
+  MUTE: | # Sets the multi-line message text for this response.
+    &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ!
+    &8&m----------------------------
+    &7ʀᴇᴀѕᴏɴ: &f%reason%
+    &7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%
+    &7ᴍᴜᴛᴇᴅ ʙʏ: &f%issuer%
+    &8&m----------------------------
+    &7ʏᴏᴜ ᴄᴀɴɴᴏᴛ ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ
+  BLACKLIST: | # Sets the multi-line message text for this response.
+    &4&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ!
+    &8&m----------------------------
+    &7ʀᴇᴀѕᴏɴ: &f%reason%
+    &7ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ʙʏ: &f%issuer%
+    &8&m----------------------------
+    &4ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴊᴏɪɴ ᴛʜᴇ ѕᴇʀᴠᴇʀ
+
+# UDS setup: Configure SOCIAL options for this file.
+SOCIAL:
+  DISCORD:
+    - ""
+    - "&fᴊᴏɪɴ ᴏᴜʀ ᴅɪѕᴄᴏʀᴅ: &#6BF18Ddiscord.example.space"
+    - ""
+  TWITTER:
+    - ""
+    - "&fꜰᴏʟʟᴏᴡ ᴏɴ x: &#6BF18D@ᴇʟᴏɴᴍᴜѕᴋ"
+    - ""
+  STORE:
+    - ""
+    - "&fᴠɪѕɪᴛ ᴏᴜʀ ѕᴛᴏʀᴇ: &#6BF18Dstore.example.space"
+    - ""
+
+# UDS setup: Configure CRASH_PROTECTION options for this file.
+CRASH_PROTECTION:
+  ITEM_BLOCKED: "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ʜᴇʀᴇ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴅᴀᴛᴀ ʟᴏᴏᴋѕ ᴜɴѕᴀꜰᴇ. &7ᴄᴏɴᴛᴇxᴛ: &f{context}&7. ʀᴇᴀѕᴏɴ: &f{reason}" # Sets the message text for this response.
+
+# UDS setup: Auction House sounds or messages for this feature.
+AUCTION_HOUSE:
+  PLAYERS_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
+  NO_PERMISSION: "&cyou cannot use that auction house action."
+  DISABLED: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  SELL_USAGE: "&cᴜѕᴀɢᴇ: /ah ѕᴇʟʟ <price>" # Sets the message text for this response.
+  CANCEL_USAGE: "&cᴜѕᴀɢᴇ: /ah ᴄᴀɴᴄᴇʟ <listingId>" # Sets the message text for this response.
+  INVALID_PRICE: "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ." # Sets the message text for this response.
+  INVALID_LISTING_ID: "&cɪɴᴠᴀʟɪᴅ ʟɪѕᴛɪɴɢ ɪᴅ." # Sets the message text for this response.
+  NO_ADMIN_PERMISSION: "&cyou do not have permission to reload auction house settings." # Sets the message text for this response.
+  RELOADED: "&aᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
+  NO_ITEM_IN_HAND: "&cʜᴏʟᴅ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ʟɪѕᴛ ɪɴ ʏᴏᴜʀ ᴍᴀɪɴ ʜᴀɴᴅ." # Sets the message text for this response.
+  ITEM_BLOCKED: "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʟɪѕᴛᴇᴅ ɪɴ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ." # Sets the message text for this response.
+  PRICE_OUT_OF_RANGE: "&cᴛʜᴀᴛ ᴘʀɪᴄᴇ ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴛʜᴇ ᴀʟʟᴏᴡᴇᴅ ʀᴀɴɢᴇ." # Sets the message text for this response.
+  NO_MONEY_FOR_FEE: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ᴛᴏ ᴘᴀʏ ᴛʜᴇ ʟɪѕᴛɪɴɢ ꜰᴇᴇ." # Sets the message text for this response.
+  MAX_LISTINGS_REACHED: "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ." # Sets the message text for this response.
+  LISTING_CREATED: "&aʟɪѕᴛɪɴɢ ᴄʀᴇᴀᴛᴇᴅ! &7#{listing_id} &f{item} &7ꜰᴏʀ &a${price}&7. ꜰᴇᴇ: &a${fee}&7. ᴇxᴘɪʀᴇѕ ɪɴ &f{expires}&7." # Sets the message text for this response.
+  LISTING_CANCELLED: "&eʟɪѕᴛɪɴɢ #{listing_id} &f({item}) &eʜᴀѕ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ʏᴏᴜʀ ᴄʟᴀɪᴍ ǫᴜᴇᴜᴇ." # Sets the message text for this response.
+  LISTING_NOT_FOUND: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
+  LISTING_NOT_ACTIVE: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ." # Sets the message text for this response.
+  NOT_YOUR_LISTING: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
+  CANNOT_BUY_OWN: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʙᴜʏ ʏᴏᴜʀ ᴏᴡɴ ʟɪѕᴛɪɴɢ." # Sets the message text for this response.
+  NOT_ENOUGH_MONEY: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ." # Sets the message text for this response.
+  FULL_INVENTORY: "&cʏᴏᴜ ɴᴇᴇᴅ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕᴘᴀᴄᴇ ᴛᴏ ʙᴜʏ ᴛʜᴀᴛ ɪᴛᴇᴍ." # Sets the message text for this response.
+  PURCHASE_SUCCESS: "&aᴘᴜʀᴄʜᴀѕᴇᴅ &f{item} &aꜰᴏʀ &a${price} &aꜰʀᴏᴍ &f{seller}&a." # Sets the message text for this response.
+  ITEM_SOLD: "&aʏᴏᴜʀ ʟɪѕᴛɪɴɢ ѕᴏʟᴅ! &f{buyer} &aʙᴏᴜɢʜᴛ &f{item} &aꜰᴏʀ &a${price}&a. ᴄʟᴀɪᴍᴀʙʟᴇ ᴘᴀʏᴏᴜᴛ: &a${payout}&a." # Sets the message text for this response.
+  CLAIM_NOT_FOUND: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
+  NOT_YOUR_CLAIM: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
+  CLAIM_ALREADY_CLAIMED: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ." # Sets the message text for this response.
+  CLAIM_INVENTORY_FULL: "&cʏᴏᴜ ɴᴇᴇᴅ ᴀ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕʟᴏᴛ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ." # Sets the message text for this response.
+  CLAIMED_MONEY: "&aᴄʟᴀɪᴍᴇᴅ &a${amount} &aꜰʀᴏᴍ ʏᴏᴜʀ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴀʟᴇѕ." # Sets the message text for this response.
+  CLAIMED_ITEM: "&aᴄʟᴀɪᴍᴇᴅ ʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ: &f{item}&a." # Sets the message text for this response.
+  SEARCH_PROMPT: "&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ɴᴀᴍᴇ ɪɴ ᴄʜᴀᴛ ᴛᴏ ѕᴇᴀʀᴄʜ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ." # Sets the message text for this response.
+
+  INVALID_DURATION: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴜʀᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ."
+  CREATE_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ʟɪѕᴛɪɴɢ."
+  PURCHASE_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴘᴜʀᴄʜᴀѕᴇ ʀɪɢʜᴛ ɴᴏᴡ."
+  CANCEL_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴀɴᴄᴇʟ ᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ʀɪɢʜᴛ ɴᴏᴡ."
+  CLAIM_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴄʟᴀɪᴍ ʀɪɢʜᴛ ɴᴏᴡ."
+  CLAIMS_AUTOMATIC: "&eᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴏʟʟᴇᴄᴛᴇᴅ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ."
+  AUTO_COLLECTED: "&aᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ &f{money} &aᴘᴀʏᴏᴜᴛ(ѕ) ᴀɴᴅ &f{items} &aʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ(ѕ)."
+  LIMIT: "&6ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ: &e{active}&7/&e{limit}"
+  NO_FAST_PERMISSION: "&cyou cannot use that fast-action setting."
+  FAST_BUY_TOGGLED: "&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eꜰᴀѕᴛ ʙᴜʏ ɪѕ ɴᴏᴡ {state}&e."
+  FAST_SELL_TOGGLED: "&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eꜰᴀѕᴛ ѕᴇʟʟ ɪѕ ɴᴏᴡ {state}&e."
+  SEARCH_CANCELLED: "&7ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴇᴀʀᴄʜ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+
+# UDS setup: Orders sounds or messages for this feature.
+ORDERS:
+  DISABLED: "&cᴏʀᴅᴇʀѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  NO_ADMIN_PERMISSION: "&cyou do not have permission to reload orders." # Sets the message text for this response.
+  RELOADED: "&aᴏʀᴅᴇʀѕ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
+  PROMPT_SEARCH: "&7ᴇɴᴛᴇʀ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ѕᴇᴀʀᴄʜ ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
+  SEARCH_EMPTY: "&cᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ɴᴀᴍᴇ ᴛᴏ ѕᴇᴀʀᴄʜ." # Sets the message text for this response.
+  PROMPT_QUANTITY: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
+  PROMPT_PRICE: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
+  INPUT_CANCELLED: "&7ᴏʀᴅᴇʀ ᴄʀᴇᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟʟᴇᴅ." # Sets the message text for this response.
+  PROMPT_EDIT_QUANTITY: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: &e{quantity}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
+  PROMPT_EDIT_PRICE: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: {price_formatted}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
+  EDIT_CANCELLED: "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ." # Sets the message text for this response.
+  EDIT_UPDATED: "&aᴏʀᴅᴇʀ #{order_id} ᴜᴘᴅᴀᴛᴇᴅ. ɴᴇᴡ ʙᴜᴅɢᴇᴛ: {budget_formatted}." # Sets the message text for this response.
+  EDIT_ITEM_UPDATED: "&aᴏʀᴅᴇʀ #{order_id} ɪᴛᴇᴍ ᴜᴘᴅᴀᴛᴇᴅ ᴛᴏ &f{item}&a." # Sets the message text for this response.
+  EDIT_LOCKED: "&cᴛʜɪѕ ᴏʀᴅᴇʀ ᴀʟʀᴇᴀᴅʏ ʜᴀѕ ᴅᴇʟɪᴠᴇʀɪᴇѕ, ѕᴏ ɪᴛ ᴄᴀɴɴᴏᴛ ʙᴇ ᴇᴅɪᴛᴇᴅ." # Sets the message text for this response.
+  NO_PENDING_ORDER: "&cᴛʜᴇʀᴇ ɪѕ ɴᴏ ᴘᴇɴᴅɪɴɢ ᴏʀᴅᴇʀ ᴅʀᴀꜰᴛ ᴛᴏ ᴄᴏɴꜰɪʀᴍ." # Sets the message text for this response.
+  ITEM_BLOCKED: "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ." # Sets the message text for this response.
+  INVALID_QUANTITY: "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0." # Sets the message text for this response.
+  QUANTITY_OUT_OF_RANGE: "&cǫᴜᴀɴᴛɪᴛʏ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {max}." # Sets the message text for this response.
+  INVALID_PRICE: "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ." # Sets the message text for this response.
+  PRICE_OUT_OF_RANGE: "&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f${min}&c ᴀɴᴅ &f${max}&c." # Sets the message text for this response.
+  TOTAL_TOO_HIGH: "&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f${max}&c." # Sets the message text for this response.
+  NOT_ENOUGH_MONEY: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ꜰᴏʀ ᴛʜᴀᴛ ᴏʀᴅᴇʀ." # Sets the message text for this response.
+  MAX_ACTIVE_REACHED: "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀ ʟɪᴍɪᴛ." # Sets the message text for this response.
+  CREATED: "&aᴏʀᴅᴇʀ ᴄʀᴇᴀᴛᴇᴅ! &7#{order_id} &fꜰᴏʀ &e{quantity} {item}&7 ᴀᴛ &a${price_each} &7ᴇᴀᴄʜ. ʙᴜᴅɢᴇᴛ ʟᴏᴄᴋᴇᴅ: &a${budget}&7." # Sets the message text for this response.
+  ORDER_NOT_FOUND: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
+  ORDER_NOT_ACTIVE: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ." # Sets the message text for this response.
+  NOT_YOUR_ORDER: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
+  CANNOT_DELIVER_OWN: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ ᴛᴏ ʏᴏᴜʀ ᴏᴡɴ ᴏʀᴅᴇʀ." # Sets the message text for this response.
+  NO_MATCHING_ITEMS: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴍᴀᴛᴄʜɪɴɢ ɪᴛᴇᴍѕ ᴛᴏ ᴅᴇʟɪᴠᴇʀ." # Sets the message text for this response.
+  ORDER_FULL: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ꜰᴜʟʟ." # Sets the message text for this response.
+  DELIVERY_SUCCESS: "&aᴅᴇʟɪᴠᴇʀᴇᴅ &e{quantity} {item}&a ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ &a${payout}&a." # Sets the message text for this response.
+  CANCELLED: "&eᴏʀᴅᴇʀ #{order_id} ᴡᴀѕ ᴄᴀɴᴄᴇʟʟᴇᴅ. ʀᴇᴍᴀɪɴɪɴɢ ᴇѕᴄʀᴏᴡ ɪѕ ʀᴇᴀᴅʏ ᴛᴏ ᴄᴏʟʟᴇᴄᴛ." # Sets the message text for this response.
+  CLAIM_NOT_FOUND: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
+  CLAIMS_DISABLED: "&cᴏʀᴅᴇʀ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  NOT_YOUR_CLAIM: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
+  CLAIM_ALREADY_CLAIMED: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ." # Sets the message text for this response.
+  CLAIM_INVENTORY_FULL: "&cʏᴏᴜ ɴᴇᴇᴅ ᴇɴᴏᴜɢʜ ɪɴᴠᴇɴᴛᴏʀʏ ѕᴘᴀᴄᴇ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ." # Sets the message text for this response.
+  CLAIMED_REFUND: "&aᴄʟᴀɪᴍᴇᴅ ᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ ᴏꜰ &a${amount}&a." # Sets the message text for this response.
+  CLAIMED_ITEM: "&aᴄʟᴀɪᴍᴇᴅ ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍ: &f{item}&a." # Sets the message text for this response.
+
+# UDS setup: Configure STATS-WIPE options for this file.
+STATS-WIPE:
+  NO-PERMISSION: "&cyou do not have permission to use stats wipe." # Sets the message text for this response.
+  PLAYER-ONLY-GUI: "&cᴏᴘᴇɴ ᴛʜᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ɢᴜɪ ɪɴ-ɢᴀᴍᴇ, ᴏʀ ᴜѕᴇ /uds ѕᴛᴀᴛѕᴡɪᴘᴇ <target> ᴄᴏɴꜰɪʀᴍ." # Sets the message text for this response.
+  INVALID-TARGET: "&cɪɴᴠᴀʟɪᴅ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ᴛᴀʀɢᴇᴛ. ᴀᴠᴀɪʟᴀʙʟᴇ: {targets}" # Sets the message text for this response.
+  DIRECT-USAGE: "&cᴜѕᴇ /uds ѕᴛᴀᴛѕᴡɪᴘᴇ <target> ᴄᴏɴꜰɪʀᴍ ᴛᴏ ʀᴜɴ ᴅɪʀᴇᴄᴛʟʏ, ᴏʀ /uds ѕᴛᴀᴛѕᴡɪᴘᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ɢᴜɪ." # Sets the message text for this response.
+  BUSY: "&cᴀ ᴡɪᴘᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ." # Sets the message text for this response.
+  FAILED: "&cѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ: {error}" # Sets the message text for this response.
+  SUCCESS: "&aᴡɪᴘᴇ ᴄᴏᴍᴘʟᴇᴛᴇ: &f{target}&a. ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}&a." # Sets the message text for this response.
+
+# UDS setup: Configure STAFF options for this file.
+STAFF:
+  NO_PERMISSION_OTHERS: "&c&lᴇʀʀᴏʀ &7» &cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ' ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!" # Sets the message text for this response.
+  TOGGLE_ERROR: "&c&lᴇʀʀᴏʀ &7» &cꜰᴀɪʟᴇᴅ ᴛᴏ ᴛᴏɢɢʟᴇ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!" # Sets the message text for this response.
+  STATUS_ENABLED: "&aᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
+  STATUS_DISABLED: "&cᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
+  ICON_ENABLED: "&a✓" # Sets the message text for this response.
+  ICON_DISABLED: "&c✗" # Sets the message text for this response.
+  STATE_ACTIVE: "&aᴀᴄᴛɪᴠᴇ" # Sets the message text for this response.
+  STATE_INACTIVE: "&cɪɴᴀᴄᴛɪᴠᴇ" # Sets the message text for this response.
+  SELF_TOGGLE: "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status%&7!" # Sets the message text for this response.
+  SELF_STATUS: "&7ѕᴛᴀᴛᴜѕ: %icon% %status%" # Sets the message text for this response.
+  OTHER_TOGGLE: "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%&7!" # Sets the message text for this response.
+  TARGET_NOTIFY: "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» ʏᴏᴜʀ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ %status% &7ʙʏ &e%staff%&7!" # Sets the message text for this response.
+  BROADCAST: "&8[&6ѕᴛᴀꜰꜰ&8] &e%staff% &7ʜᴀѕ %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%" # Sets the message text for this response.
+  ACTIVATION_MESSAGES:
+    - "&7&m------------------------------"
+    - "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ"
+    - "&7• ɪɴᴠᴇɴᴛᴏʀʏ ᴄʟᴇᴀʀᴇᴅ ᴀɴᴅ ѕᴀᴠᴇᴅ"
+    - "&7• ɢᴀᴍᴇ ᴍᴏᴅᴇ ѕᴇᴛ ᴛᴏ ᴄʀᴇᴀᴛɪᴠᴇ"
+    - "&7• ꜰʟɪɢʜᴛ ᴇɴᴀʙʟᴇᴅ"
+    - "&7• ᴜѕᴇ &e/vanish &7ᴛᴏ ʙᴇᴄᴏᴍᴇ ɪɴᴠɪѕɪʙʟᴇ"
+    - "&7&m------------------------------"
+
+# UDS setup: Configure FLY options for this file.
+FLY:
+  ENABLED: "&a✈ &7ꜰʟɪɢʜᴛ ᴍᴏᴅᴇ &aᴀᴄᴛɪᴠᴀᴛᴇᴅ" # Sets the message text for this response.
+  DISABLED: "&c✗ &7ꜰʟɪɢʜᴛ ᴍᴏᴅᴇ &cᴅᴇᴀᴄᴛɪᴠᴀᴛᴇᴅ" # Sets the message text for this response.
+
+# UDS setup: Configure FLYSPEED options for this file.
+FLYSPEED:
+  SET: "&aꜰʟʏ ѕᴘᴇᴇᴅ ѕᴇᴛ ᴛᴏ &f{speed}&a." # Sets the message text for this response.
+  INVALID: "&cɪɴᴠᴀʟɪᴅ ѕᴘᴇᴇᴅ. ᴘʟᴇᴀѕᴇ ᴇɴᴛᴇʀ ᴀ ɴᴜᴍʙᴇʀ ꜰʀᴏᴍ 1 ᴛᴏ 10." # Sets the message text for this response.
+
+# UDS setup: Configure WALKSPEED options for this file.
+WALKSPEED:
+  SET: "&aᴡᴀʟᴋ ѕᴘᴇᴇᴅ ѕᴇᴛ ᴛᴏ &f{speed}&a." # Sets the message text for this response.
+  INVALID: "&cɪɴᴠᴀʟɪᴅ ѕᴘᴇᴇᴅ. ᴘʟᴇᴀѕᴇ ᴇɴᴛᴇʀ ᴀ ɴᴜᴍʙᴇʀ ꜰʀᴏᴍ 1 ᴛᴏ 10." # Sets the message text for this response.
+
+# UDS setup: Configure HEAL options for this file.
+HEAL:
+  SELF: "&a♡ &7ʏᴏᴜʀ ʜᴇᴀʟᴛʜ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴛᴏʀᴇᴅ!" # Sets the message text for this response.
+  OTHER: "&8[&cʜᴇᴀʟ&8] &7ʏᴏᴜ ʜᴇᴀʟᴇᴅ &d%player%" # Sets the message text for this response.
+  NOTIFY: "&8[&cʜᴇᴀʟ&8] &d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴇᴀʟᴛʜ" # Sets the message text for this response.
+
+# UDS setup: Configure FEED options for this file.
+FEED:
+  SELF: "&7ʏᴏᴜʀ ʜᴜɴɢᴇʀ ʜᴀѕ ʙᴇᴇɴ ѕᴀᴛɪѕꜰɪᴇᴅ!" # Sets the message text for this response.
+  OTHER: "&8[&6ꜰᴇᴇᴅ&8] &7ʏᴏᴜ ꜰᴇᴅ &d%player%" # Sets the message text for this response.
+  NOTIFY: "&8[&6ꜰᴇᴇᴅ&8] &d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴜɴɢᴇʀ" # Sets the message text for this response.
+
+# UDS setup: Configure GOD options for this file.
+GOD:
+  ENABLED: "&aɢᴏᴅ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ." # Sets the message text for this response.
+  DISABLED: "&cɢᴏᴅ ᴍᴏᴅᴇ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  OTHER: "&7ɢᴏᴅ ᴍᴏᴅᴇ ꜰᴏʀ &e%player% &7ᴡᴀѕ %status%&7." # Sets the message text for this response.
+  NOTIFY: "&e%sender% &7ѕᴇᴛ ʏᴏᴜʀ ɢᴏᴅ ᴍᴏᴅᴇ ᴛᴏ %status%&7." # Sets the message text for this response.
+  STATUS_ENABLED: "&aᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
+  STATUS_DISABLED: "&cᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
+  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]" # Sets the message text for this response.
+  CONSOLE_USAGE: "&cᴜѕᴀɢᴇ: /%label% <player>" # Sets the message text for this response.
+  PLAYER_NOT_ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+
+# UDS setup: Configure GAMEMODE options for this file.
+GAMEMODE:
+  MESSAGE: "&d%player% &7ɪѕ ɴᴏᴡ ɪɴ &e%mode% ᴍᴏᴅᴇ" # Sets the message text for this response.
+  TARGET_MESSAGE: "&7ʏᴏᴜʀ ɢᴀᴍᴇᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴄʜᴀɴɢᴇᴅ ᴛᴏ &e%mode% &7ʙʏ &d%sender%" # Sets the message text for this response.
+  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  NO_PERMISSION_OTHERS: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʜᴀɴɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ' ɢᴀᴍᴇᴍᴏᴅᴇ." # Sets the message text for this response.
+  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ ᴡɪᴛʜᴏᴜᴛ ᴀ ᴛᴀʀɢᴇᴛ." # Sets the message text for this response.
+  PLAYER_NOT_ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
+  INVALID_MODE: "&cɪɴᴠᴀʟɪᴅ ɢᴀᴍᴇᴍᴏᴅᴇ. ᴜѕᴇ ѕᴜʀᴠɪᴠᴀʟ, ᴄʀᴇᴀᴛɪᴠᴇ, ᴀᴅᴠᴇɴᴛᴜʀᴇ, ᴏʀ ѕᴘᴇᴄᴛᴀᴛᴏʀ." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /%label% <survival|creative|adventure|spectator> [ᴘʟᴀʏᴇʀ]" # Sets the message text for this response.
+  USAGE_SHORT: "&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]" # Sets the message text for this response.
+  DISABLED: "&cɢᴀᴍᴇᴍᴏᴅᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+
+# UDS setup: Configure RANDOMTP options for this file.
+RANDOMTP:
+  SUCCESS: "&8[&dʀᴛᴘ&8] &7ʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &e%player%" # Sets the message text for this response.
+  NOTIFY: "&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!" # Sets the message text for this response.
+  NO_PLAYERS: "&c✖ &7ɴᴏ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ" # Sets the message text for this response.
+
+# UDS setup: Configure RENAME options for this file.
+RENAME:
+  NO_ITEM: "&c✖ &7ʏᴏᴜ ᴍᴜѕᴛ ʜᴏʟᴅ ᴀɴ ɪᴛᴇᴍ ᴛᴏ ʀᴇɴᴀᴍᴇ ɪᴛ" # Sets the message text for this response.
+  META_ERROR: "&c⚠ &7ᴛʜɪѕ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʀᴇɴᴀᴍᴇᴅ" # Sets the message text for this response.
+  STAFFMODE_BLOCKED: "&c✖ &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪᴛᴇᴍѕ ᴄᴀɴɴᴏᴛ ʙᴇ ʀᴇɴᴀᴍᴇᴅ" # Sets the message text for this response.
+  RESET_SUCCESS: "&8[&aʀᴇɴᴀᴍᴇ&8] &7ɪᴛᴇᴍ ɴᴀᴍᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴇᴛ" # Sets the message text for this response.
+  SUCCESS: "&8[&aʀᴇɴᴀᴍᴇ&8] &7ɴᴇᴡ ɴᴀᴍᴇ: &f%name%" # Sets the message text for this response.
+
+# UDS setup: Configure PING options for this file.
+PING:
+  SELF: "&7ʏᴏᴜʀ ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ" # Sets the message text for this response.
+  OTHER: "&e%player%'ѕ &7ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ" # Sets the message text for this response.
+
+# UDS setup: Configure PLAYTIME options for this file.
+PLAYTIME:
+  MESSAGE: "&a%time% &eᴘʟᴀʏɪɴɢ ᴏɴ &a%server%" # Sets the message text for this response.
+  OTHER: "&e%player% &7ʜᴀѕ ᴘʟᴀʏᴇᴅ ꜰᴏʀ &a%time% &7ᴏɴ &a%server%" # Sets the message text for this response.
+
+# UDS setup: Configure STAFFCHAT options for this file.
+STAFFCHAT:
+  NO_PERMISSION: "&cyou do not have permission to use staff chat." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /staffchat <message>" # Sets the message text for this response.
+  FORMAT: "&8[&6ѕᴛᴀꜰꜰᴄʜᴀᴛ&8] &e%player%&7: %message%" # Sets the message text for this response.
+  DISABLED: "&cɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  MESSAGE_TOO_LONG: "&cѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ." # Sets the message text for this response.
+  REDIS_UNAVAILABLE: "&eѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ." # Sets the message text for this response.
+
+# UDS setup: Configure HELPOP options for this file.
+HELPOP:
+  NO_PERMISSION: "&cyou do not have permission to request staff assistance." # Sets the message text for this response.
+  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʜᴇʟᴘᴏᴘ." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /helpop <message>" # Sets the message text for this response.
+  DISABLED: "&cʜᴇʟᴘᴏᴘ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  MESSAGE_TOO_LONG: "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ." # Sets the message text for this response.
+  COOLDOWN: "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ᴜѕɪɴɢ ʜᴇʟᴘᴏᴘ ᴀɢᴀɪɴ." # Sets the message text for this response.
+  REDIS_UNAVAILABLE: "&eʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ." # Sets the message text for this response.
+  FORMAT:
+    - ""
+    - "&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ"
+    - "     &9ʀᴇᴀѕᴏɴ: &b%message%"
+    - ""
+  CONFIRMATION: "&aʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ." # Sets the message text for this response.
+
+# UDS setup: Configure REPORT options for this file.
+REPORT:
+  NO_PERMISSION: "&cyou do not have permission to report players." # Sets the message text for this response.
+  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʀᴇᴘᴏʀᴛ." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /report <player> <reason>" # Sets the message text for this response.
+  DISABLED: "&cʀᴇᴘᴏʀᴛѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
+  PLAYER_NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  CANNOT_REPORT_SELF: "&cʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴇᴘᴏʀᴛ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
+  MESSAGE_TOO_LONG: "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ." # Sets the message text for this response.
+  COOLDOWN: "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ʀᴇᴘᴏʀᴛɪɴɢ ᴀɢᴀɪɴ." # Sets the message text for this response.
+  REDIS_UNAVAILABLE: "&eʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ." # Sets the message text for this response.
+  FORMAT:
+    - ""
+    - "&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%"
+    - "     &9ʀᴇᴀѕᴏɴ: &b%reason%"
+    - ""
+  CONFIRMATION: "&aʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ." # Sets the message text for this response.
+
+# UDS setup: Configure ALTS options for this file.
+ALTS:
+  USAGE: "&cᴜѕᴀɢᴇ: /alts <player>" # Sets the message text for this response.
+  NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  NO_DATA: "&cɴᴏ ɪᴘ ʜɪѕᴛᴏʀʏ ꜰᴏᴜɴᴅ ꜰᴏʀ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ." # Sets the message text for this response.
+  NONE: "&7ɴᴏ ᴀʟᴛᴇʀɴᴀᴛᴇ ᴀᴄᴄᴏᴜɴᴛѕ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  HEADER: "&8[&6ᴀʟᴛѕ&8] &e%player%" # Sets the message text for this response.
+  KNOWN_IPS: "&7ᴋɴᴏᴡɴ ɪᴘѕ: &f%ips%" # Sets the message text for this response.
+  ENTRY: "&8- &e%player% &7[%status%&7] &fѕʜᴀʀᴇᴅ: %ips%" # Sets the message text for this response.
+
+# UDS setup: Configure FRIENDS options for this file.
+FRIENDS:
+  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
+  USAGE: "&cᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]" # Sets the message text for this response.
+  PLAYER_NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+
+# UDS setup: Configure SAFETY options for this file.
+SAFETY:
+  BOOK-TITLE: "ѕᴀꜰᴇᴛʏ ɢᴜɪᴅᴇ"
+  BOOK-AUTHOR: "ѕᴇʀᴠᴇʀ"
+  NO-PERMISSION: "&cyou do not have permission."
+  RELOAD-SUCCESS: "&aѕᴀꜰᴇᴛʏ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
+  GIVE-SUCCESS-SENDER: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ɢᴀᴠᴇ ѕᴀꜰᴇᴛʏ ʙᴏᴏᴋ ᴛᴏ {player}."
+  GIVE-SUCCESS-RECEIVER: "&aʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ ᴛʜᴇ ѕᴀꜰᴇᴛʏ ʙᴏᴏᴋ."
+  USAGE: "&cᴜѕᴀɢᴇ: /safety [ʀᴇʟᴏᴀᴅ|ᴀᴅᴅ <player>|ɢɪᴠᴇ <player>]"
+  BOOK-PAGES:
+    - |
+      &0⚠ ᴡᴀᴛᴄʜ ᴏᴜᴛ!
+      
+      ꜰᴀᴋᴇ ᴅɪѕᴄᴏʀᴅѕ ᴏʀ
+      ᴍᴏᴅѕ ᴄᴀɴ ѕᴛᴇᴀʟ ʏᴏᴜʀ
+      ᴀᴄᴄᴏᴜɴᴛ.
+      
+      ᴛʜᴇ ᴏɴʟʏ ᴏꜰꜰɪᴄɪᴀʟ
+      ᴅɪѕᴄᴏʀᴅ ᴄᴀɴ ʙᴇ ꜰᴏᴜɴᴅ
+      ᴜѕɪɴɢ &1/discord&0.
+      
+      ɴᴇᴠᴇʀ ᴅᴏᴡɴʟᴏᴀᴅ ꜰɪʟᴇѕ
+      ᴏʀ ᴍᴏᴅѕ ꜰʀᴏᴍ ʀᴀɴᴅᴏᴍ
+      ᴘᴇᴏᴘʟᴇ.
+ # Sets the message text for this response.
+
+# UDS setup: Configure ANVILMOD options for this file.
+ANVILMOD:
+  NO-PERMISSION: "&cyou do not have permission."
+  USAGE: "&cᴜѕᴀɢᴇ: /amod <add|reload> [ᴡᴏʀᴅ]"
+  ADDED: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ᴀᴅᴅᴇᴅ '&e{word}&a' ᴛᴏ ʙᴀɴɴᴇᴅ ᴡᴏʀᴅѕ."
+  ALREADY-EXISTS: "&cᴛʜᴀᴛ ᴡᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ʙᴀɴɴᴇᴅ ʟɪѕᴛ."
+  RELOADED: "&aᴀɴᴠɪʟ ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
+

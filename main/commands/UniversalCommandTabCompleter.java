@@ -28,7 +28,9 @@ import java.util.UUID;
 
 public class UniversalCommandTabCompleter implements TabCompleter {
 
-    private static final List<String> AMOUNTS = List.of("1", "10", "100", "1000", "10000");
+    private static final List<String> AMOUNTS = List.of(
+            "1", "10", "100", "1K", "10K", "100K", "1M", "10M", "100M", "1B"
+    );
     private static final List<String> DURATIONS = List.of("30s", "15m", "1h", "2h", "1d", "7d");
     private static final List<String> TOGGLES = List.of("true", "false", "on", "off");
     private static final List<String> TEAM_SUBCOMMANDS = List.of(
@@ -65,23 +67,28 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             case "team" -> completeTeam(sender, args);
             case "home", "homes", "sethome", "delhome", "renamehome" -> completeHome(sender, commandName, args);
             case "rtp" -> singleArg(args, plugin.getRtpManager().getPortalSelectorSuggestions());
-            case "shop" -> completeReloadOnly(sender, args, "ultimatedonutsmp.admin.shop");
+            case "shop" -> completeShop(sender, args);
+            case "shardshop" -> List.of();
+            case "safety" -> completeSafety(sender, args);
             case "orders" -> completeOrders(sender, args);
             case "duel" -> completeDuel(sender, args);
-            case "queue" -> singleArg(args, List.of("join", "leave"));
+            case "create" -> completeCreate(sender, args);
+            case "queue" -> completeQueue(args);
             case "arena" -> completeArena(sender, args);
             case "ffa" -> completeFfa(sender, args);
             case "ffastats" -> completeKnownPlayer(args, sender, true);
             case "ffaarena" -> completeFfaArena(sender, args, 0);
             case "auctionhouse" -> completeAuctionHouse(sender, args);
             case "enderchest" -> completeReloadOnly(sender, args, "ultimatedonutsmp.admin.enderchest");
+            case "ecsee" -> completeEcsee(sender, args);
             case "sellhand" -> singleArg(args, AMOUNTS);
             case "worth" -> completeWorth(sender, args);
             case "balance", "stats", "playtime", "alts", "profileviewer", "punishments" ->
                     completeKnownPlayer(args, sender, true);
             case "ping", "findplayer" -> completeOnlinePlayer(args, sender, true);
             case "pay", "shardpay" -> completePayment(sender, args);
-            case "addmoney", "removemoney", "setmoney" -> completeMoneyAdmin(sender, args);
+            case "addmoney", "removemoney", "setmoney", "addshards", "removeshards", "setshards" ->
+                    completeMoneyAdmin(sender, args);
             case "shards" -> completeShards(sender, args);
             case "freeze" -> completePlayerOrReload(sender, args, "ultimatedonutsmp.admin.freeze", false);
             case "fly", "heal", "feed" -> completeOnlinePlayer(args, sender, true);
@@ -142,7 +149,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         if (args.length != 1) {
             return List.of();
         }
-        List<String> options = new ArrayList<>(List.of("my", "collect"));
+        List<String> options = new ArrayList<>(List.of("browse", "my", "collect"));
         if (has(sender, "ultimatedonutsmp.admin.orders")) {
             options.add("reload");
         }
@@ -160,6 +167,34 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         }
         if (args.length == 2 && Set.of("accept", "deny").contains(normalize(args[0]))) {
             return partial(args[1], onlinePlayerNames(sender, true));
+        }
+        return List.of();
+    }
+
+    private List<String> completeCreate(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            List<String> options = new ArrayList<>(List.of("invite", "friends"));
+            options.addAll(onlinePlayerNames(sender, false));
+            return partial(args[0], options);
+        }
+
+        String first = normalize(args[0]);
+        boolean hasMode = first.equals("invite") || first.equals("friends");
+        if (hasMode && args.length == 2) {
+            return partial(args[1], onlinePlayerNames(sender, false));
+        }
+        if ((hasMode && args.length == 3) || (!hasMode && args.length == 2)) {
+            return partial(args[args.length - 1], plugin.getDuelManager().getMapSelectionSuggestions(false));
+        }
+        return List.of();
+    }
+
+    private List<String> completeQueue(String[] args) {
+        if (args.length == 1) {
+            return partial(args[0], List.of("join", "leave"));
+        }
+        if (args.length == 2 && normalize(args[0]).equals("join")) {
+            return partial(args[1], plugin.getDuelManager().getMapSelectionSuggestions(true));
         }
         return List.of();
     }
@@ -299,6 +334,15 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         return partial(args[0], options);
     }
 
+    private List<String> completeEcsee(CommandSender sender, String[] args) {
+        if (args.length != 1
+                || !plugin.getEnderChestManager().isInspectionEnabled()
+                || !plugin.getEnderChestManager().canInspect(sender)) {
+            return List.of();
+        }
+        return partial(args[0], plugin.getEnderChestManager().getInspectionTargetSuggestions());
+    }
+
     private List<String> completeTeleport(CommandSender sender, String label, String[] args) {
         if (label.equals("tphere")) {
             return completeOnlinePlayer(args, sender, false);
@@ -349,11 +393,17 @@ public class UniversalCommandTabCompleter implements TabCompleter {
     private List<String> completeSpawner(CommandSender sender, String[] args) {
         boolean admin = has(sender, "ultimatedonutsmp.admin.spawner");
         if (args.length == 1) {
-            List<String> options = new ArrayList<>(List.of("info"));
+            List<String> options = new ArrayList<>(List.of("info", "split"));
             if (admin) {
                 options.addAll(List.of("give", "panel", "remove", "forcebreak", "reload"));
             }
             return partial(args[0], options);
+        }
+        if (normalize(args[0]).equals("split")) {
+            if (args.length == 2) {
+                return partial(args[1], List.of("1", "5", "10", "32", "64"));
+            }
+            return List.of();
         }
         if (!admin || !normalize(args[0]).equals("give")) {
             return List.of();
@@ -393,6 +443,10 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         return args.length == 1 && has(sender, permission) ? partial(args[0], List.of("reload")) : List.of();
     }
 
+    private List<String> completeShop(CommandSender sender, String[] args) {
+        return completeReloadOnly(sender, args, "ultimatedonutsmp.admin.shop");
+    }
+
     private List<String> completeOnlinePlayer(String[] args, CommandSender sender, boolean includeSelf) {
         return args.length == 1 ? partial(args[0], onlinePlayerNames(sender, includeSelf)) : List.of();
     }
@@ -408,11 +462,15 @@ public class UniversalCommandTabCompleter implements TabCompleter {
     private List<String> onlinePlayerNames(CommandSender sender, boolean includeSelf) {
         UUID senderUuid = sender instanceof Player player ? player.getUniqueId() : null;
         List<String> names = new ArrayList<>();
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (String name : plugin.getHideManager().onlineNames(sender)) {
+            Player player = plugin.getHideManager().findOnlinePlayer(sender, name);
+            if (player == null) {
+                continue;
+            }
             if (!includeSelf && senderUuid != null && senderUuid.equals(player.getUniqueId())) {
                 continue;
             }
-            names.add(player.getName());
+            names.add(name);
         }
         return names;
     }
@@ -520,6 +578,27 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             }
         }
         return true;
+    }
+
+    private List<String> completeSafety(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            List<String> options = new ArrayList<>();
+            if (has(sender, "safety.reload")) {
+                options.add("reload");
+            }
+            if (has(sender, "safety.add")) {
+                options.add("add");
+                options.add("give");
+            }
+            return partial(args[0], options);
+        } else if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("give")) {
+                if (has(sender, "safety.add")) {
+                    return partial(args[1], onlinePlayerNames(sender, true));
+                }
+            }
+        }
+        return List.of();
     }
 
     private boolean has(CommandSender sender, String permission) {
