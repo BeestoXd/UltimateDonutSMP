@@ -4,9 +4,21 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'folia/**'
+      - 'main/**'
+      - 'src/**'
+      - 'scripts/**'
+      - 'pom.xml'
   pull_request:
     branches:
       - main
+    paths:
+      - 'folia/**'
+      - 'main/**'
+      - 'src/**'
+      - 'scripts/**'
+      - 'pom.xml'
   workflow_dispatch:
 
 jobs:
