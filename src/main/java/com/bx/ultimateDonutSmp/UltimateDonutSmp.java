@@ -439,6 +439,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new CombatListener(this), this);
         pm.registerEvents(new GodModeListener(this), this);
         pm.registerEvents(new FastCrystalListener(this), this);
+        pm.registerEvents(new ExplosionDamageListener(this), this);
         pm.registerEvents(new PlayerRespawnListener(this), this);
         pm.registerEvents(new PlayerMoveListener(this), this);
         pm.registerEvents(new PortalListener(this), this);

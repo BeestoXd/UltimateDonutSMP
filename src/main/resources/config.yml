@@ -219,6 +219,21 @@ RESPAWN-ANCHOR:
   ENABLED: false # Enables or disables respawn anchor.
   DAMAGE: 2.0 # Configures the damage option.
 
+# UDS setup: Adjusts TNT damage behavior when enabled.
+TNT:
+  ENABLED: true # Enables or disables TNT explosion damage.
+  DAMAGE: 1.0 # Multiplier for TNT damage.
+
+# UDS setup: Adjusts TNT Minecart damage behavior when enabled.
+TNT-MINECART:
+  ENABLED: true # Enables or disables TNT Minecart explosion damage.
+  DAMAGE: 1.0 # Multiplier for TNT Minecart damage.
+
+# UDS setup: Adjusts other explosion damage (e.g. creepers, beds) behavior when enabled.
+OTHER-EXPLOSIONS:
+  ENABLED: true # Enables or disables other explosion damage.
+  DAMAGE: 1.0 # Multiplier for other explosion damage.
+
 # UDS setup: Custom ender chest rows, access rules, save timing, and display title.
 ENDER-CHEST:
   SIX-ROW: true # Configures the six row option.
