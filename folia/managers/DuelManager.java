@@ -3978,7 +3978,7 @@ public class DuelManager {
     }
 
     private void synchronizeArenaSettingsConfig() {
-        FileConfiguration duelConfig = config();
+        FileConfiguration duelConfig = plugin.getConfigManager().getOriginalDuels();
         if (duelConfig == null) {
             return;
         }

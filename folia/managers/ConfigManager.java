@@ -1964,6 +1964,10 @@ public class ConfigManager {
     public FileConfiguration getDuels()         { return localized("CONFIG.DUELS", duels); }
     public FileConfiguration getFfa()           { return localized("CONFIG.FFA", ffa); }
     public FileConfiguration getCrates()        { return localized("CONFIG.CRATES", crates); }
+    public FileConfiguration getOriginalCrates() { return crates; }
+    public FileConfiguration getOriginalDuels() { return duels; }
+    public FileConfiguration getOriginalFfa() { return ffa; }
+    public FileConfiguration getOriginalMenus() { return menus; }
     public FileConfiguration getSpawners()      { return localized("CONFIG.SPAWNERS", spawners); }
     public FileConfiguration getSpawnStash()    { return localized("CONFIG.SPAWN_STASH", spawnStash); }
     public FileConfiguration getNetwork()       { return localized("CONFIG.NETWORK", network); }
@@ -2080,6 +2084,9 @@ public class ConfigManager {
         File file = new File(plugin.getDataFolder(), name);
         try {
             configuration.save(file);
+            if (plugin != null && plugin.getLanguageManager() != null) {
+                plugin.getLanguageManager().clearLocalizedConfigurations();
+            }
             return true;
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save " + file.getPath(), e);

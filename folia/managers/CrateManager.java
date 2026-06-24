@@ -92,7 +92,7 @@ public class CrateManager {
             return new ActionResult(false, "&ca crate with id '&f" + normalized + "&c' already exists.");
         }
 
-        FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
+        FileConfiguration cratesConfig = plugin.getConfigManager().getOriginalCrates();
         String path = "CRATES." + normalized;
         cratesConfig.set(path + ".ENABLED", true);
         cratesConfig.set(path + ".DISPLAY.MATERIAL", Material.CHEST.name());
@@ -133,7 +133,7 @@ public class CrateManager {
             return new ActionResult(false, "&ccrate '&f" + crateId + "&c' was not found.");
         }
 
-        FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
+        FileConfiguration cratesConfig = plugin.getConfigManager().getOriginalCrates();
         cratesConfig.set("CRATES." + crate.id(), null);
         if (!plugin.getConfigManager().saveCrates()) {
             return new ActionResult(false, "&cfailed to save crates.yml while deleting that crate.");
@@ -154,7 +154,7 @@ public class CrateManager {
             return new ActionResult(false, "&copen type is invalid.");
         }
 
-        FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
+        FileConfiguration cratesConfig = plugin.getConfigManager().getOriginalCrates();
         String path = "CRATES." + crate.id();
         cratesConfig.set(path + ".OPEN-TYPE", openType.name());
 
@@ -222,7 +222,7 @@ public class CrateManager {
             return new ActionResult(false, "&cslot &f" + slot + "&c is not valid for this crate menu.");
         }
 
-        ConfigurationSection rewardsSection = plugin.getConfigManager().getCrates()
+        ConfigurationSection rewardsSection = plugin.getConfigManager().getOriginalCrates()
                 .getConfigurationSection("CRATES." + crate.id() + ".REWARDS");
         if (rewardsSection == null) {
             return new ActionResult(false, "&cthat crate does not have any rewards configured.");
@@ -972,7 +972,7 @@ public class CrateManager {
             return new ActionResult(false, "&cfailed to serialize that item for the crate reward.");
         }
 
-        FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
+        FileConfiguration cratesConfig = plugin.getConfigManager().getOriginalCrates();
         ConfigurationSection rewardsSection = cratesConfig.getConfigurationSection("CRATES." + crate.id() + ".REWARDS");
         if (rewardsSection == null) {
             rewardsSection = cratesConfig.createSection("CRATES." + crate.id() + ".REWARDS");

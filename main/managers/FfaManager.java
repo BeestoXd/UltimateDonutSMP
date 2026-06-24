@@ -4525,7 +4525,7 @@ public class FfaManager {
     }
 
     private void synchronizeArenaSettingsConfig() {
-        FileConfiguration ffaConfig = config();
+        FileConfiguration ffaConfig = plugin.getConfigManager().getOriginalFfa();
         if (ffaConfig == null) {
             return;
         }
