@@ -450,7 +450,7 @@ public class SpawnManager {
     private SetupLocationResult setSetupLocation(AreaType type, Location location, String configPath) {
         String serialized = LocationUtils.serialize(location);
         FileConfiguration config = plugin.getConfigManager().getConfig();
-        FileConfiguration menus = plugin.getConfigManager().getMenus();
+        FileConfiguration menus = plugin.getConfigManager().getOriginalMenus();
         SetupAreaTarget target = findNextSetupAreaTarget(type);
         if (target == null) {
             return SetupLocationResult.failure("ɴᴏ ꜰʀᴇᴇ " + getLocationLabel(type) + " ᴍᴇɴᴜ ѕʟᴏᴛ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.");
@@ -621,7 +621,7 @@ public class SpawnManager {
             return AreaDeleteResult.failure("this area is not stored in menus.yml.");
         }
 
-        FileConfiguration menus = plugin.getConfigManager().getMenus();
+        FileConfiguration menus = plugin.getConfigManager().getOriginalMenus();
         FileConfiguration config = plugin.getConfigManager().getConfig();
         String menuPath = area.type() == AreaType.SPAWN ? "SPAWN-MENU" : "AFK-MENU";
         String areaPath = menuPath + ".AREAS." + area.id();

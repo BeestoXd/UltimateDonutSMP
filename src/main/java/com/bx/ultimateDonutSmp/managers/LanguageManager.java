@@ -198,6 +198,10 @@ public class LanguageManager {
         return text("DISPLAY." + category + "." + normalizeDisplayKey(key), fallback);
     }
 
+    public void clearLocalizedConfigurations() {
+        localizedConfigurations.clear();
+    }
+
     public FileConfiguration localize(String rootPath, FileConfiguration legacyConfiguration) {
         if (legacyConfiguration == null || !hasLanguageSection(rootPath)) {
             return legacyConfiguration;
