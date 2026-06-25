@@ -1382,7 +1382,7 @@ public class RTPManager {
                     ItemUtils.parseMaterial(button.getString("MATERIAL", "GRASS_BLOCK")),
                     button.getString("DISPLAY-NAME", key),
                     button.getStringList("LORE"),
-                    worldName,
+                    normalizeConfiguredWorldName(worldName),
                     button.getBoolean("ENABLED", true)
             ));
         }
@@ -1447,12 +1447,7 @@ public class RTPManager {
             }
         }
 
-        return switch (trimmed.toLowerCase(Locale.ROOT)) {
-            case "overworld" -> getLoadedNormalWorldName();
-            case "nether" -> getLoadedNetherWorldName();
-            case "end", "the_end", "the-end" -> getLoadedEndWorldName();
-            default -> trimmed;
-        };
+        return normalizeConfiguredWorldName(trimmed);
     }
 
     private boolean isConfiguredDestinationDisabled(String worldName) {
@@ -1504,11 +1499,18 @@ public class RTPManager {
         }
 
         World worldObj = Bukkit.getWorld(worldName);
+        World.Environment env = null;
         if (worldObj != null) {
-            if (worldObj.getEnvironment() == World.Environment.NETHER) {
+            env = worldObj.getEnvironment();
+        } else if (isWorldAvailable(worldName)) {
+            env = inferWorldEnvironment(worldName);
+        }
+
+        if (env != null) {
+            if (env == World.Environment.NETHER) {
                 ConfigurationSection fallback = worlds.getConfigurationSection("world_nether");
                 if (fallback != null) return fallback;
-            } else if (worldObj.getEnvironment() == World.Environment.THE_END) {
+            } else if (env == World.Environment.THE_END) {
                 ConfigurationSection fallback = worlds.getConfigurationSection("world_the_end");
                 if (fallback != null) return fallback;
             } else {
@@ -1562,6 +1564,14 @@ public class RTPManager {
     private String getLoadedNetherWorldName() {
         for (World world : Bukkit.getWorlds()) {
             if (world.getEnvironment() == World.Environment.NETHER) {
+                String name = world.getName();
+                if (!isDeniedWorld(name)) {
+                    return name;
+                }
+            }
+        }
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getEnvironment() == World.Environment.NETHER) {
                 return world.getName();
             }
         }
@@ -1571,6 +1581,14 @@ public class RTPManager {
     private String getLoadedEndWorldName() {
         for (World world : Bukkit.getWorlds()) {
             if (world.getEnvironment() == World.Environment.THE_END) {
+                String name = world.getName();
+                if (!isDeniedWorld(name)) {
+                    return name;
+                }
+            }
+        }
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getEnvironment() == World.Environment.THE_END) {
                 return world.getName();
             }
         }
@@ -1578,6 +1596,19 @@ public class RTPManager {
     }
 
     private String getLoadedNormalWorldName() {
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getEnvironment() == World.Environment.NORMAL) {
+                String name = world.getName();
+                if (!name.equalsIgnoreCase("afk")
+                        && !name.equalsIgnoreCase("duels")
+                        && !name.equalsIgnoreCase("lobby")
+                        && !name.equalsIgnoreCase("hub")
+                        && !name.equalsIgnoreCase("spawn")
+                        && !isDeniedWorld(name)) {
+                    return name;
+                }
+            }
+        }
         for (World world : Bukkit.getWorlds()) {
             if (world.getEnvironment() == World.Environment.NORMAL) {
                 String name = world.getName();
