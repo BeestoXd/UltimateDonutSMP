@@ -201,7 +201,9 @@ public class CrateVisualManager {
     }
 
     private void spawnHologram(Block block, CrateManager.CrateDefinition crate) {
-        removeTrackedGlobalHologram(toKey(block));
+        CrateManager.CrateBlockKey key = toKey(block);
+        removeTrackedGlobalHologram(key);
+        purgeNearbyDisplaysForCrate(key);
 
         List<String> lines = getHologramLines(crate);
         if (lines.isEmpty()) {
@@ -220,13 +222,13 @@ public class CrateVisualManager {
                 textDisplay.getPersistentDataContainer().set(
                         plugin.getKey("crate_hologram"),
                         PersistentDataType.STRING,
-                        formatBlockKey(toKey(block))
+                        formatBlockKey(key)
                 );
             });
             entityIds.add(display.getUniqueId());
         }
 
-        holograms.put(toKey(block), entityIds);
+        holograms.put(key, entityIds);
     }
 
     private void ensureGlobalHolograms() {
@@ -239,6 +241,10 @@ public class CrateVisualManager {
 
             World world = Bukkit.getWorld(key.world());
             if (world == null) {
+                continue;
+            }
+
+            if (!world.isChunkLoaded(key.x() >> 4, key.z() >> 4)) {
                 continue;
             }
 
@@ -652,6 +658,10 @@ public class CrateVisualManager {
                 continue;
             }
 
+            if (!world.isChunkLoaded(key.x() >> 4, key.z() >> 4)) {
+                continue;
+            }
+
             Location location = new Location(world, key.x() + 0.5, key.y() + 1.05, key.z() + 0.5);
             world.spawnParticle(particle, location, count, 0.18, 0.25, 0.18, 0.02);
             world.spawnParticle(Particle.GLOW, location.clone().add(0, 0.15, 0), 1, 0.06, 0.06, 0.06, 0.0);
@@ -680,7 +690,7 @@ public class CrateVisualManager {
         textDisplay.setBillboard(Display.Billboard.CENTER);
         textDisplay.setDefaultBackground(false);
         textDisplay.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
-        textDisplay.setSeeThrough(true);
+        textDisplay.setSeeThrough(false);
         textDisplay.setShadowed(false);
         textDisplay.setViewRange(getDisplayViewRange());
         textDisplay.setPersistent(false);
@@ -717,7 +727,11 @@ public class CrateVisualManager {
     }
 
     private float getDisplayViewRange() {
-        return 1000.0F;
+        double dist = getHologramViewDistance();
+        if (dist <= 0D) {
+            return 1.0F;
+        }
+        return (float) Math.max(0.1D, dist / 64.0D);
     }
 
     private double getHologramOffsetY() {
@@ -863,7 +877,9 @@ public class CrateVisualManager {
     }
 
     private void spawnPreview(Block block, CrateManager.CrateDefinition crate) {
-        removeTrackedPreview(toKey(block));
+        CrateManager.CrateBlockKey key = toKey(block);
+        removeTrackedPreview(key);
+        purgeNearbyDisplaysForCrate(key);
 
         if (!isPreviewEnabled() || crate.rewards().isEmpty()) {
             return;
@@ -883,17 +899,19 @@ public class CrateVisualManager {
             itemDisplay.getPersistentDataContainer().set(
                     plugin.getKey("crate_preview"),
                     PersistentDataType.STRING,
-                    formatBlockKey(toKey(block))
+                    formatBlockKey(key)
             );
 
             int interval = getPreviewUpdateIntervalTicks();
             itemDisplay.setInterpolationDuration(interval);
             itemDisplay.setInterpolationDelay(0);
+            itemDisplay.setViewRange(getDisplayViewRange());
+            itemDisplay.setPersistent(false);
         });
 
-        previews.put(toKey(block), display.getUniqueId());
-        previewIndices.put(toKey(block), 0);
-        previewCycleTicks.put(toKey(block), 0);
+        previews.put(key, display.getUniqueId());
+        previewIndices.put(key, 0);
+        previewCycleTicks.put(key, 0);
     }
 
     private void removeTrackedPreview(CrateManager.CrateBlockKey key) {
