@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.ChatManager;
+import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.models.Team;
@@ -84,16 +85,14 @@ public class ChatListener implements Listener {
             var component = plugin.getHoverStatsManager().buildChatComponent(player, "", rawMessage, teamFormat);
             for (java.util.UUID uuid : team.getMemberUuids()) {
                 Player member = Bukkit.getPlayer(uuid);
-                if (member != null
-                        && (member.getUniqueId().equals(player.getUniqueId())
-                        || PlayerSettingUtils.notificationEnabled(
-                        plugin,
-                        member,
-                        PlayerSettingUtils.NotificationChannel.TEAM_CHAT
-                ))) {
+                if (member != null) {
                     plugin.getSpigotScheduler().runEntity(member, () -> member.spigot().sendMessage(component));
                 }
             }
+            return;
+        }
+
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CHAT)) {
             return;
         }
 
@@ -127,29 +126,17 @@ public class ChatListener implements Listener {
             return;
         }
 
-        if (!chatManager.isFormatEnabled()) {
-            chatManager.trackAcceptedGlobalMessage(player, rawMessage);
-            return;
-        }
-
         event.setCancelled(true);
 
-        String chatFormat = chatManager.getChatFormat();
+        String chatFormat = chatManager.isFormatEnabled()
+                ? chatManager.getChatFormat()
+                : "%player%: %message%";
         String prefix = getLuckPermsPrefix(player);
         var chatComponent = plugin.getHoverStatsManager()
                 .buildChatComponent(player, prefix, rawMessage, chatFormat);
 
         final var finalMsg = chatComponent;
-        plugin.getSpigotScheduler().forEachOnlinePlayer(recipient -> {
-            if (recipient.getUniqueId().equals(player.getUniqueId())
-                    || PlayerSettingUtils.notificationEnabled(
-                    plugin,
-                    recipient,
-                    PlayerSettingUtils.NotificationChannel.PUBLIC_CHAT
-            )) {
-                recipient.spigot().sendMessage(finalMsg);
-            }
-        });
+        plugin.getSpigotScheduler().forEachOnlinePlayer(p -> p.spigot().sendMessage(finalMsg));
         chatManager.trackAcceptedGlobalMessage(player, rawMessage);
     }
 

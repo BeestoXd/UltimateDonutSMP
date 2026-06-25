@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.ChatManager;
+import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.models.Team;
@@ -29,8 +30,6 @@ public class ChatListener implements Listener {
         ChatManager chatManager = plugin.getChatManager();
 
         String rawMessage = event.getMessage();
-
-
 
         if (plugin.getHomeManager().hasPendingInput(player.getUniqueId())) {
             event.setCancelled(true);
@@ -96,6 +95,10 @@ public class ChatListener implements Listener {
                     plugin.getFoliaScheduler().runEntity(member, () -> member.spigot().sendMessage(component));
                 }
             }
+            return;
+        }
+
+        if (!plugin.getFeatureManager().isEnabled(FeatureManager.Feature.CHAT)) {
             return;
         }
 
