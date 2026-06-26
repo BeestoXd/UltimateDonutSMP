@@ -10,7 +10,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -22,10 +21,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +37,7 @@ public class WorthDisplayListener implements Listener {
     public WorthDisplayListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
         startDirtySyncTask();
+        registerAttemptPickupListener();
     }
 
     @EventHandler
@@ -103,13 +101,34 @@ public class WorthDisplayListener implements Listener {
             return;
         }
 
-        if (scheduleWorthDisplayMerge(event, player)) {
+        Inventory topInventory = event.getView().getTopInventory();
+        if (topInventory.getHolder() instanceof SellMenu
+                || topInventory.getHolder() instanceof BaseMenu
+                || plugin.getInvseeManager().isInvseeInventory(topInventory)) {
             return;
         }
 
-        if (isShulkerInventory(event.getView().getTopInventory())) {
-            queueRefresh(player, 1L);
-            return;
+        // Strip player inventory and cursor to allow native stacking/actions
+        plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
+
+        ItemStack cursor = event.getCursor();
+        if (cursor != null && !cursor.getType().isAir()) {
+            ItemStack stripped = plugin.getWorthManager().stripWorthDisplay(cursor);
+            if (stripped != cursor) {
+                event.setCursor(stripped);
+            }
+        }
+
+        ItemStack current = event.getCurrentItem();
+        if (current != null && !current.getType().isAir()) {
+            ItemStack stripped = plugin.getWorthManager().stripWorthDisplay(current);
+            if (stripped != current) {
+                event.setCurrentItem(stripped);
+            }
+        }
+
+        if (isShulkerInventory(topInventory)) {
+            plugin.getWorthManager().sanitizeInventory(topInventory);
         }
 
         queueRefresh(player, 1L);
@@ -171,6 +190,38 @@ public class WorthDisplayListener implements Listener {
 
             plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
             queueRefresh(player, 1L);
+        }
+    }
+
+    private void registerAttemptPickupListener() {
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends org.bukkit.event.Event> eventClass = 
+                (Class<? extends org.bukkit.event.Event>) Class.forName("org.bukkit.event.player.PlayerAttemptPickupItemEvent");
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                eventClass,
+                this,
+                EventPriority.LOWEST,
+                (listener, event) -> {
+                    try {
+                        Player player = (Player) event.getClass().getMethod("getPlayer").invoke(event);
+                        org.bukkit.entity.Item itemEntity = (org.bukkit.entity.Item) event.getClass().getMethod("getItem").invoke(event);
+                        ItemStack current = itemEntity.getItemStack();
+                        
+                        if (!isAmethystItem(current)) {
+                            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
+                            queueRefresh(player, 1L);
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                },
+                plugin,
+                true
+            );
+        } catch (ClassNotFoundException e) {
+            // Not on Paper/Folia, ignore
         }
     }
 
@@ -280,98 +331,6 @@ public class WorthDisplayListener implements Listener {
 
     private boolean isShulkerInventory(Inventory inventory) {
         return inventory != null && inventory.getType() == InventoryType.SHULKER_BOX;
-    }
-
-    private boolean scheduleWorthDisplayMerge(InventoryClickEvent event, Player player) {
-        Inventory clickedInventory = event.getClickedInventory();
-        if (clickedInventory == null) {
-            return false;
-        }
-
-        Inventory topInventory = event.getView().getTopInventory();
-        if (topInventory.getHolder() instanceof SellMenu
-                || topInventory.getHolder() instanceof BaseMenu
-                || plugin.getInvseeManager().isInvseeInventory(topInventory)) {
-            return false;
-        }
-
-        ClickType click = event.getClick();
-        if (click != ClickType.LEFT && click != ClickType.RIGHT) {
-            return false;
-        }
-
-        ItemStack current = event.getCurrentItem();
-        ItemStack cursor = event.getCursor();
-        if (current == null || current.getType().isAir()
-                || cursor == null || cursor.getType().isAir()
-                || current.isSimilar(cursor)) {
-            return false;
-        }
-
-        ItemStack strippedCurrent = plugin.getWorthManager().stripWorthDisplay(current);
-        ItemStack strippedCursor = plugin.getWorthManager().stripWorthDisplay(cursor);
-        if (!strippedCurrent.isSimilar(strippedCursor)) {
-            return false;
-        }
-
-        int capacity = strippedCurrent.getMaxStackSize() - strippedCurrent.getAmount();
-        if (capacity <= 0) {
-            return false;
-        }
-
-        int transferred = click == ClickType.RIGHT
-                ? 1
-                : Math.min(capacity, strippedCursor.getAmount());
-        ItemStack expectedCurrent = current.clone();
-        ItemStack expectedCursor = cursor.clone();
-        int clickedSlot = event.getSlot();
-
-        event.setCancelled(true);
-        plugin.getSpigotScheduler().runEntityLater(player, () -> {
-            if (!player.isOnline()
-                    || !isSameItem(clickedInventory.getItem(clickedSlot), expectedCurrent)
-                    || !isSameItem(player.getItemOnCursor(), expectedCursor)) {
-                queueRefresh(player, 1L);
-                return;
-            }
-
-            ItemStack mergedCurrent = strippedCurrent.clone();
-            mergedCurrent.setAmount(strippedCurrent.getAmount() + transferred);
-            
-            ItemStack finalCurrent = (clickedInventory instanceof PlayerInventory)
-                    ? plugin.getWorthManager().applyWorthDisplayForPlayer(player, mergedCurrent)
-                    : mergedCurrent;
-            
-            clickedInventory.setItem(clickedSlot, finalCurrent);
-
-            int remaining = strippedCursor.getAmount() - transferred;
-            if (remaining <= 0) {
-                player.setItemOnCursor(null);
-            } else {
-                ItemStack remainingCursor = strippedCursor.clone();
-                remainingCursor.setAmount(remaining);
-                player.setItemOnCursor(
-                        plugin.getWorthManager().applyWorthDisplayForPlayer(player, remainingCursor)
-                );
-            }
-            player.updateInventory();
-        }, 1L);
-        return true;
-    }
-
-    private boolean isSameItem(ItemStack a, ItemStack b) {
-        if (a == null || a.getType().isAir()) {
-            return b == null || b.getType().isAir();
-        }
-        if (b == null || b.getType().isAir()) {
-            return false;
-        }
-        if (a.getType() != b.getType() || a.getAmount() != b.getAmount()) {
-            return false;
-        }
-        ItemStack strippedA = plugin.getWorthManager().stripWorthDisplay(a);
-        ItemStack strippedB = plugin.getWorthManager().stripWorthDisplay(b);
-        return strippedA.isSimilar(strippedB);
     }
 
     private boolean isAmethystItem(ItemStack item) {
