@@ -690,7 +690,7 @@ public class CrateVisualManager {
         textDisplay.setBillboard(Display.Billboard.CENTER);
         textDisplay.setDefaultBackground(false);
         textDisplay.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
-        textDisplay.setSeeThrough(false);
+        textDisplay.setSeeThrough(true);
         textDisplay.setShadowed(false);
         textDisplay.setViewRange(getDisplayViewRange());
         textDisplay.setPersistent(false);
@@ -731,7 +731,7 @@ public class CrateVisualManager {
         if (dist <= 0D) {
             return 1.0F;
         }
-        return (float) Math.max(0.1D, dist / 64.0D);
+        return (float) Math.max(1.0D, dist / 64.0D);
     }
 
     private double getHologramOffsetY() {
