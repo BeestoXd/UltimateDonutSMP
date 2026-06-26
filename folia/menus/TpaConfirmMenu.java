@@ -54,11 +54,11 @@ public class TpaConfirmMenu extends BaseMenu {
         player.closeInventory();
 
         if (slot == 11) {
-            player.performCommand("ᴛᴘᴀᴅᴇɴʏ " + requesterName);
+            player.performCommand("tpadeny " + requesterName);
             return;
         }
 
-        player.performCommand("ᴛᴘᴀᴄᴄᴇᴘᴛ " + requesterName);
+        player.performCommand("tpaccept " + requesterName);
     }
 
     private ItemStack createRequesterItem(List<String> lore) {
