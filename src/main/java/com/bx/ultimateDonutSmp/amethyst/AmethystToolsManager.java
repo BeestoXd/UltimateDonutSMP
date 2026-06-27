@@ -306,7 +306,7 @@ public class AmethystToolsManager {
 
         for (int i = 0; i < newLore.size(); i++) {
             String lineText = ColorUtils.strip(newLore.get(i));
-            if (lineText.contains("SELF DESTRUCT")) {
+            if (lineText.toUpperCase(Locale.ROOT).contains("SELF DESTRUCT")) {
                 foundSelfDestruct = true;
                 continue;
             }
