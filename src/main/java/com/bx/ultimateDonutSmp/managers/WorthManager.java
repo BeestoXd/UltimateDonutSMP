@@ -267,6 +267,10 @@ public class WorthManager {
         if (updatedCursor != cursor) {
             player.setItemOnCursor(updatedCursor);
         }
+
+        if (player.isOnline()) {
+            player.updateInventory();
+        }
     }
 
     public void syncWorthDisplay(Player player, Inventory inventory) {
@@ -275,6 +279,10 @@ public class WorthManager {
         }
 
         syncInventoryWorthDisplay(inventory, isWorthDisplayEnabled(player));
+
+        if (player.isOnline()) {
+            player.updateInventory();
+        }
     }
 
     public ItemStack applyWorthDisplayForPlayer(Player player, ItemStack item) {
@@ -332,6 +340,10 @@ public class WorthManager {
         ItemStack strippedCursor = stripWorthDisplay(cursor);
         if (strippedCursor != cursor) {
             player.setItemOnCursor(strippedCursor);
+        }
+
+        if (player.isOnline()) {
+            player.updateInventory();
         }
     }
 
