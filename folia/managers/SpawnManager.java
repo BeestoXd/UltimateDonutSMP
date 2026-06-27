@@ -78,6 +78,9 @@ public class SpawnManager {
     private Location afkLocation;
     private List<TeleportArea> configuredSpawnAreas = List.of();
     private List<TeleportArea> configuredAfkAreas = List.of();
+    private Location cachedSpawnLocation;
+    private Location cachedAfkLocation;
+    private final java.util.Map<String, Location> cachedAreaDestinations = new java.util.concurrent.ConcurrentHashMap<>();
 
     public SpawnManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -91,6 +94,9 @@ public class SpawnManager {
         afkLocation = LocationUtils.parse(afkStr);
         configuredSpawnAreas = loadAreas("SPAWN-MENU", AreaType.SPAWN);
         configuredAfkAreas = loadAreas("AFK-MENU", AreaType.AFK);
+        cachedSpawnLocation = null;
+        cachedAfkLocation = null;
+        cachedAreaDestinations.clear();
     }
 
     public SetupLocationResult setSpawnLocation(Location loc) {
@@ -274,6 +280,18 @@ public class SpawnManager {
         if (area == null) {
             return null;
         }
+        String cacheKey = area.type().name() + ":" + area.id() + ":" + (area.cuboidName() == null ? "" : area.cuboidName());
+        if (cachedAreaDestinations.containsKey(cacheKey)) {
+            return cachedAreaDestinations.get(cacheKey);
+        }
+        Location resolved = resolveDestinationDirect(area);
+        if (resolved != null) {
+            cachedAreaDestinations.put(cacheKey, resolved);
+        }
+        return resolved;
+    }
+
+    private Location resolveDestinationDirect(TeleportArea area) {
         if (area.locationOverride() != null) {
             Location overrideDestination = makeSafeDestination(area.locationOverride());
             if (overrideDestination != null) {
@@ -330,6 +348,17 @@ public class SpawnManager {
     }
 
     public Location getSpawnLocation() {
+        if (cachedSpawnLocation != null) {
+            return cachedSpawnLocation;
+        }
+        Location resolved = resolveSpawnLocationDirect();
+        if (resolved != null) {
+            cachedSpawnLocation = resolved;
+        }
+        return resolved;
+    }
+
+    private Location resolveSpawnLocationDirect() {
         if (spawnLocation != null) {
             Location safeSpawn = makeSafeDestination(spawnLocation);
             if (safeSpawn != null) {
@@ -346,6 +375,17 @@ public class SpawnManager {
     }
 
     public Location getAfkLocation() {
+        if (cachedAfkLocation != null) {
+            return cachedAfkLocation;
+        }
+        Location resolved = resolveAfkLocationDirect();
+        if (resolved != null) {
+            cachedAfkLocation = resolved;
+        }
+        return resolved;
+    }
+
+    private Location resolveAfkLocationDirect() {
         if (afkLocation != null) {
             Location safeAfk = makeSafeDestination(afkLocation);
             if (safeAfk != null) {

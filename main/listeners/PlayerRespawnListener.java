@@ -104,10 +104,32 @@ public class PlayerRespawnListener implements Listener {
         Set<Material> grantedMaterials = new HashSet<>();
         if (itemList != null) {
             for (Object obj : itemList) {
-                if (!(obj instanceof ConfigurationSection section)) continue;
-                Material mat = ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE"));
-                int amount = section.getInt("AMOUNT", 1);
-                String name = section.getString("NAME");
+                Material mat = Material.STONE;
+                int amount = 1;
+                String name = null;
+
+                if (obj instanceof ConfigurationSection section) {
+                    mat = ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE"));
+                    amount = section.getInt("AMOUNT", 1);
+                    name = section.getString("NAME");
+                } else if (obj instanceof java.util.Map<?, ?> map) {
+                    Object matObj = map.get("MATERIAL");
+                    if (matObj != null) {
+                        mat = ItemUtils.parseMaterial(matObj.toString());
+                    }
+                    Object amtObj = map.get("AMOUNT");
+                    if (amtObj != null) {
+                        try {
+                            amount = Integer.parseInt(amtObj.toString());
+                        } catch (NumberFormatException ignored) {}
+                    }
+                    Object nameObj = map.get("NAME");
+                    if (nameObj != null) {
+                        name = nameObj.toString();
+                    }
+                } else {
+                    continue;
+                }
 
                 ItemStack item;
                 if (name != null) {
