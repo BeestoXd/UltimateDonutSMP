@@ -45,16 +45,16 @@ public class PlayerRespawnListener implements Listener {
             if (respawnLocation != null) {
                 Location finalRespawnLocation = respawnLocation.clone();
                 event.setRespawnLocation(finalRespawnLocation);
-                plugin.getSpigotScheduler().runEntityLater(player, () -> {
+                plugin.getFoliaScheduler().runEntityLater(player, () -> {
                     if (player.isOnline() && shouldSnapToRespawnLocation(player.getLocation(), finalRespawnLocation)) {
-                        plugin.getSpigotScheduler().teleport(player, finalRespawnLocation);
+                        plugin.getFoliaScheduler().teleport(player, finalRespawnLocation);
                     }
                 }, 1L);
             }
         }
 
         plugin.getStaffModeManager().handleRespawn(player);
-        plugin.getSpigotScheduler().runEntityLater(
+        plugin.getFoliaScheduler().runEntityLater(
                 player,
                 () -> NightVisionUtils.restoreIfEnabled(plugin, player),
                 1L
@@ -91,7 +91,7 @@ public class PlayerRespawnListener implements Listener {
             return;
         }
 
-        plugin.getSpigotScheduler().runEntityLater(player, () -> {
+        plugin.getFoliaScheduler().runEntityLater(player, () -> {
             if (player.isOnline()) {
                 giveChainmailKit(plugin, player);
             }
