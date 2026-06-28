@@ -68,6 +68,7 @@ public class SpawnerManager {
     private final NamespacedKey spawnerItemMarkerKey;
     private final NamespacedKey spawnerItemTypeKey;
     private final NamespacedKey spawnerItemAmountKey;
+    private final Object lock = new Object();
     private final Map<Long, SpawnerInstance> spawnersById = new LinkedHashMap<>();
     private final Map<String, Long> locationIndex = new HashMap<>();
     private final Map<String, LinkedHashSet<Long>> worldIndex = new HashMap<>();
@@ -124,16 +125,22 @@ public class SpawnerManager {
         worldListSize = normalizeSize(config.getInt("GUI.WORLD_LIST.SIZE", 27));
         loadTypeDefinitions(config);
 
-        for (SpawnerInstance instance : spawnersById.values()) {
+        List<SpawnerInstance> copy;
+        synchronized (lock) {
+            copy = new ArrayList<>(spawnersById.values());
+        }
+        for (SpawnerInstance instance : copy) {
             syncSpawnerBlockState(instance);
         }
     }
 
     private void loadPersistedSpawners() {
-        spawnersById.clear();
-        locationIndex.clear();
-        worldIndex.clear();
-        temporarySpawnerIds.clear();
+        synchronized (lock) {
+            spawnersById.clear();
+            locationIndex.clear();
+            worldIndex.clear();
+            temporarySpawnerIds.clear();
+        }
 
         Map<Long, List<SpawnerLootEntry>> lootBySpawnerId = plugin.getDatabaseManager().loadAllSpawnerLoot();
         for (SpawnerInstance instance : plugin.getDatabaseManager().loadAllSpawners()) {
@@ -444,7 +451,9 @@ public class SpawnerManager {
         );
 
         registerSpawner(instance);
-        temporarySpawnerIds.add(instance.getId());
+        synchronized (lock) {
+            temporarySpawnerIds.add(instance.getId());
+        }
         syncSpawnerBlockStateImmediate(instance);
         if (plugin.getAntiEspManager() != null) {
             plugin.getAntiEspManager().refreshNearby(block.getLocation());
@@ -453,7 +462,12 @@ public class SpawnerManager {
     }
 
     public boolean isTemporarySpawner(SpawnerInstance instance) {
-        return instance != null && temporarySpawnerIds.contains(instance.getId());
+        if (instance == null) {
+            return false;
+        }
+        synchronized (lock) {
+            return temporarySpawnerIds.contains(instance.getId());
+        }
     }
 
     public boolean removeTemporarySpawner(Block block) {
@@ -463,7 +477,9 @@ public class SpawnerManager {
         }
 
         unregisterSpawner(instance);
-        temporarySpawnerIds.remove(instance.getId());
+        synchronized (lock) {
+            temporarySpawnerIds.remove(instance.getId());
+        }
         if (block != null && plugin.getAntiEspManager() != null) {
             plugin.getAntiEspManager().refreshNearby(block.getLocation());
         }
@@ -526,34 +542,42 @@ public class SpawnerManager {
     }
 
     public SpawnerInstance getSpawner(String world, int x, int y, int z) {
-        Long id = locationIndex.get(SpawnerInstance.buildLocationKey(world, x, y, z));
-        return id == null ? null : spawnersById.get(id);
+        synchronized (lock) {
+            Long id = locationIndex.get(SpawnerInstance.buildLocationKey(world, x, y, z));
+            return id == null ? null : spawnersById.get(id);
+        }
     }
 
     public SpawnerInstance getSpawner(long spawnerId) {
-        return spawnersById.get(spawnerId);
+        synchronized (lock) {
+            return spawnersById.get(spawnerId);
+        }
     }
 
     public Collection<SpawnerInstance> getAllSpawners() {
-        return List.copyOf(spawnersById.values());
+        synchronized (lock) {
+            return List.copyOf(spawnersById.values());
+        }
     }
 
     public List<SpawnerInstance> getSpawnersInWorld(String worldName) {
-        LinkedHashSet<Long> ids = worldIndex.get(worldName == null ? "" : worldName.toLowerCase(Locale.US));
-        if (ids == null || ids.isEmpty()) {
-            return List.of();
-        }
-
-        List<SpawnerInstance> spawners = new ArrayList<>();
-        for (Long id : ids) {
-            SpawnerInstance instance = spawnersById.get(id);
-            if (instance != null) {
-                spawners.add(instance);
+        synchronized (lock) {
+            LinkedHashSet<Long> ids = worldIndex.get(worldName == null ? "" : worldName.toLowerCase(Locale.US));
+            if (ids == null || ids.isEmpty()) {
+                return List.of();
             }
+
+            List<SpawnerInstance> spawners = new ArrayList<>();
+            for (Long id : ids) {
+                SpawnerInstance instance = spawnersById.get(id);
+                if (instance != null) {
+                    spawners.add(instance);
+                }
+            }
+            spawners.sort(Comparator.comparingLong(SpawnerInstance::getStackAmount).reversed()
+                    .thenComparingInt(SpawnerInstance::getX));
+            return spawners;
         }
-        spawners.sort(Comparator.comparingLong(SpawnerInstance::getStackAmount).reversed()
-                .thenComparingInt(SpawnerInstance::getX));
-        return spawners;
     }
 
     public List<WorldSummary> getWorldSummaries() {
@@ -834,8 +858,16 @@ public class SpawnerManager {
     }
 
     public void processGeneration() {
-        if (!enabled || spawnersById.isEmpty()) {
+        if (!enabled) {
             return;
+        }
+
+        List<SpawnerInstance> copy;
+        synchronized (lock) {
+            if (spawnersById.isEmpty()) {
+                return;
+            }
+            copy = new ArrayList<>(spawnersById.values());
         }
 
         long now = System.currentTimeMillis();
@@ -844,12 +876,20 @@ public class SpawnerManager {
             return;
         }
 
-        for (SpawnerInstance instance : new ArrayList<>(spawnersById.values())) {
+        for (SpawnerInstance instance : copy) {
             try {
-                processSpawnerGeneration(instance, now, intervalMillis);
+                Location loc = getSpawnerCenter(instance);
+                plugin.getSpigotScheduler().runRegion(loc, () -> {
+                    try {
+                        processSpawnerGeneration(instance, now, intervalMillis);
+                    } catch (Exception exception) {
+                        plugin.getLogger().log(Level.WARNING,
+                                "Failed to process spawner generation for " + instance.getLocationKey(), exception);
+                    }
+                });
             } catch (Exception exception) {
                 plugin.getLogger().log(Level.WARNING,
-                        "Failed to process spawner generation for " + instance.getLocationKey(), exception);
+                        "Failed to schedule spawner generation for " + instance.getLocationKey(), exception);
             }
         }
     }
@@ -1057,7 +1097,11 @@ public class SpawnerManager {
         if (serverWipeMode) {
             return;
         }
-        for (SpawnerInstance instance : spawnersById.values()) {
+        List<SpawnerInstance> copy;
+        synchronized (lock) {
+            copy = new ArrayList<>(spawnersById.values());
+        }
+        for (SpawnerInstance instance : copy) {
             if (isTemporarySpawner(instance)) {
                 continue;
             }
@@ -1131,20 +1175,24 @@ public class SpawnerManager {
     }
 
     private void registerSpawner(SpawnerInstance instance) {
-        spawnersById.put(instance.getId(), instance);
-        locationIndex.put(instance.getLocationKey(), instance.getId());
-        worldIndex.computeIfAbsent(instance.getWorld().toLowerCase(Locale.US), ignored -> new LinkedHashSet<>())
-                .add(instance.getId());
+        synchronized (lock) {
+            spawnersById.put(instance.getId(), instance);
+            locationIndex.put(instance.getLocationKey(), instance.getId());
+            worldIndex.computeIfAbsent(instance.getWorld().toLowerCase(Locale.US), ignored -> new LinkedHashSet<>())
+                    .add(instance.getId());
+        }
     }
 
     private void unregisterSpawner(SpawnerInstance instance) {
-        spawnersById.remove(instance.getId());
-        locationIndex.remove(instance.getLocationKey());
-        LinkedHashSet<Long> ids = worldIndex.get(instance.getWorld().toLowerCase(Locale.US));
-        if (ids != null) {
-            ids.remove(instance.getId());
-            if (ids.isEmpty()) {
-                worldIndex.remove(instance.getWorld().toLowerCase(Locale.US));
+        synchronized (lock) {
+            spawnersById.remove(instance.getId());
+            locationIndex.remove(instance.getLocationKey());
+            LinkedHashSet<Long> ids = worldIndex.get(instance.getWorld().toLowerCase(Locale.US));
+            if (ids != null) {
+                ids.remove(instance.getId());
+                if (ids.isEmpty()) {
+                    worldIndex.remove(instance.getWorld().toLowerCase(Locale.US));
+                }
             }
         }
     }
