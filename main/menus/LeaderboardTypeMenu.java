@@ -139,8 +139,8 @@ public class LeaderboardTypeMenu extends BaseMenu {
         Material material = ItemUtils.parseMaterial(valueOrDefault(buttonSection, "MATERIAL", "PLAYER_HEAD"));
         ItemStack item = ItemUtils.createItem(
                 material,
-                applyPlaceholders(valueOrDefault(buttonSection, "ᴅɪѕᴘʟᴀʏ-ɴᴀᴍᴇ", "&b{player}"), placeholders),
-                applyPlaceholders(getLore(buttonSection, "ʟᴏʀᴇ"), placeholders)
+                applyPlaceholders(valueOrDefault(buttonSection, "DISPLAY-NAME", "&b{player}"), placeholders),
+                applyPlaceholders(getLore(buttonSection, "LORE"), placeholders)
         );
 
         if (material == Material.PLAYER_HEAD && item.getItemMeta() instanceof SkullMeta meta) {
