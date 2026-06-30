@@ -98,6 +98,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private OptimizationManager optimizationManager;
     private CrashProtectionManager crashProtectionManager;
     private AnvilModerationManager anvilModerationManager;
+    private UpdateManager updateManager;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -267,6 +268,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (maintenanceManager != null && !maintenanceManager.isMaintenanceActive()) {
             maintenanceManager.broadcastOnline();
         }
+
+        updateManager = new UpdateManager(this);
+        updateManager.checkForUpdates();
 
         getLogger().info("UltimateDonutSmp enabled successfully.");
     }
@@ -933,6 +937,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (anvilModerationManager != null) {
             anvilModerationManager.load();
         }
+        if (updateManager != null) {
+            updateManager.checkForUpdates();
+        }
         leaderboardManager.invalidateAll();
         scoreboardManager.updateAll();
         tablistManager.updateAll();
@@ -969,6 +976,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public LanguageManager getLanguageManager() {
         return languageManager;
+    }
+
+    public UpdateManager getUpdateManager() {
+        return updateManager;
     }
 
     public CurrencyManager getCurrencyManager() {

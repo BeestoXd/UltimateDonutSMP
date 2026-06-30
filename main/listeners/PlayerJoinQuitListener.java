@@ -210,6 +210,22 @@ public class PlayerJoinQuitListener implements Listener {
             }, 20L);
         }
 
+        if (plugin.getUpdateManager() != null && plugin.getUpdateManager().isUpdateAvailable()) {
+            if (player.isOp() || player.hasPermission("ultimatedonutsmp.admin") || player.hasPermission("ultimatedonutsmp.updatechecker")) {
+                plugin.getSpigotScheduler().runEntityLater(player, () -> {
+                    if (player.isOnline()) {
+                        String currentVer = plugin.getDescription().getVersion();
+                        String latestVer = plugin.getUpdateManager().getLatestVersion();
+                        player.sendMessage(ColorUtils.colorize("&8&m--------------------------------------------------", player));
+                        player.sendMessage(ColorUtils.colorize("&6&lUltimateDonutSmp &7» &eA new update is available!", player));
+                        player.sendMessage(ColorUtils.colorize("&7Current version: &c" + currentVer + " &8| &7Latest version: &a" + latestVer, player));
+                        player.sendMessage(ColorUtils.colorize("&ePlease download the update from the official repository!", player));
+                        player.sendMessage(ColorUtils.colorize("&8&m--------------------------------------------------", player));
+                    }
+                }, 40L);
+            }
+        }
+
         // Hide join message (optional, uncomment to suppress)
         // event.joinMessage(null);
     }
