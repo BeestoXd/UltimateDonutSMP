@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
 
 import java.io.BufferedReader;
@@ -45,8 +46,8 @@ public class UpdateManager {
                             this.updateAvailable = isNewerVersion(currentVersion, latestVersion);
 
                             if (this.updateAvailable) {
-                                plugin.getLogger().warning("A new update is available: " + latestVersion + " (Current version: " + currentVersion + ")");
-                                plugin.getLogger().warning("Please download the latest version from: https://github.com/BeestoXd/UltimateDonutSMP");
+                                Bukkit.getConsoleSender().sendMessage(ColorUtils.colorize("&c[UltimateDonutSmp] A new update is available: " + latestVersion + " (Current version: " + currentVersion + ")"));
+                                Bukkit.getConsoleSender().sendMessage(ColorUtils.colorize("&c[UltimateDonutSmp] Please download the latest version from: https://github.com/BeestoXd/UltimateDonutSMP"));
                             } else {
                                 plugin.getLogger().info("You are running the latest version of UltimateDonutSmp (" + currentVersion + ").");
                             }

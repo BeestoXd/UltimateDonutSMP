@@ -217,9 +217,10 @@ public class PlayerJoinQuitListener implements Listener {
                         String currentVer = plugin.getDescription().getVersion();
                         String latestVer = plugin.getUpdateManager().getLatestVersion();
                         player.sendMessage(ColorUtils.colorize("&8&m--------------------------------------------------", player));
-                        player.sendMessage(ColorUtils.colorize("&6&lUltimateDonutSmp &7» &eA new update is available!", player));
+                        player.sendMessage(ColorUtils.colorize("&9&lUltimateDonutSmp &7» &c&lA new update is available!", player));
                         player.sendMessage(ColorUtils.colorize("&7Current version: &c" + currentVer + " &8| &7Latest version: &a" + latestVer, player));
-                        player.sendMessage(ColorUtils.colorize("&ePlease download the update from the official repository!", player));
+                        player.sendMessage(ColorUtils.colorize("&cPlease download the update from the official repository:", player));
+                        player.sendMessage(ColorUtils.colorize("&bhttps://github.com/BeestoXd/UltimateDonutSMP", player));
                         player.sendMessage(ColorUtils.colorize("&8&m--------------------------------------------------", player));
                     }
                 }, 40L);
