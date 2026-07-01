@@ -34,7 +34,35 @@ class LanguageManagerTest {
         assertEquals("id_ID", LanguageManager.resolveLocale("Bahasa Indonesia"));
         assertEquals("pt_BR", LanguageManager.resolveLocale("pt-BR"));
         assertEquals("zh_CN", LanguageManager.resolveLocale("simplified chinese"));
+        assertEquals("tr_TR", LanguageManager.resolveLocale("Turkish"));
+        assertEquals("tr_TR", LanguageManager.resolveLocale("türkçe"));
+        assertEquals("it_IT", LanguageManager.resolveLocale("Italian"));
+        assertEquals("pl_PL", LanguageManager.resolveLocale("polish"));
+        assertEquals("nl_NL", LanguageManager.resolveLocale("Dutch"));
         assertNull(LanguageManager.resolveLocale("klingon"));
+    }
+
+    @Test
+    void resolvesCustomLocales() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        java.lang.reflect.Field languagesField = LanguageManager.class.getDeclaredField("languages");
+        languagesField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, YamlConfiguration> languages = (java.util.Map<String, YamlConfiguration>) languagesField.get(manager);
+        languages.put("pirate", new YamlConfiguration());
+        languages.put("tr_TR", new YamlConfiguration());
+
+        java.lang.reflect.Field currentField = LanguageManager.class.getDeclaredField("current");
+        currentField.setAccessible(true);
+        currentField.set(null, manager);
+
+        try {
+            assertEquals("pirate", LanguageManager.resolveLocale("pirate"));
+            assertEquals("tr_TR", LanguageManager.resolveLocale("tr-TR"));
+            assertEquals("tr_TR", LanguageManager.resolveLocale("turkish"));
+        } finally {
+            currentField.set(null, null);
+        }
     }
 
     @Test

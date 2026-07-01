@@ -81,10 +81,49 @@ public class LanguageManager {
         YamlConfiguration englishDefaults = loadBundledLanguage(DEFAULT_LOCALE);
         mergeCurrentPlayerText(englishDefaults);
 
+        Set<String> loadedLocales = new HashSet<>();
+
+        File folder = new File(plugin.getDataFolder(), "languages");
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (!file.isFile()) {
+                        continue;
+                    }
+                    String name = file.getName();
+                    if (name.endsWith(".yml") || name.endsWith(".yaml")) {
+                        String locale = name.substring(0, name.lastIndexOf('.'));
+                        String resolvedLocale = resolveLocale(locale);
+                        if (resolvedLocale != null) {
+                            if (loadedLocales.add(resolvedLocale.toLowerCase(Locale.ROOT))) {
+                                YamlConfiguration defaults;
+                                if (BUNDLED_LOCALES.contains(resolvedLocale)) {
+                                    defaults = loadBundledLanguage(resolvedLocale);
+                                    mergeMissing(defaults, englishDefaults);
+                                } else {
+                                    defaults = englishDefaults;
+                                }
+                                languages.put(resolvedLocale, loadAndSyncLocale(resolvedLocale, file, defaults));
+                            }
+                        } else {
+                            String key = locale;
+                            if (loadedLocales.add(key.toLowerCase(Locale.ROOT))) {
+                                languages.put(key, loadAndSyncLocale(key, file, englishDefaults));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         for (String locale : BUNDLED_LOCALES) {
-            YamlConfiguration defaults = loadBundledLanguage(locale);
-            mergeMissing(defaults, englishDefaults);
-            languages.put(locale, loadAndSyncLocale(locale, defaults));
+            if (loadedLocales.add(locale.toLowerCase(Locale.ROOT))) {
+                YamlConfiguration defaults = loadBundledLanguage(locale);
+                mergeMissing(defaults, englishDefaults);
+                File target = new File(folder, locale + ".yml");
+                languages.put(locale, loadAndSyncLocale(locale, target, defaults));
+            }
         }
 
         FileConfiguration config = plugin.getConfigManager().getConfig();
@@ -314,11 +353,9 @@ public class LanguageManager {
         return fallback != null && fallback.isList(path) ? fallback.getStringList(path) : null;
     }
 
-    private YamlConfiguration loadAndSyncLocale(String locale, YamlConfiguration defaults) {
-        File folder = new File(plugin.getDataFolder(), "languages");
-        File target = new File(folder, locale + ".yml");
+    private YamlConfiguration loadAndSyncLocale(String locale, File target, YamlConfiguration defaults) {
         try {
-            Files.createDirectories(folder.toPath());
+            Files.createDirectories(target.getParentFile().toPath());
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to create language directory.", e);
             return defaults;
@@ -334,7 +371,7 @@ public class LanguageManager {
         }
 
         plugin.getConfigManager().syncGeneratedDefaults(
-                "languages/" + locale + ".yml",
+                "languages/" + target.getName(),
                 target,
                 defaults,
                 "language-backups"
@@ -537,6 +574,17 @@ public class LanguageManager {
         if (resolved != null && languages.containsKey(resolved)) {
             return resolved;
         }
+        if (raw != null) {
+            String normalized = raw.trim()
+                    .replace('-', '_')
+                    .replace(' ', '_')
+                    .toLowerCase(Locale.ROOT);
+            for (String locale : languages.keySet()) {
+                if (locale.equalsIgnoreCase(normalized) || locale.replace("_", "").equalsIgnoreCase(normalized.replace("_", ""))) {
+                    return locale;
+                }
+            }
+        }
         String warningKey = role + ":" + raw;
         if (warnedInvalidLocales.add(warningKey)) {
             plugin.getLogger().warning("Unknown " + role + " language '" + raw
@@ -562,6 +610,14 @@ public class LanguageManager {
                 return locale;
             }
         }
+        LanguageManager manager = current;
+        if (manager != null) {
+            for (String locale : manager.languages.keySet()) {
+                if (locale.equalsIgnoreCase(normalized) || locale.replace("_", "").equalsIgnoreCase(normalized.replace("_", ""))) {
+                    return locale;
+                }
+            }
+        }
         return null;
     }
 
@@ -575,6 +631,10 @@ public class LanguageManager {
         alias(aliases, "fr_FR", "fr", "french", "francais", "français");
         alias(aliases, "ru_RU", "ru", "russian", "русский");
         alias(aliases, "zh_CN", "zh", "chinese", "simplified_chinese", "chinese_simplified", "mandarin");
+        alias(aliases, "tr_TR", "tr", "turkish", "turkce", "türkçe");
+        alias(aliases, "it_IT", "it", "italian", "italiano");
+        alias(aliases, "pl_PL", "pl", "polish", "polski");
+        alias(aliases, "nl_NL", "nl", "dutch", "nederlands");
         return Map.copyOf(aliases);
     }
 
