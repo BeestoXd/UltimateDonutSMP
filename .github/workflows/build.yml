@@ -33,9 +33,15 @@ jobs:
       - name: Build Project
         run: mvn clean package
 
+      - name: Get Project Version
+        id: metadata
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Upload Shaded Jar
         uses: actions/upload-artifact@v4
         with:
-          name: UltimateDonutSMP
+          name: UltimateDonutSmp-${{ steps.metadata.outputs.version }}
           path: target/UltimateDonutSmp-*.jar
           if-no-files-found: error
