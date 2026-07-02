@@ -229,9 +229,19 @@ public class CrashProtectionManager {
             }
 
             if (content.getItemMeta() instanceof BlockStateMeta nestedMeta
-                    && nestedMeta.getBlockState() instanceof Container) {
+                    && nestedMeta.getBlockState() instanceof Container nestedContainer) {
                 if (blockNestedContainers()) {
-                    return ContainerValidation.blocked("nested containers are not allowed");
+                    boolean isShulker = org.bukkit.Tag.SHULKER_BOXES.isTagged(content.getType());
+                    boolean hasItems = false;
+                    for (ItemStack nestedContent : nestedContainer.getInventory().getContents()) {
+                        if (nestedContent != null && !nestedContent.getType().isAir()) {
+                            hasItems = true;
+                            break;
+                        }
+                    }
+                    if (isShulker || hasItems) {
+                        return ContainerValidation.blocked("nested containers are not allowed");
+                    }
                 }
             }
 
