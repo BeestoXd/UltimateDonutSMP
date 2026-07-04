@@ -42,6 +42,25 @@ jobs:
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Calculate Pre-Release Build Number
+        id: build_counter
+        run: |
+          VERSION="${{ steps.metadata.outputs.version }}"
+          TAGS=$(gh api repos/${{ github.repository }}/tags --jq '.[].name' | grep "^v${VERSION}-pre" || true)
+          if [ -z "$TAGS" ]; then
+            BUILD_NUM=1
+          else
+            LATEST=$(echo "$TAGS" | sed "s/^v${VERSION}-pre//" | grep -E '^[0-9]+$' | sort -n | tail -n 1)
+            if [ -z "$LATEST" ]; then
+              BUILD_NUM=1
+            else
+              BUILD_NUM=$((LATEST + 1))
+            fi
+          fi
+          echo "build_num=$BUILD_NUM" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Shaded Jar
         uses: actions/upload-artifact@v4
         with:
@@ -53,17 +72,17 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: nightly
-          name: "UltimateDonutSMP Nightly Build"
+          tag_name: "v${{ steps.metadata.outputs.version }}-pre${{ steps.build_counter.outputs.build_num }}"
+          name: "UltimateDonutSMP v${{ steps.metadata.outputs.version }}-pre${{ steps.build_counter.outputs.build_num }}"
           body: |
-            ### Automated Nightly Build
-            This is an automated development build compiled from the latest source code.
+            ### UltimateDonutSMP v${{ steps.metadata.outputs.version }}-pre${{ steps.build_counter.outputs.build_num }}
+            This is an automated pre-release build compiled from the latest source code.
             
             - **Commit:** ${{ github.sha }}
             - **Branch:** ${{ github.ref_name }}
             - **Build Date:** ${{ github.event.head_commit.timestamp }}
           prerelease: true
-          files: target/UltimateDonutSmp-*.jar
+          files: target/UltimateDonutSmp-${{ steps.metadata.outputs.version }}.jar
           make_latest: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
