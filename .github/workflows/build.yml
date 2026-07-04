@@ -15,6 +15,9 @@ on:
       - 'pom.xml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,3 +48,22 @@ jobs:
           name: UltimateDonutSmp-${{ steps.metadata.outputs.version }}
           path: target/UltimateDonutSmp-*.jar
           if-no-files-found: error
+
+      - name: Release Nightly Build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: "UltimateDonutSMP Nightly Build"
+          body: |
+            ### Automated Nightly Build
+            This is an automated development build compiled from the latest source code.
+            
+            - **Commit:** ${{ github.sha }}
+            - **Branch:** ${{ github.ref_name }}
+            - **Build Date:** ${{ github.event.head_commit.timestamp }}
+          prerelease: true
+          files: target/UltimateDonutSmp-*.jar
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
