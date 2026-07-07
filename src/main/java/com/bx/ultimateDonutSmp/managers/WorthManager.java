@@ -268,7 +268,9 @@ public class WorthManager {
             player.setItemOnCursor(updatedCursor);
         }
 
-
+        if (shouldUpdateInventory(player)) {
+            player.updateInventory();
+        }
     }
 
     public void syncWorthDisplay(Player player, Inventory inventory) {
@@ -278,7 +280,38 @@ public class WorthManager {
 
         syncInventoryWorthDisplay(inventory, isWorthDisplayEnabled(player));
 
+        if (shouldUpdateInventory(player)) {
+            player.updateInventory();
+        }
+    }
 
+    private boolean shouldUpdateInventory(Player player) {
+        if (player == null || !player.isOnline()) {
+            return false;
+        }
+
+        Inventory topInventory = player.getOpenInventory().getTopInventory();
+        if (topInventory == null) {
+            return true;
+        }
+
+        org.bukkit.event.inventory.InventoryType type = topInventory.getType();
+        switch (type) {
+            case CRAFTING:
+            case WORKBENCH:
+            case ANVIL:
+            case SMITHING:
+            case GRINDSTONE:
+            case STONECUTTER:
+            case CARTOGRAPHY:
+            case LOOM:
+            case ENCHANTING:
+            case MERCHANT:
+            case CREATIVE:
+                return false;
+            default:
+                return true;
+        }
     }
 
     public ItemStack applyWorthDisplayForPlayer(Player player, ItemStack item) {
@@ -338,7 +371,9 @@ public class WorthManager {
             player.setItemOnCursor(strippedCursor);
         }
 
-
+        if (shouldUpdateInventory(player)) {
+            player.updateInventory();
+        }
     }
 
     public void sanitizeInventory(Inventory inventory) {
