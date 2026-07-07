@@ -294,6 +294,23 @@ public class EconomyManager {
         saveLoadedAccount(sender);
         saveLoadedAccount(recipient);
 
+        String sName = senderName != null ? senderName : sender.reference().displayName();
+        String rName = recipientName != null ? recipientName : recipient.reference().displayName();
+        plugin.getPlayerLogsManager().log(
+                senderUuid,
+                sName,
+                "Economy",
+                "ECONOMY_TRANSFER",
+                "Paid " + rName + " " + plugin.getCurrencyManager().formatMoney(normalizedAmount)
+        );
+        plugin.getPlayerLogsManager().log(
+                recipientUuid,
+                rName,
+                "Economy",
+                "ECONOMY_TRANSFER",
+                "Received " + plugin.getCurrencyManager().formatMoney(normalizedAmount) + " from " + sName
+        );
+
         return new EconomyTransferResult(
                 true,
                 EconomyFailureReason.NONE,
@@ -330,6 +347,16 @@ public class EconomyManager {
         double beforeBalance = roundCurrency(loadedAccount.data().getMoney());
         loadedAccount.data().setMoney(roundCurrency(beforeBalance + normalizedAmount));
         saveLoadedAccount(loadedAccount);
+
+        if (reason == EconomyReason.ADMIN_ADD) {
+            plugin.getPlayerLogsManager().log(
+                    uuid,
+                    loadedAccount.reference().displayName(),
+                    "Economy",
+                    "ECONOMY_ADD",
+                    "Admin added " + plugin.getCurrencyManager().formatMoney(normalizedAmount) + " to balance (New Balance: " + plugin.getCurrencyManager().formatMoney(beforeBalance + normalizedAmount) + ")"
+            );
+        }
 
         return new EconomyTransactionResult(
                 true,
@@ -375,6 +402,16 @@ public class EconomyManager {
         loadedAccount.data().setMoney(roundCurrency(beforeBalance - normalizedAmount));
         saveLoadedAccount(loadedAccount);
 
+        if (reason == EconomyReason.ADMIN_REMOVE) {
+            plugin.getPlayerLogsManager().log(
+                    uuid,
+                    loadedAccount.reference().displayName(),
+                    "Economy",
+                    "ECONOMY_REMOVE",
+                    "Admin removed " + plugin.getCurrencyManager().formatMoney(normalizedAmount) + " from balance (New Balance: " + plugin.getCurrencyManager().formatMoney(beforeBalance - normalizedAmount) + ")"
+            );
+        }
+
         return new EconomyTransactionResult(
                 true,
                 EconomyFailureReason.NONE,
@@ -406,6 +443,16 @@ public class EconomyManager {
         double beforeBalance = roundCurrency(loadedAccount.data().getMoney());
         loadedAccount.data().setMoney(normalizedAmount);
         saveLoadedAccount(loadedAccount);
+
+        if (reason == EconomyReason.ADMIN_SET) {
+            plugin.getPlayerLogsManager().log(
+                    uuid,
+                    loadedAccount.reference().displayName(),
+                    "Economy",
+                    "ECONOMY_SET",
+                    "Admin set balance to " + plugin.getCurrencyManager().formatMoney(normalizedAmount) + " (Previous Balance: " + plugin.getCurrencyManager().formatMoney(beforeBalance) + ")"
+            );
+        }
 
         return new EconomyTransactionResult(
                 true,

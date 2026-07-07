@@ -38,6 +38,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private CurrencyManager currencyManager;
     private FeatureManager featureManager;
     private DatabaseManager databaseManager;
+    private PlayerLogsManager playerLogsManager;
     private PlayerDataManager playerDataManager;
     private PlayerVisibilityManager playerVisibilityManager;
     private ExplosionParticleFilter explosionParticleFilter;
@@ -141,6 +142,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
+        playerLogsManager = new PlayerLogsManager(this);
         serverWipeManager = new ServerWipeManager(this);
         serverWipeManager.recoverOrRecreatePendingWorlds();
 
@@ -542,6 +544,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("addmoney", new AddMoneyCommand(this));
         setExecutor("removemoney", new RemoveMoneyCommand(this));
         setExecutor("setmoney", new SetMoneyCommand(this));
+        setExecutor("logs", new LogsCommand(this));
 
         ShardsCommand shardsCmd = new ShardsCommand(this);
         setExecutor("shards", shardsCmd, FeatureManager.Feature.SHARDS);
@@ -1013,6 +1016,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public PlayerLogsManager getPlayerLogsManager() {
+        return playerLogsManager;
     }
 
     public PlayerDataManager getPlayerDataManager() {

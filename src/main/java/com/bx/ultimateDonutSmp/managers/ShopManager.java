@@ -677,6 +677,20 @@ public class ShopManager {
             data.addMoneySpent(preview.totalPrice());
         }
 
+        String itemName = item.displayName() != null && !item.displayName().isBlank()
+                ? ColorUtils.strip(item.displayName())
+                : plugin.getWorthManager().prettifyMaterial(item.material());
+        String formattedPrice = preview.currency() == Currency.SHARD
+                ? preview.totalPrice() + " Shards"
+                : plugin.getCurrencyManager().formatMoney(preview.totalPrice());
+        plugin.getPlayerLogsManager().log(
+                player.getUniqueId(),
+                player.getName(),
+                "Shop",
+                "SHOP_BUY",
+                "Bought " + itemName + " x" + preview.quantity() + " for " + formattedPrice
+        );
+
         return preview;
     }
 
@@ -1591,6 +1605,14 @@ public class ShopManager {
                     historyEntry.material().name(),
                     historyEntry.amount(),
                     historyEntry.payout()
+            );
+            String prettyName = plugin.getWorthManager().prettifyMaterial(historyEntry.material());
+            plugin.getPlayerLogsManager().log(
+                    player.getUniqueId(),
+                    player.getName(),
+                    "Shop",
+                    "SHOP_SELL",
+                    "Sold " + prettyName + " x" + historyEntry.amount() + " for " + plugin.getCurrencyManager().formatMoney(historyEntry.payout())
             );
         }
 

@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.models.Bounty;
+import com.bx.ultimateDonutSmp.models.PlayerLogEntry;
 import com.bx.ultimateDonutSmp.models.FreezeState;
 import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.models.HideMode;
@@ -568,6 +569,18 @@ public class DatabaseManager {
             "  PRIMARY KEY (uuid, server_id)" +
             ")"
         );
+        execute(
+            "CREATE TABLE IF NOT EXISTS player_logs (" +
+            "  id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "  player_uuid TEXT NOT NULL," +
+            "  player_name TEXT NOT NULL," +
+            "  category TEXT NOT NULL," +
+            "  log_type TEXT NOT NULL," +
+            "  details TEXT NOT NULL," +
+            "  timestamp INTEGER NOT NULL" +
+            ")"
+        );
+        execute("CREATE INDEX IF NOT EXISTS idx_player_logs_uuid_time ON player_logs(player_uuid, timestamp)");
     }
 
     private void ensurePlayerColumns() throws SQLException {
@@ -2109,6 +2122,63 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to delete portal " + id, e);
         }
+    }
+
+    public void addPlayerLog(UUID uuid, String name, String category, String type, String details, long timestamp) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO player_logs (player_uuid, player_name, category, log_type, details, timestamp) VALUES (?,?,?,?,?,?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setString(2, name);
+            ps.setString(3, category);
+            ps.setString(4, type);
+            ps.setString(5, details);
+            ps.setLong(6, timestamp);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to add player log", e);
+        }
+    }
+
+    public List<PlayerLogEntry> getPlayerLogs(UUID uuid, int limit, int offset) {
+        List<PlayerLogEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT id, player_uuid, player_name, category, log_type, details, timestamp FROM player_logs " +
+                "WHERE player_uuid = ? ORDER BY timestamp DESC, id DESC LIMIT ? OFFSET ?")) {
+            ps.setString(1, uuid.toString());
+            ps.setInt(2, limit);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new PlayerLogEntry(
+                            rs.getLong("id"),
+                            UUID.fromString(rs.getString("player_uuid")),
+                            rs.getString("player_name"),
+                            rs.getString("category"),
+                            rs.getString("log_type"),
+                            rs.getString("details"),
+                            rs.getLong("timestamp")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get player logs", e);
+        }
+        return list;
+    }
+
+    public int getPlayerLogsCount(UUID uuid) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT COUNT(*) FROM player_logs WHERE player_uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get player logs count", e);
+        }
+        return 0;
     }
 
     public void addSellHistory(UUID uuid, String itemName, int amount, double price) {

@@ -198,6 +198,10 @@ commands:
   freeze:
     description: freeze or unfreeze a player for moderation
     usage: /freeze <player> | /freeze reload
+  logs:
+    description: view logs for a player
+    usage: /logs <player>
+    permission: ultimatedonutsmp.admin.logs
   fly:
     description: toggle flight mode for yourself or another player
     usage: /fly [player]

@@ -536,9 +536,16 @@ public final class AuctionHouseManager {
                     result.complete(new CreateListingResult(false, reason, null, listingFee));
                     return;
                 }
-                refreshCache().thenRun(() -> result.complete(
-                        new CreateListingResult(true, null, created.listing(), listingFee)
-                ));
+                refreshCache().thenRun(() -> {
+                    plugin.getPlayerLogsManager().log(
+                            seller.getUniqueId(),
+                            seller.getName(),
+                            "Auctions",
+                            "AUCTION_LIST",
+                            "Listed " + describeItem(created.listing().item()) + " for " + plugin.getCurrencyManager().formatMoney(price)
+                    );
+                    result.complete(new CreateListingResult(true, null, created.listing(), listingFee));
+                });
             } finally {
                 endAction(seller.getUniqueId());
             }
@@ -627,6 +634,13 @@ public final class AuctionHouseManager {
                                     boolean delivered = deliveryError == null
                                             && deliveryResult != null
                                             && deliveryResult.success();
+                                    plugin.getPlayerLogsManager().log(
+                                            buyer.getUniqueId(),
+                                            buyer.getName(),
+                                            "Auctions",
+                                            "AUCTION_BUY",
+                                            "Bought " + describeItem(purchased.item()) + " from " + purchased.sellerName() + " for " + plugin.getCurrencyManager().formatMoney(purchased.price())
+                                    );
                                     result.complete(new PurchaseListingResult(
                                             deliveryError == null,
                                             deliveryError == null ? null : PurchaseFailureReason.DATABASE_ERROR,
@@ -685,7 +699,15 @@ public final class AuctionHouseManager {
                     if (!isClaimsEnabled()) {
                         plugin.getSpigotScheduler().runEntity(owner, () -> processAutoClaims(owner));
                     }
-                    return new CancelListingResult(true, null, cancelled.get());
+                    AuctionListing cancelledListing = cancelled.get();
+                    plugin.getPlayerLogsManager().log(
+                            owner.getUniqueId(),
+                            owner.getName(),
+                            "Auctions",
+                            "AUCTION_CANCEL",
+                            "Cancelled listing for " + describeItem(cancelledListing.item())
+                    );
+                    return new CancelListingResult(true, null, cancelledListing);
                 });
     }
 

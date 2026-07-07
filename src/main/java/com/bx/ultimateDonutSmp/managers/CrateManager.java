@@ -563,6 +563,16 @@ public class CrateManager {
                     getKeyBalance(player, crate.id()));
         }
 
+        String crateName = ColorUtils.strip(getReadableCrateName(crate));
+        String rewardName = ColorUtils.strip(getReadableRewardName(reward));
+        plugin.getPlayerLogsManager().log(
+                player.getUniqueId(),
+                player.getName(),
+                "Crates",
+                "CRATE_OPEN",
+                "Opened " + crateName + " crate and received " + rewardName
+        );
+
         clearSession(player.getUniqueId());
         if (shouldBroadcastClaim(crate, reward)) {
             var broadcast = ColorUtils.toComponent(buildClaimBroadcast(player, crate, reward));

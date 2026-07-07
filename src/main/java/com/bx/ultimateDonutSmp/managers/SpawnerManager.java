@@ -406,6 +406,17 @@ public class SpawnerManager {
 
         instance.setId(id);
         registerSpawner(instance);
+
+        String spawnerName = ColorUtils.strip(definition.displayName());
+        plugin.getPlayerLogsManager().log(
+                player.getUniqueId(),
+                player.getName(),
+                "Spawners",
+                "SPAWNER_PLACE",
+                "Placed " + instance.getStackAmount() + "x " + spawnerName + " spawner at "
+                        + block.getWorld().getName() + " " + block.getX() + ", " + block.getY() + ", " + block.getZ()
+        );
+
         plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
             syncSpawnerBlockStateImmediate(instance);
             if (plugin.getAntiEspManager() != null) {
@@ -630,6 +641,16 @@ public class SpawnerManager {
         if (!canBreak(player, instance)) {
             return fail("&cyou do not have permission to break that spawner.");
         }
+
+        String spawnerName = ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey()));
+        plugin.getPlayerLogsManager().log(
+                player.getUniqueId(),
+                player.getName(),
+                "Spawners",
+                "SPAWNER_BREAK",
+                "Broke " + instance.getStackAmount() + "x " + spawnerName + " spawner at "
+                        + block.getWorld().getName() + " " + block.getX() + ", " + block.getY() + ", " + block.getZ()
+        );
 
         unregisterSpawner(instance);
         plugin.getDatabaseManager().deleteSpawner(instance.getId());
