@@ -575,7 +575,7 @@ public class ShardManager {
     }
 
     public int getEverywhereRecentMovementWindowSeconds() {
-        return Math.max(1, plugin.getConfigManager().getConfig()
+        return Math.max(0, plugin.getConfigManager().getConfig()
                 .getInt("SHARDS.EVERYWHERE.RECENT-MOVEMENT-WINDOW", 15));
     }
 
@@ -723,8 +723,8 @@ public class ShardManager {
                             "&7you have been moved to the afk area for being inactive in the shard zone.")),
                     section.getBoolean("TELEPORT-ON-AFK", true),
                     section.getBoolean("RESET-ON-LEAVE", cfg.getBoolean("SHARDS.RESET-ON-LEAVE", true)),
-                    Math.max(1, section.getInt("RECENT-MOVEMENT-WINDOW", 15)),
-                    Math.max(1, section.getInt("MIN-MOVEMENT-BLOCKS", 5)),
+                    Math.max(0, section.getInt("RECENT-MOVEMENT-WINDOW", 15)),
+                    Math.max(0, section.getInt("MIN-MOVEMENT-BLOCKS", 5)),
                     section.getString("PAUSED-MESSAGE", "&emove to keep earning "
                             + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS)),
                     section.getString("AFK-PAUSED-MESSAGE", "&cyou are afk. move to resume shard gain"),

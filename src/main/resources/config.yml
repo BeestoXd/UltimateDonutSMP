@@ -293,8 +293,8 @@ SHARDS:
         TELEPORT-ON-AFK: true # Configures the teleport on afk option.
         EXCLUDED-WORLDS:
           - "duels"
-        RECENT-MOVEMENT-WINDOW: 15 # Configures the recent movement window option.
-        MIN-MOVEMENT-BLOCKS: 5 # Sets the allowed limit for this option.
+        RECENT-MOVEMENT-WINDOW: 15 # Configures the recent movement window option. Set to 0 to disable.
+        MIN-MOVEMENT-BLOCKS: 5 # Sets the required block movement in the cycle. Set to 0 to disable.
         RESET-ON-LEAVE: true # Configures the reset on leave option.
         PAUSED-MESSAGE: "&emove to keep earning shards &7(%movement%/%required_movement%)" # Configures the paused message option.
         AFK-PAUSED-MESSAGE: "&cyou are AFK. move to resume shard gain" # Configures the afk paused message option.
@@ -306,7 +306,7 @@ SHARDS:
     EVERY: 3 # Configures the every option.
     AMOUNT: 1 # Sets the item amount used by this option.
     REQUIRED-PERMISSION: "ultimatedonutsmp.shards.everywhere" # Sets the permission node required for this action.
-    RECENT-MOVEMENT-WINDOW: 15 # Configures the recent movement window option.
+    RECENT-MOVEMENT-WINDOW: 15 # Configures the recent movement window option. Set to 0 to disable.
     DISABLE-WHILE-IN-SHARD-CUBOID: false # Configures the disable while in shard cuboid option.
     RECEIVED: "&#A303F9you received %amount% shard &8[everywhere] &7(total: &#A303F9%total%&7)" # Configures the received option.
     RECEIVED-BOOSTED: "&#A303F9you received %amount% shards &7(&ax%multiplier%&7) &8[everywhere] &7(total: &#A303F9%total%&7)" # Configures the received boosted option.
