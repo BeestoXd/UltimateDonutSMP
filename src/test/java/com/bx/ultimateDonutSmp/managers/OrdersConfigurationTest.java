@@ -29,6 +29,25 @@ class OrdersConfigurationTest {
     }
 
     @Test
+    void testRootLevelFallback() throws Exception {
+        YamlConfiguration config = new YamlConfiguration();
+        config.loadFromString(
+                "BOTS:\n" +
+                "  ENABLED: true\n" +
+                "ITEMS:\n" +
+                "  - MATERIAL: COBBLESTONE\n" +
+                "    MIN_AMOUNT: 64\n"
+        );
+        org.bukkit.configuration.ConfigurationSection section = config.getConfigurationSection("BOTS");
+        java.util.List<java.util.Map<?, ?>> itemsList = section.getMapList("ITEMS");
+        if (itemsList == null || itemsList.isEmpty()) {
+            itemsList = config.getMapList("ITEMS");
+        }
+        assertEquals(1, itemsList.size());
+        assertEquals("COBBLESTONE", itemsList.get(0).get("MATERIAL"));
+    }
+
+    @Test
     void everyBundledLocaleProvidesOrdersOverridesAndEnglishFallbackCompletesIt() throws Exception {
         YamlConfiguration english = load("en_US");
         for (String locale : List.of("en_US", "id_ID", "de_DE", "es_ES", "fr_FR", "pt_BR", "ru_RU", "zh_CN")) {
