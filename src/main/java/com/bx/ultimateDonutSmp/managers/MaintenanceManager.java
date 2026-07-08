@@ -140,11 +140,11 @@ public class MaintenanceManager {
                 String worldName = getLobbyWorld();
                 World world = Bukkit.getWorld(worldName);
                 if (world != null) {
-                    player.teleport(world.getSpawnLocation());
+                    plugin.getSpigotScheduler().teleport(player, world.getSpawnLocation());
                 } else {
                     Location defaultSpawn = plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.SPAWN);
                     if (defaultSpawn != null) {
-                        player.teleport(defaultSpawn);
+                        plugin.getSpigotScheduler().teleport(player, defaultSpawn);
                     }
                 }
             }

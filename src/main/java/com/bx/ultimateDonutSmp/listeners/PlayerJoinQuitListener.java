@@ -109,7 +109,7 @@ public class PlayerJoinQuitListener implements Listener {
                     if (world != null) {
                         plugin.getSpigotScheduler().runEntityLater(player, () -> {
                             if (player.isOnline()) {
-                                player.teleport(world.getSpawnLocation());
+                                plugin.getSpigotScheduler().teleport(player, world.getSpawnLocation());
                             }
                         }, 1L);
                     }
@@ -125,8 +125,13 @@ public class PlayerJoinQuitListener implements Listener {
             if (savedLoc != null) {
                 plugin.getSpigotScheduler().runEntityLater(player, () -> {
                     if (player.isOnline()) {
-                        player.teleport(savedLoc);
-                        plugin.getDatabaseManager().deleteMaintenanceLocation(player.getUniqueId(), localServerId);
+                        plugin.getSpigotScheduler().teleport(player, savedLoc).thenAccept(success -> {
+                            plugin.getSpigotScheduler().runEntity(player, () -> {
+                                if (player.isOnline()) {
+                                    plugin.getDatabaseManager().deleteMaintenanceLocation(player.getUniqueId(), localServerId);
+                                }
+                            });
+                        });
                     }
                 }, 1L);
             }
