@@ -73,8 +73,8 @@ public class KeyAllManager {
 
             initializeCountdown(data, cycleSeconds, true);
             long remaining = data.getKeyAllRemainingSeconds();
-            if (remaining > 1L) {
-                data.setKeyAllRemainingSeconds(remaining - 1L);
+            if (remaining > 0L) {
+                // counts down off playtime now, no manual decrement
                 continue;
             }
 

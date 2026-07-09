@@ -57,6 +57,7 @@ public class PlayerData {
     private boolean quietSpawnEnabled;
     private boolean nightVisionEnabled;
     private long keyAllRemainingSeconds;
+    private long keyAllAnchorPlaytimeSeconds;
     private boolean dirty;
 
     public PlayerData(UUID uuid, String username) {
@@ -113,6 +114,7 @@ public class PlayerData {
         this.quietSpawnEnabled = false;
         this.nightVisionEnabled = false;
         this.keyAllRemainingSeconds = -1L;
+        this.keyAllAnchorPlaytimeSeconds = 0L;
         this.dirty = false;
     }
 
@@ -669,11 +671,21 @@ public class PlayerData {
     }
 
     public long getKeyAllRemainingSeconds() {
-        return keyAllRemainingSeconds;
+        if (keyAllRemainingSeconds < 0L) {
+            return keyAllRemainingSeconds;
+        }
+        // count down off the same clock as playtime so the scoreboard lines stay in sync
+        long elapsed = getTotalPlaytimeSeconds() - keyAllAnchorPlaytimeSeconds;
+        if (elapsed < 0L) {
+            elapsed = 0L;
+        }
+        long remaining = keyAllRemainingSeconds - elapsed;
+        return remaining < 0L ? 0L : remaining;
     }
 
     public void setKeyAllRemainingSeconds(long keyAllRemainingSeconds) {
         this.keyAllRemainingSeconds = Math.max(-1L, keyAllRemainingSeconds);
+        this.keyAllAnchorPlaytimeSeconds = getTotalPlaytimeSeconds();
         dirty = true;
     }
 
@@ -701,6 +713,7 @@ public class PlayerData {
         this.moneySpent = 0D;
         this.moneyMade = 0D;
         this.sessionStartMillis = newSessionStartMillis;
+        this.keyAllAnchorPlaytimeSeconds = 0L;
         this.dirty = true;
     }
 }
