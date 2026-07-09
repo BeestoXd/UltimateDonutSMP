@@ -42,7 +42,8 @@ public class SpawnManager {
             List<String> lore,
             String cuboidName,
             int capacity,
-            Location locationOverride
+            Location locationOverride,
+            String locationOverrideRaw
     ) {
         public TeleportArea {
             lore = List.copyOf(lore == null ? List.of() : lore);
@@ -74,6 +75,8 @@ public class SpawnManager {
     }
 
     private final UltimateDonutSmp plugin;
+    private String spawnLocationRaw;
+    private String afkLocationRaw;
     private Location spawnLocation;
     private Location afkLocation;
     private List<TeleportArea> configuredSpawnAreas = List.of();
@@ -88,10 +91,10 @@ public class SpawnManager {
 
     public void load() {
         FileConfiguration config = plugin.getConfigManager().getConfig();
-        String spawnStr = config.getString("LOCATIONS.SPAWN-LOCATION", "");
-        String afkStr = config.getString("LOCATIONS.AFK-LOCATION", "");
-        spawnLocation = LocationUtils.parse(spawnStr);
-        afkLocation = LocationUtils.parse(afkStr);
+        spawnLocationRaw = config.getString("LOCATIONS.SPAWN-LOCATION", "");
+        afkLocationRaw = config.getString("LOCATIONS.AFK-LOCATION", "");
+        spawnLocation = LocationUtils.parse(spawnLocationRaw);
+        afkLocation = LocationUtils.parse(afkLocationRaw);
         configuredSpawnAreas = loadAreas("SPAWN-MENU", AreaType.SPAWN);
         configuredAfkAreas = loadAreas("AFK-MENU", AreaType.AFK);
         cachedSpawnLocation = null;
@@ -292,8 +295,16 @@ public class SpawnManager {
     }
 
     private Location resolveDestinationDirect(TeleportArea area) {
-        if (area.locationOverride() != null) {
-            Location overrideDestination = makeSafeDestination(area.locationOverride());
+        Location override = area.locationOverride();
+        if (override == null && area.locationOverrideRaw() != null) {
+            String serialized = area.locationOverrideRaw().trim();
+            if (!serialized.isBlank() && !serialized.matches("\\d+")) {
+                override = LocationUtils.parse(serialized);
+            }
+        }
+
+        if (override != null) {
+            Location overrideDestination = makeSafeDestination(override);
             if (overrideDestination != null) {
                 return overrideDestination;
             }
@@ -339,7 +350,7 @@ public class SpawnManager {
             return getRandomAreaDestination(type);
         }
 
-        Location legacyLocation = type == AreaType.SPAWN ? makeSafeDestination(spawnLocation) : makeSafeDestination(afkLocation);
+        Location legacyLocation = type == AreaType.SPAWN ? getSpawnLocation() : getAfkLocation();
         if (legacyLocation != null) {
             return legacyLocation;
         }
@@ -359,6 +370,9 @@ public class SpawnManager {
     }
 
     private Location resolveSpawnLocationDirect() {
+        if (spawnLocation == null && spawnLocationRaw != null && !spawnLocationRaw.isBlank()) {
+            spawnLocation = LocationUtils.parse(spawnLocationRaw);
+        }
         if (spawnLocation != null) {
             Location safeSpawn = makeSafeDestination(spawnLocation);
             if (safeSpawn != null) {
@@ -386,6 +400,9 @@ public class SpawnManager {
     }
 
     private Location resolveAfkLocationDirect() {
+        if (afkLocation == null && afkLocationRaw != null && !afkLocationRaw.isBlank()) {
+            afkLocation = LocationUtils.parse(afkLocationRaw);
+        }
         if (afkLocation != null) {
             Location safeAfk = makeSafeDestination(afkLocation);
             if (safeAfk != null) {
@@ -447,6 +464,10 @@ public class SpawnManager {
             }
 
             String areaPath = menuPath + ".AREAS." + key;
+            String locationOverrideRaw = section.getString(MENU_LOCATION_KEY);
+            if (locationOverrideRaw == null) {
+                locationOverrideRaw = section.getString(LEGACY_MENU_LOCATION_KEY);
+            }
             Location locationOverride = parseConfiguredAreaLocation(type, section, areaPath);
 
             loaded.add(new TeleportArea(
@@ -458,7 +479,8 @@ public class SpawnManager {
                     section.getStringList("LORE"),
                     cuboidName,
                     Math.max(1, section.getInt("CAPACITY", 200)),
-                    locationOverride
+                    locationOverride,
+                    locationOverrideRaw
             ));
         }
 
@@ -1133,7 +1155,7 @@ public class SpawnManager {
             return materializeArea(template, cuboidName);
         }
 
-        if (template.locationOverride() != null) {
+        if (template.locationOverride() != null || template.locationOverrideRaw() != null) {
             return template;
         }
 
@@ -1188,7 +1210,8 @@ public class SpawnManager {
                 template.lore(),
                 boundCuboid,
                 template.capacity(),
-                template.locationOverride()
+                template.locationOverride(),
+                template.locationOverrideRaw()
         );
     }
 
@@ -1234,6 +1257,7 @@ public class SpawnManager {
                     lore,
                     cuboid,
                     200,
+                    null,
                     null
             ));
             usedSlots.add(slot);
