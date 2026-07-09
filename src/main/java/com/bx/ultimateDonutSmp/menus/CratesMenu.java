@@ -65,7 +65,9 @@ public class CratesMenu extends BaseMenu {
         }
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        CrateManager.OpenResult result = plugin.getCrateManager().startOpening(player, crateId);
+        CrateManager.CrateDefinition definition = plugin.getCrateManager().getCrate(crateId);
+        boolean gacha = definition != null && definition.openType() == CrateManager.OpenType.GACHA;
+        CrateManager.OpenResult result = plugin.getCrateManager().startOpening(player, crateId, gacha);
         if (!result.success()) {
             player.sendMessage(ColorUtils.toComponent(result.message()));
             build(player);

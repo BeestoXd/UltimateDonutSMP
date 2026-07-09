@@ -50,7 +50,11 @@ public class CrateRewardMenu extends BaseMenu {
                 continue;
             }
 
-            set(targetSlot, plugin.getCrateManager().createRewardDisplayItem(player, crate, reward));
+            ItemStack display = plugin.getCrateManager().createRewardDisplayItem(player, crate, reward);
+            if (openContext.interactive()) {
+                appendKeyHint(display, player);
+            }
+            set(targetSlot, display);
             rewardSlots.put(targetSlot, reward.id());
         }
 
@@ -74,6 +78,12 @@ public class CrateRewardMenu extends BaseMenu {
 
         String rewardId = rewardSlots.get(slot);
         if (rewardId == null) {
+            return;
+        }
+
+        if (plugin.getCrateManager().getKeyBalance(player, crate.id()) <= 0) {
+            plugin.getCrateVisualManager().playNoKeyEffects(player);
+            player.sendMessage(ColorUtils.toComponent(keyHintLine(player, false)));
             return;
         }
 
@@ -109,6 +119,29 @@ public class CrateRewardMenu extends BaseMenu {
 
     public OpenContext openContext() {
         return openContext;
+    }
+
+    // one unified menu instead of preview/open modes: the reward copy says whether the
+    // player can claim (keys are a per-player balance, not an inventory item), and a
+    // keyless claim click explains itself in place
+    private void appendKeyHint(ItemStack display, Player player) {
+        var meta = display.getItemMeta();
+        if (meta == null) {
+            return;
+        }
+        List<String> lore = meta.getLore() == null ? new ArrayList<>() : new ArrayList<>(meta.getLore());
+        lore.add("");
+        boolean hasKey = plugin.getCrateManager().getKeyBalance(player, crate.id()) > 0;
+        lore.add(ColorUtils.toComponent(keyHintLine(player, hasKey)));
+        meta.setLore(lore);
+        display.setItemMeta(meta);
+    }
+
+    private String keyHintLine(Player player, boolean hasKey) {
+        String raw = hasKey
+                ? plugin.getConfigManager().getMessageOrDefault("CRATES.REWARD-CLAIM-HINT", "&aClick to claim this reward!")
+                : plugin.getConfigManager().getMessageOrDefault("CRATES.REWARD-NO-KEY", "&cYou don't have a {crate} key!");
+        return plugin.getCrateManager().applyPlaceholders(raw, player, crate, null);
     }
 
     private List<Integer> buildCenteredRewardSlots(int rewardCount, int inventorySize, int excludedSlot) {
