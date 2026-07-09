@@ -258,6 +258,10 @@ public class WorthManager {
     }
 
     public void syncWorthDisplay(Player player) {
+        syncWorthDisplay(player, false);
+    }
+
+    public void syncWorthDisplay(Player player, boolean forceUpdate) {
         boolean enabled = isWorthDisplayEnabled(player);
 
         syncInventoryWorthDisplay(player.getInventory(), enabled);
@@ -268,19 +272,23 @@ public class WorthManager {
             player.setItemOnCursor(updatedCursor);
         }
 
-        if (shouldUpdateInventory(player)) {
+        if (player.isOnline() && (forceUpdate || shouldUpdateInventory(player))) {
             player.updateInventory();
         }
     }
 
     public void syncWorthDisplay(Player player, Inventory inventory) {
+        syncWorthDisplay(player, inventory, false);
+    }
+
+    public void syncWorthDisplay(Player player, Inventory inventory, boolean forceUpdate) {
         if (player == null) {
             return;
         }
 
         syncInventoryWorthDisplay(inventory, isWorthDisplayEnabled(player));
 
-        if (shouldUpdateInventory(player)) {
+        if (player.isOnline() && (forceUpdate || shouldUpdateInventory(player))) {
             player.updateInventory();
         }
     }
@@ -321,22 +329,51 @@ public class WorthManager {
         return updateWorthDisplay(item, isWorthDisplayEnabled(player));
     }
 
-    public void stripStorageWorthDisplayForNativePickup(Player player) {
+    public boolean stripStorageWorthDisplayForNativePickup(Player player, ItemStack... contextItems) {
         if (player == null) {
-            return;
+            return false;
         }
 
+        boolean modified = false;
         Inventory inventory = player.getInventory();
-        ItemStack[] storage = player.getInventory().getStorageContents();
+        ItemStack[] storage = inventory.getStorageContents();
+        int heldSlot = player.getInventory().getHeldItemSlot();
+
+        Set<Material> targetMaterials = new HashSet<>();
+        if (contextItems != null) {
+            for (ItemStack item : contextItems) {
+                if (item != null && !item.getType().isAir()) {
+                    targetMaterials.add(item.getType());
+                }
+            }
+        }
 
         for (int slot = 0; slot < storage.length; slot++) {
+            if (slot == heldSlot) {
+                continue;
+            }
+
             ItemStack current = storage[slot];
+            if (current == null || current.getType().isAir()) {
+                continue;
+            }
+
+            if (current.getMaxStackSize() <= 1) {
+                continue;
+            }
+
+            if (!targetMaterials.isEmpty() && !targetMaterials.contains(current.getType())) {
+                continue;
+            }
+
             ItemStack stripped = stripWorthDisplay(current);
             if (stripped != current) {
                 storage[slot] = stripped;
                 inventory.setItem(slot, stripped);
+                modified = true;
             }
         }
+        return modified;
     }
 
     public void mergeStorageStacksForNativeBehavior(Player player) {

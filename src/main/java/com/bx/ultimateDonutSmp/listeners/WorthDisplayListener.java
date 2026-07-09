@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -33,6 +34,7 @@ public class WorthDisplayListener implements Listener {
     private final UltimateDonutSmp plugin;
     private final Set<UUID> dirtyPlayers = ConcurrentHashMap.newKeySet();
     private final Set<UUID> pendingRefreshes = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> forceUpdatePlayers = ConcurrentHashMap.newKeySet();
 
     public WorthDisplayListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -51,6 +53,7 @@ public class WorthDisplayListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         pendingRefreshes.remove(uuid);
         dirtyPlayers.remove(uuid);
+        forceUpdatePlayers.remove(uuid);
         plugin.getWorthManager().clearWorthDisplay(event.getPlayer());
     }
 
@@ -112,22 +115,56 @@ public class WorthDisplayListener implements Listener {
             return;
         }
 
-        // Strip player inventory and cursor to allow native stacking/actions
-        plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
-
         ItemStack cursor = event.getCursor();
-        if (cursor != null && !cursor.getType().isAir()) {
-            ItemStack stripped = plugin.getWorthManager().stripWorthDisplay(cursor);
-            if (stripped != cursor) {
-                event.setCursor(stripped);
-            }
-        }
-
         ItemStack current = event.getCurrentItem();
-        if (current != null && !current.getType().isAir()) {
-            ItemStack stripped = plugin.getWorthManager().stripWorthDisplay(current);
-            if (stripped != current) {
-                event.setCurrentItem(stripped);
+
+        boolean isStacking = cursor != null && !cursor.getType().isAir()
+                && current != null && !current.getType().isAir()
+                && cursor.getType() == current.getType();
+
+        boolean strippedAny = false;
+
+        if (isStacking) {
+            ClickType click = event.getClick();
+            if (click == ClickType.LEFT || click == ClickType.RIGHT) {
+                int maxStack = current.getMaxStackSize();
+                int currentAmount = current.getAmount();
+                if (currentAmount < maxStack) {
+                    event.setCancelled(true);
+
+                    int cursorAmount = cursor.getAmount();
+                    int transfer = (click == ClickType.LEFT)
+                            ? Math.min(cursorAmount, maxStack - currentAmount)
+                            : 1;
+
+                    ItemStack newCurrent = current.clone();
+                    newCurrent.setAmount(currentAmount + transfer);
+                    newCurrent = plugin.getWorthManager().stripWorthDisplay(newCurrent);
+
+                    ItemStack newCursor = cursor.clone();
+                    newCursor.setAmount(cursorAmount - transfer);
+                    if (newCursor.getAmount() <= 0) {
+                        newCursor = null;
+                    } else {
+                        newCursor = plugin.getWorthManager().stripWorthDisplay(newCursor);
+                    }
+
+                    event.getClickedInventory().setItem(event.getSlot(), newCurrent);
+                    player.setItemOnCursor(newCursor);
+
+                    queueRefresh(player, 1L, true);
+                    return;
+                }
+            }
+        } else if (event.getClick().isShiftClick() && current != null && !current.getType().isAir()) {
+            if (plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player, current)) {
+                strippedAny = true;
+            }
+
+            ItemStack strippedCurrent = plugin.getWorthManager().stripWorthDisplay(current);
+            if (strippedCurrent != current) {
+                event.setCurrentItem(strippedCurrent);
+                strippedAny = true;
             }
         }
 
@@ -135,7 +172,7 @@ public class WorthDisplayListener implements Listener {
             plugin.getWorthManager().sanitizeInventory(topInventory);
         }
 
-        queueRefresh(player, 1L);
+        queueRefresh(player, 1L, strippedAny);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -195,7 +232,7 @@ public class WorthDisplayListener implements Listener {
                 event.getItem().setItemStack(stripped);
             }
 
-            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
+            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player, current);
             queueRefresh(player, 1L);
         }
     }
@@ -217,7 +254,7 @@ public class WorthDisplayListener implements Listener {
                         ItemStack current = itemEntity.getItemStack();
                         
                         if (player.getGameMode() != GameMode.CREATIVE && !isAmethystItem(current)) {
-                            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player);
+                            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player, current);
                             queueRefresh(player, 1L);
                         }
                     } catch (Exception e) {
@@ -246,12 +283,20 @@ public class WorthDisplayListener implements Listener {
     }
 
     private void queueRefresh(Player player, long delayTicks) {
+        queueRefresh(player, delayTicks, false);
+    }
+
+    private void queueRefresh(Player player, long delayTicks, boolean forceUpdate) {
         long effectiveDelay = delayTicks;
         if (plugin.getAmethystToolsManager().isVisualSyncSuppressed(player.getUniqueId())) {
             effectiveDelay = Math.max(effectiveDelay, AMETHYST_REFRESH_DELAY_TICKS);
         }
 
         UUID uuid = player.getUniqueId();
+        if (forceUpdate) {
+            forceUpdatePlayers.add(uuid);
+        }
+
         if (!pendingRefreshes.add(uuid)) {
             return;
         }
@@ -259,6 +304,7 @@ public class WorthDisplayListener implements Listener {
         plugin.getSpigotScheduler().runEntityLater(player, () -> {
             pendingRefreshes.remove(uuid);
             if (!player.isOnline()) {
+                forceUpdatePlayers.remove(uuid);
                 return;
             }
             dirtyPlayers.add(uuid);
@@ -291,8 +337,11 @@ public class WorthDisplayListener implements Listener {
             dirtyPlayers.remove(uuid);
 
             if (player == null || !player.isOnline()) {
+                forceUpdatePlayers.remove(uuid);
                 continue;
             }
+
+            boolean forceUpdate = forceUpdatePlayers.remove(uuid);
 
             plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (!player.isOnline()) {
@@ -305,8 +354,13 @@ public class WorthDisplayListener implements Listener {
                     return;
                 }
 
-                plugin.getWorthManager().syncWorthDisplay(player);
+                plugin.getWorthManager().syncWorthDisplay(player, forceUpdate);
                 syncOpenShulkerInventory(player);
+
+                Inventory topInventory = player.getOpenInventory().getTopInventory();
+                if (topInventory != null && !isPlayerInventoryView(topInventory) && !isShulkerInventory(topInventory)) {
+                    plugin.getWorthManager().sanitizeInventory(topInventory);
+                }
             });
         }
     }
