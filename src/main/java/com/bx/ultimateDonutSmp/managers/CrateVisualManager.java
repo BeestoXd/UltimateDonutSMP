@@ -272,23 +272,62 @@ public class CrateVisualManager {
     }
 
     private boolean hasValidGlobalHologram(CrateManager.CrateBlockKey key, int requiredLines) {
-        List<UUID> trackedIds = holograms.get(key);
-        if (trackedIds == null || trackedIds.size() != requiredLines) {
-            removeTrackedGlobalHologram(key);
-            return false;
+        List<UUID> trackedIds;
+        synchronized (holograms) {
+            trackedIds = holograms.get(key);
         }
 
-        int validCount = 0;
-        for (UUID entityId : trackedIds) {
-            Entity entity = Bukkit.getEntity(entityId);
-            if (entity instanceof TextDisplay textDisplay
-                    && entity.isValid()
-                    && textDisplay.getScoreboardTags().contains(HOLOGRAM_TAG)) {
-                validCount++;
+        List<TextDisplay> displays = new ArrayList<>();
+        if (trackedIds != null && trackedIds.size() == requiredLines) {
+            for (UUID entityId : trackedIds) {
+                Entity entity = Bukkit.getEntity(entityId);
+                if (entity instanceof TextDisplay td && entity.isValid() && td.getScoreboardTags().contains(HOLOGRAM_TAG)) {
+                    displays.add(td);
+                }
             }
         }
 
-        if (validCount == requiredLines) {
+        if (displays.size() != requiredLines) {
+            World world = Bukkit.getWorld(key.world());
+            if (world != null) {
+                Location center = new Location(world, key.x() + 0.5, key.y() + getHologramOffsetY() - 0.35, key.z() + 0.5);
+                String expectedKey = formatBlockKey(key);
+
+                List<TextDisplay> found = new ArrayList<>();
+                for (Entity entity : world.getNearbyEntities(center, 0.5, 1.0, 0.5, candidate -> candidate instanceof TextDisplay)) {
+                    String attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_hologram"), PersistentDataType.STRING);
+                    if (expectedKey.equals(attachedKey) && entity.isValid()) {
+                        found.add((TextDisplay) entity);
+                    }
+                }
+
+                found.sort((a, b) -> Double.compare(b.getLocation().getY(), a.getLocation().getY()));
+
+                if (found.size() >= requiredLines) {
+                    displays.clear();
+                    for (int i = 0; i < requiredLines; i++) {
+                        displays.add(found.get(i));
+                    }
+                    for (int i = requiredLines; i < found.size(); i++) {
+                        found.get(i).remove();
+                    }
+
+                    List<UUID> newIds = new ArrayList<>();
+                    for (TextDisplay td : displays) {
+                        newIds.add(td.getUniqueId());
+                    }
+                    synchronized (holograms) {
+                        holograms.put(key, newIds);
+                    }
+                } else {
+                    for (TextDisplay td : found) {
+                        td.remove();
+                    }
+                }
+            }
+        }
+
+        if (displays.size() == requiredLines) {
             return true;
         }
 
@@ -1020,15 +1059,41 @@ public class CrateVisualManager {
         synchronized (holograms) {
             entityId = previews.get(key);
         }
-        if (entityId == null) {
-            removeTrackedPreview(key);
-            return false;
+
+        ItemDisplay display = null;
+        if (entityId != null) {
+            Entity entity = Bukkit.getEntity(entityId);
+            if (entity instanceof ItemDisplay id && entity.isValid() && id.getScoreboardTags().contains(PREVIEW_TAG)) {
+                display = id;
+            }
         }
 
-        Entity entity = Bukkit.getEntity(entityId);
-        if (entity instanceof ItemDisplay display
-                && entity.isValid()
-                && display.getScoreboardTags().contains(PREVIEW_TAG)) {
+        if (display == null) {
+            World world = Bukkit.getWorld(key.world());
+            if (world != null) {
+                Location center = new Location(world, key.x() + 0.5, key.y() + getPreviewOffsetY(), key.z() + 0.5);
+                String expectedKey = formatBlockKey(key);
+                List<ItemDisplay> found = new ArrayList<>();
+                for (Entity entity : world.getNearbyEntities(center, 0.5, 0.5, 0.5, candidate -> candidate instanceof ItemDisplay)) {
+                    String attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_preview"), PersistentDataType.STRING);
+                    if (expectedKey.equals(attachedKey) && entity.isValid()) {
+                        found.add((ItemDisplay) entity);
+                    }
+                }
+
+                if (!found.isEmpty()) {
+                    display = found.get(0);
+                    for (int i = 1; i < found.size(); i++) {
+                        found.get(i).remove();
+                    }
+                    synchronized (holograms) {
+                        previews.put(key, display.getUniqueId());
+                    }
+                }
+            }
+        }
+
+        if (display != null) {
             return true;
         }
 
