@@ -288,10 +288,20 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
 
     private void openBrowse(Player player) {
         plugin.getAuctionHouseManager().processAutoClaims(player);
+        String category = "ALL";
+        boolean autoFilter = plugin.getConfigManager().getAuctionHouse()
+                .getBoolean("SETTINGS.AUTO_FILTER_BY_HAND", false);
+        if (autoFilter) {
+            ItemStack hand = player.getInventory().getItemInMainHand();
+            if (hand != null && hand.getType() != org.bukkit.Material.AIR) {
+                category = com.bx.ultimateDonutSmp.models.AuctionCategory.findCategoryForItem(hand).name();
+            }
+        }
         new AuctionHouseBrowseMenu(
                 plugin,
                 1,
-                plugin.getAuctionHouseManager().getDefaultSort()
+                plugin.getAuctionHouseManager().getDefaultSort(),
+                category
         ).open(player);
     }
 

@@ -23,6 +23,7 @@ SETTINGS:
   CLICK_COOLDOWN_MS: 750 # Sets the cooldown before this action can run again.
   EXPIRE_CHECK_SECONDS: 30 # Sets the time value in seconds.
   AUTO_DETECT_CATEGORY: true # Auto-detects the category of the item being listed so the player doesn't have to choose.
+  AUTO_FILTER_BY_HAND: true # Automatically filter the browse menu by the item category in your main hand when opening.
 
 CLAIMS:
   # When disabled, pending payouts and returned items are collected automatically.
