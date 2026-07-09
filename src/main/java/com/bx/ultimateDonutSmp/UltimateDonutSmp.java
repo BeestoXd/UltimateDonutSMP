@@ -477,7 +477,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new PhantomListener(this), this);
         pm.registerEvents(new MobSpawnListener(this), this);
         pm.registerEvents(new PlayerSettingEffectsListener(this), this);
-        pm.registerEvents(new WorthDisplayListener(this), this);
+        if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            pm.registerEvents(new WorthPacketDisplay(this), this);
+        } else {
+            pm.registerEvents(new WorthDisplayListener(this), this);
+        }
         pm.registerEvents(new DuelListener(this), this);
         pm.registerEvents(new FfaListener(this), this);
         pm.registerEvents(new AmethystToolsListener(this), this);

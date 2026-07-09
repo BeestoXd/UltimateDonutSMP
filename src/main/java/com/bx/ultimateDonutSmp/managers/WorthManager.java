@@ -329,6 +329,34 @@ public class WorthManager {
         return updateWorthDisplay(item, isWorthDisplayEnabled(player));
     }
 
+    public boolean isWorthDisplayEnabledFor(Player player) {
+        return isWorthDisplayEnabled(player);
+    }
+
+    public ItemStack renderClientWorthDisplay(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return item;
+        }
+        if (isWorthDisplayExcluded(item)) {
+            return item;
+        }
+        String loreLine = getWorthLoreLine(item);
+        if (loreLine == null || loreLine.isBlank()) {
+            return item;
+        }
+        ItemStack clone = item.clone();
+        ItemMeta meta = clone.getItemMeta();
+        if (meta == null) {
+            return item;
+        }
+        List<String> base = stripExistingWorthLore(meta.getLore());
+        List<String> desired = base == null ? new ArrayList<>() : new ArrayList<>(base);
+        desired.add(ColorUtils.toComponent(loreLine));
+        meta.setLore(desired);
+        clone.setItemMeta(meta);
+        return clone;
+    }
+
     public boolean stripStorageWorthDisplayForNativePickup(Player player, ItemStack... contextItems) {
         if (player == null) {
             return false;
