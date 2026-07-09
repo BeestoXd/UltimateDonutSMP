@@ -20,11 +20,16 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +40,7 @@ public class WorthDisplayListener implements Listener {
     private final Set<UUID> dirtyPlayers = ConcurrentHashMap.newKeySet();
     private final Set<UUID> pendingRefreshes = ConcurrentHashMap.newKeySet();
     private final Set<UUID> forceUpdatePlayers = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, Long> lastMiningTimes = new ConcurrentHashMap<>();
 
     public WorthDisplayListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -54,6 +60,7 @@ public class WorthDisplayListener implements Listener {
         pendingRefreshes.remove(uuid);
         dirtyPlayers.remove(uuid);
         forceUpdatePlayers.remove(uuid);
+        lastMiningTimes.remove(uuid);
         plugin.getWorthManager().clearWorthDisplay(event.getPlayer());
     }
 
@@ -334,14 +341,24 @@ public class WorthDisplayListener implements Listener {
 
         for (UUID uuid : Set.copyOf(dirtyPlayers)) {
             Player player = plugin.getServer().getPlayer(uuid);
+
+            boolean forceUpdate = forceUpdatePlayers.contains(uuid);
+            if (!forceUpdate && player != null && player.isOnline()) {
+                long lastMining = lastMiningTimes.getOrDefault(uuid, 0L);
+                if (System.currentTimeMillis() - lastMining < 1500L) {
+                    continue;
+                }
+            }
+
             dirtyPlayers.remove(uuid);
 
             if (player == null || !player.isOnline()) {
                 forceUpdatePlayers.remove(uuid);
+                lastMiningTimes.remove(uuid);
                 continue;
             }
 
-            boolean forceUpdate = forceUpdatePlayers.remove(uuid);
+            forceUpdatePlayers.remove(uuid);
 
             plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (!player.isOnline()) {
@@ -396,5 +413,22 @@ public class WorthDisplayListener implements Listener {
 
     private boolean isAmethystItem(ItemStack item) {
         return plugin.getAmethystToolsManager().isAmethystTool(item);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    public void onBlockDamage(BlockDamageEvent event) {
+        lastMiningTimes.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            lastMiningTimes.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        lastMiningTimes.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
     }
 }
