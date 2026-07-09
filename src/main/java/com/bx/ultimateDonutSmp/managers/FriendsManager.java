@@ -180,7 +180,7 @@ public class FriendsManager {
 
         // Notify online followers
         Map<UUID, FollowEntry> followers = getFollowersMap(playerUuid);
-        String joinMsg = "&a&lfriends &8» &f" + plugin.getHideManager().publicName(player) + " &7joined the game.";
+        String joinMsg = plugin.getConfigManager().getMessage("FRIENDS.JOIN_BROADCAST", "{player}", plugin.getHideManager().publicName(player));
         for (FollowEntry entry : followers.values()) {
             if (entry.activityEnabled()) {
                 Player followerPlayer = Bukkit.getPlayer(entry.followerUuid());
@@ -203,10 +203,10 @@ public class FriendsManager {
         plugin.getSpigotScheduler().runEntityLater(player, () -> {
             if (!player.isOnline()) return;
             if (onlineFollowed.isEmpty()) {
-                player.sendMessage(ColorUtils.toComponent("&a&lꜰʀɪᴇɴᴅѕ &8» &7ɴᴏɴᴇ ᴏꜰ ᴛʜᴇ ᴘʟᴀʏᴇʀѕ ʏᴏᴜ ꜰᴏʟʟᴏᴡ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴏɴʟɪɴᴇ."));
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.NO_ONLINE_FOLLOWED"), player));
             } else {
                 String names = String.join("&7, &f", onlineFollowed);
-                player.sendMessage(ColorUtils.toComponent("&a&lꜰʀɪᴇɴᴅѕ &8» &7ᴏɴʟɪɴᴇ ꜰᴏʟʟᴏᴡᴇᴅ ᴘʟᴀʏᴇʀѕ: &f" + names));
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.ONLINE_FOLLOWED", "{players}", names), player));
             }
         }, 20L); // 1 second delay
     }
@@ -216,7 +216,7 @@ public class FriendsManager {
 
         // Notify online followers
         Map<UUID, FollowEntry> followers = getFollowersMap(playerUuid);
-        String quitMsg = "&a&lfriends &8» &f" + plugin.getHideManager().publicName(player) + " &7left the game.";
+        String quitMsg = plugin.getConfigManager().getMessage("FRIENDS.QUIT_BROADCAST", "{player}", plugin.getHideManager().publicName(player));
         for (FollowEntry entry : followers.values()) {
             if (entry.activityEnabled()) {
                 Player followerPlayer = Bukkit.getPlayer(entry.followerUuid());

@@ -30,18 +30,18 @@ public class FriendsCommand implements CommandExecutor {
             if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
                 if (sender.hasPermission(ADMIN_PERMISSION)) {
                     plugin.getConfigManager().reload();
-                    sender.sendMessage(ColorUtils.colorize("&a[ᴅᴏɴᴜᴛꜰʀɪᴇɴᴅѕ] ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ."));
+                    sender.sendMessage(ColorUtils.colorize(plugin.getConfigManager().getMessage("FRIENDS.RELOAD_SUCCESS")));
                 } else {
-                    sender.sendMessage(ColorUtils.colorize("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+                    sender.sendMessage(ColorUtils.colorize(plugin.getConfigManager().getMessage("FRIENDS.NO_PERMISSION")));
                 }
                 return true;
             }
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ ᴄᴏᴍᴍᴀɴᴅ.");
+            sender.sendMessage(ColorUtils.colorize(plugin.getConfigManager().getMessage("FRIENDS.PLAYER_ONLY")));
             return true;
         }
 
         if (!PermissionUtils.has(player, PERMISSION)) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.NO_PERMISSION"), player));
             return true;
         }
 
@@ -55,9 +55,9 @@ public class FriendsCommand implements CommandExecutor {
             case "reload" -> {
                 if (PermissionUtils.has(player, ADMIN_PERMISSION)) {
                     plugin.getConfigManager().reload();
-                    player.sendMessage(ColorUtils.toComponent("&a[ᴅᴏɴᴜᴛꜰʀɪᴇɴᴅѕ] ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ."));
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.RELOAD_SUCCESS"), player));
                 } else {
-                    player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.NO_PERMISSION"), player));
                 }
             }
             case "list" -> new FriendsMenu(plugin, 0, null, FriendsMenu.FilterType.ALL).open(player);
@@ -66,27 +66,27 @@ public class FriendsCommand implements CommandExecutor {
             case "friends" -> new FriendsMenu(plugin, 0, null, FriendsMenu.FilterType.FRIENDS).open(player);
             case "add", "follow" -> {
                 if (args.length < 2) {
-                    player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /friends ꜰᴏʟʟᴏᴡ <player>"));
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.USAGE_FOLLOW"), player));
                     return true;
                 }
                 handleFollow(player, args[1]);
             }
             case "remove", "unfollow" -> {
                 if (args.length < 2) {
-                    player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /friends ʀᴇᴍᴏᴠᴇ <player>"));
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.USAGE_REMOVE"), player));
                     return true;
                 }
                 handleUnfollow(player, args[1]);
             }
             case "search" -> {
                 if (args.length < 2) {
-                    player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /friends ѕᴇᴀʀᴄʜ <query>"));
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.USAGE_SEARCH"), player));
                     return true;
                 }
                 new FriendsMenu(plugin, 0, args[1], FriendsMenu.FilterType.ALL).open(player);
             }
             default -> {
-                player.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ѕᴜʙᴄᴏᴍᴍᴀɴᴅ. ᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]"));
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.UNKNOWN_SUBCOMMAND"), player));
             }
         }
 
@@ -96,45 +96,45 @@ public class FriendsCommand implements CommandExecutor {
     private void handleFollow(Player player, String targetName) {
         ResolvedTarget target = resolveTarget(player, targetName);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.PLAYER_NOT_FOUND"), player));
             return;
         }
 
         if (player.getUniqueId().equals(target.uuid())) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰᴏʟʟᴏᴡ ʏᴏᴜʀѕᴇʟꜰ."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.CANNOT_FOLLOW_SELF"), player));
             return;
         }
 
         if (plugin.getFriendsManager().isFollowing(player.getUniqueId(), target.uuid())) {
-            player.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ꜰᴏʟʟᴏᴡɪɴɢ &f" + target.name() + "&7."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.ALREADY_FOLLOWING", "{player}", target.name()), player));
             return;
         }
 
         boolean success = plugin.getFriendsManager().followPlayer(player, target.uuid(), target.name());
         if (success) {
-            player.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜ ꜰᴏʟʟᴏᴡᴇᴅ &f" + target.name() + "&7."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.FOLLOW_SUCCESS", "{player}", target.name()), player));
         } else {
-            player.sendMessage(ColorUtils.toComponent("&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰᴏʟʟᴏᴡ ᴘʟᴀʏᴇʀ."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.FOLLOW_FAILURE"), player));
         }
     }
 
     private void handleUnfollow(Player player, String targetName) {
         ResolvedTarget target = resolveTarget(player, targetName);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ ɪɴ ʏᴏᴜʀ ꜰᴏʟʟᴏᴡѕ ᴅᴀᴛᴀʙᴀѕᴇ."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.REMOVE_NOT_FOUND"), player));
             return;
         }
 
         if (!plugin.getFriendsManager().isFollowing(player.getUniqueId(), target.uuid())) {
-            player.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ꜰᴏʟʟᴏᴡɪɴɢ &f" + target.name() + "&7."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.NOT_FOLLOWING", "{player}", target.name()), player));
             return;
         }
 
         boolean success = plugin.getFriendsManager().unfollowPlayer(player, target.uuid());
         if (success) {
-            player.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜ ᴜɴꜰᴏʟʟᴏᴡᴇᴅ &f" + target.name() + "&7."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.UNFOLLOW_SUCCESS", "{player}", target.name()), player));
         } else {
-            player.sendMessage(ColorUtils.toComponent("&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜɴꜰᴏʟʟᴏᴡ ᴘʟᴀʏᴇʀ."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.UNFOLLOW_FAILURE"), player));
         }
     }
 

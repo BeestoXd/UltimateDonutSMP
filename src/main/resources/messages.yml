@@ -688,6 +688,24 @@ FRIENDS:
   NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
   USAGE: "&cᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]" # Sets the message text for this response.
   PLAYER_NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
+  RELOAD_SUCCESS: "&a[ᴅᴏɴᴜᴛꜰʀɪᴇɴᴅѕ] ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ."
+  PLAYER_ONLY: "ᴘʟᴀʏᴇʀ ᴏɴʟɪɴᴇ ᴄᴏᴍᴍᴀɴᴅ."
+  USAGE_FOLLOW: "&cᴜѕᴀɢᴇ: /friends ꜰᴏʟʟᴏᴡ <player>"
+  USAGE_REMOVE: "&cᴜѕᴀɢᴇ: /friends ʀᴇᴍᴏᴠᴇ <player>"
+  USAGE_SEARCH: "&cᴜѕᴀɢᴇ: /friends ѕᴇᴀʀᴄʜ <query>"
+  UNKNOWN_SUBCOMMAND: "&cᴜɴᴋɴᴏᴡɴ ѕᴜʙᴄᴏᴍᴍᴀɴᴅ. ᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]"
+  CANNOT_FOLLOW_SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰᴏʟʟᴏᴡ ʏᴏᴜʀѕᴇʟꜰ."
+  ALREADY_FOLLOWING: "&7ʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ꜰᴏʟʟᴏᴡɪɴɢ &f{player}&7."
+  FOLLOW_SUCCESS: "&7ʏᴏᴜ ꜰᴏʟʟᴏᴡᴇᴅ &f{player}&7."
+  FOLLOW_FAILURE: "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰᴏʟʟᴏᴡ ᴘʟᴀʏᴇʀ."
+  REMOVE_NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ ɪɴ ʏᴏᴜʀ ꜰᴏʟʟᴏᴡѕ ᴅᴀᴛᴀʙᴀѕᴇ."
+  NOT_FOLLOWING: "&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ꜰᴏʟʟᴏᴡɪɴɢ &f{player}&7."
+  UNFOLLOW_SUCCESS: "&7ʏᴏᴜ ᴜɴꜰᴏʟʟᴏᴡᴇᴅ &f{player}&7."
+  UNFOLLOW_FAILURE: "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜɴꜰᴏʟʟᴏᴡ ᴘʟᴀʏᴇʀ."
+  NO_ONLINE_FOLLOWED: "&a&lꜰʀɪᴇɴᴅѕ &8» &7ɴᴏɴᴇ ᴏꜰ ᴛʜᴇ ᴘʟᴀʏᴇʀѕ ʏᴏᴜ ꜰᴏʟʟᴏᴡ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴏɴʟɪɴᴇ."
+  ONLINE_FOLLOWED: "&a&lꜰʀɪᴇɴᴅѕ &8» &7ᴏɴʟɪɴᴇ ꜰᴏʟʟᴏᴡᴇᴅ ᴘʟᴀʏᴇʀѕ: &f{players}"
+  JOIN_BROADCAST: "&a&lfriends &8» &f{player} &7joined the game."
+  QUIT_BROADCAST: "&a&lfriends &8» &f{player} &7left the game."
 
 # UDS setup: Configure SAFETY options for this file.
 SAFETY:

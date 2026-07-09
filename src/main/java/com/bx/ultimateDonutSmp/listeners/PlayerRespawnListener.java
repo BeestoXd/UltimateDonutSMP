@@ -142,16 +142,16 @@ public class PlayerRespawnListener implements Listener {
                 grantedMaterials.add(mat);
                 giveRespawnItem(player, item);
             }
+        } else {
+            ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_HELMET);
+            ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_CHESTPLATE);
+            ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_LEGGINGS);
+            ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_BOOTS);
+            ensureDefaultItem(player, grantedMaterials, Material.STONE_SWORD);
+            ensureDefaultItem(player, grantedMaterials, Material.STONE_PICKAXE);
+            ensureDefaultItem(player, grantedMaterials, Material.STONE_AXE);
+            ensureDefaultItem(player, grantedMaterials, Material.STONE_SHOVEL);
         }
-
-        ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_HELMET);
-        ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_CHESTPLATE);
-        ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_LEGGINGS);
-        ensureDefaultItem(player, grantedMaterials, Material.CHAINMAIL_BOOTS);
-        ensureDefaultItem(player, grantedMaterials, Material.STONE_SWORD);
-        ensureDefaultItem(player, grantedMaterials, Material.STONE_PICKAXE);
-        ensureDefaultItem(player, grantedMaterials, Material.STONE_AXE);
-        ensureDefaultItem(player, grantedMaterials, Material.STONE_SHOVEL);
 
         player.updateInventory();
     }
