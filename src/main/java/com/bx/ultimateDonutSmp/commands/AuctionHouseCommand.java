@@ -148,12 +148,21 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
                     boolean fastSell = preference.fastSellEnabled()
                             && hasEither(player, "ultimatedonutsmp.auctionhouse.fastsell", "donutauction.fastsell");
                     if (fastSell) {
+                        com.bx.ultimateDonutSmp.models.AuctionCategory category;
+                        boolean autoDetect = plugin.getConfigManager().getAuctionHouse()
+                                .getBoolean("SETTINGS.AUTO_DETECT_CATEGORY", false);
+                        if (autoDetect) {
+                            category = com.bx.ultimateDonutSmp.models.AuctionCategory.findCategoryForItem(escrow);
+                        } else {
+                            category = com.bx.ultimateDonutSmp.models.AuctionCategory.from(preference.lastCategory());
+                        }
+
                         manager.createListingFromItem(
                                 player,
                                 escrow,
                                 price,
                                 preference.lastDurationHours(),
-                                com.bx.ultimateDonutSmp.models.AuctionCategory.from(preference.lastCategory())
+                                category
                         ).thenAccept(result -> plugin.getSpigotScheduler().runEntity(player, () ->
                                 handleCreateResult(player, preference, price, result)
                         ));

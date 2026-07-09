@@ -22,6 +22,7 @@ SETTINGS:
     ultimatedonutsmp.auctionhouse.limit.10: 10 # Configures the ultimatedonutsmp auctionhouse limit 10 option.
   CLICK_COOLDOWN_MS: 750 # Sets the cooldown before this action can run again.
   EXPIRE_CHECK_SECONDS: 30 # Sets the time value in seconds.
+  AUTO_DETECT_CATEGORY: true # Auto-detects the category of the item being listed so the player doesn't have to choose.
 
 CLAIMS:
   # When disabled, pending payouts and returned items are collected automatically.

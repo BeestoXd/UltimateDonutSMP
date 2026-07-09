@@ -40,7 +40,14 @@ public final class SellGui extends BaseMenu {
         List<Integer> durations = plugin.getAuctionHouseManager().getAllowedDurations();
         int preferredIndex = durations.indexOf(preference.lastDurationHours());
         this.selectedDurationIndex = preferredIndex < 0 ? 0 : preferredIndex;
-        this.selectedCategory = AuctionCategory.from(preference.lastCategory());
+        
+        boolean autoDetect = plugin.getConfigManager().getAuctionHouse()
+                .getBoolean("SETTINGS.AUTO_DETECT_CATEGORY", false);
+        if (autoDetect) {
+            this.selectedCategory = AuctionCategory.findCategoryForItem(item);
+        } else {
+            this.selectedCategory = AuctionCategory.from(preference.lastCategory());
+        }
     }
 
     @Override
