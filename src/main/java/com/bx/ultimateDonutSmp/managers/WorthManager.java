@@ -337,7 +337,6 @@ public class WorthManager {
         boolean modified = false;
         Inventory inventory = player.getInventory();
         ItemStack[] storage = inventory.getStorageContents();
-        int heldSlot = player.getInventory().getHeldItemSlot();
 
         Set<Material> targetMaterials = new HashSet<>();
         if (contextItems != null) {
@@ -349,10 +348,6 @@ public class WorthManager {
         }
 
         for (int slot = 0; slot < storage.length; slot++) {
-            if (slot == heldSlot) {
-                continue;
-            }
-
             ItemStack current = storage[slot];
             if (current == null || current.getType().isAir()) {
                 continue;
