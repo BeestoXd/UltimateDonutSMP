@@ -238,6 +238,9 @@ public class PlayerJoinQuitListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
+        if (plugin.getHideManager() != null) {
+            plugin.getHideManager().clearNametag(event.getPlayer().getUniqueId());
+        }
         refreshHiddenNametag(event.getPlayer());
     }
 
