@@ -41,11 +41,13 @@ SETTINGS:
 
   HOLOGRAM:
     OFFSET-Y: 1.6 # Configures the offset y option.
+    KEY-LINE-OFFSET-Y: -0.3 # Configures the Y offset for the key line relative to the chest block.
     VIEW-DISTANCE: 24.0 # Configures the view distance option.
     UPDATE-TICKS: 20 # Sets how often this task or update runs.
     LINES:
       - "{crate}"
       - "&7right-click to open"
+      - "&e/store"
     KEY-LINE: "&7keys: &f{keys}" # Configures the key line option.
 
   PREVIEW:
