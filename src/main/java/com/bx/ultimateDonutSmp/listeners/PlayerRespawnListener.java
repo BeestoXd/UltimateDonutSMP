@@ -38,18 +38,21 @@ public class PlayerRespawnListener implements Listener {
                 && plugin.getFfaManager().consumeRespawn(player, event);
 
         if (!duelRespawnHandled && !ffaRespawnHandled) {
-            Location respawnLocation = plugin.getSpawnManager().getSpawnLocation();
-            if (respawnLocation == null) {
-                respawnLocation = plugin.getSpawnManager().makeSafeDestination(event.getRespawnLocation());
-            }
-            if (respawnLocation != null) {
-                Location finalRespawnLocation = respawnLocation.clone();
-                event.setRespawnLocation(finalRespawnLocation);
-                plugin.getSpigotScheduler().runEntityLater(player, () -> {
-                    if (player.isOnline() && shouldSnapToRespawnLocation(player.getLocation(), finalRespawnLocation)) {
-                        plugin.getSpigotScheduler().teleport(player, finalRespawnLocation);
-                    }
-                }, 1L);
+            boolean respawnOnBed = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.RESPAWN-ON-BED", false);
+            if (!respawnOnBed || (!event.isBedSpawn() && !event.isAnchorSpawn())) {
+                Location respawnLocation = plugin.getSpawnManager().getSpawnLocation();
+                if (respawnLocation == null) {
+                    respawnLocation = plugin.getSpawnManager().makeSafeDestination(event.getRespawnLocation());
+                }
+                if (respawnLocation != null) {
+                    Location finalRespawnLocation = respawnLocation.clone();
+                    event.setRespawnLocation(finalRespawnLocation);
+                    plugin.getSpigotScheduler().runEntityLater(player, () -> {
+                        if (player.isOnline() && shouldSnapToRespawnLocation(player.getLocation(), finalRespawnLocation)) {
+                            plugin.getSpigotScheduler().teleport(player, finalRespawnLocation);
+                        }
+                    }, 1L);
+                }
             }
         }
 
