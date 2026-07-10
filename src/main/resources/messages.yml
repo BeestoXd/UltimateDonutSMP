@@ -684,6 +684,10 @@ ALTS:
   ENTRY: "&8- &e%player% &7[%status%&7] &fѕʜᴀʀᴇᴅ: %ips%" # Sets the message text for this response.
 
 # UDS setup: Configure FRIENDS options for this file.
+CRATES:
+  REWARD-CLAIM-HINT: "&aClick to claim this reward!" # Reward lore line when the player has a key.
+  REWARD-NO-KEY: "&cYou don't have a {crate} key!" # Reward lore line and click feedback when the player has no key.
+
 FRIENDS:
   NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
   USAGE: "&cᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]" # Sets the message text for this response.

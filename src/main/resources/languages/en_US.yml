@@ -2810,6 +2810,9 @@ MESSAGES:
     HEADER: '&8[&6ᴀʟᴛѕ&8] &e%player%'
     KNOWN_IPS: '&7ᴋɴᴏᴡɴ ɪᴘѕ: &f%ips%'
     ENTRY: '&8- &e%player% &7[%status%&7] &fѕʜᴀʀᴇᴅ: %ips%'
+  CRATES:
+    REWARD-CLAIM-HINT: '&aClick to claim this reward!'
+    REWARD-NO-KEY: '&cYou don''t have a {crate} key!'
   FRIENDS:
     NO_PERMISSION: '&cyou do not have permission.'
     USAGE: '&cᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]'

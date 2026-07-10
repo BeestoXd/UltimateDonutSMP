@@ -90,16 +90,12 @@ public class CrateChestListener implements Listener {
             return;
         }
 
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            event.setCancelled(true);
-            plugin.getSpigotScheduler().runEntity(player, () -> openPreview(player, crate));
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-
+        // both clicks open the same rewards menu; per-reward copy and the claim click
+        // tell the player whether they have a key (no separate preview mode)
         event.setCancelled(true);
         plugin.getSpigotScheduler().runEntity(player, () -> openCrate(player, clickedBlock, crate));
     }
@@ -132,17 +128,29 @@ public class CrateChestListener implements Listener {
             return;
         }
 
-        CrateManager.OpenResult result = plugin.getCrateManager().startOpening(player, crate.id());
+        // a burst of interact events can schedule several opens in one tick; once the
+        // first one opened a crate menu, silently drop the rest
+        var holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (holder instanceof CrateRewardMenu || holder instanceof CrateGachaMenu) {
+            return;
+        }
+
+        // gacha rolls a reward immediately, so it still needs the key up front;
+        // the choose-one menu opens keyless and gates the key at the claim click
+        boolean gacha = crate.openType() == CrateManager.OpenType.GACHA;
+        CrateManager.OpenResult result = plugin.getCrateManager().startOpening(player, crate.id(), gacha);
         if (!result.success()) {
+            player.sendMessage(ColorUtils.toComponent(result.message()));
             if (result.reason() == CrateManager.FailureReason.NO_KEYS) {
                 plugin.getCrateVisualManager().playNoKeyEffects(player);
+                // keyless gacha cannot roll; show the rewards preview instead
+                openPreview(player, crate);
             }
-            player.sendMessage(ColorUtils.toComponent(result.message()));
             return;
         }
 
         plugin.getCrateVisualManager().playOpenEffects(player, block, crate);
-        if (crate.openType() == CrateManager.OpenType.GACHA) {
+        if (gacha) {
             new CrateGachaMenu(plugin, crate).open(player);
             return;
         }

@@ -426,6 +426,15 @@ public class CrateManager {
     }
 
     public OpenResult startOpening(Player player, String crateId) {
+        return startOpening(player, crateId, true);
+    }
+
+    /**
+     * Starts a crate session. With {@code requireKey} false the menu opens without a key —
+     * the key is still checked and consumed at claim time ({@code claimSelectedReward}), so
+     * keyless browsing cannot grant rewards.
+     */
+    public OpenResult startOpening(Player player, String crateId, boolean requireKey) {
         CrateDefinition crate = getCrate(crateId);
         if (crate == null) {
             return new OpenResult(false, FailureReason.CRATE_NOT_FOUND,
@@ -439,7 +448,14 @@ public class CrateManager {
             return new OpenResult(false, FailureReason.NO_PERMISSION,
                     "&cyou do not have permission to open this crate.", crate);
         }
-        if (activeSessions.containsKey(player.getUniqueId())) {
+        CrateOpenSession existing = activeSessions.get(player.getUniqueId());
+        // reopening the same crate before picking a reward is not an error — block clicks
+        // can double-fire and menu close clears the session a tick late
+        if (existing != null && existing.crate() != null
+                && existing.crate().id().equalsIgnoreCase(crate.id())
+                && existing.selectedReward() == null) {
+            activeSessions.remove(player.getUniqueId());
+        } else if (existing != null) {
             return new OpenResult(false, FailureReason.ALREADY_OPENING,
                     "&cyou are already opening a crate.", crate);
         }
@@ -447,7 +463,7 @@ public class CrateManager {
             return new OpenResult(false, FailureReason.INVALID_CRATE,
                     "&cthis crate has no valid rewards configured.", crate);
         }
-        if (getKeyBalance(player, crate.id()) <= 0) {
+        if (requireKey && getKeyBalance(player, crate.id()) <= 0) {
             return new OpenResult(false, FailureReason.NO_KEYS,
                     "&cyou do not have any " + getReadableCrateName(crate) + " keys.", crate);
         }
