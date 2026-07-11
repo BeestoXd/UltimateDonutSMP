@@ -123,6 +123,7 @@ public class DatabaseManager {
             ensurePortalColumns();
             ensureTeamColumns();
             ensureStaffModeColumns();
+            ensureHomeColumns();
 
             if (mongoBridgeActive) {
                 importMongoSnapshotIntoSqlite();
@@ -353,6 +354,7 @@ public class DatabaseManager {
             "  world TEXT," +
             "  x REAL, y REAL, z REAL," +
             "  yaw REAL, pitch REAL," +
+            "  created_at BIGINT DEFAULT 0," +
             "  PRIMARY KEY (player_uuid, home_name)" +
             ")"
         );
@@ -653,6 +655,10 @@ public class DatabaseManager {
 
     private void ensureStaffModeColumns() throws SQLException {
         ensureColumnExists("staff_mode_states", "previous_game_mode", "TEXT DEFAULT 'SURVIVAL'");
+    }
+
+    private void ensureHomeColumns() throws SQLException {
+        ensureColumnExists("homes", "created_at", "BIGINT DEFAULT 0");
     }
 
     private void ensureColumnExists(String table, String column, String definition) throws SQLException {
@@ -1765,7 +1771,7 @@ public class DatabaseManager {
     public List<Home> loadHomes(UUID uuid) {
         List<Home> homes = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT * FROM homes WHERE player_uuid = ?")) {
+                "SELECT * FROM homes WHERE player_uuid = ? ORDER BY created_at ASC, home_name ASC")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -1774,7 +1780,8 @@ public class DatabaseManager {
                     Location loc = new LazyLocation(worldName,
                             rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"),
                             rs.getFloat("yaw"), rs.getFloat("pitch"));
-                    homes.add(new Home(uuid, rs.getString("home_name"), loc));
+                    long createdAt = rs.getLong("created_at");
+                    homes.add(new Home(uuid, rs.getString("home_name"), loc, createdAt));
                 }
             }
         } catch (SQLException e) {
@@ -1785,8 +1792,8 @@ public class DatabaseManager {
 
     public void saveHome(Home home) {
         try (PreparedStatement ps = connection.prepareStatement(
-                "REPLACE INTO homes (player_uuid, home_name, world, x, y, z, yaw, pitch)" +
-                " VALUES (?,?,?,?,?,?,?,?)")) {
+                "REPLACE INTO homes (player_uuid, home_name, world, x, y, z, yaw, pitch, created_at)" +
+                " VALUES (?,?,?,?,?,?,?,?,?)")) {
             ps.setString(1, home.getOwnerUuid().toString());
             ps.setString(2, home.getName());
             Location l = home.getLocation();
@@ -1804,6 +1811,7 @@ public class DatabaseManager {
             ps.setDouble(6, l != null ? l.getZ() : 0.0);
             ps.setFloat(7, l != null ? l.getYaw() : 0.0f);
             ps.setFloat(8, l != null ? l.getPitch() : 0.0f);
+            ps.setLong(9, home.getCreatedAt());
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save home", e);
