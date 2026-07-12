@@ -42,6 +42,13 @@ public class SpawnerBlockListener implements Listener {
             return;
         }
 
+        if (event.getPlayer().isSneaking() && event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
+            ItemStack hand = event.getItemInHand();
+            if (hand.getAmount() > 1) {
+                hand.setAmount(1);
+            }
+        }
+
         event.getPlayer().sendMessage(ColorUtils.toComponent(result.message()));
     }
 

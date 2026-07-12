@@ -372,7 +372,12 @@ public class SpawnerManager {
         String typeKey = getSpawnerItemType(item);
         ItemMeta meta = item.getItemMeta();
         Long nbtAmountVal = meta != null ? meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG) : 1L;
-        long amount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        long baseAmount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        
+        boolean stackAll = player.isSneaking();
+        int quantity = stackAll ? item.getAmount() : 1;
+        long amount = baseAmount * quantity;
+
         if (amount <= 0L) {
             return fail("&cthis spawner item has an invalid amount.");
         }
@@ -529,7 +534,12 @@ public class SpawnerManager {
 
         ItemMeta meta = item.getItemMeta();
         Long nbtAmountVal = meta != null ? meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG) : 1L;
-        long addAmount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        long baseAmount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        
+        boolean stackAll = player.isSneaking();
+        int quantity = stackAll ? item.getAmount() : 1;
+        long addAmount = baseAmount * quantity;
+
         if (addAmount <= 0L) {
             return fail("&cthat spawner item has an invalid amount.");
         }
@@ -1383,13 +1393,18 @@ public class SpawnerManager {
         spawnerState.update(true, false);
     }
 
-    public void consumeHeldSpawnerItem(Player player) {
+    public void consumeHeldSpawnerItem(Player player, boolean all) {
         if (player == null || player.getGameMode() == GameMode.CREATIVE) {
             return;
         }
 
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand == null || hand.getType().isAir()) {
+            return;
+        }
+
+        if (all) {
+            player.getInventory().setItemInMainHand(null);
             return;
         }
 
