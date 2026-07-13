@@ -3,87 +3,87 @@
 
 # UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
+  ENABLED: true # Options: true or false
   COUNTDOWN_SECONDS: 5 # Sets the time value in seconds.
   MATCH_DURATION_SECONDS: 900 # Sets how long this behavior lasts.
   REQUEST_TIMEOUT_SECONDS: 30 # Sets the time value in seconds.
   DRAW_REQUEST_TIMEOUT_SECONDS: 15 # Sets the time value in seconds.
   RETURN_DELAY_SECONDS: 3 # Sets the time value in seconds.
-  ROLLBACK_PADDING_HORIZONTAL: 8 # Configures the rollback padding horizontal option.
-  ROLLBACK_PADDING_VERTICAL: 6 # Configures the rollback padding vertical option.
+  ROLLBACK_PADDING_HORIZONTAL: 8 # Rollback Padding Horizontal setting.
+  ROLLBACK_PADDING_VERTICAL: 6 # Rollback Padding Vertical setting.
 
 # UDS setup: Duel map source priority and map loading behavior.
 MAP_SOURCES:
   STATIC_WORLDS:
-    ENABLED: true # Enables or disables static worlds.
-    AUTO_LOAD: true # Configures the auto load option.
+    ENABLED: true # Options: true or false
+    AUTO_LOAD: true # Auto Load setting.
     # Optional world folder names to load before duel arenas are read from storage.
     # This is compatible with Multiverse-Core but does not require it.
-    WORLDS: [] # Configures the worlds option.
+    WORLDS: [] # Worlds setting.
   RANDOM_BIOMES:
-    ENABLED: true # Enables or disables random biomes.
-    WORLD_PREFIX: "duel_biome_" # Configures the world prefix option.
-    WORLD_FOLDER: "duel" # Configures the world folder option.
+    ENABLED: true # Options: true or false
+    WORLD_PREFIX: "duel_biome_" # World Prefix setting.
+    WORLD_FOLDER: "duel" # World Folder setting.
     # Valid modes: FLAT (lightweight generated arena) or VANILLA (natural terrain using prepared pool).
-    TERRAIN_MODE: FLAT # Selects the mode or type used by this option.
+    TERRAIN_MODE: FLAT # Terrain Mode setting.
     TERRAIN_MODE_SETTINGS:
       FLAT:
-        ALLOW_ITEM_DROP: false # Configures the allow item drop option.
-        ALLOW_BLOCK_BREAK: true # Configures the allow block break option.
-        ALLOW_BLOCK_PLACE: true # Configures the allow block place option.
-        ALLOW_BUCKET_USE: true # Configures the allow bucket use option.
-        NO_HUNGER: false # Configures the no hunger option.
-        NO_WEATHER: false # Configures the no weather option.
-        ALWAYS_MORNING: false # Configures the always morning option.
-        NO_FALL_DAMAGE: false # Configures the no fall damage option.
+        ALLOW_ITEM_DROP: false # Allow Item Drop setting.
+        ALLOW_BLOCK_BREAK: true # Allow Block Break setting.
+        ALLOW_BLOCK_PLACE: true # Allow Block Place setting.
+        ALLOW_BUCKET_USE: true # Allow Bucket Use setting.
+        NO_HUNGER: false # No Hunger setting.
+        NO_WEATHER: false # No Weather setting.
+        ALWAYS_MORNING: false # Always Morning setting.
+        NO_FALL_DAMAGE: false # No Fall Damage setting.
       VANILLA:
-        ALLOW_ITEM_DROP: false # Configures the allow item drop option.
-        ALLOW_BLOCK_BREAK: true # Configures the allow block break option.
-        ALLOW_BLOCK_PLACE: true # Configures the allow block place option.
-        ALLOW_BUCKET_USE: true # Configures the allow bucket use option.
-        NO_HUNGER: false # Configures the no hunger option.
-        NO_WEATHER: false # Configures the no weather option.
-        ALWAYS_MORNING: false # Configures the always morning option.
-        NO_FALL_DAMAGE: false # Configures the no fall damage option.
-    ARENA_RADIUS: 48 # Sets the radius used for this check or effect.
-    SPAWN_DISTANCE: 16 # Configures the spawn distance option.
-    SPAWN_SEARCH_RADIUS: 16 # Sets the radius used for this check or effect.
-    CLEANUP_AFTER_MATCH: true # Configures the cleanup after match option.
-    GENERATE_STRUCTURES: false # Configures the generate structures option.
+        ALLOW_ITEM_DROP: false # Allow Item Drop setting.
+        ALLOW_BLOCK_BREAK: true # Allow Block Break setting.
+        ALLOW_BLOCK_PLACE: true # Allow Block Place setting.
+        ALLOW_BUCKET_USE: true # Allow Bucket Use setting.
+        NO_HUNGER: false # No Hunger setting.
+        NO_WEATHER: false # No Weather setting.
+        ALWAYS_MORNING: false # Always Morning setting.
+        NO_FALL_DAMAGE: false # No Fall Damage setting.
+    ARENA_RADIUS: 48 # Numeric value for distance or time
+    SPAWN_DISTANCE: 16 # Spawn Distance setting.
+    SPAWN_SEARCH_RADIUS: 16 # Numeric value for distance or time
+    CLEANUP_AFTER_MATCH: true # Cleanup After Match setting.
+    GENERATE_STRUCTURES: false # Generate Structures setting.
     FLAT_POOL:
-      ENABLED: true # Enables or disables flat pool.
-      SIZE: 2 # Sets the inventory size in slots.
+      ENABLED: true # Options: true or false
+      SIZE: 2 # Inventory size in slots (multiple of 9, max 54)
       PREPARE_INTERVAL_TICKS: 20 # Sets how often this task or update runs.
-      REUSE_WORLDS: true # Configures the reuse worlds option.
+      REUSE_WORLDS: true # Reuse Worlds setting.
     VANILLA_POOL:
-      ENABLED: true # Enables or disables vanilla pool.
+      ENABLED: true # Options: true or false
       # Enable this only when TERRAIN_MODE is VANILLA and you want natural generated biome worlds.
-      RUNTIME_GENERATION: true # Configures the runtime generation option.
-      SIZE: 2 # Sets the inventory size in slots.
-      CHUNKS_PER_TICK: 1 # Configures the chunks per tick option.
+      RUNTIME_GENERATION: true # Runtime Generation setting.
+      SIZE: 2 # Inventory size in slots (multiple of 9, max 54)
+      CHUNKS_PER_TICK: 1 # Chunks Per Tick setting.
       PREPARE_INTERVAL_TICKS: 1 # Sets how often this task or update runs.
-      MAX_SYNC_STEP_MS: 2000 # Sets the allowed limit for this option.
-      PAUSE_ON_SLOW_STEP: true # Configures the pause on slow step option.
+      MAX_SYNC_STEP_MS: 2000 # Numeric value (integer)
+      PAUSE_ON_SLOW_STEP: true # Pause On Slow Step setting.
     # Accepts minecraft:plains, plains, or PLAINS. Empty allowlist means all runtime biomes.
-    ALLOWLIST: [] # Configures the allowlist option.
+    ALLOWLIST: [] # Allowlist setting.
     EXCLUDE:
       - minecraft:the_void
 
 # UDS setup: Duel world border size, shrink timing, and warning behavior.
 WORLDBORDER:
-  ENABLED: true # Enables or disables worldborder.
-  SIZE: 96 # Sets the inventory size in slots.
-  WARNING_DISTANCE: 4 # Configures the warning distance option.
-  WARNING_TIME: 5 # Configures the warning time option.
-  DAMAGE_BUFFER: 0 # Configures the damage buffer option.
-  ACTION: PUSH_BACK # Configures the action option.
+  ENABLED: true # Options: true or false
+  SIZE: 96 # Inventory size in slots (multiple of 9, max 54)
+  WARNING_DISTANCE: 4 # Warning Distance setting.
+  WARNING_TIME: 5 # Warning Time setting.
+  DAMAGE_BUFFER: 0 # Damage Buffer setting.
+  ACTION: PUSH_BACK # Action setting.
   ESCAPE_GRACE_TICKS: 40 # Sets how often this task or update runs.
-  FALLBACK_ACTION: FORFEIT # Configures the fallback action option.
+  FALLBACK_ACTION: FORFEIT # Fallback Action setting.
 
 # UDS setup: Commands blocked or allowed during duel matches.
 COMMAND_BLOCK:
-  ENABLED: true # Enables or disables command block.
-  MODE: ALLOWLIST # Selects the mode or type used by this option.
+  ENABLED: true # Options: true or false
+  MODE: ALLOWLIST # Mode setting.
   ALLOWLIST:
     - /duel
     - /draw
@@ -96,13 +96,13 @@ COMMAND_BLOCK:
     - /home
     - /spawn
     - /rtp
-  MESSAGE: "&cYou cannot use that command during a duel." # Configures the message option.
+  MESSAGE: "&cYou cannot use that command during a duel." # Message setting.
 
 # UDS setup: Cross-server duel queue and routing settings.
 CROSS_SERVER:
-  ENABLED: false # Enables or disables cross server.
-  REDIS_CHANNEL: "ultimatedonutsmp:duels" # Configures the redis channel option.
-  KEY_PREFIX: "uds:duels:" # Configures the key prefix option.
+  ENABLED: false # Options: true or false
+  REDIS_CHANNEL: "ultimatedonutsmp:duels" # Redis Channel setting.
+  KEY_PREFIX: "uds:duels:" # Key Prefix setting.
   LOCAL_SERVER_ID: "local" # Sets the identifier used to link this configuration.
   PROXY_SERVER_NAME: "local" # Sets the name text used here.
   TRANSFER_TIMEOUT_SECONDS: 20 # Sets the time value in seconds.
@@ -110,50 +110,50 @@ CROSS_SERVER:
 
 # UDS setup: Countdown timing and titles before a match starts.
 START-COUNTDOWN:
-  ENABLED: true # Enables or disables start countdown.
+  ENABLED: true # Options: true or false
   SOUNDS:
-    ENABLED: true # Enables or disables sounds.
+    ENABLED: true # Options: true or false
   TITLES:
-    6: "" # Configures the 6 option.
-    5: "&e5" # Configures the 5 option.
-    4: "&e4" # Configures the 4 option.
-    3: "&c3" # Configures the 3 option.
-    2: "&c2" # Configures the 2 option.
-    1: "&c1" # Configures the 1 option.
-    0: "&a&lfight!" # Configures the 0 option.
+    6: "" # 6 setting.
+    5: "&e5" # 5 setting.
+    4: "&e4" # 4 setting.
+    3: "&c3" # 3 setting.
+    2: "&c2" # 2 setting.
+    1: "&c1" # 1 setting.
+    0: "&a&lfight!" # 0 setting.
   MESSAGES:
     "5": "&a5" # Sets the message text for this response.
     "4": "&a4" # Sets the message text for this response.
     "3": "&a3" # Sets the message text for this response.
     "2": "&a2" # Sets the message text for this response.
     "1": "&a1" # Sets the message text for this response.
-  START-MESSAGE: "&amatch started!" # Configures the start message option.
+  START-MESSAGE: "&amatch started!" # Start Message setting.
 
 # UDS setup: Win/loss/draw titles shown after a match ends.
 RESULT-TITLES:
   victory:
-    title: "&e&lvictory!" # Sets the title text shown for this menu or prompt.
-    subtitle: "&e<player> &fwon the match!" # Configures the subtitle option.
+    title: "&e&lvictory!" # Text string (supports & color codes)
+    subtitle: "&e<player> &fwon the match!" # Text string (supports & color codes)
   defeat:
-    title: "&c&ldefeat!" # Sets the title text shown for this menu or prompt.
-    subtitle: "&c<opponent> &fwon this match!" # Configures the subtitle option.
+    title: "&c&ldefeat!" # Text string (supports & color codes)
+    subtitle: "&c<opponent> &fwon this match!" # Text string (supports & color codes)
   draw:
-    title: "&e&ldraw!" # Sets the title text shown for this menu or prompt.
-    subtitle: "&ftime's up - no winner." # Configures the subtitle option.
-    message: "&e[timer] &ftime limit reached! match ended as a &edraw &f- streaks unchanged." # Configures the message option.
+    title: "&e&ldraw!" # Text string (supports & color codes)
+    subtitle: "&ftime's up - no winner." # Text string (supports & color codes)
+    message: "&e[timer] &ftime limit reached! match ended as a &edraw &f- streaks unchanged." # Message setting.
 
 # UDS setup: Arena world, spawn, rollback, and match environment defaults.
-ARENA_SETTINGS: {} # Configures the arena settings option.
+ARENA_SETTINGS: {} # Arena Settings setting.
 
 # UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
 GUI:
   QUEUE:
-    TITLE: "&8ᴄᴀѕᴜᴀʟ ǫᴜᴇᴜᴇ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
+    TITLE: "&8ᴄᴀѕᴜᴀʟ ǫᴜᴇᴜᴇ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
   CREATE:
-    TITLE: "&8ᴄʀᴇᴀᴛᴇ ᴅᴜᴇʟ -> {player}" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
+    TITLE: "&8ᴄʀᴇᴀᴛᴇ ᴅᴜᴇʟ -> {player}" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
   CLAIMS:
-    TITLE: "&8ᴅᴜᴇʟ ᴄʟᴀɪᴍѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴅᴜᴇʟ ᴄʟᴀɪᴍѕ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.

@@ -66,225 +66,225 @@ SHOP-GUI:
 
 # UDS setup: Shop category definitions and their menu entries.
 CATEGORIES:
-  MENU-TITLE: "&8shop" # Sets the title text shown for this menu or prompt.
-  MENU-SIZE: 27 # Sets the inventory size in slots.
+  MENU-TITLE: "&8shop" # Text string (supports & color codes)
+  MENU-SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   END:
-    MATERIAL: END_STONE # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dend" # Sets the display name shown to players.
+    MATERIAL: END_STONE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 11 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view the end shop"
-    OPEN-MENU: "{end-menu}" # Configures the open menu option.
+    OPEN-MENU: "{end-menu}" # Open Menu setting.
   NETHER:
-    MATERIAL: NETHERRACK # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dnether" # Sets the display name shown to players.
+    MATERIAL: NETHERRACK # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 12 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view the nether shop"
-    OPEN-MENU: "{nether-menu}" # Configures the open menu option.
+    OPEN-MENU: "{nether-menu}" # Open Menu setting.
   GEAR:
-    MATERIAL: TOTEM_OF_UNDYING # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dgear" # Sets the display name shown to players.
+    MATERIAL: TOTEM_OF_UNDYING # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 13 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view the gear shop"
-    OPEN-MENU: "{gear-menu}" # Configures the open menu option.
+    OPEN-MENU: "{gear-menu}" # Open Menu setting.
   FOOD:
-    MATERIAL: COOKED_BEEF # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dfood" # Sets the display name shown to players.
+    MATERIAL: COOKED_BEEF # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 14 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view the food shop"
-    OPEN-MENU: "{food-menu}" # Configures the open menu option.
+    OPEN-MENU: "{food-menu}" # Open Menu setting.
   SHARD:
-    MATERIAL: AMETHYST_SHARD # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dshard shop" # Sets the display name shown to players.
+    MATERIAL: AMETHYST_SHARD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 15 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view the shard shop"
-    OPEN-MENU: "{shard-menu}" # Configures the open menu option.
+    OPEN-MENU: "{shard-menu}" # Open Menu setting.
   EXTRA-1:
-    ENABLED: false # Enables or disables extra 1.
-    MATERIAL: DIAMOND_ORE # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dextra menu (1)" # Sets the display name shown to players.
+    ENABLED: false # Options: true or false
+    MATERIAL: DIAMOND_ORE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 22 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view extra menu"
-    OPEN-MENU: "{extra-1-menu}" # Configures the open menu option.
+    OPEN-MENU: "{extra-1-menu}" # Open Menu setting.
   EXTRA-2:
-    ENABLED: false # Enables or disables extra 2.
-    MATERIAL: IRON_ORE # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dextra menu (2)" # Sets the display name shown to players.
+    ENABLED: false # Options: true or false
+    MATERIAL: IRON_ORE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 23 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view extra menu"
-    OPEN-MENU: "{extra-2-menu}" # Configures the open menu option.
+    OPEN-MENU: "{extra-2-menu}" # Open Menu setting.
   EXTRA-3:
-    ENABLED: false # Enables or disables extra 3.
-    MATERIAL: GOLD_ORE # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dextra menu (3)" # Sets the display name shown to players.
+    ENABLED: false # Options: true or false
+    MATERIAL: GOLD_ORE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     SLOT: 24 # Sets the inventory slot used by this item.
     LORE:
       - "&fclick to view extra menu"
-    OPEN-MENU: "{extra-3-menu}" # Configures the open menu option.
+    OPEN-MENU: "{extra-3-menu}" # Open Menu setting.
 
 # End Shop Menu
 # UDS setup: End shop menu layout.
 END-MENU:
-  CURRENCY: MONEY # Configures the currency option.
-  TITLE: "&8ѕʜᴏᴘ - ᴇɴᴅ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  CURRENCY: MONEY # Currency setting.
+  TITLE: "&8ѕʜᴏᴘ - ᴇɴᴅ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   ENDER-CHEST-ITEM:
-    MATERIAL: "ENDER_CHEST" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴇɴᴅᴇʀ ᴄʜᴇѕᴛ" # Sets the display name shown to players.
+    MATERIAL: "ENDER_CHEST" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴇɴᴅᴇʀ ᴄʜᴇѕᴛ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 2500.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 2500.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$2,500"
     COMMAND: "" # Sets the command executed or suggested here.
   ENDER-PEARL-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "ENDER_PEARL" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴇɴᴅᴇʀ ᴘᴇᴀʀʟ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "ENDER_PEARL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴇɴᴅᴇʀ ᴘᴇᴀʀʟ" # Text string (supports & color codes)
     SLOT: 10 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 75.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 75.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$75"
     COMMAND: "" # Sets the command executed or suggested here.
   END-STONE-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "END_STONE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴇɴᴅ ѕᴛᴏɴᴇ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "END_STONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴇɴᴅ ѕᴛᴏɴᴇ" # Text string (supports & color codes)
     SLOT: 11 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 8.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 8.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$8"
     COMMAND: "" # Sets the command executed or suggested here.
   DRAGON-BREATH-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "DRAGON_BREATH" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&eᴅʀᴀɢᴏɴ'ѕ ʙʀᴇᴀᴛʜ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "DRAGON_BREATH" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&eᴅʀᴀɢᴏɴ'ѕ ʙʀᴇᴀᴛʜ" # Text string (supports & color codes)
     SLOT: 12 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 1000.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 1000.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$1,000"
     COMMAND: "" # Sets the command executed or suggested here.
   END-ROD-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "END_ROD" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴇɴᴅ ʀᴏᴅ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "END_ROD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴇɴᴅ ʀᴏᴅ" # Text string (supports & color codes)
     SLOT: 13 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 100.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 100.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$100"
   CHORUS-FRUIT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "CHORUS_FRUIT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴄʜᴏʀᴜѕ ꜰʀᴜɪᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "CHORUS_FRUIT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴄʜᴏʀᴜѕ ꜰʀᴜɪᴛ" # Text string (supports & color codes)
     SLOT: 14 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 10.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 10.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$10"
   POPPED-CHORUS-FRUIT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "POPPED_CHORUS_FRUIT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴘᴏᴘᴘᴇᴅ ᴄʜᴏʀᴜѕ ꜰʀᴜɪᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "POPPED_CHORUS_FRUIT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴘᴏᴘᴘᴇᴅ ᴄʜᴏʀᴜѕ ꜰʀᴜɪᴛ" # Text string (supports & color codes)
     SLOT: 15 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 15.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 15.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$15"
   SHULKER-SHELL-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "SHULKER_SHELL" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fѕʜᴜʟᴋᴇʀ ѕʜᴇʟʟ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "SHULKER_SHELL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fѕʜᴜʟᴋᴇʀ ѕʜᴇʟʟ" # Text string (supports & color codes)
     SLOT: 16 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 350.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 350.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$350"
   SHULKER-BOX-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "SHULKER_BOX" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fѕʜᴜʟᴋᴇʀ ʙᴏx" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "SHULKER_BOX" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fѕʜᴜʟᴋᴇʀ ʙᴏx" # Text string (supports & color codes)
     SLOT: 17 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 800.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 800.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$800"
 
 # Nether Shop Menu
 # UDS setup: Nether shop menu layout.
 NETHER-MENU:
-  TITLE: "&8ѕʜᴏᴘ - ɴᴇᴛʜᴇʀ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ѕʜᴏᴘ - ɴᴇᴛʜᴇʀ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BLAZE-ROD-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "BLAZE_ROD" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fʙʟᴀᴢᴇ ʀᴏᴅ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "BLAZE_ROD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fʙʟᴀᴢᴇ ʀᴏᴅ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 150.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 150.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$150"
   NETHER-WART-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "NETHER_WART" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fɴᴇᴛʜᴇʀ ᴡᴀʀᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "NETHER_WART" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fɴᴇᴛʜᴇʀ ᴡᴀʀᴛ" # Text string (supports & color codes)
     SLOT: 10 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 15 # Configures the price per unit option.
+    PRICE-PER-UNIT: 15 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$15"
   GLOWSTONE-DUST-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "GLOWSTONE_DUST" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fɢʟᴏᴡѕᴛᴏɴᴇ ᴅᴜѕᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "GLOWSTONE_DUST" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fɢʟᴏᴡѕᴛᴏɴᴇ ᴅᴜѕᴛ" # Text string (supports & color codes)
     SLOT: 11 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 15 # Configures the price per unit option.
+    PRICE-PER-UNIT: 15 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$15"
   MAGMA-CREAM-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "MAGMA_CREAM" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴍᴀɢᴍᴀ ᴄʀᴇᴀᴍ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "MAGMA_CREAM" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴍᴀɢᴍᴀ ᴄʀᴇᴀᴍ" # Text string (supports & color codes)
     SLOT: 12 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 15 # Configures the price per unit option.
+    PRICE-PER-UNIT: 15 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$15"
   GHAST-TEAR-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "GHAST_TEAR" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fɢʜᴀѕᴛ ᴛᴇᴀʀ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "GHAST_TEAR" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fɢʜᴀѕᴛ ᴛᴇᴀʀ" # Text string (supports & color codes)
     SLOT: 13 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 350 # Configures the price per unit option.
+    PRICE-PER-UNIT: 350 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$350"
   NETHER-QUARTZ-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "QUARTZ" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fɴᴇᴛʜᴇʀ ǫᴜᴀʀᴛᴢ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "QUARTZ" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fɴᴇᴛʜᴇʀ ǫᴜᴀʀᴛᴢ" # Text string (supports & color codes)
     SLOT: 14 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 15 # Configures the price per unit option.
+    PRICE-PER-UNIT: 15 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$15"
   SOUL-SAND-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "SOUL_SAND" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fѕᴏᴜʟ ѕᴀɴᴅ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "SOUL_SAND" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fѕᴏᴜʟ ѕᴀɴᴅ" # Text string (supports & color codes)
     SLOT: 15 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 50 # Configures the price per unit option.
+    PRICE-PER-UNIT: 50 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$50"
   MAGMA-BLOCK-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "MAGMA_BLOCK" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴍᴀɢᴍᴀ ʙʟᴏᴄᴋ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "MAGMA_BLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴍᴀɢᴍᴀ ʙʟᴏᴄᴋ" # Text string (supports & color codes)
     SLOT: 16 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 35 # Configures the price per unit option.
+    PRICE-PER-UNIT: 35 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$35"
   CRYING-OBSIDIAN-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "CRYING_OBSIDIAN" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴄʀʏɪɴɢ ᴏʙѕɪᴅɪᴀɴ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "CRYING_OBSIDIAN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴄʀʏɪɴɢ ᴏʙѕɪᴅɪᴀɴ" # Text string (supports & color codes)
     SLOT: 17 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 150 # Configures the price per unit option.
+    PRICE-PER-UNIT: 150 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$150"
 
@@ -292,80 +292,80 @@ NETHER-MENU:
 # Gear Shop Menu
 # UDS setup: Gear shop menu layout.
 GEAR-MENU:
-  TITLE: "&8ɢᴇᴀʀ - ѕʜᴏᴘ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ɢᴇᴀʀ - ѕʜᴏᴘ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   OBSIDIAN-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "OBSIDIAN" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴏʙѕɪᴅɪᴀɴ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "OBSIDIAN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴏʙѕɪᴅɪᴀɴ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 100 # Configures the price per unit option.
+    PRICE-PER-UNIT: 100 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$100"
   END-CRYSTAL-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "END_CRYSTAL" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&bᴇɴᴅ ᴄʀʏѕᴛᴀʟ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "END_CRYSTAL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&bᴇɴᴅ ᴄʀʏѕᴛᴀʟ" # Text string (supports & color codes)
     SLOT: 10 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 350 # Configures the price per unit option.
+    PRICE-PER-UNIT: 350 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$350"
   RESPAWN-ANCHOR-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "RESPAWN_ANCHOR" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fʀᴇѕᴘᴀᴡɴ ᴀɴᴄʜᴏʀ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "RESPAWN_ANCHOR" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fʀᴇѕᴘᴀᴡɴ ᴀɴᴄʜᴏʀ" # Text string (supports & color codes)
     SLOT: 11 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 1000 # Configures the price per unit option.
+    PRICE-PER-UNIT: 1000 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$1000"
   GLOWSTONE-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "GLOWSTONE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fɢʟᴏᴡѕᴛᴏɴᴇ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "GLOWSTONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fɢʟᴏᴡѕᴛᴏɴᴇ" # Text string (supports & color codes)
     SLOT: 12 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 100 # Configures the price per unit option.
+    PRICE-PER-UNIT: 100 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$100"
   TOTEM-OF-UNDYING-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "TOTEM_OF_UNDYING" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&eᴛᴏᴛᴇᴍ ᴏꜰ ᴜɴᴅʏɪɴɢ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "TOTEM_OF_UNDYING" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&eᴛᴏᴛᴇᴍ ᴏꜰ ᴜɴᴅʏɪɴɢ" # Text string (supports & color codes)
     SLOT: 13 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 1250 # Configures the price per unit option.
+    PRICE-PER-UNIT: 1250 # Numeric value (integer)
     MAX-QUANTITY: 36 # Sets the item amount used by this option.
-    HIDE-QUANTITY-BUTTONS: false # Configures the hide quantity buttons option.
+    HIDE-QUANTITY-BUTTONS: false # Hide Quantity Buttons setting.
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$1250"
   ENDER-PEARL-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "ENDER_PEARL" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴇɴᴅᴇʀ ᴘᴇᴀʀʟ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "ENDER_PEARL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴇɴᴅᴇʀ ᴘᴇᴀʀʟ" # Text string (supports & color codes)
     SLOT: 14 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 75 # Configures the price per unit option.
+    PRICE-PER-UNIT: 75 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$75"
   GOLDEN-APPLE-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "GOLDEN_APPLE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&bɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "GOLDEN_APPLE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&bɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ" # Text string (supports & color codes)
     SLOT: 15 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 250 # Configures the price per unit option.
+    PRICE-PER-UNIT: 250 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$250"
   BOTTLE-O-ENCHANTING-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "EXPERIENCE_BOTTLE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&eʙᴏᴛᴛʟᴇ ᴏ' ᴇɴᴄʜᴀɴᴛɪɴɢ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "EXPERIENCE_BOTTLE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&eʙᴏᴛᴛʟᴇ ᴏ' ᴇɴᴄʜᴀɴᴛɪɴɢ" # Text string (supports & color codes)
     SLOT: 16 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 100 # Configures the price per unit option.
+    PRICE-PER-UNIT: 100 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$100"
   DIRT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "DIRT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&eᴅɪʀᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "DIRT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&eᴅɪʀᴛ" # Text string (supports & color codes)
     SLOT: 17 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 500 # Configures the price per unit option.
+    PRICE-PER-UNIT: 500 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$500"
 
@@ -373,234 +373,234 @@ GEAR-MENU:
 # Food Shop Menu
 # UDS setup: Food shop menu layout.
 FOOD-MENU:
-  TITLE: "&8ꜰᴏᴏᴅ - ѕʜᴏᴘ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ꜰᴏᴏᴅ - ѕʜᴏᴘ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   POTATO-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "POTATO" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴘᴏᴛᴀᴛᴏ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "POTATO" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴘᴏᴛᴀᴛᴏ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 75 # Configures the price per unit option.
+    PRICE-PER-UNIT: 75 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$75"
   SWEET-BERRIES-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "SWEET_BERRIES" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fѕᴡᴇᴇᴛ ʙᴇʀʀɪᴇѕ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "SWEET_BERRIES" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fѕᴡᴇᴇᴛ ʙᴇʀʀɪᴇѕ" # Text string (supports & color codes)
     SLOT: 10 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 50 # Configures the price per unit option.
+    PRICE-PER-UNIT: 50 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$50"
   MELON-SLICE-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "MELON_SLICE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴍᴇʟᴏɴ ѕʟɪᴄᴇ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "MELON_SLICE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴍᴇʟᴏɴ ѕʟɪᴄᴇ" # Text string (supports & color codes)
     SLOT: 11 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 10 # Configures the price per unit option.
+    PRICE-PER-UNIT: 10 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$10"
   CARROT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "CARROT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴄᴀʀʀᴏᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "CARROT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴄᴀʀʀᴏᴛ" # Text string (supports & color codes)
     SLOT: 12 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 65 # Configures the price per unit option.
+    PRICE-PER-UNIT: 65 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$65"
   APPLE-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "APPLE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴀᴘᴘʟᴇ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "APPLE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴀᴘᴘʟᴇ" # Text string (supports & color codes)
     SLOT: 13 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 25 # Configures the price per unit option.
+    PRICE-PER-UNIT: 25 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$25"
   COOKED-CHICKEN-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "COOKED_CHICKEN" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴀᴘᴘʟᴇ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "COOKED_CHICKEN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴀᴘᴘʟᴇ" # Text string (supports & color codes)
     SLOT: 14 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 30 # Configures the price per unit option.
+    PRICE-PER-UNIT: 30 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$30"
   STEAK-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "COOKED_BEEF" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fѕᴛᴇᴀᴋ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "COOKED_BEEF" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fѕᴛᴇᴀᴋ" # Text string (supports & color codes)
     SLOT: 15 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 35 # Configures the price per unit option.
+    PRICE-PER-UNIT: 35 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$35"
   GOLDEN-CARROT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "GOLDEN_CARROT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fɢᴏʟᴅᴇɴ ᴄᴀʀʀᴏᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "GOLDEN_CARROT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fɢᴏʟᴅᴇɴ ᴄᴀʀʀᴏᴛ" # Text string (supports & color codes)
     SLOT: 16 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 50 # Configures the price per unit option.
+    PRICE-PER-UNIT: 50 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$50"
   GOLDEN-APPLE-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "GOLDEN_APPLE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&bɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "GOLDEN_APPLE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&bɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ" # Text string (supports & color codes)
     SLOT: 17 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 250 # Configures the price per unit option.
+    PRICE-PER-UNIT: 250 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$250"
       
 # Shard Shop Menu
 # UDS setup: Shard shop menu layout.
 SHARD-MENU:
-  TITLE: "&8ѕʜᴀʀᴅ - ѕʜᴏᴘ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ѕʜᴀʀᴅ - ѕʜᴏᴘ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   PIG-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 250.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 250.0 # Numeric value (integer)
     LORE:
       - "&eᴘɪɢ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &5250x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} pig {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   COW-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 10 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 350.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 350.0 # Numeric value (integer)
     LORE:
       - "&eᴄᴏᴡ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &5350x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} cow {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   ZOMBIE-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 11 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 400.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 400.0 # Numeric value (integer)
     LORE:
       - "&eᴢᴏᴍʙɪᴇ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &5400x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} zombie {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   SPIDER-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 12 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 750.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 750.0 # Numeric value (integer)
     LORE:
       - "&eѕᴘɪᴅᴇʀ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &5750x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} spider {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   SKELETON-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 13 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 500.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 500.0 # Numeric value (integer)
     LORE:
       - "&eѕᴋᴇʟᴇᴛᴏɴ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &5500x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} skeleton {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   CREEPER-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 14 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 625.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 625.0 # Numeric value (integer)
     LORE:
       - "&eᴄʀᴇᴇᴘᴇʀ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &5625x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} creeper {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   ZOMBIFIED-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 15 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 750.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 750.0 # Numeric value (integer)
     LORE:
       - "&eᴢᴏᴍʙɪꜰɪᴇᴅ ᴘɪɢʟɪɴ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &5750x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} piglin {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   BLAZE-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 16 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 1000.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 1000.0 # Numeric value (integer)
     LORE:
       - "&eʙʟᴀᴢᴇ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &51000x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} blaze {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
   GOLEM-SPAWNER-ITEM:
-    CURRENCY: SHARD # Configures the currency option.
-    MATERIAL: "SPAWNER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Sets the display name shown to players.
+    CURRENCY: SHARD # Currency setting.
+    MATERIAL: "SPAWNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&dѕᴘᴀᴡɴᴇʀ" # Text string (supports & color codes)
     SLOT: 17 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 1500.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 1500.0 # Numeric value (integer)
     LORE:
       - "&eɪʀᴏɴ ɢᴏʟᴇᴍ"
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &51500x &lѕʜᴀʀᴅѕ"
     COMMAND: "spawner give {username} iron_golem {amount}" # Sets the command executed or suggested here.
-    GIVE-ITEM: false # Configures the give item option.
+    GIVE-ITEM: false # Give Item setting.
 
 # Extra Shop Menu (1)
 # UDS setup: Extra shop menu layout slot 1.
 EXTRA-1-MENU:
-  TITLE: "&8ᴇxᴛʀᴀ - ѕʜᴏᴘ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴇxᴛʀᴀ - ѕʜᴏᴘ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BACK-BUTTON-SLOT: 18 # Sets the inventory slot used by this item.
   DIRT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "DIRT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴅɪʀᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "DIRT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴅɪʀᴛ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 150.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 150.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$150"
 
 # Extra Shop Menu (2)
 # UDS setup: Extra shop menu layout slot 2.
 EXTRA-2-MENU:
-  TITLE: "&8ᴇxᴛʀᴀ - ѕʜᴏᴘ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴇxᴛʀᴀ - ѕʜᴏᴘ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BACK-BUTTON-SLOT: 18 # Sets the inventory slot used by this item.
   DIRT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "DIRT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴅɪʀᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "DIRT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴅɪʀᴛ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 150.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 150.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$150"
 
 # Extra Shop Menu (3)
 # UDS setup: Extra shop menu layout slot 3.
 EXTRA-3-MENU:
-  TITLE: "&8ᴇxᴛʀᴀ - ѕʜᴏᴘ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴇxᴛʀᴀ - ѕʜᴏᴘ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BACK-BUTTON-SLOT: 18 # Sets the inventory slot used by this item.
   DIRT-ITEM:
-    CURRENCY: MONEY # Configures the currency option.
-    MATERIAL: "DIRT" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&fᴅɪʀᴛ" # Sets the display name shown to players.
+    CURRENCY: MONEY # Currency setting.
+    MATERIAL: "DIRT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&fᴅɪʀᴛ" # Text string (supports & color codes)
     SLOT: 9 # Sets the inventory slot used by this item.
-    PRICE-PER-UNIT: 150.0 # Configures the price per unit option.
+    PRICE-PER-UNIT: 150.0 # Numeric value (integer)
     LORE:
       - "&fʙᴜʏ ᴘʀɪᴄᴇ: &a$150"
 
 # UDS setup: Shared back button item for shop menus.
 BACK-BUTTON:
-  MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
-  DISPLAY-NAME: "&cback" # Sets the display name shown to players.
+  MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  DISPLAY-NAME: "&cback" # Text string (supports & color codes)
   LORE:
     - "&fclick to return"

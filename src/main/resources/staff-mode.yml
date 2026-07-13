@@ -3,61 +3,61 @@
 
 # UDS setup: Staff mode behavior, permissions, persistence, and vanish options.
 STAFF-MODE:
-  ENABLED: true # Enables or disables staff mode.
-  AUTO-VANISH-ON-ENABLE: false # Configures the auto vanish on enable option.
-  PERSIST-ON-QUIT: true # Configures the persist on quit option.
-  PERSIST-ON-RESTART: true # Configures the persist on restart option.
-  LOCK-TOOLS: true # Configures the lock tools option.
-  RESTORE-INVENTORY-ON-DISABLE: true # Configures the restore inventory on disable option.
+  ENABLED: true # Options: true or false
+  AUTO-VANISH-ON-ENABLE: false # Auto Vanish On Enable setting.
+  PERSIST-ON-QUIT: true # Persist On Quit setting.
+  PERSIST-ON-RESTART: true # Persist On Restart setting.
+  LOCK-TOOLS: true # Lock Tools setting.
+  RESTORE-INVENTORY-ON-DISABLE: true # Restore Inventory On Disable setting.
   VANISH-ACTIONBAR:
-    ENABLED: true # Enables or disables vanish actionbar.
+    ENABLED: true # Options: true or false
     INTERVAL-TICKS: 40 # Sets how often this task or update runs.
-    MESSAGE: "&avanished &7>> &fyou are hidden from regular players" # Configures the message option.
-  STAFF-PERMISSION: "ultimatedonutsmp.staff.mode" # Sets the permission node required for this action.
-  ADMIN-PERMISSION: "ultimatedonutsmp.admin.staffmode" # Sets the permission node required for this action.
-  VANISH-PERMISSION: "ultimatedonutsmp.staff.mode.vanish" # Sets the permission node required for this action.
-  BETTER-VIEW-PERMISSION: "ultimatedonutsmp.staff.mode.betterview" # Sets the permission node required for this action.
-  STAFF-LIST-PERMISSION: "ultimatedonutsmp.staff.mode.stafflist" # Sets the permission node required for this action.
-  RANDOM-TELEPORT-PERMISSION: "ultimatedonutsmp.staff.mode.randomtp" # Sets the permission node required for this action.
-  SEE-VANISHED-PERMISSION: "ultimatedonutsmp.staff.mode.seevanished" # Sets the permission node required for this action.
-  OTHERS-PERMISSION: "ultimatedonutsmp.staff.mode.others" # Sets the permission node required for this action.
+    MESSAGE: "&avanished &7>> &fyou are hidden from regular players" # Message setting.
+  STAFF-PERMISSION: "ultimatedonutsmp.staff.mode" # Permission node (e.g., ultimatedonutsmp.admin)
+  ADMIN-PERMISSION: "ultimatedonutsmp.admin.staffmode" # Numeric value (integer)
+  VANISH-PERMISSION: "ultimatedonutsmp.staff.mode.vanish" # Permission node (e.g., ultimatedonutsmp.admin)
+  BETTER-VIEW-PERMISSION: "ultimatedonutsmp.staff.mode.betterview" # Permission node (e.g., ultimatedonutsmp.admin)
+  STAFF-LIST-PERMISSION: "ultimatedonutsmp.staff.mode.stafflist" # Permission node (e.g., ultimatedonutsmp.admin)
+  RANDOM-TELEPORT-PERMISSION: "ultimatedonutsmp.staff.mode.randomtp" # Permission node (e.g., ultimatedonutsmp.admin)
+  SEE-VANISHED-PERMISSION: "ultimatedonutsmp.staff.mode.seevanished" # Permission node (e.g., ultimatedonutsmp.admin)
+  OTHERS-PERMISSION: "ultimatedonutsmp.staff.mode.others" # Permission node (e.g., ultimatedonutsmp.admin)
 
   HOTBAR-SLOTS:
-    VANISH: 0 # Configures the vanish option.
-    FREEZE: 1 # Configures the freeze option.
-    STAFF_LIST: 4 # Configures the staff list option.
-    BETTER_VIEW: 7 # Configures the better view option.
-    RANDOM_TELEPORT: 8 # Configures the random teleport option.
+    VANISH: 0 # Vanish setting.
+    FREEZE: 1 # Freeze setting.
+    STAFF_LIST: 4 # Staff List setting.
+    BETTER_VIEW: 7 # Better View setting.
+    RANDOM_TELEPORT: 8 # Random Teleport setting.
 
   BETTER-VIEW:
-    ENABLE-NIGHT-VISION: true # Configures the enable night vision option.
-    ENABLE-FLIGHT: true # Configures the enable flight option.
-    AUTO-FLY: true # Configures the auto fly option.
+    ENABLE-NIGHT-VISION: true # Enable Night Vision setting.
+    ENABLE-FLIGHT: true # Enable Flight setting.
+    AUTO-FLY: true # Auto Fly setting.
 
   RANDOM-TELEPORT:
-    EXCLUDE-STAFF: true # Configures the exclude staff option.
-    EXCLUDE-VANISHED: true # Configures the exclude vanished option.
-    EXCLUDE-FROZEN: false # Configures the exclude frozen option.
-    EXCLUDE-DUELS: true # Configures the exclude duels option.
-    EXCLUDE-FFA: true # Configures the exclude ffa option.
+    EXCLUDE-STAFF: true # Exclude Staff setting.
+    EXCLUDE-VANISHED: true # Exclude Vanished setting.
+    EXCLUDE-FROZEN: false # Exclude Frozen setting.
+    EXCLUDE-DUELS: true # Exclude Duels setting.
+    EXCLUDE-FFA: true # Exclude Ffa setting.
 
 # UDS setup: Fakeplayer bait NPC settings and ESP detection alerts.
 FAKE-PLAYER:
-  ENABLED: true # Enables or disables fake player.
+  ENABLED: true # Options: true or false
   TTL-SECONDS: 10 # Sets the time value in seconds.
-  VIEW-RADIUS: 64.0 # Sets the radius used for this check or effect.
-  DETECTION-RADIUS: 64.0 # Sets the radius used for this check or effect.
-  DETECTION-ANGLE-DEGREES: 8.0 # Configures the detection angle degrees option.
-  BLOCKED-CHECK-THRESHOLD: 3 # Configures the blocked check threshold option.
+  VIEW-RADIUS: 64.0 # Numeric value for distance or time
+  DETECTION-RADIUS: 64.0 # Numeric value for distance or time
+  DETECTION-ANGLE-DEGREES: 8.0 # Detection Angle Degrees setting.
+  BLOCKED-CHECK-THRESHOLD: 3 # Blocked Check Threshold setting.
   CHECK-INTERVAL-TICKS: 5 # Sets how often this task or update runs.
   SPAWN-DELAY-TICKS: 20 # Sets how often this task or update runs.
   ALERT-COOLDOWN-SECONDS: 30 # Sets the cooldown before this action can run again.
-  LOG-TO-CONSOLE: true # Configures the log to console option.
-  SEND-OPTIONAL-SPAWN-PACKETS: false # Configures the send optional spawn packets option.
-  SEND-SKIN-LAYERS-METADATA: true # Configures the send skin layers metadata option.
+  LOG-TO-CONSOLE: true # Log To Console setting.
+  SEND-OPTIONAL-SPAWN-PACKETS: false # Send Optional Spawn Packets setting.
+  SEND-SKIN-LAYERS-METADATA: true # Send Skin Layers Metadata setting.
   SKIN-LAYERS-REFRESH-DELAY-TICKS: 5 # Sets how often this task or update runs.
-  SKIN-LAYERS-METADATA-INDEX: -1 # Configures the skin layers metadata index option.
-  SKIN-LAYERS-BITMASK: 127 # Configures the skin layers bitmask option.
+  SKIN-LAYERS-METADATA-INDEX: -1 # Skin Layers Metadata Index setting.
+  SKIN-LAYERS-BITMASK: 127 # Skin Layers Bitmask setting.
   MESSAGES:
     NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
     PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
@@ -76,37 +76,37 @@ FAKE-PLAYER:
 ITEMS:
   VANISH:
     ENABLED:
-      MATERIAL: "LIME_DYE" # Sets the Bukkit material used here.
+      MATERIAL: "LIME_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&avanished" # Sets the name text used here.
       LORE:
         - "&7click to disable vanish"
     DISABLED:
-      MATERIAL: "GRAY_DYE" # Sets the Bukkit material used here.
+      MATERIAL: "GRAY_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&7unvanished" # Sets the name text used here.
       LORE:
         - "&7click to enable vanish"
 
   FREEZE:
-    MATERIAL: "ICE" # Sets the Bukkit material used here.
+    MATERIAL: "ICE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&bfreeze player" # Sets the name text used here.
     LORE:
       - "&7right-click a player to freeze them"
       - "&7left-click to see frozen players"
 
   STAFF_LIST:
-    MATERIAL: "CLOCK" # Sets the Bukkit material used here.
+    MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&estaff list" # Sets the name text used here.
     LORE:
       - "&7click to view online staff members"
 
   BETTER_VIEW:
-    MATERIAL: "ORANGE_CARPET" # Sets the Bukkit material used here.
+    MATERIAL: "ORANGE_CARPET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&ebetter view" # Sets the name text used here.
     LORE:
       - "&7click to toggle better view mode"
 
   RANDOM_TELEPORT:
-    MATERIAL: "PLAYER_HEAD" # Sets the Bukkit material used here.
+    MATERIAL: "PLAYER_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&erandom teleport" # Sets the name text used here.
     LORE:
       - "&7click to teleport to a random player"
@@ -114,10 +114,10 @@ ITEMS:
 # UDS setup: Sounds used by menu actions.
 MENUS:
   STAFF-LIST:
-    TITLE: "&8ᴏɴʟɪɴᴇ ѕᴛᴀꜰꜰ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
+    TITLE: "&8ᴏɴʟɪɴᴇ ѕᴛᴀꜰꜰ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
     REFRESH-SLOT: 49 # Sets the inventory slot used by this item.
-    PLACEHOLDER-MATERIAL: "GRAY_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    PLACEHOLDER-MATERIAL: "GRAY_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     CONTENT-SLOTS:
       - 10
       - 11
@@ -140,15 +140,15 @@ MENUS:
       - 32
       - 33
       - 34
-    EMPTY-MATERIAL: "BARRIER" # Sets the Bukkit material used here.
+    EMPTY-MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     EMPTY-NAME: "&cɴᴏ ѕᴛᴀꜰꜰ ᴏɴʟɪɴᴇ" # Sets the name text used here.
     EMPTY-LORE:
       - "&7ɴᴏ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴏɴʟɪɴᴇ."
   FROZEN-PLAYERS:
-    TITLE: "&8ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
+    TITLE: "&8ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
     REFRESH-SLOT: 49 # Sets the inventory slot used by this item.
-    PLACEHOLDER-MATERIAL: "LIGHT_BLUE_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    PLACEHOLDER-MATERIAL: "LIGHT_BLUE_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     CONTENT-SLOTS:
       - 10
       - 11
@@ -171,7 +171,7 @@ MENUS:
       - 32
       - 33
       - 34
-    EMPTY-MATERIAL: "BARRIER" # Sets the Bukkit material used here.
+    EMPTY-MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     EMPTY-NAME: "&aɴᴏ ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ" # Sets the name text used here.
     EMPTY-LORE:
       - "&7ᴛʜᴇʀᴇ ᴀʀᴇ ɴᴏ ᴀᴄᴛɪᴠᴇ ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ."

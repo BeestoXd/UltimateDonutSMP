@@ -3,20 +3,20 @@
 
 # UDS setup: Custom ender chest rows, access rules, save timing, and display title.
 ENDER-CHEST:
-  ENABLED: true # Enables or disables ender chest.
+  ENABLED: true # Options: true or false
   DEFAULT-ROWS: 6 # Sets the default value used when none is selected.
-  TITLE: "&5ender chest" # Sets the title text shown for this menu or prompt.
-  INTERCEPT-VANILLA-OPEN: true # Configures the intercept vanilla open option.
-  VANILLA-EFFECTS: true # Configures the vanilla effects option.
-  MANUAL-SOUNDS: false # Configures the manual sounds option.
-  OPEN-SOUND: "minecraft:block.ender_chest.open|1.0|1.0" # Configures the open sound option.
-  CLOSE-SOUND: "minecraft:block.ender_chest.close|1.0|1.0" # Configures the close sound option.
+  TITLE: "&5ender chest" # Text string (supports & color codes)
+  INTERCEPT-VANILLA-OPEN: true # Intercept Vanilla Open setting.
+  VANILLA-EFFECTS: true # Vanilla Effects setting.
+  MANUAL-SOUNDS: false # Options: Valid Bukkit Sound (e.g., ENTITY_PLAYER_LEVELUP)
+  OPEN-SOUND: "minecraft:block.ender_chest.open|1.0|1.0" # Options: Valid Bukkit Sound (e.g., ENTITY_PLAYER_LEVELUP)
+  CLOSE-SOUND: "minecraft:block.ender_chest.close|1.0|1.0" # Options: Valid Bukkit Sound (e.g., ENTITY_PLAYER_LEVELUP)
   ALLOW-COMMAND: true # Sets the command executed or suggested here.
-  COMMAND-REQUIRES-PERMISSION: false # Sets the permission node required for this action.
-  PERMISSION: "ultimatedonutsmp.enderchest" # Sets the permission node required for this action.
+  COMMAND-REQUIRES-PERMISSION: false # Permission node (e.g., ultimatedonutsmp.admin)
+  PERMISSION: "ultimatedonutsmp.enderchest" # Permission node (e.g., ultimatedonutsmp.admin)
   AUTO-SAVE-TICKS: 1200 # Sets how often this task or update runs.
   ECSEE:
-    ENABLED: true # Enables or disables read-only Ender Chest inspection.
+    ENABLED: true # Options: true or false
     TITLE: "&8Ender Chest of &f{player}" # Supports {player} and {target}.
     PERMISSION: "ultimatedonutsmp.admin.ecsee" # Permission required to inspect Ender Chests.
     LOG-USAGE: true # Logs each successful inspection to the server console.

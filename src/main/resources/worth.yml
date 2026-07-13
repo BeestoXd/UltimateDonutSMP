@@ -7,16 +7,16 @@ DISPLAY:
 
 # UDS setup: Worth calculation rules for containers and nested contents.
 CONTAINER:
-  ENABLED: true # Enables or disables container.
+  ENABLED: true # Options: true or false
   INCLUDE-CONTAINER-BASE-PRICE: true # Sets the economy value used by this option.
-  ALLOW-NESTED-CONTAINERS: false # Configures the allow nested containers option.
-  MAX-CONTAINER-DEPTH: 1 # Sets the allowed limit for this option.
+  ALLOW-NESTED-CONTAINERS: false # Allow Nested Containers setting.
+  MAX-CONTAINER-DEPTH: 1 # Numeric value (integer)
 
 # UDS setup: Worth browser pagination and search behavior.
 BROWSER:
-  TITLE: "&8Item Prices" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
-  ITEMS-PER-PAGE: 45 # Sets how many entries appear on each page.
+  TITLE: "&8Item Prices" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  ITEMS-PER-PAGE: 45 # Items Per Page setting.
   DEFAULT-SORT: CATEGORY # Sets the default value used when none is selected.
   ITEM:
     NAME: "&b{item}"

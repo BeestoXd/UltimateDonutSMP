@@ -14,28 +14,28 @@ AMETHYST-TOOLS:
 
   # ── Particles ─────────────────────────────────────────
   PARTICLES:
-    ENABLED: true # Enables or disables particles.
-    TYPE: BLOCK # Selects the mode or type used by this option.
-    BLOCK-MATERIAL: PURPLE_CONCRETE_POWDER # Sets the Bukkit material used here.
-    COUNT: 12 # Configures the count option.
-    SPREAD: 0.4 # Configures the spread option.
+    ENABLED: true # Options: true or false
+    TYPE: BLOCK # Type setting.
+    BLOCK-MATERIAL: PURPLE_CONCRETE_POWDER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    COUNT: 12 # Count setting.
+    SPREAD: 0.4 # Spread setting.
 
   # ── Sounds ────────────────────────────────────────────
   SOUNDS:
-    USE:     "minecraft:block.amethyst_block.hit|1.0|1.2" # Configures the use option.
-    EXPIRE:  "minecraft:entity.lightning_bolt.impact|0.5|2.0" # Configures the expire option.
-    BREAK:   "minecraft:block.amethyst_block.break|1.0|0.8" # Configures the break option.
-    ACTIVATE: "minecraft:block.amethyst_block.resonate|1.0|1.0" # Configures the activate option.
+    USE:     "minecraft:block.amethyst_block.hit|1.0|1.2" # Use setting.
+    EXPIRE:  "minecraft:entity.lightning_bolt.impact|0.5|2.0" # Expire setting.
+    BREAK:   "minecraft:block.amethyst_block.break|1.0|0.8" # Break setting.
+    ACTIVATE: "minecraft:block.amethyst_block.resonate|1.0|1.0" # Activate setting.
 
   SECURITY:
     REQUIRE-ITEM-ID: true # Sets the identifier used to link this configuration.
-    BIND-TO-OWNER: false # Configures the bind to owner option.
+    BIND-TO-OWNER: false # Bind To Owner setting.
     CLICK-COOLDOWN-MS: 250 # Sets the cooldown before this action can run again.
-    BLOCK-HOPPER-PICKUP: true # Configures the block hopper pickup option.
+    BLOCK-HOPPER-PICKUP: true # Block Hopper Pickup setting.
 
   # ── Amethyst Drill ────────────────────────────────────
   DRILL:
-    MATERIAL: NETHERITE_PICKAXE # Sets the Bukkit material used here.
+    MATERIAL: NETHERITE_PICKAXE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#9B59B6&lamethyst drill" # Sets the name text used here.
     LORE:
       - "&#BDC3C7breaks &d9 blocks &7per strike"
@@ -47,7 +47,7 @@ AMETHYST-TOOLS:
       - "efficiency:5"
       - "unbreaking:3"
       - "fortune:3"
-    RADIUS: 1 # Sets the radius used for this check or effect.
+    RADIUS: 1 # Numeric value for distance or time
     DISABLED-BLOCKS:
       - DIRT
       - GRASS_BLOCK
@@ -78,7 +78,7 @@ AMETHYST-TOOLS:
 
   # ── Amethyst Tree Chopper ─────────────────────────────
   CHOPPER:
-    MATERIAL: NETHERITE_AXE # Sets the Bukkit material used here.
+    MATERIAL: NETHERITE_AXE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#9B59B6&lamethyst tree chopper" # Sets the name text used here.
     LORE:
       - "&#BDC3C7chops entire trees &dinstantly"
@@ -89,7 +89,7 @@ AMETHYST-TOOLS:
     ENCHANTMENTS:
       - "efficiency:10"
       - "unbreaking:3"
-    MAX-LOGS: 128 # Sets the allowed limit for this option.
+    MAX-LOGS: 128 # Numeric value (integer)
     LOG-BLOCKS:
       - OAK_LOG
       - SPRUCE_LOG
@@ -124,7 +124,7 @@ AMETHYST-TOOLS:
 
   # ── Amethyst Sell Axe ─────────────────────────────────
   SELL-AXE:
-    MATERIAL: NETHERITE_AXE # Sets the Bukkit material used here.
+    MATERIAL: NETHERITE_AXE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#9B59B6&lamethyst sell axe" # Sets the name text used here.
     LORE:
       - "&#BDC3C7instantly sells all items in a chest"
@@ -148,7 +148,7 @@ AMETHYST-TOOLS:
 
   # ── Amethyst Shovel ───────────────────────────────────
   SHOVEL:
-    MATERIAL: NETHERITE_SHOVEL # Sets the Bukkit material used here.
+    MATERIAL: NETHERITE_SHOVEL # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#9B59B6&lamethyst shovel" # Sets the name text used here.
     LORE:
       - "&#BDC3C7breaks &d9 blocks &7per strike"
@@ -160,7 +160,7 @@ AMETHYST-TOOLS:
       - "efficiency:5"
       - "unbreaking:3"
       - "fortune:3"
-    RADIUS: 1 # Sets the radius used for this check or effect.
+    RADIUS: 1 # Numeric value for distance or time
     ALLOWED-BLOCKS:
       - DIRT
       - GRASS_BLOCK
@@ -192,7 +192,7 @@ AMETHYST-TOOLS:
 
   # ── Amethyst Bucket ───────────────────────────────────
   BUCKET:
-    MATERIAL: BUCKET # Sets the Bukkit material used here.
+    MATERIAL: BUCKET # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#9B59B6&lamethyst bucket" # Sets the name text used here.
     LORE:
       - "&#BDC3C7drains &d27 water blocks &7at once"
@@ -200,8 +200,8 @@ AMETHYST-TOOLS:
       - ""
       - "&#9B59B6✦ self destruct"
       - "&#BDC3C7{time}"
-    DRAIN-RADIUS: 1 # Sets the radius used for this check or effect.
-    MAX-DRAIN: 27 # Sets the allowed limit for this option.
+    DRAIN-RADIUS: 1 # Numeric value for distance or time
+    MAX-DRAIN: 27 # Numeric value (integer)
     DURATION: 86400 # Sets how long this behavior lasts.
     SHARD-SHOP:
       ENABLED: false # Enable to add this tool to /shardshop.
@@ -215,7 +215,7 @@ AMETHYST-TOOLS:
 
   # ── Shard Booster ─────────────────────────────────────
   SHARD-BOOSTER:
-    MATERIAL: POTION # Sets the Bukkit material used here.
+    MATERIAL: POTION # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#9B59B6&lshard booster" # Sets the name text used here.
     LORE:
       - "&#BDC3C7&d4x &7shard multiplier"
@@ -241,21 +241,21 @@ AMETHYST-TOOLS:
 # UDS setup: Messages sent by the amethyst tools system.
 AMETHYST-MESSAGES:
   PREFIX: "&#9B59B6[ᴀᴍᴇᴛʜʏѕᴛ] &r" # Sets the text format used by this option.
-  EXPIRED:           "{prefix}&#BDC3C7ʏᴏᴜʀ &d{tool} &7ʜᴀѕ &cᴇxᴘɪʀᴇᴅ &7ᴀɴᴅ ѕᴇʟꜰ-ᴅᴇѕᴛʀᴜᴄᴛᴇᴅ!" # Configures the expired option.
+  EXPIRED:           "{prefix}&# Expired setting.
   EXCLUDED-WORLD:    "{prefix}&#BDC3C7ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟѕ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ." # Sets the world name used by this option.
-  DRILL-BREAK:       "{prefix}&#BDC3C7&dᴀᴍᴇᴛʜʏѕᴛ ᴅʀɪʟʟ &7ʙʀᴏᴋᴇ &d{count} &7ʙʟᴏᴄᴋѕ." # Configures the drill break option.
-  CHOP-BREAK:        "{prefix}&#BDC3C7&dᴀᴍᴇᴛʜʏѕᴛ ᴛʀᴇᴇ ᴄʜᴏᴘᴘᴇʀ &7ᴄʜᴏᴘᴘᴇᴅ &d{count} &7ʟᴏɢѕ." # Configures the chop break option.
-  SELL-SUCCESS:      "{prefix}&#BDC3C7ѕᴏʟᴅ ᴀʟʟ ᴄʜᴇѕᴛ ᴄᴏɴᴛᴇɴᴛѕ ꜰᴏʀ &a${amount}&7." # Configures the sell success option.
-  SELL-EMPTY:        "{prefix}&#BDC3C7ᴛʜᴀᴛ ᴄʜᴇѕᴛ ɪѕ ᴇᴍᴘᴛʏ ᴏʀ ʜᴀѕ ɴᴏ ѕᴇʟʟᴀʙʟᴇ ɪᴛᴇᴍѕ." # Configures the sell empty option.
-  SELL-FAILED:       "{prefix}&#BDC3C7ᴛʜᴇ ѕᴀʟᴇ ꜰᴀɪʟᴇᴅ. ɴᴏ ɪᴛᴇᴍѕ ᴡᴇʀᴇ ʀᴇᴍᴏᴠᴇᴅ." # Configures the sell transaction failure response.
-  SELL-NO-CHEST:     "{prefix}&#BDC3C7ʏᴏᴜ ᴍᴜѕᴛ ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ." # Configures the sell no chest option.
-  BUCKET-DRAIN:      "{prefix}&#BDC3C7ᴅʀᴀɪɴᴇᴅ &d{count} &7ᴡᴀᴛᴇʀ ʙʟᴏᴄᴋѕ." # Configures the bucket drain option.
-  BUCKET-NO-WATER:   "{prefix}&#BDC3C7ɴᴏ ᴡᴀᴛᴇʀ ʙʟᴏᴄᴋѕ ꜰᴏᴜɴᴅ ɴᴇᴀʀʙʏ." # Configures the bucket no water option.
-  BOOSTER-ACTIVATED: "{prefix}&#BDC3C7&dѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ &7ᴀᴄᴛɪᴠᴀᴛᴇᴅ! &d4x &7ѕʜᴀʀᴅѕ ꜰᴏʀ &d60 ᴍɪɴᴜᴛᴇѕ&7." # Configures the booster activated option.
-  BOOSTER-ALREADY:   "{prefix}&#BDC3C7ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ!" # Configures the booster already option.
-  NO-PERMISSION:     "{prefix}&#BDC3C7you do not have permission to use this item." # Sets the permission node required for this action.
-  WRONG-OWNER:       "{prefix}&#BDC3C7ᴛʜɪѕ ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟ ɪѕ ʙᴏᴜɴᴅ ᴛᴏ ᴀɴᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀ." # Configures the wrong owner option.
-  GIVE-SUCCESS:      "{prefix}&#BDC3C7ɢᴀᴠᴇ &d{type} &7ᴛᴏ &d{player}&7." # Configures the give success option.
-  GIVE-USAGE:        "{prefix}&#BDC3C7ᴜѕᴀɢᴇ: &d/amethysttool ɢɪᴠᴇ <player> <type> [ᴅᴜʀᴀᴛɪᴏɴ_ѕᴇᴄᴏɴᴅѕ]" # Configures the give usage option.
-  GIVE-INVALID-TYPE: "{prefix}&#BDC3C7ɪɴᴠᴀʟɪᴅ ᴛᴏᴏʟ ᴛʏᴘᴇ. ᴛʏᴘᴇѕ: ᴅʀɪʟʟ, ᴄʜᴏᴘᴘᴇʀ, ѕᴇʟʟ_ᴀxᴇ, ѕʜᴏᴠᴇʟ, ʙᴜᴄᴋᴇᴛ, ѕʜᴀʀᴅ_ʙᴏᴏѕᴛᴇʀ" # Selects the mode or type used by this option.
-  RELOAD-SUCCESS:    "{prefix}&#BDC3C7ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ." # Configures the reload success option.
+  DRILL-BREAK:       "{prefix}&# Drill Break setting.
+  CHOP-BREAK:        "{prefix}&# Chop Break setting.
+  SELL-SUCCESS:      "{prefix}&# Sell Success setting.
+  SELL-EMPTY:        "{prefix}&# Sell Empty setting.
+  SELL-FAILED:       "{prefix}&# Sell Failed setting.
+  SELL-NO-CHEST:     "{prefix}&# Sell No Chest setting.
+  BUCKET-DRAIN:      "{prefix}&# Bucket Drain setting.
+  BUCKET-NO-WATER:   "{prefix}&# Bucket No Water setting.
+  BOOSTER-ACTIVATED: "{prefix}&# Booster Activated setting.
+  BOOSTER-ALREADY:   "{prefix}&# Booster Already setting.
+  NO-PERMISSION:     "{prefix}&# Permission node (e.g., ultimatedonutsmp.admin)
+  WRONG-OWNER:       "{prefix}&# Wrong Owner setting.
+  GIVE-SUCCESS:      "{prefix}&# Give Success setting.
+  GIVE-USAGE:        "{prefix}&# Give Usage setting.
+  GIVE-INVALID-TYPE: "{prefix}&# Give Invalid Type setting.
+  RELOAD-SUCCESS:    "{prefix}&# Reload Success setting.

@@ -3,11 +3,11 @@
 
 # UDS setup: Scoreboard title, update interval, worlds, and displayed lines.
 SCOREBOARD:
-  ENABLED: true # Enables or disables scoreboard.
+  ENABLED: true # Options: true or false
   TITLE-UPDATE-TICKS: 2 # Sets how often this task or update runs.
-  TEAM: "&#00A4FC🪓 &fteam &#00A4FC%economy_team%     " # Configures the team option.
-  SHARD-BOOSTER: "&#A303F9⚡ &fbooster &#A303F9%economy_booster_countdown%     " # Configures the shard booster option.
-  SHARD-CUBOID: "&#A303F9⌛ &fshards &#A303F9%economy_shard_cuboid_display%     " # Configures the shard cuboid option.
+  TEAM: "&# Team setting.
+  SHARD-BOOSTER: "&# Shard Booster setting.
+  SHARD-CUBOID: "&# Shard Cuboid setting.
   TITLE:
     - "&#0069d6&le&#0374da&lc&#067fdf&lo&#0a8be3&ln&#0d96e7&lo&#10a1ec&lm&#13acf0&ly&#17b8f4&ls&#1ac3f9&lm&#1dcefd&lp"
   LINES:

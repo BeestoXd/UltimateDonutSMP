@@ -3,7 +3,7 @@
 
 # UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
+  ENABLED: true # Options: true or false
   LISTING_DURATION_HOURS: 48 # Sets how long this behavior lasts.
   LISTING_DURATIONS_HOURS:
     - 6
@@ -12,7 +12,7 @@ SETTINGS:
     - 48
     - 72
     - 168
-  MAX_ACTIVE_LISTINGS_DEFAULT: 5 # Sets the allowed limit for this option.
+  MAX_ACTIVE_LISTINGS_DEFAULT: 5 # Options: true or false
   # Exact permissions only. Wildcards such as ultimatedonutsmp.auctionhouse.* do not grant numeric limits.
   # Direct numeric nodes are also supported without listing them here:
   # - ultimatedonutsmp.auctionhouse.5
@@ -34,8 +34,8 @@ CLAIMS:
 PRICING:
   MIN_PRICE: 100 # Sets the economy value used by this option.
   MAX_PRICE: 100000000 # Sets the economy value used by this option.
-  LISTING_FEE: 0 # Configures the listing fee option.
-  TAX_PERCENT: 5.0 # Configures the tax percent option.
+  LISTING_FEE: 0 # Listing Fee setting.
+  TAX_PERCENT: 5.0 # Tax Percent setting.
 
 # UDS setup: Materials, worlds, or item rules blocked from this feature.
 RESTRICTIONS:
@@ -49,14 +49,14 @@ RESTRICTIONS:
     - STRUCTURE_VOID
     - JIGSAW
     - LIGHT
-  BLOCKED_IF_HAS_LORE_CONTAINS: [] # Configures the blocked if has lore contains option.
+  BLOCKED_IF_HAS_LORE_CONTAINS: [] # Blocked If Has Lore Contains setting.
 
 # UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
 GUI:
   BROWSE:
-    TITLE: "&8ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.
     SEARCH_SIGN:
       lines:
         - ""
@@ -283,13 +283,13 @@ GUI:
   LISTING:
     TITLE: "&8ᴀᴜᴄᴛɪᴏɴ #{id}"
   MY_LISTINGS:
-    TITLE: "&8ᴍʏ ᴀᴜᴄᴛɪᴏɴѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴍʏ ᴀᴜᴄᴛɪᴏɴѕ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.
   CLAIMS:
-    TITLE: "&8ᴀᴜᴄᴛɪᴏɴ ᴄʟᴀɪᴍѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴀᴜᴄᴛɪᴏɴ ᴄʟᴀɪᴍѕ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.
 
 # UDS setup: Default sort options and order used by browsing menus.
 SORTING:

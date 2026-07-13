@@ -9,59 +9,59 @@
 # Default active trade on a fresh install.
 # Runtime state is stored in billford-data.yml after the first boot.
 # UDS setup: Current selected value used by this rotating system.
-CURRENT: 1 # Configures the current option.
+CURRENT: 1 # Current setting.
 
 # Rotation mode:
 # SEQUENTIAL -> 1 -> 2 -> 3 -> 1
 # RANDOM     -> random trade, never repeats the same trade twice in a row
 # UDS setup: Controls how the feature rotates between configured entries.
-ROTATION_MODE: SEQUENTIAL # Selects the mode or type used by this option.
+ROTATION_MODE: SEQUENTIAL # Rotation Mode setting.
 
 # UDS setup: Countdown timings and messages before the next action.
 COUNTDOWN:
-  ENABLED: true # Enables or disables countdown.
+  ENABLED: true # Options: true or false
   # SYSTEM uses the machine timezone running the server.
   # You can set a real zone like "Asia/Makassar" or "UTC" if needed.
-  TIME_ZONE: SYSTEM # Configures the time zone option.
-  START_DATE: "2026-01-31 00:00:00" # Configures the start date option.
+  TIME_ZONE: SYSTEM # Time Zone setting.
+  START_DATE: "2026-01-31 00:00:00" # Start Date setting.
   # Days and hours are combined, so 3 days + 12 hours is valid.
   INTERVAL_DAYS: 3 # Sets how often this task or update runs.
   INTERVAL_HOURS: 0 # Sets how often this task or update runs.
 
 # UDS setup: Toggles announcements when the rotation changes.
-ANNOUNCE_ON_ROTATE: true # Configures the announce on rotate option.
+ANNOUNCE_ON_ROTATE: true # Announce On Rotate setting.
 # UDS setup: Announcement text used when rotation changes are broadcast.
-ANNOUNCE_MESSAGE: "&6&l[billford] &etrade has rotated! &7new trade is live. &bnext change in &f{countdown}&b." # Configures the announce message option.
+ANNOUNCE_MESSAGE: "&6&l[billford] &etrade has rotated! &7new trade is live. &bnext change in &f{countdown}&b." # Announce Message setting.
 
 # UDS setup: Permission and access rules for opening or using this feature.
 ACCESS:
   # Leave blank to allow everyone.
-  PERMISSION: "" # Sets the permission node required for this action.
+  PERMISSION: "" # Permission node (e.g., ultimatedonutsmp.admin)
   COMMAND: "/billford" # Sets the command executed or suggested here.
   NPC:
-    ENABLED: false # Enables or disables npc.
-    DISPLAY_NAME: "&abillford" # Sets the display name shown to players.
+    ENABLED: false # Options: true or false
+    DISPLAY_NAME: "&abillford" # Text string (supports & color codes)
     INTERACT_COMMAND: "/billford" # Sets the command executed or suggested here.
 
 # UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
 SETTINGS:
   CLICK_COOLDOWN_MS: 1000 # Sets the cooldown before this action can run again.
-  CLOSE_MENU_ON_SUCCESS: true # Configures the close menu on success option.
-  REOPEN_ON_TRADE_CHANGE: true # Configures the reopen on trade change option.
+  CLOSE_MENU_ON_SUCCESS: true # Close Menu On Success setting.
+  REOPEN_ON_TRADE_CHANGE: true # Reopen On Trade Change setting.
   ALLOWED_CLICK_TYPES:
     - LEFT
     - RIGHT
 
 # UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
 GUI:
-  TITLE: "&8&lʙɪʟʟꜰᴏʀᴅ &7ᴛʀᴀᴅᴇ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
-  FILLER_MATERIAL: GRAY_STAINED_GLASS_PANE # Sets the Bukkit material used here.
+  TITLE: "&8&lʙɪʟʟꜰᴏʀᴅ &7ᴛʀᴀᴅᴇ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  FILLER_MATERIAL: GRAY_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
   REWARD_SLOT: 25 # Sets the inventory slot used by this item.
   COUNTDOWN_SLOT: 31 # Sets the inventory slot used by this item.
   INFO_SLOT: 49 # Sets the inventory slot used by this item.
   CONFIRM_SLOT: 22 # Sets the inventory slot used by this item.
-  INFO_MATERIAL: BOOK # Sets the Bukkit material used here.
+  INFO_MATERIAL: BOOK # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
 
   INPUT_NAME: "&f{item}" # Sets the name text used here.
   INPUT_LORE:
@@ -92,7 +92,7 @@ GUI:
     - "&aᴜɴʟɪᴍɪᴛᴇᴅ ᴛʀᴀᴅᴇѕ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ."
 
   CONFIRM_BUTTON:
-    MATERIAL: EMERALD # Sets the Bukkit material used here.
+    MATERIAL: EMERALD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&a&lᴄᴏɴꜰɪʀᴍ ᴛʀᴀᴅᴇ" # Sets the name text used here.
     LORE:
       - "&7ʙʀɪɴɢ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ,"
@@ -101,7 +101,7 @@ GUI:
       - "&a&lᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ"
 
   LIMIT_BUTTON:
-    MATERIAL: BARRIER # Sets the Bukkit material used here.
+    MATERIAL: BARRIER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&c&lʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ" # Sets the name text used here.
     LORE:
       - "&cʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ᴜѕᴇᴅ ᴛʜɪѕ ᴅᴇᴀʟ ᴇɴᴏᴜɢʜ"
@@ -111,9 +111,9 @@ GUI:
 # UDS setup: Action result messages and feedback text for this feature.
 FEEDBACK:
   SUCCESS_PARTICLE:
-    ENABLED: true # Enables or disables success particle.
-    TYPE: TOTEM_OF_UNDYING # Selects the mode or type used by this option.
-    COUNT: 24 # Configures the count option.
+    ENABLED: true # Options: true or false
+    TYPE: TOTEM_OF_UNDYING # Type setting.
+    COUNT: 24 # Count setting.
 
 # ============================================================
 # Trade definitions
@@ -126,81 +126,81 @@ FEEDBACK:
 # UDS setup: Billford shop entries, prices, stock, and rotation content.
 BILLFORD:
   1:
-    DISPLAY_NAME: "the gem exchange" # Sets the display name shown to players.
-    LIMIT: 3 # Configures the limit option.
+    DISPLAY_NAME: "the gem exchange" # Text string (supports & color codes)
+    LIMIT: 3 # Limit setting.
     INPUTS:
       1:
         SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: DIAMOND # Sets the Bukkit material used here.
+        MATERIAL: DIAMOND # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 3 # Sets the item amount used by this option.
       2:
         SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: EMERALD # Sets the Bukkit material used here.
+        MATERIAL: EMERALD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 5 # Sets the item amount used by this option.
     REWARD:
-      MATERIAL: PISTON # Sets the Bukkit material used here.
+      MATERIAL: PISTON # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       QUANTITY: 64 # Sets the item amount used by this option.
       SHARD_BONUS: 0 # Sets the economy value used by this option.
       MONEY_BONUS: 0 # Sets the economy value used by this option.
 
   2:
-    DISPLAY_NAME: "the utility crate" # Sets the display name shown to players.
-    LIMIT: 2 # Configures the limit option.
+    DISPLAY_NAME: "the utility crate" # Text string (supports & color codes)
+    LIMIT: 2 # Limit setting.
     INPUTS:
       1:
         SLOT: 10 # Sets the inventory slot used by this item.
-        MATERIAL: IRON_INGOT # Sets the Bukkit material used here.
+        MATERIAL: IRON_INGOT # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 32 # Sets the item amount used by this option.
       2:
         SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: REDSTONE # Sets the Bukkit material used here.
+        MATERIAL: REDSTONE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 16 # Sets the item amount used by this option.
       3:
         SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: EMERALD # Sets the Bukkit material used here.
+        MATERIAL: EMERALD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 12 # Sets the item amount used by this option.
     REWARD:
-      MATERIAL: OBSERVER # Sets the Bukkit material used here.
+      MATERIAL: OBSERVER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       QUANTITY: 32 # Sets the item amount used by this option.
       SHARD_BONUS: 40 # Sets the economy value used by this option.
       MONEY_BONUS: 0 # Sets the economy value used by this option.
 
   3:
-    DISPLAY_NAME: "the ingot deal" # Sets the display name shown to players.
-    LIMIT: 1 # Configures the limit option.
+    DISPLAY_NAME: "the ingot deal" # Text string (supports & color codes)
+    LIMIT: 1 # Limit setting.
     INPUTS:
       1:
         SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: NETHERITE_INGOT # Sets the Bukkit material used here.
+        MATERIAL: NETHERITE_INGOT # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 1 # Sets the item amount used by this option.
       2:
         SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: BLAZE_ROD # Sets the Bukkit material used here.
+        MATERIAL: BLAZE_ROD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 8 # Sets the item amount used by this option.
     REWARD:
-      MATERIAL: ELYTRA # Sets the Bukkit material used here.
+      MATERIAL: ELYTRA # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       QUANTITY: 1 # Sets the item amount used by this option.
       SHARD_BONUS: 120 # Sets the economy value used by this option.
       MONEY_BONUS: 50000 # Sets the economy value used by this option.
 
   4:
-    DISPLAY_NAME: "the builder stash" # Sets the display name shown to players.
-    LIMIT: 4 # Configures the limit option.
+    DISPLAY_NAME: "the builder stash" # Text string (supports & color codes)
+    LIMIT: 4 # Limit setting.
     INPUTS:
       1:
         SLOT: 10 # Sets the inventory slot used by this item.
-        MATERIAL: GOLD_INGOT # Sets the Bukkit material used here.
+        MATERIAL: GOLD_INGOT # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 16 # Sets the item amount used by this option.
       2:
         SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: LAPIS_LAZULI # Sets the Bukkit material used here.
+        MATERIAL: LAPIS_LAZULI # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 32 # Sets the item amount used by this option.
       3:
         SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: AMETHYST_SHARD # Sets the Bukkit material used here.
+        MATERIAL: AMETHYST_SHARD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         QUANTITY: 24 # Sets the item amount used by this option.
     REWARD:
-      MATERIAL: SEA_LANTERN # Sets the Bukkit material used here.
+      MATERIAL: SEA_LANTERN # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       QUANTITY: 48 # Sets the item amount used by this option.
       SHARD_BONUS: 15 # Sets the economy value used by this option.
       MONEY_BONUS: 0 # Sets the economy value used by this option.

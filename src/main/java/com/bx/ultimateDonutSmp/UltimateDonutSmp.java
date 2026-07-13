@@ -157,6 +157,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
             getLogger().info("ProtocolLib is not installed; packet-based explosion particle filtering is disabled.");
         }
         economyManager = new EconomyManager(this);
+        
+        // Register Vault economy early so other plugins checking in their onEnable won't fail
+        registerVaultEconomyProvider();
+        
         chatManager = new ChatManager(this);
         ignoreManager = new IgnoreManager(this);
         friendsManager = new FriendsManager(this);
@@ -249,9 +253,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         // 6. Commands
         registerCommands();
-
-        // 6.5 Optional integrations
-        registerVaultEconomyProvider();
 
         // 7. Background tasks
         ScoreboardTask.start(this);

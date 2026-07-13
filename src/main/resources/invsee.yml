@@ -3,28 +3,28 @@
 
 # UDS setup: Inventory viewer permissions, edit rules, notifications, and logging.
 INVSEE:
-  ENABLED: true # Enables or disables invsee.
-  TITLE: "&8inventory of {player}" # Sets the title text shown for this menu or prompt.
-  REQUIRE-ONLINE: true # Configures the require online option.
-  ALLOW-EDIT: false # Configures the allow edit option.
-  ALLOW-SELF-VIEW: false # Configures the allow self view option.
-  NOTIFY-TARGET: false # Configures the notify target option.
-  LOG-USAGE: true # Configures the log usage option.
-  FREEZE-ON-LOGOUT: true # Configures the freeze on logout option.
+  ENABLED: true # Options: true or false
+  TITLE: "&8inventory of {player}" # Text string (supports & color codes)
+  REQUIRE-ONLINE: true # Require Online setting.
+  ALLOW-EDIT: false # Allow Edit setting.
+  ALLOW-SELF-VIEW: false # Allow Self View setting.
+  NOTIFY-TARGET: false # Notify Target setting.
+  LOG-USAGE: true # Log Usage setting.
+  FREEZE-ON-LOGOUT: true # Freeze On Logout setting.
   AUTO-REFRESH-TICKS: 10 # Sets how often this task or update runs.
-  VIEW-PERMISSION: "ultimatedonutsmp.staff.invsee" # Sets the permission node required for this action.
-  MODIFY-PERMISSION: "ultimatedonutsmp.staff.invsee.modify" # Sets the permission node required for this action.
-  ADMIN-PERMISSION: "ultimatedonutsmp.admin.invsee" # Sets the permission node required for this action.
+  VIEW-PERMISSION: "ultimatedonutsmp.staff.invsee" # Permission node (e.g., ultimatedonutsmp.admin)
+  MODIFY-PERMISSION: "ultimatedonutsmp.staff.invsee.modify" # Permission node (e.g., ultimatedonutsmp.admin)
+  ADMIN-PERMISSION: "ultimatedonutsmp.admin.invsee" # Numeric value (integer)
 
 # UDS setup: Slot layout and fixed UI positions for this menu.
 LAYOUT:
-  SIZE: 54 # Sets the inventory size in slots.
-  ARMOR-SLOTS: [0, 1, 2, 3] # Configures the armor slots option.
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  ARMOR-SLOTS: [0, 1, 2, 3] # Armor Slots setting.
   OFFHAND-SLOT: 4 # Sets the inventory slot used by this item.
   SUMMARY-SLOT: 6 # Sets the inventory slot used by this item.
   STATUS-SLOT: 8 # Sets the inventory slot used by this item.
-  MAIN-INVENTORY-START: 18 # Configures the main inventory start option.
-  HOTBAR-START: 45 # Configures the hotbar start option.
+  MAIN-INVENTORY-START: 18 # Main Inventory Start setting.
+  HOTBAR-START: 45 # Hotbar Start setting.
 
 # UDS setup: Configure MESSAGES options for this file.
 MESSAGES:

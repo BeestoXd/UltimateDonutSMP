@@ -3,8 +3,8 @@
 
 # UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
 SETTINGS:
-  RADIUS: true # Sets the radius used for this check or effect.
-  CHUNKS: 5 # Configures the chunks option.
+  RADIUS: true # Numeric value for distance or time
+  CHUNKS: 5 # Chunks setting.
 
 # UDS setup: Configure MESSAGES options for this file.
 MESSAGES:

@@ -3,51 +3,51 @@
 
 # UDS setup: Network identity and cross-server communication settings.
 NETWORK:
-  ENABLED: true # Enables or disables network.
-  STAFF_CHAT_ENABLED: true # Enables or disables network.
-  HELPOP_ENABLED: true # Enables or disables network.
-  REPORT_ENABLED: true # Enables or disables network.
-  STAFF_JOIN_LEAVE_ENABLED: true # Enables or disables network.
-  SERVER_STATUS_ENABLED: true # Enables or disables network.
+  ENABLED: true # Options: true or false
+  STAFF_CHAT_ENABLED: true # Options: true or false
+  HELPOP_ENABLED: true # Options: true or false
+  REPORT_ENABLED: true # Options: true or false
+  STAFF_JOIN_LEAVE_ENABLED: true # Options: true or false
+  SERVER_STATUS_ENABLED: true # Options: true or false
   LOCAL_SERVER_ID: "crystal" # Sets the identifier used to link this configuration.
-  LOCAL_DISPLAY_NAME: "crystal" # Sets the display name shown to players.
-  REDIS_CHANNEL: "ultimatedonutsmp:staff-chat" # Configures the redis channel option.
-  HELPOP_REDIS_CHANNEL: "ultimatedonutsmp:staff-alerts" # Configures the helpop redis channel option.
-  REPORT_REDIS_CHANNEL: "ultimatedonutsmp:staff-alerts" # Configures the report redis channel option.
-  SEND_LOCAL_FALLBACK_ON_REDIS_ERROR: true # Configures the send local fallback on redis error option.
-  STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR: true # Configures the staff alerts local fallback on redis error option.
-  STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR: false # Configures the staff alerts warn sender on redis error option.
-  LOG_TO_CONSOLE: true # Configures the log to console option.
-  STAFF_ALERTS_LOG_TO_CONSOLE: true # Configures the staff alerts log to console option.
-  MAX_MESSAGE_LENGTH: 512 # Sets the allowed limit for this option.
-  STAFF_ALERTS_MAX_REASON_LENGTH: 256 # Configures the staff alerts max reason length option.
+  LOCAL_DISPLAY_NAME: "crystal" # Text string (supports & color codes)
+  REDIS_CHANNEL: "ultimatedonutsmp:staff-chat" # Redis Channel setting.
+  HELPOP_REDIS_CHANNEL: "ultimatedonutsmp:staff-alerts" # Helpop Redis Channel setting.
+  REPORT_REDIS_CHANNEL: "ultimatedonutsmp:staff-alerts" # Report Redis Channel setting.
+  SEND_LOCAL_FALLBACK_ON_REDIS_ERROR: true # Send Local Fallback On Redis Error setting.
+  STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR: true # Staff Alerts Local Fallback On Redis Error setting.
+  STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR: false # Staff Alerts Warn Sender On Redis Error setting.
+  LOG_TO_CONSOLE: true # Log To Console setting.
+  STAFF_ALERTS_LOG_TO_CONSOLE: true # Staff Alerts Log To Console setting.
+  MAX_MESSAGE_LENGTH: 512 # Numeric value (integer)
+  STAFF_ALERTS_MAX_REASON_LENGTH: 256 # Numeric value (integer)
   HELPOP_COOLDOWN_SECONDS: 30 # Sets the cooldown before this action can run again.
   REPORT_COOLDOWN_SECONDS: 60 # Sets the cooldown before this action can run again.
-  SERVER_STATUS: "&6%server% &eis now %status%&e." # Configures the server status option.
-  STAFF_CHAT: "&8[&dnetwork&8] &7[%server%] &e%player%&8: &f%message%" # Configures the staff chat option.
-  STAFF_JOIN: "&8[&a+&8] &a%player% &7joined &b%server%" # Configures the staff join option.
-  STAFF_LEAVE: "&8[&c-&8] &a%player% &7left &b%server%" # Configures the staff leave option.
+  SERVER_STATUS: "&6%server% &eis now %status%&e." # Server Status setting.
+  STAFF_CHAT: "&8[&dnetwork&8] &7[%server%] &e%player%&8: &f%message%" # Staff Chat setting.
+  STAFF_JOIN: "&8[&a+&8] &a%player% &7joined &b%server%" # Staff Join setting.
+  STAFF_LEAVE: "&8[&c-&8] &a%player% &7left &b%server%" # Staff Leave setting.
 
 # UDS setup: Network status endpoint, server list, and refresh behavior.
 NETWORK-STATUS:
-  ENABLED: true # Enables or disables network status.
+  ENABLED: true # Options: true or false
   LOCAL-SERVER-ID: "crystal" # Sets the identifier used to link this configuration.
-  LOCAL-DISPLAY-NAME: "crystal" # Sets the display name shown to players.
+  LOCAL-DISPLAY-NAME: "crystal" # Text string (supports & color codes)
   REFRESH-SECONDS: 5 # Sets the time value in seconds.
-  TIMEOUT-MS: 1500 # Configures the timeout ms option.
+  TIMEOUT-MS: 1500 # Timeout Ms setting.
 
   ENDPOINT:
-    ENABLED: false # Enables or disables endpoint.
+    ENABLED: false # Options: true or false
     HOST: "0.0.0.0" # Sets the database connection value for this field.
     PORT: 8123 # Sets the database connection value for this field.
-    PATH: "/status" # Configures the path option.
+    PATH: "/status" # Path setting.
     TOKEN: "change-me" # Sets the identifier used to link this configuration.
 
   SERVERS:
     crystal:
-      DISPLAY: "crystal" # Sets the display name shown to players.
+      DISPLAY: "crystal" # Display setting.
       SOURCE:
-        TYPE: "LOCAL" # Selects the mode or type used by this option.
+        TYPE: "LOCAL" # Type setting.
 
     # Example remote servers. Enable the endpoint above on the other server,
     # then point the URL below to that server's status endpoint.
@@ -68,7 +68,7 @@ NETWORK-STATUS:
 
 # UDS setup: Seamless maintenance settings
 MAINTENANCE:
-  ENABLED: true                     # Enables or disables the maintenance feature
+  ENABLED: true                     # Options: true or false
   USE_PROXY: false                   # If true, redirect to LOBBY_SERVER. If false, teleport to LOBBY_WORLD spawn on the same server.
   LOBBY_SERVER: "lobby"             # The fallback/lobby server name in BungeeCord/Velocity
   LOBBY_WORLD: "world"              # The fallback/lobby world name on the same server

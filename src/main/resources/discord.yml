@@ -3,7 +3,7 @@
 
 # UDS setup: Discord webhook URLs and payload templates.
 WEBHOOKS:
-  ENABLED: true # Enables or disables webhooks.
+  ENABLED: true # Options: true or false
   URL: "https://discord.com/api/webhooks/your_webhook_here" # Sets the external URL used by this integration.
   AVATAR_API: "https://visage.surgeplay.com/face/128/%uuid_no_dash%" # Sets the external URL used by this integration.
   MODEL_API: "https://visage.surgeplay.com/full/384/%uuid_no_dash%" # Sets the external URL used by this integration.

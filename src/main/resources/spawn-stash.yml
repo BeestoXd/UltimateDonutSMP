@@ -5,17 +5,17 @@
 # UDS setup: CLAIM_SPAWNERS_ON_BREAK gives the managed spawner item to the player who breaks a SpawnStash spawner.
 
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
+  ENABLED: true # Options: true or false
   DEFAULT_TTL_SECONDS: 900 # Sets how long this behavior lasts.
-  DEFAULT_ALERT_RADIUS: 8.0 # Sets the radius used for this check or effect.
+  DEFAULT_ALERT_RADIUS: 8.0 # Numeric value for distance or time
   ALERT_COOLDOWN_SECONDS: 30 # Sets the cooldown before this action can run again.
   CHECK_INTERVAL_TICKS: 20 # Sets how often this task or update runs.
-  OVERWRITE_BLOCKS: true # Configures the overwrite blocks option.
-  PROTECT_BLOCKS: false # Configures the protect blocks option.
-  CLAIM_SPAWNERS_ON_BREAK: false # Configures the claim spawners on break option.
-  ROLLBACK_ON_RELOAD: true # Configures the rollback on reload option.
-  LOG_TO_CONSOLE: true # Configures the log to console option.
-  MAX_BLOCKS_PER_STASH: 256 # Sets the allowed limit for this option.
+  OVERWRITE_BLOCKS: true # Overwrite Blocks setting.
+  PROTECT_BLOCKS: false # Protect Blocks setting.
+  CLAIM_SPAWNERS_ON_BREAK: false # Claim Spawners On Break setting.
+  ROLLBACK_ON_RELOAD: true # Rollback On Reload setting.
+  LOG_TO_CONSOLE: true # Log To Console setting.
+  MAX_BLOCKS_PER_STASH: 256 # Numeric value (integer)
 
 MESSAGES:
   USAGE:
@@ -47,11 +47,11 @@ MESSAGES:
 
 TYPES:
   "1":
-    ENABLED: true # Enables or disables "1".
-    DISPLAY_NAME: "&dcompact amethyst stash" # Sets the display name shown to players.
+    ENABLED: true # Options: true or false
+    DISPLAY_NAME: "&dcompact amethyst stash" # Text string (supports & color codes)
     TTL_SECONDS: 900 # Sets the time value in seconds.
-    ALERT_RADIUS: 8.0 # Sets the radius used for this check or effect.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    ALERT_RADIUS: 8.0 # Numeric value for distance or time
+    PASTE_OFFSET: [0, 0, 0] # Paste Offset setting.
     BLOCKS:
       - {OFFSET: [-1, 0, 0], MATERIAL: DEEPSLATE}
       - {OFFSET: [0, 0, 0], MATERIAL: SPAWNER, SPAWNER_TYPE: SKELETON, SPAWNER_ACCESS: PUBLIC}
@@ -69,9 +69,9 @@ TYPES:
       - {OFFSET: [1, 2, 1], MATERIAL: POLISHED_DEEPSLATE}
 
   "2":
-    ENABLED: true # Enables or disables "2".
-    DISPLAY_NAME: "&5double spawner chest stash" # Sets the display name shown to players.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    ENABLED: true # Options: true or false
+    DISPLAY_NAME: "&5double spawner chest stash" # Text string (supports & color codes)
+    PASTE_OFFSET: [0, 0, 0] # Paste Offset setting.
     BLOCKS:
       - {OFFSET: [-1, 0, 0], MATERIAL: COBBLED_DEEPSLATE}
       - {OFFSET: [0, 0, 0], MATERIAL: COBBLED_DEEPSLATE}
@@ -89,9 +89,9 @@ TYPES:
       - {OFFSET: [-1, 2, 0], MATERIAL: ENDER_CHEST}
 
   "3":
-    ENABLED: true # Enables or disables "3".
-    DISPLAY_NAME: "&amossy ore stash" # Sets the display name shown to players.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    ENABLED: true # Options: true or false
+    DISPLAY_NAME: "&amossy ore stash" # Text string (supports & color codes)
+    PASTE_OFFSET: [0, 0, 0] # Paste Offset setting.
     BLOCKS:
       - {OFFSET: [-1, 0, 0], MATERIAL: MOSSY_COBBLESTONE}
       - {OFFSET: [0, 0, 0], MATERIAL: MOSSY_COBBLESTONE}
@@ -109,9 +109,9 @@ TYPES:
       - {OFFSET: [1, 2, 1], MATERIAL: MOSSY_COBBLESTONE}
 
   "4":
-    ENABLED: true # Enables or disables "4".
-    DISPLAY_NAME: "&6mineshaft sign stash" # Sets the display name shown to players.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    ENABLED: true # Options: true or false
+    DISPLAY_NAME: "&6mineshaft sign stash" # Text string (supports & color codes)
+    PASTE_OFFSET: [0, 0, 0] # Paste Offset setting.
     BLOCKS:
       - {OFFSET: [-1, 0, 0], MATERIAL: DEEPSLATE}
       - {OFFSET: [0, 0, 0], MATERIAL: RAIL}
@@ -128,11 +128,11 @@ TYPES:
       - {OFFSET: [1, 2, 1], MATERIAL: DEEPSLATE_TILES}
 
   "5":
-    ENABLED: true # Enables or disables "5".
-    DISPLAY_NAME: "&dpremium amethyst spawner stash" # Sets the display name shown to players.
+    ENABLED: true # Options: true or false
+    DISPLAY_NAME: "&dpremium amethyst spawner stash" # Text string (supports & color codes)
     TTL_SECONDS: 1200 # Sets the time value in seconds.
-    ALERT_RADIUS: 10.0 # Sets the radius used for this check or effect.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    ALERT_RADIUS: 10.0 # Numeric value for distance or time
+    PASTE_OFFSET: [0, 0, 0] # Paste Offset setting.
     BLOCKS:
       - {OFFSET: [-1, 0, 0], MATERIAL: CHISELED_DEEPSLATE}
       - {OFFSET: [0, 0, 0], MATERIAL: AMETHYST_BLOCK}

@@ -3,45 +3,45 @@
 
 # You can enable/disable this feature
 # UDS setup: Master enable flag for this feature file.
-ENABLED: true # Enables or disables rtp.
+ENABLED: true # Options: true or false
 
 # UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
 SETTINGS:
   # Max players searching or waiting for RTP simultaneously. Values below 1 are treated as 1.
-  PLAYERS-IN-RTP: 1 # Configures the players in rtp option.
+  PLAYERS-IN-RTP: 1 # Players In Rtp setting.
   # Max tries to find a valid RTP location before failing. Values below 32 use 32.
-  MAX-ATTEMPTS: 64 # Sets the allowed limit for this option.
+  MAX-ATTEMPTS: 64 # Numeric value (integer)
   # Max chunk samples to inspect while looking for a valid location. Values below 64 use 64.
-  MAX-CHUNK-SAMPLES: 128 # Sets the allowed limit for this option.
+  MAX-CHUNK-SAMPLES: 128 # Numeric value (integer)
   # Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 8 use 8.
   ATTEMPT-INTERVAL-TICKS: 8 # Sets how often this task or update runs.
   # Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS.
-  GENERATE-CHUNKS: false # Configures the generate chunks option.
+  GENERATE-CHUNKS: false # Generate Chunks setting.
   # Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot.
-  GENERATE-FALLBACK-CHUNKS: true # Configures the generate fallback chunks option.
+  GENERATE-FALLBACK-CHUNKS: true # Generate Fallback Chunks setting.
   # Chunk samples to try before limited fallback generation starts.
-  GENERATE-FALLBACK-AFTER-SAMPLES: 48 # Configures the generate fallback after samples option.
+  GENERATE-FALLBACK-AFTER-SAMPLES: 48 # Generate Fallback After Samples setting.
   # Maximum fallback chunks allowed to generate during one RTP search. Set 0 to disable generation fallback.
-  MAX-GENERATE-FALLBACK-SAMPLES: 32 # Sets the allowed limit for this option.
+  MAX-GENERATE-FALLBACK-SAMPLES: 32 # Numeric value (integer)
   # If chunk generation is disabled, allow loading already-generated chunks from disk.
-  LOAD-GENERATED-CHUNKS: true # Configures the load generated chunks option.
+  LOAD-GENERATED-CHUNKS: true # Load Generated Chunks setting.
   # If random samples cannot be prepared, try already-loaded chunks as a fallback.
-  FALLBACK-TO-LOADED-CHUNKS: true # Configures the fallback to loaded chunks option.
-  LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32 # Configures the loaded chunk fallback after samples option.
+  FALLBACK-TO-LOADED-CHUNKS: true # Fallback To Loaded Chunks setting.
+  LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32 # Loaded Chunk Fallback After Samples setting.
   # Preload generated chunks around the RTP destination before teleporting to reduce post-teleport ping spikes.
-  PRELOAD-TELEPORT-CHUNKS: true # Configures the preload teleport chunks option.
+  PRELOAD-TELEPORT-CHUNKS: true # Preload Teleport Chunks setting.
   # Chunk radius to preload around the destination. Values are clamped between 0 and 3.
-  PRELOAD-RADIUS: 1 # Sets the radius used for this check or effect.
+  PRELOAD-RADIUS: 1 # Numeric value for distance or time
   # How many destination chunks to preload per tick.
-  PRELOAD-CHUNKS-PER-TICK: 1 # Configures the preload chunks per tick option.
+  PRELOAD-CHUNKS-PER-TICK: 1 # Preload Chunks Per Tick setting.
   # Maximum ticks to spend preloading before teleport continues anyway.
   PRELOAD-MAX-TICKS: 40 # Sets how often this task or update runs.
   # Temporarily lower player chunk send distance after RTP to avoid a large client chunk burst.
-  POST-TELEPORT-CHUNK-THROTTLE: true # Configures the post teleport chunk throttle option.
+  POST-TELEPORT-CHUNK-THROTTLE: true # Post Teleport Chunk Throttle setting.
   # Temporary per-player view distance after RTP. Values below 2 use 2.
-  POST-TELEPORT-VIEW-DISTANCE: 4 # Configures the post teleport view distance option.
+  POST-TELEPORT-VIEW-DISTANCE: 4 # Post Teleport View Distance setting.
   # Temporary per-player simulation distance after RTP. Values below 2 use 2.
-  POST-TELEPORT-SIMULATION-DISTANCE: 4 # Configures the post teleport simulation distance option.
+  POST-TELEPORT-SIMULATION-DISTANCE: 4 # Post Teleport Simulation Distance setting.
   # Ticks before the player's original view/simulation distance is restored after RTP.
   POST-TELEPORT-THROTTLE-TICKS: 80 # Sets how often this task or update runs.
 
@@ -74,36 +74,36 @@ DENIED-WORLDS:
 # UDS setup: Per-world search radius, center, and safety settings.
 WORLD-SETTINGS:
   world:
-    MAX-RADIUS: 5000 # Sets the allowed limit for this option.
-    MIN-RADIUS: 500 # Sets the allowed limit for this option.
-    CENTER-X: 0 # Configures the center x option.
-    CENTER-Z: 0 # Configures the center z option.
+    MAX-RADIUS: 5000 # Numeric value (integer)
+    MIN-RADIUS: 500 # Numeric value (integer)
+    CENTER-X: 0 # Center X setting.
+    CENTER-Z: 0 # Center Z setting.
     COOLDOWN: 30 # Sets the cooldown before this action can run again.
   world_nether:
-    MAX-RADIUS: 500 # Sets the allowed limit for this option.
-    MIN-RADIUS: 50 # Sets the allowed limit for this option.
-    CENTER-X: 0 # Configures the center x option.
-    CENTER-Z: 0 # Configures the center z option.
+    MAX-RADIUS: 500 # Numeric value (integer)
+    MIN-RADIUS: 50 # Numeric value (integer)
+    CENTER-X: 0 # Center X setting.
+    CENTER-Z: 0 # Center Z setting.
     COOLDOWN: 30 # Sets the cooldown before this action can run again.
   world_the_end:
-    MAX-RADIUS: 2000 # Sets the allowed limit for this option.
-    MIN-RADIUS: 150 # Sets the allowed limit for this option.
-    CENTER-X: 0 # Configures the center x option.
-    CENTER-Z: 0 # Configures the center z option.
+    MAX-RADIUS: 2000 # Numeric value (integer)
+    MIN-RADIUS: 150 # Numeric value (integer)
+    CENTER-X: 0 # Center X setting.
+    CENTER-Z: 0 # Center Z setting.
     COOLDOWN: 30 # Sets the cooldown before this action can run again.
 
 # UDS setup: Random teleport menu layout.
 RTP-MENU:
-  TITLE: "&8ʀᴛᴘ ᴍᴇɴᴜ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
-  PLACEHOLDER: true # Configures the placeholder option.
+  TITLE: "&8ʀᴛᴘ ᴍᴇɴᴜ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
+  PLACEHOLDER: true # Placeholder setting.
   BUTTONS:
     OVERWORLD:
-      DISPLAY-NAME: "&#4B72FFᴏᴠᴇʀᴡᴏʀʟᴅ" # Sets the display name shown to players.
-      MATERIAL: "GRASS_BLOCK" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "GRASS_BLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       WORLD: "world" # Sets the world name used by this option.
-      ENABLED: true # Enables or disables overworld.
+      ENABLED: true # Options: true or false
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ"
         - ""
@@ -111,11 +111,11 @@ RTP-MENU:
         - "&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}"
         - "&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ"
     NETHER:
-      DISPLAY-NAME: "&#FF6B3Dɴᴇᴛʜᴇʀ" # Sets the display name shown to players.
-      MATERIAL: "NETHERRACK" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "NETHERRACK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 13 # Sets the inventory slot used by this item.
       WORLD: "world_nether" # Sets the world name used by this option.
-      ENABLED: true # Enables or disables nether.
+      ENABLED: true # Options: true or false
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ"
         - ""
@@ -123,11 +123,11 @@ RTP-MENU:
         - "&7ʀᴀɴɢᴇ: &b{min_radius}-{max_radius}"
         - "&7ᴄᴏᴏʟᴅᴏᴡɴ: &b{cooldown}ѕ"
     THE_END:
-      DISPLAY-NAME: "&#F3E38Aᴛʜᴇ ᴇɴᴅ" # Sets the display name shown to players.
-      MATERIAL: "END_STONE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "END_STONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
       WORLD: "world_the_end" # Sets the world name used by this option.
-      ENABLED: true # Enables or disables the end.
+      ENABLED: true # Options: true or false
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴀɴᴅᴏᴍʟʏ ᴛᴇʟᴇᴘᴏʀᴛ"
         - ""

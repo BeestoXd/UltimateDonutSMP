@@ -3,17 +3,17 @@
 
 # UDS setup: Configure FREEZE options for this file.
 FREEZE:
-  ENABLED: true # Enables or disables freeze.
-  PERSIST-ON-QUIT: true # Configures the persist on quit option.
-  PERSIST-ON-RESTART: true # Configures the persist on restart option.
-  ALLOW-LOOK: true # Configures the allow look option.
+  ENABLED: true # Options: true or false
+  PERSIST-ON-QUIT: true # Persist On Quit setting.
+  PERSIST-ON-RESTART: true # Persist On Restart setting.
+  ALLOW-LOOK: true # Allow Look setting.
   ALERT-INTERVAL-TICKS: 100 # Sets how often this task or update runs.
-  LOG-USAGE: true # Configures the log usage option.
+  LOG-USAGE: true # Log Usage setting.
   SERVER-NAME: "survival-01" # Sets the name text used here.
-  STAFF-PERMISSION: "ultimatedonutsmp.staff.freeze" # Sets the permission node required for this action.
-  ALERT-PERMISSION: "ultimatedonutsmp.staff.freeze.alert" # Sets the permission node required for this action.
-  EXEMPT-PERMISSION: "ultimatedonutsmp.staff.freeze.exempt" # Sets the permission node required for this action.
-  ADMIN-PERMISSION: "ultimatedonutsmp.admin.freeze" # Sets the permission node required for this action.
+  STAFF-PERMISSION: "ultimatedonutsmp.staff.freeze" # Permission node (e.g., ultimatedonutsmp.admin)
+  ALERT-PERMISSION: "ultimatedonutsmp.staff.freeze.alert" # Permission node (e.g., ultimatedonutsmp.admin)
+  EXEMPT-PERMISSION: "ultimatedonutsmp.staff.freeze.exempt" # Permission node (e.g., ultimatedonutsmp.admin)
+  ADMIN-PERMISSION: "ultimatedonutsmp.admin.freeze" # Numeric value (integer)
   ALLOWED-COMMANDS:
     - "/discord"
     - "/social"
@@ -21,9 +21,9 @@ FREEZE:
     - "/r"
     - "/helpop"
 
-  STATUS_ON: "&a&lON" # Configures the status on option.
-  STATUS_OFF: "&c&lOFF" # Configures the status off option.
-  MESSAGE: "&bfreeze &a%player% &7is now %status%" # Configures the message option.
+  STATUS_ON: "&a&lON" # Status On setting.
+  STATUS_OFF: "&c&lOFF" # Status Off setting.
+  MESSAGE: "&bfreeze &a%player% &7is now %status%" # Message setting.
   ALERT:
     - ""
     - "&c&lyou're currently frozen!"
@@ -33,7 +33,7 @@ FREEZE:
     - "&7- join our discord for support:"
     - "&6&ohttps://discord.com"
     - ""
-  QUIT_MESSAGE: "&c[freeze] &4%player% &cleft while frozen on &4%server%" # Configures the quit message option.
+  QUIT_MESSAGE: "&c[freeze] &4%player% &cleft while frozen on &4%server%" # Quit Message setting.
 
 # UDS setup: Configure MESSAGES options for this file.
 MESSAGES:

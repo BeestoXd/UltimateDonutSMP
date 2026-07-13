@@ -3,40 +3,40 @@
 
 # UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
+  ENABLED: true # Options: true or false
   ORDER_DURATION_HOURS: 168 # Sets how long this behavior lasts.
-  MAX_ACTIVE_ORDERS_DEFAULT: 5 # Sets the allowed limit for this option.
+  MAX_ACTIVE_ORDERS_DEFAULT: 5 # Options: true or false
   MAX_ACTIVE_ORDERS_BY_PERMISSION:
     ultimatedonutsmp.orders.limit.10: 10 # Configures the ultimatedonutsmp orders limit 10 option.
     ultimatedonutsmp.orders.limit.15: 15 # Configures the ultimatedonutsmp orders limit 15 option.
-  MAX_QUANTITY_PER_ORDER: 2304 # Sets the allowed limit for this option.
+  MAX_QUANTITY_PER_ORDER: 2304 # Numeric value (integer)
   # SELECT_ITEM = opens the configured order catalog menu. This is the default.
   # INVENTORY_ITEM = lets players click an item from their inventory as the exact order template.
   # SEARCH_ITEM = asks players to type an item/category search, then opens matching results.
   # Valid values: SELECT_ITEM, INVENTORY_ITEM, SEARCH_ITEM. Invalid values fall back to SELECT_ITEM.
-  ITEM_SELECTION_MODE: SELECT_ITEM # Selects the mode or type used by this option.
+  ITEM_SELECTION_MODE: SELECT_ITEM # Item Selection Mode setting.
   # SELECT_ITEM_SOURCE only changes the SELECT_ITEM menu contents.
   # CATEGORY_FILTERS = use the curated CATEGORY_FILTERS list below. This is the default.
   # SERVER_MATERIALS = generate all orderable materials from the running server.jar.
   # Valid values: CATEGORY_FILTERS, SERVER_MATERIALS. Invalid values fall back to CATEGORY_FILTERS.
-  SELECT_ITEM_SOURCE: CATEGORY_FILTERS # Configures the select item source option.
+  SELECT_ITEM_SOURCE: CATEGORY_FILTERS # Select Item Source setting.
   CLICK_COOLDOWN_MS: 750 # Sets the cooldown before this action can run again.
   EXPIRE_CHECK_SECONDS: 30 # Sets the time value in seconds.
 
 # UDS setup: Price floors, caps, fees, escrow limits, and refund behavior.
 PRICING:
-  MIN_PRICE_EACH: 10 # Sets the allowed limit for this option.
+  MIN_PRICE_EACH: 10 # Numeric value (integer)
   # Maximum price for one requested item. Default matches MAX_TOTAL_BUDGET so the total escrow cap is the main limit.
-  MAX_PRICE_EACH: 250000000 # Sets the allowed limit for this option.
+  MAX_PRICE_EACH: 250000000 # Numeric value (integer)
   # Maximum total escrow budget for one order after quantity x price each.
-  MAX_TOTAL_BUDGET: 250000000 # Sets the allowed limit for this option.
-  ORDER_CREATION_FEE: 0 # Configures the order creation fee option.
+  MAX_TOTAL_BUDGET: 250000000 # Numeric value (integer)
+  ORDER_CREATION_FEE: 0 # Order Creation Fee setting.
 
 # UDS setup: How matched order items are delivered or claimed.
 DELIVERY:
   # DEPOSIT_GUI opens a 35-slot deposit inventory. AUTO_SCAN keeps the legacy inventory scan.
   MODE: DEPOSIT_GUI
-  MAX_DELIVER_PER_CLICK: 64 # Sets the allowed limit for this option.
+  MAX_DELIVER_PER_CLICK: 64 # Numeric value (integer)
   MAX_DELIVER_PER_TRANSACTION: 2304
   LIMIT_TO_STACK_SIZE: false # If true, caps delivery to 1 stack per click. If false, allows bulk delivery.
   CLAIMS_ENABLED: true # If true, players can claim/collect their completed orders and refunds.
@@ -56,7 +56,7 @@ MATCHING:
 
 # UDS setup: Curated item categories shown in order selection menus.
 CATEGORY_FILTERS:
-  ALL: [] # Configures the all option.
+  ALL: [] # All setting.
   BLOCKS:
     - STONE
     - COBBLESTONE
@@ -104,9 +104,9 @@ CATEGORY_FILTERS:
 # UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
 GUI:
   MAIN:
-    TITLE: "&8ᴏʀᴅᴇʀѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴏʀᴅᴇʀѕ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.
     BUTTONS:
       PREV: { SLOT: 45, MATERIAL: ARROW }
       SORT: { SLOT: 47, MATERIAL: CAULDRON }
@@ -117,32 +117,32 @@ GUI:
       COLLECT: { SLOT: 52, MATERIAL: ENDER_CHEST }
       NEXT: { SLOT: 53, MATERIAL: ARROW }
   MY_ORDERS:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴍʏ ᴏʀᴅᴇʀѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 25 # Sets how many entries appear on each page.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴍʏ ᴏʀᴅᴇʀѕ" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 25 # Items Per Page setting.
     BUTTONS:
       BACK: { SLOT: 25, MATERIAL: COMPASS }
       NEW: { SLOT: 26, MATERIAL: LIME_DYE }
   NEW_ORDER:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ɴᴇᴡ ᴏʀᴅᴇʀ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ɴᴇᴡ ᴏʀᴅᴇʀ" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   SELECT_ITEM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ѕᴇʟᴇᴄᴛ ɪᴛᴇᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ѕᴇʟᴇᴄᴛ ɪᴛᴇᴍ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.
   SEARCH_ITEM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.
   INVENTORY_ITEM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴄʜᴏᴏѕᴇ ɪᴛᴇᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴄʜᴏᴏѕᴇ ɪᴛᴇᴍ" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   EDIT_ORDER:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴇᴅɪᴛ ᴏʀᴅᴇʀ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴇᴅɪᴛ ᴏʀᴅᴇʀ" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   DELIVER_CONFIRM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟɪᴠᴇʀ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟɪᴠᴇʀ" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   DELIVERY_DEPOSIT:
     SIZE: 36
     BUTTONS:
@@ -158,9 +158,9 @@ GUI:
       BACK: { SLOT: 10, MATERIAL: RED_STAINED_GLASS_PANE }
       CONFIRM: { SLOT: 16, MATERIAL: LIME_STAINED_GLASS_PANE }
   COLLECT:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴄᴏʟʟᴇᴄᴛ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴄᴏʟʟᴇᴄᴛ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    ITEMS_PER_PAGE: 45 # Items Per Page setting.
     BUTTONS:
       COLLECT_PAGE: { MATERIAL: HOPPER }
       DROP_PAGE: { MATERIAL: DROPPER }

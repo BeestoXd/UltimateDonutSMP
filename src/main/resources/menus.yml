@@ -4,11 +4,11 @@
 # UDS setup: Shared menu items, filler settings, and reusable GUI defaults.
 GLOBAL:
   PAGE-MENU:
-    MATERIAL: "ARROW" # Sets the Bukkit material used here.
-    NEXT-BUTTON: "&aɴᴇxᴛ" # Configures the next button option.
-    BACK-BUTTON: "&aʙᴀᴄᴋ" # Configures the back button option.
-    FIRST-PAGE-BUTTON: "&aꜰɪʀѕᴛ ᴘᴀɢᴇ" # Configures the first page button option.
-    LAST-PAGE-BUTTON: "&aʟᴀѕᴛ ᴘᴀɢᴇ" # Configures the last page button option.
+    MATERIAL: "ARROW" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    NEXT-BUTTON: "&aɴᴇxᴛ" # Next Button setting.
+    BACK-BUTTON: "&aʙᴀᴄᴋ" # Back Button setting.
+    FIRST-PAGE-BUTTON: "&aꜰɪʀѕᴛ ᴘᴀɢᴇ" # First Page Button setting.
+    LAST-PAGE-BUTTON: "&aʟᴀѕᴛ ᴘᴀɢᴇ" # Last Page Button setting.
     NEXT-LORE:
       - "&fᴄʟɪᴄᴋ ᴛᴏ ɢᴏ ᴛᴏ ᴛʜᴇ ɴᴇxᴛ ᴘᴀɢᴇ"
     BACK-LORE:
@@ -21,296 +21,296 @@ GLOBAL:
 # UDS setup: Team-related menu layouts.
 TEAM-MENUS:
   TEAM:
-    TITLE: "&8ᴛᴇᴀᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    MAX-ITEMS-PER-PAGE: 45 # Sets the allowed limit for this option.
+    TITLE: "&8ᴛᴇᴀᴍ" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+    MAX-ITEMS-PER-PAGE: 45 # Numeric value (integer)
     PLAYER-BUTTON:
-      ONLINE-SYMBOL: "&a■" # Configures the online symbol option.
-      OFFLINE-SYMBOL: "&4■" # Configures the offline symbol option.
+      ONLINE-SYMBOL: "&a■" # Online Symbol setting.
+      OFFLINE-SYMBOL: "&4■" # Offline Symbol setting.
       LORE: "&fᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ" # Sets the lore text shown for this item.
     SEARCH-BUTTON:
-      TITLE: "&#6BF18Dѕᴇᴀʀᴄʜ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: OAK_SIGN # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: OAK_SIGN # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 45 # Sets the inventory slot used by this item.
       LORE:
         - "&fѕᴇᴀʀᴄʜ ꜰᴏʀ ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀѕ"
         - "&cɪɴ ᴅᴇᴠᴇʟᴏᴘᴍᴇɴᴛ."
     SORT-BUTTON:
-      TITLE: "&aѕᴏʀᴛ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: HOPPER # Sets the Bukkit material used here.
+      TITLE: "&aѕᴏʀᴛ" # Text string (supports & color codes)
+      MATERIAL: HOPPER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 46 # Sets the inventory slot used by this item.
-      SELECTED-PREFIX: "&a" # Configures the selected prefix option.
-      UNSELECTED-PREFIX: "&f" # Configures the unselected prefix option.
+      SELECTED-PREFIX: "&a" # Selected Prefix setting.
+      UNSELECTED-PREFIX: "&f" # Unselected Prefix setting.
       SYMBOL: "▪" # Sets the text format used by this option.
     REFRESH-BUTTON:
-      TITLE: "&#6BF18Dᴛᴇᴀᴍ {team_name}" # Sets the title text shown for this menu or prompt.
-      MATERIAL: IRON_HELMET # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: IRON_HELMET # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 49 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ"
         - "&7ᴀᴅᴅ ᴜᴘ ᴛᴏ {max_members} ᴍᴇᴍʙᴇʀѕ"
     HOME-BUTTON:
-      TITLE: "&#6BF18Dᴛᴇᴀᴍ ʜᴏᴍᴇ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: WHITE_BANNER # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: WHITE_BANNER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 52 # Sets the inventory slot used by this item.
       HOME-LORE: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ" # Sets the lore text shown for this item.
       NO-HOME-LORE: "&fѕᴇᴛ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ ᴡɪᴛʜ /home" # Sets the lore text shown for this item.
     PVP-BUTTON:
-      TITLE: "&#6BF18Dᴘᴠᴘ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: IRON_SWORD # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: IRON_SWORD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 53 # Sets the inventory slot used by this item.
-      ON-STATE: "&a&lᴏɴ" # Configures the on state option.
-      OFF-STATE: "&c&lᴏꜰꜰ" # Configures the off state option.
+      ON-STATE: "&a&lᴏɴ" # On State setting.
+      OFF-STATE: "&c&lᴏꜰꜰ" # Off State setting.
       LORE: "&fᴄᴜʀʀᴇɴᴛʟʏ: {state}" # Sets the lore text shown for this item.
     MESSAGES:
       NOT-IN-TEAM: "&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴘᴀʀᴛ ᴏꜰ ᴛʜᴇ ᴛᴇᴀᴍ." # Sets the message text for this response.
       NO-PERMISSION: "&cyou don't have permissions to do this." # Sets the message text for this response.
       CANT-EDIT-SELF: "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴅᴏ ᴛʜɪѕ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
   TEAM-EDIT-MEMBER:
-    TITLE: "&8ᴇᴅɪᴛ {player}" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
-    PLACEHOLDER: false # Configures the placeholder option.
-    PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    TITLE: "&8ᴇᴅɪᴛ {player}" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
+    PLACEHOLDER: false # Placeholder setting.
+    PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     EDIT-HOME-BUTTON:
-      TITLE: "&#6BF18Dᴇᴅɪᴛ ʜᴏᴍᴇ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: "WHITE_BANNER" # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: "WHITE_BANNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 10 # Sets the inventory slot used by this item.
-      ON-STATE: "&a&lᴏɴ" # Configures the on state option.
-      OFF-STATE: "&c&lᴏꜰꜰ" # Configures the off state option.
+      ON-STATE: "&a&lᴏɴ" # On State setting.
+      OFF-STATE: "&c&lᴏꜰꜰ" # Off State setting.
       LORE:
         - "&fʟᴇᴛ {player} ѕᴇᴛ ᴀɴᴅ ʀᴇᴍᴏᴠᴇ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ"
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {state}"
     KICK-BUTTON:
-      TITLE: "&#6BF18Dᴋɪᴄᴋ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: "OAK_DOOR" # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: "OAK_DOOR" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴋɪᴄᴋ {player}"
     MANAGE-TEAMMATES-BUTTON:
-      TITLE: "&#6BF18Dᴍᴀɴᴀɢᴇ ᴛᴇᴀᴍᴍᴀᴛᴇѕ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: "IRON_HELMET" # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: "IRON_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 12 # Sets the inventory slot used by this item.
-      ON-STATE: "&a&lᴏɴ" # Configures the on state option.
-      OFF-STATE: "&c&lᴏꜰꜰ" # Configures the off state option.
+      ON-STATE: "&a&lᴏɴ" # On State setting.
+      OFF-STATE: "&c&lᴏꜰꜰ" # Off State setting.
       LORE:
         - "&fʟᴇᴛ {player} ɪɴᴠɪᴛᴇ ᴀɴᴅ ᴋɪᴄᴋ ᴛᴇᴀᴍᴍᴀᴛᴇѕ"
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {state}"
     PVP-BUTTON:
-      TITLE: "&#6BF18Dᴘᴠᴘ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: "IRON_SWORD" # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: "IRON_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 13 # Sets the inventory slot used by this item.
-      ON-STATE: "&a&lᴏɴ" # Configures the on state option.
-      OFF-STATE: "&c&lᴏꜰꜰ" # Configures the off state option.
+      ON-STATE: "&a&lᴏɴ" # On State setting.
+      OFF-STATE: "&c&lᴏꜰꜰ" # Off State setting.
       LORE:
         - "&fʟᴇᴛ {player} ᴛᴜʀɴ ᴏɴ ᴀɴᴅ ᴏꜰꜰ ᴛᴇᴀᴍ ᴘᴠᴘ"
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {state}"
     VISIT-HOME-BUTTON:
-      TITLE: "&#6BF18Dᴠɪѕɪᴛ ᴛᴇᴀᴍ ʜᴏᴍᴇ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: "ENDER_PEARL" # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: "ENDER_PEARL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 14 # Sets the inventory slot used by this item.
-      ON-STATE: "&a&lᴏɴ" # Configures the on state option.
-      OFF-STATE: "&c&lᴏꜰꜰ" # Configures the off state option.
+      ON-STATE: "&a&lᴏɴ" # On State setting.
+      OFF-STATE: "&c&lᴏꜰꜰ" # Off State setting.
       LORE:
         - "&fʟᴇᴛ {player} ɢᴏ ᴛᴏ ᴛᴇᴀᴍ ʜᴏᴍᴇ"
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {state}"
     TEAM-CHAT-BUTTON:
-      TITLE: "&#6BF18Dᴛᴇᴀᴍ ᴄʜᴀᴛ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: "FEATHER" # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: "FEATHER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
-      ON-STATE: "&a&lᴏɴ" # Configures the on state option.
-      OFF-STATE: "&c&lᴏꜰꜰ" # Configures the off state option.
+      ON-STATE: "&a&lᴏɴ" # On State setting.
+      OFF-STATE: "&c&lᴏꜰꜰ" # Off State setting.
       LORE:
         - "&fʟᴇᴛ {player} ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ"
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {state}"
     BACK-BUTTON:
-      TITLE: "&cʙᴀᴄᴋ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+      TITLE: "&cʙᴀᴄᴋ" # Text string (supports & color codes)
+      MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 18 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴇᴛᴜʀɴ"
   TEAM-KICK-MEMBER:
-    PLACEHOLDER: true # Configures the placeholder option.
-    TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴋɪᴄᴋɪɴɢ {player}" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    PLACEHOLDER: true # Placeholder setting.
+    TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴋɪᴄᴋɪɴɢ {player}" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
     CANCEL-BUTTON:
-      TITLE: "&#FC0000ᴄᴀɴᴄᴇʟ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: RED_STAINED_GLASS_PANE # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: RED_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ"
     CONFIRM-BUTTON:
-      TITLE: "&#00FC00ᴄᴏɴꜰɪʀᴍ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: LIME_STAINED_GLASS_PANE # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: LIME_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴋɪᴄᴋ {player}"
   TEAM-DISBAND:
-    PLACEHOLDER: true # Configures the placeholder option.
-    TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴅɪѕʙᴀɴᴅɪɴɢ ᴛᴇᴀᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    PLACEHOLDER: true # Placeholder setting.
+    TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴅɪѕʙᴀɴᴅɪɴɢ ᴛᴇᴀᴍ" # Text string (supports & color codes)
+    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
     CANCEL-BUTTON:
-      TITLE: "&#FC0000ᴄᴀɴᴄᴇʟ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: RED_STAINED_GLASS_PANE # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: RED_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ"
     CONFIRM-BUTTON:
-      TITLE: "&#00FC00ᴄᴏɴꜰɪʀᴍ" # Sets the title text shown for this menu or prompt.
-      MATERIAL: LIME_STAINED_GLASS_PANE # Sets the Bukkit material used here.
+      TITLE: "&# Text string (supports & color codes)
+      MATERIAL: LIME_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ"
 
 # UDS setup: Legacy home menu layout kept for older configurations.
 HOME-MENU-LEGACY:
-  TITLE: "&8ʜᴏᴍᴇѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 36 # Sets the inventory size in slots.
-  TELEPORT-USED-MATERIAL: "LIGHT_BLUE_BED" # Sets the Bukkit material used here.
-  TELEPORT-NO-USED-MATERIAL: "LIGHT_GRAY_BED" # Sets the Bukkit material used here.
-  TELEPORT-NO-PERMISSION-MATERIAL: "RED_BED" # Sets the Bukkit material used here.
-  CREATE-USED-MATERIAL: "BLUE_DYE" # Sets the Bukkit material used here.
-  CREATE-NO-USED-MATERIAL: "GRAY_DYE" # Sets the Bukkit material used here.
-  CREATE-NO-PERMISSION-MATERIAL: "RED_DYE" # Sets the Bukkit material used here.
+  TITLE: "&8ʜᴏᴍᴇѕ" # Text string (supports & color codes)
+  SIZE: 36 # Inventory size in slots (multiple of 9, max 54)
+  TELEPORT-USED-MATERIAL: "LIGHT_BLUE_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  TELEPORT-NO-USED-MATERIAL: "LIGHT_GRAY_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  TELEPORT-NO-PERMISSION-MATERIAL: "RED_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  CREATE-USED-MATERIAL: "BLUE_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  CREATE-NO-USED-MATERIAL: "GRAY_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  CREATE-NO-PERMISSION-MATERIAL: "RED_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
   TEAM_HOME:
     TELEPORT:
       MATERIALS:
-        NO_TEAM: "RED_BANNER" # Configures the no team option.
-        NO_HOME: "WHITE_BANNER" # Configures the no home option.
-        HAS_HOME: "WHITE_BANNER" # Configures the has home option.
+        NO_TEAM: "RED_BANNER" # No Team setting.
+        NO_HOME: "WHITE_BANNER" # No Home setting.
+        HAS_HOME: "WHITE_BANNER" # Has Home setting.
       DISPLAY_NAME:
-        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no team option.
-        NO_HOME: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no home option.
-        HAS_HOME: "&bᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the has home option.
+        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Team setting.
+        NO_HOME: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Home setting.
+        HAS_HOME: "&bᴛᴇᴀᴍ ʜᴏᴍᴇ" # Has Home setting.
       LORE:
-        NO_TEAM: "&fʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀ ᴛᴇᴀᴍ." # Configures the no team option.
-        NO_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ ʜᴏᴍᴇ." # Configures the no home option.
-        HAS_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ." # Configures the has home option.
+        NO_TEAM: "&fʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀ ᴛᴇᴀᴍ." # No Team setting.
+        NO_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ ʜᴏᴍᴇ." # No Home setting.
+        HAS_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ." # Has Home setting.
     SAVE:
       MATERIALS:
-        NO_TEAM: "RED_DYE" # Configures the no team option.
-        NO_HOME: "GRAY_DYE" # Configures the no home option.
-        HAS_HOME: "BLUE_DYE" # Configures the has home option.
+        NO_TEAM: "RED_DYE" # No Team setting.
+        NO_HOME: "GRAY_DYE" # No Home setting.
+        HAS_HOME: "BLUE_DYE" # Has Home setting.
       DISPLAY_NAME:
-        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no team option.
-        NO_HOME: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no home option.
-        HAS_HOME: "&bᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the has home option.
+        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Team setting.
+        NO_HOME: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Home setting.
+        HAS_HOME: "&bᴛᴇᴀᴍ ʜᴏᴍᴇ" # Has Home setting.
       LORE:
-        NO_TEAM: "&fʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀ ᴛᴇᴀᴍ." # Configures the no team option.
-        NO_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ ʜᴏᴍᴇ." # Configures the no home option.
-        HAS_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ." # Configures the has home option.
+        NO_TEAM: "&fʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀ ᴛᴇᴀᴍ." # No Team setting.
+        NO_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ ʜᴏᴍᴇ." # No Home setting.
+        HAS_HOME: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ᴛᴇᴀᴍ'ѕ ʜᴏᴍᴇ." # Has Home setting.
   TELEPORT:
     HOME-1:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 1" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 1" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-2:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 2" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 2" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-3:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 3" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 3" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-4:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 4" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 4" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-5:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 5" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 5" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜʀ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
   CREATE:
     HOME-1:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 1" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 1" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-2:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 2" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 2" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-3:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 3" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 3" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-4:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 4" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 4" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
     HOME-5:
       DISPLAY-NAME:
-        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # Configures the no used option.
-        USED: "&bʜᴏᴍᴇ 5" # Configures the used option.
-        NO-PERMISSION: "&cno permission" # Sets the permission node required for this action.
+        NO-USED: "&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ" # No Used setting.
+        USED: "&bʜᴏᴍᴇ 5" # Used setting.
+        NO-PERMISSION: "&cno permission" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
-        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # Configures the no used option.
-        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Configures the used option.
-        NO-PERMISSION: "&fyou need a higher rank for this home" # Sets the permission node required for this action.
+        NO-USED: "&f- ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ" # No Used setting.
+        USED: "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʜᴏᴍᴇ" # Used setting.
+        NO-PERMISSION: "&fyou need a higher rank for this home" # Permission node (e.g., ultimatedonutsmp.admin)
 
 # UDS setup: Home menu layout, buttons, and slot positions.
 HOME-MENU:
-  TITLE: "&8ʜᴏᴍᴇѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 36 # Sets the inventory size in slots.
-  TELEPORT-USED-MATERIAL: "LIGHT_BLUE_BED" # Sets the Bukkit material used here.
-  TELEPORT-NO-USED-MATERIAL: "LIGHT_GRAY_BED" # Sets the Bukkit material used here.
-  TELEPORT-NO-PERMISSION-MATERIAL: "RED_BED" # Sets the Bukkit material used here.
-  CREATE-USED-MATERIAL: "BLUE_DYE" # Sets the Bukkit material used here.
-  CREATE-NO-USED-MATERIAL: "GRAY_DYE" # Sets the Bukkit material used here.
-  CREATE-NO-PERMISSION-MATERIAL: "RED_DYE" # Sets the Bukkit material used here.
+  TITLE: "&8ʜᴏᴍᴇѕ" # Text string (supports & color codes)
+  SIZE: 36 # Inventory size in slots (multiple of 9, max 54)
+  TELEPORT-USED-MATERIAL: "LIGHT_BLUE_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  TELEPORT-NO-USED-MATERIAL: "LIGHT_GRAY_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  TELEPORT-NO-PERMISSION-MATERIAL: "RED_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  CREATE-USED-MATERIAL: "BLUE_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  CREATE-NO-USED-MATERIAL: "GRAY_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+  CREATE-NO-PERMISSION-MATERIAL: "RED_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
   TEAM_HOME:
     TELEPORT:
       MATERIALS:
-        NO_TEAM: "RED_BANNER" # Configures the no team option.
-        NO_HOME: "WHITE_BANNER" # Configures the no home option.
-        HAS_HOME: "WHITE_BANNER" # Configures the has home option.
+        NO_TEAM: "RED_BANNER" # No Team setting.
+        NO_HOME: "WHITE_BANNER" # No Home setting.
+        HAS_HOME: "WHITE_BANNER" # Has Home setting.
       DISPLAY_NAME:
-        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no team option.
-        NO_HOME: "&fᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no home option.
-        HAS_HOME: "&bᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the has home option.
+        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Team setting.
+        NO_HOME: "&fᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Home setting.
+        HAS_HOME: "&bᴛᴇᴀᴍ ʜᴏᴍᴇ" # Has Home setting.
       LORE:
         NO_TEAM:
           - "&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɴ ᴀ ᴛᴇᴀᴍ."
@@ -321,13 +321,13 @@ HOME-MENU:
           - "&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ"
     SAVE:
       MATERIALS:
-        NO_TEAM: "RED_DYE" # Configures the no team option.
-        NO_HOME: "GRAY_DYE" # Configures the no home option.
-        HAS_HOME: "BLUE_DYE" # Configures the has home option.
+        NO_TEAM: "RED_DYE" # No Team setting.
+        NO_HOME: "GRAY_DYE" # No Home setting.
+        HAS_HOME: "BLUE_DYE" # Has Home setting.
       DISPLAY_NAME:
-        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no team option.
-        NO_HOME: "&7ѕᴇᴛ ᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the no home option.
-        HAS_HOME: "&bᴍᴀɴᴀɢᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ" # Configures the has home option.
+        NO_TEAM: "&cᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Team setting.
+        NO_HOME: "&7ѕᴇᴛ ᴛᴇᴀᴍ ʜᴏᴍᴇ" # No Home setting.
+        HAS_HOME: "&bᴍᴀɴᴀɢᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ" # Has Home setting.
       LORE:
         NO_TEAM:
           - "&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɴ ᴀ ᴛᴇᴀᴍ."
@@ -339,9 +339,9 @@ HOME-MENU:
   TELEPORT:
     HOME-1:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -352,9 +352,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-2:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -365,9 +365,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-3:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -378,9 +378,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-4:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -391,9 +391,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-5:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -405,9 +405,9 @@ HOME-MENU:
   CREATE:
     HOME-1:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -418,9 +418,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-2:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -431,9 +431,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-3:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -444,9 +444,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-4:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -457,9 +457,9 @@ HOME-MENU:
           - "&7you need a higher rank for this home."
     HOME-5:
       DISPLAY-NAME:
-        NO-USED: "&7{slot}" # Configures the no used option.
-        USED: "&b{name}" # Configures the used option.
-        NO-PERMISSION: "&clocked" # Sets the permission node required for this action.
+        NO-USED: "&7{slot}" # No Used setting.
+        USED: "&b{name}" # Used setting.
+        NO-PERMISSION: "&clocked" # Permission node (e.g., ultimatedonutsmp.admin)
       LORE:
         NO-USED:
           - "&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."
@@ -471,27 +471,27 @@ HOME-MENU:
 
 # UDS setup: Generic confirmation menu layout.
 CONFIRM-MENU:
-  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴅᴇʟᴇᴛᴇ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴅᴇʟᴇᴛᴇ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   CONFIRM-BUTTON:
-    DISPLAY-NAME: "&aᴄᴏɴꜰɪʀᴍ" # Sets the display name shown to players.
-    MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    DISPLAY-NAME: "&aᴄᴏɴꜰɪʀᴍ" # Text string (supports & color codes)
+    MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     LORE:
       - "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ"
   CANCEL-BUTTON:
-    DISPLAY-NAME: "&4ᴄᴀɴᴄᴇʟ" # Sets the display name shown to players.
-    MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    DISPLAY-NAME: "&4ᴄᴀɴᴄᴇʟ" # Text string (supports & color codes)
+    MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     LORE:
       - "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ"
       -
 
 # UDS setup: Social/media menu layout.
 MEDIA-MENU:
-  TITLE: "&8ᴍᴇᴅɪᴀ ʀᴀɴᴋ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴍᴇᴅɪᴀ ʀᴀɴᴋ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   MEDIA-BUTTON:
-    DISPLAY-NAME: "&dᴍᴇᴅɪᴀ ʀᴀɴᴋ" # Sets the display name shown to players.
-    MATERIAL: "PINK_DYE" # Sets the Bukkit material used here.
+    DISPLAY-NAME: "&dᴍᴇᴅɪᴀ ʀᴀɴᴋ" # Text string (supports & color codes)
+    MATERIAL: "PINK_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     SLOT: 13 # Sets the inventory slot used by this item.
     LORE:
       - "&dʀᴇǫᴜɪʀᴇᴍᴇɴᴛѕ: (ᴏɴʟʏ ᴏɴᴇ ɴᴇᴇᴅᴇᴅ)"
@@ -509,78 +509,78 @@ MEDIA-MENU:
 
 # UDS setup: Stats menu layout and displayed stat items.
 STATS-MENU:
-  TITLE: "&8{username} ѕᴛᴀᴛѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 36 # Sets the inventory size in slots.
+  TITLE: "&8{username} ѕᴛᴀᴛѕ" # Text string (supports & color codes)
+  SIZE: 36 # Inventory size in slots (multiple of 9, max 54)
   BUTTONS:
     MONEY:
-      DISPLAY-NAME: "&#6BF18Dᴍᴏɴᴇʏ" # Sets the display name shown to players.
-      MATERIAL: "EMERALD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "EMERALD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 10 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     SHARDS:
-      DISPLAY-NAME: "&#6BF18Dѕʜᴀʀᴅѕ" # Sets the display name shown to players.
-      MATERIAL: "AMETHYST_SHARD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "AMETHYST_SHARD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     KILLS:
-      DISPLAY-NAME: "&#6BF18Dᴋɪʟʟѕ" # Sets the display name shown to players.
-      MATERIAL: "DIAMOND_SWORD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "DIAMOND_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 12 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     DEATHS:
-      DISPLAY-NAME: "&#6BF18Dᴅᴇᴀᴛʜѕ" # Sets the display name shown to players.
-      MATERIAL: "SKELETON_SKULL" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "SKELETON_SKULL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 13 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     PLAYTIME:
-      DISPLAY-NAME: "&#6BF18Dᴘʟᴀʏᴛɪᴍᴇ" # Sets the display name shown to players.
-      MATERIAL: "CLOCK" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 14 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     BLOCKS_PLACED:
-      DISPLAY-NAME: "&#6BF18Dʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ" # Sets the display name shown to players.
-      MATERIAL: "STONE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "STONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     BLOCKS_BROKEN:
-      DISPLAY-NAME: "&#6BF18Dʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ" # Sets the display name shown to players.
-      MATERIAL: "COBBLESTONE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "COBBLESTONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 16 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     MOBS_KILLED:
-      DISPLAY-NAME: "&#6BF18Dᴍᴏʙѕ ᴋɪʟʟᴇᴅ" # Sets the display name shown to players.
-      MATERIAL: "ZOMBIE_HEAD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "ZOMBIE_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 19 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     KILL_STREAK:
-      DISPLAY-NAME: "&#6BF18Dᴋɪʟʟ ѕᴛʀᴇᴀᴋ" # Sets the display name shown to players.
-      MATERIAL: "DIAMOND_AXE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "DIAMOND_AXE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 20 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     HIGHEST_KILL_STREAK:
-      DISPLAY-NAME: "&#6BF18Dʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ" # Sets the display name shown to players.
-      MATERIAL: "NETHERITE_SWORD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "NETHERITE_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 21 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     MONEY_SPENT:
-      DISPLAY-NAME: "&#6BF18Dᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ" # Sets the display name shown to players.
-      MATERIAL: "GOLD_NUGGET" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "GOLD_NUGGET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 22 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
     MONEY_MADE:
-      DISPLAY-NAME: "&#6BF18Dᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /sell" # Sets the display name shown to players.
-      MATERIAL: "IRON_NUGGET" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "IRON_NUGGET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 23 # Sets the inventory slot used by this item.
       LORE:
         - "&7{value}"
@@ -775,254 +775,254 @@ SETTINGS-MENU:
 
 
 SETTINGS-MENU-LEGACY:
-  TITLE: "&8ѕᴇᴛᴛɪɴɢѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
+  TITLE: "&8ѕᴇᴛᴛɪɴɢѕ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
   BUTTONS:
     PAY_ALERTS:
-      DISPLAY-NAME: "&#6BF18Dᴘᴀʏ ᴀʟᴇʀᴛѕ" # Sets the display name shown to players.
-      MATERIAL: "CHERRY_SIGN" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "CHERRY_SIGN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 10 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     HOTBAR_MESSAGES:
-      DISPLAY-NAME: "&#6BF18Dʜᴏᴛʙᴀʀ ѕᴇʀᴠᴇʀ ᴍᴇѕѕᴀɢᴇѕ" # Sets the display name shown to players.
-      MATERIAL: "CRIMSON_SIGN" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "CRIMSON_SIGN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     CLEAR_ENTITIES_MESSAGES:
-      DISPLAY-NAME: "&#6BF18Dᴄʟᴇᴀʀ ᴇɴᴛɪᴛɪᴇѕ ᴍᴇѕѕᴀɢᴇѕ" # Sets the display name shown to players.
-      MATERIAL: "BAMBOO_SIGN" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "BAMBOO_SIGN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 12 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     BOUNTY_ALERTS:
-      DISPLAY-NAME: "&#6BF18Dʙᴏᴜɴᴛʏ ᴀʟᴇʀᴛѕ" # Sets the display name shown to players.
-      MATERIAL: "WARPED_SIGN" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "WARPED_SIGN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 13 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     AMETHYST_BREAK_MESSAGES:
-      DISPLAY-NAME: "&#6BF18Dᴀᴍᴇᴛʜʏѕᴛ ʙʀᴇᴀᴋ ᴍᴇѕѕᴀɢᴇѕ" # Sets the display name shown to players.
-      MATERIAL: "AMETHYST_SHARD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "AMETHYST_SHARD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 14 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     KEY_ALL_NOTIFICATIONS:
-      DISPLAY-NAME: "&#6BF18Dᴋᴇʏ-ᴀʟʟ ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴѕ" # Sets the display name shown to players.
-      MATERIAL: "TRIPWIRE_HOOK" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "TRIPWIRE_HOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     CHAINMAIL_ON_RESPAWN:
-      DISPLAY-NAME: "&#6BF18Dᴄʜᴀɪɴᴍᴀɪʟ ᴏɴ ʀᴇѕᴘᴀᴡɴ" # Sets the display name shown to players.
-      MATERIAL: "CHAINMAIL_HELMET" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "CHAINMAIL_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 19 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     SCOREBOARD_VISIBILITY:
-      DISPLAY-NAME: "&#6BF18Dѕᴄᴏʀᴇʙᴏᴀʀᴅ ᴠɪѕɪʙɪʟɪᴛʏ" # Sets the display name shown to players.
-      MATERIAL: "LECTERN" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "LECTERN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 20 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     TPA_CONFIRM_MENUS:
-      DISPLAY-NAME: "&#6BF18Dᴛᴘᴀ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜѕ" # Sets the display name shown to players.
-      MATERIAL: "FEATHER" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "FEATHER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 21 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     LUNAR_TEAMMATES:
-      DISPLAY-NAME: "&#6BF18Dʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇѕ" # Sets the display name shown to players.
-      MATERIAL: "BLUE_CANDLE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "BLUE_CANDLE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 22 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     TPA_REQUESTS:
-      DISPLAY-NAME: "&#6BF18Dᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ" # Sets the display name shown to players.
-      MATERIAL: "ENDER_PEARL" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "ENDER_PEARL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 23 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     TPA_HERE_REQUESTS:
-      DISPLAY-NAME: "&#6BF18Dᴛᴘᴀ ʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛѕ" # Sets the display name shown to players.
-      MATERIAL: "ENDER_EYE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "ENDER_EYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 24 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     TEAM_INVITES:
-      DISPLAY-NAME: "&#6BF18Dᴛᴇᴀᴍ ɪɴᴠɪᴛᴇѕ" # Sets the display name shown to players.
-      MATERIAL: "SHIELD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "SHIELD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 25 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     PAYMENTS:
-      DISPLAY-NAME: "&#6BF18Dᴘᴀʏᴍᴇɴᴛѕ" # Sets the display name shown to players.
-      MATERIAL: "EMERALD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "EMERALD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 28 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     TEAM_CHAT:
-      DISPLAY-NAME: "&#6BF18Dᴛᴇᴀᴍ ᴄʜᴀᴛ" # Sets the display name shown to players.
-      MATERIAL: "BELL" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "BELL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 29 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     DISABLE_MOB_SPAWN:
-      DISPLAY-NAME: "&#6BF18Dᴅɪѕᴀʙʟᴇ ᴍᴏʙ ѕᴘᴀᴡɴѕ" # Sets the display name shown to players.
-      MATERIAL: "ZOMBIE_HEAD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "ZOMBIE_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 30 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     DISABLE_PHANTOM_SPAWN:
-      DISPLAY-NAME: "&#6BF18Dᴅɪѕᴀʙʟᴇ ᴘʜᴀɴᴛᴏᴍ ѕᴘᴀᴡɴ" # Sets the display name shown to players.
-      MATERIAL: "PHANTOM_MEMBRANE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "PHANTOM_MEMBRANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 31 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     PAY_CONFIRM_MENUS:
-      DISPLAY-NAME: "&#6BF18Dᴘᴀʏ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜѕ" # Sets the display name shown to players.
-      MATERIAL: "PAPER" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "PAPER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 32 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     TP_AUTO:
-      DISPLAY-NAME: "&#6BF18Dᴛᴘ ᴀᴜᴛᴏ" # Sets the display name shown to players.
-      MATERIAL: "GOAT_HORN" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "GOAT_HORN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 33 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     TOTEM_PARTICLES:
-      DISPLAY-NAME: "&#6BF18Dᴛᴏᴛᴇᴍ ᴘᴀʀᴛɪᴄʟᴇѕ" # Sets the display name shown to players.
-      MATERIAL: "TOTEM_OF_UNDYING" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "TOTEM_OF_UNDYING" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 38 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     DUEL_REQUESTS:
-      DISPLAY-NAME: "&#6BF18Dᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛѕ" # Sets the display name shown to players.
-      MATERIAL: "DIAMOND_SWORD" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "DIAMOND_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 39 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     FAST_CRYSTALS:
-      DISPLAY-NAME: "&#6BF18Dꜰᴀѕᴛ ᴄʀʏѕᴛᴀʟѕ" # Sets the display name shown to players.
-      MATERIAL: "END_CRYSTAL" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "END_CRYSTAL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 34 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
     WORTH_DISPLAY:
-      DISPLAY-NAME: "&#6BF18Dᴡᴏʀᴛʜ ᴅɪѕᴘʟᴀʏ" # Sets the display name shown to players.
-      MATERIAL: "LIME_CANDLE" # Sets the Bukkit material used here.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "LIME_CANDLE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 37 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄᴜʀʀᴇɴᴛʟʏ: {status}"
 
 # UDS setup: Leaderboard menu layout.
 LEADERBOARDS-MENU:
-  TITLE: "&8ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 36 # Sets the inventory size in slots.
+  TITLE: "&8ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ" # Text string (supports & color codes)
+  SIZE: 36 # Inventory size in slots (multiple of 9, max 54)
   TYPE-MENU:
-    TITLE: "&8{type}" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
+    TITLE: "&8{type}" # Text string (supports & color codes)
+    SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
     BUTTON:
-      MATERIAL: "PLAYER_HEAD" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18D{player}" # Sets the display name shown to players.
+      MATERIAL: "PLAYER_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE: "&f{type}: &7{value} &#6BF18D(#{position})" # Sets the lore text shown for this item.
   TYPE-NAMES:
-    money: "ᴍᴏɴᴇʏ" # Configures the money option.
-    moneySpent: "ᴍᴏɴᴇʏ ѕᴘᴇɴᴛ" # Configures the moneyspent option.
-    moneyMade: "ᴍᴏɴᴇʏ ᴍᴀᴅᴇ" # Configures the moneymade option.
-    kills: "ᴋɪʟʟѕ" # Configures the kills option.
-    deaths: "ᴅᴇᴀᴛʜѕ" # Configures the deaths option.
-    playtime: "ᴘʟᴀʏᴛɪᴍᴇ" # Configures the playtime option.
-    blocksPlaced: "ʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ" # Configures the blocksplaced option.
-    blocksBroken: "ʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ" # Configures the blocksbroken option.
-    mobsKilled: "ᴍᴏʙѕ ᴋɪʟʟᴇᴅ" # Configures the mobskilled option.
-    killStreak: "ᴋɪʟʟ ѕᴛʀᴇᴀᴋ" # Configures the killstreak option.
-    highestKillStreak: "ʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ" # Configures the highestkillstreak option.
-    shards: "ѕʜᴀʀᴅѕ" # Configures the shards option.
+    money: "ᴍᴏɴᴇʏ" # Money setting.
+    moneySpent: "ᴍᴏɴᴇʏ ѕᴘᴇɴᴛ" # Moneyspent setting.
+    moneyMade: "ᴍᴏɴᴇʏ ᴍᴀᴅᴇ" # Moneymade setting.
+    kills: "ᴋɪʟʟѕ" # Kills setting.
+    deaths: "ᴅᴇᴀᴛʜѕ" # Deaths setting.
+    playtime: "ᴘʟᴀʏᴛɪᴍᴇ" # Playtime setting.
+    blocksPlaced: "ʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ" # Blocksplaced setting.
+    blocksBroken: "ʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ" # Blocksbroken setting.
+    mobsKilled: "ᴍᴏʙѕ ᴋɪʟʟᴇᴅ" # Mobskilled setting.
+    killStreak: "ᴋɪʟʟ ѕᴛʀᴇᴀᴋ" # Killstreak setting.
+    highestKillStreak: "ʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ" # Highestkillstreak setting.
+    shards: "ѕʜᴀʀᴅѕ" # Shards setting.
   BUTTONS:
     MONEY:
-      TYPE: "money" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴍᴏɴᴇʏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "EMERALD" # Sets the Bukkit material used here.
+      TYPE: "money" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "EMERALD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 10 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏɴᴇʏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     SHARDS:
-      TYPE: "shards" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dѕʜᴀʀᴅѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "AMETHYST_SHARD" # Sets the Bukkit material used here.
+      TYPE: "shards" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "AMETHYST_SHARD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕʜᴀʀᴅѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     KILLS:
-      TYPE: "kills" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴋɪʟʟѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "DIAMOND_SWORD" # Sets the Bukkit material used here.
+      TYPE: "kills" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "DIAMOND_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 12 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴋɪʟʟѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     DEATHS:
-      TYPE: "deaths" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴅᴇᴀᴛʜѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "SKELETON_SKULL" # Sets the Bukkit material used here.
+      TYPE: "deaths" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "SKELETON_SKULL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 13 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴅᴇᴀᴛʜѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     PLAYTIME:
-      TYPE: "playtime" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴘʟᴀʏᴛɪᴍᴇ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "CLOCK" # Sets the Bukkit material used here.
+      TYPE: "playtime" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 14 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴘʟᴀʏᴛɪᴍᴇ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     BLOCKS_PLACED:
-      TYPE: "blocksPlaced" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "STONE" # Sets the Bukkit material used here.
+      TYPE: "blocksPlaced" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "STONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     BLOCKS_BROKEN:
-      TYPE: "blocksBroken" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "COBBLESTONE" # Sets the Bukkit material used here.
+      TYPE: "blocksBroken" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "COBBLESTONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 16 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     MOBS_KILLED:
-      TYPE: "mobsKilled" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴍᴏʙѕ ᴋɪʟʟᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "ZOMBIE_HEAD" # Sets the Bukkit material used here.
+      TYPE: "mobsKilled" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "ZOMBIE_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 19 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏʙѕ ᴋɪʟʟᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     KILL_STREAK:
-      TYPE: "killStreak" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "DIAMOND_AXE" # Sets the Bukkit material used here.
+      TYPE: "killStreak" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "DIAMOND_AXE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 20 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     HIGHEST_KILL_STREAK:
-      TYPE: "highestKillStreak" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ" # Sets the display name shown to players.
-      MATERIAL: "NETHERITE_SWORD" # Sets the Bukkit material used here.
+      TYPE: "highestKillStreak" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "NETHERITE_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 21 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     MONEY_SPENT:
-      TYPE: "moneySpent" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ" # Sets the display name shown to players.
-      MATERIAL: "GOLD_NUGGET" # Sets the Bukkit material used here.
+      TYPE: "moneySpent" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "GOLD_NUGGET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 22 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
     MONEY_MADE:
-      TYPE: "moneyMade" # Selects the mode or type used by this option.
-      DISPLAY-NAME: "&#6BF18Dᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /sell" # Sets the display name shown to players.
-      MATERIAL: "IRON_NUGGET" # Sets the Bukkit material used here.
+      TYPE: "moneyMade" # Type setting.
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: "IRON_NUGGET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 23 # Sets the inventory slot used by this item.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /sell ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ"
@@ -1030,31 +1030,31 @@ LEADERBOARDS-MENU:
 # Progress Menu
 # UDS setup: Progress menu layout and display items.
 PROGRESS-MENU:
-  PROGRESS-BAR: "■" # Configures the progress bar option.
-  LEVEL: [25000, 150000, 500000, 1000000, 5000000, 25000000, 250000000, 550000000, 850000000, # Configures the level option.
+  PROGRESS-BAR: "■" # Progress Bar setting.
+  LEVEL: [25000, 150000, 500000, 1000000, 5000000, 25000000, 250000000, 550000000, 850000000, # Level setting.
           1000000000, 2000000000, 4000000000, 8000000000, 10000000000, 20000000000, 40000000000,
           80000000000, 160000000000, 320000000000, 640000000000]
   TITLE:
-    CROPS: "&8ᴄʀᴏᴘѕ ᴘʀᴏɢʀᴇѕѕ" # Configures the crops option.
-    ORES: "&8ᴏʀᴇ ᴘʀᴏɢʀᴇѕѕ" # Configures the ores option.
-    MOBS: "&8ᴍᴏʙ ᴅʀᴏᴘѕ ᴘʀᴏɢʀᴇѕѕ" # Configures the mobs option.
-    NATURAL: "&8ɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ ᴘʀᴏɢʀᴇѕѕ" # Configures the natural option.
-    ARMOR_AND_TOOLS: "&8ᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ ᴘʀᴏɢʀᴇѕѕ" # Configures the armor and tools option.
-    FISH: "&8ꜰɪѕʜ ᴘʀᴏɢʀᴇѕѕ" # Configures the fish option.
-    BOOK: "&8ᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ ᴘʀᴏɢʀᴇѕѕ" # Configures the book option.
-    POTIONS: "&8ᴘᴏᴛɪᴏɴѕ ᴘʀᴏɢʀᴇѕѕ" # Configures the potions option.
-    BLOCKS: "&8ʙʟᴏᴄᴋѕ ᴘʀᴏɢʀᴇѕѕ" # Configures the blocks option.
+    CROPS: "&8ᴄʀᴏᴘѕ ᴘʀᴏɢʀᴇѕѕ" # Crops setting.
+    ORES: "&8ᴏʀᴇ ᴘʀᴏɢʀᴇѕѕ" # Ores setting.
+    MOBS: "&8ᴍᴏʙ ᴅʀᴏᴘѕ ᴘʀᴏɢʀᴇѕѕ" # Mobs setting.
+    NATURAL: "&8ɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ ᴘʀᴏɢʀᴇѕѕ" # Natural setting.
+    ARMOR_AND_TOOLS: "&8ᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ ᴘʀᴏɢʀᴇѕѕ" # Armor And Tools setting.
+    FISH: "&8ꜰɪѕʜ ᴘʀᴏɢʀᴇѕѕ" # Fish setting.
+    BOOK: "&8ᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ ᴘʀᴏɢʀᴇѕѕ" # Book setting.
+    POTIONS: "&8ᴘᴏᴛɪᴏɴѕ ᴘʀᴏɢʀᴇѕѕ" # Potions setting.
+    BLOCKS: "&8ʙʟᴏᴄᴋѕ ᴘʀᴏɢʀᴇѕѕ" # Blocks setting.
   TYPE-BUTTON:
     TITLE:
-      CROPS: "&#6BF18Dᴄʀᴏᴘѕ" # Configures the crops option.
-      ORES: "&#6BF18Dᴏʀᴇ" # Configures the ores option.
-      MOBS: "&#6BF18Dᴍᴏʙ" # Configures the mobs option.
-      NATURAL: "&#6BF18Dɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ" # Configures the natural option.
-      ARMOR_AND_TOOLS: "&#6BF18Dᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ" # Configures the armor and tools option.
-      FISH: "&#6BF18Dꜰɪѕʜ" # Configures the fish option.
-      BOOK: "&#6BF18Dᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ" # Configures the book option.
-      POTIONS: "&#6BF18Dᴘᴏᴛɪᴏɴѕ" # Configures the potions option.
-      BLOCKS: "&#6BF18Dʙʟᴏᴄᴋѕ" # Configures the blocks option.
+      CROPS: "&# Crops setting.
+      ORES: "&# Ores setting.
+      MOBS: "&# Mobs setting.
+      NATURAL: "&# Natural setting.
+      ARMOR_AND_TOOLS: "&# Armor And Tools setting.
+      FISH: "&# Fish setting.
+      BOOK: "&# Book setting.
+      POTIONS: "&# Potions setting.
+      BLOCKS: "&# Blocks setting.
     LORE:
       CROPS:
         - "&7ѕᴇʟʟ ᴄʀᴏᴘѕ ᴀɴᴅ ꜰᴀʀᴍɪɴɢ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ"
@@ -1084,24 +1084,24 @@ PROGRESS-MENU:
         - "&7ѕᴇʟʟ ʙʟᴏᴄᴋѕ ᴀɴᴅ ᴘʟᴀᴄᴇᴀʙʟᴇ ɪᴛᴇᴍѕ ᴛᴏ"
         - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
     MATERIAL:
-      CROPS: "WHEAT" # Configures the crops option.
-      ORES: "DIAMOND" # Configures the ores option.
-      MOBS: "BONE" # Configures the mobs option.
-      NATURAL: "OAK_LEAVES" # Configures the natural option.
-      ARMOR_AND_TOOLS: "NETHERITE_HELMET" # Configures the armor and tools option.
-      FISH: "TROPICAL_FISH" # Configures the fish option.
-      BOOK: "BOOK" # Configures the book option.
-      POTIONS: "BREWING_STAND" # Configures the potions option.
-      BLOCKS: "BRICK" # Configures the blocks option.
+      CROPS: "WHEAT" # Crops setting.
+      ORES: "DIAMOND" # Ores setting.
+      MOBS: "BONE" # Mobs setting.
+      NATURAL: "OAK_LEAVES" # Natural setting.
+      ARMOR_AND_TOOLS: "NETHERITE_HELMET" # Armor And Tools setting.
+      FISH: "TROPICAL_FISH" # Fish setting.
+      BOOK: "BOOK" # Book setting.
+      POTIONS: "BREWING_STAND" # Potions setting.
+      BLOCKS: "BRICK" # Blocks setting.
   WORKING-BUTTON:
-    TITLE: "&eᴡᴏʀᴋɪɴɢ" # Sets the title text shown for this menu or prompt.
-    MATERIAL: "YELLOW_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    TITLE: "&eᴡᴏʀᴋɪɴɢ" # Text string (supports & color codes)
+    MATERIAL: "YELLOW_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     LORE:
       - "{porcentage_level} &f{next_multiplier} {porcentage}%"
       - "&7{current_earned}/{next_goal}"
   COMPLETED-BUTTON:
-    TITLE: "&aᴄᴏᴍᴘʟᴇᴛᴇᴅ" # Sets the title text shown for this menu or prompt.
-    MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    TITLE: "&aᴄᴏᴍᴘʟᴇᴛᴇᴅ" # Text string (supports & color codes)
+    MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     LORE:
       - "{porcentage_level} &f{next_multiplier} {porcentage}%"
       - "&7{current_earned}/{next_goal}"
@@ -1109,9 +1109,9 @@ PROGRESS-MENU:
 # Sell Menu
 # UDS setup: Sell menu layout.
 SELL-MENU:
-  TITLE: "&8ᴘʟᴀᴄᴇ ɪᴛᴇᴍѕ ɪɴ ʜᴇʀᴇ ᴛᴏ ѕᴇʟʟ" # Sets the title text shown for this menu or prompt.
-  MULTIPLIER-TITLE: "&8ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀѕ" # Sets the title text shown for this menu or prompt.
-  AUTO-SELL: true # Configures the auto sell option.
+  TITLE: "&8ᴘʟᴀᴄᴇ ɪᴛᴇᴍѕ ɪɴ ʜᴇʀᴇ ᴛᴏ ѕᴇʟʟ" # Text string (supports & color codes)
+  MULTIPLIER-TITLE: "&8ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀѕ" # Text string (supports & color codes)
+  AUTO-SELL: true # Auto Sell setting.
   MODE: "instant"  # Configure "instant" or "confirm" for the sell mode
   CONFIRM-BUTTON:
     MATERIAL: "LIME_STAINED_GLASS_PANE"
@@ -1119,8 +1119,8 @@ SELL-MENU:
     LORE:
       - "&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟʟ ᴀʟʟ ɪᴛᴇᴍѕ ɪɴ ᴛʜᴇ ᴍᴇɴᴜ."
   CROPS-BUTTON:
-    MATERIAL: "WHEAT" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dᴄʀᴏᴘѕ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "WHEAT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ᴄʀᴏᴘѕ ᴀɴᴅ ꜰᴀʀᴍɪɴɢ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1128,8 +1128,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   ORES-BUTTON:
-    MATERIAL: "DIAMOND" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dᴏʀᴇѕ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "DIAMOND" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ᴏʀᴇѕ ᴀɴᴅ ᴍɪɴɪɴɢ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1137,8 +1137,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   MOBS-BUTTON:
-    MATERIAL: "BONE" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dᴍᴏʙѕ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "BONE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ᴍᴏʙ ᴅʀᴏᴘѕ ᴀɴᴅ ᴄᴏᴍʙᴀᴛ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1146,8 +1146,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   NATURAL-BUTTON:
-    MATERIAL: "OAK_LEAVES" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "OAK_LEAVES" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ɴᴀᴛᴜʀᴀʟ ᴍᴀᴛᴇʀɪᴀʟѕ ᴀɴᴅ ᴛʀᴇᴇѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1155,8 +1155,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   ARMOR-AND-TOOLS-BUTTON:
-    MATERIAL: "NETHERITE_HELMET" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "NETHERITE_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1164,8 +1164,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   FISH-BUTTON:
-    MATERIAL: "TROPICAL_FISH" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dꜰɪѕʜ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "TROPICAL_FISH" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ꜰɪѕʜ ᴀɴᴅ ᴏᴛʜᴇʀ ꜰɪѕʜɪɴɢ ʟᴏᴏᴛ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1173,8 +1173,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   BOOK-BUTTON:
-    MATERIAL: "BOOK" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ʙᴏᴏᴋѕ ᴀɴᴅ ᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1182,8 +1182,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   POTIONS-BUTTON:
-    MATERIAL: "BREWING_STAND" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dᴘᴏᴛɪᴏɴѕ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "BREWING_STAND" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ᴘᴏᴛɪᴏɴѕ ᴀɴᴅ ʙʀᴇᴡɪɴɢ ᴍᴀᴛᴇʀɪᴀʟѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1191,8 +1191,8 @@ SELL-MENU:
       - "&7ᴘʀᴏɢʀᴇѕѕ ᴛᴏ &f{next_multiplier}"
       - "{porcentage_level} &#6BF18D{porcentage}%"
   BLOCKS-BUTTON:
-    MATERIAL: "BRICK" # Sets the Bukkit material used here.
-    TITLE: "&#6BF18Dʙʟᴏᴄᴋѕ" # Sets the title text shown for this menu or prompt.
+    MATERIAL: "BRICK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    TITLE: "&# Text string (supports & color codes)
     LORE:
       - "&7ѕᴇʟʟ ʙʟᴏᴄᴋѕ ᴀɴᴅ ᴘʟᴀᴄᴇᴀʙʟᴇ ɪᴛᴇᴍѕ ᴛᴏ"
       - "&7ᴜᴘɢʀᴀᴅᴇ ʏᴏᴜʀ ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀ!"
@@ -1202,56 +1202,56 @@ SELL-MENU:
 
 # UDS setup: Worth browser menu layout.
 WORTH-MENU:
-  TITLE: "&8ɪᴛᴇᴍ ᴘʀɪᴄᴇѕ" # Sets the title text shown for this menu or prompt.
+  TITLE: "&8ɪᴛᴇᴍ ᴘʀɪᴄᴇѕ" # Text string (supports & color codes)
   FORMAT: "&7ᴡᴏʀᴛʜ: &a${price}" # Sets the text format used by this option.
   SORT-BUTTON:
-    TITLE: "&aѕᴏʀᴛ" # Sets the title text shown for this menu or prompt.
-    MATERIAL: "CAULDRON" # Sets the Bukkit material used here.
+    TITLE: "&aѕᴏʀᴛ" # Text string (supports & color codes)
+    MATERIAL: "CAULDRON" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
 
 # UDS setup: TPA confirmation menu layout.
 TPA-CONFIRM-MENU:
-  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴛᴘᴀ {here}" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴛᴘᴀ {here}" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BUTTONS:
     CANCEL:
-      MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+      MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&cᴄᴀɴᴄᴇʟ" # Sets the name text used here.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ"
     CONFIRM:
-      MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+      MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&aᴄᴏɴꜰɪʀᴍ" # Sets the name text used here.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ"
     PLAYER:
-      MATERIAL: "PLAYER_HEAD" # Sets the Bukkit material used here.
+      MATERIAL: "PLAYER_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&#00FC00ᴘʟᴀʏᴇʀ" # Sets the name text used here.
       LORE:
         - "&7{player}"
     LOCATION:
       NAME: "&#6BF18Dʟᴏᴄᴀᴛɪᴏɴ" # Sets the name text used here.
-      MATERIAL: "GRASS_BLOCK" # Sets the Bukkit material used here.
+      MATERIAL: "GRASS_BLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       LORE:
         - "&7{world}"
     REGION:
       NAME: "&#6BF18Dʀᴇɢɪᴏɴ" # Sets the name text used here.
-      MATERIAL: "FEATHER" # Sets the Bukkit material used here.
+      MATERIAL: "FEATHER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       LORE:
         - "&7ɴᴀ ᴇᴀѕᴛ (&#0069D6${ping}ᴍѕ&7)"
 
 # UDS setup: Bounty browser menu layout.
 BOUNTIES-MENU:
-  TITLE: "&8ʙᴏᴜɴᴛɪᴇѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
-  MAX-ITEMS-PER-PAGE: 45 # Sets the allowed limit for this option.
+  TITLE: "&8ʙᴏᴜɴᴛɪᴇѕ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  MAX-ITEMS-PER-PAGE: 45 # Numeric value (integer)
   BOUNTY-BUTTON:
-    MATERIAL: "PLAYER_HEAD" # Sets the Bukkit material used here.
+    MATERIAL: "PLAYER_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#6BF18D{player}" # Sets the name text used here.
     LORE:
       - "&fʙᴏᴜɴᴛʏ: &7${price}"
   REFRESH-BUTTON:
     SLOT: 49 # Sets the inventory slot used by this item.
-    MATERIAL: "SKELETON_SKULL" # Sets the Bukkit material used here.
+    MATERIAL: "SKELETON_SKULL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#6BF18Dʙᴏᴜɴᴛɪᴇѕ" # Sets the name text used here.
     LORE:
       - "&fᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ"
@@ -1274,32 +1274,32 @@ BOUNTIES-MENU:
 
 # UDS setup: Bounty confirmation menu layout.
 BOUNTY-CONFIRM-MENU:
-  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ʙᴏᴜɴᴛʏ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ʙᴏᴜɴᴛʏ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   CANCEL-BUTTON:
-    MATERIAL: RED_STAINED_GLASS_PANE # Sets the Bukkit material used here.
+    MATERIAL: RED_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#FC0000ᴄᴀɴᴄᴇʟ" # Sets the name text used here.
     LORE:
       - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴛʜᴇ ʙᴏᴜɴᴛʏ ᴀᴅᴅɪɴɢ!"
   PLAYER-BUTTON:
-    MATERIAL: PLAYER_HEAD # Sets the Bukkit material used here.
+    MATERIAL: PLAYER_HEAD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#00FC00{player}" # Sets the name text used here.
     LORE:
       - "&fʏᴏᴜ'ʀᴇ ɢᴏɪɴɢ ᴛᴏ ѕᴇᴛ &#00FC00{amount}"
   CONFIRM-BUTTON:
-    MATERIAL: LIME_STAINED_GLASS_PANE # Sets the Bukkit material used here.
+    MATERIAL: LIME_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&#00FC00ᴄᴏɴꜰɪʀᴍ" # Sets the name text used here.
     LORE:
       - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛᴏ ᴀᴅᴅ {amount} ʙᴏᴜɴᴛʏ!"
 
 # UDS setup: Sell history menu layout.
 SELL-HISTORY-MENU:
-  TITLE: "&8ѕᴇʟʟ ʜɪѕᴛᴏʀʏ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
-  MAX-ITEMS-PER-PAGE: 45 # Sets the allowed limit for this option.
+  TITLE: "&8ѕᴇʟʟ ʜɪѕᴛᴏʀʏ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  MAX-ITEMS-PER-PAGE: 45 # Numeric value (integer)
   BUTTONS:
     SORT:
-      MATERIAL: "ANVIL" # Sets the Bukkit material used here.
+      MATERIAL: "ANVIL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&aѕᴏʀᴛ" # Sets the name text used here.
       LORE:
         - "&fᴄʟɪᴄᴋ ᴛᴏ ѕᴏʀᴛ"
@@ -1313,15 +1313,15 @@ SELL-HISTORY-MENU:
 
 # UDS setup: Billford menu layout.
 BILLFORD-MENU:
-  TITLE: "&8ʙɪʟʟꜰᴏʀᴅ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
+  TITLE: "&8ʙɪʟʟꜰᴏʀᴅ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
   TRADE-BUTTON:
     MATERIAL:
       NAME: "&atrade with billford" # Sets the name text used here.
       LORE:
         - ""
   CONFIRM-TRADE-BUTTON:
-    MATERIAL: "HOPPER" # Sets the Bukkit material used here.
+    MATERIAL: "HOPPER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     NAME: "&8ᴛʀᴀᴅᴇ" # Sets the name text used here.
     LORE:
       - "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛʜᴇ ᴛʀᴀᴅᴇ"
@@ -1330,64 +1330,64 @@ BILLFORD-MENU:
 
 # UDS setup: Purchase confirmation menu layout.
 PURCHASE-SHOP-MENU:
-  TITLE: "&8ᴄᴏɴꜰɪʀᴍᴀᴛɪᴏɴ ᴍᴇɴᴜ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴄᴏɴꜰɪʀᴍᴀᴛɪᴏɴ ᴍᴇɴᴜ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BUTTONS:
     MAIN:
       SLOT: 13 # Sets the inventory slot used by this item.
       LORE:
-        MONEY: "&fʙᴜʏ ᴘʀɪᴄᴇ: &a${price}" # Configures the money option.
-        SHARD: "&fʙᴜʏ ᴘʀɪᴄᴇ: &5${price}x &lѕʜᴀʀᴅѕ" # Configures the shard option.
+        MONEY: "&fʙᴜʏ ᴘʀɪᴄᴇ: &a${price}" # Money setting.
+        SHARD: "&fʙᴜʏ ᴘʀɪᴄᴇ: &5${price}x &lѕʜᴀʀᴅѕ" # Shard setting.
         DEFAULT: "&fʙᴜʏ ᴘʀɪᴄᴇ: &a${price}" # Sets the default value used when none is selected.
 
     CANCEL:
       SLOT: 21 # Sets the inventory slot used by this item.
-      MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+      MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&cᴄᴀɴᴄᴇʟ" # Sets the name text used here.
       LORE: "&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ" # Sets the lore text shown for this item.
 
     CONFIRM:
       SLOT: 23 # Sets the inventory slot used by this item.
-      MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+      MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       NAME: "&aᴄᴏɴꜰɪʀᴍ" # Sets the name text used here.
       LORE: "&fᴄʟɪᴄᴋ ᴛᴏ ʙᴜʏ" # Sets the lore text shown for this item.
 
     QUANTITY_ADJUST:
       ADD:
-        MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+        MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         ADD_1:
           SLOT: 15 # Sets the inventory slot used by this item.
           NAME: "&aᴀᴅᴅ 1" # Sets the name text used here.
-          INCREMENT: 1 # Configures the increment option.
+          INCREMENT: 1 # Increment setting.
         ADD_10:
           SLOT: 16 # Sets the inventory slot used by this item.
           NAME: "&aᴀᴅᴅ 10" # Sets the name text used here.
-          INCREMENT: 10 # Configures the increment option.
+          INCREMENT: 10 # Increment setting.
         SET_64:
           SLOT: 17 # Sets the inventory slot used by this item.
           NAME: "&aѕᴇᴛ ᴛᴏ 64" # Sets the name text used here.
-          INCREMENT: 64 # Configures the increment option.
+          INCREMENT: 64 # Increment setting.
 
       REMOVE:
-        MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+        MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
         REMOVE_1:
           SLOT: 11 # Sets the inventory slot used by this item.
           NAME: "&cʀᴇᴍᴏᴠᴇ 1" # Sets the name text used here.
-          DECREMENT: 1 # Configures the decrement option.
+          DECREMENT: 1 # Decrement setting.
         REMOVE_10:
           SLOT: 10 # Sets the inventory slot used by this item.
           NAME: "&cʀᴇᴍᴏᴠᴇ 10" # Sets the name text used here.
-          DECREMENT: 10 # Configures the decrement option.
+          DECREMENT: 10 # Decrement setting.
         REMOVE_64:
           SLOT: 9 # Sets the inventory slot used by this item.
           NAME: "&cʀᴇᴍᴏᴠᴇ 64" # Sets the name text used here.
-          DECREMENT: 64 # Configures the decrement option.
+          DECREMENT: 64 # Decrement setting.
 
   RESTRICTIONS:
     TOTEM_OF_UNDYING:
       MAX_QUANTITY: 1 # Sets the item amount used by this option.
       MIN_QUANTITY: 1 # Sets the item amount used by this option.
-      HIDE_QUANTITY_BUTTONS: true # Configures the hide quantity buttons option.
+      HIDE_QUANTITY_BUTTONS: true # Hide Quantity Buttons setting.
     ENDER_PEARL:
       MAX_QUANTITY: 16 # Sets the item amount used by this option.
       MIN_QUANTITY: 1 # Sets the item amount used by this option.
@@ -1405,34 +1405,34 @@ PURCHASE-SHOP-MENU:
       FULL_INVENTORY: "&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ꜰᴜʟʟ." # Sets the message text for this response.
 
   SOUNDS:
-    SUCCESS: "entity_experience_orb_pickup" # Configures the success option.
-    ERROR: "entity_villager_no" # Configures the error option.
+    SUCCESS: "entity_experience_orb_pickup" # Success setting.
+    ERROR: "entity_villager_no" # Error setting.
 
 # UDS setup: Pay confirmation menu layout.
 PAY-CONFIRM-MENU:
-  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴘᴀʏᴍᴇɴᴛ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴘᴀʏᴍᴇɴᴛ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   CONFIRM-BUTTON:
-    TITLE: "&#00FC00ᴄᴏɴꜰɪʀᴍ" # Sets the title text shown for this menu or prompt.
-    MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    TITLE: "&# Text string (supports & color codes)
+    MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     LORE:
       - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛᴏ ᴘᴀʏ {amount}!"
   CANCEL-BUTTON:
-    TITLE: "&#FC0000ᴄᴀɴᴄᴇʟ" # Sets the title text shown for this menu or prompt.
-    MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+    TITLE: "&# Text string (supports & color codes)
+    MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     LORE:
       - "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ"
   PLAYER-BUTTON:
-    TITLE: "&#00FC00{player}" # Sets the title text shown for this menu or prompt.
-    MATERIAL: "PLAYER_HEAD" # Sets the Bukkit material used here.
+    TITLE: "&# Text string (supports & color codes)
+    MATERIAL: "PLAYER_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     
 # UDS setup: Server information menu layout.
 SERVER-INFO-MENU:
-  TITLE: "&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BUTTONS:
     SERVER:
-      MATERIAL: "LANTERN" # Sets the Bukkit material used here.
+      MATERIAL: "LANTERN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 10 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCᴅᴏɴᴜᴛѕᴍᴘ" # Sets the name text used here.
       LORE:
@@ -1443,7 +1443,7 @@ SERVER-INFO-MENU:
         - "&#00A4FCᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
         - "&#00A4FCᴋᴇᴇᴘɪɴᴠᴇɴᴛᴏʀʏ: &cꜰᴀʟѕᴇ"
     ECONOMY:
-      MATERIAL: "GOLD_INGOT" # Sets the Bukkit material used here.
+      MATERIAL: "GOLD_INGOT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 11 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCᴇᴄᴏɴᴏᴍʏ" # Sets the name text used here.
       LORE:
@@ -1452,7 +1452,7 @@ SERVER-INFO-MENU:
         - ""
         - "&#00A4FCᴄᴏᴍᴍᴀɴᴅѕ: &f/sell ᴀɴᴅ /auction"
     RULES:
-      MATERIAL: "KNOWLEDGE_BOOK" # Sets the Bukkit material used here.
+      MATERIAL: "KNOWLEDGE_BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 12 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCʀᴜʟᴇѕ" # Sets the name text used here.
       LORE:
@@ -1461,7 +1461,7 @@ SERVER-INFO-MENU:
         - ""
         - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/rules"
     LEADERBOARDS:
-      MATERIAL: "CLOCK" # Sets the Bukkit material used here.
+      MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 13 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ" # Sets the name text used here.
       LORE:
@@ -1470,7 +1470,7 @@ SERVER-INFO-MENU:
         - ""
         - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/leaderboards"
     SHARDS:
-      MATERIAL: "AMETHYST_SHARD" # Sets the Bukkit material used here.
+      MATERIAL: "AMETHYST_SHARD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 14 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCᴀꜰᴋ ѕʜᴀʀᴅѕ" # Sets the name text used here.
       LORE:
@@ -1479,7 +1479,7 @@ SERVER-INFO-MENU:
         - ""
         - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/afk"
     SETTINGS:
-      MATERIAL: "GRAY_DYE" # Sets the Bukkit material used here.
+      MATERIAL: "GRAY_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 15 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCѕᴇᴛᴛɪɴɢѕ" # Sets the name text used here.
       LORE:
@@ -1488,7 +1488,7 @@ SERVER-INFO-MENU:
         - ""
         - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/settings"
     RTP:
-      MATERIAL: "OAK_SAPLING" # Sets the Bukkit material used here.
+      MATERIAL: "OAK_SAPLING" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 16 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ" # Sets the name text used here.
       LORE:
@@ -1505,15 +1505,15 @@ SERVER-INFO-MENU:
     BACK-SLOT: 18 # Sets the inventory slot used by this item.
     PAGE-INFO-SLOT: 22 # Sets the inventory slot used by this item.
     NEXT-SLOT: 26 # Sets the inventory slot used by this item.
-    PAGE-INFO-MATERIAL: "BOOK" # Sets the Bukkit material used here.
+    PAGE-INFO-MATERIAL: "BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
     PAGE-INFO-NAME: "&#00A4FCʜᴇʟᴘ ᴘᴀɢᴇѕ" # Sets the name text used here.
   PAGES:
     "1":
-      TITLE: "&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ" # Sets the title text shown for this menu or prompt.
-      SIZE: 27 # Sets the inventory size in slots.
+      TITLE: "&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ" # Text string (supports & color codes)
+      SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
       BUTTONS:
         SERVER:
-          MATERIAL: "LANTERN" # Sets the Bukkit material used here.
+          MATERIAL: "LANTERN" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 10 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCᴅᴏɴᴜᴛѕᴍᴘ" # Sets the name text used here.
           LORE:
@@ -1524,7 +1524,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴅɪꜰꜰɪᴄᴜʟᴛʏ: &cʜᴀʀᴅ"
             - "&#00A4FCᴋᴇᴇᴘɪɴᴠᴇɴᴛᴏʀʏ: &cꜰᴀʟѕᴇ"
         ECONOMY:
-          MATERIAL: "GOLD_INGOT" # Sets the Bukkit material used here.
+          MATERIAL: "GOLD_INGOT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 11 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCᴇᴄᴏɴᴏᴍʏ" # Sets the name text used here.
           LORE:
@@ -1533,7 +1533,7 @@ SERVER-INFO-MENU:
             - ""
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅѕ: &f/sell ᴀɴᴅ /auctionhouse"
         RULES:
-          MATERIAL: "KNOWLEDGE_BOOK" # Sets the Bukkit material used here.
+          MATERIAL: "KNOWLEDGE_BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 12 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCʀᴜʟᴇѕ" # Sets the name text used here.
           LORE:
@@ -1543,7 +1543,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/rules"
           COMMAND: "rules" # Sets the command executed or suggested here.
         LEADERBOARDS:
-          MATERIAL: "CLOCK" # Sets the Bukkit material used here.
+          MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 13 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ" # Sets the name text used here.
           LORE:
@@ -1553,7 +1553,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/leaderboards"
           COMMAND: "leaderboards" # Sets the command executed or suggested here.
         SHARDS:
-          MATERIAL: "AMETHYST_SHARD" # Sets the Bukkit material used here.
+          MATERIAL: "AMETHYST_SHARD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 14 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCᴀꜰᴋ ѕʜᴀʀᴅѕ" # Sets the name text used here.
           LORE:
@@ -1563,7 +1563,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/afk"
           COMMAND: "afk" # Sets the command executed or suggested here.
         SETTINGS:
-          MATERIAL: "GRAY_DYE" # Sets the Bukkit material used here.
+          MATERIAL: "GRAY_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 15 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCѕᴇᴛᴛɪɴɢѕ" # Sets the name text used here.
           LORE:
@@ -1573,7 +1573,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/settings"
           COMMAND: "settings" # Sets the command executed or suggested here.
         RTP:
-          MATERIAL: "OAK_SAPLING" # Sets the Bukkit material used here.
+          MATERIAL: "OAK_SAPLING" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 16 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ" # Sets the name text used here.
           LORE:
@@ -1587,11 +1587,11 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/rtp"
           COMMAND: "rtp" # Sets the command executed or suggested here.
     "2":
-      TITLE: "&8ɢᴇᴛᴛɪɴɢ ѕᴛᴀʀᴛᴇᴅ" # Sets the title text shown for this menu or prompt.
-      SIZE: 27 # Sets the inventory size in slots.
+      TITLE: "&8ɢᴇᴛᴛɪɴɢ ѕᴛᴀʀᴛᴇᴅ" # Text string (supports & color codes)
+      SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
       BUTTONS:
         START_HERE:
-          MATERIAL: "BOOK" # Sets the Bukkit material used here.
+          MATERIAL: "BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 10 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCѕᴛᴀʀᴛ ʜᴇʀᴇ" # Sets the name text used here.
           LORE:
@@ -1603,7 +1603,7 @@ SERVER-INFO-MENU:
             - "&7ѕᴛᴀʀᴛ ᴡɪᴛʜ &f/rtp &7ᴛᴏ ꜰɪɴᴅ ʟᴀɴᴅ ᴀᴡᴀʏ ꜰʀᴏᴍ ѕᴘᴀᴡɴ."
             - "&7ᴀꜰᴛᴇʀ ʙᴜɪʟᴅɪɴɢ ᴀ ʙᴀѕᴇ, ѕᴀᴠᴇ ɪᴛ ᴜѕɪɴɢ &f/sethome&7."
         MONEY:
-          MATERIAL: "GOLD_INGOT" # Sets the Bukkit material used here.
+          MATERIAL: "GOLD_INGOT" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 11 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCᴍᴀᴋᴇ ᴍᴏɴᴇʏ" # Sets the name text used here.
           LORE:
@@ -1614,7 +1614,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴛɪᴘ: &fᴋᴇᴇᴘ ʀᴀʀᴇ ʟᴏᴏᴛ ᴛᴏ ᴛʀᴀᴅᴇ."
           COMMAND: "sell" # Sets the command executed or suggested here.
         HOMES:
-          MATERIAL: "RED_BED" # Sets the Bukkit material used here.
+          MATERIAL: "RED_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 12 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCʜᴏᴍᴇѕ" # Sets the name text used here.
           LORE:
@@ -1624,7 +1624,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴏᴘᴇɴ: &f/home"
           COMMAND: "home" # Sets the command executed or suggested here.
         TEAMS:
-          MATERIAL: "IRON_HELMET" # Sets the Bukkit material used here.
+          MATERIAL: "IRON_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 13 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCᴛᴇᴀᴍѕ" # Sets the name text used here.
           LORE:
@@ -1634,7 +1634,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴏᴘᴇɴ: &f/team"
           COMMAND: "team" # Sets the command executed or suggested here.
         COMBAT:
-          MATERIAL: "DIAMOND_SWORD" # Sets the Bukkit material used here.
+          MATERIAL: "DIAMOND_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 14 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCᴄᴏᴍʙᴀᴛ ᴛɪᴘѕ" # Sets the name text used here.
           LORE:
@@ -1647,7 +1647,7 @@ SERVER-INFO-MENU:
             - "&7ʏᴏᴜ ᴅʀᴏᴘ ʏᴏᴜʀ ɪᴛᴇᴍѕ ᴏɴ ᴅᴇᴀᴛʜ ʜᴇʀᴇ, ѕᴏ ɢᴇᴀʀ ᴜᴘ ʙᴇꜰᴏʀᴇ ᴛᴀᴋɪɴɢ ʙɪɢ ꜰɪɢʜᴛѕ."
             - "&7ᴋᴇᴇᴘ ʙᴀᴄᴋᴜᴘ ᴀʀᴍᴏʀ ᴀɴᴅ ꜰᴏᴏᴅ ɪꜰ ʏᴏᴜ ᴘʟᴀɴ ᴛᴏ ᴘᴠᴘ ᴏꜰᴛᴇɴ."
         SPAWN:
-          MATERIAL: "COMPASS" # Sets the Bukkit material used here.
+          MATERIAL: "COMPASS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 15 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCѕᴘᴀᴡɴ" # Sets the name text used here.
           LORE:
@@ -1657,7 +1657,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/spawn"
           COMMAND: "spawn" # Sets the command executed or suggested here.
         RTP_GUIDE:
-          MATERIAL: "OAK_SAPLING" # Sets the Bukkit material used here.
+          MATERIAL: "OAK_SAPLING" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 16 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCʀᴛᴘ ɢᴜɪᴅᴇ" # Sets the name text used here.
           LORE:
@@ -1667,11 +1667,11 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/rtp"
           COMMAND: "rtp" # Sets the command executed or suggested here.
     "3":
-      TITLE: "&8ᴜѕᴇꜰᴜʟ ᴄᴏᴍᴍᴀɴᴅѕ" # Sets the title text shown for this menu or prompt.
-      SIZE: 27 # Sets the inventory size in slots.
+      TITLE: "&8ᴜѕᴇꜰᴜʟ ᴄᴏᴍᴍᴀɴᴅѕ" # Text string (supports & color codes)
+      SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
       BUTTONS:
         SHOP:
-          MATERIAL: "EMERALD" # Sets the Bukkit material used here.
+          MATERIAL: "EMERALD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 10 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCѕʜᴏᴘ" # Sets the name text used here.
           LORE:
@@ -1681,7 +1681,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/shop"
           COMMAND: "shop" # Sets the command executed or suggested here.
         SELL:
-          MATERIAL: "CHEST" # Sets the Bukkit material used here.
+          MATERIAL: "CHEST" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 11 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCѕᴇʟʟ" # Sets the name text used here.
           LORE:
@@ -1691,7 +1691,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/sell"
           COMMAND: "sell" # Sets the command executed or suggested here.
         TPA:
-          MATERIAL: "ENDER_PEARL" # Sets the Bukkit material used here.
+          MATERIAL: "ENDER_PEARL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 12 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛѕ" # Sets the name text used here.
           LORE:
@@ -1704,7 +1704,7 @@ SERVER-INFO-MENU:
             - "&7ᴜѕᴇ &f/tpa <player> &7ᴛᴏ ʀᴇǫᴜᴇѕᴛ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ ᴛᴏ ᴛʜᴇᴍ."
             - "&7ᴜѕᴇ &f/tpahere <player> &7ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛʜᴇᴍ ᴛᴏ ᴄᴏᴍᴇ ᴛᴏ ʏᴏᴜ."
         LEADERBOARDS_GUIDE:
-          MATERIAL: "CLOCK" # Sets the Bukkit material used here.
+          MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 13 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ" # Sets the name text used here.
           LORE:
@@ -1714,7 +1714,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/leaderboards"
           COMMAND: "leaderboards" # Sets the command executed or suggested here.
         SETTINGS_GUIDE:
-          MATERIAL: "GRAY_DYE" # Sets the Bukkit material used here.
+          MATERIAL: "GRAY_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 14 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCѕᴇᴛᴛɪɴɢѕ" # Sets the name text used here.
           LORE:
@@ -1724,7 +1724,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/settings"
           COMMAND: "settings" # Sets the command executed or suggested here.
         RULES_GUIDE:
-          MATERIAL: "KNOWLEDGE_BOOK" # Sets the Bukkit material used here.
+          MATERIAL: "KNOWLEDGE_BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 15 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCʀᴜʟᴇѕ" # Sets the name text used here.
           LORE:
@@ -1734,7 +1734,7 @@ SERVER-INFO-MENU:
             - "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/rules"
           COMMAND: "rules" # Sets the command executed or suggested here.
         SOCIAL_GUIDE:
-          MATERIAL: "PINK_DYE" # Sets the Bukkit material used here.
+          MATERIAL: "PINK_DYE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
           SLOT: 16 # Sets the inventory slot used by this item.
           NAME: "&#00A4FCѕᴏᴄɪᴀʟ & ᴍᴇᴅɪᴀ" # Sets the name text used here.
           LORE:
@@ -1745,11 +1745,11 @@ SERVER-INFO-MENU:
           COMMAND: "media" # Sets the command executed or suggested here.
 # UDS setup: Configure RULES-MENU options for this file.
 RULES-MENU:
-  TITLE: "&8ʀᴜʟᴇѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ʀᴜʟᴇѕ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   BUTTONS:
     RULE_1:
-      MATERIAL: "KNOWLEDGE_BOOK" # Sets the Bukkit material used here.
+      MATERIAL: "KNOWLEDGE_BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 12 # Sets the inventory slot used by this item.
       NAME: "&#00A4FCѕᴇʀᴠᴇʀ ʀᴜʟᴇѕ" # Sets the name text used here.
       LORE:
@@ -1775,7 +1775,7 @@ RULES-MENU:
         - "&#00A4FC● &fɴᴏ ѕᴛᴀꜰꜰ ɪᴍᴘᴇʀѕᴏɴᴀᴛɪᴏɴ"
         - "&#00A4FC● &fɴᴏ ᴇxᴛᴇʀɴᴀʟ ɢᴀᴍʙʟɪɴɢ"
     RULE_2:
-      MATERIAL: "KNOWLEDGE_BOOK" # Sets the Bukkit material used here.
+      MATERIAL: "KNOWLEDGE_BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
       SLOT: 14 # Sets the inventory slot used by this item.
       NAME: "&#00A4FC&lᴄʜᴀᴛ ʀᴜʟᴇѕ" # Sets the name text used here.
       LORE:
@@ -1794,76 +1794,76 @@ RULES-MENU:
 
 # UDS setup: Configure AFK-MENU options for this file.
 AFK-MENU:
-  TITLE: "&8ᴀꜰᴋ ᴀʀᴇᴀѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
+  TITLE: "&8ᴀꜰᴋ ᴀʀᴇᴀѕ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
   RANDOM-BUTTON:
     SLOT: 49 # Sets the inventory slot used by this item.
-    MATERIAL: "AMETHYST_BLOCK" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#A303F9ᴀꜰᴋ" # Sets the display name shown to players.
+    MATERIAL: "AMETHYST_BLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     LORE:
       - "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴀ ʀᴀɴᴅᴏᴍ ᴀꜰᴋ ᴀʀᴇᴀ"
   AREAS:
     "1":
       SLOT: 0 # Sets the inventory slot used by this item.
-      MATERIAL: "ITEM_FRAME" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#A303F9ᴀꜰᴋ #1" # Sets the display name shown to players.
+      MATERIAL: "ITEM_FRAME" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&8{players}/200"
         - "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏ ᴛᴏ ᴛʜɪѕ"
         - "&7ᴀꜰᴋ ᴢᴏɴᴇ ᴀʀᴇᴀ."
-      CUBOID: "afk1" # Configures the cuboid option.
-      LOCATION: 1 # Configures the location option.
+      CUBOID: "afk1" # Cuboid setting.
+      LOCATION: 1 # Location setting.
     "2":
       SLOT: 1 # Sets the inventory slot used by this item.
-      MATERIAL: "ITEM_FRAME" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#A303F9ᴀꜰᴋ #2" # Sets the display name shown to players.
+      MATERIAL: "ITEM_FRAME" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&8{players}/200"
         - "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏ ᴛᴏ ᴛʜɪѕ"
         - "&7ᴀꜰᴋ ᴢᴏɴᴇ ᴀʀᴇᴀ."
-      CUBOID: "afk2" # Configures the cuboid option.
-      LOCATION: 2 # Configures the location option.
+      CUBOID: "afk2" # Cuboid setting.
+      LOCATION: 2 # Location setting.
 
 # UDS setup: Configure SPAWN-MENU options for this file.
 SPAWN-MENU:
-  TITLE: "&8ѕᴘᴀᴡɴ ᴀʀᴇᴀѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
+  TITLE: "&8ѕᴘᴀᴡɴ ᴀʀᴇᴀѕ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
   RANDOM-BUTTON:
     SLOT: 49 # Sets the inventory slot used by this item.
-    MATERIAL: "LIGHT_BLUE_GLAZED_TERRACOTTA" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#00A4FCѕᴘᴀᴡɴ" # Sets the display name shown to players.
+    MATERIAL: "LIGHT_BLUE_GLAZED_TERRACOTTA" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     LORE:
       - "&fᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴀ ʀᴀɴᴅᴏᴍ ѕᴘᴀᴡɴ ᴀʀᴇᴀ"
   AREAS:
     "1":
       SLOT: 0 # Sets the inventory slot used by this item.
-      MATERIAL: "ITEM_FRAME" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#00A4FCѕᴘᴀᴡɴ #1" # Sets the display name shown to players.
+      MATERIAL: "ITEM_FRAME" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&8{players}/200"
         - "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏ ᴛᴏ ᴛʜɪѕ"
         - "&7ѕᴘᴀᴡɴ ᴀʀᴇᴀ."
-      CUBOID: "spawn1" # Configures the cuboid option.
-      LOCATION: 1 # Configures the location option.
+      CUBOID: "spawn1" # Cuboid setting.
+      LOCATION: 1 # Location setting.
     "2":
       SLOT: 1 # Sets the inventory slot used by this item.
-      MATERIAL: "ITEM_FRAME" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#00A4FCѕᴘᴀᴡɴ #2" # Sets the display name shown to players.
+      MATERIAL: "ITEM_FRAME" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&8{players}/200"
         - "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏ ᴛᴏ ᴛʜɪѕ"
         - "&7ѕᴘᴀᴡɴ ᴀʀᴇᴀ."
-      CUBOID: "spawn2" # Configures the cuboid option.
-      LOCATION: 2 # Configures the location option.
+      CUBOID: "spawn2" # Cuboid setting.
+      LOCATION: 2 # Location setting.
 # UDS setup: Profile viewer menu layout.
 PROFILE-VIEWER-MENU:
-  TITLE: "&8{username}'ѕ ᴘʀᴏꜰɪʟᴇ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
+  TITLE: "&8{username}'ѕ ᴘʀᴏꜰɪʟᴇ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
   BUTTONS:
     SUMMARY:
       SLOT: 4 # Sets the inventory slot used by this item.
-      MATERIAL: "PLAYER_HEAD" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18D{username}" # Sets the display name shown to players.
+      MATERIAL: "PLAYER_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ѕᴛᴀᴛᴜѕ: &f{status}"
         - "&7ᴛᴇᴀᴍ: &f{team}"
@@ -1872,17 +1872,17 @@ PROFILE-VIEWER-MENU:
         - "&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} ({x}, {y}, {z})"
     HOMES:
       SLOT: 40 # Sets the inventory slot used by this item.
-      MATERIAL: "RED_BED" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dʜᴏᴍᴇѕ" # Sets the display name shown to players.
+      MATERIAL: "RED_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴠɪᴇᴡ ᴀɴᴅ ɴᴀᴠɪɢᴀᴛᴇ ᴛʜʀᴏᴜɢʜ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ʜᴏᴍᴇѕ"
         - "&7ʜᴏᴍᴇѕ ѕᴀᴠᴇᴅ: &f{homes}"
         - "&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ"
     CURRENT-LOCATION:
       SLOT: 41 # Sets the inventory slot used by this item.
-      MATERIAL: "COMPASS" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ" # Sets the display name shown to players.
-      DISPLAY-NAME-OFFLINE: "&cᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ" # Configures the display name offline option.
+      MATERIAL: "COMPASS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
+      DISPLAY-NAME-OFFLINE: "&cᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ" # Text string (supports & color codes)
       LORE:
         - "&7{world} ({x}, {y}, {z})"
         - "&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ"
@@ -1890,87 +1890,87 @@ PROFILE-VIEWER-MENU:
         - "&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ ʀɪɢʜᴛ ɴᴏᴡ."
     PUNISHMENTS:
       SLOT: 42 # Sets the inventory slot used by this item.
-      MATERIAL: "IRON_BARS" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dᴘᴜɴɪѕʜᴍᴇɴᴛѕ" # Sets the display name shown to players.
+      MATERIAL: "IRON_BARS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴠɪᴇᴡ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ"
         - "&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ"
     REFRESH:
       SLOT: 49 # Sets the inventory slot used by this item.
-      MATERIAL: "CLOCK" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dʀᴇꜰʀᴇѕʜ" # Sets the display name shown to players.
+      MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ᴘʀᴏꜰɪʟᴇ"
 
 # UDS setup: Profile viewer home list menu layout.
 PROFILE-VIEWER-HOMES-MENU:
-  TITLE: "&8{username}'ѕ ʜᴏᴍᴇѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
-  MAX-ITEMS-PER-PAGE: 45 # Sets the allowed limit for this option.
+  TITLE: "&8{username}'ѕ ʜᴏᴍᴇѕ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  MAX-ITEMS-PER-PAGE: 45 # Numeric value (integer)
   HOME-BUTTON:
-    MATERIAL: "LIGHT_BLUE_BED" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&b{name}" # Sets the display name shown to players.
+    MATERIAL: "LIGHT_BLUE_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&b{name}" # Text string (supports & color codes)
     LORE:
       - "&7ᴡᴏʀʟᴅ: &f{world}"
       - "&7x: &f{x} &7ʏ: &f{y} &7ᴢ: &f{z}"
       - "&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ"
   INVALID-HOME-BUTTON:
-    MATERIAL: "BARRIER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&c{name}" # Sets the display name shown to players.
+    MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&c{name}" # Text string (supports & color codes)
     LORE:
       - "&7ᴛʜɪѕ ʜᴏᴍᴇ ᴘᴏɪɴᴛѕ ᴛᴏ ᴀɴ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ᴡᴏʀʟᴅ."
   EMPTY-BUTTON:
-    MATERIAL: "BARRIER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&cɴᴏ ʜᴏᴍᴇѕ" # Sets the display name shown to players.
+    MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&cɴᴏ ʜᴏᴍᴇѕ" # Text string (supports & color codes)
     LORE:
       - "&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ʜᴀѕ ɴᴏ ʜᴏᴍᴇѕ ѕᴀᴠᴇᴅ."
   BACK-BUTTON:
-    MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&cʙᴀᴄᴋ" # Sets the display name shown to players.
+    MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&cʙᴀᴄᴋ" # Text string (supports & color codes)
     LORE:
       - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴍᴀɪɴ ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ"
   REFRESH-BUTTON:
-    MATERIAL: "CLOCK" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&#6BF18Dʀᴇꜰʀᴇѕʜ" # Sets the display name shown to players.
+    MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     LORE:
       - "&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ʜᴏᴍᴇѕ"
 
 # UDS setup: Punishment history menu layout.
 PUNISHMENT-HISTORY-MENU:
-  TITLE: "&8ᴘᴜɴɪѕʜᴍᴇɴᴛѕ ({player})" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
-  MAX-ITEMS-PER-PAGE: 45 # Sets the allowed limit for this option.
+  TITLE: "&8ᴘᴜɴɪѕʜᴍᴇɴᴛѕ ({player})" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  MAX-ITEMS-PER-PAGE: 45 # Numeric value (integer)
   BUTTONS:
     BACK:
-      MATERIAL: "ARROW" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&cʙᴀᴄᴋ" # Sets the display name shown to players.
+      MATERIAL: "ARROW" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&cʙᴀᴄᴋ" # Text string (supports & color codes)
       LORE:
         - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴘʀᴇᴠɪᴏᴜѕ ᴍᴇɴᴜ"
     FILTER-STATE:
-      MATERIAL: "HOPPER" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dѕᴛᴀᴛᴇ ꜰɪʟᴛᴇʀ" # Sets the display name shown to players.
+      MATERIAL: "HOPPER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴄᴜʀʀᴇɴᴛ: &f{state_filter}"
         - "&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ"
     FILTER-TYPE:
-      MATERIAL: "BOOK" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dᴛʏᴘᴇ ꜰɪʟᴛᴇʀ" # Sets the display name shown to players.
+      MATERIAL: "BOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴄᴜʀʀᴇɴᴛ: &f{type_filter}"
         - "&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ"
     REFRESH:
-      MATERIAL: "CLOCK" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dʀᴇꜰʀᴇѕʜ" # Sets the display name shown to players.
+      MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ"
   PUNISHMENT-ITEM:
     MATERIALS:
-      BAN: "IRON_BARS" # Configures the ban option.
-      MUTE: "PAPER" # Configures the mute option.
-      WARN: "YELLOW_DYE" # Configures the warn option.
-      KICK: "LEATHER_BOOTS" # Configures the kick option.
-      BLACKLIST: "BARRIER" # Configures the blacklist option.
-    DISPLAY-NAME: "{status_color}{type}" # Sets the display name shown to players.
+      BAN: "IRON_BARS" # Ban setting.
+      MUTE: "PAPER" # Mute setting.
+      WARN: "YELLOW_DYE" # Warn setting.
+      KICK: "LEATHER_BOOTS" # Kick setting.
+      BLACKLIST: "BARRIER" # Blacklist setting.
+    DISPLAY-NAME: "{status_color}{type}" # Text string (supports & color codes)
     LORE:
       - "&7ʀᴇᴀѕᴏɴ: &f{reason}"
       - "&7ɪѕѕᴜᴇᴅ ʙʏ: &f{issuer}"
@@ -1984,80 +1984,80 @@ PUNISHMENT-HISTORY-MENU:
       - ""
       - "&cѕʜɪꜰᴛ-ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʀᴇᴄᴏʀᴅ"
   EMPTY-BUTTON:
-    MATERIAL: "BARRIER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&cɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ" # Sets the display name shown to players.
+    MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&cɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ" # Text string (supports & color codes)
     LORE:
       - "&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ʜᴀѕ ɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅѕ."
 
 # UDS setup: Stats wipe menu layout.
 STATS-WIPE-MENU:
-  TITLE: "&8ѕᴛᴀᴛѕ ᴡɪᴘᴇ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
-  PLACEHOLDER: true # Configures the placeholder option.
-  PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+  TITLE: "&8ѕᴛᴀᴛѕ ᴡɪᴘᴇ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
+  PLACEHOLDER: true # Placeholder setting.
+  PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
   STATUS:
     SLOT: 13 # Sets the inventory slot used by this item.
-    MATERIAL: "BARRIER" # Sets the Bukkit material used here.
-    DISPLAY-NAME: "&cᴡɪᴘᴇ ɪɴ ᴘʀᴏɢʀᴇѕѕ" # Sets the display name shown to players.
+    MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+    DISPLAY-NAME: "&cᴡɪᴘᴇ ɪɴ ᴘʀᴏɢʀᴇѕѕ" # Text string (supports & color codes)
     LORE:
       - "&7ᴀɴᴏᴛʜᴇʀ ᴡɪᴘᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ʀᴜɴɴɪɴɢ."
       - "&7ᴡᴀɪᴛ ꜰᴏʀ ɪᴛ ᴛᴏ ꜰɪɴɪѕʜ, ᴛʜᴇɴ ʀᴇꜰʀᴇѕʜ."
   BUTTONS:
     PLAYER_STATS:
       SLOT: 10 # Sets the inventory slot used by this item.
-      MATERIAL: "PAPER" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dᴘʟᴀʏᴇʀ ѕᴛᴀᴛѕ" # Sets the display name shown to players.
+      MATERIAL: "PAPER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴘʟᴀʏᴇʀѕ ᴡɪᴛʜ ᴛʀᴀᴄᴋᴇᴅ ѕᴛᴀᴛѕ: &f{count}"
         - "&cʀᴇѕᴇᴛ ᴋɪʟʟѕ, ᴅᴇᴀᴛʜѕ, ᴘʟᴀʏᴛɪᴍᴇ,"
         - "&cʙʟᴏᴄᴋѕ, ᴍᴏʙѕ, ѕᴛʀᴇᴀᴋѕ, ᴀɴᴅ ᴍᴏɴᴇʏ ꜰʟᴏᴡ ѕᴛᴀᴛѕ."
     TEAM_DOCUMENTS:
       SLOT: 11 # Sets the inventory slot used by this item.
-      MATERIAL: "LIGHT_BLUE_BANNER" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dᴛᴇᴀᴍ ᴅᴏᴄᴜᴍᴇɴᴛѕ" # Sets the display name shown to players.
+      MATERIAL: "LIGHT_BLUE_BANNER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴛᴇᴀᴍѕ ѕᴛᴏʀᴇᴅ: &f{count}"
         - "&cᴅᴇʟᴇᴛᴇ ᴀʟʟ ᴛᴇᴀᴍѕ ᴀɴᴅ ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀѕ."
     HOME_DOCUMENTS:
       SLOT: 12 # Sets the inventory slot used by this item.
-      MATERIAL: "RED_BED" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dʜᴏᴍᴇ ᴅᴏᴄᴜᴍᴇɴᴛѕ" # Sets the display name shown to players.
+      MATERIAL: "RED_BED" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ʜᴏᴍᴇѕ ѕᴛᴏʀᴇᴅ: &f{count}"
         - "&cᴅᴇʟᴇᴛᴇ ᴀʟʟ ѕᴀᴠᴇᴅ ᴘʟᴀʏᴇʀ ʜᴏᴍᴇѕ."
     BOUNTIES:
       SLOT: 14 # Sets the inventory slot used by this item.
-      MATERIAL: "PLAYER_HEAD" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dʙᴏᴜɴᴛɪᴇѕ" # Sets the display name shown to players.
+      MATERIAL: "PLAYER_HEAD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴀᴄᴛɪᴠᴇ ʙᴏᴜɴᴛɪᴇѕ: &f{count}"
         - "&cᴅᴇʟᴇᴛᴇ ᴀʟʟ ᴀᴄᴛɪᴠᴇ ʙᴏᴜɴᴛɪᴇѕ."
     SELL_DOCUMENTS:
       SLOT: 15 # Sets the inventory slot used by this item.
-      MATERIAL: "CHEST" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dѕᴇʟʟ ᴅᴏᴄᴜᴍᴇɴᴛѕ" # Sets the display name shown to players.
+      MATERIAL: "CHEST" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ѕᴇʟʟ ᴅᴏᴄѕ ѕᴛᴏʀᴇᴅ: &f{count}"
         - "&cᴅᴇʟᴇᴛᴇ ѕᴇʟʟ ʜɪѕᴛᴏʀʏ ᴀɴᴅ ѕᴇʟʟ ᴘʀᴏɢʀᴇѕѕ."
     REFRESH:
       SLOT: 22 # Sets the inventory slot used by this item.
-      MATERIAL: "CLOCK" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18Dʀᴇꜰʀᴇѕʜ" # Sets the display name shown to players.
+      MATERIAL: "CLOCK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ ᴡɪᴘᴇ ᴄᴏᴜɴᴛѕ."
     CLOSE:
       SLOT: 26 # Sets the inventory slot used by this item.
-      MATERIAL: "BARRIER" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&cᴄʟᴏѕᴇ" # Sets the display name shown to players.
+      MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&cᴄʟᴏѕᴇ" # Text string (supports & color codes)
       LORE:
         - "&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ."
 
 # UDS setup: Feature toggle admin menu layout.
 FEATURE-TOGGLE-MENU:
-  TITLE: "&8ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 54 # Sets the inventory size in slots.
-  PLACEHOLDER: true # Configures the placeholder option.
-  PLACEHOLDER-MATERIAL: "GRAY_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+  TITLE: "&8ꜰᴇᴀᴛᴜʀᴇ ᴛᴏɢɢʟᴇѕ" # Text string (supports & color codes)
+  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
+  PLACEHOLDER: true # Placeholder setting.
+  PLACEHOLDER-MATERIAL: "GRAY_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
   CONTENT-SLOTS:
     - 0
     - 1
@@ -2105,7 +2105,7 @@ FEATURE-TOGGLE-MENU:
     - 43
     - 44
   DEFAULTS:
-    DISPLAY-NAME: "&#6BF18D{feature}" # Sets the display name shown to players.
+    DISPLAY-NAME: "&# Text string (supports & color codes)
     LORE:
       - "&7{description}"
       - ""
@@ -2116,59 +2116,59 @@ FEATURE-TOGGLE-MENU:
   BUTTONS:
     PREVIOUS:
       SLOT: 45 # Sets the inventory slot used by this item.
-      MATERIAL: "ARROW" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&aᴘʀᴇᴠɪᴏᴜѕ" # Sets the display name shown to players.
+      MATERIAL: "ARROW" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&aᴘʀᴇᴠɪᴏᴜѕ" # Text string (supports & color codes)
       LORE:
         - "&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{previous_page}&7."
     CLOSE:
       SLOT: 49 # Sets the inventory slot used by this item.
-      MATERIAL: "BARRIER" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&cᴄʟᴏѕᴇ" # Sets the display name shown to players.
+      MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&cᴄʟᴏѕᴇ" # Text string (supports & color codes)
       LORE:
         - "&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ."
     NEXT:
       SLOT: 53 # Sets the inventory slot used by this item.
-      MATERIAL: "ARROW" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&aɴᴇxᴛ" # Sets the display name shown to players.
+      MATERIAL: "ARROW" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&aɴᴇxᴛ" # Text string (supports & color codes)
       LORE:
         - "&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{next_page}&7."
 
 # UDS setup: Stats wipe confirmation menu layout.
 STATS-WIPE-CONFIRM-MENU:
-  TITLE: "&8ᴄᴏɴꜰɪʀᴍ {target}" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
-  PLACEHOLDER: true # Configures the placeholder option.
-  PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+  TITLE: "&8ᴄᴏɴꜰɪʀᴍ {target}" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
+  PLACEHOLDER: true # Placeholder setting.
+  PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
   BUTTONS:
     TARGET:
       SLOT: 13 # Sets the inventory slot used by this item.
-      MATERIAL: "PAPER" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&#6BF18D{target}" # Sets the display name shown to players.
+      MATERIAL: "PAPER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&# Text string (supports & color codes)
       LORE:
         - "&7ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}"
         - "&cᴛʜɪѕ ᴀᴄᴛɪᴏɴ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜɴᴅᴏɴᴇ."
         - "&7ᴄʟɪᴄᴋ ᴄᴏɴꜰɪʀᴍ ᴏɴʟʏ ɪꜰ ʏᴏᴜ ᴀʀᴇ ѕᴜʀᴇ."
     CANCEL:
       SLOT: 11 # Sets the inventory slot used by this item.
-      MATERIAL: "RED_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&cᴄᴀɴᴄᴇʟ" # Sets the display name shown to players.
+      MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&cᴄᴀɴᴄᴇʟ" # Text string (supports & color codes)
       LORE:
         - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ᴍᴇɴᴜ."
     CONFIRM:
       SLOT: 15 # Sets the inventory slot used by this item.
-      MATERIAL: "LIME_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
-      DISPLAY-NAME: "&aᴄᴏɴꜰɪʀᴍ" # Sets the display name shown to players.
+      MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
+      DISPLAY-NAME: "&aᴄᴏɴꜰɪʀᴍ" # Text string (supports & color codes)
       LORE:
         - "&7ʀᴜɴ ᴡɪᴘᴇ ꜰᴏʀ &f{target}&7."
         - "&7ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}"
 # UDS setup: Server selector menu layout.
 SERVERS-MENU:
-  TITLE: "&8ᴏɴɢᴏɪɴɢ ѕᴇʀᴠᴇʀѕ" # Sets the title text shown for this menu or prompt.
-  SIZE: 27 # Sets the inventory size in slots.
+  TITLE: "&8ᴏɴɢᴏɪɴɢ ѕᴇʀᴠᴇʀѕ" # Text string (supports & color codes)
+  SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
   REFRESH-TICKS: 40 # Sets how often this task or update runs.
-  PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Sets the Bukkit material used here.
+  PLACEHOLDER-MATERIAL: "BLACK_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
   SERVER_STATUS:
-    TITLE: "&8ᴏɴɢᴏɪɴɢ ѕᴇʀᴠᴇʀѕ" # Sets the title text shown for this menu or prompt.
+    TITLE: "&8ᴏɴɢᴏɪɴɢ ѕᴇʀᴠᴇʀѕ" # Text string (supports & color codes)
     SERVER_NAME: "&b%server%" # Sets the name text used here.
     LORE:
       - "&8&m---------------------"
@@ -2178,8 +2178,8 @@ SERVERS-MENU:
       - "&6ᴘᴇʀꜰᴏʀᴍᴀɴᴄᴇ: %performance%"
       - "&8&m---------------------"
     MATERIALS:
-      ONLINE: "LIME_CONCRETE" # Configures the online option.
-      OFFLINE: "RED_CONCRETE" # Configures the offline option.
+      ONLINE: "LIME_CONCRETE" # Online setting.
+      OFFLINE: "RED_CONCRETE" # Offline setting.
   SERVERS:
     crystal:
       SLOT: 13 # Sets the inventory slot used by this item.
