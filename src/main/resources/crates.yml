@@ -1,360 +1,490 @@
-# UDS setup: Crate opening behavior and editable crate reward definitions.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+# Configuration section for Settings.
 SETTINGS:
+  # Configuration section for List Menu.
   LIST-MENU:
-    TITLE: "&8ᴄʀᴀᴛᴇѕ" # Text string (supports & color codes)
-    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
-    FILLER: "GRAY_STAINED_GLASS_PANE" # Filler setting.
-    CONTENT-SLOTS: [10, 11, 12, 13, 14, 15, 16] # Content Slots setting.
-    EMPTY-SLOT: 13 # Sets the inventory slot used by this item.
+    TITLE: '&8Crates'
+    SIZE: 27
+    # The text or value for Filler. Available options: Any valid string text
+    FILLER: GRAY_STAINED_GLASS_PANE
+    # Configuration section for Content Slots.
+    CONTENT-SLOTS:
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    # The numerical value for Empty Slot. Available options: Any valid integer
+    EMPTY-SLOT: 13
+    # Configuration section for Empty.
     EMPTY:
-      MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&cɴᴏ ᴄʀᴀᴛᴇѕ" # Text string (supports & color codes)
+      MATERIAL: BARRIER
+      DISPLAY-NAME: '&cNo Crates'
       LORE:
-        - "&7ɴᴏ ᴄʀᴀᴛᴇѕ ᴀʀᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ."
+      - '&7No crates are available right now.'
+    # Configuration section for Close Button.
     CLOSE-BUTTON:
-      SLOT: 26 # Sets the inventory slot used by this item.
-      MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&cᴄʟᴏѕᴇ" # Text string (supports & color codes)
+      SLOT: 26
+      MATERIAL: BARRIER
+      DISPLAY-NAME: '&cClose'
       LORE:
-        - "&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ."
-
+      - '&7Close this menu.'
+  # Configuration section for Confirm Menu.
   CONFIRM-MENU:
-    SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
-    FILLER: "GRAY_STAINED_GLASS_PANE" # Filler setting.
-    PREVIEW-SLOT: 13 # Sets the inventory slot used by this item.
-    CONFIRM-SLOT: 15 # Sets the inventory slot used by this item.
+    SIZE: 27
+    # The text or value for Filler. Available options: Any valid string text
+    FILLER: GRAY_STAINED_GLASS_PANE
+    # The numerical value for Preview Slot. Available options: Any valid integer
+    PREVIEW-SLOT: 13
+    # The numerical value for Confirm Slot. Available options: Any valid integer
+    CONFIRM-SLOT: 15
+    # Configuration section for Confirm Button.
     CONFIRM-BUTTON:
-      MATERIAL: "LIME_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&aᴄᴏɴꜰɪʀᴍ" # Text string (supports & color codes)
+      MATERIAL: LIME_STAINED_GLASS_PANE
+      DISPLAY-NAME: '&aConfirm'
       LORE:
-        - "&7ᴄʟᴀɪᴍ &f{reward}&7 ꜰʀᴏᴍ"
-        - "&b{crate}&7."
+      - '&7Claim &f{reward}&7 from'
+      - '&b{crate}&7.'
+    # Configuration section for Cancel Button.
     CANCEL-BUTTON:
-      SLOT: 11 # Sets the inventory slot used by this item.
-      MATERIAL: "RED_STAINED_GLASS_PANE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&cᴄᴀɴᴄᴇʟ" # Text string (supports & color codes)
+      SLOT: 11
+      MATERIAL: RED_STAINED_GLASS_PANE
+      DISPLAY-NAME: '&cCancel'
       LORE:
-        - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ʀᴇᴡᴀʀᴅ ʟɪѕᴛ."
-
+      - '&7Return to the reward list.'
+  # Configuration section for Hologram.
   HOLOGRAM:
-    OFFSET-Y: 1.6 # Offset Y setting.
-    KEY-LINE-OFFSET-Y: -0.3 # Key Line Offset Y setting.
-    VIEW-DISTANCE: 24.0 # View Distance setting.
-    UPDATE-TICKS: 20 # Sets how often this task or update runs.
+    # The decimal value for Offset Y. Available options: Any decimal number
+    OFFSET-Y: 1.6
+    # Configuration section for Lines.
     LINES:
-      - "{crate}"
-      - "&7right-click to open"
-      - "&e/store"
-    KEY-LINE: "&7keys: &f{keys}" # Key Line setting.
-
-  PREVIEW:
-    ENABLED: true # Options: true or false
-    OFFSET-Y: 1.25 # The vertical offset above the crate block for the preview item.
-    UPDATE-INTERVAL-TICKS: 2 # How often to update the rotation/hover on the server (1 = every tick, 2 = every 2 ticks, etc). Higher values reduce server lag.
-    CYCLE-INTERVAL-TICKS: 40 # Cycle to the next reward item every 2 seconds.
-    ROTATION-SPEED: 4.0 # Rotation speed factor in degrees per tick.
-    HOVER-AMPLITUDE: 0.08 # Maximum vertical distance to float up and down.
-    HOVER-SPEED: 0.08 # Speed/frequency of the floating motion.
-
+    - '{crate}'
+    - '&7Right-click to open'
+    # The text or value for Key Line. Available options: Any valid string text
+    KEY-LINE: '&7Keys: &f{keys}'
+  # Configuration section for Particles.
   PARTICLES:
-    ENABLED: true # Options: true or false
-    TYPE: "ENCHANT" # Type setting.
-    COUNT: 4 # Count setting.
-
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    TYPE: ENCHANT
+    # The numerical value for Count. Available options: Any valid integer
+    COUNT: 4
+  # Configuration section for Gacha.
   GACHA:
-    TITLE: "&8rolling reward" # Text string (supports & color codes)
-    FILLER: "BLACK_STAINED_GLASS_PANE" # Filler setting.
-    PREVIEW-SLOTS: [10, 11, 12, 13, 14, 15, 16] # Preview Slots setting.
-    POINTER-SLOT: 13 # Sets the inventory slot used by this item.
-    TOTAL-STEPS: 38 # Total Steps setting.
-    TICK-INTERVAL: 2 # Sets how often this task or update runs.
-
-# UDS setup: Crate definitions, keys, animations, rewards, and editor-managed content.
+    TITLE: '&8Rolling Reward'
+    # The text or value for Filler. Available options: Any valid string text
+    FILLER: BLACK_STAINED_GLASS_PANE
+    # Configuration section for Preview Slots.
+    PREVIEW-SLOTS:
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    # The numerical value for Pointer Slot. Available options: Any valid integer
+    POINTER-SLOT: 13
+    # The numerical value for Total Steps. Available options: Any valid integer
+    TOTAL-STEPS: 38
+    # The numerical value for Tick Interval. Available options: Any valid integer
+    TICK-INTERVAL: 2
+# Configuration section for Crates.
 CRATES:
+  # Configuration section for Common.
   common:
-    ENABLED: true # Options: true or false
-    OPEN-TYPE: "CHOOSE_ONE" # Open Type setting.
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Open Type. Available options: Any valid string text
+    OPEN-TYPE: CHOOSE_ONE
+    # Configuration section for Display.
     DISPLAY:
-      MATERIAL: "CHEST" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&fcommon crate" # Text string (supports & color codes)
+      MATERIAL: CHEST
+      DISPLAY-NAME: '&fCommon Crate'
       LORE:
-        - "&7keys: &f{keys}"
-        - "&aclick to open and choose 1 reward."
+      - '&7Keys: &f{keys}'
+      - '&aClick to open and choose 1 reward.'
+    # Configuration section for Key Item.
     KEY-ITEM:
-      MATERIAL: "TRIPWIRE_HOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&fcommon key" # Text string (supports & color codes)
+      MATERIAL: TRIPWIRE_HOOK
+      DISPLAY-NAME: '&fCommon Key'
       LORE:
-        - "&7opens the &fcommon crate&7."
-    PERMISSION: "" # Permission node (e.g., ultimatedonutsmp.admin)
-    BROADCAST-ON-CLAIM: false # Broadcast On Claim setting.
+      - '&7Opens the &fCommon Crate&7.'
+    # The text or value for Permission. Available options: Any valid string text
+    PERMISSION: ''
+    # Determines whether Broadcast On Claim is enabled or disabled. Available options: true, false
+    BROADCAST-ON-CLAIM: false
+    # Configuration section for Menu.
     MENU:
-      OPEN-TITLE: "&8ᴄʜᴏᴏѕᴇ 1 ʀᴇᴡᴀʀᴅ" # Text string (supports & color codes)
-      CONFIRM-TITLE: "&8ᴄᴏɴꜰɪʀᴍ ʀᴇᴡᴀʀᴅ" # Text string (supports & color codes)
-      SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
-      FILLER: "BLACK_STAINED_GLASS_PANE" # Filler setting.
-      BACK-SLOT: 26 # Sets the inventory slot used by this item.
+      # The text or value for Open Title. Available options: Any valid string text
+      OPEN-TITLE: '&8Choose 1 Reward'
+      # The text or value for Confirm Title. Available options: Any valid string text
+      CONFIRM-TITLE: '&8Confirm Reward'
+      SIZE: 27
+      # The text or value for Filler. Available options: Any valid string text
+      FILLER: BLACK_STAINED_GLASS_PANE
+      # The numerical value for Back Slot. Available options: Any valid integer
+      BACK-SLOT: 26
+      # Configuration section for Back Button.
       BACK-BUTTON:
-        MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        DISPLAY-NAME: "&cʙᴀᴄᴋ" # Text string (supports & color codes)
+        MATERIAL: BARRIER
+        DISPLAY-NAME: '&cBack'
         LORE:
-          - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."
+        - '&7Return to the crate list.'
+    # Configuration section for Rewards.
     REWARDS:
+      # Configuration section for Iron Helmet.
       iron_helmet:
-        SLOT: 10 # Sets the inventory slot used by this item.
+        SLOT: 10
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "IRON_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&firon helmet" # Text string (supports & color codes)
+          MATERIAL: IRON_HELMET
+          DISPLAY-NAME: '&fIron Helmet'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "IRON_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: IRON_HELMET
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Iron Chestplate.
       iron_chestplate:
-        SLOT: 11 # Sets the inventory slot used by this item.
+        SLOT: 11
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "IRON_CHESTPLATE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&firon chestplate" # Text string (supports & color codes)
+          MATERIAL: IRON_CHESTPLATE
+          DISPLAY-NAME: '&fIron Chestplate'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "IRON_CHESTPLATE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: IRON_CHESTPLATE
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Iron Leggings.
       iron_leggings:
-        SLOT: 12 # Sets the inventory slot used by this item.
+        SLOT: 12
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "IRON_LEGGINGS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&firon leggings" # Text string (supports & color codes)
+          MATERIAL: IRON_LEGGINGS
+          DISPLAY-NAME: '&fIron Leggings'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "IRON_LEGGINGS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: IRON_LEGGINGS
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Iron Boots.
       iron_boots:
-        SLOT: 13 # Sets the inventory slot used by this item.
+        SLOT: 13
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "IRON_BOOTS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&firon boots" # Text string (supports & color codes)
+          MATERIAL: IRON_BOOTS
+          DISPLAY-NAME: '&fIron Boots'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "IRON_BOOTS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: IRON_BOOTS
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Iron Sword.
       iron_sword:
-        SLOT: 14 # Sets the inventory slot used by this item.
+        SLOT: 14
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "IRON_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&firon sword" # Text string (supports & color codes)
+          MATERIAL: IRON_SWORD
+          DISPLAY-NAME: '&fIron Sword'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "IRON_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: IRON_SWORD
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Money.
       money:
-        SLOT: 15 # Sets the inventory slot used by this item.
+        SLOT: 15
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "SUNFLOWER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&e$5,000" # Text string (supports & color codes)
+          MATERIAL: SUNFLOWER
+          DISPLAY-NAME: '&e$5,000'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "COMMAND" # Type setting.
+          TYPE: COMMAND
+          # Configuration section for Commands.
           COMMANDS:
-            - "addmoney {player} 5000"
-
+          - addmoney {player} 5000
+  # Configuration section for Rare.
   rare:
-    ENABLED: true # Options: true or false
-    OPEN-TYPE: "CHOOSE_ONE" # Open Type setting.
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Open Type. Available options: Any valid string text
+    OPEN-TYPE: CHOOSE_ONE
+    # Configuration section for Display.
     DISPLAY:
-      MATERIAL: "BARREL" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: BARREL
+      DISPLAY-NAME: '&#37BFF9Rare Crate'
       LORE:
-        - "&7keys: &f{keys}"
-        - "&aclick to open and choose 1 reward."
+      - '&7Keys: &f{keys}'
+      - '&aClick to open and choose 1 reward.'
+    # Configuration section for Key Item.
     KEY-ITEM:
-      MATERIAL: "TRIPWIRE_HOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: TRIPWIRE_HOOK
+      DISPLAY-NAME: '&#37BFF9Rare Key'
       LORE:
-        - "&7opens the &brare crate&7."
-    PERMISSION: "" # Permission node (e.g., ultimatedonutsmp.admin)
-    BROADCAST-ON-CLAIM: false # Broadcast On Claim setting.
+      - '&7Opens the &bRare Crate&7.'
+    # The text or value for Permission. Available options: Any valid string text
+    PERMISSION: ''
+    # Determines whether Broadcast On Claim is enabled or disabled. Available options: true, false
+    BROADCAST-ON-CLAIM: false
+    # Configuration section for Menu.
     MENU:
-      OPEN-TITLE: "&8ʀᴀʀᴇ ᴄʀᴀᴛᴇ" # Text string (supports & color codes)
-      CONFIRM-TITLE: "&8ᴄᴏɴꜰɪʀᴍ ʀᴀʀᴇ ʀᴇᴡᴀʀᴅ" # Text string (supports & color codes)
-      SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
-      FILLER: "BLACK_STAINED_GLASS_PANE" # Filler setting.
-      BACK-SLOT: 26 # Sets the inventory slot used by this item.
+      # The text or value for Open Title. Available options: Any valid string text
+      OPEN-TITLE: '&8Rare Crate'
+      # The text or value for Confirm Title. Available options: Any valid string text
+      CONFIRM-TITLE: '&8Confirm Rare Reward'
+      SIZE: 27
+      # The text or value for Filler. Available options: Any valid string text
+      FILLER: BLACK_STAINED_GLASS_PANE
+      # The numerical value for Back Slot. Available options: Any valid integer
+      BACK-SLOT: 26
+      # Configuration section for Back Button.
       BACK-BUTTON:
-        MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        DISPLAY-NAME: "&cʙᴀᴄᴋ" # Text string (supports & color codes)
+        MATERIAL: BARRIER
+        DISPLAY-NAME: '&cBack'
         LORE:
-          - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."
+        - '&7Return to the crate list.'
+    # Configuration section for Rewards.
     REWARDS:
+      # Configuration section for Diamond Helmet.
       diamond_helmet:
-        SLOT: 10 # Sets the inventory slot used by this item.
+        SLOT: 10
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "DIAMOND_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&bdiamond helmet" # Text string (supports & color codes)
+          MATERIAL: DIAMOND_HELMET
+          DISPLAY-NAME: '&bDiamond Helmet'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "DIAMOND_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: DIAMOND_HELMET
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Diamond Chestplate.
       diamond_chestplate:
-        SLOT: 11 # Sets the inventory slot used by this item.
+        SLOT: 11
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "DIAMOND_CHESTPLATE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&bdiamond chestplate" # Text string (supports & color codes)
+          MATERIAL: DIAMOND_CHESTPLATE
+          DISPLAY-NAME: '&bDiamond Chestplate'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "DIAMOND_CHESTPLATE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: DIAMOND_CHESTPLATE
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Diamond Leggings.
       diamond_leggings:
-        SLOT: 12 # Sets the inventory slot used by this item.
+        SLOT: 12
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "DIAMOND_LEGGINGS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&bdiamond leggings" # Text string (supports & color codes)
+          MATERIAL: DIAMOND_LEGGINGS
+          DISPLAY-NAME: '&bDiamond Leggings'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "DIAMOND_LEGGINGS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: DIAMOND_LEGGINGS
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Diamond Boots.
       diamond_boots:
-        SLOT: 13 # Sets the inventory slot used by this item.
+        SLOT: 13
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "DIAMOND_BOOTS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&bdiamond boots" # Text string (supports & color codes)
+          MATERIAL: DIAMOND_BOOTS
+          DISPLAY-NAME: '&bDiamond Boots'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "DIAMOND_BOOTS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: DIAMOND_BOOTS
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Diamond Sword.
       diamond_sword:
-        SLOT: 14 # Sets the inventory slot used by this item.
+        SLOT: 14
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "DIAMOND_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&bdiamond sword" # Text string (supports & color codes)
+          MATERIAL: DIAMOND_SWORD
+          DISPLAY-NAME: '&bDiamond Sword'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "DIAMOND_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: DIAMOND_SWORD
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Money.
       money:
-        SLOT: 15 # Sets the inventory slot used by this item.
+        SLOT: 15
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "SUNFLOWER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&e$15,000" # Text string (supports & color codes)
+          MATERIAL: SUNFLOWER
+          DISPLAY-NAME: '&e$15,000'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "COMMAND" # Type setting.
+          TYPE: COMMAND
+          # Configuration section for Commands.
           COMMANDS:
-            - "addmoney {player} 15000"
-
+          - addmoney {player} 15000
+  # Configuration section for Epic.
   epic:
-    ENABLED: true # Options: true or false
-    OPEN-TYPE: "CHOOSE_ONE" # Open Type setting.
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Open Type. Available options: Any valid string text
+    OPEN-TYPE: CHOOSE_ONE
+    # Configuration section for Display.
     DISPLAY:
-      MATERIAL: "ENDER_CHEST" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: ENDER_CHEST
+      DISPLAY-NAME: '&#A303F9Epic Crate'
       LORE:
-        - "&7keys: &f{keys}"
-        - "&aclick to open and choose 1 reward."
+      - '&7Keys: &f{keys}'
+      - '&aClick to open and choose 1 reward.'
+    # Configuration section for Key Item.
     KEY-ITEM:
-      MATERIAL: "TRIPWIRE_HOOK" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      DISPLAY-NAME: "&# Text string (supports & color codes)
+      MATERIAL: TRIPWIRE_HOOK
+      DISPLAY-NAME: '&#A303F9Epic Key'
       LORE:
-        - "&7opens the &5epic crate&7."
-    PERMISSION: "" # Permission node (e.g., ultimatedonutsmp.admin)
-    BROADCAST-ON-CLAIM: true # Broadcast On Claim setting.
+      - '&7Opens the &5Epic Crate&7.'
+    # The text or value for Permission. Available options: Any valid string text
+    PERMISSION: ''
+    # Determines whether Broadcast On Claim is enabled or disabled. Available options: true, false
+    BROADCAST-ON-CLAIM: true
+    # Configuration section for Menu.
     MENU:
-      OPEN-TITLE: "&8ᴇᴘɪᴄ ᴄʀᴀᴛᴇ" # Text string (supports & color codes)
-      CONFIRM-TITLE: "&8ᴄᴏɴꜰɪʀᴍ ᴇᴘɪᴄ ʀᴇᴡᴀʀᴅ" # Text string (supports & color codes)
-      SIZE: 27 # Inventory size in slots (multiple of 9, max 54)
-      FILLER: "BLACK_STAINED_GLASS_PANE" # Filler setting.
-      BACK-SLOT: 26 # Sets the inventory slot used by this item.
+      # The text or value for Open Title. Available options: Any valid string text
+      OPEN-TITLE: '&8Epic Crate'
+      # The text or value for Confirm Title. Available options: Any valid string text
+      CONFIRM-TITLE: '&8Confirm Epic Reward'
+      SIZE: 27
+      # The text or value for Filler. Available options: Any valid string text
+      FILLER: BLACK_STAINED_GLASS_PANE
+      # The numerical value for Back Slot. Available options: Any valid integer
+      BACK-SLOT: 26
+      # Configuration section for Back Button.
       BACK-BUTTON:
-        MATERIAL: "BARRIER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        DISPLAY-NAME: "&cʙᴀᴄᴋ" # Text string (supports & color codes)
+        MATERIAL: BARRIER
+        DISPLAY-NAME: '&cBack'
         LORE:
-          - "&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."
+        - '&7Return to the crate list.'
+    # Configuration section for Rewards.
     REWARDS:
+      # Configuration section for Netherite Helmet.
       netherite_helmet:
-        SLOT: 10 # Sets the inventory slot used by this item.
+        SLOT: 10
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "NETHERITE_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&5netherite helmet" # Text string (supports & color codes)
+          MATERIAL: NETHERITE_HELMET
+          DISPLAY-NAME: '&5Netherite Helmet'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "NETHERITE_HELMET" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: NETHERITE_HELMET
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Netherite Chestplate.
       netherite_chestplate:
-        SLOT: 11 # Sets the inventory slot used by this item.
+        SLOT: 11
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "NETHERITE_CHESTPLATE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&5netherite chestplate" # Text string (supports & color codes)
+          MATERIAL: NETHERITE_CHESTPLATE
+          DISPLAY-NAME: '&5Netherite Chestplate'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "NETHERITE_CHESTPLATE" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: NETHERITE_CHESTPLATE
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Netherite Leggings.
       netherite_leggings:
-        SLOT: 12 # Sets the inventory slot used by this item.
+        SLOT: 12
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "NETHERITE_LEGGINGS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&5netherite leggings" # Text string (supports & color codes)
+          MATERIAL: NETHERITE_LEGGINGS
+          DISPLAY-NAME: '&5Netherite Leggings'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "NETHERITE_LEGGINGS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: NETHERITE_LEGGINGS
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Netherite Boots.
       netherite_boots:
-        SLOT: 13 # Sets the inventory slot used by this item.
+        SLOT: 13
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "NETHERITE_BOOTS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&5netherite boots" # Text string (supports & color codes)
+          MATERIAL: NETHERITE_BOOTS
+          DISPLAY-NAME: '&5Netherite Boots'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "NETHERITE_BOOTS" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: NETHERITE_BOOTS
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Netherite Sword.
       netherite_sword:
-        SLOT: 14 # Sets the inventory slot used by this item.
+        SLOT: 14
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "NETHERITE_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&5netherite sword" # Text string (supports & color codes)
+          MATERIAL: NETHERITE_SWORD
+          DISPLAY-NAME: '&5Netherite Sword'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "ITEM" # Type setting.
-          MATERIAL: "NETHERITE_SWORD" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          AMOUNT: 1 # Sets the item amount used by this option.
+          TYPE: ITEM
+          MATERIAL: NETHERITE_SWORD
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Money.
       money:
-        SLOT: 15 # Sets the inventory slot used by this item.
+        SLOT: 15
+        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: "SUNFLOWER" # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-          DISPLAY-NAME: "&e$50,000" # Text string (supports & color codes)
+          MATERIAL: SUNFLOWER
+          DISPLAY-NAME: '&e$50,000'
           LORE:
-            - "&7choose this reward."
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
         GRANT:
-          TYPE: "COMMAND" # Type setting.
+          TYPE: COMMAND
+          # Configuration section for Commands.
           COMMANDS:
-            - "addmoney {player} 50000"
+          - addmoney {player} 50000

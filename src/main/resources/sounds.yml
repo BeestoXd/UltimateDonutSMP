@@ -1,130 +1,170 @@
-# UDS setup: Sound effects played by commands, menus, and feature actions.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Sounds used by menu actions.
+# Configuration section for Menus.
 MENUS:
-  BUTTON-CLICK: "minecraft:ui.button.click|1.0|1.0" # Sets the sound played for this event.
-  PAGE-TURN: "minecraft:item.book.page_turn|2.0|0.1" # Sets the sound played for this event.
-
-# UDS setup: Spawn command and spawn menu sounds.
+  # The text or value for Button Click. Available options: Any valid string text
+  BUTTON-CLICK: minecraft:ui.button.click|1.0|1.0
+  # The text or value for Page Turn. Available options: Any valid string text
+  PAGE-TURN: minecraft:item.book.page_turn|2.0|0.1
+# Configuration section for Spawn.
 SPAWN:
-  SLIME-JUMP: "minecraft:entity.slime.jump|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Sell command and sell menu sounds.
+  # The text or value for Slime Jump. Available options: Any valid string text
+  SLIME-JUMP: minecraft:entity.slime.jump|1.0|1.0
+# Configuration section for Sell.
 SELL:
-  LEVEL-UP: "minecraft:entity.player.levelup|1.0|2.0" # Sets the sound played for this event.
-  SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Amethyst tool sounds.
+  # The text or value for Level Up. Available options: Any valid string text
+  LEVEL-UP: minecraft:entity.player.levelup|1.0|2.0
+# Configuration section for Amethyst.
 AMETHYST:
-  EXPIRED: "minecraft:entity.item.break|1.0|1.0" # Sets the sound played for this event.
-  BREAK: "minecraft:block.amethyst_block.break|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Booster activation and feedback sounds.
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: minecraft:entity.item.break|1.0|1.0
+  # The text or value for Break. Available options: Any valid string text
+  BREAK: minecraft:block.amethyst_block.break|1.0|1.0
+# Configuration section for Booster.
 BOOSTER:
-  ERROR: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-  SUCCESS: "minecraft:entity.player.levelup|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Shard earning, boosters, menus, drops, cuboids, and passive generation.
+  # The text or value for Error. Available options: Any valid string text
+  ERROR: minecraft:entity.villager.no|1.0|1.0
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: minecraft:entity.player.levelup|1.0|1.0
+# Configuration section for Shards.
 SHARDS:
-  REWARD: "minecraft:entity.experience_orb.pickup|0.85|1.35" # Sets the sound played for this event.
-  REWARD-BOOSTED: "minecraft:entity.player.levelup|0.85|1.45" # Sets the sound played for this event.
-  CANCELLED: "minecraft:entity.villager.no|0.8|1.1" # Sets the sound played for this event.
-
-# UDS setup: Command registration, descriptions, usage, and aliases.
+  # The text or value for Reward. Available options: Any valid string text
+  REWARD: minecraft:entity.experience_orb.pickup|0.85|1.35
+  # The text or value for Reward Boosted. Available options: Any valid string text
+  REWARD-BOOSTED: minecraft:entity.player.levelup|0.85|1.45
+  # The text or value for Cancelled. Available options: Any valid string text
+  CANCELLED: minecraft:entity.villager.no|0.8|1.1
+# Configuration section for Commands.
 COMMANDS:
-  ERROR: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Bucket-related action sounds.
+  # The text or value for Error. Available options: Any valid string text
+  ERROR: minecraft:entity.villager.no|1.0|1.0
+# Configuration section for Bucket.
 BUCKET:
-  FILL: "minecraft:item.bucket.fill|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Auto-TPA sounds.
+  # The text or value for Fill. Available options: Any valid string text
+  FILL: minecraft:item.bucket.fill|1.0|1.0
+# Configuration section for Tpauto.
 TPAUTO:
-  ACTIVATE: "minecraft:block.beacon.activate|1.0|1.0" # Sets the sound played for this event.
-  DEACTIVATE: "minecraft:block.beacon.deactivate|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: TPA request and response sounds.
+  # The text or value for Activate. Available options: Any valid string text
+  ACTIVATE: minecraft:block.beacon.activate|1.0|1.0
+  # The text or value for Deactivate. Available options: Any valid string text
+  DEACTIVATE: minecraft:block.beacon.deactivate|1.0|1.0
+# Configuration section for Tpa.
 TPA:
-  REQUEST-RECEIVED: "minecraft:block.note_block.chime|1.0|1.0" # Sets the sound played for this event.
-  REQUEST-SENT: "minecraft:block.note_block.bit|1.0|1.0" # Sets the sound played for this event.
-  REQUEST-SENT-EXTRA: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
-  NO-REQUEST: "minecraft:entity.ender_pearl.throw|1.0|1.0" # Sets the sound played for this event.
-  CONFIRM: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Teleport countdown and completion sounds.
+  # The text or value for Request Received. Available options: Any valid string text
+  REQUEST-RECEIVED: minecraft:block.note_block.chime|1.0|1.0
+  # The text or value for Request Sent. Available options: Any valid string text
+  REQUEST-SENT: minecraft:block.note_block.bit|1.0|1.0
+  # The text or value for Request Sent Extra. Available options: Any valid string text
+  REQUEST-SENT-EXTRA: minecraft:entity.experience_orb.pickup|1.0|1.0
+  # The text or value for No Request. Available options: Any valid string text
+  NO-REQUEST: minecraft:entity.ender_pearl.throw|1.0|1.0
+  # The text or value for Confirm. Available options: Any valid string text
+  CONFIRM: minecraft:entity.experience_orb.pickup|1.0|1.0
+# Configuration section for Teleport.
 TELEPORT:
-  SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
-  COUNTDOWN: "minecraft:entity.enderman.teleport|1.0|1.0" # Sets the sound played for this event.
-  CANCELLED: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: RTP zone cuboid behavior, countdowns, titles, and teleport search area.
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: minecraft:entity.experience_orb.pickup|1.0|1.0
+  # The text or value for Countdown. Available options: Any valid string text
+  COUNTDOWN: minecraft:entity.enderman.teleport|1.0|1.0
+  # The text or value for Cancelled. Available options: Any valid string text
+  CANCELLED: minecraft:entity.villager.no|1.0|1.0
+# Configuration section for Rtp Zone.
 RTP-ZONE:
-  COUNTDOWN: "minecraft:block.note_block.hat|0.9|1.5" # Sets the sound played for this event.
-  CANCELLED: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Random teleport sounds.
+  # The text or value for Countdown. Available options: Any valid string text
+  COUNTDOWN: minecraft:block.note_block.hat|0.9|1.5
+  # The text or value for Cancelled. Available options: Any valid string text
+  CANCELLED: minecraft:entity.villager.no|1.0|1.0
+# Configuration section for Rtp.
 RTP:
-  SEARCH-START: "minecraft:block.note_block.pling|0.9|1.1" # Sets the sound played for this event.
-  SEARCH-TICK: "minecraft:block.note_block.hat|0.5|1.6" # Sets the sound played for this event.
-  SEARCH-FOUND: "minecraft:entity.experience_orb.pickup|1.0|1.35" # Sets the sound played for this event.
-  SEARCH-FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Shop interaction sounds.
+  # The text or value for Search Start. Available options: Any valid string text
+  SEARCH-START: minecraft:block.note_block.pling|0.9|1.1
+  # The text or value for Search Tick. Available options: Any valid string text
+  SEARCH-TICK: minecraft:block.note_block.hat|0.5|1.6
+  # The text or value for Search Found. Available options: Any valid string text
+  SEARCH-FOUND: minecraft:entity.experience_orb.pickup|1.0|1.35
+  # The text or value for Search Fail. Available options: Any valid string text
+  SEARCH-FAIL: minecraft:entity.villager.no|1.0|1.0
+# Configuration section for Shop.
 SHOP:
-  NO-MONEY: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-  BUY-SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Drill tool sounds.
+  # The text or value for No Money. Available options: Any valid string text
+  NO-MONEY: minecraft:entity.villager.no|1.0|1.0
+  # The text or value for Buy Success. Available options: Any valid string text
+  BUY-SUCCESS: minecraft:entity.experience_orb.pickup|1.0|1.0
+# Configuration section for Drill.
 DRILL:
-  ITEM-BREAK: "minecraft:entity.item.break|1.0|1.0" # Sets the sound played for this event.
-  AMETHYST-BREAK: "minecraft:block.amethyst_block.break|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Billford shop entries, prices, stock, and rotation content.
+  # The text or value for Item Break. Available options: Any valid string text
+  ITEM-BREAK: minecraft:entity.item.break|1.0|1.0
+  # The text or value for Amethyst Break. Available options: Any valid string text
+  AMETHYST-BREAK: minecraft:block.amethyst_block.break|1.0|1.0
+# Configuration section for Billford.
 BILLFORD:
-  OPEN: "minecraft:entity.villager.trade|1.0|1.1" # Sets the sound played for this event.
-  ROTATE: "minecraft:block.beacon.activate|0.8|1.2" # Sets the sound played for this event.
-  SUCCESS: "minecraft:entity.player.levelup|1.0|1.5" # Sets the sound played for this event.
-  FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Auction House sounds or messages for this feature.
+  # The text or value for Open. Available options: Any valid string text
+  OPEN: minecraft:entity.villager.trade|1.0|1.1
+  # The text or value for Rotate. Available options: Any valid string text
+  ROTATE: minecraft:block.beacon.activate|0.8|1.2
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: minecraft:entity.player.levelup|1.0|1.5
+  # The text or value for Fail. Available options: Any valid string text
+  FAIL: minecraft:entity.villager.no|1.0|1.0
+# Configuration section for Auction House.
 AUCTION_HOUSE:
-  SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.2" # Sets the sound played for this event.
-  FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Orders sounds or messages for this feature.
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: minecraft:entity.experience_orb.pickup|1.0|1.2
+  # The text or value for Fail. Available options: Any valid string text
+  FAIL: minecraft:entity.villager.no|1.0|1.0
+# Configuration section for Orders.
 ORDERS:
-  SUCCESS: "minecraft:entity.experience_orb.pickup|1.0|1.2" # Sets the sound played for this event.
-  FAIL: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Duel sounds or messages for this feature.
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: minecraft:entity.experience_orb.pickup|1.0|1.2
+  # The text or value for Fail. Available options: Any valid string text
+  FAIL: minecraft:entity.villager.no|1.0|1.0
+# Configuration section for Duels.
 DUELS:
-  CLICK: "minecraft:ui.button.click|1.0|1.0" # Sets the sound played for this event.
-  REQUEST-SENT: "minecraft:entity.experience_orb.pickup|1.0|1.2" # Sets the sound played for this event.
-  REQUEST-RECEIVED: "minecraft:block.note_block.pling|1.0|1.0" # Sets the sound played for this event.
-  QUEUE-JOIN: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
+  # The text or value for Click. Available options: Any valid string text
+  CLICK: minecraft:ui.button.click|1.0|1.0
+  # The text or value for Request Sent. Available options: Any valid string text
+  REQUEST-SENT: minecraft:entity.experience_orb.pickup|1.0|1.2
+  # The text or value for Request Received. Available options: Any valid string text
+  REQUEST-RECEIVED: minecraft:block.note_block.pling|1.0|1.0
+  # The text or value for Queue Join. Available options: Any valid string text
+  QUEUE-JOIN: minecraft:block.note_block.hat|1.0|1.0
+  # Configuration section for Start Countdown.
   START-COUNTDOWN:
+    # Configuration section for Per Second.
     PER-SECOND:
-      5: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
-      4: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
-      3: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
-      2: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
-      1: "minecraft:block.note_block.hat|1.0|1.0" # Sets the sound played for this event.
-    START-SOUND: "minecraft:entity.firework_rocket.blast|1.0|1.0" # Sets the sound played for this event.
-  MATCH-FOUND: "minecraft:block.beacon.activate|1.0|1.1" # Sets the sound played for this event.
-  MATCH-START: "minecraft:entity.player.levelup|1.0|1.0" # Sets the sound played for this event.
-  VICTORY: "minecraft:ui.toast.challenge_complete|1.0|1.0" # Sets the sound played for this event.
-  DEFEAT: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-  CLAIM: "minecraft:entity.item.pickup|1.0|1.0" # Sets the sound played for this event.
-
-# UDS setup: Scheduled key-all rewards, notifications, and reward commands/items.
+      # The text or value for 5. Available options: Any valid string text
+      5: minecraft:block.note_block.hat|1.0|1.0
+      # The text or value for 4. Available options: Any valid string text
+      4: minecraft:block.note_block.hat|1.0|1.0
+      # The text or value for 3. Available options: Any valid string text
+      3: minecraft:block.note_block.hat|1.0|1.0
+      # The text or value for 2. Available options: Any valid string text
+      2: minecraft:block.note_block.hat|1.0|1.0
+      # The text or value for 1. Available options: Any valid string text
+      1: minecraft:block.note_block.hat|1.0|1.0
+    # The text or value for Start Sound. Available options: Any valid string text
+    START-SOUND: minecraft:entity.firework_rocket.blast|1.0|1.0
+  # The text or value for Match Found. Available options: Any valid string text
+  MATCH-FOUND: minecraft:block.beacon.activate|1.0|1.1
+  # The text or value for Match Start. Available options: Any valid string text
+  MATCH-START: minecraft:entity.player.levelup|1.0|1.0
+  # The text or value for Victory. Available options: Any valid string text
+  VICTORY: minecraft:ui.toast.challenge_complete|1.0|1.0
+  # The text or value for Defeat. Available options: Any valid string text
+  DEFEAT: minecraft:entity.villager.no|1.0|1.0
+  # The text or value for Claim. Available options: Any valid string text
+  CLAIM: minecraft:entity.item.pickup|1.0|1.0
+# Configuration section for Key All.
 KEY-ALL:
-  REWARD: "minecraft:entity.player.levelup|1.0|1.1" # Sets the sound played for this event.
-
-# UDS setup: Crate definitions, keys, animations, rewards, and editor-managed content.
+  # The text or value for Reward. Available options: Any valid string text
+  REWARD: minecraft:entity.player.levelup|1.0|1.1
+# Configuration section for Crates.
 CRATES:
-  OPEN: "minecraft:block.ender_chest.open|1.0|1.05" # Sets the sound played for this event.
-  CLAIM: "minecraft:entity.player.levelup|1.0|1.25" # Sets the sound played for this event.
-  NO-KEY: "minecraft:entity.villager.no|1.0|1.0" # Sets the sound played for this event.
-  SPIN-TICK: "minecraft:block.note_block.hat|0.55|1.55" # Sets the sound played for this event.
-  SPIN-END: "minecraft:entity.experience_orb.pickup|1.0|1.35" # Sets the sound played for this event.
+  # The text or value for Open. Available options: Any valid string text
+  OPEN: minecraft:block.ender_chest.open|1.0|1.05
+  # The text or value for Claim. Available options: Any valid string text
+  CLAIM: minecraft:entity.player.levelup|1.0|1.25
+  # The text or value for No Key. Available options: Any valid string text
+  NO-KEY: minecraft:entity.villager.no|1.0|1.0
+  # The text or value for Spin Tick. Available options: Any valid string text
+  SPIN-TICK: minecraft:block.note_block.hat|0.55|1.55
+  # The text or value for Spin End. Available options: Any valid string text
+  SPIN-END: minecraft:entity.experience_orb.pickup|1.0|1.35

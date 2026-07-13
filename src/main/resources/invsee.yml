@@ -1,39 +1,65 @@
-# UDS setup: Staff inventory viewer permissions, layout, refresh behavior, and messages.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Inventory viewer permissions, edit rules, notifications, and logging.
+# Configuration section for Invsee.
 INVSEE:
-  ENABLED: true # Options: true or false
-  TITLE: "&8inventory of {player}" # Text string (supports & color codes)
-  REQUIRE-ONLINE: true # Require Online setting.
-  ALLOW-EDIT: false # Allow Edit setting.
-  ALLOW-SELF-VIEW: false # Allow Self View setting.
-  NOTIFY-TARGET: false # Notify Target setting.
-  LOG-USAGE: true # Log Usage setting.
-  FREEZE-ON-LOGOUT: true # Freeze On Logout setting.
-  AUTO-REFRESH-TICKS: 10 # Sets how often this task or update runs.
-  VIEW-PERMISSION: "ultimatedonutsmp.staff.invsee" # Permission node (e.g., ultimatedonutsmp.admin)
-  MODIFY-PERMISSION: "ultimatedonutsmp.staff.invsee.modify" # Permission node (e.g., ultimatedonutsmp.admin)
-  ADMIN-PERMISSION: "ultimatedonutsmp.admin.invsee" # Numeric value (integer)
-
-# UDS setup: Slot layout and fixed UI positions for this menu.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  TITLE: '&8Inventory of {player}'
+  # Determines whether Require Online is enabled or disabled. Available options: true, false
+  REQUIRE-ONLINE: true
+  # Determines whether Allow Edit is enabled or disabled. Available options: true, false
+  ALLOW-EDIT: false
+  # Determines whether Allow Self View is enabled or disabled. Available options: true, false
+  ALLOW-SELF-VIEW: false
+  # Determines whether Notify Target is enabled or disabled. Available options: true, false
+  NOTIFY-TARGET: false
+  # Determines whether Log Usage is enabled or disabled. Available options: true, false
+  LOG-USAGE: true
+  # Determines whether Freeze On Logout is enabled or disabled. Available options: true, false
+  FREEZE-ON-LOGOUT: true
+  # The numerical value for Auto Refresh Ticks. Available options: Any valid integer
+  AUTO-REFRESH-TICKS: 10
+  # The text or value for View Permission. Available options: Any valid string text
+  VIEW-PERMISSION: ultimatedonutsmp.staff.invsee
+  # The text or value for Modify Permission. Available options: Any valid string text
+  MODIFY-PERMISSION: ultimatedonutsmp.staff.invsee.modify
+  # The text or value for Admin Permission. Available options: Any valid string text
+  ADMIN-PERMISSION: ultimatedonutsmp.admin.invsee
+# Configuration section for Layout.
 LAYOUT:
-  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
-  ARMOR-SLOTS: [0, 1, 2, 3] # Armor Slots setting.
-  OFFHAND-SLOT: 4 # Sets the inventory slot used by this item.
-  SUMMARY-SLOT: 6 # Sets the inventory slot used by this item.
-  STATUS-SLOT: 8 # Sets the inventory slot used by this item.
-  MAIN-INVENTORY-START: 18 # Main Inventory Start setting.
-  HOTBAR-START: 45 # Hotbar Start setting.
-
-# UDS setup: Configure MESSAGES options for this file.
+  SIZE: 54
+  # Configuration section for Armor Slots.
+  ARMOR-SLOTS:
+  - 0
+  - 1
+  - 2
+  - 3
+  # The numerical value for Offhand Slot. Available options: Any valid integer
+  OFFHAND-SLOT: 4
+  # The numerical value for Summary Slot. Available options: Any valid integer
+  SUMMARY-SLOT: 6
+  # The numerical value for Status Slot. Available options: Any valid integer
+  STATUS-SLOT: 8
+  # The numerical value for Main Inventory Start. Available options: Any valid integer
+  MAIN-INVENTORY-START: 18
+  # The numerical value for Hotbar Start. Available options: Any valid integer
+  HOTBAR-START: 45
 MESSAGES:
-  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  FEATURE-DISABLED: "&cᴛʜᴇ ɪɴᴠѕᴇᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  PLAYER-NOT-ONLINE: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  SELF-VIEW-DISABLED: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠѕᴇᴇ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
-  EDIT-CONFLICT: "&eᴀɴᴏᴛʜᴇʀ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴇᴅɪᴛɪɴɢ &f{target}&e. ᴏᴘᴇɴᴇᴅ ɪɴ ʀᴇᴀᴅ-ᴏɴʟʏ ᴍᴏᴅᴇ." # Sets the message text for this response.
-  TARGET-LOGGED-OUT: "&eᴛʜɪѕ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ɴᴏᴡ ᴀ ꜰʀᴏᴢᴇɴ ѕɴᴀᴘѕʜᴏᴛ ʙᴇᴄᴀᴜѕᴇ &f{target}&e ʟᴏɢɢᴇᴅ ᴏᴜᴛ." # Sets the message text for this response.
-  TARGET-NOTIFY: "&eʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ʙᴇɪɴɢ ᴠɪᴇᴡᴇᴅ ʙʏ &f{viewer}&e ɪɴ &f{mode}&e ᴍᴏᴅᴇ." # Sets the message text for this response.
-  RELOAD-SUCCESS: "&aɪɴᴠѕᴇᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission.'
+  # The text or value for Feature Disabled. Available options: Any valid string text
+  FEATURE-DISABLED: '&cThe Invsee system is disabled.'
+  # The text or value for Player Not Online. Available options: Any valid string text
+  PLAYER-NOT-ONLINE: '&cThat player must be online.'
+  # The text or value for Player Not Found. Available options: Any valid string text
+  PLAYER-NOT-FOUND: '&cPlayer not found.'
+  # The text or value for Self View Disabled. Available options: Any valid string text
+  SELF-VIEW-DISABLED: '&cYou cannot invsee yourself.'
+  # The text or value for Edit Conflict. Available options: Any valid string text
+  EDIT-CONFLICT: '&eAnother staff member is already editing &f{target}&e. Opened in
+    read-only mode.'
+  # The text or value for Target Logged Out. Available options: Any valid string text
+  TARGET-LOGGED-OUT: '&eThis inventory is now a frozen snapshot because &f{target}&e
+    logged out.'
+  # The text or value for Target Notify. Available options: Any valid string text
+  TARGET-NOTIFY: '&eYour inventory is being viewed by &f{viewer}&e in &f{mode}&e mode.'
+  # The text or value for Reload Success. Available options: Any valid string text
+  RELOAD-SUCCESS: '&aInvsee config reloaded.'

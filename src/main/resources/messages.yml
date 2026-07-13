@@ -1,748 +1,1152 @@
-# UDS setup: Player-facing messages; placeholders and color codes depend on each feature.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Team limits, naming rules, homes, chat, invites, and team PvP settings.
+# Configuration section for Team.
 TEAM:
-  NO-TEAM: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀ ᴛᴇᴀᴍ. ᴛʏᴘᴇ /team ᴄʀᴇᴀᴛᴇ (ɴᴀᴍᴇ) ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ." # Sets the message text for this response.
-  ALREADY-EXISTS: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀ ᴛᴇᴀᴍ ᴡɪᴛʜ ᴛʜɪѕ ɴᴀᴍᴇ, ɪᴛ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴛᴀᴋᴇɴ." # Sets the message text for this response.
-  TEAM-CREATED: "&aᴛᴇᴀᴍ ᴄʀᴇᴀᴛᴇᴅ." # Sets the message text for this response.
-  TEAM-DISBANDED: "&7ᴛᴇᴀᴍ ᴅɪѕʙᴀɴᴅᴇᴅ." # Sets the message text for this response.
-  ALREADY-IN-TEAM: "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴀ ᴛᴇᴀᴍ." # Sets the message text for this response.
-  NOT-LEADER: "&cʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴛʜᴇ ʟᴇᴀᴅᴇʀ." # Sets the message text for this response.
-  PLAYER-NO-INVITES: "&cᴛʜɪѕ ᴘʟᴀʏᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ᴀᴄᴄᴇᴘᴛ ɪɴᴠɪᴛᴀᴛɪᴏɴѕ." # Sets the message text for this response.
-  PLAYER-IN-TEAM: "&c{player} ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴀ ᴛᴇᴀᴍ." # Sets the message text for this response.
-  TEAM-FULL: "&cᴛᴇᴀᴍ ʜᴀѕ ʀᴇᴀᴄʜᴇᴅ ᴛʜᴇ ᴍᴀxɪᴍᴜᴍ ᴍᴇᴍʙᴇʀѕ." # Sets the message text for this response.
-  INVITE-SENT: "&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴊᴏɪɴ ᴛʜᴇ ᴛᴇᴀᴍ." # Sets the message text for this response.
-  NO-PENDING-INVITES: "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴘᴇɴᴅɪɴɢ ɪɴᴠɪᴛᴇѕ ꜰᴏʀ &6{team}&c." # Sets the message text for this response.
-  JOIN-SUCCESS: "&aʏᴏᴜ ʜᴀᴠᴇ ᴊᴏɪɴᴇᴅ ᴛᴏ &e{team}&a." # Sets the message text for this response.
-  CANT-KICK-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴋɪᴄᴋ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
-  KICK-SUCCESS: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ᴋɪᴄᴋᴇᴅ &7({player})." # Sets the message text for this response.
-  KICKED-FROM-TEAM: "&aʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ ꜰʀᴏᴍ ᴛʜᴇ ᴛᴇᴀᴍ." # Sets the message text for this response.
-  PLAYER-NOT-IN-TEAM: "&c{player} ɪѕ ɴᴏᴛ ᴀ ᴍᴇᴍʙᴇʀ ᴏꜰ ʏᴏᴜʀ ᴛᴇᴀᴍ." # Sets the message text for this response.
-  TEAM-CHAT-ENABLED: "&7ʏᴏᴜ ᴇɴᴀʙʟᴇᴅ ᴛᴇᴀᴍ ᴄʜᴀᴛ." # Sets the message text for this response.
-  TEAM-CHAT-DISABLED: "&7ʏᴏᴜ ᴅɪѕᴀʙʟᴇᴅ ᴛᴇᴀᴍ ᴄʜᴀᴛ." # Sets the message text for this response.
-  NO-MANAGE-PERMISSION: "&cyou don't have permission to invite or kick teammates." # Sets the message text for this response.
-  NO-EDIT-HOME-PERMISSION: "&cyou don't have permission to edit the team home." # Sets the message text for this response.
-  NO-VISIT-HOME-PERMISSION: "&cyou don't have permission to visit the team home." # Sets the message text for this response.
-  NO-TEAM-CHAT-PERMISSION: "&cyou don't have permission to use team chat." # Sets the message text for this response.
-  NO-PVP-PERMISSION: "&cyou don't have permission to change team pvp." # Sets the message text for this response.
-  TEAM-PVP-ENABLED: "&7ᴛᴇᴀᴍ ᴘᴠᴘ ɪѕ ɴᴏᴡ &aᴇɴᴀʙʟᴇᴅ&7." # Sets the message text for this response.
-  TEAM-PVP-DISABLED: "&7ᴛᴇᴀᴍ ᴘᴠᴘ ɪѕ ɴᴏᴡ &cᴅɪѕᴀʙʟᴇᴅ&7." # Sets the message text for this response.
-  NO-TEAM-HOME: "&7ʏᴏᴜʀ ᴛᴇᴀᴍ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ʜᴏᴍᴇ." # Sets the message text for this response.
-  TEAM-HOME-DELETED: "&7ᴛᴇᴀᴍ ʜᴏᴍᴇ ᴅᴇʟᴇᴛᴇᴅ." # Sets the message text for this response.
-  TEAM-HOME-SET: "&7ᴛᴇᴀᴍ ʜᴏᴍᴇ ѕᴇᴛ" # Sets the message text for this response.
-  TEAM-NOT-EXIST: "&cᴜѕᴇʀ/team ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
-  # Added in 3.7
-  INVITED-TO-JOIN: "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ɪɴᴠɪᴛᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ &a{team}&7 ᴛᴇᴀᴍ!" # Sets the message text for this response.
-  CLICK-TO-JOIN: "&b[ᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ]" # Sets the message text for this response.
-  HOVER-JOIN: "&eᴄʟɪᴄᴋ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ {team} ᴛᴇᴀᴍ." # Sets the message text for this response.
-  OR-TYPE-COMMAND: "&7or type &f{command}&7 to join." # Sets the message text for this response.
-  JOINED-BROADCAST: "&a{player} &eʜᴀѕ ᴊᴏɪɴᴇᴅ ᴛʜᴇ ᴛᴇᴀᴍ." # Sets the message text for this response.
-
-# UDS setup: Configure CHAT-MANAGER options for this file.
+  # The text or value for No Team. Available options: Any valid string text
+  NO-TEAM: '&cYou don''t have a team. Type /team create (name) to create a team.'
+  # The text or value for Already Exists. Available options: Any valid string text
+  ALREADY-EXISTS: '&cYou cannot create a team with this name, it is already taken.'
+  # The text or value for Team Created. Available options: Any valid string text
+  TEAM-CREATED: '&aTeam created.'
+  # The text or value for Team Disbanded. Available options: Any valid string text
+  TEAM-DISBANDED: '&7Team disbanded.'
+  # The text or value for Already In Team. Available options: Any valid string text
+  ALREADY-IN-TEAM: '&cYou are already in a team.'
+  # The text or value for Not Leader. Available options: Any valid string text
+  NOT-LEADER: '&cYou are not the leader.'
+  # The text or value for Player No Invites. Available options: Any valid string text
+  PLAYER-NO-INVITES: '&cThis player does not accept invitations.'
+  # The text or value for Player In Team. Available options: Any valid string text
+  PLAYER-IN-TEAM: '&c{player} is already in a team.'
+  # The text or value for Team Full. Available options: Any valid string text
+  TEAM-FULL: '&cTeam has reached the maximum members.'
+  # The text or value for Invite Sent. Available options: Any valid string text
+  INVITE-SENT: '&eYou have invited &a{player} &eto join the team.'
+  # The text or value for No Pending Invites. Available options: Any valid string text
+  NO-PENDING-INVITES: '&cYou have no pending invites for &6{team}&c.'
+  # The text or value for Join Success. Available options: Any valid string text
+  JOIN-SUCCESS: '&aYou have joined to &e{team}&a.'
+  # The text or value for Cant Kick Self. Available options: Any valid string text
+  CANT-KICK-SELF: '&cYou cannot kick yourself!'
+  # The text or value for Kick Success. Available options: Any valid string text
+  KICK-SUCCESS: '&aSuccessfully kicked &7({player}).'
+  # The text or value for Kicked From Team. Available options: Any valid string text
+  KICKED-FROM-TEAM: '&aYou have been kicked from the team.'
+  # The text or value for Player Not In Team. Available options: Any valid string text
+  PLAYER-NOT-IN-TEAM: '&c{player} is not a member of your team.'
+  # The text or value for Team Chat Enabled. Available options: Any valid string text
+  TEAM-CHAT-ENABLED: '&7You enabled team chat.'
+  # The text or value for Team Chat Disabled. Available options: Any valid string text
+  TEAM-CHAT-DISABLED: '&7You disabled team chat.'
+  # The text or value for No Manage Permission. Available options: Any valid string text
+  NO-MANAGE-PERMISSION: '&cYou don''t have permission to invite or kick teammates.'
+  # The text or value for No Edit Home Permission. Available options: Any valid string text
+  NO-EDIT-HOME-PERMISSION: '&cYou don''t have permission to edit the team home.'
+  # The text or value for No Visit Home Permission. Available options: Any valid string text
+  NO-VISIT-HOME-PERMISSION: '&cYou don''t have permission to visit the team home.'
+  # The text or value for No Team Chat Permission. Available options: Any valid string text
+  NO-TEAM-CHAT-PERMISSION: '&cYou don''t have permission to use team chat.'
+  # The text or value for No Pvp Permission. Available options: Any valid string text
+  NO-PVP-PERMISSION: '&cYou don''t have permission to change team PvP.'
+  # The text or value for Team Pvp Enabled. Available options: Any valid string text
+  TEAM-PVP-ENABLED: '&7Team PvP is now &aenabled&7.'
+  # The text or value for Team Pvp Disabled. Available options: Any valid string text
+  TEAM-PVP-DISABLED: '&7Team PvP is now &cdisabled&7.'
+  # The text or value for No Team Home. Available options: Any valid string text
+  NO-TEAM-HOME: '&7Your team does not have a home.'
+  # The text or value for Team Home Deleted. Available options: Any valid string text
+  TEAM-HOME-DELETED: '&7Team home deleted.'
+  # The text or value for Team Home Set. Available options: Any valid string text
+  TEAM-HOME-SET: '&7Team home set'
+  # The text or value for Team Not Exist. Available options: Any valid string text
+  TEAM-NOT-EXIST: '&cUser/team does not exist.'
+  # The text or value for Invited To Join. Available options: Any valid string text
+  INVITED-TO-JOIN: '&7You have been invited to join the &a{team}&7 team!'
+  # The text or value for Click To Join. Available options: Any valid string text
+  CLICK-TO-JOIN: '&b[Click to join]'
+  # The text or value for Hover Join. Available options: Any valid string text
+  HOVER-JOIN: '&eClick to join the {team} team.'
+  # The text or value for Or Type Command. Available options: Any valid string text
+  OR-TYPE-COMMAND: '&7or type &f{command}&7 to join.'
+  # The text or value for Joined Broadcast. Available options: Any valid string text
+  JOINED-BROADCAST: '&a{player} &ehas joined the team.'
+# Configuration section for Chat Manager.
 CHAT-MANAGER:
+  # Configuration section for Help.
   HELP:
-    - ""
-    - "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(ᴄᴏᴍᴍᴀɴᴅѕ)"
-    - ""
-    - "&f/chat ᴍᴜᴛᴇ &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
-    - "&f/chat ᴜɴᴍᴜᴛᴇ &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
-    - "&f/chat ᴅᴇʟᴀʏ (ᴛɪᴍᴇ) &7- ᴛᴏ ᴀᴅᴅ ᴅᴇʟᴀʏ ᴛᴏ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
-    - "&f/chat ᴄʟᴇᴀʀ &7- ᴛᴏ ᴄʟᴇᴀʀ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ."
-    - ""
-  MUTED: "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴍᴜᴛᴇᴅ." # Sets the message text for this response.
-  UNMUTED: "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴜɴᴍᴜᴛᴇᴅ." # Sets the message text for this response.
-  DELAY: "&7ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴅᴇʟᴀʏᴇᴅ &a%delay% &7ѕᴇᴄᴏɴᴅѕ ᴀɴᴅ ᴅᴇʟᴀʏ ɪѕ &a%status%" # Sets the message text for this response.
-  CLEARED: "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄʟᴇᴀʀᴇᴅ." # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  DISABLED: "&cᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  INVALID-DELAY: "&cɪɴᴠᴀʟɪᴅ ᴅᴇʟᴀʏ. ᴜѕᴇ ᴀ ɴᴜᴍʙᴇʀ ʙᴇᴛᴡᴇᴇɴ 0 ᴀɴᴅ {max}." # Sets the message text for this response.
-  STATUS-ENABLED: "ᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
-  STATUS-DISABLED: "ᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
-  GLOBAL-MUTED-BLOCK: "&cɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴍᴜᴛᴇᴅ." # Sets the message text for this response.
-  GLOBAL-DELAY-BLOCK: "&cʏᴏᴜ ᴍᴜѕᴛ ᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀᴛᴛɪɴɢ ᴀɢᴀɪɴ." # Sets the message text for this response.
-
-# UDS setup: Configure IGNORE options for this file.
+  - ''
+  - '&b&lChat Manager &7(Commands)'
+  - ''
+  - '&f/chat mute &7- To mute global chat.'
+  - '&f/chat unmute &7- To unmute global chat.'
+  - '&f/chat delay (time) &7- To add delay to global chat.'
+  - '&f/chat clear &7- To clear global chat.'
+  - ''
+  # The text or value for Muted. Available options: Any valid string text
+  MUTED: '&aGlobal chat is now muted.'
+  # The text or value for Unmuted. Available options: Any valid string text
+  UNMUTED: '&aGlobal chat is now unmuted.'
+  # The text or value for Delay. Available options: Any valid string text
+  DELAY: '&7Chat is now delayed &a%delay% &7seconds and delay is &a%status%'
+  # The text or value for Cleared. Available options: Any valid string text
+  CLEARED: '&aGlobal chat is cleared.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cChat command is currently disabled.'
+  # The text or value for Invalid Delay. Available options: Any valid string text
+  INVALID-DELAY: '&cInvalid delay. Use a number between 0 and {max}.'
+  # The text or value for Status Enabled. Available options: Any valid string text
+  STATUS-ENABLED: enabled
+  # The text or value for Status Disabled. Available options: Any valid string text
+  STATUS-DISABLED: disabled
+  # The text or value for Global Muted Block. Available options: Any valid string text
+  GLOBAL-MUTED-BLOCK: '&cGlobal chat is currently muted.'
+  # The text or value for Global Delay Block. Available options: Any valid string text
+  GLOBAL-DELAY-BLOCK: '&cYou must wait &f{seconds}s &cbefore chatting again.'
+# Configuration section for Ignore.
 IGNORE:
-  ADDED: "&7%player% &cʜᴀѕ ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
-  REMOVED: "&7%player% &cʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /ignore <player|list>" # Sets the message text for this response.
-  UNIGNORE-USAGE: "&cᴜѕᴀɢᴇ: /unignore <player>" # Sets the message text for this response.
-  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  DISABLED: "&cɪɢɴᴏʀᴇ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  CANNOT-IGNORE-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɢɴᴏʀᴇ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
-  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  NOT-IGNORED: "&7%player% &cɪѕ ɴᴏᴛ ɪɴ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
-  LIST-EMPTY: "&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɢɴᴏʀɪɴɢ ᴀɴʏᴏɴᴇ." # Sets the message text for this response.
-  LIST-HEADER: "&8&m-------- &cɪɢɴᴏʀᴇᴅ ᴘʟᴀʏᴇʀѕ &7(%count%) &8&m--------" # Sets the message text for this response.
-  LIST-ENTRY: "&8- &7%player%" # Sets the message text for this response.
-  MESSAGE-BLOCKED-SENDER: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ %player%." # Sets the message text for this response.
-  ERROR: "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜᴘᴅᴀᴛᴇ ʏᴏᴜʀ ɪɢɴᴏʀᴇ ʟɪѕᴛ." # Sets the message text for this response.
-
-# UDS setup: Configure PRIVATE_MESSAGES options for this file.
+  # The text or value for Added. Available options: Any valid string text
+  ADDED: '&7%player% &chas been added to your ignore list.'
+  # The text or value for Removed. Available options: Any valid string text
+  REMOVED: '&7%player% &chas been removed from your ignore list.'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /ignore <player|list>'
+  # The text or value for Unignore Usage. Available options: Any valid string text
+  UNIGNORE-USAGE: '&cUsage: /unignore <player>'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: '&cOnly players can use this command.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cIgnore command is currently disabled.'
+  # The text or value for Cannot Ignore Self. Available options: Any valid string text
+  CANNOT-IGNORE-SELF: '&cYou cannot ignore yourself.'
+  # The text or value for Player Not Found. Available options: Any valid string text
+  PLAYER-NOT-FOUND: '&cPlayer not found.'
+  # The text or value for Not Ignored. Available options: Any valid string text
+  NOT-IGNORED: '&7%player% &cis not in your ignore list.'
+  # The text or value for List Empty. Available options: Any valid string text
+  LIST-EMPTY: '&7You are not ignoring anyone.'
+  # The text or value for List Header. Available options: Any valid string text
+  LIST-HEADER: '&8&m-------- &cIgnored Players &7(%count%) &8&m--------'
+  # The text or value for List Entry. Available options: Any valid string text
+  LIST-ENTRY: '&8- &7%player%'
+  # The text or value for Message Blocked Sender. Available options: Any valid string text
+  MESSAGE-BLOCKED-SENDER: '&cYou cannot message %player%.'
+  # The text or value for Error. Available options: Any valid string text
+  ERROR: '&cCould not update your ignore list.'
 PRIVATE_MESSAGES:
-  PM_ENABLED: "&aᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
-  PM_DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
-
-# UDS setup: Configure MESSAGES options for this file.
+  # The text or value for Pm Enabled. Available options: Any valid string text
+  PM_ENABLED: '&aPrivate messages are now enabled'
+  # The text or value for Pm Disabled. Available options: Any valid string text
+  PM_DISABLED: '&cPrivate messages are now disabled'
 MESSAGES:
-  CANNOT_MESSAGE_SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
-  PLAYER_BLOCKED: "&c%player% ʜᴀѕ ʙʟᴏᴄᴋᴇᴅ ʏᴏᴜ." # Sets the message text for this response.
-  PMS_DISABLED: "&c%player% ʜᴀѕ ᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  NO_CONVERSATION: "&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ." # Sets the message text for this response.
-  SENDER_FORMAT: "&d(ᴛᴏ &a%player%&d) %message%" # Sets the message text for this response.
-  RECEIVER_FORMAT: "&d(ꜰʀᴏᴍ &a%player%&d) %message%" # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /msg <player> <message>" # Sets the message text for this response.
-  REPLY_USAGE: "&cᴜѕᴀɢᴇ: /reply <message>" # Sets the message text for this response.
-  PLAYER_NOT_ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-  PLAYER_ONLY_REPLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /reply." # Sets the message text for this response.
-  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
-  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-
-# UDS setup: Configure PRIVATE-MESSAGE options for this file.
+  # The text or value for Cannot Message Self. Available options: Any valid string text
+  CANNOT_MESSAGE_SELF: '&cYou cannot message yourself!'
+  # The text or value for Player Blocked. Available options: Any valid string text
+  PLAYER_BLOCKED: '&c%player% has blocked you.'
+  # The text or value for Pms Disabled. Available options: Any valid string text
+  PMS_DISABLED: '&c%player% has private messages disabled.'
+  # The text or value for No Conversation. Available options: Any valid string text
+  NO_CONVERSATION: '&cYou are currently not in conversation with anyone or the player
+    is offline.'
+  # The text or value for Sender Format. Available options: Any valid string text
+  SENDER_FORMAT: '&d(To &a%player%&d) %message%'
+  # The text or value for Receiver Format. Available options: Any valid string text
+  RECEIVER_FORMAT: '&d(From &a%player%&d) %message%'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /msg <player> <message>'
+  # The text or value for Reply Usage. Available options: Any valid string text
+  REPLY_USAGE: '&cUsage: /reply <message>'
+  # The text or value for Player Not Online. Available options: Any valid string text
+  PLAYER_NOT_ONLINE: '&cPlayer not online.'
+  # The text or value for Player Only Reply. Available options: Any valid string text
+  PLAYER_ONLY_REPLY: '&cOnly players can use /reply.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER_ONLY: '&cOnly players can use this command.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO_PERMISSION: '&cYou do not have permission.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cPrivate messages are currently disabled.'
+# Configuration section for Private Message.
 PRIVATE-MESSAGE:
-  USAGE: "&cᴜѕᴀɢᴇ: /msg <player> <message>" # Sets the message text for this response.
-  REPLY-USAGE: "&cᴜѕᴀɢᴇ: /reply <message>" # Sets the message text for this response.
-  PLAYER-ONLY-REPLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /reply." # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  PLAYER-NOT-ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-  CANNOT-MESSAGE-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴇѕѕᴀɢᴇ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
-  NO-REPLY-TARGET: "&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ." # Sets the message text for this response.
-  SENT: "&d(ᴛᴏ &a%player%&d) %message%" # Sets the message text for this response.
-  RECEIVED: "&d(ꜰʀᴏᴍ &a%player%&d) %message%" # Sets the message text for this response.
-  PM-ENABLED: "&aᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
-  PM-DISABLED: "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
-
-# UDS setup: Auto-TPA sounds.
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /msg <player> <message>'
+  # The text or value for Reply Usage. Available options: Any valid string text
+  REPLY-USAGE: '&cUsage: /reply <message>'
+  # The text or value for Player Only Reply. Available options: Any valid string text
+  PLAYER-ONLY-REPLY: '&cOnly players can use /reply.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cPrivate messages are currently disabled.'
+  # The text or value for Player Not Online. Available options: Any valid string text
+  PLAYER-NOT-ONLINE: '&cPlayer not online.'
+  # The text or value for Cannot Message Self. Available options: Any valid string text
+  CANNOT-MESSAGE-SELF: '&cYou cannot message yourself!'
+  # The text or value for No Reply Target. Available options: Any valid string text
+  NO-REPLY-TARGET: '&cYou are currently not in conversation with anyone or the player
+    is offline.'
+  # The text or value for Sent. Available options: Any valid string text
+  SENT: '&d(To &a%player%&d) %message%'
+  # The text or value for Received. Available options: Any valid string text
+  RECEIVED: '&d(From &a%player%&d) %message%'
+  # The text or value for Pm Enabled. Available options: Any valid string text
+  PM-ENABLED: '&aPrivate messages are now enabled'
+  # The text or value for Pm Disabled. Available options: Any valid string text
+  PM-DISABLED: '&cPrivate messages are now disabled'
+# Configuration section for Tpauto.
 TPAUTO:
-  ENABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏɴ ᴛᴘᴀᴜᴛᴏ." # Sets the message text for this response.
-  DISABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏꜰꜰ ᴛᴘᴀᴜᴛᴏ." # Sets the message text for this response.
-
-# UDS setup: Configure TPAHEREAUTO options for this file.
+  # The text or value for Enabled. Available options: Any valid string text
+  ENABLED: '&7You turned on tpauto.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&7You turned off tpauto.'
+# Configuration section for Tpahereauto.
 TPAHEREAUTO:
-  ENABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏɴ ᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ." # Sets the message text for this response.
-  DISABLED: "&7ʏᴏᴜ ᴛᴜʀɴᴇᴅ ᴏꜰꜰ ᴛᴘᴀʜᴇʀᴇ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ." # Sets the message text for this response.
-
-# UDS setup: Configure PHANTOM options for this file.
+  # The text or value for Enabled. Available options: Any valid string text
+  ENABLED: '&7You turned on tpahere auto-accept.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&7You turned off tpahere auto-accept.'
+# Configuration section for Phantom.
 PHANTOM:
-  ENABLED: "&7ʏᴏᴜ ᴅɪѕᴀʙʟᴇᴅ ᴘʜᴀɴᴛᴏᴍѕ ѕᴘᴀᴡɴɪɴɢ ᴄʟᴏѕᴇ ᴛᴏ ʏᴏᴜ" # Sets the message text for this response.
-  DISABLED: "&7ʏᴏᴜ ᴇɴᴀʙʟᴇᴅ ᴘʜᴀɴᴛᴏᴍѕ ѕᴘᴀᴡɴɪɴɢ ᴄʟᴏѕᴇ ᴛᴏ ʏᴏᴜ" # Sets the message text for this response.
-
-# UDS setup: Entity cleanup timing, exclusions, warnings, and cleanup scope.
+  # The text or value for Enabled. Available options: Any valid string text
+  ENABLED: '&7You disabled phantoms spawning close to you'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&7You enabled phantoms spawning close to you'
+# Configuration section for Clear Lag.
 CLEAR-LAG:
-  COUNTDOWN: "&7ᴇɴᴛɪᴛɪᴇѕ ᴡɪʟʟ ʙᴇ ʀᴇᴍᴏᴠᴇᴅ ɪɴ &b{seconds} &7ѕᴇᴄᴏɴᴅѕ." # Sets the message text for this response.
-  SUCCESS: "&7ᴛᴏᴛᴀʟ ᴏꜰ &b{total} &7ᴇɴᴛɪᴛɪᴇѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄʟᴇᴀʀᴇᴅ." # Sets the message text for this response.
-
-# UDS setup: Teleport countdown and completion sounds.
+  # The text or value for Countdown. Available options: Any valid string text
+  COUNTDOWN: '&7Entities will be removed in &b{seconds} &7seconds.'
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: '&7Total of &b{total} &7entities have been cleared.'
+# Configuration section for Teleport.
 TELEPORT:
-  SUCCESS: "&7ʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ" # Sets the message text for this response.
-  COUNTDOWN: "&7ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ ɪɴ &b{seconds}&7 ѕᴇᴄᴏɴᴅѕ" # Sets the message text for this response.
-  WARNING: "&eᴅᴏ ɴᴏᴛ ᴍᴏᴠᴇ ꜰᴏʀ &b{seconds}&e ѕᴇᴄᴏɴᴅѕ. ɪꜰ ʏᴏᴜ ᴍᴏᴠᴇ, ᴛʜᴇ ᴛᴇʟᴇᴘᴏʀᴛ ᴡɪʟʟ ʙᴇ ᴄᴀɴᴄᴇʟᴇᴅ." # Sets the message text for this response.
-  CANCELED: "&cᴛᴇʟᴇᴘᴏʀᴛ ᴄᴀɴᴄᴇʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ʏᴏᴜ ᴍᴏᴠᴇᴅ." # Sets the message text for this response.
-  TO_PLAYER: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ %player%" # Sets the message text for this response.
-  HERE: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7%player% ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ" # Sets the message text for this response.
-  HERE_TARGET: "&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%" # Sets the message text for this response.
-  ALL: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴀʟʟ ᴘʟᴀʏᴇʀѕ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ" # Sets the message text for this response.
-  ALL_TARGET: "&dʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &7%sender%" # Sets the message text for this response.
-  POSITION: "&7ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ: &d%x%,%y%,%z% &7(%world%)" # Sets the message text for this response.
-  TOP: "&dᴛᴇʟᴇᴘᴏʀᴛᴇᴅ &7ᴛᴏ ᴛʜᴇ ʜɪɢʜᴇѕᴛ ᴘᴏѕɪᴛɪᴏɴ" # Sets the message text for this response.
-
-# UDS setup: Configure SHARD-BOOSTER options for this file.
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: '&7You have been teleported successfully'
+  # The text or value for Countdown. Available options: Any valid string text
+  COUNTDOWN: '&7Teleporting in &b{seconds}&7 seconds'
+  # The text or value for Warning. Available options: Any valid string text
+  WARNING: '&eDo not move for &b{seconds}&e seconds. If you move, the teleport will
+    be canceled.'
+  # The text or value for Canceled. Available options: Any valid string text
+  CANCELED: '&cTeleport canceled because you moved.'
+  # The text or value for To Player. Available options: Any valid string text
+  TO_PLAYER: '&dTeleported &7to %player%'
+  # The text or value for Here. Available options: Any valid string text
+  HERE: '&dTeleported &7%player% to your location'
+  # The text or value for Here Target. Available options: Any valid string text
+  HERE_TARGET: '&dYou were teleported to &7%sender%'
+  # The text or value for All. Available options: Any valid string text
+  ALL: '&dTeleported &7all players to your location'
+  # The text or value for All Target. Available options: Any valid string text
+  ALL_TARGET: '&dYou were teleported to &7%sender%'
+  # The text or value for Position. Available options: Any valid string text
+  POSITION: '&7Teleported to: &d%x%,%y%,%z% &7(%world%)'
+  # The text or value for Top. Available options: Any valid string text
+  TOP: '&dTeleported &7to the highest position'
+# Configuration section for Shard Booster.
 SHARD-BOOSTER:
-  ACTIVATED: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ ʏᴏᴜʀ &5ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ &aꜰᴏʀ 24ʜ." # Sets the message text for this response.
-  ALREADY-ACTIVATED: "&cʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ." # Sets the message text for this response.
-  EXPIRED: "&cʏᴏᴜʀ ѕʜᴀʀᴅ ʙᴏᴏѕᴛᴇʀ ʜᴀѕ ᴇxᴘɪʀᴇᴅ." # Sets the message text for this response.
-
-# UDS setup: TPA request and response sounds.
+  # The text or value for Activated. Available options: Any valid string text
+  ACTIVATED: '&aYou have activated your &5Shard Booster &afor 24h.'
+  # The text or value for Already Activated. Available options: Any valid string text
+  ALREADY-ACTIVATED: '&cYou already have an active Shard Booster.'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '&cYour shard booster has expired.'
+# Configuration section for Tpa.
 TPA:
-  INVITE-SENT: "&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ." # Sets the message text for this response.
-  INVITE-HERE-SENT: "&eʏᴏᴜ ʜᴀᴠᴇ ɪɴᴠɪᴛᴇᴅ &a{player} &eᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
-  ALREADY-SENT: "&cʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ѕᴇɴᴛ ᴛʜᴇ ʀᴇǫᴜᴇѕᴛ ᴛᴏ &6{player}." # Sets the message text for this response.
-  REQUEST-RECEIVED: "&e[&d&lᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ&e] &eʏᴏᴜ ʜᴀᴠᴇ ᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a&l{player}&e. &a&l(ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴄᴇᴘᴛ)" # Sets the message text for this response.
-  REQUEST-HERE-RECEIVED: "&e[&d&lᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ&e] &eʏᴏᴜ ʜᴀᴠᴇ ᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a&l{player}&e ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴛʜᴇᴍ. &a&l(ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴄᴇᴘᴛ)" # Sets the message text for this response.
-  NO-REQUEST: "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
-  NO-SENT-REQUESTS: "&cᴛʜɪѕ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ᴅᴏᴇѕᴛ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
-  CANCELLED-REQUESTS: "&7ʏᴏᴜ ᴄᴀɴᴄᴇʟᴇᴅ ʏᴏᴜʀ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ." # Sets the message text for this response.
-  NO-REQUEST-HERE: "&cʏᴏᴜ ʜᴀᴠᴇ ɴᴏ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
-  ACCEPTED: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛʜᴇ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
-  ACCEPTED-HERE: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛʜᴇ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &a{player}." # Sets the message text for this response.
-  YOUR-REQUEST-ACCEPTED: "&a{player} ʜᴀѕ ᴀᴄᴄᴇᴘᴛᴇᴅ ʏᴏᴜʀ ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ." # Sets the message text for this response.
-  YOUR-REQUEST-HERE-ACCEPTED: "&a{player} ʜᴀѕ ᴀᴄᴄᴇᴘᴛᴇᴅ ʏᴏᴜʀ ᴛᴘᴀʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛ." # Sets the message text for this response.
-  # Added in 3.7
-  CANNOT-INVITE-YOURSELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ɪɴᴠɪᴛᴇ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
-  NOT-ACCEPTING-REQUESTS: "&cᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴀᴄᴄᴇᴘᴛɪɴɢ ʀᴇǫᴜᴇѕᴛѕ." # Sets the message text for this response.
-
-# UDS setup: Configure HOME options for this file.
+  # The text or value for Invite Sent. Available options: Any valid string text
+  INVITE-SENT: '&eyou have invited &a{player} &eto teleport.'
+  # The text or value for Invite Here Sent. Available options: Any valid string text
+  INVITE-HERE-SENT: '&eyou have invited &a{player} &eto teleport to you.'
+  # The text or value for Already Sent. Available options: Any valid string text
+  ALREADY-SENT: '&cYou have already sent the request to &6{player}.'
+  # The text or value for Request Received. Available options: Any valid string text
+  REQUEST-RECEIVED: '&e[&d&ltpa request&e] &eyou have a request from &a&l{player}&e.
+    &a&l(click to accept)'
+  # The text or value for Request Here Received. Available options: Any valid string text
+  REQUEST-HERE-RECEIVED: '&e[&d&ltpahere request&e] &eyou have a request from &a&l{player}&e
+    to teleport to them. &a&l(click to accept)'
+  # The text or value for No Request. Available options: Any valid string text
+  NO-REQUEST: '&cyou have no tpa request from &a{player}.'
+  # The text or value for No Sent Requests. Available options: Any valid string text
+  NO-SENT-REQUESTS: '&cThis teleport request doest not exist.'
+  # The text or value for Cancelled Requests. Available options: Any valid string text
+  CANCELLED-REQUESTS: '&7You canceled your tpa requests.'
+  # The text or value for No Request Here. Available options: Any valid string text
+  NO-REQUEST-HERE: '&cyou have no tpahere request from &a{player}.'
+  # The text or value for Accepted. Available options: Any valid string text
+  ACCEPTED: '&ayou have accepted the tpa request from &a{player}.'
+  # The text or value for Accepted Here. Available options: Any valid string text
+  ACCEPTED-HERE: '&ayou have accepted the tpahere request from &a{player}.'
+  # The text or value for Your Request Accepted. Available options: Any valid string text
+  YOUR-REQUEST-ACCEPTED: '&a{player} has accepted your tpa request.'
+  # The text or value for Your Request Here Accepted. Available options: Any valid string text
+  YOUR-REQUEST-HERE-ACCEPTED: '&a{player} has accepted your tpahere request.'
+  # The text or value for Cannot Invite Yourself. Available options: Any valid string text
+  CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
+  # The text or value for Not Accepting Requests. Available options: Any valid string text
+  NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
+# Configuration section for Home.
 HOME:
-  NAME-PROMPT: "&7ᴛʏᴘᴇ ᴛʜᴇ ʜᴏᴍᴇ ɴᴀᴍᴇ ɪɴ ᴄʜᴀᴛ ꜰᴏʀ &b{name}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ &7ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
-  SET: "&7ʜᴏᴍᴇ ѕᴇᴛ" # Sets the message text for this response.
-  DELETED: "&7ʜᴏᴍᴇ ᴅᴇʟᴇᴛᴇᴅ" # Sets the message text for this response.
-  RENAME-PROMPT: "&7ᴛʏᴘᴇ ᴛʜᴇ ɴᴇᴡ ɴᴀᴍᴇ ꜰᴏʀ &b{name}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ &7ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
-  RENAME-SUCCESS: "&7ʏᴏᴜ ʀᴇɴᴀᴍᴇ ʏᴏᴜʀ ʜᴏᴍᴇ ᴛᴏ &b{name}" # Sets the message text for this response.
-  INVALID-NAME: "&cɪɴᴠᴀʟɪᴅ ʜᴏᴍᴇ ɴᴀᴍᴇ. ᴅᴏ ɴᴏᴛ ᴜѕᴇ ѕᴘᴀᴄᴇѕ." # Sets the message text for this response.
-  ALREADY-EXISTS: "&cᴀ ʜᴏᴍᴇ ᴡɪᴛʜ ᴛʜᴀᴛ ɴᴀᴍᴇ ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ." # Sets the message text for this response.
-  CANCELLED: "&7ʜᴏᴍᴇ ɪɴᴘᴜᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ." # Sets the message text for this response.
-
-# UDS setup: Configure WARP options for this file.
+  # The text or value for Name Prompt. Available options: Any valid string text
+  NAME-PROMPT: '&7Type the home name in chat for &b{name}&7. Type &ccancel &7to abort.'
+  # The text or value for Set. Available options: Any valid string text
+  SET: '&7Home set'
+  # The text or value for Deleted. Available options: Any valid string text
+  DELETED: '&7Home deleted'
+  # The text or value for Rename Prompt. Available options: Any valid string text
+  RENAME-PROMPT: '&7Type the new name for &b{name}&7 in chat. Type &ccancel &7to abort.'
+  # The text or value for Rename Success. Available options: Any valid string text
+  RENAME-SUCCESS: '&7You rename your home to &b{name}'
+  # The text or value for Invalid Name. Available options: Any valid string text
+  INVALID-NAME: '&cInvalid home name. Do not use spaces.'
+  # The text or value for Already Exists. Available options: Any valid string text
+  ALREADY-EXISTS: '&cA home with that name already exists.'
+  # The text or value for Cancelled. Available options: Any valid string text
+  CANCELLED: '&7Home input cancelled.'
+# Configuration section for Warp.
 WARP:
-  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴡᴀʀᴘ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /warp [ɴᴀᴍᴇ]" # Sets the message text for this response.
-  LIST-HEADER: "&8&m---------------- &bᴡᴀʀᴘѕ &7({count}) &8&m----------------" # Sets the message text for this response.
-  LIST-ENTRY: "&7- &b{name}" # Sets the message text for this response.
-  LIST-EMPTY: "&cɴᴏ ᴡᴀʀᴘѕ ᴀᴠᴀɪʟᴀʙʟᴇ." # Sets the message text for this response.
-  NOT-FOUND: "&cᴡᴀʀᴘ '&e{name}&c' ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  NOT-FOUND-SUGGESTION: "&7ᴅɪᴅ ʏᴏᴜ ᴍᴇᴀɴ: &b{suggestions}" # Sets the message text for this response.
-  CREATED: "&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ." # Sets the message text for this response.
-  DELETED: "&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ." # Sets the message text for this response.
-  ALREADY-EXISTS: "&cᴡᴀʀᴘ '&e{name}&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ." # Sets the message text for this response.
-  INVALID-NAME: "&cɪɴᴠᴀʟɪᴅ ᴡᴀʀᴘ ɴᴀᴍᴇ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ." # Sets the message text for this response.
-
-# UDS setup: Configure WARPMANAGER options for this file.
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: '&cOnly players can use this warp command.'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /warp [name]'
+  # The text or value for List Header. Available options: Any valid string text
+  LIST-HEADER: '&8&m---------------- &bWarps &7({count}) &8&m----------------'
+  # The text or value for List Entry. Available options: Any valid string text
+  LIST-ENTRY: '&7- &b{name}'
+  # The text or value for List Empty. Available options: Any valid string text
+  LIST-EMPTY: '&cNo warps available.'
+  # The text or value for Not Found. Available options: Any valid string text
+  NOT-FOUND: '&cWarp ''&e{name}&c'' not found.'
+  # The text or value for Not Found Suggestion. Available options: Any valid string text
+  NOT-FOUND-SUGGESTION: '&7Did you mean: &b{suggestions}'
+  # The text or value for Created. Available options: Any valid string text
+  CREATED: '&aWarp &b{name} &ahas been created.'
+  # The text or value for Deleted. Available options: Any valid string text
+  DELETED: '&aWarp &b{name} &ahas been deleted.'
+  # The text or value for Already Exists. Available options: Any valid string text
+  ALREADY-EXISTS: '&cWarp ''&e{name}&c'' already exists.'
+  # The text or value for Invalid Name. Available options: Any valid string text
+  INVALID-NAME: '&cInvalid warp name. Use only letters, numbers, dashes, and underscores.'
+# Configuration section for Warpmanager.
 WARPMANAGER:
-  USAGE: "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [ɴᴀᴍᴇ]" # Sets the message text for this response.
-  CREATE-USAGE: "&cᴜѕᴀɢᴇ: /warpmanager ᴄʀᴇᴀᴛᴇ <name>" # Sets the message text for this response.
-  DELETE-USAGE: "&cᴜѕᴀɢᴇ: /warpmanager ᴅᴇʟᴇᴛᴇ <name>" # Sets the message text for this response.
-  CREATE-USAGE-ALIAS: "&cᴜѕᴀɢᴇ: /setwarp <name>" # Sets the message text for this response.
-  DELETE-USAGE-ALIAS: "&cᴜѕᴀɢᴇ: /delwarp <name>" # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission to manage warps." # Sets the message text for this response.
-  CREATE-PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘѕ." # Sets the message text for this response.
-  CREATE-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘ '&e{name}&c'." # Sets the message text for this response.
-
-# UDS setup: Configure PORTAL options for this file.
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /warpmanager <create|delete|list> [name]'
+  # The text or value for Create Usage. Available options: Any valid string text
+  CREATE-USAGE: '&cUsage: /warpmanager create <name>'
+  # The text or value for Delete Usage. Available options: Any valid string text
+  DELETE-USAGE: '&cUsage: /warpmanager delete <name>'
+  # The text or value for Create Usage Alias. Available options: Any valid string text
+  CREATE-USAGE-ALIAS: '&cUsage: /setwarp <name>'
+  # The text or value for Delete Usage Alias. Available options: Any valid string text
+  DELETE-USAGE-ALIAS: '&cUsage: /delwarp <name>'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission to manage warps.'
+  # The text or value for Create Player Only. Available options: Any valid string text
+  CREATE-PLAYER-ONLY: '&cOnly players can create warps.'
+  # The text or value for Create Failed. Available options: Any valid string text
+  CREATE-FAILED: '&cFailed to create warp ''&e{name}&c''.'
+# Configuration section for Portal.
 PORTAL:
-  LIST-EMPTY: "&cɴᴏ ᴘᴏʀᴛᴀʟѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʏᴇᴛ." # Sets the message text for this response.
-  ENTERED: "&dᴇɴᴛᴇʀɪɴɢ {portal}&7..." # Sets the message text for this response.
-  INVALID-CUBOID: "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴄᴏʀʀᴇᴄᴛʟʏ ʀɪɢʜᴛ ɴᴏᴡ." # Sets the message text for this response.
-  INVALID-DESTINATION: "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ." # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission to use this portal." # Sets the message text for this response.
-  IN-COMBAT: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴘᴏʀᴛᴀʟѕ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ." # Sets the message text for this response.
-  TELEPORT-IN-PROGRESS: "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ." # Sets the message text for this response.
-  STATUS-READY: "&aʀᴇᴀᴅʏ" # Sets the message text for this response.
-  STATUS-DISABLED: "&cᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
-  STATUS-INVALID-CUBOID: "&eɪɴᴠᴀʟɪᴅ ᴄᴜʙᴏɪᴅ" # Sets the message text for this response.
-  STATUS-INVALID-DESTINATION: "&eɪɴᴠᴀʟɪᴅ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ" # Sets the message text for this response.
-
-# UDS setup: Configure PORTALMANAGER options for this file.
+  # The text or value for List Empty. Available options: Any valid string text
+  LIST-EMPTY: '&cNo portals have been configured yet.'
+  # The text or value for Entered. Available options: Any valid string text
+  ENTERED: '&dEntering {portal}&7...'
+  # The text or value for Invalid Cuboid. Available options: Any valid string text
+  INVALID-CUBOID: '&cThis portal is not configured correctly right now.'
+  # The text or value for Invalid Destination. Available options: Any valid string text
+  INVALID-DESTINATION: '&cThis portal destination is currently unavailable.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission to use this portal.'
+  # The text or value for In Combat. Available options: Any valid string text
+  IN-COMBAT: '&cYou cannot use portals while in combat.'
+  # The text or value for Teleport In Progress. Available options: Any valid string text
+  TELEPORT-IN-PROGRESS: '&cYou are already teleporting.'
+  # The text or value for Status Ready. Available options: Any valid string text
+  STATUS-READY: '&aready'
+  # The text or value for Status Disabled. Available options: Any valid string text
+  STATUS-DISABLED: '&cdisabled'
+  # The text or value for Status Invalid Cuboid. Available options: Any valid string text
+  STATUS-INVALID-CUBOID: '&einvalid cuboid'
+  # The text or value for Status Invalid Destination. Available options: Any valid string text
+  STATUS-INVALID-DESTINATION: '&einvalid destination'
+# Configuration section for Portalmanager.
 PORTALMANAGER:
-  USAGE: "&cᴜѕᴀɢᴇ: /portalmanager <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>" # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission to manage portals." # Sets the message text for this response.
-  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
-  CREATE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ᴄʀᴇᴀᴛᴇ <id> <cuboid> <rtp_selector>" # Sets the message text for this response.
-  DELETE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ᴅᴇʟᴇᴛᴇ <id>" # Sets the message text for this response.
-  INFO-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ɪɴꜰᴏ <id>" # Sets the message text for this response.
-  SETCUBOID-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴄᴜʙᴏɪᴅ <id> <cuboid>" # Sets the message text for this response.
-  SETDESTINATION-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>" # Sets the message text for this response.
-  SETDISPLAY-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴅɪѕᴘʟᴀʏ <id> <display name...>" # Sets the message text for this response.
-  TOGGLE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ᴛᴏɢɢʟᴇ <id>" # Sets the message text for this response.
-  SETPRIORITY-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛᴘʀɪᴏʀɪᴛʏ <id> <number>" # Sets the message text for this response.
-  SETHOLOGRAMHERE-USAGE: "&cᴜѕᴀɢᴇ: /portalmanager ѕᴇᴛʜᴏʟᴏɢʀᴀᴍʜᴇʀᴇ <id>" # Sets the message text for this response.
-  INVALID-ID: "&cɪɴᴠᴀʟɪᴅ ᴘᴏʀᴛᴀʟ ɪᴅ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ." # Sets the message text for this response.
-  INVALID-CUBOID: "&cᴄᴜʙᴏɪᴅ '&e{cuboid}&c' ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
-  INVALID-DESTINATION: "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ." # Sets the message text for this response.
-  INVALID-PRIORITY: "&cᴘʀɪᴏʀɪᴛʏ ᴍᴜѕᴛ ʙᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ." # Sets the message text for this response.
-  NOT-FOUND: "&cᴘᴏʀᴛᴀʟ '&e{id}&c' ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  ALREADY-EXISTS: "&cᴘᴏʀᴛᴀʟ '&e{id}&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ." # Sets the message text for this response.
-  CREATED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ." # Sets the message text for this response.
-  UPDATED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ." # Sets the message text for this response.
-  HOLOGRAM-UPDATED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴏʟᴏɢʀᴀᴍ ʜᴀѕ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ʏᴏᴜʀ ʟᴏᴄᴀᴛɪᴏɴ." # Sets the message text for this response.
-  DELETED: "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ." # Sets the message text for this response.
-  TOGGLED: "&aᴘᴏʀᴛᴀʟ &d{id} &aɪѕ ɴᴏᴡ &f{state}&a." # Sets the message text for this response.
-  LIST-HEADER: "&8&m---------------- &dᴘᴏʀᴛᴀʟѕ &7({count}) &8&m----------------" # Sets the message text for this response.
-  LIST-ENTRY: "&7- &d{id} &8[&f{state}&8] &7ᴄᴜʙᴏɪᴅ=&f{cuboid} &7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ=&f{destination}" # Sets the message text for this response.
-  INFO-HEADER: "&8&m---------------- &dᴘᴏʀᴛᴀʟ: &f{id} &8&m----------------" # Sets the message text for this response.
-  INFO-DISPLAY: "&7ᴅɪѕᴘʟᴀʏ: &f{display}" # Sets the message text for this response.
-  INFO-STATE: "&7ѕᴛᴀᴛᴇ: &f{state}" # Sets the message text for this response.
-  INFO-CUBOID: "&7ᴄᴜʙᴏɪᴅ: &f{cuboid}" # Sets the message text for this response.
-  INFO-DESTINATION: "&7ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ: &f{destination}" # Sets the message text for this response.
-  INFO-WORLD: "&7ʀᴇѕᴏʟᴠᴇᴅ ᴡᴏʀʟᴅ: &f{world}" # Sets the message text for this response.
-  INFO-PRIORITY: "&7ᴘʀɪᴏʀɪᴛʏ: &f{priority}" # Sets the message text for this response.
-  INFO-COOLDOWN: "&7ᴛʀɪɢɢᴇʀ ᴄᴏᴏʟᴅᴏᴡɴ: &f{cooldown}ᴍѕ" # Sets the message text for this response.
-  INFO-PERMISSION: "&7permission: &f{permission}" # Sets the message text for this response.
-  INFO-HOLOGRAM: "&7ʜᴏʟᴏɢʀᴀᴍ: &f{hologram}" # Sets the message text for this response.
-
-# UDS setup: Configure WORTH options for this file.
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /portalmanager <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission to manage portals.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: '&cOnly players can use this command.'
+  # The text or value for Create Usage. Available options: Any valid string text
+  CREATE-USAGE: '&cUsage: /portalmanager create <id> <cuboid> <rtp_selector>'
+  # The text or value for Delete Usage. Available options: Any valid string text
+  DELETE-USAGE: '&cUsage: /portalmanager delete <id>'
+  # The text or value for Info Usage. Available options: Any valid string text
+  INFO-USAGE: '&cUsage: /portalmanager info <id>'
+  # The text or value for Setcuboid Usage. Available options: Any valid string text
+  SETCUBOID-USAGE: '&cUsage: /portalmanager setcuboid <id> <cuboid>'
+  # The text or value for Setdestination Usage. Available options: Any valid string text
+  SETDESTINATION-USAGE: '&cUsage: /portalmanager setdestination <id> <rtp_selector>'
+  # The text or value for Setdisplay Usage. Available options: Any valid string text
+  SETDISPLAY-USAGE: '&cUsage: /portalmanager setdisplay <id> <display name...>'
+  # The text or value for Toggle Usage. Available options: Any valid string text
+  TOGGLE-USAGE: '&cUsage: /portalmanager toggle <id>'
+  # The text or value for Setpriority Usage. Available options: Any valid string text
+  SETPRIORITY-USAGE: '&cUsage: /portalmanager setpriority <id> <number>'
+  # The text or value for Sethologramhere Usage. Available options: Any valid string text
+  SETHOLOGRAMHERE-USAGE: '&cUsage: /portalmanager sethologramhere <id>'
+  # The text or value for Invalid Id. Available options: Any valid string text
+  INVALID-ID: '&cInvalid portal id. Use only letters, numbers, dashes, and underscores.'
+  # The text or value for Invalid Cuboid. Available options: Any valid string text
+  INVALID-CUBOID: '&cCuboid ''&e{cuboid}&c'' does not exist.'
+  # The text or value for Invalid Destination. Available options: Any valid string text
+  INVALID-DESTINATION: '&cRTP destination ''&e{destination}&c'' is unavailable.'
+  # The text or value for Invalid Priority. Available options: Any valid string text
+  INVALID-PRIORITY: '&cPriority must be a whole number.'
+  # The text or value for Not Found. Available options: Any valid string text
+  NOT-FOUND: '&cPortal ''&e{id}&c'' not found.'
+  # The text or value for Already Exists. Available options: Any valid string text
+  ALREADY-EXISTS: '&cPortal ''&e{id}&c'' already exists.'
+  # The text or value for Created. Available options: Any valid string text
+  CREATED: '&aPortal &d{id} &ahas been created.'
+  # The text or value for Updated. Available options: Any valid string text
+  UPDATED: '&aPortal &d{id} &ahas been updated.'
+  # The text or value for Hologram Updated. Available options: Any valid string text
+  HOLOGRAM-UPDATED: '&aPortal &d{id} &ahologram has been moved to your location.'
+  # The text or value for Deleted. Available options: Any valid string text
+  DELETED: '&aPortal &d{id} &ahas been deleted.'
+  # The text or value for Toggled. Available options: Any valid string text
+  TOGGLED: '&aPortal &d{id} &ais now &f{state}&a.'
+  # The text or value for List Header. Available options: Any valid string text
+  LIST-HEADER: '&8&m---------------- &dPortals &7({count}) &8&m----------------'
+  # The text or value for List Entry. Available options: Any valid string text
+  LIST-ENTRY: '&7- &d{id} &8[&f{state}&8] &7cuboid=&f{cuboid} &7destination=&f{destination}'
+  # The text or value for Info Header. Available options: Any valid string text
+  INFO-HEADER: '&8&m---------------- &dPortal: &f{id} &8&m----------------'
+  # The text or value for Info Display. Available options: Any valid string text
+  INFO-DISPLAY: '&7Display: &f{display}'
+  # The text or value for Info State. Available options: Any valid string text
+  INFO-STATE: '&7State: &f{state}'
+  # The text or value for Info Cuboid. Available options: Any valid string text
+  INFO-CUBOID: '&7Cuboid: &f{cuboid}'
+  # The text or value for Info Destination. Available options: Any valid string text
+  INFO-DESTINATION: '&7Destination: &f{destination}'
+  # The text or value for Info World. Available options: Any valid string text
+  INFO-WORLD: '&7Resolved World: &f{world}'
+  # The text or value for Info Priority. Available options: Any valid string text
+  INFO-PRIORITY: '&7Priority: &f{priority}'
+  # The text or value for Info Cooldown. Available options: Any valid string text
+  INFO-COOLDOWN: '&7Trigger Cooldown: &f{cooldown}ms'
+  # The text or value for Info Permission. Available options: Any valid string text
+  INFO-PERMISSION: '&7Permission: &f{permission}'
+  # The text or value for Info Hologram. Available options: Any valid string text
+  INFO-HOLOGRAM: '&7Hologram: &f{hologram}'
+# Configuration section for Worth.
 WORTH:
-  DEFAULT: "&b1 {item} &7ɪѕ ɴᴏᴡ &a${price}" # Sets the message text for this response.
-  HAND-ITEM: "&b{amount} {item} &7ɪѕ ɴᴏᴡ &a${total}" # Sets the message text for this response.
-  NO-SELLABLE: "&cᴛʜɪѕ ɪᴛᴇᴍ ɪѕ ɴᴏᴛ ѕᴇʟʟᴀʙʟᴇ." # Sets the message text for this response.
-  CONTAINER-BREAKDOWN: "&7ʙᴀѕᴇ: &f${base} &8| &7ᴄᴏɴᴛᴇɴᴛѕ: &f${contents}" # Sets the message text for this response.
-  RELOADED: "&aᴡᴏʀᴛʜ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
-  NO-ADMIN-PERMISSION: "&cyou do not have permission to reload worth settings." # Sets the message text for this response.
-
-# UDS setup: Bounty limits, taxes, menus, and reward handling.
+  # The text or value for Default. Available options: Any valid string text
+  DEFAULT: '&b1 {item} &7is now &a${price}'
+  # The text or value for Hand Item. Available options: Any valid string text
+  HAND-ITEM: '&b{amount} {item} &7is now &a${total}'
+  # The text or value for No Sellable. Available options: Any valid string text
+  NO-SELLABLE: '&cThis item is not sellable.'
+  # The text or value for Container Breakdown. Available options: Any valid string text
+  CONTAINER-BREAKDOWN: '&7Base: &f${base} &8| &7Contents: &f${contents}'
+  # The text or value for Reloaded. Available options: Any valid string text
+  RELOADED: '&aWorth config reloaded.'
+  # The text or value for No Admin Permission. Available options: Any valid string text
+  NO-ADMIN-PERMISSION: '&cYou do not have permission to reload worth settings.'
+# Configuration section for Bounty.
 BOUNTY:
-  NEW: "&aᴀ ɴᴇᴡ ʙᴏᴜɴᴛʏ ᴏꜰ ${price} ʜᴀѕ ʙᴇᴇɴ ᴘʟᴀᴄᴇᴅ ᴏɴ {player}!" # Sets the message text for this response.
-  INCREASED: "&aᴛʜᴇ ʙᴏᴜɴᴛʏ ꜰᴏʀ {player} ʜᴀѕ ʙᴇᴇɴ ɪɴᴄʀᴇᴀѕᴇᴅ ʙʏ ${price}!" # Sets the message text for this response.
-  ALERT: "&aʏᴏᴜ ʜᴀᴠᴇ ᴀ ɴᴇᴡ ʙᴏᴜɴᴛʏ ꜰʀᴏᴍ {who} ꜰᴏʀ ${price}" # Sets the message text for this response.
-  CLAIM-SUCCESS: "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &b${amount}&7 ꜰᴏʀ ᴋɪʟʟɪɴɢ &c{player}&7." # Sets the message text for this response.
-  PLAYER-NOT-EXIST: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ᴇxɪѕᴛ." # Sets the message text for this response.
-  PLAYER-HAS-BOUNTY: "&b{player} &7ʜᴀѕ ᴀ ʙᴏᴜɴᴛʏ ᴏꜰ &c${amount}" # Sets the message text for this response.
-  NO-BOUNTY: "&cᴛʜᴇ ᴜѕᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀ ʙᴏᴜɴᴛʏ." # Sets the message text for this response.
-  CANT-SELF-BOUNTY: "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴅᴏ ᴛʜɪѕ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
-  MINIMUM-PRICE: "&cᴍɪɴɪᴍᴜᴍ ᴘʀɪᴄᴇ ɪѕ $1.00." # Sets the message text for this response.
-
-# UDS setup: Billford shop entries, prices, stock, and rotation content.
+  # The text or value for New. Available options: Any valid string text
+  NEW: '&aA new bounty of ${price} has been placed on {player}!'
+  # The text or value for Increased. Available options: Any valid string text
+  INCREASED: '&aThe bounty for {player} has been increased by ${price}!'
+  # The text or value for Alert. Available options: Any valid string text
+  ALERT: '&aYou have a new bounty from {who} for ${price}'
+  # The text or value for Claim Success. Available options: Any valid string text
+  CLAIM-SUCCESS: '&7You received &b${amount}&7 for killing &c{player}&7.'
+  # The text or value for Player Not Exist. Available options: Any valid string text
+  PLAYER-NOT-EXIST: '&cThat player does not exist.'
+  # The text or value for Player Has Bounty. Available options: Any valid string text
+  PLAYER-HAS-BOUNTY: '&b{player} &7has a bounty of &c${amount}'
+  # The text or value for No Bounty. Available options: Any valid string text
+  NO-BOUNTY: '&cThe user does not have a bounty.'
+  # The text or value for Cant Self Bounty. Available options: Any valid string text
+  CANT-SELF-BOUNTY: '&cYou can''t do this yourself.'
+  # The text or value for Minimum Price. Available options: Any valid string text
+  MINIMUM-PRICE: '&cMinimum price is $1.00.'
+# Configuration section for Billford.
 BILLFORD:
-  REQUIRED_CONTENTS: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀʟʟ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ ꜰᴏʀ ᴛʜɪѕ ᴛʀᴀᴅᴇ." # Sets the message text for this response.
-  FULL-INVENTORY: "&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ꜰᴜʟʟ! ꜰʀᴇᴇ ᴜᴘ ᴀ ѕʟᴏᴛ ʙᴇꜰᴏʀᴇ ᴄᴏɴꜰɪʀᴍɪɴɢ ᴛʜᴇ ᴛʀᴀᴅᴇ." # Sets the message text for this response.
-  TRADE-COMPLETED: "&aᴛʀᴀᴅᴇ ᴄᴏᴍᴘʟᴇᴛᴇ! ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &f{reward}&a. &7ѕʜᴀʀᴅѕ: &#A303F9{shard_bonus}&7, ᴍᴏɴᴇʏ: &a${money_bonus}&7. &8ɴᴇxᴛ ʀᴇꜰʀᴇѕʜ ɪɴ &f{next_rotation}&8." # Sets the message text for this response.
-  LIMIT-REACHED: "&cʏᴏᴜ'ᴠᴇ ʀᴇᴀᴄʜᴇᴅ ᴛʜᴇ ᴛʀᴀᴅᴇ ʟɪᴍɪᴛ ꜰᴏʀ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ. ᴄᴏᴍᴇ ʙᴀᴄᴋ ᴀꜰᴛᴇʀ ᴛʜᴇ ɴᴇxᴛ ᴛʀᴀᴅᴇ ᴄʜᴀɴɢᴇ!" # Sets the message text for this response.
-  CLICK-COOLDOWN: "&cѕʟᴏᴡ ᴅᴏᴡɴ. ʙɪʟʟꜰᴏʀᴅ ɪѕ ѕᴛɪʟʟ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴄʟɪᴄᴋ." # Sets the message text for this response.
-  TRADE-CHANGED: "&eʙɪʟʟꜰᴏʀᴅ ʀᴏᴛᴀᴛᴇᴅ ᴛᴏ ᴀ ɴᴇᴡ ᴏꜰꜰᴇʀ ᴡʜɪʟᴇ ʏᴏᴜ ʜᴀᴅ ᴛʜᴇ ᴍᴇɴᴜ ᴏᴘᴇɴ. &7ɴᴇxᴛ ᴄʜᴀɴɢᴇ ɪɴ &b{countdown}&7." # Sets the message text for this response.
-  BUSY: "&cʙɪʟʟꜰᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴘʀᴏᴄᴇѕѕɪɴɢ ʏᴏᴜʀ ʟᴀѕᴛ ᴄʟɪᴄᴋ." # Sets the message text for this response.
-  NOT-CONFIGURED: "&cʙɪʟʟꜰᴏʀᴅ ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ ᴛʀᴀᴅᴇ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ʀɪɢʜᴛ ɴᴏᴡ." # Sets the message text for this response.
-  NO-PERMISSION: "&cyou need &f{permission} &cto use billford." # Sets the message text for this response.
-
-# UDS setup: Configure BALANCE options for this file.
+  # The text or value for Required Contents. Available options: Any valid string text
+  REQUIRED_CONTENTS: '&cYou don''t have all the required items for this trade.'
+  # The text or value for Full Inventory. Available options: Any valid string text
+  FULL-INVENTORY: '&cYour inventory is full! Free up a slot before confirming the
+    trade.'
+  # The text or value for Trade Completed. Available options: Any valid string text
+  TRADE-COMPLETED: '&aTrade complete! You received &f{reward}&a. &7Shards: &#A303F9{shard_bonus}&7,
+    # The text or value for # The Text Or Mode For Money. Available Options. Available options: Any valid string text
+    # The text or mode for Money. Available options: Any string text Money: &a${money_bonus}&7.
+    &8Next refresh in &f{next_rotation}&8.'
+  # The text or value for Limit Reached. Available options: Any valid string text
+  LIMIT-REACHED: '&cYou''ve reached the trade limit for this rotation. Come back after
+    the next trade change!'
+  # The text or value for Click Cooldown. Available options: Any valid string text
+  CLICK-COOLDOWN: '&cSlow down. Billford is still processing your last click.'
+  # The text or value for Trade Changed. Available options: Any valid string text
+  TRADE-CHANGED: '&eBillford rotated to a new offer while you had the menu open. &7Next
+    change in &b{countdown}&7.'
+  # The text or value for Busy. Available options: Any valid string text
+  BUSY: '&cBillford is already processing your last click.'
+  # The text or value for Not Configured. Available options: Any valid string text
+  NOT-CONFIGURED: '&cBillford does not have an active trade configured right now.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou need &f{permission} &cto use Billford.'
+# Configuration section for Balance.
 BALANCE:
-  YOUR-BALANCE: "&7ʏᴏᴜ ʜᴀᴠᴇ &a${amount}&7." # Sets the message text for this response.
-  OTHER-BALANCE: "&b{player} &7ʜᴀѕ &a${amount}&7." # Sets the message text for this response.
-  YOUR-SHARDS: "&7ʏᴏᴜʀ ѕʜᴀʀᴅѕ: &#A303F9{amount}" # Sets the message text for this response.
-  OTHER-SHARDS: "&7{player}'ѕ ѕʜᴀʀᴅѕ: &#A303F9{amount}" # Sets the message text for this response.
+  # The text or value for Your Balance. Available options: Any valid string text
+  YOUR-BALANCE: '&7You have &a${amount}&7.'
+  # The text or value for Other Balance. Available options: Any valid string text
+  OTHER-BALANCE: '&b{player} &7has &a${amount}&7.'
+  # The text or value for Your Shards. Available options: Any valid string text
+  YOUR-SHARDS: '&7Your shards: &#A303F9{amount}'
+  # The text or value for Other Shards. Available options: Any valid string text
+  OTHER-SHARDS: '&7{player}''s shards: &#A303F9{amount}'
+  # Configuration section for Admin.
   ADMIN:
-    INVALID-AMOUNT: "&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1.5ᴍ, 2ʙ)" # Sets the message text for this response.
-    MUST-BE-POSITIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
-    MUST-BE-NON-NEGATIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴢᴇʀᴏ ᴏʀ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
-    PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-    TARGET-NOT-ENOUGH-MONEY: "&c{player} ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ. ᴄᴜʀʀᴇɴᴛ ʙᴀʟᴀɴᴄᴇ: &f${balance}&c." # Sets the message text for this response.
-    ADD-MONEY-SUCCESS: "&aᴀᴅᴅᴇᴅ &f${amount} &aᴛᴏ &b{player}&a. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&a." # Sets the message text for this response.
-    ADD-MONEY-RECEIVED: "&a{admin} ᴀᴅᴅᴇᴅ &f${amount} &aᴛᴏ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&a." # Sets the message text for this response.
-    REMOVE-MONEY-SUCCESS: "&aʀᴇᴍᴏᴠᴇᴅ &f${amount} &aꜰʀᴏᴍ &b{player}&a. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&a." # Sets the message text for this response.
-    REMOVE-MONEY-RECEIVED: "&c{admin} ʀᴇᴍᴏᴠᴇᴅ &f${amount} &cꜰʀᴏᴍ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ. ɴᴇᴡ ʙᴀʟᴀɴᴄᴇ: &f${balance}&c." # Sets the message text for this response.
-    SET-MONEY-SUCCESS: "&aѕᴇᴛ &b{player}&a'ѕ ʙᴀʟᴀɴᴄᴇ ᴛᴏ &f${amount}&a. ᴘʀᴇᴠɪᴏᴜѕ ʙᴀʟᴀɴᴄᴇ: &f${previous_balance}&a." # Sets the message text for this response.
-    SET-MONEY-RECEIVED: "&e{admin} ѕᴇᴛ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ ᴛᴏ &f${amount}&e. ᴘʀᴇᴠɪᴏᴜѕ ʙᴀʟᴀɴᴄᴇ: &f${previous_balance}&e." # Sets the message text for this response.
+    # The text or value for Invalid Amount. Available options: Any valid string text
+    INVALID-AMOUNT: '&cInvalid amount format. Use numbers with optional K, M, or B
+      suffix (e.g. 100K, 1.5M, 2B)'
+    # The text or value for Must Be Positive. Available options: Any valid string text
+    MUST-BE-POSITIVE: '&cThe amount must be positive.'
+    # The text or value for Must Be Non Negative. Available options: Any valid string text
+    MUST-BE-NON-NEGATIVE: '&cThe amount must be zero or positive.'
+    # The text or value for Player Not Found. Available options: Any valid string text
+    PLAYER-NOT-FOUND: '&cPlayer not found.'
+    # The text or value for Target Not Enough Money. Available options: Any valid string text
+    TARGET-NOT-ENOUGH-MONEY: '&c{player} does not have enough money. Current balance:
+      &f${balance}&c.'
+    # The text or value for Add Money Success. Available options: Any valid string text
+    ADD-MONEY-SUCCESS: '&aAdded &f${amount} &ato &b{player}&a. New balance: &f${balance}&a.'
+    # The text or value for Add Money Received. Available options: Any valid string text
+    ADD-MONEY-RECEIVED: '&a{admin} added &f${amount} &ato your balance. New balance:
+      &f${balance}&a.'
+    # The text or value for Remove Money Success. Available options: Any valid string text
+    REMOVE-MONEY-SUCCESS: '&aRemoved &f${amount} &afrom &b{player}&a. New balance:
+      &f${balance}&a.'
+    # The text or value for Remove Money Received. Available options: Any valid string text
+    REMOVE-MONEY-RECEIVED: '&c{admin} removed &f${amount} &cfrom your balance. New
+      # The text or value for # The Text Or Mode For Balance. Available Options. Available options: Any valid string text
+      # The text or mode for Balance. Available options: Any string text balance:
+      &f${balance}&c.'
+    # The text or value for Set Money Success. Available options: Any valid string text
+    SET-MONEY-SUCCESS: '&aSet &b{player}&a''s balance to &f${amount}&a. Previous balance:
+      &f${previous_balance}&a.'
+    # The text or value for Set Money Received. Available options: Any valid string text
+    SET-MONEY-RECEIVED: '&e{admin} set your balance to &f${amount}&e. Previous balance:
+      &f${previous_balance}&e.'
+  # Configuration section for Pay.
   PAY:
-    CANT-PAY-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴘᴀʏ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
-    INVALID-AMOUNT: "&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1.5ᴍ, 2ʙ)" # Sets the message text for this response.
-    MUST-BE-POSITIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
-    NOT-ENOUGH-MONEY: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ." # Sets the message text for this response.
-    TRANSACTION-ERROR: "&cᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ ᴅᴜʀɪɴɢ ᴛʀᴀɴѕᴀᴄᴛɪᴏɴ. ʏᴏᴜʀ ᴍᴏɴᴇʏ ʜᴀѕ ʙᴇᴇɴ ʀᴇꜰᴜɴᴅᴇᴅ." # Sets the message text for this response.
-    PLAYER-NOT-ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-    TARGET-PROFILE-NOT-FOUND: "&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-    SUCCESS-SENDER: "&7ʏᴏᴜ ᴘᴀɪᴅ &b{player} &a${amount}&7." # Sets the message text for this response.
-    SUCCESS-RECEIVER: "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &a${amount}&7 ꜰʀᴏᴍ &b{player}&7." # Sets the message text for this response.
-    TARGET-DISABLED-PAYMENTS: "&cᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴘʟᴀʏᴇʀ ʜᴀѕ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-
-# UDS setup: Configure SHARD_PAY options for this file.
+    # The text or value for Cant Pay Self. Available options: Any valid string text
+    CANT-PAY-SELF: '&cYou cannot pay yourself.'
+    # The text or value for Invalid Amount. Available options: Any valid string text
+    INVALID-AMOUNT: '&cInvalid amount format. Use numbers with optional K, M, or B
+      suffix (e.g. 100K, 1.5M, 2B)'
+    # The text or value for Must Be Positive. Available options: Any valid string text
+    MUST-BE-POSITIVE: '&cThe amount must be positive.'
+    # The text or value for Not Enough Money. Available options: Any valid string text
+    NOT-ENOUGH-MONEY: '&cYou don''t have enough money.'
+    # The text or value for Transaction Error. Available options: Any valid string text
+    TRANSACTION-ERROR: '&cError occurred during transaction. Your money has been refunded.'
+    # The text or value for Player Not Online. Available options: Any valid string text
+    PLAYER-NOT-ONLINE: '&cPlayer not online.'
+    # The text or value for Target Profile Not Found. Available options: Any valid string text
+    TARGET-PROFILE-NOT-FOUND: '&cTarget profile not found.'
+    # The text or value for Success Sender. Available options: Any valid string text
+    SUCCESS-SENDER: '&7You paid &b{player} &a${amount}&7.'
+    # The text or value for Success Receiver. Available options: Any valid string text
+    SUCCESS-RECEIVER: '&7You received &a${amount}&7 from &b{player}&7.'
+    # The text or value for Target Disabled Payments. Available options: Any valid string text
+    TARGET-DISABLED-PAYMENTS: '&cThe target player has the payments disabled.'
+# Configuration section for Shard Pay.
 SHARD_PAY:
-  CANT-PAY-SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴘᴀʏ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
-  INVALID-AMOUNT: "&cɪɴᴠᴀʟɪᴅ ᴀᴍᴏᴜɴᴛ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴋ, ᴍ, ᴏʀ ʙ ѕᴜꜰꜰɪx (e.g. 100ᴋ, 1.5ᴍ, 2ʙ)" # Sets the message text for this response.
-  MUST-BE-POSITIVE: "&cᴛʜᴇ ᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴘᴏѕɪᴛɪᴠᴇ." # Sets the message text for this response.
-  NOT-ENOUGH-SHARDS: "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ѕʜᴀʀᴅѕ." # Sets the message text for this response.
-  TARGET-PROFILE-NOT-FOUND: "&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  TARGET-DISABLED-PAYMENTS: "&cᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴘʟᴀʏᴇʀ ʜᴀѕ ᴛʜᴇ ᴘᴀʏᴍᴇɴᴛѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  SUCCESS-SENDER: "&7ʏᴏᴜ ᴘᴀɪᴅ &b{player} &#A303F9{amount}&7 ѕʜᴀʀᴅѕ." # Sets the message text for this response.
-  SUCCESS-RECEIVER: "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ &#A303F9{amount}&7 ѕʜᴀʀᴅѕ ꜰʀᴏᴍ &b{player}&7." # Sets the message text for this response.
-
-# UDS setup: Configure FINDPLAYER options for this file.
+  # The text or value for Cant Pay Self. Available options: Any valid string text
+  CANT-PAY-SELF: '&cYou cannot pay yourself.'
+  # The text or value for Invalid Amount. Available options: Any valid string text
+  INVALID-AMOUNT: '&cInvalid amount format. Use numbers with optional K, M, or B suffix
+    (e.g. 100K, 1.5M, 2B)'
+  # The text or value for Must Be Positive. Available options: Any valid string text
+  MUST-BE-POSITIVE: '&cThe amount must be positive.'
+  # The text or value for Not Enough Shards. Available options: Any valid string text
+  NOT-ENOUGH-SHARDS: '&cYou don''t have enough shards.'
+  # The text or value for Target Profile Not Found. Available options: Any valid string text
+  TARGET-PROFILE-NOT-FOUND: '&cTarget profile not found.'
+  # The text or value for Target Disabled Payments. Available options: Any valid string text
+  TARGET-DISABLED-PAYMENTS: '&cThe target player has the payments disabled.'
+  # The text or value for Success Sender. Available options: Any valid string text
+  SUCCESS-SENDER: '&7You paid &b{player} &#A303F9{amount}&7 shards.'
+  # The text or value for Success Receiver. Available options: Any valid string text
+  SUCCESS-RECEIVER: '&7You received &#A303F9{amount}&7 shards from &b{player}&7.'
+# Configuration section for Findplayer.
 FINDPLAYER:
-  AFK: "&7{player}'ѕ ɪɴ ᴛʜᴇ &#A303F9ᴀꜰᴋ" # Sets the message text for this response.
-  RTP_ZONE: "&7{player}'ѕ ɪɴ ᴛʜᴇ &cʀᴛᴘᴢᴏɴᴇ" # Sets the message text for this response.
-  SPAWN: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bѕᴘᴀᴡɴ" # Sets the message text for this response.
-  OVERWORLD: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bᴏᴠᴇʀᴡᴏʀʟᴅ &7(&b{biome}&7)" # Sets the message text for this response.
-  NETHER: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bɴᴇᴛʜᴇʀ &7(&b{biome}&7)" # Sets the message text for this response.
-  THE_END: "&7{player}'ѕ ɪɴ ᴛʜᴇ &bᴛʜᴇ ᴇɴᴅ &7(&b{biome}&7)" # Sets the message text for this response.
-  UNKNOWN: "&7{player}'ѕ ɪɴ ᴛʜᴇ &b{world}" # Sets the message text for this response.
-
-# UDS setup: Configure PUNISHMENTS options for this file.
+  # The text or value for Afk. Available options: Any valid string text
+  AFK: '&7{player}''s in the &#A303F9afk'
+  # The text or value for Rtp Zone. Available options: Any valid string text
+  RTP_ZONE: '&7{player}''s in the &crtpzone'
+  # The text or value for Spawn. Available options: Any valid string text
+  SPAWN: '&7{player}''s in the &bspawn'
+  # The text or value for Overworld. Available options: Any valid string text
+  OVERWORLD: '&7{player}''s in the &boverworld &7(&b{biome}&7)'
+  # The text or value for Nether. Available options: Any valid string text
+  NETHER: '&7{player}''s in the &bnether &7(&b{biome}&7)'
+  # The text or value for The End. Available options: Any valid string text
+  THE_END: '&7{player}''s in the &bthe end &7(&b{biome}&7)'
+  # The text or value for Unknown. Available options: Any valid string text
+  UNKNOWN: '&7{player}''s in the &b{world}'
+# Configuration section for Punishments.
 PUNISHMENTS:
-  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission to view punishment history." # Sets the message text for this response.
-  NO-CREATE-PERMISSION: "&cyou do not have permission to create punishments." # Sets the message text for this response.
-  NO-REMOVE-PERMISSION: "&cyou do not have permission to remove punishments." # Sets the message text for this response.
-  NO-DELETE-PERMISSION: "&cyou do not have permission to delete punishment history records." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /punishments <player>" # Sets the message text for this response.
-  USAGE-BAN: "&cᴜѕᴀɢᴇ: /ban <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-TEMPBAN: "&cᴜѕᴀɢᴇ: /tempban <player> <time> [ʀᴇᴀѕᴏɴ] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)" # Sets the message text for this response.
-  USAGE-MUTE: "&cᴜѕᴀɢᴇ: /mute <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-TEMPMUTE: "&cᴜѕᴀɢᴇ: /tempmute <player> <time> [ʀᴇᴀѕᴏɴ] &7(ᴛɪᴍᴇ: 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ 5ᴅ 15ᴍ 30ѕ)" # Sets the message text for this response.
-  USAGE-WARN: "&cᴜѕᴀɢᴇ: /warn <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-KICK: "&cᴜѕᴀɢᴇ: /kick <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-BLACKLIST: "&cᴜѕᴀɢᴇ: /blacklist <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-UNBAN: "&cᴜѕᴀɢᴇ: /unban <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-PARDON: "&cᴜѕᴀɢᴇ: /pardon <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-UNMUTE: "&cᴜѕᴀɢᴇ: /unmute <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  USAGE-UNBLACKLIST: "&cᴜѕᴀɢᴇ: /unblacklist <player> [ʀᴇᴀѕᴏɴ]" # Sets the message text for this response.
-  NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  TARGET-OFFLINE: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-  INVALID-DURATION: "&cɪɴᴠᴀʟɪᴅ ᴛɪᴍᴇ. ᴜѕᴇ ᴠᴀʟᴜᴇѕ ʟɪᴋᴇ 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ ᴄᴏᴍʙɪɴᴇ: 5ᴅ 15ᴍ 30ѕ." # Sets the message text for this response.
-  CREATE-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ." # Sets the message text for this response.
-  DELETE-FAILED: "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ #{id}." # Sets the message text for this response.
-  CREATED: "&aᴄʀᴇᴀᴛᴇᴅ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏʀ &b{player}&a. ɪᴅ: &f#{id}" # Sets the message text for this response.
-  DELETED-RECORD: "&aᴅᴇʟᴇᴛᴇᴅ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅ &f#{id}&a." # Sets the message text for this response.
-  REMOVED: "&aʀᴇᴍᴏᴠᴇᴅ ᴀᴄᴛɪᴠᴇ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ(ѕ) ꜰᴏʀ &b{player}&a." # Sets the message text for this response.
-  NO-ACTIVE: "&cɴᴏ ᴀᴄᴛɪᴠᴇ {type} ᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏᴜɴᴅ ꜰᴏʀ {player}." # Sets the message text for this response.
-  WARN-RECEIVED: "&cᴡᴀʀɴɪɴɢ: &f{reason}" # Sets the message text for this response.
-  MUTE-RECEIVED: "&cʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ. ʀᴇᴀѕᴏɴ: &f{reason}" # Sets the message text for this response.
-  MUTED-CHAT: "&cʏᴏᴜ ᴀʀᴇ ᴍᴜᴛᴇᴅ. ʀᴇᴀѕᴏɴ: &f{reason}&7. ᴇxᴘɪʀᴇѕ: &f{expires}" # Sets the message text for this response.
-  BAN-KICK: "&cʏᴏᴜ ᴀʀᴇ ʙᴀɴɴᴇᴅ ꜰʀᴏᴍ ᴛʜɪѕ ѕᴇʀᴠᴇʀ.\n&7ʀᴇᴀѕᴏɴ: &f{reason}\n&7ᴇxᴘɪʀᴇѕ: &f{expires}" # Sets the message text for this response.
-  BLACKLIST-KICK: "&cʏᴏᴜ ᴀʀᴇ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ꜰʀᴏᴍ ᴛʜɪѕ ѕᴇʀᴠᴇʀ.\n&7ʀᴇᴀѕᴏɴ: &f{reason}" # Sets the message text for this response.
-  BAN: | # Sets the multi-line message text for this response.
-    &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ!
-    &8&m----------------------------
-    &7ʀᴇᴀѕᴏɴ: &f%reason%
-    &7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%
-    &7ʙᴀɴɴᴇᴅ ʙʏ: &f%issuer%
-    &8&m----------------------------
-    &7ᴀᴘᴘᴇᴀʟ ᴀᴛ: &fdiscord.example.space
-  KICK: | # Sets the multi-line message text for this response.
-    &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴋɪᴄᴋᴇᴅ!
-    &8&m----------------------------
-    &7ʀᴇᴀѕᴏɴ: &f%reason%
-    &7ᴋɪᴄᴋᴇᴅ ʙʏ: &f%issuer%
-    &8&m----------------------------
-    &7ʏᴏᴜ ᴍᴀʏ ʀᴇᴄᴏɴɴᴇᴄᴛ
-  MUTE: | # Sets the multi-line message text for this response.
-    &c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ!
-    &8&m----------------------------
-    &7ʀᴇᴀѕᴏɴ: &f%reason%
-    &7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%
-    &7ᴍᴜᴛᴇᴅ ʙʏ: &f%issuer%
-    &8&m----------------------------
-    &7ʏᴏᴜ ᴄᴀɴɴᴏᴛ ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ
-  BLACKLIST: | # Sets the multi-line message text for this response.
-    &4&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ!
-    &8&m----------------------------
-    &7ʀᴇᴀѕᴏɴ: &f%reason%
-    &7ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ʙʏ: &f%issuer%
-    &8&m----------------------------
-    &4ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴊᴏɪɴ ᴛʜᴇ ѕᴇʀᴠᴇʀ
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: '&cOnly players can use this command.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission to view punishment history.'
+  # The text or value for No Create Permission. Available options: Any valid string text
+  NO-CREATE-PERMISSION: '&cYou do not have permission to create punishments.'
+  # The text or value for No Remove Permission. Available options: Any valid string text
+  NO-REMOVE-PERMISSION: '&cYou do not have permission to remove punishments.'
+  # The text or value for No Delete Permission. Available options: Any valid string text
+  NO-DELETE-PERMISSION: '&cYou do not have permission to delete punishment history
+    records.'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /punishments <player>'
+  # The text or value for Usage Ban. Available options: Any valid string text
+  USAGE-BAN: '&cUsage: /ban <player> [reason]'
+  # The text or value for Usage Tempban. Available options: Any valid string text
+  USAGE-TEMPBAN: '&cUsage: /tempban <player> <time> [reason] &7(Time: 30s, 15m, 2h,
+    5d, or 5d 15m 30s)'
+  # The text or value for Usage Mute. Available options: Any valid string text
+  USAGE-MUTE: '&cUsage: /mute <player> [reason]'
+  # The text or value for Usage Tempmute. Available options: Any valid string text
+  USAGE-TEMPMUTE: '&cUsage: /tempmute <player> <time> [reason] &7(Time: 30s, 15m,
+    2h, 5d, or 5d 15m 30s)'
+  # The text or value for Usage Warn. Available options: Any valid string text
+  USAGE-WARN: '&cUsage: /warn <player> [reason]'
+  # The text or value for Usage Kick. Available options: Any valid string text
+  USAGE-KICK: '&cUsage: /kick <player> [reason]'
+  # The text or value for Usage Blacklist. Available options: Any valid string text
+  USAGE-BLACKLIST: '&cUsage: /blacklist <player> [reason]'
+  # The text or value for Usage Unban. Available options: Any valid string text
+  USAGE-UNBAN: '&cUsage: /unban <player> [reason]'
+  # The text or value for Usage Pardon. Available options: Any valid string text
+  USAGE-PARDON: '&cUsage: /pardon <player> [reason]'
+  # The text or value for Usage Unmute. Available options: Any valid string text
+  USAGE-UNMUTE: '&cUsage: /unmute <player> [reason]'
+  # The text or value for Usage Unblacklist. Available options: Any valid string text
+  USAGE-UNBLACKLIST: '&cUsage: /unblacklist <player> [reason]'
+  # The text or value for Not Found. Available options: Any valid string text
+  NOT-FOUND: '&cPlayer not found.'
+  # The text or value for Target Offline. Available options: Any valid string text
+  TARGET-OFFLINE: '&cThat player is not online.'
+  # The text or value for Invalid Duration. Available options: Any valid string text
+  INVALID-DURATION: '&cInvalid time. Use values like 30s, 15m, 2h, 5d, or combine:
+    5d 15m 30s.'
+  # The text or value for Create Failed. Available options: Any valid string text
+  CREATE-FAILED: '&cFailed to create punishment record.'
+  # The text or value for Delete Failed. Available options: Any valid string text
+  DELETE-FAILED: '&cFailed to delete punishment record #{id}.'
+  # The text or value for Created. Available options: Any valid string text
+  CREATED: '&aCreated &f{type} &apunishment for &b{player}&a. ID: &f#{id}'
+  # The text or value for Deleted Record. Available options: Any valid string text
+  DELETED-RECORD: '&aDeleted punishment history record &f#{id}&a.'
+  # The text or value for Removed. Available options: Any valid string text
+  REMOVED: '&aRemoved active &f{type} &apunishment(s) for &b{player}&a.'
+  # The text or value for No Active. Available options: Any valid string text
+  NO-ACTIVE: '&cNo active {type} punishment found for {player}.'
+  # The text or value for Warn Received. Available options: Any valid string text
+  WARN-RECEIVED: '&cWarning: &f{reason}'
+  # The text or value for Mute Received. Available options: Any valid string text
+  MUTE-RECEIVED: '&cYou have been muted. Reason: &f{reason}'
+  # The text or value for Muted Chat. Available options: Any valid string text
+  MUTED-CHAT: '&cYou are muted. Reason: &f{reason}&7. Expires: &f{expires}'
+  # The text or value for Ban Kick. Available options: Any valid string text
+  BAN-KICK: '&cYou are banned from this server.
 
-# UDS setup: Configure SOCIAL options for this file.
+    # The text or value for # The Text Or Mode For &7Reason. Available Options. Available options: Any valid string text
+    # The text or mode for &7Reason. Available options: Any string text &7Reason:
+    &f{reason}
+
+    # The text or value for # The Text Or Mode For &7Expires. Available Options. Available options: Any valid string text
+    # The text or mode for &7Expires. Available options: Any string text &7Expires:
+    &f{expires}'
+  # The text or value for Blacklist Kick. Available options: Any valid string text
+  BLACKLIST-KICK: '&cYou are blacklisted from this server.
+
+    # The text or value for # The Text Or Mode For &7Reason. Available Options. Available options: Any valid string text
+    # The text or mode for &7Reason. Available options: Any string text &7Reason:
+    &f{reason}'
+  # The text or value for Ban. Available options: Any valid string text
+  BAN: '&c&lYou have been banned!
+
+    &8&m----------------------------
+
+    # The text or value for # The Text Or Mode For &7Reason. Available Options. Available options: Any valid string text
+    # The text or mode for &7Reason. Available options: Any string text &7Reason:
+    &f%reason%
+
+    # The text or value for # The Text Or Mode For &7Expires. Available Options. Available options: Any valid string text
+    # The text or mode for &7Expires. Available options: Any string text &7Expires:
+    &f%nicest_expiration%
+
+    # The text or value for # The Text Or Mode For &7Banned By. Available Options. Available options: Any valid string text
+    # The text or mode for &7Banned By. Available options: Any string text &7Banned
+    # The text or value for By. Available options: Any valid string text
+    by: &f%issuer%
+
+    &8&m----------------------------
+
+    # The text or value for # The Text Or Mode For &7Appeal At. Available Options. Available options: Any valid string text
+    # The text or mode for &7Appeal At. Available options: Any string text &7Appeal
+    # The text or value for At. Available options: Any valid string text
+    at: &fdiscord.example.space
+
+    '
+  # The text or value for Kick. Available options: Any valid string text
+  KICK: '&c&lYou have been kicked!
+
+    &8&m----------------------------
+
+    # The text or value for # The Text Or Mode For &7Reason. Available Options. Available options: Any valid string text
+    # The text or mode for &7Reason. Available options: Any string text &7Reason:
+    &f%reason%
+
+    # The text or value for # The Text Or Mode For &7Kicked By. Available Options. Available options: Any valid string text
+    # The text or mode for &7Kicked By. Available options: Any string text &7Kicked
+    # The text or value for By. Available options: Any valid string text
+    by: &f%issuer%
+
+    &8&m----------------------------
+
+    &7You may reconnect
+
+    '
+  # The text or value for Mute. Available options: Any valid string text
+  MUTE: '&c&lYou have been muted!
+
+    &8&m----------------------------
+
+    # The text or value for # The Text Or Mode For &7Reason. Available Options. Available options: Any valid string text
+    # The text or mode for &7Reason. Available options: Any string text &7Reason:
+    &f%reason%
+
+    # The text or value for # The Text Or Mode For &7Expires. Available Options. Available options: Any valid string text
+    # The text or mode for &7Expires. Available options: Any string text &7Expires:
+    &f%nicest_expiration%
+
+    # The text or value for # The Text Or Mode For &7Muted By. Available Options. Available options: Any valid string text
+    # The text or mode for &7Muted By. Available options: Any string text &7Muted
+    # The text or value for By. Available options: Any valid string text
+    by: &f%issuer%
+
+    &8&m----------------------------
+
+    &7You cannot speak in chat
+
+    '
+  # The text or value for Blacklist. Available options: Any valid string text
+  BLACKLIST: '&4&lYOU HAVE BEEN BLACKLISTED!
+
+    &8&m----------------------------
+
+    # The text or value for # The Text Or Mode For &7Reason. Available Options. Available options: Any valid string text
+    # The text or mode for &7Reason. Available options: Any string text &7Reason:
+    &f%reason%
+
+    # The text or value for # The Text Or Mode For &7Blacklisted By. Available Options. Available options: Any valid string text
+    # The text or mode for &7Blacklisted By. Available options: Any string text &7Blacklisted
+    # The text or value for By. Available options: Any valid string text
+    by: &f%issuer%
+
+    &8&m----------------------------
+
+    &4You cannot join the server
+
+    '
+# Configuration section for Social.
 SOCIAL:
+  # Configuration section for Discord.
   DISCORD:
-    - ""
-    - "&fᴊᴏɪɴ ᴏᴜʀ ᴅɪѕᴄᴏʀᴅ: &#6BF18Ddiscord.example.space"
-    - ""
+  - ''
+  - '&fJoin our discord: &#6BF18Ddiscord.example.space'
+  - ''
+  # Configuration section for Twitter.
   TWITTER:
-    - ""
-    - "&fꜰᴏʟʟᴏᴡ ᴏɴ x: &#6BF18D@ᴇʟᴏɴᴍᴜѕᴋ"
-    - ""
+  - ''
+  - '&fFollow on X: &#6BF18D@ElonMusk'
+  - ''
+  # Configuration section for Store.
   STORE:
-    - ""
-    - "&fᴠɪѕɪᴛ ᴏᴜʀ ѕᴛᴏʀᴇ: &#6BF18Dstore.example.space"
-    - ""
-
-# UDS setup: Configure CRASH_PROTECTION options for this file.
-CRASH_PROTECTION:
-  ITEM_BLOCKED: "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ʜᴇʀᴇ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴅᴀᴛᴀ ʟᴏᴏᴋѕ ᴜɴѕᴀꜰᴇ. &7ᴄᴏɴᴛᴇxᴛ: &f{context}&7. ʀᴇᴀѕᴏɴ: &f{reason}" # Sets the message text for this response.
-
-# UDS setup: Auction House sounds or messages for this feature.
+  - ''
+  - '&fVisit our store: &#6BF18Dstore.example.space'
+  - ''
+# Configuration section for Auction House.
 AUCTION_HOUSE:
-  PLAYERS_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
-  NO_PERMISSION: "&cyou cannot use that auction house action."
-  DISABLED: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  SELL_USAGE: "&cᴜѕᴀɢᴇ: /ah ѕᴇʟʟ <price>" # Sets the message text for this response.
-  CANCEL_USAGE: "&cᴜѕᴀɢᴇ: /ah ᴄᴀɴᴄᴇʟ <listingId>" # Sets the message text for this response.
-  INVALID_PRICE: "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ." # Sets the message text for this response.
-  INVALID_LISTING_ID: "&cɪɴᴠᴀʟɪᴅ ʟɪѕᴛɪɴɢ ɪᴅ." # Sets the message text for this response.
-  NO_ADMIN_PERMISSION: "&cyou do not have permission to reload auction house settings." # Sets the message text for this response.
-  RELOADED: "&aᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
-  NO_ITEM_IN_HAND: "&cʜᴏʟᴅ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ʟɪѕᴛ ɪɴ ʏᴏᴜʀ ᴍᴀɪɴ ʜᴀɴᴅ." # Sets the message text for this response.
-  ITEM_BLOCKED: "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʟɪѕᴛᴇᴅ ɪɴ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ." # Sets the message text for this response.
-  PRICE_OUT_OF_RANGE: "&cᴛʜᴀᴛ ᴘʀɪᴄᴇ ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴛʜᴇ ᴀʟʟᴏᴡᴇᴅ ʀᴀɴɢᴇ." # Sets the message text for this response.
-  NO_MONEY_FOR_FEE: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ᴛᴏ ᴘᴀʏ ᴛʜᴇ ʟɪѕᴛɪɴɢ ꜰᴇᴇ." # Sets the message text for this response.
-  MAX_LISTINGS_REACHED: "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ." # Sets the message text for this response.
-  LISTING_CREATED: "&aʟɪѕᴛɪɴɢ ᴄʀᴇᴀᴛᴇᴅ! &7#{listing_id} &f{item} &7ꜰᴏʀ &a${price}&7. ꜰᴇᴇ: &a${fee}&7. ᴇxᴘɪʀᴇѕ ɪɴ &f{expires}&7." # Sets the message text for this response.
-  LISTING_CANCELLED: "&eʟɪѕᴛɪɴɢ #{listing_id} &f({item}) &eʜᴀѕ ʙᴇᴇɴ ᴍᴏᴠᴇᴅ ᴛᴏ ʏᴏᴜʀ ᴄʟᴀɪᴍ ǫᴜᴇᴜᴇ." # Sets the message text for this response.
-  LISTING_NOT_FOUND: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
-  LISTING_NOT_ACTIVE: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ." # Sets the message text for this response.
-  NOT_YOUR_LISTING: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
-  CANNOT_BUY_OWN: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʙᴜʏ ʏᴏᴜʀ ᴏᴡɴ ʟɪѕᴛɪɴɢ." # Sets the message text for this response.
-  NOT_ENOUGH_MONEY: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ." # Sets the message text for this response.
-  FULL_INVENTORY: "&cʏᴏᴜ ɴᴇᴇᴅ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕᴘᴀᴄᴇ ᴛᴏ ʙᴜʏ ᴛʜᴀᴛ ɪᴛᴇᴍ." # Sets the message text for this response.
-  PURCHASE_SUCCESS: "&aᴘᴜʀᴄʜᴀѕᴇᴅ &f{item} &aꜰᴏʀ &a${price} &aꜰʀᴏᴍ &f{seller}&a." # Sets the message text for this response.
-  ITEM_SOLD: "&aʏᴏᴜʀ ʟɪѕᴛɪɴɢ ѕᴏʟᴅ! &f{buyer} &aʙᴏᴜɢʜᴛ &f{item} &aꜰᴏʀ &a${price}&a. ᴄʟᴀɪᴍᴀʙʟᴇ ᴘᴀʏᴏᴜᴛ: &a${payout}&a." # Sets the message text for this response.
-  CLAIM_NOT_FOUND: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
-  NOT_YOUR_CLAIM: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
-  CLAIM_ALREADY_CLAIMED: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ." # Sets the message text for this response.
-  CLAIM_INVENTORY_FULL: "&cʏᴏᴜ ɴᴇᴇᴅ ᴀ ꜰʀᴇᴇ ɪɴᴠᴇɴᴛᴏʀʏ ѕʟᴏᴛ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ." # Sets the message text for this response.
-  CLAIMED_MONEY: "&aᴄʟᴀɪᴍᴇᴅ &a${amount} &aꜰʀᴏᴍ ʏᴏᴜʀ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴀʟᴇѕ." # Sets the message text for this response.
-  CLAIMED_ITEM: "&aᴄʟᴀɪᴍᴇᴅ ʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ: &f{item}&a." # Sets the message text for this response.
-  SEARCH_PROMPT: "&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ɴᴀᴍᴇ ɪɴ ᴄʜᴀᴛ ᴛᴏ ѕᴇᴀʀᴄʜ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ." # Sets the message text for this response.
-
-  INVALID_DURATION: "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴜʀᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ."
-  CREATE_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ʟɪѕᴛɪɴɢ."
-  PURCHASE_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴘᴜʀᴄʜᴀѕᴇ ʀɪɢʜᴛ ɴᴏᴡ."
-  CANCEL_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴀɴᴄᴇʟ ᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ʀɪɢʜᴛ ɴᴏᴡ."
-  CLAIM_DATABASE_ERROR: "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴍᴘʟᴇᴛᴇ ᴛʜᴀᴛ ᴄʟᴀɪᴍ ʀɪɢʜᴛ ɴᴏᴡ."
-  CLAIMS_AUTOMATIC: "&eᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴏʟʟᴇᴄᴛᴇᴅ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ."
-  AUTO_COLLECTED: "&aᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ &f{money} &aᴘᴀʏᴏᴜᴛ(ѕ) ᴀɴᴅ &f{items} &aʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ(ѕ)."
-  LIMIT: "&6ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ: &e{active}&7/&e{limit}"
-  NO_FAST_PERMISSION: "&cyou cannot use that fast-action setting."
-  FAST_BUY_TOGGLED: "&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eꜰᴀѕᴛ ʙᴜʏ ɪѕ ɴᴏᴡ {state}&e."
-  FAST_SELL_TOGGLED: "&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &eꜰᴀѕᴛ ѕᴇʟʟ ɪѕ ɴᴏᴡ {state}&e."
-  SEARCH_CANCELLED: "&7ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴇᴀʀᴄʜ ᴄᴀɴᴄᴇʟʟᴇᴅ."
-
-# UDS setup: Orders sounds or messages for this feature.
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cAuction House is currently disabled.'
+  # The text or value for Sell Usage. Available options: Any valid string text
+  SELL_USAGE: '&cUsage: /ah sell <price>'
+  # The text or value for Cancel Usage. Available options: Any valid string text
+  CANCEL_USAGE: '&cUsage: /ah cancel <listingId>'
+  # The text or value for Invalid Price. Available options: Any valid string text
+  INVALID_PRICE: '&cInvalid price format. Use numbers like 100, 5K, or 1.5M.'
+  # The text or value for Invalid Listing Id. Available options: Any valid string text
+  INVALID_LISTING_ID: '&cInvalid listing id.'
+  # The text or value for No Admin Permission. Available options: Any valid string text
+  NO_ADMIN_PERMISSION: '&cYou do not have permission to reload Auction House settings.'
+  # The text or value for Reloaded. Available options: Any valid string text
+  RELOADED: '&aAuction House config reloaded.'
+  # The text or value for No Item In Hand. Available options: Any valid string text
+  NO_ITEM_IN_HAND: '&cHold the item you want to list in your main hand.'
+  # The text or value for Item Blocked. Available options: Any valid string text
+  ITEM_BLOCKED: '&cThat item cannot be listed in the Auction House.'
+  # The text or value for Price Out Of Range. Available options: Any valid string text
+  PRICE_OUT_OF_RANGE: '&cThat price is outside the allowed range.'
+  # The text or value for No Money For Fee. Available options: Any valid string text
+  NO_MONEY_FOR_FEE: '&cYou do not have enough money to pay the listing fee.'
+  # The text or value for Max Listings Reached. Available options: Any valid string text
+  MAX_LISTINGS_REACHED: '&cYou have reached your active listing limit.'
+  # The text or value for Listing Created. Available options: Any valid string text
+  LISTING_CREATED: '&aListing created! &7#{listing_id} &f{item} &7for &a${price}&7.
+    # The text or value for # The Text Or Mode For Fee. Available Options. Available options: Any valid string text
+    # The text or mode for Fee. Available options: Any string text Fee: &a${fee}&7.
+    Expires in &f{expires}&7.'
+  # The text or value for Listing Cancelled. Available options: Any valid string text
+  LISTING_CANCELLED: '&eListing #{listing_id} &f({item}) &ehas been moved to your
+    claim queue.'
+  # The text or value for Listing Not Found. Available options: Any valid string text
+  LISTING_NOT_FOUND: '&cThat listing no longer exists.'
+  # The text or value for Listing Not Active. Available options: Any valid string text
+  LISTING_NOT_ACTIVE: '&cThat listing is no longer active.'
+  # The text or value for Not Your Listing. Available options: Any valid string text
+  NOT_YOUR_LISTING: '&cThat listing does not belong to you.'
+  # The text or value for Cannot Buy Own. Available options: Any valid string text
+  CANNOT_BUY_OWN: '&cYou cannot buy your own listing.'
+  # The text or value for Not Enough Money. Available options: Any valid string text
+  NOT_ENOUGH_MONEY: '&cYou do not have enough money.'
+  # The text or value for Full Inventory. Available options: Any valid string text
+  FULL_INVENTORY: '&cYou need free inventory space to buy that item.'
+  # The text or value for Purchase Success. Available options: Any valid string text
+  PURCHASE_SUCCESS: '&aPurchased &f{item} &afor &a${price} &afrom &f{seller}&a.'
+  # The text or value for Item Sold. Available options: Any valid string text
+  ITEM_SOLD: '&aYour listing sold! &f{buyer} &abought &f{item} &afor &a${price}&a.
+    # The text or value for # The Text Or Mode For Claimable Payout. Available Options. Available options: Any valid string text
+    # The text or mode for Claimable Payout. Available options: Any string text Claimable
+    # The text or value for Payout. Available options: Any valid string text
+    payout: &a${payout}&a.'
+  # The text or value for Claim Not Found. Available options: Any valid string text
+  CLAIM_NOT_FOUND: '&cThat claim no longer exists.'
+  # The text or value for Not Your Claim. Available options: Any valid string text
+  NOT_YOUR_CLAIM: '&cThat claim does not belong to you.'
+  # The text or value for Claim Already Claimed. Available options: Any valid string text
+  CLAIM_ALREADY_CLAIMED: '&cThat claim was already collected.'
+  # The text or value for Claim Inventory Full. Available options: Any valid string text
+  CLAIM_INVENTORY_FULL: '&cYou need a free inventory slot to claim that item.'
+  # The text or value for Claimed Money. Available options: Any valid string text
+  CLAIMED_MONEY: '&aClaimed &a${amount} &afrom your Auction House sales.'
+  # The text or value for Claimed Item. Available options: Any valid string text
+  CLAIMED_ITEM: '&aClaimed returned item: &f{item}&a.'
+# Configuration section for Orders.
 ORDERS:
-  DISABLED: "&cᴏʀᴅᴇʀѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  NO_ADMIN_PERMISSION: "&cyou do not have permission to reload orders." # Sets the message text for this response.
-  RELOADED: "&aᴏʀᴅᴇʀѕ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
-  PROMPT_SEARCH: "&7ᴇɴᴛᴇʀ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ѕᴇᴀʀᴄʜ ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
-  SEARCH_EMPTY: "&cᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ɴᴀᴍᴇ ᴛᴏ ѕᴇᴀʀᴄʜ." # Sets the message text for this response.
-  PROMPT_QUANTITY: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
-  PROMPT_PRICE: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ &f{item}&7 ɪɴ ᴄʜᴀᴛ. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
-  INPUT_CANCELLED: "&7ᴏʀᴅᴇʀ ᴄʀᴇᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟʟᴇᴅ." # Sets the message text for this response.
-  PROMPT_EDIT_QUANTITY: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: &e{quantity}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
-  PROMPT_EDIT_PRICE: "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: {price_formatted}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ." # Sets the message text for this response.
-  EDIT_CANCELLED: "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ." # Sets the message text for this response.
-  EDIT_UPDATED: "&aᴏʀᴅᴇʀ #{order_id} ᴜᴘᴅᴀᴛᴇᴅ. ɴᴇᴡ ʙᴜᴅɢᴇᴛ: {budget_formatted}." # Sets the message text for this response.
-  EDIT_ITEM_UPDATED: "&aᴏʀᴅᴇʀ #{order_id} ɪᴛᴇᴍ ᴜᴘᴅᴀᴛᴇᴅ ᴛᴏ &f{item}&a." # Sets the message text for this response.
-  EDIT_LOCKED: "&cᴛʜɪѕ ᴏʀᴅᴇʀ ᴀʟʀᴇᴀᴅʏ ʜᴀѕ ᴅᴇʟɪᴠᴇʀɪᴇѕ, ѕᴏ ɪᴛ ᴄᴀɴɴᴏᴛ ʙᴇ ᴇᴅɪᴛᴇᴅ." # Sets the message text for this response.
-  NO_PENDING_ORDER: "&cᴛʜᴇʀᴇ ɪѕ ɴᴏ ᴘᴇɴᴅɪɴɢ ᴏʀᴅᴇʀ ᴅʀᴀꜰᴛ ᴛᴏ ᴄᴏɴꜰɪʀᴍ." # Sets the message text for this response.
-  ITEM_BLOCKED: "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ." # Sets the message text for this response.
-  INVALID_QUANTITY: "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0." # Sets the message text for this response.
-  QUANTITY_OUT_OF_RANGE: "&cǫᴜᴀɴᴛɪᴛʏ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {max}." # Sets the message text for this response.
-  INVALID_PRICE: "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ." # Sets the message text for this response.
-  PRICE_OUT_OF_RANGE: "&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f${min}&c ᴀɴᴅ &f${max}&c." # Sets the message text for this response.
-  TOTAL_TOO_HIGH: "&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f${max}&c." # Sets the message text for this response.
-  NOT_ENOUGH_MONEY: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ꜰᴏʀ ᴛʜᴀᴛ ᴏʀᴅᴇʀ." # Sets the message text for this response.
-  MAX_ACTIVE_REACHED: "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀ ʟɪᴍɪᴛ." # Sets the message text for this response.
-  CREATED: "&aᴏʀᴅᴇʀ ᴄʀᴇᴀᴛᴇᴅ! &7#{order_id} &fꜰᴏʀ &e{quantity} {item}&7 ᴀᴛ &a${price_each} &7ᴇᴀᴄʜ. ʙᴜᴅɢᴇᴛ ʟᴏᴄᴋᴇᴅ: &a${budget}&7." # Sets the message text for this response.
-  ORDER_NOT_FOUND: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
-  ORDER_NOT_ACTIVE: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ." # Sets the message text for this response.
-  NOT_YOUR_ORDER: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
-  CANNOT_DELIVER_OWN: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ ᴛᴏ ʏᴏᴜʀ ᴏᴡɴ ᴏʀᴅᴇʀ." # Sets the message text for this response.
-  NO_MATCHING_ITEMS: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴍᴀᴛᴄʜɪɴɢ ɪᴛᴇᴍѕ ᴛᴏ ᴅᴇʟɪᴠᴇʀ." # Sets the message text for this response.
-  ORDER_FULL: "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ꜰᴜʟʟ." # Sets the message text for this response.
-  DELIVERY_SUCCESS: "&aᴅᴇʟɪᴠᴇʀᴇᴅ &e{quantity} {item}&a ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ &a${payout}&a." # Sets the message text for this response.
-  CANCELLED: "&eᴏʀᴅᴇʀ #{order_id} ᴡᴀѕ ᴄᴀɴᴄᴇʟʟᴇᴅ. ʀᴇᴍᴀɪɴɪɴɢ ᴇѕᴄʀᴏᴡ ɪѕ ʀᴇᴀᴅʏ ᴛᴏ ᴄᴏʟʟᴇᴄᴛ." # Sets the message text for this response.
-  CLAIM_NOT_FOUND: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ." # Sets the message text for this response.
-  CLAIMS_DISABLED: "&cᴏʀᴅᴇʀ ᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  NOT_YOUR_CLAIM: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ." # Sets the message text for this response.
-  CLAIM_ALREADY_CLAIMED: "&cᴛʜᴀᴛ ᴄʟᴀɪᴍ ᴡᴀѕ ᴀʟʀᴇᴀᴅʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ." # Sets the message text for this response.
-  CLAIM_INVENTORY_FULL: "&cʏᴏᴜ ɴᴇᴇᴅ ᴇɴᴏᴜɢʜ ɪɴᴠᴇɴᴛᴏʀʏ ѕᴘᴀᴄᴇ ᴛᴏ ᴄʟᴀɪᴍ ᴛʜᴀᴛ ɪᴛᴇᴍ." # Sets the message text for this response.
-  CLAIMED_REFUND: "&aᴄʟᴀɪᴍᴇᴅ ᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ ᴏꜰ &a${amount}&a." # Sets the message text for this response.
-  CLAIMED_ITEM: "&aᴄʟᴀɪᴍᴇᴅ ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍ: &f{item}&a." # Sets the message text for this response.
-
-# UDS setup: Configure STATS-WIPE options for this file.
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cOrders is currently disabled.'
+  # The text or value for No Admin Permission. Available options: Any valid string text
+  NO_ADMIN_PERMISSION: '&cYou do not have permission to reload Orders settings.'
+  # The text or value for Reloaded. Available options: Any valid string text
+  RELOADED: '&aOrders config reloaded.'
+  # The text or value for Prompt Quantity. Available options: Any valid string text
+  PROMPT_QUANTITY: '&7Enter the order quantity for &f{item}&7 in chat. Type &ccancel&7
+    to abort.'
+  # The text or value for Prompt Price. Available options: Any valid string text
+  PROMPT_PRICE: '&7Enter the price each for &f{item}&7 in chat. Type &ccancel&7 to
+    abort.'
+  # The text or value for Input Cancelled. Available options: Any valid string text
+  INPUT_CANCELLED: '&7Order creation cancelled.'
+  # The text or value for No Pending Order. Available options: Any valid string text
+  NO_PENDING_ORDER: '&cThere is no pending order draft to confirm.'
+  # The text or value for Item Blocked. Available options: Any valid string text
+  ITEM_BLOCKED: '&cThat item cannot be ordered.'
+  # The text or value for Invalid Quantity. Available options: Any valid string text
+  INVALID_QUANTITY: '&cInvalid quantity. Use a whole number greater than 0.'
+  # The text or value for Quantity Out Of Range. Available options: Any valid string text
+  QUANTITY_OUT_OF_RANGE: '&cQuantity must be between 1 and {max}.'
+  # The text or value for Invalid Price. Available options: Any valid string text
+  INVALID_PRICE: '&cInvalid price format. Use numbers like 100, 5K, or 1.5M.'
+  # The text or value for Price Out Of Range. Available options: Any valid string text
+  PRICE_OUT_OF_RANGE: '&cPrice each must be between &f${min}&c and &f${max}&c.'
+  # The text or value for Total Too High. Available options: Any valid string text
+  TOTAL_TOO_HIGH: '&cTotal order budget cannot exceed &f${max}&c.'
+  # The text or value for Not Enough Money. Available options: Any valid string text
+  NOT_ENOUGH_MONEY: '&cYou do not have enough money for that order.'
+  # The text or value for Max Active Reached. Available options: Any valid string text
+  MAX_ACTIVE_REACHED: '&cYou have reached your active order limit.'
+  # The text or value for Created. Available options: Any valid string text
+  CREATED: '&aOrder created! &7#{order_id} &ffor &e{quantity} {item}&7 at &a${price_each}
+    # The text or value for # The Text Or Mode For &7Each. Budget Locked. Available Options. Available options: Any valid string text
+    # The text or mode for &7Each. Budget Locked. Available options: Any string text
+    # The text or value for &7Each. Budget Locked. Available options: Any valid string text
+    &7each. Budget locked: &a${budget}&7.'
+  # The text or value for Order Not Found. Available options: Any valid string text
+  ORDER_NOT_FOUND: '&cThat order no longer exists.'
+  # The text or value for Order Not Active. Available options: Any valid string text
+  ORDER_NOT_ACTIVE: '&cThat order is no longer active.'
+  # The text or value for Not Your Order. Available options: Any valid string text
+  NOT_YOUR_ORDER: '&cThat order does not belong to you.'
+  # The text or value for Cannot Deliver Own. Available options: Any valid string text
+  CANNOT_DELIVER_OWN: '&cYou cannot deliver to your own order.'
+  # The text or value for No Matching Items. Available options: Any valid string text
+  NO_MATCHING_ITEMS: '&cYou do not have the required items to deliver.'
+  # The text or value for Order Full. Available options: Any valid string text
+  ORDER_FULL: '&cThat order is already full.'
+  # The text or value for Delivery Success. Available options: Any valid string text
+  DELIVERY_SUCCESS: '&aDelivered &e{quantity} {item}&a and received &a${payout}&a.'
+  # The text or value for Cancelled. Available options: Any valid string text
+  CANCELLED: '&eOrder #{order_id} &ehas been closed. Remaining escrow was moved to
+    your collect queue.'
+  # The text or value for Claim Not Found. Available options: Any valid string text
+  CLAIM_NOT_FOUND: '&cThat claim no longer exists.'
+  # The text or value for Not Your Claim. Available options: Any valid string text
+  NOT_YOUR_CLAIM: '&cThat claim does not belong to you.'
+  # The text or value for Claim Already Claimed. Available options: Any valid string text
+  CLAIM_ALREADY_CLAIMED: '&cThat claim was already collected.'
+  # The text or value for Claim Inventory Full. Available options: Any valid string text
+  CLAIM_INVENTORY_FULL: '&cYou need a free inventory slot to claim that item.'
+  # The text or value for Claimed Refund. Available options: Any valid string text
+  CLAIMED_REFUND: '&aClaimed escrow refund of &a${amount}&a.'
+  # The text or value for Claimed Item. Available options: Any valid string text
+  CLAIMED_ITEM: '&aClaimed delivered item: &f{item}&a.'
+# Configuration section for Stats Wipe.
 STATS-WIPE:
-  NO-PERMISSION: "&cyou do not have permission to use stats wipe." # Sets the message text for this response.
-  PLAYER-ONLY-GUI: "&cᴏᴘᴇɴ ᴛʜᴇ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ɢᴜɪ ɪɴ-ɢᴀᴍᴇ, ᴏʀ ᴜѕᴇ /uds ѕᴛᴀᴛѕᴡɪᴘᴇ <target> ᴄᴏɴꜰɪʀᴍ." # Sets the message text for this response.
-  INVALID-TARGET: "&cɪɴᴠᴀʟɪᴅ ѕᴛᴀᴛѕ ᴡɪᴘᴇ ᴛᴀʀɢᴇᴛ. ᴀᴠᴀɪʟᴀʙʟᴇ: {targets}" # Sets the message text for this response.
-  DIRECT-USAGE: "&cᴜѕᴇ /uds ѕᴛᴀᴛѕᴡɪᴘᴇ <target> ᴄᴏɴꜰɪʀᴍ ᴛᴏ ʀᴜɴ ᴅɪʀᴇᴄᴛʟʏ, ᴏʀ /uds ѕᴛᴀᴛѕᴡɪᴘᴇ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ ɢᴜɪ." # Sets the message text for this response.
-  BUSY: "&cᴀ ᴡɪᴘᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ." # Sets the message text for this response.
-  FAILED: "&cѕᴛᴀᴛѕ ᴡɪᴘᴇ ꜰᴀɪʟᴇᴅ: {error}" # Sets the message text for this response.
-  SUCCESS: "&aᴡɪᴘᴇ ᴄᴏᴍᴘʟᴇᴛᴇ: &f{target}&a. ᴀꜰꜰᴇᴄᴛᴇᴅ ʀᴇᴄᴏʀᴅѕ: &f{count}&a." # Sets the message text for this response.
-
-# UDS setup: Configure STAFF options for this file.
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission to use Stats Wipe.'
+  # The text or value for Player Only Gui. Available options: Any valid string text
+  PLAYER-ONLY-GUI: '&cOpen the Stats Wipe GUI in-game, or use /uds statswipe <target>
+    confirm.'
+  # The text or value for Invalid Target. Available options: Any valid string text
+  INVALID-TARGET: '&cInvalid Stats Wipe target. Available: {targets}'
+  # The text or value for Direct Usage. Available options: Any valid string text
+  DIRECT-USAGE: '&cUse /uds statswipe <target> confirm to run directly, or /uds statswipe
+    to open the GUI.'
+  # The text or value for Busy. Available options: Any valid string text
+  BUSY: '&cA wipe is already in progress.'
+  # The text or value for Failed. Available options: Any valid string text
+  FAILED: '&cStats Wipe failed: {error}'
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: '&aWipe complete: &f{target}&a. Affected records: &f{count}&a.'
+# Configuration section for Staff.
 STAFF:
-  NO_PERMISSION_OTHERS: "&c&lᴇʀʀᴏʀ &7» &cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ' ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!" # Sets the message text for this response.
-  TOGGLE_ERROR: "&c&lᴇʀʀᴏʀ &7» &cꜰᴀɪʟᴇᴅ ᴛᴏ ᴛᴏɢɢʟᴇ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ!" # Sets the message text for this response.
-  STATUS_ENABLED: "&aᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
-  STATUS_DISABLED: "&cᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
-  ICON_ENABLED: "&a✓" # Sets the message text for this response.
-  ICON_DISABLED: "&c✗" # Sets the message text for this response.
-  STATE_ACTIVE: "&aᴀᴄᴛɪᴠᴇ" # Sets the message text for this response.
-  STATE_INACTIVE: "&cɪɴᴀᴄᴛɪᴠᴇ" # Sets the message text for this response.
-  SELF_TOGGLE: "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status%&7!" # Sets the message text for this response.
-  SELF_STATUS: "&7ѕᴛᴀᴛᴜѕ: %icon% %status%" # Sets the message text for this response.
-  OTHER_TOGGLE: "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%&7!" # Sets the message text for this response.
-  TARGET_NOTIFY: "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ &7» ʏᴏᴜʀ ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ %status% &7ʙʏ &e%staff%&7!" # Sets the message text for this response.
-  BROADCAST: "&8[&6ѕᴛᴀꜰꜰ&8] &e%staff% &7ʜᴀѕ %status% &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ꜰᴏʀ &e%target%" # Sets the message text for this response.
+  # The text or value for No Permission Others. Available options: Any valid string text
+  NO_PERMISSION_OTHERS: '&c&lERROR &7» &cYou don''t have permission to manage other
+    players'' staff mode!'
+  # The text or value for Toggle Error. Available options: Any valid string text
+  TOGGLE_ERROR: '&c&lERROR &7» &cFailed to toggle staff mode!'
+  # The text or value for Status Enabled. Available options: Any valid string text
+  STATUS_ENABLED: '&aEnabled'
+  # The text or value for Status Disabled. Available options: Any valid string text
+  STATUS_DISABLED: '&cDisabled'
+  # The text or value for Icon Enabled. Available options: Any valid string text
+  ICON_ENABLED: '&a✓'
+  # The text or value for Icon Disabled. Available options: Any valid string text
+  ICON_DISABLED: '&c✗'
+  # The text or value for State Active. Available options: Any valid string text
+  STATE_ACTIVE: '&aActive'
+  # The text or value for State Inactive. Available options: Any valid string text
+  STATE_INACTIVE: '&cInactive'
+  # The text or value for Self Toggle. Available options: Any valid string text
+  SELF_TOGGLE: '&6&lSTAFF MODE &7» %status%&7!'
+  # The text or value for Self Status. Available options: Any valid string text
+  SELF_STATUS: '&7Status: %icon% %status%'
+  # The text or value for Other Toggle. Available options: Any valid string text
+  OTHER_TOGGLE: '&6&lSTAFF MODE &7» %status% &7staff mode for &e%target%&7!'
+  # The text or value for Target Notify. Available options: Any valid string text
+  TARGET_NOTIFY: '&6&lSTAFF MODE &7» Your staff mode has been %status% &7by &e%staff%&7!'
+  # The text or value for Broadcast. Available options: Any valid string text
+  BROADCAST: '&8[&6STAFF&8] &e%staff% &7has %status% &7staff mode for &e%target%'
+  # Configuration section for Activation Messages.
   ACTIVATION_MESSAGES:
-    - "&7&m------------------------------"
-    - "&6&lѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ"
-    - "&7• ɪɴᴠᴇɴᴛᴏʀʏ ᴄʟᴇᴀʀᴇᴅ ᴀɴᴅ ѕᴀᴠᴇᴅ"
-    - "&7• ɢᴀᴍᴇ ᴍᴏᴅᴇ ѕᴇᴛ ᴛᴏ ᴄʀᴇᴀᴛɪᴠᴇ"
-    - "&7• ꜰʟɪɢʜᴛ ᴇɴᴀʙʟᴇᴅ"
-    - "&7• ᴜѕᴇ &e/vanish &7ᴛᴏ ʙᴇᴄᴏᴍᴇ ɪɴᴠɪѕɪʙʟᴇ"
-    - "&7&m------------------------------"
-
-# UDS setup: Configure FLY options for this file.
+  - '&7&m------------------------------'
+  - '&6&lSTAFF MODE ACTIVATED'
+  - '&7• Inventory cleared and saved'
+  - '&7• Game mode set to Creative'
+  - '&7• Flight enabled'
+  - '&7• Use &e/vanish &7to become invisible'
+  - '&7&m------------------------------'
+# Configuration section for Fly.
 FLY:
-  ENABLED: "&a✈ &7ꜰʟɪɢʜᴛ ᴍᴏᴅᴇ &aᴀᴄᴛɪᴠᴀᴛᴇᴅ" # Sets the message text for this response.
-  DISABLED: "&c✗ &7ꜰʟɪɢʜᴛ ᴍᴏᴅᴇ &cᴅᴇᴀᴄᴛɪᴠᴀᴛᴇᴅ" # Sets the message text for this response.
-
-# UDS setup: Configure FLYSPEED options for this file.
+  # The text or value for Enabled. Available options: Any valid string text
+  ENABLED: '&a✈ &7Flight mode &aactivated'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&c✗ &7Flight mode &cdeactivated'
+# Configuration section for Flyspeed.
 FLYSPEED:
-  SET: "&aꜰʟʏ ѕᴘᴇᴇᴅ ѕᴇᴛ ᴛᴏ &f{speed}&a." # Sets the message text for this response.
-  INVALID: "&cɪɴᴠᴀʟɪᴅ ѕᴘᴇᴇᴅ. ᴘʟᴇᴀѕᴇ ᴇɴᴛᴇʀ ᴀ ɴᴜᴍʙᴇʀ ꜰʀᴏᴍ 1 ᴛᴏ 10." # Sets the message text for this response.
-
-# UDS setup: Configure WALKSPEED options for this file.
+  # The text or value for Set. Available options: Any valid string text
+  SET: '&aFly speed set to &f{speed}&a.'
+  # The text or value for Invalid. Available options: Any valid string text
+  INVALID: '&cInvalid speed. Please enter a number from 1 to 10.'
+# Configuration section for Walkspeed.
 WALKSPEED:
-  SET: "&aᴡᴀʟᴋ ѕᴘᴇᴇᴅ ѕᴇᴛ ᴛᴏ &f{speed}&a." # Sets the message text for this response.
-  INVALID: "&cɪɴᴠᴀʟɪᴅ ѕᴘᴇᴇᴅ. ᴘʟᴇᴀѕᴇ ᴇɴᴛᴇʀ ᴀ ɴᴜᴍʙᴇʀ ꜰʀᴏᴍ 1 ᴛᴏ 10." # Sets the message text for this response.
-
-# UDS setup: Configure HEAL options for this file.
+  # The text or value for Set. Available options: Any valid string text
+  SET: '&aWalk speed set to &f{speed}&a.'
+  # The text or value for Invalid. Available options: Any valid string text
+  INVALID: '&cInvalid speed. Please enter a number from 1 to 10.'
+# Configuration section for Heal.
 HEAL:
-  SELF: "&a♡ &7ʏᴏᴜʀ ʜᴇᴀʟᴛʜ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴛᴏʀᴇᴅ!" # Sets the message text for this response.
-  OTHER: "&8[&cʜᴇᴀʟ&8] &7ʏᴏᴜ ʜᴇᴀʟᴇᴅ &d%player%" # Sets the message text for this response.
-  NOTIFY: "&8[&cʜᴇᴀʟ&8] &d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴇᴀʟᴛʜ" # Sets the message text for this response.
-
-# UDS setup: Configure FEED options for this file.
+  # The text or value for Self. Available options: Any valid string text
+  SELF: '&a♡ &7Your health has been restored!'
+  # The text or value for Other. Available options: Any valid string text
+  OTHER: '&8[&cHeal&8] &7You healed &d%player%'
+  # The text or value for Notify. Available options: Any valid string text
+  NOTIFY: '&8[&cHeal&8] &d%sender% &7restored your health'
+# Configuration section for Feed.
 FEED:
-  SELF: "&7ʏᴏᴜʀ ʜᴜɴɢᴇʀ ʜᴀѕ ʙᴇᴇɴ ѕᴀᴛɪѕꜰɪᴇᴅ!" # Sets the message text for this response.
-  OTHER: "&8[&6ꜰᴇᴇᴅ&8] &7ʏᴏᴜ ꜰᴇᴅ &d%player%" # Sets the message text for this response.
-  NOTIFY: "&8[&6ꜰᴇᴇᴅ&8] &d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴜɴɢᴇʀ" # Sets the message text for this response.
-
-# UDS setup: Configure GOD options for this file.
-GOD:
-  ENABLED: "&aɢᴏᴅ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ." # Sets the message text for this response.
-  DISABLED: "&cɢᴏᴅ ᴍᴏᴅᴇ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  OTHER: "&7ɢᴏᴅ ᴍᴏᴅᴇ ꜰᴏʀ &e%player% &7ᴡᴀѕ %status%&7." # Sets the message text for this response.
-  NOTIFY: "&e%sender% &7ѕᴇᴛ ʏᴏᴜʀ ɢᴏᴅ ᴍᴏᴅᴇ ᴛᴏ %status%&7." # Sets the message text for this response.
-  STATUS_ENABLED: "&aᴇɴᴀʙʟᴇᴅ" # Sets the message text for this response.
-  STATUS_DISABLED: "&cᴅɪѕᴀʙʟᴇᴅ" # Sets the message text for this response.
-  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]" # Sets the message text for this response.
-  CONSOLE_USAGE: "&cᴜѕᴀɢᴇ: /%label% <player>" # Sets the message text for this response.
-  PLAYER_NOT_ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-
-# UDS setup: Configure GAMEMODE options for this file.
+  # The text or value for Self. Available options: Any valid string text
+  SELF: '&7Your hunger has been satisfied!'
+  # The text or value for Other. Available options: Any valid string text
+  OTHER: '&8[&6Feed&8] &7You fed &d%player%'
+  # The text or value for Notify. Available options: Any valid string text
+  NOTIFY: '&8[&6Feed&8] &d%sender% &7restored your hunger'
+# Configuration section for Gamemode.
 GAMEMODE:
-  MESSAGE: "&d%player% &7ɪѕ ɴᴏᴡ ɪɴ &e%mode% ᴍᴏᴅᴇ" # Sets the message text for this response.
-  TARGET_MESSAGE: "&7ʏᴏᴜʀ ɢᴀᴍᴇᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴄʜᴀɴɢᴇᴅ ᴛᴏ &e%mode% &7ʙʏ &d%sender%" # Sets the message text for this response.
-  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  NO_PERMISSION_OTHERS: "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʜᴀɴɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ' ɢᴀᴍᴇᴍᴏᴅᴇ." # Sets the message text for this response.
-  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ ᴡɪᴛʜᴏᴜᴛ ᴀ ᴛᴀʀɢᴇᴛ." # Sets the message text for this response.
-  PLAYER_NOT_ONLINE: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-  INVALID_MODE: "&cɪɴᴠᴀʟɪᴅ ɢᴀᴍᴇᴍᴏᴅᴇ. ᴜѕᴇ ѕᴜʀᴠɪᴠᴀʟ, ᴄʀᴇᴀᴛɪᴠᴇ, ᴀᴅᴠᴇɴᴛᴜʀᴇ, ᴏʀ ѕᴘᴇᴄᴛᴀᴛᴏʀ." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /%label% <survival|creative|adventure|spectator> [ᴘʟᴀʏᴇʀ]" # Sets the message text for this response.
-  USAGE_SHORT: "&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]" # Sets the message text for this response.
-  DISABLED: "&cɢᴀᴍᴇᴍᴏᴅᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-
-# UDS setup: Configure RANDOMTP options for this file.
+  # The text or value for Message. Available options: Any valid string text
+  MESSAGE: '&d%player% &7is now in &e%mode% mode'
+  # The text or value for Target Message. Available options: Any valid string text
+  TARGET_MESSAGE: '&7Your gamemode has been changed to &e%mode% &7by &d%sender%'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO_PERMISSION: '&cYou do not have permission.'
+  # The text or value for No Permission Others. Available options: Any valid string text
+  NO_PERMISSION_OTHERS: '&cYou do not have permission to change other players'' gamemode.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER_ONLY: '&cOnly players can use this command without a target.'
+  # The text or value for Player Not Online. Available options: Any valid string text
+  PLAYER_NOT_ONLINE: '&cPlayer not online.'
+  # The text or value for Invalid Mode. Available options: Any valid string text
+  INVALID_MODE: '&cInvalid gamemode. Use survival, creative, adventure, or spectator.'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /%label% <survival|creative|adventure|spectator> [player]'
+  # The text or value for Usage Short. Available options: Any valid string text
+  USAGE_SHORT: '&cUsage: /%label% [player]'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cGamemode commands are currently disabled.'
+# Configuration section for Randomtp.
 RANDOMTP:
-  SUCCESS: "&8[&dʀᴛᴘ&8] &7ʏᴏᴜ ᴡᴇʀᴇ ᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ &e%player%" # Sets the message text for this response.
-  NOTIFY: "&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!" # Sets the message text for this response.
-  NO_PLAYERS: "&c✖ &7ɴᴏ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ" # Sets the message text for this response.
-
-# UDS setup: Configure RENAME options for this file.
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: '&8[&dRTP&8] &7You were teleported to &e%player%'
+  # The text or value for Notify. Available options: Any valid string text
+  NOTIFY: '&8[&dRTP&8] &e%player% &7appeared near you!'
+  # The text or value for No Players. Available options: Any valid string text
+  NO_PLAYERS: '&c✖ &7No other players available for random teleport'
+# Configuration section for Rename.
 RENAME:
-  NO_ITEM: "&c✖ &7ʏᴏᴜ ᴍᴜѕᴛ ʜᴏʟᴅ ᴀɴ ɪᴛᴇᴍ ᴛᴏ ʀᴇɴᴀᴍᴇ ɪᴛ" # Sets the message text for this response.
-  META_ERROR: "&c⚠ &7ᴛʜɪѕ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ʀᴇɴᴀᴍᴇᴅ" # Sets the message text for this response.
-  STAFFMODE_BLOCKED: "&c✖ &7ѕᴛᴀꜰꜰ ᴍᴏᴅᴇ ɪᴛᴇᴍѕ ᴄᴀɴɴᴏᴛ ʙᴇ ʀᴇɴᴀᴍᴇᴅ" # Sets the message text for this response.
-  RESET_SUCCESS: "&8[&aʀᴇɴᴀᴍᴇ&8] &7ɪᴛᴇᴍ ɴᴀᴍᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴇᴛ" # Sets the message text for this response.
-  SUCCESS: "&8[&aʀᴇɴᴀᴍᴇ&8] &7ɴᴇᴡ ɴᴀᴍᴇ: &f%name%" # Sets the message text for this response.
-
-# UDS setup: Configure PING options for this file.
+  # The text or value for No Item. Available options: Any valid string text
+  NO_ITEM: '&c✖ &7You must hold an item to rename it'
+  # The text or value for Meta Error. Available options: Any valid string text
+  META_ERROR: '&c⚠ &7This item cannot be renamed'
+  # The text or value for Staffmode Blocked. Available options: Any valid string text
+  STAFFMODE_BLOCKED: '&c✖ &7Staff mode items cannot be renamed'
+  # The text or value for Reset Success. Available options: Any valid string text
+  RESET_SUCCESS: '&8[&aRename&8] &7Item name has been reset'
+  # The text or value for Success. Available options: Any valid string text
+  SUCCESS: '&8[&aRename&8] &7New name: &f%name%'
+# Configuration section for Ping.
 PING:
-  SELF: "&7ʏᴏᴜʀ ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ" # Sets the message text for this response.
-  OTHER: "&e%player%'ѕ &7ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ" # Sets the message text for this response.
-
-# UDS setup: Configure PLAYTIME options for this file.
+  # The text or value for Self. Available options: Any valid string text
+  SELF: '&7Your ping is &b%ping%ms'
+  # The text or value for Other. Available options: Any valid string text
+  OTHER: '&e%player%''s &7ping is &b%ping%ms'
+# Configuration section for Playtime.
 PLAYTIME:
-  MESSAGE: "&a%time% &eᴘʟᴀʏɪɴɢ ᴏɴ &a%server%" # Sets the message text for this response.
-  OTHER: "&e%player% &7ʜᴀѕ ᴘʟᴀʏᴇᴅ ꜰᴏʀ &a%time% &7ᴏɴ &a%server%" # Sets the message text for this response.
-
-# UDS setup: Configure STAFFCHAT options for this file.
+  # The text or value for Message. Available options: Any valid string text
+  MESSAGE: '&a%time% &eplaying on &a%server%'
+  # The text or value for Other. Available options: Any valid string text
+  OTHER: '&e%player% &7has played for &a%time% &7on &a%server%'
+# Configuration section for Staffchat.
 STAFFCHAT:
-  NO_PERMISSION: "&cyou do not have permission to use staff chat." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /staffchat <message>" # Sets the message text for this response.
-  FORMAT: "&8[&6ѕᴛᴀꜰꜰᴄʜᴀᴛ&8] &e%player%&7: %message%" # Sets the message text for this response.
-  DISABLED: "&cɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  MESSAGE_TOO_LONG: "&cѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ." # Sets the message text for this response.
-  REDIS_UNAVAILABLE: "&eѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ." # Sets the message text for this response.
-
-# UDS setup: Configure HELPOP options for this file.
+  # The text or value for No Permission. Available options: Any valid string text
+  NO_PERMISSION: '&cYou do not have permission to use staff chat.'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /staffchat <message>'
+  # The text or value for Format. Available options: Any valid string text
+  FORMAT: '&8[&6StaffChat&8] &e%player%&7: %message%'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cNetwork staff chat is currently disabled.'
+  # The text or value for Message Too Long. Available options: Any valid string text
+  MESSAGE_TOO_LONG: '&cStaff chat message is too long. Max: %max% characters.'
+  # The text or value for Redis Unavailable. Available options: Any valid string text
+  REDIS_UNAVAILABLE: '&eStaff chat was delivered locally, but Redis is unavailable
+    for cross-server delivery.'
+# Configuration section for Helpop.
 HELPOP:
-  NO_PERMISSION: "&cyou do not have permission to request staff assistance." # Sets the message text for this response.
-  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʜᴇʟᴘᴏᴘ." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /helpop <message>" # Sets the message text for this response.
-  DISABLED: "&cʜᴇʟᴘᴏᴘ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  MESSAGE_TOO_LONG: "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ." # Sets the message text for this response.
-  COOLDOWN: "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ᴜѕɪɴɢ ʜᴇʟᴘᴏᴘ ᴀɢᴀɪɴ." # Sets the message text for this response.
-  REDIS_UNAVAILABLE: "&eʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ." # Sets the message text for this response.
+  # The text or value for No Permission. Available options: Any valid string text
+  NO_PERMISSION: '&cYou do not have permission to request staff assistance.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER_ONLY: '&cOnly players can use helpop.'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /helpop <message>'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cHelpop is currently disabled.'
+  # The text or value for Message Too Long. Available options: Any valid string text
+  MESSAGE_TOO_LONG: '&cYour request is too long. Max: %max% characters.'
+  # The text or value for Cooldown. Available options: Any valid string text
+  COOLDOWN: '&cPlease wait %seconds%s before using helpop again.'
+  # The text or value for Redis Unavailable. Available options: Any valid string text
+  REDIS_UNAVAILABLE: '&eYour request was delivered locally, but Redis is unavailable
+    for cross-server delivery.'
+  # Configuration section for Format.
   FORMAT:
-    - ""
-    - "&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ"
-    - "     &9ʀᴇᴀѕᴏɴ: &b%message%"
-    - ""
-  CONFIRMATION: "&aʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ." # Sets the message text for this response.
-
-# UDS setup: Configure REPORT options for this file.
+  - ''
+  - '&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ'
+  - '     &9ʀᴇᴀѕᴏɴ: &b%message%'
+  - ''
+  # The text or value for Confirmation. Available options: Any valid string text
+  CONFIRMATION: '&aYour request has been sent to all staff members.'
+# Configuration section for Report.
 REPORT:
-  NO_PERMISSION: "&cyou do not have permission to report players." # Sets the message text for this response.
-  PLAYER_ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʀᴇᴘᴏʀᴛ." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /report <player> <reason>" # Sets the message text for this response.
-  DISABLED: "&cʀᴇᴘᴏʀᴛѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  PLAYER_NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  CANNOT_REPORT_SELF: "&cʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴇᴘᴏʀᴛ ʏᴏᴜʀѕᴇʟꜰ!" # Sets the message text for this response.
-  MESSAGE_TOO_LONG: "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ." # Sets the message text for this response.
-  COOLDOWN: "&cᴘʟᴇᴀѕᴇ ᴡᴀɪᴛ %seconds%ѕ ʙᴇꜰᴏʀᴇ ʀᴇᴘᴏʀᴛɪɴɢ ᴀɢᴀɪɴ." # Sets the message text for this response.
-  REDIS_UNAVAILABLE: "&eʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ." # Sets the message text for this response.
+  # The text or value for No Permission. Available options: Any valid string text
+  NO_PERMISSION: '&cYou do not have permission to report players.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER_ONLY: '&cOnly players can use report.'
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /report <player> <reason>'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cReports are currently disabled.'
+  # The text or value for Player Not Found. Available options: Any valid string text
+  PLAYER_NOT_FOUND: '&cPlayer not found.'
+  # The text or value for Cannot Report Self. Available options: Any valid string text
+  CANNOT_REPORT_SELF: '&cYou can''t report yourself!'
+  # The text or value for Message Too Long. Available options: Any valid string text
+  MESSAGE_TOO_LONG: '&cYour report reason is too long. Max: %max% characters.'
+  # The text or value for Cooldown. Available options: Any valid string text
+  COOLDOWN: '&cPlease wait %seconds%s before reporting again.'
+  # The text or value for Redis Unavailable. Available options: Any valid string text
+  REDIS_UNAVAILABLE: '&eYour report was delivered locally, but Redis is unavailable
+    for cross-server delivery.'
+  # Configuration section for Format.
   FORMAT:
-    - ""
-    - "&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%"
-    - "     &9ʀᴇᴀѕᴏɴ: &b%reason%"
-    - ""
-  CONFIRMATION: "&aʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ." # Sets the message text for this response.
-
-# UDS setup: Configure ALTS options for this file.
+  - ''
+  - '&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%'
+  - '     &9ʀᴇᴀѕᴏɴ: &b%reason%'
+  - ''
+  # The text or value for Confirmation. Available options: Any valid string text
+  CONFIRMATION: '&aYour report has been sent to all staff members.'
+# Configuration section for Alts.
 ALTS:
-  USAGE: "&cᴜѕᴀɢᴇ: /alts <player>" # Sets the message text for this response.
-  NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  NO_DATA: "&cɴᴏ ɪᴘ ʜɪѕᴛᴏʀʏ ꜰᴏᴜɴᴅ ꜰᴏʀ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ." # Sets the message text for this response.
-  NONE: "&7ɴᴏ ᴀʟᴛᴇʀɴᴀᴛᴇ ᴀᴄᴄᴏᴜɴᴛѕ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  HEADER: "&8[&6ᴀʟᴛѕ&8] &e%player%" # Sets the message text for this response.
-  KNOWN_IPS: "&7ᴋɴᴏᴡɴ ɪᴘѕ: &f%ips%" # Sets the message text for this response.
-  ENTRY: "&8- &e%player% &7[%status%&7] &fѕʜᴀʀᴇᴅ: %ips%" # Sets the message text for this response.
-
-# UDS setup: Configure FRIENDS options for this file.
-CRATES:
-  REWARD-CLAIM-HINT: "&aClick to claim this reward!" # Reward lore line when the player has a key.
-  REWARD-NO-KEY: "&cYou don't have a {crate} key!" # Reward lore line and click feedback when the player has no key.
-
-FRIENDS:
-  NO_PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  USAGE: "&cᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]" # Sets the message text for this response.
-  PLAYER_NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  RELOAD_SUCCESS: "&a[ᴅᴏɴᴜᴛꜰʀɪᴇɴᴅѕ] ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ."
-  PLAYER_ONLY: "ᴘʟᴀʏᴇʀ ᴏɴʟɪɴᴇ ᴄᴏᴍᴍᴀɴᴅ."
-  USAGE_FOLLOW: "&cᴜѕᴀɢᴇ: /friends ꜰᴏʟʟᴏᴡ <player>"
-  USAGE_REMOVE: "&cᴜѕᴀɢᴇ: /friends ʀᴇᴍᴏᴠᴇ <player>"
-  USAGE_SEARCH: "&cᴜѕᴀɢᴇ: /friends ѕᴇᴀʀᴄʜ <query>"
-  UNKNOWN_SUBCOMMAND: "&cᴜɴᴋɴᴏᴡɴ ѕᴜʙᴄᴏᴍᴍᴀɴᴅ. ᴜѕᴀɢᴇ: /friends [ʟɪѕᴛ|ꜰᴏʟʟᴏᴡ|ʀᴇᴍᴏᴠᴇ|ѕᴇᴀʀᴄʜ|ꜰᴏʟʟᴏᴡɪɴɢ|ꜰᴏʟʟᴏᴡᴇʀѕ|ꜰʀɪᴇɴᴅѕ]"
-  CANNOT_FOLLOW_SELF: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰᴏʟʟᴏᴡ ʏᴏᴜʀѕᴇʟꜰ."
-  ALREADY_FOLLOWING: "&7ʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ꜰᴏʟʟᴏᴡɪɴɢ &f{player}&7."
-  FOLLOW_SUCCESS: "&7ʏᴏᴜ ꜰᴏʟʟᴏᴡᴇᴅ &f{player}&7."
-  FOLLOW_FAILURE: "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰᴏʟʟᴏᴡ ᴘʟᴀʏᴇʀ."
-  REMOVE_NOT_FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ ɪɴ ʏᴏᴜʀ ꜰᴏʟʟᴏᴡѕ ᴅᴀᴛᴀʙᴀѕᴇ."
-  NOT_FOLLOWING: "&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ꜰᴏʟʟᴏᴡɪɴɢ &f{player}&7."
-  UNFOLLOW_SUCCESS: "&7ʏᴏᴜ ᴜɴꜰᴏʟʟᴏᴡᴇᴅ &f{player}&7."
-  UNFOLLOW_FAILURE: "&cᴄᴏᴜʟᴅ ɴᴏᴛ ᴜɴꜰᴏʟʟᴏᴡ ᴘʟᴀʏᴇʀ."
-  NO_ONLINE_FOLLOWED: "&a&lꜰʀɪᴇɴᴅѕ &8» &7ɴᴏɴᴇ ᴏꜰ ᴛʜᴇ ᴘʟᴀʏᴇʀѕ ʏᴏᴜ ꜰᴏʟʟᴏᴡ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴏɴʟɪɴᴇ."
-  ONLINE_FOLLOWED: "&a&lꜰʀɪᴇɴᴅѕ &8» &7ᴏɴʟɪɴᴇ ꜰᴏʟʟᴏᴡᴇᴅ ᴘʟᴀʏᴇʀѕ: &f{players}"
-  JOIN_BROADCAST: "&a&lfriends &8» &f{player} &7joined the game."
-  QUIT_BROADCAST: "&a&lfriends &8» &f{player} &7left the game."
-
-# UDS setup: Configure SAFETY options for this file.
-SAFETY:
-  BOOK-TITLE: "ѕᴀꜰᴇᴛʏ ɢᴜɪᴅᴇ"
-  BOOK-AUTHOR: "ѕᴇʀᴠᴇʀ"
-  NO-PERMISSION: "&cyou do not have permission."
-  RELOAD-SUCCESS: "&aѕᴀꜰᴇᴛʏ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
-  GIVE-SUCCESS-SENDER: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ɢᴀᴠᴇ ѕᴀꜰᴇᴛʏ ʙᴏᴏᴋ ᴛᴏ {player}."
-  GIVE-SUCCESS-RECEIVER: "&aʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ ᴛʜᴇ ѕᴀꜰᴇᴛʏ ʙᴏᴏᴋ."
-  USAGE: "&cᴜѕᴀɢᴇ: /safety [ʀᴇʟᴏᴀᴅ|ᴀᴅᴅ <player>|ɢɪᴠᴇ <player>]"
-  BOOK-PAGES:
-    - |
-      &0⚠ ᴡᴀᴛᴄʜ ᴏᴜᴛ!
-      
-      ꜰᴀᴋᴇ ᴅɪѕᴄᴏʀᴅѕ ᴏʀ
-      ᴍᴏᴅѕ ᴄᴀɴ ѕᴛᴇᴀʟ ʏᴏᴜʀ
-      ᴀᴄᴄᴏᴜɴᴛ.
-      
-      ᴛʜᴇ ᴏɴʟʏ ᴏꜰꜰɪᴄɪᴀʟ
-      ᴅɪѕᴄᴏʀᴅ ᴄᴀɴ ʙᴇ ꜰᴏᴜɴᴅ
-      ᴜѕɪɴɢ &1/discord&0.
-      
-      ɴᴇᴠᴇʀ ᴅᴏᴡɴʟᴏᴀᴅ ꜰɪʟᴇѕ
-      ᴏʀ ᴍᴏᴅѕ ꜰʀᴏᴍ ʀᴀɴᴅᴏᴍ
-      ᴘᴇᴏᴘʟᴇ.
- # Sets the message text for this response.
-
-# UDS setup: Configure ANVILMOD options for this file.
-ANVILMOD:
-  NO-PERMISSION: "&cyou do not have permission."
-  USAGE: "&cᴜѕᴀɢᴇ: /amod <add|reload> [ᴡᴏʀᴅ]"
-  ADDED: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ᴀᴅᴅᴇᴅ '&e{word}&a' ᴛᴏ ʙᴀɴɴᴇᴅ ᴡᴏʀᴅѕ."
-  ALREADY-EXISTS: "&cᴛʜᴀᴛ ᴡᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ʙᴀɴɴᴇᴅ ʟɪѕᴛ."
-  RELOADED: "&aᴀɴᴠɪʟ ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
-
-
+  # The text or value for Usage. Available options: Any valid string text
+  USAGE: '&cUsage: /alts <player>'
+  # The text or value for Not Found. Available options: Any valid string text
+  NOT_FOUND: '&cPlayer not found.'
+  # The text or value for No Data. Available options: Any valid string text
+  NO_DATA: '&cNo IP history found for that player.'
+  # The text or value for None. Available options: Any valid string text
+  NONE: '&7No alternate accounts found.'
+  # The text or value for Header. Available options: Any valid string text
+  HEADER: '&8[&6Alts&8] &e%player%'
+  # The text or value for Known Ips. Available options: Any valid string text
+  KNOWN_IPS: '&7Known IPs: &f%ips%'
+  # The text or value for Entry. Available options: Any valid string text
+  ENTRY: '&8- &e%player% &7[%status%&7] &fshared: %ips%'

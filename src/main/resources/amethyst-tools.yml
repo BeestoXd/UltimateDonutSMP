@@ -1,261 +1,332 @@
-# UDS setup: Amethyst tool abilities, upgrade behavior, GUI text, and related messages.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# ═══════════════════════════════════════════════════════
-#   Amethyst Tools Configuration - UltimateDonutSmp
-# ═══════════════════════════════════════════════════════
-
-# UDS setup: Amethyst tool ability settings, cooldowns, costs, and upgrades.
+# Configuration section for Amethyst Tools.
 AMETHYST-TOOLS:
-
-  # Worlds where amethyst tools are completely disabled
+  # Configuration section for Excluded Worlds.
   EXCLUDED-WORLDS:
-    - duels
-
-  # ── Particles ─────────────────────────────────────────
+  - duels
+  # Configuration section for Particles.
   PARTICLES:
-    ENABLED: true # Options: true or false
-    TYPE: BLOCK # Type setting.
-    BLOCK-MATERIAL: PURPLE_CONCRETE_POWDER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    COUNT: 12 # Count setting.
-    SPREAD: 0.4 # Spread setting.
-
-  # ── Sounds ────────────────────────────────────────────
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    TYPE: BLOCK
+    # The text or value for Block Material. Available options: Any valid string text
+    BLOCK-MATERIAL: PURPLE_CONCRETE_POWDER
+    # The numerical value for Count. Available options: Any valid integer
+    COUNT: 12
+    # The decimal value for Spread. Available options: Any decimal number
+    SPREAD: 0.4
+  # Configuration section for Sounds.
   SOUNDS:
-    USE:     "minecraft:block.amethyst_block.hit|1.0|1.2" # Use setting.
-    EXPIRE:  "minecraft:entity.lightning_bolt.impact|0.5|2.0" # Expire setting.
-    BREAK:   "minecraft:block.amethyst_block.break|1.0|0.8" # Break setting.
-    ACTIVATE: "minecraft:block.amethyst_block.resonate|1.0|1.0" # Activate setting.
-
+    # The text or value for Use. Available options: Any valid string text
+    USE: minecraft:block.amethyst_block.hit|1.0|1.2
+    # The text or value for Expire. Available options: Any valid string text
+    EXPIRE: minecraft:entity.lightning_bolt.impact|0.5|2.0
+    # The text or value for Break. Available options: Any valid string text
+    BREAK: minecraft:block.amethyst_block.break|1.0|0.8
+    # The text or value for Activate. Available options: Any valid string text
+    ACTIVATE: minecraft:block.amethyst_block.resonate|1.0|1.0
+  # Configuration section for Security.
   SECURITY:
-    REQUIRE-ITEM-ID: true # Sets the identifier used to link this configuration.
-    BIND-TO-OWNER: false # Bind To Owner setting.
-    CLICK-COOLDOWN-MS: 250 # Sets the cooldown before this action can run again.
-    BLOCK-HOPPER-PICKUP: true # Block Hopper Pickup setting.
-
-  # ── Amethyst Drill ────────────────────────────────────
+    # Determines whether Require Item Id is enabled or disabled. Available options: true, false
+    REQUIRE-ITEM-ID: true
+    # Determines whether Bind To Owner is enabled or disabled. Available options: true, false
+    BIND-TO-OWNER: false
+    # The numerical value for Click Cooldown Ms. Available options: Any valid integer
+    CLICK-COOLDOWN-MS: 250
+    # Determines whether Block Hopper Pickup is enabled or disabled. Available options: true, false
+    BLOCK-HOPPER-PICKUP: true
+  # Configuration section for Drill.
   DRILL:
-    MATERIAL: NETHERITE_PICKAXE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&#9B59B6&lamethyst drill" # Sets the name text used here.
+    MATERIAL: NETHERITE_PICKAXE
+    NAME: '&#9B59B6&lAmethyst Drill'
     LORE:
-      - "&#BDC3C7breaks &d9 blocks &7per strike"
-      - "&#BDC3C7powered by amethyst energy"
-      - ""
-      - "&#9B59B6✦ self destruct"
-      - "&#BDC3C7{time}"
+    - '&#BDC3C7Breaks &d9 blocks &7per strike'
+    - '&#BDC3C7Powered by amethyst energy'
+    - ''
+    - '&#9B59B6✦ Self Destruct'
+    - '&#BDC3C7{time}'
+    # Configuration section for Enchantments.
     ENCHANTMENTS:
-      - "efficiency:5"
-      - "unbreaking:3"
-      - "fortune:3"
-    RADIUS: 1 # Numeric value for distance or time
+    - efficiency:5
+    - unbreaking:3
+    - fortune:3
+    # The numerical value for Radius. Available options: Any valid integer
+    RADIUS: 1
+    # Configuration section for Disabled Blocks.
     DISABLED-BLOCKS:
-      - DIRT
-      - GRASS_BLOCK
-      - COARSE_DIRT
-      - ROOTED_DIRT
-      - PODZOL
-      - SAND
-      - RED_SAND
-      - GRAVEL
-      - SPAWNER
-      - BEDROCK
-      - OBSIDIAN
-      - CRYING_OBSIDIAN
-      - END_PORTAL_FRAME
-      - FARMLAND
-      - SOUL_SAND
-      - SOUL_SOIL
-    DURATION: 86400 # Sets how long this behavior lasts.
+    - DIRT
+    - GRASS_BLOCK
+    - COARSE_DIRT
+    - ROOTED_DIRT
+    - PODZOL
+    - SAND
+    - RED_SAND
+    - GRAVEL
+    - SPAWNER
+    - BEDROCK
+    - OBSIDIAN
+    - CRYING_OBSIDIAN
+    - END_PORTAL_FRAME
+    - FARMLAND
+    - SOUL_SAND
+    - SOUL_SOIL
+    # The numerical value for Duration. Available options: Any valid integer
+    DURATION: 86400
+    # Configuration section for Shard Shop.
     SHARD-SHOP:
-      ENABLED: false # Enable to add this tool to /shardshop.
-      SLOT: 0
-      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
-      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      SLOT: 11
+      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX-QUANTITY: 1
+      # The numerical value for Default Quantity. Available options: Any valid integer
       DEFAULT-QUANTITY: 1
+      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE-QUANTITY-BUTTONS: true
-
-  # ── Amethyst Tree Chopper ─────────────────────────────
+  # Configuration section for Chopper.
   CHOPPER:
-    MATERIAL: NETHERITE_AXE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&#9B59B6&lamethyst tree chopper" # Sets the name text used here.
+    MATERIAL: NETHERITE_AXE
+    NAME: '&#9B59B6&lAmethyst Tree Chopper'
     LORE:
-      - "&#BDC3C7chops entire trees &dinstantly"
-      - "&#BDC3C7vein-style breaking"
-      - ""
-      - "&#9B59B6✦ self destruct"
-      - "&#BDC3C7{time}"
+    - '&#BDC3C7Chops entire trees &dinstantly'
+    - '&#BDC3C7Vein-style breaking'
+    - ''
+    - '&#9B59B6✦ Self Destruct'
+    - '&#BDC3C7{time}'
+    # Configuration section for Enchantments.
     ENCHANTMENTS:
-      - "efficiency:10"
-      - "unbreaking:3"
-    MAX-LOGS: 128 # Numeric value (integer)
+    - efficiency:10
+    - unbreaking:3
+    # The numerical value for Max Logs. Available options: Any valid integer
+    MAX-LOGS: 128
+    # Configuration section for Log Blocks.
     LOG-BLOCKS:
-      - OAK_LOG
-      - SPRUCE_LOG
-      - BIRCH_LOG
-      - JUNGLE_LOG
-      - ACACIA_LOG
-      - DARK_OAK_LOG
-      - CHERRY_LOG
-      - MANGROVE_LOG
-      - CRIMSON_STEM
-      - WARPED_STEM
-      - STRIPPED_OAK_LOG
-      - STRIPPED_SPRUCE_LOG
-      - STRIPPED_BIRCH_LOG
-      - STRIPPED_JUNGLE_LOG
-      - STRIPPED_ACACIA_LOG
-      - STRIPPED_DARK_OAK_LOG
-      - STRIPPED_CHERRY_LOG
-      - STRIPPED_MANGROVE_LOG
-      - STRIPPED_CRIMSON_STEM
-      - STRIPPED_WARPED_STEM
-    DURATION: 86400 # Sets how long this behavior lasts.
+    - OAK_LOG
+    - SPRUCE_LOG
+    - BIRCH_LOG
+    - JUNGLE_LOG
+    - ACACIA_LOG
+    - DARK_OAK_LOG
+    - CHERRY_LOG
+    - MANGROVE_LOG
+    - CRIMSON_STEM
+    - WARPED_STEM
+    - STRIPPED_OAK_LOG
+    - STRIPPED_SPRUCE_LOG
+    - STRIPPED_BIRCH_LOG
+    - STRIPPED_JUNGLE_LOG
+    - STRIPPED_ACACIA_LOG
+    - STRIPPED_DARK_OAK_LOG
+    - STRIPPED_CHERRY_LOG
+    - STRIPPED_MANGROVE_LOG
+    - STRIPPED_CRIMSON_STEM
+    - STRIPPED_WARPED_STEM
+    # The numerical value for Duration. Available options: Any valid integer
+    DURATION: 86400
+    # Configuration section for Shard Shop.
     SHARD-SHOP:
-      ENABLED: false # Enable to add this tool to /shardshop.
-      SLOT: 1
-      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
-      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      SLOT: 12
+      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX-QUANTITY: 1
+      # The numerical value for Default Quantity. Available options: Any valid integer
       DEFAULT-QUANTITY: 1
+      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE-QUANTITY-BUTTONS: true
-
-  # ── Amethyst Sell Axe ─────────────────────────────────
+  # Configuration section for Sell Axe.
   SELL-AXE:
-    MATERIAL: NETHERITE_AXE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&#9B59B6&lamethyst sell axe" # Sets the name text used here.
+    MATERIAL: NETHERITE_AXE
+    NAME: '&#9B59B6&lAmethyst Sell Axe'
     LORE:
-      - "&#BDC3C7instantly sells all items in a chest"
-      - "&#BDC3C7right-click a chest to sell"
-      - ""
-      - "&#9B59B6✦ self destruct"
-      - "&#BDC3C7{time}"
+    - '&#BDC3C7Instantly sells all items in a chest'
+    - '&#BDC3C7Right-click a chest to sell'
+    - ''
+    - '&#9B59B6✦ Self Destruct'
+    - '&#BDC3C7{time}'
+    # Configuration section for Enchantments.
     ENCHANTMENTS:
-      - "efficiency:5"
-      - "unbreaking:3"
-    DURATION: 86400 # Sets how long this behavior lasts.
+    - efficiency:5
+    - unbreaking:3
+    # The numerical value for Duration. Available options: Any valid integer
+    DURATION: 86400
+    # Configuration section for Shard Shop.
     SHARD-SHOP:
-      ENABLED: false # Enable to add this tool to /shardshop.
-      SLOT: 2
-      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
-      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      SLOT: 13
+      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX-QUANTITY: 1
+      # The numerical value for Default Quantity. Available options: Any valid integer
       DEFAULT-QUANTITY: 1
+      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE-QUANTITY-BUTTONS: true
-
-  # ── Amethyst Shovel ───────────────────────────────────
+  # Configuration section for Shovel.
   SHOVEL:
-    MATERIAL: NETHERITE_SHOVEL # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&#9B59B6&lamethyst shovel" # Sets the name text used here.
+    MATERIAL: NETHERITE_SHOVEL
+    NAME: '&#9B59B6&lAmethyst Shovel'
     LORE:
-      - "&#BDC3C7breaks &d9 blocks &7per strike"
-      - "&#BDC3C7only for soft terrain blocks"
-      - ""
-      - "&#9B59B6✦ self destruct"
-      - "&#BDC3C7{time}"
+    - '&#BDC3C7Breaks &d9 blocks &7per strike'
+    - '&#BDC3C7Only for soft terrain blocks'
+    - ''
+    - '&#9B59B6✦ Self Destruct'
+    - '&#BDC3C7{time}'
+    # Configuration section for Enchantments.
     ENCHANTMENTS:
-      - "efficiency:5"
-      - "unbreaking:3"
-      - "fortune:3"
-    RADIUS: 1 # Numeric value for distance or time
+    - efficiency:5
+    - unbreaking:3
+    - fortune:3
+    # The numerical value for Radius. Available options: Any valid integer
+    RADIUS: 1
+    # Configuration section for Allowed Blocks.
     ALLOWED-BLOCKS:
-      - DIRT
-      - GRASS_BLOCK
-      - COARSE_DIRT
-      - PODZOL
-      - ROOTED_DIRT
-      - GRAVEL
-      - SAND
-      - RED_SAND
-      - CLAY
-      - SOUL_SAND
-      - SOUL_SOIL
-      - FARMLAND
-      - DIRT_PATH
-      - SNOW
-      - SNOW_BLOCK
-      - POWDER_SNOW
-      - MUD
-    DURATION: 86400 # Sets how long this behavior lasts.
+    - DIRT
+    - GRASS_BLOCK
+    - COARSE_DIRT
+    - PODZOL
+    - ROOTED_DIRT
+    - GRAVEL
+    - SAND
+    - RED_SAND
+    - CLAY
+    - SOUL_SAND
+    - SOUL_SOIL
+    - FARMLAND
+    - DIRT_PATH
+    - SNOW
+    - SNOW_BLOCK
+    - POWDER_SNOW
+    - MUD
+    # The numerical value for Duration. Available options: Any valid integer
+    DURATION: 86400
+    # Configuration section for Shard Shop.
     SHARD-SHOP:
-      ENABLED: false # Enable to add this tool to /shardshop.
-      SLOT: 3
-      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
-      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      SLOT: 14
+      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX-QUANTITY: 1
+      # The numerical value for Default Quantity. Available options: Any valid integer
       DEFAULT-QUANTITY: 1
+      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE-QUANTITY-BUTTONS: true
-
-  # ── Amethyst Bucket ───────────────────────────────────
+  # Configuration section for Bucket.
   BUCKET:
-    MATERIAL: BUCKET # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&#9B59B6&lamethyst bucket" # Sets the name text used here.
+    MATERIAL: BUCKET
+    NAME: '&#9B59B6&lAmethyst Bucket'
     LORE:
-      - "&#BDC3C7drains &d27 water blocks &7at once"
-      - "&#BDC3C7right-click water to drain"
-      - ""
-      - "&#9B59B6✦ self destruct"
-      - "&#BDC3C7{time}"
-    DRAIN-RADIUS: 1 # Numeric value for distance or time
-    MAX-DRAIN: 27 # Numeric value (integer)
-    DURATION: 86400 # Sets how long this behavior lasts.
+    - '&#BDC3C7Drains &d27 water blocks &7at once'
+    - '&#BDC3C7Right-click water to drain'
+    - ''
+    - '&#9B59B6✦ Self Destruct'
+    - '&#BDC3C7{time}'
+    # The numerical value for Drain Radius. Available options: Any valid integer
+    DRAIN-RADIUS: 1
+    # The numerical value for Max Drain. Available options: Any valid integer
+    MAX-DRAIN: 27
+    # The numerical value for Duration. Available options: Any valid integer
+    DURATION: 86400
+    # Configuration section for Shard Shop.
     SHARD-SHOP:
-      ENABLED: false # Enable to add this tool to /shardshop.
-      SLOT: 4
-      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
-      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      SLOT: 15
+      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX-QUANTITY: 1
+      # The numerical value for Default Quantity. Available options: Any valid integer
       DEFAULT-QUANTITY: 1
+      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE-QUANTITY-BUTTONS: true
-
-  # ── Shard Booster ─────────────────────────────────────
+  # Configuration section for Shard Booster.
   SHARD-BOOSTER:
-    MATERIAL: POTION # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&#9B59B6&lshard booster" # Sets the name text used here.
+    MATERIAL: POTION
+    NAME: '&#9B59B6&lShard Booster'
     LORE:
-      - "&#BDC3C7&d4x &7shard multiplier"
-      - "&#BDC3C7duration: &d60 minutes"
-      - ""
-      - "&#BDC3C7drink to &dactivate"
-      - ""
-      - "&#9B59B6✦ self destruct"
-      - "&#BDC3C7{time}"
-    BOOSTER-DURATION: 3600 # Sets how long this behavior lasts.
-    DURATION: 3600 # Sets how long this behavior lasts.
+    - '&#BDC3C7&d4x &7Shard Multiplier'
+    - '&#BDC3C7Duration: &d60 minutes'
+    - ''
+    - '&#BDC3C7Drink to &dactivate'
+    - ''
+    - '&#9B59B6✦ Self Destruct'
+    - '&#BDC3C7{time}'
+    # The numerical value for Booster Duration. Available options: Any valid integer
+    BOOSTER-DURATION: 3600
+    # The numerical value for Duration. Available options: Any valid integer
+    DURATION: 3600
+    # Configuration section for Shard Shop.
     SHARD-SHOP:
-      ENABLED: false # Enable to add this tool to /shardshop.
-      SLOT: 5
-      PRICE-PER-UNIT: 0 # Set the shard price before enabling.
-      # DURATION: 3600 # Optional; defaults to the tool's DURATION above.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      SLOT: 16
+      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX-QUANTITY: 1
+      # The numerical value for Default Quantity. Available options: Any valid integer
       DEFAULT-QUANTITY: 1
+      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE-QUANTITY-BUTTONS: true
-
-# ── Messages ──────────────────────────────────────────────────────────────────
-# UDS setup: Messages sent by the amethyst tools system.
+  # Configuration section for Chop.
+  CHOP:
+    # Configuration section for Shard Shop.
+    SHARD-SHOP:
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      SLOT: 11
+      # The numerical value for Min Quantity. Available options: Any valid integer
+      MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
+      MAX-QUANTITY: 1
+      # The numerical value for Default Quantity. Available options: Any valid integer
+      DEFAULT-QUANTITY: 1
+      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
+      HIDE-QUANTITY-BUTTONS: true
+# Configuration section for Amethyst Messages.
 AMETHYST-MESSAGES:
-  PREFIX: "&#9B59B6[ᴀᴍᴇᴛʜʏѕᴛ] &r" # Sets the text format used by this option.
-  EXPIRED:           "{prefix}&# Expired setting.
-  EXCLUDED-WORLD:    "{prefix}&#BDC3C7ᴀᴍᴇᴛʜʏѕᴛ ᴛᴏᴏʟѕ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ." # Sets the world name used by this option.
-  DRILL-BREAK:       "{prefix}&# Drill Break setting.
-  CHOP-BREAK:        "{prefix}&# Chop Break setting.
-  SELL-SUCCESS:      "{prefix}&# Sell Success setting.
-  SELL-EMPTY:        "{prefix}&# Sell Empty setting.
-  SELL-FAILED:       "{prefix}&# Sell Failed setting.
-  SELL-NO-CHEST:     "{prefix}&# Sell No Chest setting.
-  BUCKET-DRAIN:      "{prefix}&# Bucket Drain setting.
-  BUCKET-NO-WATER:   "{prefix}&# Bucket No Water setting.
-  BOOSTER-ACTIVATED: "{prefix}&# Booster Activated setting.
-  BOOSTER-ALREADY:   "{prefix}&# Booster Already setting.
-  NO-PERMISSION:     "{prefix}&# Permission node (e.g., ultimatedonutsmp.admin)
-  WRONG-OWNER:       "{prefix}&# Wrong Owner setting.
-  GIVE-SUCCESS:      "{prefix}&# Give Success setting.
-  GIVE-USAGE:        "{prefix}&# Give Usage setting.
-  GIVE-INVALID-TYPE: "{prefix}&# Give Invalid Type setting.
-  RELOAD-SUCCESS:    "{prefix}&# Reload Success setting.
+  # The text or value for Prefix. Available options: Any valid string text
+  PREFIX: '&#9B59B6[Amethyst] &r'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '{prefix}&#BDC3C7Your &d{tool} &7has &cexpired &7and self-destructed!'
+  # The text or value for Excluded World. Available options: Any valid string text
+  EXCLUDED-WORLD: '{prefix}&#BDC3C7Amethyst Tools cannot be used in this world.'
+  # The text or value for Drill Break. Available options: Any valid string text
+  DRILL-BREAK: '{prefix}&#BDC3C7&dAmethyst Drill &7broke &d{count} &7blocks.'
+  # The text or value for Chop Break. Available options: Any valid string text
+  CHOP-BREAK: '{prefix}&#BDC3C7&dAmethyst Tree Chopper &7chopped &d{count} &7logs.'
+  # The text or value for Sell Success. Available options: Any valid string text
+  SELL-SUCCESS: '{prefix}&#BDC3C7Sold all chest contents for &a${amount}&7.'
+  # The text or value for Sell Empty. Available options: Any valid string text
+  SELL-EMPTY: '{prefix}&#BDC3C7That chest is empty or has no sellable items.'
+  # The text or value for Sell No Chest. Available options: Any valid string text
+  SELL-NO-CHEST: '{prefix}&#BDC3C7You must right-click a chest.'
+  # The text or value for Bucket Drain. Available options: Any valid string text
+  BUCKET-DRAIN: '{prefix}&#BDC3C7Drained &d{count} &7water blocks.'
+  # The text or value for Bucket No Water. Available options: Any valid string text
+  BUCKET-NO-WATER: '{prefix}&#BDC3C7No water blocks found nearby.'
+  # The text or value for Booster Activated. Available options: Any valid string text
+  BOOSTER-ACTIVATED: '{prefix}&#BDC3C7&dShard Booster &7activated! &d4x &7shards for
+    &d60 minutes&7.'
+  # The text or value for Booster Already. Available options: Any valid string text
+  BOOSTER-ALREADY: '{prefix}&#BDC3C7You already have an active shard booster!'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '{prefix}&#BDC3C7You do not have permission to use this item.'
+  # The text or value for Wrong Owner. Available options: Any valid string text
+  WRONG-OWNER: '{prefix}&#BDC3C7This Amethyst Tool is bound to another player.'
+  # The text or value for Give Success. Available options: Any valid string text
+  GIVE-SUCCESS: '{prefix}&#BDC3C7Gave &d{type} &7to &d{player}&7.'
+  # The text or value for Give Usage. Available options: Any valid string text
+  GIVE-USAGE: '{prefix}&#BDC3C7Usage: &d/amethysttool give <player> <type> [duration_seconds]'
+  # The text or value for Give Invalid Type. Available options: Any valid string text
+  GIVE-INVALID-TYPE: '{prefix}&#BDC3C7Invalid tool type. Types: DRILL, CHOPPER, SELL_AXE,
+    SHOVEL, BUCKET, SHARD_BOOSTER'
+  # The text or value for Reload Success. Available options: Any valid string text
+  RELOAD-SUCCESS: '{prefix}&#BDC3C7Configuration reloaded.'

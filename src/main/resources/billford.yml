@@ -1,206 +1,252 @@
-# UDS setup: Billford rotation, access, shop GUI, and feedback configuration.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# ============================================================
-# Billford Trade
-# Rotating trade system inspired by DonutSMP.
-# ============================================================
-
-# Default active trade on a fresh install.
-# Runtime state is stored in billford-data.yml after the first boot.
-# UDS setup: Current selected value used by this rotating system.
-CURRENT: 1 # Current setting.
-
-# Rotation mode:
-# SEQUENTIAL -> 1 -> 2 -> 3 -> 1
-# RANDOM     -> random trade, never repeats the same trade twice in a row
-# UDS setup: Controls how the feature rotates between configured entries.
-ROTATION_MODE: SEQUENTIAL # Rotation Mode setting.
-
-# UDS setup: Countdown timings and messages before the next action.
+# The numerical value for Current. Available options: Any valid integer
+CURRENT: 1
+# The text or value for Rotation Mode. Available options: Any valid string text
+ROTATION_MODE: SEQUENTIAL
+# Configuration section for Countdown.
 COUNTDOWN:
-  ENABLED: true # Options: true or false
-  # SYSTEM uses the machine timezone running the server.
-  # You can set a real zone like "Asia/Makassar" or "UTC" if needed.
-  TIME_ZONE: SYSTEM # Time Zone setting.
-  START_DATE: "2026-01-31 00:00:00" # Start Date setting.
-  # Days and hours are combined, so 3 days + 12 hours is valid.
-  INTERVAL_DAYS: 3 # Sets how often this task or update runs.
-  INTERVAL_HOURS: 0 # Sets how often this task or update runs.
-
-# UDS setup: Toggles announcements when the rotation changes.
-ANNOUNCE_ON_ROTATE: true # Announce On Rotate setting.
-# UDS setup: Announcement text used when rotation changes are broadcast.
-ANNOUNCE_MESSAGE: "&6&l[billford] &etrade has rotated! &7new trade is live. &bnext change in &f{countdown}&b." # Announce Message setting.
-
-# UDS setup: Permission and access rules for opening or using this feature.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The text or value for Time Zone. Available options: Any valid string text
+  TIME_ZONE: SYSTEM
+  # The text or value for Start Date. Available options: Any valid string text
+  START_DATE: '2026-01-31 00:00:00'
+  # The numerical value for Interval Days. Available options: Any valid integer
+  INTERVAL_DAYS: 3
+  # The numerical value for Interval Hours. Available options: Any valid integer
+  INTERVAL_HOURS: 0
+# Determines whether Announce On Rotate is enabled or disabled. Available options: true, false
+ANNOUNCE_ON_ROTATE: true
+# The text or value for Announce Message. Available options: Any valid string text
+ANNOUNCE_MESSAGE: '&6&l[Billford] &eTrade has rotated! &7New trade is live. &bNext
+  change in &f{countdown}&b.'
+# Configuration section for Access.
 ACCESS:
-  # Leave blank to allow everyone.
-  PERMISSION: "" # Permission node (e.g., ultimatedonutsmp.admin)
-  COMMAND: "/billford" # Sets the command executed or suggested here.
+  # The text or value for Permission. Available options: Any valid string text
+  PERMISSION: ''
+  # The text or value for Command. Available options: Any valid string text
+  COMMAND: /billford
+  # Configuration section for Npc.
   NPC:
-    ENABLED: false # Options: true or false
-    DISPLAY_NAME: "&abillford" # Text string (supports & color codes)
-    INTERACT_COMMAND: "/billford" # Sets the command executed or suggested here.
-
-# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: false
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&aBillford'
+    # The text or value for Interact Command. Available options: Any valid string text
+    INTERACT_COMMAND: /billford
+# Configuration section for Settings.
 SETTINGS:
-  CLICK_COOLDOWN_MS: 1000 # Sets the cooldown before this action can run again.
-  CLOSE_MENU_ON_SUCCESS: true # Close Menu On Success setting.
-  REOPEN_ON_TRADE_CHANGE: true # Reopen On Trade Change setting.
+  # The numerical value for Click Cooldown Ms. Available options: Any valid integer
+  CLICK_COOLDOWN_MS: 1000
+  # Determines whether Close Menu On Success is enabled or disabled. Available options: true, false
+  CLOSE_MENU_ON_SUCCESS: true
+  # Determines whether Reopen On Trade Change is enabled or disabled. Available options: true, false
+  REOPEN_ON_TRADE_CHANGE: true
+  # Configuration section for Allowed Click Types.
   ALLOWED_CLICK_TYPES:
-    - LEFT
-    - RIGHT
-
-# UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
+  - LEFT
+  - RIGHT
+# Configuration section for Gui.
 GUI:
-  TITLE: "&8&lʙɪʟʟꜰᴏʀᴅ &7ᴛʀᴀᴅᴇ" # Text string (supports & color codes)
-  SIZE: 54 # Inventory size in slots (multiple of 9, max 54)
-  FILLER_MATERIAL: GRAY_STAINED_GLASS_PANE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-  REWARD_SLOT: 25 # Sets the inventory slot used by this item.
-  COUNTDOWN_SLOT: 31 # Sets the inventory slot used by this item.
-  INFO_SLOT: 49 # Sets the inventory slot used by this item.
-  CONFIRM_SLOT: 22 # Sets the inventory slot used by this item.
-  INFO_MATERIAL: BOOK # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-
-  INPUT_NAME: "&f{item}" # Sets the name text used here.
+  TITLE: '&8&lBillford &7Trade'
+  SIZE: 54
+  # The text or value for Filler Material. Available options: Any valid string text
+  FILLER_MATERIAL: GRAY_STAINED_GLASS_PANE
+  # The numerical value for Reward Slot. Available options: Any valid integer
+  REWARD_SLOT: 25
+  # The numerical value for Countdown Slot. Available options: Any valid integer
+  COUNTDOWN_SLOT: 31
+  # The numerical value for Info Slot. Available options: Any valid integer
+  INFO_SLOT: 49
+  # The numerical value for Confirm Slot. Available options: Any valid integer
+  CONFIRM_SLOT: 22
+  # The text or value for Info Material. Available options: Any valid string text
+  INFO_MATERIAL: BOOK
+  # The text or value for Input Name. Available options: Any valid string text
+  INPUT_NAME: '&f{item}'
+  # Configuration section for Input Lore.
   INPUT_LORE:
-    - "&7ᴄᴏѕᴛ: &f{amount}x &e{item}"
-    - ""
-    - "&8ᴍᴜѕᴛ ᴀʟʀᴇᴀᴅʏ ʙᴇ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ."
-
-  REWARD_NAME: "&aʀᴇᴡᴀʀᴅ" # Sets the name text used here.
+  - '&7Cost: &f{amount}x &e{item}'
+  - ''
+  - '&8Must already be in your inventory.'
+  # The text or value for Reward Name. Available options: Any valid string text
+  REWARD_NAME: '&aReward'
+  # Configuration section for Reward Lore.
   REWARD_LORE:
-    - "&7ʀᴇᴡᴀʀᴅ: &a{amount}x &f{item}"
-    - "{money_line}"
-    - "{shard_line}"
-    - ""
-    - "&8ɢʀᴀɴᴛᴇᴅ ᴡʜᴇɴ ᴛʜᴇ ᴛʀᴀᴅᴇ ѕᴜᴄᴄᴇᴇᴅѕ."
-
-  COUNTDOWN_NAME: "&e{trade_name}" # Sets the name text used here.
+  - '&7Reward: &a{amount}x &f{item}'
+  - '{money_line}'
+  - '{shard_line}'
+  - ''
+  - '&8Granted when the trade succeeds.'
+  # The text or value for Countdown Name. Available options: Any valid string text
+  COUNTDOWN_NAME: '&e{trade_name}'
+  # Configuration section for Countdown Lore.
   COUNTDOWN_LORE:
-    - "&7ɴᴇxᴛ ʀᴏᴛᴀᴛɪᴏɴ: &b{countdown}"
-    - ""
-    - "&8ᴛʀᴀᴅᴇ &f{trade_id} &8ᴏꜰ &f{trade_count}"
-
-  INFO_NAME: "&6ᴛʀᴀᴅᴇ ɪɴꜰᴏ" # Sets the name text used here.
+  - '&7Next rotation: &b{countdown}'
+  - ''
+  - '&8Trade &f{trade_id} &8of &f{trade_count}'
+  # The text or value for Info Name. Available options: Any valid string text
+  INFO_NAME: '&6Trade Info'
+  # Configuration section for Info Limited Lore.
   INFO_LIMITED_LORE:
-    - "&7ᴛʀᴀᴅᴇѕ: &f{used} &7/ &f{limit}"
-    - "{status_line}"
+  - '&7Trades: &f{used} &7/ &f{limit}'
+  - '{status_line}'
+  # Configuration section for Info Unlimited Lore.
   INFO_UNLIMITED_LORE:
-    - "&7ᴛʀᴀᴅᴇѕ ᴅᴏɴᴇ: &f{used}"
-    - "&aᴜɴʟɪᴍɪᴛᴇᴅ ᴛʀᴀᴅᴇѕ ᴛʜɪѕ ʀᴏᴛᴀᴛɪᴏɴ."
-
+  - '&7Trades done: &f{used}'
+  - '&aUnlimited trades this rotation.'
+  # Configuration section for Confirm Button.
   CONFIRM_BUTTON:
-    MATERIAL: EMERALD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&a&lᴄᴏɴꜰɪʀᴍ ᴛʀᴀᴅᴇ" # Sets the name text used here.
+    MATERIAL: EMERALD
+    NAME: '&a&lConfirm Trade'
     LORE:
-      - "&7ʙʀɪɴɢ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ɪᴛᴇᴍѕ,"
-      - "&7ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴛᴏ ᴇxᴄʜᴀɴɢᴇ ᴛʜᴇᴍ."
-      - ""
-      - "&a&lᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ"
-
+    - '&7Bring the required items,'
+    - '&7then click to exchange them.'
+    - ''
+    - '&a&lClick to Confirm'
+  # Configuration section for Limit Button.
   LIMIT_BUTTON:
-    MATERIAL: BARRIER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-    NAME: "&c&lʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ" # Sets the name text used here.
+    MATERIAL: BARRIER
+    NAME: '&c&lLimit Reached'
     LORE:
-      - "&cʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ᴜѕᴇᴅ ᴛʜɪѕ ᴅᴇᴀʟ ᴇɴᴏᴜɢʜ"
-      - "&cꜰᴏʀ ᴛʜᴇ ᴄᴜʀʀᴇɴᴛ ʀᴏᴛᴀᴛɪᴏɴ."
-      - "&7ᴄᴏᴍᴇ ʙᴀᴄᴋ ᴀꜰᴛᴇʀ ᴛʜᴇ ɴᴇxᴛ ʀᴇꜰʀᴇѕʜ."
-
-# UDS setup: Action result messages and feedback text for this feature.
+    - '&cYou already used this deal enough'
+    - '&cfor the current rotation.'
+    - '&7Come back after the next refresh.'
+# Configuration section for Feedback.
 FEEDBACK:
+  # Configuration section for Success Particle.
   SUCCESS_PARTICLE:
-    ENABLED: true # Options: true or false
-    TYPE: TOTEM_OF_UNDYING # Type setting.
-    COUNT: 24 # Count setting.
-
-# ============================================================
-# Trade definitions
-# INPUTS supports 1-9 items.
-# SLOT is 1-based and supports the full GUI size.
-# LIMIT: 0 = unlimited per rotation
-# REWARD can also grant optional SHARD_BONUS or MONEY_BONUS
-# ============================================================
-
-# UDS setup: Billford shop entries, prices, stock, and rotation content.
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    TYPE: TOTEM_OF_UNDYING
+    # The numerical value for Count. Available options: Any valid integer
+    COUNT: 24
+# Configuration section for Billford.
 BILLFORD:
+  # Configuration section for 1.
   1:
-    DISPLAY_NAME: "the gem exchange" # Text string (supports & color codes)
-    LIMIT: 3 # Limit setting.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: The Gem Exchange
+    # The numerical value for Limit. Available options: Any valid integer
+    LIMIT: 3
+    # Configuration section for Inputs.
     INPUTS:
+      # Configuration section for 1.
       1:
-        SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: DIAMOND # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 3 # Sets the item amount used by this option.
+        SLOT: 11
+        MATERIAL: DIAMOND
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 3
+      # Configuration section for 2.
       2:
-        SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: EMERALD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 5 # Sets the item amount used by this option.
+        SLOT: 12
+        MATERIAL: EMERALD
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 5
+    # Configuration section for Reward.
     REWARD:
-      MATERIAL: PISTON # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      QUANTITY: 64 # Sets the item amount used by this option.
-      SHARD_BONUS: 0 # Sets the economy value used by this option.
-      MONEY_BONUS: 0 # Sets the economy value used by this option.
-
+      MATERIAL: PISTON
+      # The numerical value for Quantity. Available options: Any valid integer
+      QUANTITY: 64
+      # The numerical value for Shard Bonus. Available options: Any valid integer
+      SHARD_BONUS: 0
+      # The numerical value for Money Bonus. Available options: Any valid integer
+      MONEY_BONUS: 0
+  # Configuration section for 2.
   2:
-    DISPLAY_NAME: "the utility crate" # Text string (supports & color codes)
-    LIMIT: 2 # Limit setting.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: The Utility Crate
+    # The numerical value for Limit. Available options: Any valid integer
+    LIMIT: 2
+    # Configuration section for Inputs.
     INPUTS:
+      # Configuration section for 1.
       1:
-        SLOT: 10 # Sets the inventory slot used by this item.
-        MATERIAL: IRON_INGOT # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 32 # Sets the item amount used by this option.
+        SLOT: 10
+        MATERIAL: IRON_INGOT
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 32
+      # Configuration section for 2.
       2:
-        SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: REDSTONE # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 16 # Sets the item amount used by this option.
+        SLOT: 11
+        MATERIAL: REDSTONE
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 16
+      # Configuration section for 3.
       3:
-        SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: EMERALD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 12 # Sets the item amount used by this option.
+        SLOT: 12
+        MATERIAL: EMERALD
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 12
+    # Configuration section for Reward.
     REWARD:
-      MATERIAL: OBSERVER # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      QUANTITY: 32 # Sets the item amount used by this option.
-      SHARD_BONUS: 40 # Sets the economy value used by this option.
-      MONEY_BONUS: 0 # Sets the economy value used by this option.
-
+      MATERIAL: OBSERVER
+      # The numerical value for Quantity. Available options: Any valid integer
+      QUANTITY: 32
+      # The numerical value for Shard Bonus. Available options: Any valid integer
+      SHARD_BONUS: 40
+      # The numerical value for Money Bonus. Available options: Any valid integer
+      MONEY_BONUS: 0
+  # Configuration section for 3.
   3:
-    DISPLAY_NAME: "the ingot deal" # Text string (supports & color codes)
-    LIMIT: 1 # Limit setting.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: The Ingot Deal
+    # The numerical value for Limit. Available options: Any valid integer
+    LIMIT: 1
+    # Configuration section for Inputs.
     INPUTS:
+      # Configuration section for 1.
       1:
-        SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: NETHERITE_INGOT # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 1 # Sets the item amount used by this option.
+        SLOT: 11
+        MATERIAL: NETHERITE_INGOT
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 1
+      # Configuration section for 2.
       2:
-        SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: BLAZE_ROD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 8 # Sets the item amount used by this option.
+        SLOT: 12
+        MATERIAL: BLAZE_ROD
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 8
+    # Configuration section for Reward.
     REWARD:
-      MATERIAL: ELYTRA # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      QUANTITY: 1 # Sets the item amount used by this option.
-      SHARD_BONUS: 120 # Sets the economy value used by this option.
-      MONEY_BONUS: 50000 # Sets the economy value used by this option.
-
+      MATERIAL: ELYTRA
+      # The numerical value for Quantity. Available options: Any valid integer
+      QUANTITY: 1
+      # The numerical value for Shard Bonus. Available options: Any valid integer
+      SHARD_BONUS: 120
+      # The numerical value for Money Bonus. Available options: Any valid integer
+      MONEY_BONUS: 50000
+  # Configuration section for 4.
   4:
-    DISPLAY_NAME: "the builder stash" # Text string (supports & color codes)
-    LIMIT: 4 # Limit setting.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: The Builder Stash
+    # The numerical value for Limit. Available options: Any valid integer
+    LIMIT: 4
+    # Configuration section for Inputs.
     INPUTS:
+      # Configuration section for 1.
       1:
-        SLOT: 10 # Sets the inventory slot used by this item.
-        MATERIAL: GOLD_INGOT # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 16 # Sets the item amount used by this option.
+        SLOT: 10
+        MATERIAL: GOLD_INGOT
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 16
+      # Configuration section for 2.
       2:
-        SLOT: 11 # Sets the inventory slot used by this item.
-        MATERIAL: LAPIS_LAZULI # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 32 # Sets the item amount used by this option.
+        SLOT: 11
+        MATERIAL: LAPIS_LAZULI
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 32
+      # Configuration section for 3.
       3:
-        SLOT: 12 # Sets the inventory slot used by this item.
-        MATERIAL: AMETHYST_SHARD # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-        QUANTITY: 24 # Sets the item amount used by this option.
+        SLOT: 12
+        MATERIAL: AMETHYST_SHARD
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 24
+    # Configuration section for Reward.
     REWARD:
-      MATERIAL: SEA_LANTERN # Options: Valid Bukkit Material (e.g., DIAMOND, STONE, IRON_INGOT)
-      QUANTITY: 48 # Sets the item amount used by this option.
-      SHARD_BONUS: 15 # Sets the economy value used by this option.
-      MONEY_BONUS: 0 # Sets the economy value used by this option.
+      MATERIAL: SEA_LANTERN
+      # The numerical value for Quantity. Available options: Any valid integer
+      QUANTITY: 48
+      # The numerical value for Shard Bonus. Available options: Any valid integer
+      SHARD_BONUS: 15
+      # The numerical value for Money Bonus. Available options: Any valid integer
+      MONEY_BONUS: 0
