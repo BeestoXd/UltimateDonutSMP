@@ -200,6 +200,14 @@ public class EconomyExpansion extends PlaceholderExpansion {
         }
 
         return switch (params) {
+            case "donutplus", "display_donutplus" -> {
+                if (offlinePlayer == null || !offlinePlayer.isOnline()) yield "";
+                org.bukkit.entity.Player p = offlinePlayer.getPlayer();
+                if (p != null && data.isDisplayDonutPlusEnabled() && (p.hasPermission("ultimatedonutsmp.donutplus") || p.hasPermission("donutplus"))) {
+                    yield "&d&lDonut+ &r";
+                }
+                yield "";
+            }
             case "money" -> NumberUtils.format(data.getMoney());
             case "nicestMoney", "money_short", "money_amount_short", "nicestmoney" ->
                     currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, data.getMoney());

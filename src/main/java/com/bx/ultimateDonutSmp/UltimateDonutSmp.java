@@ -497,6 +497,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
         pm.registerEvents(new AnvilModerationListener(this), this);
+        pm.registerEvents(new PlayerAdvancementDoneListener(this), this);
     }
 
     private void registerCommands() {

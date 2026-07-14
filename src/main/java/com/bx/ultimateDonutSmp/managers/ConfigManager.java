@@ -1898,6 +1898,13 @@ public class ConfigManager {
         try {
             configuration.load(file);
             invalidConfigurations.remove(name);
+            if ("menus.yml".equals(name) && (configuration.contains("SETTINGS-MENU-LEGACY") || hasLegacyButtons(configuration))) {
+                plugin.getLogger().warning("Detected legacy menus.yml format. Resetting to default for new slot layout...");
+                backupInvalidFile(file);
+                file.delete();
+                copyBundledResource(name, file, true);
+                configuration.load(file);
+            }
             return configuration;
         } catch (IOException | InvalidConfigurationException e) {
             boolean firstInvalidLoad = invalidConfigurations.add(name);
@@ -1922,6 +1929,19 @@ public class ConfigManager {
                 return configuration;
             }
         }
+    }
+
+    private boolean hasLegacyButtons(YamlConfiguration config) {
+        ConfigurationSection buttons = config.getConfigurationSection("SETTINGS-MENU.BUTTONS");
+        if (buttons == null) {
+            return false;
+        }
+        for (String key : buttons.getKeys(false)) {
+            if (key.startsWith("HEADER_") || "TOTEM_PARTICLES".equals(key) || "TP_AUTO".equals(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void backupInvalidFile(File file) {

@@ -282,7 +282,16 @@ public class DatabaseManager {
               "  quiet_spawn_enabled INTEGER DEFAULT 0," +
               "  night_vision_enabled INTEGER DEFAULT 0," +
               "  keyall_remaining_seconds INTEGER DEFAULT -1," +
-              "  shard_booster_expiry INTEGER DEFAULT 0" +
+              "  shard_booster_expiry INTEGER DEFAULT 0," +
+              "  destroy_pearl_on_death INTEGER DEFAULT 1," +
+              "  randomized_coords INTEGER DEFAULT 0," +
+              "  death_messages_choice INTEGER DEFAULT 1," +
+              "  advancement_messages_choice INTEGER DEFAULT 1," +
+              "  join_leave_messages_choice INTEGER DEFAULT 1," +
+              "  teleport_alerts_enabled INTEGER DEFAULT 1," +
+              "  follow_alerts_enabled INTEGER DEFAULT 1," +
+              "  explosion_sounds_enabled INTEGER DEFAULT 1," +
+              "  display_donutplus_enabled INTEGER DEFAULT 1" +
               ")"
           );
         execute(
@@ -629,6 +638,15 @@ public class DatabaseManager {
         ensureColumnExists("players", "night_vision_enabled", "INTEGER DEFAULT 0");
         ensureColumnExists("players", "keyall_remaining_seconds", "INTEGER DEFAULT -1");
         ensureColumnExists("players", "shard_booster_expiry", "INTEGER DEFAULT 0");
+        ensureColumnExists("players", "destroy_pearl_on_death", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "randomized_coords", "INTEGER DEFAULT 0");
+        ensureColumnExists("players", "death_messages_choice", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "advancement_messages_choice", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "join_leave_messages_choice", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "teleport_alerts_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "follow_alerts_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "explosion_sounds_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "display_donutplus_enabled", "INTEGER DEFAULT 1");
     }
 
     private void ensurePortalColumns() throws SQLException {
@@ -868,7 +886,7 @@ public class DatabaseManager {
         data.setMoneyMade(rs.getDouble("money_made"));
         data.setTpauto(rs.getInt("tpauto") == 1);
         data.setPhantomEnabled(rs.getInt("phantom_enabled") == 1);
-        data.setPaymentsEnabled(rs.getInt("payments_enabled") == 1);
+        data.setPaymentsChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("payments_enabled")));
         data.setScoreboardVisible(rs.getInt("scoreboard_visible") != 0);
         data.setPayAlertsEnabled(rs.getInt("pay_alerts_enabled") != 0);
         data.setHotbarMessagesEnabled(rs.getInt("hotbar_messages_enabled") != 0);
@@ -878,16 +896,16 @@ public class DatabaseManager {
         data.setTpaConfirmMenuEnabled(rs.getInt("tpa_confirm_menu_enabled") != 0);
         data.setChainmailOnRespawnEnabled(rs.getInt("chainmail_on_respawn_enabled") != 0);
         data.setLunarTeammatesEnabled(rs.getInt("lunar_teammates_enabled") != 0);
-        data.setTpaRequestsEnabled(rs.getInt("tpa_requests_enabled") != 0);
+        data.setTpaRequestsChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("tpa_requests_enabled")));
         data.setAutoTpaHereEnabled(rs.getInt("auto_tpahere_enabled") != 0);
-        data.setTpaHereRequestsEnabled(rs.getInt("tpahere_requests_enabled") != 0);
+        data.setTpaHereRequestsChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("tpahere_requests_enabled")));
         data.setTeamInvitesEnabled(rs.getInt("team_invites_enabled") != 0);
         data.setMobSpawnEnabled(rs.getInt("mob_spawn_enabled") != 0);
         data.setPayConfirmMenuEnabled(rs.getInt("pay_confirm_menu_enabled") != 0);
         data.setTotemParticlesEnabled(rs.getInt("totem_particles_enabled") != 0);
         data.setFastCrystalsEnabled(rs.getInt("fast_crystals_enabled") != 0);
         data.setAmethystBreakMessagesEnabled(rs.getInt("amethyst_break_messages_enabled") != 0);
-        data.setPrivateMessagesEnabled(rs.getInt("private_messages_enabled") != 0);
+        data.setPrivateMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("private_messages_enabled")));
         data.setKeyAllNotificationsEnabled(rs.getInt("keyall_notifications_enabled") != 0);
         data.setDuelRequestsEnabled(rs.getInt("duel_requests_enabled") != 0);
         data.setPublicChatEnabled(rs.getInt("public_chat_enabled") != 0);
@@ -904,6 +922,15 @@ public class DatabaseManager {
         data.setNightVisionEnabled(rs.getInt("night_vision_enabled") != 0);
         data.setKeyAllRemainingSeconds(rs.getLong("keyall_remaining_seconds"));
         data.setShardBoosterExpiryMillis(rs.getLong("shard_booster_expiry"));
+        data.setDestroyPearlOnDeath(rs.getInt("destroy_pearl_on_death") != 0);
+        data.setRandomizedCoords(rs.getInt("randomized_coords") != 0);
+        data.setDeathMessagesChoice(com.bx.ultimateDonutSmp.models.TwoChoice.fromInt(rs.getInt("death_messages_choice")));
+        data.setAdvancementMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("advancement_messages_choice")));
+        data.setJoinLeaveMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("join_leave_messages_choice")));
+        data.setTeleportAlertsEnabled(rs.getInt("teleport_alerts_enabled") != 0);
+        data.setFollowAlertsEnabled(rs.getInt("follow_alerts_enabled") != 0);
+        data.setExplosionSoundsEnabled(rs.getInt("explosion_sounds_enabled") != 0);
+        data.setDisplayDonutPlusEnabled(rs.getInt("display_donutplus_enabled") != 0);
         data.setDirty(false);
         return data;
     }
@@ -1321,8 +1348,10 @@ public class DatabaseManager {
                  explosion_particles_enabled, hide_all_players_enabled, notification_sounds_enabled,
                  rtp_coordinates_enabled, order_notifications_enabled, team_chat_visible,
                    duel_music_enabled, quiet_spawn_enabled, night_vision_enabled, keyall_remaining_seconds,
-                   shard_booster_expiry)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                   shard_booster_expiry, destroy_pearl_on_death, randomized_coords, death_messages_choice,
+                   advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
+                   follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """)) {
             ps.setString(1, data.getUuid().toString());
             ps.setString(2, data.getUsername());
@@ -1340,7 +1369,7 @@ public class DatabaseManager {
             ps.setDouble(14, data.getMoneyMade());
             ps.setInt(15, data.isTpauto() ? 1 : 0);
             ps.setInt(16, data.isPhantomEnabled() ? 1 : 0);
-            ps.setInt(17, data.isPaymentsEnabled() ? 1 : 0);
+            ps.setInt(17, data.getPaymentsChoice().ordinal());
             ps.setInt(18, data.isScoreboardVisible() ? 1 : 0);
             ps.setInt(19, data.isPayAlertsEnabled() ? 1 : 0);
             ps.setInt(20, data.isHotbarMessagesEnabled() ? 1 : 0);
@@ -1350,16 +1379,16 @@ public class DatabaseManager {
             ps.setInt(24, data.isTpaConfirmMenuEnabled() ? 1 : 0);
             ps.setInt(25, data.isChainmailOnRespawnEnabled() ? 1 : 0);
             ps.setInt(26, data.isLunarTeammatesEnabled() ? 1 : 0);
-            ps.setInt(27, data.isTpaRequestsEnabled() ? 1 : 0);
+            ps.setInt(27, data.getTpaRequestsChoice().ordinal());
             ps.setInt(28, data.isAutoTpaHereEnabled() ? 1 : 0);
-            ps.setInt(29, data.isTpaHereRequestsEnabled() ? 1 : 0);
+            ps.setInt(29, data.getTpaHereRequestsChoice().ordinal());
             ps.setInt(30, data.isTeamInvitesEnabled() ? 1 : 0);
             ps.setInt(31, data.isMobSpawnEnabled() ? 1 : 0);
             ps.setInt(32, data.isPayConfirmMenuEnabled() ? 1 : 0);
             ps.setInt(33, data.isTotemParticlesEnabled() ? 1 : 0);
             ps.setInt(34, data.isFastCrystalsEnabled() ? 1 : 0);
             ps.setInt(35, data.isAmethystBreakMessagesEnabled() ? 1 : 0);
-            ps.setInt(36, data.isPrivateMessagesEnabled() ? 1 : 0);
+            ps.setInt(36, data.getPrivateMessagesChoice().ordinal());
             ps.setInt(37, data.isKeyAllNotificationsEnabled() ? 1 : 0);
             ps.setInt(38, data.isDuelRequestsEnabled() ? 1 : 0);
             ps.setInt(39, data.isPublicChatEnabled() ? 1 : 0);
@@ -1376,6 +1405,15 @@ public class DatabaseManager {
             ps.setInt(50, data.isNightVisionEnabled() ? 1 : 0);
             ps.setLong(51, data.getKeyAllRemainingSeconds());
             ps.setLong(52, data.getShardBoosterExpiryMillis());
+            ps.setInt(53, data.isDestroyPearlOnDeath() ? 1 : 0);
+            ps.setInt(54, data.isRandomizedCoords() ? 1 : 0);
+            ps.setInt(55, data.getDeathMessagesChoice().ordinal());
+            ps.setInt(56, data.getAdvancementMessagesChoice().ordinal());
+            ps.setInt(57, data.getJoinLeaveMessagesChoice().ordinal());
+            ps.setInt(58, data.isTeleportAlertsEnabled() ? 1 : 0);
+            ps.setInt(59, data.isFollowAlertsEnabled() ? 1 : 0);
+            ps.setInt(60, data.isExplosionSoundsEnabled() ? 1 : 0);
+            ps.setInt(61, data.isDisplayDonutPlusEnabled() ? 1 : 0);
             ps.executeUpdate();
             data.setDirty(false);
         } catch (SQLException e) {

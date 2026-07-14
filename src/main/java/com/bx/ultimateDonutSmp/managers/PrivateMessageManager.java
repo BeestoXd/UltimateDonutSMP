@@ -59,6 +59,30 @@ public class PrivateMessageManager {
                 send(sender, ColorUtils.colorize("&c%player% has disabled private messages from you.").replace("%player%", targetName));
                 return false;
             }
+
+            PlayerData targetData = plugin.getPlayerDataManager().get(target);
+            if (targetData != null && !PermissionUtils.has(sender, BYPASS_DISABLED_PERMISSION)) {
+                com.bx.ultimateDonutSmp.models.ThreeChoice choice = targetData.getPrivateMessagesChoice();
+                if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
+                    send(sender, applyPlaceholders(configuredMessage(
+                            "MESSAGES.PMS_DISABLED",
+                            null,
+                            "&c%player% has private messages disabled."
+                    ), targetName, message));
+                    return false;
+                }
+                if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
+                    boolean followed = plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(target.getUniqueId(), player.getUniqueId());
+                    if (!followed) {
+                        send(sender, applyPlaceholders(configuredMessage(
+                                "MESSAGES.PMS_DISABLED_FRIENDS",
+                                null,
+                                "&c%player% only accepts private messages from friends/followed."
+                        ), targetName, message));
+                        return false;
+                    }
+                }
+            }
         }
 
         if (!targetPrivateMessagesEnabled(target) && !PermissionUtils.has(sender, BYPASS_DISABLED_PERMISSION)) {

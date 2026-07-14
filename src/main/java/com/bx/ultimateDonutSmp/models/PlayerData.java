@@ -22,7 +22,7 @@ public class PlayerData {
     private long sessionStartMillis;
     private boolean tpauto;
     private boolean phantomEnabled;
-    private boolean paymentsEnabled;
+    private ThreeChoice paymentsChoice;
     private boolean scoreboardVisible;
     private boolean payAlertsEnabled;
     private boolean hotbarMessagesEnabled;
@@ -32,16 +32,16 @@ public class PlayerData {
     private boolean tpaConfirmMenuEnabled;
     private boolean chainmailOnRespawnEnabled;
     private boolean lunarTeammatesEnabled;
-    private boolean tpaRequestsEnabled;
+    private ThreeChoice tpaRequestsChoice;
     private boolean autoTpaHereEnabled;
-    private boolean tpaHereRequestsEnabled;
+    private ThreeChoice tpaHereRequestsChoice;
     private boolean teamInvitesEnabled;
     private boolean mobSpawnEnabled;
     private boolean payConfirmMenuEnabled;
     private boolean totemParticlesEnabled;
     private boolean fastCrystalsEnabled;
     private boolean amethystBreakMessagesEnabled;
-    private boolean privateMessagesEnabled;
+    private ThreeChoice privateMessagesChoice;
     private boolean keyAllNotificationsEnabled;
     private boolean duelRequestsEnabled;
     private boolean publicChatEnabled;
@@ -59,6 +59,17 @@ public class PlayerData {
     private long keyAllRemainingSeconds;
     private long keyAllAnchorPlaytimeSeconds;
     private boolean dirty;
+
+    // New Settings
+    private boolean destroyPearlOnDeath;
+    private boolean randomizedCoords;
+    private TwoChoice deathMessagesChoice;
+    private ThreeChoice advancementMessagesChoice;
+    private ThreeChoice joinLeaveMessagesChoice;
+    private boolean teleportAlertsEnabled;
+    private boolean followAlertsEnabled;
+    private boolean explosionSoundsEnabled;
+    private boolean displayDonutPlusEnabled;
 
     public PlayerData(UUID uuid, String username) {
         this.uuid = uuid;
@@ -79,7 +90,7 @@ public class PlayerData {
         this.sessionStartMillis = System.currentTimeMillis();
         this.tpauto = false;
         this.phantomEnabled = true;
-        this.paymentsEnabled = true;
+        this.paymentsChoice = ThreeChoice.ANYONE;
         this.scoreboardVisible = true;
         this.payAlertsEnabled = true;
         this.hotbarMessagesEnabled = true;
@@ -89,16 +100,16 @@ public class PlayerData {
         this.tpaConfirmMenuEnabled = true;
         this.chainmailOnRespawnEnabled = true;
         this.lunarTeammatesEnabled = true;
-        this.tpaRequestsEnabled = true;
+        this.tpaRequestsChoice = ThreeChoice.ANYONE;
         this.autoTpaHereEnabled = false;
-        this.tpaHereRequestsEnabled = true;
+        this.tpaHereRequestsChoice = ThreeChoice.ANYONE;
         this.teamInvitesEnabled = true;
         this.mobSpawnEnabled = true;
         this.payConfirmMenuEnabled = true;
         this.totemParticlesEnabled = true;
         this.fastCrystalsEnabled = true;
         this.amethystBreakMessagesEnabled = true;
-        this.privateMessagesEnabled = true;
+        this.privateMessagesChoice = ThreeChoice.ANYONE;
         this.keyAllNotificationsEnabled = true;
         this.duelRequestsEnabled = true;
         this.publicChatEnabled = true;
@@ -116,6 +127,17 @@ public class PlayerData {
         this.keyAllRemainingSeconds = -1L;
         this.keyAllAnchorPlaytimeSeconds = 0L;
         this.dirty = false;
+
+        // New Settings Defaults
+        this.destroyPearlOnDeath = true;
+        this.randomizedCoords = false;
+        this.deathMessagesChoice = TwoChoice.FRIENDS_FOLLOWED;
+        this.advancementMessagesChoice = ThreeChoice.ANYONE;
+        this.joinLeaveMessagesChoice = ThreeChoice.ANYONE;
+        this.teleportAlertsEnabled = true;
+        this.followAlertsEnabled = true;
+        this.explosionSoundsEnabled = true;
+        this.displayDonutPlusEnabled = true;
     }
 
     public UUID getUuid() {
@@ -365,11 +387,20 @@ public class PlayerData {
     }
 
     public boolean isPaymentsEnabled() {
-        return paymentsEnabled;
+        return paymentsChoice != ThreeChoice.OFF;
     }
 
     public void setPaymentsEnabled(boolean paymentsEnabled) {
-        this.paymentsEnabled = paymentsEnabled;
+        this.paymentsChoice = paymentsEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
+        dirty = true;
+    }
+
+    public ThreeChoice getPaymentsChoice() {
+        return paymentsChoice;
+    }
+
+    public void setPaymentsChoice(ThreeChoice paymentsChoice) {
+        this.paymentsChoice = paymentsChoice;
         dirty = true;
     }
 
@@ -455,11 +486,20 @@ public class PlayerData {
     }
 
     public boolean isTpaRequestsEnabled() {
-        return tpaRequestsEnabled;
+        return tpaRequestsChoice != ThreeChoice.OFF;
     }
 
     public void setTpaRequestsEnabled(boolean tpaRequestsEnabled) {
-        this.tpaRequestsEnabled = tpaRequestsEnabled;
+        this.tpaRequestsChoice = tpaRequestsEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
+        dirty = true;
+    }
+
+    public ThreeChoice getTpaRequestsChoice() {
+        return tpaRequestsChoice;
+    }
+
+    public void setTpaRequestsChoice(ThreeChoice tpaRequestsChoice) {
+        this.tpaRequestsChoice = tpaRequestsChoice;
         dirty = true;
     }
 
@@ -473,11 +513,20 @@ public class PlayerData {
     }
 
     public boolean isTpaHereRequestsEnabled() {
-        return tpaHereRequestsEnabled;
+        return tpaHereRequestsChoice != ThreeChoice.OFF;
     }
 
     public void setTpaHereRequestsEnabled(boolean tpaHereRequestsEnabled) {
-        this.tpaHereRequestsEnabled = tpaHereRequestsEnabled;
+        this.tpaHereRequestsChoice = tpaHereRequestsEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
+        dirty = true;
+    }
+
+    public ThreeChoice getTpaHereRequestsChoice() {
+        return tpaHereRequestsChoice;
+    }
+
+    public void setTpaHereRequestsChoice(ThreeChoice tpaHereRequestsChoice) {
+        this.tpaHereRequestsChoice = tpaHereRequestsChoice;
         dirty = true;
     }
 
@@ -536,11 +585,20 @@ public class PlayerData {
     }
 
     public boolean isPrivateMessagesEnabled() {
-        return privateMessagesEnabled;
+        return privateMessagesChoice != ThreeChoice.OFF;
     }
 
     public void setPrivateMessagesEnabled(boolean privateMessagesEnabled) {
-        this.privateMessagesEnabled = privateMessagesEnabled;
+        this.privateMessagesChoice = privateMessagesEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
+        dirty = true;
+    }
+
+    public ThreeChoice getPrivateMessagesChoice() {
+        return privateMessagesChoice;
+    }
+
+    public void setPrivateMessagesChoice(ThreeChoice privateMessagesChoice) {
+        this.privateMessagesChoice = privateMessagesChoice;
         dirty = true;
     }
 
@@ -715,5 +773,86 @@ public class PlayerData {
         this.sessionStartMillis = newSessionStartMillis;
         this.keyAllAnchorPlaytimeSeconds = 0L;
         this.dirty = true;
+    }
+
+    public boolean isDestroyPearlOnDeath() {
+        return destroyPearlOnDeath;
+    }
+
+    public void setDestroyPearlOnDeath(boolean destroyPearlOnDeath) {
+        this.destroyPearlOnDeath = destroyPearlOnDeath;
+        dirty = true;
+    }
+
+    public boolean isRandomizedCoords() {
+        return randomizedCoords;
+    }
+
+    public void setRandomizedCoords(boolean randomizedCoords) {
+        this.randomizedCoords = randomizedCoords;
+        dirty = true;
+    }
+
+    public TwoChoice getDeathMessagesChoice() {
+        return deathMessagesChoice;
+    }
+
+    public void setDeathMessagesChoice(TwoChoice deathMessagesChoice) {
+        this.deathMessagesChoice = deathMessagesChoice;
+        dirty = true;
+    }
+
+    public ThreeChoice getAdvancementMessagesChoice() {
+        return advancementMessagesChoice;
+    }
+
+    public void setAdvancementMessagesChoice(ThreeChoice advancementMessagesChoice) {
+        this.advancementMessagesChoice = advancementMessagesChoice;
+        dirty = true;
+    }
+
+    public ThreeChoice getJoinLeaveMessagesChoice() {
+        return joinLeaveMessagesChoice;
+    }
+
+    public void setJoinLeaveMessagesChoice(ThreeChoice joinLeaveMessagesChoice) {
+        this.joinLeaveMessagesChoice = joinLeaveMessagesChoice;
+        dirty = true;
+    }
+
+    public boolean isTeleportAlertsEnabled() {
+        return teleportAlertsEnabled;
+    }
+
+    public void setTeleportAlertsEnabled(boolean teleportAlertsEnabled) {
+        this.teleportAlertsEnabled = teleportAlertsEnabled;
+        dirty = true;
+    }
+
+    public boolean isFollowAlertsEnabled() {
+        return followAlertsEnabled;
+    }
+
+    public void setFollowAlertsEnabled(boolean followAlertsEnabled) {
+        this.followAlertsEnabled = followAlertsEnabled;
+        dirty = true;
+    }
+
+    public boolean isExplosionSoundsEnabled() {
+        return explosionSoundsEnabled;
+    }
+
+    public void setExplosionSoundsEnabled(boolean explosionSoundsEnabled) {
+        this.explosionSoundsEnabled = explosionSoundsEnabled;
+        dirty = true;
+    }
+
+    public boolean isDisplayDonutPlusEnabled() {
+        return displayDonutPlusEnabled;
+    }
+
+    public void setDisplayDonutPlusEnabled(boolean displayDonutPlusEnabled) {
+        this.displayDonutPlusEnabled = displayDonutPlusEnabled;
+        dirty = true;
     }
 }

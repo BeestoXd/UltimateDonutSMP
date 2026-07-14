@@ -410,6 +410,18 @@ public class LanguageManager {
             return defaults;
         }
 
+        if ((current.contains("MENUS.SETTINGS-MENU-LEGACY") && !current.contains("MENUS.SETTINGS-MENU")) || current.contains("MENUS.SETTINGS-MENU.BUTTONS.TP_AUTO")) {
+            plugin.getLogger().warning("Detected legacy language file format for " + locale + ". Resetting it to default...");
+            backupInvalidLanguage(target);
+            target.delete();
+            try {
+                defaults.save(target);
+                current.load(target);
+            } catch (IOException | InvalidConfigurationException e) {
+                // fallback
+            }
+        }
+
         mergeMissing(current, defaults);
         return current;
     }

@@ -1,758 +1,486 @@
-# Configuration section for Global.
 GLOBAL:
-  # Configuration section for Page Menu.
   PAGE-MENU:
     MATERIAL: ARROW
-    # The text or value for Next Button. Available options: Any valid string text
-    NEXT-BUTTON: '&aɴᴇxᴛ'
-    # The text or value for Back Button. Available options: Any valid string text
-    BACK-BUTTON: '&aʙᴀᴄᴋ'
-    # The text or value for First Page Button. Available options: Any valid string text
-    FIRST-PAGE-BUTTON: '&aꜰɪʀѕᴛ ᴘᴀɢᴇ'
-    # The text or value for Last Page Button. Available options: Any valid string text
-    LAST-PAGE-BUTTON: '&aʟᴀѕᴛ ᴘᴀɢᴇ'
-    # Configuration section for Next Lore.
+    NEXT-BUTTON: '&aNEXT'
+    BACK-BUTTON: '&aBACK'
+    FIRST-PAGE-BUTTON: '&aFIRST PAGE'
+    LAST-PAGE-BUTTON: '&aLAST PAGE'
     NEXT-LORE:
-    - '&fClick to go to the next page'
-    # Configuration section for Back Lore.
+    - '&fClick to go to the neXt page'
     BACK-LORE:
     - '&fClick to go to the previous page'
-    # Configuration section for First Page Lore.
     FIRST-PAGE-LORE:
     - '&fJump to the first page'
-    # Configuration section for Last Page Lore.
     LAST-PAGE-LORE:
     - '&fJump to the last page'
-# Configuration section for Team Menus.
 TEAM-MENUS:
-  # Configuration section for Team.
   TEAM:
-    TITLE: '&8ᴛᴇᴀᴍ'
+    TITLE: '&8Team'
     SIZE: 54
-    # The numerical value for Max Items Per Page. Available options: Any valid integer
     MAX-ITEMS-PER-PAGE: 45
-    # Configuration section for Player Button.
     PLAYER-BUTTON:
-      # The text or value for Online Symbol. Available options: Any valid string text
-      ONLINE-SYMBOL: '&a■'
-      # The text or value for Offline Symbol. Available options: Any valid string text
-      OFFLINE-SYMBOL: '&4■'
+      ONLINE-SYMBOL: "&a■"
+      OFFLINE-SYMBOL: "&4■"
       LORE: '&fClick to edit'
-    # Configuration section for Search Button.
     SEARCH-BUTTON:
-      TITLE: '&#6BF18Dѕᴇᴀʀᴄʜ'
+      TITLE: '&#6BF18DSearch'
       MATERIAL: OAK_SIGN
       SLOT: 45
       LORE:
       - '&fSearch for team members'
       - '&cIn development.'
-    # Configuration section for Sort Button.
     SORT-BUTTON:
       TITLE: '&aSort'
       MATERIAL: HOPPER
       SLOT: 46
-      # The text or value for Selected Prefix. Available options: Any valid string text
       SELECTED-PREFIX: '&a'
-      # The text or value for Unselected Prefix. Available options: Any valid string text
       UNSELECTED-PREFIX: '&f'
-      # The text or value for Symbol. Available options: Any valid string text
-      SYMBOL: ▪
-    # Configuration section for Refresh Button.
+      SYMBOL: "▪"
     REFRESH-BUTTON:
-      TITLE: '&#6BF18Dᴛᴇᴀᴍ {team_name}'
+      TITLE: '&#6BF18DTeam {team_name}'
       MATERIAL: IRON_HELMET
       SLOT: 49
       LORE:
       - '&fClick to refresh'
-      - '&7Add up to {max_members} members'
-    # Configuration section for Home Button.
+      - '&7Add up to {maX_members} members'
     HOME-BUTTON:
-      TITLE: '&#6BF18Dᴛᴇᴀᴍ ʜᴏᴍᴇ'
+      TITLE: '&#6BF18DTeam Home'
       MATERIAL: WHITE_BANNER
       SLOT: 52
-      # The text or value for Home Lore. Available options: Any valid string text
       HOME-LORE: '&fClick to teleport to your team''s home'
-      # The text or value for No Home Lore. Available options: Any valid string text
       NO-HOME-LORE: '&fSet the team home with /home'
-    # Configuration section for Pvp Button.
     PVP-BUTTON:
-      TITLE: '&#6BF18Dᴘᴠᴘ'
+      TITLE: '&#6BF18DPVP'
       MATERIAL: IRON_SWORD
       SLOT: 53
-      # The text or value for On State. Available options: Any valid string text
       ON-STATE: '&a&lON'
-      # The text or value for Off State. Available options: Any valid string text
       OFF-STATE: '&c&lOFF'
       LORE: '&fCurrently: {state}'
     MESSAGES:
-      # The text or value for Not In Team. Available options: Any valid string text
       NOT-IN-TEAM: '&cYou are not part of the team.'
-      # The text or value for No Permission. Available options: Any valid string text
       NO-PERMISSION: '&cYou don''t have permissions to do this.'
-      # The text or value for Cant Edit Self. Available options: Any valid string text
       CANT-EDIT-SELF: '&cYou can''t do this yourself!'
-  # Configuration section for Team Edit Member.
   TEAM-EDIT-MEMBER:
-    TITLE: '&8ᴇᴅɪᴛ {player}'
+    TITLE: '&8Edit {player}'
     SIZE: 27
-    # Determines whether Placeholder is enabled or disabled. Available options: true, false
     PLACEHOLDER: false
-    # The text or value for Placeholder Material. Available options: Any valid string text
     PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
-    # Configuration section for Edit Home Button.
     EDIT-HOME-BUTTON:
-      TITLE: '&#6BF18Dᴇᴅɪᴛ ʜᴏᴍᴇ'
+      TITLE: '&#6BF18DEdit Home'
       MATERIAL: WHITE_BANNER
       SLOT: 10
-      # The text or value for On State. Available options: Any valid string text
       ON-STATE: '&a&lON'
-      # The text or value for Off State. Available options: Any valid string text
       OFF-STATE: '&c&lOFF'
       LORE:
       - '&fLet {player} set and remove the team home'
       - '&fCurrently: {state}'
-    # Configuration section for Kick Button.
     KICK-BUTTON:
-      TITLE: '&#6BF18Dᴋɪᴄᴋ'
+      TITLE: '&#6BF18DKick'
       MATERIAL: OAK_DOOR
       SLOT: 11
       LORE:
       - '&fClick to kick {player}'
-    # Configuration section for Manage Teammates Button.
     MANAGE-TEAMMATES-BUTTON:
-      TITLE: '&#6BF18Dᴍᴀɴᴀɢᴇ ᴛᴇᴀᴍᴍᴀᴛᴇѕ'
+      TITLE: '&#6BF18DManage Teammates'
       MATERIAL: IRON_HELMET
       SLOT: 12
-      # The text or value for On State. Available options: Any valid string text
       ON-STATE: '&a&lON'
-      # The text or value for Off State. Available options: Any valid string text
       OFF-STATE: '&c&lOFF'
       LORE:
       - '&fLet {player} invite and kick teammates'
       - '&fCurrently: {state}'
-    # Configuration section for Pvp Button.
     PVP-BUTTON:
-      TITLE: '&#6BF18Dᴘᴠᴘ'
+      TITLE: '&#6BF18DPVP'
       MATERIAL: IRON_SWORD
       SLOT: 13
-      # The text or value for On State. Available options: Any valid string text
       ON-STATE: '&a&lON'
-      # The text or value for Off State. Available options: Any valid string text
       OFF-STATE: '&c&lOFF'
       LORE:
       - '&fLet {player} turn on and off team pvp'
       - '&fCurrently: {state}'
-    # Configuration section for Visit Home Button.
     VISIT-HOME-BUTTON:
-      TITLE: '&#6BF18Dᴠɪѕɪᴛ ᴛᴇᴀᴍ ʜᴏᴍᴇ'
+      TITLE: '&#6BF18DVisit Team Home'
       MATERIAL: ENDER_PEARL
       SLOT: 14
-      # The text or value for On State. Available options: Any valid string text
       ON-STATE: '&a&lON'
-      # The text or value for Off State. Available options: Any valid string text
       OFF-STATE: '&c&lOFF'
       LORE:
       - '&fLet {player} go to team home'
       - '&fCurrently: {state}'
-    # Configuration section for Team Chat Button.
     TEAM-CHAT-BUTTON:
-      TITLE: '&#6BF18Dᴛᴇᴀᴍ ᴄʜᴀᴛ'
+      TITLE: '&#6BF18DTeam Chat'
       MATERIAL: FEATHER
       SLOT: 15
-      # The text or value for On State. Available options: Any valid string text
       ON-STATE: '&a&lON'
-      # The text or value for Off State. Available options: Any valid string text
       OFF-STATE: '&c&lOFF'
       LORE:
       - '&fLet {player} speak in chat'
       - '&fCurrently: {state}'
-    # Configuration section for Back Button.
     BACK-BUTTON:
-      TITLE: '&cʙᴀᴄᴋ'
+      TITLE: '&cBack'
       MATERIAL: RED_STAINED_GLASS_PANE
       SLOT: 18
       LORE:
       - '&fClick to return'
-  # Configuration section for Team Kick Member.
   TEAM-KICK-MEMBER:
-    # Determines whether Placeholder is enabled or disabled. Available options: true, false
     PLACEHOLDER: true
-    TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴋɪᴄᴋɪɴɢ {player}'
+    TITLE: '&8Confirm Kicking {player}'
     SIZE: 27
-    # Configuration section for Cancel Button.
     CANCEL-BUTTON:
-      TITLE: '&#FC0000ᴄᴀɴᴄᴇʟ'
+      TITLE: '&#FC0000Cancel'
       MATERIAL: RED_STAINED_GLASS_PANE
       SLOT: 11
       LORE:
       - '&fClick to cancel'
-    # Configuration section for Confirm Button.
     CONFIRM-BUTTON:
-      TITLE: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+      TITLE: '&#00FC00Confirm'
       MATERIAL: LIME_STAINED_GLASS_PANE
       SLOT: 15
       LORE:
       - '&fClick to kick {player}'
-  # Configuration section for Team Disband.
   TEAM-DISBAND:
-    # Determines whether Placeholder is enabled or disabled. Available options: true, false
     PLACEHOLDER: true
-    TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴅɪѕʙᴀɴᴅɪɴɢ ᴛᴇᴀᴍ'
+    TITLE: '&8Confirm Disbanding Team'
     SIZE: 27
-    # Configuration section for Cancel Button.
     CANCEL-BUTTON:
-      TITLE: '&#FC0000ᴄᴀɴᴄᴇʟ'
+      TITLE: '&#FC0000Cancel'
       MATERIAL: RED_STAINED_GLASS_PANE
       SLOT: 11
       LORE:
       - '&fClick to cancel'
-    # Configuration section for Confirm Button.
     CONFIRM-BUTTON:
-      TITLE: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+      TITLE: '&#00FC00Confirm'
       MATERIAL: LIME_STAINED_GLASS_PANE
       SLOT: 15
       LORE:
       - '&fClick to confirm'
-# Configuration section for Home Menu Legacy.
 HOME-MENU-LEGACY:
-  TITLE: '&8ʜᴏᴍᴇѕ'
+  TITLE: '&8Homes'
   SIZE: 36
-  # The text or value for Teleport Used Material. Available options: Any valid string text
   TELEPORT-USED-MATERIAL: LIGHT_BLUE_BED
-  # The text or value for Teleport No Used Material. Available options: Any valid string text
   TELEPORT-NO-USED-MATERIAL: LIGHT_GRAY_BED
-  # The text or value for Teleport No Permission Material. Available options: Any valid string text
   TELEPORT-NO-PERMISSION-MATERIAL: RED_BED
-  # The text or value for Create Used Material. Available options: Any valid string text
   CREATE-USED-MATERIAL: BLUE_DYE
-  # The text or value for Create No Used Material. Available options: Any valid string text
   CREATE-NO-USED-MATERIAL: GRAY_DYE
-  # The text or value for Create No Permission Material. Available options: Any valid string text
   CREATE-NO-PERMISSION-MATERIAL: RED_DYE
-  # Configuration section for Team Home.
   TEAM_HOME:
-    # Configuration section for Teleport.
     TELEPORT:
-      # Configuration section for Materials.
       MATERIALS:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: RED_BANNER
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: WHITE_BANNER
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: WHITE_BANNER
-      # Configuration section for Display Name.
       DISPLAY_NAME:
-        # The text or value for No Team. Available options: Any valid string text
-        NO_TEAM: '&cᴛᴇᴀᴍ ʜᴏᴍᴇ'
-        # The text or value for No Home. Available options: Any valid string text
-        NO_HOME: '&cᴛᴇᴀᴍ ʜᴏᴍᴇ'
-        # The text or value for Has Home. Available options: Any valid string text
-        HAS_HOME: '&bᴛᴇᴀᴍ ʜᴏᴍᴇ'
+        NO_TEAM: '&cTEAM HOME'
+        NO_HOME: '&cTEAM HOME'
+        HAS_HOME: '&bTEAM HOME'
       LORE:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: '&fYou don''t have a team.'
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: '&fClick to create a team home.'
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: '&fClick to teleport to your team''s home.'
-    # Configuration section for Save.
     SAVE:
-      # Configuration section for Materials.
       MATERIALS:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: RED_DYE
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: GRAY_DYE
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: BLUE_DYE
-      # Configuration section for Display Name.
       DISPLAY_NAME:
-        # The text or value for No Team. Available options: Any valid string text
-        NO_TEAM: '&cᴛᴇᴀᴍ ʜᴏᴍᴇ'
-        # The text or value for No Home. Available options: Any valid string text
-        NO_HOME: '&cᴛᴇᴀᴍ ʜᴏᴍᴇ'
-        # The text or value for Has Home. Available options: Any valid string text
-        HAS_HOME: '&bᴛᴇᴀᴍ ʜᴏᴍᴇ'
+        NO_TEAM: '&cTEAM HOME'
+        NO_HOME: '&cTEAM HOME'
+        HAS_HOME: '&bTEAM HOME'
       LORE:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: '&fYou don''t have a team.'
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: '&fClick to create a team home.'
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: '&fClick to teleport to your team''s home.'
-  # Configuration section for Teleport.
   TELEPORT:
-    # Configuration section for Home 1.
     HOME-1:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 1'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 1'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to teleport to your home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 2.
     HOME-2:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 2'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 2'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to teleport to your home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 3.
     HOME-3:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 3'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 3'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to teleport to your home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 4.
     HOME-4:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 4'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 4'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to teleport to your home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 5.
     HOME-5:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 5'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 5'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to teleport to your home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-  # Configuration section for Create.
   CREATE:
-    # Configuration section for Home 1.
     HOME-1:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 1'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 1'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to delete this home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 2.
     HOME-2:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 2'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 2'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to delete this home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 3.
     HOME-3:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 3'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 3'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to delete this home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 4.
     HOME-4:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 4'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 4'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to delete this home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-    # Configuration section for Home 5.
     HOME-5:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
-        NO-USED: '&7ɴᴏ ʜᴏᴍᴇ ѕᴇᴛ'
-        # The text or value for Used. Available options: Any valid string text
-        USED: '&bʜᴏᴍᴇ 5'
-        # The text or value for No Permission. Available options: Any valid string text
-        NO-PERMISSION: '&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ'
+        NO-USED: '&7NO HOME SET'
+        USED: '&bHOME 5'
+        NO-PERMISSION: '&cNO PERMISSION'
       LORE:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&f- Click to create a home'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&fClick to delete this home'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&fYou need a higher rank for this home'
-# Configuration section for Home Menu.
 HOME-MENU:
-  TITLE: '&8ʜᴏᴍᴇѕ'
+  TITLE: '&8Homes'
   SIZE: 36
-  # The text or value for Teleport Used Material. Available options: Any valid string text
   TELEPORT-USED-MATERIAL: LIGHT_BLUE_BED
-  # The text or value for Teleport No Used Material. Available options: Any valid string text
   TELEPORT-NO-USED-MATERIAL: LIGHT_GRAY_BED
-  # The text or value for Teleport No Permission Material. Available options: Any valid string text
   TELEPORT-NO-PERMISSION-MATERIAL: RED_BED
-  # The text or value for Create Used Material. Available options: Any valid string text
   CREATE-USED-MATERIAL: BLUE_DYE
-  # The text or value for Create No Used Material. Available options: Any valid string text
   CREATE-NO-USED-MATERIAL: GRAY_DYE
-  # The text or value for Create No Permission Material. Available options: Any valid string text
   CREATE-NO-PERMISSION-MATERIAL: RED_DYE
-  # Configuration section for Team Home.
   TEAM_HOME:
-    # Configuration section for Teleport.
     TELEPORT:
-      # Configuration section for Materials.
       MATERIALS:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: RED_BANNER
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: WHITE_BANNER
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: WHITE_BANNER
-      # Configuration section for Display Name.
       DISPLAY_NAME:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: '&cTeam Home'
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: '&fTeam Home'
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: '&bTeam Home'
       LORE:
-        # Configuration section for No Team.
         NO_TEAM:
         - '&7You are not in a team.'
-        # Configuration section for No Home.
         NO_HOME:
         - '&7Click to create your team home.'
-        # Configuration section for Has Home.
         HAS_HOME:
         - '&7World: &f{world}'
         - '&aLeft-click to teleport'
-    # Configuration section for Save.
     SAVE:
-      # Configuration section for Materials.
       MATERIALS:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: RED_DYE
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: GRAY_DYE
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: BLUE_DYE
-      # Configuration section for Display Name.
       DISPLAY_NAME:
-        # The text or value for No Team. Available options: Any valid string text
         NO_TEAM: '&cTeam Home'
-        # The text or value for No Home. Available options: Any valid string text
         NO_HOME: '&7Set Team Home'
-        # The text or value for Has Home. Available options: Any valid string text
         HAS_HOME: '&bManage Team Home'
       LORE:
-        # Configuration section for No Team.
         NO_TEAM:
         - '&7You are not in a team.'
-        # Configuration section for No Home.
         NO_HOME:
         - '&7Left-click to save your team home.'
-        # Configuration section for Has Home.
         HAS_HOME:
         - '&bLeft-click to update the team home'
         - '&cRight-click to delete'
-  # Configuration section for Teleport.
   TELEPORT:
-    # Configuration section for Home 1.
     HOME-1:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to create a home.'
-        # Configuration section for Used.
         USED:
         - '&7World: &f{world}'
         - '&aLeft-click to teleport'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 2.
     HOME-2:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to create a home.'
-        # Configuration section for Used.
         USED:
         - '&7World: &f{world}'
         - '&aLeft-click to teleport'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 3.
     HOME-3:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to create a home.'
-        # Configuration section for Used.
         USED:
         - '&7World: &f{world}'
         - '&aLeft-click to teleport'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 4.
     HOME-4:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to create a home.'
-        # Configuration section for Used.
         USED:
         - '&7World: &f{world}'
         - '&aLeft-click to teleport'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 5.
     HOME-5:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to create a home.'
-        # Configuration section for Used.
         USED:
         - '&7World: &f{world}'
         - '&aLeft-click to teleport'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-  # Configuration section for Create.
   CREATE:
-    # Configuration section for Home 1.
     HOME-1:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to name and create a home.'
-        # Configuration section for Used.
         USED:
         - '&eLeft-click to rename this home'
         - '&cRight-click to delete'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 2.
     HOME-2:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to name and create a home.'
-        # Configuration section for Used.
         USED:
         - '&eLeft-click to rename this home'
         - '&cRight-click to delete'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 3.
     HOME-3:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to name and create a home.'
-        # Configuration section for Used.
         USED:
         - '&eLeft-click to rename this home'
         - '&cRight-click to delete'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 4.
     HOME-4:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to name and create a home.'
-        # Configuration section for Used.
         USED:
         - '&eLeft-click to rename this home'
         - '&cRight-click to delete'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-    # Configuration section for Home 5.
     HOME-5:
       DISPLAY-NAME:
-        # The text or value for No Used. Available options: Any valid string text
         NO-USED: '&7{slot}'
-        # The text or value for Used. Available options: Any valid string text
         USED: '&b{name}'
-        # The text or value for No Permission. Available options: Any valid string text
         NO-PERMISSION: '&cLocked'
       LORE:
-        # Configuration section for No Used.
         NO-USED:
         - '&7Click to name and create a home.'
-        # Configuration section for Used.
         USED:
         - '&eLeft-click to rename this home'
         - '&cRight-click to delete'
-        # Configuration section for No Permission.
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-# Configuration section for Confirm Menu.
 CONFIRM-MENU:
   TITLE: '&8Confirm Delete'
   SIZE: 27
-  # Configuration section for Confirm Button.
   CONFIRM-BUTTON:
-    DISPLAY-NAME: '&aᴄᴏɴꜰɪʀᴍ'
+    DISPLAY-NAME: '&aConfirm'
     MATERIAL: LIME_STAINED_GLASS_PANE
     LORE:
     - '&fClick to delete'
-  # Configuration section for Cancel Button.
   CANCEL-BUTTON:
-    DISPLAY-NAME: '&4ᴄᴀɴᴄᴇʟ'
+    DISPLAY-NAME: '&4Cancel'
     MATERIAL: RED_STAINED_GLASS_PANE
     LORE:
     - '&fClick to cancel'
     - null
-# Configuration section for Media Menu.
 MEDIA-MENU:
-  TITLE: '&8ᴍᴇᴅɪᴀ ʀᴀɴᴋ'
+  TITLE: '&8Media Rank'
   SIZE: 27
-  # Configuration section for Media Button.
   MEDIA-BUTTON:
-    DISPLAY-NAME: '&dᴍᴇᴅɪᴀ ʀᴀɴᴋ'
+    DISPLAY-NAME: '&dMedia Rank'
     MATERIAL: PINK_DYE
     SLOT: 13
     LORE:
-    - '&dRequirements: (only one needed)'
+    - '&dReQuirements: (only one needed)'
     - '&d- &f25 average viewers on Stream'
     - '&d- &f5k views on a YouTube Video'
     - '&d- &f25k views on a TikTok'
@@ -764,312 +492,355 @@ MEDIA-MENU:
     - '&8- &7Create ticket in discord for the rank'
     - '&8- &7It lasts 90 days and has all top ranks perks'
     - ''
-# Configuration section for Stats Menu.
 STATS-MENU:
-  TITLE: '&8{username} ѕᴛᴀᴛѕ'
+  TITLE: '&8{username} Stats'
   SIZE: 36
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Money.
     MONEY:
-      DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ'
+      DISPLAY-NAME: '&#6BF18DMoney'
       MATERIAL: EMERALD
       SLOT: 10
       LORE:
       - '&7{value}'
-    # Configuration section for Shards.
     SHARDS:
-      DISPLAY-NAME: '&#6BF18Dѕʜᴀʀᴅѕ'
+      DISPLAY-NAME: '&#6BF18DShards'
       MATERIAL: AMETHYST_SHARD
       SLOT: 11
       LORE:
       - '&7{value}'
-    # Configuration section for Kills.
     KILLS:
-      DISPLAY-NAME: '&#6BF18Dᴋɪʟʟѕ'
+      DISPLAY-NAME: '&#6BF18DKills'
       MATERIAL: DIAMOND_SWORD
       SLOT: 12
       LORE:
       - '&7{value}'
-    # Configuration section for Deaths.
     DEATHS:
-      DISPLAY-NAME: '&#6BF18Dᴅᴇᴀᴛʜѕ'
+      DISPLAY-NAME: '&#6BF18DDeaths'
       MATERIAL: SKELETON_SKULL
       SLOT: 13
       LORE:
       - '&7{value}'
-    # Configuration section for Playtime.
     PLAYTIME:
-      DISPLAY-NAME: '&#6BF18Dᴘʟᴀʏᴛɪᴍᴇ'
+      DISPLAY-NAME: '&#6BF18DPlaytime'
       MATERIAL: CLOCK
       SLOT: 14
       LORE:
       - '&7{value}'
-    # Configuration section for Blocks Placed.
     BLOCKS_PLACED:
-      DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ'
+      DISPLAY-NAME: '&#6BF18DBlocks Placed'
       MATERIAL: STONE
       SLOT: 15
       LORE:
       - '&7{value}'
-    # Configuration section for Blocks Broken.
     BLOCKS_BROKEN:
-      DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ'
+      DISPLAY-NAME: '&#6BF18DBlocks Broken'
       MATERIAL: COBBLESTONE
       SLOT: 16
       LORE:
       - '&7{value}'
-    # Configuration section for Mobs Killed.
     MOBS_KILLED:
-      DISPLAY-NAME: '&#6BF18Dᴍᴏʙѕ ᴋɪʟʟᴇᴅ'
+      DISPLAY-NAME: '&#6BF18DMobs Killed'
       MATERIAL: ZOMBIE_HEAD
       SLOT: 19
       LORE:
       - '&7{value}'
-    # Configuration section for Kill Streak.
     KILL_STREAK:
-      DISPLAY-NAME: '&#6BF18Dᴋɪʟʟ ѕᴛʀᴇᴀᴋ'
+      DISPLAY-NAME: '&#6BF18DKill Streak'
       MATERIAL: DIAMOND_AXE
       SLOT: 20
       LORE:
       - '&7{value}'
-    # Configuration section for Highest Kill Streak.
     HIGHEST_KILL_STREAK:
-      DISPLAY-NAME: '&#6BF18Dʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ'
+      DISPLAY-NAME: '&#6BF18DHighest Kill Streak'
       MATERIAL: NETHERITE_SWORD
       SLOT: 21
       LORE:
       - '&7{value}'
-    # Configuration section for Money Spent.
     MONEY_SPENT:
-      DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ'
+      DISPLAY-NAME: '&#6BF18DMoney Spent On Shop'
       MATERIAL: GOLD_NUGGET
       SLOT: 22
       LORE:
       - '&7{value}'
-    # Configuration section for Money Made.
     MONEY_MADE:
-      DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /ѕᴇʟʟ'
+      DISPLAY-NAME: '&#6BF18DMoney Made On /Sell'
       MATERIAL: IRON_NUGGET
       SLOT: 23
       LORE:
       - '&7{value}'
-# Configuration section for Settings Menu.
 SETTINGS-MENU:
-  TITLE: '&8ѕᴇᴛᴛɪɴɢѕ'
+  TITLE: '&8Settings'
   SIZE: 54
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Pay Alerts.
-    PAY_ALERTS:
-      DISPLAY-NAME: '&bPay Alerts'
-      MATERIAL: PAPER
+    PUBLIC_CHAT:
+      DISPLAY-NAME: '&#6BF18DPublic Chat'
+      MATERIAL: OAK_SIGN
+      SLOT: 0
+      LORE:
+      - '&7Receive public chat messages'
+      - '&fCurrently: {status}'
+    PRIVATE_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DPrivate Messages'
+      MATERIAL: SPRUCE_SIGN
+      SLOT: 1
+      LORE:
+      - '&7Private messages privacy settings'
+      - '&fCurrently: {status}'
+    SERVER_BROADCASTS:
+      DISPLAY-NAME: '&#6BF18DServer Broadcasts'
+      MATERIAL: WARPED_SIGN
+      SLOT: 2
+      LORE:
+      - '&7Receive server broadcasts'
+      - '&fCurrently: {status}'
+    TEAM_CHAT_VISIBILITY:
+      DISPLAY-NAME: '&#6BF18DTeam Chat Visibility'
+      MATERIAL: DARK_OAK_SIGN
+      SLOT: 3
+      LORE:
+      - '&7Show team chat in main chat'
+      - '&fCurrently: {status}'
+    LUNAR_TEAMMATES:
+      DISPLAY-NAME: '&#6BF18DLunar Teammates'
+      MATERIAL: BIRCH_SIGN
+      SLOT: 4
+      LORE:
+      - '&7Show teammates on Lunar Client'
+      - '&fCurrently: {status}'
+    TPA_CONFIRM_MENUS:
+      DISPLAY-NAME: '&#6BF18DTpa Confirm Menus'
+      MATERIAL: JUNGLE_SIGN
+      SLOT: 5
+      LORE:
+      - '&7Show confirmation GUI for TPA'
+      - '&fCurrently: {status}'
+    QUICK_AUCTION_PURCHASE:
+      DISPLAY-NAME: '&#6BF18DQuick Auction Purchase'
+      MATERIAL: GOLD_NUGGET
+      SLOT: 9
+      LORE:
+      - '&7Fast buy auction items directly'
+      - '&fCurrently: {status}'
+    DESTROY_PEARL_ON_DEATH:
+      DISPLAY-NAME: '&#6BF18DDestroy Pearl on Death'
+      MATERIAL: ENDER_PEARL
+      SLOT: 10
+      LORE:
+      - '&7Destroy thrown ender pearls when you die'
+      - '&fCurrently: {status}'
+    PAY_CONFIRM_MENUS:
+      DISPLAY-NAME: '&#6BF18DPay Confirm Menus'
+      MATERIAL: OAK_SIGN
+      SLOT: 11
+      LORE:
+      - '&7Show confirmation GUI for payments'
+      - '&fCurrently: {status}'
+    AUTO_CONFIRM_TPAS:
+      DISPLAY-NAME: '&bTp Auto'
+      MATERIAL: ACACIA_SIGN
       SLOT: 12
-    # Configuration section for Hotbar Messages.
+      LORE:
+      - '&7Auto-confirm teleport requests'
+      - '&fCurrently: {status}'
     HOTBAR_MESSAGES:
-      DISPLAY-NAME: '&bHotbar Messages'
+      DISPLAY-NAME: '&#6BF18DHotbar Messages'
       MATERIAL: PAPER
       SLOT: 13
-    # Configuration section for Clear Entities Messages.
-    CLEAR_ENTITIES_MESSAGES:
-      DISPLAY-NAME: '&bClear Entities Messages'
-      MATERIAL: PAPER
+      LORE:
+      - '&7Show action bar status notifications'
+      - '&fCurrently: {status}'
+    NOTIFICATION_SOUNDS:
+      DISPLAY-NAME: '&#6BF18DNotification Sounds'
+      MATERIAL: NOTE_BLOCK
       SLOT: 14
-    # Configuration section for Bounty Alerts.
-    BOUNTY_ALERTS:
-      DISPLAY-NAME: '&bBounty Alerts'
-      MATERIAL: PAPER
+      LORE:
+      - '&7Play notification sounds'
+      - '&fCurrently: {status}'
+    FOLLOW_ALERT_SETTINGS:
+      DISPLAY-NAME: '&#6BF18DFollow Alerts'
+      MATERIAL: PLAYER_HEAD
       SLOT: 15
-    # Configuration section for Amethyst Break Messages.
-    AMETHYST_BREAK_MESSAGES:
-      DISPLAY-NAME: '&bAmethyst Break Messages'
-      MATERIAL: PAPER
-      SLOT: 16
-    # Configuration section for Key All Notifications.
-    KEY_ALL_NOTIFICATIONS:
-      DISPLAY-NAME: '&bKey All Notifications'
-      MATERIAL: PAPER
-      SLOT: 19
-    # Configuration section for Chainmail On Respawn.
+      LORE:
+      - '&7Notify when players follow you'
+      - '&fCurrently: {status}'
+    DISPLAY_DONUT_PLUS:
+      DISPLAY-NAME: '&#6BF18DDisplay Donut+'
+      MATERIAL: END_CRYSTAL
+      SLOT: 18
+      LORE:
+      - '&7Display your premium Donut+ status'
+      - '&fCurrently: {status}'
     CHAINMAIL_ON_RESPAWN:
-      DISPLAY-NAME: '&bChainmail on Respawn'
-      MATERIAL: PAPER
+      DISPLAY-NAME: '&#6BF18DChainmail on Respawn'
+      MATERIAL: TOTEM_OF_UNDYING
+      SLOT: 19
+      LORE:
+      - '&7Receive respawn starter gear'
+      - '&fCurrently: {status}'
+    EXPLOSION_PARTICLES:
+      DISPLAY-NAME: '&#6BF18DExplosion Particles'
+      MATERIAL: TNT
       SLOT: 20
-    SCOREBOARD_VISIBILITY:
-      DISPLAY-NAME: '&#6BF18Dѕᴄᴏʀᴇʙᴏᴀʀᴅ ᴠɪѕɪʙɪʟɪᴛʏ'
-      MATERIAL: LECTERN
+      LORE:
+      - '&7Show explosion particles'
+      - '&fCurrently: {status}'
+    EXPLOSION_SOUNDS:
+      DISPLAY-NAME: '&#6BF18DExplosion Sounds'
+      MATERIAL: GOAT_HORN
       SLOT: 21
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Tpa Confirm Menus.
-    TPA_CONFIRM_MENUS:
-      DISPLAY-NAME: '&#6BF18Dᴛᴘᴀ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜѕ'
+      - '&7Play explosion sound effects'
+      - '&fCurrently: {status}'
+    TELEPORT_ALERTS:
+      DISPLAY-NAME: '&#6BF18DTeleport Alerts'
       MATERIAL: FEATHER
       SLOT: 22
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Lunar Teammates.
-    LUNAR_TEAMMATES:
-      DISPLAY-NAME: '&#6BF18Dʟᴜɴᴀʀ ᴛᴇᴀᴍᴍᴀᴛᴇѕ'
-      MATERIAL: BLUE_CANDLE
+      - '&7Sound and message alerts for TPA'
+      - '&fCurrently: {status}'
+    FAST_CRYSTALS:
+      DISPLAY-NAME: '&#6BF18DFast Crystals'
+      MATERIAL: DIAMOND
       SLOT: 23
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Tpa Requests.
-    TPA_REQUESTS:
-      DISPLAY-NAME: '&#6BF18Dᴛᴘᴀ ʀᴇǫᴜᴇѕᴛѕ'
-      MATERIAL: ENDER_PEARL
+      - '&7Faster end crystal placement speed'
+      - '&fCurrently: {status}'
+    RANDOMIZED_COORDS:
+      DISPLAY-NAME: '&#6BF18DRandomized Coords'
+      MATERIAL: COMPASS
       SLOT: 24
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Tpa Here Requests.
-    TPA_HERE_REQUESTS:
-      DISPLAY-NAME: '&#6BF18Dᴛᴘᴀ ʜᴇʀᴇ ʀᴇǫᴜᴇѕᴛѕ'
-      MATERIAL: ENDER_EYE
-      SLOT: 25
+      - '&7Show randomized coords on HUD (Kick on toggle)'
+      - '&fCurrently: {status}'
+    TPA_REQUESTS:
+      DISPLAY-NAME: '&#6BF18DTpa Requests'
+      MATERIAL: ENDER_PEARL
+      SLOT: 27
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Team Invites.
-    TEAM_INVITES:
-      DISPLAY-NAME: '&#6BF18Dᴛᴇᴀᴍ ɪɴᴠɪᴛᴇѕ'
-      MATERIAL: SHIELD
+      - '&7Teleport requests privacy settings'
+      - '&fCurrently: {status}'
+    TPA_HERE_REQUESTS:
+      DISPLAY-NAME: '&#6BF18DTpa Here Requests'
+      MATERIAL: ENDER_EYE
       SLOT: 28
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Payments.
+      - '&7Teleport-here requests privacy settings'
+      - '&fCurrently: {status}'
     PAYMENTS:
-      DISPLAY-NAME: '&#6BF18Dᴘᴀʏᴍᴇɴᴛѕ'
+      DISPLAY-NAME: '&#6BF18DPayments'
       MATERIAL: EMERALD
       SLOT: 29
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Team Chat.
-    TEAM_CHAT:
-      DISPLAY-NAME: '&#6BF18Dᴛᴇᴀᴍ ᴄʜᴀᴛ'
-      MATERIAL: BELL
+      - '&7Incoming payments privacy settings'
+      - '&fCurrently: {status}'
+    WORTH_DISPLAY:
+      DISPLAY-NAME: '&#6BF18DWorth Display'
+      MATERIAL: NETHERITE_SCRAP
       SLOT: 30
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Disable Mob Spawn.
-    DISABLE_MOB_SPAWN:
-      DISPLAY-NAME: '&#6BF18Dᴅɪѕᴀʙʟᴇ ᴍᴏʙ ѕᴘᴀᴡɴѕ'
-      MATERIAL: ZOMBIE_HEAD
+      - '&7Show item worth values in item lore'
+      - '&fCurrently: {status}'
+    JOIN_LEAVE_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DJoin/Leave Messages'
+      MATERIAL: PAPER
       SLOT: 31
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Disable Phantom Spawn.
-    DISABLE_PHANTOM_SPAWN:
-      DISPLAY-NAME: '&#6BF18Dᴅɪѕᴀʙʟᴇ ᴘʜᴀɴᴛᴏᴍ ѕᴘᴀᴡɴ'
-      MATERIAL: PHANTOM_MEMBRANE
+      - '&7Show join and leave notifications'
+      - '&fCurrently: {status}'
+    PAY_ALERTS:
+      DISPLAY-NAME: '&#6BF18DPay Alerts'
+      MATERIAL: PAPER
       SLOT: 32
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Pay Confirm Menus.
-    PAY_CONFIRM_MENUS:
-      DISPLAY-NAME: '&#6BF18Dᴘᴀʏ ᴄᴏɴꜰɪʀᴍ ᴍᴇɴᴜѕ'
-      MATERIAL: PAPER
-      SLOT: 33
+      - '&7Receive pay alerts'
+      - '&fCurrently: {status}'
+    ADVANCEMENT_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DAdvancement Messages'
+      MATERIAL: LECTERN
+      SLOT: 36
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Totem Particles.
-    TOTEM_PARTICLES:
-      DISPLAY-NAME: '&#6BF18Dᴛᴏᴛᴇᴍ ᴘᴀʀᴛɪᴄʟᴇѕ'
-      MATERIAL: TOTEM_OF_UNDYING
-      SLOT: 39
-      LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Fast Crystals.
-    FAST_CRYSTALS:
-      DISPLAY-NAME: '&#6BF18Dꜰᴀѕᴛ ᴄʀʏѕᴛᴀʟѕ'
-      MATERIAL: END_CRYSTAL
+      - '&7Show advancement achievement notifications'
+      - '&fCurrently: {status}'
+    AUCTION_NOTIFICATIONS:
+      DISPLAY-NAME: '&#6BF18DAuction Alerts'
+      MATERIAL: GOLD_INGOT
       SLOT: 37
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Worth Display.
-    WORTH_DISPLAY:
-      DISPLAY-NAME: '&#6BF18Dᴡᴏʀᴛʜ ᴅɪѕᴘʟᴀʏ'
-      MATERIAL: LIME_CANDLE
+      - '&7Notify when items are bought/sold'
+      - '&fCurrently: {status}'
+    AMETHYST_BREAK_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DAmethyst Break Messages'
+      MATERIAL: AMETHYST_SHARD
       SLOT: 38
       LORE:
-      - '&fᴄᴜʀʀᴇɴᴛʟʏ: {status}'
-    # Configuration section for Public Chat.
-    PUBLIC_CHAT:
-      SLOT: 1
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&bPublic Chat'
-    PRIVATE_MESSAGES:
-      SLOT: 2
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&bPrivate Messages'
-    SERVER_BROADCASTS:
-      SLOT: 3
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&bServer Broadcasts'
-    # Configuration section for Auction Notifications.
-    AUCTION_NOTIFICATIONS:
-      SLOT: 4
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&bAuction Notifications'
-    # Configuration section for Rtp Coordinates.
-    RTP_COORDINATES:
-      SLOT: 11
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&bRTP Coordinates'
-    # Configuration section for Explosion Particles.
-    EXPLOSION_PARTICLES:
-      SLOT: 5
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DExplosion Particles'
-    # Configuration section for Quick Auction Purchase.
-    QUICK_AUCTION_PURCHASE:
-      SLOT: 6
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DQuick Auction Purchase'
-    # Configuration section for Hide All Players.
-    HIDE_ALL_PLAYERS:
-      SLOT: 7
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DHide All Players'
-    # Configuration section for Notification Sounds.
-    NOTIFICATION_SOUNDS:
-      SLOT: 10
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DNotification Sounds'
-    # Configuration section for Auto Confirm Tpas.
-    AUTO_CONFIRM_TPAS:
-      SLOT: 34
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DAuto Confirm Tpas'
-    # Configuration section for Duel Requests.
+      - '&7Show message when amethyst cluster breaks'
+      - '&fCurrently: {status}'
     DUEL_REQUESTS:
-      SLOT: 40
-      MATERIAL: PAPER
       DISPLAY-NAME: '&#6BF18DDuel Requests'
-    # Configuration section for Order Notifications.
-    ORDER_NOTIFICATIONS:
+      MATERIAL: IRON_SWORD
+      SLOT: 39
+      LORE:
+      - '&7Receive incoming duel requests'
+      - '&fCurrently: {status}'
+    DEATH_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DDeath Messages'
+      MATERIAL: SKELETON_SKULL
+      SLOT: 40
+      LORE:
+      - '&7Show death message notifications'
+      - '&fCurrently: {status}'
+    KEY_ALL_NOTIFICATIONS:
+      DISPLAY-NAME: '&#6BF18DKey All Notifications'
+      MATERIAL: CLOCK
       SLOT: 41
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DOrder Notifications'
-    # Configuration section for Team Chat Visibility.
-    TEAM_CHAT_VISIBILITY:
-      SLOT: 42
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DTeam Chat Visibility'
-    # Configuration section for Duel Music.
-    DUEL_MUSIC:
-      SLOT: 43
-      MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DDuel Music'
-    # Configuration section for Quiet Spawn.
-    QUIET_SPAWN:
+      LORE:
+      - '&7Show key-all event notifications'
+      - '&fCurrently: {status}'
+    QUICK_AUCTION_SELL:
+      DISPLAY-NAME: '&#6BF18DQuick Auction Sell'
+      MATERIAL: GOLD_INGOT
+      SLOT: 45
+      LORE:
+      - '&7Fast sell items to auction house'
+      - '&fCurrently: {status}'
+    ORDER_NOTIFICATIONS:
+      DISPLAY-NAME: '&#6BF18DOrder Alerts'
+      MATERIAL: GOLD_BLOCK
       SLOT: 46
+      LORE:
+      - '&7Notify when order transactions occur'
+      - '&fCurrently: {status}'
+    DISABLE_MOB_SPAWN:
+      DISPLAY-NAME: '&#6BF18DDisable Mob Spawns'
+      MATERIAL: ZOMBIE_HEAD
+      SLOT: 47
+      LORE:
+      - '&7Prevent mobs spawning around you'
+      - '&fCurrently: {status}'
+    DISABLE_PHANTOM_SPAWN:
+      DISPLAY-NAME: '&#6BF18DDisable Phantom Spawn'
+      MATERIAL: PHANTOM_MEMBRANE
+      SLOT: 48
+      LORE:
+      - '&7Prevent phantoms spawning above you'
+      - '&fCurrently: {status}'
+    NIGHT_VISION:
+      DISPLAY-NAME: '&#6BF18DNight Vision'
+      MATERIAL: GOLDEN_CARROT
+      SLOT: 49
+      LORE:
+      - '&7Permanent night vision effect'
+      - '&fCurrently: {status}'
+    BOUNTY_ALERTS:
+      DISPLAY-NAME: '&#6BF18DBounty Alerts'
       MATERIAL: PAPER
-      DISPLAY-NAME: '&#6BF18DQuiet Spawn'
-# Configuration section for Leaderboards Menu.
+      SLOT: 50
+      LORE:
+      - '&7Notify when bounties are set/claimed'
+      - '&fCurrently: {status}'
 LEADERBOARDS-MENU:
-  TITLE: '&8ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ'
+  TITLE: '&8Leaderboards'
   SIZE: 36
-  # Configuration section for Type Menu.
   TYPE-MENU:
     TITLE: '&8{type}'
     SIZE: 54
@@ -1077,135 +848,106 @@ LEADERBOARDS-MENU:
       MATERIAL: PLAYER_HEAD
       DISPLAY-NAME: '&#6BF18D{player}'
       LORE: '&f{type}: &7{value} &#6BF18D(#{position})'
-  # Configuration section for Type Names.
   TYPE-NAMES:
-    # The text or value for Money. Available options: Any valid string text
     money: Money
-    # The text or value for Moneyspent. Available options: Any valid string text
     moneySpent: Money Spent
-    # The text or value for Moneymade. Available options: Any valid string text
     moneyMade: Money Made
-    # The text or value for Kills. Available options: Any valid string text
     kills: Kills
-    # The text or value for Deaths. Available options: Any valid string text
     deaths: Deaths
-    # The text or value for Playtime. Available options: Any valid string text
     playtime: Playtime
-    # The text or value for Blocksplaced. Available options: Any valid string text
     blocksPlaced: Blocks Placed
-    # The text or value for Blocksbroken. Available options: Any valid string text
     blocksBroken: Blocks Broken
-    # The text or value for Mobskilled. Available options: Any valid string text
     mobsKilled: Mobs Killed
-    # The text or value for Killstreak. Available options: Any valid string text
     killStreak: Kill Streak
-    # The text or value for Highestkillstreak. Available options: Any valid string text
     highestKillStreak: Highest Kill Streak
-    # The text or value for Shards. Available options: Any valid string text
     shards: Shards
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Money.
     MONEY:
       TYPE: money
-      DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DMoney Leaderboard'
       MATERIAL: EMERALD
       SLOT: 10
       LORE:
-      - '&fClick to view ᴍᴏɴᴇʏ leaderboard'
-    # Configuration section for Shards.
+      - '&fClick to view MONEY leaderboard'
     SHARDS:
       TYPE: shards
-      DISPLAY-NAME: '&#6BF18Dѕʜᴀʀᴅѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DShards Leaderboard'
       MATERIAL: AMETHYST_SHARD
       SLOT: 11
       LORE:
-      - '&fClick to view ѕʜᴀʀᴅѕ leaderboard'
-    # Configuration section for Kills.
+      - '&fClick to view SHARDS leaderboard'
     KILLS:
       TYPE: kills
-      DISPLAY-NAME: '&#6BF18Dᴋɪʟʟѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DKills Leaderboard'
       MATERIAL: DIAMOND_SWORD
       SLOT: 12
       LORE:
-      - '&fClick to view ᴋɪʟʟѕ leaderboard'
-    # Configuration section for Deaths.
+      - '&fClick to view KILLS leaderboard'
     DEATHS:
       TYPE: deaths
-      DISPLAY-NAME: '&#6BF18Dᴅᴇᴀᴛʜѕ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DDeaths Leaderboard'
       MATERIAL: SKELETON_SKULL
       SLOT: 13
       LORE:
-      - '&fClick to view ᴅᴇᴀᴛʜѕ leaderboard'
-    # Configuration section for Playtime.
+      - '&fClick to view DEATHS leaderboard'
     PLAYTIME:
       TYPE: playtime
-      DISPLAY-NAME: '&#6BF18Dᴘʟᴀʏᴛɪᴍᴇ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DPlaytime Leaderboard'
       MATERIAL: CLOCK
       SLOT: 14
       LORE:
-      - '&fClick to view ᴘʟᴀʏᴛɪᴍᴇ leaderboard'
-    # Configuration section for Blocks Placed.
+      - '&fClick to view PLAYTIME leaderboard'
     BLOCKS_PLACED:
       TYPE: blocksPlaced
-      DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DBlocks Placed Leaderboard'
       MATERIAL: STONE
       SLOT: 15
       LORE:
-      - '&fClick to view ʙʟᴏᴄᴋѕ ᴘʟᴀᴄᴇᴅ leaderboard'
-    # Configuration section for Blocks Broken.
+      - '&fClick to view BLOCKS PLACED leaderboard'
     BLOCKS_BROKEN:
       TYPE: blocksBroken
-      DISPLAY-NAME: '&#6BF18Dʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DBlocks Broken Leaderboard'
       MATERIAL: COBBLESTONE
       SLOT: 16
       LORE:
-      - '&fClick to view ʙʟᴏᴄᴋѕ ʙʀᴏᴋᴇɴ leaderboard'
-    # Configuration section for Mobs Killed.
+      - '&fClick to view BLOCKS BROKEN leaderboard'
     MOBS_KILLED:
       TYPE: mobsKilled
-      DISPLAY-NAME: '&#6BF18Dᴍᴏʙѕ ᴋɪʟʟᴇᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DMobs Killed Leaderboard'
       MATERIAL: ZOMBIE_HEAD
       SLOT: 19
       LORE:
-      - '&fClick to view ᴍᴏʙѕ ᴋɪʟʟᴇᴅ leaderboard'
-    # Configuration section for Kill Streak.
+      - '&fClick to view MOBS KILLED leaderboard'
     KILL_STREAK:
       TYPE: killStreak
-      DISPLAY-NAME: '&#6BF18Dᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DKill Streak Leaderboard'
       MATERIAL: DIAMOND_AXE
       SLOT: 20
       LORE:
-      - '&fClick to view ᴋɪʟʟ ѕᴛʀᴇᴀᴋ leaderboard'
-    # Configuration section for Highest Kill Streak.
+      - '&fClick to view KILL STREAK leaderboard'
     HIGHEST_KILL_STREAK:
       TYPE: highestKillStreak
-      DISPLAY-NAME: '&#6BF18Dʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ'
+      DISPLAY-NAME: '&#6BF18DHighest Kill Streak Leaderboard'
       MATERIAL: NETHERITE_SWORD
       SLOT: 21
       LORE:
-      - '&fClick to view ʜɪɢʜᴇѕᴛ ᴋɪʟʟ ѕᴛʀᴇᴀᴋ leaderboard'
-    # Configuration section for Money Spent.
+      - '&fClick to view HIGHEST KILL STREAK leaderboard'
     MONEY_SPENT:
       TYPE: moneySpent
-      DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ'
+      DISPLAY-NAME: '&#6BF18DMoney Spent On Shop'
       MATERIAL: GOLD_NUGGET
       SLOT: 22
       LORE:
-      - '&fClick to view ᴍᴏɴᴇʏ ѕᴘᴇɴᴛ ᴏɴ ѕʜᴏᴘ leaderboard'
-    # Configuration section for Money Made.
+      - '&fClick to view MONEY SPENT ON SHOP leaderboard'
     MONEY_MADE:
       TYPE: moneyMade
-      DISPLAY-NAME: '&#6BF18Dᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /ѕᴇʟʟ'
+      DISPLAY-NAME: '&#6BF18DMoney Made On /Sell'
       MATERIAL: IRON_NUGGET
       SLOT: 23
       LORE:
-      - '&fClick to view ᴍᴏɴᴇʏ ᴍᴀᴅᴇ ᴏɴ /ѕᴇʟʟ leaderboard'
-# Configuration section for Progress Menu.
+      - '&fClick to view MONEY MADE ON /SELL leaderboard'
 PROGRESS-MENU:
-  # The text or value for Progress Bar. Available options: Any valid string text
-  PROGRESS-BAR: ■
-  # Configuration section for Level.
+  PROGRESS-BAR: "■"
   LEVEL:
   - 25000
   - 150000
@@ -1228,308 +970,236 @@ PROGRESS-MENU:
   - 320000000000
   - 640000000000
   TITLE:
-    # The text or value for Crops. Available options: Any valid string text
-    CROPS: '&8ᴄʀᴏᴘѕ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Ores. Available options: Any valid string text
-    ORES: '&8ᴏʀᴇ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Mobs. Available options: Any valid string text
-    MOBS: '&8ᴍᴏʙ ᴅʀᴏᴘѕ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Natural. Available options: Any valid string text
-    NATURAL: '&8ɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Armor And Tools. Available options: Any valid string text
-    ARMOR_AND_TOOLS: '&8ᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Fish. Available options: Any valid string text
-    FISH: '&8ꜰɪѕʜ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Book. Available options: Any valid string text
-    BOOK: '&8ᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Potions. Available options: Any valid string text
-    POTIONS: '&8ᴘᴏᴛɪᴏɴѕ ᴘʀᴏɢʀᴇѕѕ'
-    # The text or value for Blocks. Available options: Any valid string text
-    BLOCKS: '&8ʙʟᴏᴄᴋѕ ᴘʀᴏɢʀᴇѕѕ'
-  # Configuration section for Type Button.
+    CROPS: '&8CROPS PROGRESS'
+    ORES: '&8ORE PROGRESS'
+    MOBS: '&8MOB DROPS PROGRESS'
+    NATURAL: '&8NATURAL ITEMS PROGRESS'
+    ARMOR_AND_TOOLS: '&8ARMOR AND TOOLS PROGRESS'
+    FISH: '&8FISH PROGRESS'
+    BOOK: '&8ENCHANTED BOOK PROGRESS'
+    POTIONS: '&8POTIONS PROGRESS'
+    BLOCKS: '&8BLOCKS PROGRESS'
   TYPE-BUTTON:
     TITLE:
-      # The text or value for Crops. Available options: Any valid string text
-      CROPS: '&#6BF18Dᴄʀᴏᴘѕ'
-      # The text or value for Ores. Available options: Any valid string text
-      ORES: '&#6BF18Dᴏʀᴇ'
-      # The text or value for Mobs. Available options: Any valid string text
-      MOBS: '&#6BF18Dᴍᴏʙ'
-      # The text or value for Natural. Available options: Any valid string text
-      NATURAL: '&#6BF18Dɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ'
-      # The text or value for Armor And Tools. Available options: Any valid string text
-      ARMOR_AND_TOOLS: '&#6BF18Dᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ'
-      # The text or value for Fish. Available options: Any valid string text
-      FISH: '&#6BF18Dꜰɪѕʜ'
-      # The text or value for Book. Available options: Any valid string text
-      BOOK: '&#6BF18Dᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ'
-      # The text or value for Potions. Available options: Any valid string text
-      POTIONS: '&#6BF18Dᴘᴏᴛɪᴏɴѕ'
-      # The text or value for Blocks. Available options: Any valid string text
-      BLOCKS: '&#6BF18Dʙʟᴏᴄᴋѕ'
+      CROPS: '&#6BF18DCROPS'
+      ORES: '&#6BF18DORE'
+      MOBS: '&#6BF18DMOB'
+      NATURAL: '&#6BF18DNATURAL ITEMS'
+      ARMOR_AND_TOOLS: '&#6BF18DARMOR AND TOOLS'
+      FISH: '&#6BF18DFISH'
+      BOOK: '&#6BF18DENCHANTED BOOK'
+      POTIONS: '&#6BF18DPOTIONS'
+      BLOCKS: '&#6BF18DBLOCKS'
     LORE:
-      # Configuration section for Crops.
       CROPS:
       - '&7Sell crops and farming materials to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Ores.
       ORES:
       - '&7Sell ores and mining materials to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Mobs.
       MOBS:
       - '&7Sell mob drops and combat materials to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Natural.
       NATURAL:
       - '&7Sell natural materials and trees to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Armor And Tools.
       ARMOR_AND_TOOLS:
       - '&7Sell armor and tools to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Fish.
       FISH:
       - '&7Sell fish and other fishing loot to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Book.
       BOOK:
       - '&7Sell books and enchanted books to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Potions.
       POTIONS:
       - '&7Sell potions and brewing materials to'
       - '&7upgrade your sell multiplier!'
-      # Configuration section for Blocks.
       BLOCKS:
       - '&7Sell blocks and placeable items to'
       - '&7upgrade your sell multiplier!'
     MATERIAL:
-      # The text or value for Crops. Available options: Any valid string text
       CROPS: WHEAT
-      # The text or value for Ores. Available options: Any valid string text
       ORES: DIAMOND
-      # The text or value for Mobs. Available options: Any valid string text
       MOBS: BONE
-      # The text or value for Natural. Available options: Any valid string text
       NATURAL: OAK_LEAVES
-      # The text or value for Armor And Tools. Available options: Any valid string text
       ARMOR_AND_TOOLS: NETHERITE_HELMET
-      # The text or value for Fish. Available options: Any valid string text
       FISH: TROPICAL_FISH
-      # The text or value for Book. Available options: Any valid string text
       BOOK: BOOK
-      # The text or value for Potions. Available options: Any valid string text
       POTIONS: BREWING_STAND
-      # The text or value for Blocks. Available options: Any valid string text
       BLOCKS: BRICK
-  # Configuration section for Working Button.
   WORKING-BUTTON:
-    TITLE: '&eᴡᴏʀᴋɪɴɢ'
+    TITLE: '&eWorking'
     MATERIAL: YELLOW_STAINED_GLASS_PANE
     LORE:
-    - '{porcentage_level} &f{next_multiplier} {porcentage}%'
-    - '&7{current_earned}/{next_goal}'
-  # Configuration section for Completed Button.
+    - '{porcentage_level} &f{neXt_multiplier} {porcentage}%'
+    - '&7{current_earned}/{neXt_goal}'
   COMPLETED-BUTTON:
-    TITLE: '&aᴄᴏᴍᴘʟᴇᴛᴇᴅ'
+    TITLE: '&aCompleted'
     MATERIAL: LIME_STAINED_GLASS_PANE
     LORE:
-    - '{porcentage_level} &f{next_multiplier} {porcentage}%'
-    - '&7{current_earned}/{next_goal}'
-# Configuration section for Sell Menu.
+    - '{porcentage_level} &f{neXt_multiplier} {porcentage}%'
+    - '&7{current_earned}/{neXt_goal}'
 SELL-MENU:
-  TITLE: '&8ᴘʟᴀᴄᴇ ɪᴛᴇᴍѕ ɪɴ ʜᴇʀᴇ ᴛᴏ ѕᴇʟʟ'
-  # The text or value for Multiplier Title. Available options: Any valid string text
-  MULTIPLIER-TITLE: '&8ѕᴇʟʟ ᴍᴜʟᴛɪᴘʟɪᴇʀѕ'
-  # Configuration section for Crops Button.
+  TITLE: '&8Place Items In Here To Sell'
+  MULTIPLIER-TITLE: '&8Sell Multipliers'
   CROPS-BUTTON:
     MATERIAL: WHEAT
-    TITLE: '&#6BF18Dᴄʀᴏᴘѕ'
+    TITLE: '&#6BF18DCrops'
     LORE:
     - '&7Sell crops and farming materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Ores Button.
   ORES-BUTTON:
     MATERIAL: DIAMOND
-    TITLE: '&#6BF18Dᴏʀᴇѕ'
+    TITLE: '&#6BF18DOres'
     LORE:
     - '&7Sell ores and mining materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Mobs Button.
   MOBS-BUTTON:
     MATERIAL: BONE
-    TITLE: '&#6BF18Dᴍᴏʙѕ'
+    TITLE: '&#6BF18DMobs'
     LORE:
     - '&7Sell mob drops and combat materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Natural Button.
   NATURAL-BUTTON:
     MATERIAL: OAK_LEAVES
-    TITLE: '&#6BF18Dɴᴀᴛᴜʀᴀʟ ɪᴛᴇᴍѕ'
+    TITLE: '&#6BF18DNatural Items'
     LORE:
     - '&7Sell natural materials and trees to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Armor And Tools Button.
   ARMOR-AND-TOOLS-BUTTON:
     MATERIAL: NETHERITE_HELMET
-    TITLE: '&#6BF18Dᴀʀᴍᴏʀ ᴀɴᴅ ᴛᴏᴏʟѕ'
+    TITLE: '&#6BF18DArmor And Tools'
     LORE:
     - '&7Sell armor and tools to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Fish Button.
   FISH-BUTTON:
     MATERIAL: TROPICAL_FISH
-    TITLE: '&#6BF18Dꜰɪѕʜ'
+    TITLE: '&#6BF18DFish'
     LORE:
     - '&7Sell fish and other fishing loot to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Book Button.
   BOOK-BUTTON:
     MATERIAL: BOOK
-    TITLE: '&#6BF18Dᴇɴᴄʜᴀɴᴛᴇᴅ ʙᴏᴏᴋ'
+    TITLE: '&#6BF18DEnchanted Book'
     LORE:
     - '&7Sell books and enchanted books to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Potions Button.
   POTIONS-BUTTON:
     MATERIAL: BREWING_STAND
-    TITLE: '&#6BF18Dᴘᴏᴛɪᴏɴѕ'
+    TITLE: '&#6BF18DPotions'
     LORE:
     - '&7Sell potions and brewing materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-  # Configuration section for Blocks Button.
   BLOCKS-BUTTON:
     MATERIAL: BRICK
-    TITLE: '&#6BF18Dʙʟᴏᴄᴋѕ'
+    TITLE: '&#6BF18DBlocks'
     LORE:
     - '&7Sell blocks and placeable items to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'
+    - '&7Progress to &f{neXt_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
-# Configuration section for Worth Menu.
 WORTH-MENU:
-  TITLE: '&8ɪᴛᴇᴍ ᴘʀɪᴄᴇѕ'
-  # The text or value for Format. Available options: Any valid string text
+  TITLE: '&8Item Prices'
   FORMAT: '&7Worth: &a${price}'
-  # Configuration section for Sort Button.
   SORT-BUTTON:
     TITLE: '&aSort'
     MATERIAL: CAULDRON
-# Configuration section for Tpa Confirm Menu.
 TPA-CONFIRM-MENU:
-  TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴛᴘᴀ {here}'
+  TITLE: '&8Confirm TPA {here}'
   SIZE: 27
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Cancel.
     CANCEL:
       MATERIAL: RED_STAINED_GLASS_PANE
-      NAME: '&cᴄᴀɴᴄᴇʟ'
+      NAME: '&cCancel'
       LORE:
-      - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ'
-    # Configuration section for Confirm.
+      - '&fCLICK TO CANCEL'
     CONFIRM:
       MATERIAL: LIME_STAINED_GLASS_PANE
-      NAME: '&aᴄᴏɴꜰɪʀᴍ'
+      NAME: '&aConfirm'
       LORE:
-      - '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ'
-    # Configuration section for Player.
+      - '&fCLICK TO CONFIRM'
     PLAYER:
       MATERIAL: PLAYER_HEAD
-      NAME: '&#00FC00ᴘʟᴀʏᴇʀ'
+      NAME: '&#00FC00Player'
       LORE:
       - '&7{player}'
-    # Configuration section for Location.
     LOCATION:
-      NAME: '&#6BF18Dʟᴏᴄᴀᴛɪᴏɴ'
+      NAME: '&#6BF18DLocation'
       MATERIAL: GRASS_BLOCK
       LORE:
       - '&7{world}'
-    # Configuration section for Region.
     REGION:
-      NAME: '&#6BF18Dʀᴇɢɪᴏɴ'
+      NAME: '&#6BF18DRegion'
       MATERIAL: FEATHER
       LORE:
       - '&7NA East (&#0069D6${ping}ms&7)'
-# Configuration section for Bounties Menu.
 BOUNTIES-MENU:
-  TITLE: '&8ʙᴏᴜɴᴛɪᴇѕ'
+  TITLE: '&8Bounties'
   SIZE: 54
-  # The numerical value for Max Items Per Page. Available options: Any valid integer
   MAX-ITEMS-PER-PAGE: 45
-  # Configuration section for Bounty Button.
   BOUNTY-BUTTON:
     MATERIAL: PLAYER_HEAD
     NAME: '&#6BF18D{player}'
     LORE:
     - '&fBounty: &7${price}'
-  # Configuration section for Refresh Button.
   REFRESH-BUTTON:
     SLOT: 49
     MATERIAL: SKELETON_SKULL
-    NAME: '&#6BF18Dʙᴏᴜɴᴛɪᴇѕ'
+    NAME: '&#6BF18DBounties'
     LORE:
     - '&fClick to refresh'
     - ''
     - '&7Set a bounty using this:'
     - '&7/bounty add (player) (amount)'
-# Configuration section for Bounty Confirm Menu.
 BOUNTY-CONFIRM-MENU:
-  TITLE: '&8ᴄᴏɴꜰɪʀᴍ ʙᴏᴜɴᴛʏ'
+  TITLE: '&8Confirm Bounty'
   SIZE: 27
-  # Configuration section for Cancel Button.
   CANCEL-BUTTON:
     MATERIAL: RED_STAINED_GLASS_PANE
-    NAME: '&#FC0000ᴄᴀɴᴄᴇʟ'
+    NAME: '&#FC0000Cancel'
     LORE:
     - '&7Click to cancel the bounty adding!'
-  # Configuration section for Player Button.
   PLAYER-BUTTON:
     MATERIAL: PLAYER_HEAD
     NAME: '&#00FC00{player}'
     LORE:
     - '&fYou''re going to set &#00FC00{amount}'
-  # Configuration section for Confirm Button.
   CONFIRM-BUTTON:
     MATERIAL: LIME_STAINED_GLASS_PANE
-    NAME: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+    NAME: '&#00FC00Confirm'
     LORE:
     - '&7Click to confirm to add {amount} bounty!'
-# Configuration section for Sell History Menu.
 SELL-HISTORY-MENU:
-  TITLE: '&8ѕᴇʟʟ ʜɪѕᴛᴏʀʏ'
+  TITLE: '&8Sell History'
   SIZE: 54
-  # The numerical value for Max Items Per Page. Available options: Any valid integer
   MAX-ITEMS-PER-PAGE: 45
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Sort.
     SORT:
       MATERIAL: ANVIL
       NAME: '&aSort'
@@ -1538,171 +1208,116 @@ SELL-HISTORY-MENU:
       - ''
       - '&7({sort_state})'
       SLOT: 49
-    # Configuration section for Material Item.
     MATERIAL-ITEM:
       LORE:
       - '&fTotal price: &a{price}'
       - '&fTotal amount: {amount}'
-# Configuration section for Billford Menu.
 BILLFORD-MENU:
-  TITLE: '&8ʙɪʟʟꜰᴏʀᴅ'
+  TITLE: '&8Billford'
   SIZE: 54
-  # Configuration section for Trade Button.
   TRADE-BUTTON:
     MATERIAL:
       NAME: '&aTrade with Billford'
       LORE:
       - ''
-  # Configuration section for Confirm Trade Button.
   CONFIRM-TRADE-BUTTON:
     MATERIAL: HOPPER
-    NAME: '&8ᴛʀᴀᴅᴇ'
+    NAME: '&8Trade'
     LORE:
     - '&fClick to confirm the trade'
     - ''
     - '&7(you need the items in your inventory)'
-# Configuration section for Purchase Shop Menu.
 PURCHASE-SHOP-MENU:
-  TITLE: '&8ᴄᴏɴꜰɪʀᴍᴀᴛɪᴏɴ ᴍᴇɴᴜ'
+  TITLE: '&8Confirmation Menu'
   SIZE: 27
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Main.
     MAIN:
       SLOT: 13
       LORE:
-        # The text or value for Money. Available options: Any valid string text
-        MONEY: '&fʙᴜʏ ᴘʀɪᴄᴇ: &a${price}'
-        # The text or value for Shard. Available options: Any valid string text
-        SHARD: '&fʙᴜʏ ᴘʀɪᴄᴇ: &5${price}x &lShards'
-        # The text or value for Default. Available options: Any valid string text
-        DEFAULT: '&fʙᴜʏ ᴘʀɪᴄᴇ: &a${price}'
-    # Configuration section for Cancel.
+        MONEY: '&fBUY PRICE: &a${price}'
+        SHARD: '&fBUY PRICE: &5${price}X &lShards'
+        DEFAULT: '&fBUY PRICE: &a${price}'
     CANCEL:
       SLOT: 21
       MATERIAL: RED_STAINED_GLASS_PANE
-      NAME: '&cᴄᴀɴᴄᴇʟ'
-      LORE: '&fᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ'
-    # Configuration section for Confirm.
+      NAME: '&cCancel'
+      LORE: '&fCLICK TO CANCEL'
     CONFIRM:
       SLOT: 23
       MATERIAL: LIME_STAINED_GLASS_PANE
-      NAME: '&aᴄᴏɴꜰɪʀᴍ'
-      LORE: '&fᴄʟɪᴄᴋ ᴛᴏ ʙᴜʏ'
-    # Configuration section for Quantity Adjust.
+      NAME: '&aConfirm'
+      LORE: '&fCLICK TO BUY'
     QUANTITY_ADJUST:
-      # Configuration section for Add.
       ADD:
         MATERIAL: LIME_STAINED_GLASS_PANE
-        # Configuration section for Add 1.
         ADD_1:
           SLOT: 15
-          NAME: '&aᴀᴅᴅ 1'
-          # The numerical value for Increment. Available options: Any valid integer
+          NAME: '&aAdd 1'
           INCREMENT: 1
-        # Configuration section for Add 10.
         ADD_10:
           SLOT: 16
-          NAME: '&aᴀᴅᴅ 10'
-          # The numerical value for Increment. Available options: Any valid integer
+          NAME: '&aAdd 10'
           INCREMENT: 10
-        # Configuration section for Set 64.
         SET_64:
           SLOT: 17
-          NAME: '&aѕᴇᴛ ᴛᴏ 64'
-          # The numerical value for Increment. Available options: Any valid integer
+          NAME: '&aSet To 64'
           INCREMENT: 64
-      # Configuration section for Remove.
       REMOVE:
         MATERIAL: RED_STAINED_GLASS_PANE
-        # Configuration section for Remove 1.
         REMOVE_1:
           SLOT: 11
-          NAME: '&cʀᴇᴍᴏᴠᴇ 1'
-          # The numerical value for Decrement. Available options: Any valid integer
+          NAME: '&cRemove 1'
           DECREMENT: 1
-        # Configuration section for Remove 10.
         REMOVE_10:
           SLOT: 10
-          NAME: '&cʀᴇᴍᴏᴠᴇ 10'
-          # The numerical value for Decrement. Available options: Any valid integer
+          NAME: '&cRemove 10'
           DECREMENT: 10
-        # Configuration section for Remove 64.
         REMOVE_64:
           SLOT: 9
-          NAME: '&cʀᴇᴍᴏᴠᴇ 64'
-          # The numerical value for Decrement. Available options: Any valid integer
+          NAME: '&cRemove 64'
           DECREMENT: 64
-  # Configuration section for Restrictions.
   RESTRICTIONS:
-    # Configuration section for Totem Of Undying.
     TOTEM_OF_UNDYING:
-      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX_QUANTITY: 1
-      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN_QUANTITY: 1
-      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE_QUANTITY_BUTTONS: true
-    # Configuration section for Ender Pearl.
     ENDER_PEARL:
-      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX_QUANTITY: 16
-      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN_QUANTITY: 1
-    # Configuration section for Default.
     DEFAULT:
-      # The numerical value for Max Quantity. Available options: Any valid integer
       MAX_QUANTITY: 64
-      # The numerical value for Min Quantity. Available options: Any valid integer
       MIN_QUANTITY: 1
   MESSAGES:
-    # Configuration section for Success.
     SUCCESS:
-      # The text or value for Money. Available options: Any valid string text
-      MONEY: '&7You bought &e{quantity} {item-name}&7 for &a${amount}'
-      # The text or value for Shards. Available options: Any valid string text
+      MONEY: '&7You bought &e{Quantity} {item-name}&7 for &a${amount}'
       SHARDS: '&7You bought {item-name}&7 for &5{amount} shards'
-    # Configuration section for Error.
     ERROR:
-      # The text or value for No Money. Available options: Any valid string text
-      NO_MONEY: '&cʏᴏᴜ ᴅᴏɴ''ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ.'
-      # The text or value for No Shards. Available options: Any valid string text
-      NO_SHARDS: '&cʏᴏᴜ ᴅᴏɴ''ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ѕʜᴀʀᴅѕ.'
-      # The text or value for Full Inventory. Available options: Any valid string text
-      FULL_INVENTORY: '&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ꜰᴜʟʟ.'
-  # Configuration section for Sounds.
+      NO_MONEY: '&cYOU DON''T HAVE ENOUGH MONEY.'
+      NO_SHARDS: '&cYOU DON''T HAVE ENOUGH SHARDS.'
+      FULL_INVENTORY: '&cYOUR INVENTORY IS FULL.'
   SOUNDS:
-    # The text or value for Success. Available options: Any valid string text
     SUCCESS: ENTITY_EXPERIENCE_ORB_PICKUP
-    # The text or value for Error. Available options: Any valid string text
     ERROR: ENTITY_VILLAGER_NO
-# Configuration section for Pay Confirm Menu.
 PAY-CONFIRM-MENU:
-  TITLE: '&8ᴄᴏɴꜰɪʀᴍ ᴘᴀʏᴍᴇɴᴛ'
+  TITLE: '&8Confirm Payment'
   SIZE: 27
-  # Configuration section for Confirm Button.
   CONFIRM-BUTTON:
-    TITLE: '&#00FC00ᴄᴏɴꜰɪʀᴍ'
+    TITLE: '&#00FC00Confirm'
     MATERIAL: LIME_STAINED_GLASS_PANE
     LORE:
     - '&7Click to confirm to pay {amount}!'
-  # Configuration section for Cancel Button.
   CANCEL-BUTTON:
-    TITLE: '&#FC0000ᴄᴀɴᴄᴇʟ'
+    TITLE: '&#FC0000Cancel'
     MATERIAL: RED_STAINED_GLASS_PANE
     LORE:
     - '&7Click to cancel'
-  # Configuration section for Player Button.
   PLAYER-BUTTON:
     TITLE: '&#00FC00{player}'
     MATERIAL: PLAYER_HEAD
-# Configuration section for Server Info Menu.
 SERVER-INFO-MENU:
-  TITLE: '&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ'
+  TITLE: '&8Server Info'
   SIZE: 27
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Server.
     SERVER:
       MATERIAL: LANTERN
       SLOT: 10
@@ -1714,7 +1329,6 @@ SERVER-INFO-MENU:
       - '&#00A4FCPVP: &cEnabled'
       - '&#00A4FCDifficulty: &cHard'
       - '&#00A4FCkeepInventory: &cFalse'
-    # Configuration section for Economy.
     ECONOMY:
       MATERIAL: GOLD_INGOT
       SLOT: 11
@@ -1724,7 +1338,6 @@ SERVER-INFO-MENU:
       - '&fThis allows you to buy better things like armor and pvp gear.'
       - ''
       - '&#00A4FCCommands: &f/sell and /auction'
-    # Configuration section for Rules.
     RULES:
       MATERIAL: KNOWLEDGE_BOOK
       SLOT: 12
@@ -1734,7 +1347,6 @@ SERVER-INFO-MENU:
       - '&ffollow the rules or be subject to punishment.'
       - ''
       - '&#00A4FCCommand: &f/rules'
-    # Configuration section for Leaderboards.
     LEADERBOARDS:
       MATERIAL: CLOCK
       SLOT: 13
@@ -1744,7 +1356,6 @@ SERVER-INFO-MENU:
       - '&fcompete for the top spots.'
       - ''
       - '&#00A4FCCommand: &f/leaderboards'
-    # Configuration section for Shards.
     SHARDS:
       MATERIAL: AMETHYST_SHARD
       SLOT: 14
@@ -1754,7 +1365,6 @@ SERVER-INFO-MENU:
       - '&fbuy things like spawners, keys, and more.'
       - ''
       - '&#00A4FCCommand: &f/afk'
-    # Configuration section for Settings.
     SETTINGS:
       MATERIAL: GRAY_DYE
       SLOT: 15
@@ -1764,7 +1374,6 @@ SERVER-INFO-MENU:
       - '&fbased on your preferences.'
       - ''
       - '&#00A4FCCommand: &f/settings'
-    # Configuration section for Rtp.
     RTP:
       MATERIAL: OAK_SAPLING
       SLOT: 16
@@ -1773,32 +1382,22 @@ SERVER-INFO-MENU:
       - '&fUse the random teleport to'
       - '&fget far away from spawn.'
       - ''
-      - '&#00A4FCOverworld: &f175k x 175k'
-      - '&#00A4FCNether: &f7.5k x 7.5k'
-      - '&#00A4FCEnd: &f225k x 225k'
+      - '&#00A4FCOverworld: &f175k X 175k'
+      - '&#00A4FCNether: &f7.5k X 7.5k'
+      - '&#00A4FCEnd: &f225k X 225k'
       - ''
       - '&#00A4FCCommand: &f/rtp'
-  # Configuration section for Navigation.
   NAVIGATION:
-    # The numerical value for Back Slot. Available options: Any valid integer
     BACK-SLOT: 18
-    # The numerical value for Page Info Slot. Available options: Any valid integer
     PAGE-INFO-SLOT: 22
-    # The numerical value for Next Slot. Available options: Any valid integer
     NEXT-SLOT: 26
-    # The text or value for Page Info Material. Available options: Any valid string text
     PAGE-INFO-MATERIAL: BOOK
-    # The text or value for Page Info Name. Available options: Any valid string text
     PAGE-INFO-NAME: '&#00A4FCHelp Pages'
-  # Configuration section for Pages.
   PAGES:
-    # Configuration section for '1'.
     '1':
       TITLE: '&8Server Info'
       SIZE: 27
-      # Configuration section for Buttons.
       BUTTONS:
-        # Configuration section for Server.
         SERVER:
           MATERIAL: LANTERN
           SLOT: 10
@@ -1810,7 +1409,6 @@ SERVER-INFO-MENU:
           - '&#00A4FCPVP: &cEnabled'
           - '&#00A4FCDifficulty: &cHard'
           - '&#00A4FCkeepInventory: &cFalse'
-        # Configuration section for Economy.
         ECONOMY:
           MATERIAL: GOLD_INGOT
           SLOT: 11
@@ -1820,7 +1418,6 @@ SERVER-INFO-MENU:
           - '&fThis allows you to buy better things like armor and pvp gear.'
           - ''
           - '&#00A4FCCommands: &f/sell and /auctionhouse'
-        # Configuration section for Rules.
         RULES:
           MATERIAL: KNOWLEDGE_BOOK
           SLOT: 12
@@ -1830,9 +1427,7 @@ SERVER-INFO-MENU:
           - '&ffollow the rules or be subject to punishment.'
           - ''
           - '&#00A4FCCommand: &f/rules'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: rules
-        # Configuration section for Leaderboards.
         LEADERBOARDS:
           MATERIAL: CLOCK
           SLOT: 13
@@ -1842,9 +1437,7 @@ SERVER-INFO-MENU:
           - '&fcompete for the top spots.'
           - ''
           - '&#00A4FCCommand: &f/leaderboards'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: leaderboards
-        # Configuration section for Shards.
         SHARDS:
           MATERIAL: AMETHYST_SHARD
           SLOT: 14
@@ -1854,9 +1447,7 @@ SERVER-INFO-MENU:
           - '&fbuy things like spawners, keys, and more.'
           - ''
           - '&#00A4FCCommand: &f/afk'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: afk
-        # Configuration section for Settings.
         SETTINGS:
           MATERIAL: GRAY_DYE
           SLOT: 15
@@ -1866,9 +1457,7 @@ SERVER-INFO-MENU:
           - '&fbased on your preferences.'
           - ''
           - '&#00A4FCCommand: &f/settings'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: settings
-        # Configuration section for Rtp.
         RTP:
           MATERIAL: OAK_SAPLING
           SLOT: 16
@@ -1877,20 +1466,16 @@ SERVER-INFO-MENU:
           - '&fUse the random teleport to'
           - '&fget far away from spawn.'
           - ''
-          - '&#00A4FCOverworld: &f175k x 175k'
-          - '&#00A4FCNether: &f7.5k x 7.5k'
-          - '&#00A4FCEnd: &f225k x 225k'
+          - '&#00A4FCOverworld: &f175k X 175k'
+          - '&#00A4FCNether: &f7.5k X 7.5k'
+          - '&#00A4FCEnd: &f225k X 225k'
           - ''
           - '&#00A4FCCommand: &f/rtp'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: rtp
-    # Configuration section for '2'.
     '2':
       TITLE: '&8Getting Started'
       SIZE: 27
-      # Configuration section for Buttons.
       BUTTONS:
-        # Configuration section for Start Here.
         START_HERE:
           MATERIAL: BOOK
           SLOT: 10
@@ -1900,11 +1485,9 @@ SERVER-INFO-MENU:
           - '&f2. Gather wood, food, and iron.'
           - '&f3. Build a safe base.'
           - '&f4. Save it with &b/sethome&f.'
-          # Configuration section for Click Message.
           CLICK-MESSAGE:
           - '&7Start with &f/rtp &7to find land away from spawn.'
           - '&7After building a base, save it using &f/sethome&7.'
-        # Configuration section for Money.
         MONEY:
           MATERIAL: GOLD_INGOT
           SLOT: 11
@@ -1915,9 +1498,7 @@ SERVER-INFO-MENU:
           - '&b/auctionhouse&f.'
           - ''
           - '&#00A4FCTip: &fKeep rare loot to trade.'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: sell
-        # Configuration section for Homes.
         HOMES:
           MATERIAL: RED_BED
           SLOT: 12
@@ -1927,9 +1508,7 @@ SERVER-INFO-MENU:
           - '&fimportant places.'
           - ''
           - '&#00A4FCOpen: &f/home'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: home
-        # Configuration section for Teams.
         TEAMS:
           MATERIAL: IRON_HELMET
           SLOT: 13
@@ -1939,9 +1518,7 @@ SERVER-INFO-MENU:
           - '&fand manage team permissions.'
           - ''
           - '&#00A4FCOpen: &f/team'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: team
-        # Configuration section for Combat.
         COMBAT:
           MATERIAL: DIAMOND_SWORD
           SLOT: 14
@@ -1952,11 +1529,9 @@ SERVER-INFO-MENU:
           - ''
           - '&#00A4FCTip: &fAvoid risky fights'
           - '&funtil you are geared.'
-          # Configuration section for Click Message.
           CLICK-MESSAGE:
           - '&7You drop your items on death here, so gear up before taking big fights.'
           - '&7Keep backup armor and food if you plan to PvP often.'
-        # Configuration section for Spawn.
         SPAWN:
           MATERIAL: COMPASS
           SLOT: 15
@@ -1966,9 +1541,7 @@ SERVER-INFO-MENU:
           - '&fshops, safety, or a reset.'
           - ''
           - '&#00A4FCCommand: &f/spawn'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: spawn
-        # Configuration section for Rtp Guide.
         RTP_GUIDE:
           MATERIAL: OAK_SAPLING
           SLOT: 16
@@ -1978,15 +1551,11 @@ SERVER-INFO-MENU:
           - '&for you need fresh land.'
           - ''
           - '&#00A4FCCommand: &f/rtp'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: rtp
-    # Configuration section for '3'.
     '3':
       TITLE: '&8Useful Commands'
       SIZE: 27
-      # Configuration section for Buttons.
       BUTTONS:
-        # Configuration section for Shop.
         SHOP:
           MATERIAL: EMERALD
           SLOT: 10
@@ -1996,36 +1565,30 @@ SERVER-INFO-MENU:
           - '&fand starter gear.'
           - ''
           - '&#00A4FCCommand: &f/shop'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: shop
-        # Configuration section for Sell.
         SELL:
           MATERIAL: CHEST
           SLOT: 11
           NAME: '&#00A4FCSell'
           LORE:
           - '&fTurn farmed or mined items'
-          - '&finto quick money.'
+          - '&finto Quick money.'
           - ''
           - '&#00A4FCCommand: &f/sell'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: sell
-        # Configuration section for Tpa.
         TPA:
           MATERIAL: ENDER_PEARL
           SLOT: 12
-          NAME: '&#00A4FCTeleport Requests'
+          NAME: '&#00A4FCTeleport ReQuests'
           LORE:
           - '&fUse &b/tpa <player> &for'
           - '&b/tpahere <player>&f.'
           - ''
           - '&#00A4FCTip: &fOnly teleport to'
           - '&fpeople you trust.'
-          # Configuration section for Click Message.
           CLICK-MESSAGE:
-          - '&7Use &f/tpa <player> &7to request teleporting to them.'
+          - '&7Use &f/tpa <player> &7to reQuest teleporting to them.'
           - '&7Use &f/tpahere <player> &7if you want them to come to you.'
-        # Configuration section for Leaderboards Guide.
         LEADERBOARDS_GUIDE:
           MATERIAL: CLOCK
           SLOT: 13
@@ -2035,9 +1598,7 @@ SERVER-INFO-MENU:
           - '&fmoney, kills, and more.'
           - ''
           - '&#00A4FCCommand: &f/leaderboards'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: leaderboards
-        # Configuration section for Settings Guide.
         SETTINGS_GUIDE:
           MATERIAL: GRAY_DYE
           SLOT: 14
@@ -2047,9 +1608,7 @@ SERVER-INFO-MENU:
           - '&falerts and menu preferences.'
           - ''
           - '&#00A4FCCommand: &f/settings'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: settings
-        # Configuration section for Rules Guide.
         RULES_GUIDE:
           MATERIAL: KNOWLEDGE_BOOK
           SLOT: 15
@@ -2059,156 +1618,128 @@ SERVER-INFO-MENU:
           - '&for trading with players.'
           - ''
           - '&#00A4FCCommand: &f/rules'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: rules
-        # Configuration section for Social Guide.
         SOCIAL_GUIDE:
           MATERIAL: PINK_DYE
           SLOT: 16
           NAME: '&#00A4FCSocial & Media'
           LORE:
           - '&fOpen server links and check'
-          - '&fmedia rank requirements.'
+          - '&fmedia rank reQuirements.'
           - ''
           - '&#00A4FCCommand: &f/media'
-          # The text or value for Command. Available options: Any valid string text
           COMMAND: media
-# Configuration section for Rules Menu.
 RULES-MENU:
-  TITLE: '&8ʀᴜʟᴇѕ'
+  TITLE: '&8Rules'
   SIZE: 27
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Rule 1.
     RULE_1:
       MATERIAL: KNOWLEDGE_BOOK
       SLOT: 12
       NAME: '&#00A4FCServer Rules'
       LORE:
-      - '&#00A4FC● &fNo Hacked Clients'
-      - '&#00A4FC● &fNo Movement Mods'
-      - '&#00A4FC● &fNo Inventory Mods'
-      - '&#00A4FC● &fNo Health Indicators'
-      - '&#00A4FC● &fNo Radar'
-      - '&#00A4FC● &fNo Freecam'
-      - '&#00A4FC● &fNo Auto Place'
-      - '&#00A4FC● &fNo Easy Place'
-      - '&#00A4FC● &fNo Macros or Scripts'
-      - '&#00A4FC● &fNo Abusing bugs'
-      - '&#00A4FC● &fNo Using dupe methods'
-      - '&#00A4FC● &fNo Irl trading'
-      - '&#00A4FC● &fNo Invite Rewards'
-      - '&#00A4FC● &fNo Cross Server Trading'
-      - '&#00A4FC● &fNo Finding or Using the seed'
-      - '&#00A4FC● &fNo Using More Than 5 Accounts'
-      - '&#00A4FC● &fNo Mouse Tweaks / Scrollers'
-      - '&#00A4FC● &fNo Nitro Boost Rewards'
-      - '&#00A4FC● &fNo Crafting Modifications'
-      - '&#00A4FC● &fNo Staff Impersonation'
-      - '&#00A4FC● &fNo External Gambling'
-    # Configuration section for Rule 2.
+      - "&#00A4FC● &fNo Hacked Clients"
+      - "&#00A4FC● &fNo Movement Mods"
+      - "&#00A4FC● &fNo Inventory Mods"
+      - "&#00A4FC● &fNo Health Indicators"
+      - "&#00A4FC● &fNo Radar"
+      - "&#00A4FC● &fNo Freecam"
+      - "&#00A4FC● &fNo Auto Place"
+      - "&#00A4FC● &fNo Easy Place"
+      - "&#00A4FC● &fNo Macros or Scripts"
+      - "&#00A4FC● &fNo Abusing bugs"
+      - "&#00A4FC● &fNo Using dupe methods"
+      - "&#00A4FC● &fNo Irl trading"
+      - "&#00A4FC● &fNo Invite Rewards"
+      - "&#00A4FC● &fNo Cross Server Trading"
+      - "&#00A4FC● &fNo Finding or Using the seed"
+      - "&#00A4FC● &fNo Using More Than 5 Accounts"
+      - "&#00A4FC● &fNo Mouse Tweaks / Scrollers"
+      - "&#00A4FC● &fNo Nitro Boost Rewards"
+      - "&#00A4FC● &fNo Crafting Modifications"
+      - "&#00A4FC● &fNo Staff Impersonation"
+      - "&#00A4FC● &fNo EXternal Gambling"
     RULE_2:
       MATERIAL: KNOWLEDGE_BOOK
       SLOT: 14
       NAME: '&#00A4FC&lChat Rules'
       LORE:
       - ''
-      - '&#00A4FC● &fNo Spamming or getting others to spam'
-      - '&#00A4FC● &fNo Harassing'
-      - '&#00A4FC● &fNo Advertising or Promotion'
-      - '&#00A4FC● &fNo Discrimination or Hate Speech'
-      - '&#00A4FC● &fNo Death Threats'
-      - '&#00A4FC● &fNo Sharing Others Private Information'
-      - '&#00A4FC● &fNo Pretending to be someone else'
-      - '&#00A4FC● &fNo Ban Evasion'
-      - '&#00A4FC● &fNo Lying to Staff Members'
-      - '&#00A4FC● &fReport All Bugs, Glitches, and Cheaters'
+      - "&#00A4FC● &fNo Spamming or getting others to spam"
+      - "&#00A4FC● &fNo Harassing"
+      - "&#00A4FC● &fNo Advertising or Promotion"
+      - "&#00A4FC● &fNo Discrimination or Hate Speech"
+      - "&#00A4FC● &fNo Death Threats"
+      - "&#00A4FC● &fNo Sharing Others Private Information"
+      - "&#00A4FC● &fNo Pretending to be someone else"
+      - "&#00A4FC● &fNo Ban Evasion"
+      - "&#00A4FC● &fNo Lying to Staff Members"
+      - "&#00A4FC● &fReport All Bugs, Glitches, and Cheaters"
       - '  &fin the discord &&#F97603(discord.gg/donutsmp)'
-# Configuration section for Afk Menu.
 AFK-MENU:
-  TITLE: '&8ᴀꜰᴋ ᴀʀᴇᴀѕ'
+  TITLE: '&8AFK Areas'
   SIZE: 54
-  # Configuration section for Random Button.
   RANDOM-BUTTON:
     SLOT: 49
     MATERIAL: AMETHYST_BLOCK
-    DISPLAY-NAME: '&#A303F9ᴀꜰᴋ'
+    DISPLAY-NAME: '&#A303F9AFK'
     LORE:
     - '&fClick to teleport to a random afk area'
-  # Configuration section for Areas.
   AREAS:
-    # Configuration section for '1'.
     '1':
       SLOT: 0
       MATERIAL: ITEM_FRAME
-      DISPLAY-NAME: '&#A303F9ᴀꜰᴋ #1'
+      DISPLAY-NAME: '&#A303F9AFK #1'
       LORE:
       - '&8{players}/200'
       - '&7Click to go to this'
       - '&7AFK zone area.'
-      # The text or value for Cuboid. Available options: Any valid string text
       CUBOID: afk1
-      # The numerical value for Location. Available options: Any valid integer
       LOCATION: 1
-    # Configuration section for '2'.
     '2':
       SLOT: 1
       MATERIAL: ITEM_FRAME
-      DISPLAY-NAME: '&#A303F9ᴀꜰᴋ #2'
+      DISPLAY-NAME: '&#A303F9AFK #2'
       LORE:
       - '&8{players}/200'
       - '&7Click to go to this'
       - '&7AFK zone area.'
-      # The text or value for Cuboid. Available options: Any valid string text
       CUBOID: afk2
-      # The numerical value for Location. Available options: Any valid integer
       LOCATION: 2
-# Configuration section for Spawn Menu.
 SPAWN-MENU:
-  TITLE: '&8ѕᴘᴀᴡɴ ᴀʀᴇᴀѕ'
+  TITLE: '&8Spawn Areas'
   SIZE: 54
-  # Configuration section for Random Button.
   RANDOM-BUTTON:
     SLOT: 49
     MATERIAL: LIGHT_BLUE_GLAZED_TERRACOTTA
-    DISPLAY-NAME: '&#00A4FCѕᴘᴀᴡɴ'
+    DISPLAY-NAME: '&#00A4FCSpawn'
     LORE:
     - '&fClick to teleport to a random spawn area'
-  # Configuration section for Areas.
   AREAS:
-    # Configuration section for '1'.
     '1':
       SLOT: 0
       MATERIAL: ITEM_FRAME
-      DISPLAY-NAME: '&#00A4FCѕᴘᴀᴡɴ #1'
+      DISPLAY-NAME: '&#00A4FCSpawn #1'
       LORE:
       - '&8{players}/200'
       - '&7Click to go to this'
       - '&7Spawn area.'
-      # The text or value for Cuboid. Available options: Any valid string text
       CUBOID: spawn1
-      # The numerical value for Location. Available options: Any valid integer
       LOCATION: 1
-    # Configuration section for '2'.
     '2':
       SLOT: 1
       MATERIAL: ITEM_FRAME
-      DISPLAY-NAME: '&#00A4FCѕᴘᴀᴡɴ #2'
+      DISPLAY-NAME: '&#00A4FCSpawn #2'
       LORE:
       - '&8{players}/200'
       - '&7Click to go to this'
       - '&7Spawn area.'
-      # The text or value for Cuboid. Available options: Any valid string text
       CUBOID: spawn2
-      # The numerical value for Location. Available options: Any valid integer
       LOCATION: 2
-# Configuration section for Profile Viewer Menu.
 PROFILE-VIEWER-MENU:
   TITLE: '&8{username}''s Profile'
   SIZE: 54
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Summary.
     SUMMARY:
       SLOT: 4
       MATERIAL: PLAYER_HEAD
@@ -2218,8 +1749,7 @@ PROFILE-VIEWER-MENU:
       - '&7Team: &f{team}'
       - '&7Homes: &f{homes}'
       - '&7AFK: &f{afk}'
-      - '&7Location: &f{world} ({x}, {y}, {z})'
-    # Configuration section for Homes.
+      - '&7Location: &f{world} ({X}, {y}, {z})'
     HOMES:
       SLOT: 40
       MATERIAL: RED_BED
@@ -2228,20 +1758,16 @@ PROFILE-VIEWER-MENU:
       - '&7View and navigate through this player''s homes'
       - '&7Homes saved: &f{homes}'
       - '&aClick to open'
-    # Configuration section for Current Location.
     CURRENT-LOCATION:
       SLOT: 41
       MATERIAL: COMPASS
       DISPLAY-NAME: '&#6BF18DCurrent Location'
-      # The text or value for Display Name Offline. Available options: Any valid string text
       DISPLAY-NAME-OFFLINE: '&cCurrent Location'
       LORE:
-      - '&7{world} ({x}, {y}, {z})'
+      - '&7{world} ({X}, {y}, {z})'
       - '&aClick to teleport'
-      # Configuration section for Lore Offline.
       LORE-OFFLINE:
       - '&7This player is offline right now.'
-    # Configuration section for Punishments.
     PUNISHMENTS:
       SLOT: 42
       MATERIAL: IRON_BARS
@@ -2249,105 +1775,83 @@ PROFILE-VIEWER-MENU:
       LORE:
       - '&7View this player''s punishment history'
       - '&aClick to open'
-    # Configuration section for Refresh.
     REFRESH:
       SLOT: 49
       MATERIAL: CLOCK
       DISPLAY-NAME: '&#6BF18DRefresh'
       LORE:
       - '&7Reload this player''s profile'
-# Configuration section for Profile Viewer Homes Menu.
 PROFILE-VIEWER-HOMES-MENU:
   TITLE: '&8{username}''s Homes'
   SIZE: 54
-  # The numerical value for Max Items Per Page. Available options: Any valid integer
   MAX-ITEMS-PER-PAGE: 45
-  # Configuration section for Home Button.
   HOME-BUTTON:
     MATERIAL: LIGHT_BLUE_BED
     DISPLAY-NAME: '&b{name}'
     LORE:
     - '&7World: &f{world}'
-    - '&7X: &f{x} &7Y: &f{y} &7Z: &f{z}'
+    - '&7X: &f{X} &7Y: &f{y} &7Z: &f{z}'
     - '&aClick to teleport'
-  # Configuration section for Invalid Home Button.
   INVALID-HOME-BUTTON:
     MATERIAL: BARRIER
     DISPLAY-NAME: '&c{name}'
     LORE:
     - '&7This home points to an unavailable world.'
-  # Configuration section for Empty Button.
   EMPTY-BUTTON:
     MATERIAL: BARRIER
     DISPLAY-NAME: '&cNo Homes'
     LORE:
     - '&7This player has no homes saved.'
-  # Configuration section for Back Button.
   BACK-BUTTON:
     MATERIAL: RED_STAINED_GLASS_PANE
     DISPLAY-NAME: '&cBack'
     LORE:
     - '&7Return to the main profile viewer'
-  # Configuration section for Refresh Button.
   REFRESH-BUTTON:
     MATERIAL: CLOCK
     DISPLAY-NAME: '&#6BF18DRefresh'
     LORE:
     - '&7Reload this player''s homes'
-# Configuration section for Punishment History Menu.
 PUNISHMENT-HISTORY-MENU:
   TITLE: '&8Punishments ({player})'
   SIZE: 54
-  # The numerical value for Max Items Per Page. Available options: Any valid integer
   MAX-ITEMS-PER-PAGE: 45
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Back.
     BACK:
       MATERIAL: ARROW
       DISPLAY-NAME: '&cBack'
       LORE:
       - '&7Return to the previous menu'
-    # Configuration section for Filter State.
     FILTER-STATE:
       MATERIAL: HOPPER
       DISPLAY-NAME: '&#6BF18DState Filter'
       LORE:
       - '&7Current: &f{state_filter}'
       - '&aClick to change'
-    # Configuration section for Filter Type.
     FILTER-TYPE:
       MATERIAL: BOOK
       DISPLAY-NAME: '&#6BF18DType Filter'
       LORE:
       - '&7Current: &f{type_filter}'
       - '&aClick to change'
-    # Configuration section for Refresh.
     REFRESH:
       MATERIAL: CLOCK
       DISPLAY-NAME: '&#6BF18DRefresh'
       LORE:
       - '&7Reload this player''s punishment history'
-  # Configuration section for Punishment Item.
   PUNISHMENT-ITEM:
-    # Configuration section for Materials.
     MATERIALS:
-      # The text or value for Ban. Available options: Any valid string text
       BAN: IRON_BARS
-      # The text or value for Mute. Available options: Any valid string text
       MUTE: PAPER
-      # The text or value for Warn. Available options: Any valid string text
       WARN: YELLOW_DYE
-      # The text or value for Kick. Available options: Any valid string text
       KICK: LEATHER_BOOTS
-      # The text or value for Blacklist. Available options: Any valid string text
       BLACKLIST: BARRIER
     DISPLAY-NAME: '{status_color}{type}'
     LORE:
     - '&7Reason: &f{reason}'
     - '&7Issued by: &f{issuer}'
     - '&7Date: &f{issued_at}'
-    - '&7Expires: &f{expires_at}'
+    - '&7EXpires: &f{eXpires_at}'
     - '&7Status: {status_color}{status}'
     - '&7Removed by: &f{removed_by}'
     - '&7Removal reason: &f{removal_reason}'
@@ -2355,21 +1859,16 @@ PUNISHMENT-HISTORY-MENU:
     - '&7ID: &f#{id}'
     - ''
     - '&cShift-right-click to delete this record'
-  # Configuration section for Empty Button.
   EMPTY-BUTTON:
     MATERIAL: BARRIER
     DISPLAY-NAME: '&cNo Punishment History'
     LORE:
     - '&7This player has no punishment records.'
-# Configuration section for Stats Wipe Menu.
 STATS-WIPE-MENU:
   TITLE: '&8Stats Wipe'
   SIZE: 27
-  # Determines whether Placeholder is enabled or disabled. Available options: true, false
   PLACEHOLDER: true
-  # The text or value for Placeholder Material. Available options: Any valid string text
   PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
-  # Configuration section for Status.
   STATUS:
     SLOT: 13
     MATERIAL: BARRIER
@@ -2377,9 +1876,7 @@ STATS-WIPE-MENU:
     LORE:
     - '&7Another wipe is currently running.'
     - '&7Wait for it to finish, then refresh.'
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Player Stats.
     PLAYER_STATS:
       SLOT: 10
       MATERIAL: PAPER
@@ -2388,7 +1885,6 @@ STATS-WIPE-MENU:
       - '&7Players with tracked stats: &f{count}'
       - '&cReset kills, deaths, playtime,'
       - '&cblocks, mobs, streaks, and money flow stats.'
-    # Configuration section for Team Documents.
     TEAM_DOCUMENTS:
       SLOT: 11
       MATERIAL: LIGHT_BLUE_BANNER
@@ -2396,7 +1892,6 @@ STATS-WIPE-MENU:
       LORE:
       - '&7Teams stored: &f{count}'
       - '&cDelete all teams and team members.'
-    # Configuration section for Home Documents.
     HOME_DOCUMENTS:
       SLOT: 12
       MATERIAL: RED_BED
@@ -2404,7 +1899,6 @@ STATS-WIPE-MENU:
       LORE:
       - '&7Homes stored: &f{count}'
       - '&cDelete all saved player homes.'
-    # Configuration section for Bounties.
     BOUNTIES:
       SLOT: 14
       MATERIAL: PLAYER_HEAD
@@ -2412,7 +1906,6 @@ STATS-WIPE-MENU:
       LORE:
       - '&7Active bounties: &f{count}'
       - '&cDelete all active bounties.'
-    # Configuration section for Sell Documents.
     SELL_DOCUMENTS:
       SLOT: 15
       MATERIAL: CHEST
@@ -2420,31 +1913,24 @@ STATS-WIPE-MENU:
       LORE:
       - '&7Sell docs stored: &f{count}'
       - '&cDelete sell history and sell progress.'
-    # Configuration section for Refresh.
     REFRESH:
       SLOT: 22
       MATERIAL: CLOCK
       DISPLAY-NAME: '&#6BF18DRefresh'
       LORE:
       - '&7Click to refresh wipe counts.'
-    # Configuration section for Close.
     CLOSE:
       SLOT: 26
       MATERIAL: BARRIER
       DISPLAY-NAME: '&cClose'
       LORE:
       - '&7Close this menu.'
-# Configuration section for Stats Wipe Confirm Menu.
 STATS-WIPE-CONFIRM-MENU:
   TITLE: '&8Confirm {target}'
   SIZE: 27
-  # Determines whether Placeholder is enabled or disabled. Available options: true, false
   PLACEHOLDER: true
-  # The text or value for Placeholder Material. Available options: Any valid string text
   PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
-  # Configuration section for Buttons.
   BUTTONS:
-    # Configuration section for Target.
     TARGET:
       SLOT: 13
       MATERIAL: PAPER
@@ -2453,14 +1939,12 @@ STATS-WIPE-CONFIRM-MENU:
       - '&7Affected records: &f{count}'
       - '&cThis action cannot be undone.'
       - '&7Click confirm only if you are sure.'
-    # Configuration section for Cancel.
     CANCEL:
       SLOT: 11
       MATERIAL: RED_STAINED_GLASS_PANE
       DISPLAY-NAME: '&cCancel'
       LORE:
       - '&7Return to the Stats Wipe menu.'
-    # Configuration section for Confirm.
     CONFIRM:
       SLOT: 15
       MATERIAL: LIME_STAINED_GLASS_PANE
@@ -2468,18 +1952,13 @@ STATS-WIPE-CONFIRM-MENU:
       LORE:
       - '&7Run wipe for &f{target}&7.'
       - '&7Affected records: &f{count}'
-# Configuration section for Servers Menu.
 SERVERS-MENU:
   TITLE: '&8Ongoing Servers'
   SIZE: 27
-  # The numerical value for Refresh Ticks. Available options: Any valid integer
   REFRESH-TICKS: 40
-  # The text or value for Placeholder Material. Available options: Any valid string text
   PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
-  # Configuration section for Server Status.
   SERVER_STATUS:
     TITLE: '&8Ongoing Servers'
-    # The text or value for Server Name. Available options: Any valid string text
     SERVER_NAME: '&b%server%'
     LORE:
     - '&8&m---------------------'
@@ -2488,14 +1967,9 @@ SERVERS-MENU:
     - '&eSoftware: &a%software%'
     - '&6Performance: %performance%'
     - '&8&m---------------------'
-    # Configuration section for Materials.
     MATERIALS:
-      # The text or value for Online. Available options: Any valid string text
       ONLINE: LIME_CONCRETE
-      # The text or value for Offline. Available options: Any valid string text
       OFFLINE: RED_CONCRETE
-  # Configuration section for Servers.
   SERVERS:
-    # Configuration section for Crystal.
     crystal:
       SLOT: 13

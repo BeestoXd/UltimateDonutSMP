@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import com.bx.ultimateDonutSmp.models.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -62,11 +63,13 @@ public class PlayerJoinQuitListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        String joinMsg = event.getJoinMessage();
+        event.setJoinMessage(null);
 
-        // Check maintenance mode
+        // 1. Maintenance checkmode
         if (plugin.getMaintenanceManager() != null && plugin.getMaintenanceManager().isMaintenanceActive()) {
             String bypassPerm = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.BYPASS_PERMISSION", "ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS");
             if (!player.hasPermission(bypassPerm)) {
@@ -232,8 +235,14 @@ public class PlayerJoinQuitListener implements Listener {
             }
         }
 
-        // Hide join message (optional, uncomment to suppress)
-        // event.joinMessage(null);
+        if (joinMsg != null && !joinMsg.isEmpty()) {
+            final String finalJoinMsg = joinMsg;
+            plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
+                if (shouldReceiveJoinLeaveMessage(p, player)) {
+                    p.sendMessage(ColorUtils.toComponent(finalJoinMsg));
+                }
+            });
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -262,6 +271,8 @@ public class PlayerJoinQuitListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        String quitMsg = event.getQuitMessage();
+        event.setQuitMessage(null);
 
         plugin.getNetworkStaffChatManager().handleStaffLeave(player);
         plugin.getNetworkStaffChatManager().clearPlayerState(player.getUniqueId());
@@ -338,6 +349,30 @@ public class PlayerJoinQuitListener implements Listener {
         // Remove team chat
         plugin.getTeamManager().setTeamChat(player.getUniqueId(), false);
         plugin.getTeamManager().clearSearchState(player.getUniqueId());
+
+        if (quitMsg != null && !quitMsg.isEmpty()) {
+            final String finalQuitMsg = quitMsg;
+            plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
+                if (shouldReceiveJoinLeaveMessage(p, player)) {
+                    p.sendMessage(ColorUtils.toComponent(finalQuitMsg));
+                }
+            });
+        }
+    }
+
+    private boolean shouldReceiveJoinLeaveMessage(Player receiver, Player joiner) {
+        PlayerData receiverData = plugin.getPlayerDataManager().get(receiver);
+        if (receiverData == null) {
+            return true;
+        }
+        com.bx.ultimateDonutSmp.models.ThreeChoice choice = receiverData.getJoinLeaveMessagesChoice();
+        if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
+            return false;
+        }
+        if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
+            return plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(receiver.getUniqueId(), joiner.getUniqueId());
+        }
+        return true;
     }
 
     private String kickMessage(PunishmentRecord record) {

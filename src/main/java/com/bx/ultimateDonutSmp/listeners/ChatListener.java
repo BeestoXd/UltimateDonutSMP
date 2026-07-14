@@ -136,7 +136,11 @@ public class ChatListener implements Listener {
                 .buildChatComponent(player, prefix, rawMessage, chatFormat);
 
         final var finalMsg = chatComponent;
-        plugin.getSpigotScheduler().forEachOnlinePlayer(p -> p.spigot().sendMessage(finalMsg));
+        plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
+            if (PlayerSettingUtils.notificationEnabled(plugin, p, PlayerSettingUtils.NotificationChannel.PUBLIC_CHAT)) {
+                p.spigot().sendMessage(finalMsg);
+            }
+        });
         chatManager.trackAcceptedGlobalMessage(player, rawMessage);
     }
 
