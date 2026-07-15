@@ -1463,6 +1463,16 @@ public class DatabaseManager {
         return executeUpdate(sql);
     }
 
+    public int resetAllPlayerMoney(double defaultMoney) {
+        String sql = "UPDATE players SET money = " + defaultMoney;
+        return executeUpdate(sql);
+    }
+
+    public int resetAllPlayerShards() {
+        String sql = "UPDATE players SET shards = 0";
+        return executeUpdate(sql);
+    }
+
     public List<PlayerData> getTopByMoney(int limit) {
         return getTop("money", limit);
     }

@@ -1936,6 +1936,21 @@ STATS-WIPE-MENU:
       LORE:
       - '&7Sell docs stored: &f{count}'
       - '&cDelete sell history and sell progress.'
+    MONEY:
+      SLOT: 9
+      MATERIAL: GOLD_INGOT
+      DISPLAY-NAME: '&#6BF18DPlayer Money'
+      LORE:
+      - '&7Players with custom balances: &f{count}'
+      - '&cReset all player balances to'
+      - '&cthe default starting money.'
+    SHARDS:
+      SLOT: 16
+      MATERIAL: PRISMARINE_SHARD
+      DISPLAY-NAME: '&#6BF18DPlayer Shards'
+      LORE:
+      - '&7Players with shards: &f{count}'
+      - '&cReset all player shards to 0.'
     REFRESH:
       SLOT: 22
       MATERIAL: CLOCK

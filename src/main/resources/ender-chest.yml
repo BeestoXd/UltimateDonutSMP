@@ -23,6 +23,8 @@ ENDER-CHEST:
     PERMISSION: ultimatedonutsmp.admin.ecsee
     # The numerical value for Auto Refresh Ticks. Available options: Any valid integer
     AUTO-REFRESH-TICKS: 20
+    # Determines whether staff can edit other players' ender chests. Available options: true, false
+    EDITABLE: false
 MESSAGES:
   # The text or value for Feature Disabled. Available options: Any valid string text
   FEATURE-DISABLED: '&cThe Ender Chest 6 Rows system is disabled.'
