@@ -2077,7 +2077,12 @@ public class ConfigManager {
     public String getMessageOrDefault(String path, String fallback, String... placeholders) {
         String msg = getMessageOrDefault(path, fallback);
         for (int i = 0; i + 1 < placeholders.length; i += 2) {
-            msg = msg.replace(placeholders[i], placeholders[i + 1]);
+            String key = placeholders[i];
+            String val = placeholders[i + 1];
+            msg = msg.replace(key, val);
+            if (key.equals("{quantity}")) {
+                msg = msg.replace("{Quantity}", val);
+            }
         }
         return msg;
     }

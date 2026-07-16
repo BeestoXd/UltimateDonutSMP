@@ -751,7 +751,12 @@ public class LanguageManager {
         String resolved = value == null ? "" : value;
         if (placeholders != null) {
             for (int index = 0; index + 1 < placeholders.length; index += 2) {
-                resolved = resolved.replace(placeholders[index], placeholders[index + 1]);
+                String key = placeholders[index];
+                String val = placeholders[index + 1];
+                resolved = resolved.replace(key, val);
+                if (key.equals("{quantity}")) {
+                    resolved = resolved.replace("{Quantity}", val);
+                }
             }
         }
         return resolved;
