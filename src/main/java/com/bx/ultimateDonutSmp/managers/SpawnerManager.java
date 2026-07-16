@@ -237,7 +237,7 @@ public class SpawnerManager {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         container.set(spawnerItemMarkerKey, PersistentDataType.BYTE, (byte) 1);
         container.set(spawnerItemTypeKey, PersistentDataType.STRING, definition.key());
-        container.set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
+        container.set(spawnerItemAmountKey, PersistentDataType.LONG, amount);
         item.setItemMeta(meta);
         item.setAmount((int) Math.min(64, amount));
         return item;
@@ -261,7 +261,7 @@ public class SpawnerManager {
                 "",
                 "&eᴘʟᴀᴄᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏʀ ѕᴛᴀᴄᴋ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ."
         )));
-        meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
+        meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, newAmount);
         item.setItemMeta(meta);
         item.setAmount((int) newAmount);
     }

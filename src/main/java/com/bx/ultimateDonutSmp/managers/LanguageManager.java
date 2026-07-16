@@ -143,6 +143,13 @@ public class LanguageManager {
                 DEFAULT_LOCALE,
                 "fallback"
         );
+        for (java.util.Map.Entry<String, YamlConfiguration> entry : languages.entrySet()) {
+            String locale = entry.getKey();
+            YamlConfiguration langConfig = entry.getValue();
+            if (locale.equalsIgnoreCase(DEFAULT_LOCALE)) {
+                mergePlayerLegacyCustomizations(langConfig, locale, true);
+            }
+        }
         rebuildBuiltInTranslations();
         current = this;
 
@@ -427,40 +434,52 @@ public class LanguageManager {
     }
 
     private void mergeCurrentPlayerText(YamlConfiguration englishDefaults) {
+        mergePlayerLegacyCustomizations(englishDefaults, DEFAULT_LOCALE, false);
+    }
+
+    private void mergePlayerLegacyCustomizations(YamlConfiguration target, String locale, boolean force) {
         ConfigManager config = plugin.getConfigManager();
-        mergeSection(englishDefaults, "MESSAGES", config.getLegacyMessages());
-        mergeSection(englishDefaults, "DEATH_MESSAGES", config.getLegacyDeathMessages());
-        mergeTranslatableSection(englishDefaults, "MENUS", config.getLegacyMenus(), true, MENU_EXCLUDED_PATHS);
-        mergeFeature(englishDefaults, "BILLFORD", config.getBillford(), List.of("BILLFORD", "ACCESS.NPC.DISPLAY_NAME"));
-        mergeFeature(englishDefaults, "RTP", config.getRtp(), List.of("DENIED-WORLDS", "WORLD-SETTINGS"));
-        mergeFeature(englishDefaults, "AMETHYST_TOOLS", config.getAmethystTools(), List.of());
-        mergeFeature(englishDefaults, "ENDER_CHEST", config.getEnderChest(), List.of());
-        mergeFeature(englishDefaults, "INVSEE", config.getInvsee(), List.of());
-        mergeFeature(englishDefaults, "FREEZE", config.getFreeze(), List.of("FREEZE.SERVER-NAME", "FREEZE.ALLOWED-COMMANDS"));
-        mergeFeature(englishDefaults, "AUCTION_HOUSE", config.getAuctionHouse(), List.of());
-        mergeFeature(englishDefaults, "ORDERS", config.getOrders(), List.of("CATEGORY_FILTERS"));
-        mergeFeature(englishDefaults, "DUELS", config.getDuels(), List.of("ARENA_SETTINGS", "MAP_SOURCES"));
-        mergeFeature(englishDefaults, "FFA", config.getFfa(), List.of("ARENA_SETTINGS"));
-        mergeFeature(englishDefaults, "CRATES", config.getCrates(), List.of("CRATES"));
-        mergeFeature(englishDefaults, "SPAWNERS", config.getSpawners(), List.of("TYPES"));
-        mergeFeature(englishDefaults, "SPAWN_STASH", config.getSpawnStash(), List.of("TYPES"));
-        mergeFeature(englishDefaults, "NETWORK", config.getNetwork(), List.of(
-                "NETWORK-STATUS.SERVERS", "NETWORK.LOCAL_DISPLAY_NAME", "NETWORK-STATUS.LOCAL-DISPLAY-NAME"));
-        mergeFeature(englishDefaults, "STAFF_MODE", config.getStaffMode(), List.of());
-        mergeFeature(englishDefaults, "SERVER_WIPE", config.getServerWipe(), List.of());
-        mergeFeature(englishDefaults, "WORTH", config.getWorth(), List.of("BLOCK-ITEMS"));
-        mergeShopText(englishDefaults, config.getLegacyShop());
-        mergeFeature(englishDefaults, "HIDE", config.getHide(), List.of("ALIASES", "SKINS", "STAFF-MARKER"));
-        mergeFeature(englishDefaults, "ENCHANTMENTS", config.getEnchantments(), List.of(
+        mergeSection(target, "MESSAGES", config.getLegacyMessages(), force);
+        mergeSection(target, "DEATH_MESSAGES", config.getLegacyDeathMessages(), force);
+        mergeTranslatableSection(target, "MENUS", config.getLegacyMenus(), true, MENU_EXCLUDED_PATHS, force);
+        mergeFeature(target, "BILLFORD", config.getBillford(), List.of("BILLFORD", "ACCESS.NPC.DISPLAY_NAME"), force);
+        mergeFeature(target, "RTP", config.getRtp(), List.of("DENIED-WORLDS", "WORLD-SETTINGS"), force);
+        mergeFeature(target, "AMETHYST_TOOLS", config.getAmethystTools(), List.of(), force);
+        mergeFeature(target, "ENDER_CHEST", config.getEnderChest(), List.of(), force);
+        mergeFeature(target, "INVSEE", config.getInvsee(), List.of(), force);
+        mergeFeature(target, "FREEZE", config.getFreeze(), List.of("FREEZE.SERVER-NAME", "FREEZE.ALLOWED-COMMANDS"), force);
+        mergeFeature(target, "AUCTION_HOUSE", config.getAuctionHouse(), List.of(), force);
+        mergeFeature(target, "ORDERS", config.getOrders(), List.of("CATEGORY_FILTERS"), force);
+        mergeFeature(target, "DUELS", config.getDuels(), List.of("ARENA_SETTINGS", "MAP_SOURCES"), force);
+        mergeFeature(target, "FFA", config.getFfa(), List.of("ARENA_SETTINGS"), force);
+        mergeFeature(target, "CRATES", config.getCrates(), List.of("CRATES"), force);
+        mergeFeature(target, "SPAWNERS", config.getSpawners(), List.of("TYPES"), force);
+        mergeFeature(target, "SPAWN_STASH", config.getSpawnStash(), List.of("TYPES"), force);
+        mergeFeature(target, "NETWORK", config.getNetwork(), List.of(
+                "NETWORK-STATUS.SERVERS", "NETWORK.LOCAL_DISPLAY_NAME", "NETWORK-STATUS.LOCAL-DISPLAY-NAME"), force);
+        mergeFeature(target, "STAFF_MODE", config.getStaffMode(), List.of(), force);
+        mergeFeature(target, "SERVER_WIPE", config.getServerWipe(), List.of(), force);
+        mergeFeature(target, "WORTH", config.getWorth(), List.of("BLOCK-ITEMS"), force);
+        mergeShopText(target, config.getLegacyShop(), force);
+        mergeFeature(target, "HIDE", config.getHide(), List.of("ALIASES", "SKINS", "STAFF-MARKER"), force);
+        mergeFeature(target, "ENCHANTMENTS", config.getEnchantments(), List.of(
                 "helmet", "chestplate", "leggings", "boots", "elytra", "bow", "crossbow",
-                "sword", "axe", "pickaxe", "shovel", "hoe", "fishing_rod", "trident", "mace"));
+                "sword", "axe", "pickaxe", "shovel", "hoe", "fishing_rod", "trident", "mace"), force);
     }
 
     private void mergeFeature(YamlConfiguration target, String feature, ConfigurationSection source, List<String> excludedPaths) {
-        mergeTranslatableSection(target, "CONFIG." + feature, source, false, excludedPaths);
+        mergeTranslatableSection(target, "CONFIG." + feature, source, false, excludedPaths, false);
+    }
+
+    private void mergeFeature(YamlConfiguration target, String feature, ConfigurationSection source, List<String> excludedPaths, boolean force) {
+        mergeTranslatableSection(target, "CONFIG." + feature, source, false, excludedPaths, force);
     }
 
     static int mergeShopText(YamlConfiguration target, ConfigurationSection shop) {
+        return mergeShopText(target, shop, false);
+    }
+
+    static int mergeShopText(YamlConfiguration target, ConfigurationSection shop, boolean force) {
         ConfigurationSection shopGui = shop == null ? null : shop.getConfigurationSection("SHOP-GUI");
         if (shopGui == null) {
             return 0;
@@ -473,7 +492,7 @@ public class LanguageManager {
                 continue;
             }
             String targetPath = "CONFIG.SHOP.SHOP-GUI." + path;
-            if (!target.contains(targetPath, true)) {
+            if (force || !target.contains(targetPath, true)) {
                 target.set(targetPath, copyValue(shopGui.get(path)));
                 added++;
             }
@@ -483,13 +502,18 @@ public class LanguageManager {
 
     static int mergeTranslatableSection(YamlConfiguration target, String targetRoot, ConfigurationSection source,
                                         boolean menu, List<String> excludedPaths) {
+        return mergeTranslatableSection(target, targetRoot, source, menu, excludedPaths, false);
+    }
+
+    static int mergeTranslatableSection(YamlConfiguration target, String targetRoot, ConfigurationSection source,
+                                        boolean menu, List<String> excludedPaths, boolean force) {
         if (source == null) return 0;
         int added = 0;
         for (String path : source.getKeys(true)) {
             if (source.isConfigurationSection(path) || isExcludedPath(path, excludedPaths)
                     || !isTranslatableValue(source.get(path)) || !isTranslatablePath(path, menu)) continue;
             String targetPath = targetRoot + "." + path;
-            if (!target.contains(targetPath, true)) {
+            if (force || !target.contains(targetPath, true)) {
                 target.set(targetPath, copyValue(source.get(path)));
                 added++;
             }
@@ -689,7 +713,8 @@ public class LanguageManager {
     private static void mergeSection(
             YamlConfiguration target,
             String targetRoot,
-            ConfigurationSection source
+            ConfigurationSection source,
+            boolean force
     ) {
         if (source == null) {
             return;
@@ -699,7 +724,7 @@ public class LanguageManager {
                 continue;
             }
             String targetPath = targetRoot + "." + path;
-            if (!target.contains(targetPath, true)) {
+            if (force || !target.contains(targetPath, true)) {
                 target.set(targetPath, copyValue(source.get(path)));
             }
         }

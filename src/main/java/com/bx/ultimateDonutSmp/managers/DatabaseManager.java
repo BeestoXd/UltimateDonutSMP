@@ -2937,6 +2937,14 @@ public class DatabaseManager {
     }
 
     public void saveSpawner(SpawnerInstance instance) {
+        if (instance.getId() <= 0L) {
+            long newId = createSpawner(instance);
+            if (newId > 0L) {
+                instance.setId(newId);
+            }
+            return;
+        }
+
         try (PreparedStatement ps = connection.prepareStatement(
                 "REPLACE INTO spawners " +
                         "(id, world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys) " +
