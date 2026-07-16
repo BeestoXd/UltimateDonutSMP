@@ -31,7 +31,7 @@ import java.util.UUID;
 public class PunishmentHistoryMenu extends BaseMenu {
 
     private static final String MENU_PATH = "PUNISHMENT-HISTORY-MENU";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("ᴍᴍᴍ ᴅ ʏʏʏʏ, ʜʜ:ᴍᴍ:ѕѕ", Locale.US);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy, HH:mm:ss", Locale.US);
 
     private static final int BACK_SLOT = 45;
     private static final int FILTER_STATE_SLOT = 46;
@@ -346,6 +346,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
                 .replace("{issuer}", safeText(record.getIssuerNameSnapshot()))
                 .replace("{issued_at}", formatOptionalTimestamp(record.getIssuedAt(), "unknown"))
                 .replace("{expires_at}", formatOptionalTimestamp(record.getExpiresAt(), "Never"))
+                .replace("{eXpires_at}", formatOptionalTimestamp(record.getExpiresAt(), "Never"))
                 .replace("{status}", state.getDisplayName())
                 .replace("{removed_by}", removedBy)
                 .replace("{removal_reason}", removalReason)
@@ -393,11 +394,51 @@ public class PunishmentHistoryMenu extends BaseMenu {
         };
     }
 
+    private String toSmallCaps(String input) {
+        if (input == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            char lower = Character.toLowerCase(c);
+            switch (lower) {
+                case 'a': sb.append('ᴀ'); break;
+                case 'b': sb.append('ʙ'); break;
+                case 'c': sb.append('ᴄ'); break;
+                case 'd': sb.append('ᴅ'); break;
+                case 'e': sb.append('ᴇ'); break;
+                case 'f': sb.append('ꜰ'); break;
+                case 'g': sb.append('ɢ'); break;
+                case 'h': sb.append('ʜ'); break;
+                case 'i': sb.append('ɪ'); break;
+                case 'j': sb.append('ᴊ'); break;
+                case 'k': sb.append('ᴋ'); break;
+                case 'l': sb.append('ʟ'); break;
+                case 'm': sb.append('ᴍ'); break;
+                case 'n': sb.append('ɴ'); break;
+                case 'o': sb.append('ᴏ'); break;
+                case 'p': sb.append('ᴘ'); break;
+                case 'q': sb.append('ǫ'); break;
+                case 'r': sb.append('ʀ'); break;
+                case 's': sb.append('ѕ'); break;
+                case 't': sb.append('ᴛ'); break;
+                case 'u': sb.append('ᴜ'); break;
+                case 'v': sb.append('ᴠ'); break;
+                case 'w': sb.append('ᴡ'); break;
+                case 'x': sb.append('x'); break;
+                case 'y': sb.append('ʏ'); break;
+                case 'z': sb.append('ᴢ'); break;
+                default: sb.append(c); break;
+            }
+        }
+        return sb.toString();
+    }
+
     private String formatOptionalTimestamp(Long timestamp, String fallback) {
         if (timestamp == null || timestamp <= 0L) {
-            return fallback;
+            return toSmallCaps(fallback);
         }
-        return DATE_FORMATTER.format(Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()));
+        String formatted = DATE_FORMATTER.format(Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()));
+        return toSmallCaps(formatted);
     }
 
     private String safeText(String value) {
