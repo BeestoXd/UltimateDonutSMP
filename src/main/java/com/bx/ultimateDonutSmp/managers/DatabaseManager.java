@@ -4053,9 +4053,14 @@ public class DatabaseManager {
             String methodName = method.getName();
 
             synchronized (lock) {
+                long limit = System.currentTimeMillis() + 10000; // 10 seconds timeout
                 while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
+                    long delay = limit - System.currentTimeMillis();
+                    if (delay <= 0) {
+                        throw new SQLException("Database lock acquisition timeout (10s). Current owner: " + transactionOwner.getName());
+                    }
                     try {
-                        lock.wait();
+                        lock.wait(delay);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         throw new SQLException("Thread interrupted while waiting for database lock", e);
