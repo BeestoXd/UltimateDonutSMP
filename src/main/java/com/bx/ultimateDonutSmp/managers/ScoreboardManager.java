@@ -247,7 +247,7 @@ public class ScoreboardManager {
 
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective obj = board.registerNewObjective("sidebar", Criteria.DUMMY,
-                ColorUtils.toTitleCaseSmart(ColorUtils.toComponent("EconomySMP")));
+                ColorUtils.toComponent("EconomySMP"));
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         playerBoards.put(player.getUniqueId(), board);
@@ -284,7 +284,7 @@ public class ScoreboardManager {
         List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
         if (!titles.isEmpty()) {
             String title = titles.get(titleIndex % titles.size());
-            obj.setDisplayName(ColorUtils.toTitleCaseSmart(ColorUtils.toComponent(title, player)));
+            obj.setDisplayName(ColorUtils.toComponent(title, player));
         }
 
         List<String> lines = getLines(player);
@@ -295,7 +295,6 @@ public class ScoreboardManager {
             Team team = board.getTeam("sb_" + i);
             if (team == null) continue;
             String text = ColorUtils.colorize(lines.get(i), player);
-            text = ColorUtils.toTitleCaseSmart(text);
             text = alignSidebarIconColumn(text);
             applyLineSpigot(team, text);
         }
@@ -603,9 +602,9 @@ public class ScoreboardManager {
     private String getTitle(Player player) {
         List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
         if (titles.isEmpty()) {
-            return ColorUtils.toTitleCaseSmart(ColorUtils.colorize("EconomySMP", player));
+            return ColorUtils.colorize("EconomySMP", player);
         }
-        return ColorUtils.toTitleCaseSmart(ColorUtils.colorize(titles.get(titleIndex % titles.size()), player));
+        return ColorUtils.colorize(titles.get(titleIndex % titles.size()), player);
     }
 
     private List<String> getRenderedLines(Player player) {
@@ -616,7 +615,6 @@ public class ScoreboardManager {
                 break;
             }
             String text = ColorUtils.colorize(line, player);
-            text = ColorUtils.toTitleCaseSmart(text);
             rendered.add(alignSidebarIconColumn(text));
         }
         return rendered;
