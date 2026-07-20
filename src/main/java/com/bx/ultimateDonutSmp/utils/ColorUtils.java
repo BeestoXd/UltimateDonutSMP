@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class ColorUtils {
 
     private static final char SECTION_CHAR = '\u00A7';
-    private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
+    private static final Pattern HEX_PATTERN = Pattern.compile("(?:&#|\\{#|&x#|<#|#)([A-Fa-f0-9]{6})\\}?>?");
     private static final Pattern TAGGED_GRADIENT_PATTERN = Pattern.compile(
             "<#([A-Fa-f0-9]{6})>(.*?)</#([A-Fa-f0-9]{6})>",
             Pattern.DOTALL
@@ -171,6 +171,11 @@ public class ColorUtils {
         }
 
         return text.replaceAll("&#[A-Fa-f0-9]{6}", "")
+                .replaceAll("\\{#[A-Fa-f0-9]{6}\\}", "")
+                .replaceAll("<#?[A-Fa-f0-9]{6}>", "")
+                .replaceAll("</#?[A-Fa-f0-9]{6}>", "")
+                .replaceAll("&x#[A-Fa-f0-9]{6}", "")
+                .replaceAll("#[A-Fa-f0-9]{6}", "")
                 .replaceAll("(?i)\\u00A7x(?:\\u00A7[0-9A-F]){6}", "")
                 .replaceAll("[\\u00A7&][0-9A-FK-ORa-fk-or]", "");
     }
@@ -336,7 +341,7 @@ public class ColorUtils {
         return result;
     }
 
-    private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("&#[A-Fa-f0-9]{6}|<#?[A-Fa-f0-9]{6}>|</#?[A-Fa-f0-9]{6}>");
+    private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("&#[A-Fa-f0-9]{6}|\\{#[A-Fa-f0-9]{6}\\}|<#?[A-Fa-f0-9]{6}>|</#?[A-Fa-f0-9]{6}>|&x#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{6}");
     private static final Pattern LEGACY_COLOR_PATTERN = Pattern.compile("&[0-9a-fk-orA-FK-OR]");
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{.*?\\}|%.*?%");
 
@@ -378,10 +383,25 @@ public class ColorUtils {
         int len = text.length();
 
         while (i < len) {
-            // Check hex color
+            // Check braced hex color {#ffffff}
+            if (text.charAt(i) == '{' && i + 9 <= len && text.charAt(i + 8) == '}') {
+                String sub = text.substring(i, i + 9);
+                if (sub.matches("\\{#[A-Fa-f0-9]{6}\\}")) {
+                    result.append(sub);
+                    i += 9;
+                    continue;
+                }
+            }
+            // Check ampersand hex color &#ffffff
             if (i + 7 < len && text.charAt(i) == '&' && text.charAt(i + 1) == '#' && isHexColor(text, i + 2)) {
                 result.append(text, i, i + 8);
                 i += 8;
+                continue;
+            }
+            // Check ampersand x hex color &x#ffffff
+            if (i + 8 < len && text.charAt(i) == '&' && text.charAt(i + 1) == 'x' && text.charAt(i + 2) == '#' && isHexColor(text, i + 3)) {
+                result.append(text, i, i + 9);
+                i += 9;
                 continue;
             }
             // Check legacy color
@@ -408,6 +428,12 @@ public class ColorUtils {
                     continue;
                 }
             }
+            // Check standalone hex color #ffffff
+            if (text.charAt(i) == '#' && isHexColor(text, i + 1)) {
+                result.append(text, i, i + 7);
+                i += 7;
+                continue;
+            }
             // Check brace placeholder
             if (text.charAt(i) == '{') {
                 int end = text.indexOf('}', i);
@@ -431,18 +457,21 @@ public class ColorUtils {
             StringBuilder textToken = new StringBuilder();
             while (i < len) {
                 char current = text.charAt(i);
-                if (current == '&' || current == '\u00A7' || current == '{' || current == '%' || current == '<') {
+                if (current == '&' || current == '\u00A7' || current == '{' || current == '%' || current == '<' || current == '#') {
                     if (current == '&' || current == '\u00A7') {
                         if (i + 1 < len && "0123456789abcdefklmnorx#".indexOf(Character.toLowerCase(text.charAt(i + 1))) >= 0) {
                             break;
                         }
                     } else if (current == '{') {
+                        if (i + 9 <= len && text.substring(i, i + 9).matches("\\{#[A-Fa-f0-9]{6}\\}")) break;
                         if (text.indexOf('}', i) != -1) break;
                     } else if (current == '%') {
                         if (text.indexOf('%', i + 1) != -1) break;
                     } else if (current == '<') {
                         if (i + 8 <= len && text.substring(i, i + 8).matches("<#[A-Fa-f0-9]{6}>")) break;
                         if (i + 9 <= len && text.substring(i, i + 9).matches("</#[A-Fa-f0-9]{6}>")) break;
+                    } else if (current == '#') {
+                        if (isHexColor(text, i + 1)) break;
                     }
                 }
                 textToken.append(current);
