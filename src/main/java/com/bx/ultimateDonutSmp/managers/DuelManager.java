@@ -160,6 +160,12 @@ public class DuelManager {
                 worldManager.cleanupGeneratedWorld(match.getGeneratedWorldName());
             }
         }
+        for (UUID uuid : new java.util.ArrayList<>(transitionStates.keySet())) {
+            Player p = Bukkit.getPlayer(uuid);
+            if (p != null && p.isOnline()) {
+                restoreTransitionState(p);
+            }
+        }
         requestsByTarget.clear();
         queue.clear();
         queueSelections.clear();
@@ -1631,10 +1637,12 @@ public class DuelManager {
             if (player.isOnline()) {
                 plugin.getSpigotScheduler().teleport(player, location).thenAccept(success ->
                         plugin.getSpigotScheduler().runEntity(player, () -> {
-                            if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
+                            if (!player.isOnline()) {
                                 return;
                             }
-                            healPlayer(player);
+                            if (Boolean.TRUE.equals(success)) {
+                                healPlayer(player);
+                            }
                             if (clearTransition) {
                                 restoreTransitionState(player);
                             }

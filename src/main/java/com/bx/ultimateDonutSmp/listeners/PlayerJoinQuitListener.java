@@ -194,6 +194,16 @@ public class PlayerJoinQuitListener implements Listener {
         if (plugin.getDuelManager() != null) {
             plugin.getDuelManager().handleJoin(player);
         }
+        if (player.isInvulnerable()) {
+            boolean inGodMode = plugin.getGodModeManager() != null && plugin.getGodModeManager().isInGodMode(player.getUniqueId());
+            boolean inStaffMode = plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isInStaffMode(player.getUniqueId());
+            boolean inDuel = plugin.getDuelManager() != null && (plugin.getDuelManager().isTransitioning(player.getUniqueId()) || plugin.getDuelManager().isInDuel(player.getUniqueId()));
+            boolean inFfa = plugin.getFfaManager() != null && plugin.getFfaManager().isInSession(player.getUniqueId());
+
+            if (!inGodMode && !inStaffMode && !inDuel && !inFfa) {
+                player.setInvulnerable(false);
+            }
+        }
         plugin.getPlayerVisibilityManager().handleJoin(player);
 
         if (!player.hasPlayedBefore()) {
