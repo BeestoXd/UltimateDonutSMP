@@ -437,6 +437,7 @@ public class DatabaseManager {
         );
         execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_issued ON punishments(target_uuid, issued_at DESC)");
         execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_type ON punishments(target_uuid, type)");
+        execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_name ON punishments(target_name_snapshot)");
         execute(
             "CREATE TABLE IF NOT EXISTS freeze_states (" +
             "  target_uuid TEXT PRIMARY KEY," +
@@ -2749,13 +2750,17 @@ public class DatabaseManager {
     }
 
     public int countPunishmentHistory(UUID targetUuid, PunishmentQuery query, long now) {
-        if (targetUuid == null) {
+        return countPunishmentHistory(targetUuid, null, query, now);
+    }
+
+    public int countPunishmentHistory(UUID targetUuid, String targetName, PunishmentQuery query, long now) {
+        if (targetUuid == null && (targetName == null || targetName.isBlank())) {
             return 0;
         }
 
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM punishments");
         List<Object> parameters = new ArrayList<>();
-        appendPunishmentFilters(sql, parameters, targetUuid, query, now);
+        appendPunishmentFilters(sql, parameters, targetUuid, targetName, query, now);
 
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             bindParameters(ps, parameters);
@@ -2772,14 +2777,18 @@ public class DatabaseManager {
     }
 
     public List<PunishmentRecord> loadPunishmentHistory(UUID targetUuid, PunishmentQuery query, int limit, int offset, long now) {
+        return loadPunishmentHistory(targetUuid, null, query, limit, offset, now);
+    }
+
+    public List<PunishmentRecord> loadPunishmentHistory(UUID targetUuid, String targetName, PunishmentQuery query, int limit, int offset, long now) {
         List<PunishmentRecord> records = new ArrayList<>();
-        if (targetUuid == null) {
+        if (targetUuid == null && (targetName == null || targetName.isBlank())) {
             return records;
         }
 
         StringBuilder sql = new StringBuilder("SELECT * FROM punishments");
         List<Object> parameters = new ArrayList<>();
-        appendPunishmentFilters(sql, parameters, targetUuid, query, now);
+        appendPunishmentFilters(sql, parameters, targetUuid, targetName, query, now);
 
         PunishmentSortOrder sortOrder = query == null ? PunishmentSortOrder.NEWEST : query.sortOrder();
         sql.append(sortOrder == PunishmentSortOrder.OLDEST
@@ -3188,10 +3197,51 @@ public class DatabaseManager {
     private void appendPunishmentFilters(StringBuilder sql,
                                          List<Object> parameters,
                                          UUID targetUuid,
+                                         String targetName,
                                          PunishmentQuery query,
                                          long now) {
-        sql.append(" WHERE target_uuid = ?");
-        parameters.add(targetUuid.toString());
+        Set<String> uuids = new LinkedHashSet<>();
+        if (targetUuid != null) {
+            uuids.add(targetUuid.toString());
+        }
+        if (targetName != null && !targetName.isBlank()) {
+            try {
+                org.bukkit.OfflinePlayer offline = org.bukkit.Bukkit.getOfflinePlayer(targetName.trim());
+                if (offline != null && offline.getUniqueId() != null) {
+                    uuids.add(offline.getUniqueId().toString());
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        sql.append(" WHERE (");
+        boolean hasClause = false;
+        if (!uuids.isEmpty()) {
+            sql.append("target_uuid IN (");
+            int count = 0;
+            for (String uuidStr : uuids) {
+                if (count > 0) sql.append(", ");
+                sql.append("?");
+                parameters.add(uuidStr);
+                count++;
+            }
+            sql.append(")");
+            hasClause = true;
+        }
+
+        if (targetName != null && !targetName.isBlank()) {
+            if (hasClause) {
+                sql.append(" OR ");
+            }
+            sql.append("LOWER(target_name_snapshot) = LOWER(?)");
+            parameters.add(targetName.trim());
+            hasClause = true;
+        }
+
+        if (!hasClause) {
+            sql.append("1=0");
+        }
+        sql.append(")");
 
         if (query == null) {
             return;

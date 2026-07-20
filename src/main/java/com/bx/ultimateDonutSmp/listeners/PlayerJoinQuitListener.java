@@ -47,8 +47,9 @@ public class PlayerJoinQuitListener implements Listener {
             return;
         }
 
+        String playerName = event.getPlayer().getName();
         PunishmentRecord blacklist = plugin.getPunishmentManager()
-                .getActiveRecord(uuid, PunishmentType.BLACKLIST)
+                .getActiveRecord(uuid, playerName, PunishmentType.BLACKLIST)
                 .orElse(null);
         if (blacklist != null) {
             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ColorUtils.colorize(kickMessage(blacklist)));
@@ -56,7 +57,7 @@ public class PlayerJoinQuitListener implements Listener {
         }
 
         PunishmentRecord ban = plugin.getPunishmentManager()
-                .getActiveRecord(uuid, PunishmentType.BAN)
+                .getActiveRecord(uuid, playerName, PunishmentType.BAN)
                 .orElse(null);
         if (ban != null) {
             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ColorUtils.colorize(kickMessage(ban)));

@@ -55,7 +55,7 @@ public class ChatListener implements Listener {
 
 
         PunishmentRecord activeMute = plugin.getPunishmentManager()
-                .getActiveRecord(player.getUniqueId(), PunishmentType.MUTE)
+                .getActiveRecord(player.getUniqueId(), player.getName(), PunishmentType.MUTE)
                 .orElse(null);
         if (activeMute != null) {
             event.setCancelled(true);

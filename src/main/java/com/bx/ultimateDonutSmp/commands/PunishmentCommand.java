@@ -202,7 +202,10 @@ public class PunishmentCommand implements CommandExecutor {
         }
 
         ResolvedTarget target = resolveTarget(args[0]);
-        if (target == null || target.uuid() == null) {
+        UUID targetUuid = target != null ? target.uuid() : null;
+        String targetName = target != null ? target.name() : args[0];
+
+        if (targetUuid == null && (targetName == null || targetName.isBlank())) {
             send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return true;
         }
@@ -214,7 +217,8 @@ public class PunishmentCommand implements CommandExecutor {
 
         Actor actor = resolveActor(sender);
         boolean removed = plugin.getPunishmentManager().markActiveRecordsRemoved(
-                target.uuid(),
+                targetUuid,
+                targetName,
                 type,
                 new PunishmentManager.PunishmentRemovalRequest(
                         actor.uuid(),

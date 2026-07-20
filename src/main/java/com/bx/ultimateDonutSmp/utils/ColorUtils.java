@@ -327,8 +327,6 @@ public class ColorUtils {
         result = result.replace("RANDOMIVED", "RANDOMIZED").replace("randomived", "randomized").replace("Randomived", "Randomized");
         result = result.replace("MDWVST", "MESSAGES").replace("mdwvst", "messages").replace("Mdwvst", "Messages");
         result = result.replace("MWVST", "MESSAGES").replace("mwvst", "messages").replace("Mwvst", "Messages");
-        result = result.replace("CURRENTLY", "Currently").replace("currently", "Currently");
-        result = result.replace("STATUS", "Status").replace("status", "Status");
         result = result.replace("{Status}", "{status}");
         result = result.replace("{State}", "{state}");
         return result;

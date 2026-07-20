@@ -341,8 +341,12 @@ public class LanguageManager {
             Object value = section.get(key);
             if (value instanceof String || isStringList(value)) {
                 if (target.contains(key)) {
+                    Object existingTargetValue = target.get(key);
                     if (bundledSection != null && bundledSection.contains(key)) {
                         Object bundledValue = bundledSection.get(key);
+                        if (existingTargetValue != null && !existingTargetValue.equals(bundledValue)) {
+                            continue;
+                        }
                         if (value.equals(bundledValue)) {
                             continue;
                         }
