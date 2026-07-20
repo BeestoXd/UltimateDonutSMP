@@ -46,7 +46,14 @@ class ColorUtilsTest {
     void testAllCapsMessageWithHex() {
         String input = "#FF0000YOU DO NOT HAVE PERMISSION!";
         String colorized = ColorUtils.colorize(input);
-        assertEquals("\u00A7x\u00A7F\u00A7F\u00A70\u00A70\u00A70\u00A70You Do Not Have Permission!", colorized);
+        assertEquals("\u00A7x\u00A7F\u00A7F\u00A70\u00A70\u00A70\u00A70YOU DO NOT HAVE PERMISSION!", colorized);
+    }
+
+    @Test
+    void testSmallCapsPreservation() {
+        String input = "&fᴏᴡɴᴇʀ";
+        String colorized = ColorUtils.colorize(input);
+        assertEquals("\u00A7fᴏᴡɴᴇʀ", colorized);
     }
 
     @Test

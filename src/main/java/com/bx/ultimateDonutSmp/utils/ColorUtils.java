@@ -65,7 +65,6 @@ public class ColorUtils {
 
     private static String applyColors(String text) {
         String result = normalizeText(text);
-        result = transformAllCaps(result);
         result = translateTaggedGradients(result);
         result = translateTaggedHex(result);
         return translateHex(result).replace('&', SECTION_CHAR);
@@ -321,13 +320,7 @@ public class ColorUtils {
         if (text == null) {
             return "";
         }
-        String decoded = decodeUnicodeEscapes(text);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < decoded.length(); i++) {
-            char ch = decoded.charAt(i);
-            sb.append(SMALL_CAPS_MAP.getOrDefault(ch, ch));
-        }
-        String result = sb.toString();
+        String result = decodeUnicodeEscapes(text);
         // Fix known translation/spelling typos from old configs
         result = result.replace("PEARH", "PEARL").replace("pearh", "pearl").replace("Pearh", "Pearl");
         result = result.replace("DONT+", "DONUT+").replace("dont+", "donut+").replace("Dont+", "Donut+");
