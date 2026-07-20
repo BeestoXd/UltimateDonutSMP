@@ -829,6 +829,49 @@ public class PlayerData {
         dirty = true;
     }
 
+    private transient int randomOffsetX = 0;
+    private transient int randomOffsetZ = 0;
+    private transient boolean randomOffsetInitialized = false;
+
+    private synchronized void ensureRandomOffset() {
+        if (!randomOffsetInitialized) {
+            java.util.concurrent.ThreadLocalRandom rng = java.util.concurrent.ThreadLocalRandom.current();
+            randomOffsetX = (rng.nextBoolean() ? 1 : -1) * rng.nextInt(1000, 50000);
+            randomOffsetZ = (rng.nextBoolean() ? 1 : -1) * rng.nextInt(1000, 50000);
+            randomOffsetInitialized = true;
+        }
+    }
+
+    public void setRandomOffsetForTesting(int offsetX, int offsetZ) {
+        this.randomOffsetX = offsetX;
+        this.randomOffsetZ = offsetZ;
+        this.randomOffsetInitialized = true;
+    }
+
+    public int getDisplayX(int actualX) {
+        if (!randomizedCoords) return actualX;
+        ensureRandomOffset();
+        return actualX + randomOffsetX;
+    }
+
+    public int getDisplayY(int actualY) {
+        return actualY;
+    }
+
+    public int getDisplayZ(int actualZ) {
+        if (!randomizedCoords) return actualZ;
+        ensureRandomOffset();
+        return actualZ + randomOffsetZ;
+    }
+
+    public String getDisplayCoords(org.bukkit.Location loc) {
+        if (loc == null) return "0, 0, 0";
+        int x = getDisplayX(loc.getBlockX());
+        int y = getDisplayY(loc.getBlockY());
+        int z = getDisplayZ(loc.getBlockZ());
+        return x + ", " + y + ", " + z;
+    }
+
     public TwoChoice getDeathMessagesChoice() {
         return deathMessagesChoice;
     }

@@ -44,6 +44,11 @@ import org.jetbrains.annotations.Nullable;
  *   %economy_shard_cuboid_display% shard cuboid HUD text for scoreboard/action info
  *   %economy_shard_cuboid_status%  current shard cuboid state
  *   %economy_shard_cuboid_name%    active shard cuboid name
+ *   %economy_x%                    player display X coordinate (randomized if setting enabled)
+ *   %economy_y%                    player display Y coordinate
+ *   %economy_z%                    player display Z coordinate (randomized if setting enabled)
+ *   %economy_coords%               player display formatted coordinates (X, Y, Z)
+ *   %economy_randomized_coords%    boolean setting state
  */
 public class EconomyExpansion extends PlaceholderExpansion {
 
@@ -228,6 +233,23 @@ public class EconomyExpansion extends PlaceholderExpansion {
             case "mobsKilled", "mobskilled" -> String.valueOf(data.getMobsKilled());
             case "moneySpent", "moneyspent" -> NumberUtils.format(data.getMoneySpent());
             case "moneyMade", "moneymade" -> NumberUtils.format(data.getMoneyMade());
+            case "x", "coord_x", "coords_x" -> {
+                if (offlinePlayer == null || !offlinePlayer.isOnline() || offlinePlayer.getPlayer() == null) yield "0";
+                yield String.valueOf(data.getDisplayX(offlinePlayer.getPlayer().getLocation().getBlockX()));
+            }
+            case "y", "coord_y", "coords_y" -> {
+                if (offlinePlayer == null || !offlinePlayer.isOnline() || offlinePlayer.getPlayer() == null) yield "0";
+                yield String.valueOf(data.getDisplayY(offlinePlayer.getPlayer().getLocation().getBlockY()));
+            }
+            case "z", "coord_z", "coords_z" -> {
+                if (offlinePlayer == null || !offlinePlayer.isOnline() || offlinePlayer.getPlayer() == null) yield "0";
+                yield String.valueOf(data.getDisplayZ(offlinePlayer.getPlayer().getLocation().getBlockZ()));
+            }
+            case "coords", "location", "formatted_coords" -> {
+                if (offlinePlayer == null || !offlinePlayer.isOnline() || offlinePlayer.getPlayer() == null) yield "0, 0, 0";
+                yield data.getDisplayCoords(offlinePlayer.getPlayer().getLocation());
+            }
+            case "randomized_coords", "randomized_coords_enabled" -> String.valueOf(data.isRandomizedCoords());
             default -> null;
         };
     }
