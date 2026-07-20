@@ -5,6 +5,8 @@ import com.bx.ultimateDonutSmp.api.EconomyExpansion;
 import com.bx.ultimateDonutSmp.api.EconomyLeaderboardExpansion;
 import com.bx.ultimateDonutSmp.api.EconomyRankExpansion;
 import com.bx.ultimateDonutSmp.api.HideExpansion;
+import com.bx.ultimateDonutSmp.api.UltimateDonutSmpExpansion;
+import com.bx.ultimateDonutSmp.api.UdsExpansion;
 import com.bx.ultimateDonutSmp.commands.*;
 import com.bx.ultimateDonutSmp.hooks.VaultEconomyHook;
 import com.bx.ultimateDonutSmp.listeners.*;
@@ -277,6 +279,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // 8. PlaceholderAPI expansion
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new EconomyExpansion(this).register();
+            new UltimateDonutSmpExpansion(this).register();
+            new UdsExpansion(this).register();
             new HideExpansion(this).register();
             new EconomyLeaderboardExpansion(this).register();
             new EconomyRankExpansion(this).register();

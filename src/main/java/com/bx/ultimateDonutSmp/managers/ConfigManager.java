@@ -1841,7 +1841,9 @@ public class ConfigManager {
     private YamlConfiguration loadYamlFile(File file) throws IOException, InvalidConfigurationException {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.options().parseComments(true);
-        configuration.load(file);
+        try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
+            configuration.load(reader);
+        }
         return configuration;
     }
 
@@ -1896,14 +1898,18 @@ public class ConfigManager {
         configuration.options().parseComments(true);
 
         try {
-            configuration.load(file);
+            try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
+                configuration.load(reader);
+            }
             invalidConfigurations.remove(name);
             if ("menus.yml".equals(name) && (configuration.contains("SETTINGS-MENU-LEGACY") || hasLegacyButtons(configuration))) {
                 plugin.getLogger().warning("Detected legacy menus.yml format. Resetting to default for new slot layout...");
                 backupInvalidFile(file);
                 file.delete();
                 copyBundledResource(name, file, true);
-                configuration.load(file);
+                try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
+                    configuration.load(reader);
+                }
             }
             return configuration;
         } catch (IOException | InvalidConfigurationException e) {

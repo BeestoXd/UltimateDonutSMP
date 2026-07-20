@@ -404,8 +404,8 @@ public class LanguageManager {
 
         YamlConfiguration current = new YamlConfiguration();
         current.options().parseComments(true);
-        try {
-            current.load(target);
+        try (java.io.Reader reader = new java.io.InputStreamReader(new java.io.FileInputStream(target), StandardCharsets.UTF_8)) {
+            current.load(reader);
         } catch (IOException | InvalidConfigurationException e) {
             backupInvalidLanguage(target);
             if (warnedInvalidLocales.add(locale)) {
@@ -423,7 +423,9 @@ public class LanguageManager {
             target.delete();
             try {
                 defaults.save(target);
-                current.load(target);
+                try (java.io.Reader reader = new java.io.InputStreamReader(new java.io.FileInputStream(target), StandardCharsets.UTF_8)) {
+                    current.load(reader);
+                }
             } catch (IOException | InvalidConfigurationException e) {
                 // fallback
             }
