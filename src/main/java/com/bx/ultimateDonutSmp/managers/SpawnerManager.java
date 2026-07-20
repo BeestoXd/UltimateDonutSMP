@@ -229,17 +229,23 @@ public class SpawnerManager {
 
         meta.setDisplayName(ColorUtils.toComponent(definition.displayName()));
         meta.setLore(ColorUtils.toComponentList(List.of(
-                "&7ᴛʏᴘᴇ: &f" + ColorUtils.strip(definition.displayName()),
+                "&7Type: &f" + ColorUtils.strip(definition.displayName()),
                 "",
-                "&eᴘʟᴀᴄᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏʀ ѕᴛᴀᴄᴋ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ."
+                "&ePlace to create or stack this spawner."
         )));
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
         container.set(spawnerItemMarkerKey, PersistentDataType.BYTE, (byte) 1);
         container.set(spawnerItemTypeKey, PersistentDataType.STRING, definition.key());
-        container.set(spawnerItemAmountKey, PersistentDataType.LONG, amount);
-        item.setItemMeta(meta);
-        item.setAmount((int) Math.min(64, amount));
+        if (amount <= 64) {
+            container.set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
+            item.setItemMeta(meta);
+            item.setAmount((int) amount);
+        } else {
+            container.set(spawnerItemAmountKey, PersistentDataType.LONG, amount);
+            item.setItemMeta(meta);
+            item.setAmount(1);
+        }
         return item;
     }
 
@@ -257,13 +263,19 @@ public class SpawnerManager {
             return;
         }
         meta.setLore(ColorUtils.toComponentList(List.of(
-                "&7ᴛʏᴘᴇ: &f" + ColorUtils.strip(definition.displayName()),
+                "&7Type: &f" + ColorUtils.strip(definition.displayName()),
                 "",
-                "&eᴘʟᴀᴄᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏʀ ѕᴛᴀᴄᴋ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ."
+                "&ePlace to create or stack this spawner."
         )));
-        meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, newAmount);
-        item.setItemMeta(meta);
-        item.setAmount((int) newAmount);
+        if (newAmount <= 64) {
+            meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
+            item.setItemMeta(meta);
+            item.setAmount((int) newAmount);
+        } else {
+            meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, newAmount);
+            item.setItemMeta(meta);
+            item.setAmount(1);
+        }
     }
 
     public boolean isSpawnerItem(ItemStack item) {
@@ -292,6 +304,22 @@ public class SpawnerManager {
         return meta == null ? null : meta.getPersistentDataContainer().get(spawnerItemTypeKey, PersistentDataType.STRING);
     }
 
+    public long getSpawnerItemBaseAmount(ItemStack item) {
+        if (!isSpawnerItem(item)) {
+            return 0L;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return 1L;
+        }
+        Long amount = meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG);
+        long nbtAmount = amount == null ? 1L : Math.max(1L, amount);
+        if (item.getAmount() > 1) {
+            return 1L;
+        }
+        return nbtAmount;
+    }
+
     public long getSpawnerItemAmount(ItemStack item) {
         if (!isSpawnerItem(item)) {
             return 0L;
@@ -302,13 +330,8 @@ public class SpawnerManager {
             return 0L;
         }
 
-        Long amount = meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG);
-        long nbtAmount = amount == null ? 1L : Math.max(1L, amount);
-        if (nbtAmount == 1L) {
-            return item.getAmount();
-        } else {
-            return nbtAmount * item.getAmount();
-        }
+        long baseAmount = getSpawnerItemBaseAmount(item);
+        return baseAmount * item.getAmount();
     }
 
     public SpawnerTypeDefinition getTypeDefinition(String typeKey) {
@@ -370,9 +393,7 @@ public class SpawnerManager {
         }
 
         String typeKey = getSpawnerItemType(item);
-        ItemMeta meta = item.getItemMeta();
-        Long nbtAmountVal = meta != null ? meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG) : 1L;
-        long baseAmount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        long baseAmount = getSpawnerItemBaseAmount(item);
         
         boolean stackAll = player.isSneaking();
         int quantity = stackAll ? item.getAmount() : 1;
@@ -532,9 +553,7 @@ public class SpawnerManager {
             return fail("&cyou can only stack the same spawner type onto this block.");
         }
 
-        ItemMeta meta = item.getItemMeta();
-        Long nbtAmountVal = meta != null ? meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG) : 1L;
-        long baseAmount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        long baseAmount = getSpawnerItemBaseAmount(item);
         
         boolean stackAll = player.isSneaking();
         int quantity = stackAll ? item.getAmount() : 1;
