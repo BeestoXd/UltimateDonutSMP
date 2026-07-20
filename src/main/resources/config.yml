@@ -97,7 +97,7 @@ CHAT:
   # Determines whether Format Enabled is enabled or disabled. Available options: true, false
   FORMAT-ENABLED: true
   # The text or value for Format. Available options: Any valid string text
-  FORMAT: '%player%: %message%'
+  FORMAT: '&f%prefix%%player%&7: &f%message%'
   # Configuration section for Message Colors.
   MESSAGE-COLORS:
     # The text or value for Default. Available options: Any valid string text
