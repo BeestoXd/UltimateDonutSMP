@@ -1,149 +1,595 @@
-# UDS setup: SpawnStash bait structure definitions and staff alert behavior.
-# UDS setup: Add new entries under TYPES to create more /spawnstash types without code changes.
-# UDS setup: Use SPAWNER_TYPE with a key from spawners.yml TYPES. Optional: SPAWNER_STACK and SPAWNER_ACCESS.
-# UDS setup: Containers can use CONTAINER_ITEMS, CHEST_ITEMS, or ITEMS with SLOT, MATERIAL, AMOUNT, DISPLAY_NAME, LORE.
-# UDS setup: CLAIM_SPAWNERS_ON_BREAK gives the managed spawner item to the player who breaks a SpawnStash spawner.
-
+# Configuration section for Settings.
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
-  DEFAULT_TTL_SECONDS: 900 # Sets how long this behavior lasts.
-  DEFAULT_ALERT_RADIUS: 8.0 # Sets the radius used for this check or effect.
-  ALERT_COOLDOWN_SECONDS: 30 # Sets the cooldown before this action can run again.
-  CHECK_INTERVAL_TICKS: 20 # Sets how often this task or update runs.
-  OVERWRITE_BLOCKS: true # Configures the overwrite blocks option.
-  PROTECT_BLOCKS: false # Configures the protect blocks option.
-  CLAIM_SPAWNERS_ON_BREAK: false # Configures the claim spawners on break option.
-  ROLLBACK_ON_RELOAD: true # Configures the rollback on reload option.
-  LOG_TO_CONSOLE: true # Configures the log to console option.
-  MAX_BLOCKS_PER_STASH: 256 # Sets the allowed limit for this option.
-
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Default Ttl Seconds. Available options: Any valid integer
+  DEFAULT_TTL_SECONDS: 900
+  # The decimal value for Default Alert Radius. Available options: Any decimal number
+  DEFAULT_ALERT_RADIUS: 8.0
+  # The numerical value for Alert Cooldown Seconds. Available options: Any valid integer
+  ALERT_COOLDOWN_SECONDS: 30
+  # The numerical value for Check Interval Ticks. Available options: Any valid integer
+  CHECK_INTERVAL_TICKS: 20
+  # Determines whether Overwrite Blocks is enabled or disabled. Available options: true, false
+  OVERWRITE_BLOCKS: true
+  # Determines whether Protect Blocks is enabled or disabled. Available options: true, false
+  PROTECT_BLOCKS: false
+  # Determines whether Claim Spawners On Break is enabled or disabled. Available options: true, false
+  CLAIM_SPAWNERS_ON_BREAK: false
+  # Determines whether Rollback On Reload is enabled or disabled. Available options: true, false
+  ROLLBACK_ON_RELOAD: true
+  # Determines whether Log To Console is enabled or disabled. Available options: true, false
+  LOG_TO_CONSOLE: true
+  # The numerical value for Max Blocks Per Stash. Available options: Any valid integer
+  MAX_BLOCKS_PER_STASH: 256
 MESSAGES:
+  # Configuration section for Usage.
   USAGE:
-    - "&8&m----------- &dѕᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------"
-    - "&f/{label} &7- ѕᴘᴀᴡɴ ʀᴀɴᴅᴏᴍ ʙᴀɪᴛ ѕᴛᴀѕʜ"
-    - "&f/{label} <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ"
-    - "&f/{label} ѕᴘᴀᴡɴ <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ"
-    - "&f/{label} ʟɪѕᴛ &7- ʟɪѕᴛ ᴀᴄᴛɪᴠᴇ/configured ѕᴛᴀѕʜᴇѕ"
-    - "&f/{label} ʀᴇᴍᴏᴠᴇ <id|nearest|all> &7- ʀᴏʟʟʙᴀᴄᴋ ѕᴛᴀѕʜᴇѕ"
-    - "&f/{label} ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴ-ѕᴛᴀѕʜ.ʏᴍʟ"
-  SPAWNED: "&aѕᴘᴀᴡɴᴇᴅ ѕᴛᴀѕʜ #{type} ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ. &7(ɪᴅ: {id})" # Sets the message text for this response.
-  REMOVED: "&aʀᴇᴍᴏᴠᴇᴅ ѕᴛᴀѕʜ &f#{id}&a." # Sets the message text for this response.
-  REMOVED-ALL: "&aʀᴇᴍᴏᴠᴇᴅ &f{count}&a ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ(ᴇѕ)." # Sets the message text for this response.
-  EXPIRED: "&7ѕᴘᴀᴡɴѕᴛᴀѕʜ #{id} ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ᴡᴀѕ ʀᴏʟʟᴇᴅ ʙᴀᴄᴋ." # Sets the message text for this response.
-  RELOADED: "&aѕᴘᴀᴡɴѕᴛᴀѕʜ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
-  DISABLED: "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ." # Sets the message text for this response.
-  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  NO-ACTIVE: "&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  BLOCKED-BREAK: "&cᴛʜɪѕ ѕᴛᴀѕʜ ɪѕ ᴘʀᴏᴛᴇᴄᴛᴇᴅ. ᴜѕᴇ &f/spawnstash ʀᴇᴍᴏᴠᴇ ɴᴇᴀʀᴇѕᴛ &cᴛᴏ ʀᴏʟʟʙᴀᴄᴋ ɪᴛ." # Sets the message text for this response.
-  SPAWNER-CLAIMED: "&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a ꜰʀᴏᴍ ѕᴘᴀᴡɴѕᴛᴀѕʜ." # Sets the message text for this response.
-  SPAWNER-CLAIMED-DROPPED: "&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a. &7ɪɴᴠᴇɴᴛᴏʀʏ ꜰᴜʟʟ, ɪᴛᴇᴍ ᴅʀᴏᴘᴘᴇᴅ." # Sets the message text for this response.
-  INVALID-TYPE: "&cᴜɴᴋɴᴏᴡɴ ѕᴛᴀѕʜ ᴛʏᴘᴇ '&f{type}&c'. ᴜѕᴇ &f/spawnstash ʟɪѕᴛ&c." # Sets the message text for this response.
-  INVALID-CONFIG: "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: &f{reason}&c." # Sets the message text for this response.
+  - '&8&m----------- &dѕᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------'
+  - '&f/{label} &7- ѕᴘᴀᴡɴ ʀᴀɴᴅᴏᴍ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+  - '&f/{label} <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+  - '&f/{label} ѕᴘᴀᴡɴ <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+  - '&f/{label} ʟɪѕᴛ &7- ʟɪѕᴛ ᴀᴄᴛɪᴠᴇ/configured ѕᴛᴀѕʜᴇѕ'
+  - '&f/{label} ʀᴇᴍᴏᴠᴇ <id|nearest|all> &7- ʀᴏʟʟʙᴀᴄᴋ ѕᴛᴀѕʜᴇѕ'
+  - '&f/{label} ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴ-ѕᴛᴀѕʜ.ʏᴍʟ'
+  # The text or value for Spawned. Available options: Any valid string text
+  SPAWNED: '&aѕᴘᴀᴡɴᴇᴅ ѕᴛᴀѕʜ #{type} ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ. &7(ɪᴅ: {id})'
+  # The text or value for Removed. Available options: Any valid string text
+  REMOVED: '&aʀᴇᴍᴏᴠᴇᴅ ѕᴛᴀѕʜ &f#{id}&a.'
+  # The text or value for Removed All. Available options: Any valid string text
+  REMOVED-ALL: '&aʀᴇᴍᴏᴠᴇᴅ &f{count}&a ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ(ᴇѕ).'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '&7ѕᴘᴀᴡɴѕᴛᴀѕʜ #{id} ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ᴡᴀѕ ʀᴏʟʟᴇᴅ ʙᴀᴄᴋ.'
+  # The text or value for Reloaded. Available options: Any valid string text
+  RELOADED: '&aѕᴘᴀᴡɴѕᴛᴀѕʜ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cyou do not have permission.'
+  # The text or value for No Active. Available options: Any valid string text
+  NO-ACTIVE: '&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ.'
+  # The text or value for Blocked Break. Available options: Any valid string text
+  BLOCKED-BREAK: '&cᴛʜɪѕ ѕᴛᴀѕʜ ɪѕ ᴘʀᴏᴛᴇᴄᴛᴇᴅ. ᴜѕᴇ &f/spawnstash ʀᴇᴍᴏᴠᴇ ɴᴇᴀʀᴇѕᴛ &cᴛᴏ
+    ʀᴏʟʟʙᴀᴄᴋ ɪᴛ.'
+  # The text or value for Spawner Claimed. Available options: Any valid string text
+  SPAWNER-CLAIMED: '&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a ꜰʀᴏᴍ ѕᴘᴀᴡɴѕᴛᴀѕʜ.'
+  # The text or value for Spawner Claimed Dropped. Available options: Any valid string text
+  SPAWNER-CLAIMED-DROPPED: '&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a. &7ɪɴᴠᴇɴᴛᴏʀʏ ꜰᴜʟʟ, ɪᴛᴇᴍ
+    ᴅʀᴏᴘᴘᴇᴅ.'
+  # The text or value for Invalid Type. Available options: Any valid string text
+  INVALID-TYPE: '&cᴜɴᴋɴᴏᴡɴ ѕᴛᴀѕʜ ᴛʏᴘᴇ ''&f{type}&c''. ᴜѕᴇ &f/spawnstash ʟɪѕᴛ&c.'
+  # The text or value for Invalid Config. Available options: Any valid string text
+  INVALID-CONFIG: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: &f{reason}&c.'
+  # Configuration section for Alert.
   ALERT:
-    - "&8[&dѕᴘᴀᴡɴѕᴛᴀѕʜ&8] &f{player} &7ᴛʀɪɢɢᴇʀᴇᴅ &d{reason}&7 ᴏɴ ѕᴛᴀѕʜ &f#{id}&7 (&f{type}&7)"
-    - "&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}"
-  ALERT-HOVER: "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}" # Sets the message text for this response.
-
+  - '&8[&dѕᴘᴀᴡɴѕᴛᴀѕʜ&8] &f{player} &7ᴛʀɪɢɢᴇʀᴇᴅ &d{reason}&7 ᴏɴ ѕᴛᴀѕʜ &f#{id}&7 (&f{type}&7)'
+  - '&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}'
+  # The text or value for Alert Hover. Available options: Any valid string text
+  ALERT-HOVER: '&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}'
+# Configuration section for Types.
 TYPES:
-  "1":
-    ENABLED: true # Enables or disables "1".
-    DISPLAY_NAME: "&dcompact amethyst stash" # Sets the display name shown to players.
-    TTL_SECONDS: 900 # Sets the time value in seconds.
-    ALERT_RADIUS: 8.0 # Sets the radius used for this check or effect.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+  # Configuration section for '1'.
+  '1':
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dcompact amethyst stash'
+    # The numerical value for Ttl Seconds. Available options: Any valid integer
+    TTL_SECONDS: 900
+    # The decimal value for Alert Radius. Available options: Any decimal number
+    ALERT_RADIUS: 8.0
+    # Configuration section for Paste Offset.
+    PASTE_OFFSET:
+    - 0
+    - 0
+    - 0
+    # Configuration section for Blocks.
     BLOCKS:
-      - {OFFSET: [-1, 0, 0], MATERIAL: DEEPSLATE}
-      - {OFFSET: [0, 0, 0], MATERIAL: SPAWNER, SPAWNER_TYPE: SKELETON, SPAWNER_ACCESS: PUBLIC}
-      - {OFFSET: [1, 0, 0], MATERIAL: DEEPSLATE}
-      - {OFFSET: [-1, 0, 1], MATERIAL: COBBLED_DEEPSLATE}
-      - {OFFSET: [0, 0, 1], MATERIAL: AMETHYST_BLOCK}
-      - {OFFSET: [1, 0, 1], MATERIAL: COBBLED_DEEPSLATE}
-      - {OFFSET: [-1, 1, 0], MATERIAL: DEEPSLATE_TILES}
-      - {OFFSET: [1, 1, 0], MATERIAL: DEEPSLATE_TILES}
-      - {OFFSET: [-1, 1, 1], MATERIAL: DEEPSLATE}
-      - {OFFSET: [0, 1, 1], MATERIAL: BUDDING_AMETHYST}
-      - {OFFSET: [1, 1, 1], MATERIAL: DEEPSLATE}
-      - {OFFSET: [0, 2, 1], MATERIAL: AMETHYST_CLUSTER}
-      - {OFFSET: [-1, 2, 1], MATERIAL: POLISHED_DEEPSLATE}
-      - {OFFSET: [1, 2, 1], MATERIAL: POLISHED_DEEPSLATE}
-
-  "2":
-    ENABLED: true # Enables or disables "2".
-    DISPLAY_NAME: "&5double spawner chest stash" # Sets the display name shown to players.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    - OFFSET:
+      - -1
+      - 0
+      - 0
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - 0
+      - 0
+      - 0
+      MATERIAL: SPAWNER
+      # The text or value for Spawner Type. Available options: Any valid string text
+      SPAWNER_TYPE: SKELETON
+      # The text or value for Spawner Access. Available options: Any valid string text
+      SPAWNER_ACCESS: PUBLIC
+    - OFFSET:
+      - 1
+      - 0
+      - 0
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - -1
+      - 0
+      - 1
+      MATERIAL: COBBLED_DEEPSLATE
+    - OFFSET:
+      - 0
+      - 0
+      - 1
+      MATERIAL: AMETHYST_BLOCK
+    - OFFSET:
+      - 1
+      - 0
+      - 1
+      MATERIAL: COBBLED_DEEPSLATE
+    - OFFSET:
+      - -1
+      - 1
+      - 0
+      MATERIAL: DEEPSLATE_TILES
+    - OFFSET:
+      - 1
+      - 1
+      - 0
+      MATERIAL: DEEPSLATE_TILES
+    - OFFSET:
+      - -1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - 0
+      - 1
+      - 1
+      MATERIAL: BUDDING_AMETHYST
+    - OFFSET:
+      - 1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - 0
+      - 2
+      - 1
+      MATERIAL: AMETHYST_CLUSTER
+    - OFFSET:
+      - -1
+      - 2
+      - 1
+      MATERIAL: POLISHED_DEEPSLATE
+    - OFFSET:
+      - 1
+      - 2
+      - 1
+      MATERIAL: POLISHED_DEEPSLATE
+  # Configuration section for '2'.
+  '2':
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&5double spawner chest stash'
+    # Configuration section for Paste Offset.
+    PASTE_OFFSET:
+    - 0
+    - 0
+    - 0
+    # Configuration section for Blocks.
     BLOCKS:
-      - {OFFSET: [-1, 0, 0], MATERIAL: COBBLED_DEEPSLATE}
-      - {OFFSET: [0, 0, 0], MATERIAL: COBBLED_DEEPSLATE}
-      - {OFFSET: [1, 0, 0], MATERIAL: COBBLED_DEEPSLATE}
-      - {OFFSET: [-1, 0, 1], MATERIAL: SPAWNER, SPAWNER_TYPE: ZOMBIE, SPAWNER_ACCESS: PUBLIC}
-      - {OFFSET: [0, 0, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 10, MATERIAL: DIAMOND, AMOUNT: 12}, {SLOT: 13, MATERIAL: EMERALD, AMOUNT: 16}]}
-      - {OFFSET: [1, 0, 1], MATERIAL: SPAWNER, SPAWNER_TYPE: SKELETON, SPAWNER_ACCESS: PUBLIC}
-      - {OFFSET: [-1, 1, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 11, MATERIAL: GOLD_INGOT, AMOUNT: 24}, {SLOT: 15, MATERIAL: AMETHYST_SHARD, AMOUNT: 32}]}
-      - {OFFSET: [0, 1, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 13, MATERIAL: ENCHANTED_GOLDEN_APPLE, AMOUNT: 1}]}
-      - {OFFSET: [1, 1, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 13, MATERIAL: NETHERITE_INGOT, AMOUNT: 2}]}
-      - {OFFSET: [-1, 2, 1], MATERIAL: DEEPSLATE_BRICKS}
-      - {OFFSET: [0, 2, 1], MATERIAL: DEEPSLATE_BRICKS}
-      - {OFFSET: [1, 2, 1], MATERIAL: DEEPSLATE_BRICKS}
-      - {OFFSET: [-1, 3, 1], MATERIAL: PURPLE_SHULKER_BOX, CONTAINER_ITEMS: [{SLOT: 13, MATERIAL: ECHO_SHARD, AMOUNT: 8}]}
-      - {OFFSET: [-1, 2, 0], MATERIAL: ENDER_CHEST}
-
-  "3":
-    ENABLED: true # Enables or disables "3".
-    DISPLAY_NAME: "&amossy ore stash" # Sets the display name shown to players.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    - OFFSET:
+      - -1
+      - 0
+      - 0
+      MATERIAL: COBBLED_DEEPSLATE
+    - OFFSET:
+      - 0
+      - 0
+      - 0
+      MATERIAL: COBBLED_DEEPSLATE
+    - OFFSET:
+      - 1
+      - 0
+      - 0
+      MATERIAL: COBBLED_DEEPSLATE
+    - OFFSET:
+      - -1
+      - 0
+      - 1
+      MATERIAL: SPAWNER
+      # The text or value for Spawner Type. Available options: Any valid string text
+      SPAWNER_TYPE: ZOMBIE
+      # The text or value for Spawner Access. Available options: Any valid string text
+      SPAWNER_ACCESS: PUBLIC
+    - OFFSET:
+      - 0
+      - 0
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 10
+        MATERIAL: DIAMOND
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 12
+      - SLOT: 13
+        MATERIAL: EMERALD
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 16
+    - OFFSET:
+      - 1
+      - 0
+      - 1
+      MATERIAL: SPAWNER
+      # The text or value for Spawner Type. Available options: Any valid string text
+      SPAWNER_TYPE: SKELETON
+      # The text or value for Spawner Access. Available options: Any valid string text
+      SPAWNER_ACCESS: PUBLIC
+    - OFFSET:
+      - -1
+      - 1
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 11
+        MATERIAL: GOLD_INGOT
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 24
+      - SLOT: 15
+        MATERIAL: AMETHYST_SHARD
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 32
+    - OFFSET:
+      - 0
+      - 1
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 13
+        MATERIAL: ENCHANTED_GOLDEN_APPLE
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 1
+    - OFFSET:
+      - 1
+      - 1
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 13
+        MATERIAL: NETHERITE_INGOT
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 2
+    - OFFSET:
+      - -1
+      - 2
+      - 1
+      MATERIAL: DEEPSLATE_BRICKS
+    - OFFSET:
+      - 0
+      - 2
+      - 1
+      MATERIAL: DEEPSLATE_BRICKS
+    - OFFSET:
+      - 1
+      - 2
+      - 1
+      MATERIAL: DEEPSLATE_BRICKS
+    - OFFSET:
+      - -1
+      - 3
+      - 1
+      MATERIAL: PURPLE_SHULKER_BOX
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 13
+        MATERIAL: ECHO_SHARD
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 8
+    - OFFSET:
+      - -1
+      - 2
+      - 0
+      MATERIAL: ENDER_CHEST
+  # Configuration section for '3'.
+  '3':
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&amossy ore stash'
+    # Configuration section for Paste Offset.
+    PASTE_OFFSET:
+    - 0
+    - 0
+    - 0
+    # Configuration section for Blocks.
     BLOCKS:
-      - {OFFSET: [-1, 0, 0], MATERIAL: MOSSY_COBBLESTONE}
-      - {OFFSET: [0, 0, 0], MATERIAL: MOSSY_COBBLESTONE}
-      - {OFFSET: [1, 0, 0], MATERIAL: MOSSY_COBBLESTONE}
-      - {OFFSET: [-1, 0, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 13, MATERIAL: REDSTONE, AMOUNT: 32}]}
-      - {OFFSET: [0, 0, 1], MATERIAL: SPAWNER, SPAWNER_TYPE: CREEPER, SPAWNER_ACCESS: PUBLIC}
-      - {OFFSET: [1, 0, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 13, MATERIAL: GOLD_INGOT, AMOUNT: 20}]}
-      - {OFFSET: [-1, 1, 1], MATERIAL: DEEPSLATE_REDSTONE_ORE}
-      - {OFFSET: [0, 1, 1], MATERIAL: LANTERN}
-      - {OFFSET: [1, 1, 1], MATERIAL: DEEPSLATE_GOLD_ORE}
-      - {OFFSET: [-1, 1, 0], MATERIAL: MOSSY_COBBLESTONE}
-      - {OFFSET: [1, 1, 0], MATERIAL: MOSSY_COBBLESTONE}
-      - {OFFSET: [-1, 2, 1], MATERIAL: MOSSY_COBBLESTONE}
-      - {OFFSET: [0, 2, 1], MATERIAL: MOSSY_COBBLESTONE}
-      - {OFFSET: [1, 2, 1], MATERIAL: MOSSY_COBBLESTONE}
-
-  "4":
-    ENABLED: true # Enables or disables "4".
-    DISPLAY_NAME: "&6mineshaft sign stash" # Sets the display name shown to players.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    - OFFSET:
+      - -1
+      - 0
+      - 0
+      MATERIAL: MOSSY_COBBLESTONE
+    - OFFSET:
+      - 0
+      - 0
+      - 0
+      MATERIAL: MOSSY_COBBLESTONE
+    - OFFSET:
+      - 1
+      - 0
+      - 0
+      MATERIAL: MOSSY_COBBLESTONE
+    - OFFSET:
+      - -1
+      - 0
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 13
+        MATERIAL: REDSTONE
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 32
+    - OFFSET:
+      - 0
+      - 0
+      - 1
+      MATERIAL: SPAWNER
+      # The text or value for Spawner Type. Available options: Any valid string text
+      SPAWNER_TYPE: CREEPER
+      # The text or value for Spawner Access. Available options: Any valid string text
+      SPAWNER_ACCESS: PUBLIC
+    - OFFSET:
+      - 1
+      - 0
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 13
+        MATERIAL: GOLD_INGOT
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 20
+    - OFFSET:
+      - -1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE_REDSTONE_ORE
+    - OFFSET:
+      - 0
+      - 1
+      - 1
+      MATERIAL: LANTERN
+    - OFFSET:
+      - 1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE_GOLD_ORE
+    - OFFSET:
+      - -1
+      - 1
+      - 0
+      MATERIAL: MOSSY_COBBLESTONE
+    - OFFSET:
+      - 1
+      - 1
+      - 0
+      MATERIAL: MOSSY_COBBLESTONE
+    - OFFSET:
+      - -1
+      - 2
+      - 1
+      MATERIAL: MOSSY_COBBLESTONE
+    - OFFSET:
+      - 0
+      - 2
+      - 1
+      MATERIAL: MOSSY_COBBLESTONE
+    - OFFSET:
+      - 1
+      - 2
+      - 1
+      MATERIAL: MOSSY_COBBLESTONE
+  # Configuration section for '4'.
+  '4':
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&6mineshaft sign stash'
+    # Configuration section for Paste Offset.
+    PASTE_OFFSET:
+    - 0
+    - 0
+    - 0
+    # Configuration section for Blocks.
     BLOCKS:
-      - {OFFSET: [-1, 0, 0], MATERIAL: DEEPSLATE}
-      - {OFFSET: [0, 0, 0], MATERIAL: RAIL}
-      - {OFFSET: [1, 0, 0], MATERIAL: DEEPSLATE}
-      - {OFFSET: [-1, 0, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 13, MATERIAL: IRON_INGOT, AMOUNT: 32}]}
-      - {OFFSET: [0, 0, 1], MATERIAL: SPAWNER, SPAWNER_TYPE: ZOMBIE, SPAWNER_ACCESS: PUBLIC}
-      - {OFFSET: [1, 0, 1], MATERIAL: DEEPSLATE_IRON_ORE}
-      - {OFFSET: [0, 1, 0], MATERIAL: OAK_SIGN, SIGN_LINES: ["&6private mine", "&7no entry", "&8- staff bait -", ""]}
-      - {OFFSET: [-1, 1, 1], MATERIAL: DEEPSLATE_BRICKS}
-      - {OFFSET: [0, 1, 1], MATERIAL: DEEPSLATE_BRICKS}
-      - {OFFSET: [1, 1, 1], MATERIAL: DEEPSLATE_BRICKS}
-      - {OFFSET: [-1, 2, 1], MATERIAL: DEEPSLATE_TILES}
-      - {OFFSET: [0, 2, 1], MATERIAL: DEEPSLATE_TILES}
-      - {OFFSET: [1, 2, 1], MATERIAL: DEEPSLATE_TILES}
-
-  "5":
-    ENABLED: true # Enables or disables "5".
-    DISPLAY_NAME: "&dpremium amethyst spawner stash" # Sets the display name shown to players.
-    TTL_SECONDS: 1200 # Sets the time value in seconds.
-    ALERT_RADIUS: 10.0 # Sets the radius used for this check or effect.
-    PASTE_OFFSET: [0, 0, 0] # Configures the paste offset option.
+    - OFFSET:
+      - -1
+      - 0
+      - 0
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - 0
+      - 0
+      - 0
+      MATERIAL: RAIL
+    - OFFSET:
+      - 1
+      - 0
+      - 0
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - -1
+      - 0
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 13
+        MATERIAL: IRON_INGOT
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 32
+    - OFFSET:
+      - 0
+      - 0
+      - 1
+      MATERIAL: SPAWNER
+      # The text or value for Spawner Type. Available options: Any valid string text
+      SPAWNER_TYPE: ZOMBIE
+      # The text or value for Spawner Access. Available options: Any valid string text
+      SPAWNER_ACCESS: PUBLIC
+    - OFFSET:
+      - 1
+      - 0
+      - 1
+      MATERIAL: DEEPSLATE_IRON_ORE
+    - OFFSET:
+      - 0
+      - 1
+      - 0
+      MATERIAL: OAK_SIGN
+      # Configuration section for Sign Lines.
+      SIGN_LINES:
+      - '&6private mine'
+      - '&7no entry'
+      - '&8- staff bait -'
+      - ''
+    - OFFSET:
+      - -1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE_BRICKS
+    - OFFSET:
+      - 0
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE_BRICKS
+    - OFFSET:
+      - 1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE_BRICKS
+    - OFFSET:
+      - -1
+      - 2
+      - 1
+      MATERIAL: DEEPSLATE_TILES
+    - OFFSET:
+      - 0
+      - 2
+      - 1
+      MATERIAL: DEEPSLATE_TILES
+    - OFFSET:
+      - 1
+      - 2
+      - 1
+      MATERIAL: DEEPSLATE_TILES
+  # Configuration section for '5'.
+  '5':
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dpremium amethyst spawner stash'
+    # The numerical value for Ttl Seconds. Available options: Any valid integer
+    TTL_SECONDS: 1200
+    # The decimal value for Alert Radius. Available options: Any decimal number
+    ALERT_RADIUS: 10.0
+    # Configuration section for Paste Offset.
+    PASTE_OFFSET:
+    - 0
+    - 0
+    - 0
+    # Configuration section for Blocks.
     BLOCKS:
-      - {OFFSET: [-1, 0, 0], MATERIAL: CHISELED_DEEPSLATE}
-      - {OFFSET: [0, 0, 0], MATERIAL: AMETHYST_BLOCK}
-      - {OFFSET: [1, 0, 0], MATERIAL: CHISELED_DEEPSLATE}
-      - {OFFSET: [-1, 0, 1], MATERIAL: SPAWNER, SPAWNER_TYPE: BLAZE, SPAWNER_ACCESS: PUBLIC}
-      - {OFFSET: [0, 0, 1], MATERIAL: CHEST, CONTAINER_ITEMS: [{SLOT: 11, MATERIAL: DIAMOND, AMOUNT: 24}, {SLOT: 13, MATERIAL: NETHERITE_INGOT, AMOUNT: 3}, {SLOT: 15, MATERIAL: ENCHANTED_GOLDEN_APPLE, AMOUNT: 2}]}
-      - {OFFSET: [1, 0, 1], MATERIAL: SPAWNER, SPAWNER_TYPE: IRON_GOLEM, SPAWNER_ACCESS: PUBLIC}
-      - {OFFSET: [-1, 1, 1], MATERIAL: BUDDING_AMETHYST}
-      - {OFFSET: [0, 1, 1], MATERIAL: AMETHYST_CLUSTER}
-      - {OFFSET: [1, 1, 1], MATERIAL: BUDDING_AMETHYST}
-      - {OFFSET: [-1, 2, 1], MATERIAL: POLISHED_BLACKSTONE_BRICKS}
-      - {OFFSET: [0, 2, 1], MATERIAL: REINFORCED_DEEPSLATE}
-      - {OFFSET: [1, 2, 1], MATERIAL: POLISHED_BLACKSTONE_BRICKS}
-      - {OFFSET: [0, 3, 1], MATERIAL: PURPLE_SHULKER_BOX, CONTAINER_ITEMS: [{SLOT: 13, MATERIAL: ECHO_SHARD, AMOUNT: 12}]}
+    - OFFSET:
+      - -1
+      - 0
+      - 0
+      MATERIAL: CHISELED_DEEPSLATE
+    - OFFSET:
+      - 0
+      - 0
+      - 0
+      MATERIAL: AMETHYST_BLOCK
+    - OFFSET:
+      - 1
+      - 0
+      - 0
+      MATERIAL: CHISELED_DEEPSLATE
+    - OFFSET:
+      - -1
+      - 0
+      - 1
+      MATERIAL: SPAWNER
+      # The text or value for Spawner Type. Available options: Any valid string text
+      SPAWNER_TYPE: BLAZE
+      # The text or value for Spawner Access. Available options: Any valid string text
+      SPAWNER_ACCESS: PUBLIC
+    - OFFSET:
+      - 0
+      - 0
+      - 1
+      MATERIAL: CHEST
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 11
+        MATERIAL: DIAMOND
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 24
+      - SLOT: 13
+        MATERIAL: NETHERITE_INGOT
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 3
+      - SLOT: 15
+        MATERIAL: ENCHANTED_GOLDEN_APPLE
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 2
+    - OFFSET:
+      - 1
+      - 0
+      - 1
+      MATERIAL: SPAWNER
+      # The text or value for Spawner Type. Available options: Any valid string text
+      SPAWNER_TYPE: IRON_GOLEM
+      # The text or value for Spawner Access. Available options: Any valid string text
+      SPAWNER_ACCESS: PUBLIC
+    - OFFSET:
+      - -1
+      - 1
+      - 1
+      MATERIAL: BUDDING_AMETHYST
+    - OFFSET:
+      - 0
+      - 1
+      - 1
+      MATERIAL: AMETHYST_CLUSTER
+    - OFFSET:
+      - 1
+      - 1
+      - 1
+      MATERIAL: BUDDING_AMETHYST
+    - OFFSET:
+      - -1
+      - 2
+      - 1
+      MATERIAL: POLISHED_BLACKSTONE_BRICKS
+    - OFFSET:
+      - 0
+      - 2
+      - 1
+      MATERIAL: REINFORCED_DEEPSLATE
+    - OFFSET:
+      - 1
+      - 2
+      - 1
+      MATERIAL: POLISHED_BLACKSTONE_BRICKS
+    - OFFSET:
+      - 0
+      - 3
+      - 1
+      MATERIAL: PURPLE_SHULKER_BOX
+      # Configuration section for Container Items.
+      CONTAINER_ITEMS:
+      - SLOT: 13
+        MATERIAL: ECHO_SHARD
+        # The numerical value for Amount. Available options: Any valid integer
+        AMOUNT: 12

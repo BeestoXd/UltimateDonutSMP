@@ -304,10 +304,7 @@ public class SpawnManager {
         }
 
         if (override != null) {
-            Location overrideDestination = makeSafeDestination(override);
-            if (overrideDestination != null) {
-                return overrideDestination;
-            }
+            return override;
         }
 
         String cuboidName = trimToNull(area.cuboidName());
@@ -374,10 +371,7 @@ public class SpawnManager {
             spawnLocation = LocationUtils.parse(spawnLocationRaw);
         }
         if (spawnLocation != null) {
-            Location safeSpawn = makeSafeDestination(spawnLocation);
-            if (safeSpawn != null) {
-                return safeSpawn;
-            }
+            return spawnLocation;
         }
 
         Location areaDestination = getFirstAreaDestination(AreaType.SPAWN);
@@ -404,10 +398,7 @@ public class SpawnManager {
             afkLocation = LocationUtils.parse(afkLocationRaw);
         }
         if (afkLocation != null) {
-            Location safeAfk = makeSafeDestination(afkLocation);
-            if (safeAfk != null) {
-                return safeAfk;
-            }
+            return afkLocation;
         }
 
         Location areaDestination = getFirstAreaDestination(AreaType.AFK);
@@ -522,9 +513,7 @@ public class SpawnManager {
         config.set(getMenuTogglePath(type), true);
         menus.set(target.path() + "." + MENU_LOCATION_KEY, serialized);
         menus.set(target.path() + "." + LEGACY_MENU_LOCATION_KEY, null);
-        if (type == AreaType.AFK) {
-            configureSetupShardRegion(config, menus, target, location, serialized);
-        }
+        configureSetupShardRegion(config, menus, target, location, serialized, type);
 
         try {
             if (!plugin.getConfigManager().saveConfig()) {
@@ -556,7 +545,8 @@ public class SpawnManager {
             FileConfiguration menus,
             SetupAreaTarget target,
             Location location,
-            String serialized
+            String serialized,
+            AreaType type
     ) {
         if (location == null || location.getWorld() == null || serialized == null || serialized.isBlank()) {
             return;
@@ -564,18 +554,23 @@ public class SpawnManager {
 
         String cuboidName = trimToNull(menus.getString(target.path() + ".CUBOID"));
         if (cuboidName == null) {
-            cuboidName = defaultCuboidName(AreaType.AFK, parsePositiveInt(target.areaId(), 1));
+            cuboidName = defaultCuboidName(type, parsePositiveInt(target.areaId(), 1));
         }
 
         config.set(SETUP_SHARD_REGION_PATH + ".ENABLED", true);
-        config.set(SETUP_SHARD_REGION_PATH + ".BOUND", true);
-        config.set(SETUP_SHARD_REGION_PATH + ".CUBOID", cuboidName);
         config.set(SETUP_SHARD_REGION_PATH + ".WORLD", location.getWorld().getName());
-        config.set(SETUP_SHARD_REGION_PATH + "." + MENU_LOCATION_KEY, serialized);
-        if (config.getDouble(SETUP_SHARD_REGION_PATH + ".RADIUS", 0D) <= 0D) {
-            config.set(SETUP_SHARD_REGION_PATH + ".RADIUS", LOCATION_COUNT_RADIUS);
+
+        if (type == AreaType.SPAWN) {
+            config.set(SETUP_SHARD_REGION_PATH + ".BOUND", true);
+            config.set(SETUP_SHARD_REGION_PATH + ".CUBOID", cuboidName);
+            config.set(SETUP_SHARD_REGION_PATH + "." + MENU_LOCATION_KEY, serialized);
+            if (config.getDouble(SETUP_SHARD_REGION_PATH + ".RADIUS", 0D) <= 0D) {
+                config.set(SETUP_SHARD_REGION_PATH + ".RADIUS", LOCATION_COUNT_RADIUS);
+            }
+        } else if (type == AreaType.AFK) {
+            config.set(SETUP_SHARD_REGION_PATH + ".AFK-CUBOID", cuboidName);
+            config.set(SETUP_SHARD_REGION_PATH + ".AFK-LOCATION", serialized);
         }
-        config.set(SETUP_SHARD_REGION_PATH + ".AFK-LOCATION", serialized);
     }
 
     private SetupAreaTarget findNextSetupAreaTarget(AreaType type) {
@@ -843,7 +838,7 @@ public class SpawnManager {
 
     private boolean hasSetupDestination(AreaType type, String areaPath, ConfigurationSection areaSection) {
         Location location = parseConfiguredAreaLocation(type, areaSection, areaPath);
-        if (location != null && makeSafeDestination(location) != null) {
+        if (location != null) {
             return true;
         }
 
@@ -1111,7 +1106,7 @@ public class SpawnManager {
             return Set.of(legacyAfk.toLowerCase());
         }
 
-        String shardAfk = trimToNull(config.getString("SHARDS.CUBOIDS.REGIONS.SPAWN.AFK-CUBOID"));
+        String shardAfk = trimToNull(config.getString("SHARDS.CUBOIDS.REGIONS.spawn.AFK-CUBOID"));
         return shardAfk == null ? Set.of() : Set.of(shardAfk.toLowerCase());
     }
 

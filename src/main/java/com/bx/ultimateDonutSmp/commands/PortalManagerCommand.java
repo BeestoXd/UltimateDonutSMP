@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+import com.bx.ultimateDonutSmp.managers.SpawnManager;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PortalDefinition;
@@ -127,15 +128,42 @@ public class PortalManagerCommand implements CommandExecutor {
     }
 
     private void handleCreate(CommandSender sender, String label, String[] args) {
-        if (args.length != 4) {
+        if (args.length < 4 || args.length > 5) {
             sendMessage(sender, message("PORTALMANAGER.CREATE-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " create <id> <cuboid> <rtp_selector>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " create <id> <cuboid> <destination_type> <value> OR /" + label + " create <id> <cuboid> <rtp_selector>"));
             return;
         }
 
         String portalId = args[1];
         String cuboidName = args[2];
-        String selector = args[3];
+
+        String destinationType = "RTP";
+        String destinationValue = "";
+
+        if (args.length == 4) {
+            String arg3 = args[3].toUpperCase(Locale.ROOT);
+            if (arg3.equals("AFK")) {
+                destinationType = "AFK";
+                destinationValue = "";
+            } else if (arg3.equals("RTP")) {
+                sendMessage(sender, message("PORTALMANAGER.CREATE-USAGE",
+                        "&cᴜѕᴀɢᴇ: /" + label + " create <id> <cuboid> <destination_type> <value> OR /" + label + " create <id> <cuboid> <rtp_selector>"));
+                return;
+            } else {
+                destinationType = "RTP";
+                destinationValue = args[3];
+            }
+        } else {
+            String arg3 = args[3].toUpperCase(Locale.ROOT);
+            if (arg3.equals("RTP") || arg3.equals("AFK")) {
+                destinationType = arg3;
+                destinationValue = args[4];
+            } else {
+                sendMessage(sender, message("PORTALMANAGER.CREATE-USAGE",
+                        "&cᴜѕᴀɢᴇ: /" + label + " create <id> <cuboid> <destination_type> <value> OR /" + label + " create <id> <cuboid> <rtp_selector>"));
+                return;
+            }
+        }
 
         if (!plugin.getPortalManager().isValidPortalId(portalId)) {
             sendMessage(sender, message("PORTALMANAGER.INVALID-ID",
@@ -150,14 +178,34 @@ public class PortalManagerCommand implements CommandExecutor {
             return;
         }
 
-        if (!plugin.getRtpManager().isPortalDestinationAvailable(selector)) {
-            sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
-                    "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
-                    .replace("{destination}", selector));
-            return;
+        if (destinationType.equals("RTP")) {
+            if (!plugin.getRtpManager().isPortalDestinationAvailable(destinationValue)) {
+                sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
+                        "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
+                        .replace("{destination}", destinationValue));
+                return;
+            }
+        } else if (destinationType.equals("AFK")) {
+            boolean valid = false;
+            if (destinationValue.isBlank()) {
+                valid = plugin.getSpawnManager().hasAfk();
+            } else {
+                for (SpawnManager.TeleportArea area : plugin.getSpawnManager().getValidAreas(SpawnManager.AreaType.AFK)) {
+                    if (area.id().equalsIgnoreCase(destinationValue)) {
+                        valid = true;
+                        break;
+                    }
+                }
+            }
+            if (!valid) {
+                sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
+                        "&cᴀꜰᴋ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
+                        .replace("{destination}", destinationValue.isBlank() ? "default" : destinationValue));
+                return;
+            }
         }
 
-        if (!plugin.getPortalManager().createPortal(portalId, cuboidName, selector)) {
+        if (!plugin.getPortalManager().createPortal(portalId, cuboidName, destinationType, destinationValue)) {
             sendMessage(sender, message("PORTALMANAGER.ALREADY-EXISTS",
                     "&cᴘᴏʀᴛᴀʟ '&e{id}&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.")
                     .replace("{id}", portalId));
@@ -212,9 +260,9 @@ public class PortalManagerCommand implements CommandExecutor {
     }
 
     private void handleSetDestination(CommandSender sender, String label, String[] args) {
-        if (args.length != 3) {
+        if (args.length < 3 || args.length > 4) {
             sendMessage(sender, message("PORTALMANAGER.SETDESTINATION-USAGE",
-                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>"));
+                    "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <destination_type> <value> OR /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>"));
             return;
         }
 
@@ -223,14 +271,62 @@ public class PortalManagerCommand implements CommandExecutor {
             return;
         }
 
-        if (!plugin.getRtpManager().isPortalDestinationAvailable(args[2])) {
-            sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
-                    "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
-                    .replace("{destination}", args[2]));
-            return;
+        String destinationType = "RTP";
+        String destinationValue = "";
+
+        if (args.length == 3) {
+            String arg2 = args[2].toUpperCase(Locale.ROOT);
+            if (arg2.equals("AFK")) {
+                destinationType = "AFK";
+                destinationValue = "";
+            } else if (arg2.equals("RTP")) {
+                sendMessage(sender, message("PORTALMANAGER.SETDESTINATION-USAGE",
+                        "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <destination_type> <value> OR /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>"));
+                return;
+            } else {
+                destinationType = "RTP";
+                destinationValue = args[2];
+            }
+        } else {
+            String arg2 = args[2].toUpperCase(Locale.ROOT);
+            if (arg2.equals("RTP") || arg2.equals("AFK")) {
+                destinationType = arg2;
+                destinationValue = args[3];
+            } else {
+                sendMessage(sender, message("PORTALMANAGER.SETDESTINATION-USAGE",
+                        "&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <destination_type> <value> OR /" + label + " ѕᴇᴛᴅᴇѕᴛɪɴᴀᴛɪᴏɴ <id> <rtp_selector>"));
+                return;
+            }
         }
 
-        plugin.getPortalManager().setPortalDestination(args[1], args[2]);
+        if (destinationType.equals("RTP")) {
+            if (!plugin.getRtpManager().isPortalDestinationAvailable(destinationValue)) {
+                sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
+                        "&cʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
+                        .replace("{destination}", destinationValue));
+                return;
+            }
+        } else if (destinationType.equals("AFK")) {
+            boolean valid = false;
+            if (destinationValue.isBlank()) {
+                valid = plugin.getSpawnManager().hasAfk();
+            } else {
+                for (SpawnManager.TeleportArea area : plugin.getSpawnManager().getValidAreas(SpawnManager.AreaType.AFK)) {
+                    if (area.id().equalsIgnoreCase(destinationValue)) {
+                        valid = true;
+                        break;
+                    }
+                }
+            }
+            if (!valid) {
+                sendMessage(sender, message("PORTALMANAGER.INVALID-DESTINATION",
+                        "&cᴀꜰᴋ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ '&e{destination}&c' ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")
+                        .replace("{destination}", destinationValue.isBlank() ? "default" : destinationValue));
+                return;
+            }
+        }
+
+        plugin.getPortalManager().setPortalDestination(args[1], destinationType, destinationValue);
         sendMessage(sender, message("PORTALMANAGER.UPDATED",
                 "&aᴘᴏʀᴛᴀʟ &d{id} &aʜᴀѕ ʙᴇᴇɴ ᴜᴘᴅᴀᴛᴇᴅ.")
                 .replace("{id}", plugin.getPortalManager().normalizeId(args[1])));

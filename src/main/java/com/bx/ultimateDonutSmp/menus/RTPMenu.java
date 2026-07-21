@@ -69,6 +69,8 @@ public class RTPMenu extends BaseMenu {
         RTPManager.SearchSettings settings = plugin.getRtpManager().getWorldSearchSettings(destination.worldName());
         String minRadius = settings == null ? "0" : String.valueOf(settings.minRadius());
         String maxRadius = settings == null ? "0" : String.valueOf(settings.maxRadius());
+        double reqHours = plugin.getRtpManager().getWorldRequiredPlaytimeHours(destination.worldName());
+        String reqPlaytimeStr = reqHours > 0.0 ? String.format(java.util.Locale.ROOT, "%.1f hours", reqHours) : "None";
 
         return text
                 .replace("{players}", String.valueOf(plugin.getRtpManager().getPlayersInWorld(destination.worldName())))
@@ -76,6 +78,7 @@ public class RTPMenu extends BaseMenu {
                 .replace("{world}", plugin.getRtpManager().describeWorld(destination.worldName()))
                 .replace("{min_radius}", minRadius)
                 .replace("{max_radius}", maxRadius)
+                .replace("{required_playtime}", reqPlaytimeStr)
                 .replace("{cooldown}", String.valueOf(plugin.getRtpManager().getWorldCooldownSeconds(destination.worldName())))
                 .replace("{status}", destination.enabled() ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ");
     }

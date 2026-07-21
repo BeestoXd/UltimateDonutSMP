@@ -53,6 +53,9 @@ public class WorthPacketDisplay implements Listener {
                 PacketType.Play.Server.WINDOW_ITEMS) {
             @Override
             public void onPacketSending(PacketEvent event) {
+                if (event.isPlayerTemporary()) {
+                    return;
+                }
                 Player player = event.getPlayer();
                 if (player == null || player.getGameMode() == GameMode.CREATIVE) {
                     return;

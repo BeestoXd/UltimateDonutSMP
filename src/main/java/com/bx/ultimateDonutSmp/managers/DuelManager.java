@@ -160,6 +160,12 @@ public class DuelManager {
                 worldManager.cleanupGeneratedWorld(match.getGeneratedWorldName());
             }
         }
+        for (UUID uuid : new java.util.ArrayList<>(transitionStates.keySet())) {
+            Player p = Bukkit.getPlayer(uuid);
+            if (p != null && p.isOnline()) {
+                restoreTransitionState(p);
+            }
+        }
         requestsByTarget.clear();
         queue.clear();
         queueSelections.clear();
@@ -1231,6 +1237,9 @@ public class DuelManager {
             }
             applyTransitionState(player);
             showStoredTransitionTitle(player);
+            if (state.restoreSnapshot() != null) {
+                restoreSnapshotDirectly(player, state.restoreSnapshot());
+            }
             teleportAfterDelay(player.getUniqueId(), state.returnLocation(), state.delayTicks(), true);
         });
         return true;
@@ -1494,11 +1503,18 @@ public class DuelManager {
         updateMatchRecord(match, winnerUuid, loserUuid, endReason);
 
         List<ItemStack> claimLoot = loot == null ? List.of() : loot;
+        GeneratedInventorySnapshot restoreSnapshot = null;
         if (match.usesGeneratedWorld()) {
-            restoreGeneratedInventory(match, match.getPlayerOneUuid(),
-                    match.getPlayerOneUuid().equals(loserUuid) ? claimLoot : List.of());
-            restoreGeneratedInventory(match, match.getPlayerTwoUuid(),
-                    match.getPlayerTwoUuid().equals(loserUuid) ? claimLoot : List.of());
+            if (loserUuid == null || !"DEATH".equalsIgnoreCase(endReason)) {
+                restoreGeneratedInventory(match, match.getPlayerOneUuid(),
+                        match.getPlayerOneUuid().equals(loserUuid) ? claimLoot : List.of());
+                restoreGeneratedInventory(match, match.getPlayerTwoUuid(),
+                        match.getPlayerTwoUuid().equals(loserUuid) ? claimLoot : List.of());
+            } else {
+                UUID winnerUuidToRestore = match.getPlayerOneUuid().equals(loserUuid) ? match.getPlayerTwoUuid() : match.getPlayerOneUuid();
+                restoreGeneratedInventory(match, winnerUuidToRestore, List.of());
+                restoreSnapshot = computeRestoredInventory(match, loserUuid, claimLoot);
+            }
             cleanupGeneratedTransientEntities(match);
             generatedMatchInventorySnapshots.remove(match.getId());
         }
@@ -1553,12 +1569,12 @@ public class DuelManager {
             }
         }
 
-        scheduleTransitionAndReturn(match, winnerUuid, loserUuid, endReason);
+        scheduleTransitionAndReturn(match, winnerUuid, loserUuid, endReason, restoreSnapshot);
         plugin.getCombatManager().clearTag(match.getPlayerOneUuid());
         plugin.getCombatManager().clearTag(match.getPlayerTwoUuid());
     }
 
-    private void scheduleTransitionAndReturn(DuelMatch match, UUID winnerUuid, UUID loserUuid, String endReason) {
+    private void scheduleTransitionAndReturn(DuelMatch match, UUID winnerUuid, UUID loserUuid, String endReason, GeneratedInventorySnapshot restoreSnapshot) {
         int delayTicks = getReturnDelayTicks();
 
         prepareTransition(match.getPlayerOneUuid());
@@ -1568,7 +1584,8 @@ public class DuelManager {
             pendingRespawns.put(loserUuid, new PendingRespawnState(
                     resolveArenaStayLocation(match, loserUuid),
                     resolveReturnLocation(match, loserUuid),
-                    delayTicks
+                    delayTicks,
+                    restoreSnapshot
             ));
         }
 
@@ -1620,10 +1637,12 @@ public class DuelManager {
             if (player.isOnline()) {
                 plugin.getSpigotScheduler().teleport(player, location).thenAccept(success ->
                         plugin.getSpigotScheduler().runEntity(player, () -> {
-                            if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
+                            if (!player.isOnline()) {
                                 return;
                             }
-                            healPlayer(player);
+                            if (Boolean.TRUE.equals(success)) {
+                                healPlayer(player);
+                            }
                             if (clearTransition) {
                                 restoreTransitionState(player);
                             }
@@ -2950,6 +2969,45 @@ public class DuelManager {
         ));
         inventory.setItemInOffHand(cloneItemWithoutRemovedItems(snapshot.offHand(), remainingRemovedItems));
         player.setItemOnCursor(cloneItemWithoutRemovedItems(snapshot.cursor(), remainingRemovedItems));
+    }
+
+    private GeneratedInventorySnapshot computeRestoredInventory(DuelMatch match, UUID uuid, List<ItemStack> removedItems) {
+        if (match == null || !match.usesGeneratedWorld() || uuid == null) {
+            return null;
+        }
+
+        GeneratedInventorySnapshot snapshot = getGeneratedInventorySnapshot(match, uuid);
+        if (snapshot == null) {
+            return null;
+        }
+
+        List<ItemStack> remainingRemovedItems = cloneItemList(removedItems);
+        ItemStack[] storage = fitContentsWithoutRemovedItems(
+                snapshot.storage(),
+                snapshot.storage() != null ? snapshot.storage().length : 36,
+                remainingRemovedItems
+        );
+        ItemStack[] armor = fitContentsWithoutRemovedItems(
+                snapshot.armor(),
+                snapshot.armor() != null ? snapshot.armor().length : 4,
+                remainingRemovedItems
+        );
+        ItemStack offHand = cloneItemWithoutRemovedItems(snapshot.offHand(), remainingRemovedItems);
+        ItemStack cursor = cloneItemWithoutRemovedItems(snapshot.cursor(), remainingRemovedItems);
+
+        return new GeneratedInventorySnapshot(storage, armor, offHand, cursor);
+    }
+
+    private void restoreSnapshotDirectly(Player player, GeneratedInventorySnapshot snapshot) {
+        if (player == null || snapshot == null) {
+            return;
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        inventory.setStorageContents(snapshot.storage());
+        inventory.setArmorContents(snapshot.armor());
+        inventory.setItemInOffHand(snapshot.offHand());
+        player.setItemOnCursor(snapshot.cursor());
         player.updateInventory();
     }
 
@@ -4198,7 +4256,7 @@ public class DuelManager {
         SoundUtils.play(plugin, player, plugin.getConfigManager().getSound(path), channel);
     }
 
-    private record PendingRespawnState(Location respawnLocation, Location returnLocation, long delayTicks) {
+    private record PendingRespawnState(Location respawnLocation, Location returnLocation, long delayTicks, GeneratedInventorySnapshot restoreSnapshot) {
     }
 
     private static final class ClaimAccumulator {

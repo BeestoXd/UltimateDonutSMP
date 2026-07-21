@@ -5,9 +5,11 @@ import org.bukkit.Material;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class SpawnerInstance {
@@ -46,6 +48,7 @@ public class SpawnerInstance {
     private final long createdAt;
     private long updatedAt;
     private final Map<String, SpawnerLootEntry> storedLoot = new LinkedHashMap<>();
+    private final Set<String> disabledLootKeys = new LinkedHashSet<>();
 
     public SpawnerInstance(
             long id,
@@ -222,6 +225,40 @@ public class SpawnerInstance {
 
     public String getLocationKey() {
         return buildLocationKey(world, x, y, z);
+    }
+
+    public Set<String> getDisabledLootKeys() {
+        return disabledLootKeys;
+    }
+
+    public boolean isLootDisabled(String key) {
+        if (key == null) {
+            return false;
+        }
+        return disabledLootKeys.contains(key.toUpperCase(Locale.US));
+    }
+
+    public void setLootDisabled(String key, boolean disabled) {
+        if (key == null) {
+            return;
+        }
+        String normalized = key.toUpperCase(Locale.US);
+        if (disabled) {
+            disabledLootKeys.add(normalized);
+        } else {
+            disabledLootKeys.remove(normalized);
+        }
+    }
+
+    public void setDisabledLootKeys(Collection<String> keys) {
+        this.disabledLootKeys.clear();
+        if (keys != null) {
+            for (String key : keys) {
+                if (key != null) {
+                    this.disabledLootKeys.add(key.toUpperCase(Locale.US));
+                }
+            }
+        }
     }
 
     public static String buildLocationKey(String world, int x, int y, int z) {

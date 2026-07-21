@@ -1,196 +1,339 @@
-# UDS setup: Spawner stacking, anti-ESP behavior, GUI layout, and entity type settings.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+# Configuration section for Settings.
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
-  ACCESS_MODE: OWNER_ONLY # Selects the mode or type used by this option.
-  ALLOW_STEALING: false # If true, players can break and steal spawners placed by others.
-  GENERATION_INTERVAL_SECONDS: 5 # Sets how often this task or update runs.
-  PROCESS_ONLY_LOADED_CHUNKS: true # Configures the process only loaded chunks option.
-  REQUIRE_PLAYER_NEARBY: false # Configures the require player nearby option.
-  PLAYER_NEARBY_RADIUS: 16 # Sets the radius used for this check or effect.
-  MAX_STACK_PER_BLOCK: 100000 # Sets the allowed limit for this option.
-  STORAGE_CAP_PER_LOOT_KEY: 1000000 # Configures the storage cap per loot key option.
-  DROP_ON_BREAK_IF_INVENTORY_FULL: true # Configures the drop on break if inventory full option.
-  HOPPER_EXTRACTION:
-    ENABLED: false # If true, hoppers placed underneath spawners will pull items out of spawner storage.
-    AMOUNT_PER_CYCLE: 64 # The maximum amount of items per loot type to transfer to the hopper below per generation cycle.
-
-# UDS setup: Spawner anti-ESP behavior and visibility protections.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The Access Mode setting. Available options: OWNER_ONLY, OWNER_AND_TEAM, PUBLIC
+  ACCESS_MODE: OWNER_ONLY
+  # The numerical value for Generation Interval Seconds. Available options: Any valid integer
+  GENERATION_INTERVAL_SECONDS: 5
+  # Determines whether Process Only Loaded Chunks is enabled or disabled. Available options: true, false
+  PROCESS_ONLY_LOADED_CHUNKS: true
+  # Determines whether Require Player Nearby is enabled or disabled. Available options: true, false
+  REQUIRE_PLAYER_NEARBY: false
+  # The numerical value for Player Nearby Radius. Available options: Any valid integer
+  PLAYER_NEARBY_RADIUS: 16
+  # The numerical value for Max Stack Per Block. Available options: Any valid integer
+  MAX_STACK_PER_BLOCK: 100000
+  # The numerical value for Storage Cap Per Loot Key. Available options: Any valid integer
+  STORAGE_CAP_PER_LOOT_KEY: 1000000
+  # Determines whether Drop On Break If Inventory Full is enabled or disabled. Available options: true, false
+  DROP_ON_BREAK_IF_INVENTORY_FULL: true
+# Configuration section for Anti Esp.
 ANTI_ESP:
-  ENABLED: true # Enables or disables anti esp.
-  REVEAL_RADIUS: 7 # Sets the radius used for this check or effect.
-  OWNER_SEE_RADIUS: 9 # Sets the radius used for this check or effect.
-  TRACKING_RADIUS: 128 # Sets the radius used for this check or effect.
-  REQUIRE_LINE_OF_SIGHT: true # Configures the require line of sight option.
-  STAFF_BYPASS_PERMISSION: "ultimatedonutsmp.admin.spawner.seeall" # Sets the permission node required for this action.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Reveal Radius. Available options: Any valid integer
+  REVEAL_RADIUS: 7
+  # The numerical value for Owner See Radius. Available options: Any valid integer
+  OWNER_SEE_RADIUS: 9
+  # The numerical value for Tracking Radius. Available options: Any valid integer
+  TRACKING_RADIUS: 128
+  # Determines whether Require Line Of Sight is enabled or disabled. Available options: true, false
+  REQUIRE_LINE_OF_SIGHT: true
+  # The text or value for Staff Bypass Permission. Available options: Any valid string text
+  STAFF_BYPASS_PERMISSION: ultimatedonutsmp.admin.spawner.seeall
+  # Configuration section for Camouflage.
   CAMOUFLAGE:
-    OVERWORLD: DEEPSLATE # Configures the overworld option.
-    NETHER: NETHERRACK # Configures the nether option.
-    THE_END: END_STONE # Configures the the end option.
-
-# UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
+    # The text or value for Overworld. Available options: Any valid string text
+    OVERWORLD: DEEPSLATE
+    # The text or value for Nether. Available options: Any valid string text
+    NETHER: NETHERRACK
+    # The text or value for The End. Available options: Any valid string text
+    THE_END: END_STONE
+# Configuration section for Gui.
 GUI:
+  # Configuration section for Storage.
   STORAGE:
-    TITLE: "&8{mob} ѕᴘᴀᴡɴᴇʀѕ - {page}/{max_page}" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: '&8{mob} Spawners - {page}/{max_page}'
+    SIZE: 54
+    # The numerical value for Items Per Page. Available options: Any valid integer
+    ITEMS_PER_PAGE: 45
+  # Configuration section for Panel.
   PANEL:
-    TITLE: "&8ѕᴘᴀᴡɴᴇʀѕ - {world}" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
+    TITLE: '&8Spawners - {world}'
+    SIZE: 54
+  # Configuration section for World List.
   WORLD_LIST:
-    TITLE: "&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
-
-# UDS setup: Spawner entity type definitions, prices, and drops.
+    TITLE: '&8Spawners Panel'
+    SIZE: 27
+# Configuration section for Types.
 TYPES:
+  # Configuration section for Pig.
   PIG:
-    DISPLAY_NAME: "&dpig spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: PIG # Selects the mode or type used by this option.
-    ICON_MATERIAL: PORKCHOP # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dPig Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: PIG
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: PORKCHOP
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Porkchop.
       PORKCHOP:
-        MATERIAL: PORKCHOP # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 3 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: PORKCHOP
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 3
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Leather.
       LEATHER:
-        MATERIAL: LEATHER # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 1 # Sets the allowed limit for this option.
-        CHANCE: 0.35 # Sets the random selection chance or weight.
+        MATERIAL: LEATHER
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 1
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.35
+  # Configuration section for Cow.
   COW:
-    DISPLAY_NAME: "&dcow spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: COW # Selects the mode or type used by this option.
-    ICON_MATERIAL: BEEF # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dCow Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: COW
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: BEEF
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Beef.
       BEEF:
-        MATERIAL: BEEF # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 3 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: BEEF
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 3
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Leather.
       LEATHER:
-        MATERIAL: LEATHER # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 2 # Sets the allowed limit for this option.
-        CHANCE: 0.8 # Sets the random selection chance or weight.
+        MATERIAL: LEATHER
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 2
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.8
+  # Configuration section for Zombie.
   ZOMBIE:
-    DISPLAY_NAME: "&dzombie spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: ZOMBIE # Selects the mode or type used by this option.
-    ICON_MATERIAL: ROTTEN_FLESH # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dZombie Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: ZOMBIE
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: ROTTEN_FLESH
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Rotten Flesh.
       ROTTEN_FLESH:
-        MATERIAL: ROTTEN_FLESH # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 3 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: ROTTEN_FLESH
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 3
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Iron Ingot.
       IRON_INGOT:
-        MATERIAL: IRON_INGOT # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 1 # Sets the allowed limit for this option.
-        CHANCE: 0.05 # Sets the random selection chance or weight.
+        MATERIAL: IRON_INGOT
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 1
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.05
+      # Configuration section for Carrot.
       CARROT:
-        MATERIAL: CARROT # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 1 # Sets the allowed limit for this option.
-        CHANCE: 0.025 # Sets the random selection chance or weight.
+        MATERIAL: CARROT
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 1
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.025
+      # Configuration section for Potato.
       POTATO:
-        MATERIAL: POTATO # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 1 # Sets the allowed limit for this option.
-        CHANCE: 0.025 # Sets the random selection chance or weight.
+        MATERIAL: POTATO
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 1
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.025
+  # Configuration section for Spider.
   SPIDER:
-    DISPLAY_NAME: "&dspider spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: SPIDER # Selects the mode or type used by this option.
-    ICON_MATERIAL: STRING # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dSpider Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: SPIDER
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: STRING
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for String.
       STRING:
-        MATERIAL: STRING # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 2 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: STRING
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 2
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Spider Eye.
       SPIDER_EYE:
-        MATERIAL: SPIDER_EYE # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 1 # Sets the allowed limit for this option.
-        CHANCE: 0.4 # Sets the random selection chance or weight.
+        MATERIAL: SPIDER_EYE
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 1
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.4
+  # Configuration section for Skeleton.
   SKELETON:
-    DISPLAY_NAME: "&dskeleton spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: SKELETON # Selects the mode or type used by this option.
-    ICON_MATERIAL: BONE # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dSkeleton Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: SKELETON
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: BONE
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Bone.
       BONE:
-        MATERIAL: BONE # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 3 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: BONE
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 3
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Arrow.
       ARROW:
-        MATERIAL: ARROW # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 3 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: ARROW
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 3
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+  # Configuration section for Creeper.
   CREEPER:
-    DISPLAY_NAME: "&dcreeper spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: CREEPER # Selects the mode or type used by this option.
-    ICON_MATERIAL: GUNPOWDER # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dCreeper Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: CREEPER
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: GUNPOWDER
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Gunpowder.
       GUNPOWDER:
-        MATERIAL: GUNPOWDER # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 2 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: GUNPOWDER
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 2
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+  # Configuration section for Piglin.
   PIGLIN:
-    DISPLAY_NAME: "&dpiglin spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: ZOMBIFIED_PIGLIN # Selects the mode or type used by this option.
-    ICON_MATERIAL: GOLD_NUGGET # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dPiglin Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: ZOMBIFIED_PIGLIN
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: GOLD_NUGGET
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Rotten Flesh.
       ROTTEN_FLESH:
-        MATERIAL: ROTTEN_FLESH # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 2 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: ROTTEN_FLESH
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 2
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Gold Nugget.
       GOLD_NUGGET:
-        MATERIAL: GOLD_NUGGET # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 4 # Sets the allowed limit for this option.
-        CHANCE: 0.85 # Sets the random selection chance or weight.
+        MATERIAL: GOLD_NUGGET
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 4
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.85
+      # Configuration section for Gold Ingot.
       GOLD_INGOT:
-        MATERIAL: GOLD_INGOT # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 1 # Sets the allowed limit for this option.
-        CHANCE: 0.06 # Sets the random selection chance or weight.
+        MATERIAL: GOLD_INGOT
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 1
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.06
+  # Configuration section for Blaze.
   BLAZE:
-    DISPLAY_NAME: "&dblaze spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: BLAZE # Selects the mode or type used by this option.
-    ICON_MATERIAL: BLAZE_ROD # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dBlaze Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: BLAZE
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: BLAZE_ROD
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Blaze Rod.
       BLAZE_ROD:
-        MATERIAL: BLAZE_ROD # Sets the Bukkit material used here.
-        MIN: 1 # Sets the allowed limit for this option.
-        MAX: 2 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: BLAZE_ROD
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 2
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+  # Configuration section for Iron Golem.
   IRON_GOLEM:
-    DISPLAY_NAME: "&diron golem spawner" # Sets the display name shown to players.
-    ENTITY_TYPE: IRON_GOLEM # Selects the mode or type used by this option.
-    ICON_MATERIAL: IRON_INGOT # Sets the Bukkit material used here.
-    BASE_ITEMS_PER_CYCLE: 1 # Configures the base items per cycle option.
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dIron Golem Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: IRON_GOLEM
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: IRON_INGOT
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
     DROPS:
+      # Configuration section for Iron Ingot.
       IRON_INGOT:
-        MATERIAL: IRON_INGOT # Sets the Bukkit material used here.
-        MIN: 3 # Sets the allowed limit for this option.
-        MAX: 5 # Sets the allowed limit for this option.
-        CHANCE: 1.0 # Sets the random selection chance or weight.
+        MATERIAL: IRON_INGOT
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 3
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 5
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Poppy.
       POPPY:
-        MATERIAL: POPPY # Sets the Bukkit material used here.
-        MIN: 0 # Sets the allowed limit for this option.
-        MAX: 2 # Sets the allowed limit for this option.
-        CHANCE: 0.45 # Sets the random selection chance or weight.
+        MATERIAL: POPPY
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 2
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.45

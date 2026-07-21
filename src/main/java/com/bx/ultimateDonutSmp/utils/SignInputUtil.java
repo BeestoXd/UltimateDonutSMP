@@ -113,6 +113,11 @@ public final class SignInputUtil {
 
         var scheduler = getScheduler(plugin);
 
+        // Close inventory immediately so player is ready for sign input
+        try {
+            player.closeInventory();
+        } catch (Throwable ignored) {}
+
         // Schedule timeout (45 seconds)
         if (scheduler != null) {
             org.bukkit.scheduler.BukkitTask task = scheduler.runEntityLater(player, () -> {
@@ -127,15 +132,7 @@ public final class SignInputUtil {
         Location loc = placement.loc.clone();
         BlockData oldData = placement.oldData;
 
-        // Close inventory on next tick to avoid visual glitches
-        if (scheduler != null) {
-            scheduler.runEntity(player, () -> player.closeInventory());
-        }
-
-
-        // Place sign block in world on region thread / sync
-        if (scheduler != null) {
-            scheduler.runRegion(loc, () -> {
+        Runnable openAction = () -> {
             Block block = loc.getBlock();
             block.setType(Material.OAK_SIGN, false);
 
@@ -161,10 +158,15 @@ public final class SignInputUtil {
                 }
             }
 
-            // Set editable and allowed editor UUID
+            // Set editable, unwaxed and allowed editor UUID
             try {
                 java.lang.reflect.Method setEditable = sign.getClass().getMethod("setEditable", boolean.class);
                 setEditable.invoke(sign, true);
+            } catch (Throwable ignored) {}
+
+            try {
+                java.lang.reflect.Method setWaxed = sign.getClass().getMethod("setWaxed", boolean.class);
+                setWaxed.invoke(sign, false);
             } catch (Throwable ignored) {}
 
             try {
@@ -179,15 +181,28 @@ public final class SignInputUtil {
             try {
                 player.sendSignChange(loc, signLines);
             } catch (Throwable ignored) {}
+
             try {
-                player.openSign(sign);
+                Class<?> sideClass = Class.forName("org.bukkit.block.sign.Side");
+                Object frontSide = sideClass.getEnumConstants()[0];
+                java.lang.reflect.Method openSignMethod = player.getClass().getMethod("openSign", Sign.class, sideClass);
+                openSignMethod.invoke(player, sign, frontSide);
             } catch (Throwable t) {
-                finish(player, null);
+                try {
+                    player.openSign(sign);
+                } catch (Throwable t2) {
+                    finish(player, null);
+                }
             }
 
             // Hide from others immediately
             startHideFromOthers(plugin, player, loc, oldData);
-        });
+        };
+
+        if (scheduler != null) {
+            scheduler.runRegion(loc, openAction);
+        } else {
+            openAction.run();
         }
     }
 
@@ -238,7 +253,7 @@ public final class SignInputUtil {
     }
 
     private static Placement findGroundPlacement(Player player) {
-        Location loc = player.getLocation().clone().add(0, 5.0, 0);
+        Location loc = player.getLocation().clone().add(0, 2.0, 0);
         int maxHeight = loc.getWorld().getMaxHeight() - 2;
         if (loc.getY() > maxHeight) {
             loc.setY(maxHeight);

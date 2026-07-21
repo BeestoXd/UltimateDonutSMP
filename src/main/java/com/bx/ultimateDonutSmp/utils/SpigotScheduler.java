@@ -560,17 +560,9 @@ public final class SpigotScheduler {
 
         private static boolean looksLikeFolia() {
             try {
-                if ("Folia".equalsIgnoreCase(Bukkit.getServer().getName())) {
-                    return true;
-                }
-            } catch (RuntimeException ignored) {
-                return false;
-            }
-
-            try {
-                Class.forName("io.papermc.paper.threadedregions.RegionizedServer", false, Bukkit.class.getClassLoader());
+                Bukkit.class.getMethod("getGlobalRegionScheduler");
                 return true;
-            } catch (ClassNotFoundException ignored) {
+            } catch (NoSuchMethodException ignored) {
                 return false;
             }
         }

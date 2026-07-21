@@ -1,78 +1,138 @@
-# Hide privacy system: persistent scramble aliases and configured disguises.
+# Determines whether Enabled is enabled or disabled. Available options: true, false
 ENABLED: true
+# The numerical value for Cooldown Seconds. Available options: Any valid integer
 COOLDOWN-SECONDS: 30
+# The numerical value for Max Name Length. Available options: Any valid integer
 MAX-NAME-LENGTH: 16
-STAFF-MARKER: "&8[&cH&8] "
-
+# The text or value for Staff Marker. Available options: Any valid string text
+STAFF-MARKER: '&8[&cH&8] '
+# Configuration section for Scramble.
 SCRAMBLE:
+  # The numerical value for Length. Available options: Any valid integer
   LENGTH: 10
-  CHARACTERS: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
+  # The text or value for Characters. Available options: Any valid string text
+  CHARACTERS: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_
+  # Determines whether Obfuscated is enabled or disabled. Available options: true, false
   OBFUSCATED: true
-
-# Keys are used by /disguise <alias-key> <skin-key>.
+# Configuration section for Aliases.
 ALIASES:
+  # Configuration section for Mrbeast.
   mrbeast:
-    NAME: "MrBeast"
+    NAME: MrBeast
+    # The text or value for Skin. Available options: Any valid string text
     SKIN: mrbeast
+  # Configuration section for Technoblade.
   technoblade:
-    NAME: "Technoblade"
+    NAME: Technoblade
+    # The text or value for Skin. Available options: Any valid string text
     SKIN: technoblade
+  # Configuration section for Dream.
   dream:
-    NAME: "Dream"
+    NAME: Dream
+    # The text or value for Skin. Available options: Any valid string text
     SKIN: dream
+  # Configuration section for Drdonutt.
   drdonutt:
-    NAME: "DrDonutt"
+    NAME: DrDonutt
+    # The text or value for Skin. Available options: Any valid string text
     SKIN: drdonutt
-
-# USERNAME is resolved asynchronously through the existing Mojang/SkinsRestorer skin pipeline.
+# Configuration section for Skins.
 SKINS:
+  # Configuration section for Mrbeast.
   mrbeast:
-    DISPLAY-NAME: "MrBeast"
-    USERNAME: "MrBeast"
+    DISPLAY-NAME: MrBeast
+    # The text or value for Username. Available options: Any valid string text
+    USERNAME: MrBeast
+  # Configuration section for Technoblade.
   technoblade:
-    DISPLAY-NAME: "Technoblade"
-    USERNAME: "Technoblade"
+    DISPLAY-NAME: Technoblade
+    # The text or value for Username. Available options: Any valid string text
+    USERNAME: Technoblade
+  # Configuration section for Dream.
   dream:
-    DISPLAY-NAME: "Dream"
-    USERNAME: "Dream"
+    DISPLAY-NAME: Dream
+    # The text or value for Username. Available options: Any valid string text
+    USERNAME: Dream
+  # Configuration section for Drdonutt.
   drdonutt:
-    DISPLAY-NAME: "DrDonutt"
-    USERNAME: "DrDonutt"
-
+    DISPLAY-NAME: DrDonutt
+    # The text or value for Username. Available options: Any valid string text
+    USERNAME: DrDonutt
+# Configuration section for Gui.
 GUI:
+  # Configuration section for Main.
   MAIN:
-    TITLE: "&8ʜɪᴅᴇ"
+    TITLE: '&8ʜɪᴅᴇ'
     SIZE: 27
+  # Configuration section for Aliases.
   ALIASES:
-    TITLE: "&8select a name - {page}/{pages}"
+    TITLE: '&8select a name - {page}/{pages}'
     SIZE: 54
+  # Configuration section for Skins.
   SKINS:
-    TITLE: "&8ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}"
+    TITLE: '&8ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}'
     SIZE: 54
+  # Configuration section for List.
   LIST:
-    TITLE: "&8ʜɪᴅᴅᴇɴ ᴘʟᴀʏᴇʀѕ - {page}/{pages}"
+    TITLE: '&8ʜɪᴅᴅᴇɴ ᴘʟᴀʏᴇʀѕ - {page}/{pages}'
     SIZE: 54
-
 MESSAGES:
-  PLAYER-ONLY: "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
-  NO-PERMISSION: "&cyou do not have permission."
-  DEPENDENCY-MISSING: "&cʜɪᴅᴇ ʀᴇǫᴜɪʀᴇѕ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴛᴏ ʙᴇ ɪɴѕᴛᴀʟʟᴇᴅ ᴀɴᴅ ᴇɴᴀʙʟᴇᴅ."
-  DISABLED: "&cᴛʜᴇ ʜɪᴅᴇ ꜰᴇᴀᴛᴜʀᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
-  IN-COMBAT: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʜᴀɴɢᴇ ʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ."
-  COOLDOWN: "&cᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀɴɢɪɴɢ ʜɪᴅᴇ ᴀɢᴀɪɴ."
-  ALREADY-HIDDEN: "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴜѕɪɴɢ ᴛʜᴀᴛ ʜɪᴅᴇ ɪᴅᴇɴᴛɪᴛʏ."
-  NOT-HIDDEN: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ."
-  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."
-  INVALID-ALIAS: "&cᴛʜᴀᴛ ᴅɪѕɢᴜɪѕᴇ ᴀʟɪᴀѕ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴏʀ ɪѕ ɪɴᴠᴀʟɪᴅ."
-  INVALID-SKIN: "&cᴜɴᴀʙʟᴇ ᴛᴏ ʀᴇѕᴏʟᴠᴇ ᴛʜᴀᴛ ѕᴋɪɴ ɴᴀᴍᴇ ᴏʀ ᴜʀʟ."
-  SKIN-SEARCHING: "&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7..."
-  ALIAS-IN-USE: "&cᴛʜᴀᴛ ᴀʟɪᴀѕ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴜѕᴇ."
-  SCRAMBLED: "&aʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ɪѕ ɴᴏᴡ ѕᴄʀᴀᴍʙʟᴇᴅ ᴀѕ &f{alias}&a."
-  DISGUISED: "&aʏᴏᴜ ᴀʀᴇ ɴᴏᴡ ᴅɪѕɢᴜɪѕᴇᴅ ᴀѕ &f{alias}&a."
-  REMOVED: "&aʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ."
-  ADMIN-REMOVED: "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a."
-  REMOVED-BY-ADMIN: "&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ."
-  STATUS-NONE: "&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &cɪɴᴀᴄᴛɪᴠᴇ"
-  STATUS-ACTIVE: "&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &a{mode} &8- &f{alias}"
-  CHECK: "&bʜɪᴅᴇ ᴄʜᴇᴄᴋ\n&7ʀᴇᴀʟ ɴᴀᴍᴇ: &f{real}\n&7ᴀʟɪᴀѕ: &f{alias}\n&7ᴍᴏᴅᴇ: &f{mode}\n&7ѕᴋɪɴ: &f{skin}"
-  PERMISSION-REMOVED: "&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡᴀѕ ʀᴇᴍᴏᴠᴇᴅ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴘᴇʀᴍɪѕѕɪᴏɴ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ."
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cyou do not have permission.'
+  # The text or value for Dependency Missing. Available options: Any valid string text
+  DEPENDENCY-MISSING: '&cʜɪᴅᴇ ʀᴇǫᴜɪʀᴇѕ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴛᴏ ʙᴇ ɪɴѕᴛᴀʟʟᴇᴅ ᴀɴᴅ ᴇɴᴀʙʟᴇᴅ.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cᴛʜᴇ ʜɪᴅᴇ ꜰᴇᴀᴛᴜʀᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+  # The text or value for In Combat. Available options: Any valid string text
+  IN-COMBAT: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʜᴀɴɢᴇ ʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ.'
+  # The text or value for Cooldown. Available options: Any valid string text
+  COOLDOWN: '&cᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀɴɢɪɴɢ ʜɪᴅᴇ ᴀɢᴀɪɴ.'
+  # The text or value for Already Hidden. Available options: Any valid string text
+  ALREADY-HIDDEN: '&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴜѕɪɴɢ ᴛʜᴀᴛ ʜɪᴅᴇ ɪᴅᴇɴᴛɪᴛʏ.'
+  # The text or value for Not Hidden. Available options: Any valid string text
+  NOT-HIDDEN: '&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ.'
+  # The text or value for Player Not Found. Available options: Any valid string text
+  PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+  # The text or value for Invalid Alias. Available options: Any valid string text
+  INVALID-ALIAS: '&cᴛʜᴀᴛ ᴅɪѕɢᴜɪѕᴇ ᴀʟɪᴀѕ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴏʀ ɪѕ ɪɴᴠᴀʟɪᴅ.'
+  # The text or value for Invalid Skin. Available options: Any valid string text
+  INVALID-SKIN: '&cᴜɴᴀʙʟᴇ ᴛᴏ ʀᴇѕᴏʟᴠᴇ ᴛʜᴀᴛ ѕᴋɪɴ ɴᴀᴍᴇ ᴏʀ ᴜʀʟ.'
+  # The text or value for Skin Searching. Available options: Any valid string text
+  SKIN-SEARCHING: '&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7...'
+  # The text or value for Alias In Use. Available options: Any valid string text
+  ALIAS-IN-USE: '&cᴛʜᴀᴛ ᴀʟɪᴀѕ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴜѕᴇ.'
+  # The text or value for Scrambled. Available options: Any valid string text
+  SCRAMBLED: '&aʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ɪѕ ɴᴏᴡ ѕᴄʀᴀᴍʙʟᴇᴅ ᴀѕ &f{alias}&a.'
+  # The text or value for Disguised. Available options: Any valid string text
+  DISGUISED: '&aʏᴏᴜ ᴀʀᴇ ɴᴏᴡ ᴅɪѕɢᴜɪѕᴇᴅ ᴀѕ &f{alias}&a.'
+  # The text or value for Removed. Available options: Any valid string text
+  REMOVED: '&aʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ.'
+  # The text or value for Admin Removed. Available options: Any valid string text
+  ADMIN-REMOVED: '&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a.'
+  # The text or value for Removed By Admin. Available options: Any valid string text
+  REMOVED-BY-ADMIN: '&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ.'
+  # The text or value for Status None. Available options: Any valid string text
+  STATUS-NONE: '&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &cɪɴᴀᴄᴛɪᴠᴇ'
+  # The text or value for Status Active. Available options: Any valid string text
+  STATUS-ACTIVE: '&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &a{mode} &8- &f{alias}'
+  # The text or value for Check. Available options: Any valid string text
+  CHECK: '&bʜɪᴅᴇ ᴄʜᴇᴄᴋ
+
+    # The text or value for # The Text Or Mode For &7Ʀᴇᴀʟ ɴᴀᴍᴇ. Available Options. Available options: Any valid string text
+    # The text or mode for &7Ʀᴇᴀʟ ɴᴀᴍᴇ. Available options: Any string text &7ʀᴇᴀʟ
+    # The text or value for ɴᴀᴍᴇ. Available options: Any valid string text
+    ɴᴀᴍᴇ: &f{real}
+
+    # The text or value for # The Text Or Mode For &7ᴀʟɪᴀѕ. Available Options. Available options: Any valid string text
+    # The text or mode for &7ᴀʟɪᴀѕ. Available options: Any string text &7ᴀʟɪᴀѕ: &f{alias}
+
+    # The text or value for # The Text Or Mode For &7ᴍᴏᴅᴇ. Available Options. Available options: Any valid string text
+    # The text or mode for &7ᴍᴏᴅᴇ. Available options: Any string text &7ᴍᴏᴅᴇ: &f{mode}
+
+    # The text or value for # The Text Or Mode For &7Ѕᴋɪɴ. Available Options. Available options: Any valid string text
+    # The text or mode for &7Ѕᴋɪɴ. Available options: Any string text &7ѕᴋɪɴ: &f{skin}'
+  # The text or value for Permission Removed. Available options: Any valid string text
+  PERMISSION-REMOVED: '&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡᴀѕ ʀᴇᴍᴏᴠᴇᴅ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴘᴇʀᴍɪѕѕɪᴏɴ ɪѕ ɴᴏ
+    ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ.'

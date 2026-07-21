@@ -1,88 +1,202 @@
-# UDS setup: Discord webhook endpoints and cross-platform notification text.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Discord webhook URLs and payload templates.
+# Configuration section for Webhooks.
 WEBHOOKS:
-  ENABLED: true # Enables or disables webhooks.
-  URL: "https://discord.com/api/webhooks/your_webhook_here" # Sets the external URL used by this integration.
-  AVATAR_API: "https://visage.surgeplay.com/face/128/%uuid_no_dash%" # Sets the external URL used by this integration.
-  MODEL_API: "https://visage.surgeplay.com/full/384/%uuid_no_dash%" # Sets the external URL used by this integration.
-  BUST_API: "https://visage.surgeplay.com/bust/384/%uuid_no_dash%" # Sets the external URL used by this integration.
-
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The text or value for Url. Available options: Any valid string text
+  URL: https://discord.com/api/webhooks/your_webhook_here
+  # The text or value for Avatar Api. Available options: Any valid string text
+  AVATAR_API: https://visage.surgeplay.com/face/128/%uuid_no_dash%
+  # The text or value for Model Api. Available options: Any valid string text
+  MODEL_API: https://visage.surgeplay.com/full/384/%uuid_no_dash%
+  # The text or value for Bust Api. Available options: Any valid string text
+  BUST_API: https://visage.surgeplay.com/bust/384/%uuid_no_dash%
   MESSAGES:
+    # Configuration section for Ban.
     BAN:
-      ENABLED: true # Sets the message text for this response.
-      TITLE: "ᴘʟᴀʏᴇʀ ʙᴀɴɴᴇᴅ - %player%" # Sets the message text for this response.
-      COLOR: "#ff0000" # Sets the message text for this response.
-      DESCRIPTION: | # Sets the multi-line message text for this response.
-        :hammer: **ᴘᴜɴɪѕʜᴍᴇɴᴛ ᴛʏᴘᴇ:** ʙᴀɴ
-        **ᴘʟᴀʏᴇʀ:** %player%
-        **ѕᴛᴀꜰꜰ:** %staff%
-        **ʀᴇᴀѕᴏɴ:** ||%reason%||
-        **ᴅᴜʀᴀᴛɪᴏɴ:** %duration%
-        **ᴅᴀᴛᴇ:** %date%
-        **ɪᴅ:** `%id%`
-      THUMBNAIL: "%skin_bust%" # Sets the message text for this response.
-      AUTHOR_NAME: "ʙᴀɴ ѕʏѕᴛᴇᴍ" # Sets the message text for this response.
-      FOOTER: "ᴘᴜɴɪѕʜᴍᴇɴᴛ ɪѕѕᴜᴇᴅ ᴠɪᴀ ѕᴇʀᴠᴇʀ" # Sets the message text for this response.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: true
+      TITLE: Player Banned - %player%
+      # The text or value for Color. Available options: Any valid string text
+      COLOR: '#FF0000'
+      # The text or value for Description. Available options: Any valid string text
+      DESCRIPTION: ':hammer: **Punishment Type:** Ban
 
+        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
+        # The text or mode for **Player. Available options: Any string text **Player:**
+        %player%
+
+        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
+        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        %staff%
+
+        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
+        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        ||%reason%||
+
+        # The text or value for # The Text Or Mode For **Duration. Available Options. Available options: Any valid string text
+        # The text or mode for **Duration. Available options: Any string text **Duration:**
+        %duration%
+
+        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
+        # The text or mode for **Date. Available options: Any string text **Date:**
+        %date%
+
+        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
+        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
+
+        '
+      # The text or value for Thumbnail. Available options: Any valid string text
+      THUMBNAIL: '%skin_bust%'
+      # The text or value for Author Name. Available options: Any valid string text
+      AUTHOR_NAME: Ban System
+      # The text or value for Footer. Available options: Any valid string text
+      FOOTER: Punishment issued via server
+    # Configuration section for Mute.
     MUTE:
-      ENABLED: true # Sets the message text for this response.
-      TITLE: "ᴘʟᴀʏᴇʀ ᴍᴜᴛᴇᴅ - %player%" # Sets the message text for this response.
-      COLOR: "#ffff00" # Sets the message text for this response.
-      DESCRIPTION: | # Sets the multi-line message text for this response.
-        :mute: **ᴘᴜɴɪѕʜᴍᴇɴᴛ ᴛʏᴘᴇ:** ᴍᴜᴛᴇ
-        **ᴘʟᴀʏᴇʀ:** %player%
-        **ѕᴛᴀꜰꜰ:** %staff%
-        **ʀᴇᴀѕᴏɴ:** ||%reason%||
-        **ᴅᴜʀᴀᴛɪᴏɴ:** %duration%
-        **ᴅᴀᴛᴇ:** %date%
-        **ɪᴅ:** `%id%`
-      THUMBNAIL: "%skin_bust%" # Sets the message text for this response.
-      AUTHOR_NAME: "ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ѕʏѕᴛᴇᴍ" # Sets the message text for this response.
-      FOOTER: "ᴄʜᴀᴛ ʀᴇѕᴛʀɪᴄᴛɪᴏɴ ᴀᴘᴘʟɪᴇᴅ" # Sets the message text for this response.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: true
+      TITLE: Player Muted - %player%
+      # The text or value for Color. Available options: Any valid string text
+      COLOR: '#FFFF00'
+      # The text or value for Description. Available options: Any valid string text
+      DESCRIPTION: ':mute: **Punishment Type:** Mute
 
+        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
+        # The text or mode for **Player. Available options: Any string text **Player:**
+        %player%
+
+        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
+        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        %staff%
+
+        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
+        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        ||%reason%||
+
+        # The text or value for # The Text Or Mode For **Duration. Available Options. Available options: Any valid string text
+        # The text or mode for **Duration. Available options: Any string text **Duration:**
+        %duration%
+
+        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
+        # The text or mode for **Date. Available options: Any string text **Date:**
+        %date%
+
+        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
+        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
+
+        '
+      # The text or value for Thumbnail. Available options: Any valid string text
+      THUMBNAIL: '%skin_bust%'
+      # The text or value for Author Name. Available options: Any valid string text
+      AUTHOR_NAME: Moderation System
+      # The text or value for Footer. Available options: Any valid string text
+      FOOTER: Chat restriction applied
+    # Configuration section for Warn.
     WARN:
-      ENABLED: true # Sets the message text for this response.
-      TITLE: "ᴘʟᴀʏᴇʀ ᴡᴀʀɴᴇᴅ - %player%" # Sets the message text for this response.
-      COLOR: "#ffa500" # Sets the message text for this response.
-      DESCRIPTION: | # Sets the multi-line message text for this response.
-        :warning: **ᴘᴜɴɪѕʜᴍᴇɴᴛ ᴛʏᴘᴇ:** ᴡᴀʀɴɪɴɢ
-        **ᴘʟᴀʏᴇʀ:** %player%
-        **ѕᴛᴀꜰꜰ:** %staff%
-        **ʀᴇᴀѕᴏɴ:** ||%reason%||
-        **ᴅᴀᴛᴇ:** %date%
-        **ɪᴅ:** `%id%`
-      THUMBNAIL: "%skin_bust%" # Sets the message text for this response.
-      AUTHOR_NAME: "ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ѕʏѕᴛᴇᴍ" # Sets the message text for this response.
-      FOOTER: "ᴡᴀʀɴɪɴɢ ɪѕѕᴜᴇᴅ" # Sets the message text for this response.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: true
+      TITLE: Player Warned - %player%
+      # The text or value for Color. Available options: Any valid string text
+      COLOR: '#FFA500'
+      # The text or value for Description. Available options: Any valid string text
+      DESCRIPTION: ':warning: **Punishment Type:** Warning
 
+        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
+        # The text or mode for **Player. Available options: Any string text **Player:**
+        %player%
+
+        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
+        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        %staff%
+
+        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
+        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        ||%reason%||
+
+        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
+        # The text or mode for **Date. Available options: Any string text **Date:**
+        %date%
+
+        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
+        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
+
+        '
+      # The text or value for Thumbnail. Available options: Any valid string text
+      THUMBNAIL: '%skin_bust%'
+      # The text or value for Author Name. Available options: Any valid string text
+      AUTHOR_NAME: Moderation System
+      # The text or value for Footer. Available options: Any valid string text
+      FOOTER: Warning issued
+    # Configuration section for Kick.
     KICK:
-      ENABLED: true # Sets the message text for this response.
-      TITLE: "ᴘʟᴀʏᴇʀ ᴋɪᴄᴋᴇᴅ - %player%" # Sets the message text for this response.
-      COLOR: "#ff6347" # Sets the message text for this response.
-      DESCRIPTION: | # Sets the multi-line message text for this response.
-        :boot: **ᴘᴜɴɪѕʜᴍᴇɴᴛ ᴛʏᴘᴇ:** ᴋɪᴄᴋ
-        **ᴘʟᴀʏᴇʀ:** %player%
-        **ѕᴛᴀꜰꜰ:** %staff%
-        **ʀᴇᴀѕᴏɴ:** ||%reason%||
-        **ᴅᴀᴛᴇ:** %date%
-      THUMBNAIL: "%skin_bust%" # Sets the message text for this response.
-      AUTHOR_NAME: "ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ѕʏѕᴛᴇᴍ" # Sets the message text for this response.
-      FOOTER: "ᴘʟᴀʏᴇʀ ᴡᴀѕ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ѕᴇʀᴠᴇʀ" # Sets the message text for this response.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: true
+      TITLE: Player Kicked - %player%
+      # The text or value for Color. Available options: Any valid string text
+      COLOR: '#FF6347'
+      # The text or value for Description. Available options: Any valid string text
+      DESCRIPTION: ':boot: **Punishment Type:** Kick
 
+        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
+        # The text or mode for **Player. Available options: Any string text **Player:**
+        %player%
+
+        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
+        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        %staff%
+
+        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
+        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        ||%reason%||
+
+        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
+        # The text or mode for **Date. Available options: Any string text **Date:**
+        %date%
+
+        '
+      # The text or value for Thumbnail. Available options: Any valid string text
+      THUMBNAIL: '%skin_bust%'
+      # The text or value for Author Name. Available options: Any valid string text
+      AUTHOR_NAME: Moderation System
+      # The text or value for Footer. Available options: Any valid string text
+      FOOTER: Player was removed from server
+    # Configuration section for Blacklist.
     BLACKLIST:
-      ENABLED: true # Sets the message text for this response.
-      TITLE: "ᴘʟᴀʏᴇʀ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ - %player%" # Sets the message text for this response.
-      COLOR: "#000000" # Sets the message text for this response.
-      DESCRIPTION: | # Sets the multi-line message text for this response.
-        :no_entry: **ᴘᴇʀᴍᴀɴᴇɴᴛ ɴᴇᴛᴡᴏʀᴋ ʙᴀɴ**
-        **ᴘʟᴀʏᴇʀ:** %player%
-        **ѕᴛᴀꜰꜰ:** %staff%
-        **ʀᴇᴀѕᴏɴ:** ||%reason%||
-        **ᴅᴀᴛᴇ:** %date%
-        **ɪᴅ:** `%id%`
-        :exclamation: ᴛʜɪѕ ɪѕ ᴀ ᴘᴇʀᴍᴀɴᴇɴᴛ ɴᴇᴛᴡᴏʀᴋ-ᴡɪᴅᴇ ʙᴀɴ
-      THUMBNAIL: "%skin_bust%" # Sets the message text for this response.
-      AUTHOR_NAME: "ѕᴇᴄᴜʀɪᴛʏ ѕʏѕᴛᴇᴍ" # Sets the message text for this response.
-      FOOTER: "ʙʟᴀᴄᴋʟɪѕᴛ ᴇɴꜰᴏʀᴄᴇᴅ" # Sets the message text for this response.
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: true
+      TITLE: PLAYER BLACKLISTED - %player%
+      # The text or value for Color. Available options: Any valid string text
+      COLOR: '#000000'
+      # The text or value for Description. Available options: Any valid string text
+      DESCRIPTION: ':no_entry: **PERMANENT NETWORK BAN**
+
+        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
+        # The text or mode for **Player. Available options: Any string text **Player:**
+        %player%
+
+        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
+        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        %staff%
+
+        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
+        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        ||%reason%||
+
+        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
+        # The text or mode for **Date. Available options: Any string text **Date:**
+        %date%
+
+        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
+        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
+
+        # The text or value for # The Text Or Mode For . Available Options. Available options: Any valid string text
+        # The text or mode for . Available options: Any string text :exclamation:
+        This is a permanent network-wide ban
+
+        '
+      # The text or value for Thumbnail. Available options: Any valid string text
+      THUMBNAIL: '%skin_bust%'
+      # The text or value for Author Name. Available options: Any valid string text
+      AUTHOR_NAME: Security System
+      # The text or value for Footer. Available options: Any valid string text
+      FOOTER: Blacklist enforced

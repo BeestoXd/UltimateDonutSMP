@@ -231,20 +231,40 @@ public class HoverStatsManager {
         if (fallbackPrefix != null && !fallbackPrefix.isBlank()) {
             return fallbackPrefix;
         }
-        if (!ColorUtils.hasPAPI()) {
-            return "";
-        }
-
-        try {
-            String prefix = me.clip.placeholderapi.PlaceholderAPI
-                    .setPlaceholders(player, "%luckperms_prefix%");
-            if (prefix == null || prefix.isBlank() || prefix.startsWith("%")) {
-                return "";
+        if (ColorUtils.hasPAPI()) {
+            try {
+                String prefix = me.clip.placeholderapi.PlaceholderAPI
+                        .setPlaceholders(player, "%luckperms_prefix%");
+                if (prefix != null && !prefix.isBlank() && !prefix.startsWith("%")) {
+                    return prefix;
+                }
+                prefix = me.clip.placeholderapi.PlaceholderAPI
+                        .setPlaceholders(player, "%vault_prefix%");
+                if (prefix != null && !prefix.isBlank() && !prefix.startsWith("%")) {
+                    return prefix;
+                }
+                prefix = me.clip.placeholderapi.PlaceholderAPI
+                        .setPlaceholders(player, "%prefix%");
+                if (prefix != null && !prefix.isBlank() && !prefix.startsWith("%")) {
+                    return prefix;
+                }
+            } catch (Exception ignored) {
             }
-            return prefix;
-        } catch (Exception ignored) {
-            return "";
         }
+        if (org.bukkit.Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            try {
+                org.bukkit.plugin.RegisteredServiceProvider<net.milkbowl.vault.chat.Chat> rsp =
+                        org.bukkit.Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+                if (rsp != null && rsp.getProvider() != null) {
+                    String prefix = rsp.getProvider().getPlayerPrefix(player);
+                    if (prefix != null && !prefix.isBlank()) {
+                        return prefix;
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return "";
     }
 
     private void append(TextComponent root, BaseComponent[] components) {

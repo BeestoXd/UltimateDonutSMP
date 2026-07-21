@@ -1,44 +1,61 @@
-# UDS setup: Persistent storage and Redis connection settings.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Database engine, file path, host, credentials, and pool settings.
+# Configuration section for Database.
 DATABASE:
-  # SQLITE, MYSQL, or MONGODB.
-  # Redis is intentionally separate and is only used for cross-server messaging.
-  TYPE: "SQLITE" # Selects the mode or type used by this option.
-
+  TYPE: SQLITE
+  # Configuration section for Sqlite.
   SQLITE:
-    FILE: "data/data.db" # Sets the database connection value for this field.
-
+    # The text or value for File. Available options: Any valid string text
+    FILE: data/data.db
+  # Configuration section for Mysql.
   MYSQL:
-    HOST: "localhost" # Sets the database connection value for this field.
-    PORT: 3306 # Sets the database connection value for this field.
-    DATABASE: "ultimatedonutsmp" # Sets the database connection value for this field.
-    USERNAME: "root" # Sets the database connection value for this field.
-    PASSWORD: "" # Sets the database connection value for this field.
-    CREATE-DATABASE: true # Configures the create database option.
-    PARAMETERS: "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8" # Configures the parameters option.
-
+    # The text or value for Host. Available options: Any valid string text
+    HOST: localhost
+    # The numerical value for Port. Available options: Any valid integer
+    PORT: 3306
+    # The text or value for Database. Available options: Any valid string text
+    DATABASE: ultimatedonutsmp
+    # The text or value for Username. Available options: Any valid string text
+    USERNAME: root
+    # The text or value for Password. Available options: Any valid string text
+    PASSWORD: ''
+    # Determines whether Create Database is enabled or disabled. Available options: true, false
+    CREATE-DATABASE: true
+    # The text or value for Parameters. Available options: Any valid string text
+    PARAMETERS: useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
+  # Configuration section for Mongodb.
   MONGODB:
-    # MongoDB uses a local SQLite runtime cache for compatibility with existing JDBC-backed systems,
-    # then syncs table snapshots to MongoDB. Prefer MYSQL for active multi-server shared player data.
-    URI: "mongodb://localhost:27017" # Configures the uri option.
-    DATABASE: "ultimatedonutsmp" # Sets the database connection value for this field.
-    CACHE-FILE: "data/mongodb-cache.db" # Configures the cache file option.
-    SYNC-ON-AUTOSAVE: true # Configures the sync on autosave option.
-
-# UDS setup: Redis connection and pub/sub settings for network features.
+    # The text or value for Uri. Available options: Any valid string text
+    URI: mongodb://localhost:27017
+    # The text or value for Database. Available options: Any valid string text
+    DATABASE: ultimatedonutsmp
+    # The text or value for Cache File. Available options: Any valid string text
+    CACHE-FILE: data/mongodb-cache.db
+    # Determines whether Sync On Autosave is enabled or disabled. Available options: true, false
+    SYNC-ON-AUTOSAVE: true
+# Configuration section for Redis.
 REDIS:
-  ENABLED: false # Enables or disables redis.
-  HOST: "localhost" # Sets the database connection value for this field.
-  PORT: 6379 # Sets the database connection value for this field.
-  TIMEOUT: 2000 # Configures the timeout option.
-  PASSWORD: "" # Sets the database connection value for this field.
-  DATABASE: 0 # Sets the database connection value for this field.
-  MAX-TOTAL: 50 # Sets the allowed limit for this option.
-  MAX-IDLE: 10 # Sets the allowed limit for this option.
-  MIN-IDLE: 5 # Sets the allowed limit for this option.
-  TEST-ON-BORROW: false # Configures the test on borrow option.
-  TEST-ON-RETURN: false # Configures the test on return option.
-  TEST-WHILE-IDLE: false # Configures the test while idle option.
-  RECONNECT-DELAY-MS: 5000 # Configures the reconnect delay ms option.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: false
+  # The text or value for Host. Available options: Any valid string text
+  HOST: localhost
+  # The numerical value for Port. Available options: Any valid integer
+  PORT: 6379
+  # The numerical value for Timeout. Available options: Any valid integer
+  TIMEOUT: 2000
+  # The text or value for Password. Available options: Any valid string text
+  PASSWORD: ''
+  # The numerical value for Database. Available options: Any valid integer
+  DATABASE: 0
+  # The numerical value for Max Total. Available options: Any valid integer
+  MAX-TOTAL: 50
+  # The numerical value for Max Idle. Available options: Any valid integer
+  MAX-IDLE: 10
+  # The numerical value for Min Idle. Available options: Any valid integer
+  MIN-IDLE: 5
+  # Determines whether Test On Borrow is enabled or disabled. Available options: true, false
+  TEST-ON-BORROW: false
+  # Determines whether Test On Return is enabled or disabled. Available options: true, false
+  TEST-ON-RETURN: false
+  # Determines whether Test While Idle is enabled or disabled. Available options: true, false
+  TEST-WHILE-IDLE: false
+  # The numerical value for Reconnect Delay Ms. Available options: Any valid integer
+  RECONNECT-DELAY-MS: 5000

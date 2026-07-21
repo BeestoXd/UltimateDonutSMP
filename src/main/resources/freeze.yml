@@ -1,49 +1,70 @@
-# UDS setup: Staff freeze behavior, persistence, allowed commands, alerts, and messages.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Configure FREEZE options for this file.
+# Configuration section for Freeze.
 FREEZE:
-  ENABLED: true # Enables or disables freeze.
-  PERSIST-ON-QUIT: true # Configures the persist on quit option.
-  PERSIST-ON-RESTART: true # Configures the persist on restart option.
-  ALLOW-LOOK: true # Configures the allow look option.
-  ALERT-INTERVAL-TICKS: 100 # Sets how often this task or update runs.
-  LOG-USAGE: true # Configures the log usage option.
-  SERVER-NAME: "survival-01" # Sets the name text used here.
-  STAFF-PERMISSION: "ultimatedonutsmp.staff.freeze" # Sets the permission node required for this action.
-  ALERT-PERMISSION: "ultimatedonutsmp.staff.freeze.alert" # Sets the permission node required for this action.
-  EXEMPT-PERMISSION: "ultimatedonutsmp.staff.freeze.exempt" # Sets the permission node required for this action.
-  ADMIN-PERMISSION: "ultimatedonutsmp.admin.freeze" # Sets the permission node required for this action.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # Determines whether Persist On Quit is enabled or disabled. Available options: true, false
+  PERSIST-ON-QUIT: true
+  # Determines whether Persist On Restart is enabled or disabled. Available options: true, false
+  PERSIST-ON-RESTART: true
+  # Determines whether Allow Look is enabled or disabled. Available options: true, false
+  ALLOW-LOOK: true
+  # The numerical value for Alert Interval Ticks. Available options: Any valid integer
+  ALERT-INTERVAL-TICKS: 100
+  # Determines whether Log Usage is enabled or disabled. Available options: true, false
+  LOG-USAGE: true
+  # The text or value for Server Name. Available options: Any valid string text
+  SERVER-NAME: survival-01
+  # The text or value for Staff Permission. Available options: Any valid string text
+  STAFF-PERMISSION: ultimatedonutsmp.staff.freeze
+  # The text or value for Alert Permission. Available options: Any valid string text
+  ALERT-PERMISSION: ultimatedonutsmp.staff.freeze.alert
+  # The text or value for Exempt Permission. Available options: Any valid string text
+  EXEMPT-PERMISSION: ultimatedonutsmp.staff.freeze.exempt
+  # The text or value for Admin Permission. Available options: Any valid string text
+  ADMIN-PERMISSION: ultimatedonutsmp.admin.freeze
+  # Configuration section for Allowed Commands.
   ALLOWED-COMMANDS:
-    - "/discord"
-    - "/social"
-    - "/msg"
-    - "/r"
-    - "/helpop"
-
-  STATUS_ON: "&a&lON" # Configures the status on option.
-  STATUS_OFF: "&c&lOFF" # Configures the status off option.
-  MESSAGE: "&bfreeze &a%player% &7is now %status%" # Configures the message option.
+  - /discord
+  - /social
+  - /msg
+  - /r
+  - /helpop
+  # The text or value for Status On. Available options: Any valid string text
+  STATUS_ON: '&a&lON'
+  # The text or value for Status Off. Available options: Any valid string text
+  STATUS_OFF: '&c&lOFF'
+  # The text or value for Message. Available options: Any valid string text
+  MESSAGE: '&bFreeze &a%player% &7is now %status%'
+  # Configuration section for Alert.
   ALERT:
-    - ""
-    - "&c&lyou're currently frozen!"
-    - ""
-    - "&7- you cannot move or interact"
-    - "&7- staff members are reviewing your actions"
-    - "&7- join our discord for support:"
-    - "&6&ohttps://discord.com"
-    - ""
-  QUIT_MESSAGE: "&c[freeze] &4%player% &cleft while frozen on &4%server%" # Configures the quit message option.
-
-# UDS setup: Configure MESSAGES options for this file.
+  - ''
+  - '&c&lYou''re currently frozen!'
+  - ''
+  - '&7- You cannot move or interact'
+  - '&7- Staff members are reviewing your actions'
+  - '&7- Join our Discord for support:'
+  - '&6&ohttps://discord.com'
+  - ''
+  # The text or value for Quit Message. Available options: Any valid string text
+  QUIT_MESSAGE: '&c[Freeze] &4%player% &cleft while frozen on &4%server%'
 MESSAGES:
-  NO-PERMISSION: "&cyou do not have permission." # Sets the message text for this response.
-  FEATURE-DISABLED: "&cᴛʜᴇ ꜰʀᴇᴇᴢᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ." # Sets the message text for this response.
-  PLAYER-NOT-FOUND: "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ." # Sets the message text for this response.
-  TARGET-OFFLINE: "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴍᴜѕᴛ ʙᴇ ᴏɴʟɪɴᴇ." # Sets the message text for this response.
-  TARGET-EXEMPT: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ." # Sets the message text for this response.
-  SELF-TARGET: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ʏᴏᴜʀѕᴇʟꜰ." # Sets the message text for this response.
-  COMMAND-BLOCKED: "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴡʜɪʟᴇ ꜰʀᴏᴢᴇɴ." # Sets the message text for this response.
-  STILL-FROZEN: "&cʏᴏᴜ ᴀʀᴇ ѕᴛɪʟʟ ꜰʀᴏᴢᴇɴ. ᴡᴀɪᴛ ꜰᴏʀ ѕᴛᴀꜰꜰ ɪɴѕᴛʀᴜᴄᴛɪᴏɴѕ." # Sets the message text for this response.
-  UNFROZEN: "&aʏᴏᴜ ᴀʀᴇ ɴᴏ ʟᴏɴɢᴇʀ ꜰʀᴏᴢᴇɴ." # Sets the message text for this response.
-  RELOAD-SUCCESS: "&aꜰʀᴇᴇᴢᴇ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ." # Sets the message text for this response.
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cYou do not have permission.'
+  # The text or value for Feature Disabled. Available options: Any valid string text
+  FEATURE-DISABLED: '&cThe Freeze system is disabled.'
+  # The text or value for Player Not Found. Available options: Any valid string text
+  PLAYER-NOT-FOUND: '&cPlayer not found.'
+  # The text or value for Target Offline. Available options: Any valid string text
+  TARGET-OFFLINE: '&cThat player must be online.'
+  # The text or value for Target Exempt. Available options: Any valid string text
+  TARGET-EXEMPT: '&cYou cannot freeze that player.'
+  # The text or value for Self Target. Available options: Any valid string text
+  SELF-TARGET: '&cYou cannot freeze yourself.'
+  # The text or value for Command Blocked. Available options: Any valid string text
+  COMMAND-BLOCKED: '&cYou cannot use commands while frozen.'
+  # The text or value for Still Frozen. Available options: Any valid string text
+  STILL-FROZEN: '&cYou are still frozen. Wait for staff instructions.'
+  # The text or value for Unfrozen. Available options: Any valid string text
+  UNFROZEN: '&aYou are no longer frozen.'
+  # The text or value for Reload Success. Available options: Any valid string text
+  RELOAD-SUCCESS: '&aFreeze config reloaded.'

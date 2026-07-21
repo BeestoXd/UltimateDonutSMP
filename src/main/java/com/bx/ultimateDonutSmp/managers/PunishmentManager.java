@@ -106,16 +106,26 @@ public class PunishmentManager {
     }
 
     public int countHistory(UUID targetUuid, PunishmentQuery query) {
+        return countHistory(targetUuid, null, query);
+    }
+
+    public int countHistory(UUID targetUuid, String targetName, PunishmentQuery query) {
         return plugin.getDatabaseManager().countPunishmentHistory(
                 targetUuid,
+                targetName,
                 query == null ? PunishmentQuery.defaultQuery() : query,
                 System.currentTimeMillis()
         );
     }
 
     public List<PunishmentRecord> getHistory(UUID targetUuid, int limit, int offset, PunishmentQuery query) {
+        return getHistory(targetUuid, null, limit, offset, query);
+    }
+
+    public List<PunishmentRecord> getHistory(UUID targetUuid, String targetName, int limit, int offset, PunishmentQuery query) {
         return plugin.getDatabaseManager().loadPunishmentHistory(
                 targetUuid,
+                targetName,
                 query == null ? PunishmentQuery.defaultQuery() : query,
                 Math.max(1, limit),
                 Math.max(0, offset),
@@ -124,12 +134,17 @@ public class PunishmentManager {
     }
 
     public Optional<PunishmentRecord> getActiveRecord(UUID targetUuid, PunishmentType type) {
-        if (targetUuid == null || type == null) {
+        return getActiveRecord(targetUuid, null, type);
+    }
+
+    public Optional<PunishmentRecord> getActiveRecord(UUID targetUuid, String targetName, PunishmentType type) {
+        if ((targetUuid == null && (targetName == null || targetName.isBlank())) || type == null) {
             return Optional.empty();
         }
 
         List<PunishmentRecord> records = getHistory(
                 targetUuid,
+                targetName,
                 1,
                 0,
                 new PunishmentQuery(type, com.bx.ultimateDonutSmp.models.PunishmentFilterState.ACTIVE, null)
@@ -138,13 +153,17 @@ public class PunishmentManager {
     }
 
     public Optional<PunishmentRecord> getActiveRecord(UUID targetUuid, PunishmentType... types) {
-        if (targetUuid == null || types == null || types.length == 0) {
+        return getActiveRecord(targetUuid, null, types);
+    }
+
+    public Optional<PunishmentRecord> getActiveRecord(UUID targetUuid, String targetName, PunishmentType... types) {
+        if ((targetUuid == null && (targetName == null || targetName.isBlank())) || types == null || types.length == 0) {
             return Optional.empty();
         }
 
         PunishmentRecord newest = null;
         for (PunishmentType type : types) {
-            PunishmentRecord record = getActiveRecord(targetUuid, type).orElse(null);
+            PunishmentRecord record = getActiveRecord(targetUuid, targetName, type).orElse(null);
             if (record != null && (newest == null || record.getIssuedAt() > newest.getIssuedAt())) {
                 newest = record;
             }
@@ -153,12 +172,17 @@ public class PunishmentManager {
     }
 
     public boolean markActiveRecordsRemoved(UUID targetUuid, PunishmentType type, PunishmentRemovalRequest request) {
-        if (targetUuid == null || type == null || request == null) {
+        return markActiveRecordsRemoved(targetUuid, null, type, request);
+    }
+
+    public boolean markActiveRecordsRemoved(UUID targetUuid, String targetName, PunishmentType type, PunishmentRemovalRequest request) {
+        if ((targetUuid == null && (targetName == null || targetName.isBlank())) || type == null || request == null) {
             return false;
         }
 
         List<PunishmentRecord> activeRecords = getHistory(
                 targetUuid,
+                targetName,
                 100,
                 0,
                 new PunishmentQuery(type, com.bx.ultimateDonutSmp.models.PunishmentFilterState.ACTIVE, null)

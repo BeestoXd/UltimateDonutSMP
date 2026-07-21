@@ -744,7 +744,16 @@ public class CrateManager {
     }
 
     public ItemStack createRewardDisplayItem(Player player, CrateDefinition crate, CrateReward reward) {
-        ItemStack item = createDisplayItem(reward.display(), reward.display().amount());
+        ItemStack item = null;
+        if (reward.grant().type() == GrantType.ITEM && reward.grant().serializedItemData() != null && !reward.grant().serializedItemData().isBlank()) {
+            item = deserializeGrantItem(reward.grant().serializedItemData(), crate, reward);
+        }
+        if (item == null) {
+            item = createDisplayItem(reward.display(), reward.display().amount());
+        } else {
+            item = item.clone();
+            item.setAmount(Math.max(1, Math.min(reward.display().amount(), item.getMaxStackSize())));
+        }
         var meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ColorUtils.toComponent(applyPlaceholders(reward.display().displayName(), player, crate, reward)));

@@ -128,4 +128,19 @@ public enum AuctionCategory {
             return ALL;
         }
     }
+
+    public static AuctionCategory findCategoryForItem(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) {
+            return ALL;
+        }
+        for (AuctionCategory category : values()) {
+            if (category == ALL) {
+                continue;
+            }
+            if (category.matches(item)) {
+                return category;
+            }
+        }
+        return ALL;
+    }
 }

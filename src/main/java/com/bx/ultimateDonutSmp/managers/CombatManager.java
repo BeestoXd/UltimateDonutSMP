@@ -7,6 +7,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +29,22 @@ public class CombatManager {
         long cooldownMillis = getCooldownSeconds() * 1000L;
         combatMap.put(player.getUniqueId(), System.currentTimeMillis() + cooldownMillis);
         startCountdown(player);
+
+        if (player.getAllowFlight()
+                && player.getGameMode() != org.bukkit.GameMode.CREATIVE
+                && player.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+            if (plugin.getConfigManager().getConfig().getBoolean("FLY-SYSTEM.AUTO-DISABLE-OUTSIDE", true)) {
+                if (!PermissionUtils.has(player, "ultimatedonutsmp.staff.fly")) {
+                    player.setFlying(false);
+                    player.setAllowFlight(false);
+                    String msg = plugin.getConfigManager().getMessageOrDefault(
+                            "FLY.PLAYER_DISABLED",
+                            "&c✗ &7Flight deactivated because you left the allowed area or entered combat."
+                    );
+                    player.sendMessage(ColorUtils.toComponent(msg));
+                }
+            }
+        }
     }
 
     private void startCountdown(Player player) {
@@ -44,7 +62,8 @@ public class CombatManager {
             long remaining = getRemainingSeconds(uuid);
             String format = plugin.getConfigManager().getConfig()
                     .getString("COMBAT-MANAGER.ACTION-BAR", "&fcombat: &b${time}s")
-                    .replace("${time}", String.valueOf(remaining));
+                    .replace("${time}", String.valueOf(remaining))
+                    .replace("{time}", String.valueOf(remaining));
             PlayerSettingUtils.sendActionBar(plugin, p, ColorUtils.toComponent(format));
         }, 0L, 20L);
         if (task != null) {

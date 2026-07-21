@@ -1,32 +1,40 @@
-# UDS setup: FFA arena rules, rollback behavior, player state handling, and arena defaults.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+# Configuration section for Settings.
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
-  RETURN_DELAY_SECONDS: 3 # Sets the time value in seconds.
-
-# UDS setup: World or arena reset behavior after a match ends.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Return Delay Seconds. Available options: Any valid integer
+  RETURN_DELAY_SECONDS: 3
+# Configuration section for Rollback.
 ROLLBACK:
-  ENABLED: true # Enables or disables rollback.
-  PADDING_HORIZONTAL: 48 # Configures the padding horizontal option.
-  PADDING_VERTICAL: 20 # Configures the padding vertical option.
-  TIMEOUT_SECONDS: 10 # Sets the time value in seconds.
-  CLEANUP_PROJECTILES: true # Configures the cleanup projectiles option.
-  CLEANUP_DROPS: true # Configures the cleanup drops option.
-  CLEANUP_FIRE_AND_FLUIDS: true # Configures the cleanup fire and fluids option.
-
-# UDS setup: Inventory, health, effects, and state handling for arena entry/exit.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Padding Horizontal. Available options: Any valid integer
+  PADDING_HORIZONTAL: 48
+  # The numerical value for Padding Vertical. Available options: Any valid integer
+  PADDING_VERTICAL: 20
+  # The numerical value for Timeout Seconds. Available options: Any valid integer
+  TIMEOUT_SECONDS: 10
+  # Determines whether Cleanup Projectiles is enabled or disabled. Available options: true, false
+  CLEANUP_PROJECTILES: true
+  # Determines whether Cleanup Drops is enabled or disabled. Available options: true, false
+  CLEANUP_DROPS: true
+  # Determines whether Cleanup Fire And Fluids is enabled or disabled. Available options: true, false
+  CLEANUP_FIRE_AND_FLUIDS: true
+# Configuration section for Player State.
 PLAYER_STATE:
-  RESTORE_INVENTORY: true # Configures the restore inventory option.
-  RESTORE_HEALTH: true # Configures the restore health option.
-  RESTORE_EFFECTS: true # Configures the restore effects option.
-
-# UDS setup: Rule toggles that control what players can do in this mode.
+  # Determines whether Restore Inventory is enabled or disabled. Available options: true, false
+  RESTORE_INVENTORY: true
+  # Determines whether Restore Health is enabled or disabled. Available options: true, false
+  RESTORE_HEALTH: true
+  # Determines whether Restore Effects is enabled or disabled. Available options: true, false
+  RESTORE_EFFECTS: true
+# Configuration section for Rules.
 RULES:
-  BLOCK_COMMANDS: true # Configures the block commands option.
-  COUNT_TOWARD_GLOBAL_STATS: false # Configures the count toward global stats option.
-  GIVE_SURVIVAL_REWARDS: false # Configures the give survival rewards option.
-
-# UDS setup: Arena world, spawn, rollback, and match environment defaults.
-ARENA_SETTINGS: {} # Configures the arena settings option.
+  # Determines whether Block Commands is enabled or disabled. Available options: true, false
+  BLOCK_COMMANDS: true
+  # Determines whether Count Toward Global Stats is enabled or disabled. Available options: true, false
+  COUNT_TOWARD_GLOBAL_STATS: false
+  # Determines whether Give Survival Rewards is enabled or disabled. Available options: true, false
+  GIVE_SURVIVAL_REWARDS: false
+# The text or value for Arena Settings. Available options: Any valid string text
+ARENA_SETTINGS: {}

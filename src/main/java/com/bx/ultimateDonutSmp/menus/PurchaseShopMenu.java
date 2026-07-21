@@ -323,7 +323,8 @@ public class PurchaseShopMenu extends BaseMenu {
                 .replace("{currency_name_singular}", plugin.getCurrencyManager().singular(currencyType))
                 .replace("{currency_name_plural}", plugin.getCurrencyManager().plural(currencyType))
                 .replace("{item-name}", resolveItemName())
-                .replace("{quantity}", String.valueOf(quantity));
+                .replace("{quantity}", String.valueOf(quantity))
+                .replace("{Quantity}", String.valueOf(quantity));
     }
 
     private String replaceCommonPlaceholders(String text) {
@@ -357,6 +358,7 @@ public class PurchaseShopMenu extends BaseMenu {
                 .replace("{currency_name_plural}", plugin.getCurrencyManager().plural(currencyType))
                 .replace("%quantity%", String.valueOf(quantity))
                 .replace("{quantity}", String.valueOf(quantity))
+                .replace("{Quantity}", String.valueOf(quantity))
                 .replace("{item-name}", resolveItemName())
                 .replace("{item_name}", resolveItemName());
     }

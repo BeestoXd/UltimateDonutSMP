@@ -1,6 +1,8 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.models.ThreeChoice;
+import com.bx.ultimateDonutSmp.models.TwoChoice;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -12,6 +14,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,7 +33,16 @@ class DatabaseManagerPlayerSettingsTest {
             "team_chat_visible",
             "duel_music_enabled",
             "quiet_spawn_enabled",
-            "night_vision_enabled"
+            "night_vision_enabled",
+            "destroy_pearl_on_death",
+            "randomized_coords",
+            "death_messages_choice",
+            "advancement_messages_choice",
+            "join_leave_messages_choice",
+            "teleport_alerts_enabled",
+            "follow_alerts_enabled",
+            "explosion_sounds_enabled",
+            "display_donutplus_enabled"
     );
 
     @Test
@@ -52,6 +64,23 @@ class DatabaseManagerPlayerSettingsTest {
             original.setQuietSpawnEnabled(true);
             original.setNightVisionEnabled(true);
 
+            // Enum / 3 choice settings
+            original.setPrivateMessagesChoice(ThreeChoice.FRIENDS_FOLLOWED);
+            original.setTpaRequestsChoice(ThreeChoice.OFF);
+            original.setTpaHereRequestsChoice(ThreeChoice.FRIENDS_FOLLOWED);
+            original.setPaymentsChoice(ThreeChoice.OFF);
+
+            // New settings
+            original.setDestroyPearlOnDeath(false);
+            original.setRandomizedCoords(true);
+            original.setDeathMessagesChoice(TwoChoice.OFF);
+            original.setAdvancementMessagesChoice(ThreeChoice.FRIENDS_FOLLOWED);
+            original.setJoinLeaveMessagesChoice(ThreeChoice.OFF);
+            original.setTeleportAlertsEnabled(false);
+            original.setFollowAlertsEnabled(false);
+            original.setExplosionSoundsEnabled(false);
+            original.setDisplayDonutPlusEnabled(false);
+
             manager.savePlayer(original);
             PlayerData loaded = manager.loadPlayer(uuid);
 
@@ -68,6 +97,23 @@ class DatabaseManagerPlayerSettingsTest {
             assertFalse(loaded.isDuelMusicEnabled());
             assertTrue(loaded.isQuietSpawnEnabled());
             assertTrue(loaded.isNightVisionEnabled());
+
+            // Enum choices assertions
+            assertEquals(ThreeChoice.FRIENDS_FOLLOWED, loaded.getPrivateMessagesChoice());
+            assertEquals(ThreeChoice.OFF, loaded.getTpaRequestsChoice());
+            assertEquals(ThreeChoice.FRIENDS_FOLLOWED, loaded.getTpaHereRequestsChoice());
+            assertEquals(ThreeChoice.OFF, loaded.getPaymentsChoice());
+
+            // New settings assertions
+            assertFalse(loaded.isDestroyPearlOnDeath());
+            assertTrue(loaded.isRandomizedCoords());
+            assertEquals(TwoChoice.OFF, loaded.getDeathMessagesChoice());
+            assertEquals(ThreeChoice.FRIENDS_FOLLOWED, loaded.getAdvancementMessagesChoice());
+            assertEquals(ThreeChoice.OFF, loaded.getJoinLeaveMessagesChoice());
+            assertFalse(loaded.isTeleportAlertsEnabled());
+            assertFalse(loaded.isFollowAlertsEnabled());
+            assertFalse(loaded.isExplosionSoundsEnabled());
+            assertFalse(loaded.isDisplayDonutPlusEnabled());
         }
     }
 
@@ -100,6 +146,17 @@ class DatabaseManagerPlayerSettingsTest {
                     assertTrue(result.getInt("duel_music_enabled") != 0);
                     assertFalse(result.getInt("quiet_spawn_enabled") != 0);
                     assertFalse(result.getInt("night_vision_enabled") != 0);
+
+                    // New settings column defaults assertions
+                    assertTrue(result.getInt("destroy_pearl_on_death") != 0);
+                    assertFalse(result.getInt("randomized_coords") != 0);
+                    assertEquals(1, result.getInt("death_messages_choice"));
+                    assertEquals(1, result.getInt("advancement_messages_choice"));
+                    assertEquals(1, result.getInt("join_leave_messages_choice"));
+                    assertTrue(result.getInt("teleport_alerts_enabled") != 0);
+                    assertTrue(result.getInt("follow_alerts_enabled") != 0);
+                    assertTrue(result.getInt("explosion_sounds_enabled") != 0);
+                    assertTrue(result.getInt("display_donutplus_enabled") != 0);
                 }
             }
         }

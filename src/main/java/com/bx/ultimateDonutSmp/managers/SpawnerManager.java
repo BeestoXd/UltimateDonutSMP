@@ -56,7 +56,11 @@ import java.util.logging.Level;
 
 public class SpawnerManager {
 
-    public record ActionResult(boolean success, String message) {}
+    public record ActionResult(boolean success, String message, int consumedAmount) {
+        public ActionResult(boolean success, String message) {
+            this(success, message, 0);
+        }
+    }
 
     public record SellLootResult(
             boolean success,
@@ -229,17 +233,23 @@ public class SpawnerManager {
 
         meta.setDisplayName(ColorUtils.toComponent(definition.displayName()));
         meta.setLore(ColorUtils.toComponentList(List.of(
-                "&7ᴛʏᴘᴇ: &f" + ColorUtils.strip(definition.displayName()),
+                "&7Type: &f" + ColorUtils.strip(definition.displayName()),
                 "",
-                "&eᴘʟᴀᴄᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏʀ ѕᴛᴀᴄᴋ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ."
+                "&ePlace to create or stack this spawner."
         )));
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
         container.set(spawnerItemMarkerKey, PersistentDataType.BYTE, (byte) 1);
         container.set(spawnerItemTypeKey, PersistentDataType.STRING, definition.key());
-        container.set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
-        item.setItemMeta(meta);
-        item.setAmount((int) Math.min(64, amount));
+        if (amount <= 64) {
+            container.set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
+            item.setItemMeta(meta);
+            item.setAmount((int) amount);
+        } else {
+            container.set(spawnerItemAmountKey, PersistentDataType.LONG, amount);
+            item.setItemMeta(meta);
+            item.setAmount(1);
+        }
         return item;
     }
 
@@ -257,13 +267,19 @@ public class SpawnerManager {
             return;
         }
         meta.setLore(ColorUtils.toComponentList(List.of(
-                "&7ᴛʏᴘᴇ: &f" + ColorUtils.strip(definition.displayName()),
+                "&7Type: &f" + ColorUtils.strip(definition.displayName()),
                 "",
-                "&eᴘʟᴀᴄᴇ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴏʀ ѕᴛᴀᴄᴋ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ."
+                "&ePlace to create or stack this spawner."
         )));
-        meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
-        item.setItemMeta(meta);
-        item.setAmount((int) newAmount);
+        if (newAmount <= 64) {
+            meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, 1L);
+            item.setItemMeta(meta);
+            item.setAmount((int) newAmount);
+        } else {
+            meta.getPersistentDataContainer().set(spawnerItemAmountKey, PersistentDataType.LONG, newAmount);
+            item.setItemMeta(meta);
+            item.setAmount(1);
+        }
     }
 
     public boolean isSpawnerItem(ItemStack item) {
@@ -292,6 +308,22 @@ public class SpawnerManager {
         return meta == null ? null : meta.getPersistentDataContainer().get(spawnerItemTypeKey, PersistentDataType.STRING);
     }
 
+    public long getSpawnerItemBaseAmount(ItemStack item) {
+        if (!isSpawnerItem(item)) {
+            return 0L;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return 1L;
+        }
+        Long amount = meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG);
+        long nbtAmount = amount == null ? 1L : Math.max(1L, amount);
+        if (item.getAmount() > 1) {
+            return 1L;
+        }
+        return nbtAmount;
+    }
+
     public long getSpawnerItemAmount(ItemStack item) {
         if (!isSpawnerItem(item)) {
             return 0L;
@@ -302,13 +334,8 @@ public class SpawnerManager {
             return 0L;
         }
 
-        Long amount = meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG);
-        long nbtAmount = amount == null ? 1L : Math.max(1L, amount);
-        if (nbtAmount == 1L) {
-            return item.getAmount();
-        } else {
-            return nbtAmount * item.getAmount();
-        }
+        long baseAmount = getSpawnerItemBaseAmount(item);
+        return baseAmount * item.getAmount();
     }
 
     public SpawnerTypeDefinition getTypeDefinition(String typeKey) {
@@ -370,9 +397,12 @@ public class SpawnerManager {
         }
 
         String typeKey = getSpawnerItemType(item);
-        ItemMeta meta = item.getItemMeta();
-        Long nbtAmountVal = meta != null ? meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG) : 1L;
-        long amount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        long baseAmount = getSpawnerItemBaseAmount(item);
+        
+        boolean stackAll = player.isSneaking();
+        int quantity = stackAll ? item.getAmount() : 1;
+        long amount = baseAmount * quantity;
+
         if (amount <= 0L) {
             return fail("&cthis spawner item has an invalid amount.");
         }
@@ -527,9 +557,21 @@ public class SpawnerManager {
             return fail("&cyou can only stack the same spawner type onto this block.");
         }
 
-        ItemMeta meta = item.getItemMeta();
-        Long nbtAmountVal = meta != null ? meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG) : 1L;
-        long addAmount = nbtAmountVal == null ? 1L : Math.max(1L, nbtAmountVal);
+        long baseAmount = getSpawnerItemBaseAmount(item);
+        if (baseAmount <= 0L) {
+            return fail("&cthat spawner item has an invalid amount.");
+        }
+
+        long remainingCapacity = maxStackPerBlock - existing.getStackAmount();
+        if (remainingCapacity <= 0L) {
+            return fail("&cthat spawner is already at the max stack per block (&f" + NumberUtils.format(maxStackPerBlock) + "&c).");
+        }
+
+        boolean stackAll = player.isSneaking();
+        long maxUnitsCanAdd = Math.max(1L, remainingCapacity / baseAmount);
+        int quantity = stackAll ? (int) Math.min(item.getAmount(), maxUnitsCanAdd) : 1;
+        long addAmount = baseAmount * quantity;
+
         if (addAmount <= 0L) {
             return fail("&cthat spawner item has an invalid amount.");
         }
@@ -549,7 +591,7 @@ public class SpawnerManager {
             }
         });
 
-        return ok("&aspawner stack updated to &f" + NumberUtils.format(existing.getStackAmount()) + "&a.");
+        return new ActionResult(true, "&aspawner stack updated to &f" + NumberUtils.format(existing.getStackAmount()) + "&a.", quantity);
     }
 
     public SpawnerInstance getSpawner(Block block) {
@@ -697,9 +739,30 @@ public class SpawnerManager {
             return List.of();
         }
 
-        List<SpawnerLootEntry> entries = new ArrayList<>(instance.getStoredLootEntries());
-        entries.sort(Comparator.comparingLong(SpawnerLootEntry::getAmount).reversed()
-                .thenComparing(entry -> entry.getMaterial().name()));
+        Map<String, SpawnerLootEntry> merged = new LinkedHashMap<>();
+        SpawnerTypeDefinition definition = getTypeDefinition(instance.getMobTypeKey());
+        if (definition != null) {
+            for (SpawnerTypeDefinition.DropDefinition drop : definition.drops()) {
+                merged.put(drop.key().toUpperCase(Locale.US), new SpawnerLootEntry(drop.key(), drop.material(), 0L));
+            }
+        }
+        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
+            merged.put(entry.getKey().toUpperCase(Locale.US), entry);
+        }
+
+        List<SpawnerLootEntry> entries = new ArrayList<>(merged.values());
+        entries.sort((a, b) -> {
+            int cmp = Long.compare(b.getAmount(), a.getAmount());
+            if (cmp != 0) {
+                return cmp;
+            }
+            boolean aDisabled = instance.isLootDisabled(a.getKey());
+            boolean bDisabled = instance.isLootDisabled(b.getKey());
+            if (aDisabled != bDisabled) {
+                return aDisabled ? 1 : -1;
+            }
+            return a.getMaterial().name().compareTo(b.getMaterial().name());
+        });
         return entries;
     }
 
@@ -739,6 +802,9 @@ public class SpawnerManager {
 
         long totalMoved = 0L;
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
+            if (instance.isLootDisabled(entry.getKey())) {
+                continue;
+            }
             long moved = moveMaterialToInventory(player.getInventory(), entry.getMaterial(), entry.getAmount());
             if (moved <= 0L) {
                 continue;
@@ -768,14 +834,20 @@ public class SpawnerManager {
         Location dropLocation = getSpawnerCenter(instance).add(0, 0.5D, 0);
         long dropped = 0L;
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
-            dropped += dropMaterial(dropLocation, entry.getMaterial(), entry.getAmount());
+            if (instance.isLootDisabled(entry.getKey())) {
+                continue;
+            }
+            long droppedForEntry = dropMaterial(dropLocation, entry.getMaterial(), entry.getAmount());
+            if (droppedForEntry > 0L) {
+                instance.removeStoredLoot(entry.getKey(), droppedForEntry);
+                dropped += droppedForEntry;
+            }
         }
 
         if (dropped <= 0L) {
-            return fail("&cthere is no loot stored in that spawner.");
+            return fail("&cthere is no enabled loot stored in that spawner.");
         }
 
-        instance.clearStoredLoot();
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
         return ok("&adropped &f" + NumberUtils.format(dropped) + "&a stored items on the ground.");
@@ -797,6 +869,9 @@ public class SpawnerManager {
         long soldItems = 0L;
 
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
+            if (instance.isLootDisabled(entry.getKey())) {
+                continue;
+            }
             ItemStack single = new ItemStack(entry.getMaterial(), 1);
             WorthResult worthResult = plugin.getWorthManager().resolveWorth(single);
             if (!worthResult.sellable()) {
@@ -974,6 +1049,9 @@ public class SpawnerManager {
 
         boolean changed = false;
         for (SpawnerTypeDefinition.DropDefinition drop : definition.drops()) {
+            if (instance.isLootDisabled(drop.key())) {
+                continue;
+            }
             double expected = totalRolls * drop.chance() * drop.averageDropAmount();
             long generated = (long) Math.floor(expected);
             double remainder = expected - generated;
@@ -1015,6 +1093,9 @@ public class SpawnerManager {
 
         List<SpawnerLootEntry> entries = new ArrayList<>(instance.getStoredLootEntries());
         for (SpawnerLootEntry entry : entries) {
+            if (instance.isLootDisabled(entry.getKey())) {
+                continue;
+            }
             long storedAmount = entry.getAmount();
             if (storedAmount <= 0L) {
                 continue;
@@ -1259,6 +1340,14 @@ public class SpawnerManager {
         plugin.getDatabaseManager().replaceSpawnerLoot(instance.getId(), instance.getStoredLootEntries());
     }
 
+    public void saveSpawnerAndLoot(SpawnerInstance instance) {
+        if (instance == null || isTemporarySpawner(instance)) {
+            return;
+        }
+        plugin.getDatabaseManager().saveSpawner(instance);
+        saveLoot(instance);
+    }
+
     private void registerSpawner(SpawnerInstance instance) {
         synchronized (lock) {
             spawnersById.put(instance.getId(), instance);
@@ -1383,7 +1472,7 @@ public class SpawnerManager {
         spawnerState.update(true, false);
     }
 
-    public void consumeHeldSpawnerItem(Player player) {
+    public void consumeHeldSpawnerItem(Player player, boolean all) {
         if (player == null || player.getGameMode() == GameMode.CREATIVE) {
             return;
         }
@@ -1393,7 +1482,20 @@ public class SpawnerManager {
             return;
         }
 
-        int nextAmount = hand.getAmount() - 1;
+        consumeHeldSpawnerItem(player, all ? hand.getAmount() : 1);
+    }
+
+    public void consumeHeldSpawnerItem(Player player, int amount) {
+        if (player == null || player.getGameMode() == GameMode.CREATIVE || amount <= 0) {
+            return;
+        }
+
+        ItemStack hand = player.getInventory().getItemInMainHand();
+        if (hand == null || hand.getType().isAir()) {
+            return;
+        }
+
+        int nextAmount = hand.getAmount() - amount;
         if (nextAmount <= 0) {
             player.getInventory().setItemInMainHand(null);
             return;

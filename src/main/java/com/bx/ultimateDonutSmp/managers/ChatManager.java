@@ -30,7 +30,7 @@ public class ChatManager {
     private static final String LEGACY_HOVER_LORE_PATH = "CHAT-FORMAT.HOVER-LORE";
     private static final String LEGACY_CLICK_RUN_PATH = "CHAT-FORMAT.HOVER-STATS.CLICK-RUN-COMMAND";
     private static final String LEGACY_CLICK_COMMAND_PATH = "CHAT-FORMAT.HOVER-STATS.CLICK-COMMAND";
-    private static final String DEFAULT_CHAT_FORMAT = "%player%: %message%";
+    private static final String DEFAULT_CHAT_FORMAT = "&f%prefix%%player%&7: &f%message%";
     private static final Pattern LINK_PATTERN = Pattern.compile(
             "(?i)\\b(?:https?://)?(?:www\\.)?([a-z0-9-]+(?:\\.[a-z0-9-]+)+)(?::\\d+)?(?:/\\S*)?"
     );

@@ -38,18 +38,21 @@ public class PlayerRespawnListener implements Listener {
                 && plugin.getFfaManager().consumeRespawn(player, event);
 
         if (!duelRespawnHandled && !ffaRespawnHandled) {
-            Location respawnLocation = plugin.getSpawnManager().getSpawnLocation();
-            if (respawnLocation == null) {
-                respawnLocation = plugin.getSpawnManager().makeSafeDestination(event.getRespawnLocation());
-            }
-            if (respawnLocation != null) {
-                Location finalRespawnLocation = respawnLocation.clone();
-                event.setRespawnLocation(finalRespawnLocation);
-                plugin.getSpigotScheduler().runEntityLater(player, () -> {
-                    if (player.isOnline() && shouldSnapToRespawnLocation(player.getLocation(), finalRespawnLocation)) {
-                        plugin.getSpigotScheduler().teleport(player, finalRespawnLocation);
-                    }
-                }, 1L);
+            boolean respawnOnBed = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.RESPAWN-ON-BED", false);
+            if (!respawnOnBed || !isRespawningAtBedOrAnchor(event, player)) {
+                Location respawnLocation = plugin.getSpawnManager().getSpawnLocation();
+                if (respawnLocation == null) {
+                    respawnLocation = plugin.getSpawnManager().makeSafeDestination(event.getRespawnLocation());
+                }
+                if (respawnLocation != null) {
+                    Location finalRespawnLocation = respawnLocation.clone();
+                    event.setRespawnLocation(finalRespawnLocation);
+                    plugin.getSpigotScheduler().runEntityLater(player, () -> {
+                        if (player.isOnline() && shouldSnapToRespawnLocation(player.getLocation(), finalRespawnLocation)) {
+                            plugin.getSpigotScheduler().teleport(player, finalRespawnLocation);
+                        }
+                    }, 1L);
+                }
             }
         }
 
@@ -76,6 +79,23 @@ public class PlayerRespawnListener implements Listener {
             return true;
         }
         return current.distanceSquared(expected) > 0.36D;
+    }
+
+    private boolean isRespawningAtBedOrAnchor(PlayerRespawnEvent event, Player player) {
+        if (event.isBedSpawn() || event.isAnchorSpawn()) {
+            return true;
+        }
+        Location respawnLoc = event.getRespawnLocation();
+        if (respawnLoc == null) {
+            return false;
+        }
+        Location bedLoc = player.getBedSpawnLocation();
+        if (bedLoc == null) {
+            return false;
+        }
+        return respawnLoc.getWorld() != null &&
+               respawnLoc.getWorld().equals(bedLoc.getWorld()) &&
+               respawnLoc.distanceSquared(bedLoc) < 9.0D;
     }
 
     public static void scheduleChainmailKit(UltimateDonutSmp plugin, Player player, long delayTicks) {

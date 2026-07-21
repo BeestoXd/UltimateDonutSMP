@@ -98,6 +98,7 @@ public class DatabaseManager {
     private static final String MONGO_SCHEMA_COLLECTION = "_schema";
 
     private final UltimateDonutSmp plugin;
+    private Connection rawConnection;
     private Connection connection;
     private DatabaseType databaseType = DatabaseType.SQLITE;
     private MongoClient mongoClient;
@@ -123,6 +124,8 @@ public class DatabaseManager {
             ensurePortalColumns();
             ensureTeamColumns();
             ensureStaffModeColumns();
+            ensureHomeColumns();
+            ensureSpawnerColumns();
 
             if (mongoBridgeActive) {
                 importMongoSnapshotIntoSqlite();
@@ -141,7 +144,8 @@ public class DatabaseManager {
         File legacyDbFile = new File(plugin.getDataFolder(), "data.db");
         migrateLegacyDatabase(legacyDbFile, dbFile);
 
-        connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
+        rawConnection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
+        connection = wrapConnection(rawConnection);
         try (Statement st = connection.createStatement()) {
             st.execute("PRAGMA journal_mode=WAL");
         }
@@ -168,7 +172,8 @@ public class DatabaseManager {
         }
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + appendJdbcParameters(parameters);
-        connection = DriverManager.getConnection(url, username, password);
+        rawConnection = DriverManager.getConnection(url, username, password);
+        connection = wrapConnection(rawConnection);
     }
 
     private void initializeMongoBridgeConnection() throws Exception {
@@ -281,7 +286,18 @@ public class DatabaseManager {
               "  quiet_spawn_enabled INTEGER DEFAULT 0," +
               "  night_vision_enabled INTEGER DEFAULT 0," +
               "  keyall_remaining_seconds INTEGER DEFAULT -1," +
-              "  shard_booster_expiry INTEGER DEFAULT 0" +
+              "  shard_booster_expiry INTEGER DEFAULT 0," +
+              "  mob_spawn_disabled_until BIGINT DEFAULT 0," +
+              "  phantom_disabled_until BIGINT DEFAULT 0," +
+              "  destroy_pearl_on_death INTEGER DEFAULT 1," +
+              "  randomized_coords INTEGER DEFAULT 0," +
+              "  death_messages_choice INTEGER DEFAULT 1," +
+              "  advancement_messages_choice INTEGER DEFAULT 1," +
+              "  join_leave_messages_choice INTEGER DEFAULT 1," +
+              "  teleport_alerts_enabled INTEGER DEFAULT 1," +
+              "  follow_alerts_enabled INTEGER DEFAULT 1," +
+              "  explosion_sounds_enabled INTEGER DEFAULT 1," +
+              "  display_donutplus_enabled INTEGER DEFAULT 1" +
               ")"
           );
         execute(
@@ -353,6 +369,7 @@ public class DatabaseManager {
             "  world TEXT," +
             "  x REAL, y REAL, z REAL," +
             "  yaw REAL, pitch REAL," +
+            "  created_at BIGINT DEFAULT 0," +
             "  PRIMARY KEY (player_uuid, home_name)" +
             ")"
         );
@@ -420,6 +437,7 @@ public class DatabaseManager {
         );
         execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_issued ON punishments(target_uuid, issued_at DESC)");
         execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_type ON punishments(target_uuid, type)");
+        execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_name ON punishments(target_name_snapshot)");
         execute(
             "CREATE TABLE IF NOT EXISTS freeze_states (" +
             "  target_uuid TEXT PRIMARY KEY," +
@@ -528,6 +546,7 @@ public class DatabaseManager {
             "  last_processed_at INTEGER NOT NULL," +
             "  created_at INTEGER NOT NULL," +
             "  updated_at INTEGER NOT NULL," +
+            "  disabled_loot_keys TEXT DEFAULT ''," +
             "  UNIQUE(world, x, y, z)" +
             ")"
         );
@@ -627,6 +646,17 @@ public class DatabaseManager {
         ensureColumnExists("players", "night_vision_enabled", "INTEGER DEFAULT 0");
         ensureColumnExists("players", "keyall_remaining_seconds", "INTEGER DEFAULT -1");
         ensureColumnExists("players", "shard_booster_expiry", "INTEGER DEFAULT 0");
+        ensureColumnExists("players", "mob_spawn_disabled_until", "BIGINT DEFAULT 0");
+        ensureColumnExists("players", "phantom_disabled_until", "BIGINT DEFAULT 0");
+        ensureColumnExists("players", "destroy_pearl_on_death", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "randomized_coords", "INTEGER DEFAULT 0");
+        ensureColumnExists("players", "death_messages_choice", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "advancement_messages_choice", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "join_leave_messages_choice", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "teleport_alerts_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "follow_alerts_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "explosion_sounds_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "display_donutplus_enabled", "INTEGER DEFAULT 1");
     }
 
     private void ensurePortalColumns() throws SQLException {
@@ -653,6 +683,14 @@ public class DatabaseManager {
 
     private void ensureStaffModeColumns() throws SQLException {
         ensureColumnExists("staff_mode_states", "previous_game_mode", "TEXT DEFAULT 'SURVIVAL'");
+    }
+
+    private void ensureHomeColumns() throws SQLException {
+        ensureColumnExists("homes", "created_at", "BIGINT DEFAULT 0");
+    }
+
+    private void ensureSpawnerColumns() throws SQLException {
+        ensureColumnExists("spawners", "disabled_loot_keys", "TEXT DEFAULT ''");
     }
 
     private void ensureColumnExists(String table, String column, String definition) throws SQLException {
@@ -862,7 +900,7 @@ public class DatabaseManager {
         data.setMoneyMade(rs.getDouble("money_made"));
         data.setTpauto(rs.getInt("tpauto") == 1);
         data.setPhantomEnabled(rs.getInt("phantom_enabled") == 1);
-        data.setPaymentsEnabled(rs.getInt("payments_enabled") == 1);
+        data.setPaymentsChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("payments_enabled")));
         data.setScoreboardVisible(rs.getInt("scoreboard_visible") != 0);
         data.setPayAlertsEnabled(rs.getInt("pay_alerts_enabled") != 0);
         data.setHotbarMessagesEnabled(rs.getInt("hotbar_messages_enabled") != 0);
@@ -872,16 +910,16 @@ public class DatabaseManager {
         data.setTpaConfirmMenuEnabled(rs.getInt("tpa_confirm_menu_enabled") != 0);
         data.setChainmailOnRespawnEnabled(rs.getInt("chainmail_on_respawn_enabled") != 0);
         data.setLunarTeammatesEnabled(rs.getInt("lunar_teammates_enabled") != 0);
-        data.setTpaRequestsEnabled(rs.getInt("tpa_requests_enabled") != 0);
+        data.setTpaRequestsChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("tpa_requests_enabled")));
         data.setAutoTpaHereEnabled(rs.getInt("auto_tpahere_enabled") != 0);
-        data.setTpaHereRequestsEnabled(rs.getInt("tpahere_requests_enabled") != 0);
+        data.setTpaHereRequestsChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("tpahere_requests_enabled")));
         data.setTeamInvitesEnabled(rs.getInt("team_invites_enabled") != 0);
         data.setMobSpawnEnabled(rs.getInt("mob_spawn_enabled") != 0);
         data.setPayConfirmMenuEnabled(rs.getInt("pay_confirm_menu_enabled") != 0);
         data.setTotemParticlesEnabled(rs.getInt("totem_particles_enabled") != 0);
         data.setFastCrystalsEnabled(rs.getInt("fast_crystals_enabled") != 0);
         data.setAmethystBreakMessagesEnabled(rs.getInt("amethyst_break_messages_enabled") != 0);
-        data.setPrivateMessagesEnabled(rs.getInt("private_messages_enabled") != 0);
+        data.setPrivateMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("private_messages_enabled")));
         data.setKeyAllNotificationsEnabled(rs.getInt("keyall_notifications_enabled") != 0);
         data.setDuelRequestsEnabled(rs.getInt("duel_requests_enabled") != 0);
         data.setPublicChatEnabled(rs.getInt("public_chat_enabled") != 0);
@@ -898,6 +936,17 @@ public class DatabaseManager {
         data.setNightVisionEnabled(rs.getInt("night_vision_enabled") != 0);
         data.setKeyAllRemainingSeconds(rs.getLong("keyall_remaining_seconds"));
         data.setShardBoosterExpiryMillis(rs.getLong("shard_booster_expiry"));
+        data.setMobSpawnDisabledUntil(rs.getLong("mob_spawn_disabled_until"));
+        data.setPhantomDisabledUntil(rs.getLong("phantom_disabled_until"));
+        data.setDestroyPearlOnDeath(rs.getInt("destroy_pearl_on_death") != 0);
+        data.setRandomizedCoords(rs.getInt("randomized_coords") != 0);
+        data.setDeathMessagesChoice(com.bx.ultimateDonutSmp.models.TwoChoice.fromInt(rs.getInt("death_messages_choice")));
+        data.setAdvancementMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("advancement_messages_choice")));
+        data.setJoinLeaveMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("join_leave_messages_choice")));
+        data.setTeleportAlertsEnabled(rs.getInt("teleport_alerts_enabled") != 0);
+        data.setFollowAlertsEnabled(rs.getInt("follow_alerts_enabled") != 0);
+        data.setExplosionSoundsEnabled(rs.getInt("explosion_sounds_enabled") != 0);
+        data.setDisplayDonutPlusEnabled(rs.getInt("display_donutplus_enabled") != 0);
         data.setDirty(false);
         return data;
     }
@@ -1314,9 +1363,11 @@ public class DatabaseManager {
                  public_chat_enabled, server_broadcasts_enabled, auction_notifications_enabled,
                  explosion_particles_enabled, hide_all_players_enabled, notification_sounds_enabled,
                  rtp_coordinates_enabled, order_notifications_enabled, team_chat_visible,
-                 duel_music_enabled, quiet_spawn_enabled, night_vision_enabled, keyall_remaining_seconds,
-                 shard_booster_expiry)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    duel_music_enabled, quiet_spawn_enabled, night_vision_enabled, keyall_remaining_seconds,
+                    shard_booster_expiry, mob_spawn_disabled_until, phantom_disabled_until, destroy_pearl_on_death, randomized_coords, death_messages_choice,
+                    advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
+                    follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """)) {
             ps.setString(1, data.getUuid().toString());
             ps.setString(2, data.getUsername());
@@ -1334,7 +1385,7 @@ public class DatabaseManager {
             ps.setDouble(14, data.getMoneyMade());
             ps.setInt(15, data.isTpauto() ? 1 : 0);
             ps.setInt(16, data.isPhantomEnabled() ? 1 : 0);
-            ps.setInt(17, data.isPaymentsEnabled() ? 1 : 0);
+            ps.setInt(17, data.getPaymentsChoice().ordinal());
             ps.setInt(18, data.isScoreboardVisible() ? 1 : 0);
             ps.setInt(19, data.isPayAlertsEnabled() ? 1 : 0);
             ps.setInt(20, data.isHotbarMessagesEnabled() ? 1 : 0);
@@ -1344,16 +1395,16 @@ public class DatabaseManager {
             ps.setInt(24, data.isTpaConfirmMenuEnabled() ? 1 : 0);
             ps.setInt(25, data.isChainmailOnRespawnEnabled() ? 1 : 0);
             ps.setInt(26, data.isLunarTeammatesEnabled() ? 1 : 0);
-            ps.setInt(27, data.isTpaRequestsEnabled() ? 1 : 0);
+            ps.setInt(27, data.getTpaRequestsChoice().ordinal());
             ps.setInt(28, data.isAutoTpaHereEnabled() ? 1 : 0);
-            ps.setInt(29, data.isTpaHereRequestsEnabled() ? 1 : 0);
+            ps.setInt(29, data.getTpaHereRequestsChoice().ordinal());
             ps.setInt(30, data.isTeamInvitesEnabled() ? 1 : 0);
             ps.setInt(31, data.isMobSpawnEnabled() ? 1 : 0);
             ps.setInt(32, data.isPayConfirmMenuEnabled() ? 1 : 0);
             ps.setInt(33, data.isTotemParticlesEnabled() ? 1 : 0);
             ps.setInt(34, data.isFastCrystalsEnabled() ? 1 : 0);
             ps.setInt(35, data.isAmethystBreakMessagesEnabled() ? 1 : 0);
-            ps.setInt(36, data.isPrivateMessagesEnabled() ? 1 : 0);
+            ps.setInt(36, data.getPrivateMessagesChoice().ordinal());
             ps.setInt(37, data.isKeyAllNotificationsEnabled() ? 1 : 0);
             ps.setInt(38, data.isDuelRequestsEnabled() ? 1 : 0);
             ps.setInt(39, data.isPublicChatEnabled() ? 1 : 0);
@@ -1370,6 +1421,17 @@ public class DatabaseManager {
             ps.setInt(50, data.isNightVisionEnabled() ? 1 : 0);
             ps.setLong(51, data.getKeyAllRemainingSeconds());
             ps.setLong(52, data.getShardBoosterExpiryMillis());
+            ps.setLong(53, data.getMobSpawnDisabledUntil());
+            ps.setLong(54, data.getPhantomDisabledUntil());
+            ps.setInt(55, data.isDestroyPearlOnDeath() ? 1 : 0);
+            ps.setInt(56, data.isRandomizedCoords() ? 1 : 0);
+            ps.setInt(57, data.getDeathMessagesChoice().ordinal());
+            ps.setInt(58, data.getAdvancementMessagesChoice().ordinal());
+            ps.setInt(59, data.getJoinLeaveMessagesChoice().ordinal());
+            ps.setInt(60, data.isTeleportAlertsEnabled() ? 1 : 0);
+            ps.setInt(61, data.isFollowAlertsEnabled() ? 1 : 0);
+            ps.setInt(62, data.isExplosionSoundsEnabled() ? 1 : 0);
+            ps.setInt(63, data.isDisplayDonutPlusEnabled() ? 1 : 0);
             ps.executeUpdate();
             data.setDirty(false);
         } catch (SQLException e) {
@@ -1408,6 +1470,16 @@ public class DatabaseManager {
                     money_spent = 0,
                     money_made = 0
                 """;
+        return executeUpdate(sql);
+    }
+
+    public int resetAllPlayerMoney(double defaultMoney) {
+        String sql = "UPDATE players SET money = " + defaultMoney;
+        return executeUpdate(sql);
+    }
+
+    public int resetAllPlayerShards() {
+        String sql = "UPDATE players SET shards = 0";
         return executeUpdate(sql);
     }
 
@@ -1765,7 +1837,7 @@ public class DatabaseManager {
     public List<Home> loadHomes(UUID uuid) {
         List<Home> homes = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT * FROM homes WHERE player_uuid = ?")) {
+                "SELECT * FROM homes WHERE player_uuid = ? ORDER BY created_at ASC, home_name ASC")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -1774,7 +1846,8 @@ public class DatabaseManager {
                     Location loc = new LazyLocation(worldName,
                             rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"),
                             rs.getFloat("yaw"), rs.getFloat("pitch"));
-                    homes.add(new Home(uuid, rs.getString("home_name"), loc));
+                    long createdAt = rs.getLong("created_at");
+                    homes.add(new Home(uuid, rs.getString("home_name"), loc, createdAt));
                 }
             }
         } catch (SQLException e) {
@@ -1785,8 +1858,8 @@ public class DatabaseManager {
 
     public void saveHome(Home home) {
         try (PreparedStatement ps = connection.prepareStatement(
-                "REPLACE INTO homes (player_uuid, home_name, world, x, y, z, yaw, pitch)" +
-                " VALUES (?,?,?,?,?,?,?,?)")) {
+                "REPLACE INTO homes (player_uuid, home_name, world, x, y, z, yaw, pitch, created_at)" +
+                " VALUES (?,?,?,?,?,?,?,?,?)")) {
             ps.setString(1, home.getOwnerUuid().toString());
             ps.setString(2, home.getName());
             Location l = home.getLocation();
@@ -1804,6 +1877,7 @@ public class DatabaseManager {
             ps.setDouble(6, l != null ? l.getZ() : 0.0);
             ps.setFloat(7, l != null ? l.getYaw() : 0.0f);
             ps.setFloat(8, l != null ? l.getPitch() : 0.0f);
+            ps.setLong(9, home.getCreatedAt());
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save home", e);
@@ -2676,13 +2750,17 @@ public class DatabaseManager {
     }
 
     public int countPunishmentHistory(UUID targetUuid, PunishmentQuery query, long now) {
-        if (targetUuid == null) {
+        return countPunishmentHistory(targetUuid, null, query, now);
+    }
+
+    public int countPunishmentHistory(UUID targetUuid, String targetName, PunishmentQuery query, long now) {
+        if (targetUuid == null && (targetName == null || targetName.isBlank())) {
             return 0;
         }
 
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM punishments");
         List<Object> parameters = new ArrayList<>();
-        appendPunishmentFilters(sql, parameters, targetUuid, query, now);
+        appendPunishmentFilters(sql, parameters, targetUuid, targetName, query, now);
 
         try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
             bindParameters(ps, parameters);
@@ -2699,14 +2777,18 @@ public class DatabaseManager {
     }
 
     public List<PunishmentRecord> loadPunishmentHistory(UUID targetUuid, PunishmentQuery query, int limit, int offset, long now) {
+        return loadPunishmentHistory(targetUuid, null, query, limit, offset, now);
+    }
+
+    public List<PunishmentRecord> loadPunishmentHistory(UUID targetUuid, String targetName, PunishmentQuery query, int limit, int offset, long now) {
         List<PunishmentRecord> records = new ArrayList<>();
-        if (targetUuid == null) {
+        if (targetUuid == null && (targetName == null || targetName.isBlank())) {
             return records;
         }
 
         StringBuilder sql = new StringBuilder("SELECT * FROM punishments");
         List<Object> parameters = new ArrayList<>();
-        appendPunishmentFilters(sql, parameters, targetUuid, query, now);
+        appendPunishmentFilters(sql, parameters, targetUuid, targetName, query, now);
 
         PunishmentSortOrder sortOrder = query == null ? PunishmentSortOrder.NEWEST : query.sortOrder();
         sql.append(sortOrder == PunishmentSortOrder.OLDEST
@@ -2784,7 +2866,7 @@ public class DatabaseManager {
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM spawners ORDER BY id ASC")) {
             while (rs.next()) {
-                spawners.add(new SpawnerInstance(
+                SpawnerInstance instance = new SpawnerInstance(
                         rs.getLong("id"),
                         rs.getString("world"),
                         rs.getInt("x"),
@@ -2798,7 +2880,12 @@ public class DatabaseManager {
                         rs.getLong("last_processed_at"),
                         rs.getLong("created_at"),
                         rs.getLong("updated_at")
-                ));
+                );
+                String disabledKeysRaw = rs.getString("disabled_loot_keys");
+                if (disabledKeysRaw != null && !disabledKeysRaw.isBlank()) {
+                    instance.setDisabledLootKeys(List.of(disabledKeysRaw.split(",")));
+                }
+                spawners.add(instance);
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load managed spawners", e);
@@ -2828,8 +2915,8 @@ public class DatabaseManager {
 
     public long createSpawner(SpawnerInstance instance) {
         try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO spawners (world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO spawners (world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 Statement.RETURN_GENERATED_KEYS
         )) {
             ps.setString(1, instance.getWorld());
@@ -2844,6 +2931,7 @@ public class DatabaseManager {
             ps.setLong(10, instance.getLastProcessedAt());
             ps.setLong(11, instance.getCreatedAt());
             ps.setLong(12, instance.getUpdatedAt());
+            ps.setString(13, String.join(",", instance.getDisabledLootKeys()));
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -2858,10 +2946,18 @@ public class DatabaseManager {
     }
 
     public void saveSpawner(SpawnerInstance instance) {
+        if (instance.getId() <= 0L) {
+            long newId = createSpawner(instance);
+            if (newId > 0L) {
+                instance.setId(newId);
+            }
+            return;
+        }
+
         try (PreparedStatement ps = connection.prepareStatement(
                 "REPLACE INTO spawners " +
-                        "(id, world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                        "(id, world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
             ps.setLong(1, instance.getId());
             ps.setString(2, instance.getWorld());
             ps.setInt(3, instance.getX());
@@ -2875,6 +2971,7 @@ public class DatabaseManager {
             ps.setLong(11, instance.getLastProcessedAt());
             ps.setLong(12, instance.getCreatedAt());
             ps.setLong(13, instance.getUpdatedAt());
+            ps.setString(14, String.join(",", instance.getDisabledLootKeys()));
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save managed spawner " + instance.getId(), e);
@@ -3100,10 +3197,51 @@ public class DatabaseManager {
     private void appendPunishmentFilters(StringBuilder sql,
                                          List<Object> parameters,
                                          UUID targetUuid,
+                                         String targetName,
                                          PunishmentQuery query,
                                          long now) {
-        sql.append(" WHERE target_uuid = ?");
-        parameters.add(targetUuid.toString());
+        Set<String> uuids = new LinkedHashSet<>();
+        if (targetUuid != null) {
+            uuids.add(targetUuid.toString());
+        }
+        if (targetName != null && !targetName.isBlank()) {
+            try {
+                org.bukkit.OfflinePlayer offline = org.bukkit.Bukkit.getOfflinePlayer(targetName.trim());
+                if (offline != null && offline.getUniqueId() != null) {
+                    uuids.add(offline.getUniqueId().toString());
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        sql.append(" WHERE (");
+        boolean hasClause = false;
+        if (!uuids.isEmpty()) {
+            sql.append("target_uuid IN (");
+            int count = 0;
+            for (String uuidStr : uuids) {
+                if (count > 0) sql.append(", ");
+                sql.append("?");
+                parameters.add(uuidStr);
+                count++;
+            }
+            sql.append(")");
+            hasClause = true;
+        }
+
+        if (targetName != null && !targetName.isBlank()) {
+            if (hasClause) {
+                sql.append(" OR ");
+            }
+            sql.append("LOWER(target_name_snapshot) = LOWER(?)");
+            parameters.add(targetName.trim());
+            hasClause = true;
+        }
+
+        if (!hasClause) {
+            sql.append("1=0");
+        }
+        sql.append(")");
 
         if (query == null) {
             return;
@@ -3278,7 +3416,9 @@ public class DatabaseManager {
                             money_spent = 0,
                             money_made = 0,
                             keyall_remaining_seconds = -1,
-                            shard_booster_expiry = 0
+                            shard_booster_expiry = 0,
+                            mob_spawn_disabled_until = 0,
+                            phantom_disabled_until = 0
                         """)) {
                     statement.setDouble(1, Math.max(0D, startingMoney));
                     affected.put("players", statement.executeUpdate());
@@ -3640,9 +3780,9 @@ public class DatabaseManager {
                 schemaCollection.replaceOne(new Document("_id", table), schema, new ReplaceOptions().upsert(true));
             }
 
+            List<Document> documents = readTableDocuments(table);
             MongoCollection<Document> collection = mongoDatabase.getCollection(table);
             collection.deleteMany(new Document());
-            List<Document> documents = readTableDocuments(table);
             if (!documents.isEmpty()) {
                 collection.insertMany(documents);
             }
@@ -3937,4 +4077,65 @@ public class DatabaseManager {
     }
 
     public Connection getConnection() { return connection; }
+
+    private Connection wrapConnection(Connection target) {
+        if (target == null) {
+            return null;
+        }
+        return (Connection) java.lang.reflect.Proxy.newProxyInstance(
+                Connection.class.getClassLoader(),
+                new Class<?>[]{Connection.class},
+                new ThreadSafeConnectionHandler(target)
+        );
+    }
+
+    private static class ThreadSafeConnectionHandler implements java.lang.reflect.InvocationHandler {
+        private final Connection target;
+        private final Object lock = new Object();
+        private Thread transactionOwner = null;
+
+        public ThreadSafeConnectionHandler(Connection target) {
+            this.target = target;
+        }
+
+        @Override
+        public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
+            String methodName = method.getName();
+
+            synchronized (lock) {
+                long limit = System.currentTimeMillis() + 10000; // 10 seconds timeout
+                while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
+                    long delay = limit - System.currentTimeMillis();
+                    if (delay <= 0) {
+                        throw new SQLException("Database lock acquisition timeout (10s). Current owner: " + transactionOwner.getName());
+                    }
+                    try {
+                        lock.wait(delay);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new SQLException("Thread interrupted while waiting for database lock", e);
+                    }
+                }
+
+                if (methodName.equals("setAutoCommit") && args.length == 1 && args[0] instanceof Boolean) {
+                    boolean autoCommit = (Boolean) args[0];
+                    if (!autoCommit) {
+                        transactionOwner = Thread.currentThread();
+                    } else {
+                        transactionOwner = null;
+                        lock.notifyAll();
+                    }
+                } else if (methodName.equals("commit") || methodName.equals("rollback") || methodName.equals("close")) {
+                    transactionOwner = null;
+                    lock.notifyAll();
+                }
+
+                try {
+                    return method.invoke(target, args);
+                } catch (java.lang.reflect.InvocationTargetException e) {
+                    throw e.getCause();
+                }
+            }
+        }
+    }
 }

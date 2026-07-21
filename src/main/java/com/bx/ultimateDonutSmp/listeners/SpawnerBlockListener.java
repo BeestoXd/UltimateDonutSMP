@@ -42,6 +42,12 @@ public class SpawnerBlockListener implements Listener {
             return;
         }
 
+        if (event.getPlayer().isSneaking() && event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
+            plugin.getSpigotScheduler().runEntity(event.getPlayer(), () -> {
+                event.getPlayer().updateInventory();
+            });
+        }
+
         event.getPlayer().sendMessage(ColorUtils.toComponent(result.message()));
     }
 

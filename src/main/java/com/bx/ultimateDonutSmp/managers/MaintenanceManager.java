@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -222,31 +221,32 @@ public class MaintenanceManager {
         String titleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_TITLE", "&a&lѕᴇʀᴠᴇʀ ᴏɴʟɪɴᴇ");
         String subtitleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_SUBTITLE", "&7ѕᴇɴᴅɪɴɢ ʏᴏᴜ ʙᴀᴄᴋ ɪɴ %seconds% ѕᴇᴄᴏɴᴅѕ...");
 
-        new BukkitRunnable() {
-            int countdown = delaySeconds;
-
-            @Override
-            public void run() {
-                if (!player.isOnline()) {
-                    cancel();
-                    return;
+        final int[] countdown = {delaySeconds};
+        final org.bukkit.scheduler.BukkitTask[] taskRef = new org.bukkit.scheduler.BukkitTask[1];
+        taskRef[0] = plugin.getSpigotScheduler().runEntityTimer(player, () -> {
+            if (!player.isOnline()) {
+                if (taskRef[0] != null) {
+                    taskRef[0].cancel();
                 }
-
-                if (countdown <= 0) {
-                    sendToLobby(player, targetServerId);
-                    cancel();
-                    return;
-                }
-
-                String subtitle = subtitleMsg.replace("%seconds%", String.valueOf(countdown));
-                player.sendTitle(
-                        ColorUtils.colorize(titleMsg),
-                        ColorUtils.colorize(subtitle),
-                        0, 25, 0
-                );
-
-                countdown--;
+                return;
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+
+            if (countdown[0] <= 0) {
+                sendToLobby(player, targetServerId);
+                if (taskRef[0] != null) {
+                    taskRef[0].cancel();
+                }
+                return;
+            }
+
+            String subtitle = subtitleMsg.replace("%seconds%", String.valueOf(countdown[0]));
+            player.sendTitle(
+                    ColorUtils.colorize(titleMsg),
+                    ColorUtils.colorize(subtitle),
+                    0, 25, 0
+            );
+
+            countdown[0]--;
+        }, 0L, 20L);
     }
 }

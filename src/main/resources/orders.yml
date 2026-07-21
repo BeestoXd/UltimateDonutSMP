@@ -1,245 +1,178 @@
-# UDS setup: Orders marketplace behavior, item selection, pricing, delivery, and menus.
-# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
-
-# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
+# Configuration section for Settings.
 SETTINGS:
-  ENABLED: true # Enables or disables settings.
-  ORDER_DURATION_HOURS: 168 # Sets how long this behavior lasts.
-  MAX_ACTIVE_ORDERS_DEFAULT: 5 # Sets the allowed limit for this option.
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Order Duration Hours. Available options: Any valid integer
+  ORDER_DURATION_HOURS: 168
+  # The numerical value for Max Active Orders Default. Available options: Any valid integer
+  MAX_ACTIVE_ORDERS_DEFAULT: 5
+  # Configuration section for Max Active Orders By Permission.
   MAX_ACTIVE_ORDERS_BY_PERMISSION:
-    ultimatedonutsmp.orders.limit.10: 10 # Configures the ultimatedonutsmp orders limit 10 option.
-    ultimatedonutsmp.orders.limit.15: 15 # Configures the ultimatedonutsmp orders limit 15 option.
-  MAX_QUANTITY_PER_ORDER: 2304 # Sets the allowed limit for this option.
-  # SELECT_ITEM = opens the configured order catalog menu. This is the default.
-  # INVENTORY_ITEM = lets players click an item from their inventory as the exact order template.
-  # SEARCH_ITEM = asks players to type an item/category search, then opens matching results.
-  # Valid values: SELECT_ITEM, INVENTORY_ITEM, SEARCH_ITEM. Invalid values fall back to SELECT_ITEM.
-  ITEM_SELECTION_MODE: SELECT_ITEM # Selects the mode or type used by this option.
-  # SELECT_ITEM_SOURCE only changes the SELECT_ITEM menu contents.
-  # CATEGORY_FILTERS = use the curated CATEGORY_FILTERS list below. This is the default.
-  # SERVER_MATERIALS = generate all orderable materials from the running server.jar.
-  # Valid values: CATEGORY_FILTERS, SERVER_MATERIALS. Invalid values fall back to CATEGORY_FILTERS.
-  SELECT_ITEM_SOURCE: CATEGORY_FILTERS # Configures the select item source option.
-  CLICK_COOLDOWN_MS: 750 # Sets the cooldown before this action can run again.
-  EXPIRE_CHECK_SECONDS: 30 # Sets the time value in seconds.
-
-# UDS setup: Price floors, caps, fees, escrow limits, and refund behavior.
+    # The numerical value for Ultimatedonutsmp.Orders.Limit.10. Available options: Any valid integer
+    ultimatedonutsmp.orders.limit.10: 10
+    # The numerical value for Ultimatedonutsmp.Orders.Limit.15. Available options: Any valid integer
+    ultimatedonutsmp.orders.limit.15: 15
+  # The numerical value for Max Quantity Per Order. Available options: Any valid integer
+  MAX_QUANTITY_PER_ORDER: 2304
+  # The numerical value for Click Cooldown Ms. Available options: Any valid integer
+  CLICK_COOLDOWN_MS: 750
+  # The numerical value for Expire Check Seconds. Available options: Any valid integer
+  EXPIRE_CHECK_SECONDS: 30
+# Configuration section for Pricing.
 PRICING:
-  MIN_PRICE_EACH: 10 # Sets the allowed limit for this option.
-  # Maximum price for one requested item. Default matches MAX_TOTAL_BUDGET so the total escrow cap is the main limit.
-  MAX_PRICE_EACH: 250000000 # Sets the allowed limit for this option.
-  # Maximum total escrow budget for one order after quantity x price each.
-  MAX_TOTAL_BUDGET: 250000000 # Sets the allowed limit for this option.
-  ORDER_CREATION_FEE: 0 # Configures the order creation fee option.
-
-# UDS setup: How matched order items are delivered or claimed.
+  # The numerical value for Min Price Each. Available options: Any valid integer
+  MIN_PRICE_EACH: 10
+  # The numerical value for Max Price Each. Available options: Any valid integer
+  MAX_PRICE_EACH: 1000000
+  # The numerical value for Max Total Budget. Available options: Any valid integer
+  MAX_TOTAL_BUDGET: 250000000
+  # The numerical value for Order Creation Fee. Available options: Any valid integer
+  ORDER_CREATION_FEE: 0
+# Configuration section for Delivery.
 DELIVERY:
-  # DEPOSIT_GUI opens a 35-slot deposit inventory. AUTO_SCAN keeps the legacy inventory scan.
+  # The numerical value for Max Deliver Per Click. Available options: Any valid integer
+  MAX_DELIVER_PER_CLICK: 64
+  # The Mode setting. Available options: NORMAL, HARDCORE, CASUAL
   MODE: DEPOSIT_GUI
-  MAX_DELIVER_PER_CLICK: 64 # Sets the allowed limit for this option.
+  # The numerical value for Max Deliver Per Transaction. Available options: Any valid integer
   MAX_DELIVER_PER_TRANSACTION: 2304
-  LIMIT_TO_STACK_SIZE: false # If true, caps delivery to 1 stack per click. If false, allows bulk delivery.
-  CLAIMS_ENABLED: true # If true, players can claim/collect their completed orders and refunds.
-
-# UDS setup: Rules used when comparing submitted items to order templates.
+# Configuration section for Matching.
 MATCHING:
+  # Configuration section for Blocked Materials.
   BLOCKED_MATERIALS:
-    - BEDROCK
-    - BARRIER
-    - COMMAND_BLOCK
-    - CHAIN_COMMAND_BLOCK
-    - REPEATING_COMMAND_BLOCK
-    - STRUCTURE_BLOCK
-    - STRUCTURE_VOID
-    - JIGSAW
-    - LIGHT
-
-# UDS setup: Curated item categories shown in order selection menus.
+  - BEDROCK
+  - BARRIER
+  - COMMAND_BLOCK
+  - CHAIN_COMMAND_BLOCK
+  - REPEATING_COMMAND_BLOCK
+  - STRUCTURE_BLOCK
+  - STRUCTURE_VOID
+  - JIGSAW
+  - LIGHT
+# Configuration section for Category Filters.
 CATEGORY_FILTERS:
-  ALL: [] # Configures the all option.
+  # A list configuration for All. Available options: Multiple items
+  ALL: []
+  # Configuration section for Blocks.
   BLOCKS:
-    - STONE
-    - COBBLESTONE
-    - DIRT
-    - OAK_LOG
-    - GLASS
-    - OBSIDIAN
+  - STONE
+  - COBBLESTONE
+  - DIRT
+  - OAK_LOG
+  - GLASS
+  - OBSIDIAN
+  # Configuration section for Tools.
   TOOLS:
-    - IRON_PICKAXE
-    - DIAMOND_PICKAXE
-    - DIAMOND_AXE
-    - DIAMOND_SHOVEL
+  - IRON_PICKAXE
+  - DIAMOND_PICKAXE
+  - DIAMOND_AXE
+  - DIAMOND_SHOVEL
+  # Configuration section for Food.
   FOOD:
-    - APPLE
-    - BREAD
-    - COOKED_BEEF
-    - COOKED_CHICKEN
-    - GOLDEN_CARROT
+  - APPLE
+  - BREAD
+  - COOKED_BEEF
+  - COOKED_CHICKEN
+  - GOLDEN_CARROT
+  # Configuration section for Combat.
   COMBAT:
-    - ARROW
-    - SHIELD
-    - DIAMOND_SWORD
-    - NETHERITE_SWORD
+  - ARROW
+  - SHIELD
+  - DIAMOND_SWORD
+  - NETHERITE_SWORD
+  # Configuration section for Potions.
   POTIONS:
-    - GLASS_BOTTLE
-    - FERMENTED_SPIDER_EYE
-    - BLAZE_POWDER
+  - GLASS_BOTTLE
+  - FERMENTED_SPIDER_EYE
+  - BLAZE_POWDER
+  # Configuration section for Books.
   BOOKS:
-    - BOOK
-    - BOOKSHELF
-    - LECTERN
+  - BOOK
+  - BOOKSHELF
+  - LECTERN
+  # Configuration section for Ingredients.
   INGREDIENTS:
-    - WHEAT
-    - SUGAR_CANE
-    - BLAZE_ROD
-    - ENDER_PEARL
-    - SLIME_BALL
+  - WHEAT
+  - SUGAR_CANE
+  - BLAZE_ROD
+  - ENDER_PEARL
+  - SLIME_BALL
+  # Configuration section for Utilities.
   UTILITIES:
-    - HOPPER
-    - PISTON
-    - OBSERVER
-    - REDSTONE
-    - DISPENSER
-
-# UDS setup: Menu title, rows, slots, buttons, and item layout for this feature.
+  - HOPPER
+  - PISTON
+  - OBSERVER
+  - REDSTONE
+  - DISPENSER
+# Configuration section for Gui.
 GUI:
+  # Configuration section for Main.
   MAIN:
-    TITLE: "&8ᴏʀᴅᴇʀѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
-    BUTTONS:
-      PREV: { SLOT: 45, MATERIAL: ARROW }
-      SORT: { SLOT: 47, MATERIAL: CAULDRON }
-      FILTER: { SLOT: 48, MATERIAL: HOPPER }
-      REFRESH: { SLOT: 49, MATERIAL: CLOCK }
-      SEARCH: { SLOT: 50, MATERIAL: SPYGLASS }
-      MY_ORDERS: { SLOT: 51, MATERIAL: CHEST }
-      COLLECT: { SLOT: 52, MATERIAL: ENDER_CHEST }
-      NEXT: { SLOT: 53, MATERIAL: ARROW }
+    TITLE: '&8Orders'
+    SIZE: 54
+    # The numerical value for Items Per Page. Available options: Any valid integer
+    ITEMS_PER_PAGE: 45
+  # Configuration section for My Orders.
   MY_ORDERS:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴍʏ ᴏʀᴅᴇʀѕ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 25 # Sets how many entries appear on each page.
+    TITLE: '&8Orders -> My Orders'
+    SIZE: 27
+    # The numerical value for Items Per Page. Available options: Any valid integer
+    ITEMS_PER_PAGE: 45
+    # Configuration section for Buttons.
     BUTTONS:
-      BACK: { SLOT: 25, MATERIAL: COMPASS }
-      NEW: { SLOT: 26, MATERIAL: LIME_DYE }
+      # Configuration section for New.
+      NEW:
+        SLOT: 26
+  # Configuration section for New Order.
   NEW_ORDER:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ɴᴇᴡ ᴏʀᴅᴇʀ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    TITLE: '&8Orders -> New Order'
+    SIZE: 27
+  # Configuration section for Select Item.
   SELECT_ITEM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ѕᴇʟᴇᴄᴛ ɪᴛᴇᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
-  SEARCH_ITEM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
-  INVENTORY_ITEM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴄʜᴏᴏѕᴇ ɪᴛᴇᴍ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    TITLE: '&8Orders -> Select Item'
+    SIZE: 54
+    # The numerical value for Items Per Page. Available options: Any valid integer
+    ITEMS_PER_PAGE: 45
+  # Configuration section for Edit Order.
   EDIT_ORDER:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴇᴅɪᴛ ᴏʀᴅᴇʀ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
+    TITLE: '&8Orders -> Edit Order'
+    SIZE: 27
+  # Configuration section for Deliver Confirm.
   DELIVER_CONFIRM:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟɪᴠᴇʀ" # Sets the title text shown for this menu or prompt.
-    SIZE: 27 # Sets the inventory size in slots.
-  DELIVERY_DEPOSIT:
-    SIZE: 36
-    BUTTONS:
-      CONFIRM: { SLOT: 35, MATERIAL: LIME_STAINED_GLASS_PANE }
-  DELIVERY_CONFIRM:
+    TITLE: '&8Orders -> Deliver'
     SIZE: 27
-    BUTTONS:
-      CANCEL: { SLOT: 11, MATERIAL: RED_STAINED_GLASS_PANE }
-      CONFIRM: { SLOT: 15, MATERIAL: LIME_STAINED_GLASS_PANE }
-  DELETE:
-    SIZE: 27
-    BUTTONS:
-      BACK: { SLOT: 10, MATERIAL: RED_STAINED_GLASS_PANE }
-      CONFIRM: { SLOT: 16, MATERIAL: LIME_STAINED_GLASS_PANE }
+  # Configuration section for Collect.
   COLLECT:
-    TITLE: "&8ᴏʀᴅᴇʀѕ -> ᴄᴏʟʟᴇᴄᴛ" # Sets the title text shown for this menu or prompt.
-    SIZE: 54 # Sets the inventory size in slots.
-    ITEMS_PER_PAGE: 45 # Sets how many entries appear on each page.
+    TITLE: '&8Orders -> Collect'
+    SIZE: 54
+    # The numerical value for Items Per Page. Available options: Any valid integer
+    ITEMS_PER_PAGE: 45
+  # Configuration section for Delivery Deposit.
+  DELIVERY_DEPOSIT:
+    # Configuration section for Buttons.
     BUTTONS:
-      COLLECT_PAGE: { MATERIAL: HOPPER }
-      DROP_PAGE: { MATERIAL: DROPPER }
-
-# UDS setup: Optional Bedrock forms. Java GUIs remain the fallback.
-BEDROCK:
-  ENABLED: true
-  MAX_RESULTS: 20
-  FALLBACK_TO_JAVA_GUI: true
-
-# UDS setup: Cross-server refresh and tokenized order locks.
-NETWORK:
-  ENABLED: true
-  REDIS_CHANNEL: "ultimate-donut-smp:orders"
-  LOCK_PREFIX: "ultimate-donut-smp:orders:lock:"
-  LOCK_TTL_SECONDS: 15
-
-# UDS setup: Default sort options and order used by browsing menus.
+      # Configuration section for Confirm.
+      CONFIRM:
+        SLOT: 35
+# Configuration section for Sorting.
 SORTING:
-  DEFAULT: MOST_PAID # Sets the default value used when none is selected.
+  # The text or value for Default. Available options: Any valid string text
+  DEFAULT: MOST_PAID
+  # Configuration section for Allowed.
   ALLOWED:
-    - MOST_PAID
-    - MOST_DELIVERED
-    - RECENTLY_LISTED
-    - MOST_MONEY_PER_ITEM
-
-# UDS setup: Sign inputs configuration.
-SEARCH_SIGN:
-  lines:
-    - ""
-    - "↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
-    - "Search"
-    - ""
-  input-line: 0
-
-AMOUNT_SIGN:
-  lines:
-    - ""
-    - "↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
-    - "Amount"
-    - ""
-  input-line: 0
-
-PRICE_SIGN:
-  lines:
-    - ""
-    - "↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
-    - "Price"
-    - ""
-  input-line: 0
-
-# UDS setup: Simulated bot settings for placing buy orders on the orders marketplace.
-BOTS:
-  ENABLED: false # Set to true to enable simulated bot buy orders on the orders marketplace.
-  MIN_CHECK_INTERVAL_SECONDS: 60 # Minimum time in seconds between bot order attempts.
-  MAX_CHECK_INTERVAL_SECONDS: 300 # Maximum time in seconds between bot order attempts.
-  CHANCE: 0.5 # Probability (0.0 to 1.0) of a bot placing a buy order when checked. (e.g. 0.5 = 50% chance).
-  MAX_ACTIVE_BOT_ORDERS: 10 # Maximum number of bot-created orders allowed to be active at once.
-  MIN_DURATION_HOURS: 24 # Minimum order duration in hours for bot items.
-  MAX_DURATION_HOURS: 72 # Maximum order duration in hours for bot items.
-  BOT_NAMES:
-    - "Builder_Bob"
-    - "Farmer_John"
-    - "Miner_Joe"
-    - "Knight_Arthur"
-    - "Collector_Rex"
-  ITEMS:
-    - MATERIAL: COBBLESTONE
-      MIN_AMOUNT: 64
-      MAX_AMOUNT: 576
-      MIN_PRICE_EACH: 0.5
-      MAX_PRICE_EACH: 1.5
-    - MATERIAL: WHEAT
-      MIN_AMOUNT: 32
-      MAX_AMOUNT: 128
-      MIN_PRICE_EACH: 2
-      MAX_PRICE_EACH: 5
-    - MATERIAL: DIAMOND
-      MIN_AMOUNT: 1
-      MAX_AMOUNT: 10
-      MIN_PRICE_EACH: 100
-      MAX_PRICE_EACH: 180
+  - MOST_PAID
+  - MOST_DELIVERED
+  - RECENTLY_LISTED
+  - MOST_MONEY_PER_ITEM
+# The text or value for Donut Style. Available options: Any valid string text
+DONUT-STYLE: DEPOSIT_GUI
+# Configuration section for Bedrock.
+BEDROCK:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+# Configuration section for Network.
+NETWORK:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The text or value for Redis Channel. Available options: Any valid string text
+  REDIS_CHANNEL: ultimate-donut-smp:orders
