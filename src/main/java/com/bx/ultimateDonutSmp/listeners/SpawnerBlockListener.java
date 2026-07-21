@@ -43,19 +43,8 @@ public class SpawnerBlockListener implements Listener {
         }
 
         if (event.getPlayer().isSneaking() && event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
-            int expectedAmount = event.getItemInHand().getAmount() - 1;
-            org.bukkit.inventory.EquipmentSlot slot = event.getHand();
             plugin.getSpigotScheduler().runEntity(event.getPlayer(), () -> {
-                org.bukkit.entity.Player p = event.getPlayer();
-                org.bukkit.inventory.ItemStack current = slot == org.bukkit.inventory.EquipmentSlot.HAND ? p.getInventory().getItemInMainHand() : p.getInventory().getItemInOffHand();
-                if (current != null && current.getAmount() == expectedAmount && plugin.getSpawnerManager().isSpawnerItem(current)) {
-                    if (slot == org.bukkit.inventory.EquipmentSlot.HAND) {
-                        p.getInventory().setItemInMainHand(null);
-                    } else {
-                        p.getInventory().setItemInOffHand(null);
-                    }
-                    p.updateInventory();
-                }
+                event.getPlayer().updateInventory();
             });
         }
 

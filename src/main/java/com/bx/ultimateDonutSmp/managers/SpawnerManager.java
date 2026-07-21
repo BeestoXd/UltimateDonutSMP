@@ -56,7 +56,11 @@ import java.util.logging.Level;
 
 public class SpawnerManager {
 
-    public record ActionResult(boolean success, String message) {}
+    public record ActionResult(boolean success, String message, int consumedAmount) {
+        public ActionResult(boolean success, String message) {
+            this(success, message, 0);
+        }
+    }
 
     public record SellLootResult(
             boolean success,
@@ -554,9 +558,18 @@ public class SpawnerManager {
         }
 
         long baseAmount = getSpawnerItemBaseAmount(item);
-        
+        if (baseAmount <= 0L) {
+            return fail("&cthat spawner item has an invalid amount.");
+        }
+
+        long remainingCapacity = maxStackPerBlock - existing.getStackAmount();
+        if (remainingCapacity <= 0L) {
+            return fail("&cthat spawner is already at the max stack per block (&f" + NumberUtils.format(maxStackPerBlock) + "&c).");
+        }
+
         boolean stackAll = player.isSneaking();
-        int quantity = stackAll ? item.getAmount() : 1;
+        long maxUnitsCanAdd = Math.max(1L, remainingCapacity / baseAmount);
+        int quantity = stackAll ? (int) Math.min(item.getAmount(), maxUnitsCanAdd) : 1;
         long addAmount = baseAmount * quantity;
 
         if (addAmount <= 0L) {
@@ -578,7 +591,7 @@ public class SpawnerManager {
             }
         });
 
-        return ok("&aspawner stack updated to &f" + NumberUtils.format(existing.getStackAmount()) + "&a.");
+        return new ActionResult(true, "&aspawner stack updated to &f" + NumberUtils.format(existing.getStackAmount()) + "&a.", quantity);
     }
 
     public SpawnerInstance getSpawner(Block block) {
@@ -1469,12 +1482,20 @@ public class SpawnerManager {
             return;
         }
 
-        if (all) {
-            player.getInventory().setItemInMainHand(null);
+        consumeHeldSpawnerItem(player, all ? hand.getAmount() : 1);
+    }
+
+    public void consumeHeldSpawnerItem(Player player, int amount) {
+        if (player == null || player.getGameMode() == GameMode.CREATIVE || amount <= 0) {
             return;
         }
 
-        int nextAmount = hand.getAmount() - 1;
+        ItemStack hand = player.getInventory().getItemInMainHand();
+        if (hand == null || hand.getType().isAir()) {
+            return;
+        }
+
+        int nextAmount = hand.getAmount() - amount;
         if (nextAmount <= 0) {
             player.getInventory().setItemInMainHand(null);
             return;

@@ -40,11 +40,10 @@ public class ExplosionDamageListener implements Listener {
         if (event.getDamager() instanceof EnderCrystal) {
             boolean enabled = config.getBoolean("END-CRYSTAL.ENABLED", false);
             if (!enabled) {
-                event.setCancelled(true);
-            } else {
-                double multiplier = config.getDouble("END-CRYSTAL.DAMAGE", 2.0D);
-                event.setDamage(event.getDamage() * multiplier);
+                return;
             }
+            double multiplier = config.getDouble("END-CRYSTAL.DAMAGE", 2.0D);
+            event.setDamage(event.getDamage() * multiplier);
             return;
         }
 
@@ -98,11 +97,10 @@ public class ExplosionDamageListener implements Listener {
         if (isRespawnAnchorDamage(event)) {
             boolean enabled = config.getBoolean("RESPAWN-ANCHOR.ENABLED", false);
             if (!enabled) {
-                event.setCancelled(true);
-            } else {
-                double multiplier = config.getDouble("RESPAWN-ANCHOR.DAMAGE", 2.0D);
-                event.setDamage(event.getDamage() * multiplier);
+                return;
             }
+            double multiplier = config.getDouble("RESPAWN-ANCHOR.DAMAGE", 2.0D);
+            event.setDamage(event.getDamage() * multiplier);
             return;
         }
 

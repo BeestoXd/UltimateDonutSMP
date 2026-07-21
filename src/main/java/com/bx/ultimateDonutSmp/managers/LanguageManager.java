@@ -147,7 +147,7 @@ public class LanguageManager {
             String locale = entry.getKey();
             YamlConfiguration langConfig = entry.getValue();
             if (locale.equalsIgnoreCase(DEFAULT_LOCALE)) {
-                mergePlayerLegacyCustomizations(langConfig, locale, true);
+                mergePlayerLegacyCustomizations(langConfig, locale, false);
             }
         }
         rebuildBuiltInTranslations();

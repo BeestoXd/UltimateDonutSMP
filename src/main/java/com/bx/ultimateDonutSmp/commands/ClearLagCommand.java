@@ -22,8 +22,7 @@ public class ClearLagCommand implements CommandExecutor {
             sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
             return true;
         }
-        int cleared = plugin.getClearLagManager().clearEntities();
-        plugin.getClearLagManager().broadcastSuccess(cleared);
+        plugin.getClearLagManager().clearEntities();
         return true;
     }
 }

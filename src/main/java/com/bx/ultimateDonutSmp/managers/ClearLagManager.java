@@ -112,7 +112,7 @@ public class ClearLagManager {
                                 if (clearAnimals()) {
                                     remove = true;
                                 }
-                            } else if (entity instanceof Monster) {
+                            } else if (entity instanceof Monster || entity instanceof Mob) {
                                 if (clearMonsters()) {
                                     remove = true;
                                 }
@@ -178,7 +178,7 @@ public class ClearLagManager {
                     if (clearAnimals()) {
                         remove = true;
                     }
-                } else if (entity instanceof Monster) {
+                } else if (entity instanceof Monster || entity instanceof Mob) {
                     if (clearMonsters()) {
                         remove = true;
                     }
@@ -190,6 +190,7 @@ public class ClearLagManager {
                 }
             }
         }
+        broadcastSuccess(count);
         return count;
     }
 
