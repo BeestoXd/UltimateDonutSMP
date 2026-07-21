@@ -9,7 +9,7 @@ messages:
 # Configuration section for Gui.
 gui:
   # The text or value for Title. Available options: Any valid string text
-  title: '&#444444pick enchantments'
+  title: '&#444444Pick enchantments'
   # The numerical value for Rows. Available options: Any valid integer
   rows: 6
   # Configuration section for Slots.
@@ -31,7 +31,7 @@ gui:
       # The text or value for Material. Available options: Any valid string text
       material: RED_STAINED_GLASS_PANE
       # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14cancel'
+      name: '&#39FF14Cancel'
       # Configuration section for Lore.
       lore:
       - '&fClick to return'
@@ -40,7 +40,7 @@ gui:
       # The text or value for Material. Available options: Any valid string text
       material: LIME_STAINED_GLASS_PANE
       # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14confirm'
+      name: '&#39FF14Confirm'
       # Configuration section for Lore.
       lore:
       - '&fClick to confirm enchants'

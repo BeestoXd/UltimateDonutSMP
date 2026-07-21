@@ -25,29 +25,29 @@ SETTINGS:
 MESSAGES:
   # Configuration section for Usage.
   USAGE:
-  - '&8&m----------- &dѕᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------'
-  - '&f/{label} &7- ѕᴘᴀᴡɴ ʀᴀɴᴅᴏᴍ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+  - '&8&m----------- &dЅᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------'
+  - '&f/{label} &7- Ѕᴘᴀᴡɴ ʀᴀɴᴅᴏᴍ ʙᴀɪᴛ ѕᴛᴀѕʜ'
   - '&f/{label} <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
-  - '&f/{label} ѕᴘᴀᴡɴ <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
+  - '&f/{label} Ѕᴘᴀᴡɴ <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
   - '&f/{label} ʟɪѕᴛ &7- ʟɪѕᴛ ᴀᴄᴛɪᴠᴇ/configured ѕᴛᴀѕʜᴇѕ'
-  - '&f/{label} ʀᴇᴍᴏᴠᴇ <id|nearest|all> &7- ʀᴏʟʟʙᴀᴄᴋ ѕᴛᴀѕʜᴇѕ'
-  - '&f/{label} ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴ-ѕᴛᴀѕʜ.ʏᴍʟ'
+  - '&f/{label} Ʀᴇᴍᴏᴠᴇ <id|nearest|all> &7- ʀᴏʟʟʙᴀᴄᴋ ѕᴛᴀѕʜᴇѕ'
+  - '&f/{label} Ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴ-ѕᴛᴀѕʜ.ʏᴍʟ'
   # The text or value for Spawned. Available options: Any valid string text
-  SPAWNED: '&aѕᴘᴀᴡɴᴇᴅ ѕᴛᴀѕʜ #{type} ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ. &7(ɪᴅ: {id})'
+  SPAWNED: '&aЅᴘᴀᴡɴᴇᴅ ѕᴛᴀѕʜ #{type} ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ. &7(ɪᴅ: {id})'
   # The text or value for Removed. Available options: Any valid string text
-  REMOVED: '&aʀᴇᴍᴏᴠᴇᴅ ѕᴛᴀѕʜ &f#{id}&a.'
+  REMOVED: '&aƦᴇᴍᴏᴠᴇᴅ ѕᴛᴀѕʜ &f#{id}&a.'
   # The text or value for Removed All. Available options: Any valid string text
-  REMOVED-ALL: '&aʀᴇᴍᴏᴠᴇᴅ &f{count}&a ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ(ᴇѕ).'
+  REMOVED-ALL: '&aƦᴇᴍᴏᴠᴇᴅ &f{count}&a ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ(ᴇѕ).'
   # The text or value for Expired. Available options: Any valid string text
-  EXPIRED: '&7ѕᴘᴀᴡɴѕᴛᴀѕʜ #{id} ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ᴡᴀѕ ʀᴏʟʟᴇᴅ ʙᴀᴄᴋ.'
+  EXPIRED: '&7Ѕᴘᴀᴡɴѕᴛᴀѕʜ #{id} ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ᴡᴀѕ ʀᴏʟʟᴇᴅ ʙᴀᴄᴋ.'
   # The text or value for Reloaded. Available options: Any valid string text
-  RELOADED: '&aѕᴘᴀᴡɴѕᴛᴀѕʜ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ.'
+  RELOADED: '&aЅᴘᴀᴡɴѕᴛᴀѕʜ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ.'
   # The text or value for Disabled. Available options: Any valid string text
-  DISABLED: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+  DISABLED: '&cЅᴘᴀᴡɴѕᴛᴀѕʜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
   # The text or value for Player Only. Available options: Any valid string text
   PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
   # The text or value for No Permission. Available options: Any valid string text
-  NO-PERMISSION: '&cyou do not have permission.'
+  NO-PERMISSION: '&cYou do not have permission.'
   # The text or value for No Active. Available options: Any valid string text
   NO-ACTIVE: '&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ.'
   # The text or value for Blocked Break. Available options: Any valid string text
@@ -61,10 +61,10 @@ MESSAGES:
   # The text or value for Invalid Type. Available options: Any valid string text
   INVALID-TYPE: '&cᴜɴᴋɴᴏᴡɴ ѕᴛᴀѕʜ ᴛʏᴘᴇ ''&f{type}&c''. ᴜѕᴇ &f/spawnstash ʟɪѕᴛ&c.'
   # The text or value for Invalid Config. Available options: Any valid string text
-  INVALID-CONFIG: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: &f{reason}&c.'
+  INVALID-CONFIG: '&cЅᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: &f{reason}&c.'
   # Configuration section for Alert.
   ALERT:
-  - '&8[&dѕᴘᴀᴡɴѕᴛᴀѕʜ&8] &f{player} &7ᴛʀɪɢɢᴇʀᴇᴅ &d{reason}&7 ᴏɴ ѕᴛᴀѕʜ &f#{id}&7 (&f{type}&7)'
+  - '&8[&dЅᴘᴀᴡɴѕᴛᴀѕʜ&8] &f{player} &7ᴛʀɪɢɢᴇʀᴇᴅ &d{reason}&7 ᴏɴ ѕᴛᴀѕʜ &f#{id}&7 (&f{type}&7)'
   - '&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}'
   # The text or value for Alert Hover. Available options: Any valid string text
   ALERT-HOVER: '&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}'
@@ -75,7 +75,7 @@ TYPES:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     # The text or value for Display Name. Available options: Any valid string text
-    DISPLAY_NAME: '&dcompact amethyst stash'
+    DISPLAY_NAME: '&dCompact amethyst stash'
     # The numerical value for Ttl Seconds. Available options: Any valid integer
     TTL_SECONDS: 900
     # The decimal value for Alert Radius. Available options: Any decimal number
@@ -166,7 +166,7 @@ TYPES:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     # The text or value for Display Name. Available options: Any valid string text
-    DISPLAY_NAME: '&5double spawner chest stash'
+    DISPLAY_NAME: '&5Double spawner chest stash'
     # Configuration section for Paste Offset.
     PASTE_OFFSET:
     - 0
@@ -295,7 +295,7 @@ TYPES:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     # The text or value for Display Name. Available options: Any valid string text
-    DISPLAY_NAME: '&amossy ore stash'
+    DISPLAY_NAME: '&aMossy ore stash'
     # Configuration section for Paste Offset.
     PASTE_OFFSET:
     - 0
@@ -394,7 +394,7 @@ TYPES:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     # The text or value for Display Name. Available options: Any valid string text
-    DISPLAY_NAME: '&6mineshaft sign stash'
+    DISPLAY_NAME: '&6Mineshaft sign stash'
     # Configuration section for Paste Offset.
     PASTE_OFFSET:
     - 0
@@ -449,9 +449,9 @@ TYPES:
       MATERIAL: OAK_SIGN
       # Configuration section for Sign Lines.
       SIGN_LINES:
-      - '&6private mine'
-      - '&7no entry'
-      - '&8- staff bait -'
+      - '&6Private mine'
+      - '&7No entry'
+      - '&8- Staff bait -'
       - ''
     - OFFSET:
       - -1
@@ -488,7 +488,7 @@ TYPES:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     # The text or value for Display Name. Available options: Any valid string text
-    DISPLAY_NAME: '&dpremium amethyst spawner stash'
+    DISPLAY_NAME: '&dPremium amethyst spawner stash'
     # The numerical value for Ttl Seconds. Available options: Any valid integer
     TTL_SECONDS: 1200
     # The decimal value for Alert Radius. Available options: Any decimal number

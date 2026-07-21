@@ -1,10 +1,10 @@
 GLOBAL:
   PAGE-MENU:
     MATERIAL: ARROW
-    NEXT-BUTTON: '&aNEXT'
-    BACK-BUTTON: '&aBACK'
-    FIRST-PAGE-BUTTON: '&aFIRST PAGE'
-    LAST-PAGE-BUTTON: '&aLAST PAGE'
+    NEXT-BUTTON: '&aNext'
+    BACK-BUTTON: '&aBack'
+    FIRST-PAGE-BUTTON: '&aFirst page'
+    LAST-PAGE-BUTTON: '&aLast page'
     NEXT-LORE:
     - '&fClick to go to the neXt page'
     BACK-LORE:
@@ -42,24 +42,24 @@ TEAM-MENUS:
       SLOT: 49
       LORE:
       - '&fClick to refresh'
-      - '&7Add up to {maX_members} members'
+      - '&7Add up to {max_members} members'
     HOME-BUTTON:
       TITLE: '&#6BF18DTeam Home'
       MATERIAL: WHITE_BANNER
       SLOT: 52
-      HOME-LORE: '&fClick to teleport to your team''s home'
+      HOME-LORE: '&fClick to teleport to your team''S home'
       NO-HOME-LORE: '&fSet the team home with /home'
     PVP-BUTTON:
-      TITLE: '&#6BF18DPVP'
+      TITLE: '&#6BF18DPvp'
       MATERIAL: IRON_SWORD
       SLOT: 53
       ON-STATE: '&a&lON'
-      OFF-STATE: '&c&lOFF'
+      OFF-STATE: '&c&lOff'
       LORE: '&fCurrently: {state}'
     MESSAGES:
       NOT-IN-TEAM: '&cYou are not part of the team.'
-      NO-PERMISSION: '&cYou don''t have permissions to do this.'
-      CANT-EDIT-SELF: '&cYou can''t do this yourself!'
+      NO-PERMISSION: '&cYou don''T have permissions to do this.'
+      CANT-EDIT-SELF: '&cYou can''T do this yourself!'
   TEAM-EDIT-MEMBER:
     TITLE: '&8Edit {player}'
     SIZE: 27
@@ -70,7 +70,7 @@ TEAM-MENUS:
       MATERIAL: WHITE_BANNER
       SLOT: 10
       ON-STATE: '&a&lON'
-      OFF-STATE: '&c&lOFF'
+      OFF-STATE: '&c&lOff'
       LORE:
       - '&fLet {player} set and remove the team home'
       - '&fCurrently: {state}'
@@ -85,16 +85,16 @@ TEAM-MENUS:
       MATERIAL: IRON_HELMET
       SLOT: 12
       ON-STATE: '&a&lON'
-      OFF-STATE: '&c&lOFF'
+      OFF-STATE: '&c&lOff'
       LORE:
       - '&fLet {player} invite and kick teammates'
       - '&fCurrently: {state}'
     PVP-BUTTON:
-      TITLE: '&#6BF18DPVP'
+      TITLE: '&#6BF18DPvp'
       MATERIAL: IRON_SWORD
       SLOT: 13
       ON-STATE: '&a&lON'
-      OFF-STATE: '&c&lOFF'
+      OFF-STATE: '&c&lOff'
       LORE:
       - '&fLet {player} turn on and off team pvp'
       - '&fCurrently: {state}'
@@ -103,7 +103,7 @@ TEAM-MENUS:
       MATERIAL: ENDER_PEARL
       SLOT: 14
       ON-STATE: '&a&lON'
-      OFF-STATE: '&c&lOFF'
+      OFF-STATE: '&c&lOff'
       LORE:
       - '&fLet {player} go to team home'
       - '&fCurrently: {state}'
@@ -112,7 +112,7 @@ TEAM-MENUS:
       MATERIAL: FEATHER
       SLOT: 15
       ON-STATE: '&a&lON'
-      OFF-STATE: '&c&lOFF'
+      OFF-STATE: '&c&lOff'
       LORE:
       - '&fLet {player} speak in chat'
       - '&fCurrently: {state}'
@@ -159,10 +159,10 @@ HOME-MENU-LEGACY:
   SIZE: 36
   TELEPORT-USED-MATERIAL: LIGHT_BLUE_BED
   TELEPORT-NO-USED-MATERIAL: LIGHT_GRAY_BED
-  TELEPORT-NO-PERMISSION-MATERIAL: RED_BED
+  TELEPORT-NO-PERMISSION-MATERIAL: red_bed
   CREATE-USED-MATERIAL: BLUE_DYE
   CREATE-NO-USED-MATERIAL: GRAY_DYE
-  CREATE-NO-PERMISSION-MATERIAL: RED_DYE
+  CREATE-NO-PERMISSION-MATERIAL: red_dye
   TEAM_HOME:
     TELEPORT:
       MATERIALS:
@@ -170,68 +170,68 @@ HOME-MENU-LEGACY:
         NO_HOME: WHITE_BANNER
         HAS_HOME: WHITE_BANNER
       DISPLAY_NAME:
-        NO_TEAM: '&cTEAM HOME'
-        NO_HOME: '&cTEAM HOME'
-        HAS_HOME: '&bTEAM HOME'
+        NO_TEAM: '&cTeam home'
+        NO_HOME: '&cTeam home'
+        HAS_HOME: '&bTeam home'
       LORE:
-        NO_TEAM: '&fYou don''t have a team.'
+        NO_TEAM: '&fYou don''T have a team.'
         NO_HOME: '&fClick to create a team home.'
-        HAS_HOME: '&fClick to teleport to your team''s home.'
+        HAS_HOME: '&fClick to teleport to your team''S home.'
     SAVE:
       MATERIALS:
         NO_TEAM: RED_DYE
         NO_HOME: GRAY_DYE
         HAS_HOME: BLUE_DYE
       DISPLAY_NAME:
-        NO_TEAM: '&cTEAM HOME'
-        NO_HOME: '&cTEAM HOME'
-        HAS_HOME: '&bTEAM HOME'
+        NO_TEAM: '&cTeam home'
+        NO_HOME: '&cTeam home'
+        HAS_HOME: '&bTeam home'
       LORE:
-        NO_TEAM: '&fYou don''t have a team.'
+        NO_TEAM: '&fYou don''T have a team.'
         NO_HOME: '&fClick to create a team home.'
-        HAS_HOME: '&fClick to teleport to your team''s home.'
+        HAS_HOME: '&fClick to teleport to your team''S home.'
   TELEPORT:
     HOME-1:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 1'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 1'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to teleport to your home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-2:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 2'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 2'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to teleport to your home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-3:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 3'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 3'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to teleport to your home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-4:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 4'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 4'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to teleport to your home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-5:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 5'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 5'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to teleport to your home'
@@ -239,45 +239,45 @@ HOME-MENU-LEGACY:
   CREATE:
     HOME-1:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 1'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 1'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to delete this home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-2:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 2'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 2'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to delete this home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-3:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 3'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 3'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to delete this home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-4:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 4'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 4'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to delete this home'
         NO-PERMISSION: '&fYou need a higher rank for this home'
     HOME-5:
       DISPLAY-NAME:
-        NO-USED: '&7NO HOME SET'
-        USED: '&bHOME 5'
-        NO-PERMISSION: '&cNO PERMISSION'
+        NO-USED: '&7No home set'
+        USED: '&bHome 5'
+        NO-PERMISSION: '&cNo permission'
       LORE:
         NO-USED: '&f- Click to create a home'
         USED: '&fClick to delete this home'
@@ -287,10 +287,10 @@ HOME-MENU:
   SIZE: 36
   TELEPORT-USED-MATERIAL: LIGHT_BLUE_BED
   TELEPORT-NO-USED-MATERIAL: LIGHT_GRAY_BED
-  TELEPORT-NO-PERMISSION-MATERIAL: RED_BED
+  TELEPORT-NO-PERMISSION-MATERIAL: red_bed
   CREATE-USED-MATERIAL: BLUE_DYE
   CREATE-NO-USED-MATERIAL: GRAY_DYE
-  CREATE-NO-PERMISSION-MATERIAL: RED_DYE
+  CREATE-NO-PERMISSION-MATERIAL: red_dye
   TEAM_HOME:
     TELEPORT:
       MATERIALS:
@@ -481,10 +481,10 @@ MEDIA-MENU:
     SLOT: 13
     LORE:
     - '&dReQuirements: (only one needed)'
-    - '&d- &f25 average viewers on Stream'
-    - '&d- &f5k views on a YouTube Video'
-    - '&d- &f25k views on a TikTok'
-    - '&d- &f50k views on YouTube Short'
+    - '&d- &f25 Average viewers on Stream'
+    - '&d- &f5K views on a YouTube Video'
+    - '&d- &f25K views on a TikTok'
+    - '&d- &f50K views on YouTube Short'
     - ''
     - '&dReminders:'
     - '&8- &7Must have the IP on screen'
@@ -970,54 +970,54 @@ PROGRESS-MENU:
   - 320000000000
   - 640000000000
   TITLE:
-    CROPS: '&8CROPS PROGRESS'
-    ORES: '&8ORE PROGRESS'
-    MOBS: '&8MOB DROPS PROGRESS'
-    NATURAL: '&8NATURAL ITEMS PROGRESS'
-    ARMOR_AND_TOOLS: '&8ARMOR AND TOOLS PROGRESS'
-    FISH: '&8FISH PROGRESS'
-    BOOK: '&8ENCHANTED BOOK PROGRESS'
-    POTIONS: '&8POTIONS PROGRESS'
-    BLOCKS: '&8BLOCKS PROGRESS'
+    CROPS: '&8Crops progress'
+    ORES: '&8Ore progress'
+    MOBS: '&8Mob drops progress'
+    NATURAL: '&8Natural items progress'
+    ARMOR_AND_TOOLS: '&8Armor and tools progress'
+    FISH: '&8Fish progress'
+    BOOK: '&8Enchanted book progress'
+    POTIONS: '&8Potions progress'
+    BLOCKS: '&8Blocks progress'
   TYPE-BUTTON:
     TITLE:
-      CROPS: '&#6BF18DCROPS'
-      ORES: '&#6BF18DORE'
-      MOBS: '&#6BF18DMOB'
-      NATURAL: '&#6BF18DNATURAL ITEMS'
-      ARMOR_AND_TOOLS: '&#6BF18DARMOR AND TOOLS'
-      FISH: '&#6BF18DFISH'
-      BOOK: '&#6BF18DENCHANTED BOOK'
-      POTIONS: '&#6BF18DPOTIONS'
-      BLOCKS: '&#6BF18DBLOCKS'
+      CROPS: '&#6BF18DCrops'
+      ORES: '&#6BF18DOre'
+      MOBS: '&#6BF18DMob'
+      NATURAL: '&#6BF18DNatural items'
+      ARMOR_AND_TOOLS: '&#6BF18DArmor and tools'
+      FISH: '&#6BF18DFish'
+      BOOK: '&#6BF18DEnchanted book'
+      POTIONS: '&#6BF18DPotions'
+      BLOCKS: '&#6BF18DBlocks'
     LORE:
       CROPS:
       - '&7Sell crops and farming materials to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       ORES:
       - '&7Sell ores and mining materials to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       MOBS:
       - '&7Sell mob drops and combat materials to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       NATURAL:
       - '&7Sell natural materials and trees to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       ARMOR_AND_TOOLS:
       - '&7Sell armor and tools to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       FISH:
       - '&7Sell fish and other fishing loot to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       BOOK:
       - '&7Sell books and enchanted books to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       POTIONS:
       - '&7Sell potions and brewing materials to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
       BLOCKS:
       - '&7Sell blocks and placeable items to'
-      - '&7upgrade your sell multiplier!'
+      - '&7Upgrade your sell multiplier!'
     MATERIAL:
       CROPS: WHEAT
       ORES: DIAMOND
@@ -1032,14 +1032,14 @@ PROGRESS-MENU:
     TITLE: '&eWorking'
     MATERIAL: YELLOW_STAINED_GLASS_PANE
     LORE:
-    - '{porcentage_level} &f{neXt_multiplier} {porcentage}%'
-    - '&7{current_earned}/{neXt_goal}'
+    - '{porcentage_level} &f{next_multiplier} {porcentage}%'
+    - '&7{current_earned}/{next_goal}'
   COMPLETED-BUTTON:
     TITLE: '&aCompleted'
     MATERIAL: LIME_STAINED_GLASS_PANE
     LORE:
-    - '{porcentage_level} &f{neXt_multiplier} {porcentage}%'
-    - '&7{current_earned}/{neXt_goal}'
+    - '{porcentage_level} &f{next_multiplier} {porcentage}%'
+    - '&7{current_earned}/{next_goal}'
 SELL-MENU:
   TITLE: '&8Place Items In Here To Sell'
   MULTIPLIER-TITLE: '&8Sell Multipliers'
@@ -1048,81 +1048,81 @@ SELL-MENU:
     TITLE: '&#6BF18DCrops'
     LORE:
     - '&7Sell crops and farming materials to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   ORES-BUTTON:
     MATERIAL: DIAMOND
     TITLE: '&#6BF18DOres'
     LORE:
     - '&7Sell ores and mining materials to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   MOBS-BUTTON:
     MATERIAL: BONE
     TITLE: '&#6BF18DMobs'
     LORE:
     - '&7Sell mob drops and combat materials to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   NATURAL-BUTTON:
     MATERIAL: OAK_LEAVES
     TITLE: '&#6BF18DNatural Items'
     LORE:
     - '&7Sell natural materials and trees to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   ARMOR-AND-TOOLS-BUTTON:
     MATERIAL: NETHERITE_HELMET
     TITLE: '&#6BF18DArmor And Tools'
     LORE:
     - '&7Sell armor and tools to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   FISH-BUTTON:
     MATERIAL: TROPICAL_FISH
     TITLE: '&#6BF18DFish'
     LORE:
     - '&7Sell fish and other fishing loot to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   BOOK-BUTTON:
     MATERIAL: BOOK
     TITLE: '&#6BF18DEnchanted Book'
     LORE:
     - '&7Sell books and enchanted books to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   POTIONS-BUTTON:
     MATERIAL: BREWING_STAND
     TITLE: '&#6BF18DPotions'
     LORE:
     - '&7Sell potions and brewing materials to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   BLOCKS-BUTTON:
     MATERIAL: BRICK
     TITLE: '&#6BF18DBlocks'
     LORE:
     - '&7Sell blocks and placeable items to'
-    - '&7upgrade your sell multiplier!'
+    - '&7Upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
 WORTH-MENU:
   TITLE: '&8Item Prices'
@@ -1138,12 +1138,12 @@ TPA-CONFIRM-MENU:
       MATERIAL: RED_STAINED_GLASS_PANE
       NAME: '&cCancel'
       LORE:
-      - '&fCLICK TO CANCEL'
+      - '&fClick to cancel'
     CONFIRM:
       MATERIAL: LIME_STAINED_GLASS_PANE
       NAME: '&aConfirm'
       LORE:
-      - '&fCLICK TO CONFIRM'
+      - '&fClick to confirm'
     PLAYER:
       MATERIAL: PLAYER_HEAD
       NAME: '&#00FC00Player'
@@ -1176,7 +1176,7 @@ BOUNTIES-MENU:
     - '&fClick to refresh'
     - ''
     - '&7Set a bounty using this:'
-    - '&7/bounty add (player) (amount)'
+    - '&7/Bounty add (player) (amount)'
 BOUNTY-CONFIRM-MENU:
   TITLE: '&8Confirm Bounty'
   SIZE: 27
@@ -1189,7 +1189,7 @@ BOUNTY-CONFIRM-MENU:
     MATERIAL: PLAYER_HEAD
     NAME: '&#00FC00{player}'
     LORE:
-    - '&fYou''re going to set &#00FC00{amount}'
+    - '&fYou''Re going to set &#00FC00{amount}'
   CONFIRM-BUTTON:
     MATERIAL: LIME_STAINED_GLASS_PANE
     NAME: '&#00FC00Confirm'
@@ -1226,7 +1226,7 @@ BILLFORD-MENU:
     LORE:
     - '&fClick to confirm the trade'
     - ''
-    - '&7(you need the items in your inventory)'
+    - '&7(You need the items in your inventory)'
 PURCHASE-SHOP-MENU:
   TITLE: '&8Confirmation Menu'
   SIZE: 27
@@ -1234,19 +1234,19 @@ PURCHASE-SHOP-MENU:
     MAIN:
       SLOT: 13
       LORE:
-        MONEY: '&fBUY PRICE: &a${price}'
+        MONEY: '&fBuy price: &a${price}'
         SHARD: '&fBUY PRICE: &5${price}X &lShards'
-        DEFAULT: '&fBUY PRICE: &a${price}'
+        DEFAULT: '&fBuy price: &a${price}'
     CANCEL:
       SLOT: 21
       MATERIAL: RED_STAINED_GLASS_PANE
       NAME: '&cCancel'
-      LORE: '&fCLICK TO CANCEL'
+      LORE: '&fClick to cancel'
     CONFIRM:
       SLOT: 23
       MATERIAL: LIME_STAINED_GLASS_PANE
       NAME: '&aConfirm'
-      LORE: '&fCLICK TO BUY'
+      LORE: '&fClick to buy'
     QUANTITY_ADJUST:
       ADD:
         MATERIAL: LIME_STAINED_GLASS_PANE
@@ -1289,12 +1289,12 @@ PURCHASE-SHOP-MENU:
       MIN_QUANTITY: 1
   MESSAGES:
     SUCCESS:
-      MONEY: '&7You bought &e{Quantity} {item-name}&7 for &a${amount}'
+      MONEY: '&7You bought &e{quantity} {item-name}&7 for &a${amount}'
       SHARDS: '&7You bought {item-name}&7 for &5{amount} shards'
     ERROR:
-      NO_MONEY: '&cYOU DON''T HAVE ENOUGH MONEY.'
-      NO_SHARDS: '&cYOU DON''T HAVE ENOUGH SHARDS.'
-      FULL_INVENTORY: '&cYOUR INVENTORY IS FULL.'
+      NO_MONEY: '&cYou don''T have enough money.'
+      NO_SHARDS: '&cYou don''T have enough shards.'
+      FULL_INVENTORY: '&cYour inventory is full.'
   SOUNDS:
     SUCCESS: ENTITY_EXPERIENCE_ORB_PICKUP
     ERROR: ENTITY_VILLAGER_NO
@@ -1323,7 +1323,7 @@ SELLALL-CONFIRM-MENU:
     SLOT: 15
     LORE:
     - '&7Click to confirm to sell all'
-    - '&7sellable items in your inventory.'
+    - '&7Sellable items in your inventory.'
   CANCEL-BUTTON:
     TITLE: '&#FC0000Cancel'
     MATERIAL: RED_STAINED_GLASS_PANE
@@ -1336,7 +1336,7 @@ SELLALL-CONFIRM-MENU:
     SLOT: 13
     LORE:
     - '&7This will sell all sellable'
-    - '&7items in your inventory.'
+    - '&7Items in your inventory.'
 SERVER-INFO-MENU:
   TITLE: '&8Server Info'
   SIZE: 27
@@ -1347,11 +1347,11 @@ SERVER-INFO-MENU:
       NAME: '&#00A4FCDonutSMP'
       LORE:
       - '&fBuild a base, fight players,'
-      - '&fand become the richest.'
+      - '&fAnd become the richest.'
       - ''
       - '&#00A4FCPVP: &cEnabled'
       - '&#00A4FCDifficulty: &cHard'
-      - '&#00A4FCkeepInventory: &cFalse'
+      - '&#00A4FCKeepInventory: &cFalse'
     ECONOMY:
       MATERIAL: GOLD_INGOT
       SLOT: 11
@@ -1367,7 +1367,7 @@ SERVER-INFO-MENU:
       NAME: '&#00A4FCRules'
       LORE:
       - '&fTo keep the community safe, everyone must'
-      - '&ffollow the rules or be subject to punishment.'
+      - '&fFollow the rules or be subject to punishment.'
       - ''
       - '&#00A4FCCommand: &f/rules'
     LEADERBOARDS:
@@ -1376,7 +1376,7 @@ SERVER-INFO-MENU:
       NAME: '&#00A4FCLeaderboards'
       LORE:
       - '&fLook at the top players and'
-      - '&fcompete for the top spots.'
+      - '&fCompete for the top spots.'
       - ''
       - '&#00A4FCCommand: &f/leaderboards'
     SHARDS:
@@ -1385,7 +1385,7 @@ SERVER-INFO-MENU:
       NAME: '&#00A4FCAFK Shards'
       LORE:
       - '&fYou can earn shards by sitting idle, then'
-      - '&fbuy things like spawners, keys, and more.'
+      - '&fBuy things like spawners, keys, and more.'
       - ''
       - '&#00A4FCCommand: &f/afk'
     SETTINGS:
@@ -1394,7 +1394,7 @@ SERVER-INFO-MENU:
       NAME: '&#00A4FCSettings'
       LORE:
       - '&fYou can change certain settings'
-      - '&fbased on your preferences.'
+      - '&fBased on your preferences.'
       - ''
       - '&#00A4FCCommand: &f/settings'
     RTP:
@@ -1403,7 +1403,7 @@ SERVER-INFO-MENU:
       NAME: '&#00A4FCRandom Teleport'
       LORE:
       - '&fUse the random teleport to'
-      - '&fget far away from spawn.'
+      - '&fGet far away from spawn.'
       - ''
       - '&#00A4FCOverworld: &f175k X 175k'
       - '&#00A4FCNether: &f7.5k X 7.5k'
@@ -1427,11 +1427,11 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCDonutSMP'
           LORE:
           - '&fBuild a base, fight players,'
-          - '&fand become the richest.'
+          - '&fAnd become the richest.'
           - ''
           - '&#00A4FCPVP: &cEnabled'
           - '&#00A4FCDifficulty: &cHard'
-          - '&#00A4FCkeepInventory: &cFalse'
+          - '&#00A4FCKeepInventory: &cFalse'
         ECONOMY:
           MATERIAL: GOLD_INGOT
           SLOT: 11
@@ -1447,7 +1447,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCRules'
           LORE:
           - '&fTo keep the community safe, everyone must'
-          - '&ffollow the rules or be subject to punishment.'
+          - '&fFollow the rules or be subject to punishment.'
           - ''
           - '&#00A4FCCommand: &f/rules'
           COMMAND: rules
@@ -1457,7 +1457,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCLeaderboards'
           LORE:
           - '&fLook at the top players and'
-          - '&fcompete for the top spots.'
+          - '&fCompete for the top spots.'
           - ''
           - '&#00A4FCCommand: &f/leaderboards'
           COMMAND: leaderboards
@@ -1467,7 +1467,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCAFK Shards'
           LORE:
           - '&fYou can earn shards by sitting idle, then'
-          - '&fbuy things like spawners, keys, and more.'
+          - '&fBuy things like spawners, keys, and more.'
           - ''
           - '&#00A4FCCommand: &f/afk'
           COMMAND: afk
@@ -1477,7 +1477,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCSettings'
           LORE:
           - '&fYou can change certain settings'
-          - '&fbased on your preferences.'
+          - '&fBased on your preferences.'
           - ''
           - '&#00A4FCCommand: &f/settings'
           COMMAND: settings
@@ -1487,7 +1487,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCRandom Teleport'
           LORE:
           - '&fUse the random teleport to'
-          - '&fget far away from spawn.'
+          - '&fGet far away from spawn.'
           - ''
           - '&#00A4FCOverworld: &f175k X 175k'
           - '&#00A4FCNether: &f7.5k X 7.5k'
@@ -1517,8 +1517,8 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCMake Money'
           LORE:
           - '&fSell blocks, ores, and drops with'
-          - '&b/sell &for list items in'
-          - '&b/auctionhouse&f.'
+          - '&b/Sell &for list items in'
+          - '&b/Auctionhouse&f.'
           - ''
           - '&#00A4FCTip: &fKeep rare loot to trade.'
           COMMAND: sell
@@ -1528,7 +1528,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCHomes'
           LORE:
           - '&fUse &b/sethome <name> &fto save'
-          - '&fimportant places.'
+          - '&fImportant places.'
           - ''
           - '&#00A4FCOpen: &f/home'
           COMMAND: home
@@ -1538,7 +1538,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCTeams'
           LORE:
           - '&fPlay with friends, share a base,'
-          - '&fand manage team permissions.'
+          - '&fAnd manage team permissions.'
           - ''
           - '&#00A4FCOpen: &f/team'
           COMMAND: team
@@ -1548,10 +1548,10 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCCombat Tips'
           LORE:
           - '&fDying is punishing because'
-          - '&fkeepInventory is turned off.'
+          - '&fKeepInventory is turned off.'
           - ''
           - '&#00A4FCTip: &fAvoid risky fights'
-          - '&funtil you are geared.'
+          - '&fUntil you are geared.'
           CLICK-MESSAGE:
           - '&7You drop your items on death here, so gear up before taking big fights.'
           - '&7Keep backup armor and food if you plan to PvP often.'
@@ -1561,7 +1561,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCSpawn'
           LORE:
           - '&fReturn to spawn when you need'
-          - '&fshops, safety, or a reset.'
+          - '&fShops, safety, or a reset.'
           - ''
           - '&#00A4FCCommand: &f/spawn'
           COMMAND: spawn
@@ -1571,7 +1571,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCRTP Guide'
           LORE:
           - '&fUse RTP when spawn feels crowded'
-          - '&for you need fresh land.'
+          - '&fOr you need fresh land.'
           - ''
           - '&#00A4FCCommand: &f/rtp'
           COMMAND: rtp
@@ -1585,7 +1585,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCShop'
           LORE:
           - '&fBuy useful items, blocks,'
-          - '&fand starter gear.'
+          - '&fAnd starter gear.'
           - ''
           - '&#00A4FCCommand: &f/shop'
           COMMAND: shop
@@ -1595,7 +1595,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCSell'
           LORE:
           - '&fTurn farmed or mined items'
-          - '&finto Quick money.'
+          - '&fInto Quick money.'
           - ''
           - '&#00A4FCCommand: &f/sell'
           COMMAND: sell
@@ -1605,10 +1605,10 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCTeleport ReQuests'
           LORE:
           - '&fUse &b/tpa <player> &for'
-          - '&b/tpahere <player>&f.'
+          - '&b/Tpahere <player>&f.'
           - ''
           - '&#00A4FCTip: &fOnly teleport to'
-          - '&fpeople you trust.'
+          - '&fPeople you trust.'
           CLICK-MESSAGE:
           - '&7Use &f/tpa <player> &7to reQuest teleporting to them.'
           - '&7Use &f/tpahere <player> &7if you want them to come to you.'
@@ -1618,7 +1618,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCLeaderboards'
           LORE:
           - '&fCheck who is leading in'
-          - '&fmoney, kills, and more.'
+          - '&fMoney, kills, and more.'
           - ''
           - '&#00A4FCCommand: &f/leaderboards'
           COMMAND: leaderboards
@@ -1628,7 +1628,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCSettings'
           LORE:
           - '&fToggle personal options like'
-          - '&falerts and menu preferences.'
+          - '&fAlerts and menu preferences.'
           - ''
           - '&#00A4FCCommand: &f/settings'
           COMMAND: settings
@@ -1638,7 +1638,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCRules'
           LORE:
           - '&fRead the rules before grinding'
-          - '&for trading with players.'
+          - '&fOr trading with players.'
           - ''
           - '&#00A4FCCommand: &f/rules'
           COMMAND: rules
@@ -1648,7 +1648,7 @@ SERVER-INFO-MENU:
           NAME: '&#00A4FCSocial & Media'
           LORE:
           - '&fOpen server links and check'
-          - '&fmedia rank reQuirements.'
+          - '&fMedia rank reQuirements.'
           - ''
           - '&#00A4FCCommand: &f/media'
           COMMAND: media
@@ -1698,21 +1698,21 @@ RULES-MENU:
       - "&#00A4FC● &fNo Ban Evasion"
       - "&#00A4FC● &fNo Lying to Staff Members"
       - "&#00A4FC● &fReport All Bugs, Glitches, and Cheaters"
-      - '  &fin the discord &&#F97603(discord.gg/donutsmp)'
+      - '  &fIn the discord &&#F97603(discord.gg/donutsmp)'
 AFK-MENU:
   TITLE: '&8AFK Areas'
   SIZE: 54
   RANDOM-BUTTON:
     SLOT: 49
     MATERIAL: AMETHYST_BLOCK
-    DISPLAY-NAME: '&#A303F9AFK'
+    DISPLAY-NAME: '&#A303F9Afk'
     LORE:
     - '&fClick to teleport to a random afk area'
   AREAS:
     '1':
       SLOT: 0
       MATERIAL: ITEM_FRAME
-      DISPLAY-NAME: '&#A303F9AFK #1'
+      DISPLAY-NAME: '&#A303F9Afk #1'
       LORE:
       - '&8{players}/200'
       - '&7Click to go to this'
@@ -1722,7 +1722,7 @@ AFK-MENU:
     '2':
       SLOT: 1
       MATERIAL: ITEM_FRAME
-      DISPLAY-NAME: '&#A303F9AFK #2'
+      DISPLAY-NAME: '&#A303F9Afk #2'
       LORE:
       - '&8{players}/200'
       - '&7Click to go to this'
@@ -1760,7 +1760,7 @@ SPAWN-MENU:
       CUBOID: spawn2
       LOCATION: 2
 PROFILE-VIEWER-MENU:
-  TITLE: '&8{username}''s Profile'
+  TITLE: '&8{username}''S Profile'
   SIZE: 54
   BUTTONS:
     SUMMARY:
@@ -1771,14 +1771,14 @@ PROFILE-VIEWER-MENU:
       - '&7Status: &f{status}'
       - '&7Team: &f{team}'
       - '&7Homes: &f{homes}'
-      - '&7AFK: &f{afk}'
-      - '&7Location: &f{world} ({X}, {y}, {z})'
+      - '&7Afk: &f{afk}'
+      - '&7Location: &f{world} ({x}, {y}, {z})'
     HOMES:
       SLOT: 40
       MATERIAL: RED_BED
       DISPLAY-NAME: '&#6BF18DHomes'
       LORE:
-      - '&7View and navigate through this player''s homes'
+      - '&7View and navigate through this player''S homes'
       - '&7Homes saved: &f{homes}'
       - '&aClick to open'
     CURRENT-LOCATION:
@@ -1787,7 +1787,7 @@ PROFILE-VIEWER-MENU:
       DISPLAY-NAME: '&#6BF18DCurrent Location'
       DISPLAY-NAME-OFFLINE: '&cCurrent Location'
       LORE:
-      - '&7{world} ({X}, {y}, {z})'
+      - '&7{world} ({x}, {y}, {z})'
       - '&aClick to teleport'
       LORE-OFFLINE:
       - '&7This player is offline right now.'
@@ -1796,16 +1796,16 @@ PROFILE-VIEWER-MENU:
       MATERIAL: IRON_BARS
       DISPLAY-NAME: '&#6BF18DPunishments'
       LORE:
-      - '&7View this player''s punishment history'
+      - '&7View this player''S punishment history'
       - '&aClick to open'
     REFRESH:
       SLOT: 49
       MATERIAL: CLOCK
       DISPLAY-NAME: '&#6BF18DRefresh'
       LORE:
-      - '&7Reload this player''s profile'
+      - '&7Reload this player''S profile'
 PROFILE-VIEWER-HOMES-MENU:
-  TITLE: '&8{username}''s Homes'
+  TITLE: '&8{username}''S Homes'
   SIZE: 54
   MAX-ITEMS-PER-PAGE: 45
   HOME-BUTTON:
@@ -1813,7 +1813,7 @@ PROFILE-VIEWER-HOMES-MENU:
     DISPLAY-NAME: '&b{name}'
     LORE:
     - '&7World: &f{world}'
-    - '&7X: &f{X} &7Y: &f{y} &7Z: &f{z}'
+    - '&7X: &f{x} &7y: &f{y} &7z: &f{z}'
     - '&aClick to teleport'
   INVALID-HOME-BUTTON:
     MATERIAL: BARRIER
@@ -1834,7 +1834,7 @@ PROFILE-VIEWER-HOMES-MENU:
     MATERIAL: CLOCK
     DISPLAY-NAME: '&#6BF18DRefresh'
     LORE:
-    - '&7Reload this player''s homes'
+    - '&7Reload this player''S homes'
 PUNISHMENT-HISTORY-MENU:
   TITLE: '&8Punishments ({player})'
   SIZE: 54
@@ -1861,7 +1861,7 @@ PUNISHMENT-HISTORY-MENU:
       MATERIAL: CLOCK
       DISPLAY-NAME: '&#6BF18DRefresh'
       LORE:
-      - '&7Reload this player''s punishment history'
+      - '&7Reload this player''S punishment history'
   PUNISHMENT-ITEM:
     MATERIALS:
       BAN: IRON_BARS
@@ -1874,7 +1874,7 @@ PUNISHMENT-HISTORY-MENU:
     - '&7Reason: &f{reason}'
     - '&7Issued by: &f{issuer}'
     - '&7Date: &f{issued_at}'
-    - '&7EXpires: &f{eXpires_at}'
+    - '&7EXpires: &f{expires_at}'
     - '&7Status: {status_color}{status}'
     - '&7Removed by: &f{removed_by}'
     - '&7Removal reason: &f{removal_reason}'
@@ -1907,7 +1907,7 @@ STATS-WIPE-MENU:
       LORE:
       - '&7Players with tracked stats: &f{count}'
       - '&cReset kills, deaths, playtime,'
-      - '&cblocks, mobs, streaks, and money flow stats.'
+      - '&cBlocks, mobs, streaks, and money flow stats.'
     TEAM_DOCUMENTS:
       SLOT: 11
       MATERIAL: LIGHT_BLUE_BANNER
@@ -1943,7 +1943,7 @@ STATS-WIPE-MENU:
       LORE:
       - '&7Players with custom balances: &f{count}'
       - '&cReset all player balances to'
-      - '&cthe default starting money.'
+      - '&cThe default starting money.'
     SHARDS:
       SLOT: 16
       MATERIAL: PRISMARINE_SHARD

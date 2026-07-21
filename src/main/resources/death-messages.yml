@@ -16,7 +16,7 @@ MESSAGES:
   # Configuration section for Drowning.
   DROWNING:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} drowned!'
+    NORMAL: '{player} Drowned!'
     # The text or value for Pvp. Available options: Any valid string text
     PVP: '{player} ᴅʀᴏᴡɴᴇᴅ ᴡʜɪʟѕᴛ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}'
   # The text or value for Entity Attack. Available options: Any valid string text
@@ -58,9 +58,9 @@ MESSAGES:
     # The text or value for Pvp. Available options: Any valid string text
     PVP: '{player} ᴡᴀѕ ѕʜᴏᴛ ʙʏ {killer}'
   # The text or value for Starvation. Available options: Any valid string text
-  STARVATION: '{player} ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
+  STARVATION: '{player} Ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
   # The text or value for Suffocation. Available options: Any valid string text
-  SUFFOCATION: '{player} ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ'
+  SUFFOCATION: '{player} Ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ'
   # The text or value for Suicide. Available options: Any valid string text
   SUICIDE: '{player} ᴛᴏᴏᴋ ʜɪѕ ᴏᴡɴ ʟɪꜰᴇ ʟɪᴋᴇ ᴀ ᴘᴇᴀѕᴀɴᴛ'
   # The text or value for Thorns. Available options: Any valid string text

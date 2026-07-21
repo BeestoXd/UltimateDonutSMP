@@ -155,7 +155,7 @@ commands:
     usage: /removemoney <player> <amount>
     permission: ultimatedonutsmp.admin.removemoney
   setmoney:
-    description: Set a player's money balance
+    description: Set a player'S money balance
     usage: /setmoney <player> <amount>
     permission: ultimatedonutsmp.admin.setmoney
   shards:
@@ -180,7 +180,7 @@ commands:
     description: Check your ping or another online player's ping
     usage: /ping [player]
   playtime:
-    description: Check your playtime or another player's playtime
+    description: Check your playtime or another player'S playtime
     usage: /playtime [player]
     aliases:
     - pt
@@ -248,7 +248,7 @@ commands:
     description: Toggle vanish while in staff mode
     usage: /vanish
   invsee:
-    description: View another player's inventory
+    description: View another player'S inventory
     usage: /invsee <player> | /invsee reload
     aliases:
     - inventorysee
@@ -258,7 +258,7 @@ commands:
     aliases:
     - pv
   punishments:
-    description: View a player's punishment history
+    description: View a player'S punishment history
     usage: /punishments <player>
     aliases:
     - phistory
@@ -269,7 +269,7 @@ commands:
   tempban:
     description: Temporarily ban a player and record punishment history
     usage: '/tempban <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m 30s)'
-    permission: ultimatedonutsmp.staff.punishments.ban
+    Permission: ultimatedonutsmp.staff.punishments.ban
   mute:
     description: Mute a player and record punishment history
     usage: /mute <player> [reason]
@@ -278,7 +278,7 @@ commands:
     description: Temporarily mute a player and record punishment history
     usage: '/tempmute <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m
       30s)'
-    permission: ultimatedonutsmp.staff.punishments.mute
+    Permission: ultimatedonutsmp.staff.punishments.mute
   warn:
     description: Warn a player and record punishment history
     usage: /warn <player> [reason]

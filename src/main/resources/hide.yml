@@ -66,11 +66,11 @@ GUI:
     SIZE: 27
   # Configuration section for Aliases.
   ALIASES:
-    TITLE: '&8select a name - {page}/{pages}'
+    TITLE: '&8Select a name - {page}/{pages}'
     SIZE: 54
   # Configuration section for Skins.
   SKINS:
-    TITLE: '&8ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}'
+    TITLE: '&8Ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}'
     SIZE: 54
   # Configuration section for List.
   LIST:
@@ -80,7 +80,7 @@ MESSAGES:
   # The text or value for Player Only. Available options: Any valid string text
   PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
   # The text or value for No Permission. Available options: Any valid string text
-  NO-PERMISSION: '&cyou do not have permission.'
+  NO-PERMISSION: '&cYou do not have permission.'
   # The text or value for Dependency Missing. Available options: Any valid string text
   DEPENDENCY-MISSING: '&cʜɪᴅᴇ ʀᴇǫᴜɪʀᴇѕ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴛᴏ ʙᴇ ɪɴѕᴛᴀʟʟᴇᴅ ᴀɴᴅ ᴇɴᴀʙʟᴇᴅ.'
   # The text or value for Disabled. Available options: Any valid string text
@@ -100,7 +100,7 @@ MESSAGES:
   # The text or value for Invalid Skin. Available options: Any valid string text
   INVALID-SKIN: '&cᴜɴᴀʙʟᴇ ᴛᴏ ʀᴇѕᴏʟᴠᴇ ᴛʜᴀᴛ ѕᴋɪɴ ɴᴀᴍᴇ ᴏʀ ᴜʀʟ.'
   # The text or value for Skin Searching. Available options: Any valid string text
-  SKIN-SEARCHING: '&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7...'
+  SKIN-SEARCHING: '&7Ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7...'
   # The text or value for Alias In Use. Available options: Any valid string text
   ALIAS-IN-USE: '&cᴛʜᴀᴛ ᴀʟɪᴀѕ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴜѕᴇ.'
   # The text or value for Scrambled. Available options: Any valid string text
@@ -110,7 +110,7 @@ MESSAGES:
   # The text or value for Removed. Available options: Any valid string text
   REMOVED: '&aʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ.'
   # The text or value for Admin Removed. Available options: Any valid string text
-  ADMIN-REMOVED: '&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a.'
+  ADMIN-REMOVED: '&aЅᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a.'
   # The text or value for Removed By Admin. Available options: Any valid string text
   REMOVED-BY-ADMIN: '&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ.'
   # The text or value for Status None. Available options: Any valid string text

@@ -32,18 +32,18 @@ FREEZE:
   # The text or value for Status On. Available options: Any valid string text
   STATUS_ON: '&a&lON'
   # The text or value for Status Off. Available options: Any valid string text
-  STATUS_OFF: '&c&lOFF'
+  STATUS_OFF: '&c&lOff'
   # The text or value for Message. Available options: Any valid string text
   MESSAGE: '&bFreeze &a%player% &7is now %status%'
   # Configuration section for Alert.
   ALERT:
   - ''
-  - '&c&lYou''re currently frozen!'
+  - '&c&lYou''Re currently frozen!'
   - ''
   - '&7- You cannot move or interact'
   - '&7- Staff members are reviewing your actions'
   - '&7- Join our Discord for support:'
-  - '&6&ohttps://discord.com'
+  - '&6&oHttps://discord.com'
   - ''
   # The text or value for Quit Message. Available options: Any valid string text
   QUIT_MESSAGE: '&c[Freeze] &4%player% &cleft while frozen on &4%server%'

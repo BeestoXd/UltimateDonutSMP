@@ -11,11 +11,11 @@ SCOREBOARD:
   # The text or value for Shard Cuboid. Available options: Any valid string text
   SHARD-CUBOID: '&#A303F9⌛ &fShards &#A303F9%economy_shard_cuboid_display%     '
   TITLE:
-  - '&#0069d6&lE&#0374da&lc&#067fdf&lo&#0a8be3&ln&#0d96e7&lo&#10a1ec&lm&#13acf0&ly&#17b8f4&lS&#1ac3f9&lM&#1dcefd&lP'
+  - '&#0069D6&lE&#0374DA&lc&#067FDF&lo&#0A8BE3&ln&#0D96E7&lo&#10A1EC&lm&#13ACF0&ly&#17B8F4&lS&#1AC3F9&lM&#1DCEFD&lP'
   # Configuration section for Lines.
   LINES:
   - ''
-  - '&#00FC00&l$ &fMoney &#00FC00%economy_nicestMoney%     '
+  - '&#00FC00&l$ &fMoney &#00FC00%economy_nicestmoney%     '
   - '&#A303F9★ &fShards &#A303F9%economy_shards%     '
   - '&#FC0000🗡 &fKills &#FC0000%economy_kills%      '
   - '&#F97603☠ &fDeaths &#F97603%economy_deaths%   '

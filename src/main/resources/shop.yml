@@ -1,7 +1,7 @@
 # Configuration section for Categories.
 CATEGORIES:
   # The text or value for Menu Title. Available options: Any valid string text
-  MENU-TITLE: '&8ѕʜᴏᴘ'
+  MENU-TITLE: '&8Ѕʜᴏᴘ'
   # The numerical value for Menu Size. Available options: Any valid integer
   MENU-SIZE: 27
   # Configuration section for End.
@@ -43,7 +43,7 @@ CATEGORIES:
   # Configuration section for Shard.
   SHARD:
     MATERIAL: AMETHYST_SHARD
-    DISPLAY-NAME: '&#6BF18Dѕʜᴀʀᴅ ѕʜᴏᴘ'
+    DISPLAY-NAME: '&#6BF18DЅʜᴀʀᴅ ѕʜᴏᴘ'
     SLOT: 15
     LORE:
     - '&fClick to view the shard shop'
@@ -86,7 +86,7 @@ CATEGORIES:
 END-MENU:
   # The text or value for Currency. Available options: Any valid string text
   CURRENCY: MONEY
-  TITLE: '&8ѕʜᴏᴘ - ᴇɴᴅ'
+  TITLE: '&8Ѕʜᴏᴘ - ᴇɴᴅ'
   SIZE: 27
   # Configuration section for Ender Chest Item.
   ENDER-CHEST-ITEM:
@@ -130,7 +130,7 @@ END-MENU:
     # The text or value for Currency. Available options: Any valid string text
     CURRENCY: MONEY
     MATERIAL: DRAGON_BREATH
-    DISPLAY-NAME: '&eDragon''s Breath'
+    DISPLAY-NAME: '&eDragon''S Breath'
     SLOT: 12
     # The decimal value for Price Per Unit. Available options: Any decimal number
     PRICE-PER-UNIT: 1000.0
@@ -195,7 +195,7 @@ END-MENU:
     - '&fBuy price: &a$800'
 # Configuration section for Nether Menu.
 NETHER-MENU:
-  TITLE: '&8ѕʜᴏᴘ - ɴᴇᴛʜᴇʀ'
+  TITLE: '&8Ѕʜᴏᴘ - ɴᴇᴛʜᴇʀ'
   SIZE: 27
   # Configuration section for Blaze Rod Item.
   BLAZE-ROD-ITEM:
@@ -393,7 +393,7 @@ GEAR-MENU:
     # The text or value for Currency. Available options: Any valid string text
     CURRENCY: MONEY
     MATERIAL: DIRT
-    DISPLAY-NAME: '&eDIRT'
+    DISPLAY-NAME: '&eDirt'
     SLOT: 17
     # The numerical value for Price Per Unit. Available options: Any valid integer
     PRICE-PER-UNIT: 500
@@ -504,7 +504,7 @@ FOOD-MENU:
     - '&fBuy price: &a$250'
 # Configuration section for Shard Menu.
 SHARD-MENU:
-  TITLE: '&8ѕʜᴀʀᴅ - ѕʜᴏᴘ'
+  TITLE: '&8Ѕʜᴀʀᴅ - ѕʜᴏᴘ'
   SIZE: 27
   # Configuration section for Pig Spawner Item.
   PIG-SPAWNER-ITEM:

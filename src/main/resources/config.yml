@@ -116,7 +116,7 @@ CHAT:
     - '&#FC0000⚔ &fᴋɪʟʟѕ &#FC0000%economy_kills%'
     - '&#FCE300⌚ &fᴘʟᴀʏᴛɪᴍᴇ &#FCE300%economy_playtime%'
     - '&#F97603☠ &fᴅᴇᴀᴛʜѕ &#F97603%economy_deaths%'
-    - '&#A303F9★ &fѕʜᴀʀᴅѕ &#A303F9%economy_shards%'
+    - '&#A303F9★ &fЅʜᴀʀᴅѕ &#A303F9%economy_shards%'
     - '&7&m----------'
     - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕᴛᴀᴛѕ'
     # The text or value for Suggest Command. Available options: Any valid string text
@@ -300,7 +300,7 @@ LUNAR-CLIENT:
     # The text or value for Game Name. Available options: Any valid string text
     GAME-NAME: Economy
     # The text or value for Variant. Available options: Any valid string text
-    VARIANT: '%economy_username% ($%economy_nicestMoney%)'
+    VARIANT: '%economy_username% ($%economy_nicestmoney%)'
     # The text or value for World Name. Available options: Any valid string text
     WORLD-NAME: Economy
     # The text or value for Sub Server Name. Available options: Any valid string text
@@ -493,7 +493,7 @@ TABLIST:
   # Configuration section for Footer.
   FOOTER:
   - ''
-  - '   &#37BFF9/discord  /guide  /store   '
+  - '   &#37BFF9/Discord  /guide  /store   '
   - ''
 # Configuration section for Optimization.
 OPTIMIZATION:
@@ -577,7 +577,7 @@ COMBAT-MANAGER:
     # Determines whether Prevent World Change is enabled or disabled. Available options: true, false
     PREVENT-WORLD-CHANGE: true
   # The text or value for Block Message. Available options: Any valid string text
-  BLOCK-MESSAGE: '&cYou can''t use this command in your current status.'
+  BLOCK-MESSAGE: '&cYou can''T use this command in your current status.'
   # Configuration section for Block Commands.
   BLOCK-COMMANDS:
   - /spawn
@@ -767,7 +767,7 @@ AMETHYST-TOOLS:
       AMOUNT: 10
     NAME: '&#A303F9Shard Booster'
     LORE:
-    - '&74x Shard Production for 24 hours'
+    - '&74X Shard Production for 24 hours'
     - '&8Self Destruct'
     - '&8{time}'
     # A list configuration for Enchantments. Available options: Multiple items

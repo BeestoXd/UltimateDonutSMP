@@ -58,21 +58,21 @@ RESULT-TITLES:
   # Configuration section for Victory.
   victory:
     # The text or value for Title. Available options: Any valid string text
-    title: '&e&lVICTORY!'
+    title: '&e&lVictory!'
     # The text or value for Subtitle. Available options: Any valid string text
     subtitle: '&e<player> &fwon the Match!'
   # Configuration section for Defeat.
   defeat:
     # The text or value for Title. Available options: Any valid string text
-    title: '&c&lDEFEAT!'
+    title: '&c&lDefeat!'
     # The text or value for Subtitle. Available options: Any valid string text
     subtitle: '&c<opponent> &fwon this Match!'
   # Configuration section for Draw.
   draw:
     # The text or value for Title. Available options: Any valid string text
-    title: '&e&lDRAW!'
+    title: '&e&lDraw!'
     # The text or value for Subtitle. Available options: Any valid string text
-    subtitle: '&fTime''s up - no winner.'
+    subtitle: '&fTime''S up - no winner.'
     # The text or value for Message. Available options: Any valid string text
     message: '&e[Timer] &fTime limit reached! Match ended as a &eDRAW &f- streaks
       unchanged.'

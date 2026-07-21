@@ -41,13 +41,13 @@ NETWORK:
   # The numerical value for Report Cooldown Seconds. Available options: Any valid integer
   REPORT_COOLDOWN_SECONDS: 60
   # The text or value for Server Status. Available options: Any valid string text
-  SERVER_STATUS: '&6%server% &eis now %status%&e.'
+  SERVER_STATUS: '&6%server% &eIs now %status%&e.'
   # The text or value for Staff Chat. Available options: Any valid string text
   STAFF_CHAT: '&8[&dNetwork&8] &7[%server%] &e%player%&8: &f%message%'
   # The text or value for Staff Join. Available options: Any valid string text
-  STAFF_JOIN: '&8[&a+&8] &a%player% &7joined &b%server%'
+  STAFF_JOIN: '&8[&a+&8] &a%player% &7Joined &b%server%'
   # The text or value for Staff Leave. Available options: Any valid string text
-  STAFF_LEAVE: '&8[&c-&8] &a%player% &7left &b%server%'
+  STAFF_LEAVE: '&8[&c-&8] &a%player% &7Left &b%server%'
 # Configuration section for Network Status.
 NETWORK-STATUS:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

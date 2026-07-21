@@ -100,7 +100,7 @@ GUI:
     NAME: '&a&lConfirm Trade'
     LORE:
     - '&7Bring the required items,'
-    - '&7then click to exchange them.'
+    - '&7Then click to exchange them.'
     - ''
     - '&a&lClick to Confirm'
   # Configuration section for Limit Button.
@@ -109,7 +109,7 @@ GUI:
     NAME: '&c&lLimit Reached'
     LORE:
     - '&cYou already used this deal enough'
-    - '&cfor the current rotation.'
+    - '&cFor the current rotation.'
     - '&7Come back after the next refresh.'
 # Configuration section for Feedback.
 FEEDBACK:

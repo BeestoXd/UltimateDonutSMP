@@ -10,7 +10,7 @@ MESSAGES:
   # The text or value for Disabled. Available options: Any valid string text
   DISABLED: '&cRTP is currently disabled.'
   # The text or value for Cooldown. Available options: Any valid string text
-  COOLDOWN: '&cYou can''t rtp for another {remaining}s.'
+  COOLDOWN: '&cYou can''T rtp for another {remaining}s.'
   # The text or value for Max Players. Available options: Any valid string text
   MAX-PLAYERS: '&cToo many players are using RTP right now. Please try again later.'
   # The text or value for World Not Exist. Available options: Any valid string text

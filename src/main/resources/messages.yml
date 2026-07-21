@@ -1,7 +1,7 @@
 # Configuration section for Team.
 TEAM:
   # The text or value for No Team. Available options: Any valid string text
-  NO-TEAM: '&cYou don''t have a team. Type /team create (name) to create a team.'
+  NO-TEAM: '&cYou don''T have a team. Type /team create (name) to create a team.'
   # The text or value for Already Exists. Available options: Any valid string text
   ALREADY-EXISTS: '&cYou cannot create a team with this name, it is already taken.'
   # The text or value for Team Created. Available options: Any valid string text
@@ -15,7 +15,7 @@ TEAM:
   # The text or value for Player No Invites. Available options: Any valid string text
   PLAYER-NO-INVITES: '&cThis player does not accept invitations.'
   # The text or value for Player In Team. Available options: Any valid string text
-  PLAYER-IN-TEAM: '&c{player} is already in a team.'
+  PLAYER-IN-TEAM: '&c{player} Is already in a team.'
   # The text or value for Team Full. Available options: Any valid string text
   TEAM-FULL: '&cTeam has reached the maximum members.'
   # The text or value for Invite Sent. Available options: Any valid string text
@@ -31,21 +31,21 @@ TEAM:
   # The text or value for Kicked From Team. Available options: Any valid string text
   KICKED-FROM-TEAM: '&aYou have been kicked from the team.'
   # The text or value for Player Not In Team. Available options: Any valid string text
-  PLAYER-NOT-IN-TEAM: '&c{player} is not a member of your team.'
+  PLAYER-NOT-IN-TEAM: '&c{player} Is not a member of your team.'
   # The text or value for Team Chat Enabled. Available options: Any valid string text
   TEAM-CHAT-ENABLED: '&7You enabled team chat.'
   # The text or value for Team Chat Disabled. Available options: Any valid string text
   TEAM-CHAT-DISABLED: '&7You disabled team chat.'
   # The text or value for No Manage Permission. Available options: Any valid string text
-  NO-MANAGE-PERMISSION: '&cYou don''t have permission to invite or kick teammates.'
+  NO-MANAGE-PERMISSION: '&cYou don''T have permission to invite or kick teammates.'
   # The text or value for No Edit Home Permission. Available options: Any valid string text
-  NO-EDIT-HOME-PERMISSION: '&cYou don''t have permission to edit the team home.'
+  NO-EDIT-HOME-PERMISSION: '&cYou don''T have permission to edit the team home.'
   # The text or value for No Visit Home Permission. Available options: Any valid string text
-  NO-VISIT-HOME-PERMISSION: '&cYou don''t have permission to visit the team home.'
+  NO-VISIT-HOME-PERMISSION: '&cYou don''T have permission to visit the team home.'
   # The text or value for No Team Chat Permission. Available options: Any valid string text
-  NO-TEAM-CHAT-PERMISSION: '&cYou don''t have permission to use team chat.'
+  NO-TEAM-CHAT-PERMISSION: '&cYou don''T have permission to use team chat.'
   # The text or value for No Pvp Permission. Available options: Any valid string text
-  NO-PVP-PERMISSION: '&cYou don''t have permission to change team PvP.'
+  NO-PVP-PERMISSION: '&cYou don''T have permission to change team PvP.'
   # The text or value for Team Pvp Enabled. Available options: Any valid string text
   TEAM-PVP-ENABLED: '&7Team PvP is now &aenabled&7.'
   # The text or value for Team Pvp Disabled. Available options: Any valid string text
@@ -65,9 +65,9 @@ TEAM:
   # The text or value for Hover Join. Available options: Any valid string text
   HOVER-JOIN: '&eClick to join the {team} team.'
   # The text or value for Or Type Command. Available options: Any valid string text
-  OR-TYPE-COMMAND: '&7or type &f{command}&7 to join.'
+  OR-TYPE-COMMAND: '&7Or type &f{command}&7 to join.'
   # The text or value for Joined Broadcast. Available options: Any valid string text
-  JOINED-BROADCAST: '&a{player} &ehas joined the team.'
+  JOINED-BROADCAST: '&a{player} &eHas joined the team.'
 # Configuration section for Chat Manager.
 CHAT-MANAGER:
   # Configuration section for Help.
@@ -75,10 +75,10 @@ CHAT-MANAGER:
   - ''
   - '&b&lChat Manager &7(Commands)'
   - ''
-  - '&f/chat mute &7- To mute global chat.'
-  - '&f/chat unmute &7- To unmute global chat.'
-  - '&f/chat delay (time) &7- To add delay to global chat.'
-  - '&f/chat clear &7- To clear global chat.'
+  - '&f/Chat mute &7- To mute global chat.'
+  - '&f/Chat unmute &7- To unmute global chat.'
+  - '&f/Chat delay (time) &7- To add delay to global chat.'
+  - '&f/Chat clear &7- To clear global chat.'
   - ''
   # The text or value for Muted. Available options: Any valid string text
   MUTED: '&aGlobal chat is now muted.'
@@ -105,9 +105,9 @@ CHAT-MANAGER:
 # Configuration section for Ignore.
 IGNORE:
   # The text or value for Added. Available options: Any valid string text
-  ADDED: '&7%player% &chas been added to your ignore list.'
+  ADDED: '&7%player% &cHas been added to your ignore list.'
   # The text or value for Removed. Available options: Any valid string text
-  REMOVED: '&7%player% &chas been removed from your ignore list.'
+  REMOVED: '&7%player% &cHas been removed from your ignore list.'
   # The text or value for Usage. Available options: Any valid string text
   USAGE: '&cUsage: /ignore <player|list>'
   # The text or value for Unignore Usage. Available options: Any valid string text
@@ -123,7 +123,7 @@ IGNORE:
   # The text or value for Player Not Found. Available options: Any valid string text
   PLAYER-NOT-FOUND: '&cPlayer not found.'
   # The text or value for Not Ignored. Available options: Any valid string text
-  NOT-IGNORED: '&7%player% &cis not in your ignore list.'
+  NOT-IGNORED: '&7%player% &cIs not in your ignore list.'
   # The text or value for List Empty. Available options: Any valid string text
   LIST-EMPTY: '&7You are not ignoring anyone.'
   # The text or value for List Header. Available options: Any valid string text
@@ -143,9 +143,9 @@ MESSAGES:
   # The text or value for Cannot Message Self. Available options: Any valid string text
   CANNOT_MESSAGE_SELF: '&cYou cannot message yourself!'
   # The text or value for Player Blocked. Available options: Any valid string text
-  PLAYER_BLOCKED: '&c%player% has blocked you.'
+  PLAYER_BLOCKED: '&c%player% Has blocked you.'
   # The text or value for Pms Disabled. Available options: Any valid string text
-  PMS_DISABLED: '&c%player% has private messages disabled.'
+  PMS_DISABLED: '&c%player% Has private messages disabled.'
   # The text or value for No Conversation. Available options: Any valid string text
   NO_CONVERSATION: '&cYou are currently not in conversation with anyone or the player
     is offline.'
@@ -254,33 +254,33 @@ SHARD-BOOSTER:
 # Configuration section for Tpa.
 TPA:
   # The text or value for Invite Sent. Available options: Any valid string text
-  INVITE-SENT: '&eyou have invited &a{player} &eto teleport.'
+  INVITE-SENT: '&eYou have invited &a{player} &eto teleport.'
   # The text or value for Invite Here Sent. Available options: Any valid string text
-  INVITE-HERE-SENT: '&eyou have invited &a{player} &eto teleport to you.'
+  INVITE-HERE-SENT: '&eYou have invited &a{player} &eto teleport to you.'
   # The text or value for Already Sent. Available options: Any valid string text
   ALREADY-SENT: '&cYou have already sent the request to &6{player}.'
   # The text or value for Request Received. Available options: Any valid string text
-  REQUEST-RECEIVED: '&e[&d&ltpa request&e] &eyou have a request from &a&l{player}&e.
+  REQUEST-RECEIVED: '&e[&d&lTpa request&e] &eyou have a request from &a&l{player}&e.
     &a&l(click to accept)'
   # The text or value for Request Here Received. Available options: Any valid string text
-  REQUEST-HERE-RECEIVED: '&e[&d&ltpahere request&e] &eyou have a request from &a&l{player}&e
+  REQUEST-HERE-RECEIVED: '&e[&d&lTpahere request&e] &eyou have a request from &a&l{player}&e
     to teleport to them. &a&l(click to accept)'
   # The text or value for No Request. Available options: Any valid string text
-  NO-REQUEST: '&cyou have no tpa request from &a{player}.'
+  NO-REQUEST: '&cYou have no tpa request from &a{player}.'
   # The text or value for No Sent Requests. Available options: Any valid string text
   NO-SENT-REQUESTS: '&cThis teleport request doest not exist.'
   # The text or value for Cancelled Requests. Available options: Any valid string text
   CANCELLED-REQUESTS: '&7You canceled your tpa requests.'
   # The text or value for No Request Here. Available options: Any valid string text
-  NO-REQUEST-HERE: '&cyou have no tpahere request from &a{player}.'
+  NO-REQUEST-HERE: '&cYou have no tpahere request from &a{player}.'
   # The text or value for Accepted. Available options: Any valid string text
-  ACCEPTED: '&ayou have accepted the tpa request from &a{player}.'
+  ACCEPTED: '&aYou have accepted the tpa request from &a{player}.'
   # The text or value for Accepted Here. Available options: Any valid string text
-  ACCEPTED-HERE: '&ayou have accepted the tpahere request from &a{player}.'
+  ACCEPTED-HERE: '&aYou have accepted the tpahere request from &a{player}.'
   # The text or value for Your Request Accepted. Available options: Any valid string text
-  YOUR-REQUEST-ACCEPTED: '&a{player} has accepted your tpa request.'
+  YOUR-REQUEST-ACCEPTED: '&a{player} Has accepted your tpa request.'
   # The text or value for Your Request Here Accepted. Available options: Any valid string text
-  YOUR-REQUEST-HERE-ACCEPTED: '&a{player} has accepted your tpahere request.'
+  YOUR-REQUEST-HERE-ACCEPTED: '&a{player} Has accepted your tpahere request.'
   # The text or value for Cannot Invite Yourself. Available options: Any valid string text
   CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Not Accepting Requests. Available options: Any valid string text
@@ -316,7 +316,7 @@ WARP:
   # The text or value for List Empty. Available options: Any valid string text
   LIST-EMPTY: '&cNo warps available.'
   # The text or value for Not Found. Available options: Any valid string text
-  NOT-FOUND: '&cWarp ''&e{name}&c'' not found.'
+  NOT-FOUND: '&cWarp ''&e{name}&c'' Not found.'
   # The text or value for Not Found Suggestion. Available options: Any valid string text
   NOT-FOUND-SUGGESTION: '&7Did you mean: &b{suggestions}'
   # The text or value for Created. Available options: Any valid string text
@@ -324,7 +324,7 @@ WARP:
   # The text or value for Deleted. Available options: Any valid string text
   DELETED: '&aWarp &b{name} &ahas been deleted.'
   # The text or value for Already Exists. Available options: Any valid string text
-  ALREADY-EXISTS: '&cWarp ''&e{name}&c'' already exists.'
+  ALREADY-EXISTS: '&cWarp ''&e{name}&c'' Already exists.'
   # The text or value for Invalid Name. Available options: Any valid string text
   INVALID-NAME: '&cInvalid warp name. Use only letters, numbers, dashes, and underscores.'
 # Configuration section for Warpmanager.
@@ -362,13 +362,13 @@ PORTAL:
   # The text or value for Teleport In Progress. Available options: Any valid string text
   TELEPORT-IN-PROGRESS: '&cYou are already teleporting.'
   # The text or value for Status Ready. Available options: Any valid string text
-  STATUS-READY: '&aready'
+  STATUS-READY: '&aReady'
   # The text or value for Status Disabled. Available options: Any valid string text
-  STATUS-DISABLED: '&cdisabled'
+  STATUS-DISABLED: '&cDisabled'
   # The text or value for Status Invalid Cuboid. Available options: Any valid string text
-  STATUS-INVALID-CUBOID: '&einvalid cuboid'
+  STATUS-INVALID-CUBOID: '&eInvalid cuboid'
   # The text or value for Status Invalid Destination. Available options: Any valid string text
-  STATUS-INVALID-DESTINATION: '&einvalid destination'
+  STATUS-INVALID-DESTINATION: '&eInvalid destination'
 # Configuration section for Portalmanager.
 PORTALMANAGER:
   # The text or value for Usage. Available options: Any valid string text
@@ -398,15 +398,15 @@ PORTALMANAGER:
   # The text or value for Invalid Id. Available options: Any valid string text
   INVALID-ID: '&cInvalid portal id. Use only letters, numbers, dashes, and underscores.'
   # The text or value for Invalid Cuboid. Available options: Any valid string text
-  INVALID-CUBOID: '&cCuboid ''&e{cuboid}&c'' does not exist.'
+  INVALID-CUBOID: '&cCuboid ''&e{cuboid}&c'' Does not exist.'
   # The text or value for Invalid Destination. Available options: Any valid string text
-  INVALID-DESTINATION: '&cRTP destination ''&e{destination}&c'' is unavailable.'
+  INVALID-DESTINATION: '&cRTP destination ''&e{destination}&c'' Is unavailable.'
   # The text or value for Invalid Priority. Available options: Any valid string text
   INVALID-PRIORITY: '&cPriority must be a whole number.'
   # The text or value for Not Found. Available options: Any valid string text
-  NOT-FOUND: '&cPortal ''&e{id}&c'' not found.'
+  NOT-FOUND: '&cPortal ''&e{id}&c'' Not found.'
   # The text or value for Already Exists. Available options: Any valid string text
-  ALREADY-EXISTS: '&cPortal ''&e{id}&c'' already exists.'
+  ALREADY-EXISTS: '&cPortal ''&e{id}&c'' Already exists.'
   # The text or value for Created. Available options: Any valid string text
   CREATED: '&aPortal &d{id} &ahas been created.'
   # The text or value for Updated. Available options: Any valid string text
@@ -420,7 +420,7 @@ PORTALMANAGER:
   # The text or value for List Header. Available options: Any valid string text
   LIST-HEADER: '&8&m---------------- &dPortals &7({count}) &8&m----------------'
   # The text or value for List Entry. Available options: Any valid string text
-  LIST-ENTRY: '&7- &d{id} &8[&f{state}&8] &7cuboid=&f{cuboid} &7destination=&f{destination}'
+  LIST-ENTRY: '&7- &d{id} &8[&f{state}&8] &7Cuboid=&f{cuboid} &7destination=&f{destination}'
   # The text or value for Info Header. Available options: Any valid string text
   INFO-HEADER: '&8&m---------------- &dPortal: &f{id} &8&m----------------'
   # The text or value for Info Display. Available options: Any valid string text
@@ -444,9 +444,9 @@ PORTALMANAGER:
 # Configuration section for Worth.
 WORTH:
   # The text or value for Default. Available options: Any valid string text
-  DEFAULT: '&b1 {item} &7is now &a${price}'
+  DEFAULT: '&b1 {item} &7Is now &a${price}'
   # The text or value for Hand Item. Available options: Any valid string text
-  HAND-ITEM: '&b{amount} {item} &7is now &a${total}'
+  HAND-ITEM: '&b{amount} {item} &7Is now &a${total}'
   # The text or value for No Sellable. Available options: Any valid string text
   NO-SELLABLE: '&cThis item is not sellable.'
   # The text or value for Container Breakdown. Available options: Any valid string text
@@ -468,17 +468,17 @@ BOUNTY:
   # The text or value for Player Not Exist. Available options: Any valid string text
   PLAYER-NOT-EXIST: '&cThat player does not exist.'
   # The text or value for Player Has Bounty. Available options: Any valid string text
-  PLAYER-HAS-BOUNTY: '&b{player} &7has a bounty of &c${amount}'
+  PLAYER-HAS-BOUNTY: '&b{player} &7Has a bounty of &c${amount}'
   # The text or value for No Bounty. Available options: Any valid string text
   NO-BOUNTY: '&cThe user does not have a bounty.'
   # The text or value for Cant Self Bounty. Available options: Any valid string text
-  CANT-SELF-BOUNTY: '&cYou can''t do this yourself.'
+  CANT-SELF-BOUNTY: '&cYou can''T do this yourself.'
   # The text or value for Minimum Price. Available options: Any valid string text
   MINIMUM-PRICE: '&cMinimum price is $1.00.'
 # Configuration section for Billford.
 BILLFORD:
   # The text or value for Required Contents. Available options: Any valid string text
-  REQUIRED_CONTENTS: '&cYou don''t have all the required items for this trade.'
+  REQUIRED_CONTENTS: '&cYou don''T have all the required items for this trade.'
   # The text or value for Full Inventory. Available options: Any valid string text
   FULL-INVENTORY: '&cYour inventory is full! Free up a slot before confirming the
     trade.'
@@ -488,7 +488,7 @@ BILLFORD:
     # The text or mode for Money. Available options: Any string text Money: &a${money_bonus}&7.
     &8Next refresh in &f{next_rotation}&8.'
   # The text or value for Limit Reached. Available options: Any valid string text
-  LIMIT-REACHED: '&cYou''ve reached the trade limit for this rotation. Come back after
+  LIMIT-REACHED: '&cYou''Ve reached the trade limit for this rotation. Come back after
     the next trade change!'
   # The text or value for Click Cooldown. Available options: Any valid string text
   CLICK-COOLDOWN: '&cSlow down. Billford is still processing your last click.'
@@ -506,11 +506,11 @@ BALANCE:
   # The text or value for Your Balance. Available options: Any valid string text
   YOUR-BALANCE: '&7You have &a${amount}&7.'
   # The text or value for Other Balance. Available options: Any valid string text
-  OTHER-BALANCE: '&b{player} &7has &a${amount}&7.'
+  OTHER-BALANCE: '&b{player} &7Has &a${amount}&7.'
   # The text or value for Your Shards. Available options: Any valid string text
   YOUR-SHARDS: '&7Your shards: &#A303F9{amount}'
   # The text or value for Other Shards. Available options: Any valid string text
-  OTHER-SHARDS: '&7{player}''s shards: &#A303F9{amount}'
+  OTHER-SHARDS: '&7{player}''S shards: &#A303F9{amount}'
   # Configuration section for Admin.
   ADMIN:
     # The text or value for Invalid Amount. Available options: Any valid string text
@@ -523,26 +523,26 @@ BALANCE:
     # The text or value for Player Not Found. Available options: Any valid string text
     PLAYER-NOT-FOUND: '&cPlayer not found.'
     # The text or value for Target Not Enough Money. Available options: Any valid string text
-    TARGET-NOT-ENOUGH-MONEY: '&c{player} does not have enough money. Current balance:
+    TARGET-NOT-ENOUGH-MONEY: '&c{player} Does not have enough money. Current balance:
       &f${balance}&c.'
     # The text or value for Add Money Success. Available options: Any valid string text
     ADD-MONEY-SUCCESS: '&aAdded &f${amount} &ato &b{player}&a. New balance: &f${balance}&a.'
     # The text or value for Add Money Received. Available options: Any valid string text
-    ADD-MONEY-RECEIVED: '&a{admin} added &f${amount} &ato your balance. New balance:
+    ADD-MONEY-RECEIVED: '&a{admin} Added &f${amount} &ato your balance. New balance:
       &f${balance}&a.'
     # The text or value for Remove Money Success. Available options: Any valid string text
     REMOVE-MONEY-SUCCESS: '&aRemoved &f${amount} &afrom &b{player}&a. New balance:
       &f${balance}&a.'
     # The text or value for Remove Money Received. Available options: Any valid string text
-    REMOVE-MONEY-RECEIVED: '&c{admin} removed &f${amount} &cfrom your balance. New
+    REMOVE-MONEY-RECEIVED: '&c{admin} Removed &f${amount} &cfrom your balance. New
       # The text or value for # The Text Or Mode For Balance. Available Options. Available options: Any valid string text
       # The text or mode for Balance. Available options: Any string text balance:
       &f${balance}&c.'
     # The text or value for Set Money Success. Available options: Any valid string text
-    SET-MONEY-SUCCESS: '&aSet &b{player}&a''s balance to &f${amount}&a. Previous balance:
+    SET-MONEY-SUCCESS: '&aSet &b{player}&a''S balance to &f${amount}&a. Previous balance:
       &f${previous_balance}&a.'
     # The text or value for Set Money Received. Available options: Any valid string text
-    SET-MONEY-RECEIVED: '&e{admin} set your balance to &f${amount}&e. Previous balance:
+    SET-MONEY-RECEIVED: '&e{admin} Set your balance to &f${amount}&e. Previous balance:
       &f${previous_balance}&e.'
   # Configuration section for Pay.
   PAY:
@@ -554,7 +554,7 @@ BALANCE:
     # The text or value for Must Be Positive. Available options: Any valid string text
     MUST-BE-POSITIVE: '&cThe amount must be positive.'
     # The text or value for Not Enough Money. Available options: Any valid string text
-    NOT-ENOUGH-MONEY: '&cYou don''t have enough money.'
+    NOT-ENOUGH-MONEY: '&cYou don''T have enough money.'
     # The text or value for Transaction Error. Available options: Any valid string text
     TRANSACTION-ERROR: '&cError occurred during transaction. Your money has been refunded.'
     # The text or value for Player Not Online. Available options: Any valid string text
@@ -577,7 +577,7 @@ SHARD_PAY:
   # The text or value for Must Be Positive. Available options: Any valid string text
   MUST-BE-POSITIVE: '&cThe amount must be positive.'
   # The text or value for Not Enough Shards. Available options: Any valid string text
-  NOT-ENOUGH-SHARDS: '&cYou don''t have enough shards.'
+  NOT-ENOUGH-SHARDS: '&cYou don''T have enough shards.'
   # The text or value for Target Profile Not Found. Available options: Any valid string text
   TARGET-PROFILE-NOT-FOUND: '&cTarget profile not found.'
   # The text or value for Target Disabled Payments. Available options: Any valid string text
@@ -589,19 +589,19 @@ SHARD_PAY:
 # Configuration section for Findplayer.
 FINDPLAYER:
   # The text or value for Afk. Available options: Any valid string text
-  AFK: '&7{player}''s in the &#A303F9afk'
+  AFK: '&7{player}''S in the &#A303F9afk'
   # The text or value for Rtp Zone. Available options: Any valid string text
-  RTP_ZONE: '&7{player}''s in the &crtpzone'
+  RTP_ZONE: '&7{player}''S in the &crtpzone'
   # The text or value for Spawn. Available options: Any valid string text
-  SPAWN: '&7{player}''s in the &bspawn'
+  SPAWN: '&7{player}''S in the &bspawn'
   # The text or value for Overworld. Available options: Any valid string text
-  OVERWORLD: '&7{player}''s in the &boverworld &7(&b{biome}&7)'
+  OVERWORLD: '&7{player}''S in the &boverworld &7(&b{biome}&7)'
   # The text or value for Nether. Available options: Any valid string text
-  NETHER: '&7{player}''s in the &bnether &7(&b{biome}&7)'
+  NETHER: '&7{player}''S in the &bnether &7(&b{biome}&7)'
   # The text or value for The End. Available options: Any valid string text
-  THE_END: '&7{player}''s in the &bthe end &7(&b{biome}&7)'
+  THE_END: '&7{player}''S in the &bthe end &7(&b{biome}&7)'
   # The text or value for Unknown. Available options: Any valid string text
-  UNKNOWN: '&7{player}''s in the &b{world}'
+  UNKNOWN: '&7{player}''S in the &b{world}'
 # Configuration section for Punishments.
 PUNISHMENTS:
   # The text or value for Player Only. Available options: Any valid string text
@@ -793,7 +793,7 @@ AUCTION_HOUSE:
   # The text or value for Sell Usage. Available options: Any valid string text
   SELL_USAGE: '&cUsage: /ah sell <price>'
   # The text or value for Cancel Usage. Available options: Any valid string text
-  CANCEL_USAGE: '&cUsage: /ah cancel <listingId>'
+  CANCEL_USAGE: '&cUsage: /ah cancel <listingid>'
   # The text or value for Invalid Price. Available options: Any valid string text
   INVALID_PRICE: '&cInvalid price format. Use numbers like 100, 5K, or 1.5M.'
   # The text or value for Invalid Listing Id. Available options: Any valid string text
@@ -942,8 +942,8 @@ STATS-WIPE:
 # Configuration section for Staff.
 STAFF:
   # The text or value for No Permission Others. Available options: Any valid string text
-  NO_PERMISSION_OTHERS: '&c&lERROR &7» &cYou don''t have permission to manage other
-    players'' staff mode!'
+  NO_PERMISSION_OTHERS: '&c&lERROR &7» &cYou don''T have permission to manage other
+    players'' Staff mode!'
   # The text or value for Toggle Error. Available options: Any valid string text
   TOGGLE_ERROR: '&c&lERROR &7» &cFailed to toggle staff mode!'
   # The text or value for Status Enabled. Available options: Any valid string text
@@ -959,7 +959,7 @@ STAFF:
   # The text or value for State Inactive. Available options: Any valid string text
   STATE_INACTIVE: '&cInactive'
   # The text or value for Self Toggle. Available options: Any valid string text
-  SELF_TOGGLE: '&6&lSTAFF MODE &7» %status%&7!'
+  SELF_TOGGLE: '&6&lStaff mode &7» %status%&7!'
   # The text or value for Self Status. Available options: Any valid string text
   SELF_STATUS: '&7Status: %icon% %status%'
   # The text or value for Other Toggle. Available options: Any valid string text
@@ -971,7 +971,7 @@ STAFF:
   # Configuration section for Activation Messages.
   ACTIVATION_MESSAGES:
   - '&7&m------------------------------'
-  - '&6&lSTAFF MODE ACTIVATED'
+  - '&6&lStaff mode activated'
   - '&7• Inventory cleared and saved'
   - '&7• Game mode set to Creative'
   - '&7• Flight enabled'
@@ -1020,13 +1020,13 @@ FEED:
 # Configuration section for Gamemode.
 GAMEMODE:
   # The text or value for Message. Available options: Any valid string text
-  MESSAGE: '&d%player% &7is now in &e%mode% mode'
+  MESSAGE: '&d%player% &7Is now in &e%mode% mode'
   # The text or value for Target Message. Available options: Any valid string text
   TARGET_MESSAGE: '&7Your gamemode has been changed to &e%mode% &7by &d%sender%'
   # The text or value for No Permission. Available options: Any valid string text
   NO_PERMISSION: '&cYou do not have permission.'
   # The text or value for No Permission Others. Available options: Any valid string text
-  NO_PERMISSION_OTHERS: '&cYou do not have permission to change other players'' gamemode.'
+  NO_PERMISSION_OTHERS: '&cYou do not have permission to change other players'' Gamemode.'
   # The text or value for Player Only. Available options: Any valid string text
   PLAYER_ONLY: '&cOnly players can use this command without a target.'
   # The text or value for Player Not Online. Available options: Any valid string text
@@ -1064,13 +1064,13 @@ PING:
   # The text or value for Self. Available options: Any valid string text
   SELF: '&7Your ping is &b%ping%ms'
   # The text or value for Other. Available options: Any valid string text
-  OTHER: '&e%player%''s &7ping is &b%ping%ms'
+  OTHER: '&e%player%''S &7ping is &b%ping%ms'
 # Configuration section for Playtime.
 PLAYTIME:
   # The text or value for Message. Available options: Any valid string text
-  MESSAGE: '&a%time% &eplaying on &a%server%'
+  MESSAGE: '&a%time% &ePlaying on &a%server%'
   # The text or value for Other. Available options: Any valid string text
-  OTHER: '&e%player% &7has played for &a%time% &7on &a%server%'
+  OTHER: '&e%player% &7Has played for &a%time% &7on &a%server%'
 # Configuration section for Staffchat.
 STAFFCHAT:
   # The text or value for No Permission. Available options: Any valid string text
@@ -1106,8 +1106,8 @@ HELPOP:
   # Configuration section for Format.
   FORMAT:
   - ''
-  - '&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ'
-  - '     &9ʀᴇᴀѕᴏɴ: &b%message%'
+  - '&9[Ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ'
+  - '     &9Ʀᴇᴀѕᴏɴ: &b%message%'
   - ''
   # The text or value for Confirmation. Available options: Any valid string text
   CONFIRMATION: '&aYour request has been sent to all staff members.'
@@ -1124,7 +1124,7 @@ REPORT:
   # The text or value for Player Not Found. Available options: Any valid string text
   PLAYER_NOT_FOUND: '&cPlayer not found.'
   # The text or value for Cannot Report Self. Available options: Any valid string text
-  CANNOT_REPORT_SELF: '&cYou can''t report yourself!'
+  CANNOT_REPORT_SELF: '&cYou can''T report yourself!'
   # The text or value for Message Too Long. Available options: Any valid string text
   MESSAGE_TOO_LONG: '&cYour report reason is too long. Max: %max% characters.'
   # The text or value for Cooldown. Available options: Any valid string text
@@ -1135,8 +1135,8 @@ REPORT:
   # Configuration section for Format.
   FORMAT:
   - ''
-  - '&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%'
-  - '     &9ʀᴇᴀѕᴏɴ: &b%reason%'
+  - '&9[Ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%'
+  - '     &9Ʀᴇᴀѕᴏɴ: &b%reason%'
   - ''
   # The text or value for Confirmation. Available options: Any valid string text
   CONFIRMATION: '&aYour report has been sent to all staff members.'
@@ -1155,4 +1155,4 @@ ALTS:
   # The text or value for Known Ips. Available options: Any valid string text
   KNOWN_IPS: '&7Known IPs: &f%ips%'
   # The text or value for Entry. Available options: Any valid string text
-  ENTRY: '&8- &e%player% &7[%status%&7] &fshared: %ips%'
+  ENTRY: '&8- &e%player% &7[%status%&7] &fShared: %ips%'

@@ -251,7 +251,7 @@ AMETHYST-TOOLS:
     MATERIAL: POTION
     NAME: '&#9B59B6&lShard Booster'
     LORE:
-    - '&#BDC3C7&d4x &7Shard Multiplier'
+    - '&#BDC3C7&d4X &7Shard Multiplier'
     - '&#BDC3C7Duration: &d60 minutes'
     - ''
     - '&#BDC3C7Drink to &dactivate'

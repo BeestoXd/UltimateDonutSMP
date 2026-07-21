@@ -19,7 +19,7 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FF0000'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':hammer: **Punishment Type:** Ban
+      DESCRIPTION: ':Hammer: **Punishment Type:** Ban
 
         # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
         # The text or mode for **Player. Available options: Any string text **Player:**
@@ -59,7 +59,7 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FFFF00'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':mute: **Punishment Type:** Mute
+      DESCRIPTION: ':Mute: **Punishment Type:** Mute
 
         # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
         # The text or mode for **Player. Available options: Any string text **Player:**
@@ -99,7 +99,7 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FFA500'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':warning: **Punishment Type:** Warning
+      DESCRIPTION: ':Warning: **Punishment Type:** Warning
 
         # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
         # The text or mode for **Player. Available options: Any string text **Player:**
@@ -135,7 +135,7 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FF6347'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':boot: **Punishment Type:** Kick
+      DESCRIPTION: ':Boot: **Punishment Type:** Kick
 
         # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
         # The text or mode for **Player. Available options: Any string text **Player:**
@@ -168,7 +168,7 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#000000'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':no_entry: **PERMANENT NETWORK BAN**
+      DESCRIPTION: ':No_entry: **PERMANENT NETWORK BAN**
 
         # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
         # The text or mode for **Player. Available options: Any string text **Player:**
