@@ -56,6 +56,7 @@ public class PlayerData {
     private boolean duelMusicEnabled;
     private boolean quietSpawnEnabled;
     private boolean nightVisionEnabled;
+    private ThreeChoice advancementMessagesChoice = ThreeChoice.ANYONE;
     private long keyAllRemainingSeconds;
     private long keyAllAnchorPlaytimeSeconds;
     private boolean dirty;
@@ -695,6 +696,15 @@ public class PlayerData {
 
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    public ThreeChoice getAdvancementMessagesChoice() {
+        return advancementMessagesChoice != null ? advancementMessagesChoice : ThreeChoice.ANYONE;
+    }
+
+    public void setAdvancementMessagesChoice(ThreeChoice advancementMessagesChoice) {
+        this.advancementMessagesChoice = advancementMessagesChoice;
+        this.dirty = true;
     }
 
     public void markDirty() {
