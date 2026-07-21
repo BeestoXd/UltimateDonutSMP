@@ -60,9 +60,7 @@ public class SpawnerInteractListener implements Listener {
             var result = plugin.getSpawnerManager().stackSpawner(player, block, held);
             player.sendMessage(ColorUtils.toComponent(result.message()));
             if (result.success()) {
-                int consumed = result.consumedAmount() > 0 ? result.consumedAmount() : (player.isSneaking() ? held.getAmount() : 1);
-                plugin.getSpawnerManager().consumeHeldSpawnerItem(player, consumed);
-                player.updateInventory();
+                plugin.getSpawnerManager().consumeHeldSpawnerItem(player);
             }
             return;
         }

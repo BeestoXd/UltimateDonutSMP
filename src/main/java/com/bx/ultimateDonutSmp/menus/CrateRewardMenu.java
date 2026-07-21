@@ -201,9 +201,9 @@ public class CrateRewardMenu extends BaseMenu {
     }
 
     public enum OpenContext {
-        COMMAND(false, true, true),
-        CHEST(false, false, true),
-        PREVIEW(false, false, false);
+        COMMAND(true, true, true),
+        CHEST(true, false, true),
+        PREVIEW(true, false, false);
 
         private final boolean centerRewards;
         private final boolean showBackButton;

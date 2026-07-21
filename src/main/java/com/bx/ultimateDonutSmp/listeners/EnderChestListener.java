@@ -90,14 +90,6 @@ public class EnderChestListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         if (plugin.getEnderChestManager().isInspectionView(event.getView())) {
-            if (event.getWhoClicked() instanceof Player viewer && plugin.getEnderChestManager().isEcseeEditable(viewer)) {
-                plugin.getSpigotScheduler().runEntity(viewer, () -> {
-                    if (viewer.isOnline()) {
-                        plugin.getEnderChestManager().syncInspectionBackToTarget(event.getView().getTopInventory());
-                    }
-                });
-                return;
-            }
             event.setCancelled(true);
             event.setResult(org.bukkit.event.Event.Result.DENY);
             return;
@@ -111,14 +103,6 @@ public class EnderChestListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onInventoryDrag(InventoryDragEvent event) {
         if (plugin.getEnderChestManager().isInspectionView(event.getView())) {
-            if (event.getWhoClicked() instanceof Player viewer && plugin.getEnderChestManager().isEcseeEditable(viewer)) {
-                plugin.getSpigotScheduler().runEntity(viewer, () -> {
-                    if (viewer.isOnline()) {
-                        plugin.getEnderChestManager().syncInspectionBackToTarget(event.getView().getTopInventory());
-                    }
-                });
-                return;
-            }
             event.setCancelled(true);
             event.setResult(org.bukkit.event.Event.Result.DENY);
             return;

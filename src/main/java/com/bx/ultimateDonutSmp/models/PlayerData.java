@@ -22,7 +22,7 @@ public class PlayerData {
     private long sessionStartMillis;
     private boolean tpauto;
     private boolean phantomEnabled;
-    private ThreeChoice paymentsChoice;
+    private boolean paymentsEnabled;
     private boolean scoreboardVisible;
     private boolean payAlertsEnabled;
     private boolean hotbarMessagesEnabled;
@@ -32,16 +32,16 @@ public class PlayerData {
     private boolean tpaConfirmMenuEnabled;
     private boolean chainmailOnRespawnEnabled;
     private boolean lunarTeammatesEnabled;
-    private ThreeChoice tpaRequestsChoice;
+    private boolean tpaRequestsEnabled;
     private boolean autoTpaHereEnabled;
-    private ThreeChoice tpaHereRequestsChoice;
+    private boolean tpaHereRequestsEnabled;
     private boolean teamInvitesEnabled;
     private boolean mobSpawnEnabled;
     private boolean payConfirmMenuEnabled;
     private boolean totemParticlesEnabled;
     private boolean fastCrystalsEnabled;
     private boolean amethystBreakMessagesEnabled;
-    private ThreeChoice privateMessagesChoice;
+    private boolean privateMessagesEnabled;
     private boolean keyAllNotificationsEnabled;
     private boolean duelRequestsEnabled;
     private boolean publicChatEnabled;
@@ -59,19 +59,6 @@ public class PlayerData {
     private long keyAllRemainingSeconds;
     private long keyAllAnchorPlaytimeSeconds;
     private boolean dirty;
-
-    // New Settings
-    private boolean destroyPearlOnDeath;
-    private boolean randomizedCoords;
-    private TwoChoice deathMessagesChoice;
-    private ThreeChoice advancementMessagesChoice;
-    private ThreeChoice joinLeaveMessagesChoice;
-    private boolean teleportAlertsEnabled;
-    private boolean followAlertsEnabled;
-    private boolean explosionSoundsEnabled;
-    private boolean displayDonutPlusEnabled;
-    private long mobSpawnDisabledUntil;
-    private long phantomDisabledUntil;
 
     public PlayerData(UUID uuid, String username) {
         this.uuid = uuid;
@@ -92,7 +79,7 @@ public class PlayerData {
         this.sessionStartMillis = System.currentTimeMillis();
         this.tpauto = false;
         this.phantomEnabled = true;
-        this.paymentsChoice = ThreeChoice.ANYONE;
+        this.paymentsEnabled = true;
         this.scoreboardVisible = true;
         this.payAlertsEnabled = true;
         this.hotbarMessagesEnabled = true;
@@ -102,16 +89,16 @@ public class PlayerData {
         this.tpaConfirmMenuEnabled = true;
         this.chainmailOnRespawnEnabled = true;
         this.lunarTeammatesEnabled = true;
-        this.tpaRequestsChoice = ThreeChoice.ANYONE;
+        this.tpaRequestsEnabled = true;
         this.autoTpaHereEnabled = false;
-        this.tpaHereRequestsChoice = ThreeChoice.ANYONE;
+        this.tpaHereRequestsEnabled = true;
         this.teamInvitesEnabled = true;
         this.mobSpawnEnabled = true;
         this.payConfirmMenuEnabled = true;
         this.totemParticlesEnabled = true;
         this.fastCrystalsEnabled = true;
         this.amethystBreakMessagesEnabled = true;
-        this.privateMessagesChoice = ThreeChoice.ANYONE;
+        this.privateMessagesEnabled = true;
         this.keyAllNotificationsEnabled = true;
         this.duelRequestsEnabled = true;
         this.publicChatEnabled = true;
@@ -129,19 +116,6 @@ public class PlayerData {
         this.keyAllRemainingSeconds = -1L;
         this.keyAllAnchorPlaytimeSeconds = 0L;
         this.dirty = false;
-
-        // New Settings Defaults
-        this.destroyPearlOnDeath = true;
-        this.randomizedCoords = false;
-        this.deathMessagesChoice = TwoChoice.FRIENDS_FOLLOWED;
-        this.advancementMessagesChoice = ThreeChoice.ANYONE;
-        this.joinLeaveMessagesChoice = ThreeChoice.ANYONE;
-        this.teleportAlertsEnabled = true;
-        this.followAlertsEnabled = true;
-        this.explosionSoundsEnabled = true;
-        this.displayDonutPlusEnabled = true;
-        this.mobSpawnDisabledUntil = 0L;
-        this.phantomDisabledUntil = 0L;
     }
 
     public UUID getUuid() {
@@ -382,13 +356,6 @@ public class PlayerData {
     }
 
     public boolean isPhantomEnabled() {
-        if (!phantomEnabled) {
-            if (phantomDisabledUntil > 0 && System.currentTimeMillis() > phantomDisabledUntil) {
-                phantomEnabled = true;
-                phantomDisabledUntil = 0L;
-                dirty = true;
-            }
-        }
         return phantomEnabled;
     }
 
@@ -397,30 +364,12 @@ public class PlayerData {
         dirty = true;
     }
 
-    public long getPhantomDisabledUntil() {
-        return phantomDisabledUntil;
-    }
-
-    public void setPhantomDisabledUntil(long phantomDisabledUntil) {
-        this.phantomDisabledUntil = phantomDisabledUntil;
-        dirty = true;
-    }
-
     public boolean isPaymentsEnabled() {
-        return paymentsChoice != ThreeChoice.OFF;
+        return paymentsEnabled;
     }
 
     public void setPaymentsEnabled(boolean paymentsEnabled) {
-        this.paymentsChoice = paymentsEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
-        dirty = true;
-    }
-
-    public ThreeChoice getPaymentsChoice() {
-        return paymentsChoice;
-    }
-
-    public void setPaymentsChoice(ThreeChoice paymentsChoice) {
-        this.paymentsChoice = paymentsChoice;
+        this.paymentsEnabled = paymentsEnabled;
         dirty = true;
     }
 
@@ -506,20 +455,11 @@ public class PlayerData {
     }
 
     public boolean isTpaRequestsEnabled() {
-        return tpaRequestsChoice != ThreeChoice.OFF;
+        return tpaRequestsEnabled;
     }
 
     public void setTpaRequestsEnabled(boolean tpaRequestsEnabled) {
-        this.tpaRequestsChoice = tpaRequestsEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
-        dirty = true;
-    }
-
-    public ThreeChoice getTpaRequestsChoice() {
-        return tpaRequestsChoice;
-    }
-
-    public void setTpaRequestsChoice(ThreeChoice tpaRequestsChoice) {
-        this.tpaRequestsChoice = tpaRequestsChoice;
+        this.tpaRequestsEnabled = tpaRequestsEnabled;
         dirty = true;
     }
 
@@ -533,20 +473,11 @@ public class PlayerData {
     }
 
     public boolean isTpaHereRequestsEnabled() {
-        return tpaHereRequestsChoice != ThreeChoice.OFF;
+        return tpaHereRequestsEnabled;
     }
 
     public void setTpaHereRequestsEnabled(boolean tpaHereRequestsEnabled) {
-        this.tpaHereRequestsChoice = tpaHereRequestsEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
-        dirty = true;
-    }
-
-    public ThreeChoice getTpaHereRequestsChoice() {
-        return tpaHereRequestsChoice;
-    }
-
-    public void setTpaHereRequestsChoice(ThreeChoice tpaHereRequestsChoice) {
-        this.tpaHereRequestsChoice = tpaHereRequestsChoice;
+        this.tpaHereRequestsEnabled = tpaHereRequestsEnabled;
         dirty = true;
     }
 
@@ -560,27 +491,11 @@ public class PlayerData {
     }
 
     public boolean isMobSpawnEnabled() {
-        if (!mobSpawnEnabled) {
-            if (mobSpawnDisabledUntil > 0 && System.currentTimeMillis() > mobSpawnDisabledUntil) {
-                mobSpawnEnabled = true;
-                mobSpawnDisabledUntil = 0L;
-                dirty = true;
-            }
-        }
         return mobSpawnEnabled;
     }
 
     public void setMobSpawnEnabled(boolean mobSpawnEnabled) {
         this.mobSpawnEnabled = mobSpawnEnabled;
-        dirty = true;
-    }
-
-    public long getMobSpawnDisabledUntil() {
-        return mobSpawnDisabledUntil;
-    }
-
-    public void setMobSpawnDisabledUntil(long mobSpawnDisabledUntil) {
-        this.mobSpawnDisabledUntil = mobSpawnDisabledUntil;
         dirty = true;
     }
 
@@ -621,20 +536,11 @@ public class PlayerData {
     }
 
     public boolean isPrivateMessagesEnabled() {
-        return privateMessagesChoice != ThreeChoice.OFF;
+        return privateMessagesEnabled;
     }
 
     public void setPrivateMessagesEnabled(boolean privateMessagesEnabled) {
-        this.privateMessagesChoice = privateMessagesEnabled ? ThreeChoice.ANYONE : ThreeChoice.OFF;
-        dirty = true;
-    }
-
-    public ThreeChoice getPrivateMessagesChoice() {
-        return privateMessagesChoice;
-    }
-
-    public void setPrivateMessagesChoice(ThreeChoice privateMessagesChoice) {
-        this.privateMessagesChoice = privateMessagesChoice;
+        this.privateMessagesEnabled = privateMessagesEnabled;
         dirty = true;
     }
 
@@ -809,129 +715,5 @@ public class PlayerData {
         this.sessionStartMillis = newSessionStartMillis;
         this.keyAllAnchorPlaytimeSeconds = 0L;
         this.dirty = true;
-    }
-
-    public boolean isDestroyPearlOnDeath() {
-        return destroyPearlOnDeath;
-    }
-
-    public void setDestroyPearlOnDeath(boolean destroyPearlOnDeath) {
-        this.destroyPearlOnDeath = destroyPearlOnDeath;
-        dirty = true;
-    }
-
-    public boolean isRandomizedCoords() {
-        return randomizedCoords;
-    }
-
-    public void setRandomizedCoords(boolean randomizedCoords) {
-        this.randomizedCoords = randomizedCoords;
-        dirty = true;
-    }
-
-    private transient int randomOffsetX = 0;
-    private transient int randomOffsetZ = 0;
-    private transient boolean randomOffsetInitialized = false;
-
-    private synchronized void ensureRandomOffset() {
-        if (!randomOffsetInitialized) {
-            java.util.concurrent.ThreadLocalRandom rng = java.util.concurrent.ThreadLocalRandom.current();
-            randomOffsetX = (rng.nextBoolean() ? 1 : -1) * rng.nextInt(1000, 50000);
-            randomOffsetZ = (rng.nextBoolean() ? 1 : -1) * rng.nextInt(1000, 50000);
-            randomOffsetInitialized = true;
-        }
-    }
-
-    public void setRandomOffsetForTesting(int offsetX, int offsetZ) {
-        this.randomOffsetX = offsetX;
-        this.randomOffsetZ = offsetZ;
-        this.randomOffsetInitialized = true;
-    }
-
-    public int getDisplayX(int actualX) {
-        if (!randomizedCoords) return actualX;
-        ensureRandomOffset();
-        return actualX + randomOffsetX;
-    }
-
-    public int getDisplayY(int actualY) {
-        return actualY;
-    }
-
-    public int getDisplayZ(int actualZ) {
-        if (!randomizedCoords) return actualZ;
-        ensureRandomOffset();
-        return actualZ + randomOffsetZ;
-    }
-
-    public String getDisplayCoords(org.bukkit.Location loc) {
-        if (loc == null) return "0, 0, 0";
-        int x = getDisplayX(loc.getBlockX());
-        int y = getDisplayY(loc.getBlockY());
-        int z = getDisplayZ(loc.getBlockZ());
-        return x + ", " + y + ", " + z;
-    }
-
-    public TwoChoice getDeathMessagesChoice() {
-        return deathMessagesChoice;
-    }
-
-    public void setDeathMessagesChoice(TwoChoice deathMessagesChoice) {
-        this.deathMessagesChoice = deathMessagesChoice;
-        dirty = true;
-    }
-
-    public ThreeChoice getAdvancementMessagesChoice() {
-        return advancementMessagesChoice;
-    }
-
-    public void setAdvancementMessagesChoice(ThreeChoice advancementMessagesChoice) {
-        this.advancementMessagesChoice = advancementMessagesChoice;
-        dirty = true;
-    }
-
-    public ThreeChoice getJoinLeaveMessagesChoice() {
-        return joinLeaveMessagesChoice;
-    }
-
-    public void setJoinLeaveMessagesChoice(ThreeChoice joinLeaveMessagesChoice) {
-        this.joinLeaveMessagesChoice = joinLeaveMessagesChoice;
-        dirty = true;
-    }
-
-    public boolean isTeleportAlertsEnabled() {
-        return teleportAlertsEnabled;
-    }
-
-    public void setTeleportAlertsEnabled(boolean teleportAlertsEnabled) {
-        this.teleportAlertsEnabled = teleportAlertsEnabled;
-        dirty = true;
-    }
-
-    public boolean isFollowAlertsEnabled() {
-        return followAlertsEnabled;
-    }
-
-    public void setFollowAlertsEnabled(boolean followAlertsEnabled) {
-        this.followAlertsEnabled = followAlertsEnabled;
-        dirty = true;
-    }
-
-    public boolean isExplosionSoundsEnabled() {
-        return explosionSoundsEnabled;
-    }
-
-    public void setExplosionSoundsEnabled(boolean explosionSoundsEnabled) {
-        this.explosionSoundsEnabled = explosionSoundsEnabled;
-        dirty = true;
-    }
-
-    public boolean isDisplayDonutPlusEnabled() {
-        return displayDonutPlusEnabled;
-    }
-
-    public void setDisplayDonutPlusEnabled(boolean displayDonutPlusEnabled) {
-        this.displayDonutPlusEnabled = displayDonutPlusEnabled;
-        dirty = true;
     }
 }

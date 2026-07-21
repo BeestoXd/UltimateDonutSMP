@@ -209,16 +209,4 @@ public class RTPZoneManager {
             }
         }
     }
-
-    public int getRemainingSeconds(java.util.UUID uuid) {
-        if (uuid == null) {
-            return 0;
-        }
-        return countdowns.getOrDefault(uuid, 0);
-    }
-
-    public String getFormattedCountdown(java.util.UUID uuid) {
-        int secs = getRemainingSeconds(uuid);
-        return secs > 0 ? com.bx.ultimateDonutSmp.utils.NumberUtils.formatCountdown(secs) : "0s";
-    }
 }

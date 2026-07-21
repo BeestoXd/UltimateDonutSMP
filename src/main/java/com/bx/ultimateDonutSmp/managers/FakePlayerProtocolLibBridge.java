@@ -1153,8 +1153,13 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
         PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
         packet.getModifier().writeDefaults();
         packet.getIntegers().write(0, fakePlayer.entityId());
+        if (packet.getIntegers().size() > 1) {
+            packet.getIntegers().write(1, 0);
+        }
         packet.getUUIDs().write(0, fakePlayer.fakeUuid());
-        applyPlayerEntityType(packet);
+        if (packet.getEntityTypeModifier().size() > 0) {
+            packet.getEntityTypeModifier().write(0, EntityType.PLAYER);
+        }
         packet.getDoubles().write(0, location.getX());
         packet.getDoubles().write(1, location.getY());
         packet.getDoubles().write(2, location.getZ());
@@ -1162,103 +1167,6 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
         writeByte(packet, 1, angle(location.getYaw()));
         writeByte(packet, 2, angle(location.getYaw()));
         return packet;
-    }
-
-    private void applyPlayerEntityType(PacketContainer packet) {
-        if (packet == null) {
-            return;
-        }
-
-        if (packet.getEntityTypeModifier().size() > 0) {
-            try {
-                packet.getEntityTypeModifier().write(0, EntityType.PLAYER);
-            } catch (RuntimeException | LinkageError ignored) {
-            }
-        }
-
-        Object handle = packet.getHandle();
-        if (handle == null) {
-            return;
-        }
-
-        try {
-            ClassLoader loader = handle.getClass().getClassLoader();
-            Class<?> nmsEntityTypeClass = findFirstClass(loader, "net.minecraft.world.entity.EntityType");
-            if (nmsEntityTypeClass == null) {
-                return;
-            }
-
-            Object nmsPlayerEntityType = null;
-            for (Field field : nmsEntityTypeClass.getDeclaredFields()) {
-                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())
-                        && nmsEntityTypeClass.isAssignableFrom(field.getType())
-                        && field.getName().equalsIgnoreCase("PLAYER")) {
-                    field.setAccessible(true);
-                    nmsPlayerEntityType = field.get(null);
-                    break;
-                }
-            }
-
-            if (nmsPlayerEntityType == null) {
-                return;
-            }
-
-            for (Field field : handle.getClass().getDeclaredFields()) {
-                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    continue;
-                }
-                field.setAccessible(true);
-
-                if (field.getType().isAssignableFrom(nmsPlayerEntityType.getClass())
-                        || field.getType().getName().equals("net.minecraft.world.entity.EntityType")) {
-                    field.set(handle, nmsPlayerEntityType);
-                    return;
-                }
-
-                if (field.getType().getName().equals("net.minecraft.core.Holder")
-                        || field.getType().getSimpleName().equals("Holder")) {
-                    Object holder = wrapInHolder(loader, nmsPlayerEntityType);
-                    if (holder != null) {
-                        field.set(handle, holder);
-                        return;
-                    }
-                }
-            }
-        } catch (ReflectiveOperationException | RuntimeException | LinkageError ignored) {
-        }
-    }
-
-    private Object wrapInHolder(ClassLoader loader, Object value) {
-        if (value == null) {
-            return null;
-        }
-
-        try {
-            Method builtInRegistryHolderMethod = value.getClass().getMethod("builtInRegistryHolder");
-            builtInRegistryHolderMethod.setAccessible(true);
-            Object holder = builtInRegistryHolderMethod.invoke(value);
-            if (holder != null) {
-                return holder;
-            }
-        } catch (ReflectiveOperationException | RuntimeException ignored) {
-        }
-
-        try {
-            Class<?> holderClass = findFirstClass(loader, "net.minecraft.core.Holder");
-            if (holderClass != null) {
-                for (Method m : holderClass.getDeclaredMethods()) {
-                    if (java.lang.reflect.Modifier.isStatic(m.getModifiers())
-                            && m.getParameterCount() == 1
-                            && m.getReturnType().isAssignableFrom(holderClass)
-                            && (m.getName().equals("direct") || m.getName().equals("a"))) {
-                        m.setAccessible(true);
-                        return m.invoke(null, value);
-                    }
-                }
-            }
-        } catch (ReflectiveOperationException | RuntimeException ignored) {
-        }
-        return null;
     }
 
     private PacketContainer createNamedEntitySpawn(FakePlayerSession fakePlayer) {

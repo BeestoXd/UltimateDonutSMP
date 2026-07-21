@@ -2,11 +2,7 @@ package com.bx.ultimateDonutSmp;
 
 import com.bx.ultimateDonutSmp.amethyst.*;
 import com.bx.ultimateDonutSmp.api.EconomyExpansion;
-import com.bx.ultimateDonutSmp.api.EconomyLeaderboardExpansion;
-import com.bx.ultimateDonutSmp.api.EconomyRankExpansion;
 import com.bx.ultimateDonutSmp.api.HideExpansion;
-import com.bx.ultimateDonutSmp.api.UltimateDonutSmpExpansion;
-import com.bx.ultimateDonutSmp.api.UdsExpansion;
 import com.bx.ultimateDonutSmp.commands.*;
 import com.bx.ultimateDonutSmp.hooks.VaultEconomyHook;
 import com.bx.ultimateDonutSmp.listeners.*;
@@ -159,10 +155,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
             getLogger().info("ProtocolLib is not installed; packet-based explosion particle filtering is disabled.");
         }
         economyManager = new EconomyManager(this);
-        
-        // Register Vault economy early so other plugins checking in their onEnable won't fail
-        registerVaultEconomyProvider();
-        
         chatManager = new ChatManager(this);
         ignoreManager = new IgnoreManager(this);
         friendsManager = new FriendsManager(this);
@@ -256,6 +248,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // 6. Commands
         registerCommands();
 
+        // 6.5 Optional integrations
+        registerVaultEconomyProvider();
+
         // 7. Background tasks
         ScoreboardTask.start(this);
         TablistTask.start(this);
@@ -279,11 +274,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // 8. PlaceholderAPI expansion
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new EconomyExpansion(this).register();
-            new UltimateDonutSmpExpansion(this).register();
-            new UdsExpansion(this).register();
             new HideExpansion(this).register();
-            new EconomyLeaderboardExpansion(this).register();
-            new EconomyRankExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
         }
 
@@ -465,7 +456,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     private void registerListeners() {
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new PlayerContextListener(this), this);
         pm.registerEvents(new PlayerJoinQuitListener(this), this);
         pm.registerEvents(new PlayerDeathListener(this), this);
         pm.registerEvents(new ChatListener(this), this);
@@ -501,8 +491,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
         pm.registerEvents(new AnvilModerationListener(this), this);
-        pm.registerEvents(new PlayerAdvancementDoneListener(this), this);
-        pm.registerEvents(new ItemDropListener(this), this);
     }
 
     private void registerCommands() {

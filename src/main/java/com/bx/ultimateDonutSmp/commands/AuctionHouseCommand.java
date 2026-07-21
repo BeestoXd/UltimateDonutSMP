@@ -148,21 +148,12 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
                     boolean fastSell = preference.fastSellEnabled()
                             && hasEither(player, "ultimatedonutsmp.auctionhouse.fastsell", "donutauction.fastsell");
                     if (fastSell) {
-                        com.bx.ultimateDonutSmp.models.AuctionCategory category;
-                        boolean autoDetect = plugin.getConfigManager().getAuctionHouse()
-                                .getBoolean("SETTINGS.AUTO_DETECT_CATEGORY", false);
-                        if (autoDetect) {
-                            category = com.bx.ultimateDonutSmp.models.AuctionCategory.findCategoryForItem(escrow);
-                        } else {
-                            category = com.bx.ultimateDonutSmp.models.AuctionCategory.from(preference.lastCategory());
-                        }
-
                         manager.createListingFromItem(
                                 player,
                                 escrow,
                                 price,
                                 preference.lastDurationHours(),
-                                category
+                                com.bx.ultimateDonutSmp.models.AuctionCategory.from(preference.lastCategory())
                         ).thenAccept(result -> plugin.getSpigotScheduler().runEntity(player, () ->
                                 handleCreateResult(player, preference, price, result)
                         ));
@@ -288,20 +279,10 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
 
     private void openBrowse(Player player) {
         plugin.getAuctionHouseManager().processAutoClaims(player);
-        String category = "ALL";
-        boolean autoFilter = plugin.getConfigManager().getAuctionHouse()
-                .getBoolean("SETTINGS.AUTO_FILTER_BY_HAND", false);
-        if (autoFilter) {
-            ItemStack hand = player.getInventory().getItemInMainHand();
-            if (hand != null && hand.getType() != org.bukkit.Material.AIR) {
-                category = com.bx.ultimateDonutSmp.models.AuctionCategory.findCategoryForItem(hand).name();
-            }
-        }
         new AuctionHouseBrowseMenu(
                 plugin,
                 1,
-                plugin.getAuctionHouseManager().getDefaultSort(),
-                category
+                plugin.getAuctionHouseManager().getDefaultSort()
         ).open(player);
     }
 

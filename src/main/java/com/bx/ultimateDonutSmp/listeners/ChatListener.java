@@ -55,7 +55,7 @@ public class ChatListener implements Listener {
 
 
         PunishmentRecord activeMute = plugin.getPunishmentManager()
-                .getActiveRecord(player.getUniqueId(), player.getName(), PunishmentType.MUTE)
+                .getActiveRecord(player.getUniqueId(), PunishmentType.MUTE)
                 .orElse(null);
         if (activeMute != null) {
             event.setCancelled(true);
@@ -126,62 +126,29 @@ public class ChatListener implements Listener {
             return;
         }
 
-        if (!chatManager.isFormatEnabled()) {
-            chatManager.trackAcceptedGlobalMessage(player, rawMessage);
-            return;
-        }
-
         event.setCancelled(true);
 
-        String chatFormat = chatManager.getChatFormat();
-        String prefix = resolvePrefix(player);
+        String chatFormat = chatManager.isFormatEnabled()
+                ? chatManager.getChatFormat()
+                : "%player%: %message%";
+        String prefix = getLuckPermsPrefix(player);
         var chatComponent = plugin.getHoverStatsManager()
                 .buildChatComponent(player, prefix, rawMessage, chatFormat);
 
         final var finalMsg = chatComponent;
-        plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
-            if (PlayerSettingUtils.notificationEnabled(plugin, p, PlayerSettingUtils.NotificationChannel.PUBLIC_CHAT)) {
-                p.spigot().sendMessage(finalMsg);
-            }
-        });
+        plugin.getSpigotScheduler().forEachOnlinePlayer(p -> p.spigot().sendMessage(finalMsg));
         chatManager.trackAcceptedGlobalMessage(player, rawMessage);
     }
 
-    private String resolvePrefix(Player player) {
-        if (ColorUtils.hasPAPI()) {
-            try {
-                String prefix = me.clip.placeholderapi.PlaceholderAPI
-                        .setPlaceholders(player, "%luckperms_prefix%");
-                if (prefix != null && !prefix.isBlank() && !prefix.startsWith("%")) {
-                    return prefix;
-                }
-                prefix = me.clip.placeholderapi.PlaceholderAPI
-                        .setPlaceholders(player, "%vault_prefix%");
-                if (prefix != null && !prefix.isBlank() && !prefix.startsWith("%")) {
-                    return prefix;
-                }
-                prefix = me.clip.placeholderapi.PlaceholderAPI
-                        .setPlaceholders(player, "%prefix%");
-                if (prefix != null && !prefix.isBlank() && !prefix.startsWith("%")) {
-                    return prefix;
-                }
-            } catch (Exception ignored) {
-            }
+    private String getLuckPermsPrefix(Player player) {
+        if (!ColorUtils.hasPAPI()) return "";
+        try {
+            String prefix = me.clip.placeholderapi.PlaceholderAPI
+                    .setPlaceholders(player, "%luckperms_prefix%");
+            return prefix.startsWith("%") ? "" : prefix;
+        } catch (Exception e) {
+            return "";
         }
-        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-            try {
-                org.bukkit.plugin.RegisteredServiceProvider<net.milkbowl.vault.chat.Chat> rsp =
-                        Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-                if (rsp != null && rsp.getProvider() != null) {
-                    String prefix = rsp.getProvider().getPlayerPrefix(player);
-                    if (prefix != null && !prefix.isBlank()) {
-                        return prefix;
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return "";
     }
 
     private String mutedChatMessage(PunishmentRecord record) {

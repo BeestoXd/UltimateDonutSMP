@@ -1,83 +1,48 @@
-# Configuration section for Settings.
+# UDS setup: Death message formatting and custom death text.
+# UDS setup: Keep indentation with spaces; reload with /uds reload when the setting supports reload.
+
+# UDS setup: Main enable flags, limits, timings, and behavior defaults for this feature.
 SETTINGS:
-  # Determines whether Radius is enabled or disabled. Available options: true, false
-  RADIUS: true
-  # The numerical value for Chunks. Available options: Any valid integer
-  CHUNKS: 5
+  RADIUS: true # Sets the radius used for this check or effect.
+  CHUNKS: 5 # Configures the chunks option.
+
+# UDS setup: Configure MESSAGES options for this file.
 MESSAGES:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
-  ENABLED: true
-  # The text or value for Prefix. Available options: Any valid string text
-  PREFIX: '&c☠ '
-  # The text or value for Block Explosion. Available options: Any valid string text
-  BLOCK-EXPLOSION: '{player} ɢᴏᴛ ʙʟᴏᴡɴ ᴛᴏ ᴘɪᴇᴄᴇѕ'
-  # The text or value for Contact. Available options: Any valid string text
-  CONTACT: '{player} ᴡᴀѕ ᴘʀɪᴄᴋᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
-  # Configuration section for Drowning.
+  ENABLED: true # Sets the death message text for this case.
+  PREFIX: "&c☠ " # Sets the death message text for this case.
+  BLOCK-EXPLOSION: "{player} ɢᴏᴛ ʙʟᴏᴡɴ ᴛᴏ ᴘɪᴇᴄᴇѕ" # Sets the death message text for this case.
+  CONTACT: "{player} ᴡᴀѕ ᴘʀɪᴄᴋᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ" # Sets the death message text for this case.
   DROWNING:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} Drowned!'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴅʀᴏᴡɴᴇᴅ ᴡʜɪʟѕᴛ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}'
-  # The text or value for Entity Attack. Available options: Any valid string text
-  ENTITY-ATTACK: '{player} ᴡᴀѕ ѕʟᴀɪɴ ʙʏ {killer}'
-  # Configuration section for Fall.
+    NORMAL: "{player} ᴅʀᴏᴡɴᴇᴅ!" # Sets the death message text for this case.
+    PVP: "{player} ᴅʀᴏᴡɴᴇᴅ ᴡʜɪʟѕᴛ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}" # Sets the death message text for this case.
+  ENTITY-ATTACK: "{player} ᴡᴀѕ ѕʟᴀɪɴ ʙʏ {killer}" # Sets the death message text for this case.
   FALL:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ʜɪᴛ ᴛʜᴇ ɢʀᴏᴜɴᴅ ᴛᴏᴏ ʜᴀʀᴅ'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ᴅᴏᴏᴍᴇᴅ ᴛᴏ ꜰᴀʟʟ ʙʏ {killer}'
-  # The text or value for Falling Block. Available options: Any valid string text
-  FALLING-BLOCK: '{player} ɢᴏᴛ ꜰʀᴇᴀᴋɪɴɢ ѕǫᴜᴀѕʜᴇᴅ ʙʏ ᴀ ʙʟᴏᴄᴋ'
-  # Configuration section for Fire.
+    NORMAL: "{player} ʜɪᴛ ᴛʜᴇ ɢʀᴏᴜɴᴅ ᴛᴏᴏ ʜᴀʀᴅ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ᴅᴏᴏᴍᴇᴅ ᴛᴏ ꜰᴀʟʟ ʙʏ {killer}" # Sets the death message text for this case.
+  FALLING-BLOCK: "{player} ɢᴏᴛ ꜰʀᴇᴀᴋɪɴɢ ѕǫᴜᴀѕʜᴇᴅ ʙʏ ᴀ ʙʟᴏᴄᴋ" # Sets the death message text for this case.
   FIRE:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴡᴇɴᴛ ᴜᴘ ɪɴ ꜰʟᴀᴍᴇѕ'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀʟᴋᴇᴅ ɪɴᴛᴏ ᴀ ꜰɪʀᴇ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}'
-  # Configuration section for Fire Tick.
+    NORMAL: "{player} ᴡᴇɴᴛ ᴜᴘ ɪɴ ꜰʟᴀᴍᴇѕ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀʟᴋᴇᴅ ɪɴᴛᴏ ᴀ ꜰɪʀᴇ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}" # Sets the death message text for this case.
   FIRE-TICK:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ʙᴜʀɴᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ʙᴜʀɴᴛ ᴛᴏ ᴀ ᴄʀɪѕᴘ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}'
-  # Configuration section for Lava.
+    NORMAL: "{player} ʙᴜʀɴᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ʙᴜʀɴᴛ ᴛᴏ ᴀ ᴄʀɪѕᴘ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}" # Sets the death message text for this case.
   LAVA:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ ᴡʜɪʟᴇ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}'
-  # The text or value for Lightning. Available options: Any valid string text
-  LIGHTNING: '{player} ɢᴏᴛ ʟɪᴛ ᴛʜᴇ ʜᴇʟʟ ᴜᴘ ʙʏ ᴀ ʟɪɢʜᴛɴɪɴɢ'
-  # The text or value for Poison. Available options: Any valid string text
-  POISON: '{player} ᴡᴀѕ ᴘᴏɪѕᴏɴᴇᴅ'
-  # Configuration section for Projectile.
+    NORMAL: "{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ" # Sets the death message text for this case.
+    PVP: "{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ ᴡʜɪʟᴇ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}" # Sets the death message text for this case.
+  LIGHTNING: "{player} ɢᴏᴛ ʟɪᴛ ᴛʜᴇ ʜᴇʟʟ ᴜᴘ ʙʏ ᴀ ʟɪɢʜᴛɴɪɴɢ" # Sets the death message text for this case.
+  POISON: "{player} ᴡᴀѕ ᴘᴏɪѕᴏɴᴇᴅ" # Sets the death message text for this case.
   PROJECTILE:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴡᴀѕ ѕʜᴏᴛ'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ѕʜᴏᴛ ʙʏ {killer}'
-  # The text or value for Starvation. Available options: Any valid string text
-  STARVATION: '{player} Ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
-  # The text or value for Suffocation. Available options: Any valid string text
-  SUFFOCATION: '{player} Ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ'
-  # The text or value for Suicide. Available options: Any valid string text
-  SUICIDE: '{player} ᴛᴏᴏᴋ ʜɪѕ ᴏᴡɴ ʟɪꜰᴇ ʟɪᴋᴇ ᴀ ᴘᴇᴀѕᴀɴᴛ'
-  # The text or value for Thorns. Available options: Any valid string text
-  THORNS: '{player} ᴋɪʟʟᴇᴅ ᴛʜᴇᴍѕᴇʟꜰ ʙʏ ᴛʀʏɪɴɢ ᴛᴏ ᴋɪʟʟ ѕᴏᴍᴇᴏɴᴇ'
-  # Configuration section for Void.
+    NORMAL: "{player} ᴡᴀѕ ѕʜᴏᴛ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ѕʜᴏᴛ ʙʏ {killer}" # Sets the death message text for this case.
+  STARVATION: "{player} ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ" # Sets the death message text for this case.
+  SUFFOCATION: "{player} ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ" # Sets the death message text for this case.
+  SUICIDE: "{player} ᴛᴏᴏᴋ ʜɪѕ ᴏᴡɴ ʟɪꜰᴇ ʟɪᴋᴇ ᴀ ᴘᴇᴀѕᴀɴᴛ" # Sets the death message text for this case.
+  THORNS: "{player} ᴋɪʟʟᴇᴅ ᴛʜᴇᴍѕᴇʟꜰ ʙʏ ᴛʀʏɪɴɢ ᴛᴏ ᴋɪʟʟ ѕᴏᴍᴇᴏɴᴇ" # Sets the death message text for this case.
   VOID:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ꜰᴇʟʟ ᴏᴜᴛ ᴏꜰ ᴛʜᴇ ᴡᴏʀʟᴅ'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ᴋɴᴏᴄᴋᴇᴅ ɪɴᴛᴏ ᴛʜᴇ ᴠᴏɪᴅ ʙʏ {killer}'
-  # The text or value for Wither. Available options: Any valid string text
-  WITHER: '{player} ᴡɪᴛʜᴇʀᴇᴅ ᴀᴡᴀʏ'
-  # Configuration section for Entity Explosion.
+    NORMAL: "{player} ꜰᴇʟʟ ᴏᴜᴛ ᴏꜰ ᴛʜᴇ ᴡᴏʀʟᴅ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ᴋɴᴏᴄᴋᴇᴅ ɪɴᴛᴏ ᴛʜᴇ ᴠᴏɪᴅ ʙʏ {killer}" # Sets the death message text for this case.
+  WITHER: "{player} ᴡɪᴛʜᴇʀᴇᴅ ᴀᴡᴀʏ" # Sets the death message text for this case.
   ENTITY-EXPLOSION:
-    # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ'
-    # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ ʙʏ {killer}'
-  # The text or value for Default. Available options: Any valid string text
-  DEFAULT: '{player} ᴅɪᴇᴅ'
+    NORMAL: "{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ" # Sets the death message text for this case.
+    PVP: "{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ ʙʏ {killer}" # Sets the death message text for this case.
+  DEFAULT: "{player} ᴅɪᴇᴅ" # Sets the death message text for this case.

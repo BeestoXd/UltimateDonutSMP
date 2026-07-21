@@ -164,22 +164,22 @@ public class CuboidCommand implements CommandExecutor {
                 config.set("AFK-SYSTEM.SPAWN-CUBOID-NAME", spawnBinds.isEmpty() ? "" : spawnBinds.get(0));
             }
             case "shard" -> {
-                config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", enabled);
-                config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", enabled);
+                config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.ENABLED", enabled);
+                config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.BOUND", enabled);
                 updateBindList(config, "CUBOID-BINDS.AFK", cuboidName, enabled);
                 List<String> afkBinds = config.getStringList("CUBOID-BINDS.AFK");
                 if (enabled) {
-                    config.set("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", cuboidName);
-                    config.set("SHARDS.CUBOIDS.REGIONS.spawn.WORLD", cuboid.world());
+                    config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.CUBOID", cuboidName);
+                    config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.WORLD", cuboid.world());
                 } else {
-                    config.set("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", "");
-                    config.set("SHARDS.CUBOIDS.REGIONS.spawn.WORLD", "");
-                    if (isBlank(config.getString("SHARDS.CUBOIDS.REGIONS.spawn.LOCATION"))) {
-                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", false);
-                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+                    config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.CUBOID", "");
+                    config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.WORLD", "");
+                    if (isBlank(config.getString("SHARDS.CUBOIDS.REGIONS.SPAWN.LOCATION"))) {
+                        config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.ENABLED", false);
+                        config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.BOUND", false);
                     } else {
-                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", true);
-                        config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+                        config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.ENABLED", true);
+                        config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.BOUND", false);
                     }
                 }
                 config.set("AFK-SYSTEM.AFK-CUBOID-NAME", afkBinds.isEmpty() ? "" : afkBinds.get(0));
@@ -223,15 +223,15 @@ public class CuboidCommand implements CommandExecutor {
             config.set("AFK-SYSTEM.AFK-CUBOID-NAME", afkBinds.isEmpty() ? "" : afkBinds.get(0));
         }
 
-        if (cuboidName.equalsIgnoreCase(config.getString("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", ""))) {
-            config.set("SHARDS.CUBOIDS.REGIONS.spawn.CUBOID", "");
-            config.set("SHARDS.CUBOIDS.REGIONS.spawn.WORLD", "");
-            if (isBlank(config.getString("SHARDS.CUBOIDS.REGIONS.spawn.LOCATION"))) {
-                config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", false);
-                config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+        if (cuboidName.equalsIgnoreCase(config.getString("SHARDS.CUBOIDS.REGIONS.SPAWN.CUBOID", ""))) {
+            config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.CUBOID", "");
+            config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.WORLD", "");
+            if (isBlank(config.getString("SHARDS.CUBOIDS.REGIONS.SPAWN.LOCATION"))) {
+                config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.ENABLED", false);
+                config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.BOUND", false);
             } else {
-                config.set("SHARDS.CUBOIDS.REGIONS.spawn.ENABLED", true);
-                config.set("SHARDS.CUBOIDS.REGIONS.spawn.BOUND", false);
+                config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.ENABLED", true);
+                config.set("SHARDS.CUBOIDS.REGIONS.SPAWN.BOUND", false);
             }
         }
     }

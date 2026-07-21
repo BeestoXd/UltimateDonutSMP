@@ -185,7 +185,6 @@ class LanguageManagerTest {
         assertEquals(0, added, "en_US.yml is missing player-facing text from current UDS resources");
     }
 
-
     private static int mergeCurrentResourceText(YamlConfiguration target) throws Exception {
         int added = 0;
         added += mergeAll(target, "MESSAGES", "messages.yml");

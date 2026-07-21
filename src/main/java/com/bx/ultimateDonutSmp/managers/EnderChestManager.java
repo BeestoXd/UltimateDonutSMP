@@ -115,13 +115,6 @@ public class EnderChestManager {
         return sender != null && PermissionUtils.has(sender, getInspectionPermission());
     }
 
-    public boolean isEcseeEditable(Player viewer) {
-        return isInspectionEnabled()
-                && getConfig().getBoolean("ENDER-CHEST.ECSEE.EDITABLE", false)
-                && viewer != null
-                && PermissionUtils.has(viewer, "ultimatedonutsmp.admin.ecsee.edit");
-    }
-
     public List<String> getInspectionTargetSuggestions() {
         Set<String> names = new LinkedHashSet<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -388,42 +381,7 @@ public class EnderChestManager {
         if (session == null || session.getInventory() != inventory) {
             return;
         }
-        if (viewer != null && isEcseeEditable(viewer)) {
-            saveInspectionSession(session);
-        }
         removeInspectionSession(session);
-    }
-
-    public void syncInspectionBackToTarget(Inventory inspectionInventory) {
-        if (inspectionInventory == null || !(inspectionInventory.getHolder() instanceof EnderChestInspectionHolder holder)) {
-            return;
-        }
-
-        UUID targetUuid = holder.getTargetUuid();
-        EnderChestSession targetSession = activeSessions.get(targetUuid);
-        ItemStack[] currentContents = inspectionInventory.getContents();
-
-        if (targetSession != null) {
-            targetSession.getInventory().setContents(copyInspectionContents(currentContents, targetSession.getInventory().getSize()));
-            targetSession.markDirty();
-        }
-    }
-
-    private void saveInspectionSession(EnderChestInspectionSession session) {
-        UUID targetUuid = session.getTargetUuid();
-        EnderChestSession activeTargetSession = activeSessions.get(targetUuid);
-
-        if (activeTargetSession != null) {
-            activeTargetSession.getInventory().setContents(copyInspectionContents(
-                    session.getInventory().getContents(),
-                    activeTargetSession.getInventory().getSize()
-            ));
-            saveSession(activeTargetSession);
-        } else {
-            ItemStack[] sanitizedContents = sanitizeContents(session.getInventory().getContents());
-            int rows = clampRows(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, getDefaultRows()));
-            plugin.getDatabaseManager().saveEnderChest(targetUuid, rows, sanitizedContents);
-        }
     }
 
     public void handleInspectionViewerQuit(Player viewer) {

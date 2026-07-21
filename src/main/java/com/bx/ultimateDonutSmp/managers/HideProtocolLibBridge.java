@@ -459,10 +459,6 @@ final class HideProtocolLibBridge implements HidePacketBridge {
         Entity entity = Bukkit.getEntity(displayUuid);
         if (entity != null) {
             try {
-                Player player = Bukkit.getPlayer(targetUuid);
-                if (player != null) {
-                    player.removePassenger(entity);
-                }
                 entity.remove();
             } catch (RuntimeException ignored) {
             }

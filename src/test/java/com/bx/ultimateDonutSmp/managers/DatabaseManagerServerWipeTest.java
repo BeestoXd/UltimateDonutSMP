@@ -108,9 +108,7 @@ class DatabaseManagerServerWipeTest {
                         money_made REAL,
                         scoreboard_visible INTEGER,
                         keyall_remaining_seconds INTEGER,
-                        shard_booster_expiry INTEGER,
-                        mob_spawn_disabled_until BIGINT,
-                        phantom_disabled_until BIGINT
+                        shard_booster_expiry INTEGER
                     )
                     """);
             statement.execute("CREATE TABLE homes (owner_uuid TEXT, name TEXT)");
@@ -143,7 +141,7 @@ class DatabaseManagerServerWipeTest {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("""
                     INSERT INTO players VALUES (
-                        'player-1', 'Player', 500, 25, 9, 3, 900, 12, 13, 14, 4, 8, 200, 300, 1, 60, 12345, 0, 0
+                        'player-1', 'Player', 500, 25, 9, 3, 900, 12, 13, 14, 4, 8, 200, 300, 1, 60, 12345
                     )
                     """);
             statement.executeUpdate("INSERT INTO homes VALUES ('player-1', 'base')");

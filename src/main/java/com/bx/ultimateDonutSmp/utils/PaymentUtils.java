@@ -37,16 +37,9 @@ public final class PaymentUtils {
             sender.sendMessage(ColorUtils.toComponent("&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
             return false;
         }
-        if (targetData.getPaymentsChoice() == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
+        if (!targetData.isPaymentsEnabled()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("BALANCE.PAY.TARGET-DISABLED-PAYMENTS")));
             return false;
-        }
-        if (targetData.getPaymentsChoice() == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
-            boolean isFriendOrFollowed = plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(target.getUniqueId(), sender.getUniqueId());
-            if (!isFriendOrFollowed) {
-                sender.sendMessage(ColorUtils.toComponent("&c" + target.getName() + " only accepts payments from friends/followed."));
-                return false;
-            }
         }
         if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isPaymentBlocked(sender.getUniqueId(), target.getUniqueId())) {
             sender.sendMessage(ColorUtils.toComponent("&c" + target.getName() + " has disabled payments from you."));
@@ -112,16 +105,9 @@ public final class PaymentUtils {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("SHARD_PAY.TARGET-PROFILE-NOT-FOUND")));
             return false;
         }
-        if (targetData.getPaymentsChoice() == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
+        if (!targetData.isPaymentsEnabled()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("SHARD_PAY.TARGET-DISABLED-PAYMENTS")));
             return false;
-        }
-        if (targetData.getPaymentsChoice() == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
-            boolean isFriendOrFollowed = plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(target.getUniqueId(), sender.getUniqueId());
-            if (!isFriendOrFollowed) {
-                sender.sendMessage(ColorUtils.toComponent("&c" + target.getName() + " only accepts payments from friends/followed."));
-                return false;
-            }
         }
         if (plugin.getFriendsManager() != null && plugin.getFriendsManager().isPaymentBlocked(sender.getUniqueId(), target.getUniqueId())) {
             sender.sendMessage(ColorUtils.toComponent("&c" + target.getName() + " has disabled payments from you."));

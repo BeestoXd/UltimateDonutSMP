@@ -32,7 +32,6 @@ public class PortalManager {
 
     private static final Pattern VALID_ID_PATTERN = Pattern.compile("^[A-Za-z0-9_-]{1,32}$");
     private static final String DESTINATION_TYPE_RTP = "RTP";
-    private static final String DESTINATION_TYPE_AFK = "AFK";
     private static final String HOLOGRAM_TAG = "uds_portal_hologram";
 
     private final UltimateDonutSmp plugin;
@@ -102,17 +101,12 @@ public class PortalManager {
         return getPortal(id) != null;
     }
 
-    public boolean createPortal(String id, String cuboidName, String destinationType, String destinationValue) {
+    public boolean createPortal(String id, String cuboidName, String rtpSelector) {
         String normalizedId = normalizeId(id);
         if (normalizedId == null || !isValidPortalId(id) || portals.containsKey(normalizedId)) {
             return false;
         }
-        if (!plugin.getCuboidManager().exists(cuboidName)) {
-            return false;
-        }
-
-        String type = destinationType.trim().toUpperCase(Locale.ROOT);
-        if (!type.equals(DESTINATION_TYPE_RTP) && !type.equals(DESTINATION_TYPE_AFK)) {
+        if (!plugin.getCuboidManager().exists(cuboidName) || !plugin.getRtpManager().isPortalDestinationAvailable(rtpSelector)) {
             return false;
         }
 
@@ -120,8 +114,8 @@ public class PortalManager {
                 normalizedId,
                 normalizedId,
                 cuboidName,
-                type,
-                destinationValue,
+                DESTINATION_TYPE_RTP,
+                rtpSelector,
                 true,
                 "",
                 0,
@@ -132,19 +126,10 @@ public class PortalManager {
                 0D,
                 0D
         );
-
-        if (!isDestinationUsable(portal)) {
-            return false;
-        }
-
         portals.put(normalizedId, portal);
         savePortal(portal);
         reloadHolograms();
         return true;
-    }
-
-    public boolean createPortal(String id, String cuboidName, String rtpSelector) {
-        return createPortal(id, cuboidName, DESTINATION_TYPE_RTP, rtpSelector);
     }
 
     public boolean deletePortal(String id) {
@@ -170,30 +155,17 @@ public class PortalManager {
         return true;
     }
 
-    public boolean setPortalDestination(String id, String destinationType, String destinationValue) {
+    public boolean setPortalDestination(String id, String rtpSelector) {
         PortalDefinition portal = getPortal(id);
-        if (portal == null) {
+        if (portal == null || !plugin.getRtpManager().isPortalDestinationAvailable(rtpSelector)) {
             return false;
         }
 
-        String type = destinationType.trim().toUpperCase(Locale.ROOT);
-        if (!type.equals(DESTINATION_TYPE_RTP) && !type.equals(DESTINATION_TYPE_AFK)) {
-            return false;
-        }
-
-        PortalDefinition updated = portal.withDestination(type, destinationValue);
-        if (!isDestinationUsable(updated)) {
-            return false;
-        }
-
+        PortalDefinition updated = portal.withDestination(DESTINATION_TYPE_RTP, rtpSelector);
         portals.put(updated.id(), updated);
         savePortal(updated);
         reloadHolograms();
         return true;
-    }
-
-    public boolean setPortalDestination(String id, String rtpSelector) {
-        return setPortalDestination(id, DESTINATION_TYPE_RTP, rtpSelector);
     }
 
     public boolean setPortalDisplayName(String id, String displayName) {
@@ -352,54 +324,28 @@ public class PortalManager {
             return false;
         }
 
-        if (DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
-            if (plugin.getTeleportManager().hasPending(playerId)
-                    && !plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
-                player.sendMessage(ColorUtils.toComponent(message("PORTAL.TELEPORT-IN-PROGRESS",
-                        "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.")));
-                return false;
-            }
-
-            boolean queued = plugin.getRtpManager().queueCommandTeleport(player, portal.destinationValue());
-            if (!queued) {
-                return false;
-            }
-
-            String enterMessage = portal.enterMessage().isBlank()
-                    ? message("PORTAL.ENTERED", "")
-                    : portal.enterMessage();
-            if (!enterMessage.isBlank()) {
-                String destinationLabel = describeDestination(portal);
-                player.sendMessage(ColorUtils.toComponent(
-                        enterMessage
-                                .replace("{portal}", portal.effectiveDisplayName())
-                                .replace("{destination}", destinationLabel)
-                ));
-            }
-        } else if (DESTINATION_TYPE_AFK.equalsIgnoreCase(portal.destinationType())) {
-            if (plugin.getTeleportManager().hasPending(playerId)) {
-                player.sendMessage(ColorUtils.toComponent(message("PORTAL.TELEPORT-IN-PROGRESS",
-                        "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.")));
-                return false;
-            }
-
-            Location destination = resolveAfkDestinationLocation(portal);
-            if (destination == null) {
-                player.sendMessage(ColorUtils.toComponent("&cᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
-                return false;
-            }
-
-            String enterMessage = portal.enterMessage().isBlank()
-                    ? message("PORTAL.ENTERED", "")
-                    : portal.enterMessage();
-            String destinationLabel = describeDestination(portal);
-            String resolvedMessage = enterMessage.isBlank() ? "" : enterMessage
-                    .replace("{portal}", portal.effectiveDisplayName())
-                    .replace("{destination}", destinationLabel);
-
-            plugin.getAFKManager().sendToAfk(player, destination, resolvedMessage);
-        } else {
+        if (plugin.getTeleportManager().hasPending(playerId)
+                && !plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
+            player.sendMessage(ColorUtils.toComponent(message("PORTAL.TELEPORT-IN-PROGRESS",
+                    "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.")));
             return false;
+        }
+
+        boolean queued = plugin.getRtpManager().queueCommandTeleport(player, portal.destinationValue());
+        if (!queued) {
+            return false;
+        }
+
+        String enterMessage = portal.enterMessage().isBlank()
+                ? message("PORTAL.ENTERED", "")
+                : portal.enterMessage();
+        if (!enterMessage.isBlank()) {
+            String destinationLabel = describeDestination(portal);
+            player.sendMessage(ColorUtils.toComponent(
+                    enterMessage
+                            .replace("{portal}", portal.effectiveDisplayName())
+                            .replace("{destination}", destinationLabel)
+            ));
         }
 
         return true;
@@ -409,59 +355,23 @@ public class PortalManager {
         return portal != null && plugin.getCuboidManager().exists(portal.cuboidName());
     }
 
-    private Location resolveAfkDestinationLocation(PortalDefinition portal) {
-        String value = portal.destinationValue();
-        if (value != null && !value.isBlank()) {
-            for (SpawnManager.TeleportArea area : plugin.getSpawnManager().getValidAreas(SpawnManager.AreaType.AFK)) {
-                if (area.id().equalsIgnoreCase(value)) {
-                    Location loc = plugin.getSpawnManager().resolveDestination(area);
-                    if (loc != null) {
-                        return loc;
-                    }
-                }
-            }
-        }
-        return plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.AFK);
-    }
-
     public boolean isDestinationUsable(PortalDefinition portal) {
-        if (portal == null) {
+        if (portal == null || !DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
             return false;
         }
-        if (DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
-            return plugin.getRtpManager().isPortalDestinationAvailable(portal.destinationValue());
-        }
-        if (DESTINATION_TYPE_AFK.equalsIgnoreCase(portal.destinationType())) {
-            return resolveAfkDestinationLocation(portal) != null;
-        }
-        return false;
+        return plugin.getRtpManager().isPortalDestinationAvailable(portal.destinationValue());
     }
 
     public String resolveDestinationWorld(PortalDefinition portal) {
-        if (portal == null) {
+        if (portal == null || !DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
             return null;
         }
-        if (DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {
-            return plugin.getRtpManager().resolveWorldSelector(portal.destinationValue());
-        }
-        if (DESTINATION_TYPE_AFK.equalsIgnoreCase(portal.destinationType())) {
-            Location loc = resolveAfkDestinationLocation(portal);
-            return loc != null && loc.getWorld() != null ? loc.getWorld().getName() : null;
-        }
-        return null;
+        return plugin.getRtpManager().resolveWorldSelector(portal.destinationValue());
     }
 
     public String describeDestination(PortalDefinition portal) {
         if (portal == null) {
             return "unknown";
-        }
-
-        if (DESTINATION_TYPE_AFK.equalsIgnoreCase(portal.destinationType())) {
-            String value = portal.destinationValue();
-            if (value == null || value.isBlank()) {
-                return "AFK";
-            }
-            return "AFK:" + value;
         }
 
         if (!DESTINATION_TYPE_RTP.equalsIgnoreCase(portal.destinationType())) {

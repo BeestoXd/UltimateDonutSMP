@@ -35,8 +35,6 @@ public class SellMenu extends BaseMenu {
     );
 
     private boolean processScheduled;
-    private boolean confirmMode;
-    private Player player;
 
     public SellMenu(UltimateDonutSmp plugin) {
         super(plugin, plugin.getConfigManager().getMenus().getString(
@@ -47,44 +45,12 @@ public class SellMenu extends BaseMenu {
 
     @Override
     public void build(Player player) {
-        this.player = player;
-        FileConfiguration menus = plugin.getConfigManager().getMenus();
-        String modeStr = menus.getString("SELL-MENU.MODE", "instant");
-        this.confirmMode = "confirm".equalsIgnoreCase(modeStr);
-
         clear();
-        if (confirmMode) {
-            buildConfirmSellGUI(player);
-        } else {
-            refreshMultiplierButtons(player);
-        }
-    }
-
-    private void buildConfirmSellGUI(Player player) {
-        FileConfiguration menus = plugin.getConfigManager().getMenus();
-        
-        Material material = ItemUtils.parseMaterial(menus.getString("SELL-MENU.CONFIRM-BUTTON.MATERIAL", "LIME_STAINED_GLASS_PANE"));
-        String title = menus.getString("SELL-MENU.CONFIRM-BUTTON.TITLE", "&a&lᴄᴏɴꜰɪʀᴍ ѕᴇʟʟ");
-        List<String> lore = menus.getStringList("SELL-MENU.CONFIRM-BUTTON.LORE");
-        if (lore.isEmpty()) {
-            lore = List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟʟ ᴀʟʟ ɪᴛᴇᴍѕ ɪɴ ᴛʜᴇ ᴍᴇɴᴜ.");
-        }
-        set(53, ItemUtils.createItem(material, title, lore));
+        refreshMultiplierButtons(player);
     }
 
     @Override
     public void handleClick(int slot, Player player, ClickType clickType) {
-        if (confirmMode && slot == 53) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            ShopManager.SellResult result = plugin.getShopManager().sellInventoryContents(player, inventory, 0, getSellableSlotEnd());
-            if (result.status() == ShopManager.SellStatus.NO_SELLABLE_ITEMS) {
-                player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE", "&cᴛʜɪѕ ɪᴛᴇᴍ ɪѕ ɴᴏᴛ ѕᴇʟʟᴀʙʟᴇ.")
-                ));
-            }
-            return;
-        }
-
         SellCategory category = getCategoryForSlot(slot);
         if (category == null) {
             return;
@@ -97,10 +63,6 @@ public class SellMenu extends BaseMenu {
     public void handleInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) {
             return;
-        }
-
-        if (event.isShiftClick()) {
-            plugin.getSpigotScheduler().runEntityLater(player, player::updateInventory, 1L);
         }
 
         boolean autoSell = isAutoSellEnabled();
@@ -145,12 +107,11 @@ public class SellMenu extends BaseMenu {
 
     @Override
     public void onClose(Player player) {
-        int sellableEnd = getSellableSlotEnd();
         if (isAutoSellEnabled()) {
-            plugin.getShopManager().sellInventoryContents(player, inventory, 0, sellableEnd);
+            plugin.getShopManager().sellInventoryContents(player, inventory, 0, SELLABLE_SLOT_END);
         }
 
-        for (int slot = 0; slot < sellableEnd; slot++) {
+        for (int slot = 0; slot < SELLABLE_SLOT_END; slot++) {
             ItemStack item = inventory.getItem(slot);
             if (item == null || item.getType().isAir()) {
                 continue;
@@ -177,7 +138,7 @@ public class SellMenu extends BaseMenu {
                 return;
             }
 
-            plugin.getShopManager().sellInventoryContents(player, inventory, 0, getSellableSlotEnd());
+            plugin.getShopManager().sellInventoryContents(player, inventory, 0, SELLABLE_SLOT_END);
             refreshMultiplierButtons(player);
             player.updateInventory();
         }, PROCESS_DELAY_TICKS);
@@ -212,9 +173,6 @@ public class SellMenu extends BaseMenu {
     }
 
     private SellCategory getCategoryForSlot(int slot) {
-        if (confirmMode) {
-            return null;
-        }
         int index = slot - 45;
         if (index < 0 || index >= BUTTON_ORDER.size()) {
             return null;
@@ -222,18 +180,11 @@ public class SellMenu extends BaseMenu {
         return BUTTON_ORDER.get(index);
     }
 
-    private int getSellableSlotEnd() {
-        return confirmMode ? 53 : 45;
-    }
-
     private boolean isSellableSlot(int slot) {
-        return slot >= 0 && slot < getSellableSlotEnd();
+        return slot >= 0 && slot < SELLABLE_SLOT_END;
     }
 
     private boolean isAutoSellEnabled() {
-        if (confirmMode) {
-            return false;
-        }
         return plugin.getConfigManager().getMenus().getBoolean("SELL-MENU.AUTO-SELL", true);
     }
 }

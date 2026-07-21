@@ -63,15 +63,12 @@ public class SpawnerStorageMenu extends BaseMenu {
             ItemStack display = new ItemStack(entry.getMaterial(), (int) Math.max(1, Math.min(entry.getAmount(), entry.getMaterial().getMaxStackSize())));
             var meta = display.getItemMeta();
             if (meta != null) {
-                boolean isFiltered = instance.isLootDisabled(entry.getKey());
                 meta.setDisplayName(ColorUtils.toComponent("&b" + plugin.getWorthManager().prettifyMaterial(entry.getMaterial())));
                 meta.setLore(ColorUtils.toComponentList(List.of(
                         "&7ѕᴛᴏʀᴇᴅ: &f" + NumberUtils.format(entry.getAmount()),
-                        "&7ꜰɪʟᴛᴇʀ ѕᴛᴀᴛᴜѕ: " + (isFiltered ? "&cᴅɪѕᴀʙʟᴇᴅ &7(ɴᴏᴛ ѕᴛᴏʀɪɴɢ)" : "&aᴇɴᴀʙʟᴇᴅ &7(ѕᴛᴏʀɪɴɢ)"),
                         "",
                         "&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ᴄᴏʟʟᴇᴄᴛ ᴏɴᴇ ѕᴛᴀᴄᴋ",
-                        "&eѕʜɪꜰᴛ-ʟᴇꜰᴛ &7ᴛᴏ ᴄᴏʟʟᴇᴄᴛ ᴀʟʟ ᴏꜰ ᴛʜɪѕ ʟᴏᴏᴛ",
-                        "&eʀɪɢʜᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ᴛᴏɢɢʟᴇ ꜰɪʟᴛᴇʀ"
+                        "&eѕʜɪꜰᴛ-ʟᴇꜰᴛ &7ᴛᴏ ᴄᴏʟʟᴇᴄᴛ ᴀʟʟ ᴏꜰ ᴛʜɪѕ ʟᴏᴏᴛ"
                 )));
                 display.setItemMeta(meta);
             }
@@ -154,21 +151,6 @@ public class SpawnerStorageMenu extends BaseMenu {
         }
 
         SpawnerLootEntry entry = entries.get(entryIndex);
-        if (clickType.isRightClick()) {
-            boolean currentState = instance.isLootDisabled(entry.getKey());
-            instance.setLootDisabled(entry.getKey(), !currentState);
-            instance.setUpdatedAt(System.currentTimeMillis());
-            plugin.getSpawnerManager().saveSpawnerAndLoot(instance);
-
-            String statusMsg = !currentState ? "&cᴅɪѕᴀʙʟᴇᴅ &7(ɴᴏᴛ ѕᴛᴏʀɪɴɢ)" : "&aᴇɴᴀʙʟᴇᴅ &7(ѕᴛᴏʀɪɴɢ)";
-            player.sendMessage(ColorUtils.toComponent("&aToggled filter for &f"
-                    + plugin.getWorthManager().prettifyMaterial(entry.getMaterial())
-                    + " &ato " + statusMsg + "&a."));
-
-            new SpawnerStorageMenu(plugin, spawnerId, safePage).open(player);
-            return;
-        }
-
         boolean collectAll = clickType.isShiftClick();
         player.sendMessage(ColorUtils.toComponent(
                 plugin.getSpawnerManager().collectLootEntry(player, instance, entry.getKey(), collectAll).message()

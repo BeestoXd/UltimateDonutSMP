@@ -2976,33 +2976,29 @@ public class OrdersManager {
             double payout,
             long createdAt
     ) {
-        Connection conn = connection();
-        boolean originalAutoCommit = true;
         try {
-            originalAutoCommit = conn.getAutoCommit();
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before order delivery", e);
-            return false;
-        }
-
-        try {
+            Connection conn = connection();
+            boolean originalAutoCommit = conn.getAutoCommit();
             conn.setAutoCommit(false);
             try {
                 Order liveOrder = getOrderForUpdate(conn, order.id());
                 if (liveOrder == null || !liveOrder.active() || liveOrder.remainingQuantity() <= 0) {
                     conn.rollback();
+                    conn.setAutoCommit(originalAutoCommit);
                     return false;
                 }
 
                 int actualQuantity = Math.min(deliveredQuantity, liveOrder.remainingQuantity());
                 if (actualQuantity <= 0) {
                     conn.rollback();
+                    conn.setAutoCommit(originalAutoCommit);
                     return false;
                 }
 
                 double actualPayout = roundCurrency(actualQuantity * liveOrder.priceEach());
                 if (actualPayout <= 0D || actualPayout - liveOrder.escrowRemaining() > EPSILON) {
                     conn.rollback();
+                    conn.setAutoCommit(originalAutoCommit);
                     return false;
                 }
 
@@ -3026,6 +3022,7 @@ public class OrdersManager {
                     updateOrder.setString(7, OrderStatus.ACTIVE.name());
                     if (updateOrder.executeUpdate() != 1) {
                         conn.rollback();
+                        conn.setAutoCommit(originalAutoCommit);
                         return false;
                     }
                 }
@@ -3064,35 +3061,27 @@ public class OrdersManager {
                     }
                     if (remainingToStore != 0) {
                         conn.rollback();
+                        conn.setAutoCommit(originalAutoCommit);
                         return false;
                     }
                     insertClaim.executeBatch();
                 }
 
                 conn.commit();
+                conn.setAutoCommit(originalAutoCommit);
 
                 Player owner = org.bukkit.Bukkit.getPlayer(liveOrder.ownerUuid());
                 if (owner != null && owner.isOnline()) {
                     processAutoClaims(owner);
                 }
                 return true;
-            } catch (Exception e) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackException) {
-                    e.addSuppressed(rollbackException);
-                }
-                plugin.getLogger().log(Level.WARNING, "Failed to apply order delivery", e);
-                return false;
-            } finally {
-                try {
-                    conn.setAutoCommit(originalAutoCommit);
-                } catch (SQLException e) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit after order delivery", e);
-                }
+            } catch (SQLException e) {
+                conn.rollback();
+                conn.setAutoCommit(originalAutoCommit);
+                throw e;
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to set auto-commit state before order delivery", e);
+            plugin.getLogger().log(Level.WARNING, "Failed to apply order delivery", e);
             return false;
         }
     }
@@ -3105,21 +3094,15 @@ public class OrdersManager {
             double payout,
             long createdAt
     ) {
-        Connection conn = connection();
-        boolean originalAutoCommit = true;
         try {
-            originalAutoCommit = conn.getAutoCommit();
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before reverting order delivery", e);
-            return;
-        }
-
-        try {
+            Connection conn = connection();
+            boolean originalAutoCommit = conn.getAutoCommit();
             conn.setAutoCommit(false);
             try {
                 Order order = getOrderForUpdate(conn, orderId);
                 if (order == null) {
                     conn.rollback();
+                    conn.setAutoCommit(originalAutoCommit);
                     return;
                 }
 
@@ -3161,36 +3144,21 @@ public class OrdersManager {
                 }
 
                 conn.commit();
-            } catch (Exception e) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackException) {
-                    e.addSuppressed(rollbackException);
-                }
+                conn.setAutoCommit(originalAutoCommit);
+            } catch (SQLException e) {
+                conn.rollback();
+                conn.setAutoCommit(originalAutoCommit);
                 throw e;
-            } finally {
-                try {
-                    conn.setAutoCommit(originalAutoCommit);
-                } catch (SQLException e) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit after reverting order delivery", e);
-                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to revert order delivery " + orderId, e);
         }
     }
 
     private boolean closeOrderAndCreateRefundClaim(Order order, OrderStatus nextStatus, long closedAt) {
-        Connection conn = connection();
-        boolean originalAutoCommit = true;
         try {
-            originalAutoCommit = conn.getAutoCommit();
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before closing order", e);
-            return false;
-        }
-
-        try {
+            Connection conn = connection();
+            boolean originalAutoCommit = conn.getAutoCommit();
             conn.setAutoCommit(false);
             try {
                 try (PreparedStatement updateOrder = conn.prepareStatement(
@@ -3201,6 +3169,7 @@ public class OrdersManager {
                     updateOrder.setString(4, OrderStatus.ACTIVE.name());
                     if (updateOrder.executeUpdate() != 1) {
                         conn.rollback();
+                        conn.setAutoCommit(originalAutoCommit);
                         return false;
                     }
                 }
@@ -3221,27 +3190,19 @@ public class OrdersManager {
                 }
 
                 conn.commit();
+                conn.setAutoCommit(originalAutoCommit);
 
                 Player owner = org.bukkit.Bukkit.getPlayer(order.ownerUuid());
                 if (owner != null && owner.isOnline()) {
                     processAutoClaims(owner);
                 }
                 return true;
-            } catch (Exception e) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackException) {
-                    e.addSuppressed(rollbackException);
-                }
+            } catch (SQLException e) {
+                conn.rollback();
+                conn.setAutoCommit(originalAutoCommit);
                 throw e;
-            } finally {
-                try {
-                    conn.setAutoCommit(originalAutoCommit);
-                } catch (SQLException e) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit after closing order", e);
-                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to close order " + order.id(), e);
             return false;
         }

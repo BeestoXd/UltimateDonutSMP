@@ -1,6 +1,5 @@
 package com.bx.ultimateDonutSmp.managers;
 
-import com.bx.ultimateDonutSmp.utils.LazyLocation;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
@@ -81,27 +80,11 @@ public class HomeManager {
     }
 
     public boolean setHome(UUID uuid, String name, Location location) {
-        if (location == null) return false;
-        String worldName = location.getWorld() != null ? location.getWorld().getName() : null;
-        if (location instanceof LazyLocation lazy) {
-            worldName = lazy.getWorldName();
-        }
-        if (worldName == null || worldName.isBlank()) return false;
-
-        Location targetLocation = new LazyLocation(
-                worldName,
-                location.getX(),
-                location.getY(),
-                location.getZ(),
-                location.getYaw(),
-                location.getPitch()
-        );
-
         List<Home> homes = cache.computeIfAbsent(uuid, k -> new ArrayList<>());
         // Update existing
         for (Home h : homes) {
             if (h.getName().equalsIgnoreCase(name)) {
-                h.setLocation(targetLocation);
+                h.setLocation(location.clone());
                 plugin.getDatabaseManager().saveHome(h);
                 return true;
             }
@@ -109,7 +92,7 @@ public class HomeManager {
         // Create new
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null && homes.size() >= getMaxHomes(player)) return false;
-        Home home = new Home(uuid, name, targetLocation);
+        Home home = new Home(uuid, name, location.clone());
         homes.add(home);
         plugin.getDatabaseManager().saveHome(home);
         return true;

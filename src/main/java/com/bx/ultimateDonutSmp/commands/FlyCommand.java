@@ -30,62 +30,21 @@ public class FlyCommand implements CommandExecutor {
             return true;
         }
 
+        if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
+            player.sendMessage(ColorUtils.toComponent(
+                    plugin.getConfigManager().getMessageOrDefault("STAFF.NO_PERMISSION_OTHERS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+            ));
+            return true;
+        }
+
         Player target;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
                 return true;
             }
-
-            boolean isStaff = PermissionUtils.has(player, PERMISSION);
-            String playerFlyPerm = plugin.getConfigManager().getConfig()
-                    .getString("FLY-SYSTEM.PLAYER-FLY-PERMISSION", "ultimatedonutsmp.player.fly");
-            boolean isPlayerFly = PermissionUtils.has(player, playerFlyPerm);
-
-            if (!isStaff && !isPlayerFly) {
-                player.sendMessage(ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessageOrDefault("STAFF.NO_PERMISSION_OTHERS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
-                ));
-                return true;
-            }
-
-            if (!isStaff) {
-                // Check combat
-                if (plugin.getCombatManager() != null && plugin.getCombatManager().isInCombat(player.getUniqueId())) {
-                    player.sendMessage(ColorUtils.toComponent(
-                            plugin.getConfigManager().getMessageOrDefault("FLY.PLAYER_IN_COMBAT", "&cYou cannot fly while in combat.")
-                    ));
-                    return true;
-                }
-
-                // Check location (spawn or cuboids)
-                boolean inSpawn = plugin.getAFKManager().isInSpawnCuboid(player);
-                boolean inCuboid = false;
-                for (String name : plugin.getCuboidManager().getCuboidNames()) {
-                    if (plugin.getCuboidManager().isInCuboid(player, name)) {
-                        inCuboid = true;
-                        break;
-                    }
-                }
-
-                if (!inSpawn && !inCuboid) {
-                    player.sendMessage(ColorUtils.toComponent(
-                            plugin.getConfigManager().getMessageOrDefault("FLY.PLAYER_RESTRICTED", "&cYou can only use flight in spawn or cuboids.")
-                    ));
-                    return true;
-                }
-            }
-
             target = player;
         } else {
-            // Target player specified - staff only
-            if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
-                player.sendMessage(ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessageOrDefault("STAFF.NO_PERMISSION_OTHERS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
-                ));
-                return true;
-            }
-
             target = findOnlinePlayer(args[0]);
             if (target == null) {
                 sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));

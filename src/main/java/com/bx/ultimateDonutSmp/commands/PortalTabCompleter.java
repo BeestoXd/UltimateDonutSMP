@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -10,7 +9,6 @@ import org.bukkit.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class PortalTabCompleter implements TabCompleter {
 
@@ -44,48 +42,13 @@ public class PortalTabCompleter implements TabCompleter {
         if (args.length == 3) {
             return switch (subcommand) {
                 case "create", "setcuboid" -> partialMatches(args[2], new ArrayList<>(plugin.getCuboidManager().getCuboidNames()));
-                case "setdestination" -> {
-                    List<String> list = new ArrayList<>();
-                    list.add("RTP");
-                    list.add("AFK");
-                    list.addAll(plugin.getRtpManager().getPortalSelectorSuggestions());
-                    yield partialMatches(args[2], list);
-                }
+                case "setdestination" -> partialMatches(args[2], plugin.getRtpManager().getPortalSelectorSuggestions());
                 default -> Collections.emptyList();
             };
         }
 
-        if (args.length == 4) {
-            if (subcommand.equals("create")) {
-                List<String> list = new ArrayList<>();
-                list.add("RTP");
-                list.add("AFK");
-                list.addAll(plugin.getRtpManager().getPortalSelectorSuggestions());
-                return partialMatches(args[3], list);
-            }
-            if (subcommand.equals("setdestination")) {
-                String type = args[2].toUpperCase(Locale.ROOT);
-                if (type.equals("RTP")) {
-                    return partialMatches(args[3], plugin.getRtpManager().getPortalSelectorSuggestions());
-                } else if (type.equals("AFK")) {
-                    List<String> areas = plugin.getSpawnManager().getValidAreas(SpawnManager.AreaType.AFK)
-                            .stream().map(SpawnManager.TeleportArea::id).toList();
-                    return partialMatches(args[3], areas);
-                }
-            }
-        }
-
-        if (args.length == 5) {
-            if (subcommand.equals("create")) {
-                String type = args[3].toUpperCase(Locale.ROOT);
-                if (type.equals("RTP")) {
-                    return partialMatches(args[4], plugin.getRtpManager().getPortalSelectorSuggestions());
-                } else if (type.equals("AFK")) {
-                    List<String> areas = plugin.getSpawnManager().getValidAreas(SpawnManager.AreaType.AFK)
-                            .stream().map(SpawnManager.TeleportArea::id).toList();
-                    return partialMatches(args[4], areas);
-                }
-            }
+        if (args.length == 4 && subcommand.equals("create")) {
+            return partialMatches(args[3], plugin.getRtpManager().getPortalSelectorSuggestions());
         }
 
         return Collections.emptyList();

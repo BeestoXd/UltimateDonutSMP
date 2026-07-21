@@ -77,27 +77,18 @@ public class TPACommand implements CommandExecutor {
         }
 
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
-        if (targetData != null) {
-            com.bx.ultimateDonutSmp.models.ThreeChoice choice = targetData.getTpaRequestsChoice();
-            if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
-                int queuePosition = plugin.getTPAManager().queueManualTPA(player, target);
-                if (queuePosition == 0) {
-                    sendAlreadySent(player, target);
-                    return;
-                }
-
-                send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", publicName(target)));
-                send(player, "&7ʏᴏᴜʀ /tpa ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ѕᴛᴏʀᴇᴅ ɪɴ &b" + publicName(target)
-                        + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
-                playNotification(player, "TPA.REQUEST-SENT");
+        if (targetData != null && !targetData.isTpaRequestsEnabled()) {
+            int queuePosition = plugin.getTPAManager().queueManualTPA(player, target);
+            if (queuePosition == 0) {
+                sendAlreadySent(player, target);
                 return;
-            } else if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
-                boolean isFriendOrFollowed = plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(target.getUniqueId(), player.getUniqueId());
-                if (!isFriendOrFollowed) {
-                    send(player, "&c" + target.getName() + " only accepts teleport requests from friends/followed.");
-                    return;
-                }
             }
+
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", publicName(target)));
+            send(player, "&7ʏᴏᴜʀ /tpa ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ѕᴛᴏʀᴇᴅ ɪɴ &b" + publicName(target)
+                    + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
+            playNotification(player, "TPA.REQUEST-SENT");
+            return;
         }
 
         if (targetData != null && targetData.isTpauto()) {
@@ -154,27 +145,18 @@ public class TPACommand implements CommandExecutor {
         }
 
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
-        if (targetData != null) {
-            com.bx.ultimateDonutSmp.models.ThreeChoice choice = targetData.getTpaHereRequestsChoice();
-            if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
-                int queuePosition = plugin.getTPAManager().queueManualTPAHere(player, target);
-                if (queuePosition == 0) {
-                    sendAlreadySent(player, target);
-                    return;
-                }
-
-                send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", publicName(target)));
-                send(player, "&7ʏᴏᴜʀ /tpahere ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴀᴅᴅᴇᴅ ᴛᴏ &b" + publicName(target)
-                        + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
-                playNotification(player, "TPA.REQUEST-SENT");
+        if (targetData != null && !targetData.isTpaHereRequestsEnabled()) {
+            int queuePosition = plugin.getTPAManager().queueManualTPAHere(player, target);
+            if (queuePosition == 0) {
+                sendAlreadySent(player, target);
                 return;
-            } else if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
-                boolean isFriendOrFollowed = plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(target.getUniqueId(), player.getUniqueId());
-                if (!isFriendOrFollowed) {
-                    send(player, "&c" + target.getName() + " only accepts teleport-here requests from friends/followed.");
-                    return;
-                }
             }
+
+            send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", publicName(target)));
+            send(player, "&7ʏᴏᴜʀ /tpahere ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴀᴅᴅᴇᴅ ᴛᴏ &b" + publicName(target)
+                    + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
+            playNotification(player, "TPA.REQUEST-SENT");
+            return;
         }
 
         if (targetData != null && targetData.isAutoTpaHereEnabled()) {
@@ -246,28 +228,23 @@ public class TPACommand implements CommandExecutor {
         String requesterDisplayName = publicName(requester);
         UUID requesterUuid = requester.getUniqueId();
 
-        PlayerData targetData = plugin.getPlayerDataManager().get(target);
-        boolean alertsEnabled = targetData == null || targetData.isTeleportAlertsEnabled();
-
         plugin.getSpigotScheduler().runEntity(target, () -> {
             if (!target.isOnline()) {
                 return;
             }
 
-            if (alertsEnabled) {
-                playNotification(target, "TPA.REQUEST-RECEIVED");
+            playNotification(target, "TPA.REQUEST-RECEIVED");
 
-                String messagePath = tpaHere ? "TPA.REQUEST-HERE-RECEIVED" : "TPA.REQUEST-RECEIVED";
-                TextComponent requestMsg = ColorUtils.toBaseComponent(
-                        plugin.getConfigManager().getMessage(messagePath, "{player}", requesterDisplayName));
-                requestMsg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + requesterName));
-                target.spigot().sendMessage(requestMsg);
+            String messagePath = tpaHere ? "TPA.REQUEST-HERE-RECEIVED" : "TPA.REQUEST-RECEIVED";
+            TextComponent requestMsg = ColorUtils.toBaseComponent(
+                    plugin.getConfigManager().getMessage(messagePath, "{player}", requesterDisplayName));
+            requestMsg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + requesterName));
+            target.spigot().sendMessage(requestMsg);
 
-                if (shouldOpenTpaConfirmMenu(target)) {
-                    plugin.getSpigotScheduler().runEntityLater(target,
-                            () -> openTpaConfirmMenuIfPending(target, requesterUuid, requesterName, tpaHere),
-                            1L);
-                }
+            if (shouldOpenTpaConfirmMenu(target)) {
+                plugin.getSpigotScheduler().runEntityLater(target,
+                        () -> openTpaConfirmMenuIfPending(target, requesterUuid, requesterName, tpaHere),
+                        1L);
             }
         });
     }

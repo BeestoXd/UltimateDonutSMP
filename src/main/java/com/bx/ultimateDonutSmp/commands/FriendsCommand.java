@@ -5,7 +5,6 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.menus.FriendsMenu;
 import com.bx.ultimateDonutSmp.models.FollowEntry;
-import com.bx.ultimateDonutSmp.models.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -114,18 +113,6 @@ public class FriendsCommand implements CommandExecutor {
         boolean success = plugin.getFriendsManager().followPlayer(player, target.uuid(), target.name());
         if (success) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.FOLLOW_SUCCESS", "{player}", target.name()), player));
-            
-            Player onlineTarget = org.bukkit.Bukkit.getPlayer(target.uuid());
-            if (onlineTarget != null && onlineTarget.isOnline()) {
-                PlayerData targetData = plugin.getPlayerDataManager().get(onlineTarget);
-                if (targetData == null || targetData.isFollowAlertsEnabled()) {
-                    String senderName = plugin.getHideManager() != null ? plugin.getHideManager().publicName(player) : player.getName();
-                    onlineTarget.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
-                            "FRIENDS.FOLLOW_ALERT_RECEIVED",
-                            "&d&lFollow &7» &b" + senderName + " &7is now following you."
-                    )));
-                }
-            }
         } else {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.FOLLOW_FAILURE"), player));
         }

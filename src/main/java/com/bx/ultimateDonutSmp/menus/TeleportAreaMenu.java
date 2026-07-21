@@ -193,7 +193,7 @@ public abstract class TeleportAreaMenu extends BaseMenu {
     private String replaceAreaPlaceholders(String text, SpawnManager.TeleportArea area) {
         return text.replace("{players}", String.valueOf(plugin.getSpawnManager().countPlayersInArea(area)))
                 .replace("{capacity}", String.valueOf(area.capacity()))
-                .replace("{cuboid}", area.cuboidName() == null ? "" : area.cuboidName())
+                .replace("{cuboid}", area.cuboidName())
                 .replace("{id}", area.id());
     }
 

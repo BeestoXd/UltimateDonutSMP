@@ -23,7 +23,7 @@ public final class ItemSerializationUtils {
     }
 
     public static String serialize(ItemStack item) throws IOException {
-        byte[] serializedBytes = serializeAsBytes(item);
+        byte[] serializedBytes = serializeToBytes(item);
         if (serializedBytes != null) {
             return BYTE_SERIALIZATION_PREFIX + Base64.getEncoder().encodeToString(serializedBytes);
         }
@@ -53,21 +53,10 @@ public final class ItemSerializationUtils {
     public static ItemStack deserialize(String encoded) throws IOException, ClassNotFoundException {
         if (isByteSerialized(encoded)) {
             byte[] bytes = Base64.getDecoder().decode(encoded.substring(BYTE_SERIALIZATION_PREFIX.length()));
-            if (isLegacyBytes(bytes)) {
-                return deserializeLegacyBytes(bytes);
-            }
             return deserializeBytes(bytes);
         }
 
         byte[] bytes = Base64.getDecoder().decode(encoded);
-        return deserializeLegacyBytes(bytes);
-    }
-
-    public static boolean isLegacyBytes(byte[] bytes) {
-        return bytes != null && bytes.length >= 2 && bytes[0] == (byte) 0xAC && bytes[1] == (byte) 0xED;
-    }
-
-    private static ItemStack deserializeLegacyBytes(byte[] bytes) throws IOException, ClassNotFoundException {
         try (BukkitObjectInputStream input = new BukkitObjectInputStream(new ByteArrayInputStream(bytes))) {
             Object value = input.readObject();
             return value instanceof ItemStack item ? item : null;

@@ -1,15 +1,17 @@
-# Determines whether Enabled is enabled or disabled. Available options: true, false
+# UDS setup: Destructive season reset behavior. Keep RESET-WORLDS empty until dedicated RTP worlds are ready.
+
 ENABLED: true
-# A list configuration for Reset Worlds. Available options: Multiple items
+
+# Only direct child world folders with these exact names can be replaced.
+# Main/default, spawn, AFK, warp, portal-source, and bound-crate worlds are always rejected.
 RESET-WORLDS: []
-# A list configuration for Protected Worlds. Available options: Multiple items
+
+# Extra worlds that must never be accepted even if accidentally added above.
 PROTECTED-WORLDS: []
-# The numerical value for Token Ttl Seconds. Available options: Any valid integer
+
 TOKEN-TTL-SECONDS: 300
-# The text or value for Backup Directory. Available options: Any valid string text
-BACKUP-DIRECTORY: server-wipe-backups
+BACKUP-DIRECTORY: "server-wipe-backups"
+
 MESSAGES:
-  # The text or value for Maintenance. Available options: Any valid string text
-  MAINTENANCE: '&cᴛʜᴇ ѕᴇʀᴠᴇʀ ɪѕ ᴘʀᴇᴘᴀʀɪɴɢ ᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ. ᴛʀʏ ᴀɢᴀɪɴ ᴀꜰᴛᴇʀ ᴛʜᴇ ʀᴇѕᴛᴀʀᴛ.'
-  # The text or value for Kick. Available options: Any valid string text
-  KICK: '&cᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ ɪѕ ѕᴛᴀʀᴛɪɴɢ. ᴛʜᴇ ѕᴇʀᴠᴇʀ ᴡɪʟʟ ʀᴇѕᴛᴀʀᴛ ѕʜᴏʀᴛʟʏ.'
+  MAINTENANCE: "&cᴛʜᴇ ѕᴇʀᴠᴇʀ ɪѕ ᴘʀᴇᴘᴀʀɪɴɢ ᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ. ᴛʀʏ ᴀɢᴀɪɴ ᴀꜰᴛᴇʀ ᴛʜᴇ ʀᴇѕᴛᴀʀᴛ."
+  KICK: "&cᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ ɪѕ ѕᴛᴀʀᴛɪɴɢ. ᴛʜᴇ ѕᴇʀᴠᴇʀ ᴡɪʟʟ ʀᴇѕᴛᴀʀᴛ ѕʜᴏʀᴛʟʏ."

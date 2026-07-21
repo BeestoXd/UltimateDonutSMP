@@ -24,9 +24,7 @@ public class StatsWipeManager {
         TEAM_DOCUMENTS("TEAM_DOCUMENTS", "team documents", "teams", "team", "teamdocs", "team_documents"),
         HOME_DOCUMENTS("HOME_DOCUMENTS", "home documents", "homes", "home", "homedocs", "home_documents"),
         BOUNTIES("BOUNTIES", "bounties", "bounty", "bounties"),
-        SELL_DOCUMENTS("SELL_DOCUMENTS", "sell documents", "sell", "sellhistory", "sell_history", "selldocuments", "sell_documents"),
-        MONEY("MONEY", "player money", "money", "bal", "balance"),
-        SHARDS("SHARDS", "player shards", "shard", "shards");
+        SELL_DOCUMENTS("SELL_DOCUMENTS", "sell documents", "sell", "sellhistory", "sell_history", "selldocuments", "sell_documents");
 
         private final String configKey;
         private final String displayName;
@@ -99,8 +97,6 @@ public class StatsWipeManager {
             case HOME_DOCUMENTS -> plugin.getDatabaseManager().countHomes();
             case BOUNTIES -> plugin.getDatabaseManager().countBounties();
             case SELL_DOCUMENTS -> plugin.getDatabaseManager().countSellDocuments();
-            case MONEY -> countEconomyTargets(true);
-            case SHARDS -> countEconomyTargets(false);
         };
     }
 
@@ -141,8 +137,6 @@ public class StatsWipeManager {
             case HOME_DOCUMENTS -> wipeHomes();
             case BOUNTIES -> wipeBounties();
             case SELL_DOCUMENTS -> wipeSellDocuments();
-            case MONEY -> wipeMoney();
-            case SHARDS -> wipeShards();
         };
     }
 
@@ -227,56 +221,6 @@ public class StatsWipeManager {
                 || Double.compare(data.getMoneyMade(), 0D) != 0);
     }
 
-    private int countEconomyTargets(boolean money) {
-        Map<UUID, PlayerData> merged = new HashMap<>();
-        for (PlayerData stored : plugin.getDatabaseManager().loadAllPlayers()) {
-            merged.put(stored.getUuid(), stored);
-        }
-        for (PlayerData live : plugin.getPlayerDataManager().getAll()) {
-            merged.put(live.getUuid(), live);
-        }
-
-        int count = 0;
-        double defaultMoney = plugin.getConfigManager().getConfig().getDouble("SETTINGS.MONEY-PER-DEFAULT", 1000.0);
-        for (PlayerData data : merged.values()) {
-            if (money) {
-                if (Double.compare(data.getMoney(), defaultMoney) != 0) {
-                    count++;
-                }
-            } else {
-                if (data.getShards() != 0) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    private int wipeMoney() {
-        int affectedPlayers = countEconomyTargets(true);
-        double defaultMoney = plugin.getConfigManager().getConfig().getDouble("SETTINGS.MONEY-PER-DEFAULT", 1000.0);
-        
-        for (PlayerData data : plugin.getPlayerDataManager().getAll()) {
-            data.setMoney(defaultMoney);
-        }
-        
-        plugin.getDatabaseManager().resetAllPlayerMoney(defaultMoney);
-        persistLivePlayerData();
-        return affectedPlayers;
-    }
-
-    private int wipeShards() {
-        int affectedPlayers = countEconomyTargets(false);
-        
-        for (PlayerData data : plugin.getPlayerDataManager().getAll()) {
-            data.setShards(0L);
-        }
-        
-        plugin.getDatabaseManager().resetAllPlayerShards();
-        persistLivePlayerData();
-        return affectedPlayers;
-    }
-
     private void refreshRuntimeStateAfterWipe(Set<WipeTarget> targets) {
         if (targets.contains(WipeTarget.HOME_DOCUMENTS)) {
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -292,8 +236,7 @@ public class StatsWipeManager {
             }
         }
 
-        if (targets.contains(WipeTarget.PLAYER_STATS) || targets.contains(WipeTarget.TEAM_DOCUMENTS)
-                || targets.contains(WipeTarget.MONEY) || targets.contains(WipeTarget.SHARDS)) {
+        if (targets.contains(WipeTarget.PLAYER_STATS) || targets.contains(WipeTarget.TEAM_DOCUMENTS)) {
             plugin.getScoreboardManager().updateAll();
             plugin.getTablistManager().updateAll();
         }

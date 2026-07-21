@@ -50,7 +50,7 @@ public class HomeMenu extends BaseMenu {
         fillWithFiller();
 
         List<Home> homes = new ArrayList<>(plugin.getHomeManager().getHomes(player.getUniqueId()));
-        homes.sort(Comparator.comparingLong(Home::getCreatedAt));
+        homes.sort(Comparator.comparing(Home::getName, String.CASE_INSENSITIVE_ORDER));
 
         int maxHomes = plugin.getHomeManager().getMaxHomes(player);
         int totalPages = plugin.getHomeManager().getMaxHomePages(player);
@@ -228,14 +228,8 @@ public class HomeMenu extends BaseMenu {
                         List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."), placeholders)
         ));
 
-        slotActions.put(teleportSlot, (p, click) -> {
-            if (plugin.getHomeManager().setHome(p, suggestedName)) {
-                p.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.SET")));
-                new HomeMenu(plugin).open(p);
-            } else {
-                p.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀɴᴏᴛʜᴇʀ ʜᴏᴍᴇ ʀɪɢʜᴛ ɴᴏᴡ."));
-            }
-        });
+        slotActions.put(teleportSlot, (p, click) ->
+                plugin.getHomeManager().promptCreateHome(p, p.getLocation(), suggestedName));
         slotActions.put(actionSlot, (p, click) ->
                 plugin.getHomeManager().promptCreateHome(p, p.getLocation(), suggestedName));
     }

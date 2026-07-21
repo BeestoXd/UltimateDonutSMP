@@ -341,7 +341,7 @@ public class BillfordManager {
 
     private long computeNext(String startStr) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
             ZoneId zoneId = getRotationZone();
             ZonedDateTime start = LocalDateTime.parse(startStr, formatter).atZone(zoneId);
             ZonedDateTime now = ZonedDateTime.now(zoneId);

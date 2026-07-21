@@ -510,17 +510,9 @@ public class EconomyManager {
     }
 
     private void saveLoadedAccount(LoadedAccount loadedAccount) {
-        if (loadedAccount.reference().isOnline()) {
-            if (plugin.getLeaderboardManager() != null) {
-                plugin.getLeaderboardManager().invalidate(LeaderboardManager.LeaderboardType.MONEY);
-            }
-        } else {
-            plugin.getSpigotScheduler().runAsync(() -> {
-                plugin.getDatabaseManager().savePlayer(loadedAccount.data());
-            });
-            if (plugin.getLeaderboardManager() != null) {
-                plugin.getLeaderboardManager().invalidate(LeaderboardManager.LeaderboardType.MONEY);
-            }
+        plugin.getDatabaseManager().savePlayer(loadedAccount.data());
+        if (plugin.getLeaderboardManager() != null) {
+            plugin.getLeaderboardManager().invalidate(LeaderboardManager.LeaderboardType.MONEY);
         }
     }
 

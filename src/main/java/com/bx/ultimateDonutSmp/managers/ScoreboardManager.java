@@ -614,8 +614,7 @@ public class ScoreboardManager {
             if (rendered.size() >= MAX_LINES) {
                 break;
             }
-            String text = ColorUtils.colorize(line, player);
-            rendered.add(alignSidebarIconColumn(text));
+            rendered.add(alignSidebarIconColumn(ColorUtils.colorize(line, player)));
         }
         return rendered;
     }

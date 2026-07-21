@@ -1841,9 +1841,7 @@ public class ConfigManager {
     private YamlConfiguration loadYamlFile(File file) throws IOException, InvalidConfigurationException {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.options().parseComments(true);
-        try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
-            configuration.load(reader);
-        }
+        configuration.load(file);
         return configuration;
     }
 
@@ -1898,19 +1896,8 @@ public class ConfigManager {
         configuration.options().parseComments(true);
 
         try {
-            try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
-                configuration.load(reader);
-            }
+            configuration.load(file);
             invalidConfigurations.remove(name);
-            if ("menus.yml".equals(name) && (configuration.contains("SETTINGS-MENU-LEGACY") || hasLegacyButtons(configuration))) {
-                plugin.getLogger().warning("Detected legacy menus.yml format. Resetting to default for new slot layout...");
-                backupInvalidFile(file);
-                file.delete();
-                copyBundledResource(name, file, true);
-                try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
-                    configuration.load(reader);
-                }
-            }
             return configuration;
         } catch (IOException | InvalidConfigurationException e) {
             boolean firstInvalidLoad = invalidConfigurations.add(name);
@@ -1935,19 +1922,6 @@ public class ConfigManager {
                 return configuration;
             }
         }
-    }
-
-    private boolean hasLegacyButtons(YamlConfiguration config) {
-        ConfigurationSection buttons = config.getConfigurationSection("SETTINGS-MENU.BUTTONS");
-        if (buttons == null) {
-            return false;
-        }
-        for (String key : buttons.getKeys(false)) {
-            if (key.startsWith("HEADER_") || "TOTEM_PARTICLES".equals(key) || "TP_AUTO".equals(key)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void backupInvalidFile(File file) {
@@ -2083,12 +2057,7 @@ public class ConfigManager {
     public String getMessageOrDefault(String path, String fallback, String... placeholders) {
         String msg = getMessageOrDefault(path, fallback);
         for (int i = 0; i + 1 < placeholders.length; i += 2) {
-            String key = placeholders[i];
-            String val = placeholders[i + 1];
-            msg = msg.replace(key, val);
-            if (key.equals("{quantity}")) {
-                msg = msg.replace("{Quantity}", val);
-            }
+            msg = msg.replace(placeholders[i], placeholders[i + 1]);
         }
         return msg;
     }

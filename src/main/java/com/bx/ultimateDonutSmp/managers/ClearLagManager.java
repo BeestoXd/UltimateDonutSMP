@@ -67,75 +67,6 @@ public class ClearLagManager {
         List<String> excludedTypes = getExcludedEntityTypes();
         List<String> excludedMaterials = getExcludedItemMaterials();
 
-        if (plugin.getSpigotScheduler().isFolia()) {
-            java.util.concurrent.atomic.AtomicInteger count = new java.util.concurrent.atomic.AtomicInteger(0);
-            java.util.concurrent.atomic.AtomicInteger pending = new java.util.concurrent.atomic.AtomicInteger(0);
-
-            for (World world : Bukkit.getWorlds()) {
-                if (excludedWorlds.contains(world.getName())) continue;
-                for (Entity entity : world.getEntities()) {
-                    if (entity instanceof Player) continue;
-                    pending.incrementAndGet();
-                    plugin.getSpigotScheduler().runEntity(entity, () -> {
-                        try {
-                            if (!entity.isValid()) return;
-
-                            if (checkNamed && entity.getCustomName() != null) return;
-                            if (checkTamed && entity instanceof Tameable tameable && tameable.isTamed()) return;
-
-                            boolean typeExcluded = false;
-                            String typeName = entity.getType().name();
-                            for (String t : excludedTypes) {
-                                if (typeName.equalsIgnoreCase(t)) {
-                                    typeExcluded = true;
-                                    break;
-                                }
-                            }
-                            if (typeExcluded) return;
-
-                            boolean remove = false;
-                            if (entity instanceof Item item) {
-                                if (clearDroppedItems()) {
-                                    String materialName = item.getItemStack().getType().name();
-                                    boolean materialExcluded = false;
-                                    for (String mat : excludedMaterials) {
-                                        if (materialName.equalsIgnoreCase(mat)) {
-                                            materialExcluded = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!materialExcluded) {
-                                        remove = true;
-                                    }
-                                }
-                            } else if (entity instanceof Animals) {
-                                if (clearAnimals()) {
-                                    remove = true;
-                                }
-                            } else if (entity instanceof Monster || entity instanceof Mob) {
-                                if (clearMonsters()) {
-                                    remove = true;
-                                }
-                            }
-
-                            if (remove) {
-                                entity.remove();
-                                count.incrementAndGet();
-                            }
-                        } finally {
-                            if (pending.decrementAndGet() == 0) {
-                                plugin.getSpigotScheduler().runGlobal(() -> broadcastSuccess(count.get()));
-                            }
-                        }
-                    });
-                }
-            }
-            if (pending.get() == 0) {
-                broadcastSuccess(0);
-            }
-            return 0;
-        }
-
         int count = 0;
         for (World world : Bukkit.getWorlds()) {
             if (excludedWorlds.contains(world.getName())) continue;
@@ -146,7 +77,7 @@ public class ClearLagManager {
                 if (checkNamed && entity.getCustomName() != null) continue;
 
                 // Check tamed exclusion
-                if (checkTamed && entity instanceof Tameable tameable && tameable.isTamed()) continue;
+                if (checkTamed && entity instanceof Tameable && ((Tameable) entity).isTamed()) continue;
 
                 // Check excluded entity type
                 boolean typeExcluded = false;
@@ -160,8 +91,9 @@ public class ClearLagManager {
                 if (typeExcluded) continue;
 
                 boolean remove = false;
-                if (entity instanceof Item item) {
+                if (entity instanceof Item) {
                     if (clearDroppedItems()) {
+                        Item item = (Item) entity;
                         String materialName = item.getItemStack().getType().name();
                         boolean materialExcluded = false;
                         for (String mat : excludedMaterials) {
@@ -178,7 +110,7 @@ public class ClearLagManager {
                     if (clearAnimals()) {
                         remove = true;
                     }
-                } else if (entity instanceof Monster || entity instanceof Mob) {
+                } else if (entity instanceof Monster) {
                     if (clearMonsters()) {
                         remove = true;
                     }
@@ -190,7 +122,6 @@ public class ClearLagManager {
                 }
             }
         }
-        broadcastSuccess(count);
         return count;
     }
 

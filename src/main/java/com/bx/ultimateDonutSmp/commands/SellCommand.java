@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.menus.SellAllConfirmMenu;
 import com.bx.ultimateDonutSmp.menus.SellHistoryMenu;
 import com.bx.ultimateDonutSmp.menus.SellMenu;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -29,7 +28,11 @@ public class SellCommand implements CommandExecutor {
                 if (total <= 0) player.sendMessage(ColorUtils.toComponent(
                         plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE")));
             }
-            case "sellall"     -> new SellAllConfirmMenu(plugin).open(player);
+            case "sellall"     -> {
+                double total = plugin.getShopManager().sellInventory(player, false);
+                if (total <= 0) player.sendMessage(ColorUtils.toComponent(
+                        plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE")));
+            }
             case "sellhistory" -> new SellHistoryMenu(plugin).open(player);
         }
         return true;

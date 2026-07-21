@@ -16,6 +16,8 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import java.util.UUID;
+
 public class ExplosionDamageListener implements Listener {
 
     private final UltimateDonutSmp plugin;
@@ -30,6 +32,10 @@ public class ExplosionDamageListener implements Listener {
             return;
         }
 
+        if (isSpecialSession(player)) {
+            return;
+        }
+
         DamageCause cause = event.getCause();
         if (cause != DamageCause.ENTITY_EXPLOSION && cause != DamageCause.BLOCK_EXPLOSION) {
             return;
@@ -40,10 +46,11 @@ public class ExplosionDamageListener implements Listener {
         if (event.getDamager() instanceof EnderCrystal) {
             boolean enabled = config.getBoolean("END-CRYSTAL.ENABLED", false);
             if (!enabled) {
-                return;
+                event.setCancelled(true);
+            } else {
+                double multiplier = config.getDouble("END-CRYSTAL.DAMAGE", 2.0D);
+                event.setDamage(event.getDamage() * multiplier);
             }
-            double multiplier = config.getDouble("END-CRYSTAL.DAMAGE", 2.0D);
-            event.setDamage(event.getDamage() * multiplier);
             return;
         }
 
@@ -87,6 +94,10 @@ public class ExplosionDamageListener implements Listener {
             return;
         }
 
+        if (isSpecialSession(player)) {
+            return;
+        }
+
         DamageCause cause = event.getCause();
         if (cause != DamageCause.BLOCK_EXPLOSION) {
             return;
@@ -97,10 +108,11 @@ public class ExplosionDamageListener implements Listener {
         if (isRespawnAnchorDamage(event)) {
             boolean enabled = config.getBoolean("RESPAWN-ANCHOR.ENABLED", false);
             if (!enabled) {
-                return;
+                event.setCancelled(true);
+            } else {
+                double multiplier = config.getDouble("RESPAWN-ANCHOR.DAMAGE", 2.0D);
+                event.setDamage(event.getDamage() * multiplier);
             }
-            double multiplier = config.getDouble("RESPAWN-ANCHOR.DAMAGE", 2.0D);
-            event.setDamage(event.getDamage() * multiplier);
             return;
         }
 
@@ -121,5 +133,16 @@ public class ExplosionDamageListener implements Listener {
         }
         BlockState state = event.getDamagerBlockState();
         return state != null && state.getType() == Material.RESPAWN_ANCHOR;
+    }
+
+    private boolean isSpecialSession(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (plugin.getDuelManager() != null && plugin.getDuelManager().isInDuel(uuid)) {
+            return true;
+        }
+        if (plugin.getFfaManager() != null && plugin.getFfaManager().isInSession(uuid)) {
+            return true;
+        }
+        return false;
     }
 }

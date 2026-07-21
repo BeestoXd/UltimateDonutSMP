@@ -109,39 +109,6 @@ public class WorthManager {
     private List<WorthBrowserEntry> browserEntriesCache = Collections.emptyList();
     private boolean browserEntriesLoaded;
 
-    private final java.util.Map<WorthCacheKey, DirectWorthData> directWorthCache = new java.util.concurrent.ConcurrentHashMap<>();
-    private final java.util.Map<String, Double> enchantmentWorthCache = new java.util.concurrent.ConcurrentHashMap<>();
-    private final java.util.Map<WorthCacheKey, java.util.Optional<SellCategory>> sellCategoryCache = new java.util.concurrent.ConcurrentHashMap<>();
-    private final java.util.Set<Material> blockedMaterialsCache = java.util.concurrent.ConcurrentHashMap.newKeySet();
-    private boolean blockedMaterialsLoaded = false;
-
-    private static final DirectWorthData NULL_DIRECT_WORTH = new DirectWorthData(-1.0, "", "", "");
-
-    private record WorthCacheKey(
-            Material material,
-            PotionType potionType,
-            java.util.Map<Enchantment, java.lang.Integer> enchantments
-    ) {
-        public static WorthCacheKey of(ItemStack item) {
-            if (item == null) {
-                return new WorthCacheKey(null, null, java.util.Collections.emptyMap());
-            }
-            PotionType potionType = null;
-            if (item.getItemMeta() instanceof PotionMeta meta) {
-                potionType = meta.getBasePotionType();
-            }
-            java.util.Map<Enchantment, java.lang.Integer> enchants = java.util.Collections.emptyMap();
-            if (item.getType() == Material.ENCHANTED_BOOK) {
-                if (item.getItemMeta() instanceof EnchantmentStorageMeta meta) {
-                    enchants = meta.getStoredEnchants();
-                }
-            } else {
-                enchants = item.getEnchantments();
-            }
-            return new WorthCacheKey(item.getType(), potionType, enchants);
-        }
-    }
-
     public WorthManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
         this.worthDisplayAppliedKey = new NamespacedKey(plugin, "worth_display_applied");
@@ -151,11 +118,6 @@ public class WorthManager {
     public void reload() {
         browserEntriesCache = Collections.emptyList();
         browserEntriesLoaded = false;
-        directWorthCache.clear();
-        enchantmentWorthCache.clear();
-        sellCategoryCache.clear();
-        blockedMaterialsCache.clear();
-        blockedMaterialsLoaded = false;
     }
 
     public double getWorth(Material material) {
@@ -193,18 +155,6 @@ public class WorthManager {
             return null;
         }
 
-        WorthCacheKey cacheKey = WorthCacheKey.of(item);
-        java.util.Optional<SellCategory> cached = sellCategoryCache.get(cacheKey);
-        if (cached != null) {
-            return cached.orElse(null);
-        }
-
-        SellCategory resolved = getSellCategoryNoCache(item);
-        sellCategoryCache.put(cacheKey, java.util.Optional.ofNullable(resolved));
-        return resolved;
-    }
-
-    private SellCategory getSellCategoryNoCache(ItemStack item) {
         Material material = item.getType();
         if (FISH_CATEGORY_OVERRIDES.contains(material)) {
             return SellCategory.FISH;
@@ -786,26 +736,23 @@ public class WorthManager {
             return false;
         }
 
-        if (!blockedMaterialsLoaded) {
-            blockedMaterialsCache.clear();
-            List<String> blockItems = plugin.getConfigManager().getWorth().getStringList("BLOCK-ITEMS");
-            if (blockItems != null) {
-                for (String rawMaterial : blockItems) {
-                    if (rawMaterial == null || rawMaterial.isBlank()) {
-                        continue;
-                    }
-                    try {
-                        Material blocked = matchMaterial(rawMaterial.trim());
-                        if (blocked != null) {
-                            blockedMaterialsCache.add(blocked);
-                        }
-                    } catch (IllegalArgumentException ignored) {}
-                }
+        for (String rawMaterial : plugin.getConfigManager().getWorth().getStringList("BLOCK-ITEMS")) {
+            if (rawMaterial == null || rawMaterial.isBlank()) {
+                continue;
             }
-            blockedMaterialsLoaded = true;
-        }
 
-        return blockedMaterialsCache.contains(material);
+            Material blockedMaterial;
+            try {
+                blockedMaterial = matchMaterial(rawMaterial.trim());
+            } catch (IllegalArgumentException exception) {
+                continue;
+            }
+
+            if (material == blockedMaterial) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isContainerWorthEnabled() {
@@ -832,123 +779,19 @@ public class WorthManager {
             return null;
         }
 
-        WorthCacheKey cacheKey = WorthCacheKey.of(item);
-        DirectWorthData cached = directWorthCache.get(cacheKey);
-        if (cached != null) {
-            return cached == NULL_DIRECT_WORTH ? null : cached;
-        }
-
-        DirectWorthData resolved = resolveDirectWorthNoCache(item);
-        directWorthCache.put(cacheKey, resolved == null ? NULL_DIRECT_WORTH : resolved);
-        return resolved;
-    }
-
-    private DirectWorthData resolveDirectWorthNoCache(ItemStack item) {
-        if (item == null || item.getType().isAir()) {
-            return null;
-        }
-        if (isBlockedItem(item)) {
-            return null;
-        }
-
         FileConfiguration worthConfig = plugin.getConfigManager().getWorth();
         ConfigurationSection typedValues = worthConfig.getConfigurationSection("TYPE");
-        DirectWorthData resolved = null;
         if (typedValues != null) {
             for (String categoryKey : typedValues.getKeys(false)) {
                 ConfigurationSection categorySection = typedValues.getConfigurationSection(categoryKey);
                 DirectWorthData typedWorth = findWorthRecursively(categorySection, item, categoryKey);
                 if (typedWorth != null) {
-                    resolved = typedWorth;
-                    break;
+                    return typedWorth;
                 }
             }
         }
 
-        if (resolved == null) {
-            resolved = findWorthRecursively(worthConfig, item, "");
-        }
-
-        return addEnchantmentWorthIfApplicable(item, resolved);
-    }
-
-    private DirectWorthData addEnchantmentWorthIfApplicable(ItemStack item, DirectWorthData baseData) {
-        if (baseData == null || item == null) {
-            return baseData;
-        }
-
-        if (item.getType() == Material.ENCHANTED_BOOK) {
-            return baseData;
-        }
-
-        java.util.Map<Enchantment, Integer> enchantments = item.getEnchantments();
-        if (enchantments.isEmpty()) {
-            return baseData;
-        }
-
-        double extraWorth = 0;
-        for (java.util.Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-            extraWorth += getEnchantmentWorth(entry.getKey(), entry.getValue());
-        }
-
-        if (extraWorth > 0) {
-            return new DirectWorthData(
-                    baseData.worth() + extraWorth,
-                    baseData.sourceKey(),
-                    baseData.categoryKey(),
-                    baseData.resolutionType() + "_ENCHANTED"
-            );
-        }
-
-        return baseData;
-    }
-
-    private double getEnchantmentWorth(Enchantment enchantment, int level) {
-        String enchantmentKey = enchantment.getKey().getKey()
-                .toUpperCase(Locale.US)
-                .replace('-', '_');
-        String lookupKey = "ENCHANTED_BOOK:" + enchantmentKey + ":" + level;
-
-        Double cached = enchantmentWorthCache.get(lookupKey);
-        if (cached != null) {
-            return cached;
-        }
-
-        double resolved = getEnchantmentWorthNoCache(lookupKey);
-        enchantmentWorthCache.put(lookupKey, resolved);
-        return resolved;
-    }
-
-    private double getEnchantmentWorthNoCache(String lookupKey) {
-        FileConfiguration worthConfig = plugin.getConfigManager().getWorth();
-        if (worthConfig == null) {
-            return 0;
-        }
-
-        double direct = worthConfig.getDouble("TYPE.BOOK." + lookupKey, -1);
-        if (direct >= 0) {
-            return direct;
-        }
-
-        return findEnchantmentWorthRecursively(worthConfig, lookupKey);
-    }
-
-    private double findEnchantmentWorthRecursively(ConfigurationSection section, String lookupKey) {
-        if (section == null) {
-            return 0;
-        }
-        if (section.contains(lookupKey) && !section.isConfigurationSection(lookupKey)) {
-            return section.getDouble(lookupKey, 0);
-        }
-        for (String key : section.getKeys(false)) {
-            if (section.isConfigurationSection(key)) {
-                double worth = findEnchantmentWorthRecursively(section.getConfigurationSection(key), lookupKey);
-                if (worth > 0) {
-                    return worth;
-                }
-            }
-        }
-        return 0;
+        return findWorthRecursively(worthConfig, item, "");
     }
 
     private DirectWorthData findWorthRecursively(ConfigurationSection section, ItemStack item, String categoryKey) {

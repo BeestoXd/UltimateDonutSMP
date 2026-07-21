@@ -47,52 +47,27 @@ public final class ExplosionParticleFilter {
             listener = new PacketAdapter(
                     plugin,
                     ListenerPriority.NORMAL,
-                    PacketType.Play.Server.WORLD_PARTICLES,
-                    PacketType.Play.Server.NAMED_SOUND_EFFECT
+                    PacketType.Play.Server.WORLD_PARTICLES
             ) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
                     Player viewer = event.getPlayer();
                     PlayerData data = ExplosionParticleFilter.this.plugin
                             .getPlayerDataManager().get(viewer);
-                    if (data == null) {
+                    if (data == null || data.isExplosionParticlesEnabled()) {
                         return;
                     }
-                    PacketType type = event.getPacketType();
-                    if (type == PacketType.Play.Server.WORLD_PARTICLES) {
-                        if (!data.isExplosionParticlesEnabled()) {
-                            WrappedParticle<?> wrapped = event.getPacket().getNewParticles().readSafely(0);
-                            Particle particle = wrapped == null ? null : wrapped.getParticle();
-                            if (particle == Particle.EXPLOSION || particle == Particle.EXPLOSION_EMITTER) {
-                                event.setCancelled(true);
-                            }
-                        }
-                    } else if (type == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-                        if (!data.isExplosionSoundsEnabled()) {
-                            String soundName = "";
-                            Object soundObj = event.getPacket().getSoundEffects().readSafely(0);
-                            if (soundObj instanceof org.bukkit.Sound sound) {
-                                soundName = sound.name();
-                            } else if (soundObj != null) {
-                                soundName = soundObj.toString();
-                            }
-                            if (soundName.isEmpty() || "null".equalsIgnoreCase(soundName)) {
-                                soundName = event.getPacket().getStrings().readSafely(0);
-                            }
-                            if (soundName != null) {
-                                String soundUpper = soundName.toUpperCase();
-                                if (soundUpper.contains("EXPLODE") || soundUpper.contains("EXPLOSION")) {
-                                    event.setCancelled(true);
-                                }
-                            }
-                        }
+                    WrappedParticle<?> wrapped = event.getPacket().getNewParticles().readSafely(0);
+                    Particle particle = wrapped == null ? null : wrapped.getParticle();
+                    if (particle == Particle.EXPLOSION || particle == Particle.EXPLOSION_EMITTER) {
+                        event.setCancelled(true);
                     }
                 }
             };
             protocolManager.addPacketListener(listener);
             available = true;
         } catch (Throwable error) {
-            plugin.getLogger().warning("Explosion particle/sound setting is unavailable: " + error.getMessage());
+            plugin.getLogger().warning("Explosion particle setting is unavailable: " + error.getMessage());
             shutdown();
         }
     }

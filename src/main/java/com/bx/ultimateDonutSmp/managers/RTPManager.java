@@ -593,20 +593,6 @@ public class RTPManager {
             return false;
         }
 
-        double reqHours = getWorldRequiredPlaytimeHours(worldName);
-        if (reqHours > 0.0) {
-            com.bx.ultimateDonutSmp.models.PlayerData data = plugin.getPlayerDataManager().get(player);
-            double playtimeHours = data != null ? data.getTotalPlaytimeSeconds() / 3600.0 : 0.0;
-            if (playtimeHours < reqHours) {
-                String message = plugin.getConfigManager().getRtp().getString("MESSAGES.PLAYTIME-REQUIRED", "&cʏᴏᴜ ɴᴇᴇᴅ ᴀᴛ ʟᴇᴀѕᴛ {required} ʜᴏᴜʀѕ ᴏꜰ ᴘʟᴀʏᴛɪᴍᴇ ᴛᴏ ʀᴛᴘ ᴛᴏ {world}. &7(ᴄᴜʀʀᴇɴᴛ: {current}ʜ)");
-                message = message.replace("{required}", String.format(Locale.ROOT, "%.1f", reqHours))
-                        .replace("{world}", describeWorld(worldName))
-                        .replace("{current}", String.format(Locale.ROOT, "%.1f", playtimeHours));
-                player.sendMessage(ColorUtils.toComponent(message));
-                return false;
-            }
-        }
-
         if (isConfiguredDestinationDisabled(worldName)) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
@@ -1489,14 +1475,6 @@ public class RTPManager {
 
     private boolean hasWorldSearchSettings(String worldName) {
         return getWorldSettingsSection(worldName) != null;
-    }
-
-    public double getWorldRequiredPlaytimeHours(String worldName) {
-        ConfigurationSection worldSettings = getWorldSettingsSection(worldName);
-        if (worldSettings == null) {
-            return 0.0;
-        }
-        return worldSettings.getDouble("REQUIRED-PLAYTIME-HOURS", 0.0);
     }
 
     private ConfigurationSection getWorldSettingsSection(String worldName) {

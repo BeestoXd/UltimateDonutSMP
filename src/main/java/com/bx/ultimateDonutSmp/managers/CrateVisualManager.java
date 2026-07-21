@@ -430,13 +430,7 @@ public class CrateVisualManager {
         }
 
         if (display == null) {
-            double baseY;
-            double configuredKeyLineOffset = plugin.getConfigManager().getCrates().getDouble("SETTINGS.HOLOGRAM.KEY-LINE-OFFSET-Y", -999.0D);
-            if (configuredKeyLineOffset != -999.0D) {
-                baseY = key.y() + configuredKeyLineOffset;
-            } else {
-                baseY = key.y() + getHologramOffsetY() - (getHologramLines(crate).size() * 0.27D);
-            }
+            double baseY = key.y() + getHologramOffsetY() - (getHologramLines(crate).size() * 0.27D);
             Location location = new Location(world, key.x() + 0.5, baseY, key.z() + 0.5);
             display = world.spawn(location, TextDisplay.class, textDisplay -> {
                 configureHologramDisplay(textDisplay);
@@ -463,7 +457,7 @@ public class CrateVisualManager {
 
         String text = getKeyLine(crate, plugin.getCrateManager().getKeyBalance(player, crate.id()));
         if (!text.equals(playerDisplayTexts.get(key))) {
-            display.setText(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(text, player));
+            display.setText(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(text));
             playerDisplayTexts.put(key, text);
         }
         if (shouldShowToOwner) {
@@ -920,8 +914,8 @@ public class CrateVisualManager {
         Location location = entity.getLocation();
         double deltaX = Math.abs(location.getX() - (key.x() + 0.5D));
         double deltaZ = Math.abs(location.getZ() - (key.z() + 0.5D));
-        double minY = key.y() - 1.5D;
-        double maxY = key.y() + getHologramOffsetY() + 1.0D;
+        double minY = key.y() + getHologramOffsetY() - 1.1D;
+        double maxY = key.y() + getHologramOffsetY() + 0.25D;
 
         return deltaX <= 0.2D
                 && deltaZ <= 0.2D

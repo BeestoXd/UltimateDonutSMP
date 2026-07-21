@@ -3,7 +3,6 @@ package com.bx.ultimateDonutSmp.listeners;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
-import com.bx.ultimateDonutSmp.models.TwoChoice;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,17 +32,6 @@ public class PlayerDeathListener implements Listener {
             plugin.getHideManager().clearNametag(victim.getUniqueId());
         }
 
-        PlayerData victimData = plugin.getPlayerDataManager().get(victim);
-        if (victimData != null && victimData.isDestroyPearlOnDeath()) {
-            for (org.bukkit.World world : org.bukkit.Bukkit.getWorlds()) {
-                for (org.bukkit.entity.EnderPearl pearl : world.getEntitiesByClass(org.bukkit.entity.EnderPearl.class)) {
-                    if (victim.equals(pearl.getShooter())) {
-                        pearl.remove();
-                    }
-                }
-            }
-        }
-
         if (plugin.getDuelManager() != null && plugin.getDuelManager().handleDuelDeath(event)) {
             return;
         }
@@ -56,6 +44,7 @@ public class PlayerDeathListener implements Listener {
             return;
         }
 
+        PlayerData victimData = plugin.getPlayerDataManager().get(victim);
         if (victimData != null) {
             victimData.addDeath();
             victimData.resetKillStreak();
@@ -86,34 +75,13 @@ public class PlayerDeathListener implements Listener {
             }
         }
 
-        event.setDeathMessage(null);
         if (plugin.getConfigManager().getDeathMessages()
                 .getBoolean("MESSAGES.ENABLED", true)) {
-            final String finalDeathMsg = deathMsg;
-            plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
-                if (shouldReceiveDeathMessage(p, victim)) {
-                    p.sendMessage(ColorUtils.toComponent(finalDeathMsg));
-                }
-            });
+            event.setDeathMessage(deathMsg);
         }
 
         plugin.getCombatManager().clearTag(victim.getUniqueId());
         plugin.getRtpZoneManager().clearState(victim);
-    }
-
-    private boolean shouldReceiveDeathMessage(Player receiver, Player victim) {
-        PlayerData receiverData = plugin.getPlayerDataManager().get(receiver);
-        if (receiverData == null) {
-            return true;
-        }
-        TwoChoice choice = receiverData.getDeathMessagesChoice();
-        if (choice == TwoChoice.OFF) {
-            return false;
-        }
-        if (choice == TwoChoice.FRIENDS_FOLLOWED) {
-            return plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(receiver.getUniqueId(), victim.getUniqueId());
-        }
-        return true;
     }
 
     private String buildDeathMessage(PlayerDeathEvent event, Player victim, Player killer) {

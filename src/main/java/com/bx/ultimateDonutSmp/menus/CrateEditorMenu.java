@@ -144,25 +144,13 @@ public class CrateEditorMenu extends BaseMenu {
     }
 
     private ItemStack createEditorItem(CrateManager.CrateReward reward) {
-        ItemStack item = null;
-        if (reward.grant().serializedItemData() != null && !reward.grant().serializedItemData().isBlank()) {
-            try {
-                item = com.bx.ultimateDonutSmp.utils.ItemSerializationUtils.deserialize(reward.grant().serializedItemData());
-            } catch (Exception ignored) {
-            }
-        }
-        if (item == null) {
-            item = ItemUtils.createItem(
-                    reward.grant().item().material(),
-                    reward.grant().item().displayName(),
-                    reward.grant().item().lore()
-            );
-            item.setAmount(Math.max(1, Math.min(reward.grant().item().amount(), item.getMaxStackSize())));
-            ItemUtils.addEnchantments(item, reward.grant().item().enchantments());
-        } else {
-            item = item.clone();
-            item.setAmount(Math.max(1, Math.min(reward.grant().item().amount(), item.getMaxStackSize())));
-        }
+        ItemStack item = ItemUtils.createItem(
+                reward.grant().item().material(),
+                reward.grant().item().displayName(),
+                reward.grant().item().lore()
+        );
+        item.setAmount(Math.max(1, Math.min(reward.grant().item().amount(), item.getMaxStackSize())));
+        ItemUtils.addEnchantments(item, reward.grant().item().enchantments());
         return item;
     }
 

@@ -151,16 +151,6 @@ public class SettingsMenu extends BaseMenu {
             }
             case "DISABLE_PHANTOM_SPAWN" -> {
                 data.setPhantomEnabled(!data.isPhantomEnabled());
-                if (!data.isPhantomEnabled()) {
-                    long limitSeconds = plugin.getConfigManager().getConfig().getLong("SETTINGS.DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS", -1L);
-                    if (limitSeconds > 0) {
-                        data.setPhantomDisabledUntil(System.currentTimeMillis() + (limitSeconds * 1000L));
-                    } else {
-                        data.setPhantomDisabledUntil(0L);
-                    }
-                } else {
-                    data.setPhantomDisabledUntil(0L);
-                }
                 String msg = data.isPhantomEnabled()
                         ? plugin.getConfigManager().getMessage("PHANTOM.DISABLED")
                         : plugin.getConfigManager().getMessage("PHANTOM.ENABLED");
@@ -170,14 +160,6 @@ public class SettingsMenu extends BaseMenu {
                 data.setMobSpawnEnabled(!data.isMobSpawnEnabled());
                 if (!data.isMobSpawnEnabled()) {
                     clearNearbyHostileMobs(player);
-                    long limitSeconds = plugin.getConfigManager().getConfig().getLong("SETTINGS.DISABLE-MOB-SPAWN-LIMIT-SECONDS", -1L);
-                    if (limitSeconds > 0) {
-                        data.setMobSpawnDisabledUntil(System.currentTimeMillis() + (limitSeconds * 1000L));
-                    } else {
-                        data.setMobSpawnDisabledUntil(0L);
-                    }
-                } else {
-                    data.setMobSpawnDisabledUntil(0L);
                 }
                 sendToggleMessage(player, "ɴᴇᴀʀʙʏ ʜᴏѕᴛɪʟᴇ ᴍᴏʙ ѕᴘᴀᴡɴѕ", data.isMobSpawnEnabled());
             }
@@ -290,26 +272,8 @@ public class SettingsMenu extends BaseMenu {
             case "LUNAR_TEAMMATES" -> new ButtonState(formatStatus(data.isLunarTeammatesEnabled()), true);
             case "TEAM_INVITES" -> new ButtonState(formatStatus(data.isTeamInvitesEnabled()), true);
             case "PAYMENTS" -> new ButtonState(formatStatus(data.isPaymentsEnabled()), true);
-            case "DISABLE_MOB_SPAWN" -> {
-                boolean disabled = !data.isMobSpawnEnabled();
-                if (disabled && data.getMobSpawnDisabledUntil() > 0) {
-                    long remainingSecs = (data.getMobSpawnDisabledUntil() - System.currentTimeMillis()) / 1000L;
-                    if (remainingSecs > 0) {
-                        yield new ButtonState("&aᴇɴᴀʙʟᴇᴅ &7(" + com.bx.ultimateDonutSmp.utils.NumberUtils.formatTime(remainingSecs) + " left)", true);
-                    }
-                }
-                yield new ButtonState(formatStatus(disabled), true);
-            }
-            case "DISABLE_PHANTOM_SPAWN" -> {
-                boolean disabled = !data.isPhantomEnabled();
-                if (disabled && data.getPhantomDisabledUntil() > 0) {
-                    long remainingSecs = (data.getPhantomDisabledUntil() - System.currentTimeMillis()) / 1000L;
-                    if (remainingSecs > 0) {
-                        yield new ButtonState("&aᴇɴᴀʙʟᴇᴅ &7(" + com.bx.ultimateDonutSmp.utils.NumberUtils.formatTime(remainingSecs) + " left)", true);
-                    }
-                }
-                yield new ButtonState(formatStatus(disabled), true);
-            }
+            case "DISABLE_MOB_SPAWN" -> new ButtonState(formatStatus(!data.isMobSpawnEnabled()), true);
+            case "DISABLE_PHANTOM_SPAWN" -> new ButtonState(formatStatus(!data.isPhantomEnabled()), true);
             case "PAY_CONFIRM_MENUS" -> new ButtonState(formatStatus(data.isPayConfirmMenuEnabled()), true);
             case "TOTEM_PARTICLES" -> new ButtonState(formatStatus(data.isTotemParticlesEnabled()), true);
             case "FAST_CRYSTALS" -> new ButtonState(formatStatus(data.isFastCrystalsEnabled()), true);

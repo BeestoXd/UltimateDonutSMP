@@ -1,465 +1,476 @@
 name: UltimateDonutSmp
-version: ${project.version}
+version: '${project.version}'
 main: com.bx.ultimateDonutSmp.UltimateDonutSmp
-api-version: "1.21"
+api-version: '${minecraft.api.version}'
 folia-supported: true
 softdepend:
-- NickPlus
-- PlaceholderAPI
-- LuckPerms
-- Vault
-- ProtocolLib
-- Apollo
-- Multiverse-Core
-- floodgate
-loadbefore:
-- EconomyShopGUI
-- EconomyShopGUI-Premium
-- UltraCosmetics
-- DeluxeMenus
+  - NickPlus
+  - PlaceholderAPI
+  - LuckPerms
+  - Vault
+  - ProtocolLib
+  - Apollo
+  - SkinsRestorer
+  - Multiverse-Core
+  - floodgate
+
 commands:
   team:
-    description: Team management
+    description: team management
     usage: /team <create|disband|invite|kick|join|leave|home|sethome|delhome|chat|info|pvp>
   chat:
-    description: Manage global chat settings
+    description: manage global chat settings
     usage: /chat <help|mute|unmute|delay|clear>
   ignore:
-    description: Add or remove a player from your ignore list
+    description: add or remove a player from your ignore list
     usage: /ignore <player|list>
     permission: ultimatedonutsmp.ignore
   unignore:
-    description: Remove a player from your ignore list
+    description: remove a player from your ignore list
     usage: /unignore <player>
     permission: ultimatedonutsmp.ignore
   msg:
-    description: Send a private message
+    description: send a private message
     usage: /msg <player> <message>
-    aliases:
-    - message
-    - tell
-    - whisper
-    - w
+    aliases: [message, tell, whisper, w]
     permission: ultimatedonutsmp.message
   reply:
-    description: Reply to your last private conversation
+    description: reply to your last private conversation
     usage: /reply <message>
-    aliases:
-    - r
+    aliases: [r]
     permission: ultimatedonutsmp.message
   pm:
-    description: Toggle private messages
+    description: toggle private messages
     usage: /pm
-    aliases:
-    - togglepm
-    - privatemessages
+    aliases: [togglepm, privatemessages]
     permission: ultimatedonutsmp.message.toggle
+  friends:
+    description: manage your friends, follows, and settings
+    usage: /friends [list|follow|remove|search|following|followers|friends]
+    aliases: [friend]
+    permission: ultimatedonutsmp.friends
   home:
-    description: Teleport to your home
+    description: teleport to your home
     usage: /home [name]
   homes:
-    description: List your homes
+    description: list your homes
     usage: /homes
   sethome:
-    description: Set your home
+    description: set your home
     usage: /sethome [name]
   delhome:
-    description: Delete a home
+    description: delete a home
     usage: /delhome <name>
   renamehome:
-    description: Rename a home
+    description: rename a home
     usage: /renamehome <old> <new>
   spawn:
-    description: Teleport to spawn
+    description: teleport to spawn
     usage: /spawn
   afk:
-    description: Go to AFK zone
+    description: go to AFK zone
     usage: /afk
   rtp:
-    description: Random teleport
+    description: random teleport
     usage: /rtp [world]
   shop:
-    description: Open the shop
+    description: open the shop
     usage: /shop [reload]
+  shardshop:
+    description: Open the shard currency shop directly
+    usage: /shardshop
+    permission: ultimatedonutsmp.shardshop
   orders:
-    description: Open the Orders board
-    usage: /orders [my|collect|reload]
+    description: open the orders board
+    usage: /orders [my|collect|reload|search query]
+    aliases: [order]
   duel:
-    description: Challenge or manage duels
+    description: challenge or manage duels
     usage: /duel [player|accept|deny|claims|reload]
+  create:
+    description: Create a private duel invite
+    usage: /create <invite|friends> <player> [map]
   queue:
-    description: Open or join the duel queue
-    usage: /queue [join|leave]
+    description: open or join the duel queue
+    usage: /queue [join|leave] [map]
   leave:
-    description: Leave a duel or FFA queue/match
+    description: leave a duel or FFA queue/match
     usage: /leave
   draw:
-    description: Request or accept a duel draw
+    description: request or accept a duel draw
     usage: /draw
   arena:
-    description: Manage duel arenas
+    description: manage duel arenas
     usage: /arena <create|delete|setpos1|setpos2|setreturn|setdisplay|enable|disable|queue|list|reload>
-    aliases:
-    - duelarena
+    aliases: [duelarena]
   ffa:
-    description: Join the instanced FFA queue
+    description: join the instanced FFA queue
     usage: /ffa [join|reload|arena ...]
   ffastats:
-    description: View FFA stats
+    description: view FFA stats
     usage: /ffastats [player]
   ffaarena:
-    description: Manage FFA arenas
+    description: manage FFA arenas
     usage: /ffaarena <create|delete|setpos|setdisplay|settings|enable|disable|list|reload>
   auctionhouse:
-    description: Open the Auction House
-    usage: /auctionhouse [sell|my|claims|cancel|reload]
-    aliases:
-    - ah
+    description: open the auction house
+    usage: /auctionhouse [sell|my|claims|cancel|limit|fastbuy|fastsell|reload]
+    aliases: [ah]
   enderchest:
-    description: Open your custom Ender Chest
+    description: open your custom ender chest
     usage: /enderchest [reload]
-    aliases:
-    - ec
+    aliases: [ec]
+  ecsee:
+    description: Inspect a player's custom Ender Chest
+    usage: /ecsee <player>
   sell:
-    description: Open sell menu
+    description: open sell menu
     usage: /sell
   sellhand:
-    description: Sell item in hand
+    description: sell item in hand
     usage: /sellhand [amount]
   sellall:
-    description: Sell all sellable items
+    description: sell all sellable items
     usage: /sellall
   sellhistory:
-    description: View sell history
+    description: view sell history
     usage: /sellhistory
   worth:
-    description: Open the worth browser or check held item worth
+    description: open the worth browser or check held item worth
     usage: /worth [hand|reload]
-    aliases:
-    - prices
+    aliases: [prices]
   balance:
-    description: Check balance
+    description: check balance
     usage: /balance [player]
-    aliases:
-    - bal
-    - money
+    aliases: [bal, money]
   pay:
-    description: Pay a player
+    description: pay a player
     usage: /pay <player> <amount>
   addmoney:
-    description: Add money to a player
+    description: add money to a player
     usage: /addmoney <player> <amount>
     permission: ultimatedonutsmp.admin.addmoney
   removemoney:
-    description: Remove money from a player
+    description: remove money from a player
     usage: /removemoney <player> <amount>
     permission: ultimatedonutsmp.admin.removemoney
   setmoney:
-    description: Set a player'S money balance
+    description: set a player's money balance
     usage: /setmoney <player> <amount>
     permission: ultimatedonutsmp.admin.setmoney
   shards:
-    description: Check shards
+    description: check shards
     usage: /shards [player] | /shards everywhere <status|debug> [player]
   shardpay:
-    description: Pay shards to a player
+    description: pay shards to a player
     usage: /shardpay <player> <amount>
+  addshards:
+    description: add shards to a player
+    usage: /addshards <player> <amount>
+    permission: ultimatedonutsmp.admin.shards
+  removeshards:
+    description: remove shards from a player
+    usage: /removeshards <player> <amount>
+    permission: ultimatedonutsmp.admin.shards
+  setshards:
+    description: set a player's shard balance
+    usage: /setshards <player> <amount>
+    permission: ultimatedonutsmp.admin.shards
   crate:
-    description: Manage crates
+    description: manage crates
     usage: /crate <create|delete|type|open|keys|reload|key|take|set|keyall|add|edit|remove|bind|unbind|info>
   crates:
-    description: Open the crates menu
+    description: open the crates menu
     usage: /crates
   keys:
-    description: Open your crate keys menu
+    description: open your crate keys menu
     usage: /keys
   stats:
-    description: View player stats
+    description: view player stats
     usage: /stats [player]
   ping:
-    description: Check your ping or another online player's ping
+    description: check your ping or another online player's ping
     usage: /ping [player]
   playtime:
-    description: Check your playtime or another player'S playtime
+    description: check your playtime or another player's playtime
     usage: /playtime [player]
-    aliases:
-    - pt
+    aliases: [pt]
   freeze:
-    description: Freeze or unfreeze a player for moderation
+    description: freeze or unfreeze a player for moderation
     usage: /freeze <player> | /freeze reload
+  logs:
+    description: view logs for a player
+    usage: /logs <player>
+    permission: ultimatedonutsmp.admin.logs
   fly:
-    description: Toggle flight mode for yourself or another player
+    description: toggle flight mode for yourself or another player
     usage: /fly [player]
   heal:
-    description: Restore health for yourself or another player
+    description: restore health for yourself or another player
     usage: /heal [player]
   feed:
-    description: Restore hunger for yourself or another player
+    description: restore hunger for yourself or another player
     usage: /feed [player]
+  god:
+    description: toggle god mode for yourself or another online player
+    usage: /god [player]
+    aliases: [godmode]
   gamemode:
-    description: Change your gamemode or another online player's gamemode
+    description: change your gamemode or another online player's gamemode
     usage: /gamemode <mode> [player]
-    aliases:
-    - gm
-    - gmc
-    - gms
-    - gma
-    - gmsp
+    aliases: [gm, gmc, gms, gma, gmsp]
   staffmode:
-    description: Toggle the staff moderation hotbar
+    description: toggle the staff moderation hotbar
     usage: /staffmode [player|reload]
-    aliases:
-    - staff
+    aliases: [staff]
   stafflist:
-    description: Open the online staff list
+    description: open the online staff list
     usage: /stafflist
   staffchat:
-    description: Send a message to staff chat
+    description: send a message to staff chat
     usage: /staffchat <message>
-    aliases:
-    - sc
+    aliases: [sc]
   helpop:
-    description: Request staff assistance
+    description: request staff assistance
     usage: /helpop <message>
     permission: ultimatedonutsmp.helpop
   report:
-    description: Report a player to online staff
+    description: report a player to online staff
     usage: /report <player> <reason>
     permission: ultimatedonutsmp.report
   rename:
-    description: Rename the item in your hand
+    description: rename the item in your hand
     usage: /rename <name...|reset>
+  safety:
+    description: safety info
+    usage: /safety [reload|add [player]]
+  amod:
+    description: Anvil Moderation admin command
+    usage: /amod <add|reload>
+    permission: anvilmod.admin
   randomteleport:
-    description: Teleport to a random online player
+    description: teleport to a random online player
     usage: /randomteleport
-    aliases:
-    - randomtp
+    aliases: [randomtp]
   teleport:
-    description: Staff teleport command suite
+    description: staff teleport command suite
     usage: /teleport <player|here <player>|all|top|x y z [world]>
-    aliases:
-    - tp
-    - tphere
-    - tpall
+    aliases: [tp, tphere, tpall]
   alts:
-    description: View alternate accounts by shared IP history
+    description: view alternate accounts by shared ip history
     usage: /alts <player>
   vanish:
-    description: Toggle vanish while in staff mode
+    description: toggle vanish while in staff mode
     usage: /vanish
   invsee:
-    description: View another player'S inventory
+    description: view another player's inventory
     usage: /invsee <player> | /invsee reload
-    aliases:
-    - inventorysee
+    aliases: [inventorysee]
   profileviewer:
-    description: View a player's profile and homes
+    description: view a player's profile and homes
     usage: /profileviewer <player>
-    aliases:
-    - pv
+    aliases: [pv]
   punishments:
-    description: View a player'S punishment history
+    description: view a player's punishment history
     usage: /punishments <player>
-    aliases:
-    - phistory
+    aliases: [phistory]
   ban:
-    description: Ban a player and record punishment history
+    description: ban a player and record punishment history
     usage: /ban <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.ban
   tempban:
-    description: Temporarily ban a player and record punishment history
-    usage: '/tempban <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m 30s)'
-    Permission: ultimatedonutsmp.staff.punishments.ban
+    description: temporarily ban a player and record punishment history
+    usage: "/tempban <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m 30s)"
+    permission: ultimatedonutsmp.staff.punishments.ban
   mute:
-    description: Mute a player and record punishment history
+    description: mute a player and record punishment history
     usage: /mute <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.mute
   tempmute:
-    description: Temporarily mute a player and record punishment history
-    usage: '/tempmute <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m
-      30s)'
-    Permission: ultimatedonutsmp.staff.punishments.mute
+    description: temporarily mute a player and record punishment history
+    usage: "/tempmute <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m 30s)"
+    permission: ultimatedonutsmp.staff.punishments.mute
   warn:
-    description: Warn a player and record punishment history
+    description: warn a player and record punishment history
     usage: /warn <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.create
   kick:
-    description: Kick a player and record punishment history
+    description: kick a player and record punishment history
     usage: /kick <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.create
   blacklist:
-    description: Blacklist a player and record punishment history
+    description: blacklist a player and record punishment history
     usage: /blacklist <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.blacklist
   unban:
-    description: Remove active ban records for a player
+    description: remove active ban records for a player
     usage: /unban <player> [reason]
-    aliases:
-    - pardon
+    aliases: [pardon]
     permission: ultimatedonutsmp.staff.punishments.unban
   unmute:
-    description: Remove active mute records for a player
+    description: remove active mute records for a player
     usage: /unmute <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.unmute
   unblacklist:
-    description: Remove active blacklist records for a player
+    description: remove active blacklist records for a player
     usage: /unblacklist <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.unblacklist
   bounty:
-    description: Manage bounties
+    description: manage bounties
     usage: /bounty <add|set|info|list> [player] [amount]
   tpa:
-    description: Request teleport to player
+    description: request teleport to player
     usage: /tpa <player>
   tpahere:
-    description: Request player to teleport to you
+    description: request player to teleport to you
     usage: /tpahere <player>
   tpaccept:
-    description: Accept a TPA request
+    description: accept a tpa request
     usage: /tpaccept [player]
   tpadeny:
-    description: Deny a TPA request
+    description: deny a tpa request
     usage: /tpadeny [player]
   tpacancel:
-    description: Cancel your TPA requests
+    description: cancel your tpa requests
     usage: /tpacancel
   tpauto:
-    description: Toggle TPA auto-accept
+    description: toggle tpa auto-accept
     usage: /tpauto
   tpahereauto:
-    description: Toggle TPA Here auto-accept
+    description: toggle tpa here auto-accept
     usage: /tpahereauto
   leaderboard:
-    description: View leaderboards
+    description: view leaderboards
     usage: /leaderboard [type]
-    aliases:
-    - lb
-    - top
-    - leaderboards
+    aliases: [lb, top, leaderboards, baltop]
   warp:
-    description: Teleport to a warp
+    description: teleport to a warp
     usage: /warp [name]
   warpmanager:
-    description: Manage warp points
+    description: manage warp points
     usage: /warpmanager <create|delete|list> [name]
   portalmanager:
-    description: Manage RTP portal triggers
+    description: manage rtp portal triggers
     usage: /portalmanager <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>
   nightvision:
-    description: Toggle night vision
+    description: toggle night vision
     usage: /nightvision
-    aliases:
-    - nv
+    aliases: [nv]
   phantom:
-    description: Toggle phantom spawning
+    description: toggle phantom spawning
     usage: /phantom
   findplayer:
-    description: Find a player location
+    description: find a player location
     usage: /findplayer <player>
-    aliases:
-    - fp
+    aliases: [fp]
   settings:
-    description: Open player settings
+    description: open player settings
     usage: /settings
   discord:
-    description: Get Discord link
+    description: get discord link
     usage: /discord
   twitter:
-    description: Get Twitter/X link
+    description: get twitter/x link
     usage: /twitter
   store:
-    description: Get store link
+    description: get store link
     usage: /store
   social:
-    description: Get social links
+    description: get social links
     usage: /social
-    aliases:
-    - media
+    aliases: [media]
   rules:
-    description: View server rules
+    description: view server rules
     usage: /rules
   help:
-    description: View help
+    description: view help
     usage: /help
   servers:
-    description: View network server status
+    description: view network server status
     usage: /servers
     permission: ultimatedonutsmp.servers
   billford:
-    description: Open Billford trade
+    description: open billford trade
     usage: /billford
   spawner:
-    description: Manage Donut-style spawners
+    description: manage donut-style spawners
     usage: /spawner [give|info|panel|reload|remove]
-    aliases:
-    - spawners
+    aliases: [spawners]
+  spawnstash:
+    description: Spawn temporary staff bait stashes
+    usage: /spawnstash [type|spawn|list|remove|reload]
+    aliases: [stash]
+    permission: ultimatedonutsmp.staff.spawnstash
+  fakeplayer:
+    description: Spawn a temporary fake player bait NPC
+    usage: /fakeplayer
+    aliases: [fplayer]
+    permission: ultimatedonutsmp.staff.fakeplayer
+  hide:
+    description: Scramble, inspect, or remove hidden player identities
+    usage: /hide [status|scramble|remove|check <player>|list]
+  disguise:
+    description: Disguise using a configured skin, Minecraft username, or skin URL
+    usage: /disguise [player-name|url] or /disguise <alias> <player-name|url>
   clearlag:
-    description: Manually clear lag entities
+    description: manually clear lag entities
     usage: /clearlag
     permission: ultimatedonutsmp.admin.clearlag
   cuboid:
-    description: Manage cuboid regions
+    description: manage cuboid regions
     usage: /cuboid <wand|create|delete|list|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>
     permission: ultimatedonutsmp.admin.cuboid
   setwarp:
-    description: Set a warp point
+    description: set a warp point
     usage: /setwarp <name>
   delwarp:
-    description: Delete a warp point
+    description: delete a warp point
     usage: /delwarp <name>
   amethysttool:
-    description: Manage amethyst tools
+    description: manage amethyst tools
     usage: /amethysttool give <player> <type> [duration] | /amethysttool reload
     permission: ultimatedonutsmp.admin.amethysttool
   ultimatedonutsmp:
-    description: UltimateDonutSmp admin command
+    description: ultimatedonutsmp admin command
     usage: /ultimatedonutsmp <reload|statswipe|optimize>
-    aliases:
-    - uds
-    - udsmp
-  ecsee:
-    description: ecsee
-    usage: /ecsee <player>
-    permission: ultimatedonutsmp.ecsee
-  logs:
-    description: Command logs
-  addshards:
-    description: Command addshards
-  removeshards:
-    description: Command removeshards
-  setshards:
-    description: Command setshards
-  shardshop:
-    description: Command shardshop
-  create:
-    description: Command create
-  kill:
-    description: Command kill
-  safety:
-    description: Command safety
-  friends:
-    description: Command friends
-  friend:
-    description: Command friend
-  spawnstash:
-    description: Command spawnstash
-  fakeplayer:
-    description: Command fakeplayer
-  hide:
-    description: Command hide
-  disguise:
-    description: Command disguise
-  maintenance:
-    description: Command maintenance
+    aliases: [uds, udsmp]
   serverwipe:
-    description: Command serverwipe
-  amod:
-    description: Command amod
+    description: Preview and execute a guarded season reset
+    usage: /serverwipe <preview|prepare|confirm|cancel|status>
+    permission: ultimatedonutsmp.admin.serverwipe
+  maintenance:
+    description: toggle maintenance mode
+    usage: /maintenance <on|off|status|setlobby [server]>
+    permission: ultimatedonutsmp.admin.maintenance
+  kill:
+    description: show a confirmation gui to kill yourself
+    usage: /kill
+    aliases: [suicide]
+
 permissions:
+  ultimatedonutsmp.shardshop:
+    description: Open the shard shop directly
+    default: true
+  ultimatedonutsmp.hide.scramble:
+    description: Use the Hide scramble mode
+    default: op
+  ultimatedonutsmp.hide.disguise:
+    description: Use configured Hide disguises
+    default: op
+  ultimatedonutsmp.hide.admin:
+    description: Inspect and remove Hide states
+    default: op
+  ultimatedonutsmp.hide.bypass:
+    description: See real identities of hidden players
+    default: op
+  anvilmod.admin:
+    description: Bypass anvil moderation and use admin command
+    default: op
   ultimatedonutsmp.admin:
-    description: Full admin access
+    description: full admin access
     default: op
     children:
+      anvilmod.admin: true
       ultimatedonutsmp.admin.shop: true
       ultimatedonutsmp.admin.orders: true
       ultimatedonutsmp.admin.duels: true
@@ -477,18 +488,24 @@ permissions:
       ultimatedonutsmp.admin.amethysttool: true
       ultimatedonutsmp.admin.worth: true
       ultimatedonutsmp.admin.enderchest: true
+      ultimatedonutsmp.admin.ecsee: true
+      ultimatedonutsmp.hide.admin: true
+      ultimatedonutsmp.hide.bypass: true
       ultimatedonutsmp.admin.freeze: true
       ultimatedonutsmp.admin.staffmode: true
       ultimatedonutsmp.admin.invsee: true
       ultimatedonutsmp.admin.spawner: true
       ultimatedonutsmp.admin.spawner.seeall: true
+      ultimatedonutsmp.admin.spawnstash: true
       ultimatedonutsmp.admin.crate: true
       ultimatedonutsmp.admin.crate.reload: true
       ultimatedonutsmp.admin.crate.keyall: true
       ultimatedonutsmp.admin.reload: true
       ultimatedonutsmp.admin.statswipe: true
+      ultimatedonutsmp.admin.serverwipe: true
       ultimatedonutsmp.admin.optimize: true
       ultimatedonutsmp.admin.shards: true
+      ultimatedonutsmp.friends: true
       ultimatedonutsmp.ignore: true
       ultimatedonutsmp.ignore.bypass: true
       ultimatedonutsmp.message: true
@@ -500,6 +517,7 @@ permissions:
       ultimatedonutsmp.staff.fly: true
       ultimatedonutsmp.staff.heal: true
       ultimatedonutsmp.staff.feed: true
+      ultimatedonutsmp.staff.god: true
       ultimatedonutsmp.staff.gamemode: true
       ultimatedonutsmp.staff.gamemode.others: true
       ultimatedonutsmp.staff.mode: true
@@ -509,6 +527,12 @@ permissions:
       ultimatedonutsmp.staff.mode.randomtp: true
       ultimatedonutsmp.staff.mode.seevanished: true
       ultimatedonutsmp.staff.mode.others: true
+      ultimatedonutsmp.staff.spawnstash: true
+      ultimatedonutsmp.staff.spawnstash.alert: true
+      ultimatedonutsmp.staff.spawnstash.bypass: true
+      ultimatedonutsmp.staff.fakeplayer: true
+      ultimatedonutsmp.staff.fakeplayer.alert: true
+      ultimatedonutsmp.staff.fakeplayer.bypass: true
       ultimatedonutsmp.staff.chat.use: true
       ultimatedonutsmp.staff.chat.mute: true
       ultimatedonutsmp.staff.chat.unmute: true
@@ -530,123 +554,213 @@ permissions:
       ultimatedonutsmp.staff.punishments.delete: true
       ultimatedonutsmp.servers: true
       ultimatedonutsmp.shards.everywhere: true
-      ultimatedonutsmp.admin.ecsee: true
   ultimatedonutsmp.servers:
-    description: Access the network servers status menu
+    description: access the network servers status menu
     default: false
   ultimatedonutsmp.admin.clearlag:
-    description: Manually clear lag
+    description: manually clear lag
     default: op
   ultimatedonutsmp.admin.duels:
-    description: Manage duel system and arenas
+    description: manage duel system and arenas
     default: op
   ultimatedonutsmp.admin.ffa:
-    description: Manage FFA system and arenas
+    description: manage FFA system and arenas
     default: op
   ultimatedonutsmp.admin.cuboid:
-    description: Manage cuboid regions
+    description: manage cuboid regions
     default: op
   ultimatedonutsmp.admin.warpmanager:
-    description: Manage public warp points
+    description: manage public warp points
     default: op
   ultimatedonutsmp.admin.portalmanager:
-    description: Manage RTP portal triggers
+    description: manage rtp portal triggers
     default: op
   ultimatedonutsmp.admin.setwarp:
-    description: Set warp points
+    description: set warp points
     default: op
   ultimatedonutsmp.admin.delwarp:
-    description: Delete warp points
+    description: delete warp points
     default: op
   ultimatedonutsmp.admin.addmoney:
-    description: Add money to player balances
+    description: add money to player balances
     default: op
   ultimatedonutsmp.admin.removemoney:
-    description: Remove money from player balances
+    description: remove money from player balances
     default: op
   ultimatedonutsmp.admin.setmoney:
-    description: Set player balances
+    description: set player balances
     default: op
   ultimatedonutsmp.admin.shop:
-    description: Reload and validate shop settings
+    description: reload and validate shop settings
     default: op
   ultimatedonutsmp.admin.orders:
-    description: Reload and manage Orders settings
+    description: reload and manage orders settings
     default: op
   ultimatedonutsmp.admin.auctionhouse:
-    description: Reload Auction House settings
+    description: reload auction house settings
     default: op
+    children:
+      ultimatedonutsmp.auctionhouse.use: true
+      ultimatedonutsmp.auctionhouse.buy: true
+      ultimatedonutsmp.auctionhouse.sell: true
+      ultimatedonutsmp.auctionhouse.my: true
+      ultimatedonutsmp.auctionhouse.claims: true
+      ultimatedonutsmp.auctionhouse.cancel: true
+      ultimatedonutsmp.auctionhouse.limit: true
+      ultimatedonutsmp.auctionhouse.fastbuy: true
+      ultimatedonutsmp.auctionhouse.fastsell: true
+  ultimatedonutsmp.auctionhouse:
+    description: Default Auction House player access
+    default: true
+    children:
+      ultimatedonutsmp.auctionhouse.use: true
+      ultimatedonutsmp.auctionhouse.buy: true
+      ultimatedonutsmp.auctionhouse.sell: true
+      ultimatedonutsmp.auctionhouse.my: true
+      ultimatedonutsmp.auctionhouse.claims: true
+      ultimatedonutsmp.auctionhouse.cancel: true
+      ultimatedonutsmp.auctionhouse.limit: true
+  ultimatedonutsmp.auctionhouse.use:
+    description: Open the Auction House
+    default: false
+  ultimatedonutsmp.auctionhouse.buy:
+    description: Buy Auction House listings
+    default: false
+  ultimatedonutsmp.auctionhouse.sell:
+    description: Create Auction House listings
+    default: false
+  ultimatedonutsmp.auctionhouse.my:
+    description: View Auction House history and pending claims
+    default: false
+  ultimatedonutsmp.auctionhouse.claims:
+    description: Manually collect Auction House claims
+    default: false
+  ultimatedonutsmp.auctionhouse.cancel:
+    description: Cancel owned Auction House listings
+    default: false
+  ultimatedonutsmp.auctionhouse.limit:
+    description: View the Auction House listing limit
+    default: false
+  ultimatedonutsmp.auctionhouse.fastbuy:
+    description: Toggle Auction House fast-buy
+    default: op
+  ultimatedonutsmp.auctionhouse.fastsell:
+    description: Toggle Auction House fast-sell
+    default: op
+  donutauction.use:
+    description: Legacy alias for Auction House access
+    default: false
+  donutauction.buy:
+    description: Legacy alias for buying Auction House listings
+    default: false
+  donutauction.sell:
+    description: Legacy alias for creating Auction House listings
+    default: false
+  donutauction.my:
+    description: Legacy alias for Auction House history
+    default: false
+  donutauction.claims:
+    description: Legacy alias for Auction House claims
+    default: false
+  donutauction.cancel:
+    description: Legacy alias for cancelling Auction House listings
+    default: false
+  donutauction.limit:
+    description: Legacy alias for Auction House limits
+    default: false
+  donutauction.fastbuy:
+    description: Legacy alias for Auction House fast-buy
+    default: false
+  donutauction.fastsell:
+    description: Legacy alias for Auction House fast-sell
+    default: false
   ultimatedonutsmp.admin.amethysttool:
-    description: Manage and give amethyst tools
+    description: manage and give amethyst tools
     default: op
   ultimatedonutsmp.admin.worth:
-    description: Reload worth settings
+    description: reload worth settings
     default: op
   ultimatedonutsmp.admin.enderchest:
-    description: Reload Ender Chest settings
+    description: reload ender chest settings
     default: op
   ultimatedonutsmp.admin.freeze:
-    description: Reload and administer Freeze settings
+    description: reload and administer freeze settings
     default: op
   ultimatedonutsmp.admin.staffmode:
-    description: Reload and administer Staff Mode settings
+    description: reload and administer staff mode settings
     default: op
   ultimatedonutsmp.admin.invsee:
-    description: Reload and administer Invsee settings
+    description: reload and administer invsee settings
     default: op
   ultimatedonutsmp.admin.spawner:
-    description: Manage internal spawner systems
+    description: manage internal spawner systems
     default: op
   ultimatedonutsmp.admin.spawner.seeall:
-    description: Bypass spawner anti-ESP concealment
+    description: bypass spawner anti-esp concealment
     default: op
+  ultimatedonutsmp.admin.spawnstash:
+    description: Reload and clear SpawnStash settings
+    default: op
+    children:
+      ultimatedonutsmp.staff.spawnstash: true
+      ultimatedonutsmp.staff.spawnstash.alert: true
+      ultimatedonutsmp.staff.spawnstash.bypass: true
   ultimatedonutsmp.admin.crate:
-    description: Manage crate balances, settings, and chest bindings
+    description: manage crate balances, settings, and chest bindings
     default: op
   ultimatedonutsmp.admin.crate.reload:
-    description: Reload crate settings
+    description: reload crate settings
     default: op
   ultimatedonutsmp.admin.crate.keyall:
-    description: Trigger crate key-all rewards manually
+    description: trigger crate key-all rewards manually
     default: op
   ultimatedonutsmp.admin.reload:
-    description: Reload all UltimateDonutSmp configuration files
+    description: reload all ultimatedonutsmp configuration files
     default: op
   ultimatedonutsmp.admin.statswipe:
-    description: Open and execute Stats Wipe tools
+    description: open and execute stats wipe tools
+    default: op
+  ultimatedonutsmp.admin.ecsee:
+    description: Inspect another player's custom Ender Chest
+    default: op
+  ultimatedonutsmp.admin.serverwipe:
+    description: Preview server wipes; destructive actions are console-only
     default: op
   ultimatedonutsmp.admin.optimize:
-    description: View and reload runtime optimization controls
+    description: view and reload runtime optimization controls
     default: op
   ultimatedonutsmp.admin.shards:
-    description: Inspect Shards Everywhere eligibility and status
+    description: inspect shards everywhere eligibility and status
     default: op
   ultimatedonutsmp.staff.freeze:
-    description: Freeze and unfreeze players for moderation purposes
+    description: freeze and unfreeze players for moderation purposes
     default: op
   ultimatedonutsmp.staff.freeze.alert:
-    description: Receive freeze moderation alerts
+    description: receive freeze moderation alerts
     default: op
   ultimatedonutsmp.staff.freeze.exempt:
-    description: Cannot be frozen by non-admin staff
+    description: cannot be frozen by non-admin staff
     default: op
   ultimatedonutsmp.staff.fly:
-    description: Toggle flight mode for yourself or another player
+    description: toggle flight mode for yourself or another player
     default: op
   ultimatedonutsmp.staff.heal:
-    description: Restore health for yourself or another player
+    description: restore health for yourself or another player
     default: op
   ultimatedonutsmp.staff.feed:
-    description: Restore hunger for yourself or another player
+    description: restore hunger for yourself or another player
+    default: op
+  ultimatedonutsmp.staff.god:
+    description: toggle god mode for yourself or another online player
     default: op
   ultimatedonutsmp.staff.gamemode:
-    description: Change your own gamemode
+    description: change your own gamemode
     default: op
   ultimatedonutsmp.staff.gamemode.others:
-    description: Change another online player's gamemode
+    description: change another online player's gamemode
     default: op
   ultimatedonutsmp.staff.mode:
-    description: Full staff access for Staff Mode and staff utility commands
+    description: full staff access for staff mode and staff utility commands
     default: op
     children:
       ultimatedonutsmp.staff.freeze: true
@@ -654,6 +768,7 @@ permissions:
       ultimatedonutsmp.staff.fly: true
       ultimatedonutsmp.staff.heal: true
       ultimatedonutsmp.staff.feed: true
+      ultimatedonutsmp.staff.god: true
       ultimatedonutsmp.staff.gamemode: true
       ultimatedonutsmp.staff.gamemode.others: true
       ultimatedonutsmp.staff.mode.vanish: true
@@ -662,6 +777,12 @@ permissions:
       ultimatedonutsmp.staff.mode.randomtp: true
       ultimatedonutsmp.staff.mode.seevanished: true
       ultimatedonutsmp.staff.mode.others: true
+      ultimatedonutsmp.staff.spawnstash: true
+      ultimatedonutsmp.staff.spawnstash.alert: true
+      ultimatedonutsmp.staff.spawnstash.bypass: true
+      ultimatedonutsmp.staff.fakeplayer: true
+      ultimatedonutsmp.staff.fakeplayer.alert: true
+      ultimatedonutsmp.staff.fakeplayer.bypass: true
       ultimatedonutsmp.staff.chat.use: true
       ultimatedonutsmp.staff.teleport: true
       ultimatedonutsmp.staff.rename: true
@@ -674,138 +795,172 @@ permissions:
       ultimatedonutsmp.staff.punishments.create: true
       ultimatedonutsmp.staff.punishments.remove: true
   ultimatedonutsmp.staff.mode.others:
-    description: Toggle staff mode for other players
+    description: toggle staff mode for other players
     default: op
   ultimatedonutsmp.staff.mode.vanish:
-    description: Toggle vanish from the staff mode hotbar
+    description: toggle vanish from the staff mode hotbar
     default: op
   ultimatedonutsmp.staff.mode.stafflist:
-    description: Open the staff list from the staff mode hotbar
+    description: open the staff list from the staff mode hotbar
     default: op
   ultimatedonutsmp.staff.mode.betterview:
-    description: Toggle better view from the staff mode hotbar
+    description: toggle better view from the staff mode hotbar
     default: op
   ultimatedonutsmp.staff.mode.randomtp:
-    description: Teleport to a random player from the staff mode hotbar
+    description: teleport to a random player from the staff mode hotbar
     default: op
   ultimatedonutsmp.staff.mode.seevanished:
-    description: See staff members who are vanished
+    description: see staff members who are vanished
     default: op
   ultimatedonutsmp.staff.chat.use:
-    description: Send and receive network staff chat
+    description: send and receive network staff chat
     default: op
   ultimatedonutsmp.staff.chat.mute:
-    description: Mute the global chat
+    description: mute the global chat
     default: op
   ultimatedonutsmp.staff.chat.unmute:
-    description: Unmute the global chat
+    description: unmute the global chat
     default: op
   ultimatedonutsmp.staff.chat.delay:
-    description: Configure global chat delay
+    description: configure global chat delay
     default: op
   ultimatedonutsmp.staff.chat.clear:
-    description: Clear the global chat visually
+    description: clear the global chat visually
     default: op
   ultimatedonutsmp.staff.chat.bypass.mute:
-    description: Bypass the global chat mute
+    description: bypass the global chat mute
     default: op
   ultimatedonutsmp.staff.chat.bypass.delay:
-    description: Bypass the global chat delay
+    description: bypass the global chat delay
     default: op
   ultimatedonutsmp.staff.chat.bypass.filter:
-    description: Bypass global chat filters
+    description: bypass global chat filters
+    default: op
+  ultimatedonutsmp.staff.spawnstash:
+    description: Spawn and manage temporary bait stashes
+    default: op
+  ultimatedonutsmp.staff.spawnstash.alert:
+    description: Receive SpawnStash detection alerts
+    default: op
+  ultimatedonutsmp.staff.spawnstash.bypass:
+    description: Bypass SpawnStash detection
+    default: op
+  ultimatedonutsmp.staff.fakeplayer:
+    description: Spawn temporary fake player bait NPCs
+    default: op
+  ultimatedonutsmp.staff.fakeplayer.alert:
+    description: Receive FakePlayer detection alerts
+    default: op
+  ultimatedonutsmp.staff.fakeplayer.bypass:
+    description: Bypass FakePlayer detection
     default: op
   ultimatedonutsmp.helpop:
-    description: Use helpop to request staff assistance
+    description: use helpop to request staff assistance
     default: true
   ultimatedonutsmp.report:
-    description: Report players to staff
+    description: report players to staff
     default: true
   ultimatedonutsmp.staff.alerts.receive:
-    description: Receive staff alerts from helpop and report
+    description: receive staff alerts from helpop and report
     default: op
     children:
       ultimatedonutsmp.staff.helpop.receive: true
       ultimatedonutsmp.staff.report.receive: true
   ultimatedonutsmp.staff.helpop.receive:
-    description: Receive helpop alerts
+    description: receive helpop alerts
     default: op
   ultimatedonutsmp.staff.report.receive:
-    description: Receive report alerts
+    description: receive report alerts
     default: op
   ultimatedonutsmp.staff.alerts.bypass-cooldown:
-    description: Bypass helpop and report cooldowns
+    description: bypass helpop and report cooldowns
     default: op
   ultimatedonutsmp.staff.teleport:
-    description: Access staff teleport commands
+    description: access staff teleport commands
     default: op
   ultimatedonutsmp.staff.rename:
-    description: Rename held items
+    description: rename held items
     default: op
   ultimatedonutsmp.staff.alts:
-    description: View alternate accounts by shared IP history
+    description: view alternate accounts by shared ip history
     default: op
   ultimatedonutsmp.staff.invsee:
-    description: View other players' inventories for moderation purposes
+    description: view other players' inventories for moderation purposes
     default: op
   ultimatedonutsmp.staff.invsee.modify:
-    description: Reserved for future editable Invsee sessions
+    description: reserved for future editable invsee sessions
     default: op
   ultimatedonutsmp.staff.profileviewer:
-    description: View player profiles and homes for moderation purposes
+    description: view player profiles and homes for moderation purposes
     default: op
   ultimatedonutsmp.staff.punishments.view:
-    description: View punishment history for moderation purposes
+    description: view punishment history for moderation purposes
     default: op
   ultimatedonutsmp.staff.punishments.create:
-    description: Create punishment records and apply punishment actions
+    description: create punishment records and apply punishment actions
     default: op
     children:
       ultimatedonutsmp.staff.punishments.ban: true
       ultimatedonutsmp.staff.punishments.mute: true
       ultimatedonutsmp.staff.punishments.blacklist: true
+  ultimatedonutsmp.staff.punishments.ban:
+    description: Ban and temporarily ban players
+    default: false
+  ultimatedonutsmp.staff.punishments.mute:
+    description: Mute and temporarily mute players
+    default: false
+  ultimatedonutsmp.staff.punishments.blacklist:
+    description: Blacklist players
+    default: false
   ultimatedonutsmp.staff.punishments.remove:
-    description: Remove active punishment records
+    description: remove active punishment records
     default: op
     children:
       ultimatedonutsmp.staff.punishments.unban: true
       ultimatedonutsmp.staff.punishments.unmute: true
       ultimatedonutsmp.staff.punishments.unblacklist: true
-  ultimatedonutsmp.staff.punishments.delete:
-    description: Delete punishment history records from the GUI
-    default: op
-  ultimatedonutsmp.shards.everywhere:
-    description: Receive passive Shards Everywhere rewards
-    default: false
-  ultimatedonutsmp.enderchest:
-    description: Open the custom Ender Chest command
-    default: true
-  ultimatedonutsmp.ignore:
-    description: Add and remove players from your ignore list
-    default: true
-  ultimatedonutsmp.ignore.bypass:
-    description: Bypass private-message ignore checks
-    default: op
-  ultimatedonutsmp.message:
-    description: Send and reply to private messages
-    default: true
-  ultimatedonutsmp.message.toggle:
-    description: Toggle private message receiving
-    default: true
-  ultimatedonutsmp.message.bypass-disabled:
-    description: Bypass target private-message disabled checks
-    default: op
-  ultimatedonutsmp.staff.punishments.ban:
-    default: false
-  ultimatedonutsmp.staff.punishments.mute:
-    default: false
-  ultimatedonutsmp.staff.punishments.blacklist:
-    default: false
   ultimatedonutsmp.staff.punishments.unban:
+    description: Remove active ban punishments
     default: false
   ultimatedonutsmp.staff.punishments.unmute:
+    description: Remove active mute punishments
     default: false
   ultimatedonutsmp.staff.punishments.unblacklist:
+    description: Remove active blacklist punishments
     default: false
-  ultimatedonutsmp.admin.ecsee:
+  ultimatedonutsmp.staff.punishments.delete:
+    description: delete punishment history records from the gui
+    default: op
+  ultimatedonutsmp.shards.everywhere:
+    description: receive passive shards everywhere rewards
+    default: false
+  ultimatedonutsmp.enderchest:
+    description: open the custom ender chest command
+    default: true
+  ultimatedonutsmp.friends:
+    description: manage your friends, follows, and settings
+    default: true
+  ultimatedonutsmp.ignore:
+    description: add and remove players from your ignore list
+    default: true
+  ultimatedonutsmp.ignore.bypass:
+    description: bypass private-message ignore checks
+    default: op
+  ultimatedonutsmp.message:
+    description: send and reply to private messages
+    default: true
+  ultimatedonutsmp.message.toggle:
+    description: toggle private message receiving
+    default: true
+  ultimatedonutsmp.message.bypass-disabled:
+    description: bypass target private-message disabled checks
+    default: op
+  safety.use:
+    description: use the safety command
+    default: true
+  safety.add:
+    description: allows giving/adding safety info books
+    default: op
+  safety.reload:
+    description: reload the safety configuration
     default: op

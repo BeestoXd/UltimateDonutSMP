@@ -1637,9 +1637,6 @@ public class ShopManager {
         if (sendFeedback) {
             sendSellFeedback(player, sale.totalPayout);
         }
-        if (sale.totalPayout > 0) {
-            SoundUtils.play(player, plugin.getConfigManager().getSound("SELL.SUCCESS"));
-        }
         if (!leveledUpCategories.isEmpty()) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("SELL.LEVEL-UP"));
         }
