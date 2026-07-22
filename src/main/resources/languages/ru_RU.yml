@@ -266,7 +266,7 @@ MENUS:
         TITLE: "&#6BF18DTeam {team_name}"
         LORE:
         - "&fClick to refresh"
-        - "&7Add up to {maX_members} members"
+        - "&7Add up to {max_members} members"
       HOME-BUTTON:
         TITLE: "&#6BF18DTeam home"
         HOME-LORE: "&fClick to teleport to your team's home"
@@ -1235,7 +1235,7 @@ MENUS:
       NEXT:
         DISPLAY-NAME: "&aNext"
         LORE:
-        - "&7Go to page &f{neXt_page}&7."
+        - "&7Go to page &f{next_page}&7."
   STATS-WIPE-CONFIRM-MENU:
     TITLE: "&8Confirm {target}"
     BUTTONS:

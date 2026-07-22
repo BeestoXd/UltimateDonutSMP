@@ -6,7 +6,7 @@ GLOBAL:
     FIRST-PAGE-BUTTON: '&aFIRST PAGE'
     LAST-PAGE-BUTTON: '&aLAST PAGE'
     NEXT-LORE:
-    - '&fClick to go to the neXt page'
+    - '&fClick to go to the next page'
     BACK-LORE:
     - '&fClick to go to the previous page'
     FIRST-PAGE-LORE:
@@ -42,7 +42,7 @@ TEAM-MENUS:
       SLOT: 49
       LORE:
       - '&fClick to refresh'
-      - '&7Add up to {maX_members} members'
+      - '&7Add up to {max_members} members'
     HOME-BUTTON:
       TITLE: '&#6BF18DTeam Home'
       MATERIAL: WHITE_BANNER
@@ -1032,14 +1032,14 @@ PROGRESS-MENU:
     TITLE: '&eWorking'
     MATERIAL: YELLOW_STAINED_GLASS_PANE
     LORE:
-    - '{porcentage_level} &f{neXt_multiplier} {porcentage}%'
-    - '&7{current_earned}/{neXt_goal}'
+    - '{porcentage_level} &f{next_multiplier} {porcentage}%'
+    - '&7{current_earned}/{next_goal}'
   COMPLETED-BUTTON:
     TITLE: '&aCompleted'
     MATERIAL: LIME_STAINED_GLASS_PANE
     LORE:
-    - '{porcentage_level} &f{neXt_multiplier} {porcentage}%'
-    - '&7{current_earned}/{neXt_goal}'
+    - '{porcentage_level} &f{next_multiplier} {porcentage}%'
+    - '&7{current_earned}/{next_goal}'
 SELL-MENU:
   TITLE: '&8Place Items In Here To Sell'
   MULTIPLIER-TITLE: '&8Sell Multipliers'
@@ -1050,7 +1050,7 @@ SELL-MENU:
     - '&7Sell crops and farming materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   ORES-BUTTON:
     MATERIAL: DIAMOND
@@ -1059,7 +1059,7 @@ SELL-MENU:
     - '&7Sell ores and mining materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   MOBS-BUTTON:
     MATERIAL: BONE
@@ -1068,7 +1068,7 @@ SELL-MENU:
     - '&7Sell mob drops and combat materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   NATURAL-BUTTON:
     MATERIAL: OAK_LEAVES
@@ -1077,7 +1077,7 @@ SELL-MENU:
     - '&7Sell natural materials and trees to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   ARMOR-AND-TOOLS-BUTTON:
     MATERIAL: NETHERITE_HELMET
@@ -1086,7 +1086,7 @@ SELL-MENU:
     - '&7Sell armor and tools to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   FISH-BUTTON:
     MATERIAL: TROPICAL_FISH
@@ -1095,7 +1095,7 @@ SELL-MENU:
     - '&7Sell fish and other fishing loot to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   BOOK-BUTTON:
     MATERIAL: BOOK
@@ -1104,7 +1104,7 @@ SELL-MENU:
     - '&7Sell books and enchanted books to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   POTIONS-BUTTON:
     MATERIAL: BREWING_STAND
@@ -1113,7 +1113,7 @@ SELL-MENU:
     - '&7Sell potions and brewing materials to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
   BLOCKS-BUTTON:
     MATERIAL: BRICK
@@ -1122,7 +1122,7 @@ SELL-MENU:
     - '&7Sell blocks and placeable items to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{neXt_multiplier}'
+    - '&7Progress to &f{next_multiplier}'iplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
 WORTH-MENU:
   TITLE: '&8Item Prices'
@@ -1772,7 +1772,7 @@ PROFILE-VIEWER-MENU:
       - '&7Team: &f{team}'
       - '&7Homes: &f{homes}'
       - '&7AFK: &f{afk}'
-      - '&7Location: &f{world} ({X}, {y}, {z})'
+      - '&7Location: &f{world} ({x}, {y}, {z})'
     HOMES:
       SLOT: 40
       MATERIAL: RED_BED
@@ -1787,7 +1787,7 @@ PROFILE-VIEWER-MENU:
       DISPLAY-NAME: '&#6BF18DCurrent Location'
       DISPLAY-NAME-OFFLINE: '&cCurrent Location'
       LORE:
-      - '&7{world} ({X}, {y}, {z})'
+      - '&7{world} ({x}, {y}, {z})'
       - '&aClick to teleport'
       LORE-OFFLINE:
       - '&7This player is offline right now.'
@@ -1813,7 +1813,7 @@ PROFILE-VIEWER-HOMES-MENU:
     DISPLAY-NAME: '&b{name}'
     LORE:
     - '&7World: &f{world}'
-    - '&7X: &f{X} &7Y: &f{y} &7Z: &f{z}'
+    - '&7X: &f{x} &7Y: &f{y} &7Z: &f{z}'
     - '&aClick to teleport'
   INVALID-HOME-BUTTON:
     MATERIAL: BARRIER
@@ -1874,7 +1874,7 @@ PUNISHMENT-HISTORY-MENU:
     - '&7Reason: &f{reason}'
     - '&7Issued by: &f{issuer}'
     - '&7Date: &f{issued_at}'
-    - '&7EXpires: &f{eXpires_at}'
+    - '&7Expires: &f{expires_at}'
     - '&7Status: {status_color}{status}'
     - '&7Removed by: &f{removed_by}'
     - '&7Removal reason: &f{removal_reason}'
