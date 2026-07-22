@@ -10,74 +10,74 @@ MESSAGES:
   # The text or value for Prefix. Available options: Any valid string text
   PREFIX: '&c☠ '
   # The text or value for Block Explosion. Available options: Any valid string text
-  BLOCK-EXPLOSION: '{player} ɢᴏᴛ ʙʟᴏᴡɴ ᴛᴏ ᴘɪᴇᴄᴇѕ'
+  BLOCK-EXPLOSION: '{player} got blown to pieces'
   # The text or value for Contact. Available options: Any valid string text
-  CONTACT: '{player} ᴡᴀѕ ᴘʀɪᴄᴋᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
+  CONTACT: '{player} was pricked to death'
   # Configuration section for Drowning.
   DROWNING:
     # The text or value for Normal. Available options: Any valid string text
     NORMAL: '{player} drowned!'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴅʀᴏᴡɴᴇᴅ ᴡʜɪʟѕᴛ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}'
+    PVP: '{player} drowned whilst trying to escape {killer}'
   # The text or value for Entity Attack. Available options: Any valid string text
-  ENTITY-ATTACK: '{player} ᴡᴀѕ ѕʟᴀɪɴ ʙʏ {killer}'
+  ENTITY-ATTACK: '{player} was slain by {killer}'
   # Configuration section for Fall.
   FALL:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ʜɪᴛ ᴛʜᴇ ɢʀᴏᴜɴᴅ ᴛᴏᴏ ʜᴀʀᴅ'
+    NORMAL: '{player} hit the ground too hard'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ᴅᴏᴏᴍᴇᴅ ᴛᴏ ꜰᴀʟʟ ʙʏ {killer}'
+    PVP: '{player} was doomed to fall by {killer}'
   # The text or value for Falling Block. Available options: Any valid string text
-  FALLING-BLOCK: '{player} ɢᴏᴛ ꜰʀᴇᴀᴋɪɴɢ ѕǫᴜᴀѕʜᴇᴅ ʙʏ ᴀ ʙʟᴏᴄᴋ'
+  FALLING-BLOCK: '{player} got freaking squashed by a block'
   # Configuration section for Fire.
   FIRE:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴡᴇɴᴛ ᴜᴘ ɪɴ ꜰʟᴀᴍᴇѕ'
+    NORMAL: '{player} went up in flames'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀʟᴋᴇᴅ ɪɴᴛᴏ ᴀ ꜰɪʀᴇ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}'
+    PVP: '{player} walked into a fire whilst fighting {killer}'
   # Configuration section for Fire Tick.
   FIRE-TICK:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ʙᴜʀɴᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
+    NORMAL: '{player} burned to death'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ʙᴜʀɴᴛ ᴛᴏ ᴀ ᴄʀɪѕᴘ ᴡʜɪʟѕᴛ ꜰɪɢʜᴛɪɴɢ {killer}'
+    PVP: '{player} was burnt to a crisp whilst fighting {killer}'
   # Configuration section for Lava.
   LAVA:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ'
+    NORMAL: '{player} tried to swim in lava'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴛʀɪᴇᴅ ᴛᴏ ѕᴡɪᴍ ɪɴ ʟᴀᴠᴀ ᴡʜɪʟᴇ ᴛʀʏɪɴɢ ᴛᴏ ᴇѕᴄᴀᴘᴇ {killer}'
+    PVP: '{player} tried to swim in lava while trying to escape {killer}'
   # The text or value for Lightning. Available options: Any valid string text
-  LIGHTNING: '{player} ɢᴏᴛ ʟɪᴛ ᴛʜᴇ ʜᴇʟʟ ᴜᴘ ʙʏ ᴀ ʟɪɢʜᴛɴɪɴɢ'
+  LIGHTNING: '{player} got lit the hell up by a lightning'
   # The text or value for Poison. Available options: Any valid string text
-  POISON: '{player} ᴡᴀѕ ᴘᴏɪѕᴏɴᴇᴅ'
+  POISON: '{player} was poisoned'
   # Configuration section for Projectile.
   PROJECTILE:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴡᴀѕ ѕʜᴏᴛ'
+    NORMAL: '{player} was shot'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ѕʜᴏᴛ ʙʏ {killer}'
+    PVP: '{player} was shot by {killer}'
   # The text or value for Starvation. Available options: Any valid string text
-  STARVATION: '{player} ѕᴛᴀʀᴠᴇᴅ ᴛᴏ ᴅᴇᴀᴛʜ'
+  STARVATION: '{player} starved to death'
   # The text or value for Suffocation. Available options: Any valid string text
-  SUFFOCATION: '{player} ѕᴜꜰꜰᴏᴄᴀᴛᴇᴅ ɪɴ ᴀ ᴡᴀʟʟ'
+  SUFFOCATION: '{player} suffocated in a wall'
   # The text or value for Suicide. Available options: Any valid string text
-  SUICIDE: '{player} ᴛᴏᴏᴋ ʜɪѕ ᴏᴡɴ ʟɪꜰᴇ ʟɪᴋᴇ ᴀ ᴘᴇᴀѕᴀɴᴛ'
+  SUICIDE: '{player} took his own life like a peasant'
   # The text or value for Thorns. Available options: Any valid string text
-  THORNS: '{player} ᴋɪʟʟᴇᴅ ᴛʜᴇᴍѕᴇʟꜰ ʙʏ ᴛʀʏɪɴɢ ᴛᴏ ᴋɪʟʟ ѕᴏᴍᴇᴏɴᴇ'
+  THORNS: '{player} killed themself by trying to kill someone'
   # Configuration section for Void.
   VOID:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ꜰᴇʟʟ ᴏᴜᴛ ᴏꜰ ᴛʜᴇ ᴡᴏʀʟᴅ'
+    NORMAL: '{player} fell out of the world'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ᴋɴᴏᴄᴋᴇᴅ ɪɴᴛᴏ ᴛʜᴇ ᴠᴏɪᴅ ʙʏ {killer}'
+    PVP: '{player} was knocked into the void by {killer}'
   # The text or value for Wither. Available options: Any valid string text
-  WITHER: '{player} ᴡɪᴛʜᴇʀᴇᴅ ᴀᴡᴀʏ'
+  WITHER: '{player} withered away'
   # Configuration section for Entity Explosion.
   ENTITY-EXPLOSION:
     # The text or value for Normal. Available options: Any valid string text
-    NORMAL: '{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ'
+    NORMAL: '{player} was blown up'
     # The text or value for Pvp. Available options: Any valid string text
-    PVP: '{player} ᴡᴀѕ ʙʟᴏᴡɴ ᴜᴘ ʙʏ {killer}'
+    PVP: '{player} was blown up by {killer}'
   # The text or value for Default. Available options: Any valid string text
-  DEFAULT: '{player} ᴅɪᴇᴅ'
+  DEFAULT: '{player} died'

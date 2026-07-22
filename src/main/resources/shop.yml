@@ -1,13 +1,13 @@
 # Configuration section for Categories.
 CATEGORIES:
   # The text or value for Menu Title. Available options: Any valid string text
-  MENU-TITLE: '&8ѕʜᴏᴘ'
+  MENU-TITLE: '&8shop'
   # The numerical value for Menu Size. Available options: Any valid integer
   MENU-SIZE: 27
   # Configuration section for End.
   END:
     MATERIAL: END_STONE
-    DISPLAY-NAME: '&#6BF18Dᴇɴᴅ'
+    DISPLAY-NAME: '&#6BF18Dend'
     SLOT: 11
     LORE:
     - '&fClick to view the end shop'
@@ -16,7 +16,7 @@ CATEGORIES:
   # Configuration section for Nether.
   NETHER:
     MATERIAL: NETHERRACK
-    DISPLAY-NAME: '&#6BF18Dɴᴇᴛʜᴇʀ'
+    DISPLAY-NAME: '&#6BF18Dnether'
     SLOT: 12
     LORE:
     - '&fClick to view the nether shop'
@@ -25,7 +25,7 @@ CATEGORIES:
   # Configuration section for Gear.
   GEAR:
     MATERIAL: TOTEM_OF_UNDYING
-    DISPLAY-NAME: '&#6BF18Dɢᴇᴀʀ'
+    DISPLAY-NAME: '&#6BF18Dgear'
     SLOT: 13
     LORE:
     - '&fClick to view the gear shop'
@@ -34,7 +34,7 @@ CATEGORIES:
   # Configuration section for Food.
   FOOD:
     MATERIAL: COOKED_BEEF
-    DISPLAY-NAME: '&#6BF18Dꜰᴏᴏᴅ'
+    DISPLAY-NAME: '&#6BF18Dfood'
     SLOT: 14
     LORE:
     - '&fClick to view the food shop'
@@ -43,7 +43,7 @@ CATEGORIES:
   # Configuration section for Shard.
   SHARD:
     MATERIAL: AMETHYST_SHARD
-    DISPLAY-NAME: '&#6BF18Dѕʜᴀʀᴅ ѕʜᴏᴘ'
+    DISPLAY-NAME: '&#6BF18Dshard shop'
     SLOT: 15
     LORE:
     - '&fClick to view the shard shop'
@@ -86,7 +86,7 @@ CATEGORIES:
 END-MENU:
   # The text or value for Currency. Available options: Any valid string text
   CURRENCY: MONEY
-  TITLE: '&8ѕʜᴏᴘ - ᴇɴᴅ'
+  TITLE: '&8shop - end'
   SIZE: 27
   # Configuration section for Ender Chest Item.
   ENDER-CHEST-ITEM:
@@ -195,7 +195,7 @@ END-MENU:
     - '&fBuy price: &a$800'
 # Configuration section for Nether Menu.
 NETHER-MENU:
-  TITLE: '&8ѕʜᴏᴘ - ɴᴇᴛʜᴇʀ'
+  TITLE: '&8shop - nether'
   SIZE: 27
   # Configuration section for Blaze Rod Item.
   BLAZE-ROD-ITEM:
@@ -298,7 +298,7 @@ NETHER-MENU:
     - '&fBuy price: &a$150'
 # Configuration section for Gear Menu.
 GEAR-MENU:
-  TITLE: '&8ɢᴇᴀʀ - ѕʜᴏᴘ'
+  TITLE: '&8gear - shop'
   SIZE: 27
   # Configuration section for Obsidian Item.
   OBSIDIAN-ITEM:
@@ -401,7 +401,7 @@ GEAR-MENU:
     - '&fBuy price: &a$500'
 # Configuration section for Food Menu.
 FOOD-MENU:
-  TITLE: '&8ꜰᴏᴏᴅ - ѕʜᴏᴘ'
+  TITLE: '&8food - shop'
   SIZE: 27
   # Configuration section for Potato Item.
   POTATO-ITEM:
@@ -504,7 +504,7 @@ FOOD-MENU:
     - '&fBuy price: &a$250'
 # Configuration section for Shard Menu.
 SHARD-MENU:
-  TITLE: '&8ѕʜᴀʀᴅ - ѕʜᴏᴘ'
+  TITLE: '&8shard - shop'
   SIZE: 27
   # Configuration section for Pig Spawner Item.
   PIG-SPAWNER-ITEM:
@@ -652,7 +652,7 @@ SHARD-MENU:
     GIVE-ITEM: false
 # Configuration section for Extra 1 Menu.
 EXTRA-1-MENU:
-  TITLE: '&8ᴇxᴛʀᴀ - ѕʜᴏᴘ'
+  TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
@@ -669,7 +669,7 @@ EXTRA-1-MENU:
     - '&fBuy price: &a$150'
 # Configuration section for Extra 2 Menu.
 EXTRA-2-MENU:
-  TITLE: '&8ᴇxᴛʀᴀ - ѕʜᴏᴘ'
+  TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
@@ -686,7 +686,7 @@ EXTRA-2-MENU:
     - '&fBuy price: &a$150'
 # Configuration section for Extra 3 Menu.
 EXTRA-3-MENU:
-  TITLE: '&8ᴇxᴛʀᴀ - ѕʜᴏᴘ'
+  TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
@@ -704,6 +704,6 @@ EXTRA-3-MENU:
 # Configuration section for Back Button.
 BACK-BUTTON:
   MATERIAL: RED_STAINED_GLASS_PANE
-  DISPLAY-NAME: '&cʙᴀᴄᴋ'
+  DISPLAY-NAME: '&cback'
   LORE:
   - '&fClick to return'

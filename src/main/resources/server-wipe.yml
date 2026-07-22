@@ -10,6 +10,6 @@ TOKEN-TTL-SECONDS: 300
 BACKUP-DIRECTORY: server-wipe-backups
 MESSAGES:
   # The text or value for Maintenance. Available options: Any valid string text
-  MAINTENANCE: '&cᴛʜᴇ ѕᴇʀᴠᴇʀ ɪѕ ᴘʀᴇᴘᴀʀɪɴɢ ᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ. ᴛʀʏ ᴀɢᴀɪɴ ᴀꜰᴛᴇʀ ᴛʜᴇ ʀᴇѕᴛᴀʀᴛ.'
+  MAINTENANCE: '&cthe server is preparing a season reset. try again after the restart.'
   # The text or value for Kick. Available options: Any valid string text
-  KICK: '&cᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ ɪѕ ѕᴛᴀʀᴛɪɴɢ. ᴛʜᴇ ѕᴇʀᴠᴇʀ ᴡɪʟʟ ʀᴇѕᴛᴀʀᴛ ѕʜᴏʀᴛʟʏ.'
+  KICK: '&ca season reset is starting. the server will restart shortly.'

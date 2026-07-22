@@ -471,7 +471,7 @@ CONFIRM-MENU:
     MATERIAL: RED_STAINED_GLASS_PANE
     LORE:
     - '&fClick to cancel'
-    - null
+    - 
 MEDIA-MENU:
   TITLE: '&8Media Rank'
   SIZE: 27

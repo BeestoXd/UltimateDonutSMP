@@ -1106,8 +1106,8 @@ HELPOP:
   # Configuration section for Format.
   FORMAT:
   - ''
-  - '&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ'
-  - '     &9ʀᴇᴀѕᴏɴ: &b%message%'
+  - '&9[request] &7[%server%] &a%player% &bhas requested assistance'
+  - '     &9reason: &b%message%'
   - ''
   # The text or value for Confirmation. Available options: Any valid string text
   CONFIRMATION: '&aYour request has been sent to all staff members.'
@@ -1135,8 +1135,8 @@ REPORT:
   # Configuration section for Format.
   FORMAT:
   - ''
-  - '&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%'
-  - '     &9ʀᴇᴀѕᴏɴ: &b%reason%'
+  - '&9[report] &7[%server%] &c%reported% &bhas been reported by &a%reporter%'
+  - '     &9reason: &b%reason%'
   - ''
   # The text or value for Confirmation. Available options: Any valid string text
   CONFIRMATION: '&aYour report has been sent to all staff members.'

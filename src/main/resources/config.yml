@@ -112,13 +112,13 @@ CHAT:
     HOVER-TEXT:
     - '%luckperms_prefix%%player%'
     - '&7&m----------'
-    - '&#00FC00&l$ &fᴍᴏɴᴇʏ &#00FC00%economy_money%'
-    - '&#FC0000⚔ &fᴋɪʟʟѕ &#FC0000%economy_kills%'
-    - '&#FCE300⌚ &fᴘʟᴀʏᴛɪᴍᴇ &#FCE300%economy_playtime%'
-    - '&#F97603☠ &fᴅᴇᴀᴛʜѕ &#F97603%economy_deaths%'
-    - '&#A303F9★ &fѕʜᴀʀᴅѕ &#A303F9%economy_shards%'
+    - '&#00FC00&l$ &fmoney &#00FC00%economy_money%'
+    - '&#FC0000⚔ &fkills &#FC0000%economy_kills%'
+    - '&#FCE300⌚ &fplaytime &#FCE300%economy_playtime%'
+    - '&#F97603☠ &fdeaths &#F97603%economy_deaths%'
+    - '&#A303F9★ &fshards &#A303F9%economy_shards%'
     - '&7&m----------'
-    - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕᴛᴀᴛѕ'
+    - '&7click to view stats'
     # The text or value for Suggest Command. Available options: Any valid string text
     SUGGEST-COMMAND: '/msg <player> '
   # Determines whether Global Chat Muted is enabled or disabled. Available options: true, false

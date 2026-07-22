@@ -65,6 +65,7 @@ public class ColorUtils {
 
     private static String applyColors(String text) {
         String result = normalizeText(text);
+        result = transformAllCaps(result);
         result = translateTaggedGradients(result);
         result = translateTaggedHex(result);
         return translateHex(result).replace('&', SECTION_CHAR);
@@ -316,11 +317,57 @@ public class ColorUtils {
         return sb.toString();
     }
 
+    public static String unSmallCaps(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        boolean hasSmallCaps = false;
+        for (int i = 0; i < text.length(); i++) {
+            if (SMALL_CAPS_MAP.containsKey(text.charAt(i))) {
+                hasSmallCaps = true;
+                break;
+            }
+        }
+        if (!hasSmallCaps) {
+            return text;
+        }
+        StringBuilder sb = new StringBuilder(text.length());
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            Character mapped = SMALL_CAPS_MAP.get(c);
+            sb.append(mapped != null ? mapped : c);
+        }
+        return capitalizeFirstTextChar(sb.toString());
+    }
+
+    private static String capitalizeFirstTextChar(String text) {
+        if (text == null || text.isEmpty()) return text;
+        int i = 0;
+        int len = text.length();
+        while (i < len) {
+            if (text.charAt(i) == '&' || text.charAt(i) == '\u00A7') {
+                if (i + 1 < len) {
+                    i += 2;
+                    continue;
+                }
+            }
+            if (Character.isLowerCase(text.charAt(i))) {
+                return text.substring(0, i) + Character.toUpperCase(text.charAt(i)) + text.substring(i + 1);
+            }
+            if (Character.isLetter(text.charAt(i))) {
+                break;
+            }
+            i++;
+        }
+        return text;
+    }
+
     public static String normalizeText(String text) {
         if (text == null) {
             return "";
         }
         String result = decodeUnicodeEscapes(text);
+        result = unSmallCaps(result);
         // Fix known translation/spelling typos from old configs
         result = result.replace("PEARH", "PEARL").replace("pearh", "pearl").replace("Pearh", "Pearl");
         result = result.replace("DONT+", "DONUT+").replace("dont+", "donut+").replace("Dont+", "Donut+");
