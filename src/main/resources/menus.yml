@@ -1122,7 +1122,7 @@ SELL-MENU:
     - '&7Sell blocks and placeable items to'
     - '&7upgrade your sell multiplier!'
     - ''
-    - '&7Progress to &f{next_multiplier}'iplier}'
+    - '&7Progress to &f{next_multiplier}'
     - '{porcentage_level} &#6BF18D{porcentage}%'
 WORTH-MENU:
   TITLE: '&8Item Prices'
