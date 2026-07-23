@@ -168,3 +168,13 @@ CRATES:
   SPIN-TICK: minecraft:block.note_block.hat|0.55|1.55
   # The text or value for Spin End. Available options: Any valid string text
   SPIN-END: minecraft:entity.experience_orb.pickup|1.0|1.35
+# Configuration section for Spawners.
+SPAWNERS:
+  OPEN-MENU: minecraft:block.chest.open|1.0|1.0
+  COLLECT-LOOT: minecraft:entity.item.pickup|1.0|1.0
+  DROP-LOOT: minecraft:entity.item.pickup|1.0|1.2
+  COLLECT-XP: minecraft:entity.experience_orb.pickup|1.0|1.0
+  SELL-CONFIRM-OPEN: minecraft:ui.button.click|1.0|1.0
+  SELL-SUCCESS: minecraft:entity.villager.yes|1.0|1.0
+  SELL-CANCEL: minecraft:ui.button.click|1.0|0.8
+

@@ -155,6 +155,7 @@ public class SpawnerStorageMenu extends BaseMenu {
         }
         if (slot == lastRow + 8) {
             // Gold Ingot - Sell All (Open Confirm Sell GUI)
+            plugin.getSpawnerManager().playSellConfirmOpenSound(player);
             new SpawnerSellConfirmMenu(plugin, spawnerId, safePage).open(player);
             return;
         }

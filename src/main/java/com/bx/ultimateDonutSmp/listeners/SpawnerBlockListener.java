@@ -77,16 +77,33 @@ public class SpawnerBlockListener implements Listener {
         player.sendMessage(ColorUtils.toComponent(result.message()));
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSpawnerSpawn(SpawnerSpawnEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
+        if (!plugin.getSpawnerManager().isEnabled() || !plugin.getSpawnerManager().isCancelMobSpawn()) {
             return;
         }
-        if (!plugin.getSpawnerManager().isCancelMobSpawn()) {
-            return;
-        }
-        if (plugin.getSpawnerManager().getSpawner(event.getSpawner().getBlock()) != null) {
+        Block spawnerBlock = event.getSpawner() != null ? event.getSpawner().getBlock() : null;
+        if (spawnerBlock != null && plugin.getSpawnerManager().getSpawner(spawnerBlock) != null) {
             event.setCancelled(true);
+            if (event.getEntity() != null && event.getEntity().isValid()) {
+                event.getEntity().remove();
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCreatureSpawn(org.bukkit.event.entity.CreatureSpawnEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled() || !plugin.getSpawnerManager().isCancelMobSpawn()) {
+            return;
+        }
+        if (event.getSpawnReason() == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER) {
+            org.bukkit.Location loc = event.getLocation();
+            if (loc != null && plugin.getSpawnerManager().isNearManagedSpawner(loc, 12.0D)) {
+                event.setCancelled(true);
+                if (event.getEntity() != null && event.getEntity().isValid()) {
+                    event.getEntity().remove();
+                }
+            }
         }
     }
 

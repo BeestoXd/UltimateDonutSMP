@@ -76,6 +76,7 @@ public class SpawnerSellConfirmMenu extends BaseMenu {
         }
 
         if (slot == 11) {
+            plugin.getSpawnerManager().playSellCancelSound(player);
             new SpawnerStorageMenu(plugin, spawnerId, returnPage).open(player);
             return;
         }

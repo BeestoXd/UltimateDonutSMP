@@ -7,7 +7,7 @@ CATEGORIES:
   # Configuration section for End.
   END:
     MATERIAL: END_STONE
-    DISPLAY-NAME: '&#6BF18Dend'
+    DISPLAY-NAME: '&#6BF18DEnd'
     SLOT: 11
     LORE:
     - '&fClick to view the end shop'
@@ -16,7 +16,7 @@ CATEGORIES:
   # Configuration section for Nether.
   NETHER:
     MATERIAL: NETHERRACK
-    DISPLAY-NAME: '&#6BF18Dnether'
+    DISPLAY-NAME: '&#6BF18DNether'
     SLOT: 12
     LORE:
     - '&fClick to view the nether shop'
@@ -43,7 +43,7 @@ CATEGORIES:
   # Configuration section for Shard.
   SHARD:
     MATERIAL: AMETHYST_SHARD
-    DISPLAY-NAME: '&#6BF18Shard Shop'
+    DISPLAY-NAME: '&#6BF18DShard shop'
     SLOT: 15
     LORE:
     - '&fClick to view the shard shop'

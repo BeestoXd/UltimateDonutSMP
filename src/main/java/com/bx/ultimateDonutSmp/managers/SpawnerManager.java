@@ -106,6 +106,13 @@ public class SpawnerManager {
     private int panelSize;
     private String worldListTitle;
     private int worldListSize;
+    private String soundOpenMenu;
+    private String soundCollectLoot;
+    private String soundDropLoot;
+    private String soundCollectXp;
+    private String soundSellConfirmOpen;
+    private String soundSellSuccess;
+    private String soundSellCancel;
 
     public SpawnerManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -144,6 +151,14 @@ public class SpawnerManager {
         panelSize = normalizeSize(config.getInt("GUI.PANEL.SIZE", 54));
         worldListTitle = config.getString("GUI.WORLD_LIST.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ");
         worldListSize = normalizeSize(config.getInt("GUI.WORLD_LIST.SIZE", 27));
+        FileConfiguration sounds = plugin.getConfigManager().getSounds();
+        soundOpenMenu = sounds.getString("SPAWNERS.OPEN-MENU", "minecraft:block.chest.open|1.0|1.0");
+        soundCollectLoot = sounds.getString("SPAWNERS.COLLECT-LOOT", "minecraft:entity.item.pickup|1.0|1.0");
+        soundDropLoot = sounds.getString("SPAWNERS.DROP-LOOT", "minecraft:entity.item.pickup|1.0|1.2");
+        soundCollectXp = sounds.getString("SPAWNERS.COLLECT-XP", "minecraft:entity.experience_orb.pickup|1.0|1.0");
+        soundSellConfirmOpen = sounds.getString("SPAWNERS.SELL-CONFIRM-OPEN", "minecraft:ui.button.click|1.0|1.0");
+        soundSellSuccess = sounds.getString("SPAWNERS.SELL-SUCCESS", "minecraft:entity.villager.yes|1.0|1.0");
+        soundSellCancel = sounds.getString("SPAWNERS.SELL-CANCEL", "minecraft:ui.button.click|1.0|0.8");
         loadTypeDefinitions(config);
 
         List<SpawnerInstance> copy;
@@ -660,6 +675,23 @@ public class SpawnerManager {
         }
     }
 
+    public boolean isNearManagedSpawner(Location loc, double maxDistance) {
+        if (loc == null || loc.getWorld() == null) {
+            return false;
+        }
+        double maxDistSq = maxDistance * maxDistance;
+        List<SpawnerInstance> inWorld = getSpawnersInWorld(loc.getWorld().getName());
+        for (SpawnerInstance instance : inWorld) {
+            double dx = instance.getX() + 0.5D - loc.getX();
+            double dy = instance.getY() + 0.5D - loc.getY();
+            double dz = instance.getZ() + 0.5D - loc.getZ();
+            if ((dx * dx + dy * dy + dz * dz) <= maxDistSq) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<WorldSummary> getWorldSummaries() {
         List<WorldSummary> summaries = new ArrayList<>();
         for (World world : Bukkit.getWorlds()) {
@@ -671,10 +703,25 @@ public class SpawnerManager {
         return summaries;
     }
 
+    public void playSound(Player player, String soundConfig) {
+        if (player != null && soundConfig != null && !soundConfig.isBlank()) {
+            com.bx.ultimateDonutSmp.utils.SoundUtils.play(player, soundConfig);
+        }
+    }
+
+    public void playOpenMenuSound(Player player) { playSound(player, soundOpenMenu); }
+    public void playCollectLootSound(Player player) { playSound(player, soundCollectLoot); }
+    public void playDropLootSound(Player player) { playSound(player, soundDropLoot); }
+    public void playCollectXpSound(Player player) { playSound(player, soundCollectXp); }
+    public void playSellConfirmOpenSound(Player player) { playSound(player, soundSellConfirmOpen); }
+    public void playSellSuccessSound(Player player) { playSound(player, soundSellSuccess); }
+    public void playSellCancelSound(Player player) { playSound(player, soundSellCancel); }
+
     public void openStorage(Player player, SpawnerInstance instance, int page) {
         if (player == null || instance == null) {
             return;
         }
+        playOpenMenuSound(player);
         new SpawnerStorageMenu(plugin, instance.getId(), page).open(player);
     }
 
@@ -682,6 +729,7 @@ public class SpawnerManager {
         if (player == null || instance == null) {
             return;
         }
+        playOpenMenuSound(player);
         new com.bx.ultimateDonutSmp.menus.SpawnerMainMenu(plugin, instance.getId()).open(player);
     }
 
@@ -854,6 +902,7 @@ public class SpawnerManager {
         instance.removeStoredLoot(entry.getKey(), moved);
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playCollectLootSound(player);
         return ok("&acollected &f" + NumberUtils.format(moved) + "x "
                 + plugin.getWorthManager().prettifyMaterial(entry.getMaterial()) + "&a.");
     }
@@ -886,6 +935,7 @@ public class SpawnerManager {
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playCollectLootSound(player);
         return ok("&acollected &f" + NumberUtils.format(totalMoved) + "&a items from this spawner.");
     }
 
@@ -916,6 +966,7 @@ public class SpawnerManager {
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playDropLootSound(player);
         return ok("&adropped &f" + NumberUtils.format(dropped) + "&a stored items on the ground.");
     }
 
@@ -982,6 +1033,7 @@ public class SpawnerManager {
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playSellSuccessSound(player);
         return new SellLootResult(
                 true,
                 "&asold &f" + NumberUtils.format(soldItems) + "&a items for "
@@ -1013,6 +1065,7 @@ public class SpawnerManager {
         int xpPoints = (int) Math.round(xp);
         player.giveExp(xpPoints);
 
+        playCollectXpSound(player);
         return ok("&acollected &f" + String.format("%.1f", xp) + " &aXP points!");
     }
 
@@ -1614,12 +1667,24 @@ public class SpawnerManager {
             return;
         }
 
-        if (spawnerState.getSpawnedType() == definition.entityType()) {
-            return;
+        boolean updated = false;
+        if (spawnerState.getSpawnedType() != definition.entityType()) {
+            spawnerState.setSpawnedType(definition.entityType());
+            updated = true;
         }
 
-        spawnerState.setSpawnedType(definition.entityType());
-        spawnerState.update(true, false);
+        if (cancelMobSpawn) {
+            if (spawnerState.getDelay() < 9999) {
+                spawnerState.setDelay(999999);
+                spawnerState.setMinSpawnDelay(999999);
+                spawnerState.setMaxSpawnDelay(999999);
+                updated = true;
+            }
+        }
+
+        if (updated) {
+            spawnerState.update(true, false);
+        }
     }
 
     public void consumeHeldSpawnerItem(Player player, boolean all) {
