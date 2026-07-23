@@ -12,6 +12,7 @@ public record SpawnerTypeDefinition(
         Material iconMaterial,
         long baseItemsPerCycle,
         double xpPerCycle,
+        String headTexture,
         List<DropDefinition> drops
 ) {
 
@@ -23,7 +24,19 @@ public record SpawnerTypeDefinition(
             long baseItemsPerCycle,
             List<DropDefinition> drops
     ) {
-        this(key, displayName, entityType, iconMaterial, baseItemsPerCycle, 3.7, drops);
+        this(key, displayName, entityType, iconMaterial, baseItemsPerCycle, 3.7, null, drops);
+    }
+
+    public SpawnerTypeDefinition(
+            String key,
+            String displayName,
+            EntityType entityType,
+            Material iconMaterial,
+            long baseItemsPerCycle,
+            double xpPerCycle,
+            List<DropDefinition> drops
+    ) {
+        this(key, displayName, entityType, iconMaterial, baseItemsPerCycle, xpPerCycle, null, drops);
     }
 
     public SpawnerTypeDefinition {
@@ -31,6 +44,7 @@ public record SpawnerTypeDefinition(
         iconMaterial = iconMaterial == null ? Material.SPAWNER : iconMaterial;
         baseItemsPerCycle = Math.max(1L, baseItemsPerCycle);
         xpPerCycle = Math.max(0.0, xpPerCycle);
+        headTexture = headTexture == null || headTexture.isBlank() ? null : headTexture.trim();
         drops = List.copyOf(drops == null ? List.of() : drops);
     }
 

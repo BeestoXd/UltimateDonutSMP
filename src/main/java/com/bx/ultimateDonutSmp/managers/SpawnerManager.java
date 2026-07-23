@@ -230,6 +230,7 @@ public class SpawnerManager {
                 }
             }
 
+            String headTexture = section.getString("HEAD_TEXTURE", null);
             typeDefinitions.put(key, new SpawnerTypeDefinition(
                     key,
                     section.getString("DISPLAY_NAME", "&d" + prettifyKey(key) + " Spawner"),
@@ -237,6 +238,7 @@ public class SpawnerManager {
                     iconMaterial,
                     baseItemsPerCycle,
                     xpPerCycle,
+                    headTexture,
                     drops
             ));
         }

@@ -72,6 +72,8 @@ TYPES:
     DISPLAY_NAME: '&dPig Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: PIG
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: 'https://textures.minecraft.net/texture/d875eb45aca34a4d24c3dc1395fc020ccf37f825a17b054a22fd24b189c24c'
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: PORKCHOP
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -102,6 +104,8 @@ TYPES:
     DISPLAY_NAME: '&dCow Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: COW
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: ''
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: BEEF
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -134,6 +138,8 @@ TYPES:
     DISPLAY_NAME: '&dZombie Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: ZOMBIE
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: ''
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: ROTTEN_FLESH
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -182,6 +188,8 @@ TYPES:
     DISPLAY_NAME: '&dSpider Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: SPIDER
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: 'https://textures.minecraft.net/texture/cd541541daaff50896cd258bdbdd4cf80c3ba816735726078bfe393927e57f1'
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: STRING
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -212,6 +220,8 @@ TYPES:
     DISPLAY_NAME: '&dSkeleton Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: SKELETON
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: ''
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: BONE
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -242,6 +252,8 @@ TYPES:
     DISPLAY_NAME: '&dCreeper Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: CREEPER
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: ''
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: GUNPOWDER
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -263,6 +275,8 @@ TYPES:
     DISPLAY_NAME: '&dPiglin Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: ZOMBIFIED_PIGLIN
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: ''
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: GOLD_NUGGET
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -302,6 +316,8 @@ TYPES:
     DISPLAY_NAME: '&dBlaze Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: BLAZE
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: 'https://textures.minecraft.net/texture/b78ef2e4cf2c41a2d14bfde9caff10219f5b1bf5b35a49eb51c6467882cb5f0'
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: BLAZE_ROD
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
@@ -323,6 +339,8 @@ TYPES:
     DISPLAY_NAME: '&dIron Golem Spawner'
     # The text or value for Entity Type. Available options: Any valid string text
     ENTITY_TYPE: IRON_GOLEM
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: 'https://textures.minecraft.net/texture/e13f34227283796bc017244cb46557d64bd562fa9dab0e12af5d23ad699cf697'
     # The text or value for Icon Material. Available options: Any valid string text
     ICON_MATERIAL: IRON_INGOT
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer

@@ -72,6 +72,11 @@ public class ItemUtils {
             return createItem(vanillaHead, displayName, lore);
         }
 
+        String skinUrl = getMobSkinUrl(key);
+        if (skinUrl != null) {
+            return createHeadFromSkinUrl(skinUrl, displayName, lore);
+        }
+
         String mhfName = switch (key) {
             case "COW" -> "MHF_Cow";
             case "PIG" -> "MHF_Pig";
@@ -91,6 +96,140 @@ public class ItemUtils {
         return createPlayerHead(mhfPlayer, displayName, lore);
     }
 
+    public static ItemStack createHeadFromSkinUrl(String skinUrlOrBase64, String displayName, List<String> lore) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta rawMeta = item.getItemMeta();
+        if (!(rawMeta instanceof SkullMeta meta)) {
+            return createItem(Material.PLAYER_HEAD, displayName, lore);
+        }
+
+        applyTextureToSkullMeta(meta, skinUrlOrBase64);
+
+        if (displayName != null && !displayName.isEmpty()) {
+            meta.setDisplayName(ColorUtils.colorize(displayName));
+        } else {
+            meta.setDisplayName("");
+        }
+
+        if (lore != null && !lore.isEmpty()) {
+            meta.setLore(ColorUtils.colorizeList(lore));
+        }
+
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static boolean applyTextureToSkullMeta(SkullMeta meta, String textureOrUrl) {
+        if (meta == null || textureOrUrl == null || textureOrUrl.isBlank()) {
+            return false;
+        }
+
+        String base64;
+        String rawUrl = null;
+        String trimmed = textureOrUrl.trim();
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+            rawUrl = trimmed.startsWith("http://") ? "https://" + trimmed.substring(7) : trimmed;
+            String json = "{\"textures\":{\"SKIN\":{\"url\":\"" + rawUrl + "\"}}}";
+            base64 = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+        } else {
+            base64 = trimmed;
+            try {
+                byte[] decoded = Base64.getDecoder().decode(base64);
+                String jsonStr = new String(decoded, StandardCharsets.UTF_8);
+                if (jsonStr.contains("http://textures.minecraft.net/")) {
+                    jsonStr = jsonStr.replace("http://textures.minecraft.net/", "https://textures.minecraft.net/");
+                    base64 = Base64.getEncoder().encodeToString(jsonStr.getBytes(StandardCharsets.UTF_8));
+                }
+                JsonObject root = JsonParser.parseString(jsonStr).getAsJsonObject();
+                JsonObject textures = root.getAsJsonObject("textures");
+                JsonObject skin = textures == null ? null : textures.getAsJsonObject("SKIN");
+                if (skin != null && skin.has("url")) {
+                    rawUrl = skin.get("url").getAsString();
+                    if (rawUrl.startsWith("http://")) {
+                        rawUrl = "https://" + rawUrl.substring(7);
+                    }
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        UUID profileId = UUID.nameUUIDFromBytes(base64.getBytes(StandardCharsets.UTF_8));
+
+        // 1. Try Direct Mojang Authlib GameProfile Reflection (Used by all skull plugins)
+        try {
+            Class<?> gameProfileClass = Class.forName("com.mojang.authlib.GameProfile");
+            Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
+            Object gameProfile = gameProfileClass.getConstructor(UUID.class, String.class).newInstance(profileId, "MobHead");
+            
+            Object property;
+            try {
+                property = propertyClass.getConstructor(String.class, String.class).newInstance("textures", base64);
+            } catch (Throwable t) {
+                property = propertyClass.getConstructor(String.class, String.class, String.class).newInstance("textures", base64, null);
+            }
+
+            Object propertiesMap = gameProfileClass.getMethod("getProperties").invoke(gameProfile);
+            try {
+                Class<?> multimapClass = Class.forName("com.google.common.collect.Multimap");
+                java.lang.reflect.Method putMethod = multimapClass.getMethod("put", Object.class, Object.class);
+                putMethod.invoke(propertiesMap, "textures", property);
+            } catch (Throwable t) {
+                for (java.lang.reflect.Method m : propertiesMap.getClass().getMethods()) {
+                    if (m.getName().equals("put") && m.getParameterCount() == 2) {
+                        m.setAccessible(true);
+                        m.invoke(propertiesMap, "textures", property);
+                        break;
+                    }
+                }
+            }
+
+            java.lang.reflect.Field profileField = meta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(meta, gameProfile);
+            return true;
+        } catch (Throwable ignored1) {}
+
+        // 2. Try Modern Paper PlayerProfile API
+        try {
+            PlayerProfile profile = Bukkit.createPlayerProfile(profileId, "MobHead");
+            if (rawUrl != null) {
+                try {
+                    PlayerTextures textures = profile.getTextures();
+                    textures.setSkin(java.net.URI.create(rawUrl).toURL());
+                    profile.setTextures(textures);
+                } catch (Throwable ignored) {}
+            }
+
+            try {
+                Class<?> profilePropClass = Class.forName("com.destroystokyo.paper.profile.ProfileProperty");
+                Object prop = profilePropClass.getConstructor(String.class, String.class).newInstance("textures", base64);
+                profile.getClass().getMethod("setProperty", profilePropClass).invoke(profile, prop);
+            } catch (Throwable ignored) {}
+
+            try {
+                java.lang.reflect.Method setPlayerProfileMethod = meta.getClass().getMethod("setPlayerProfile", PlayerProfile.class);
+                setPlayerProfileMethod.invoke(meta, profile);
+                return true;
+            } catch (Throwable ignored) {
+                meta.setOwnerProfile(profile);
+                return true;
+            }
+        } catch (Throwable ignored2) {}
+
+        return false;
+    }
+
+    public static String getMobSkinUrl(String mobTypeKey) {
+        if (mobTypeKey == null) return null;
+        String key = mobTypeKey.trim().toUpperCase(java.util.Locale.US);
+        return switch (key) {
+            case "IRON_GOLEM" -> "https://textures.minecraft.net/texture/e13f34227283796bc017244cb46557d64bd562fa9dab0e12af5d23ad699cf697";
+            case "PIG" -> "https://textures.minecraft.net/texture/d875eb45aca34a4d24c3dc1395fc020ccf37f825a17b054a22fd24b189c24c";
+            case "SPIDER" -> "https://textures.minecraft.net/texture/cd541541daaff50896cd258bdbdd4cf80c3ba816735726078bfe393927e57f1";
+            case "BLAZE" -> "https://textures.minecraft.net/texture/b78ef2e4cf2c41a2d14bfde9caff10219f5b1bf5b35a49eb51c6467882cb5f0";
+            default -> null;
+        };
+    }
+
     public static ItemStack createPlayerHead(
             OfflinePlayer player,
             String textureValue,
@@ -103,7 +242,9 @@ public class ItemUtils {
             return createItem(Material.PLAYER_HEAD, displayName, lore);
         }
 
-        if (!applyTextureProfile(meta, player, textureValue)) {
+        if (textureValue != null && !textureValue.isBlank()) {
+            applyTextureToSkullMeta(meta, textureValue);
+        } else if (player != null) {
             meta.setOwningPlayer(player);
         }
         if (displayName != null && !displayName.isEmpty()) {

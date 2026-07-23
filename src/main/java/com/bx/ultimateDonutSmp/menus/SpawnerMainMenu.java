@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.menus;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.SpawnerInstance;
 import com.bx.ultimateDonutSmp.models.SpawnerLootEntry;
+import com.bx.ultimateDonutSmp.models.SpawnerTypeDefinition;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -71,9 +72,12 @@ public class SpawnerMainMenu extends BaseMenu {
         double fillPercentage = totalCapacity > 0 ? Math.min(100.0, (currentTotal / (double) totalCapacity) * 100.0) : 0.0;
         String mobLabel = instance.getMobTypeKey().replace('_', ' ').toUpperCase();
 
+        SpawnerTypeDefinition def = plugin.getSpawnerManager().getTypeDefinition(instance.getMobTypeKey());
+        String customTexture = def != null ? def.headTexture() : null;
+
         ItemStack headItem = ItemUtils.createMobHead(
                 instance.getMobTypeKey(),
-                null,
+                customTexture,
                 "&e" + NumberUtils.format(instance.getStackAmount()) + " " + mobLabel + " SPAWNERS",
                 List.of(
                         "&e• &fClick to sell items and collect xp",

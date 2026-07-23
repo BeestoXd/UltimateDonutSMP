@@ -43,25 +43,51 @@ public class SpawnerBlockListener implements Listener {
         }
 
         Player player = event.getPlayer();
+        org.bukkit.inventory.EquipmentSlot handSlot = event.getHand();
+        final int finalRemaining;
         if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
             int totalPlaced = result.consumedAmount() > 0 ? result.consumedAmount() : (player.isSneaking() ? item.getAmount() : 1);
             int currentAmount = item.getAmount();
-            int remainingInHand = Math.max(0, currentAmount - totalPlaced);
+            finalRemaining = Math.max(0, currentAmount - totalPlaced);
 
-            if (remainingInHand <= 0) {
+            if (finalRemaining <= 0) {
                 item.setAmount(1);
-                org.bukkit.inventory.EquipmentSlot hand = event.getHand();
-                if (hand == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
+                if (handSlot == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
                     player.getInventory().setItemInOffHand(null);
                 } else {
                     player.getInventory().setItemInMainHand(null);
                 }
             } else {
-                item.setAmount(remainingInHand + 1);
+                item.setAmount(finalRemaining + 1);
             }
+        } else {
+            finalRemaining = -1;
         }
 
         plugin.getSpigotScheduler().runEntity(player, () -> {
+            if (player.getGameMode() != org.bukkit.GameMode.CREATIVE && finalRemaining >= 0) {
+                if (handSlot == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
+                    if (finalRemaining <= 0) {
+                        player.getInventory().setItemInOffHand(null);
+                    } else {
+                        ItemStack off = player.getInventory().getItemInOffHand();
+                        if (off != null && plugin.getSpawnerManager().isSpawnerItem(off)) {
+                            off.setAmount(finalRemaining);
+                            player.getInventory().setItemInOffHand(off);
+                        }
+                    }
+                } else {
+                    if (finalRemaining <= 0) {
+                        player.getInventory().setItemInMainHand(null);
+                    } else {
+                        ItemStack main = player.getInventory().getItemInMainHand();
+                        if (main != null && plugin.getSpawnerManager().isSpawnerItem(main)) {
+                            main.setAmount(finalRemaining);
+                            player.getInventory().setItemInMainHand(main);
+                        }
+                    }
+                }
+            }
             player.updateInventory();
         });
 

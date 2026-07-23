@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.SpawnerInstance;
+import com.bx.ultimateDonutSmp.models.SpawnerTypeDefinition;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -48,9 +49,12 @@ public class SpawnerSellConfirmMenu extends BaseMenu {
         ));
 
         // Head Skin Mob - Slot 13
+        SpawnerTypeDefinition def = plugin.getSpawnerManager().getTypeDefinition(instance.getMobTypeKey());
+        String customTexture = def != null ? def.headTexture() : null;
+
         set(13, ItemUtils.createMobHead(
                 instance.getMobTypeKey(),
-                null,
+                customTexture,
                 "&e" + mobLabel + " LOOT SALE",
                 List.of(
                         "&7Stored Items: &f" + NumberUtils.format(totalItems),
