@@ -148,6 +148,8 @@ public class HomeMenu extends BaseMenu {
             slotActions.put(TEAM_ACTION_SLOT, (p, click) -> {
                 if (click.isRightClick()) {
                     deleteTeamHome(p, team);
+                } else if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(p)) {
+                    plugin.getHomeBedrockManager().openTeamHomeOptions(p);
                 } else {
                     setTeamHome(p, team);
                 }
@@ -205,8 +207,10 @@ public class HomeMenu extends BaseMenu {
         slotActions.put(actionSlot, (p, click) -> {
             if (click.isRightClick()) {
                 deleteHome(p, home);
+            } else if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(p)) {
+                plugin.getHomeBedrockManager().openHomeOptions(p, home);
             } else {
-                plugin.getHomeManager().promptRenameHome(p, home.getName());
+                new HomeActionMenu(plugin, home).open(p);
             }
         });
     }

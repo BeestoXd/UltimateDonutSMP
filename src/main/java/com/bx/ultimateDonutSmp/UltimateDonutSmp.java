@@ -53,6 +53,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PrivateMessageManager privateMessageManager;
     private TeamManager teamManager;
     private HomeManager homeManager;
+    private HomeBedrockManager homeBedrockManager;
     private BountyManager bountyManager;
     private WarpManager warpManager;
     private CuboidManager cuboidManager;
@@ -202,6 +203,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
                 ordersBedrockManager = new OrdersBedrockManager(this);
             } catch (LinkageError error) {
                 getLogger().warning("Floodgate is present but its API could not be loaded; Orders will use Java GUIs.");
+            }
+            try {
+                homeBedrockManager = new HomeBedrockManager(this);
+            } catch (LinkageError error) {
+                getLogger().warning("Floodgate is present but its API could not be loaded; Homes will use Java GUIs.");
             }
         }
         duelManager = new DuelManager(this);
@@ -1160,6 +1166,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public OrdersBedrockManager getOrdersBedrockManager() {
         return ordersBedrockManager;
+    }
+
+    public HomeBedrockManager getHomeBedrockManager() {
+        return homeBedrockManager;
     }
 
     public EnchantmentsManager getEnchantmentsManager() {

@@ -19,18 +19,22 @@ public class HomeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
 
         if (plugin.getCombatManager().isInCombat(player.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getConfig()
-                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴜѕᴇ ᴛʜɪѕ ɪɴ ᴄᴏᴍʙᴀᴛ.")));
+                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cYou can't use this in combat.")));
             return true;
         }
 
         String sub = label.toLowerCase();
 
         if (sub.equals("homes")) {
-            new HomeMenu(plugin).open(player);
+            if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {
+                plugin.getHomeBedrockManager().openMain(player);
+            } else {
+                new HomeMenu(plugin).open(player);
+            }
             return true;
         }
 
@@ -42,26 +46,33 @@ public class HomeCommand implements CommandExecutor {
                         plugin.getConfigManager().getMessage("HOME.SET")));
             } else {
                 player.sendMessage(ColorUtils.toComponent(
-                        "&cʏᴏᴜ'ᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ʜᴏᴍᴇ ʟɪᴍɪᴛ ᴏʀ ᴛʜᴇ ʜᴏᴍᴇ ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ ᴀᴛ ᴛʜɪѕ ɴᴀᴍᴇ."));
+                        "&cYou've reached your home limit or the home already exists at this name."));
             }
             return true;
         }
 
         if (sub.equals("delhome")) {
-            if (args.length == 0) { player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /delhome <name>")); return true; }
+            if (args.length == 0) {
+                if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {
+                    plugin.getHomeBedrockManager().openDeleteSelect(player);
+                } else {
+                    player.sendMessage(ColorUtils.toComponent("&cUsage: /delhome <name>"));
+                }
+                return true;
+            }
             boolean removed = plugin.getHomeManager().deleteHome(player.getUniqueId(), args[0]);
             player.sendMessage(ColorUtils.toComponent(removed
                     ? plugin.getConfigManager().getMessage("HOME.DELETED")
-                    : "&cʜᴏᴍᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+                    : "&cHome not found."));
             return true;
         }
 
         if (sub.equals("renamehome")) {
-            if (args.length < 2) { player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /renamehome <old> <new>")); return true; }
+            if (args.length < 2) { player.sendMessage(ColorUtils.toComponent("&cUsage: /renamehome <old> <new>")); return true; }
             boolean ok = plugin.getHomeManager().renameHome(player.getUniqueId(), args[0], args[1]);
             player.sendMessage(ColorUtils.toComponent(ok
                     ? plugin.getConfigManager().getMessage("HOME.RENAME-SUCCESS", "{name}", args[1])
-                    : "&cꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇɴᴀᴍᴇ ʜᴏᴍᴇ."));
+                    : "&cFailed to rename home."));
             return true;
         }
 
@@ -70,9 +81,13 @@ public class HomeCommand implements CommandExecutor {
         Home home = plugin.getHomeManager().getHome(player.getUniqueId(), homeName);
         if (home == null) {
             if (plugin.getHomeManager().getHomeCount(player.getUniqueId()) == 0) {
-                new HomeMenu(plugin).open(player);
+                if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {
+                    plugin.getHomeBedrockManager().openMain(player);
+                } else {
+                    new HomeMenu(plugin).open(player);
+                }
             } else {
-                player.sendMessage(ColorUtils.toComponent("&cʜᴏᴍᴇ '&e" + homeName + "&c' ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+                player.sendMessage(ColorUtils.toComponent("&cHome '&e" + homeName + "&c' not found."));
             }
             return true;
         }
