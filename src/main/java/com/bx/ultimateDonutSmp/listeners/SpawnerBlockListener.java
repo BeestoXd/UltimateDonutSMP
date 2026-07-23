@@ -45,19 +45,19 @@ public class SpawnerBlockListener implements Listener {
         Player player = event.getPlayer();
         if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
             int totalPlaced = result.consumedAmount() > 0 ? result.consumedAmount() : (player.isSneaking() ? item.getAmount() : 1);
-            int extraToConsume = totalPlaced - 1;
-            if (extraToConsume > 0) {
-                int currentHandAmount = item.getAmount();
-                int newHandAmount = Math.max(0, currentHandAmount - extraToConsume);
-                if (newHandAmount <= 0) {
-                    if (event.getHand() == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
-                        player.getInventory().setItemInOffHand(null);
-                    } else {
-                        player.getInventory().setItemInMainHand(null);
-                    }
+            int currentAmount = item.getAmount();
+            int remainingInHand = Math.max(0, currentAmount - totalPlaced);
+
+            if (remainingInHand <= 0) {
+                item.setAmount(1);
+                org.bukkit.inventory.EquipmentSlot hand = event.getHand();
+                if (hand == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
+                    player.getInventory().setItemInOffHand(null);
                 } else {
-                    item.setAmount(newHandAmount);
+                    player.getInventory().setItemInMainHand(null);
                 }
+            } else {
+                item.setAmount(remainingInHand + 1);
             }
         }
 

@@ -1677,17 +1677,15 @@ public class SpawnerManager {
             updated = true;
         }
 
-        if (cancelMobSpawn) {
-            if (spawnerState.getDelay() < 9999) {
-                spawnerState.setDelay(999999);
-                spawnerState.setMinSpawnDelay(999999);
-                spawnerState.setMaxSpawnDelay(999999);
-                updated = true;
-            }
+        if (spawnerState.getDelay() > 800 || spawnerState.getDelay() < 200) {
+            spawnerState.setMinSpawnDelay(200);
+            spawnerState.setMaxSpawnDelay(800);
+            spawnerState.setDelay(200);
+            updated = true;
         }
 
         if (updated) {
-            spawnerState.update(true, false);
+            spawnerState.update(true, true);
         }
     }
 
