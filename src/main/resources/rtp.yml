@@ -10,7 +10,25 @@ SETTINGS:
   # Maximum number of players allowed to perform RTP simultaneously
   PLAYERS-IN-RTP: 3
   # Maximum safe location search attempts per RTP request
-  MAX-ATTEMPTS: 16
+  MAX-ATTEMPTS: 64
+  # Maximum chunk samples to inspect while looking for a valid location
+  MAX-CHUNK-SAMPLES: 128
+  # Ticks between chunk samples
+  ATTEMPT-INTERVAL-TICKS: 8
+  # Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS
+  GENERATE-CHUNKS: false
+  # Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot
+  GENERATE-FALLBACK-CHUNKS: true
+  # Chunk samples to try before limited fallback generation starts
+  GENERATE-FALLBACK-AFTER-SAMPLES: 32
+  # Maximum fallback chunks allowed to generate during one RTP search
+  MAX-GENERATE-FALLBACK-SAMPLES: 32
+  # Allow loading already-generated chunks from disk if chunk generation is disabled
+  LOAD-GENERATED-CHUNKS: true
+  # If random samples cannot be prepared, try already-loaded chunks as a fallback
+  FALLBACK-TO-LOADED-CHUNKS: true
+  # Chunk samples to try before loaded chunk fallback starts
+  LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 64
 
 # User feedback and status messages
 MESSAGES:

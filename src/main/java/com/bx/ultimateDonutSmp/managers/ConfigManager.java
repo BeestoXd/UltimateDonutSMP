@@ -889,7 +889,7 @@ public class ConfigManager {
         changed |= syncRtpSettingDefaultAndComment(
                 lines,
                 "GENERATE-FALLBACK-AFTER-SAMPLES:",
-                "48",
+                "32",
                 "# Chunk samples to try before limited fallback generation starts.",
                 "GENERATE-FALLBACK-CHUNKS:"
         );
@@ -905,6 +905,13 @@ public class ConfigManager {
                 "# If chunk generation is disabled, allow loading already-generated chunks from disk.");
         changed |= syncRtpComment(lines, "FALLBACK-TO-LOADED-CHUNKS:",
                 "# If random samples cannot be prepared, try already-loaded chunks as a fallback.");
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "LOADED-CHUNK-FALLBACK-AFTER-SAMPLES:",
+                "64",
+                "# Chunk samples to try before loaded chunk fallback starts.",
+                "FALLBACK-TO-LOADED-CHUNKS:"
+        );
         changed |= syncRtpComment(lines, "PRELOAD-TELEPORT-CHUNKS:",
                 "# Preload generated chunks around the RTP destination before teleporting to reduce post-teleport ping spikes.");
         changed |= syncRtpComment(lines, "PRELOAD-RADIUS:",

@@ -88,7 +88,7 @@ public class RTPManager {
     private static final String PRELOAD_MAX_TICKS_SETTING = "SETTINGS.PRELOAD-MAX-TICKS";
     private static final String POST_TELEPORT_CHUNK_THROTTLE_SETTING = "SETTINGS.POST-TELEPORT-CHUNK-THROTTLE";
     private static final String POST_TELEPORT_VIEW_DISTANCE_SETTING = "SETTINGS.POST-TELEPORT-VIEW-DISTANCE";
-    private static final int DEFAULT_GENERATE_FALLBACK_AFTER_SAMPLES = 48;
+    private static final int DEFAULT_GENERATE_FALLBACK_AFTER_SAMPLES = 32;
     private static final int DEFAULT_MAX_GENERATE_FALLBACK_SAMPLES = 32;
 
     private static final class SearchProgress {
@@ -1265,7 +1265,7 @@ public class RTPManager {
             return false;
         }
 
-        int afterSamples = Math.max(1, rtp.getInt(LOADED_CHUNK_FALLBACK_AFTER_SETTING, 32));
+        int afterSamples = Math.max(1, rtp.getInt(LOADED_CHUNK_FALLBACK_AFTER_SETTING, 64));
         return chunkSamplesUsed >= afterSamples;
     }
 
