@@ -59,6 +59,11 @@ public class InventoryClickListener implements Listener {
             return;
         }
 
+        if (menu instanceof com.bx.ultimateDonutSmp.menus.SpawnerStorageMenu spawnerStorageMenu) {
+            spawnerStorageMenu.handleInventoryClick(event);
+            return;
+        }
+
         if (menu instanceof OrdersNewMenu && event.getRawSlot() == 23) {
             handleProtectedMenuClick(event, player, menu);
             return;
@@ -74,6 +79,11 @@ public class InventoryClickListener implements Listener {
     public void onDrag(InventoryDragEvent event) {
         Inventory inv = event.getInventory();
         if (!(inv.getHolder() instanceof BaseMenu menu)) return;
+
+        if (menu instanceof com.bx.ultimateDonutSmp.menus.SpawnerStorageMenu spawnerStorageMenu) {
+            spawnerStorageMenu.handleInventoryDrag(event);
+            return;
+        }
 
         if (menu instanceof SellMenu sellMenu) {
             sellMenu.handleInventoryDrag(event);

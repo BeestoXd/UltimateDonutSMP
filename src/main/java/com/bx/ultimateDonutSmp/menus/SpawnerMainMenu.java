@@ -14,7 +14,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SpawnerMainMenu extends BaseMenu {
 
@@ -44,17 +46,27 @@ public class SpawnerMainMenu extends BaseMenu {
 
         // Slot 11: Spawner Storage (Chest)
         List<SpawnerLootEntry> lootEntries = instance.getStoredLootEntries();
+        Map<Material, Long> aggregated = new java.util.LinkedHashMap<>();
+        for (SpawnerLootEntry entry : lootEntries) {
+            if (entry != null && entry.getAmount() > 0) {
+                aggregated.merge(entry.getMaterial(), entry.getAmount(), Long::sum);
+            }
+        }
+
         List<String> storageLore = new ArrayList<>();
-        if (lootEntries.isEmpty()) {
+        if (aggregated.isEmpty()) {
             storageLore.add("&7No items stored.");
         } else {
-            for (SpawnerLootEntry entry : lootEntries) {
-                if (entry.getAmount() > 0) {
-                    storageLore.add("&6" + NumberUtils.format(entry.getAmount()) + " &f" + plugin.getWorthManager().prettifyMaterial(entry.getMaterial()));
+            int count = 0;
+            for (Map.Entry<Material, Long> entry : aggregated.entrySet()) {
+                if (count < 6) {
+                    storageLore.add("&6" + NumberUtils.format(entry.getValue()) + " &f" + plugin.getWorthManager().prettifyMaterial(entry.getKey()));
+                    count++;
+                } else {
+                    int remainingTypes = aggregated.size() - count;
+                    storageLore.add("&7+ " + remainingTypes + " more item types...");
+                    break;
                 }
-            }
-            if (storageLore.isEmpty()) {
-                storageLore.add("&7No items stored.");
             }
         }
         storageLore.add("");

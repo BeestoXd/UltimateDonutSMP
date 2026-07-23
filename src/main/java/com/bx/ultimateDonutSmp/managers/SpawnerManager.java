@@ -859,18 +859,13 @@ public class SpawnerManager {
             return List.of();
         }
 
-        Map<String, SpawnerLootEntry> merged = new LinkedHashMap<>();
-        SpawnerTypeDefinition definition = getTypeDefinition(instance.getMobTypeKey());
-        if (definition != null) {
-            for (SpawnerTypeDefinition.DropDefinition drop : definition.drops()) {
-                merged.put(drop.key().toUpperCase(Locale.US), new SpawnerLootEntry(drop.key(), drop.material(), 0L));
+        List<SpawnerLootEntry> entries = new ArrayList<>();
+        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
+            if (entry != null && entry.getAmount() > 0L) {
+                entries.add(entry);
             }
         }
-        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
-            merged.put(entry.getKey().toUpperCase(Locale.US), entry);
-        }
 
-        List<SpawnerLootEntry> entries = new ArrayList<>(merged.values());
         entries.sort((a, b) -> {
             int cmp = Long.compare(b.getAmount(), a.getAmount());
             if (cmp != 0) {
@@ -1174,6 +1169,16 @@ public class SpawnerManager {
                         "Failed to schedule spawner generation for " + instance.getLocationKey(), exception);
             }
         }
+        refreshOpenStorageMenus();
+    }
+
+    public void refreshOpenStorageMenus() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Inventory top = player.getOpenInventory().getTopInventory();
+            if (top != null && top.getHolder() instanceof SpawnerStorageMenu storageMenu) {
+                storageMenu.refresh(player);
+            }
+        }
     }
 
     private void processSpawnerGeneration(SpawnerInstance instance, long now, long intervalMillis) {
@@ -1248,7 +1253,7 @@ public class SpawnerManager {
                 continue;
             }
 
-            instance.addStoredLoot(drop.key(), drop.material(), generated, storageCapPerLootKey);
+            instance.addAutoMobDrop(drop.material(), generated, storageCapPerLootKey);
             changed = true;
         }
 
@@ -1542,7 +1547,7 @@ public class SpawnerManager {
         return false;
     }
 
-    private void saveLoot(SpawnerInstance instance) {
+    public void saveLoot(SpawnerInstance instance) {
         if (isTemporarySpawner(instance)) {
             return;
         }
