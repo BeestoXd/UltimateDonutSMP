@@ -809,3 +809,46 @@ permissions:
     default: false
   ultimatedonutsmp.admin.ecsee:
     default: op
+  ultimatedonutsmp.auctionhouse.use:
+    description: Open the Auction House menu
+    default: true
+  ultimatedonutsmp.auctionhouse.buy:
+    description: Buy items from the Auction House
+    default: true
+  ultimatedonutsmp.auctionhouse.sell:
+    description: Sell items on the Auction House
+    default: true
+  ultimatedonutsmp.auctionhouse.my:
+    description: View own listings in the Auction House
+    default: true
+  ultimatedonutsmp.auctionhouse.claims:
+    description: View and collect claims in the Auction House
+    default: true
+  ultimatedonutsmp.auctionhouse.cancel:
+    description: Cancel own listings in the Auction House
+    default: true
+  ultimatedonutsmp.auctionhouse.limit:
+    description: Check listing limits in the Auction House
+    default: true
+  donutauction.use:
+    description: Open the Auction House menu (alias)
+    default: true
+  donutauction.buy:
+    description: Buy items from the Auction House (alias)
+    default: true
+  donutauction.sell:
+    description: Sell items on the Auction House (alias)
+    default: true
+  donutauction.my:
+    description: View own listings in the Auction House (alias)
+    default: true
+  donutauction.claims:
+    description: View and collect claims in the Auction House (alias)
+    default: true
+  donutauction.cancel:
+    description: Cancel own listings in the Auction House (alias)
+    default: true
+  donutauction.limit:
+    description: Check listing limits in the Auction House (alias)
+    default: true
+
