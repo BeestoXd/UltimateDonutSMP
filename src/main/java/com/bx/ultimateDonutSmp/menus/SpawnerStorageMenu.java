@@ -79,27 +79,38 @@ public class SpawnerStorageMenu extends BaseMenu {
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow, safePage > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage - 1)))
-                : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 2, ItemUtils.createItem(Material.HOPPER, "&aᴄᴏʟʟᴇᴄᴛ ᴀʟʟ", List.of("&7ᴍᴏᴠᴇ ᴀʟʟ ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ ᴛᴏ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ.")));
-        set(lastRow + 3, ItemUtils.createItem(Material.DISPENSER, "&6ᴅʀᴏᴘ ʟᴏᴏᴛ", List.of("&7ᴅʀᴏᴘ ᴀʟʟ ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ ᴏɴ ᴛʜᴇ ɢʀᴏᴜɴᴅ.")));
-        set(lastRow + 4, ItemUtils.createItem(
-                Material.GOLD_INGOT,
-                "&eѕᴇʟʟ ᴀʟʟ",
-                List.of("&7ѕᴇʟʟ ᴀʟʟ ѕᴇʟʟᴀʙʟᴇ ʟᴏᴏᴛ ꜰᴏʀ "
-                        + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
-                        + ".")
+        // Slot 45 (lastRow + 0): Barrier (Back to menu)
+        set(lastRow, ItemUtils.createItem(Material.BARRIER, "&cBACK", List.of("&7Return to spawner menu.")));
+
+        // Slot 48 (lastRow + 3): Spectral Arrow (Golden arrow - collect loot)
+        set(lastRow + 3, ItemUtils.createItem(
+                Material.SPECTRAL_ARROW,
+                "&eSPAWNER",
+                List.of("&e• &fCollect your loot from the storage")
         ));
-        set(lastRow + 5, ItemUtils.createItem(Material.SPAWNER, "&bѕᴘᴀᴡɴᴇʀ ɪɴꜰᴏ", List.of(
-                "&7ᴛʏᴘᴇ: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey()),
-                "&7ѕᴛᴀᴄᴋ: &f" + NumberUtils.format(instance.getStackAmount()),
-                "&7ѕᴛᴏʀᴇᴅ ɪᴛᴇᴍѕ: &f" + NumberUtils.format(instance.getTotalStoredItems())
-        )));
-        set(lastRow + 7, safePage < totalPages
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage + 1)))
-                : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ.")));
+
+        // Slot 49 (lastRow + 4): Arrow (Next / Previous page)
+        if (safePage < totalPages) {
+            set(lastRow + 4, ItemUtils.createItem(Material.ARROW, "&aNEXT", List.of("&fClick to go forward a page")));
+        } else if (safePage > 1) {
+            set(lastRow + 4, ItemUtils.createItem(Material.ARROW, "&aPREVIOUS", List.of("&fClick to go back a page")));
+        } else {
+            set(lastRow + 4, ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
+        }
+
+        // Slot 52 (lastRow + 7): Dropper (Drop loot)
+        set(lastRow + 7, ItemUtils.createItem(
+                Material.DROPPER,
+                "&aDROP LOOT",
+                List.of("&fClick to drop all loot on the page")
+        ));
+
+        // Slot 53 (lastRow + 8): Gold Ingot (Sell all with confirm sell)
+        set(lastRow + 8, ItemUtils.createItem(
+                Material.GOLD_INGOT,
+                "&aSELL ALL",
+                List.of("&fClick to sell all mob drops!")
+        ));
     }
 
     @Override
@@ -116,31 +127,35 @@ public class SpawnerStorageMenu extends BaseMenu {
         int safePage = Math.min(page, totalPages);
 
         int lastRow = inventory.getSize() - 9;
-        if (slot == lastRow && safePage > 1) {
-            new SpawnerStorageMenu(plugin, spawnerId, safePage - 1).open(player);
+        if (slot == lastRow) {
+            // Barrier - Back to menu
+            new SpawnerMainMenu(plugin, spawnerId).open(player);
             return;
         }
-        if (slot == lastRow + 2) {
+        if (slot == lastRow + 3) {
+            // Golden arrow - Collect loot
             player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().collectAllLoot(player, instance).message()));
             new SpawnerStorageMenu(plugin, spawnerId, safePage).open(player);
             return;
         }
-        if (slot == lastRow + 3) {
+        if (slot == lastRow + 4) {
+            // Arrow - Page navigation
+            if (safePage < totalPages) {
+                new SpawnerStorageMenu(plugin, spawnerId, safePage + 1).open(player);
+            } else if (safePage > 1) {
+                new SpawnerStorageMenu(plugin, spawnerId, safePage - 1).open(player);
+            }
+            return;
+        }
+        if (slot == lastRow + 7) {
+            // Dropper - Drop loot
             player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().dropAllLoot(player, instance).message()));
             new SpawnerStorageMenu(plugin, spawnerId, safePage).open(player);
             return;
         }
-        if (slot == lastRow + 4) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().sellAllLoot(player, instance).message()));
-            new SpawnerStorageMenu(plugin, spawnerId, safePage).open(player);
-            return;
-        }
-        if (slot == lastRow + 7 && safePage < totalPages) {
-            new SpawnerStorageMenu(plugin, spawnerId, safePage + 1).open(player);
-            return;
-        }
         if (slot == lastRow + 8) {
-            player.closeInventory();
+            // Gold Ingot - Sell All (Open Confirm Sell GUI)
+            new SpawnerSellConfirmMenu(plugin, spawnerId, safePage).open(player);
             return;
         }
 

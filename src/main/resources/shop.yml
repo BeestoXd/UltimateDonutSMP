@@ -1,7 +1,7 @@
 # Configuration section for Categories.
 CATEGORIES:
   # The text or value for Menu Title. Available options: Any valid string text
-  MENU-TITLE: '&8shop'
+  MENU-TITLE: '&8Shop'
   # The numerical value for Menu Size. Available options: Any valid integer
   MENU-SIZE: 27
   # Configuration section for End.
@@ -25,7 +25,7 @@ CATEGORIES:
   # Configuration section for Gear.
   GEAR:
     MATERIAL: TOTEM_OF_UNDYING
-    DISPLAY-NAME: '&#6BF18Dgear'
+    DISPLAY-NAME: '&#6BF18DGear'
     SLOT: 13
     LORE:
     - '&fClick to view the gear shop'
@@ -34,7 +34,7 @@ CATEGORIES:
   # Configuration section for Food.
   FOOD:
     MATERIAL: COOKED_BEEF
-    DISPLAY-NAME: '&#6BF18Dfood'
+    DISPLAY-NAME: '&#6BF18DFood'
     SLOT: 14
     LORE:
     - '&fClick to view the food shop'
@@ -43,7 +43,7 @@ CATEGORIES:
   # Configuration section for Shard.
   SHARD:
     MATERIAL: AMETHYST_SHARD
-    DISPLAY-NAME: '&#6BF18Dshard shop'
+    DISPLAY-NAME: '&#6BF18Shard Shop'
     SLOT: 15
     LORE:
     - '&fClick to view the shard shop'

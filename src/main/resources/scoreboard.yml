@@ -1,28 +1,44 @@
-# Configuration section for Scoreboard.
+# ==============================================================================
+# UltimateDonutSMP - Scoreboard Configuration
+# ==============================================================================
+
 SCOREBOARD:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the animated sidebar scoreboard (true / false)
   ENABLED: true
-  # The numerical value for Title Update Ticks. Available options: Any valid integer
+
+  # Ticks between title animation frames (20 ticks = 1 second)
   TITLE-UPDATE-TICKS: 2
-  # The text or value for Team. Available options: Any valid string text
-  TEAM: '&#00A4FC🪓 &fTeam &#00A4FC%economy_team%     '
-  # The text or value for Shard Booster. Available options: Any valid string text
-  SHARD-BOOSTER: '&#A303F9⚡ &fBooster &#A303F9%economy_booster_countdown%     '
-  # The text or value for Shard Cuboid. Available options: Any valid string text
-  SHARD-CUBOID: '&#A303F9⌛ &fShards &#A303F9%economy_shard_cuboid_display%     '
+
+  # Enable column alignment for icons on the left side of scoreboard lines (true / false)
+  ALIGN-ICON-COLUMN: true
+
+  # Column width in pixels for icon alignment padding
+  ICON-COLUMN-WIDTH: 10
+
+  # Animated title frames displayed at the top of the scoreboard
   TITLE:
-  - '&#0069d6&lE&#0374da&lc&#067fdf&lo&#0a8be3&ln&#0d96e7&lo&#10a1ec&lm&#13acf0&ly&#17b8f4&lS&#1ac3f9&lM&#1dcefd&lP'
-  # Configuration section for Lines.
+    - '&#0069d6&lE&#0374da&lc&#067fdf&lo&#0a8be3&ln&#0d96e7&lo&#10a1ec&lm&#13acf0&ly&#17b8f4&lS&#1ac3f9&lM&#1dcefd&lP'
+
+  # Dynamic line templates rendered on the scoreboard
   LINES:
-  - ''
-  - '&#00FC00&l$ &fMoney &#00FC00%economy_nicestMoney%     '
-  - '&#A303F9★ &fShards &#A303F9%economy_shards%     '
-  - '&#FC0000🗡 &fKills &#FC0000%economy_kills%      '
-  - '&#F97603☠ &fDeaths &#F97603%economy_deaths%   '
-  - '&#00A4FC⌛ &fKeyall &#00A4FC%economy_keyall_countdown%'
-  - '&#FCE300⌚ &fPlaytime &#FCE300%economy_playtime%   '
-  - '{team}'
-  - '{shard_cuboid}'
-  - '{shard_booster}'
-  - ''
-  - '&7NA East &7(&#0069D6%economy_ping%ms&7)'
+    - ''
+    - '&#00FC00&l$ &fMoney &#00FC00%economy_nicestMoney%     '
+    - '&#A303F9★ &fShards &#A303F9%economy_shards%     '
+    - '&#FC0000🗡 &fKills &#FC0000%economy_kills%      '
+    - '&#F97603☠ &fDeaths &#F97603%economy_deaths%   '
+    - '&#00A4FC⌛ &fKeyall &#00A4FC%economy_keyall_countdown%'
+    - '&#FCE300⌚ &fPlaytime &#FCE300%economy_playtime%   '
+    - '{team}'
+    - '{shard_cuboid}'
+    - '{shard_booster}'
+    - ''
+    - '&7NA East &7(&#0069D6%economy_ping%ms&7)'
+
+  # Formatting template for the team display line
+  TEAM: '&#00A4FC🪓 &fTeam &#00A4FC%economy_team%     '
+
+  # Formatting template for the active shard booster display line
+  SHARD-BOOSTER: '&#A303F9⚡ &fBooster &#A303F9%economy_booster_countdown%     '
+
+  # Formatting template for the shard cuboid display line
+  SHARD-CUBOID: '&#A303F9⌛ &fShards &#A303F9%economy_shard_cuboid_display%     '

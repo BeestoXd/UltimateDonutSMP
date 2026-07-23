@@ -1,178 +1,160 @@
-# Configuration section for Settings.
+# ==============================================================================
+# UltimateDonutSMP - Player Item Orders Configuration
+# ==============================================================================
+
+# General Order system settings
 SETTINGS:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the Orders system globally (true / false)
   ENABLED: true
-  # The numerical value for Order Duration Hours. Available options: Any valid integer
+  # Duration in hours before an active order expires automatically
   ORDER_DURATION_HOURS: 168
-  # The numerical value for Max Active Orders Default. Available options: Any valid integer
+  # Default maximum active orders a player can create simultaneously
   MAX_ACTIVE_ORDERS_DEFAULT: 5
-  # Configuration section for Max Active Orders By Permission.
+  # Maximum active order limits granted by permission node
   MAX_ACTIVE_ORDERS_BY_PERMISSION:
-    # The numerical value for Ultimatedonutsmp.Orders.Limit.10. Available options: Any valid integer
     ultimatedonutsmp.orders.limit.10: 10
-    # The numerical value for Ultimatedonutsmp.Orders.Limit.15. Available options: Any valid integer
     ultimatedonutsmp.orders.limit.15: 15
-  # The numerical value for Max Quantity Per Order. Available options: Any valid integer
+  # Maximum quantity of items requested per single order listing
   MAX_QUANTITY_PER_ORDER: 2304
-  # The numerical value for Click Cooldown Ms. Available options: Any valid integer
+  # Anti-spam click cooldown between menu interactions (in milliseconds)
   CLICK_COOLDOWN_MS: 750
-  # The numerical value for Expire Check Seconds. Available options: Any valid integer
+  # Interval in seconds to check for expired orders
   EXPIRE_CHECK_SECONDS: 30
-# Configuration section for Pricing.
+
+# Pricing, budget, and fee limits
 PRICING:
-  # The numerical value for Min Price Each. Available options: Any valid integer
+  # Minimum price per individual item offered in an order
   MIN_PRICE_EACH: 10
-  # The numerical value for Max Price Each. Available options: Any valid integer
+  # Maximum price per individual item offered in an order
   MAX_PRICE_EACH: 1000000
-  # The numerical value for Max Total Budget. Available options: Any valid integer
+  # Maximum total money budget allowed for a single order listing
   MAX_TOTAL_BUDGET: 250000000
-  # The numerical value for Order Creation Fee. Available options: Any valid integer
+  # Flat creation fee charged when listing a new item order
   ORDER_CREATION_FEE: 0
-# Configuration section for Delivery.
+
+# Delivery system configuration
 DELIVERY:
-  # The numerical value for Max Deliver Per Click. Available options: Any valid integer
+  # Maximum item quantity delivered in a single menu click
   MAX_DELIVER_PER_CLICK: 64
-  # The Mode setting. Available options: NORMAL, HARDCORE, CASUAL
+  # Delivery interaction mode: DEPOSIT_GUI or DIRECT
   MODE: DEPOSIT_GUI
-  # The numerical value for Max Deliver Per Transaction. Available options: Any valid integer
+  # Maximum item quantity delivered per single transaction
   MAX_DELIVER_PER_TRANSACTION: 2304
-# Configuration section for Matching.
+
+# Item matching and restriction filters
 MATCHING:
-  # Configuration section for Blocked Materials.
+  # Materials blocked from being requested via item orders
   BLOCKED_MATERIALS:
-  - BEDROCK
-  - BARRIER
-  - COMMAND_BLOCK
-  - CHAIN_COMMAND_BLOCK
-  - REPEATING_COMMAND_BLOCK
-  - STRUCTURE_BLOCK
-  - STRUCTURE_VOID
-  - JIGSAW
-  - LIGHT
-# Configuration section for Category Filters.
+    - BEDROCK
+    - BARRIER
+    - COMMAND_BLOCK
+    - CHAIN_COMMAND_BLOCK
+    - REPEATING_COMMAND_BLOCK
+    - STRUCTURE_BLOCK
+    - STRUCTURE_VOID
+    - JIGSAW
+    - LIGHT
+
+# Item categories shown in order creation & browser menus
 CATEGORY_FILTERS:
-  # A list configuration for All. Available options: Multiple items
   ALL: []
-  # Configuration section for Blocks.
   BLOCKS:
-  - STONE
-  - COBBLESTONE
-  - DIRT
-  - OAK_LOG
-  - GLASS
-  - OBSIDIAN
-  # Configuration section for Tools.
+    - STONE
+    - COBBLESTONE
+    - DIRT
+    - OAK_LOG
+    - GLASS
+    - OBSIDIAN
   TOOLS:
-  - IRON_PICKAXE
-  - DIAMOND_PICKAXE
-  - DIAMOND_AXE
-  - DIAMOND_SHOVEL
-  # Configuration section for Food.
+    - IRON_PICKAXE
+    - DIAMOND_PICKAXE
+    - DIAMOND_AXE
+    - DIAMOND_SHOVEL
   FOOD:
-  - APPLE
-  - BREAD
-  - COOKED_BEEF
-  - COOKED_CHICKEN
-  - GOLDEN_CARROT
-  # Configuration section for Combat.
+    - APPLE
+    - BREAD
+    - COOKED_BEEF
+    - COOKED_CHICKEN
+    - GOLDEN_CARROT
   COMBAT:
-  - ARROW
-  - SHIELD
-  - DIAMOND_SWORD
-  - NETHERITE_SWORD
-  # Configuration section for Potions.
+    - ARROW
+    - SHIELD
+    - DIAMOND_SWORD
+    - NETHERITE_SWORD
   POTIONS:
-  - GLASS_BOTTLE
-  - FERMENTED_SPIDER_EYE
-  - BLAZE_POWDER
-  # Configuration section for Books.
+    - GLASS_BOTTLE
+    - FERMENTED_SPIDER_EYE
+    - BLAZE_POWDER
   BOOKS:
-  - BOOK
-  - BOOKSHELF
-  - LECTERN
-  # Configuration section for Ingredients.
+    - BOOK
+    - BOOKSHELF
+    - LECTERN
   INGREDIENTS:
-  - WHEAT
-  - SUGAR_CANE
-  - BLAZE_ROD
-  - ENDER_PEARL
-  - SLIME_BALL
-  # Configuration section for Utilities.
+    - WHEAT
+    - SUGAR_CANE
+    - BLAZE_ROD
+    - ENDER_PEARL
+    - SLIME_BALL
   UTILITIES:
-  - HOPPER
-  - PISTON
-  - OBSERVER
-  - REDSTONE
-  - DISPENSER
-# Configuration section for Gui.
+    - HOPPER
+    - PISTON
+    - OBSERVER
+    - REDSTONE
+    - DISPENSER
+
+# GUI Inventory Titles and Sizes
 GUI:
-  # Configuration section for Main.
   MAIN:
     TITLE: '&8Orders'
     SIZE: 54
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45
-  # Configuration section for My Orders.
   MY_ORDERS:
     TITLE: '&8Orders -> My Orders'
     SIZE: 27
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45
-    # Configuration section for Buttons.
     BUTTONS:
-      # Configuration section for New.
       NEW:
         SLOT: 26
-  # Configuration section for New Order.
   NEW_ORDER:
     TITLE: '&8Orders -> New Order'
     SIZE: 27
-  # Configuration section for Select Item.
   SELECT_ITEM:
     TITLE: '&8Orders -> Select Item'
     SIZE: 54
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45
-  # Configuration section for Edit Order.
   EDIT_ORDER:
     TITLE: '&8Orders -> Edit Order'
     SIZE: 27
-  # Configuration section for Deliver Confirm.
   DELIVER_CONFIRM:
     TITLE: '&8Orders -> Deliver'
     SIZE: 27
-  # Configuration section for Collect.
   COLLECT:
     TITLE: '&8Orders -> Collect'
     SIZE: 54
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45
-  # Configuration section for Delivery Deposit.
   DELIVERY_DEPOSIT:
-    # Configuration section for Buttons.
     BUTTONS:
-      # Configuration section for Confirm.
       CONFIRM:
         SLOT: 35
-# Configuration section for Sorting.
+
+# Order sorting options in GUI
 SORTING:
-  # The text or value for Default. Available options: Any valid string text
+  # Default sorting: MOST_PAID, MOST_DELIVERED, RECENTLY_LISTED, MOST_MONEY_PER_ITEM
   DEFAULT: MOST_PAID
-  # Configuration section for Allowed.
   ALLOWED:
-  - MOST_PAID
-  - MOST_DELIVERED
-  - RECENTLY_LISTED
-  - MOST_MONEY_PER_ITEM
-# The text or value for Donut Style. Available options: Any valid string text
+    - MOST_PAID
+    - MOST_DELIVERED
+    - RECENTLY_LISTED
+    - MOST_MONEY_PER_ITEM
+
+# Visual layout style mode
 DONUT-STYLE: DEPOSIT_GUI
-# Configuration section for Bedrock.
+
+# Geyser/Floodgate Bedrock player compatibility
 BEDROCK:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
   ENABLED: true
-# Configuration section for Network.
+
+# Cross-server Redis sync for orders
 NETWORK:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
   ENABLED: true
-  # The text or value for Redis Channel. Available options: Any valid string text
   REDIS_CHANNEL: ultimate-donut-smp:orders

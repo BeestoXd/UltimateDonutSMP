@@ -1941,6 +1941,15 @@ CONFIG:
         TITLE: '&8Create duel -> {player}'
       CLAIMS:
         TITLE: '&8Duel claims'
+  FFA:
+    RESULT-TITLES:
+      victory:
+        title: '&e&lVictory!'
+        subtitle: '&e<player> &fwon the FFA Match!'
+      defeat:
+        title: '&c&lDefeat!'
+        subtitle: '&c<opponent> &feliminated you!'
+
   CRATES:
     SETTINGS:
       LIST-MENU:
@@ -1971,6 +1980,8 @@ CONFIG:
         TITLE: '&8Rolling reward'
   SPAWNERS:
     GUI:
+      MAIN_MENU:
+        TITLE: '{stack} {mob}'
       STORAGE:
         TITLE: '&8{mob} Spawners - {page}/{max_page}'
       PANEL:

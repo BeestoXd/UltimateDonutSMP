@@ -18,6 +18,10 @@ SETTINGS:
   STORAGE_CAP_PER_LOOT_KEY: 1000000
   # Determines whether Drop On Break If Inventory Full is enabled or disabled. Available options: true, false
   DROP_ON_BREAK_IF_INVENTORY_FULL: true
+  # Determines whether a Silk Touch pickaxe is required to break and collect spawners.
+  REQUIRE_SILK_TOUCH: true
+  # Determines whether physical vanilla mob spawning is cancelled (set to true for virtual storage anti-lag drops, set to false to allow physical mobs to spawn in world).
+  CANCEL_MOB_SPAWN: true
 # Configuration section for Anti Esp.
 ANTI_ESP:
   # Determines whether Enabled is enabled or disabled. Available options: true, false
@@ -42,6 +46,10 @@ ANTI_ESP:
     THE_END: END_STONE
 # Configuration section for Gui.
 GUI:
+  # Configuration section for Main Menu.
+  MAIN_MENU:
+    TITLE: '{stack} {mob}'
+    SIZE: 27
   # Configuration section for Storage.
   STORAGE:
     TITLE: '&8{mob} Spawners - {page}/{max_page}'
@@ -98,6 +106,8 @@ TYPES:
     ICON_MATERIAL: BEEF
     # The numerical value for Base Items Per Cycle. Available options: Any valid integer
     BASE_ITEMS_PER_CYCLE: 1
+    # The decimal value for XP generated per spawner cycle per stack.
+    XP_PER_CYCLE: 3.7
     # Configuration section for Drops.
     DROPS:
       # Configuration section for Beef.
@@ -113,7 +123,7 @@ TYPES:
       LEATHER:
         MATERIAL: LEATHER
         # The numerical value for Min. Available options: Any valid integer
-        MIN: 0
+        MIN: 1
         # The numerical value for Max. Available options: Any valid integer
         MAX: 2
         # The decimal value for Chance. Available options: Any decimal number

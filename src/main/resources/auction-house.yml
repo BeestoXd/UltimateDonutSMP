@@ -1,74 +1,79 @@
-# Configuration section for Settings.
+# ==============================================================================
+# UltimateDonutSMP - Auction House Configuration
+# ==============================================================================
+
+# General Auction House settings
 SETTINGS:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the Auction House system globally (true / false)
   ENABLED: true
-  # The numerical value for Listing Duration Hours. Available options: Any valid integer
+  # Duration in hours before an unpurchased auction listing expires
   LISTING_DURATION_HOURS: 48
-  # The numerical value for Max Active Listings Default. Available options: Any valid integer
+  # Default maximum active listings a player can post simultaneously
   MAX_ACTIVE_LISTINGS_DEFAULT: 5
-  # Configuration section for Max Active Listings By Permission.
+  # Maximum active listing limits granted by permission node
   MAX_ACTIVE_LISTINGS_BY_PERMISSION:
-    # The numerical value for Ultimatedonutsmp.Auctionhouse.Limit.10. Available options: Any valid integer
     ultimatedonutsmp.auctionhouse.limit.10: 10
-    # The numerical value for Ultimatedonutsmp.Auctionhouse.Limit.15. Available options: Any valid integer
     ultimatedonutsmp.auctionhouse.limit.15: 15
-  # The numerical value for Click Cooldown Ms. Available options: Any valid integer
+  # Anti-spam click cooldown between menu interactions (in milliseconds)
   CLICK_COOLDOWN_MS: 750
-  # The numerical value for Expire Check Seconds. Available options: Any valid integer
+  # Interval in seconds to check for expired auction listings
   EXPIRE_CHECK_SECONDS: 30
-# Configuration section for Pricing.
+
+# Pricing, fees, and tax limits
 PRICING:
-  # The numerical value for Min Price. Available options: Any valid integer
+  # Minimum allowed listing price for an item
   MIN_PRICE: 100
-  # The numerical value for Max Price. Available options: Any valid integer
+  # Maximum allowed listing price for an item
   MAX_PRICE: 100000000
-  # The numerical value for Listing Fee. Available options: Any valid integer
+  # Flat fee charged upfront to create an auction listing
   LISTING_FEE: 0
-  # The decimal value for Tax Percent. Available options: Any decimal number
+  # Percentage tax deducted from the final sale price upon purchase (%)
   TAX_PERCENT: 5.0
-# Configuration section for Restrictions.
+
+# Item restrictions and blacklist
 RESTRICTIONS:
-  # Configuration section for Blocked Materials.
+  # Materials blocked from being listed on the Auction House
   BLOCKED_MATERIALS:
-  - BEDROCK
-  - BARRIER
-  - COMMAND_BLOCK
-  - CHAIN_COMMAND_BLOCK
-  - REPEATING_COMMAND_BLOCK
-  - STRUCTURE_BLOCK
-  - STRUCTURE_VOID
-  - JIGSAW
-  - LIGHT
-  # A list configuration for Blocked If Has Lore Contains. Available options: Multiple items
+    - BEDROCK
+    - BARRIER
+    - COMMAND_BLOCK
+    - CHAIN_COMMAND_BLOCK
+    - REPEATING_COMMAND_BLOCK
+    - STRUCTURE_BLOCK
+    - STRUCTURE_VOID
+    - JIGSAW
+    - LIGHT
+  # Lore text phrases that block an item from being listed if present
   BLOCKED_IF_HAS_LORE_CONTAINS: []
-# Configuration section for Gui.
+
+# Claims system configuration
+CLAIMS:
+  # Enable or disable auction claims collection system (true / false)
+  ENABLED: true
+
+# GUI Inventory Titles and Sizes
 GUI:
-  # Configuration section for Browse.
   BROWSE:
     TITLE: '&8Auction House'
     SIZE: 54
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45
-  # Configuration section for My Listings.
   MY_LISTINGS:
     TITLE: '&8My Auctions'
     SIZE: 54
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45
-  # Configuration section for Claims.
   CLAIMS:
     TITLE: '&8Auction Claims'
     SIZE: 54
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45
-# Configuration section for Sorting.
+
+# Auction sorting configuration
 SORTING:
-  # The text or value for Default. Available options: Any valid string text
+  # Default sorting method: NEWEST, PRICE_LOWEST, PRICE_HIGHEST, EXPIRING_SOON, OLDEST
   DEFAULT: NEWEST
-  # Configuration section for Allowed.
+  # List of allowed sorting options in the GUI
   ALLOWED:
-  - NEWEST
-  - PRICE_LOWEST
-  - PRICE_HIGHEST
-  - EXPIRING_SOON
-  - OLDEST
+    - NEWEST
+    - PRICE_LOWEST
+    - PRICE_HIGHEST
+    - EXPIRING_SOON
+    - OLDEST

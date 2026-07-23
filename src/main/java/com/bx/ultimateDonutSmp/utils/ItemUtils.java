@@ -52,6 +52,45 @@ public class ItemUtils {
         return createPlayerHead(player, null, displayName, lore);
     }
 
+    public static ItemStack createMobHead(String mobTypeKey, String textureValue, String displayName, List<String> lore) {
+        if (textureValue != null && !textureValue.isBlank()) {
+            return createPlayerHead(null, textureValue, displayName, lore);
+        }
+
+        String key = mobTypeKey == null ? "" : mobTypeKey.trim().toUpperCase(java.util.Locale.US);
+        Material vanillaHead = switch (key) {
+            case "SKELETON" -> Material.SKELETON_SKULL;
+            case "ZOMBIE" -> Material.ZOMBIE_HEAD;
+            case "CREEPER" -> Material.CREEPER_HEAD;
+            case "PIGLIN", "ZOMBIFIED_PIGLIN" -> Material.PIGLIN_HEAD;
+            case "WITHER_SKELETON" -> Material.WITHER_SKELETON_SKULL;
+            case "DRAGON" -> Material.DRAGON_HEAD;
+            default -> null;
+        };
+
+        if (vanillaHead != null) {
+            return createItem(vanillaHead, displayName, lore);
+        }
+
+        String mhfName = switch (key) {
+            case "COW" -> "MHF_Cow";
+            case "PIG" -> "MHF_Pig";
+            case "SPIDER" -> "MHF_Spider";
+            case "CAVE_SPIDER" -> "MHF_CaveSpider";
+            case "BLAZE" -> "MHF_Blaze";
+            case "IRON_GOLEM" -> "MHF_Golem";
+            case "ENDERMAN" -> "MHF_Enderman";
+            case "SQUID" -> "MHF_Squid";
+            case "GHAST" -> "MHF_Ghast";
+            case "SHEEP" -> "MHF_Sheep";
+            case "CHICKEN" -> "MHF_Chicken";
+            default -> "MHF_" + key;
+        };
+
+        OfflinePlayer mhfPlayer = Bukkit.getOfflinePlayer(mhfName);
+        return createPlayerHead(mhfPlayer, displayName, lore);
+    }
+
     public static ItemStack createPlayerHead(
             OfflinePlayer player,
             String textureValue,

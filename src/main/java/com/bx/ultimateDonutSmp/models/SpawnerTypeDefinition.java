@@ -11,13 +11,26 @@ public record SpawnerTypeDefinition(
         EntityType entityType,
         Material iconMaterial,
         long baseItemsPerCycle,
+        double xpPerCycle,
         List<DropDefinition> drops
 ) {
+
+    public SpawnerTypeDefinition(
+            String key,
+            String displayName,
+            EntityType entityType,
+            Material iconMaterial,
+            long baseItemsPerCycle,
+            List<DropDefinition> drops
+    ) {
+        this(key, displayName, entityType, iconMaterial, baseItemsPerCycle, 3.7, drops);
+    }
 
     public SpawnerTypeDefinition {
         displayName = displayName == null || displayName.isBlank() ? key : displayName;
         iconMaterial = iconMaterial == null ? Material.SPAWNER : iconMaterial;
         baseItemsPerCycle = Math.max(1L, baseItemsPerCycle);
+        xpPerCycle = Math.max(0.0, xpPerCycle);
         drops = List.copyOf(drops == null ? List.of() : drops);
     }
 

@@ -47,6 +47,7 @@ public class SpawnerInstance {
     private long lastProcessedAt;
     private final long createdAt;
     private long updatedAt;
+    private double storedXp;
     private final Map<String, SpawnerLootEntry> storedLoot = new LinkedHashMap<>();
     private final Set<String> disabledLootKeys = new LinkedHashSet<>();
 
@@ -65,6 +66,25 @@ public class SpawnerInstance {
             long createdAt,
             long updatedAt
     ) {
+        this(id, world, x, y, z, ownerUuid, ownerNameSnapshot, mobTypeKey, stackAmount, accessMode, lastProcessedAt, createdAt, updatedAt, 0.0);
+    }
+
+    public SpawnerInstance(
+            long id,
+            String world,
+            int x,
+            int y,
+            int z,
+            UUID ownerUuid,
+            String ownerNameSnapshot,
+            String mobTypeKey,
+            long stackAmount,
+            AccessMode accessMode,
+            long lastProcessedAt,
+            long createdAt,
+            long updatedAt,
+            double storedXp
+    ) {
         this.id = id;
         this.world = world == null ? "" : world;
         this.x = x;
@@ -78,6 +98,7 @@ public class SpawnerInstance {
         this.lastProcessedAt = Math.max(0L, lastProcessedAt);
         this.createdAt = Math.max(0L, createdAt);
         this.updatedAt = Math.max(0L, updatedAt);
+        this.storedXp = Math.max(0.0, storedXp);
     }
 
     public long getId() {
@@ -259,6 +280,21 @@ public class SpawnerInstance {
                 }
             }
         }
+    }
+
+    public double getStoredXp() {
+        return storedXp;
+    }
+
+    public void setStoredXp(double storedXp) {
+        this.storedXp = Math.max(0.0, storedXp);
+    }
+
+    public void addStoredXp(double amount) {
+        if (amount <= 0.0) {
+            return;
+        }
+        setStoredXp(this.storedXp + amount);
     }
 
     public static String buildLocationKey(String world, int x, int y, int z) {

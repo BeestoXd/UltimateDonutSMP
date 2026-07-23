@@ -1,96 +1,195 @@
-# Configuration section for Settings.
+# ==============================================================================
+# UltimateDonutSMP - Duels Configuration
+# ==============================================================================
+
+# General duel settings
 SETTINGS:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the duels system globally (true / false)
   ENABLED: true
-  # The numerical value for Countdown Seconds. Available options: Any valid integer
+  # Countdown duration before match starts (in seconds)
   COUNTDOWN_SECONDS: 5
-  # The numerical value for Match Duration Seconds. Available options: Any valid integer
+  # Maximum allowed match duration before forcing a draw (in seconds)
   MATCH_DURATION_SECONDS: 900
-  # The numerical value for Request Timeout Seconds. Available options: Any valid integer
+  # Time before an outgoing duel request expires (in seconds)
   REQUEST_TIMEOUT_SECONDS: 30
-  # The numerical value for Draw Request Timeout Seconds. Available options: Any valid integer
+  # Time before a draw offer expires (in seconds)
   DRAW_REQUEST_TIMEOUT_SECONDS: 15
-  # The numerical value for Return Delay Seconds. Available options: Any valid integer
+  # Delay before teleporting players back after match ends (in seconds)
   RETURN_DELAY_SECONDS: 3
-  # The numerical value for Rollback Padding Horizontal. Available options: Any valid integer
+  # Delay before returning winner (in seconds)
+  WINNER_RETURN_DELAY_SECONDS: 3
+  # Extra horizontal padding blocks preserved around duel arena during arena rollback
   ROLLBACK_PADDING_HORIZONTAL: 8
-  # The numerical value for Rollback Padding Vertical. Available options: Any valid integer
+  # Extra vertical padding blocks preserved around duel arena during arena rollback
   ROLLBACK_PADDING_VERTICAL: 6
-# Configuration section for Start Countdown.
+
+# Countdown titles and sound notifications
 START-COUNTDOWN:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable countdown messages and titles
   ENABLED: true
-  # Configuration section for Sounds.
   SOUNDS:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    # Play tick sound effects during countdown
     ENABLED: true
-  # Configuration section for Titles.
   TITLES:
-    # The text or value for 6. Available options: Any valid string text
     6: ''
-    # The text or value for 5. Available options: Any valid string text
     5: '&e5'
-    # The text or value for 4. Available options: Any valid string text
     4: '&e4'
-    # The text or value for 3. Available options: Any valid string text
     3: '&c3'
-    # The text or value for 2. Available options: Any valid string text
     2: '&c2'
-    # The text or value for 1. Available options: Any valid string text
     1: '&c1'
-    # The text or value for 0. Available options: Any valid string text
     0: '&a&lFight!'
   MESSAGES:
-    # The text or value for '5'. Available options: Any valid string text
     '5': '&a5'
-    # The text or value for '4'. Available options: Any valid string text
     '4': '&a4'
-    # The text or value for '3'. Available options: Any valid string text
     '3': '&a3'
-    # The text or value for '2'. Available options: Any valid string text
     '2': '&a2'
-    # The text or value for '1'. Available options: Any valid string text
     '1': '&a1'
-  # The text or value for Start Message. Available options: Any valid string text
   START-MESSAGE: '&aMatch Started!'
-# Configuration section for Result Titles.
+
+# End match screen titles and subtitles
 RESULT-TITLES:
-  # Configuration section for Victory.
   victory:
-    # The text or value for Title. Available options: Any valid string text
     title: '&e&lVICTORY!'
-    # The text or value for Subtitle. Available options: Any valid string text
     subtitle: '&e<player> &fwon the Match!'
-  # Configuration section for Defeat.
   defeat:
-    # The text or value for Title. Available options: Any valid string text
     title: '&c&lDEFEAT!'
-    # The text or value for Subtitle. Available options: Any valid string text
     subtitle: '&c<opponent> &fwon this Match!'
-  # Configuration section for Draw.
   draw:
-    # The text or value for Title. Available options: Any valid string text
     title: '&e&lDRAW!'
-    # The text or value for Subtitle. Available options: Any valid string text
     subtitle: '&fTime''s up - no winner.'
-    # The text or value for Message. Available options: Any valid string text
-    message: '&e[Timer] &fTime limit reached! Match ended as a &eDRAW &f- streaks
-      unchanged.'
-# The text or value for Arena Settings. Available options: Any valid string text
+    message: '&e[Timer] &fTime limit reached! Match ended as a &eDRAW &f- streaks unchanged.'
+
+# Command restrictions during a duel
+COMMAND_BLOCK:
+  # Enable command blocking during a duel match (true / false)
+  ENABLED: true
+  # Filtering mode: ALLOWLIST (only specified commands allowed) or BLOCKLIST (specified commands blocked)
+  MODE: ALLOWLIST
+  # List of commands allowed (or blocked depending on MODE) during a duel match
+  COMMANDS:
+    - "/duel"
+    - "/draw"
+    - "/leave"
+    - "/queue"
+  # Message shown to players attempting blocked commands
+  MESSAGE: "&cYou cannot use that command during a duel."
+
+# World Border settings applied during dynamic random biome duel matches
+WORLDBORDER:
+  # Enable world border restrictions during duel matches (true / false)
+  ENABLED: true
+  # Size/diameter of the world border in blocks
+  SIZE: 96.0
+  # Safe buffer zone size in blocks before border damage is applied
+  DAMAGE_BUFFER: 0.0
+  # Distance in blocks from border to display border warning vignette
+  WARNING_DISTANCE: 4
+  # Time in seconds for border warning pulse animation
+  WARNING_TIME: 5
+  # Grace period in ticks before penalizing a player outside the border
+  ESCAPE_GRACE_TICKS: 40
+  # Action to take when a player steps outside: PUSH_BACK, TELEPORT, or DAMAGE
+  ACTION: PUSH_BACK
+  # Fallback action if push back fails: FORFEIT or KILL
+  FALLBACK_ACTION: FORFEIT
+
+# Arena and World Sources configuration
+MAP_SOURCES:
+  # Configuration for pre-built static arenas in existing server worlds
+  STATIC_WORLDS:
+    # Enable static world duel arenas (true / false)
+    ENABLED: true
+    # Automatically load configured static duel worlds on server startup (true / false)
+    AUTO_LOAD: true
+    # List of world names containing static duel arenas (e.g., ["world_duels"])
+    WORLDS: []
+
+  # Configuration for dynamic auto-generated random biome duel worlds
+  RANDOM_BIOMES:
+    # Enable auto-generating random biome duel worlds for matches (true / false)
+    ENABLED: true
+    # Terrain generation mode: FLAT (superflat with biome theme) or VANILLA (natural terrain)
+    TERRAIN_MODE: FLAT
+    # Whether to generate structures (villages, fortresses) in duel worlds (true / false)
+    GENERATE_STRUCTURES: false
+    # Automatically unload and delete generated duel worlds after match ends (true / false)
+    CLEANUP_AFTER_MATCH: true
+    # Radius of arena play zone in blocks
+    ARENA_RADIUS: 48
+    # Distance between player spawn points in blocks
+    SPAWN_DISTANCE: 16
+    # Search radius when scanning for safe spawn points on vanilla terrain
+    SPAWN_SEARCH_RADIUS: 16
+    # World name prefix for auto-generated duel worlds
+    WORLD_PREFIX: duel_biome_
+    # Subfolder name for generated duel world files
+    WORLD_FOLDER: duel
+    # Whitelist of biome keys allowed for selection (empty [] = all biomes allowed)
+    ALLOWLIST: []
+    # Blacklist of biome keys excluded from selection
+    EXCLUDE: []
+
+    # Pre-prepared world pool settings for FLAT terrain mode
+    FLAT_POOL:
+      # Enable pre-generating flat duel worlds in advance (true / false)
+      ENABLED: true
+      # Recycle and reuse clean flat worlds for subsequent matches (true / false)
+      REUSE_WORLDS: true
+      # Number of pre-prepared flat worlds to keep ready in pool
+      SIZE: 2
+      # Interval in ticks between pool preparation checks
+      PREPARE_INTERVAL_TICKS: 20
+
+    # Pre-prepared world pool settings for VANILLA terrain mode
+    VANILLA_POOL:
+      # Enable pre-generating vanilla terrain duel worlds (true / false)
+      ENABLED: true
+      # Allow background chunk generation for vanilla terrain (true / false)
+      RUNTIME_GENERATION: true
+      # Number of pre-prepared vanilla worlds to keep ready in pool
+      SIZE: 2
+      # Chunks generated per tick to prevent server lag
+      CHUNKS_PER_TICK: 1
+      # Interval in ticks between vanilla pool preparation ticks
+      PREPARE_INTERVAL_TICKS: 1
+      # Maximum allowed time in milliseconds per sync preparation step before pausing
+      MAX_SYNC_STEP_MS: 2000
+      # Pause background chunk generation if a step exceeds MAX_SYNC_STEP_MS (true / false)
+      PAUSE_ON_SLOW_STEP: true
+
+# Cross-server BungeeCord / Velocity Redis sync settings
+CROSS_SERVER:
+  # Enable cross-server duel matchmaking (true / false)
+  ENABLED: false
+  # Unique identifier for this local server instance
+  LOCAL_SERVER_ID: ""
+  # Redis channel for duel match communications
+  REDIS_CHANNEL: "ultimatedonutsmp:duels"
+  # Redis key prefix for duel data
+  KEY_PREFIX: "uds:duels:"
+  # Stale queue request timeout (in seconds)
+  STALE_QUEUE_TIMEOUT_SECONDS: 45
+  # Player proxy transfer timeout (in seconds)
+  TRANSFER_TIMEOUT_SECONDS: 20
+  # Proxy server target name
+  PROXY_SERVER_NAME: ""
+  # List of server IDs allowed for duel matchmaking queues
+  ALLOWED_QUEUE_SERVERS: []
+  # List of server IDs allowed to host duel matches
+  ALLOWED_MATCH_SERVERS: []
+
+# Configuration for static arena definitions (managed via /arena commands)
 ARENA_SETTINGS: {}
-# Configuration section for Gui.
+
+# GUI Inventory Titles and Sizes
 GUI:
-  # Configuration section for Queue.
   QUEUE:
     TITLE: '&8Casual Queue'
     SIZE: 27
-  # Configuration section for Create.
   CREATE:
     TITLE: '&8Create Duel -> {player}'
     SIZE: 27
-  # Configuration section for Claims.
   CLAIMS:
     TITLE: '&8Duel Claims'
     SIZE: 54
-    # The numerical value for Items Per Page. Available options: Any valid integer
     ITEMS_PER_PAGE: 45

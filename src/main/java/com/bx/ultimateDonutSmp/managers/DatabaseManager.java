@@ -691,6 +691,7 @@ public class DatabaseManager {
 
     private void ensureSpawnerColumns() throws SQLException {
         ensureColumnExists("spawners", "disabled_loot_keys", "TEXT DEFAULT ''");
+        ensureColumnExists("spawners", "stored_xp", "REAL DEFAULT 0.0");
     }
 
     private void ensureColumnExists(String table, String column, String definition) throws SQLException {
@@ -2866,6 +2867,11 @@ public class DatabaseManager {
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM spawners ORDER BY id ASC")) {
             while (rs.next()) {
+                double storedXp = 0.0;
+                try {
+                    storedXp = rs.getDouble("stored_xp");
+                } catch (Exception ignored) {}
+
                 SpawnerInstance instance = new SpawnerInstance(
                         rs.getLong("id"),
                         rs.getString("world"),
@@ -2879,7 +2885,8 @@ public class DatabaseManager {
                         SpawnerInstance.AccessMode.fromString(rs.getString("access_mode"), SpawnerInstance.AccessMode.OWNER_ONLY),
                         rs.getLong("last_processed_at"),
                         rs.getLong("created_at"),
-                        rs.getLong("updated_at")
+                        rs.getLong("updated_at"),
+                        storedXp
                 );
                 String disabledKeysRaw = rs.getString("disabled_loot_keys");
                 if (disabledKeysRaw != null && !disabledKeysRaw.isBlank()) {
@@ -2915,8 +2922,8 @@ public class DatabaseManager {
 
     public long createSpawner(SpawnerInstance instance) {
         try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO spawners (world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO spawners (world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys, stored_xp) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 Statement.RETURN_GENERATED_KEYS
         )) {
             ps.setString(1, instance.getWorld());
@@ -2932,6 +2939,7 @@ public class DatabaseManager {
             ps.setLong(11, instance.getCreatedAt());
             ps.setLong(12, instance.getUpdatedAt());
             ps.setString(13, String.join(",", instance.getDisabledLootKeys()));
+            ps.setDouble(14, instance.getStoredXp());
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -2956,8 +2964,8 @@ public class DatabaseManager {
 
         try (PreparedStatement ps = connection.prepareStatement(
                 "REPLACE INTO spawners " +
-                        "(id, world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                        "(id, world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys, stored_xp) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
             ps.setLong(1, instance.getId());
             ps.setString(2, instance.getWorld());
             ps.setInt(3, instance.getX());
@@ -2972,6 +2980,7 @@ public class DatabaseManager {
             ps.setLong(12, instance.getCreatedAt());
             ps.setLong(13, instance.getUpdatedAt());
             ps.setString(14, String.join(",", instance.getDisabledLootKeys()));
+            ps.setDouble(15, instance.getStoredXp());
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save managed spawner " + instance.getId(), e);

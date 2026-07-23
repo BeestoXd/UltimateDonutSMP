@@ -1,15 +1,25 @@
-# Determines whether Enabled is enabled or disabled. Available options: true, false
+# ==============================================================================
+# UltimateDonutSMP - Server Wipe (Season Reset) Configuration
+# ==============================================================================
+
+# Enable or disable the season reset / server wipe feature (true / false)
 ENABLED: true
-# A list configuration for Reset Worlds. Available options: Multiple items
+
+# List of world names to be reset during a server wipe (e.g., ["world", "world_nether", "world_the_end"])
 RESET-WORLDS: []
-# A list configuration for Protected Worlds. Available options: Multiple items
+
+# List of world names protected from being reset during a server wipe (e.g., ["spawn", "lobby"])
 PROTECTED-WORLDS: []
-# The numerical value for Token Ttl Seconds. Available options: Any valid integer
+
+# Time-to-live duration in seconds for admin confirmation tokens before expiration
 TOKEN-TTL-SECONDS: 300
-# The text or value for Backup Directory. Available options: Any valid string text
+
+# Subfolder path where world backups are saved before wiping
 BACKUP-DIRECTORY: server-wipe-backups
+
+# Notification messages broadcast during server reset maintenance
 MESSAGES:
-  # The text or value for Maintenance. Available options: Any valid string text
+  # Maintenance message shown when players attempt to log in during a wipe
   MAINTENANCE: '&cthe server is preparing a season reset. try again after the restart.'
-  # The text or value for Kick. Available options: Any valid string text
+  # Kick message shown to all online players when a wipe sequence begins
   KICK: '&ca season reset is starting. the server will restart shortly.'

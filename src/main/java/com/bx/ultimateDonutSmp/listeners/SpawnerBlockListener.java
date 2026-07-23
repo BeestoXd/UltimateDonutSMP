@@ -82,6 +82,9 @@ public class SpawnerBlockListener implements Listener {
         if (!plugin.getSpawnerManager().isEnabled()) {
             return;
         }
+        if (!plugin.getSpawnerManager().isCancelMobSpawn()) {
+            return;
+        }
         if (plugin.getSpawnerManager().getSpawner(event.getSpawner().getBlock()) != null) {
             event.setCancelled(true);
         }
