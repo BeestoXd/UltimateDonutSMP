@@ -496,8 +496,12 @@ public class SpawnerManager {
             }
         });
 
-        return ok("&aplaced &f" + NumberUtils.format(instance.getStackAmount()) + "x "
-                + ColorUtils.strip(definition.displayName()) + "&a.");
+        return new ActionResult(
+                true,
+                "&aplaced &f" + NumberUtils.format(instance.getStackAmount()) + "x "
+                        + ColorUtils.strip(definition.displayName()) + "&a.",
+                quantity
+        );
     }
 
     public ActionResult createTemporarySpawner(Player owner, Block block, String typeKey, long amount, SpawnerInstance.AccessMode accessMode) {

@@ -42,13 +42,30 @@ public class SpawnerBlockListener implements Listener {
             return;
         }
 
-        if (event.getPlayer().isSneaking() && event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
-            plugin.getSpigotScheduler().runEntity(event.getPlayer(), () -> {
-                event.getPlayer().updateInventory();
-            });
+        Player player = event.getPlayer();
+        if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+            int totalPlaced = result.consumedAmount() > 0 ? result.consumedAmount() : (player.isSneaking() ? item.getAmount() : 1);
+            int extraToConsume = totalPlaced - 1;
+            if (extraToConsume > 0) {
+                int currentHandAmount = item.getAmount();
+                int newHandAmount = Math.max(0, currentHandAmount - extraToConsume);
+                if (newHandAmount <= 0) {
+                    if (event.getHand() == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
+                        player.getInventory().setItemInOffHand(null);
+                    } else {
+                        player.getInventory().setItemInMainHand(null);
+                    }
+                } else {
+                    item.setAmount(newHandAmount);
+                }
+            }
         }
 
-        event.getPlayer().sendMessage(ColorUtils.toComponent(result.message()));
+        plugin.getSpigotScheduler().runEntity(player, () -> {
+            player.updateInventory();
+        });
+
+        player.sendMessage(ColorUtils.toComponent(result.message()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
