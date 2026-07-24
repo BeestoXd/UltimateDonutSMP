@@ -514,6 +514,18 @@ public class WorthManager {
         }
     }
 
+    public boolean isSimilarIgnoringWorth(ItemStack a, ItemStack b) {
+        if (a == null || b == null) {
+            return a == b;
+        }
+        if (a.getType() != b.getType()) {
+            return false;
+        }
+        ItemStack strippedA = stripWorthDisplay(a);
+        ItemStack strippedB = stripWorthDisplay(b);
+        return strippedA.isSimilar(strippedB);
+    }
+
     public ItemStack stripWorthDisplay(ItemStack item) {
         if (item == null || item.getType().isAir()) {
             return item;
@@ -525,7 +537,11 @@ public class WorthManager {
         }
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(worthDisplayAppliedKey, PersistentDataType.BYTE)) {
+        boolean hasTag = container != null && container.has(worthDisplayAppliedKey, PersistentDataType.BYTE);
+        List<String> currentLore = meta.getLore();
+        List<String> strippedLore = stripExistingWorthLore(readOriginalLore(meta));
+
+        if (!hasTag && (currentLore == null || Objects.equals(currentLore, strippedLore))) {
             return item;
         }
 
@@ -536,10 +552,11 @@ public class WorthManager {
         }
 
         PersistentDataContainer updatedContainer = updatedMeta.getPersistentDataContainer();
-        List<String> originalLore = readOriginalLore(updatedMeta);
-        updatedContainer.remove(worthDisplayAppliedKey);
-        updatedContainer.remove(worthDisplayOriginalLoreKey);
-        updatedMeta.setLore(originalLore);
+        if (updatedContainer != null) {
+            updatedContainer.remove(worthDisplayAppliedKey);
+            updatedContainer.remove(worthDisplayOriginalLoreKey);
+        }
+        updatedMeta.setLore(strippedLore == null || strippedLore.isEmpty() ? null : strippedLore);
         updated.setItemMeta(updatedMeta);
         return updated;
     }
@@ -1091,7 +1108,7 @@ public class WorthManager {
         return worthResult.totalWorth();
     }
 
-    private boolean mergePlayerStorageStacks(Player player) {
+    public boolean mergePlayerStorageStacks(Player player) {
         ItemStack[] storage = player.getInventory().getStorageContents();
         boolean changed = false;
 
@@ -1106,30 +1123,41 @@ public class WorthManager {
                 continue;
             }
 
+            ItemStack strippedBase = stripWorthDisplay(base);
+
             for (int j = i + 1; j < storage.length; j++) {
                 ItemStack candidate = storage[j];
                 if (candidate == null || candidate.getType().isAir()) {
                     continue;
                 }
 
-                if (!base.isSimilar(candidate)) {
+                ItemStack strippedCandidate = stripWorthDisplay(candidate);
+
+                if (!strippedBase.isSimilar(strippedCandidate)) {
                     continue;
                 }
 
-                int transferable = Math.min(maxStackSize - base.getAmount(), candidate.getAmount());
+                int transferable = Math.min(maxStackSize - strippedBase.getAmount(), strippedCandidate.getAmount());
                 if (transferable <= 0) {
                     continue;
                 }
 
-                base.setAmount(base.getAmount() + transferable);
-                candidate.setAmount(candidate.getAmount() - transferable);
-                storage[i] = base;
-                storage[j] = candidate.getAmount() <= 0 ? null : candidate;
-                player.getInventory().setItem(i, storage[i]);
-                player.getInventory().setItem(j, storage[j]);
+                strippedBase.setAmount(strippedBase.getAmount() + transferable);
+                strippedCandidate.setAmount(strippedCandidate.getAmount() - transferable);
+
+                boolean enabled = isWorthDisplayEnabled(player);
+                ItemStack newBase = updateWorthDisplay(strippedBase, enabled);
+                ItemStack newCandidate = strippedCandidate.getAmount() <= 0 ? null : updateWorthDisplay(strippedCandidate, enabled);
+
+                storage[i] = newBase;
+                storage[j] = newCandidate;
+                player.getInventory().setItem(i, newBase);
+                player.getInventory().setItem(j, newCandidate);
                 changed = true;
 
-                if (base.getAmount() >= maxStackSize) {
+                base = newBase;
+                strippedBase = stripWorthDisplay(base);
+                if (strippedBase.getAmount() >= maxStackSize) {
                     break;
                 }
             }
@@ -1168,8 +1196,8 @@ public class WorthManager {
 
         PersistentDataContainer container = meta.getPersistentDataContainer();
         String serializedOriginalLore = serializeLore(originalLore);
-        String storedOriginalLore = container.get(worthDisplayOriginalLoreKey, PersistentDataType.STRING);
-        boolean alreadyApplied = container.has(worthDisplayAppliedKey, PersistentDataType.BYTE);
+        String storedOriginalLore = container == null ? null : container.get(worthDisplayOriginalLoreKey, PersistentDataType.STRING);
+        boolean alreadyApplied = container != null && container.has(worthDisplayAppliedKey, PersistentDataType.BYTE);
         if (alreadyApplied
                 && Objects.equals(storedOriginalLore, serializedOriginalLore)
                 && Objects.equals(currentLore, desiredLore)) {
@@ -1183,8 +1211,10 @@ public class WorthManager {
         }
 
         PersistentDataContainer updatedContainer = updatedMeta.getPersistentDataContainer();
-        updatedContainer.set(worthDisplayAppliedKey, PersistentDataType.BYTE, (byte) 1);
-        updatedContainer.set(worthDisplayOriginalLoreKey, PersistentDataType.STRING, serializedOriginalLore);
+        if (updatedContainer != null) {
+            updatedContainer.set(worthDisplayAppliedKey, PersistentDataType.BYTE, (byte) 1);
+            updatedContainer.set(worthDisplayOriginalLoreKey, PersistentDataType.STRING, serializedOriginalLore);
+        }
         updatedMeta.setLore(desiredLore);
         updated.setItemMeta(updatedMeta);
         return updated;
@@ -1196,6 +1226,9 @@ public class WorthManager {
 
     private List<String> readOriginalLore(ItemMeta meta) {
         PersistentDataContainer container = meta.getPersistentDataContainer();
+        if (container == null) {
+            return meta.getLore();
+        }
         String stored = container.get(worthDisplayOriginalLoreKey, PersistentDataType.STRING);
         if (stored != null) {
             return deserializeLore(stored);

@@ -44,6 +44,37 @@ public class WorthPacketDisplay implements Listener {
         this.plugin = plugin;
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         registerPacketListener();
+        registerAttemptPickupListener();
+    }
+
+    private void registerAttemptPickupListener() {
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends org.bukkit.event.Event> eventClass = 
+                (Class<? extends org.bukkit.event.Event>) Class.forName("org.bukkit.event.player.PlayerAttemptPickupItemEvent");
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                eventClass,
+                this,
+                EventPriority.LOWEST,
+                (listener, event) -> {
+                    try {
+                        Player player = (Player) event.getClass().getMethod("getPlayer").invoke(event);
+                        org.bukkit.entity.Item itemEntity = (org.bukkit.entity.Item) event.getClass().getMethod("getItem").invoke(event);
+                        ItemStack current = itemEntity.getItemStack();
+                        if (player.getGameMode() != GameMode.CREATIVE) {
+                            plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player, current);
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                },
+                plugin,
+                true
+            );
+        } catch (ClassNotFoundException e) {
+            // Not on Paper/Folia, ignore
+        }
     }
 
     private void registerPacketListener() {
@@ -69,19 +100,8 @@ public class WorthPacketDisplay implements Listener {
                 }
 
                 PacketContainer packet = event.getPacket();
-                int windowId = readWindowId(packet);
-                // editing the held/offhand item replays the equip animation, so skip them only when GUI is closed
-                int heldSlot = 36 + player.getInventory().getHeldItemSlot();
-                int offhandSlot = 45;
-                boolean skipHeld = !openInventories.contains(player.getUniqueId());
 
                 if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
-                    if (windowId == 0) {
-                        int slot = readSlotIndex(packet);
-                        if (skipHeld && (slot == heldSlot || slot == offhandSlot)) {
-                            return;
-                        }
-                    }
                     ItemStack item = packet.getItemModifier().read(0);
                     if (item != null && item.getType() == suppressedMat) {
                         return;
@@ -101,10 +121,6 @@ public class WorthPacketDisplay implements Listener {
                 boolean changed = false;
                 for (int i = 0; i < items.size(); i++) {
                     ItemStack item = items.get(i);
-                    if (windowId == 0 && skipHeld && (i == heldSlot || i == offhandSlot)) {
-                        updated.add(item);
-                        continue;
-                    }
                     if (item != null && item.getType() == suppressedMat) {
                         updated.add(item);
                         continue;
@@ -146,6 +162,11 @@ public class WorthPacketDisplay implements Listener {
         openInventories.add(event.getPlayer().getUniqueId());
         if (event.getInventory().getHolder() instanceof BaseMenu) {
             inPluginMenu.add(event.getPlayer().getUniqueId());
+        } else {
+            plugin.getWorthManager().sanitizeInventory(event.getInventory());
+            if (event.getPlayer() instanceof Player player) {
+                plugin.getWorthManager().clearWorthDisplay(player);
+            }
         }
     }
 
@@ -178,7 +199,7 @@ public class WorthPacketDisplay implements Listener {
     // strip any leftover worth nbt so the real item stays clean
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
+        if (!(event.getEntity() instanceof Player player)) {
             return;
         }
         ItemStack current = event.getItem().getItemStack();
@@ -186,6 +207,7 @@ public class WorthPacketDisplay implements Listener {
         if (stripped != current) {
             event.getItem().setItemStack(stripped);
         }
+        plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player, current);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

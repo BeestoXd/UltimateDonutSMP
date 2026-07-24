@@ -127,11 +127,14 @@ public class WorthDisplayListener implements Listener {
 
         boolean isStacking = cursor != null && !cursor.getType().isAir()
                 && current != null && !current.getType().isAir()
-                && cursor.getType() == current.getType();
+                && plugin.getWorthManager().isSimilarIgnoringWorth(cursor, current);
 
         boolean strippedAny = false;
 
-        if (isStacking) {
+        if (event.getClick() == ClickType.DOUBLE_CLICK) {
+            plugin.getWorthManager().mergeStorageStacksForNativeBehavior(player);
+            strippedAny = true;
+        } else if (isStacking) {
             ClickType click = event.getClick();
             if (click == ClickType.LEFT || click == ClickType.RIGHT) {
                 int maxStack = current.getMaxStackSize();
@@ -159,6 +162,7 @@ public class WorthDisplayListener implements Listener {
                     event.getClickedInventory().setItem(event.getSlot(), newCurrent);
                     player.setItemOnCursor(newCursor);
 
+                    plugin.getWorthManager().mergePlayerStorageStacks(player);
                     queueRefresh(player, 1L, true);
                     return;
                 }
@@ -173,6 +177,8 @@ public class WorthDisplayListener implements Listener {
                 event.setCurrentItem(strippedCurrent);
                 strippedAny = true;
             }
+
+            plugin.getWorthManager().mergePlayerStorageStacks(player);
         }
 
         if (isShulkerInventory(topInventory)) {
@@ -240,6 +246,7 @@ public class WorthDisplayListener implements Listener {
             }
 
             plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player, current);
+            plugin.getWorthManager().mergePlayerStorageStacks(player);
             queueRefresh(player, 1L);
         }
     }
@@ -262,6 +269,7 @@ public class WorthDisplayListener implements Listener {
                         
                         if (player.getGameMode() != GameMode.CREATIVE && !isAmethystItem(current)) {
                             plugin.getWorthManager().stripStorageWorthDisplayForNativePickup(player, current);
+                            plugin.getWorthManager().mergePlayerStorageStacks(player);
                             queueRefresh(player, 1L);
                         }
                     } catch (Exception e) {

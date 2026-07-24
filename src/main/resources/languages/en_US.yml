@@ -2258,6 +2258,8 @@ CONFIG:
         USAGE: '&cUsage: /shop [reload]'
         FAVORITE-ADDED: '&aAdded &f{item}&a to shop favorites.'
         FAVORITE-REMOVED: '&eRemoved &f{item}&e from shop favorites.'
+      WEB-SERVER:
+        PUBLIC-URL: ''
   HIDE:
     GUI:
       MAIN:
