@@ -1766,7 +1766,12 @@ public class SpawnerManager {
         return builder.toString();
     }
 
-    private int normalizeSize(int size) {
+    public Material getTypeIcon(String typeKey) {
+        SpawnerTypeDefinition def = getTypeDefinition(typeKey);
+        return def == null || def.iconMaterial() == null ? Material.SPAWNER : def.iconMaterial();
+    }
+
+    public int normalizeSize(int size) {
         int normalized = Math.max(9, ((size + 8) / 9) * 9);
         return Math.min(54, normalized);
     }

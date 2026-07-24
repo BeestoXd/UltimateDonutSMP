@@ -1417,6 +1417,86 @@ MENUS:
       LORE:
       - '&7Are you sure you want'
       - '&7To end your life?'
+  SPAWNER-MENUS:
+    MAIN-MENU:
+      TITLE: '{stack} {mob}'
+      STORAGE-BUTTON:
+        TITLE: '&6Spawner Storage'
+        NO-ITEMS-LORE:
+        - '&7No items stored.'
+        ITEM-SUMMARY-FORMAT: '&6{amount} &f{material}'
+        MORE-ITEMS-FORMAT: '&7+ {count} more item types...'
+        FOOTER-LORE:
+        - ''
+        - '&eClick to view & collect spawner storage'
+      MOB-HEAD-BUTTON:
+        TITLE: '&e{stack} {mob} SPAWNERS'
+        LORE:
+        - '&e• &fClick to sell items and collect xp'
+        - '&7Storage: &e{percentage}% Filled.'
+      COLLECT-XP-BUTTON:
+        TITLE: '&aCollect XP'
+        LORE:
+        - '&a{xp} &fXP Points'
+        - ''
+        - '&eClick to claim XP points'
+    STORAGE-MENU:
+      TITLE: '&8{mob} Spawners - {page}/{max_page}'
+      ITEM-META:
+        TITLE: '&b{material}'
+        LORE:
+        - '&7Filter Status: {filter_status}'
+        - ''
+        - '&eLeft-Click &7to pick up'
+        - '&eRight-Click &7to pick up half / place 1'
+        - '&eShift-Left &7to collect to inventory'
+        - '&eShift-Right &7to toggle filter'
+        FILTER-ENABLED: '&aEnabled &7(Storing)'
+        FILTER-DISABLED: '&cDisabled &7(Not Storing)'
+      BACK-BUTTON:
+        TITLE: '&cBACK'
+        LORE:
+        - '&7Return to spawner menu.'
+      COLLECT-ALL-BUTTON:
+        TITLE: '&eCOLLECT ALL'
+        LORE:
+        - '&e• &fCollect all loot from storage into inventory'
+      PREVIOUS-PAGE-BUTTON:
+        TITLE: '&aPREVIOUS PAGE'
+        LORE:
+        - '&fClick to go back to page {prev_page}'
+      NEXT-PAGE-BUTTON:
+        TITLE: '&aNEXT PAGE'
+        LORE:
+        - '&fClick to go to page {next_page}'
+      DROP-LOOT-BUTTON:
+        TITLE: '&aDROP LOOT'
+        LORE:
+        - '&fClick to drop all loot on the page'
+      SELL-ALL-BUTTON:
+        TITLE: '&aSELL ALL'
+        LORE:
+        - '&fClick to sell all mob drops!'
+    SELL-CONFIRM-MENU:
+      TITLE: '&8Confirm Sell'
+      CONFIRM-BUTTON:
+        TITLE: '&aConfirm Sell'
+        LORE:
+        - '&fTotal Value: &a${price}'
+        - '&7Category Multiplier: &e{multiplier}x'
+        - ''
+        - '&eClick to confirm sale!'
+      CANCEL-BUTTON:
+        TITLE: '&cCancel'
+        LORE:
+        - '&7Cancel transaction and return to storage.'
+      INFO-ICON:
+        TITLE: '&eSell Summary'
+        LORE:
+        - '&fEstimated Total: &a${price}'
+        - '&7Total Items: &f{item_count}'
+    PANEL-MENU:
+      TITLE: '&8Spawners'
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -1949,7 +2029,7 @@ CONFIG:
       defeat:
         title: '&c&lDefeat!'
         subtitle: '&c<opponent> &feliminated you!'
-
+  
   CRATES:
     SETTINGS:
       LIST-MENU:
@@ -4382,8 +4462,7 @@ BUILTIN:
   860de4268604cfffa720: '&fUse rtp when spawn feels crowded'
   d7e549a7f9fc2b01d1e5: '&l'
   f33ae22aa6c9add1be07: '&r'
-  f45e0052108b575928a1: 
-    usessl=false&allowpublickeyretrieval=true&servertimezone=utc&characterencoding=utf8
+  f45e0052108b575928a1: usessl=false&allowpublickeyretrieval=true&servertimezone=utc&characterencoding=utf8
   3243ec39eaf4e7ba59f8: '{money_color}{money_name_plural}: &f%money_formatted%'
   19cc37298cec4ee00ebd: '{shards_color}{shards_name_plural}: &f%shards_formatted%'
   efe932379b53b1a38b2c: 'You received %amount_formatted% &7(&ax%multiplier%&7) &7(total:
@@ -4394,5 +4473,4 @@ BUILTIN:
   23d6007c51d950a18c48: 'You received %amount_formatted% &8[everywhere] &7(total:
     %total_formatted%&7)'
   56d883250427ad469055: Mb&8/&f
-  d8b9a7616dfdf1cbb574: 
-    usessl=false&allowpublickeyretrieval=true&servertimezone=utc&characterencoding=utf8
+  d8b9a7616dfdf1cbb574: usessl=false&allowpublickeyretrieval=true&servertimezone=utc&characterencoding=utf8

@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
+import com.bx.ultimateDonutSmp.managers.WorthManager;
 import com.bx.ultimateDonutSmp.models.AuctionListing;
 import com.bx.ultimateDonutSmp.models.DuelArena;
 import com.bx.ultimateDonutSmp.models.FfaArena;
@@ -273,14 +274,63 @@ public class UniversalCommandTabCompleter implements TabCompleter {
     }
 
     private List<String> completeWorth(CommandSender sender, String[] args) {
-        if (args.length != 1) {
+        if (args == null || args.length == 0) {
             return List.of();
         }
-        List<String> options = new ArrayList<>(List.of("hand", "held", "item", "check", "browse", "prices"));
-        if (has(sender, "ultimatedonutsmp.admin.worth")) {
-            options.add("reload");
+
+        List<WorthManager.WorthBrowserEntry> entries = plugin.getWorthManager().getBrowserEntries();
+        List<String> prettifiedNames = entries.stream()
+                .map(WorthManager.WorthBrowserEntry::material)
+                .filter(mat -> mat != null && !mat.isAir())
+                .map(mat -> plugin.getWorthManager().prettifyMaterial(mat))
+                .distinct()
+                .toList();
+
+        if (args.length == 1) {
+            List<String> options = new ArrayList<>();
+            options.addAll(List.of("hand", "held", "item", "check", "browse", "prices"));
+            if (has(sender, "ultimatedonutsmp.admin.worth")) {
+                options.add("reload");
+            }
+            options.addAll(prettifiedNames);
+            return partial(args[0], options);
         }
-        return partial(args[0], options);
+
+        boolean isFirstArgAmount = false;
+        try {
+            int amount = Integer.parseInt(args[0]);
+            if (amount > 0) {
+                isFirstArgAmount = true;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+
+        int itemStartIndex = isFirstArgAmount ? 1 : 0;
+        if (args.length <= itemStartIndex) {
+            return List.of();
+        }
+
+        if (isFirstArgAmount && args.length == 2) {
+            return partial(args[1], prettifiedNames);
+        }
+
+        String itemTypedSoFar = String.join(" ", java.util.Arrays.copyOfRange(args, itemStartIndex, args.length)).toLowerCase(Locale.ROOT);
+        String itemTypedPrefixBeforeLast = String.join(" ", java.util.Arrays.copyOfRange(args, itemStartIndex, args.length - 1)).toLowerCase(Locale.ROOT);
+        String lastArg = args[args.length - 1];
+
+        List<String> suggestions = new ArrayList<>();
+        for (String fullName : prettifiedNames) {
+            String lowerFull = fullName.toLowerCase(Locale.ROOT);
+            if (lowerFull.startsWith(itemTypedSoFar)) {
+                suggestions.add(fullName);
+            }
+            if (!itemTypedPrefixBeforeLast.isEmpty() && lowerFull.startsWith(itemTypedPrefixBeforeLast + " ")) {
+                String remainder = fullName.substring(itemTypedPrefixBeforeLast.length() + 1);
+                suggestions.add(remainder);
+            }
+        }
+
+        return partial(lastArg, suggestions);
     }
 
     private List<String> completePayment(CommandSender sender, String[] args) {

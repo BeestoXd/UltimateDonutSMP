@@ -1403,11 +1403,58 @@ public class WorthManager {
         return placeholder.contains("price");
     }
 
-    private Material matchMaterial(String key) {
+    public Material matchMaterial(String key) {
+        if (key == null || key.isBlank()) {
+            return null;
+        }
         Material material = Material.matchMaterial(key);
         if (material != null) {
             return material;
         }
         return Registry.MATERIAL.get(NamespacedKey.minecraft(key.toLowerCase(Locale.US)));
+    }
+
+    public Material findMaterial(String input) {
+        if (input == null || input.isBlank()) {
+            return null;
+        }
+
+        String clean = input.trim();
+        Material direct = matchMaterial(clean);
+        if (direct != null) {
+            return direct;
+        }
+
+        Material withUnderscores = matchMaterial(clean.replace(" ", "_"));
+        if (withUnderscores != null) {
+            return withUnderscores;
+        }
+
+        Material withSpaces = matchMaterial(clean.replace("_", " "));
+        if (withSpaces != null) {
+            return withSpaces;
+        }
+
+        String normalizedClean = clean.replaceAll("[ _-]", "").toLowerCase(Locale.US);
+
+        for (WorthBrowserEntry entry : getBrowserEntries()) {
+            Material mat = entry.material();
+            if (mat == null) continue;
+            if (mat.name().replaceAll("[ _-]", "").toLowerCase(Locale.US).equals(normalizedClean)) {
+                return mat;
+            }
+            if (prettifyMaterial(mat).replaceAll("[ _-]", "").toLowerCase(Locale.US).equals(normalizedClean)) {
+                return mat;
+            }
+        }
+
+        for (Material mat : Material.values()) {
+            if (mat.isAir()) continue;
+            if (mat.name().replaceAll("[ _-]", "").toLowerCase(Locale.US).equals(normalizedClean)) {
+                return mat;
+            }
+        }
+
+        return null;
     }
 }

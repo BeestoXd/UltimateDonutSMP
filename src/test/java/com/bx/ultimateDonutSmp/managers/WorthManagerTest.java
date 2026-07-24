@@ -60,6 +60,21 @@ class WorthManagerTest {
         assertEquals(1550.0, result.totalWorth());
     }
 
+    @Test
+    void findMaterialResolvesSnakeCaseAndPrettifiedNames() throws Exception {
+        org.bukkit.configuration.file.YamlConfiguration worthConfig = new org.bukkit.configuration.file.YamlConfiguration();
+        worthConfig.set("TYPE.BLOCKS.ACACIA_PRESSURE_PLATE", 25.0);
+        worthConfig.set("TYPE.MISC.DRAGON_EGG", 6400000000.0);
+
+        UltimateDonutSmp plugin = createMockPlugin(worthConfig);
+        WorthManager worthManager = new WorthManager(plugin);
+
+        assertEquals(org.bukkit.Material.ACACIA_PRESSURE_PLATE, worthManager.findMaterial("acacia_pressure_plate"));
+        assertEquals(org.bukkit.Material.ACACIA_PRESSURE_PLATE, worthManager.findMaterial("Acacia Pressure Plate"));
+        assertEquals(org.bukkit.Material.DRAGON_EGG, worthManager.findMaterial("dragon_egg"));
+        assertEquals(org.bukkit.Material.DRAGON_EGG, worthManager.findMaterial("Dragon Egg"));
+    }
+
     private void setupMockServer() throws Exception {
         java.lang.reflect.Field serverField = org.bukkit.Bukkit.class.getDeclaredField("server");
         serverField.setAccessible(true);

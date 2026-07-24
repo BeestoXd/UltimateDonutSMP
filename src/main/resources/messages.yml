@@ -444,9 +444,9 @@ PORTALMANAGER:
 # Configuration section for Worth.
 WORTH:
   # The text or value for Default. Available options: Any valid string text
-  DEFAULT: '&b1 {item} &7is now &a${price}'
+  DEFAULT: '&b1 {item} &fis worth &a{price_formatted}'
   # The text or value for Hand Item. Available options: Any valid string text
-  HAND-ITEM: '&b{amount} {item} &7is now &a${total}'
+  HAND-ITEM: '&b{amount} {item} &fis worth &a{total_formatted}'
   # The text or value for No Sellable. Available options: Any valid string text
   NO-SELLABLE: '&cThis item is not sellable.'
   # The text or value for Container Breakdown. Available options: Any valid string text

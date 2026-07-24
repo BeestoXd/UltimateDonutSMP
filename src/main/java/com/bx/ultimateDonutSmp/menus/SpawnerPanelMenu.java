@@ -35,7 +35,7 @@ public class SpawnerPanelMenu extends BaseMenu {
         inventory = Bukkit.createInventory(
                 this,
                 plugin.getSpawnerManager().getPanelSize(),
-                ColorUtils.toComponent(plugin.getSpawnerManager().getPanelTitle().replace("{world}", worldLabel))
+                ColorUtils.toComponent(plugin.getSpawnerManager().getPanelTitle(worldName))
         );
         clear();
 
