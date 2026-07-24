@@ -873,6 +873,10 @@ public class DuelManager {
             return false;
         }
 
+        if (resolvedSelection.usesGeneratedWorld()) {
+            worldManager.prepareGeneratedArena(resolvedSelection);
+        }
+
         removeRequestsFor(challenger.getUniqueId(), false);
         removeRequestsFor(target.getUniqueId(), false);
 
@@ -979,6 +983,10 @@ public class DuelManager {
         if (queue.contains(player.getUniqueId())) {
             send(player, "&eʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ᴄᴀѕᴜᴀʟ ᴅᴜᴇʟ ǫᴜᴇᴜᴇ.");
             return false;
+        }
+
+        if (resolvedSelection.usesGeneratedWorld()) {
+            worldManager.prepareGeneratedArena(resolvedSelection);
         }
 
         removeRequestsFor(player.getUniqueId(), false);
