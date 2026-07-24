@@ -2,10 +2,10 @@ package com.bx.ultimateDonutSmp.menus;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.SpawnerInstance;
-import com.bx.ultimateDonutSmp.models.SpawnerTypeDefinition;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,58 +16,67 @@ import java.util.List;
 public class SpawnerPanelMenu extends BaseMenu {
 
     private static final int ITEMS_PER_PAGE = 45;
-
     private final String worldName;
     private final int page;
 
     public SpawnerPanelMenu(UltimateDonutSmp plugin, String worldName, int page) {
-        super(plugin, plugin.getSpawnerManager().getPanelTitle(worldName), plugin.getSpawnerManager().getPanelSize());
+        super(plugin, "&8Spawners", plugin.getSpawnerManager().getPanelSize());
         this.worldName = worldName;
         this.page = Math.max(1, page);
     }
 
     @Override
     public void build(Player player) {
-        clear();
-        fill(Material.GRAY_STAINED_GLASS_PANE);
-
         List<SpawnerInstance> spawners = plugin.getSpawnerManager().getSpawnersInWorld(worldName);
-        String worldLabel = plugin.getSpawnerManager().describeWorld(worldName);
         int totalPages = Math.max(1, (int) Math.ceil(spawners.size() / (double) ITEMS_PER_PAGE));
         int safePage = Math.min(page, totalPages);
-        int startIndex = (safePage - 1) * ITEMS_PER_PAGE;
-        int endIndex = Math.min(spawners.size(), startIndex + ITEMS_PER_PAGE);
+        String worldLabel = plugin.getSpawnerManager().describeWorld(worldName);
 
-        for (int slot = 0; slot < ITEMS_PER_PAGE && startIndex + slot < endIndex; slot++) {
-            SpawnerInstance instance = spawners.get(startIndex + slot);
-            SpawnerTypeDefinition definition = plugin.getSpawnerManager().getTypeDefinition(instance.getMobTypeKey());
-            Material icon = definition == null ? Material.SPAWNER : definition.iconMaterial();
+        inventory = Bukkit.createInventory(
+                this,
+                plugin.getSpawnerManager().getPanelSize(),
+                ColorUtils.toComponent(plugin.getSpawnerManager().getPanelTitle().replace("{world}", worldLabel))
+        );
+        clear();
+
+        for (int r = inventory.getSize() - 9; r < inventory.getSize(); r++) {
+            set(r, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
+        }
+
+        int startIndex = (safePage - 1) * ITEMS_PER_PAGE;
+        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, spawners.size());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            SpawnerInstance instance = spawners.get(i);
+            int slot = i - startIndex;
+            Material icon = plugin.getSpawnerManager().getTypeIcon(instance.getMobTypeKey());
+
             set(slot, ItemUtils.createItem(
                     icon,
                     "&b" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey()) + " &fx" + NumberUtils.format(instance.getStackAmount()),
                     List.of(
-                            "&7ᴏᴡɴᴇʀ: &f" + instance.getOwnerNameSnapshot(),
-                            "&7ᴡᴏʀʟᴅ: &f" + worldLabel,
-                            "&7ᴄᴏᴏʀᴅѕ: &f" + instance.getX() + ", " + instance.getY() + ", " + instance.getZ(),
-                            "&7ѕᴛᴏʀᴇᴅ ʟᴏᴏᴛ: &f" + NumberUtils.format(instance.getTotalStoredItems()),
+                            "&7Owner: &f" + instance.getOwnerNameSnapshot(),
+                            "&7World: &f" + worldLabel,
+                            "&7Coords: &f" + instance.getX() + ", " + instance.getY() + ", " + instance.getZ(),
+                            "&7Stored Loot: &f" + NumberUtils.format(instance.getTotalStoredItems()),
                             "",
-                            "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ ᴛʜɪѕ ѕᴘᴀᴡɴᴇʀ"
+                            "&eClick to teleport to this spawner"
                     )
             ));
         }
 
         int lastRow = inventory.getSize() - 9;
         set(lastRow, ItemUtils.createItem(Material.COMPASS, "&b" + worldLabel, List.of(
-                "&7ᴘᴀɢᴇ: &f" + safePage + "&7/&f" + totalPages,
-                "&7ѕᴘᴀᴡɴᴇʀѕ ɪɴ ᴡᴏʀʟᴅ: &f" + spawners.size()
+                "&7Page: &f" + safePage + "&7/&f" + totalPages,
+                "&7Spawners in World: &f" + spawners.size()
         )));
         set(lastRow + 1, safePage > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aPrevious Page", List.of("&7Go to page &f" + (safePage - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 7, safePage < totalPages
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (safePage + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aNext Page", List.of("&7Go to page &f" + (safePage + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.OAK_DOOR, "&cʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴡᴏʀʟᴅ ʟɪѕᴛ.")));
+        set(lastRow + 8, ItemUtils.createItem(Material.OAK_DOOR, "&cBack", List.of("&7Return to world list.")));
     }
 
     @Override
@@ -101,7 +110,7 @@ public class SpawnerPanelMenu extends BaseMenu {
         SpawnerInstance instance = spawners.get(entryIndex);
         Location destination = plugin.getSpawnerManager().getSpawnerCenter(instance).add(0, 1, 0);
         if (destination.getWorld() == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕᴘᴀᴡɴᴇʀ'ѕ ᴡᴏʀʟᴅ ɪѕ ɴᴏᴛ ᴄᴜʀʀᴇɴᴛʟʏ ʟᴏᴀᴅᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cThat spawner's world is not currently loaded."));
             return;
         }
 
@@ -111,8 +120,8 @@ public class SpawnerPanelMenu extends BaseMenu {
                     if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
                         return;
                     }
-                    player.sendMessage(ColorUtils.toComponent("&aᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ ѕᴘᴀᴡɴᴇʀ ᴀᴛ &f"
-                            + instance.getX() + ", " + instance.getY() + ", " + instance.getZ() + "&a ɪɴ &f" + worldLabel + "&a."));
+                    player.sendMessage(ColorUtils.toComponent("&aTeleported to spawner at &f"
+                            + instance.getX() + ", " + instance.getY() + ", " + instance.getZ() + "&a in &f" + worldLabel + "&a."));
                     plugin.getAntiEspManager().updatePlayer(player);
                 }));
     }

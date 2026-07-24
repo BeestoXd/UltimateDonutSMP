@@ -142,15 +142,25 @@ public class SpawnerManager {
         defaultXpPerCycle = Math.max(0.0, config.getDouble("SETTINGS.XP_PER_CYCLE", 3.7));
         hopperExtractionEnabled = config.getBoolean("SETTINGS.HOPPER_EXTRACTION.ENABLED", false);
         hopperExtractionAmountPerCycle = Math.max(1, config.getInt("SETTINGS.HOPPER_EXTRACTION.AMOUNT_PER_CYCLE", 64));
-        mainMenuTitle = config.getString("GUI.MAIN_MENU.TITLE", "{stack} {mob}");
-        mainMenuSize = normalizeSize(config.getInt("GUI.MAIN_MENU.SIZE", 27));
-        storageTitle = config.getString("GUI.STORAGE.TITLE", "&8{mob} ѕᴘᴀᴡɴᴇʀѕ - {page}/{max_page}");
-        storageSize = normalizeSize(config.getInt("GUI.STORAGE.SIZE", 54));
-        storageItemsPerPage = Math.max(9, Math.min(storageSize - 9, config.getInt("GUI.STORAGE.ITEMS_PER_PAGE", 45)));
-        panelTitle = config.getString("GUI.PANEL.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ");
-        panelSize = normalizeSize(config.getInt("GUI.PANEL.SIZE", 54));
-        worldListTitle = config.getString("GUI.WORLD_LIST.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ");
-        worldListSize = normalizeSize(config.getInt("GUI.WORLD_LIST.SIZE", 27));
+        FileConfiguration menusConfig = plugin.getConfigManager().getMenus();
+        mainMenuTitle = menusConfig.getString("SPAWNER-MENUS.MAIN-MENU.TITLE",
+                config.getString("GUI.MAIN_MENU.TITLE", "{stack} {mob}"));
+        mainMenuSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.MAIN-MENU.SIZE",
+                config.getInt("GUI.MAIN_MENU.SIZE", 27)));
+        storageTitle = menusConfig.getString("SPAWNER-MENUS.STORAGE-MENU.TITLE",
+                config.getString("GUI.STORAGE.TITLE", "&8{mob} ѕᴘᴀᴡɴᴇʀѕ - {page}/{max_page}"));
+        storageSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.STORAGE-MENU.SIZE",
+                config.getInt("GUI.STORAGE.SIZE", 54)));
+        storageItemsPerPage = Math.max(9, Math.min(storageSize - 9, menusConfig.getInt("SPAWNER-MENUS.STORAGE-MENU.ITEMS-PER-PAGE",
+                config.getInt("GUI.STORAGE.ITEMS_PER_PAGE", 45))));
+        panelTitle = menusConfig.getString("SPAWNER-MENUS.PANEL-MENU.TITLE",
+                config.getString("GUI.PANEL.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ"));
+        panelSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.PANEL-MENU.SIZE",
+                config.getInt("GUI.PANEL.SIZE", 54)));
+        worldListTitle = menusConfig.getString("SPAWNER-MENUS.WORLD-LIST-MENU.TITLE",
+                config.getString("GUI.WORLD_LIST.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ"));
+        worldListSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.WORLD-LIST-MENU.SIZE",
+                config.getInt("GUI.WORLD_LIST.SIZE", 27)));
         FileConfiguration sounds = plugin.getConfigManager().getSounds();
         soundOpenMenu = sounds.getString("SPAWNERS.OPEN-MENU", "minecraft:block.chest.open|1.0|1.0");
         soundCollectLoot = sounds.getString("SPAWNERS.COLLECT-LOOT", "minecraft:entity.item.pickup|1.0|1.0");

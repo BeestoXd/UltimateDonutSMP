@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -14,6 +15,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class SpawnerStorageMenu extends BaseMenu {
     private long lastInteractionTime = 0L;
 
     public SpawnerStorageMenu(UltimateDonutSmp plugin, long spawnerId, int page) {
-        super(plugin, "&8ѕᴘᴀᴡɴᴇʀ ѕᴛᴏʀᴀɢᴇ", plugin.getSpawnerManager().getStorageSize());
+        super(plugin, "&8Spawner Storage", plugin.getSpawnerManager().getStorageSize());
         this.spawnerId = spawnerId;
         this.page = Math.max(1, page);
     }
@@ -88,16 +90,32 @@ public class SpawnerStorageMenu extends BaseMenu {
         ItemStack item = new ItemStack(material, Math.max(1, Math.min(amount, material.getMaxStackSize())));
         var meta = item.getItemMeta();
         if (meta != null) {
+            FileConfiguration config = plugin.getConfigManager().getMenus();
             boolean isFiltered = instance.isLootDisabled(material.name());
-            meta.setDisplayName(ColorUtils.toComponent("&b" + plugin.getWorthManager().prettifyMaterial(material)));
-            meta.setLore(ColorUtils.toComponentList(List.of(
-                    "&7ꜰɪʟᴛᴇʀ ѕᴛᴀᴛᴜѕ: " + (isFiltered ? "&cᴅɪѕᴀʙʟᴇᴅ &7(ɴᴏᴛ ѕᴛᴏʀɪɴɢ)" : "&aᴇɴᴀʙʟᴇᴅ &7(ѕᴛᴏʀɪɴɢ)"),
-                    "",
-                    "&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ᴘɪᴄᴋ ᴜᴘ",
-                    "&eʀɪɢʜᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ᴘɪᴄᴋ ᴜᴘ ʜᴀʟꜰ / ᴘʟᴀᴄᴇ 1",
-                    "&eѕʜɪꜰᴛ-ʟᴇꜰᴛ &7ᴛᴏ ᴄᴏʟʟᴇᴄᴛ ᴛᴏ ɪɴᴠᴇɴᴛᴏʀʏ",
-                    "&eѕʜɪꜰᴛ-ʀɪɢʜᴛ &7ᴛᴏ ᴛᴏɢɢʟᴇ ꜰɪʟᴛᴇʀ"
-            )));
+
+            String enabledTxt = config.getString("SPAWNER-MENUS.STORAGE-MENU.ITEM-META.FILTER-ENABLED", "&aEnabled &7(Storing)");
+            String disabledTxt = config.getString("SPAWNER-MENUS.STORAGE-MENU.ITEM-META.FILTER-DISABLED", "&cDisabled &7(Not Storing)");
+            String filterStatus = isFiltered ? disabledTxt : enabledTxt;
+
+            String titleFormat = config.getString("SPAWNER-MENUS.STORAGE-MENU.ITEM-META.TITLE", "&b{material}");
+            meta.setDisplayName(ColorUtils.toComponent(titleFormat.replace("{material}", plugin.getWorthManager().prettifyMaterial(material))));
+
+            List<String> rawLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.ITEM-META.LORE");
+            List<String> lore = new ArrayList<>();
+            if (rawLore.isEmpty()) {
+                lore.add("&7Filter Status: " + filterStatus);
+                lore.add("");
+                lore.add("&eLeft-Click &7to pick up");
+                lore.add("&eRight-Click &7to pick up half / place 1");
+                lore.add("&eShift-Left &7to collect to inventory");
+                lore.add("&eShift-Right &7to toggle filter");
+            } else {
+                for (String line : rawLore) {
+                    lore.add(line.replace("{filter_status}", filterStatus)
+                            .replace("{material}", plugin.getWorthManager().prettifyMaterial(material)));
+                }
+            }
+            meta.setLore(ColorUtils.toComponentList(lore));
             item.setItemMeta(meta);
         }
         return item;
@@ -120,10 +138,10 @@ public class SpawnerStorageMenu extends BaseMenu {
     public void build(Player player) {
         SpawnerInstance instance = plugin.getSpawnerManager().getSpawner(spawnerId);
         if (instance == null) {
-            inventory = Bukkit.createInventory(this, plugin.getSpawnerManager().getStorageSize(), ColorUtils.toComponent("&8ѕᴘᴀᴡɴᴇʀ ᴍɪѕѕɪɴɢ"));
+            inventory = Bukkit.createInventory(this, plugin.getSpawnerManager().getStorageSize(), ColorUtils.toComponent("&8Spawner Missing"));
             clear();
             fill(Material.GRAY_STAINED_GLASS_PANE);
-            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cѕᴘᴀᴡɴᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ"));
+            set(inventory.getSize() / 2, ItemUtils.createItem(Material.BARRIER, "&cSpawner Not Found"));
             return;
         }
 
@@ -163,46 +181,89 @@ public class SpawnerStorageMenu extends BaseMenu {
             }
         }
 
-        // Slot 45 (lastRow + 0): Barrier (Back to menu)
-        set(lastRow, ItemUtils.createItem(Material.BARRIER, "&cBACK", List.of("&7Return to spawner menu.")));
+        FileConfiguration config = plugin.getConfigManager().getMenus();
 
-        // Slot 48 (lastRow + 3): Spectral Arrow (Golden arrow - collect loot)
-        set(lastRow + 3, ItemUtils.createItem(
-                Material.SPECTRAL_ARROW,
-                "&eCOLLECT ALL",
-                List.of("&e• &fCollect all loot from storage into inventory")
-        ));
+        // 1. Back Button
+        int backSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.BACK-BUTTON.SLOT", lastRow);
+        String backMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.BACK-BUTTON.MATERIAL", "BARRIER");
+        Material backMat = Material.matchMaterial(backMatName);
+        if (backMat == null) backMat = Material.BARRIER;
+        String backTitle = config.getString("SPAWNER-MENUS.STORAGE-MENU.BACK-BUTTON.TITLE", "&cBACK");
+        List<String> backLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.BACK-BUTTON.LORE");
+        if (backLore.isEmpty()) backLore = List.of("&7Return to spawner menu.");
+        set(backSlot, ItemUtils.createItem(backMat, backTitle, backLore));
 
-        // Slot 49 (lastRow + 4): Previous Page Arrow
+        // 2. Collect All Button
+        int collectSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.SLOT", lastRow + 3);
+        String collectMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.MATERIAL", "SPECTRAL_ARROW");
+        Material collectMat = Material.matchMaterial(collectMatName);
+        if (collectMat == null) collectMat = Material.SPECTRAL_ARROW;
+        String collectTitle = config.getString("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.TITLE", "&eCOLLECT ALL");
+        List<String> collectLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.LORE");
+        if (collectLore.isEmpty()) collectLore = List.of("&e• &fCollect all loot from storage into inventory");
+        set(collectSlot, ItemUtils.createItem(collectMat, collectTitle, collectLore));
+
+        // 3. Previous Page Button
+        int prevSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.SLOT", lastRow + 4);
         if (safePage > 1) {
-            set(lastRow + 4, ItemUtils.createItem(Material.ARROW, "&aPREVIOUS PAGE", List.of("&fClick to go back to page " + (safePage - 1))));
+            String prevMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.MATERIAL", "ARROW");
+            Material prevMat = Material.matchMaterial(prevMatName);
+            if (prevMat == null) prevMat = Material.ARROW;
+            String prevTitle = config.getString("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.TITLE", "&aPREVIOUS PAGE");
+            List<String> rawPrevLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.LORE");
+            List<String> prevLore = new ArrayList<>();
+            if (rawPrevLore.isEmpty()) {
+                prevLore.add("&fClick to go back to page " + (safePage - 1));
+            } else {
+                for (String line : rawPrevLore) {
+                    prevLore.add(line.replace("{prev_page}", String.valueOf(safePage - 1)));
+                }
+            }
+            set(prevSlot, ItemUtils.createItem(prevMat, prevTitle, prevLore));
         } else {
-            set(lastRow + 4, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
+            set(prevSlot, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
         }
 
-        // Slot 50 (lastRow + 5): Background Glass Pane
-        set(lastRow + 5, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
-
-        // Slot 51 (lastRow + 6): Next Page Arrow
+        // 4. Next Page Button
+        int nextSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.SLOT", lastRow + 6);
         if (safePage < totalPages) {
-            set(lastRow + 6, ItemUtils.createItem(Material.ARROW, "&aNEXT PAGE", List.of("&fClick to go to page " + (safePage + 1))));
+            String nextMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.MATERIAL", "ARROW");
+            Material nextMat = Material.matchMaterial(nextMatName);
+            if (nextMat == null) nextMat = Material.ARROW;
+            String nextTitle = config.getString("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.TITLE", "&aNEXT PAGE");
+            List<String> rawNextLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.LORE");
+            List<String> nextLore = new ArrayList<>();
+            if (rawNextLore.isEmpty()) {
+                nextLore.add("&fClick to go to page " + (safePage + 1));
+            } else {
+                for (String line : rawNextLore) {
+                    nextLore.add(line.replace("{next_page}", String.valueOf(safePage + 1)));
+                }
+            }
+            set(nextSlot, ItemUtils.createItem(nextMat, nextTitle, nextLore));
         } else {
-            set(lastRow + 6, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
+            set(nextSlot, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
         }
 
-        // Slot 52 (lastRow + 7): Dropper (Drop loot)
-        set(lastRow + 7, ItemUtils.createItem(
-                Material.DROPPER,
-                "&aDROP LOOT",
-                List.of("&fClick to drop all loot on the page")
-        ));
+        // 5. Drop Loot Button
+        int dropSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.DROP-LOOT-BUTTON.SLOT", lastRow + 7);
+        String dropMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.DROP-LOOT-BUTTON.MATERIAL", "DROPPER");
+        Material dropMat = Material.matchMaterial(dropMatName);
+        if (dropMat == null) dropMat = Material.DROPPER;
+        String dropTitle = config.getString("SPAWNER-MENUS.STORAGE-MENU.DROP-LOOT-BUTTON.TITLE", "&aDROP LOOT");
+        List<String> dropLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.DROP-LOOT-BUTTON.LORE");
+        if (dropLore.isEmpty()) dropLore = List.of("&fClick to drop all loot on the page");
+        set(dropSlot, ItemUtils.createItem(dropMat, dropTitle, dropLore));
 
-        // Slot 53 (lastRow + 8): Gold Ingot (Sell all with confirm sell)
-        set(lastRow + 8, ItemUtils.createItem(
-                Material.GOLD_INGOT,
-                "&aSELL ALL",
-                List.of("&fClick to sell all mob drops!")
-        ));
+        // 6. Sell All Button
+        int sellSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.SELL-ALL-BUTTON.SLOT", lastRow + 8);
+        String sellMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.SELL-ALL-BUTTON.MATERIAL", "GOLD_INGOT");
+        Material sellMat = Material.matchMaterial(sellMatName);
+        if (sellMat == null) sellMat = Material.GOLD_INGOT;
+        String sellTitle = config.getString("SPAWNER-MENUS.STORAGE-MENU.SELL-ALL-BUTTON.TITLE", "&aSELL ALL");
+        List<String> sellLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.SELL-ALL-BUTTON.LORE");
+        if (sellLore.isEmpty()) sellLore = List.of("&fClick to sell all mob drops!");
+        set(sellSlot, ItemUtils.createItem(sellMat, sellTitle, sellLore));
     }
 
     public void handleInventoryClick(InventoryClickEvent event) {
@@ -278,26 +339,33 @@ public class SpawnerStorageMenu extends BaseMenu {
                     player.updateInventory();
                 }
             }
-            // For normal (non-shift) clicks inside player inventory, let Bukkit handle it natively!
             return;
         }
 
-        // 2. Click in top inventory control bar (Slots 45 to 53)
-        if (rawSlot >= lastRow) {
+        FileConfiguration config = plugin.getConfigManager().getMenus();
+        int backSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.BACK-BUTTON.SLOT", lastRow);
+        int collectSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.SLOT", lastRow + 3);
+        int prevSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.SLOT", lastRow + 4);
+        int nextSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.SLOT", lastRow + 6);
+        int dropSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.DROP-LOOT-BUTTON.SLOT", lastRow + 7);
+        int sellSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.SELL-ALL-BUTTON.SLOT", lastRow + 8);
+
+        // 2. Click in top inventory control bar / non-content slots
+        if (rawSlot >= lastRow || rawSlot == backSlot || rawSlot == collectSlot || rawSlot == prevSlot || rawSlot == nextSlot || rawSlot == dropSlot || rawSlot == sellSlot) {
             event.setCancelled(true);
-            if (rawSlot == lastRow) {
+            if (rawSlot == backSlot) {
                 new SpawnerMainMenu(plugin, spawnerId).open(player);
-            } else if (rawSlot == lastRow + 3) {
+            } else if (rawSlot == collectSlot) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().collectAllLoot(player, instance).message()));
                 new SpawnerStorageMenu(plugin, spawnerId, page).open(player);
-            } else if (rawSlot == lastRow + 4 && page > 1) {
+            } else if (rawSlot == prevSlot && page > 1) {
                 new SpawnerStorageMenu(plugin, spawnerId, page - 1).open(player);
-            } else if (rawSlot == lastRow + 6) {
+            } else if (rawSlot == nextSlot) {
                 new SpawnerStorageMenu(plugin, spawnerId, page + 1).open(player);
-            } else if (rawSlot == lastRow + 7) {
+            } else if (rawSlot == dropSlot) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().dropAllLoot(player, instance).message()));
                 new SpawnerStorageMenu(plugin, spawnerId, page).open(player);
-            } else if (rawSlot == lastRow + 8) {
+            } else if (rawSlot == sellSlot) {
                 plugin.getSpawnerManager().playSellConfirmOpenSound(player);
                 new SpawnerSellConfirmMenu(plugin, spawnerId, page).open(player);
             }
@@ -319,7 +387,7 @@ public class SpawnerStorageMenu extends BaseMenu {
                     instance.setUpdatedAt(System.currentTimeMillis());
                     plugin.getSpawnerManager().saveSpawnerAndLoot(instance);
 
-                    String statusMsg = !currentState ? "&cᴅɪѕᴀʙʟᴇᴅ &7(ɴᴏᴛ ѕᴛᴏʀɪɴɢ)" : "&aᴇɴᴀʙʟᴇᴅ &7(ѕᴛᴏʀɪɴɢ)";
+                    String statusMsg = !currentState ? "&cDisabled &7(Not Storing)" : "&aEnabled &7(Storing)";
                     player.sendMessage(ColorUtils.toComponent("&aToggled filter for &f"
                             + plugin.getWorthManager().prettifyMaterial(slotItem.getType())
                             + " &ato " + statusMsg + "&a."));
