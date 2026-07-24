@@ -715,7 +715,7 @@ SHOP-GUI:
     ENABLED: true
   WEB-SERVER:
     # Set to true to enable the embedded Shop Analytics web server
-    ENABLED: true
+    ENABLED: false
     # Port for the embedded web server (e.g. 8080 or 25580)
     PORT: 8080
     # Optional custom domain or public URL (e.g. "https://stats.ultimatedonutsmpmc.net" or "http://192.168.1.15:8080/stats")
