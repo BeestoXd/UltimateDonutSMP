@@ -981,6 +981,56 @@ public class SpawnerManager {
         return ok("&adropped &f" + NumberUtils.format(dropped) + "&a stored items on the ground.");
     }
 
+    public record SpawnerSellPreview(double totalPayout, long totalSellableItems, double maxMultiplier) {}
+
+    public SpawnerSellPreview calculateLootSellPreview(Player player, SpawnerInstance instance) {
+        if (player == null || instance == null) {
+            return new SpawnerSellPreview(0D, 0L, 1.0D);
+        }
+
+        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
+        progress.putAll(plugin.getShopManager().getSellProgress(player.getUniqueId()));
+
+        double totalPayout = 0D;
+        long soldItems = 0L;
+        double maxMultiplier = 1.0D;
+        boolean foundCategory = false;
+
+        for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
+            if (instance.isLootDisabled(entry.getKey()) || entry.getAmount() <= 0) {
+                continue;
+            }
+            ItemStack single = new ItemStack(entry.getMaterial(), 1);
+            WorthResult worthResult = plugin.getWorthManager().resolveWorth(single);
+            if (!worthResult.sellable()) {
+                continue;
+            }
+
+            SellCategory category = plugin.getShopManager().getSellCategory(single);
+            if (category == null) {
+                continue;
+            }
+
+            double unitWorth = worthResult.unitWorth();
+            double baseTotal = unitWorth * entry.getAmount();
+            double multiplier = plugin.getShopManager().getCurrentSellMultiplier(progress, category);
+            double payout = baseTotal * multiplier;
+
+            totalPayout += payout;
+            soldItems += entry.getAmount();
+            if (!foundCategory || multiplier > maxMultiplier) {
+                maxMultiplier = multiplier;
+                foundCategory = true;
+            }
+        }
+
+        if (!foundCategory) {
+            maxMultiplier = plugin.getShopManager().getCurrentSellMultiplier(progress, SellCategory.MOBS);
+        }
+
+        return new SpawnerSellPreview(totalPayout, soldItems, maxMultiplier);
+    }
+
     public SellLootResult sellAllLoot(Player player, SpawnerInstance instance) {
         if (player == null || instance == null) {
             return failSell("&cspawner not found.");
