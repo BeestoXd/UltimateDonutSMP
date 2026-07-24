@@ -546,14 +546,17 @@ CLEAR-LAG:
   # The numerical value for Every. Available options: Any valid integer
   EVERY: 5
   # Determines whether Animals is enabled or disabled. Available options: true, false
-  ANIMALS: true
+  ANIMALS: false
   # Determines whether Monsters is enabled or disabled. Available options: true, false
-  MONSTERS: true
+  MONSTERS: false
   # Determines whether Dropped Items is enabled or disabled. Available options: true, false
   DROPPED-ITEMS: true
   # Configuration section for Excluded Worlds.
   EXCLUDED-WORLDS:
   - duels
+  EXCLUDE-NAMED: true
+  EXCLUDE-TAMED: true
+  EXCLUDE-VILLAGERS: true
 # Configuration section for Combat Manager.
 COMBAT-MANAGER:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

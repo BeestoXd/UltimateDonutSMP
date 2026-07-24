@@ -29,11 +29,11 @@ public class ClearLagManager {
     }
 
     public boolean clearAnimals() {
-        return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.ANIMALS", true);
+        return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.ANIMALS", false);
     }
 
     public boolean clearMonsters() {
-        return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.MONSTERS", true);
+        return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.MONSTERS", false);
     }
 
     public boolean clearDroppedItems() {
@@ -52,6 +52,10 @@ public class ClearLagManager {
         return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.EXCLUDE-TAMED", true);
     }
 
+    public boolean excludeVillagers() {
+        return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.EXCLUDE-VILLAGERS", true);
+    }
+
     public List<String> getExcludedEntityTypes() {
         return plugin.getConfigManager().getConfig().getStringList("CLEAR-LAG.EXCLUDED-ENTITY-TYPES");
     }
@@ -64,6 +68,7 @@ public class ClearLagManager {
         List<String> excludedWorlds = getExcludedWorlds();
         boolean checkNamed = excludeNamed();
         boolean checkTamed = excludeTamed();
+        boolean checkVillagers = excludeVillagers();
         List<String> excludedTypes = getExcludedEntityTypes();
         List<String> excludedMaterials = getExcludedItemMaterials();
 
@@ -82,6 +87,7 @@ public class ClearLagManager {
 
                             if (checkNamed && entity.getCustomName() != null) return;
                             if (checkTamed && entity instanceof Tameable tameable && tameable.isTamed()) return;
+                            if (checkVillagers && (entity instanceof AbstractVillager || entity instanceof NPC)) return;
 
                             boolean typeExcluded = false;
                             String typeName = entity.getType().name();
@@ -112,7 +118,7 @@ public class ClearLagManager {
                                 if (clearAnimals()) {
                                     remove = true;
                                 }
-                            } else if (entity instanceof Monster || entity instanceof Mob) {
+                            } else if (entity instanceof Monster || entity instanceof Enemy || entity instanceof Slime || entity instanceof Flying) {
                                 if (clearMonsters()) {
                                     remove = true;
                                 }
@@ -148,6 +154,9 @@ public class ClearLagManager {
                 // Check tamed exclusion
                 if (checkTamed && entity instanceof Tameable tameable && tameable.isTamed()) continue;
 
+                // Check villagers/NPCs exclusion
+                if (checkVillagers && (entity instanceof AbstractVillager || entity instanceof NPC)) continue;
+
                 // Check excluded entity type
                 boolean typeExcluded = false;
                 String typeName = entity.getType().name();
@@ -178,7 +187,7 @@ public class ClearLagManager {
                     if (clearAnimals()) {
                         remove = true;
                     }
-                } else if (entity instanceof Monster || entity instanceof Mob) {
+                } else if (entity instanceof Monster || entity instanceof Enemy || entity instanceof Slime || entity instanceof Flying) {
                     if (clearMonsters()) {
                         remove = true;
                     }
