@@ -598,10 +598,11 @@ public class RTPManager {
             com.bx.ultimateDonutSmp.models.PlayerData data = plugin.getPlayerDataManager().get(player);
             double playtimeHours = data != null ? data.getTotalPlaytimeSeconds() / 3600.0 : 0.0;
             if (playtimeHours < reqHours) {
+                double currentDisplayHours = data != null ? (data.getTotalPlaytimeSeconds() / 360) / 10.0 : 0.0;
                 String message = plugin.getConfigManager().getRtp().getString("MESSAGES.PLAYTIME-REQUIRED", "&cʏᴏᴜ ɴᴇᴇᴅ ᴀᴛ ʟᴇᴀѕᴛ {required} ʜᴏᴜʀѕ ᴏꜰ ᴘʟᴀʏᴛɪᴍᴇ ᴛᴏ ʀᴛᴘ ᴛᴏ {world}. &7(ᴄᴜʀʀᴇɴᴛ: {current}ʜ)");
                 message = message.replace("{required}", String.format(Locale.ROOT, "%.1f", reqHours))
                         .replace("{world}", describeWorld(worldName))
-                        .replace("{current}", String.format(Locale.ROOT, "%.1f", playtimeHours));
+                        .replace("{current}", String.format(Locale.ROOT, "%.1f", currentDisplayHours));
                 player.sendMessage(ColorUtils.toComponent(message));
                 return false;
             }
