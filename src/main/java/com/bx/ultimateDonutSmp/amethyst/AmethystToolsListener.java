@@ -503,12 +503,22 @@ public class AmethystToolsListener implements Listener {
         if (!manager.hasValidSignature(item) || item.getAmount() > 1) {
             event.setCancelled(true);
             manager.sanitizeHeldItem(player, false);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
             return;
         }
 
         if (manager.isExpired(item)) {
             event.setCancelled(true);
             manager.sanitizeHeldItem(player, true);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
             return;
         }
 

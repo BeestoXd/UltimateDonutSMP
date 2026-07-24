@@ -82,6 +82,11 @@ public class StaffModeListener implements Listener {
         }
 
         event.setCancelled(true);
+        org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            if (player.isOnline()) {
+                player.updateInventory();
+            }
+        });
         plugin.getStaffModeManager().sendToolLockedMessage(player);
     }
 

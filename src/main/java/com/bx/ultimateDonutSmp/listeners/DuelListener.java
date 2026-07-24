@@ -238,12 +238,18 @@ public class DuelListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
+        org.bukkit.entity.Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
         if (plugin.getDuelManager().isTransitioning(uuid)
                 || plugin.getDuelManager().isInCountdown(uuid)
                 || (plugin.getDuelManager().isInDuel(uuid)
                 && !plugin.getDuelManager().hasArenaSetting(uuid, DuelManager.ArenaSetting.ALLOW_ITEM_DROP))) {
             event.setCancelled(true);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
         }
     }
 

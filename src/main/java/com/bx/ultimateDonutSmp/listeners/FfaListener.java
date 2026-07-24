@@ -166,11 +166,17 @@ public class FfaListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
+        org.bukkit.entity.Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
         if (plugin.getFfaManager().isInQueue(uuid)
                 || plugin.getFfaManager().isInMatch(uuid)
                 || plugin.getFfaManager().isTransitioning(uuid)) {
             event.setCancelled(true);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
         }
     }
 
