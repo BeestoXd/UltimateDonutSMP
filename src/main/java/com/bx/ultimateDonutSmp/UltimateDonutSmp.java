@@ -300,12 +300,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         updateManager = new UpdateManager(this);
         updateManager.checkForUpdates();
 
+        com.bx.ultimateDonutSmp.managers.SellStatsExporter.startEmbeddedHttpServer(this);
+
         syncCommands();
         getLogger().info("UltimateDonutSmp enabled successfully.");
     }
 
     @Override
     public void onDisable() {
+        com.bx.ultimateDonutSmp.managers.SellStatsExporter.stopEmbeddedHttpServer();
         boolean suppressWipeSaves = serverWipeManager != null
                 && serverWipeManager.shouldSuppressShutdownSaves();
         if (teleportManager != null) {
@@ -607,6 +610,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellall", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhistory", sellCmd, FeatureManager.Feature.SELL);
+        SellStatsCommand sellStatsCmd = new SellStatsCommand(this);
+        setExecutor("topsell", sellStatsCmd, FeatureManager.Feature.SELL);
+        setTabCompleter("topsell", sellStatsCmd);
         setExecutor("worth", new WorthCommand(this), FeatureManager.Feature.SELL, FeatureManager.Feature.WORTH);
 
         // RTP

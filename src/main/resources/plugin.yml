@@ -132,6 +132,12 @@ commands:
   sellhistory:
     description: View sell history
     usage: /sellhistory
+  topsell:
+    description: View admin top sell statistics and economy metrics
+    usage: /topsell [gui|items|volume|sellers|export]
+    permission: ultimatedonutsmp.admin.sellstats
+    aliases:
+    - sellstats
   worth:
     description: Open the worth browser or check held item worth
     usage: /worth [hand|reload]
@@ -488,6 +494,7 @@ permissions:
       ultimatedonutsmp.admin.reload: true
       ultimatedonutsmp.admin.statswipe: true
       ultimatedonutsmp.admin.optimize: true
+      ultimatedonutsmp.admin.sellstats: true
       ultimatedonutsmp.admin.shards: true
       ultimatedonutsmp.ignore: true
       ultimatedonutsmp.ignore.bypass: true

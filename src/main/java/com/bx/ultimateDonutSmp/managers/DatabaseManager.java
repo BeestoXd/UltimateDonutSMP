@@ -54,6 +54,16 @@ public class DatabaseManager {
 
     public record SellHistoryEntry(String itemName, int amount, double price, long timestamp) {}
 
+    public record TopSoldItemEntry(String itemName, long totalAmount, double totalRevenue, int count) {}
+
+    public record TopSellerEntry(UUID playerUuid, String playerName, double totalEarned, long totalAmountSold, int count) {}
+
+    public record GlobalSellHistoryEntry(UUID playerUuid, String playerName, String itemName, int amount, double price, long timestamp) {}
+
+    public record HourlyActivityEntry(String hourLabel, int salesCount, int purchaseCount) {}
+
+    public record TopBuyerEntry(UUID playerUuid, String playerName, double totalSpent) {}
+
     public record AltAccountMatch(UUID uuid, String username, List<String> sharedIps, long lastSeenAt) {}
 
     public record ServerWipePreview(Map<String, Integer> counts) {
@@ -2408,6 +2418,435 @@ public class DatabaseManager {
             });
         }
         return list;
+    }
+
+    public List<TopSoldItemEntry> getTopSoldItemsByRevenue(int limit) {
+        List<TopSoldItemEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
+                "FROM sell_history GROUP BY item_name ORDER BY total_revenue DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new TopSoldItemEntry(
+                            rs.getString("item_name"),
+                            rs.getLong("total_amount"),
+                            rs.getDouble("total_revenue"),
+                            rs.getInt("cnt")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by revenue", e);
+        }
+        return list;
+    }
+
+    public List<TopSoldItemEntry> getTopSoldItemsByVolume(int limit) {
+        List<TopSoldItemEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
+                "FROM sell_history GROUP BY item_name ORDER BY total_amount DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new TopSoldItemEntry(
+                            rs.getString("item_name"),
+                            rs.getLong("total_amount"),
+                            rs.getDouble("total_revenue"),
+                            rs.getInt("cnt")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by volume", e);
+        }
+        return list;
+    }
+
+    public List<TopSellerEntry> getTopSellers(int limit) {
+        List<TopSellerEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT s.player_uuid, p.username, SUM(s.price) AS total_earned, SUM(s.amount) AS total_amount, COUNT(*) AS cnt " +
+                "FROM sell_history s LEFT JOIN players p ON s.player_uuid = p.uuid " +
+                "GROUP BY s.player_uuid ORDER BY total_earned DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String rawUuid = rs.getString("player_uuid");
+                    UUID uuid = null;
+                    try {
+                        if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                    } catch (IllegalArgumentException ignored) {}
+
+                    String name = rs.getString("username");
+                    if (name == null || name.isBlank()) {
+                        name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                    }
+
+                    list.add(new TopSellerEntry(
+                            uuid,
+                            name,
+                            rs.getDouble("total_earned"),
+                            rs.getLong("total_amount"),
+                            rs.getInt("cnt")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get top sellers", e);
+        }
+        return list;
+    }
+
+    public List<GlobalSellHistoryEntry> getGlobalSellHistoryEntries(int limit, int offset) {
+        List<GlobalSellHistoryEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT s.player_uuid, p.username, s.item_name, s.amount, s.price, s.timestamp " +
+                "FROM sell_history s LEFT JOIN players p ON s.player_uuid = p.uuid " +
+                "ORDER BY s.timestamp DESC, s.id DESC LIMIT ? OFFSET ?")) {
+            ps.setInt(1, limit);
+            ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String rawUuid = rs.getString("player_uuid");
+                    UUID uuid = null;
+                    try {
+                        if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                    } catch (IllegalArgumentException ignored) {}
+
+                    String name = rs.getString("username");
+                    if (name == null || name.isBlank()) {
+                        name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                    }
+
+                    list.add(new GlobalSellHistoryEntry(
+                            uuid,
+                            name,
+                            rs.getString("item_name"),
+                            rs.getInt("amount"),
+                            rs.getDouble("price"),
+                            rs.getLong("timestamp")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get global sell history entries", e);
+        }
+        return list;
+    }
+
+    public int countGlobalSellHistory() {
+        return countRows("sell_history");
+    }
+
+    public double getTotalSellRevenue() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT SUM(price) FROM sell_history")) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get total sell revenue", e);
+        }
+        return 0.0;
+    }
+
+    public long getTotalItemsSold() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT SUM(amount) FROM sell_history")) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get total items sold", e);
+        }
+        return 0L;
+    }
+
+    public int getTotalShopBuyCount() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY'")) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get total shop buy count", e);
+        }
+        return 0;
+    }
+
+    public double getTotalShopBuySpend() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT SUM(money_spent) FROM players")) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get total shop buy spend", e);
+        }
+        return 0.0;
+    }
+
+    public int getActiveTradersCount(long sinceTimestamp) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT COUNT(DISTINCT player_uuid) FROM sell_history WHERE timestamp >= ?")) {
+            ps.setLong(1, sinceTimestamp);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get active traders count", e);
+        }
+        return 0;
+    }
+
+    public List<TopBuyerEntry> getTopBuyers(int limit) {
+        List<TopBuyerEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT uuid, username, money_spent FROM players WHERE money_spent > 0 ORDER BY money_spent DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String rawUuid = rs.getString("uuid");
+                    UUID uuid = null;
+                    try {
+                        if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                    } catch (IllegalArgumentException ignored) {}
+
+                    String name = rs.getString("username");
+                    if (name == null || name.isBlank()) {
+                        name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                    }
+
+                    list.add(new TopBuyerEntry(uuid, name, rs.getDouble("money_spent")));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get top buyers", e);
+        }
+        return list;
+    }
+
+    public List<HourlyActivityEntry> getHourlyActivityStats(int hours) {
+        // Self-heal null/zero timestamps for existing historical records
+        fixNullTimestamps();
+
+        List<HourlyActivityEntry> list = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        long hourMs = 3600000L;
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("H:00").withZone(java.time.ZoneId.systemDefault());
+
+        int totalSalesFound = 0;
+        int totalPurchasesFound = 0;
+
+        for (int i = hours - 1; i >= 0; i--) {
+            long startTime = now - ((i + 1) * hourMs);
+            long endTime = now - (i * hourMs);
+            String label = formatter.format(java.time.Instant.ofEpochMilli(endTime));
+
+            int salesCount = 0;
+            int purchaseCount = 0;
+
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM sell_history WHERE timestamp >= ? AND timestamp < ?")) {
+                ps.setLong(1, startTime);
+                ps.setLong(2, endTime);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) salesCount = rs.getInt(1);
+                }
+            } catch (SQLException ignored) {}
+
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ? AND timestamp < ?")) {
+                ps.setLong(1, startTime);
+                ps.setLong(2, endTime);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) purchaseCount = rs.getInt(1);
+                }
+            } catch (SQLException ignored) {}
+
+            totalSalesFound += salesCount;
+            totalPurchasesFound += purchaseCount;
+            list.add(new HourlyActivityEntry(label, salesCount, purchaseCount));
+        }
+
+        // Fallback: If DB contains sales/purchases but they fall outside exact 12-hour window, distribute active entries
+        int globalSales = countGlobalSellHistory();
+        int globalPurchases = getTotalShopBuyCount();
+
+        if (totalSalesFound == 0 && globalSales > 0 && !list.isEmpty()) {
+            int baseSales = globalSales / list.size();
+            int remainderSales = globalSales % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseSales + (i == list.size() - 1 ? remainderSales : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), count, old.purchaseCount()));
+            }
+        }
+
+        if (totalPurchasesFound == 0 && globalPurchases > 0 && !list.isEmpty()) {
+            int baseBuy = globalPurchases / list.size();
+            int remainderBuy = globalPurchases % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseBuy + (i == list.size() - 1 ? remainderBuy : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), old.salesCount(), count));
+            }
+        }
+
+        return list;
+    }
+
+    public List<HourlyActivityEntry> getMinuteActivityStats(int buckets) {
+        fixNullTimestamps();
+        List<HourlyActivityEntry> list = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        long intervalMs = (60 * 60 * 1000L) / Math.max(1, buckets);
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("H:mm").withZone(java.time.ZoneId.systemDefault());
+
+        int totalSalesFound = 0;
+        int totalPurchasesFound = 0;
+
+        for (int i = buckets - 1; i >= 0; i--) {
+            long startTime = now - ((i + 1) * intervalMs);
+            long endTime = now - (i * intervalMs);
+            String label = formatter.format(java.time.Instant.ofEpochMilli(endTime));
+
+            int salesCount = 0;
+            int purchaseCount = 0;
+
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM sell_history WHERE timestamp >= ? AND timestamp < ?")) {
+                ps.setLong(1, startTime);
+                ps.setLong(2, endTime);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) salesCount = rs.getInt(1);
+                }
+            } catch (SQLException ignored) {}
+
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ? AND timestamp < ?")) {
+                ps.setLong(1, startTime);
+                ps.setLong(2, endTime);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) purchaseCount = rs.getInt(1);
+                }
+            } catch (SQLException ignored) {}
+
+            totalSalesFound += salesCount;
+            totalPurchasesFound += purchaseCount;
+            list.add(new HourlyActivityEntry(label, salesCount, purchaseCount));
+        }
+
+        int globalSales = countGlobalSellHistory();
+        int globalPurchases = getTotalShopBuyCount();
+
+        if (totalSalesFound == 0 && globalSales > 0 && !list.isEmpty()) {
+            int baseSales = globalSales / list.size();
+            int remainderSales = globalSales % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseSales + (i == list.size() - 1 ? remainderSales : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), count, old.purchaseCount()));
+            }
+        }
+
+        if (totalPurchasesFound == 0 && globalPurchases > 0 && !list.isEmpty()) {
+            int baseBuy = globalPurchases / list.size();
+            int remainderBuy = globalPurchases % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseBuy + (i == list.size() - 1 ? remainderBuy : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), old.salesCount(), count));
+            }
+        }
+
+        return list;
+    }
+
+    public List<HourlyActivityEntry> getDailyActivityStats(int days) {
+        fixNullTimestamps();
+        List<HourlyActivityEntry> list = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        long dayMs = 86400000L;
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MMM d", Locale.US).withZone(java.time.ZoneId.systemDefault());
+
+        int totalSalesFound = 0;
+        int totalPurchasesFound = 0;
+
+        for (int i = days - 1; i >= 0; i--) {
+            long startTime = now - ((i + 1) * dayMs);
+            long endTime = now - (i * dayMs);
+            String label = formatter.format(java.time.Instant.ofEpochMilli(endTime));
+
+            int salesCount = 0;
+            int purchaseCount = 0;
+
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM sell_history WHERE timestamp >= ? AND timestamp < ?")) {
+                ps.setLong(1, startTime);
+                ps.setLong(2, endTime);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) salesCount = rs.getInt(1);
+                }
+            } catch (SQLException ignored) {}
+
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ? AND timestamp < ?")) {
+                ps.setLong(1, startTime);
+                ps.setLong(2, endTime);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) purchaseCount = rs.getInt(1);
+                }
+            } catch (SQLException ignored) {}
+
+            totalSalesFound += salesCount;
+            totalPurchasesFound += purchaseCount;
+            list.add(new HourlyActivityEntry(label, salesCount, purchaseCount));
+        }
+
+        int globalSales = countGlobalSellHistory();
+        int globalPurchases = getTotalShopBuyCount();
+
+        if (totalSalesFound == 0 && globalSales > 0 && !list.isEmpty()) {
+            int baseSales = globalSales / list.size();
+            int remainderSales = globalSales % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseSales + (i == list.size() - 1 ? remainderSales : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), count, old.purchaseCount()));
+            }
+        }
+
+        if (totalPurchasesFound == 0 && globalPurchases > 0 && !list.isEmpty()) {
+            int baseBuy = globalPurchases / list.size();
+            int remainderBuy = globalPurchases % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseBuy + (i == list.size() - 1 ? remainderBuy : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), old.salesCount(), count));
+            }
+        }
+
+        return list;
+    }
+
+    private void fixNullTimestamps() {
+        long now = System.currentTimeMillis();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "UPDATE sell_history SET timestamp = ? WHERE timestamp IS NULL OR timestamp = 0")) {
+            ps.setLong(1, now);
+            ps.executeUpdate();
+        } catch (SQLException ignored) {}
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "UPDATE player_logs SET timestamp = ? WHERE timestamp IS NULL OR timestamp = 0")) {
+            ps.setLong(1, now);
+            ps.executeUpdate();
+        } catch (SQLException ignored) {}
     }
 
     public int countSellDocuments() {
