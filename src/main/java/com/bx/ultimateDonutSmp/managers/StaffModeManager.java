@@ -976,9 +976,6 @@ public class StaffModeManager {
         if (state.isNightVisionOwned()) {
             player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         }
-        if (isBetterViewFlightEnabled() && isBetterViewAutoFlyEnabled()) {
-            player.setFlying(false);
-        }
     }
 
     private void reapplyBetterView(Player player, StaffModeState state) {
