@@ -68,6 +68,8 @@ STAFF-MODE:
     EXCLUDE-DUELS: true
     # Determines whether Exclude Ffa is enabled or disabled. Available options: true, false
     EXCLUDE-FFA: true
+    # Determines whether Notify Target is enabled or disabled. Available options: true, false
+    NOTIFY-TARGET: false
 ITEMS:
   # Configuration section for Vanish.
   VANISH:

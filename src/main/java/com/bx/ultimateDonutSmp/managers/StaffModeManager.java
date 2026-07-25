@@ -378,21 +378,23 @@ public class StaffModeManager {
                     PlayerSettingUtils.sendActionBar(plugin, viewer, message);
                 }
             });
-            plugin.getSpigotScheduler().runEntity(target, () -> {
-                if (target.isOnline()) {
-                    target.sendMessage(ColorUtils.toComponent(
-                            formatLegacyMessage(
-                                    getRandomTeleportMessage("NOTIFY", "&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!"),
-                                    viewerName,
-                                    null,
-                                    null,
-                                    viewerName,
-                                    null
-                            ),
-                            target
-                    ));
-                }
-            });
+            if (isRandomTeleportNotifyTargetEnabled()) {
+                plugin.getSpigotScheduler().runEntity(target, () -> {
+                    if (target.isOnline()) {
+                        target.sendMessage(ColorUtils.toComponent(
+                                formatLegacyMessage(
+                                        getRandomTeleportMessage("NOTIFY", "&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!"),
+                                        viewerName,
+                                        null,
+                                        null,
+                                        viewerName,
+                                        null
+                                ),
+                                target
+                        ));
+                    }
+                });
+            }
         });
         return target;
     }
@@ -1191,6 +1193,10 @@ public class StaffModeManager {
 
     private boolean isBetterViewAutoFlyEnabled() {
         return getConfig().getBoolean("STAFF-MODE.BETTER-VIEW.AUTO-FLY", true);
+    }
+
+    public boolean isRandomTeleportNotifyTargetEnabled() {
+        return getConfig().getBoolean("STAFF-MODE.RANDOM-TELEPORT.NOTIFY-TARGET", false);
     }
 
     private int getToolSlot(StaffToolType toolType) {
