@@ -89,7 +89,7 @@ SETTINGS:
   # The numerical value for Phantom Spawn Radius. Available options: Any valid integer
   PHANTOM-SPAWN-RADIUS: 40
   # The numerical value for Disable Mob Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
-  DISABLE-MOB-SPAWN-LIMIT-SECONDS: 3600
+  DISABLE-MOB-SPAWN-LIMIT-SECONDS: -1
   # The numerical value for Disable Phantom Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
   DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS: 3600
 # Configuration section for Chat.
