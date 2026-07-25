@@ -2312,6 +2312,7 @@ public class DatabaseManager {
             stmt.executeUpdate("DELETE FROM sell_history");
             stmt.executeUpdate("DELETE FROM sell_progress");
             stmt.executeUpdate("DELETE FROM player_logs WHERE log_type IN ('SHOP_BUY', 'SHOP_SELL')");
+            stmt.executeUpdate("UPDATE players SET money_spent = 0, money_made = 0");
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to clear shop analytics data", e);
         }
