@@ -4,6 +4,8 @@ SETTINGS:
   ENABLED: true
   # The Access Mode setting. Available options: OWNER_ONLY, OWNER_AND_TEAM, PUBLIC
   ACCESS_MODE: OWNER_ONLY
+  # Determines whether spawner stealing (breaking or accessing other players' spawners) is allowed globally. Available options: true, false
+  ALLOW_SPAWNER_STEAL: false
   # The numerical value for Generation Interval Seconds. Available options: Any valid integer
   GENERATION_INTERVAL_SECONDS: 5
   # Determines whether Process Only Loaded Chunks is enabled or disabled. Available options: true, false

@@ -92,6 +92,7 @@ public class SpawnerManager {
     private long maxStackPerBlock;
     private long storageCapPerLootKey;
     private boolean dropOnBreakIfInventoryFull;
+    private boolean allowSpawnerSteal;
     private boolean hopperExtractionEnabled;
     private int hopperExtractionAmountPerCycle;
     private boolean requireSilkTouch;
@@ -130,6 +131,9 @@ public class SpawnerManager {
                 config.getString("SETTINGS.ACCESS_MODE", "OWNER_ONLY"),
                 SpawnerInstance.AccessMode.OWNER_ONLY
         );
+        allowSpawnerSteal = config.getBoolean("SETTINGS.ALLOW_SPAWNER_STEAL",
+                config.getBoolean("SETTINGS.ALLOW_STEAL",
+                        config.getBoolean("SETTINGS.ALLOW_SPAWNER_STEALING", false)));
         generationIntervalSeconds = Math.max(1L, config.getLong("SETTINGS.GENERATION_INTERVAL_SECONDS", 5L));
         processOnlyLoadedChunks = config.getBoolean("SETTINGS.PROCESS_ONLY_LOADED_CHUNKS", true);
         requirePlayerNearby = config.getBoolean("SETTINGS.REQUIRE_PLAYER_NEARBY", false);
@@ -1485,6 +1489,9 @@ public class SpawnerManager {
         if (player == null || instance == null) {
             return false;
         }
+        if (allowSpawnerSteal) {
+            return true;
+        }
         if (PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")) {
             return true;
         }
@@ -1503,8 +1510,21 @@ public class SpawnerManager {
         if (player == null || instance == null) {
             return false;
         }
-        return PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")
-                || player.getUniqueId().equals(instance.getOwnerUuid());
+        if (allowSpawnerSteal) {
+            return true;
+        }
+        if (PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")) {
+            return true;
+        }
+        if (player.getUniqueId().equals(instance.getOwnerUuid())) {
+            return true;
+        }
+
+        return switch (instance.getAccessMode()) {
+            case PUBLIC -> true;
+            case OWNER_AND_TEAM -> plugin.getTeamManager().areTeammates(player.getUniqueId(), instance.getOwnerUuid());
+            case OWNER_ONLY -> false;
+        };
     }
 
     public boolean canModify(Player player, SpawnerInstance instance) {
