@@ -172,9 +172,16 @@ public class SellStatsCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            List<String> options = List.of("gui", "items", "volume", "sellers", "export", "web", "site", "html");
+            List<String> options = List.of("gui", "items", "volume", "sellers", "export", "web", "site", "html", "reset", "wipe");
             String filter = args[0].toLowerCase(Locale.ROOT);
             return options.stream().filter(o -> o.startsWith(filter)).toList();
+        } else if (args.length == 2) {
+            String sub = args[0].toLowerCase(Locale.ROOT);
+            if ("reset".equals(sub) || "wipe".equals(sub)) {
+                if ("confirm".startsWith(args[1].toLowerCase(Locale.ROOT))) {
+                    return List.of("confirm");
+                }
+            }
         }
         return List.of();
     }
