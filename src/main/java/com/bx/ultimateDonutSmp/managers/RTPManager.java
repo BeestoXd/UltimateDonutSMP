@@ -63,15 +63,15 @@ public class RTPManager {
     }
 
     private static final long SEARCH_ACTIONBAR_REFRESH_TICKS = 1L;
-    private static final long MIN_SEARCH_DISPLAY_TICKS = 0L;
-    private static final int DEFAULT_SEARCH_ATTEMPTS_PER_TICK = 2;
+    private static final long MIN_SEARCH_DISPLAY_TICKS = 30L;
+    private static final int DEFAULT_SEARCH_ATTEMPTS_PER_TICK = 1;
     private static final long FOUND_ACTIONBAR_DELAY_TICKS = 20L;
     private static final int DEFAULT_MAX_CONCURRENT_RTP = 1;
     private static final int MIN_MAX_ATTEMPTS = 32;
     private static final int MIN_MAX_CHUNK_SAMPLES = 64;
     private static final int DEFAULT_MAX_ATTEMPTS = 64;
     private static final int DEFAULT_MAX_CHUNK_SAMPLES = 128;
-    private static final int DEFAULT_ATTEMPT_INTERVAL_TICKS = 1;
+    private static final int DEFAULT_ATTEMPT_INTERVAL_TICKS = 2;
     private static final int CHUNK_COLUMN_CHECKS = 8;
     private static final int NETHER_ROOF_PADDING_BLOCKS = 8;
     private static final int PLAYER_CLEARANCE_BLOCKS = 2;
@@ -99,7 +99,7 @@ public class RTPManager {
         private int chunkSamplesUsed;
         private int generateFallbackSamplesUsed;
         private long lastElapsedSecond;
-        private boolean attemptInFlight;
+        private int activeAttemptsInFlight;
         private Location pendingFoundLocation;
 
         private SearchProgress(String worldName, SearchSettings settings) {
@@ -138,92 +138,42 @@ public class RTPManager {
     }
 
     public boolean isPreCacheEnabled() {
-        return plugin.getConfigManager().getRtp().getBoolean("SETTINGS.PRECACHE-ENABLED", true);
+        return false;
     }
 
     public int getPreCacheSize() {
-        return Math.max(1, plugin.getConfigManager().getRtp().getInt("SETTINGS.PRECACHE-SIZE", 5));
+        return 0;
     }
 
     public int getSearchAttemptsPerTick() {
+        if (plugin == null || plugin.getConfigManager() == null || plugin.getConfigManager().getRtp() == null) {
+            return DEFAULT_SEARCH_ATTEMPTS_PER_TICK;
+        }
         return Math.max(1, plugin.getConfigManager().getRtp().getInt("SETTINGS.SEARCH-ATTEMPTS-PER-TICK", DEFAULT_SEARCH_ATTEMPTS_PER_TICK));
     }
 
     public void refillPreCacheAllWorlds() {
-        if (!isEnabled() || !isPreCacheEnabled()) {
-            return;
-        }
-        for (RTPDestination dest : configuredDestinations) {
-            if (dest.enabled()) {
-                refillPreCache(dest.worldName());
-            }
-        }
-        refillPreCache("world");
-        refillPreCache("world_nether");
-        refillPreCache("world_the_end");
+        // Disabled background pre-caching loop to avoid disk region scanning
     }
 
     public void refillPreCache(String worldName) {
-        if (!isEnabled() || !isPreCacheEnabled() || worldName == null || worldName.isBlank()) {
-            return;
-        }
-        String key = worldName.toLowerCase(Locale.ROOT);
-        java.util.Queue<Location> queue = locationPreCache.computeIfAbsent(key, k -> new java.util.concurrent.ConcurrentLinkedQueue<>());
-        int targetSize = getPreCacheSize();
-        if (queue.size() >= targetSize) {
-            return;
-        }
-        if (!preCacheInFlight.add(key)) {
-            return;
-        }
-
-        SearchSettings settings = getWorldSearchSettings(worldName);
-        if (settings == null) {
-            preCacheInFlight.remove(key);
-            return;
-        }
-
-        findSafeLocationAsync(settings).whenComplete((location, throwable) -> {
-            preCacheInFlight.remove(key);
-            if (location != null && location.getWorld() != null) {
-                queue.add(location);
-            }
-            if (queue.size() < targetSize) {
-                plugin.getSpigotScheduler().runGlobalLater(() -> refillPreCache(worldName), 5L);
-            }
-        });
+        // Disabled background pre-caching loop to avoid disk region scanning
     }
 
     private Location pollPreCachedLocation(String worldName) {
-        if (!isPreCacheEnabled() || worldName == null) {
-            return null;
-        }
-        String key = worldName.toLowerCase(Locale.ROOT);
-        java.util.Queue<Location> queue = locationPreCache.get(key);
-        if (queue == null || queue.isEmpty()) {
-            return null;
-        }
-
-        Location loc;
-        while ((loc = queue.poll()) != null) {
-            if (loc.getWorld() != null && isPreCachedLocationValid(loc)) {
-                return loc;
-            }
-        }
         return null;
     }
 
     private boolean isPreCachedLocationValid(Location loc) {
-        World world = loc.getWorld();
-        if (world == null) return false;
-        int x = loc.getBlockX();
-        int groundY = loc.getBlockY() - 1;
-        int z = loc.getBlockZ();
-        return isSafeStandLocation(world, x, groundY, z);
+        return false;
     }
 
     public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP)
+        return plugin != null
+                && plugin.getFeatureManager() != null
+                && plugin.getFeatureManager().isEnabled(FeatureManager.Feature.RTP)
+                && plugin.getConfigManager() != null
+                && plugin.getConfigManager().getRtp() != null
                 && plugin.getConfigManager().getRtp().getBoolean("ENABLED", true);
     }
 
@@ -798,17 +748,15 @@ public class RTPManager {
         sendSearchActionBar(player, progress);
 
         if (progress.pendingFoundLocation != null) {
-            stopSearch(playerId, false);
-            finishSearch(player, progress.worldName, progress.pendingFoundLocation);
+            if (progress.elapsedTicks >= MIN_SEARCH_DISPLAY_TICKS) {
+                stopSearch(playerId, false);
+                finishSearch(player, progress.worldName, progress.pendingFoundLocation);
+            }
             return;
         }
 
-        if (progress.attemptInFlight || progress.elapsedTicks % progress.settings.attemptIntervalTicks() != 0L) {
-            return;
-        }
-
-        for (int i = 0; i < getSearchAttemptsPerTick()
-                && hasSearchBudget(progress); i++) {
+        int maxConcurrent = 4;
+        while (progress.activeAttemptsInFlight < maxConcurrent && hasSearchBudget(progress)) {
             beginAsyncLocationAttempt(playerId, progress);
         }
     }
@@ -822,7 +770,7 @@ public class RTPManager {
         boolean generateFallback = shouldUseGenerateFallback(progress);
         if (!generateFallback && shouldUseLoadedChunkFallback(progress)) {
             progress.chunkSamplesUsed++;
-            progress.attemptInFlight = true;
+            progress.activeAttemptsInFlight++;
             plugin.getSpigotScheduler().runRegion(world, progress.settings.centerX() >> 4, progress.settings.centerZ() >> 4, () -> {
                 try {
                     LocationAttempt attempt = tryLoadedChunkLocationAttempt(progress.settings);
@@ -848,7 +796,7 @@ public class RTPManager {
         if (generateFallback) {
             progress.generateFallbackSamplesUsed++;
         }
-        progress.attemptInFlight = true;
+        progress.activeAttemptsInFlight++;
         boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
         boolean generateForSample = generateChunks || generateFallback;
         if (!generateForSample && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
@@ -886,10 +834,15 @@ public class RTPManager {
             return;
         }
 
-        progress.attemptInFlight = false;
+        progress.activeAttemptsInFlight = Math.max(0, progress.activeAttemptsInFlight - 1);
         if (throwable != null) {
             progress.attemptsUsed++;
-            plugin.getLogger().warning("[RTPManager] async rtp chunk load failed: " + throwable.getMessage());
+            String msg = throwable.getMessage();
+            if (msg != null && (msg.contains("newer version") || msg.contains("4903"))) {
+                // Silently skip incompatible chunk versions without spamming logs
+            } else {
+                plugin.getLogger().warning("[RTPManager] async rtp chunk load skipped: " + msg);
+            }
             if (isSearchLimitReached(progress)) {
                 failSearch(playerId, progress);
             }
@@ -904,7 +857,7 @@ public class RTPManager {
         if (found != null) {
             progress.pendingFoundLocation = found;
             Player player = plugin.getServer().getPlayer(playerId);
-            if (player != null && player.isOnline()) {
+            if (player != null && player.isOnline() && progress.elapsedTicks >= MIN_SEARCH_DISPLAY_TICKS) {
                 stopSearch(playerId, false);
                 finishSearch(player, progress.worldName, found);
             }

@@ -880,25 +880,9 @@ public class ConfigManager {
         changed |= syncRtpSettingDefaultAndComment(
                 lines,
                 "SEARCH-ATTEMPTS-PER-TICK:",
-                "2",
-                "# Number of location attempts evaluated per tick.",
+                "4",
+                "# Number of location attempts evaluated in parallel per sample interval.",
                 "ATTEMPT-INTERVAL-TICKS:"
-        );
-
-        changed |= syncRtpSettingDefaultAndComment(
-                lines,
-                "PRECACHE-ENABLED:",
-                "true",
-                "# Enable pre-caching safe locations in background for instant RTP.",
-                "SEARCH-ATTEMPTS-PER-TICK:"
-        );
-
-        changed |= syncRtpSettingDefaultAndComment(
-                lines,
-                "PRECACHE-SIZE:",
-                "5",
-                "# Number of pre-cached safe locations to maintain per world.",
-                "PRECACHE-ENABLED:"
         );
 
         changed |= syncRtpComment(lines, "GENERATE-CHUNKS:",
