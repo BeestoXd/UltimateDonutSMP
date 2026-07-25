@@ -52,7 +52,7 @@ public final class SignInputUtil {
             return;
         }
         List<String> lines = config.getStringList("lines");
-        int inputLine = config.getInt("input-line", 1);
+        int inputLine = config.getInt("input-line", 0);
         open(plugin, player, lines, inputLine, callback);
     }
 

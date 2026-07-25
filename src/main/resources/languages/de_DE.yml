@@ -1882,18 +1882,21 @@ CONFIG:
       - "↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
       - Search
       - ''
+      input-line: 0
     AMOUNT_SIGN:
       lines:
       - ''
       - "↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
       - Amount
       - ''
+      input-line: 0
     PRICE_SIGN:
       lines:
       - ''
       - "↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
       - Price
       - ''
+      input-line: 0
   DUELS:
     COMMAND_BLOCK:
       MESSAGE: "&cSie können diesen befehl nicht während eines duells verwenden."
