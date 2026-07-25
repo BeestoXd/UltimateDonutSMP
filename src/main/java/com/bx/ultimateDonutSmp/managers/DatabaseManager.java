@@ -2307,6 +2307,16 @@ public class DatabaseManager {
         }
     }
 
+    public void clearShopAnalyticsData() {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate("DELETE FROM sell_history");
+            stmt.executeUpdate("DELETE FROM sell_progress");
+            stmt.executeUpdate("DELETE FROM player_logs WHERE log_type IN ('SHOP_BUY', 'SHOP_SELL')");
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to clear shop analytics data", e);
+        }
+    }
+
     public void addSellProgress(UUID uuid, SellCategory category, double amount) {
         if (amount <= 0) {
             return;

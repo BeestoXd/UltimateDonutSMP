@@ -66,6 +66,18 @@ public class SellStatsExporter {
                 activeHttpServer = HttpServer.create(new InetSocketAddress(p), 0);
                 activeHttpServer.createContext("/stats", exchange -> {
                     try {
+                        String path = exchange.getRequestURI().getPath();
+                        if ("/stats/reset".equals(path) || "/stats/reset/".equals(path)) {
+                            plugin.getDatabaseManager().clearShopAnalyticsData();
+                            byte[] response = "{\"success\":true}".getBytes(StandardCharsets.UTF_8);
+                            exchange.getResponseHeaders().set("Content-Type", "application/json");
+                            exchange.sendResponseHeaders(200, response.length);
+                            try (OutputStream os = exchange.getResponseBody()) {
+                                os.write(response);
+                            }
+                            return;
+                        }
+
                         String html = new SellStatsExporter(plugin).generateDashboardHtml();
                         byte[] response = html.getBytes(StandardCharsets.UTF_8);
                         exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
@@ -272,6 +284,9 @@ public class SellStatsExporter {
         html.append("  <button id=\"autoRefreshBtn\" style=\"background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #e5e7eb; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; transition: all 0.2s ease;\">\n");
         html.append("    <span id=\"refreshDot\" style=\"width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;\"></span>\n");
         html.append("    <span id=\"refreshText\">Auto-Refresh (30s)</span>\n");
+        html.append("  </button>\n");
+        html.append("  <button id=\"resetDataBtn\" style=\"background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s ease;\">\n");
+        html.append("    🗑️ Reset Data\n");
         html.append("  </button>\n");
         html.append("</div>\n");
         html.append("</div>\n");
@@ -543,6 +558,32 @@ public class SellStatsExporter {
         html.append("      rText.innerText = 'Auto-Refresh (' + timer + 's)';\n");
         html.append("    }\n");
         html.append("  }, 1000);\n");
+        html.append("}\n");
+        // Reset Confirmation Modal HTML
+        html.append("<div id=\"resetModal\" style=\"display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); backdrop-filter:blur(5px); z-index:9999; align-items:center; justify-content:center;\">\n");
+        html.append("  <div style=\"background:#1e293b; border:1px solid rgba(239,68,68,0.4); border-radius:14px; padding:1.75rem; max-width:420px; width:90%; text-align:center; box-shadow:0 20px 25px -5px rgba(0,0,0,0.6);\">\n");
+        html.append("    <div style=\"font-size:2.2rem; margin-bottom:0.4rem;\">⚠️</div>\n");
+        html.append("    <h3 style=\"color:#ef4444; font-size:1.2rem; font-weight:700; margin-bottom:0.5rem;\">Reset Shop Analytics?</h3>\n");
+        html.append("    <p style=\"color:#9ca3af; font-size:0.85rem; line-height:1.4; margin-bottom:1.5rem;\">This will permanently clear all shop purchases, sales history, and leaderboard statistics. This action cannot be undone.</p>\n");
+        html.append("    <div style=\"display:flex; gap:0.75rem; justify-content:center;\">\n");
+        html.append("      <button id=\"cancelResetModal\" style=\"background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#e5e7eb; padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer;\">Cancel</button>\n");
+        html.append("      <button id=\"confirmResetModal\" style=\"background:#ef4444; border:none; color:#fff; padding:8px 18px; border-radius:8px; font-weight:700; cursor:pointer;\">Yes, Reset All</button>\n");
+        html.append("    </div>\n");
+        html.append("  </div>\n");
+        html.append("</div>\n");
+
+        html.append("<script>\n");
+        html.append("const resetBtn = document.getElementById('resetDataBtn');\n");
+        html.append("const resetModal = document.getElementById('resetModal');\n");
+        html.append("const cancelModal = document.getElementById('cancelResetModal');\n");
+        html.append("const confirmModal = document.getElementById('confirmResetModal');\n");
+        html.append("if (resetBtn && resetModal) {\n");
+        html.append("  resetBtn.addEventListener('click', () => { resetModal.style.display = 'flex'; });\n");
+        html.append("  cancelModal.addEventListener('click', () => { resetModal.style.display = 'none'; });\n");
+        html.append("  confirmModal.addEventListener('click', () => {\n");
+        html.append("    confirmModal.innerText = 'Resetting...';\n");
+        html.append("    fetch('/stats/reset', { method: 'POST' }).then(() => { window.location.reload(); });\n");
+        html.append("  });\n");
         html.append("}\n");
         html.append("</script>\n");
 

@@ -50,10 +50,25 @@ public class SellStatsCommand implements CommandExecutor, TabCompleter {
             case "export", "report" -> handleExport(sender);
             case "web", "site", "url", "paste" -> new com.bx.ultimateDonutSmp.managers.SellStatsExporter(plugin).uploadToWebPaste(sender);
             case "html" -> new com.bx.ultimateDonutSmp.managers.SellStatsExporter(plugin).exportHtml(sender);
+            case "reset", "wipe", "clear" -> handleReset(sender, args);
             default -> sendUsage(sender, label);
         }
 
         return true;
+    }
+
+    private void handleReset(CommandSender sender, String[] args) {
+        if (args.length >= 2 && args[1].equalsIgnoreCase("confirm")) {
+            plugin.getDatabaseManager().clearShopAnalyticsData();
+            sender.sendMessage(ColorUtils.toComponent("&a[Shop Analytics] All shop analytics, purchases, and sales data have been reset!"));
+            return;
+        }
+
+        if (sender instanceof Player player) {
+            new com.bx.ultimateDonutSmp.menus.StatsWipeConfirmMenu(plugin, com.bx.ultimateDonutSmp.managers.StatsWipeManager.WipeTarget.SELL_DOCUMENTS).open(player);
+        } else {
+            sender.sendMessage(ColorUtils.toComponent("&cUse '/topsell reset confirm' to wipe all shop analytics data from console."));
+        }
     }
 
     private void handleTopItems(CommandSender sender, String[] args) {
