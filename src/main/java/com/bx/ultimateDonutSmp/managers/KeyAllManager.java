@@ -20,6 +20,7 @@ public class KeyAllManager {
 
     private final UltimateDonutSmp plugin;
     private final Random random = new Random();
+    private boolean executingCommands = false;
 
     public KeyAllManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -116,7 +117,6 @@ public class KeyAllManager {
                 }
             }
             notifyPlayer(player, reward);
-            executeConfiguredCommands(player, reward);
             granted++;
         }
         return granted;
@@ -306,7 +306,7 @@ public class KeyAllManager {
     }
 
     private void executeConfiguredCommands(Player player, SelectedKeyReward reward) {
-        if (player == null || !player.isOnline()) {
+        if (player == null || !player.isOnline() || executingCommands) {
             return;
         }
 
@@ -315,29 +315,43 @@ public class KeyAllManager {
             return;
         }
 
-        boolean randomize = plugin.getConfigManager().getConfig().getBoolean("KEY-ALL.RANDOM-COMMANDS", false);
-        if (randomize) {
-            String command = commands.get(random.nextInt(commands.size()));
-            if (command != null && !command.isBlank()) {
-                String resolved = resolveCommandReward(command, player, reward);
-                if (!resolved.isBlank()) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+        executingCommands = true;
+        try {
+            boolean randomize = plugin.getConfigManager().getConfig().getBoolean("KEY-ALL.RANDOM-COMMANDS", false);
+            if (randomize) {
+                String command = commands.get(random.nextInt(commands.size()));
+                if (command != null && !command.isBlank()) {
+                    executeSingleCommand(command, player, reward);
+                }
+            } else {
+                for (String command : commands) {
+                    if (command == null || command.isBlank()) {
+                        continue;
+                    }
+                    executeSingleCommand(command, player, reward);
                 }
             }
-        } else {
-            for (String command : commands) {
-                if (command == null || command.isBlank()) {
-                    continue;
-                }
-
-                String resolved = resolveCommandReward(command, player, reward);
-                if (resolved.isBlank()) {
-                    continue;
-                }
-
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
-            }
+        } finally {
+            executingCommands = false;
         }
+    }
+
+    private void executeSingleCommand(String command, Player player, SelectedKeyReward reward) {
+        String resolved = resolveCommandReward(command, player, reward);
+        if (resolved.isBlank()) {
+            return;
+        }
+
+        String checkLower = resolved.toLowerCase(Locale.ROOT);
+        if (checkLower.startsWith("/")) {
+            checkLower = checkLower.substring(1).trim();
+        }
+        if (checkLower.startsWith("crate keyall") || checkLower.startsWith("ultimatedonutsmp:crate keyall") || checkLower.startsWith("keyall")) {
+            plugin.getLogger().warning("Blocked recursive KEY-ALL command in config: '" + command + "'. Key-all already grants keys automatically.");
+            return;
+        }
+
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
     }
 
     private String resolveCommandReward(String command, Player player, SelectedKeyReward reward) {
