@@ -176,6 +176,7 @@ commands:
   crates:
     description: Open the crates menu
     usage: /crates
+    permission: ultimatedonutsmp.command.crates
   keys:
     description: Open your crate keys menu
     usage: /keys
