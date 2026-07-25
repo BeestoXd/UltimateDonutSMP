@@ -14,13 +14,19 @@ SETTINGS:
   # Maximum chunk samples to inspect while looking for a valid location
   MAX-CHUNK-SAMPLES: 128
   # Ticks between chunk samples
-  ATTEMPT-INTERVAL-TICKS: 8
+  ATTEMPT-INTERVAL-TICKS: 1
+  # Number of location attempts evaluated per tick
+  SEARCH-ATTEMPTS-PER-TICK: 2
+  # Enable pre-caching safe locations in background for instant RTP
+  PRECACHE-ENABLED: true
+  # Number of pre-cached safe locations to maintain per world
+  PRECACHE-SIZE: 5
   # Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS
   GENERATE-CHUNKS: false
   # Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot
   GENERATE-FALLBACK-CHUNKS: true
   # Chunk samples to try before limited fallback generation starts
-  GENERATE-FALLBACK-AFTER-SAMPLES: 32
+  GENERATE-FALLBACK-AFTER-SAMPLES: 8
   # Maximum fallback chunks allowed to generate during one RTP search
   MAX-GENERATE-FALLBACK-SAMPLES: 32
   # Allow loading already-generated chunks from disk if chunk generation is disabled

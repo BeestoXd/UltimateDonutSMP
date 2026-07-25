@@ -874,8 +874,32 @@ public class ConfigManager {
         changed |= syncLegacyScalarDefault(lines, "MAX-CHUNK-SAMPLES:", "128", List.of("0", "1"));
 
         changed |= syncRtpComment(lines, "ATTEMPT-INTERVAL-TICKS:",
-                "# Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 8 use 8.");
-        changed |= syncLegacyScalarDefault(lines, "ATTEMPT-INTERVAL-TICKS:", "8", List.of("1", "2", "4"));
+                "# Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 1 use 1.");
+        changed |= syncLegacyScalarDefault(lines, "ATTEMPT-INTERVAL-TICKS:", "1", List.of("8"));
+
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "SEARCH-ATTEMPTS-PER-TICK:",
+                "2",
+                "# Number of location attempts evaluated per tick.",
+                "ATTEMPT-INTERVAL-TICKS:"
+        );
+
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "PRECACHE-ENABLED:",
+                "true",
+                "# Enable pre-caching safe locations in background for instant RTP.",
+                "SEARCH-ATTEMPTS-PER-TICK:"
+        );
+
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "PRECACHE-SIZE:",
+                "5",
+                "# Number of pre-cached safe locations to maintain per world.",
+                "PRECACHE-ENABLED:"
+        );
 
         changed |= syncRtpComment(lines, "GENERATE-CHUNKS:",
                 "# Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS.");
@@ -889,7 +913,7 @@ public class ConfigManager {
         changed |= syncRtpSettingDefaultAndComment(
                 lines,
                 "GENERATE-FALLBACK-AFTER-SAMPLES:",
-                "32",
+                "8",
                 "# Chunk samples to try before limited fallback generation starts.",
                 "GENERATE-FALLBACK-CHUNKS:"
         );
