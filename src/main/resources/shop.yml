@@ -388,17 +388,7 @@ GEAR-MENU:
     PRICE-PER-UNIT: 100
     LORE:
     - '&fBuy price: &a$100'
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&eDIRT'
-    SLOT: 17
-    # The numerical value for Price Per Unit. Available options: Any valid integer
-    PRICE-PER-UNIT: 500
-    LORE:
-    - '&fBuy price: &a$500'
+
 # Configuration section for Food Menu.
 FOOD-MENU:
   TITLE: '&8food - shop'
@@ -656,51 +646,18 @@ EXTRA-1-MENU:
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&fDirt'
-    SLOT: 9
-    # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 150.0
-    LORE:
-    - '&fBuy price: &a$150'
 # Configuration section for Extra 2 Menu.
 EXTRA-2-MENU:
   TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&fDirt'
-    SLOT: 9
-    # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 150.0
-    LORE:
-    - '&fBuy price: &a$150'
 # Configuration section for Extra 3 Menu.
 EXTRA-3-MENU:
   TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&fDirt'
-    SLOT: 9
-    # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 150.0
-    LORE:
-    - '&fBuy price: &a$150'
 # Configuration section for Back Button.
 BACK-BUTTON:
   MATERIAL: RED_STAINED_GLASS_PANE
