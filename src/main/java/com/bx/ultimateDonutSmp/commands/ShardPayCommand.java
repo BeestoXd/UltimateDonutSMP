@@ -21,6 +21,10 @@ public class ShardPayCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!plugin.getConfigManager().isCommandEnabled("SHARDPAY")) {
+            plugin.getFeatureManager().sendDisabledMessage(sender, com.bx.ultimateDonutSmp.managers.FeatureManager.Feature.SHARDS, label);
+            return true;
+        }
         if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
         if (args.length < 2) { player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /shardpay <player> <amount>")); return true; }
 
