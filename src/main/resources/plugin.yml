@@ -1004,6 +1004,9 @@ permissions:
   ultimatedonutsmp.shards.everywhere:
     description: Receive passive Shards Everywhere rewards
     default: false
+  ultimatedonutsmp.friends:
+    description: Access to friends feature
+    default: true
   ultimatedonutsmp.enderchest:
     description: Open the custom Ender Chest command
     default: true
@@ -1519,7 +1522,7 @@ permissions:
     default: op
   ultimatedonutsmp.command.billford:
     description: Access to /billford command
-    default: op
+    default: true
   ultimatedonutsmp.command.spawner:
     description: Access to /spawner command
     default: op
