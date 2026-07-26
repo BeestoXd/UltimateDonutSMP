@@ -188,20 +188,7 @@ public class HoverStatsManager {
         if (plugin.getHideManager() != null && plugin.getHideManager().isHidden(player.getUniqueId())) {
             return plugin.getHideManager().publicName(player);
         }
-        if (!ColorUtils.hasPAPI()) {
-            return player.getName();
-        }
-
-        try {
-            String nickname = me.clip.placeholderapi.PlaceholderAPI
-                    .setPlaceholders(player, "%nickplus_nick%");
-            if (nickname == null || nickname.isBlank() || nickname.startsWith("%")) {
-                return player.getName();
-            }
-            return nickname;
-        } catch (Exception ignored) {
-            return player.getName();
-        }
+        return player.getName();
     }
 
     private void applyEvents(TextComponent component, HoverEvent hover, ClickEvent click) {

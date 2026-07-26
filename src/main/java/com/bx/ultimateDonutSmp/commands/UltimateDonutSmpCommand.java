@@ -590,7 +590,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     private String optionalIntegrationDetail() {
         List<String> installed = new ArrayList<>();
         List<String> missing = new ArrayList<>();
-        for (String pluginName : List.of("PlaceholderAPI", "LuckPerms", "Vault", "ProtocolLib", "Apollo", "NickPlus")) {
+        for (String pluginName : List.of("PlaceholderAPI", "LuckPerms", "Vault", "ProtocolLib", "Apollo")) {
             if (plugin.getServer().getPluginManager().getPlugin(pluginName) == null) {
                 missing.add(pluginName);
             } else {
