@@ -149,7 +149,7 @@ public class PlayerJoinQuitListener implements Listener {
             plugin.getFriendsManager().handleJoin(player);
         }
         if (player.getAddress() != null && player.getAddress().getAddress() != null) {
-            plugin.getDatabaseManager().savePlayerIpAddress(
+            plugin.getDatabaseManager().savePlayerIpAddressAsync(
                     player.getUniqueId(),
                     player.getAddress().getAddress().getHostAddress(),
                     System.currentTimeMillis()

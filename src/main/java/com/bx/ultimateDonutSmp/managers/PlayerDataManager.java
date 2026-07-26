@@ -26,7 +26,7 @@ public class PlayerDataManager {
             double startMoney = plugin.getConfigManager().getConfig()
                     .getDouble("SETTINGS.MONEY-PER-DEFAULT", 1000.0);
             data.setMoney(startMoney);
-            plugin.getDatabaseManager().savePlayer(data);
+            plugin.getDatabaseManager().savePlayerAsync(data);
         } else {
             data.setUsername(player.getName());
         }
@@ -39,7 +39,7 @@ public class PlayerDataManager {
         PlayerData data = cache.get(uuid);
         if (data != null) {
             data.commitSession();
-            plugin.getDatabaseManager().savePlayer(data);
+            plugin.getDatabaseManager().savePlayerAsync(data);
             cache.remove(uuid);
         }
     }
@@ -78,7 +78,7 @@ public class PlayerDataManager {
         }
         for (PlayerData data : cache.values()) {
             if (data.isDirty()) {
-                plugin.getDatabaseManager().savePlayer(data);
+                plugin.getDatabaseManager().savePlayerAsync(data);
             }
         }
     }

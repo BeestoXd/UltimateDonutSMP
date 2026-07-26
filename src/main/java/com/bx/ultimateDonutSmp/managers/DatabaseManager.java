@@ -50,6 +50,11 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class DatabaseManager {
 
     public record SellHistoryEntry(String itemName, int amount, double price, long timestamp) {}
@@ -108,12 +113,14 @@ public class DatabaseManager {
     private static final String MONGO_SCHEMA_COLLECTION = "_schema";
 
     private final UltimateDonutSmp plugin;
+    private HikariDataSource hikariDataSource;
     private Connection rawConnection;
     private Connection connection;
     private DatabaseType databaseType = DatabaseType.SQLITE;
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private boolean mongoBridgeActive;
+    private final ExecutorService asyncExecutor = Executors.newFixedThreadPool(4);
 
     public DatabaseManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -182,7 +189,21 @@ public class DatabaseManager {
         }
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + appendJdbcParameters(parameters);
-        rawConnection = DriverManager.getConnection(url, username, password);
+
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        hikariConfig.setJdbcUrl(url);
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);
+        hikariConfig.setMaximumPoolSize(Math.max(2, config.getInt("DATABASE.MYSQL.POOL.MAX-SIZE", 10)));
+        hikariConfig.setMinimumIdle(Math.max(1, config.getInt("DATABASE.MYSQL.POOL.MIN-IDLE", 2)));
+        hikariConfig.setIdleTimeout(config.getLong("DATABASE.MYSQL.POOL.IDLE-TIMEOUT", 30000L));
+        hikariConfig.setMaxLifetime(config.getLong("DATABASE.MYSQL.POOL.MAX-LIFETIME", 1800000L));
+        hikariConfig.setConnectionTimeout(config.getLong("DATABASE.MYSQL.POOL.CONNECTION-TIMEOUT", 10000L));
+        hikariConfig.setPoolName("UltimateDonutSMP-HikariPool");
+
+        hikariDataSource = new HikariDataSource(hikariConfig);
+        rawConnection = hikariDataSource.getConnection();
         connection = wrapConnection(rawConnection);
     }
 
@@ -4411,12 +4432,18 @@ public class DatabaseManager {
 
     public void close() {
         flush();
+        if (asyncExecutor != null && !asyncExecutor.isShutdown()) {
+            asyncExecutor.shutdown();
+        }
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to close database", e);
+        }
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            hikariDataSource.close();
         }
         if (mongoClient != null) {
             try {
@@ -4575,7 +4602,37 @@ public class DatabaseManager {
         return list;
     }
 
-    public Connection getConnection() { return connection; }
+    public Connection getConnection() {
+        try {
+            if (hikariDataSource != null && (rawConnection == null || rawConnection.isClosed())) {
+                rawConnection = hikariDataSource.getConnection();
+                connection = wrapConnection(rawConnection);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to refresh MySQL connection from pool", e);
+        }
+        return connection;
+    }
+
+    public void executeAsync(Runnable task) {
+        if (asyncExecutor != null && !asyncExecutor.isShutdown()) {
+            asyncExecutor.submit(() -> {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    plugin.getLogger().log(Level.WARNING, "Error executing async database task", e);
+                }
+            });
+        }
+    }
+
+    public void savePlayerAsync(PlayerData data) {
+        executeAsync(() -> savePlayer(data));
+    }
+
+    public void savePlayerIpAddressAsync(UUID playerUuid, String ipAddress, long seenAt) {
+        executeAsync(() -> savePlayerIpAddress(playerUuid, ipAddress, seenAt));
+    }
 
     private Connection wrapConnection(Connection target) {
         if (target == null) {
@@ -4606,7 +4663,9 @@ public class DatabaseManager {
                 while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
                     long delay = limit - System.currentTimeMillis();
                     if (delay <= 0) {
-                        throw new SQLException("Database lock acquisition timeout (10s). Current owner: " + transactionOwner.getName());
+                        transactionOwner = null;
+                        lock.notifyAll();
+                        throw new SQLException("Database lock acquisition timeout (10s). Resetting lock owner.");
                     }
                     try {
                         lock.wait(delay);
@@ -4632,6 +4691,10 @@ public class DatabaseManager {
                 try {
                     return method.invoke(target, args);
                 } catch (java.lang.reflect.InvocationTargetException e) {
+                    if (transactionOwner == Thread.currentThread() && methodName.equals("setAutoCommit")) {
+                        transactionOwner = null;
+                        lock.notifyAll();
+                    }
                     throw e.getCause();
                 }
             }
