@@ -21,17 +21,23 @@ commands:
   team:
     description: Team management
     usage: /team <create|disband|invite|kick|join|leave|home|sethome|delhome|chat|info|pvp>
+    permission: ultimatedonutsmp.command.team
+    permission-message: "&cYou do not have permission to use /team."
   chat:
     description: Manage global chat settings
     usage: /chat <help|mute|unmute|delay|clear>
+    permission: ultimatedonutsmp.command.chat
+    permission-message: "&cYou do not have permission to use /chat."
   ignore:
     description: Add or remove a player from your ignore list
     usage: /ignore <player|list>
-    permission: ultimatedonutsmp.ignore
+    permission: ultimatedonutsmp.command.ignore
+    permission-message: "&cYou do not have permission to use /ignore."
   unignore:
     description: Remove a player from your ignore list
     usage: /unignore <player>
-    permission: ultimatedonutsmp.ignore
+    permission: ultimatedonutsmp.command.unignore
+    permission-message: "&cYou do not have permission to use /unignore."
   msg:
     description: Send a private message
     usage: /msg <player> <message>
@@ -40,169 +46,253 @@ commands:
     - tell
     - whisper
     - w
-    permission: ultimatedonutsmp.message
+    permission: ultimatedonutsmp.command.msg
+    permission-message: "&cYou do not have permission to use /msg."
   reply:
     description: Reply to your last private conversation
     usage: /reply <message>
     aliases:
     - r
-    permission: ultimatedonutsmp.message
+    permission: ultimatedonutsmp.command.reply
+    permission-message: "&cYou do not have permission to use /reply."
   pm:
     description: Toggle private messages
     usage: /pm
     aliases:
     - togglepm
     - privatemessages
-    permission: ultimatedonutsmp.message.toggle
+    permission: ultimatedonutsmp.command.pm
+    permission-message: "&cYou do not have permission to use /pm."
   home:
     description: Teleport to your home
     usage: /home [name]
+    permission: ultimatedonutsmp.command.home
+    permission-message: "&cYou do not have permission to use /home."
   homes:
     description: List your homes
     usage: /homes
+    permission: ultimatedonutsmp.command.homes
+    permission-message: "&cYou do not have permission to use /homes."
   sethome:
     description: Set your home
     usage: /sethome [name]
+    permission: ultimatedonutsmp.command.sethome
+    permission-message: "&cYou do not have permission to use /sethome."
   delhome:
     description: Delete a home
     usage: /delhome <name>
+    permission: ultimatedonutsmp.command.delhome
+    permission-message: "&cYou do not have permission to use /delhome."
   renamehome:
     description: Rename a home
     usage: /renamehome <old> <new>
+    permission: ultimatedonutsmp.command.renamehome
+    permission-message: "&cYou do not have permission to use /renamehome."
   spawn:
     description: Teleport to spawn
     usage: /spawn
+    permission: ultimatedonutsmp.command.spawn
+    permission-message: "&cYou do not have permission to use /spawn."
   afk:
     description: Go to AFK zone
     usage: /afk
+    permission: ultimatedonutsmp.command.afk
+    permission-message: "&cYou do not have permission to use /afk."
   rtp:
     description: Random teleport
     usage: /rtp [world]
+    permission: ultimatedonutsmp.command.rtp
+    permission-message: "&cYou do not have permission to use /rtp."
   shop:
     description: Open the shop
     usage: /shop [reload]
+    permission: ultimatedonutsmp.command.shop
+    permission-message: "&cYou do not have permission to use /shop."
   orders:
     description: Open the Orders board
     usage: /orders [my|collect|reload]
+    permission: ultimatedonutsmp.command.orders
+    permission-message: "&cYou do not have permission to use /orders."
   duel:
     description: Challenge or manage duels
     usage: /duel [player|accept|deny|claims|reload]
+    permission: ultimatedonutsmp.command.duel
+    permission-message: "&cYou do not have permission to use /duel."
   queue:
     description: Open or join the duel queue
     usage: /queue [join|leave]
+    permission: ultimatedonutsmp.command.queue
+    permission-message: "&cYou do not have permission to use /queue."
   leave:
     description: Leave a duel or FFA queue/match
     usage: /leave
+    permission: ultimatedonutsmp.command.leave
+    permission-message: "&cYou do not have permission to use /leave."
   draw:
     description: Request or accept a duel draw
     usage: /draw
+    permission: ultimatedonutsmp.command.draw
+    permission-message: "&cYou do not have permission to use /draw."
   arena:
     description: Manage duel arenas
     usage: /arena <create|delete|setpos1|setpos2|setreturn|setdisplay|enable|disable|queue|list|reload>
     aliases:
     - duelarena
+    permission: ultimatedonutsmp.command.arena
+    permission-message: "&cYou do not have permission to use /arena."
   ffa:
     description: Join the instanced FFA queue
     usage: /ffa [join|reload|arena ...]
+    permission: ultimatedonutsmp.command.ffa
+    permission-message: "&cYou do not have permission to use /ffa."
   ffastats:
     description: View FFA stats
     usage: /ffastats [player]
+    permission: ultimatedonutsmp.command.ffastats
+    permission-message: "&cYou do not have permission to use /ffastats."
   ffaarena:
     description: Manage FFA arenas
     usage: /ffaarena <create|delete|setpos|setdisplay|settings|enable|disable|list|reload>
+    permission: ultimatedonutsmp.command.ffaarena
+    permission-message: "&cYou do not have permission to use /ffaarena."
   auctionhouse:
     description: Open the Auction House
     usage: /auctionhouse [sell|my|claims|cancel|reload]
     aliases:
     - ah
+    permission: ultimatedonutsmp.command.auctionhouse
+    permission-message: "&cYou do not have permission to use /auctionhouse."
   enderchest:
     description: Open your custom Ender Chest
     usage: /enderchest [reload]
     aliases:
     - ec
+    permission: ultimatedonutsmp.command.enderchest
+    permission-message: "&cYou do not have permission to use /enderchest."
   sell:
     description: Open sell menu
     usage: /sell
+    permission: ultimatedonutsmp.command.sell
+    permission-message: "&cYou do not have permission to use /sell."
   sellhand:
     description: Sell item in hand
     usage: /sellhand [amount]
+    permission: ultimatedonutsmp.command.sellhand
+    permission-message: "&cYou do not have permission to use /sellhand."
   sellall:
     description: Sell all sellable items
     usage: /sellall
+    permission: ultimatedonutsmp.command.sellall
+    permission-message: "&cYou do not have permission to use /sellall."
   sellhistory:
     description: View sell history
     usage: /sellhistory
+    permission: ultimatedonutsmp.command.sellhistory
+    permission-message: "&cYou do not have permission to use /sellhistory."
   topsell:
     description: View admin top sell statistics and economy metrics
     usage: /topsell [gui|items|volume|sellers|export]
-    permission: ultimatedonutsmp.admin.sellstats
     aliases:
     - sellstats
+    permission: ultimatedonutsmp.command.topsell
+    permission-message: "&cYou do not have permission to use /topsell."
   worth:
     description: Open the worth browser or check held item worth
     usage: /worth [hand|reload]
     aliases:
     - prices
+    permission: ultimatedonutsmp.command.worth
+    permission-message: "&cYou do not have permission to use /worth."
   balance:
     description: Check balance
     usage: /balance [player]
     aliases:
     - bal
     - money
+    permission: ultimatedonutsmp.command.balance
+    permission-message: "&cYou do not have permission to use /balance."
   pay:
     description: Pay a player
     usage: /pay <player> <amount>
+    permission: ultimatedonutsmp.command.pay
+    permission-message: "&cYou do not have permission to use /pay."
   addmoney:
     description: Add money to a player
     usage: /addmoney <player> <amount>
-    permission: ultimatedonutsmp.admin.addmoney
+    permission: ultimatedonutsmp.command.addmoney
+    permission-message: "&cYou do not have permission to use /addmoney."
   removemoney:
     description: Remove money from a player
     usage: /removemoney <player> <amount>
-    permission: ultimatedonutsmp.admin.removemoney
+    permission: ultimatedonutsmp.command.removemoney
+    permission-message: "&cYou do not have permission to use /removemoney."
   setmoney:
     description: Set a player's money balance
     usage: /setmoney <player> <amount>
-    permission: ultimatedonutsmp.admin.setmoney
+    permission: ultimatedonutsmp.command.setmoney
+    permission-message: "&cYou do not have permission to use /setmoney."
   shards:
     description: Check shards
     usage: /shards [player] | /shards everywhere <status|debug> [player]
+    permission: ultimatedonutsmp.command.shards
+    permission-message: "&cYou do not have permission to use /shards."
   shardpay:
     description: Pay shards to a player
     usage: /shardpay <player> <amount>
+    permission: ultimatedonutsmp.command.shardpay
+    permission-message: "&cYou do not have permission to use /shardpay."
   crate:
     description: Manage crates
     usage: /crate <create|delete|type|open|keys|reload|key|take|set|keyall|add|edit|remove|bind|unbind|info>
+    permission: ultimatedonutsmp.command.crate
+    permission-message: "&cYou do not have permission to use /crate."
   crates:
     description: Open the crates menu
     usage: /crates
     permission: ultimatedonutsmp.command.crates
+    permission-message: "&cYou do not have permission to use /crates."
   keys:
     description: Open your crate keys menu
     usage: /keys
+    permission: ultimatedonutsmp.command.keys
+    permission-message: "&cYou do not have permission to use /keys."
   stats:
     description: View player stats
     usage: /stats [player]
+    permission: ultimatedonutsmp.command.stats
+    permission-message: "&cYou do not have permission to use /stats."
   ping:
     description: Check your ping or another online player's ping
     usage: /ping [player]
+    permission: ultimatedonutsmp.command.ping
+    permission-message: "&cYou do not have permission to use /ping."
   playtime:
     description: Check your playtime or another player's playtime
     usage: /playtime [player]
     aliases:
     - pt
+    permission: ultimatedonutsmp.command.playtime
+    permission-message: "&cYou do not have permission to use /playtime."
   freeze:
     description: Freeze or unfreeze a player for moderation
     usage: /freeze <player> | /freeze reload
+    permission: ultimatedonutsmp.command.freeze
+    permission-message: "&cYou do not have permission to use /freeze."
   fly:
     description: Toggle flight mode for yourself or another player
     usage: /fly [player]
+    permission: ultimatedonutsmp.command.fly
+    permission-message: "&cYou do not have permission to use /fly."
   heal:
     description: Restore health for yourself or another player
     usage: /heal [player]
+    permission: ultimatedonutsmp.command.heal
+    permission-message: "&cYou do not have permission to use /heal."
   feed:
     description: Restore hunger for yourself or another player
     usage: /feed [player]
+    permission: ultimatedonutsmp.command.feed
+    permission-message: "&cYou do not have permission to use /feed."
   gamemode:
     description: Change your gamemode or another online player's gamemode
     usage: /gamemode <mode> [player]
@@ -212,35 +302,49 @@ commands:
     - gms
     - gma
     - gmsp
+    permission: ultimatedonutsmp.command.gamemode
+    permission-message: "&cYou do not have permission to use /gamemode."
   staffmode:
     description: Toggle the staff moderation hotbar
     usage: /staffmode [player|reload]
     aliases:
     - staff
+    permission: ultimatedonutsmp.command.staffmode
+    permission-message: "&cYou do not have permission to use /staffmode."
   stafflist:
     description: Open the online staff list
     usage: /stafflist
+    permission: ultimatedonutsmp.command.stafflist
+    permission-message: "&cYou do not have permission to use /stafflist."
   staffchat:
     description: Send a message to staff chat
     usage: /staffchat <message>
     aliases:
     - sc
+    permission: ultimatedonutsmp.command.staffchat
+    permission-message: "&cYou do not have permission to use /staffchat."
   helpop:
     description: Request staff assistance
     usage: /helpop <message>
-    permission: ultimatedonutsmp.helpop
+    permission: ultimatedonutsmp.command.helpop
+    permission-message: "&cYou do not have permission to use /helpop."
   report:
     description: Report a player to online staff
     usage: /report <player> <reason>
-    permission: ultimatedonutsmp.report
+    permission: ultimatedonutsmp.command.report
+    permission-message: "&cYou do not have permission to use /report."
   rename:
     description: Rename the item in your hand
     usage: /rename <name...|reset>
+    permission: ultimatedonutsmp.command.rename
+    permission-message: "&cYou do not have permission to use /rename."
   randomteleport:
     description: Teleport to a random online player
     usage: /randomteleport
     aliases:
     - randomtp
+    permission: ultimatedonutsmp.command.randomteleport
+    permission-message: "&cYou do not have permission to use /randomteleport."
   teleport:
     description: Staff teleport command suite
     usage: /teleport <player|here <player>|all|top|x y z [world]>
@@ -248,94 +352,132 @@ commands:
     - tp
     - tphere
     - tpall
+    permission: ultimatedonutsmp.command.teleport
+    permission-message: "&cYou do not have permission to use /teleport."
   alts:
     description: View alternate accounts by shared IP history
     usage: /alts <player>
+    permission: ultimatedonutsmp.command.alts
+    permission-message: "&cYou do not have permission to use /alts."
   vanish:
     description: Toggle vanish while in staff mode
     usage: /vanish
+    permission: ultimatedonutsmp.command.vanish
+    permission-message: "&cYou do not have permission to use /vanish."
   invsee:
     description: View another player's inventory
     usage: /invsee <player> | /invsee reload
     aliases:
     - inventorysee
+    permission: ultimatedonutsmp.command.invsee
+    permission-message: "&cYou do not have permission to use /invsee."
   profileviewer:
     description: View a player's profile and homes
     usage: /profileviewer <player>
     aliases:
     - pv
+    permission: ultimatedonutsmp.command.profileviewer
+    permission-message: "&cYou do not have permission to use /profileviewer."
   punishments:
     description: View a player's punishment history
     usage: /punishments <player>
     aliases:
     - phistory
+    permission: ultimatedonutsmp.command.punishments
+    permission-message: "&cYou do not have permission to use /punishments."
   ban:
     description: Ban a player and record punishment history
     usage: /ban <player> [reason]
-    permission: ultimatedonutsmp.staff.punishments.ban
+    permission: ultimatedonutsmp.command.ban
+    permission-message: "&cYou do not have permission to use /ban."
   tempban:
     description: Temporarily ban a player and record punishment history
     usage: '/tempban <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m 30s)'
-    permission: ultimatedonutsmp.staff.punishments.ban
+    permission: ultimatedonutsmp.command.tempban
+    permission-message: "&cYou do not have permission to use /tempban."
   mute:
     description: Mute a player and record punishment history
     usage: /mute <player> [reason]
-    permission: ultimatedonutsmp.staff.punishments.mute
+    permission: ultimatedonutsmp.command.mute
+    permission-message: "&cYou do not have permission to use /mute."
   tempmute:
     description: Temporarily mute a player and record punishment history
     usage: '/tempmute <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m
       30s)'
-    permission: ultimatedonutsmp.staff.punishments.mute
+    permission: ultimatedonutsmp.command.tempmute
+    permission-message: "&cYou do not have permission to use /tempmute."
   warn:
     description: Warn a player and record punishment history
     usage: /warn <player> [reason]
-    permission: ultimatedonutsmp.staff.punishments.create
+    permission: ultimatedonutsmp.command.warn
+    permission-message: "&cYou do not have permission to use /warn."
   kick:
     description: Kick a player and record punishment history
     usage: /kick <player> [reason]
-    permission: ultimatedonutsmp.staff.punishments.create
+    permission: ultimatedonutsmp.command.kick
+    permission-message: "&cYou do not have permission to use /kick."
   blacklist:
     description: Blacklist a player and record punishment history
     usage: /blacklist <player> [reason]
-    permission: ultimatedonutsmp.staff.punishments.blacklist
+    permission: ultimatedonutsmp.command.blacklist
+    permission-message: "&cYou do not have permission to use /blacklist."
   unban:
     description: Remove active ban records for a player
     usage: /unban <player> [reason]
     aliases:
     - pardon
-    permission: ultimatedonutsmp.staff.punishments.unban
+    permission: ultimatedonutsmp.command.unban
+    permission-message: "&cYou do not have permission to use /unban."
   unmute:
     description: Remove active mute records for a player
     usage: /unmute <player> [reason]
-    permission: ultimatedonutsmp.staff.punishments.unmute
+    permission: ultimatedonutsmp.command.unmute
+    permission-message: "&cYou do not have permission to use /unmute."
   unblacklist:
     description: Remove active blacklist records for a player
     usage: /unblacklist <player> [reason]
-    permission: ultimatedonutsmp.staff.punishments.unblacklist
+    permission: ultimatedonutsmp.command.unblacklist
+    permission-message: "&cYou do not have permission to use /unblacklist."
   bounty:
     description: Manage bounties
     usage: /bounty <add|set|info|list> [player] [amount]
+    permission: ultimatedonutsmp.command.bounty
+    permission-message: "&cYou do not have permission to use /bounty."
   tpa:
     description: Request teleport to player
     usage: /tpa <player>
+    permission: ultimatedonutsmp.command.tpa
+    permission-message: "&cYou do not have permission to use /tpa."
   tpahere:
     description: Request player to teleport to you
     usage: /tpahere <player>
+    permission: ultimatedonutsmp.command.tpahere
+    permission-message: "&cYou do not have permission to use /tpahere."
   tpaccept:
     description: Accept a TPA request
     usage: /tpaccept [player]
+    permission: ultimatedonutsmp.command.tpaccept
+    permission-message: "&cYou do not have permission to use /tpaccept."
   tpadeny:
     description: Deny a TPA request
     usage: /tpadeny [player]
+    permission: ultimatedonutsmp.command.tpadeny
+    permission-message: "&cYou do not have permission to use /tpadeny."
   tpacancel:
     description: Cancel your TPA requests
     usage: /tpacancel
+    permission: ultimatedonutsmp.command.tpacancel
+    permission-message: "&cYou do not have permission to use /tpacancel."
   tpauto:
     description: Toggle TPA auto-accept
     usage: /tpauto
+    permission: ultimatedonutsmp.command.tpauto
+    permission-message: "&cYou do not have permission to use /tpauto."
   tpahereauto:
     description: Toggle TPA Here auto-accept
     usage: /tpahereauto
+    permission: ultimatedonutsmp.command.tpahereauto
+    permission-message: "&cYou do not have permission to use /tpahereauto."
   leaderboard:
     description: View leaderboards
     usage: /leaderboard [type]
@@ -343,130 +485,208 @@ commands:
     - lb
     - top
     - leaderboards
+    permission: ultimatedonutsmp.command.leaderboard
+    permission-message: "&cYou do not have permission to use /leaderboard."
   warp:
     description: Teleport to a warp
     usage: /warp [name]
+    permission: ultimatedonutsmp.command.warp
+    permission-message: "&cYou do not have permission to use /warp."
   warpmanager:
     description: Manage warp points
     usage: /warpmanager <create|delete|list> [name]
+    permission: ultimatedonutsmp.command.warpmanager
+    permission-message: "&cYou do not have permission to use /warpmanager."
   portalmanager:
     description: Manage RTP portal triggers
     usage: /portalmanager <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>
+    permission: ultimatedonutsmp.command.portalmanager
+    permission-message: "&cYou do not have permission to use /portalmanager."
   nightvision:
     description: Toggle night vision
     usage: /nightvision
     aliases:
     - nv
+    permission: ultimatedonutsmp.command.nightvision
+    permission-message: "&cYou do not have permission to use /nightvision."
   phantom:
     description: Toggle phantom spawning
     usage: /phantom
+    permission: ultimatedonutsmp.command.phantom
+    permission-message: "&cYou do not have permission to use /phantom."
   findplayer:
     description: Find a player location
     usage: /findplayer <player>
     aliases:
     - fp
+    permission: ultimatedonutsmp.command.findplayer
+    permission-message: "&cYou do not have permission to use /findplayer."
   settings:
     description: Open player settings
     usage: /settings
+    permission: ultimatedonutsmp.command.settings
+    permission-message: "&cYou do not have permission to use /settings."
   discord:
     description: Get Discord link
     usage: /discord
+    permission: ultimatedonutsmp.command.discord
+    permission-message: "&cYou do not have permission to use /discord."
   twitter:
     description: Get Twitter/X link
     usage: /twitter
+    permission: ultimatedonutsmp.command.twitter
+    permission-message: "&cYou do not have permission to use /twitter."
   store:
     description: Get store link
     usage: /store
+    permission: ultimatedonutsmp.command.store
+    permission-message: "&cYou do not have permission to use /store."
   social:
     description: Get social links
     usage: /social
     aliases:
     - media
+    permission: ultimatedonutsmp.command.social
+    permission-message: "&cYou do not have permission to use /social."
   rules:
     description: View server rules
     usage: /rules
+    permission: ultimatedonutsmp.command.rules
+    permission-message: "&cYou do not have permission to use /rules."
   help:
     description: View help
     usage: /help
+    permission: ultimatedonutsmp.command.help
+    permission-message: "&cYou do not have permission to use /help."
   servers:
     description: View network server status
     usage: /servers
-    permission: ultimatedonutsmp.servers
+    permission: ultimatedonutsmp.command.servers
+    permission-message: "&cYou do not have permission to use /servers."
   billford:
     description: Open Billford trade
     usage: /billford
+    permission: ultimatedonutsmp.command.billford
+    permission-message: "&cYou do not have permission to use /billford."
   spawner:
     description: Manage Donut-style spawners
     usage: /spawner [give|info|panel|reload|remove]
     aliases:
     - spawners
+    permission: ultimatedonutsmp.command.spawner
+    permission-message: "&cYou do not have permission to use /spawner."
   clearlag:
     description: Manually clear lag entities
     usage: /clearlag
-    permission: ultimatedonutsmp.admin.clearlag
+    permission: ultimatedonutsmp.command.clearlag
+    permission-message: "&cYou do not have permission to use /clearlag."
   cuboid:
     description: Manage cuboid regions
     usage: /cuboid <wand|create|delete|list|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>
-    permission: ultimatedonutsmp.admin.cuboid
+    permission: ultimatedonutsmp.command.cuboid
+    permission-message: "&cYou do not have permission to use /cuboid."
   setwarp:
     description: Set a warp point
     usage: /setwarp <name>
+    permission: ultimatedonutsmp.command.setwarp
+    permission-message: "&cYou do not have permission to use /setwarp."
   delwarp:
     description: Delete a warp point
     usage: /delwarp <name>
+    permission: ultimatedonutsmp.command.delwarp
+    permission-message: "&cYou do not have permission to use /delwarp."
   amethysttool:
     description: Manage amethyst tools
     usage: /amethysttool give <player> <type> [duration] | /amethysttool reload
-    permission: ultimatedonutsmp.admin.amethysttool
+    permission: ultimatedonutsmp.command.amethysttool
+    permission-message: "&cYou do not have permission to use /amethysttool."
   ultimatedonutsmp:
     description: UltimateDonutSmp admin command
     usage: /ultimatedonutsmp <reload|statswipe|optimize>
     aliases:
     - uds
     - udsmp
+    permission: ultimatedonutsmp.command.ultimatedonutsmp
+    permission-message: "&cYou do not have permission to use /ultimatedonutsmp."
   ecsee:
     description: ecsee
     usage: /ecsee <player>
-    permission: ultimatedonutsmp.ecsee
+    permission: ultimatedonutsmp.command.ecsee
+    permission-message: "&cYou do not have permission to use /ecsee."
   logs:
     description: Command logs
+    permission: ultimatedonutsmp.command.logs
+    permission-message: "&cYou do not have permission to use /logs."
   addshards:
     description: Command addshards
+    permission: ultimatedonutsmp.command.addshards
+    permission-message: "&cYou do not have permission to use /addshards."
   removeshards:
     description: Command removeshards
+    permission: ultimatedonutsmp.command.removeshards
+    permission-message: "&cYou do not have permission to use /removeshards."
   setshards:
     description: Command setshards
+    permission: ultimatedonutsmp.command.setshards
+    permission-message: "&cYou do not have permission to use /setshards."
   shardshop:
     description: Command shardshop
+    permission: ultimatedonutsmp.command.shardshop
+    permission-message: "&cYou do not have permission to use /shardshop."
   create:
     description: Command create
+    permission: ultimatedonutsmp.command.create
+    permission-message: "&cYou do not have permission to use /create."
   kill:
     description: Command kill
+    permission: ultimatedonutsmp.command.kill
+    permission-message: "&cYou do not have permission to use /kill."
   safety:
     description: Command safety
+    permission: ultimatedonutsmp.command.safety
+    permission-message: "&cYou do not have permission to use /safety."
   friends:
     description: Command friends
+    permission: ultimatedonutsmp.command.friends
+    permission-message: "&cYou do not have permission to use /friends."
   friend:
     description: Command friend
+    permission: ultimatedonutsmp.command.friend
+    permission-message: "&cYou do not have permission to use /friend."
   spawnstash:
     description: Command spawnstash
+    permission: ultimatedonutsmp.command.spawnstash
+    permission-message: "&cYou do not have permission to use /spawnstash."
   fakeplayer:
     description: Command fakeplayer
+    permission: ultimatedonutsmp.command.fakeplayer
+    permission-message: "&cYou do not have permission to use /fakeplayer."
   hide:
     description: Command hide
+    permission: ultimatedonutsmp.command.hide
+    permission-message: "&cYou do not have permission to use /hide."
   disguise:
     description: Command disguise
+    permission: ultimatedonutsmp.command.disguise
+    permission-message: "&cYou do not have permission to use /disguise."
   maintenance:
     description: Command maintenance
+    permission: ultimatedonutsmp.command.maintenance
+    permission-message: "&cYou do not have permission to use /maintenance."
   serverwipe:
     description: Command serverwipe
+    permission: ultimatedonutsmp.command.serverwipe
+    permission-message: "&cYou do not have permission to use /serverwipe."
   amod:
     description: Command amod
+    permission: ultimatedonutsmp.command.amod
+    permission-message: "&cYou do not have permission to use /amod."
 permissions:
   ultimatedonutsmp.admin:
     description: Full admin access
     default: op
     children:
+      ultimatedonutsmp.command.*: true
       ultimatedonutsmp.admin.shop: true
       ultimatedonutsmp.admin.orders: true
       ultimatedonutsmp.admin.duels: true
@@ -860,3 +1080,499 @@ permissions:
     description: Check listing limits in the Auction House (alias)
     default: true
 
+  ultimatedonutsmp.command.*:
+    description: Full access to all UltimateDonutSmp commands
+    default: op
+    children:
+      ultimatedonutsmp.command.team: true
+      ultimatedonutsmp.command.chat: true
+      ultimatedonutsmp.command.ignore: true
+      ultimatedonutsmp.command.unignore: true
+      ultimatedonutsmp.command.msg: true
+      ultimatedonutsmp.command.reply: true
+      ultimatedonutsmp.command.pm: true
+      ultimatedonutsmp.command.home: true
+      ultimatedonutsmp.command.homes: true
+      ultimatedonutsmp.command.sethome: true
+      ultimatedonutsmp.command.delhome: true
+      ultimatedonutsmp.command.renamehome: true
+      ultimatedonutsmp.command.spawn: true
+      ultimatedonutsmp.command.afk: true
+      ultimatedonutsmp.command.rtp: true
+      ultimatedonutsmp.command.shop: true
+      ultimatedonutsmp.command.orders: true
+      ultimatedonutsmp.command.duel: true
+      ultimatedonutsmp.command.queue: true
+      ultimatedonutsmp.command.leave: true
+      ultimatedonutsmp.command.draw: true
+      ultimatedonutsmp.command.arena: true
+      ultimatedonutsmp.command.ffa: true
+      ultimatedonutsmp.command.ffastats: true
+      ultimatedonutsmp.command.ffaarena: true
+      ultimatedonutsmp.command.auctionhouse: true
+      ultimatedonutsmp.command.enderchest: true
+      ultimatedonutsmp.command.sell: true
+      ultimatedonutsmp.command.sellhand: true
+      ultimatedonutsmp.command.sellall: true
+      ultimatedonutsmp.command.sellhistory: true
+      ultimatedonutsmp.command.topsell: true
+      ultimatedonutsmp.command.worth: true
+      ultimatedonutsmp.command.balance: true
+      ultimatedonutsmp.command.pay: true
+      ultimatedonutsmp.command.addmoney: true
+      ultimatedonutsmp.command.removemoney: true
+      ultimatedonutsmp.command.setmoney: true
+      ultimatedonutsmp.command.shards: true
+      ultimatedonutsmp.command.shardpay: true
+      ultimatedonutsmp.command.crate: true
+      ultimatedonutsmp.command.crates: true
+      ultimatedonutsmp.command.keys: true
+      ultimatedonutsmp.command.stats: true
+      ultimatedonutsmp.command.ping: true
+      ultimatedonutsmp.command.playtime: true
+      ultimatedonutsmp.command.freeze: true
+      ultimatedonutsmp.command.fly: true
+      ultimatedonutsmp.command.heal: true
+      ultimatedonutsmp.command.feed: true
+      ultimatedonutsmp.command.gamemode: true
+      ultimatedonutsmp.command.staffmode: true
+      ultimatedonutsmp.command.stafflist: true
+      ultimatedonutsmp.command.staffchat: true
+      ultimatedonutsmp.command.helpop: true
+      ultimatedonutsmp.command.report: true
+      ultimatedonutsmp.command.rename: true
+      ultimatedonutsmp.command.randomteleport: true
+      ultimatedonutsmp.command.teleport: true
+      ultimatedonutsmp.command.alts: true
+      ultimatedonutsmp.command.vanish: true
+      ultimatedonutsmp.command.invsee: true
+      ultimatedonutsmp.command.profileviewer: true
+      ultimatedonutsmp.command.punishments: true
+      ultimatedonutsmp.command.ban: true
+      ultimatedonutsmp.command.tempban: true
+      ultimatedonutsmp.command.mute: true
+      ultimatedonutsmp.command.tempmute: true
+      ultimatedonutsmp.command.warn: true
+      ultimatedonutsmp.command.kick: true
+      ultimatedonutsmp.command.blacklist: true
+      ultimatedonutsmp.command.unban: true
+      ultimatedonutsmp.command.unmute: true
+      ultimatedonutsmp.command.unblacklist: true
+      ultimatedonutsmp.command.bounty: true
+      ultimatedonutsmp.command.tpa: true
+      ultimatedonutsmp.command.tpahere: true
+      ultimatedonutsmp.command.tpaccept: true
+      ultimatedonutsmp.command.tpadeny: true
+      ultimatedonutsmp.command.tpacancel: true
+      ultimatedonutsmp.command.tpauto: true
+      ultimatedonutsmp.command.tpahereauto: true
+      ultimatedonutsmp.command.leaderboard: true
+      ultimatedonutsmp.command.warp: true
+      ultimatedonutsmp.command.warpmanager: true
+      ultimatedonutsmp.command.portalmanager: true
+      ultimatedonutsmp.command.nightvision: true
+      ultimatedonutsmp.command.phantom: true
+      ultimatedonutsmp.command.findplayer: true
+      ultimatedonutsmp.command.settings: true
+      ultimatedonutsmp.command.discord: true
+      ultimatedonutsmp.command.twitter: true
+      ultimatedonutsmp.command.store: true
+      ultimatedonutsmp.command.social: true
+      ultimatedonutsmp.command.rules: true
+      ultimatedonutsmp.command.help: true
+      ultimatedonutsmp.command.servers: true
+      ultimatedonutsmp.command.billford: true
+      ultimatedonutsmp.command.spawner: true
+      ultimatedonutsmp.command.clearlag: true
+      ultimatedonutsmp.command.cuboid: true
+      ultimatedonutsmp.command.setwarp: true
+      ultimatedonutsmp.command.delwarp: true
+      ultimatedonutsmp.command.amethysttool: true
+      ultimatedonutsmp.command.ultimatedonutsmp: true
+      ultimatedonutsmp.command.ecsee: true
+      ultimatedonutsmp.command.logs: true
+      ultimatedonutsmp.command.addshards: true
+      ultimatedonutsmp.command.removeshards: true
+      ultimatedonutsmp.command.setshards: true
+      ultimatedonutsmp.command.shardshop: true
+      ultimatedonutsmp.command.create: true
+      ultimatedonutsmp.command.kill: true
+      ultimatedonutsmp.command.safety: true
+      ultimatedonutsmp.command.friends: true
+      ultimatedonutsmp.command.friend: true
+      ultimatedonutsmp.command.spawnstash: true
+      ultimatedonutsmp.command.fakeplayer: true
+      ultimatedonutsmp.command.hide: true
+      ultimatedonutsmp.command.disguise: true
+      ultimatedonutsmp.command.maintenance: true
+      ultimatedonutsmp.command.serverwipe: true
+      ultimatedonutsmp.command.amod: true
+  ultimatedonutsmp.command.team:
+    description: Access to /team command
+    default: true
+  ultimatedonutsmp.command.chat:
+    description: Access to /chat command
+    default: true
+  ultimatedonutsmp.command.ignore:
+    description: Access to /ignore command
+    default: true
+  ultimatedonutsmp.command.unignore:
+    description: Access to /unignore command
+    default: true
+  ultimatedonutsmp.command.msg:
+    description: Access to /msg command
+    default: true
+  ultimatedonutsmp.command.reply:
+    description: Access to /reply command
+    default: true
+  ultimatedonutsmp.command.pm:
+    description: Access to /pm command
+    default: true
+  ultimatedonutsmp.command.home:
+    description: Access to /home command
+    default: true
+  ultimatedonutsmp.command.homes:
+    description: Access to /homes command
+    default: true
+  ultimatedonutsmp.command.sethome:
+    description: Access to /sethome command
+    default: true
+  ultimatedonutsmp.command.delhome:
+    description: Access to /delhome command
+    default: true
+  ultimatedonutsmp.command.renamehome:
+    description: Access to /renamehome command
+    default: true
+  ultimatedonutsmp.command.spawn:
+    description: Access to /spawn command
+    default: true
+  ultimatedonutsmp.command.afk:
+    description: Access to /afk command
+    default: true
+  ultimatedonutsmp.command.rtp:
+    description: Access to /rtp command
+    default: true
+  ultimatedonutsmp.command.shop:
+    description: Access to /shop command
+    default: true
+  ultimatedonutsmp.command.orders:
+    description: Access to /orders command
+    default: true
+  ultimatedonutsmp.command.duel:
+    description: Access to /duel command
+    default: true
+  ultimatedonutsmp.command.queue:
+    description: Access to /queue command
+    default: true
+  ultimatedonutsmp.command.leave:
+    description: Access to /leave command
+    default: true
+  ultimatedonutsmp.command.draw:
+    description: Access to /draw command
+    default: true
+  ultimatedonutsmp.command.arena:
+    description: Access to /arena command
+    default: op
+  ultimatedonutsmp.command.ffa:
+    description: Access to /ffa command
+    default: true
+  ultimatedonutsmp.command.ffastats:
+    description: Access to /ffastats command
+    default: true
+  ultimatedonutsmp.command.ffaarena:
+    description: Access to /ffaarena command
+    default: op
+  ultimatedonutsmp.command.auctionhouse:
+    description: Access to /auctionhouse command
+    default: true
+  ultimatedonutsmp.command.enderchest:
+    description: Access to /enderchest command
+    default: true
+  ultimatedonutsmp.command.sell:
+    description: Access to /sell command
+    default: true
+  ultimatedonutsmp.command.sellhand:
+    description: Access to /sellhand command
+    default: true
+  ultimatedonutsmp.command.sellall:
+    description: Access to /sellall command
+    default: true
+  ultimatedonutsmp.command.sellhistory:
+    description: Access to /sellhistory command
+    default: true
+  ultimatedonutsmp.command.topsell:
+    description: Access to /topsell command
+    default: op
+  ultimatedonutsmp.command.worth:
+    description: Access to /worth command
+    default: true
+  ultimatedonutsmp.command.balance:
+    description: Access to /balance command
+    default: true
+  ultimatedonutsmp.command.pay:
+    description: Access to /pay command
+    default: true
+  ultimatedonutsmp.command.addmoney:
+    description: Access to /addmoney command
+    default: op
+  ultimatedonutsmp.command.removemoney:
+    description: Access to /removemoney command
+    default: op
+  ultimatedonutsmp.command.setmoney:
+    description: Access to /setmoney command
+    default: op
+  ultimatedonutsmp.command.shards:
+    description: Access to /shards command
+    default: true
+  ultimatedonutsmp.command.shardpay:
+    description: Access to /shardpay command
+    default: true
+  ultimatedonutsmp.command.crate:
+    description: Access to /crate command
+    default: op
+  ultimatedonutsmp.command.crates:
+    description: Access to /crates command
+    default: true
+  ultimatedonutsmp.command.keys:
+    description: Access to /keys command
+    default: true
+  ultimatedonutsmp.command.stats:
+    description: Access to /stats command
+    default: true
+  ultimatedonutsmp.command.ping:
+    description: Access to /ping command
+    default: true
+  ultimatedonutsmp.command.playtime:
+    description: Access to /playtime command
+    default: true
+  ultimatedonutsmp.command.freeze:
+    description: Access to /freeze command
+    default: op
+  ultimatedonutsmp.command.fly:
+    description: Access to /fly command
+    default: op
+  ultimatedonutsmp.command.heal:
+    description: Access to /heal command
+    default: op
+  ultimatedonutsmp.command.feed:
+    description: Access to /feed command
+    default: op
+  ultimatedonutsmp.command.gamemode:
+    description: Access to /gamemode command
+    default: op
+  ultimatedonutsmp.command.staffmode:
+    description: Access to /staffmode command
+    default: op
+  ultimatedonutsmp.command.stafflist:
+    description: Access to /stafflist command
+    default: op
+  ultimatedonutsmp.command.staffchat:
+    description: Access to /staffchat command
+    default: op
+  ultimatedonutsmp.command.helpop:
+    description: Access to /helpop command
+    default: true
+  ultimatedonutsmp.command.report:
+    description: Access to /report command
+    default: true
+  ultimatedonutsmp.command.rename:
+    description: Access to /rename command
+    default: op
+  ultimatedonutsmp.command.randomteleport:
+    description: Access to /randomteleport command
+    default: op
+  ultimatedonutsmp.command.teleport:
+    description: Access to /teleport command
+    default: op
+  ultimatedonutsmp.command.alts:
+    description: Access to /alts command
+    default: op
+  ultimatedonutsmp.command.vanish:
+    description: Access to /vanish command
+    default: op
+  ultimatedonutsmp.command.invsee:
+    description: Access to /invsee command
+    default: op
+  ultimatedonutsmp.command.profileviewer:
+    description: Access to /profileviewer command
+    default: op
+  ultimatedonutsmp.command.punishments:
+    description: Access to /punishments command
+    default: op
+  ultimatedonutsmp.command.ban:
+    description: Access to /ban command
+    default: op
+  ultimatedonutsmp.command.tempban:
+    description: Access to /tempban command
+    default: op
+  ultimatedonutsmp.command.mute:
+    description: Access to /mute command
+    default: op
+  ultimatedonutsmp.command.tempmute:
+    description: Access to /tempmute command
+    default: op
+  ultimatedonutsmp.command.warn:
+    description: Access to /warn command
+    default: op
+  ultimatedonutsmp.command.kick:
+    description: Access to /kick command
+    default: op
+  ultimatedonutsmp.command.blacklist:
+    description: Access to /blacklist command
+    default: op
+  ultimatedonutsmp.command.unban:
+    description: Access to /unban command
+    default: op
+  ultimatedonutsmp.command.unmute:
+    description: Access to /unmute command
+    default: op
+  ultimatedonutsmp.command.unblacklist:
+    description: Access to /unblacklist command
+    default: op
+  ultimatedonutsmp.command.bounty:
+    description: Access to /bounty command
+    default: true
+  ultimatedonutsmp.command.tpa:
+    description: Access to /tpa command
+    default: true
+  ultimatedonutsmp.command.tpahere:
+    description: Access to /tpahere command
+    default: true
+  ultimatedonutsmp.command.tpaccept:
+    description: Access to /tpaccept command
+    default: true
+  ultimatedonutsmp.command.tpadeny:
+    description: Access to /tpadeny command
+    default: true
+  ultimatedonutsmp.command.tpacancel:
+    description: Access to /tpacancel command
+    default: true
+  ultimatedonutsmp.command.tpauto:
+    description: Access to /tpauto command
+    default: true
+  ultimatedonutsmp.command.tpahereauto:
+    description: Access to /tpahereauto command
+    default: true
+  ultimatedonutsmp.command.leaderboard:
+    description: Access to /leaderboard command
+    default: true
+  ultimatedonutsmp.command.warp:
+    description: Access to /warp command
+    default: true
+  ultimatedonutsmp.command.warpmanager:
+    description: Access to /warpmanager command
+    default: op
+  ultimatedonutsmp.command.portalmanager:
+    description: Access to /portalmanager command
+    default: op
+  ultimatedonutsmp.command.nightvision:
+    description: Access to /nightvision command
+    default: true
+  ultimatedonutsmp.command.phantom:
+    description: Access to /phantom command
+    default: true
+  ultimatedonutsmp.command.findplayer:
+    description: Access to /findplayer command
+    default: op
+  ultimatedonutsmp.command.settings:
+    description: Access to /settings command
+    default: true
+  ultimatedonutsmp.command.discord:
+    description: Access to /discord command
+    default: true
+  ultimatedonutsmp.command.twitter:
+    description: Access to /twitter command
+    default: true
+  ultimatedonutsmp.command.store:
+    description: Access to /store command
+    default: true
+  ultimatedonutsmp.command.social:
+    description: Access to /social command
+    default: true
+  ultimatedonutsmp.command.rules:
+    description: Access to /rules command
+    default: true
+  ultimatedonutsmp.command.help:
+    description: Access to /help command
+    default: true
+  ultimatedonutsmp.command.servers:
+    description: Access to /servers command
+    default: op
+  ultimatedonutsmp.command.billford:
+    description: Access to /billford command
+    default: op
+  ultimatedonutsmp.command.spawner:
+    description: Access to /spawner command
+    default: op
+  ultimatedonutsmp.command.clearlag:
+    description: Access to /clearlag command
+    default: op
+  ultimatedonutsmp.command.cuboid:
+    description: Access to /cuboid command
+    default: op
+  ultimatedonutsmp.command.setwarp:
+    description: Access to /setwarp command
+    default: op
+  ultimatedonutsmp.command.delwarp:
+    description: Access to /delwarp command
+    default: op
+  ultimatedonutsmp.command.amethysttool:
+    description: Access to /amethysttool command
+    default: op
+  ultimatedonutsmp.command.ultimatedonutsmp:
+    description: Access to /ultimatedonutsmp command
+    default: op
+  ultimatedonutsmp.command.ecsee:
+    description: Access to /ecsee command
+    default: op
+  ultimatedonutsmp.command.logs:
+    description: Access to /logs command
+    default: op
+  ultimatedonutsmp.command.addshards:
+    description: Access to /addshards command
+    default: op
+  ultimatedonutsmp.command.removeshards:
+    description: Access to /removeshards command
+    default: op
+  ultimatedonutsmp.command.setshards:
+    description: Access to /setshards command
+    default: op
+  ultimatedonutsmp.command.shardshop:
+    description: Access to /shardshop command
+    default: true
+  ultimatedonutsmp.command.create:
+    description: Access to /create command
+    default: op
+  ultimatedonutsmp.command.kill:
+    description: Access to /kill command
+    default: op
+  ultimatedonutsmp.command.safety:
+    description: Access to /safety command
+    default: op
+  ultimatedonutsmp.command.friends:
+    description: Access to /friends command
+    default: true
+  ultimatedonutsmp.command.friend:
+    description: Access to /friend command
+    default: true
+  ultimatedonutsmp.command.spawnstash:
+    description: Access to /spawnstash command
+    default: op
+  ultimatedonutsmp.command.fakeplayer:
+    description: Access to /fakeplayer command
+    default: op
+  ultimatedonutsmp.command.hide:
+    description: Access to /hide command
+    default: op
+  ultimatedonutsmp.command.disguise:
+    description: Access to /disguise command
+    default: op
+  ultimatedonutsmp.command.maintenance:
+    description: Access to /maintenance command
+    default: op
+  ultimatedonutsmp.command.serverwipe:
+    description: Access to /serverwipe command
+    default: op
+  ultimatedonutsmp.command.amod:
+    description: Access to /amod command
+    default: op
