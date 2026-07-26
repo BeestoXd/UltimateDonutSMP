@@ -26,7 +26,7 @@ public class FfaStatsCommand implements CommandExecutor {
 
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+                sender.sendMessage("Player only.");
                 return true;
             }
             targetUuid = player.getUniqueId();
@@ -39,7 +39,7 @@ public class FfaStatsCommand implements CommandExecutor {
             } else {
                 targetUuid = plugin.getHideManager().findKnownPlayerUuid(sender, args[0]);
                 if (targetUuid == null) {
-                    sender.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+                    sender.sendMessage(ColorUtils.toComponent("&cThat player was not found."));
                     return true;
                 }
                 OfflinePlayer offline = Bukkit.getOfflinePlayer(targetUuid);
@@ -51,8 +51,8 @@ public class FfaStatsCommand implements CommandExecutor {
             }
         }
 
-        sender.sendMessage(ColorUtils.toComponent("&6ꜰꜰᴀ ɪɴꜰᴏ &7ꜰᴏʀ &f" + targetName));
-        sender.sendMessage(ColorUtils.toComponent("&7ꜰꜰᴀ ѕᴀᴀᴛ ɪɴɪ ᴛɪᴅᴀᴋ ᴍᴇᴍᴀᴋᴀɪ ѕɪѕᴛᴇᴍ ᴠɪᴄᴛᴏʀʏ, ᴅᴇꜰᴇᴀᴛ, ᴅʀᴀᴡ, ᴀᴛᴀᴜ ѕᴛʀᴇᴀᴋ."));
+        sender.sendMessage(ColorUtils.toComponent("&6FFA Info &7for &f" + targetName));
+        sender.sendMessage(ColorUtils.toComponent("&7FFA currently does not use a victory, defeat, draw, or streak system."));
         return true;
     }
 }

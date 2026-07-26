@@ -35,7 +35,7 @@ public class FfaCommand implements CommandExecutor {
         String subcommand = args[0].toLowerCase();
         if (subcommand.equals("join")) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+                sender.sendMessage("Player only.");
                 return true;
             }
             plugin.getFfaManager().joinArena(player);
@@ -43,12 +43,12 @@ public class FfaCommand implements CommandExecutor {
         }
         if (subcommand.equals("reload")) {
             if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.ffa")) {
-                sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ꜰꜰᴀ."));
+                sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to reload FFA."));
                 return true;
             }
             plugin.getConfigManager().reloadFfa();
             plugin.getFfaManager().reload();
-            sender.sendMessage(ColorUtils.toComponent("&aꜰꜰᴀ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&aFFA config reloaded."));
             return true;
         }
         if (subcommand.equals("arena")) {
@@ -66,10 +66,10 @@ public class FfaCommand implements CommandExecutor {
     private void sendUsage(CommandSender sender, String label) {
         sender.sendMessage(ColorUtils.toComponent("&e/" + label));
         sender.sendMessage(ColorUtils.toComponent("&e/leave"));
-        sender.sendMessage(ColorUtils.toComponent("&e/ffastats [ᴘʟᴀʏᴇʀ]"));
+        sender.sendMessage(ColorUtils.toComponent("&e/ffastats [player]"));
         if (PermissionUtils.has(sender, "ultimatedonutsmp.admin.ffa")) {
-            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " ʀᴇʟᴏᴀᴅ"));
-            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " ᴀʀᴇɴᴀ <subcommand>"));
+            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " reload"));
+            sender.sendMessage(ColorUtils.toComponent("&e/" + label + " arena <subcommand>"));
         }
     }
 }

@@ -31,7 +31,7 @@ public class RTPMenu extends BaseMenu {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
                     "&cɴᴏ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴѕ",
-                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ʀᴛᴘ ʏᴀɴɢ ᴠᴀʟɪᴅ ᴅɪ ᴄᴏɴꜰɪɢ.")
+                    List.of("&7ɴᴏ ᴠᴀʟɪᴅ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴѕ ɪɴ ᴄᴏɴꜰɪɢ.")
             ));
             return;
         }

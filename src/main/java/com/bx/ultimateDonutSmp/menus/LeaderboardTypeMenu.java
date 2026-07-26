@@ -64,14 +64,14 @@ public class LeaderboardTypeMenu extends BaseMenu {
             set(22, ItemUtils.createItem(
                     Material.BARRIER,
                     "&cɴᴏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴅᴀᴛᴀ",
-                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ᴘᴇᴍᴀɪɴ ʏᴀɴɢ ᴘᴜɴʏᴀ ᴅᴀᴛᴀ ᴅɪ ᴋᴀᴛᴇɢᴏʀɪ ɪɴɪ.")
+                    List.of("&7ɴᴏ ᴘʟᴀʏᴇʀѕ ʜᴀᴠᴇ ᴅᴀᴛᴀ ɪɴ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ ʏᴇᴛ.")
             ));
         }
 
         set(45, ItemUtils.createItem(
                 Material.RED_STAINED_GLASS_PANE,
                 "&cʙᴀᴄᴋ",
-                List.of("&7ᴋᴇᴍʙᴀʟɪ ᴋᴇ ᴍᴇɴᴜ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ.")
+                List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴍᴇɴᴜ.")
         ));
 
         if (page > 0) {
@@ -158,7 +158,7 @@ public class LeaderboardTypeMenu extends BaseMenu {
             return ItemUtils.createItem(
                     Material.PLAYER_HEAD,
                     "&eʏᴏᴜʀ ʀᴀɴᴋ",
-                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ᴅᴀᴛᴀ ᴜɴᴛᴜᴋ ᴋᴀᴛᴇɢᴏʀɪ ɪɴɪ.")
+                    List.of("&7ɴᴏ ᴅᴀᴛᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ.")
             );
         }
 
