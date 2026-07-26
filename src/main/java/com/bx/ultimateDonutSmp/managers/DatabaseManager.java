@@ -2293,6 +2293,12 @@ public class DatabaseManager {
         return 0;
     }
 
+    public record SellHistoryRecord(UUID uuid, String itemName, int amount, double price, long timestamp) {
+        public SellHistoryRecord(UUID uuid, String itemName, int amount, double price) {
+            this(uuid, itemName, amount, price, System.currentTimeMillis());
+        }
+    }
+
     public void addSellHistory(UUID uuid, String itemName, int amount, double price) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO sell_history (player_uuid, item_name, amount, price, timestamp) VALUES (?,?,?,?,?)")) {
@@ -2304,6 +2310,40 @@ public class DatabaseManager {
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to add sell history", e);
+        }
+    }
+
+    public void addSellHistoryBatch(Collection<SellHistoryRecord> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        try {
+            boolean originalAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO sell_history (player_uuid, item_name, amount, price, timestamp) VALUES (?,?,?,?,?)")) {
+                for (SellHistoryRecord record : records) {
+                    if (record == null || record.uuid() == null) {
+                        continue;
+                    }
+                    ps.setString(1, record.uuid().toString());
+                    ps.setString(2, record.itemName());
+                    ps.setInt(3, record.amount());
+                    ps.setDouble(4, record.price());
+                    ps.setLong(5, record.timestamp() > 0 ? record.timestamp() : System.currentTimeMillis());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+            connection.commit();
+            connection.setAutoCommit(originalAutoCommit);
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                plugin.getLogger().log(Level.WARNING, "Failed to roll back sell history transaction", rollbackEx);
+            }
+            plugin.getLogger().log(Level.WARNING, "Failed to add sell history batch", e);
         }
     }
 

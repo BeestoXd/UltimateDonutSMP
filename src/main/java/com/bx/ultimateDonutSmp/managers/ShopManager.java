@@ -1599,13 +1599,15 @@ public class ShopManager {
     private SellResult commitSale(Player player, PendingSale sale, boolean sendFeedback) {
         EnumSet<SellCategory> leveledUpCategories = EnumSet.noneOf(SellCategory.class);
 
+        List<DatabaseManager.SellHistoryRecord> historyBatch = new ArrayList<>();
+
         for (PendingSellHistory historyEntry : sale.history) {
-            plugin.getDatabaseManager().addSellHistory(
+            historyBatch.add(new DatabaseManager.SellHistoryRecord(
                     player.getUniqueId(),
                     historyEntry.material().name(),
                     historyEntry.amount(),
                     historyEntry.payout()
-            );
+            ));
             String prettyName = plugin.getWorthManager().prettifyMaterial(historyEntry.material());
             plugin.getPlayerLogsManager().log(
                     player.getUniqueId(),
@@ -1616,6 +1618,7 @@ public class ShopManager {
             );
         }
 
+        Map<SellCategory, Double> earnedCopy = new EnumMap<>(sale.earnedByCategory);
         for (var entry : sale.earnedByCategory.entrySet()) {
             SellCategory category = entry.getKey();
             double before = sale.currentProgress.getOrDefault(category, 0D);
@@ -1626,8 +1629,14 @@ public class ShopManager {
             }
 
             sale.currentProgress.put(category, after);
-            plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), category, entry.getValue());
         }
+
+        plugin.getSpigotScheduler().runAsync(() -> {
+            plugin.getDatabaseManager().addSellHistoryBatch(historyBatch);
+            for (var entry : earnedCopy.entrySet()) {
+                plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), entry.getKey(), entry.getValue());
+            }
+        });
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data != null) {

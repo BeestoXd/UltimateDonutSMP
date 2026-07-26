@@ -1050,6 +1050,8 @@ public class SpawnerManager {
         double totalPayout = 0D;
         long soldItems = 0L;
 
+        List<DatabaseManager.SellHistoryRecord> historyRecords = new ArrayList<>();
+
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
             if (instance.isLootDisabled(entry.getKey())) {
                 continue;
@@ -1074,7 +1076,7 @@ public class SpawnerManager {
             earnedByCategory.merge(category, baseTotal, Double::sum);
 
             int historyAmount = (int) Math.min(Integer.MAX_VALUE, entry.getAmount());
-            plugin.getDatabaseManager().addSellHistory(player.getUniqueId(), entry.getMaterial().name(), historyAmount, payout);
+            historyRecords.add(new DatabaseManager.SellHistoryRecord(player.getUniqueId(), entry.getMaterial().name(), historyAmount, payout));
             instance.removeStoredLoot(entry.getKey(), entry.getAmount());
         }
 
@@ -1082,9 +1084,13 @@ public class SpawnerManager {
             return failSell("&cthere are no sellable items stored in that spawner.");
         }
 
-        for (Map.Entry<SellCategory, Double> progressEntry : earnedByCategory.entrySet()) {
-            plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), progressEntry.getKey(), progressEntry.getValue());
-        }
+        Map<SellCategory, Double> earnedCopy = new EnumMap<>(earnedByCategory);
+        plugin.getSpigotScheduler().runAsync(() -> {
+            plugin.getDatabaseManager().addSellHistoryBatch(historyRecords);
+            for (Map.Entry<SellCategory, Double> progressEntry : earnedCopy.entrySet()) {
+                plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), progressEntry.getKey(), progressEntry.getValue());
+            }
+        });
 
         var depositResult = plugin.getEconomyManager().deposit(player, totalPayout, EconomyReason.SELL_PAYOUT);
         if (!depositResult.success()) {
@@ -1628,10 +1634,13 @@ public class SpawnerManager {
     }
 
     public void saveLoot(SpawnerInstance instance) {
-        if (isTemporarySpawner(instance)) {
+        if (instance == null || isTemporarySpawner(instance)) {
             return;
         }
-        plugin.getDatabaseManager().replaceSpawnerLoot(instance.getId(), instance.getStoredLootEntries());
+        List<SpawnerLootEntry> lootCopy = new ArrayList<>(instance.getStoredLootEntries());
+        plugin.getSpigotScheduler().runAsync(() -> {
+            plugin.getDatabaseManager().replaceSpawnerLoot(instance.getId(), lootCopy);
+        });
     }
 
     public void saveSpawnerAndLoot(SpawnerInstance instance) {
