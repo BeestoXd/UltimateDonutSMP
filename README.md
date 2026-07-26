@@ -405,6 +405,8 @@ UltimateDonutSmp is a free, proprietary software.
 
 - The plugin is free to use but remains under a proprietary license.
 - Redistribution, resale, sublicensing, public mirroring, or unauthorized sharing is not permitted without written permission.
+- For full licensing terms, see the [LICENSE](LICENSE) file.
+- For contribution guidelines and rules, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Copyright (c) 2026 UltimateDonutSmp. All rights reserved.
 
