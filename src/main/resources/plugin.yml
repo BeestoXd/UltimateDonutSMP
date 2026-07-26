@@ -388,55 +388,55 @@ commands:
   ban:
     description: Ban a player and record punishment history
     usage: /ban <player> [reason]
-    permission: ultimatedonutsmp.command.ban
+    permission: ultimatedonutsmp.staff.punishments.ban
     permission-message: "&cYou do not have permission to use /ban."
   tempban:
     description: Temporarily ban a player and record punishment history
     usage: '/tempban <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m 30s)'
-    permission: ultimatedonutsmp.command.tempban
+    permission: ultimatedonutsmp.staff.punishments.ban
     permission-message: "&cYou do not have permission to use /tempban."
   mute:
     description: Mute a player and record punishment history
     usage: /mute <player> [reason]
-    permission: ultimatedonutsmp.command.mute
+    permission: ultimatedonutsmp.staff.punishments.mute
     permission-message: "&cYou do not have permission to use /mute."
   tempmute:
     description: Temporarily mute a player and record punishment history
     usage: '/tempmute <player> <time> [reason] (time: 30s, 15m, 2h, 5d, or 5d 15m
       30s)'
-    permission: ultimatedonutsmp.command.tempmute
+    permission: ultimatedonutsmp.staff.punishments.mute
     permission-message: "&cYou do not have permission to use /tempmute."
   warn:
     description: Warn a player and record punishment history
     usage: /warn <player> [reason]
-    permission: ultimatedonutsmp.command.warn
+    permission: ultimatedonutsmp.staff.punishments.create
     permission-message: "&cYou do not have permission to use /warn."
   kick:
     description: Kick a player and record punishment history
     usage: /kick <player> [reason]
-    permission: ultimatedonutsmp.command.kick
+    permission: ultimatedonutsmp.staff.punishments.create
     permission-message: "&cYou do not have permission to use /kick."
   blacklist:
     description: Blacklist a player and record punishment history
     usage: /blacklist <player> [reason]
-    permission: ultimatedonutsmp.command.blacklist
+    permission: ultimatedonutsmp.staff.punishments.blacklist
     permission-message: "&cYou do not have permission to use /blacklist."
   unban:
     description: Remove active ban records for a player
     usage: /unban <player> [reason]
     aliases:
     - pardon
-    permission: ultimatedonutsmp.command.unban
+    permission: ultimatedonutsmp.staff.punishments.unban
     permission-message: "&cYou do not have permission to use /unban."
   unmute:
     description: Remove active mute records for a player
     usage: /unmute <player> [reason]
-    permission: ultimatedonutsmp.command.unmute
+    permission: ultimatedonutsmp.staff.punishments.unmute
     permission-message: "&cYou do not have permission to use /unmute."
   unblacklist:
     description: Remove active blacklist records for a player
     usage: /unblacklist <player> [reason]
-    permission: ultimatedonutsmp.command.unblacklist
+    permission: ultimatedonutsmp.staff.punishments.unblacklist
     permission-message: "&cYou do not have permission to use /unblacklist."
   bounty:
     description: Manage bounties
@@ -1402,33 +1402,53 @@ permissions:
   ultimatedonutsmp.command.ban:
     description: Access to /ban command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.ban: true
   ultimatedonutsmp.command.tempban:
     description: Access to /tempban command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.ban: true
   ultimatedonutsmp.command.mute:
     description: Access to /mute command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.mute: true
   ultimatedonutsmp.command.tempmute:
     description: Access to /tempmute command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.mute: true
   ultimatedonutsmp.command.warn:
     description: Access to /warn command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.create: true
   ultimatedonutsmp.command.kick:
     description: Access to /kick command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.create: true
   ultimatedonutsmp.command.blacklist:
     description: Access to /blacklist command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.blacklist: true
   ultimatedonutsmp.command.unban:
     description: Access to /unban command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.unban: true
   ultimatedonutsmp.command.unmute:
     description: Access to /unmute command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.unmute: true
   ultimatedonutsmp.command.unblacklist:
     description: Access to /unblacklist command
     default: op
+    children:
+      ultimatedonutsmp.staff.punishments.unblacklist: true
   ultimatedonutsmp.command.bounty:
     description: Access to /bounty command
     default: true
