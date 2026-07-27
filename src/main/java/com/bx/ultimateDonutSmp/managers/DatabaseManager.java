@@ -121,6 +121,8 @@ public class DatabaseManager {
     private MongoDatabase mongoDatabase;
     private boolean mongoBridgeActive;
     private final ExecutorService asyncExecutor = Executors.newFixedThreadPool(4);
+    private final Map<UUID, String> usernameCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, UUID> uuidByUsernameCache = new java.util.concurrent.ConcurrentHashMap<>();
 
     public DatabaseManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -757,16 +759,48 @@ public class DatabaseManager {
     }
 
     public PlayerData loadPlayer(UUID uuid) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT * FROM players WHERE uuid = ?")) {
+        if (uuid == null) {
+            return null;
+        }
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT * FROM players WHERE uuid = ?")) {
+                ps.setString(1, uuid.toString());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        PlayerData data = mapPlayerRow(rs);
+                        if (data != null && data.getUsername() != null && !data.getUsername().isBlank()) {
+                            usernameCache.put(uuid, data.getUsername());
+                            uuidByUsernameCache.put(data.getUsername().toLowerCase(Locale.ROOT), uuid);
+                        }
+                        return data;
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to load player " + uuid, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM players WHERE uuid = ?")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return mapPlayerRow(rs);
+                    PlayerData data = mapPlayerRow(rs);
+                    if (data != null && data.getUsername() != null && !data.getUsername().isBlank()) {
+                        usernameCache.put(uuid, data.getUsername());
+                        uuidByUsernameCache.put(data.getUsername().toLowerCase(Locale.ROOT), uuid);
+                    }
+                    return data;
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to load player " + uuid, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to load player " + uuid, e);
+            }
         }
         return null;
     }
@@ -988,27 +1022,36 @@ public class DatabaseManager {
             return null;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(
+        String lowerKey = username.trim().toLowerCase(Locale.ROOT);
+        UUID cached = uuidByUsernameCache.get(lowerKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                 "SELECT uuid FROM players WHERE LOWER(username) = LOWER(?) LIMIT 1")) {
             ps.setString(1, username.trim());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return UUID.fromString(rs.getString("uuid"));
+                    UUID uuid = UUID.fromString(rs.getString("uuid"));
+                    uuidByUsernameCache.put(lowerKey, uuid);
+                    usernameCache.put(uuid, username.trim());
+                    return uuid;
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to resolve player uuid for " + username, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to resolve player uuid for " + username, e);
+            }
         }
         return null;
     }
 
     public List<String> loadKnownPlayerNames() {
         List<String> names = new ArrayList<>();
-        if (connection == null) {
-            return names;
-        }
-
-        try (PreparedStatement ps = connection.prepareStatement(
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                 "SELECT username FROM players "
                         + "WHERE username IS NOT NULL AND TRIM(username) <> '' "
                         + "ORDER BY LOWER(username) ASC");
@@ -1020,7 +1063,9 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to load known player names", e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to load known player names", e);
+            }
         }
         return names;
     }
@@ -1030,7 +1075,8 @@ public class DatabaseManager {
             return null;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                 "SELECT target_uuid FROM punishments " +
                 "WHERE LOWER(target_name_snapshot) = LOWER(?) " +
                 "ORDER BY issued_at DESC, id DESC LIMIT 1")) {
@@ -1041,7 +1087,9 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to resolve punishment target uuid for " + username, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to resolve punishment target uuid for " + username, e);
+            }
         }
         return null;
     }
@@ -1051,16 +1099,29 @@ public class DatabaseManager {
             return null;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(
+        String cached = usernameCache.get(uuid);
+        if (cached != null && !cached.isBlank()) {
+            return cached;
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                 "SELECT username FROM players WHERE uuid = ?")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("username");
+                    String name = rs.getString("username");
+                    if (name != null && !name.isBlank()) {
+                        usernameCache.put(uuid, name);
+                        uuidByUsernameCache.put(name.toLowerCase(Locale.ROOT), uuid);
+                        return name;
+                    }
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to get username for " + uuid, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get username for " + uuid, e);
+            }
         }
         return null;
     }
@@ -1382,7 +1443,15 @@ public class DatabaseManager {
     }
 
     public void savePlayer(PlayerData data) {
-        try (PreparedStatement ps = connection.prepareStatement("""
+        if (data == null || data.getUuid() == null) {
+            return;
+        }
+        if (data.getUsername() != null && !data.getUsername().isBlank()) {
+            usernameCache.put(data.getUuid(), data.getUsername());
+            uuidByUsernameCache.put(data.getUsername().toLowerCase(Locale.ROOT), data.getUuid());
+        }
+
+        String sql = """
                 REPLACE INTO players
                 (uuid, username, money, shards, kills, deaths, playtime_seconds, blocks_placed, blocks_broken, mobs_killed,
                  kill_streak, highest_kill_streak, money_spent, money_made, tpauto, phantom_enabled, payments_enabled,
@@ -1400,7 +1469,32 @@ public class DatabaseManager {
                     advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
                     follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled)
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """)) {
+                """;
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                bindPlayerSaveParameters(ps, data);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to save player " + data.getUuid(), e);
+                }
+            }
+            return;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            bindPlayerSaveParameters(ps, data);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to save player " + data.getUuid(), e);
+            }
+        }
+    }
+
+    private void bindPlayerSaveParameters(PreparedStatement ps, PlayerData data) throws SQLException {
             ps.setString(1, data.getUuid().toString());
             ps.setString(2, data.getUsername());
             ps.setDouble(3, data.getMoney());
@@ -1464,11 +1558,7 @@ public class DatabaseManager {
             ps.setInt(61, data.isFollowAlertsEnabled() ? 1 : 0);
             ps.setInt(62, data.isExplosionSoundsEnabled() ? 1 : 0);
             ps.setInt(63, data.isDisplayDonutPlusEnabled() ? 1 : 0);
-            ps.executeUpdate();
             data.setDirty(false);
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to save player " + data.getUuid(), e);
-        }
     }
 
     public int countPlayersWithTrackedStats() {
