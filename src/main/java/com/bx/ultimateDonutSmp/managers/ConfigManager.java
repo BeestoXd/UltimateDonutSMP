@@ -1821,8 +1821,15 @@ public class ConfigManager {
         }
 
         // Network server entries can be expanded per deployment.
-        return "network.yml".equals(resourceName)
-                && path.startsWith("NETWORK-STATUS.SERVERS.");
+        if ("network.yml".equals(resourceName)
+                && path.startsWith("NETWORK-STATUS.SERVERS.")) {
+            return true;
+        }
+
+        // Shop categories and shop menus are customized by server admins.
+        return "shop.yml".equals(resourceName)
+                && !path.equals("SHOP-GUI") && !path.startsWith("SHOP-GUI.")
+                && !path.equals("BACK-BUTTON") && !path.startsWith("BACK-BUTTON.");
     }
 
     private boolean hasScalarParent(ConfigurationSection configuration, String path) {

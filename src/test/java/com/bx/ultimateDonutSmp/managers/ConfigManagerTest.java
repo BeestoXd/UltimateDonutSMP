@@ -165,6 +165,33 @@ class ConfigManagerTest {
         assertEquals(0, arenaChanges);
         assertFalse(arenaLines.contains("  example:"));
         assertTrue(arenaLines.contains("  arena1:"));
+
+        List<String> shopLines = lines(
+                "CATEGORIES:",
+                "  CUSTOM:",
+                "    MATERIAL: DIAMOND",
+                "    SLOT: 10",
+                "CUSTOM-MENU:",
+                "  TITLE: \"Custom\"",
+                "SHOP-GUI:",
+                "  SHOW-AUCTION-PRICE: true"
+        );
+        List<String> shopDefaults = lines(
+                "CATEGORIES:",
+                "  END:",
+                "    MATERIAL: END_STONE",
+                "END-MENU:",
+                "  TITLE: \"End\"",
+                "SHOP-GUI:",
+                "  SHOW-AUCTION-PRICE: true"
+        );
+
+        int shopChanges = mergeBundledDefaults("shop.yml", shopLines, shopDefaults);
+
+        assertEquals(0, shopChanges);
+        assertFalse(shopLines.contains("  END:"));
+        assertFalse(shopLines.contains("END-MENU:"));
+        assertTrue(shopLines.contains("CUSTOM-MENU:"));
     }
 
     @Test
