@@ -20,13 +20,20 @@ public class PlayerDataManager {
 
     public PlayerData loadOrCreate(Player player) {
         UUID uuid = player.getUniqueId();
-        PlayerData data = plugin.getDatabaseManager().loadPlayer(uuid);
+        PlayerData data = cache.get(uuid);
+        if (data != null) {
+            data.setUsername(player.getName());
+            data.setSessionStartMillis(System.currentTimeMillis());
+            return data;
+        }
+
+        data = plugin.getDatabaseManager().loadPlayer(uuid);
         if (data == null) {
             data = new PlayerData(uuid, player.getName());
             double startMoney = plugin.getConfigManager().getConfig()
                     .getDouble("SETTINGS.MONEY-PER-DEFAULT", 1000.0);
             data.setMoney(startMoney);
-            plugin.getDatabaseManager().savePlayerAsync(data);
+            plugin.getDatabaseManager().savePlayer(data);
         } else {
             data.setUsername(player.getName());
         }
@@ -39,7 +46,7 @@ public class PlayerDataManager {
         PlayerData data = cache.get(uuid);
         if (data != null) {
             data.commitSession();
-            plugin.getDatabaseManager().savePlayerAsync(data);
+            plugin.getDatabaseManager().savePlayer(data);
             cache.remove(uuid);
         }
     }

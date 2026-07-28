@@ -758,7 +758,7 @@ public class DatabaseManager {
         return false;
     }
 
-    public PlayerData loadPlayer(UUID uuid) {
+    public synchronized PlayerData loadPlayer(UUID uuid) {
         if (uuid == null) {
             return null;
         }
@@ -1442,7 +1442,7 @@ public class DatabaseManager {
         }
     }
 
-    public void savePlayer(PlayerData data) {
+    public synchronized void savePlayer(PlayerData data) {
         if (data == null || data.getUuid() == null) {
             return;
         }
