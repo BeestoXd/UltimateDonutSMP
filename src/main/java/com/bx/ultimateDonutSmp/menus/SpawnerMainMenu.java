@@ -137,27 +137,32 @@ public class SpawnerMainMenu extends BaseMenu {
         );
         set(headSlot, headItem);
 
-        // 3. Collect XP Button
-        int xpSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.SLOT", 15);
-        String xpMatName = config.getString("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.MATERIAL", "EXPERIENCE_BOTTLE");
-        Material xpMat = Material.matchMaterial(xpMatName);
-        if (xpMat == null) xpMat = Material.EXPERIENCE_BOTTLE;
+        // 3. Collect XP Button (if XP is enabled)
+        boolean xpButtonEnabled = plugin.getSpawnerManager().isXpEnabled()
+                && config.getBoolean("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.ENABLED", true);
 
-        String xpTitle = config.getString("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.TITLE", "&aCollect XP");
-        double storedXp = instance.getStoredXp();
-        List<String> rawXpLore = config.getStringList("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.LORE");
-        List<String> xpLore = new ArrayList<>();
-        if (rawXpLore.isEmpty()) {
-            xpLore.add("&a" + String.format(java.util.Locale.US, "%.1f", storedXp) + " &fXP Points");
-            xpLore.add("");
-            xpLore.add("&eClick to claim XP points");
-        } else {
-            for (String line : rawXpLore) {
-                xpLore.add(line.replace("{xp}", String.format(java.util.Locale.US, "%.1f", storedXp)));
+        if (xpButtonEnabled) {
+            int xpSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.SLOT", 15);
+            String xpMatName = config.getString("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.MATERIAL", "EXPERIENCE_BOTTLE");
+            Material xpMat = Material.matchMaterial(xpMatName);
+            if (xpMat == null) xpMat = Material.EXPERIENCE_BOTTLE;
+
+            String xpTitle = config.getString("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.TITLE", "&aCollect XP");
+            double storedXp = instance.getStoredXp();
+            List<String> rawXpLore = config.getStringList("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.LORE");
+            List<String> xpLore = new ArrayList<>();
+            if (rawXpLore.isEmpty()) {
+                xpLore.add("&a" + String.format(java.util.Locale.US, "%.1f", storedXp) + " &fXP Points");
+                xpLore.add("");
+                xpLore.add("&eClick to claim XP points");
+            } else {
+                for (String line : rawXpLore) {
+                    xpLore.add(line.replace("{xp}", String.format(java.util.Locale.US, "%.1f", storedXp)));
+                }
             }
-        }
 
-        set(xpSlot, ItemUtils.createItem(xpMat, xpTitle, xpLore));
+            set(xpSlot, ItemUtils.createItem(xpMat, xpTitle, xpLore));
+        }
     }
 
     @Override
@@ -172,6 +177,8 @@ public class SpawnerMainMenu extends BaseMenu {
         int storageSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.STORAGE-BUTTON.SLOT", 11);
         int headSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.MOB-HEAD-BUTTON.SLOT", 13);
         int xpSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.SLOT", 15);
+        boolean xpButtonEnabled = plugin.getSpawnerManager().isXpEnabled()
+                && config.getBoolean("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.ENABLED", true);
 
         if (slot == storageSlot) {
             // Open Spawner Storage Menu
@@ -187,7 +194,7 @@ public class SpawnerMainMenu extends BaseMenu {
             return;
         }
 
-        if (slot == xpSlot) {
+        if (xpButtonEnabled && slot == xpSlot) {
             // Collect XP
             var result = plugin.getSpawnerManager().collectXp(player, instance);
             player.sendMessage(ColorUtils.toComponent(result.message()));

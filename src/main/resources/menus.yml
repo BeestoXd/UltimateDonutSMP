@@ -2035,6 +2035,7 @@ SPAWNER-MENUS:
       - '&e• &fClick to sell items and collect xp'
       - '&7Storage: &e{percentage}% Filled.'
     COLLECT-XP-BUTTON:
+      ENABLED: true
       SLOT: 15
       MATERIAL: EXPERIENCE_BOTTLE
       TITLE: '&aCollect XP'

@@ -229,7 +229,28 @@ public class SpawnerInstance {
         if (material == null || amount <= 0L) {
             return;
         }
-        long remaining = amount;
+
+        long currentTotal = 0L;
+        for (SpawnerLootEntry entry : storedLoot.values()) {
+            if (entry.getMaterial() == material) {
+                currentTotal += entry.getAmount();
+            }
+        }
+
+        if (capPerKey > 0L && currentTotal >= capPerKey) {
+            return;
+        }
+
+        long allowedToAdd = amount;
+        if (capPerKey > 0L) {
+            allowedToAdd = Math.min(allowedToAdd, capPerKey - currentTotal);
+        }
+
+        if (allowedToAdd <= 0L) {
+            return;
+        }
+
+        long remaining = allowedToAdd;
         int maxStack = material.getMaxStackSize();
         if (maxStack <= 0) maxStack = 64;
 

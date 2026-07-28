@@ -84,6 +84,7 @@ public class SpawnerManager {
     private final Set<Long> temporarySpawnerIds = new HashSet<>();
     private boolean serverWipeMode;
     private boolean enabled;
+    private boolean xpEnabled;
     private SpawnerInstance.AccessMode defaultAccessMode;
     private long generationIntervalSeconds;
     private boolean processOnlyLoadedChunks;
@@ -127,6 +128,7 @@ public class SpawnerManager {
     public void reload() {
         FileConfiguration config = plugin.getConfigManager().getSpawners();
         enabled = config.getBoolean("SETTINGS.ENABLED", true);
+        xpEnabled = config.getBoolean("SETTINGS.XP_ENABLED", true);
         defaultAccessMode = SpawnerInstance.AccessMode.fromString(
                 config.getString("SETTINGS.ACCESS_MODE", "OWNER_ONLY"),
                 SpawnerInstance.AccessMode.OWNER_ONLY
@@ -264,6 +266,10 @@ public class SpawnerManager {
 
     public boolean isCancelMobSpawn() {
         return cancelMobSpawn;
+    }
+
+    public boolean isXpEnabled() {
+        return xpEnabled;
     }
 
     public long getStorageCapPerLootKey() {
@@ -1115,6 +1121,9 @@ public class SpawnerManager {
     }
 
     public ActionResult collectXp(Player player, SpawnerInstance instance) {
+        if (!xpEnabled) {
+            return fail("&cXP collection is disabled on this server.");
+        }
         if (player == null || instance == null) {
             return fail("&cspawner not found.");
         }
@@ -1130,7 +1139,7 @@ public class SpawnerManager {
         instance.setStoredXp(0.0);
         instance.setUpdatedAt(System.currentTimeMillis());
         if (!isTemporarySpawner(instance)) {
-            plugin.getDatabaseManager().saveSpawner(instance);
+            saveSpawnerAsync(instance);
         }
 
         int xpPoints = (int) Math.round(xp);
@@ -1149,10 +1158,10 @@ public class SpawnerManager {
         }
 
         SellLootResult sellResult = sellAllLoot(player, instance);
-        ActionResult xpResult = collectXp(player, instance);
+        ActionResult xpResult = xpEnabled ? collectXp(player, instance) : fail("");
 
-        if (!sellResult.success() && !xpResult.success()) {
-            return fail("&cthere are no sellable items or XP stored in that spawner.");
+        if (!sellResult.success() && (!xpEnabled || !xpResult.success())) {
+            return fail("&cthere are no sellable items stored in that spawner.");
         }
 
         String msg = "";
@@ -1295,16 +1304,18 @@ public class SpawnerManager {
         long totalRolls = cycles * definition.baseItemsPerCycle() * Math.max(1L, instance.getStackAmount());
         boolean changed = false;
 
-        double xpGenerated = cycles * definition.xpPerCycle() * Math.max(1L, instance.getStackAmount());
-        if (xpGenerated > 0.0) {
-            instance.addStoredXp(xpGenerated);
-            changed = true;
+        if (xpEnabled) {
+            double xpGenerated = cycles * definition.xpPerCycle() * Math.max(1L, instance.getStackAmount());
+            if (xpGenerated > 0.0) {
+                instance.addStoredXp(xpGenerated);
+                changed = true;
+            }
         }
 
         if (totalRolls <= 0L) {
             instance.setLastProcessedAt(now);
             if (!isTemporarySpawner(instance)) {
-                plugin.getDatabaseManager().saveSpawner(instance);
+                saveSpawnerAsync(instance);
             }
             return;
         }
@@ -1330,7 +1341,7 @@ public class SpawnerManager {
         instance.setLastProcessedAt(instance.getLastProcessedAt() + (cycles * intervalMillis));
         instance.setUpdatedAt(now);
         if (!isTemporarySpawner(instance)) {
-            plugin.getDatabaseManager().saveSpawner(instance);
+            saveSpawnerAsync(instance);
         }
         if (changed) {
             saveLoot(instance);
@@ -1387,7 +1398,7 @@ public class SpawnerManager {
 
         if (changed) {
             if (!isTemporarySpawner(instance)) {
-                plugin.getDatabaseManager().saveSpawner(instance);
+                saveSpawnerAsync(instance);
             }
             saveLoot(instance);
         }
@@ -1633,6 +1644,15 @@ public class SpawnerManager {
         return false;
     }
 
+    public void saveSpawnerAsync(SpawnerInstance instance) {
+        if (instance == null || isTemporarySpawner(instance)) {
+            return;
+        }
+        plugin.getSpigotScheduler().runAsync(() -> {
+            plugin.getDatabaseManager().saveSpawner(instance);
+        });
+    }
+
     public void saveLoot(SpawnerInstance instance) {
         if (instance == null || isTemporarySpawner(instance)) {
             return;
@@ -1647,7 +1667,7 @@ public class SpawnerManager {
         if (instance == null || isTemporarySpawner(instance)) {
             return;
         }
-        plugin.getDatabaseManager().saveSpawner(instance);
+        saveSpawnerAsync(instance);
         saveLoot(instance);
     }
 

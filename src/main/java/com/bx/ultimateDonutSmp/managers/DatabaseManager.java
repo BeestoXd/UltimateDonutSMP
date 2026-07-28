@@ -3554,7 +3554,7 @@ public class DatabaseManager {
         return -1L;
     }
 
-    public void saveSpawner(SpawnerInstance instance) {
+    public synchronized void saveSpawner(SpawnerInstance instance) {
         if (instance.getId() <= 0L) {
             long newId = createSpawner(instance);
             if (newId > 0L) {
@@ -3588,7 +3588,7 @@ public class DatabaseManager {
         }
     }
 
-    public void replaceSpawnerLoot(long spawnerId, Collection<SpawnerLootEntry> lootEntries) {
+    public synchronized void replaceSpawnerLoot(long spawnerId, Collection<SpawnerLootEntry> lootEntries) {
         try {
             connection.setAutoCommit(false);
 

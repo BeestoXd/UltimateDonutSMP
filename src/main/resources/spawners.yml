@@ -24,6 +24,8 @@ SETTINGS:
   REQUIRE_SILK_TOUCH: true
   # Determines whether physical vanilla mob spawning is cancelled (set to true for virtual storage anti-lag drops, set to false to allow physical mobs to spawn in world).
   CANCEL_MOB_SPAWN: true
+  # Determines whether XP generation and XP collection is enabled for spawners. Available options: true, false
+  XP_ENABLED: true
 # Configuration section for Anti Esp.
 ANTI_ESP:
   # Determines whether Enabled is enabled or disabled. Available options: true, false
