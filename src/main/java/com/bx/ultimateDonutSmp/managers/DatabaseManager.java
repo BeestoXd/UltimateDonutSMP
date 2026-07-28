@@ -1028,9 +1028,29 @@ public class DatabaseManager {
             return cached;
         }
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                "SELECT uuid FROM players WHERE LOWER(username) = LOWER(?) LIMIT 1")) {
+        String sql = "SELECT uuid FROM players WHERE LOWER(username) = LOWER(?) LIMIT 1";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        UUID uuid = UUID.fromString(rs.getString("uuid"));
+                        uuidByUsernameCache.put(lowerKey, uuid);
+                        usernameCache.put(uuid, username.trim());
+                        return uuid;
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to resolve player uuid for " + username, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, username.trim());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -1050,11 +1070,29 @@ public class DatabaseManager {
 
     public List<String> loadKnownPlayerNames() {
         List<String> names = new ArrayList<>();
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                "SELECT username FROM players "
-                        + "WHERE username IS NOT NULL AND TRIM(username) <> '' "
-                        + "ORDER BY LOWER(username) ASC");
+        String sql = "SELECT username FROM players "
+                + "WHERE username IS NOT NULL AND TRIM(username) <> '' "
+                + "ORDER BY LOWER(username) ASC";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String username = rs.getString("username");
+                    if (username != null && !username.isBlank()) {
+                        names.add(username);
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to load known player names", e);
+                }
+            }
+            return names;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 String username = rs.getString("username");
@@ -1075,11 +1113,28 @@ public class DatabaseManager {
             return null;
         }
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                "SELECT target_uuid FROM punishments " +
+        String sql = "SELECT target_uuid FROM punishments " +
                 "WHERE LOWER(target_name_snapshot) = LOWER(?) " +
-                "ORDER BY issued_at DESC, id DESC LIMIT 1")) {
+                "ORDER BY issued_at DESC, id DESC LIMIT 1";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return UUID.fromString(rs.getString("target_uuid"));
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to resolve punishment target uuid for " + username, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, username.trim());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -1104,9 +1159,31 @@ public class DatabaseManager {
             return cached;
         }
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                "SELECT username FROM players WHERE uuid = ?")) {
+        String sql = "SELECT username FROM players WHERE uuid = ?";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, uuid.toString());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String name = rs.getString("username");
+                        if (name != null && !name.isBlank()) {
+                            usernameCache.put(uuid, name);
+                            uuidByUsernameCache.put(name.toLowerCase(Locale.ROOT), uuid);
+                            return name;
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to get username for " + uuid, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

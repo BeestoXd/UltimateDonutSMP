@@ -190,6 +190,9 @@ public class EconomyExpansion extends PlaceholderExpansion {
         if (data == null && offlinePlayer.isOnline()) {
             data = plugin.getPlayerDataManager().get(offlinePlayer.getPlayer());
         }
+        if (data == null && offlinePlayer.getUniqueId() != null) {
+            data = plugin.getDatabaseManager().loadPlayer(offlinePlayer.getUniqueId());
+        }
         if (data == null) {
             return switch (params) {
                 case "nicestMoney", "money_short", "money_amount_short", "nicestmoney" ->
