@@ -41,6 +41,13 @@ public final class MobSpawnPolicy {
         ) == TRUE;
     }
 
+    public static boolean isHostileMob(LivingEntity entity) {
+        return entity instanceof Monster
+                || entity instanceof org.bukkit.entity.Slime
+                || entity instanceof org.bukkit.entity.Ghast
+                || entity instanceof org.bukkit.entity.Hoglin;
+    }
+
     public static boolean shouldRemoveFromPeriodicCleanup(
             boolean monster,
             EntityType type,
@@ -60,7 +67,7 @@ public final class MobSpawnPolicy {
             LivingEntity entity
     ) {
         return entity != null && shouldRemoveFromPeriodicCleanup(
-                entity instanceof Monster || entity instanceof org.bukkit.entity.Slime || entity instanceof org.bukkit.entity.Ghast,
+                isHostileMob(entity),
                 entity.getType(),
                 isVanillaSpawnerMob(plugin, entity)
         );

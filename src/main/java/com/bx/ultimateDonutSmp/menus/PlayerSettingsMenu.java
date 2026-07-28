@@ -505,13 +505,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             if (!(entity instanceof LivingEntity living)) {
                 continue;
             }
-            if (!(living instanceof Monster || living instanceof org.bukkit.entity.Slime || living instanceof org.bukkit.entity.Ghast)) {
-                continue;
-            }
-            if (living.getType() == EntityType.PHANTOM) {
-                continue;
-            }
-            if (MobSpawnPolicy.isVanillaSpawnerMob(plugin, living)) {
+            if (!MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(plugin, living)) {
                 continue;
             }
             if (living.getLocation().distanceSquared(player.getLocation()) > radiusSquared) {

@@ -37,7 +37,7 @@ public class MobSpawnListener implements Listener {
             return;
         }
 
-        if (!(entity instanceof Monster || entity instanceof org.bukkit.entity.Slime || entity instanceof org.bukkit.entity.Ghast)) return;
+        if (!MobSpawnPolicy.isHostileMob(entity)) return;
         if (shouldCancelMobSpawn(entity.getLocation())) {
             event.setCancelled(true);
         }
