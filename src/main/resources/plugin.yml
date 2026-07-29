@@ -89,14 +89,24 @@ commands:
     permission-message: "&cYou do not have permission to use /renamehome."
   spawn:
     description: Teleport to spawn
-    usage: /spawn
+    usage: /spawn [set]
     permission: ultimatedonutsmp.command.spawn
     permission-message: "&cYou do not have permission to use /spawn."
+  setspawn:
+    description: Set server spawn location
+    usage: /setspawn
+    permission: ultimatedonutsmp.command.setspawn
+    permission-message: "&cYou do not have permission to use /setspawn."
   afk:
     description: Go to AFK zone
-    usage: /afk
+    usage: /afk [set]
     permission: ultimatedonutsmp.command.afk
     permission-message: "&cYou do not have permission to use /afk."
+  setafk:
+    description: Set AFK zone location
+    usage: /setafk
+    permission: ultimatedonutsmp.command.setafk
+    permission-message: "&cYou do not have permission to use /setafk."
   rtp:
     description: Random teleport
     usage: /rtp [world]
@@ -1099,7 +1109,9 @@ permissions:
       ultimatedonutsmp.command.delhome: true
       ultimatedonutsmp.command.renamehome: true
       ultimatedonutsmp.command.spawn: true
+      ultimatedonutsmp.command.setspawn: true
       ultimatedonutsmp.command.afk: true
+      ultimatedonutsmp.command.setafk: true
       ultimatedonutsmp.command.rtp: true
       ultimatedonutsmp.command.shop: true
       ultimatedonutsmp.command.orders: true

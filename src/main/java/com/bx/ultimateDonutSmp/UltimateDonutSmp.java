@@ -550,6 +550,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // Spawn / AFK
         setExecutor("spawn", new SpawnCommand(this), FeatureManager.Feature.SPAWN);
         setExecutor("afk", new AFKCommand(this), FeatureManager.Feature.AFK);
+        setExecutor("setspawn", new SetSpawnCommand(this), FeatureManager.Feature.SPAWN);
+        setExecutor("setafk", new SetAfkCommand(this), FeatureManager.Feature.AFK);
 
         // Teleport
         TPACommand tpaCmd = new TPACommand(this);
