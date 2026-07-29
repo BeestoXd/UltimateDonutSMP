@@ -6,6 +6,7 @@ import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NightVisionUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.bx.ultimateDonutSmp.utils.TitleUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -285,6 +286,7 @@ public class PlayerJoinQuitListener implements Listener {
         String quitMsg = event.getQuitMessage();
         event.setQuitMessage(null);
 
+        TitleUtils.cancelPendingReset(player.getUniqueId());
         plugin.getNetworkStaffChatManager().handleStaffLeave(player);
         plugin.getNetworkStaffChatManager().clearPlayerState(player.getUniqueId());
         plugin.getNetworkStaffAlertManager().clearPlayerState(player.getUniqueId());
