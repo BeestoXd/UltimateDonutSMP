@@ -38,6 +38,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.persistence.PersistentDataContainer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -2866,10 +2868,12 @@ public class DuelManager {
         collectItems(loot, inventory.getStorageContents());
         collectItems(loot, inventory.getArmorContents());
         collectItems(loot, new ItemStack[]{inventory.getItemInOffHand()});
+        collectItems(loot, new ItemStack[]{player.getItemOnCursor()});
 
         inventory.clear();
         inventory.setArmorContents(null);
         inventory.setItemInOffHand(null);
+        player.setItemOnCursor(null);
         player.updateInventory();
         return loot;
     }
@@ -3167,7 +3171,22 @@ public class DuelManager {
         if (allowed.isSimilar(item)) {
             return true;
         }
-        return isSimilarIgnoringDamage(allowed, item);
+        if (isSimilarIgnoringDamage(allowed, item)) {
+            return true;
+        }
+
+        if (plugin != null && plugin.getAmethystToolsManager() != null) {
+            var amManager = plugin.getAmethystToolsManager();
+            if (amManager.isAmethystTool(allowed) && amManager.isAmethystTool(item)) {
+                var typeAllowed = amManager.getToolType(allowed);
+                var typeItem = amManager.getToolType(item);
+                if (typeAllowed != null && typeAllowed == typeItem) {
+                    return true;
+                }
+            }
+        }
+
+        return isSimilarIgnoringDynamicMeta(allowed, item);
     }
 
     private boolean isSimilarIgnoringDamage(ItemStack first, ItemStack second) {
@@ -3176,6 +3195,53 @@ public class DuelManager {
         clearDamage(firstClone);
         clearDamage(secondClone);
         return firstClone.isSimilar(secondClone);
+    }
+
+    private boolean isSimilarIgnoringDynamicMeta(ItemStack first, ItemStack second) {
+        if (first == null || second == null || first.getType() != second.getType()) {
+            return false;
+        }
+
+        ItemStack firstClone = first.clone();
+        ItemStack secondClone = second.clone();
+
+        clearDynamicItemMeta(firstClone);
+        clearDynamicItemMeta(secondClone);
+
+        return firstClone.isSimilar(secondClone);
+    }
+
+    private void clearDynamicItemMeta(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) {
+            return;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof Damageable damageable) {
+            damageable.setDamage(0);
+        }
+
+        if (meta instanceof Repairable repairable) {
+            repairable.setRepairCost(0);
+        }
+
+        if (plugin != null && plugin.getAmethystToolsManager() != null) {
+            var amManager = plugin.getAmethystToolsManager();
+            PersistentDataContainer pdc = meta.getPersistentDataContainer();
+            if (amManager.KEY_ID != null) pdc.remove(amManager.KEY_ID);
+            if (amManager.KEY_OWNER != null) pdc.remove(amManager.KEY_OWNER);
+            if (amManager.KEY_EXPIRY != null) pdc.remove(amManager.KEY_EXPIRY);
+        }
+
+        if (meta.hasLore()) {
+            List<String> lore = meta.getLore();
+            if (lore != null) {
+                lore.removeIf(line -> line != null && (line.contains("Expires in:") || line.contains("⏰") || line.contains("Expires")));
+                meta.setLore(lore);
+            }
+        }
+
+        item.setItemMeta(meta);
     }
 
     private void clearDamage(ItemStack item) {
