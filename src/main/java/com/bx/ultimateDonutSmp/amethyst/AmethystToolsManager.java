@@ -41,7 +41,7 @@ public class AmethystToolsManager {
     public final NamespacedKey KEY_ID;
 
     private static final long DEFAULT_USE_COOLDOWN_MS = 250L;
-    private static final long DEFAULT_VISUAL_SYNC_SUPPRESSION_MS = 1200L;
+    private static final long DEFAULT_VISUAL_SYNC_SUPPRESSION_MS = 3000L;
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, Long> useCooldowns = new java.util.HashMap<>();
