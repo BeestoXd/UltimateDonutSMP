@@ -24,22 +24,25 @@ public class MobSpawnListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onMobSpawn(CreatureSpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity entity)) return;
-        if (MobSpawnPolicy.isVanillaSpawnerSpawn(event.getSpawnReason())) {
-            MobSpawnPolicy.markVanillaSpawnerMob(plugin, entity);
-            return;
-        }
-        if (!isNaturalSpawn(event.getSpawnReason())) return;
 
         if (event.getEntityType() == EntityType.PHANTOM) {
-            if (shouldCancelPhantomSpawn(entity.getLocation())) {
+            if (isPreventableSpawnReason(event.getSpawnReason()) && shouldCancelPhantomSpawn(entity.getLocation())) {
                 event.setCancelled(true);
             }
             return;
         }
 
         if (!MobSpawnPolicy.isHostileMob(entity)) return;
-        if (shouldCancelMobSpawn(entity.getLocation())) {
-            event.setCancelled(true);
+
+        if (isPreventableSpawnReason(event.getSpawnReason())) {
+            if (shouldCancelMobSpawn(entity.getLocation())) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        if (MobSpawnPolicy.isVanillaSpawnerSpawn(event.getSpawnReason())) {
+            MobSpawnPolicy.markVanillaSpawnerMob(plugin, entity);
         }
     }
 
@@ -69,10 +72,11 @@ public class MobSpawnListener implements Listener {
         return data != null && !data.isMobSpawnEnabled();
     }
 
-    private boolean isNaturalSpawn(CreatureSpawnEvent.SpawnReason reason) {
+    private boolean isPreventableSpawnReason(CreatureSpawnEvent.SpawnReason reason) {
+        if (reason == null) return false;
         return switch (reason) {
-            case NATURAL, REINFORCEMENTS, PATROL, JOCKEY, CHUNK_GEN, NETHER_PORTAL, OCELOT_BABY, SLIME_SPLIT -> true;
-            default -> false;
+            case CUSTOM, SPAWNER_EGG, BUILD_WITHER, BREEDING -> false;
+            default -> true;
         };
     }
 
