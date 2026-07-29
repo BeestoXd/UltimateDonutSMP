@@ -91,8 +91,14 @@ public final class ConfirmPurchaseGui extends BaseMenu {
         if (slot != AuctionHouseMenuSupport.slot(plugin, "GUI.CONFIRM_PURCHASE.CONFIRM", 15)) {
             return;
         }
+        com.bx.ultimateDonutSmp.managers.AuctionHouseManager manager = plugin.getAuctionHouseManager();
+        if (manager.isOnClickCooldown(player.getUniqueId())) {
+            return;
+        }
+        manager.updateClickCooldown(player.getUniqueId());
+
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        plugin.getAuctionHouseManager().purchaseListing(player, listing.id())
+        manager.purchaseListing(player, listing.id())
                 .thenAccept(result -> plugin.getSpigotScheduler().runEntity(player, () -> {
                     if (result.success()) {
                         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(

@@ -158,6 +158,11 @@ public final class AuctionHouseBrowseMenu extends BaseMenu {
         AuctionBrowseRequest current = manager.session(player.getUniqueId()).request();
         AuctionListing listing = slotMappings.get(slot);
         if (listing != null) {
+            if (manager.isOnClickCooldown(player.getUniqueId())) {
+                return;
+            }
+            manager.updateClickCooldown(player.getUniqueId());
+
             if (clickType.isRightClick() && ShulkerBoxSupport.isShulkerBox(listing.item())) {
                 navigate(player, () -> new ShulkerPreviewGui(plugin, listing.item(), current).open(player));
                 return;
