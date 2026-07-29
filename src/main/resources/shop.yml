@@ -157,9 +157,9 @@ END-MENU:
     DISPLAY-NAME: '&fChorus Fruit'
     SLOT: 14
     # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 10.0
+    PRICE-PER-UNIT: 25.0
     LORE:
-    - '&fBuy price: &a$10'
+    - '&fBuy price: &a$25'
   # Configuration section for Popped Chorus Fruit Item.
   POPPED-CHORUS-FRUIT-ITEM:
     # The text or value for Currency. Available options: Any valid string text
@@ -216,9 +216,9 @@ NETHER-MENU:
     DISPLAY-NAME: '&fNether Wart'
     SLOT: 10
     # The numerical value for Price Per Unit. Available options: Any valid integer
-    PRICE-PER-UNIT: 15
+    PRICE-PER-UNIT: 25
     LORE:
-    - '&fBuy price: &a$15'
+    - '&fBuy price: &a$25'
   # Configuration section for Glowstone Dust Item.
   GLOWSTONE-DUST-ITEM:
     # The text or value for Currency. Available options: Any valid string text
@@ -238,9 +238,9 @@ NETHER-MENU:
     DISPLAY-NAME: '&fMagma Cream'
     SLOT: 12
     # The numerical value for Price Per Unit. Available options: Any valid integer
-    PRICE-PER-UNIT: 15
+    PRICE-PER-UNIT: 25
     LORE:
-    - '&fBuy price: &a$15'
+    - '&fBuy price: &a$25'
   # Configuration section for Ghast Tear Item.
   GHAST-TEAR-ITEM:
     # The text or value for Currency. Available options: Any valid string text
