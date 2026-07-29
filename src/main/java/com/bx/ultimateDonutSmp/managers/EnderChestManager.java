@@ -180,7 +180,11 @@ public class EnderChestManager {
         }
 
         try {
-            int rows = clampRows(plugin.getDatabaseManager().loadEnderChestRows(uuid, getDefaultRows()));
+            int dbRows = plugin.getDatabaseManager().loadEnderChestRows(uuid, -1);
+            if (dbRows == -1) {
+                throw new java.sql.SQLException("Database load error when reading Ender Chest rows");
+            }
+            int rows = clampRows(dbRows <= 0 ? getDefaultRows() : dbRows);
             EnderChestHolder holder = new EnderChestHolder(uuid, rows);
             Inventory inventory = Bukkit.createInventory(
                     holder,
@@ -188,10 +192,11 @@ public class EnderChestManager {
                     ColorUtils.toComponent(getTitle(), player)
             );
             holder.bind(inventory);
-            inventory.setContents(sanitizeLoadedContents(
-                    uuid,
-                    plugin.getDatabaseManager().loadEnderChestContents(uuid, inventory.getSize())
-            ));
+            ItemStack[] rawContents = plugin.getDatabaseManager().loadEnderChestContents(uuid, inventory.getSize());
+            if (rawContents == null) {
+                throw new java.sql.SQLException("Database load error when reading Ender Chest contents");
+            }
+            inventory.setContents(sanitizeLoadedContents(uuid, rawContents));
 
             EnderChestSession session = new EnderChestSession(uuid, inventory, rows);
             activeSessions.put(uuid, session);
@@ -222,9 +227,13 @@ public class EnderChestManager {
 
         try {
             EnderChestSession activeTargetSession = activeSessions.get(targetUuid);
-            int rows = activeTargetSession == null
-                    ? clampRows(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, getDefaultRows()))
+            int dbRows = activeTargetSession == null
+                    ? plugin.getDatabaseManager().loadEnderChestRows(targetUuid, -1)
                     : activeTargetSession.getRows();
+            if (dbRows == -1) {
+                throw new java.sql.SQLException("Database load error when reading Ender Chest rows for inspection");
+            }
+            int rows = clampRows(dbRows <= 0 ? getDefaultRows() : dbRows);
             EnderChestInspectionHolder holder = new EnderChestInspectionHolder(
                     viewer.getUniqueId(),
                     targetUuid
@@ -236,11 +245,16 @@ public class EnderChestManager {
             );
             holder.bind(inventory);
 
+            ItemStack[] rawContents = null;
+            if (activeTargetSession == null) {
+                rawContents = plugin.getDatabaseManager().loadEnderChestContents(targetUuid, inventory.getSize());
+                if (rawContents == null) {
+                    throw new java.sql.SQLException("Database load error when reading Ender Chest contents for inspection");
+                }
+            }
+
             ItemStack[] sourceContents = activeTargetSession == null
-                    ? sanitizeLoadedContents(
-                            targetUuid,
-                            plugin.getDatabaseManager().loadEnderChestContents(targetUuid, inventory.getSize())
-                    )
+                    ? sanitizeLoadedContents(targetUuid, rawContents)
                     : activeTargetSession.getInventory().getContents();
             inventory.setContents(copyInspectionContents(sourceContents, inventory.getSize()));
 

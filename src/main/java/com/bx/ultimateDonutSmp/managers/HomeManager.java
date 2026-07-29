@@ -28,7 +28,11 @@ public class HomeManager {
 
     public void loadHomes(Player player) {
         List<Home> homes = plugin.getDatabaseManager().loadHomes(player.getUniqueId());
-        cache.put(player.getUniqueId(), homes);
+        if (homes != null) {
+            cache.put(player.getUniqueId(), homes);
+        } else {
+            plugin.getLogger().warning("Failed to load homes from database for " + player.getName() + " (" + player.getUniqueId() + "). Preserving existing state.");
+        }
     }
 
     public void unloadHomes(UUID uuid) {

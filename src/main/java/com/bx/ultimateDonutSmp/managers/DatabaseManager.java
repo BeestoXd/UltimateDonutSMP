@@ -1720,7 +1720,7 @@ public class DatabaseManager {
 
     public int loadEnderChestRows(UUID uuid, int fallbackRows) {
         if (connection == null) {
-            return Math.max(1, fallbackRows);
+            return fallbackRows;
         }
 
         try (PreparedStatement ps = connection.prepareStatement(
@@ -1733,6 +1733,7 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load Ender Chest rows for " + uuid, e);
+            return -1;
         }
         return Math.max(1, fallbackRows);
     }
@@ -1763,6 +1764,7 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load Ender Chest contents for " + uuid, e);
+            return null;
         }
 
         return contents;
@@ -2051,6 +2053,7 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load homes for " + uuid, e);
+            return null;
         }
         return homes;
     }
@@ -2505,8 +2508,14 @@ public class DatabaseManager {
         if (records == null || records.isEmpty()) {
             return;
         }
+        boolean originalAutoCommit = true;
         try {
-            boolean originalAutoCommit = connection.getAutoCommit();
+            originalAutoCommit = connection.getAutoCommit();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before sell history batch", e);
+            return;
+        }
+        try {
             connection.setAutoCommit(false);
             try (PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO sell_history (player_uuid, item_name, amount, price, timestamp) VALUES (?,?,?,?,?)")) {
@@ -2524,7 +2533,6 @@ public class DatabaseManager {
                 ps.executeBatch();
             }
             connection.commit();
-            connection.setAutoCommit(originalAutoCommit);
         } catch (SQLException e) {
             try {
                 connection.rollback();
@@ -2532,6 +2540,12 @@ public class DatabaseManager {
                 plugin.getLogger().log(Level.WARNING, "Failed to roll back sell history transaction", rollbackEx);
             }
             plugin.getLogger().log(Level.WARNING, "Failed to add sell history batch", e);
+        } finally {
+            try {
+                connection.setAutoCommit(originalAutoCommit);
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit after sell history batch", e);
+            }
         }
     }
 
@@ -4826,13 +4840,20 @@ public class DatabaseManager {
             String methodName = method.getName();
 
             synchronized (lock) {
+                if (transactionOwner != null && !transactionOwner.isAlive()) {
+                    try {
+                        target.rollback();
+                        target.setAutoCommit(true);
+                    } catch (Throwable ignored) {}
+                    transactionOwner = null;
+                    lock.notifyAll();
+                }
+
                 long limit = System.currentTimeMillis() + 10000; // 10 seconds timeout
                 while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
                     long delay = limit - System.currentTimeMillis();
                     if (delay <= 0) {
-                        transactionOwner = null;
-                        lock.notifyAll();
-                        throw new SQLException("Database lock acquisition timeout (10s). Resetting lock owner.");
+                        throw new SQLException("Database lock acquisition timeout (10s) waiting for owner thread: " + transactionOwner.getName());
                     }
                     try {
                         lock.wait(delay);
@@ -4842,7 +4863,7 @@ public class DatabaseManager {
                     }
                 }
 
-                if (methodName.equals("setAutoCommit") && args.length == 1 && args[0] instanceof Boolean) {
+                if (methodName.equals("setAutoCommit") && args != null && args.length == 1 && args[0] instanceof Boolean) {
                     boolean autoCommit = (Boolean) args[0];
                     if (!autoCommit) {
                         transactionOwner = Thread.currentThread();
@@ -4858,9 +4879,11 @@ public class DatabaseManager {
                 try {
                     return method.invoke(target, args);
                 } catch (java.lang.reflect.InvocationTargetException e) {
-                    if (transactionOwner == Thread.currentThread() && methodName.equals("setAutoCommit")) {
-                        transactionOwner = null;
-                        lock.notifyAll();
+                    if (transactionOwner == Thread.currentThread()) {
+                        if (methodName.equals("setAutoCommit") || methodName.equals("rollback") || methodName.equals("close")) {
+                            transactionOwner = null;
+                            lock.notifyAll();
+                        }
                     }
                     throw e.getCause();
                 }
