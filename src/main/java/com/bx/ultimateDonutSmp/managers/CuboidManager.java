@@ -149,19 +149,32 @@ public class CuboidManager {
 
         int centerX = (minX + maxX) / 2;
         int centerZ = (minZ + maxZ) / 2;
-        int maxSafeY = Math.min(maxY, world.getMaxHeight() - 3);
 
+        // Ensure feet (groundY + 1) remain inside the cuboid bounds (<= maxY)
+        int maxSafeY = (maxY > minY) ? Math.min(maxY - 1, world.getMaxHeight() - 3) : Math.min(maxY, world.getMaxHeight() - 3);
+
+        // 1. Try finding safe standing spot at center X/Z inside the cuboid
         for (int groundY = maxSafeY; groundY >= minY; groundY--) {
             if (isSafeStandingSpot(world, centerX, groundY, centerZ)) {
                 return new Location(world, centerX + 0.5, groundY + 1.0, centerZ + 0.5);
             }
         }
 
-        int highestY = world.getHighestBlockYAt(centerX, centerZ);
-        if (highestY > world.getMinHeight()) {
-            return new Location(world, centerX + 0.5, highestY + 1.0, centerZ + 0.5);
+        // 2. Search other X/Z coordinates inside the cuboid if center has no safe spot
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                if (x == centerX && z == centerZ) {
+                    continue;
+                }
+                for (int groundY = maxSafeY; groundY >= minY; groundY--) {
+                    if (isSafeStandingSpot(world, x, groundY, z)) {
+                        return new Location(world, x + 0.5, groundY + 1.0, z + 0.5);
+                    }
+                }
+            }
         }
 
+        // 3. Fallback to center of cuboid (inside) rather than outside on top of the roof
         return getCuboidCenter(name);
     }
 
