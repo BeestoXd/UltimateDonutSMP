@@ -103,6 +103,14 @@ public class ShardManager {
             if (afkCuboid != null && afkCuboid.contains(player.getLocation())) {
                 return true;
             }
+            if (spawnManager != null && cuboidManager != null) {
+                for (String name : spawnManager.getAreaCuboidNames(SpawnManager.AreaType.AFK)) {
+                    CuboidManager.Cuboid boundAfk = cuboidManager.getCuboid(name);
+                    if (boundAfk != null && boundAfk.contains(player.getLocation())) {
+                        return true;
+                    }
+                }
+            }
             Location targetAfkLoc = afkLocation != null ? afkLocation : (spawnManager != null ? spawnManager.getAfkLocation() : null);
             if (targetAfkLoc == null || targetAfkLoc.getWorld() == null) {
                 return false;
