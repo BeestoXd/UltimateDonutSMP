@@ -852,10 +852,12 @@ public class DatabaseManager {
             return false;
         }
 
+        boolean autoCommitDisabled = false;
         boolean originalAutoCommit = true;
         try {
             originalAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
             try (PreparedStatement delete = connection.prepareStatement(
                     "DELETE FROM hide_states WHERE player_uuid = ?")) {
                 delete.setString(1, state.playerUuid().toString());
@@ -881,20 +883,24 @@ public class DatabaseManager {
             connection.commit();
             return true;
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackError) {
-                e.addSuppressed(rollbackError);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
             }
             if (!isUniqueConstraintViolation(e)) {
                 plugin.getLogger().log(Level.WARNING, "Failed to save Hide state for " + state.playerUuid(), e);
             }
             return false;
         } finally {
-            try {
-                connection.setAutoCommit(originalAutoCommit);
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit", e);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit", e);
+                }
             }
         }
     }
@@ -1981,8 +1987,10 @@ public class DatabaseManager {
             return false;
         }
 
+        boolean autoCommitDisabled = false;
         try {
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
 
             try (PreparedStatement profileStatement = connection.prepareStatement(
                     "REPLACE INTO ender_chest_profiles (player_uuid, rows, updated_at) VALUES (?,?,?)")) {
@@ -2017,18 +2025,22 @@ public class DatabaseManager {
             connection.commit();
             return true;
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackException) {
-                plugin.getLogger().log(Level.WARNING, "Failed to roll back Ender Chest save for " + uuid, rollbackException);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back Ender Chest save for " + uuid, rollbackException);
+                }
             }
             plugin.getLogger().log(Level.WARNING, "Failed to save Ender Chest for " + uuid, e);
             return false;
         } finally {
-            try {
-                connection.setAutoCommit(originalAutoCommit);
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Ender Chest save", e);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Ender Chest save", e);
+                }
             }
         }
     }
@@ -2515,8 +2527,10 @@ public class DatabaseManager {
             plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before sell history batch", e);
             return;
         }
+        boolean autoCommitDisabled = false;
         try {
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
             try (PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO sell_history (player_uuid, item_name, amount, price, timestamp) VALUES (?,?,?,?,?)")) {
                 for (SellHistoryRecord record : records) {
@@ -2534,17 +2548,21 @@ public class DatabaseManager {
             }
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackEx) {
-                plugin.getLogger().log(Level.WARNING, "Failed to roll back sell history transaction", rollbackEx);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackEx) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back sell history transaction", rollbackEx);
+                }
             }
             plugin.getLogger().log(Level.WARNING, "Failed to add sell history batch", e);
         } finally {
-            try {
-                connection.setAutoCommit(originalAutoCommit);
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit after sell history batch", e);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit after sell history batch", e);
+                }
             }
         }
     }
@@ -3368,8 +3386,10 @@ public class DatabaseManager {
             return false;
         }
 
+        boolean autoCommitDisabled = false;
         try {
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
 
             try (PreparedStatement deleteStatement = connection.prepareStatement(
                     "DELETE FROM staff_mode_snapshot_items WHERE staff_uuid = ?")) {
@@ -3396,18 +3416,22 @@ public class DatabaseManager {
             connection.commit();
             return true;
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackException) {
-                plugin.getLogger().log(Level.WARNING, "Failed to roll back Staff Mode snapshot save for " + staffUuid, rollbackException);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back Staff Mode snapshot save for " + staffUuid, rollbackException);
+                }
             }
             plugin.getLogger().log(Level.WARNING, "Failed to save Staff Mode snapshot for " + staffUuid, e);
             return false;
         } finally {
-            try {
-                connection.setAutoCommit(originalAutoCommit);
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Staff Mode snapshot save", e);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Staff Mode snapshot save", e);
+                }
             }
         }
     }
@@ -3680,8 +3704,10 @@ public class DatabaseManager {
     }
 
     public synchronized void replaceSpawnerLoot(long spawnerId, Collection<SpawnerLootEntry> lootEntries) {
+        boolean autoCommitDisabled = false;
         try {
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
 
             try (PreparedStatement delete = connection.prepareStatement("DELETE FROM spawner_loot WHERE spawner_id = ?")) {
                 delete.setLong(1, spawnerId);
@@ -3708,16 +3734,20 @@ public class DatabaseManager {
 
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackException) {
-                plugin.getLogger().log(Level.WARNING, "Failed to roll back spawner loot transaction", rollbackException);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back spawner loot transaction", rollbackException);
+                }
             }
             plugin.getLogger().log(Level.WARNING, "Failed to replace managed spawner loot for spawner " + spawnerId, e);
         } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException ignored) {
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException ignored) {
+                }
             }
         }
     }
@@ -4098,9 +4128,11 @@ public class DatabaseManager {
         }
 
         Map<String, Integer> affected = new LinkedHashMap<>();
+        boolean autoCommitDisabled = false;
         boolean originalAutoCommit = connection.getAutoCommit();
-        connection.setAutoCommit(false);
         try {
+            connection.setAutoCommit(false);
+            autoCommitDisabled = true;
             if (serverWipeTableExists("players")) {
                 try (PreparedStatement statement = connection.prepareStatement("""
                         UPDATE players SET
@@ -4172,10 +4204,20 @@ public class DatabaseManager {
             connection.commit();
             return new ServerWipeResult(Map.copyOf(affected));
         } catch (SQLException exception) {
-            connection.rollback();
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ignored) {
+                }
+            }
             throw exception;
         } finally {
-            connection.setAutoCommit(originalAutoCommit);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException ignored) {
+                }
+            }
         }
     }
 
@@ -4393,18 +4435,30 @@ public class DatabaseManager {
 
         try {
             createTablesFromMongoSchema();
+            boolean autoCommitDisabled = false;
             boolean originalAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
             try {
+                connection.setAutoCommit(false);
+                autoCommitDisabled = true;
                 for (String table : collectionNames) {
                     importMongoCollection(table);
                 }
                 connection.commit();
             } catch (Exception e) {
-                connection.rollback();
+                if (autoCommitDisabled) {
+                    try {
+                        connection.rollback();
+                    } catch (SQLException ignored) {
+                    }
+                }
                 throw e;
             } finally {
-                connection.setAutoCommit(originalAutoCommit);
+                if (autoCommitDisabled) {
+                    try {
+                        connection.setAutoCommit(originalAutoCommit);
+                    } catch (SQLException ignored) {
+                    }
+                }
             }
             plugin.getLogger().info("Imported MongoDB snapshot into SQL runtime cache.");
         } catch (Exception e) {
@@ -4830,6 +4884,7 @@ public class DatabaseManager {
         private final Connection target;
         private final Object lock = new Object();
         private Thread transactionOwner = null;
+        private long transactionStartTime = 0L;
 
         public ThreadSafeConnectionHandler(Connection target) {
             this.target = target;
@@ -4840,19 +4895,32 @@ public class DatabaseManager {
             String methodName = method.getName();
 
             synchronized (lock) {
-                if (transactionOwner != null && !transactionOwner.isAlive()) {
-                    try {
-                        target.rollback();
-                        target.setAutoCommit(true);
-                    } catch (Throwable ignored) {}
-                    transactionOwner = null;
-                    lock.notifyAll();
+                if (transactionOwner != null) {
+                    if (!transactionOwner.isAlive() || (System.currentTimeMillis() - transactionStartTime > 15000L)) {
+                        try {
+                            target.rollback();
+                            target.setAutoCommit(true);
+                        } catch (Throwable ignored) {}
+                        transactionOwner = null;
+                        transactionStartTime = 0L;
+                        lock.notifyAll();
+                    }
                 }
 
                 long limit = System.currentTimeMillis() + 10000; // 10 seconds timeout
                 while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
                     long delay = limit - System.currentTimeMillis();
                     if (delay <= 0) {
+                        if (transactionOwner != null && System.currentTimeMillis() - transactionStartTime > 15000L) {
+                            try {
+                                target.rollback();
+                                target.setAutoCommit(true);
+                            } catch (Throwable ignored) {}
+                            transactionOwner = null;
+                            transactionStartTime = 0L;
+                            lock.notifyAll();
+                            break;
+                        }
                         throw new SQLException("Database lock acquisition timeout (10s) waiting for owner thread: " + transactionOwner.getName());
                     }
                     try {
@@ -4867,12 +4935,15 @@ public class DatabaseManager {
                     boolean autoCommit = (Boolean) args[0];
                     if (!autoCommit) {
                         transactionOwner = Thread.currentThread();
+                        transactionStartTime = System.currentTimeMillis();
                     } else {
                         transactionOwner = null;
+                        transactionStartTime = 0L;
                         lock.notifyAll();
                     }
                 } else if (methodName.equals("commit") || methodName.equals("rollback") || methodName.equals("close")) {
                     transactionOwner = null;
+                    transactionStartTime = 0L;
                     lock.notifyAll();
                 }
 
@@ -4882,6 +4953,7 @@ public class DatabaseManager {
                     if (transactionOwner == Thread.currentThread()) {
                         if (methodName.equals("setAutoCommit") || methodName.equals("rollback") || methodName.equals("close")) {
                             transactionOwner = null;
+                            transactionStartTime = 0L;
                             lock.notifyAll();
                         }
                     }

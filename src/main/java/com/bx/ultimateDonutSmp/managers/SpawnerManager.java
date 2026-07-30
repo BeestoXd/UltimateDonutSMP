@@ -644,7 +644,7 @@ public class SpawnerManager {
 
         existing.setStackAmount(targetAmount);
         existing.setUpdatedAt(System.currentTimeMillis());
-        plugin.getDatabaseManager().saveSpawner(existing);
+        saveSpawnerAsync(existing);
         plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
             syncSpawnerBlockStateImmediate(existing);
             if (plugin.getAntiEspManager() != null) {
@@ -833,7 +833,7 @@ public class SpawnerManager {
         }
 
         unregisterSpawner(instance);
-        plugin.getDatabaseManager().deleteSpawner(instance.getId());
+        deleteSpawnerAsync(instance.getId());
 
         if (requireSilkTouch && !hasSilkTouch) {
             plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
@@ -1189,7 +1189,7 @@ public class SpawnerManager {
         }
 
         unregisterSpawner(instance);
-        plugin.getDatabaseManager().deleteSpawner(instance.getId());
+        deleteSpawnerAsync(instance.getId());
         World world = Bukkit.getWorld(instance.getWorld());
         if (world != null && dropItem) {
             long remaining = instance.getStackAmount();
@@ -1565,7 +1565,8 @@ public class SpawnerManager {
                 continue;
             }
             plugin.getDatabaseManager().saveSpawner(instance);
-            saveLoot(instance);
+            List<SpawnerLootEntry> lootCopy = new ArrayList<>(instance.getStoredLootEntries());
+            plugin.getDatabaseManager().replaceSpawnerLoot(instance.getId(), lootCopy);
         }
     }
 
@@ -1642,6 +1643,15 @@ public class SpawnerManager {
             }
         }
         return false;
+    }
+
+    public void deleteSpawnerAsync(long spawnerId) {
+        if (spawnerId <= 0L) {
+            return;
+        }
+        plugin.getSpigotScheduler().runAsync(() -> {
+            plugin.getDatabaseManager().deleteSpawner(spawnerId);
+        });
     }
 
     public void saveSpawnerAsync(SpawnerInstance instance) {
