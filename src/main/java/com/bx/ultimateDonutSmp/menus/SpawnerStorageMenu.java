@@ -128,6 +128,7 @@ public class SpawnerStorageMenu extends BaseMenu {
         ItemStack copy = item.clone();
         var meta = copy.getItemMeta();
         if (meta != null) {
+            meta.setDisplayName(null);
             meta.setLore(null);
             copy.setItemMeta(meta);
         }
