@@ -118,6 +118,8 @@ public class SpawnerManager {
     private String soundSellConfirmOpen;
     private String soundSellSuccess;
     private String soundSellCancel;
+    private String soundFilterOpen;
+    private String soundFilterToggle;
 
     public SpawnerManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -178,6 +180,8 @@ public class SpawnerManager {
         soundSellConfirmOpen = sounds.getString("SPAWNERS.SELL-CONFIRM-OPEN", "minecraft:ui.button.click|1.0|1.0");
         soundSellSuccess = sounds.getString("SPAWNERS.SELL-SUCCESS", "minecraft:entity.villager.yes|1.0|1.0");
         soundSellCancel = sounds.getString("SPAWNERS.SELL-CANCEL", "minecraft:ui.button.click|1.0|0.8");
+        soundFilterOpen = sounds.getString("SPAWNERS.FILTER-OPEN", "minecraft:ui.button.click|1.0|1.2");
+        soundFilterToggle = sounds.getString("SPAWNERS.FILTER-TOGGLE", "minecraft:ui.button.click|1.0|1.0");
         loadTypeDefinitions(config);
 
         List<SpawnerInstance> copy;
@@ -745,6 +749,8 @@ public class SpawnerManager {
     public void playSellConfirmOpenSound(Player player) { playSound(player, soundSellConfirmOpen); }
     public void playSellSuccessSound(Player player) { playSound(player, soundSellSuccess); }
     public void playSellCancelSound(Player player) { playSound(player, soundSellCancel); }
+    public void playFilterOpenSound(Player player) { playSound(player, soundFilterOpen); }
+    public void playFilterToggleSound(Player player) { playSound(player, soundFilterToggle); }
 
     public void openStorage(Player player, SpawnerInstance instance, int page) {
         if (player == null || instance == null) {
@@ -1877,7 +1883,7 @@ public class SpawnerManager {
         player.getInventory().setItemInMainHand(hand);
     }
 
-    private String prettifyKey(String key) {
+    public String prettifyKey(String key) {
         if (key == null || key.isBlank()) {
             return "Spawner";
         }

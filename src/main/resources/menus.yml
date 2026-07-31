@@ -2064,6 +2064,14 @@ SPAWNER-MENUS:
       TITLE: '&cBACK'
       LORE:
       - '&7Return to spawner menu.'
+    FILTER-SETTINGS-BUTTON:
+      SLOT: 46
+      MATERIAL: HOPPER
+      TITLE: '&bFILTER SETTINGS'
+      LORE:
+      - '&7Manage item drops filter.'
+      - ''
+      - '&eClick to open filter settings'
     COLLECT-ALL-BUTTON:
       SLOT: 48
       MATERIAL: SPECTRAL_ARROW
@@ -2094,6 +2102,36 @@ SPAWNER-MENUS:
       TITLE: '&aSELL ALL'
       LORE:
       - '&fClick to sell all mob drops!'
+  FILTER-MENU:
+    TITLE: '&8{mob} Filter Settings'
+    SIZE: 27
+    ITEM-META:
+      TITLE: '&b{material}'
+      LORE:
+      - '&7Filter Status: {filter_status}'
+      - '&7Drop Chance: &e{chance}%'
+      - ''
+      - '&eClick &7to toggle filter'
+      FILTER-ENABLED: '&aEnabled &7(Storing)'
+      FILTER-DISABLED: '&cDisabled &7(Not Storing)'
+    BACK-BUTTON:
+      SLOT: 18
+      MATERIAL: BARRIER
+      TITLE: '&cBACK'
+      LORE:
+      - '&7Return to storage menu.'
+    ENABLE-ALL-BUTTON:
+      SLOT: 25
+      MATERIAL: LIME_DYE
+      TITLE: '&aENABLE ALL'
+      LORE:
+      - '&7Enable storing all drops.'
+    DISABLE-ALL-BUTTON:
+      SLOT: 26
+      MATERIAL: RED_DYE
+      TITLE: '&cDISABLE ALL'
+      LORE:
+      - '&7Disable storing all drops.'
   SELL-CONFIRM-MENU:
     TITLE: '&8Confirm Sell'
     SIZE: 27

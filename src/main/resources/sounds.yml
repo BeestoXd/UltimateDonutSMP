@@ -177,4 +177,6 @@ SPAWNERS:
   SELL-CONFIRM-OPEN: minecraft:ui.button.click|1.0|1.0
   SELL-SUCCESS: minecraft:entity.villager.yes|1.0|1.0
   SELL-CANCEL: minecraft:ui.button.click|1.0|0.8
+  FILTER-OPEN: minecraft:ui.button.click|1.0|1.2
+  FILTER-TOGGLE: minecraft:ui.button.click|1.0|1.0
 

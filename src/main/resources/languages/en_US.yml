@@ -1457,6 +1457,12 @@ MENUS:
         TITLE: '&cBACK'
         LORE:
         - '&7Return to spawner menu.'
+      FILTER-SETTINGS-BUTTON:
+        TITLE: '&bFILTER SETTINGS'
+        LORE:
+        - '&7Manage item drops filter.'
+        - ''
+        - '&eClick to open filter settings'
       COLLECT-ALL-BUTTON:
         TITLE: '&eCOLLECT ALL'
         LORE:
@@ -1477,6 +1483,29 @@ MENUS:
         TITLE: '&aSELL ALL'
         LORE:
         - '&fClick to sell all mob drops!'
+    FILTER-MENU:
+      TITLE: '&8{mob} Filter Settings'
+      ITEM-META:
+        TITLE: '&b{material}'
+        LORE:
+        - '&7Filter Status: {filter_status}'
+        - '&7Drop Chance: &e{chance}%'
+        - ''
+        - '&eClick &7to toggle filter'
+        FILTER-ENABLED: '&aEnabled &7(Storing)'
+        FILTER-DISABLED: '&cDisabled &7(Not Storing)'
+      BACK-BUTTON:
+        TITLE: '&cBACK'
+        LORE:
+        - '&7Return to storage menu.'
+      ENABLE-ALL-BUTTON:
+        TITLE: '&aENABLE ALL'
+        LORE:
+        - '&7Enable storing all drops.'
+      DISABLE-ALL-BUTTON:
+        TITLE: '&cDISABLE ALL'
+        LORE:
+        - '&7Disable storing all drops.'
     SELL-CONFIRM-MENU:
       TITLE: '&8Confirm Sell'
       CONFIRM-BUTTON:

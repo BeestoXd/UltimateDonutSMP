@@ -194,6 +194,16 @@ public class SpawnerStorageMenu extends BaseMenu {
         if (backLore.isEmpty()) backLore = List.of("&7Return to spawner menu.");
         set(backSlot, ItemUtils.createItem(backMat, backTitle, backLore));
 
+        // Filter Settings Button
+        int filterSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.FILTER-SETTINGS-BUTTON.SLOT", lastRow + 1);
+        String filterMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.FILTER-SETTINGS-BUTTON.MATERIAL", "HOPPER");
+        Material filterMat = Material.matchMaterial(filterMatName);
+        if (filterMat == null) filterMat = Material.HOPPER;
+        String filterTitle = config.getString("SPAWNER-MENUS.STORAGE-MENU.FILTER-SETTINGS-BUTTON.TITLE", "&bFILTER SETTINGS");
+        List<String> filterLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.FILTER-SETTINGS-BUTTON.LORE");
+        if (filterLore.isEmpty()) filterLore = List.of("&7Manage item drops filter.", "", "&eClick to open filter settings");
+        set(filterSlot, ItemUtils.createItem(filterMat, filterTitle, filterLore));
+
         // 2. Collect All Button
         int collectSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.SLOT", lastRow + 3);
         String collectMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.MATERIAL", "SPECTRAL_ARROW");
@@ -345,6 +355,7 @@ public class SpawnerStorageMenu extends BaseMenu {
 
         FileConfiguration config = plugin.getConfigManager().getMenus();
         int backSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.BACK-BUTTON.SLOT", lastRow);
+        int filterSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.FILTER-SETTINGS-BUTTON.SLOT", lastRow + 1);
         int collectSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON.SLOT", lastRow + 3);
         int prevSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.SLOT", lastRow + 4);
         int nextSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.SLOT", lastRow + 6);
@@ -352,10 +363,13 @@ public class SpawnerStorageMenu extends BaseMenu {
         int sellSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.SELL-ALL-BUTTON.SLOT", lastRow + 8);
 
         // 2. Click in top inventory control bar / non-content slots
-        if (rawSlot >= lastRow || rawSlot == backSlot || rawSlot == collectSlot || rawSlot == prevSlot || rawSlot == nextSlot || rawSlot == dropSlot || rawSlot == sellSlot) {
+        if (rawSlot >= lastRow || rawSlot == backSlot || rawSlot == filterSlot || rawSlot == collectSlot || rawSlot == prevSlot || rawSlot == nextSlot || rawSlot == dropSlot || rawSlot == sellSlot) {
             event.setCancelled(true);
             if (rawSlot == backSlot) {
                 new SpawnerMainMenu(plugin, spawnerId).open(player);
+            } else if (rawSlot == filterSlot) {
+                plugin.getSpawnerManager().playFilterOpenSound(player);
+                new SpawnerFilterMenu(plugin, spawnerId, page).open(player);
             } else if (rawSlot == collectSlot) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().collectAllLoot(player, instance).message()));
                 new SpawnerStorageMenu(plugin, spawnerId, page).open(player);
@@ -393,6 +407,7 @@ public class SpawnerStorageMenu extends BaseMenu {
                             + plugin.getWorthManager().prettifyMaterial(slotItem.getType())
                             + " &ato " + statusMsg + "&a."));
 
+                    plugin.getSpawnerManager().playFilterToggleSound(player);
                     topInventory.setItem(rawSlot, applyStorageMeta(plugin, instance, slotItem.getType(), slotItem.getAmount()));
                 }
                 player.updateInventory();
