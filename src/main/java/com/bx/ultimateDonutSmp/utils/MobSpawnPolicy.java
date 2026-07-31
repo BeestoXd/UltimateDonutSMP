@@ -48,12 +48,28 @@ public final class MobSpawnPolicy {
                 || entity instanceof org.bukkit.entity.Hoglin;
     }
 
+    public static boolean hasCustomName(LivingEntity entity) {
+        if (entity == null) {
+            return false;
+        }
+        return entity.getCustomName() != null && !entity.getCustomName().isEmpty();
+    }
+
     public static boolean shouldRemoveFromPeriodicCleanup(
             boolean monster,
             EntityType type,
             boolean vanillaSpawnerMob
     ) {
-        if (!monster || type == null || vanillaSpawnerMob) {
+        return shouldRemoveFromPeriodicCleanup(monster, type, vanillaSpawnerMob, false);
+    }
+
+    public static boolean shouldRemoveFromPeriodicCleanup(
+            boolean monster,
+            EntityType type,
+            boolean vanillaSpawnerMob,
+            boolean hasCustomName
+    ) {
+        if (!monster || type == null || vanillaSpawnerMob || hasCustomName) {
             return false;
         }
         return switch (type) {
@@ -69,7 +85,8 @@ public final class MobSpawnPolicy {
         return entity != null && shouldRemoveFromPeriodicCleanup(
                 isHostileMob(entity),
                 entity.getType(),
-                isVanillaSpawnerMob(plugin, entity)
+                isVanillaSpawnerMob(plugin, entity),
+                hasCustomName(entity)
         );
     }
 }

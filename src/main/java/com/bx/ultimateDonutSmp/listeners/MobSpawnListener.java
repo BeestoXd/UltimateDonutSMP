@@ -25,6 +25,8 @@ public class MobSpawnListener implements Listener {
     public void onMobSpawn(CreatureSpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity entity)) return;
 
+        if (MobSpawnPolicy.hasCustomName(entity)) return;
+
         if (event.getEntityType() == EntityType.PHANTOM) {
             if (isPreventableSpawnReason(event.getSpawnReason()) && shouldCancelPhantomSpawn(entity.getLocation())) {
                 event.setCancelled(true);

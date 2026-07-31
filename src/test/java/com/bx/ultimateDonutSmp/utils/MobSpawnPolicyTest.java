@@ -20,6 +20,7 @@ class MobSpawnPolicyTest {
     void periodicCleanupPreservesSpawnerMobsAndExistingExcludedTypes() {
         assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, false));
         assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, true));
+        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, false, true));
         assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(false, EntityType.ZOMBIE, false));
 
         assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.PHANTOM, false));
