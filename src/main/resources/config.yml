@@ -92,6 +92,14 @@ SETTINGS:
   DISABLE-MOB-SPAWN-LIMIT-SECONDS: -1
   # The numerical value for Disable Phantom Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
   DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS: 3600
+# Configuration section for Features.
+FEATURES_SETTINGS:
+  # Action when executing a command linked to a disabled feature.
+  # Options:
+  # - "MESSAGE": Shows "The <feature> feature is currently disabled."
+  # - "UNKNOWN": Shows default unknown command message.
+  # - "UNREGISTER": Dynamically unregister command from Bukkit command map.
+  DISABLED_COMMAND_ACTION: "MESSAGE"
 # Configuration section for Chat.
 CHAT:
   # Determines whether Format Enabled is enabled or disabled. Available options: true, false

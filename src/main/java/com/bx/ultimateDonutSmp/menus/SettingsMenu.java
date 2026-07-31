@@ -50,11 +50,10 @@ public class SettingsMenu extends BaseMenu {
         if (buttons == null) return;
 
         for (String key : buttons.getKeys(false)) {
-            if (!shouldRenderButton(key)) {
+            ConfigurationSection section = buttons.getConfigurationSection(key);
+            if (section == null || !shouldRenderButton(key, section)) {
                 continue;
             }
-            ConfigurationSection section = buttons.getConfigurationSection(key);
-            if (section == null) continue;
             renderButton(player, data, key, section);
         }
     }
@@ -63,12 +62,41 @@ public class SettingsMenu extends BaseMenu {
     public void handleClick(int slot, Player player) {
         String key = clickableButtons.get(slot);
         if (key == null) return;
-        if (!shouldRenderButton(key)) return;
+
+        ConfigurationSection clickSection = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".BUTTONS." + key);
+        if (!shouldRenderButton(key, clickSection)) return;
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data == null) return;
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+
+        ConfigurationSection section = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".BUTTONS." + key);
+        if (section != null && section.contains("COMMAND")) {
+            String commandStr = section.getString("COMMAND");
+            if (commandStr != null && !commandStr.isBlank()) {
+                commandStr = commandStr.replace("{player}", player.getName()).replace("%player%", player.getName());
+                if (commandStr.toLowerCase(java.util.Locale.ROOT).startsWith("[console] ")) {
+                    String cmd = commandStr.substring(10).trim();
+                    org.bukkit.Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), cmd);
+                } else if (commandStr.toLowerCase(java.util.Locale.ROOT).startsWith("[player] ")) {
+                    String cmd = commandStr.substring(9).trim();
+                    if (cmd.startsWith("/")) cmd = cmd.substring(1);
+                    player.performCommand(cmd);
+                } else {
+                    String cmd = commandStr.startsWith("/") ? commandStr.substring(1) : commandStr;
+                    player.performCommand(cmd);
+                }
+                org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (player.isOnline()) {
+                        build(player);
+                    }
+                });
+                return;
+            }
+        }
 
         switch (key) {
             case "PAY_ALERTS" -> {
@@ -236,7 +264,10 @@ public class SettingsMenu extends BaseMenu {
         build(player);
     }
 
-    private boolean shouldRenderButton(String key) {
+    private boolean shouldRenderButton(String key, ConfigurationSection section) {
+        if (section != null && (section.contains("COMMAND") || section.contains("STATUS-PLACEHOLDER"))) {
+            return true;
+        }
         if (!"DUEL_REQUESTS".equals(key)) {
             return true;
         }
@@ -247,15 +278,16 @@ public class SettingsMenu extends BaseMenu {
         int slot = section.getInt("SLOT", -1);
         if (slot < 0 || slot >= inventory.getSize()) return;
 
-        ButtonState state = getButtonState(player, data, key);
+        ButtonState state = getButtonState(player, data, key, section);
 
         List<String> lore = new ArrayList<>();
         for (String line : section.getStringList("LORE")) {
-            lore.add(line.replace("{status}", state.statusText()));
+            lore.add(ColorUtils.colorize(line.replace("{status}", state.statusText()), player));
         }
 
         Material material = ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE"));
-        ItemStack item = ItemUtils.createItem(material, section.getString("DISPLAY-NAME", "&fѕᴇᴛᴛɪɴɢ"), lore);
+        String displayName = ColorUtils.colorize(section.getString("DISPLAY-NAME", "&fѕᴇᴛᴛɪɴɢ"), player);
+        ItemStack item = ItemUtils.createItem(material, displayName, lore);
         if ("NIGHT_VISION".equals(key)) {
             item = toNightVisionPotion(item);
         }
@@ -266,7 +298,42 @@ public class SettingsMenu extends BaseMenu {
         }
     }
 
-    private ButtonState getButtonState(Player player, PlayerData data, String key) {
+    private ButtonState getButtonState(Player player, PlayerData data, String key, ConfigurationSection section) {
+        if (section != null && section.contains("STATUS-PLACEHOLDER")) {
+            String placeholder = section.getString("STATUS-PLACEHOLDER");
+            if (placeholder != null && !placeholder.isBlank()) {
+                String evaluated = ColorUtils.colorize(placeholder, player).trim();
+                if (evaluated.startsWith("%") && evaluated.endsWith("%")) {
+                    if (placeholder.equalsIgnoreCase("%player_is_flying%") || placeholder.equalsIgnoreCase("%player_flying%")) {
+                        boolean flying = player.isFlying() || player.getAllowFlight();
+                        return new ButtonState(flying ? "&aEnabled" : "&cDisabled", true);
+                    }
+                    if (placeholder.equalsIgnoreCase("%player_is_op%")) {
+                        return new ButtonState(player.isOp() ? "&aEnabled" : "&cDisabled", true);
+                    }
+                    if (placeholder.equalsIgnoreCase("%player_is_sneaking%")) {
+                        return new ButtonState(player.isSneaking() ? "&aEnabled" : "&cDisabled", true);
+                    }
+                    return new ButtonState("&cDisabled", true);
+                }
+                String lower = evaluated.toLowerCase(java.util.Locale.ROOT);
+                if (lower.equals("true") || lower.equals("enabled") || lower.equals("yes") || lower.equals("on") || lower.equals("1")) {
+                    return new ButtonState("&aEnabled", true);
+                } else if (lower.equals("false") || lower.equals("disabled") || lower.equals("no") || lower.equals("off") || lower.equals("0")) {
+                    return new ButtonState("&cDisabled", true);
+                } else {
+                    return new ButtonState(evaluated, true);
+                }
+            }
+        }
+        if (section != null && section.contains("COMMAND")) {
+            String cmd = section.getString("COMMAND", "").toLowerCase(java.util.Locale.ROOT);
+            if (cmd.contains("fly")) {
+                boolean flying = player.isFlying() || player.getAllowFlight();
+                return new ButtonState(flying ? "&aEnabled" : "&cDisabled", true);
+            }
+            return new ButtonState("&aEnabled", true);
+        }
         return switch (key) {
             case "PAY_ALERTS" -> new ButtonState(formatStatus(data.isPayAlertsEnabled()), true);
             case "HOTBAR_MESSAGES" -> new ButtonState(formatStatus(data.isHotbarMessagesEnabled()), true);
@@ -295,7 +362,7 @@ public class SettingsMenu extends BaseMenu {
                 if (disabled && data.getMobSpawnDisabledUntil() > 0) {
                     long remainingSecs = (data.getMobSpawnDisabledUntil() - System.currentTimeMillis()) / 1000L;
                     if (remainingSecs > 0) {
-                        yield new ButtonState("&aᴇɴᴀʙʟᴇᴅ &7(" + com.bx.ultimateDonutSmp.utils.NumberUtils.formatTime(remainingSecs) + " left)", true);
+                        yield new ButtonState("&aEnabled &7(" + com.bx.ultimateDonutSmp.utils.NumberUtils.formatTime(remainingSecs) + " left)", true);
                     }
                 }
                 yield new ButtonState(formatStatus(disabled), true);
@@ -305,7 +372,7 @@ public class SettingsMenu extends BaseMenu {
                 if (disabled && data.getPhantomDisabledUntil() > 0) {
                     long remainingSecs = (data.getPhantomDisabledUntil() - System.currentTimeMillis()) / 1000L;
                     if (remainingSecs > 0) {
-                        yield new ButtonState("&aᴇɴᴀʙʟᴇᴅ &7(" + com.bx.ultimateDonutSmp.utils.NumberUtils.formatTime(remainingSecs) + " left)", true);
+                        yield new ButtonState("&aEnabled &7(" + com.bx.ultimateDonutSmp.utils.NumberUtils.formatTime(remainingSecs) + " left)", true);
                     }
                 }
                 yield new ButtonState(formatStatus(disabled), true);
@@ -317,27 +384,27 @@ public class SettingsMenu extends BaseMenu {
                     formatStatus(NightVisionUtils.isEnabled(plugin, player)),
                     true
             );
-            default -> new ButtonState("&8ᴘʀᴇᴠɪᴇᴡ", false);
+            default -> new ButtonState("&8Preview", false);
         };
     }
 
     private String formatStatus(boolean enabled) {
-        return enabled ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ";
+        return enabled ? "&aEnabled" : "&cDisabled";
     }
 
     private void sendToggleMessage(Player player, String label, boolean enabled) {
-        String state = enabled ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ";
-        player.sendMessage(ColorUtils.toComponent("&7" + label + " ɪѕ ɴᴏᴡ " + state + "&7."));
+        String state = enabled ? "&aEnabled" : "&cDisabled";
+        player.sendMessage(ColorUtils.toComponent("&7" + label + " is now " + state + "&7."));
     }
 
     private void toggleNightVision(Player player) {
         boolean enabled = NightVisionUtils.toggle(plugin, player);
         if (!enabled) {
-            player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &cᴅɪѕᴀʙʟᴇᴅ&7."));
+            player.sendMessage(ColorUtils.toComponent("&7Night vision &cDisabled&7."));
             return;
         }
 
-        player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &aᴇɴᴀʙʟᴇᴅ&7."));
+        player.sendMessage(ColorUtils.toComponent("&7Night vision &aEnabled&7."));
     }
 
     private void clearNearbyHostileMobs(Player player) {

@@ -27,6 +27,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -737,8 +738,26 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setTabCompleter("amod", anvilModCommand);
     }
 
+    private final Map<String, PluginCommand> pluginCommandCache = new HashMap<>();
+
+    public PluginCommand fetchPluginCommand(String commandName) {
+        if (commandName == null) {
+            return null;
+        }
+        String key = commandName.trim().toLowerCase(Locale.ROOT);
+        PluginCommand cached = pluginCommandCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+        PluginCommand command = getCommand(key);
+        if (command != null) {
+            pluginCommandCache.put(key, command);
+        }
+        return command;
+    }
+
     private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
-        PluginCommand command = getCommand(commandName);
+        PluginCommand command = fetchPluginCommand(commandName);
         if (command == null) {
             getLogger().warning("Command missing from plugin.yml: " + commandName);
             return;
@@ -1325,17 +1344,27 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     public void syncCommands() {
-        syncCommandState("spawn", FeatureManager.Feature.SPAWN);
-        syncCommandState("afk", FeatureManager.Feature.AFK);
-        syncCommandState("warp", FeatureManager.Feature.WARPS);
-        syncCommandState("warpmanager", FeatureManager.Feature.WARPS);
-        syncCommandState("setwarp", FeatureManager.Feature.WARPS);
-        syncCommandState("delwarp", FeatureManager.Feature.WARPS);
+        if (getDescription().getCommands() == null) {
+            return;
+        }
+        for (String commandName : getDescription().getCommands().keySet()) {
+            FeatureManager.Feature[] features = FeatureManager.featuresForCommand(commandName);
+            if (features != null && features.length > 0) {
+                syncCommandState(commandName, features);
+            }
+        }
+        for (org.bukkit.entity.Player player : getServer().getOnlinePlayers()) {
+            try {
+                player.updateCommands();
+            } catch (Exception ignored) {
+            }
+        }
     }
 
-    private void syncCommandState(String commandName, FeatureManager.Feature feature) {
-        boolean enabled = featureManager.isEnabled(feature);
-        PluginCommand command = getCommand(commandName);
+    private void syncCommandState(String commandName, FeatureManager.Feature... features) {
+        boolean enabled = featureManager.areEnabled(features);
+        boolean unregisterMode = featureManager.getDisabledCommandAction() == FeatureManager.DisabledCommandAction.UNREGISTER;
+        PluginCommand command = fetchPluginCommand(commandName);
         if (command == null) {
             return;
         }
@@ -1352,17 +1381,25 @@ public final class UltimateDonutSmp extends JavaPlugin {
             String fallbackPrefix = getDescription().getName().toLowerCase(Locale.ROOT);
             String namespacedKey = fallbackPrefix + ":" + commandName;
 
-            if (enabled) {
-                if (!knownCommands.containsKey(commandName)) {
-                    commandMap.register(fallbackPrefix, command);
+            if (enabled || !unregisterMode) {
+                command.register(commandMap);
+                knownCommands.put(commandName, command);
+                knownCommands.put(namespacedKey, command);
+                if (command.getAliases() != null) {
+                    for (String alias : command.getAliases()) {
+                        knownCommands.put(alias, command);
+                        knownCommands.put(fallbackPrefix + ":" + alias, command);
+                    }
                 }
             } else {
                 command.unregister(commandMap);
                 knownCommands.remove(commandName);
                 knownCommands.remove(namespacedKey);
-                for (String alias : command.getAliases()) {
-                    knownCommands.remove(alias);
-                    knownCommands.remove(fallbackPrefix + ":" + alias);
+                if (command.getAliases() != null) {
+                    for (String alias : command.getAliases()) {
+                        knownCommands.remove(alias);
+                        knownCommands.remove(fallbackPrefix + ":" + alias);
+                    }
                 }
             }
         } catch (Exception e) {

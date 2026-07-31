@@ -15,6 +15,23 @@ public class FeatureManager {
 
     private static final String ROOT = "FEATURES";
 
+    public enum DisabledCommandAction {
+        MESSAGE,
+        UNKNOWN,
+        UNREGISTER;
+
+        public static DisabledCommandAction fromString(String raw) {
+            if (raw == null) {
+                return MESSAGE;
+            }
+            return switch (raw.trim().toUpperCase(Locale.ROOT)) {
+                case "UNREGISTER", "DISABLE", "OFF", "REMOVE" -> UNREGISTER;
+                case "UNKNOWN", "HIDE" -> UNKNOWN;
+                default -> MESSAGE;
+            };
+        }
+    }
+
     public enum Feature {
         CHAT("CHAT", "chat", "global chat commands and moderation controls.", "WRITABLE_BOOK", "CHAT"),
         IGNORE("IGNORE", "ignore", "player ignore and unignore commands.", "BARRIER", "IGNORE"),
@@ -146,6 +163,11 @@ public class FeatureManager {
         this.plugin = plugin;
     }
 
+    public DisabledCommandAction getDisabledCommandAction() {
+        String value = plugin.getConfigManager().getConfig().getString("FEATURES_SETTINGS.DISABLED_COMMAND_ACTION", "MESSAGE");
+        return DisabledCommandAction.fromString(value);
+    }
+
     public List<Feature> getFeatures() {
         return List.of(Feature.values());
     }
@@ -271,14 +293,14 @@ public class FeatureManager {
 
     public String statusText(Feature feature) {
         return isEnabled(feature)
-                ? plugin.getConfigManager().getMessageOrDefault("FEATURES.STATUS-ENABLED", "&aᴇɴᴀʙʟᴇᴅ")
-                : plugin.getConfigManager().getMessageOrDefault("FEATURES.STATUS-DISABLED", "&cᴅɪѕᴀʙʟᴇᴅ");
+                ? plugin.getConfigManager().getMessageOrDefault("FEATURES.STATUS-ENABLED", "&aEnabled")
+                : plugin.getConfigManager().getMessageOrDefault("FEATURES.STATUS-DISABLED", "&cDisabled");
     }
 
     public void sendDisabledMessage(CommandSender sender, Feature feature, String commandLabel) {
         String message = plugin.getConfigManager().getMessageOrDefault(
                 "FEATURES.DISABLED",
-                "&cᴛʜᴇ {feature} ꜰᴇᴀᴛᴜʀᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.",
+                "&cThe {feature} feature is currently disabled.",
                 "{feature}", feature.displayName(),
                 "{feature_key}", feature.configKey(),
                 "{command}", commandLabel == null ? "" : commandLabel
@@ -290,6 +312,8 @@ public class FeatureManager {
         if (feature == null) {
             return;
         }
+
+        plugin.syncCommands();
 
         switch (feature) {
             case SCOREBOARD -> {

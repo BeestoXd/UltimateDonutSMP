@@ -572,6 +572,16 @@ SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
   BUTTONS:
+    # Custom redirect buttons can also be added here:
+    # EXTERNAL_FLY:
+    #   DISPLAY-NAME: '&bFlight Mode'
+    #   MATERIAL: FEATHER
+    #   SLOT: 25
+    #   COMMAND: '[player] /fly'
+    #   STATUS-PLACEHOLDER: '%cmi_user_flying%'
+    #   LORE:
+    #   - '&7Toggle flight via external plugin'
+    #   - '&fCurrently: {status}'
     PUBLIC_CHAT:
       DISPLAY-NAME: '&#6BF18DPublic Chat'
       MATERIAL: OAK_SIGN

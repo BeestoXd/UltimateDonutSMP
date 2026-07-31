@@ -30,7 +30,12 @@ public class FeatureCommandExecutor implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         for (FeatureManager.Feature feature : requiredFeatures) {
             if (feature != null && !plugin.getFeatureManager().isEnabled(feature)) {
-                plugin.getFeatureManager().sendDisabledMessage(sender, feature, label);
+                FeatureManager.DisabledCommandAction action = plugin.getFeatureManager().getDisabledCommandAction();
+                if (action == FeatureManager.DisabledCommandAction.UNKNOWN || action == FeatureManager.DisabledCommandAction.UNREGISTER) {
+                    sender.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent("&cUnknown command. Type \"/help\" for help."));
+                } else {
+                    plugin.getFeatureManager().sendDisabledMessage(sender, feature, label);
+                }
                 return true;
             }
         }

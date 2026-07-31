@@ -53,7 +53,7 @@ public class ColorUtils {
             return colorize(text, target);
         }
 
-        String result = LanguageManager.translateBuiltInText(text);
+        String result = text;
         if (hasPAPI) {
             try {
                 result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders((Player) null, result);
@@ -76,7 +76,7 @@ public class ColorUtils {
             return "";
         }
 
-        String result = LanguageManager.translateBuiltInText(text);
+        String result = text;
         if (hasPAPI && player != null) {
             try {
                 result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, result);
@@ -91,7 +91,7 @@ public class ColorUtils {
             return "";
         }
 
-        String result = LanguageManager.translateBuiltInText(text);
+        String result = text;
         if (hasPAPI && player != null) {
             try {
                 result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, result);

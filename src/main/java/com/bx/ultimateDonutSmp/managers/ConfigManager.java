@@ -1960,15 +1960,6 @@ public class ConfigManager {
     }
 
     private boolean hasLegacyButtons(YamlConfiguration config) {
-        ConfigurationSection buttons = config.getConfigurationSection("SETTINGS-MENU.BUTTONS");
-        if (buttons == null) {
-            return false;
-        }
-        for (String key : buttons.getKeys(false)) {
-            if (key.startsWith("HEADER_") || "TOTEM_PARTICLES".equals(key) || "TP_AUTO".equals(key)) {
-                return true;
-            }
-        }
         return false;
     }
 
