@@ -115,9 +115,44 @@ public class SpawnerBlockListener implements Listener {
             return;
         }
 
-        event.setDropItems(false);
-        event.setExpToDrop(0);
+        if (!result.fullyDestroyed()) {
+            event.setCancelled(true);
+            if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+                damageHeldTool(player);
+            }
+        } else {
+            event.setDropItems(false);
+            event.setExpToDrop(0);
+        }
         player.sendMessage(ColorUtils.toComponent(result.message()));
+    }
+
+    private void damageHeldTool(Player player) {
+        ItemStack tool = player.getInventory().getItemInMainHand();
+        if (tool == null || tool.getType().isAir()) {
+            return;
+        }
+        org.bukkit.inventory.meta.ItemMeta meta = tool.getItemMeta();
+        if (meta instanceof org.bukkit.inventory.meta.Damageable damageable) {
+            int unbreakingLevel = tool.getEnchantmentLevel(org.bukkit.enchantments.Enchantment.UNBREAKING);
+            if (unbreakingLevel > 0) {
+                if (java.util.concurrent.ThreadLocalRandom.current().nextInt(unbreakingLevel + 1) != 0) {
+                    return;
+                }
+            }
+            int currentDamage = damageable.getDamage();
+            int maxDurability = tool.getType().getMaxDurability();
+            if (maxDurability > 0) {
+                int newDamage = currentDamage + 1;
+                if (newDamage >= maxDurability) {
+                    player.getInventory().setItemInMainHand(null);
+                    player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+                } else {
+                    damageable.setDamage(newDamage);
+                    tool.setItemMeta(meta);
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

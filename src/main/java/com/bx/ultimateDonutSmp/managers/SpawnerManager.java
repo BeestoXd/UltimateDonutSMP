@@ -56,9 +56,12 @@ import java.util.logging.Level;
 
 public class SpawnerManager {
 
-    public record ActionResult(boolean success, String message, int consumedAmount) {
+    public record ActionResult(boolean success, String message, int consumedAmount, boolean fullyDestroyed) {
+        public ActionResult(boolean success, String message, int consumedAmount) {
+            this(success, message, consumedAmount, true);
+        }
         public ActionResult(boolean success, String message) {
-            this(success, message, 0);
+            this(success, message, 0, true);
         }
     }
 
@@ -803,7 +806,7 @@ public class SpawnerManager {
                     plugin.getAntiEspManager().refreshNearby(block.getLocation());
                 }
             });
-            return ok("&atemporary spawner removed.");
+            return new ActionResult(true, "&atemporary spawner removed.", 0, true);
         }
         if (instance == null) {
             return fail("&cthat is not a managed spawner.");
@@ -812,28 +815,52 @@ public class SpawnerManager {
             return fail("&cyou do not have permission to break that spawner.");
         }
 
-        String spawnerName = ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey()));
-        plugin.getPlayerLogsManager().log(
-                player.getUniqueId(),
-                player.getName(),
-                "Spawners",
-                "SPAWNER_BREAK",
-                "Broke " + instance.getStackAmount() + "x " + spawnerName + " spawner at "
-                        + block.getWorld().getName() + " " + block.getX() + ", " + block.getY() + ", " + block.getZ()
-        );
+        long totalStack = instance.getStackAmount();
+        boolean stackAll = player != null && player.isSneaking();
+        long breakAmount = stackAll ? Math.min(64L, totalStack) : 1L;
+        long remainingStack = totalStack - breakAmount;
 
-        boolean hasSilkTouch = false;
-        if (player.getGameMode() == GameMode.CREATIVE) {
-            hasSilkTouch = true;
+        boolean fullyDestroyed;
+        if (remainingStack <= 0L) {
+            unregisterSpawner(instance);
+            deleteSpawnerAsync(instance.getId());
+            fullyDestroyed = true;
         } else {
-            ItemStack heldTool = player.getInventory().getItemInMainHand();
-            if (heldTool != null && heldTool.getType().name().endsWith("_PICKAXE") && heldTool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH)) {
-                hasSilkTouch = true;
-            }
+            instance.setStackAmount(remainingStack);
+            instance.setUpdatedAt(System.currentTimeMillis());
+            saveSpawnerAsync(instance);
+            plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
+                syncSpawnerBlockStateImmediate(instance);
+                if (plugin.getAntiEspManager() != null) {
+                    plugin.getAntiEspManager().refreshNearby(block.getLocation());
+                }
+            });
+            fullyDestroyed = false;
         }
 
-        unregisterSpawner(instance);
-        deleteSpawnerAsync(instance.getId());
+        String spawnerName = ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey()));
+        if (player != null) {
+            plugin.getPlayerLogsManager().log(
+                    player.getUniqueId(),
+                    player.getName(),
+                    "Spawners",
+                    "SPAWNER_BREAK",
+                    "Broke " + breakAmount + "x " + spawnerName + " spawner (Remaining: " + remainingStack + "x) at "
+                            + block.getWorld().getName() + " " + block.getX() + ", " + block.getY() + ", " + block.getZ()
+            );
+        }
+
+        boolean hasSilkTouch = false;
+        if (player != null) {
+            if (player.getGameMode() == GameMode.CREATIVE) {
+                hasSilkTouch = true;
+            } else {
+                ItemStack heldTool = player.getInventory().getItemInMainHand();
+                if (heldTool != null && heldTool.getType().name().endsWith("_PICKAXE") && heldTool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH)) {
+                    hasSilkTouch = true;
+                }
+            }
+        }
 
         if (requireSilkTouch && !hasSilkTouch) {
             plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
@@ -841,27 +868,29 @@ public class SpawnerManager {
                     plugin.getAntiEspManager().refreshNearby(block.getLocation());
                 }
             });
-            return ok("&cYour spawner was destroyed because you did not use a Silk Touch pickaxe.");
+            return new ActionResult(true, "&cYour spawner was destroyed (" + NumberUtils.format(breakAmount) + "x) because you did not use a Silk Touch pickaxe.", (int) breakAmount, fullyDestroyed);
         }
 
-        long remaining = instance.getStackAmount();
-        List<ItemStack> itemsToGive = new ArrayList<>();
-        while (remaining > 0) {
-            int amount = (int) Math.min(64, remaining);
-            ItemStack item = createSpawnerItem(instance.getMobTypeKey(), amount);
-            if (item != null) {
-                itemsToGive.add(item);
+        if (player != null) {
+            long remaining = breakAmount;
+            List<ItemStack> itemsToGive = new ArrayList<>();
+            while (remaining > 0) {
+                int amount = (int) Math.min(64, remaining);
+                ItemStack item = createSpawnerItem(instance.getMobTypeKey(), amount);
+                if (item != null) {
+                    itemsToGive.add(item);
+                }
+                remaining -= amount;
             }
-            remaining -= amount;
-        }
 
-        PlayerInventory inventory = player.getInventory();
-        for (ItemStack item : itemsToGive) {
-            Map<Integer, ItemStack> leftovers = inventory.addItem(item);
-            if (dropOnBreakIfInventoryFull) {
-                leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
-            } else if (!leftovers.isEmpty()) {
-                leftovers.values().forEach(leftover -> inventory.addItem(leftover));
+            PlayerInventory inventory = player.getInventory();
+            for (ItemStack item : itemsToGive) {
+                Map<Integer, ItemStack> leftovers = inventory.addItem(item);
+                if (dropOnBreakIfInventoryFull) {
+                    leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
+                } else if (!leftovers.isEmpty()) {
+                    leftovers.values().forEach(leftover -> inventory.addItem(leftover));
+                }
             }
         }
 
@@ -870,8 +899,8 @@ public class SpawnerManager {
                 plugin.getAntiEspManager().refreshNearby(block.getLocation());
             }
         });
-        return ok("&apicked up &f" + NumberUtils.format(instance.getStackAmount()) + "x "
-                + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.");
+        return new ActionResult(true, "&apicked up &f" + NumberUtils.format(breakAmount) + "x "
+                + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.", (int) breakAmount, fullyDestroyed);
     }
 
     public List<SpawnerLootEntry> getSortedLootEntries(SpawnerInstance instance) {
