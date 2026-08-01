@@ -413,6 +413,11 @@ commands:
     - phistory
     permission: ultimatedonutsmp.command.punishments
     permission-message: "&cYou do not have permission to use /punishments."
+  offend:
+    description: Punish a player using preset offense rules from offenses.yml
+    usage: /offend <player> <reason> [time]
+    permission: ultimatedonutsmp.staff.punishments.offend
+    permission-message: "&cYou do not have permission to use /offend."
   ban:
     description: Ban a player and record punishment history
     usage: /ban <player> [reason]
@@ -1432,6 +1437,11 @@ permissions:
   ultimatedonutsmp.command.punishments:
     description: Access to /punishments command
     default: op
+  ultimatedonutsmp.command.offend:
+    description: Access to /offend command
+    default: op
+    children:
+      ultimatedonutsmp.staff.punishments.offend: true
   ultimatedonutsmp.command.ban:
     description: Access to /ban command
     default: op

@@ -94,6 +94,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private InvseeManager invseeManager;
     private ProfileViewerManager profileViewerManager;
     private PunishmentManager punishmentManager;
+    private OffenseManager offenseManager;
     private StatsWipeManager statsWipeManager;
     private ServerWipeManager serverWipeManager;
     private SpawnerManager spawnerManager;
@@ -225,6 +226,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         invseeManager = new InvseeManager(this);
         profileViewerManager = new ProfileViewerManager(this);
         punishmentManager = new PunishmentManager(this);
+        offenseManager = new OffenseManager(this);
         anvilModerationManager = new AnvilModerationManager(this);
         anvilModerationManager.load();
         statsWipeManager = new StatsWipeManager(this);
@@ -663,6 +665,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("unban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("unmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("unblacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        OffendCommand offendCommand = new OffendCommand(this);
+        setExecutor("offend", offendCommand, FeatureManager.Feature.PUNISHMENTS);
+        setTabCompleter("offend", offendCommand);
 
         // Bounty
         setExecutor("bounty", new BountyCommand(this), FeatureManager.Feature.BOUNTY);
@@ -988,6 +993,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         shardManager.reloadSettings();
         rtpZoneManager.reloadSettings();
         enderChestManager.reload();
+        if (offenseManager != null) {
+            offenseManager.reload();
+        }
         freezeManager.reload();
         staffModeManager.reload();
         invseeManager.reload();
@@ -1288,6 +1296,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public PunishmentManager getPunishmentManager() {
         return punishmentManager;
+    }
+
+    public OffenseManager getOffenseManager() {
+        return offenseManager;
     }
 
     public AnvilModerationManager getAnvilModerationManager() {
