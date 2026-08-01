@@ -184,7 +184,8 @@ public class EnderChestManager {
             if (dbRows == -1) {
                 throw new java.sql.SQLException("Database load error when reading Ender Chest rows");
             }
-            int rows = clampRows(dbRows <= 0 ? getDefaultRows() : dbRows);
+            int defaultRows = getDefaultRows();
+            int rows = clampRows(dbRows <= 0 ? defaultRows : Math.max(dbRows, defaultRows));
             EnderChestHolder holder = new EnderChestHolder(uuid, rows);
             Inventory inventory = Bukkit.createInventory(
                     holder,
@@ -233,7 +234,8 @@ public class EnderChestManager {
             if (dbRows == -1) {
                 throw new java.sql.SQLException("Database load error when reading Ender Chest rows for inspection");
             }
-            int rows = clampRows(dbRows <= 0 ? getDefaultRows() : dbRows);
+            int defaultRows = getDefaultRows();
+            int rows = clampRows(dbRows <= 0 ? defaultRows : Math.max(dbRows, defaultRows));
             EnderChestInspectionHolder holder = new EnderChestInspectionHolder(
                     viewer.getUniqueId(),
                     targetUuid
@@ -435,7 +437,8 @@ public class EnderChestManager {
             saveSession(activeTargetSession);
         } else {
             ItemStack[] sanitizedContents = sanitizeContents(session.getInventory().getContents());
-            int rows = clampRows(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, getDefaultRows()));
+            int defaultRows = getDefaultRows();
+            int rows = clampRows(Math.max(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, defaultRows), defaultRows));
             plugin.getDatabaseManager().saveEnderChest(targetUuid, rows, sanitizedContents);
         }
     }
@@ -788,8 +791,38 @@ public class EnderChestManager {
         return getConfig().getString("ENDER-CHEST.CLOSE-SOUND", "minecraft:block.ender_chest.close|1.0|1.0");
     }
 
-    private int getDefaultRows() {
-        return clampRows(getConfig().getInt("ENDER-CHEST.DEFAULT-ROWS", 6));
+    public int getDefaultRows() {
+        FileConfiguration ecConfig = getConfig();
+        if (ecConfig != null) {
+            if (ecConfig.contains("ENDER-CHEST.DEFAULT-ROWS")) {
+                return clampRows(ecConfig.getInt("ENDER-CHEST.DEFAULT-ROWS", 6));
+            }
+            if (ecConfig.contains("ENDER-CHEST.ROWS")) {
+                return clampRows(ecConfig.getInt("ENDER-CHEST.ROWS", 6));
+            }
+            if (ecConfig.contains("ENDER-CHEST.SIX-ROWS")) {
+                return ecConfig.getBoolean("ENDER-CHEST.SIX-ROWS", true) ? 6 : 1;
+            }
+            if (ecConfig.contains("ENDER-CHEST.SIX-ROW")) {
+                return ecConfig.getBoolean("ENDER-CHEST.SIX-ROW", true) ? 6 : 1;
+            }
+        }
+        FileConfiguration mainConfig = plugin != null && plugin.getConfigManager() != null ? plugin.getConfigManager().getConfig() : null;
+        if (mainConfig != null) {
+            if (mainConfig.contains("ENDER-CHEST.DEFAULT-ROWS")) {
+                return clampRows(mainConfig.getInt("ENDER-CHEST.DEFAULT-ROWS", 6));
+            }
+            if (mainConfig.contains("ENDER-CHEST.ROWS")) {
+                return clampRows(mainConfig.getInt("ENDER-CHEST.ROWS", 6));
+            }
+            if (mainConfig.contains("ENDER-CHEST.SIX-ROWS")) {
+                return mainConfig.getBoolean("ENDER-CHEST.SIX-ROWS", true) ? 6 : 1;
+            }
+            if (mainConfig.contains("ENDER-CHEST.SIX-ROW")) {
+                return mainConfig.getBoolean("ENDER-CHEST.SIX-ROW", true) ? 6 : 1;
+            }
+        }
+        return 6;
     }
 
     private String getTitle() {
