@@ -32,7 +32,7 @@ public class SellCommand implements CommandExecutor {
         }
 
         switch (label.toLowerCase()) {
-            case "sell"        -> new SellMenu(plugin).open(player);
+            case "sell", "sellmulti", "sellmultiplier", "sellprogress" -> new SellMenu(plugin).open(player);
             case "sellhand"    -> {
                 double total = plugin.getShopManager().sellInventory(player, true);
                 if (total <= 0) player.sendMessage(ColorUtils.toComponent(

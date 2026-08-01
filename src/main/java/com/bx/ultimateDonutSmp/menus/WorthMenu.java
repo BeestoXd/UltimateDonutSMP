@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import com.bx.ultimateDonutSmp.models.SellCategory;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.Locale;
 
 public class WorthMenu extends BaseMenu {
 
-    private enum SortMode {
+    public enum SortMode {
         CATEGORY(
                 "ᴄᴀᴛᴇɢᴏʀʏ ᴏʀᴅᴇʀ",
                 Material.BOOK,
@@ -98,6 +100,8 @@ public class WorthMenu extends BaseMenu {
     private final int page;
     private final int itemsPerPage;
     private final SortMode sortMode;
+    private final SellCategory categoryFilter;
+    private final BaseMenu parentMenu;
 
     public WorthMenu(UltimateDonutSmp plugin, int page) {
         this(plugin, page, SortMode.fromConfig(
@@ -106,10 +110,20 @@ public class WorthMenu extends BaseMenu {
     }
 
     public WorthMenu(UltimateDonutSmp plugin, int page, SortMode sortMode) {
-        super(plugin, plugin.getWorthManager().getBrowserTitle(), plugin.getWorthManager().getBrowserSize());
+        this(plugin, page, sortMode, null, null);
+    }
+
+    public WorthMenu(UltimateDonutSmp plugin, int page, SortMode sortMode, SellCategory categoryFilter, BaseMenu parentMenu) {
+        super(plugin,
+                categoryFilter != null
+                        ? ColorUtils.toComponent("&8" + categoryFilter.name().replace('_', ' ') + " ITEMS")
+                        : plugin.getWorthManager().getBrowserTitle(),
+                plugin.getWorthManager().getBrowserSize());
         this.page = Math.max(1, page);
         this.itemsPerPage = plugin.getWorthManager().getBrowserItemsPerPage();
         this.sortMode = sortMode == null ? SortMode.CATEGORY : sortMode;
+        this.categoryFilter = categoryFilter;
+        this.parentMenu = parentMenu;
     }
 
     @Override
@@ -167,7 +181,9 @@ public class WorthMenu extends BaseMenu {
         set(lastRowStart + 7, hasNextPage(entries.size())
                 ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRowStart + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ")));
+        set(lastRowStart + 8, parentMenu != null
+                ? ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ", List.of("&7ɢᴏ ʙᴀᴄᴋ ᴛᴏ ᴘʀᴇᴠɪᴏᴜѕ ᴍᴇɴᴜ"))
+                : ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ")));
     }
 
     @Override
@@ -176,23 +192,27 @@ public class WorthMenu extends BaseMenu {
         List<WorthManager.WorthBrowserEntry> entries = getSortedEntries();
 
         if (slot == lastRowStart + 1 && page > 1) {
-            new WorthMenu(plugin, page - 1, sortMode).open(player);
+            new WorthMenu(plugin, page - 1, sortMode, categoryFilter, parentMenu).open(player);
             return;
         }
 
         if (slot == lastRowStart + 4) {
             SortMode targetSort = clickType.isRightClick() ? sortMode.previous() : sortMode.next();
-            new WorthMenu(plugin, 1, targetSort).open(player);
+            new WorthMenu(plugin, 1, targetSort, categoryFilter, parentMenu).open(player);
             return;
         }
 
         if (slot == lastRowStart + 7 && hasNextPage(entries.size())) {
-            new WorthMenu(plugin, page + 1, sortMode).open(player);
+            new WorthMenu(plugin, page + 1, sortMode, categoryFilter, parentMenu).open(player);
             return;
         }
 
         if (slot == lastRowStart + 8) {
-            player.closeInventory();
+            if (parentMenu != null) {
+                parentMenu.open(player);
+            } else {
+                player.closeInventory();
+            }
             return;
         }
 
@@ -214,7 +234,24 @@ public class WorthMenu extends BaseMenu {
     }
 
     private List<WorthManager.WorthBrowserEntry> getSortedEntries() {
-        return sortMode.sort(plugin.getWorthManager().getBrowserEntries());
+        List<WorthManager.WorthBrowserEntry> entries = plugin.getWorthManager().getBrowserEntries();
+        if (categoryFilter != null) {
+            entries = entries.stream()
+                    .filter(entry -> isEntryInCategory(entry, categoryFilter))
+                    .toList();
+        }
+        return sortMode.sort(entries);
+    }
+
+    private boolean isEntryInCategory(WorthManager.WorthBrowserEntry entry, SellCategory category) {
+        if (entry.categoryKey() != null && entry.categoryKey().equalsIgnoreCase(category.getWorthSectionKey())) {
+            return true;
+        }
+        SellCategory entryCategory = SellCategory.fromConfigKey(entry.categoryKey()).orElse(null);
+        if (entryCategory == category) {
+            return true;
+        }
+        return plugin.getShopManager().getSellCategory(new ItemStack(entry.material())) == category;
     }
 
     private boolean hasNextPage(int totalEntries) {

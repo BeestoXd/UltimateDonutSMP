@@ -91,7 +91,11 @@ public class SellMenu extends BaseMenu {
         }
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-        new SellProgressMenu(plugin, category).open(player);
+        if (clickType.isRightClick()) {
+            new WorthMenu(plugin, 1, WorthMenu.SortMode.CATEGORY, category, this).open(player);
+        } else {
+            new SellProgressMenu(plugin, category).open(player);
+        }
     }
 
     public void handleInventoryClick(InventoryClickEvent event) {

@@ -1004,30 +1004,48 @@ PROGRESS-MENU:
       CROPS:
       - '&7Sell crops and farming materials to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       ORES:
       - '&7Sell ores and mining materials to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       MOBS:
       - '&7Sell mob drops and combat materials to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       NATURAL:
       - '&7Sell natural materials and trees to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       ARMOR_AND_TOOLS:
       - '&7Sell armor and tools to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       FISH:
       - '&7Sell fish and other fishing loot to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       BOOK:
       - '&7Sell books and enchanted books to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       POTIONS:
       - '&7Sell potions and brewing materials to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
       BLOCKS:
       - '&7Sell blocks and placeable items to'
       - '&7upgrade your sell multiplier!'
+      - ''
+      - '&e► Click to view items in this category'
     MATERIAL:
       CROPS: WHEAT
       ORES: DIAMOND

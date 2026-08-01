@@ -610,6 +610,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("ecsee", new EcseeCommand(this), FeatureManager.Feature.ENDER_CHEST);
         SellCommand sellCmd = new SellCommand(this);
         setExecutor("sell", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellmulti", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellmultiplier", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellprogress", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellall", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhistory", sellCmd, FeatureManager.Feature.SELL);
