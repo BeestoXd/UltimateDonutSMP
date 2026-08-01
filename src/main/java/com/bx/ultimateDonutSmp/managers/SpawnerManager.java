@@ -85,6 +85,7 @@ public class SpawnerManager {
     private final Map<String, SpawnerTypeDefinition> typeDefinitions = new LinkedHashMap<>();
     private final AtomicLong temporarySpawnerIdSequence = new AtomicLong(-1L);
     private final Set<Long> temporarySpawnerIds = new HashSet<>();
+    private final Map<Long, List<SpawnerLootEntry>> pendingLootMap = new java.util.concurrent.ConcurrentHashMap<>();
     private boolean serverWipeMode;
     private boolean enabled;
     private boolean xpEnabled;
@@ -1693,7 +1694,7 @@ public class SpawnerManager {
         if (instance == null || isTemporarySpawner(instance)) {
             return;
         }
-        plugin.getSpigotScheduler().runAsync(() -> {
+        plugin.getDatabaseManager().executeAsync(() -> {
             plugin.getDatabaseManager().saveSpawner(instance);
         });
     }
@@ -1702,10 +1703,17 @@ public class SpawnerManager {
         if (instance == null || isTemporarySpawner(instance)) {
             return;
         }
-        List<SpawnerLootEntry> lootCopy = new ArrayList<>(instance.getStoredLootEntries());
-        plugin.getSpigotScheduler().runAsync(() -> {
-            plugin.getDatabaseManager().replaceSpawnerLoot(instance.getId(), lootCopy);
-        });
+        long spawnerId = instance.getId();
+        List<SpawnerLootEntry> latestLoot = new ArrayList<>(instance.getStoredLootEntries());
+        boolean isFirst = (pendingLootMap.put(spawnerId, latestLoot) == null);
+        if (isFirst) {
+            plugin.getDatabaseManager().executeAsync(() -> {
+                List<SpawnerLootEntry> toSave = pendingLootMap.remove(spawnerId);
+                if (toSave != null) {
+                    plugin.getDatabaseManager().replaceSpawnerLoot(spawnerId, toSave);
+                }
+            });
+        }
     }
 
     public void saveSpawnerAndLoot(SpawnerInstance instance) {

@@ -14,7 +14,7 @@ public class AuctionHouseExpiryTask implements Runnable {
         long configuredSeconds = plugin.getConfigManager().getAuctionHouse()
                 .getLong("SETTINGS.EXPIRE_CHECK_SECONDS", 30L);
         long periodTicks = Math.max(20L, configuredSeconds * 20L);
-        plugin.getSpigotScheduler().runGlobalTimer(new AuctionHouseExpiryTask(plugin), periodTicks, periodTicks);
+        plugin.getSpigotScheduler().runAsyncTimer(new AuctionHouseExpiryTask(plugin), periodTicks, periodTicks);
     }
 
     @Override

@@ -54,9 +54,13 @@ public class LeaderboardManager {
 
     private final UltimateDonutSmp plugin;
     private final Map<LeaderboardType, CachedLeaderboard> leaderboardCache = new EnumMap<>(LeaderboardType.class);
+    private final java.util.Set<LeaderboardType> refreshingTypes = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     public LeaderboardManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+        for (LeaderboardType type : LeaderboardType.values()) {
+            triggerAsyncRefresh(type);
+        }
     }
 
     public Optional<LeaderboardType> parseType(String input) {
@@ -161,27 +165,48 @@ public class LeaderboardManager {
     }
 
     private List<PlayerData> getSortedPlayers(LeaderboardType type) {
+        if (type == null) {
+            return List.of();
+        }
         long now = System.currentTimeMillis();
         CachedLeaderboard cachedLeaderboard = leaderboardCache.get(type);
-        if (cachedLeaderboard != null && !cachedLeaderboard.isExpired(now)) {
-            return cachedLeaderboard.players();
+        if (cachedLeaderboard == null) {
+            triggerAsyncRefresh(type);
+            return List.of();
         }
 
-        Map<UUID, PlayerData> merged = new LinkedHashMap<>();
-        for (PlayerData stored : plugin.getDatabaseManager().loadAllPlayers()) {
-            merged.put(stored.getUuid(), stored);
+        if (cachedLeaderboard.isExpired(now)) {
+            triggerAsyncRefresh(type);
         }
-        for (PlayerData live : plugin.getPlayerDataManager().getAll()) {
-            merged.put(live.getUuid(), live);
+        return cachedLeaderboard.players();
+    }
+
+    public void triggerAsyncRefresh(LeaderboardType type) {
+        if (type == null || !refreshingTypes.add(type)) {
+            return;
         }
+        plugin.getDatabaseManager().executeAsync(() -> {
+            try {
+                Map<UUID, PlayerData> merged = new LinkedHashMap<>();
+                for (PlayerData stored : plugin.getDatabaseManager().loadAllPlayers()) {
+                    merged.put(stored.getUuid(), stored);
+                }
+                for (PlayerData live : plugin.getPlayerDataManager().getAll()) {
+                    merged.put(live.getUuid(), live);
+                }
 
-        List<PlayerData> players = new ArrayList<>(merged.values());
-        players.removeIf(data -> data == null || data.getUsername() == null || data.getUsername().isBlank());
-        players.sort(comparator(type));
+                List<PlayerData> players = new ArrayList<>(merged.values());
+                players.removeIf(data -> data == null || data.getUsername() == null || data.getUsername().isBlank());
+                players.sort(comparator(type));
 
-        List<PlayerData> snapshot = List.copyOf(players);
-        leaderboardCache.put(type, new CachedLeaderboard(now, snapshot));
-        return snapshot;
+                List<PlayerData> snapshot = List.copyOf(players);
+                leaderboardCache.put(type, new CachedLeaderboard(System.currentTimeMillis(), snapshot));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to update leaderboard cache for " + type.name() + ": " + e.getMessage());
+            } finally {
+                refreshingTypes.remove(type);
+            }
+        });
     }
 
     private Comparator<PlayerData> comparator(LeaderboardType type) {

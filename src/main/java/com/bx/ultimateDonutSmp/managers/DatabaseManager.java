@@ -120,7 +120,7 @@ public class DatabaseManager {
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private boolean mongoBridgeActive;
-    private final ExecutorService asyncExecutor = Executors.newFixedThreadPool(4);
+    private ExecutorService asyncExecutor;
     private final Map<UUID, String> usernameCache = new java.util.concurrent.ConcurrentHashMap<>();
     private final Map<String, UUID> uuidByUsernameCache = new java.util.concurrent.ConcurrentHashMap<>();
 
@@ -131,6 +131,19 @@ public class DatabaseManager {
     public void initialize() {
         try {
             databaseType = DatabaseType.fromConfig(getDatabaseConfig().getString("DATABASE.TYPE", "SQLITE"));
+            if (databaseType == DatabaseType.MYSQL) {
+                asyncExecutor = Executors.newFixedThreadPool(4, r -> {
+                    Thread thread = new Thread(r, "UltimateDonutSmp-DBWriter");
+                    thread.setDaemon(true);
+                    return thread;
+                });
+            } else {
+                asyncExecutor = Executors.newSingleThreadExecutor(r -> {
+                    Thread thread = new Thread(r, "UltimateDonutSmp-DBWriter");
+                    thread.setDaemon(true);
+                    return thread;
+                });
+            }
 
             switch (databaseType) {
                 case MYSQL -> initializeMySqlConnection();
@@ -167,6 +180,8 @@ public class DatabaseManager {
         connection = wrapConnection(rawConnection);
         try (Statement st = connection.createStatement()) {
             st.execute("PRAGMA journal_mode=WAL");
+            st.execute("PRAGMA synchronous=NORMAL");
+            st.execute("PRAGMA busy_timeout=15000");
         }
     }
 
@@ -4729,7 +4744,8 @@ public class DatabaseManager {
         Connection dedicated = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
         try (Statement statement = dedicated.createStatement()) {
             statement.execute("PRAGMA journal_mode=WAL");
-            statement.execute("PRAGMA busy_timeout=10000");
+            statement.execute("PRAGMA synchronous=NORMAL");
+            statement.execute("PRAGMA busy_timeout=15000");
         }
         return dedicated;
     }
@@ -4907,24 +4923,23 @@ public class DatabaseManager {
                     }
                 }
 
-                long limit = System.currentTimeMillis() + 10000; // 10 seconds timeout
                 while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
-                    long delay = limit - System.currentTimeMillis();
-                    if (delay <= 0) {
-                        if (transactionOwner != null && System.currentTimeMillis() - transactionStartTime > 15000L) {
-                            try {
-                                target.rollback();
-                                target.setAutoCommit(true);
-                            } catch (Throwable ignored) {}
-                            transactionOwner = null;
-                            transactionStartTime = 0L;
-                            lock.notifyAll();
-                            break;
-                        }
-                        throw new SQLException("Database lock acquisition timeout (10s) waiting for owner thread: " + transactionOwner.getName());
+                    long elapsedOnOwner = System.currentTimeMillis() - transactionStartTime;
+                    long maxRemainingForOwner = 15000L - elapsedOnOwner;
+                    if (maxRemainingForOwner <= 0 || !transactionOwner.isAlive()) {
+                        try {
+                            target.rollback();
+                            target.setAutoCommit(true);
+                        } catch (Throwable ignored) {}
+                        transactionOwner = null;
+                        transactionStartTime = 0L;
+                        lock.notifyAll();
+                        break;
                     }
+
+                    long waitTime = Math.min(1000L, Math.max(10L, maxRemainingForOwner));
                     try {
-                        lock.wait(delay);
+                        lock.wait(waitTime);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         throw new SQLException("Thread interrupted while waiting for database lock", e);
