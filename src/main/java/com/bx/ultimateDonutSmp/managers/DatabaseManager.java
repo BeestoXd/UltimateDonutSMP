@@ -649,6 +649,12 @@ public class DatabaseManager {
             ")"
         );
         execute("CREATE INDEX IF NOT EXISTS idx_player_logs_uuid_time ON player_logs(player_uuid, timestamp)");
+        execute("CREATE INDEX IF NOT EXISTS idx_player_logs_type_time ON player_logs(log_type, timestamp)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_history_player ON sell_history(player_uuid)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_history_timestamp ON sell_history(timestamp)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_history_item ON sell_history(item_name)");
+        execute("CREATE INDEX IF NOT EXISTS idx_players_money_spent ON players(money_spent)");
+        fixNullTimestamps();
     }
 
     private void ensurePlayerColumns() throws SQLException {
@@ -2917,181 +2923,75 @@ public class DatabaseManager {
     }
 
     public List<HourlyActivityEntry> getHourlyActivityStats(int hours) {
-        // Self-heal null/zero timestamps for existing historical records
-        fixNullTimestamps();
-
-        List<HourlyActivityEntry> list = new ArrayList<>();
-        long now = System.currentTimeMillis();
-        long hourMs = 3600000L;
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("H:00").withZone(java.time.ZoneId.systemDefault());
-
-        int totalSalesFound = 0;
-        int totalPurchasesFound = 0;
-
-        for (int i = hours - 1; i >= 0; i--) {
-            long startTime = now - ((i + 1) * hourMs);
-            long endTime = now - (i * hourMs);
-            String label = formatter.format(java.time.Instant.ofEpochMilli(endTime));
-
-            int salesCount = 0;
-            int purchaseCount = 0;
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM sell_history WHERE timestamp >= ? AND timestamp < ?")) {
-                ps.setLong(1, startTime);
-                ps.setLong(2, endTime);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) salesCount = rs.getInt(1);
-                }
-            } catch (SQLException ignored) {}
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ? AND timestamp < ?")) {
-                ps.setLong(1, startTime);
-                ps.setLong(2, endTime);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) purchaseCount = rs.getInt(1);
-                }
-            } catch (SQLException ignored) {}
-
-            totalSalesFound += salesCount;
-            totalPurchasesFound += purchaseCount;
-            list.add(new HourlyActivityEntry(label, salesCount, purchaseCount));
-        }
-
-        // Fallback: If DB contains sales/purchases but they fall outside exact 12-hour window, distribute active entries
-        int globalSales = countGlobalSellHistory();
-        int globalPurchases = getTotalShopBuyCount();
-
-        if (totalSalesFound == 0 && globalSales > 0 && !list.isEmpty()) {
-            int baseSales = globalSales / list.size();
-            int remainderSales = globalSales % list.size();
-            for (int i = 0; i < list.size(); i++) {
-                HourlyActivityEntry old = list.get(i);
-                int count = baseSales + (i == list.size() - 1 ? remainderSales : 0);
-                list.set(i, new HourlyActivityEntry(old.hourLabel(), count, old.purchaseCount()));
-            }
-        }
-
-        if (totalPurchasesFound == 0 && globalPurchases > 0 && !list.isEmpty()) {
-            int baseBuy = globalPurchases / list.size();
-            int remainderBuy = globalPurchases % list.size();
-            for (int i = 0; i < list.size(); i++) {
-                HourlyActivityEntry old = list.get(i);
-                int count = baseBuy + (i == list.size() - 1 ? remainderBuy : 0);
-                list.set(i, new HourlyActivityEntry(old.hourLabel(), old.salesCount(), count));
-            }
-        }
-
-        return list;
+        return getActivityStatsBinned(hours * 3600000L, hours, formatter);
     }
 
     public List<HourlyActivityEntry> getMinuteActivityStats(int buckets) {
-        fixNullTimestamps();
-        List<HourlyActivityEntry> list = new ArrayList<>();
-        long now = System.currentTimeMillis();
         long intervalMs = (60 * 60 * 1000L) / Math.max(1, buckets);
+        long totalMs = intervalMs * Math.max(1, buckets);
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("H:mm").withZone(java.time.ZoneId.systemDefault());
-
-        int totalSalesFound = 0;
-        int totalPurchasesFound = 0;
-
-        for (int i = buckets - 1; i >= 0; i--) {
-            long startTime = now - ((i + 1) * intervalMs);
-            long endTime = now - (i * intervalMs);
-            String label = formatter.format(java.time.Instant.ofEpochMilli(endTime));
-
-            int salesCount = 0;
-            int purchaseCount = 0;
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM sell_history WHERE timestamp >= ? AND timestamp < ?")) {
-                ps.setLong(1, startTime);
-                ps.setLong(2, endTime);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) salesCount = rs.getInt(1);
-                }
-            } catch (SQLException ignored) {}
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ? AND timestamp < ?")) {
-                ps.setLong(1, startTime);
-                ps.setLong(2, endTime);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) purchaseCount = rs.getInt(1);
-                }
-            } catch (SQLException ignored) {}
-
-            totalSalesFound += salesCount;
-            totalPurchasesFound += purchaseCount;
-            list.add(new HourlyActivityEntry(label, salesCount, purchaseCount));
-        }
-
-        int globalSales = countGlobalSellHistory();
-        int globalPurchases = getTotalShopBuyCount();
-
-        if (totalSalesFound == 0 && globalSales > 0 && !list.isEmpty()) {
-            int baseSales = globalSales / list.size();
-            int remainderSales = globalSales % list.size();
-            for (int i = 0; i < list.size(); i++) {
-                HourlyActivityEntry old = list.get(i);
-                int count = baseSales + (i == list.size() - 1 ? remainderSales : 0);
-                list.set(i, new HourlyActivityEntry(old.hourLabel(), count, old.purchaseCount()));
-            }
-        }
-
-        if (totalPurchasesFound == 0 && globalPurchases > 0 && !list.isEmpty()) {
-            int baseBuy = globalPurchases / list.size();
-            int remainderBuy = globalPurchases % list.size();
-            for (int i = 0; i < list.size(); i++) {
-                HourlyActivityEntry old = list.get(i);
-                int count = baseBuy + (i == list.size() - 1 ? remainderBuy : 0);
-                list.set(i, new HourlyActivityEntry(old.hourLabel(), old.salesCount(), count));
-            }
-        }
-
-        return list;
+        return getActivityStatsBinned(totalMs, buckets, formatter);
     }
 
     public List<HourlyActivityEntry> getDailyActivityStats(int days) {
-        fixNullTimestamps();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MMM d", Locale.US).withZone(java.time.ZoneId.systemDefault());
+        return getActivityStatsBinned(days * 86400000L, days, formatter);
+    }
+
+    private List<HourlyActivityEntry> getActivityStatsBinned(long totalDurationMs, int numBuckets, java.time.format.DateTimeFormatter formatter) {
         List<HourlyActivityEntry> list = new ArrayList<>();
         long now = System.currentTimeMillis();
-        long dayMs = 86400000L;
-        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MMM d", Locale.US).withZone(java.time.ZoneId.systemDefault());
+        long intervalMs = Math.max(1L, totalDurationMs / Math.max(1, numBuckets));
+        long startWindow = now - totalDurationMs;
+
+        int[] salesCounts = new int[numBuckets];
+        int[] purchaseCounts = new int[numBuckets];
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT timestamp FROM sell_history WHERE timestamp >= ?")) {
+            ps.setLong(1, startWindow);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long ts = rs.getLong("timestamp");
+                    int bucketIndex = (int) ((ts - startWindow) / intervalMs);
+                    if (bucketIndex >= numBuckets) bucketIndex = numBuckets - 1;
+                    if (bucketIndex >= 0) salesCounts[bucketIndex]++;
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get sell_history activity timestamps", e);
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT timestamp FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ?")) {
+            ps.setLong(1, startWindow);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long ts = rs.getLong("timestamp");
+                    int bucketIndex = (int) ((ts - startWindow) / intervalMs);
+                    if (bucketIndex >= numBuckets) bucketIndex = numBuckets - 1;
+                    if (bucketIndex >= 0) purchaseCounts[bucketIndex]++;
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get player_logs activity timestamps", e);
+        }
 
         int totalSalesFound = 0;
         int totalPurchasesFound = 0;
 
-        for (int i = days - 1; i >= 0; i--) {
-            long startTime = now - ((i + 1) * dayMs);
-            long endTime = now - (i * dayMs);
+        for (int i = 0; i < numBuckets; i++) {
+            int bucketFromOldest = (numBuckets - 1 - i);
+            long endTime = now - (bucketFromOldest * intervalMs);
             String label = formatter.format(java.time.Instant.ofEpochMilli(endTime));
 
-            int salesCount = 0;
-            int purchaseCount = 0;
+            int sCount = salesCounts[i];
+            int pCount = purchaseCounts[i];
+            totalSalesFound += sCount;
+            totalPurchasesFound += pCount;
 
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM sell_history WHERE timestamp >= ? AND timestamp < ?")) {
-                ps.setLong(1, startTime);
-                ps.setLong(2, endTime);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) salesCount = rs.getInt(1);
-                }
-            } catch (SQLException ignored) {}
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ? AND timestamp < ?")) {
-                ps.setLong(1, startTime);
-                ps.setLong(2, endTime);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) purchaseCount = rs.getInt(1);
-                }
-            } catch (SQLException ignored) {}
-
-            totalSalesFound += salesCount;
-            totalPurchasesFound += purchaseCount;
-            list.add(new HourlyActivityEntry(label, salesCount, purchaseCount));
+            list.add(new HourlyActivityEntry(label, sCount, pCount));
         }
 
         int globalSales = countGlobalSellHistory();

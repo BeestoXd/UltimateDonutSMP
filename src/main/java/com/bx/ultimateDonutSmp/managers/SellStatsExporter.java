@@ -36,10 +36,36 @@ public class SellStatsExporter {
     private static HttpServer activeHttpServer = null;
     private static int actualBoundPort = 8080;
 
+    private static volatile String cachedHtml = null;
+    private static volatile long lastCacheTime = 0;
+    private static final long CACHE_TTL_MS = 15000L;
+
+    public static void invalidateCache() {
+        cachedHtml = null;
+    }
+
     private final UltimateDonutSmp plugin;
 
     public SellStatsExporter(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+    }
+
+    public String generateDashboardHtmlCached() {
+        long now = System.currentTimeMillis();
+        String current = cachedHtml;
+        if (current != null && (now - lastCacheTime < CACHE_TTL_MS)) {
+            return current;
+        }
+        synchronized (SellStatsExporter.class) {
+            now = System.currentTimeMillis();
+            if (cachedHtml != null && (now - lastCacheTime < CACHE_TTL_MS)) {
+                return cachedHtml;
+            }
+            String fresh = generateDashboardHtml();
+            cachedHtml = fresh;
+            lastCacheTime = now;
+            return fresh;
+        }
     }
 
     public static synchronized void startEmbeddedHttpServer(UltimateDonutSmp plugin) {
@@ -69,6 +95,7 @@ public class SellStatsExporter {
                         String path = exchange.getRequestURI().getPath();
                         if ("/stats/reset".equals(path) || "/stats/reset/".equals(path)) {
                             plugin.getDatabaseManager().clearShopAnalyticsData();
+                            invalidateCache();
                             byte[] response = "{\"success\":true}".getBytes(StandardCharsets.UTF_8);
                             exchange.getResponseHeaders().set("Content-Type", "application/json");
                             exchange.sendResponseHeaders(200, response.length);
@@ -78,7 +105,7 @@ public class SellStatsExporter {
                             return;
                         }
 
-                        String html = new SellStatsExporter(plugin).generateDashboardHtml();
+                        String html = new SellStatsExporter(plugin).generateDashboardHtmlCached();
                         byte[] response = html.getBytes(StandardCharsets.UTF_8);
                         exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
                         exchange.sendResponseHeaders(200, response.length);
@@ -112,7 +139,7 @@ public class SellStatsExporter {
         plugin.getSpigotScheduler().runAsync(() -> {
             try {
                 File htmlFile = new File(plugin.getDataFolder(), "sell-stats.html");
-                String html = generateDashboardHtml();
+                String html = generateDashboardHtmlCached();
                 try (PrintWriter writer = new PrintWriter(new FileWriter(htmlFile, StandardCharsets.UTF_8))) {
                     writer.print(html);
                 }

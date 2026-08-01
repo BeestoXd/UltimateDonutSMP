@@ -61,6 +61,13 @@ public class PlayerDeathListener implements Listener {
             victimData.resetKillStreak();
         }
 
+        String locationStr = String.format("%s (%d, %d, %d)",
+                victim.getWorld().getName(),
+                victim.getLocation().getBlockX(),
+                victim.getLocation().getBlockY(),
+                victim.getLocation().getBlockZ());
+        String cleanDeathMsg = deathMsg != null ? ColorUtils.strip(deathMsg) : "";
+
         if (killer != null && !killer.equals(victim)) {
             PlayerData killerData = plugin.getPlayerDataManager().get(killer);
             if (killerData != null) {
@@ -71,6 +78,22 @@ public class PlayerDeathListener implements Listener {
                     plugin.getShardManager().giveShards(killer, shardsPerKill, true);
                 }
             }
+
+            plugin.getPlayerLogsManager().log(
+                    victim.getUniqueId(),
+                    victim.getName(),
+                    "deaths",
+                    "PVP_DEATH",
+                    "Killed by " + killer.getName() + " at " + locationStr + (cleanDeathMsg.isEmpty() ? "" : " | " + cleanDeathMsg)
+            );
+
+            plugin.getPlayerLogsManager().log(
+                    killer.getUniqueId(),
+                    killer.getName(),
+                    "deaths",
+                    "PVP_KILL",
+                    "Killed " + victim.getName() + " at " + locationStr + (cleanDeathMsg.isEmpty() ? "" : " | " + cleanDeathMsg)
+            );
 
             if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.BOUNTY)
                     && plugin.getBountyManager().hasBounty(victim.getUniqueId()) && !plugin.getBountyManager()
@@ -84,6 +107,16 @@ public class PlayerDeathListener implements Listener {
                     killer.sendMessage(ColorUtils.toComponent(msg));
                 }
             }
+        } else {
+            EntityDamageEvent damageCause = victim.getLastDamageCause();
+            String causeName = damageCause != null ? damageCause.getCause().name() : "UNKNOWN";
+            plugin.getPlayerLogsManager().log(
+                    victim.getUniqueId(),
+                    victim.getName(),
+                    "deaths",
+                    "DEATH",
+                    "Died from " + causeName + " at " + locationStr + (cleanDeathMsg.isEmpty() ? "" : " | " + cleanDeathMsg)
+            );
         }
 
         event.setDeathMessage(null);
