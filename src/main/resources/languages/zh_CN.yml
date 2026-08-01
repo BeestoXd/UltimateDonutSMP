@@ -1936,6 +1936,8 @@ CONFIG:
       DISABLED-ACTIONBAR: "&cStaff mode disabled"
       VANISH-ON: "&aVanish enabled。"
       VANISH-OFF: "&cVanish disabled。"
+      FAKE-LEAVE-MESSAGE: "&e{player} left the game"
+      FAKE-JOIN-MESSAGE: "&e{player} joined the game"
       BETTER-VIEW-ON: "&aBetterviewenabled。"
       BETTER-VIEW-OFF: "&cBetterviewdisabled。"
       RANDOM-TELEPORT-NO-TARGET: "&cNo eligible player found。"

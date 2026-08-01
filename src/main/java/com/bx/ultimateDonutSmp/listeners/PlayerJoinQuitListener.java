@@ -6,6 +6,7 @@ import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NightVisionUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.TitleUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -374,6 +375,11 @@ public class PlayerJoinQuitListener implements Listener {
     }
 
     private boolean shouldReceiveJoinLeaveMessage(Player receiver, Player joiner) {
+        if (plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isVanished(joiner.getUniqueId())) {
+            if (!PermissionUtils.has(receiver, plugin.getStaffModeManager().getSeeVanishedPermission())) {
+                return false;
+            }
+        }
         PlayerData receiverData = plugin.getPlayerDataManager().get(receiver);
         if (receiverData == null) {
             return true;
