@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.managers.WorthManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -192,22 +193,26 @@ public class WorthMenu extends BaseMenu {
         List<WorthManager.WorthBrowserEntry> entries = getSortedEntries();
 
         if (slot == lastRowStart + 1 && page > 1) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
             new WorthMenu(plugin, page - 1, sortMode, categoryFilter, parentMenu).open(player);
             return;
         }
 
         if (slot == lastRowStart + 4) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             SortMode targetSort = clickType.isRightClick() ? sortMode.previous() : sortMode.next();
             new WorthMenu(plugin, 1, targetSort, categoryFilter, parentMenu).open(player);
             return;
         }
 
         if (slot == lastRowStart + 7 && hasNextPage(entries.size())) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.PAGE-TURN"));
             new WorthMenu(plugin, page + 1, sortMode, categoryFilter, parentMenu).open(player);
             return;
         }
 
         if (slot == lastRowStart + 8) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             if (parentMenu != null) {
                 parentMenu.open(player);
             } else {
@@ -225,6 +230,7 @@ public class WorthMenu extends BaseMenu {
             return;
         }
 
+        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
         WorthManager.WorthBrowserEntry entry = entries.get(entryIndex);
         player.sendMessage(ColorUtils.toComponent(
                 "&7" + plugin.getWorthManager().prettifyMaterial(entry.material())
