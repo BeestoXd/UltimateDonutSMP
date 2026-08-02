@@ -714,6 +714,13 @@ commands:
     description: Command amod
     permission: ultimatedonutsmp.command.amod
     permission-message: "&cYou do not have permission to use /amod."
+  god:
+    description: Toggle god mode for yourself or another online player
+    usage: /god [player]
+    aliases:
+    - godmode
+    permission: ultimatedonutsmp.staff.god
+    permission-message: "&cYou do not have permission to use /god."
 permissions:
   ultimatedonutsmp.admin:
     description: Full admin access
