@@ -182,6 +182,7 @@ public class DatabaseManager {
             st.execute("PRAGMA journal_mode=WAL");
             st.execute("PRAGMA synchronous=NORMAL");
             st.execute("PRAGMA busy_timeout=15000");
+            st.execute("PRAGMA temp_store=MEMORY");
         }
     }
 
@@ -648,13 +649,33 @@ public class DatabaseManager {
             "  timestamp INTEGER NOT NULL" +
             ")"
         );
+        execute(
+            "CREATE TABLE IF NOT EXISTS sell_summary_items (" +
+            "  item_name TEXT PRIMARY KEY," +
+            "  total_amount INTEGER DEFAULT 0," +
+            "  total_revenue REAL DEFAULT 0," +
+            "  sell_count INTEGER DEFAULT 0" +
+            ")"
+        );
+        execute(
+            "CREATE TABLE IF NOT EXISTS sell_summary_players (" +
+            "  player_uuid TEXT PRIMARY KEY," +
+            "  total_earned REAL DEFAULT 0," +
+            "  total_amount INTEGER DEFAULT 0," +
+            "  sell_count INTEGER DEFAULT 0" +
+            ")"
+        );
         execute("CREATE INDEX IF NOT EXISTS idx_player_logs_uuid_time ON player_logs(player_uuid, timestamp)");
         execute("CREATE INDEX IF NOT EXISTS idx_player_logs_type_time ON player_logs(log_type, timestamp)");
         execute("CREATE INDEX IF NOT EXISTS idx_sell_history_player ON sell_history(player_uuid)");
         execute("CREATE INDEX IF NOT EXISTS idx_sell_history_timestamp ON sell_history(timestamp)");
         execute("CREATE INDEX IF NOT EXISTS idx_sell_history_item ON sell_history(item_name)");
         execute("CREATE INDEX IF NOT EXISTS idx_players_money_spent ON players(money_spent)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_sum_item_rev ON sell_summary_items(total_revenue DESC)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_sum_item_vol ON sell_summary_items(total_amount DESC)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_sum_play_earn ON sell_summary_players(total_earned DESC)");
         fixNullTimestamps();
+        ensureSellSummariesPopulated();
     }
 
     private void ensurePlayerColumns() throws SQLException {
@@ -2532,6 +2553,7 @@ public class DatabaseManager {
             ps.setDouble(4, price);
             ps.setLong(5, System.currentTimeMillis());
             ps.executeUpdate();
+            updateSellSummaries(uuid, itemName, amount, price);
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to add sell history", e);
         }
@@ -2568,6 +2590,12 @@ public class DatabaseManager {
                 ps.executeBatch();
             }
             connection.commit();
+
+            for (SellHistoryRecord record : records) {
+                if (record != null && record.uuid() != null) {
+                    updateSellSummaries(record.uuid(), record.itemName(), record.amount(), record.price());
+                }
+            }
         } catch (SQLException e) {
             if (autoCommitDisabled) {
                 try {
@@ -2588,10 +2616,103 @@ public class DatabaseManager {
         }
     }
 
+    private void updateSellSummaries(UUID uuid, String itemName, int amount, double price) {
+        if (itemName != null && !itemName.isBlank()) {
+            updateSummaryItem(itemName, amount, price);
+        }
+        if (uuid != null) {
+            updateSummaryPlayer(uuid.toString(), price, amount);
+        }
+    }
+
+    private void updateSummaryItem(String itemName, int amount, double price) {
+        try (PreparedStatement psUpdate = connection.prepareStatement(
+                "UPDATE sell_summary_items SET total_amount = total_amount + ?, total_revenue = total_revenue + ?, sell_count = sell_count + 1 WHERE item_name = ?")) {
+            psUpdate.setLong(1, amount);
+            psUpdate.setDouble(2, price);
+            psUpdate.setString(3, itemName);
+            int updated = psUpdate.executeUpdate();
+            if (updated == 0) {
+                try (PreparedStatement psInsert = connection.prepareStatement(
+                        "INSERT INTO sell_summary_items (item_name, total_amount, total_revenue, sell_count) VALUES (?, ?, ?, 1)")) {
+                    psInsert.setString(1, itemName);
+                    psInsert.setLong(2, amount);
+                    psInsert.setDouble(3, price);
+                    psInsert.executeUpdate();
+                } catch (SQLException ignored) {}
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.FINE, "Failed to update item sell summary", e);
+        }
+    }
+
+    private void updateSummaryPlayer(String playerUuidStr, double price, int amount) {
+        try (PreparedStatement psUpdate = connection.prepareStatement(
+                "UPDATE sell_summary_players SET total_earned = total_earned + ?, total_amount = total_amount + ?, sell_count = sell_count + 1 WHERE player_uuid = ?")) {
+            psUpdate.setDouble(1, price);
+            psUpdate.setLong(2, amount);
+            psUpdate.setString(3, playerUuidStr);
+            int updated = psUpdate.executeUpdate();
+            if (updated == 0) {
+                try (PreparedStatement psInsert = connection.prepareStatement(
+                        "INSERT INTO sell_summary_players (player_uuid, total_earned, total_amount, sell_count) VALUES (?, ?, ?, 1)")) {
+                    psInsert.setString(1, playerUuidStr);
+                    psInsert.setDouble(2, price);
+                    psInsert.setLong(3, amount);
+                    psInsert.executeUpdate();
+                } catch (SQLException ignored) {}
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.FINE, "Failed to update player sell summary", e);
+        }
+    }
+
+    private void ensureSellSummariesPopulated() {
+        try (Statement st = connection.createStatement()) {
+            boolean emptyItems = false;
+            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM sell_summary_items")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    emptyItems = true;
+                }
+            }
+            if (emptyItems) {
+                try {
+                    st.executeUpdate(
+                        "INSERT INTO sell_summary_items (item_name, total_amount, total_revenue, sell_count) " +
+                        "SELECT item_name, SUM(amount), SUM(price), COUNT(*) FROM sell_history WHERE item_name IS NOT NULL AND item_name != '' GROUP BY item_name"
+                    );
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Could not backfill sell_summary_items directly from sell_history", e);
+                }
+            }
+
+            boolean emptyPlayers = false;
+            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM sell_summary_players")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    emptyPlayers = true;
+                }
+            }
+            if (emptyPlayers) {
+                try {
+                    st.executeUpdate(
+                        "INSERT INTO sell_summary_players (player_uuid, total_earned, total_amount, sell_count) " +
+                        "SELECT player_uuid, SUM(price), SUM(amount), COUNT(*) FROM sell_history WHERE player_uuid IS NOT NULL AND player_uuid != '' GROUP BY player_uuid"
+                    );
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Could not backfill sell_summary_players directly from sell_history", e);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to inspect/populate sell summary tables", e);
+        }
+    }
+
     public void clearShopAnalyticsData() {
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("DELETE FROM sell_history");
             stmt.executeUpdate("DELETE FROM sell_progress");
+            stmt.executeUpdate("DELETE FROM sell_summary_items");
+            stmt.executeUpdate("DELETE FROM sell_summary_players");
             stmt.executeUpdate("DELETE FROM player_logs WHERE log_type IN ('SHOP_BUY', 'SHOP_SELL')");
             stmt.executeUpdate("UPDATE players SET money_spent = 0, money_made = 0");
         } catch (SQLException e) {
@@ -2715,8 +2836,7 @@ public class DatabaseManager {
     public List<TopSoldItemEntry> getTopSoldItemsByRevenue(int limit) {
         List<TopSoldItemEntry> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
-                "FROM sell_history GROUP BY item_name ORDER BY total_revenue DESC LIMIT ?")) {
+                "SELECT item_name, total_amount, total_revenue, sell_count FROM sell_summary_items ORDER BY total_revenue DESC LIMIT ?")) {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -2724,12 +2844,28 @@ public class DatabaseManager {
                             rs.getString("item_name"),
                             rs.getLong("total_amount"),
                             rs.getDouble("total_revenue"),
-                            rs.getInt("cnt")
+                            rs.getInt("sell_count")
                     ));
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by revenue", e);
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
+                    "FROM sell_history GROUP BY item_name ORDER BY total_revenue DESC LIMIT ?")) {
+                ps.setInt(1, limit);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(new TopSoldItemEntry(
+                                rs.getString("item_name"),
+                                rs.getLong("total_amount"),
+                                rs.getDouble("total_revenue"),
+                                rs.getInt("cnt")
+                        ));
+                    }
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by revenue", ex);
+            }
         }
         return list;
     }
@@ -2737,8 +2873,7 @@ public class DatabaseManager {
     public List<TopSoldItemEntry> getTopSoldItemsByVolume(int limit) {
         List<TopSoldItemEntry> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
-                "FROM sell_history GROUP BY item_name ORDER BY total_amount DESC LIMIT ?")) {
+                "SELECT item_name, total_amount, total_revenue, sell_count FROM sell_summary_items ORDER BY total_amount DESC LIMIT ?")) {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -2746,12 +2881,28 @@ public class DatabaseManager {
                             rs.getString("item_name"),
                             rs.getLong("total_amount"),
                             rs.getDouble("total_revenue"),
-                            rs.getInt("cnt")
+                            rs.getInt("sell_count")
                     ));
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by volume", e);
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
+                    "FROM sell_history GROUP BY item_name ORDER BY total_amount DESC LIMIT ?")) {
+                ps.setInt(1, limit);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(new TopSoldItemEntry(
+                                rs.getString("item_name"),
+                                rs.getLong("total_amount"),
+                                rs.getDouble("total_revenue"),
+                                rs.getInt("cnt")
+                        ));
+                    }
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by volume", ex);
+            }
         }
         return list;
     }
@@ -2759,9 +2910,9 @@ public class DatabaseManager {
     public List<TopSellerEntry> getTopSellers(int limit) {
         List<TopSellerEntry> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT s.player_uuid, p.username, SUM(s.price) AS total_earned, SUM(s.amount) AS total_amount, COUNT(*) AS cnt " +
-                "FROM sell_history s LEFT JOIN players p ON s.player_uuid = p.uuid " +
-                "GROUP BY s.player_uuid ORDER BY total_earned DESC LIMIT ?")) {
+                "SELECT s.player_uuid, p.username, s.total_earned, s.total_amount, s.sell_count " +
+                "FROM sell_summary_players s LEFT JOIN players p ON s.player_uuid = p.uuid " +
+                "ORDER BY s.total_earned DESC LIMIT ?")) {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -2781,12 +2932,41 @@ public class DatabaseManager {
                             name,
                             rs.getDouble("total_earned"),
                             rs.getLong("total_amount"),
-                            rs.getInt("cnt")
+                            rs.getInt("sell_count")
                     ));
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to get top sellers", e);
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT s.player_uuid, p.username, SUM(s.price) AS total_earned, SUM(s.amount) AS total_amount, COUNT(*) AS cnt " +
+                    "FROM sell_history s LEFT JOIN players p ON s.player_uuid = p.uuid " +
+                    "GROUP BY s.player_uuid ORDER BY total_earned DESC LIMIT ?")) {
+                ps.setInt(1, limit);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String rawUuid = rs.getString("player_uuid");
+                        UUID uuid = null;
+                        try {
+                            if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                        } catch (IllegalArgumentException ignored) {}
+
+                        String name = rs.getString("username");
+                        if (name == null || name.isBlank()) {
+                            name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                        }
+
+                        list.add(new TopSellerEntry(
+                                uuid,
+                                name,
+                                rs.getDouble("total_earned"),
+                                rs.getLong("total_amount"),
+                                rs.getInt("cnt")
+                        ));
+                    }
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get top sellers", ex);
+            }
         }
         return list;
     }
@@ -2834,24 +3014,38 @@ public class DatabaseManager {
 
     public double getTotalSellRevenue() {
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT SUM(price) FROM sell_history")) {
+             ResultSet rs = st.executeQuery("SELECT SUM(total_revenue) FROM sell_summary_items")) {
             if (rs.next()) {
                 return rs.getDouble(1);
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to get total sell revenue", e);
+            try (Statement st = connection.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT SUM(price) FROM sell_history")) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get total sell revenue", ex);
+            }
         }
         return 0.0;
     }
 
     public long getTotalItemsSold() {
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT SUM(amount) FROM sell_history")) {
+             ResultSet rs = st.executeQuery("SELECT SUM(total_amount) FROM sell_summary_items")) {
             if (rs.next()) {
                 return rs.getLong(1);
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to get total items sold", e);
+            try (Statement st = connection.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT SUM(amount) FROM sell_history")) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get total items sold", ex);
+            }
         }
         return 0L;
     }
