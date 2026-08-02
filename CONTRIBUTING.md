@@ -35,7 +35,7 @@ Thank you for your interest in contributing to **UltimateDonutSMP**! We welcome 
 
 ## Development Workflow
 
-- **Java Version**: Targets Java 21+ (Paper/Spigot 1.21.10 - 26.2, Folia 1.21.11 - 26.1.2).
+- **Java Version**: Targets Java 21+ (Paper/Spigot 1.21.10 - 26.2, Folia 1.21.11 - 26.2).
 - **Build System**: Apache Maven (`mvn`).
 - **Dependencies**: Soft dependencies (e.g. PlaceholderAPI, Vault, LuckPerms, ProtocolLib) should be handled safely using optional integration checks.
 

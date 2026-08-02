@@ -76,7 +76,7 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
 | Plugin version | `1.3` |
 | Java | Bytecode targets Java 21. Use the Java version required by the selected Minecraft server; Minecraft 26.1+ requires Java 25. |
 | Paper / Spigot | Minecraft `1.21.10` through `26.2` |
-| Folia | Minecraft `1.21.11` through `26.1.2` |
+| Folia | Minecraft `1.21.11` through `26.2` |
 | Hard dependencies | None |
 | Default storage | SQLite, bundled through the shaded JDBC driver |
 | Alternative storage | MySQL or MongoDB |
