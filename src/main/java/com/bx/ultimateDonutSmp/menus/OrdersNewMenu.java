@@ -141,7 +141,7 @@ public class OrdersNewMenu extends BaseMenu {
 
         if (slot == 13) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("AMOUNT_SIGN");
+            ConfigurationSection config = manager.getSignConfig("AMOUNT_SIGN");
             SignInputUtil.openFromConfig(plugin, player, config, text -> {
                 if (text != null && !text.isBlank()) {
                     try {
@@ -169,7 +169,7 @@ public class OrdersNewMenu extends BaseMenu {
 
         if (slot == 14) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("PRICE_SIGN");
+            ConfigurationSection config = manager.getSignConfig("PRICE_SIGN");
             SignInputUtil.openFromConfig(plugin, player, config, text -> {
                 if (text != null && !text.isBlank()) {
                     try {

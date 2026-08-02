@@ -158,3 +158,29 @@ BEDROCK:
 NETWORK:
   ENABLED: true
   REDIS_CHANNEL: ultimate-donut-smp:orders
+
+# Sign input prompts for search, quantity, and price
+SEARCH_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Search"
+    - ""
+  input-line: 0
+
+AMOUNT_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Amount"
+    - ""
+  input-line: 0
+
+PRICE_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Price"
+    - ""
+  input-line: 0
+

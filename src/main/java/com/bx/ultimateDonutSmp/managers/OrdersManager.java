@@ -882,6 +882,17 @@ public class OrdersManager {
 
 
 
+    public org.bukkit.configuration.ConfigurationSection getSignConfig(String key) {
+        if (key == null) {
+            return null;
+        }
+        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection(key);
+        if (config != null) {
+            return config;
+        }
+        return plugin.getConfigManager().getOrdersConfig().getConfigurationSection("ORDERS." + key);
+    }
+
     public void promptOrderSearchInput(Player player) {
         if (player == null) {
             return;
@@ -892,7 +903,7 @@ public class OrdersManager {
         pendingSearchInputs.put(player.getUniqueId(), PendingSearchInput.newOrder());
         player.closeInventory();
 
-        org.bukkit.configuration.ConfigurationSection configSection = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("SEARCH_SIGN");
+        org.bukkit.configuration.ConfigurationSection configSection = getSignConfig("SEARCH_SIGN");
         SignInputUtil.openFromConfig(plugin, player, configSection, text -> {
             if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
                 pendingSearchInputs.remove(player.getUniqueId());
@@ -909,7 +920,7 @@ public class OrdersManager {
         }
         player.closeInventory();
 
-        org.bukkit.configuration.ConfigurationSection configSection = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("SEARCH_SIGN");
+        org.bukkit.configuration.ConfigurationSection configSection = getSignConfig("SEARCH_SIGN");
         SignInputUtil.openFromConfig(plugin, player, configSection, text -> {
             String query = (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) ? "" : text.trim();
             plugin.getSpigotScheduler().runEntity(player, () -> {
@@ -939,7 +950,7 @@ public class OrdersManager {
         pendingSearchInputs.put(player.getUniqueId(), PendingSearchInput.editOrder(orderId, navigation));
         player.closeInventory();
 
-        org.bukkit.configuration.ConfigurationSection configSection = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("SEARCH_SIGN");
+        org.bukkit.configuration.ConfigurationSection configSection = getSignConfig("SEARCH_SIGN");
         SignInputUtil.openFromConfig(plugin, player, configSection, text -> {
             if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
                 pendingSearchInputs.remove(player.getUniqueId());
@@ -1179,7 +1190,7 @@ public class OrdersManager {
         pendingEdits.put(player.getUniqueId(), pendingEdit);
         player.closeInventory();
 
-        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("AMOUNT_SIGN");
+        org.bukkit.configuration.ConfigurationSection config = getSignConfig("AMOUNT_SIGN");
         SignInputUtil.openFromConfig(plugin, player, config, text -> {
             if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
                 pendingEdits.remove(player.getUniqueId());
@@ -1216,7 +1227,7 @@ public class OrdersManager {
         pendingEdits.put(player.getUniqueId(), pendingEdit);
         player.closeInventory();
 
-        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("PRICE_SIGN");
+        org.bukkit.configuration.ConfigurationSection config = getSignConfig("PRICE_SIGN");
         SignInputUtil.openFromConfig(plugin, player, config, text -> {
             if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
                 pendingEdits.remove(player.getUniqueId());
@@ -2000,7 +2011,7 @@ public class OrdersManager {
                 "{order_id}", String.valueOf(order.id()),
                 "{quantity}", String.valueOf(order.requestedQuantity())
         )));
-        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("AMOUNT_SIGN");
+        org.bukkit.configuration.ConfigurationSection config = getSignConfig("AMOUNT_SIGN");
         SignInputUtil.openFromConfig(plugin, player, config, text -> {
             if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
                 pendingEdits.remove(player.getUniqueId());
@@ -2027,7 +2038,7 @@ public class OrdersManager {
                 "{price}", NumberUtils.format(order.priceEach()),
                 "{price_formatted}", plugin.getCurrencyManager().formatMoney(order.priceEach())
         )));
-        org.bukkit.configuration.ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("PRICE_SIGN");
+        org.bukkit.configuration.ConfigurationSection config = getSignConfig("PRICE_SIGN");
         SignInputUtil.openFromConfig(plugin, player, config, text -> {
             if (text == null || text.isBlank() || text.equalsIgnoreCase("cancel")) {
                 pendingEdits.remove(player.getUniqueId());

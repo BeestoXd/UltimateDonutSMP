@@ -26,6 +26,9 @@ class OrdersConfigurationTest {
         assertTrue(orders.getBoolean("BEDROCK.ENABLED"));
         assertTrue(orders.getBoolean("NETWORK.ENABLED"));
         assertEquals("ultimate-donut-smp:orders", orders.getString("NETWORK.REDIS_CHANNEL"));
+        assertTrue(orders.isConfigurationSection("SEARCH_SIGN"));
+        assertTrue(orders.isConfigurationSection("AMOUNT_SIGN"));
+        assertTrue(orders.isConfigurationSection("PRICE_SIGN"));
     }
 
     @Test
