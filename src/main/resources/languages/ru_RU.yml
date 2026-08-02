@@ -2479,8 +2479,8 @@ MESSAGES:
     INVALID_QUANTITY: "&cInvalid ٫uantity. use a whole number greater than 0."
     QUANTITY_OUT_OF_RANGE: "&cQuantity must be between 1 and {max}."
     INVALID_PRICE: "&cInvalid price format. use numbers like 100, 5k, or 1,5m."
-    PRICE_OUT_OF_RANGE: "&cPrice each must be between &f${min}&c and &f${max}&c."
-    TOTAL_TOO_HIGH: "&cTotal order budget cannot exceed &f${max}&c."
+    PRICE_OUT_OF_RANGE: "&cPrice each must be between &f{min_formatted}&c and &f{max_formatted}&c."
+    TOTAL_TOO_HIGH: "&cTotal order budget cannot exceed &f{max_formatted}&c."
     NOT_ENOUGH_MONEY: "&cYou do not have enough money for that order."
     MAX_ACTIVE_REACHED: "&cYou have reached your active order limit."
     CREATED: "&aOrder created! &7#{order_id} &ffor &e{quantity} {item}&7 at &a${price_each}

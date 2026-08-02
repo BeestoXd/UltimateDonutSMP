@@ -467,7 +467,7 @@ public class OrdersManager {
                                             )) {
                                                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                                                         "ORDERS.AUTO_CLAIM_REFUND",
-                                                        "&a[ᴏʀᴅᴇʀѕ] ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ᴄʟᴀɪᴍᴇᴅ ʀᴇꜰᴜɴᴅ ᴏꜰ &f{amount}&a.",
+                                                        "&a[Orders] Automatically claimed refund of &f{amount}&a.",
                                                         "{amount}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount())
                                                 )));
                                             }
@@ -507,7 +507,7 @@ public class OrdersManager {
                                                 )) {
                                                     player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                                                             "ORDERS.AUTO_CLAIM_ITEM",
-                                                            "&a[ᴏʀᴅᴇʀѕ] ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ᴄʟᴀɪᴍᴇᴅ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ᴏʀᴅᴇʀ ɪᴛᴇᴍ: &f{item}&a x{amount}.",
+                                                            "&a[Orders] Automatically claimed completed order item: &f{item}&a x{amount}.",
                                                             "{item}", claim.item().getType().name(),
                                                             "{amount}", String.valueOf(claim.item().getAmount())
                                                     )));
@@ -1146,7 +1146,7 @@ public class OrdersManager {
             ItemStack displayItem = result.order() == null ? item : result.order().requestedItem();
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.EDIT_ITEM_UPDATED",
-                    "&aᴏʀᴅᴇʀ #{order_id} ɪᴛᴇᴍ ᴜᴘᴅᴀᴛᴇᴅ ᴛᴏ &f{item}&a.",
+                    "&aOrder #{order_id} item updated to &f{item}&a.",
                     "{order_id}", String.valueOf(editOrderId),
                     "{item}", describeItem(displayItem)
             )));
@@ -1185,7 +1185,7 @@ public class OrdersManager {
                 pendingEdits.remove(player.getUniqueId());
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.EDIT_CANCELLED",
-                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                        "&7Order edit cancelled."
                 )));
                 openEditOrderMenu(player, orderId, navigation);
             } else {
@@ -1222,7 +1222,7 @@ public class OrdersManager {
                 pendingEdits.remove(player.getUniqueId());
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.EDIT_CANCELLED",
-                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                        "&7Order edit cancelled."
                 )));
                 openEditOrderMenu(player, orderId, navigation);
             } else {
@@ -1316,30 +1316,34 @@ public class OrdersManager {
     public String resolveEditFailureMessage(EditOrderResult result) {
         EditFailureReason reason = result == null ? EditFailureReason.DATABASE_ERROR : result.reason();
         return switch (reason) {
-            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cᴏʀᴅᴇʀѕ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.");
-            case ORDER_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_FOUND", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.");
-            case NOT_OWNER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_YOUR_ORDER", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ᴅᴏᴇѕ ɴᴏᴛ ʙᴇʟᴏɴɢ ᴛᴏ ʏᴏᴜ.");
-            case NOT_ACTIVE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_ACTIVE", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.");
-            case ALREADY_DELIVERED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.EDIT_LOCKED", "&cᴛʜɪѕ ᴏʀᴅᴇʀ ᴀʟʀᴇᴀᴅʏ ʜᴀѕ ᴅᴇʟɪᴠᴇʀɪᴇѕ, ѕᴏ ɪᴛ ᴄᴀɴɴᴏᴛ ʙᴇ ᴇᴅɪᴛᴇᴅ.");
-            case INVALID_ITEM -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ITEM_BLOCKED", "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ.");
-            case INVALID_QUANTITY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_QUANTITY", "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ.");
-            case INVALID_PRICE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_PRICE", "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ.");
+            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cOrders is disabled.");
+            case ORDER_NOT_FOUND -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_FOUND", "&cThat order no longer exists.");
+            case NOT_OWNER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_YOUR_ORDER", "&cThat order does not belong to you.");
+            case NOT_ACTIVE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ORDER_NOT_ACTIVE", "&cThat order is no longer active.");
+            case ALREADY_DELIVERED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.EDIT_LOCKED", "&cThis order already has deliveries, so it cannot be edited.");
+            case INVALID_ITEM -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ITEM_BLOCKED", "&cThat item cannot be ordered.");
+            case INVALID_QUANTITY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_QUANTITY", "&cInvalid quantity.");
+            case INVALID_PRICE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_PRICE", "&cInvalid price.");
             case PRICE_OUT_OF_RANGE -> plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.PRICE_OUT_OF_RANGE",
-                    "&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f{min_formatted}&c ᴀɴᴅ &f{max_formatted}&c.",
+                    "&cPrice each must be between &f{min_formatted}&c and &f{max_formatted}&c.",
                     "{min}", NumberUtils.format(getMinPriceEach()),
                     "{min_formatted}", plugin.getCurrencyManager().formatMoney(getMinPriceEach()),
+                    "${min}", plugin.getCurrencyManager().formatMoney(getMinPriceEach()),
                     "{max}", NumberUtils.format(getMaxPriceEach()),
-                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach())
+                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach()),
+                    "${max}", plugin.getCurrencyManager().formatMoney(getMaxPriceEach())
             );
             case TOTAL_TOO_HIGH -> plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.TOTAL_TOO_HIGH",
-                    "&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f{max_formatted}&c.",
-                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget())
+                    "&cTotal order budget cannot exceed &f{max_formatted}&c.",
+                    "{max}", NumberUtils.format(getMaxTotalBudget()),
+                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget()),
+                    "${max}", plugin.getCurrencyManager().formatMoney(getMaxTotalBudget())
             );
-            case NO_MONEY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_ENOUGH_MONEY", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ꜰᴏʀ ᴛʜᴀᴛ ᴄʜᴀɴɢᴇ.");
-            case NO_PLAYER_DATA -> "&cyour player data could not be loaded.";
-            case DATABASE_ERROR -> "&corders could not update that order right now.";
+            case NO_MONEY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NOT_ENOUGH_MONEY", "&cYou do not have enough money for that change.");
+            case NO_PLAYER_DATA -> "&cYour player data could not be loaded.";
+            case DATABASE_ERROR -> "&cOrders could not update that order right now.";
         };
     }
 

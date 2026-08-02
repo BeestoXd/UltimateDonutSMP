@@ -879,9 +879,9 @@ ORDERS:
   # The text or value for Invalid Price. Available options: Any valid string text
   INVALID_PRICE: '&cInvalid price format. Use numbers like 100, 5K, or 1.5M.'
   # The text or value for Price Out Of Range. Available options: Any valid string text
-  PRICE_OUT_OF_RANGE: '&cPrice each must be between &f${min}&c and &f${max}&c.'
+  PRICE_OUT_OF_RANGE: '&cPrice each must be between &f{min_formatted}&c and &f{max_formatted}&c.'
   # The text or value for Total Too High. Available options: Any valid string text
-  TOTAL_TOO_HIGH: '&cTotal order budget cannot exceed &f${max}&c.'
+  TOTAL_TOO_HIGH: '&cTotal order budget cannot exceed &f{max_formatted}&c.'
   # The text or value for Not Enough Money. Available options: Any valid string text
   NOT_ENOUGH_MONEY: '&cYou do not have enough money for that order.'
   # The text or value for Max Active Reached. Available options: Any valid string text
