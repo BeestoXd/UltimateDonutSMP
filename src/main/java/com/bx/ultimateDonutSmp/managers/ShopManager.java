@@ -1600,22 +1600,26 @@ public class ShopManager {
         EnumSet<SellCategory> leveledUpCategories = EnumSet.noneOf(SellCategory.class);
 
         List<DatabaseManager.SellHistoryRecord> historyBatch = new ArrayList<>();
+        List<DatabaseManager.PlayerLogRecord> logBatch = new ArrayList<>();
+        long now = System.currentTimeMillis();
 
         for (PendingSellHistory historyEntry : sale.history) {
             historyBatch.add(new DatabaseManager.SellHistoryRecord(
                     player.getUniqueId(),
                     historyEntry.material().name(),
                     historyEntry.amount(),
-                    historyEntry.payout()
+                    historyEntry.payout(),
+                    now
             ));
             String prettyName = plugin.getWorthManager().prettifyMaterial(historyEntry.material());
-            plugin.getPlayerLogsManager().log(
+            logBatch.add(new DatabaseManager.PlayerLogRecord(
                     player.getUniqueId(),
                     player.getName(),
                     "Shop",
                     "SHOP_SELL",
-                    "Sold " + prettyName + " x" + historyEntry.amount() + " for " + plugin.getCurrencyManager().formatMoney(historyEntry.payout())
-            );
+                    "Sold " + prettyName + " x" + historyEntry.amount() + " for " + plugin.getCurrencyManager().formatMoney(historyEntry.payout()),
+                    now
+            ));
         }
 
         Map<SellCategory, Double> earnedCopy = new EnumMap<>(sale.earnedByCategory);
@@ -1631,8 +1635,9 @@ public class ShopManager {
             sale.currentProgress.put(category, after);
         }
 
-        plugin.getSpigotScheduler().runAsync(() -> {
+        plugin.getDatabaseManager().executeAsync(() -> {
             plugin.getDatabaseManager().addSellHistoryBatch(historyBatch);
+            plugin.getDatabaseManager().addPlayerLogBatch(logBatch);
             for (var entry : earnedCopy.entrySet()) {
                 plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), entry.getKey(), entry.getValue());
             }

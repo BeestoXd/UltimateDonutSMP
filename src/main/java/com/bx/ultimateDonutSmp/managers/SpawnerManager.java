@@ -1127,7 +1127,7 @@ public class SpawnerManager {
         }
 
         Map<SellCategory, Double> earnedCopy = new EnumMap<>(earnedByCategory);
-        plugin.getSpigotScheduler().runAsync(() -> {
+        plugin.getDatabaseManager().executeAsync(() -> {
             plugin.getDatabaseManager().addSellHistoryBatch(historyRecords);
             for (Map.Entry<SellCategory, Double> progressEntry : earnedCopy.entrySet()) {
                 plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), progressEntry.getKey(), progressEntry.getValue());
@@ -1685,7 +1685,7 @@ public class SpawnerManager {
         if (spawnerId <= 0L) {
             return;
         }
-        plugin.getSpigotScheduler().runAsync(() -> {
+        plugin.getDatabaseManager().executeAsync(() -> {
             plugin.getDatabaseManager().deleteSpawner(spawnerId);
         });
     }

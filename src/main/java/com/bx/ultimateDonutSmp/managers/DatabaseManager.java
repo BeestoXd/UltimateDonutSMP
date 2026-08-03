@@ -2481,6 +2481,12 @@ public class DatabaseManager {
         }
     }
 
+    public record PlayerLogRecord(UUID uuid, String name, String category, String type, String details, long timestamp) {
+        public PlayerLogRecord(UUID uuid, String name, String category, String type, String details) {
+            this(uuid, name, category, type, details, System.currentTimeMillis());
+        }
+    }
+
     public void addPlayerLog(UUID uuid, String name, String category, String type, String details, long timestamp) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO player_logs (player_uuid, player_name, category, log_type, details, timestamp) VALUES (?,?,?,?,?,?)")) {
@@ -2493,6 +2499,58 @@ public class DatabaseManager {
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to add player log", e);
+        }
+    }
+
+    public void addPlayerLogBatch(Collection<PlayerLogRecord> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        boolean originalAutoCommit = true;
+        try {
+            originalAutoCommit = connection.getAutoCommit();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before player log batch", e);
+            return;
+        }
+        boolean autoCommitDisabled = false;
+        try {
+            connection.setAutoCommit(false);
+            autoCommitDisabled = true;
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO player_logs (player_uuid, player_name, category, log_type, details, timestamp) VALUES (?,?,?,?,?,?)")) {
+                for (PlayerLogRecord record : records) {
+                    if (record == null || record.uuid() == null) {
+                        continue;
+                    }
+                    ps.setString(1, record.uuid().toString());
+                    ps.setString(2, record.name() != null ? record.name() : "");
+                    ps.setString(3, record.category() != null ? record.category() : "");
+                    ps.setString(4, record.type() != null ? record.type() : "");
+                    ps.setString(5, record.details() != null ? record.details() : "");
+                    ps.setLong(6, record.timestamp() > 0 ? record.timestamp() : System.currentTimeMillis());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackEx) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back player log transaction", rollbackEx);
+                }
+            }
+            plugin.getLogger().log(Level.WARNING, "Failed to add player log batch", e);
+        } finally {
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit state after player log batch", e);
+                }
+            }
         }
     }
 
