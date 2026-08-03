@@ -400,25 +400,71 @@ public class PlayerJoinQuitListener implements Listener {
                 record.getType() == PunishmentType.BLACKLIST
                         ? "&4&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ʙʟᴀᴄᴋʟɪѕᴛᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&4ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴊᴏɪɴ ᴛʜᴇ ѕᴇʀᴠᴇʀ"
                         : "&c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ʙᴀɴɴᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%\n&7ʙᴀɴɴᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&7ᴀᴘᴘᴇᴀʟ ᴀᴛ: &fdiscord.example.space",
-                "%reason%", record.getReason(),
-                "%nicest_expiration%", formatExpires(record),
-                "%issuer%", formatIssuer(record),
-                "{reason}", record.getReason(),
-                "{expires}", formatExpires(record),
-                "{issuer}", formatIssuer(record)
+                punishmentPlaceholders(record)
         );
     }
 
-    private String formatExpires(PunishmentRecord record) {
-        if (record.getExpiresAt() == null) {
-            return "Never";
-        }
+    private String[] punishmentPlaceholders(PunishmentRecord record) {
+        String expires = formatExpires(record);
+        String issuer = formatIssuer(record);
+        String reason = record == null || record.getReason() == null ? "" : record.getReason();
+        String player = record == null || record.getTargetNameSnapshot() == null ? "" : record.getTargetNameSnapshot();
+        String id = record == null ? "" : String.valueOf(record.getId());
+        String type = record == null || record.getType() == null ? "" : record.getType().name();
 
+        return new String[]{
+                "%reason%", reason,
+                "{reason}", reason,
+
+                "%nicest_expiration%", expires,
+                "{nicest_expiration}", expires,
+                "%expires%", expires,
+                "{expires}", expires,
+                "%expires_at%", expires,
+                "{expires_at}", expires,
+                "%expiration%", expires,
+                "{expiration}", expires,
+                "%expiry%", expires,
+                "{expiry}", expires,
+                "%duration%", expires,
+                "{duration}", expires,
+
+                "%issuer%", issuer,
+                "{issuer}", issuer,
+                "%staff%", issuer,
+                "{staff}", issuer,
+                "%by%", issuer,
+                "{by}", issuer,
+
+                "%player%", player,
+                "{player}", player,
+                "%target%", player,
+                "{target}", player,
+
+                "%id%", id,
+                "{id}", id,
+
+                "%type%", type,
+                "{type}", type
+        };
+    }
+
+    private String formatExpires(PunishmentRecord record) {
+        if (record == null || record.getExpiresAt() == null) {
+            return "Permanent";
+        }
         long remainingSeconds = Math.max(0L, (record.getExpiresAt() - System.currentTimeMillis()) / 1000L);
+        if (remainingSeconds <= 0L) {
+            return "Expired";
+        }
+        if (plugin != null && plugin.getLanguageManager() != null) {
+            return plugin.getLanguageManager().formatDuration(remainingSeconds, true);
+        }
         return NumberUtils.formatCountdown(remainingSeconds);
     }
 
     private String formatIssuer(PunishmentRecord record) {
+        if (record == null) return "unknown";
         String issuer = record.getIssuerNameSnapshot();
         return issuer == null || issuer.isBlank() ? "unknown" : issuer;
     }
