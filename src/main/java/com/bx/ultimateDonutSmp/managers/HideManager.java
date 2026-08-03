@@ -226,7 +226,7 @@ public class HideManager {
     }
 
     public boolean canSeeRealIdentity(CommandSender viewer) {
-        return viewer != null && PermissionUtils.has(viewer, BYPASS_PERMISSION);
+        return viewer != null && !PermissionUtils.isTemporaryPlayer(viewer) && PermissionUtils.has(viewer, BYPASS_PERMISSION);
     }
 
     public String staffMarker() {
