@@ -18,12 +18,12 @@ public class QueueCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("player only.");
             return true;
         }
 
         if (!plugin.getDuelManager().isEnabled()) {
-            player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent("&cᴅᴜᴇʟѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent("&cduels are currently disabled."));
             return true;
         }
 

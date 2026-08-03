@@ -41,19 +41,19 @@ public class DuelClaimMenu extends BaseMenu {
 
         int lastRow = inventory.getSize() - 9;
         set(lastRow, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ")
+                ? ItemUtils.createItem(Material.ARROW, "&aprevious page")
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 4, ItemUtils.createItem(Material.CLOCK, "&eʀᴇꜰʀᴇѕʜ"));
+        set(lastRow + 4, ItemUtils.createItem(Material.CLOCK, "&erefresh"));
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ")
+                ? ItemUtils.createItem(Material.ARROW, "&anext page")
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ"));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cback"));
 
         if (claims.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ᴘᴇɴᴅɪɴɢ ᴄʟᴀɪᴍѕ",
-                    List.of("&7ʟᴏᴏᴛ ꜰʀᴏᴍ ᴅᴜᴇʟ ᴡɪɴѕ ᴡɪʟʟ ѕʜᴏᴡ ᴜᴘ ʜᴇʀᴇ.")
+                    "&cno pending claims",
+                    List.of("&7loot from duel wins will show up here.")
             ));
         }
     }
@@ -64,12 +64,12 @@ public class DuelClaimMenu extends BaseMenu {
                 : claim.defeatedName();
         return ItemUtils.createItem(
                 Material.CHEST,
-                "&eʟᴏᴏᴛ ꜰʀᴏᴍ &f" + defeatedName,
+                "&eloot from &f" + defeatedName,
                 List.of(
-                        "&7ᴍᴀᴛᴄʜ: &f#" + claim.matchId(),
-                        "&7ѕᴛᴏʀᴇᴅ ɪᴛᴇᴍѕ: &f" + claim.itemCount(),
-                        "&7ᴄʟɪᴄᴋ ᴛᴏ ᴘʀᴇᴠɪᴇᴡ ᴛʜɪѕ ʟᴏᴏᴛ ᴘᴀᴄᴋᴀɢᴇ.",
-                        "&8ᴅᴇʟᴇᴛᴇ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ ɪɴѕɪᴅᴇ ᴛʜᴇ ᴘʀᴇᴠɪᴇᴡ."
+                        "&7match: &f#" + claim.matchId(),
+                        "&7stored items: &f" + claim.itemCount(),
+                        "&7click to preview this loot package.",
+                        "&8delete is available inside the preview."
                 )
         );
     }

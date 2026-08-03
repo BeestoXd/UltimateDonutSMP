@@ -22,12 +22,12 @@ public class CreateCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("player only.");
             return true;
         }
 
         if (!plugin.getDuelManager().isEnabled()) {
-            player.sendMessage(ColorUtils.toComponent("&cᴅᴜᴇʟѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cduels are currently disabled."));
             return true;
         }
 
@@ -54,7 +54,7 @@ public class CreateCommand implements CommandExecutor {
 
         Player target = Bukkit.getPlayerExact(args[targetIndex]);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+            player.sendMessage(ColorUtils.toComponent("&cthat player is not online."));
             return true;
         }
 
@@ -69,7 +69,7 @@ public class CreateCommand implements CommandExecutor {
     }
 
     private void sendUsage(Player player) {
-        player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /create ɪɴᴠɪᴛᴇ <player> [ᴍᴀᴘ]"));
-        player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /create ꜰʀɪᴇɴᴅѕ <player> [ᴍᴀᴘ]"));
+        player.sendMessage(ColorUtils.toComponent("&cusage: /create invite <player> [map]"));
+        player.sendMessage(ColorUtils.toComponent("&cusage: /create friends <player> [map]"));
     }
 }
