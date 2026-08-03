@@ -110,6 +110,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private StaffModeManager staffModeManager;
     private DiscordWebhookManager discordWebhookManager;
     private LunarRichPresenceManager lunarRichPresenceManager;
+    private PingManager pingManager;
     private LuckPermsTablistRefreshBridge luckPermsTablistRefreshBridge;
     private SkinsRestorerTablistRefreshBridge skinsRestorerTablistRefreshBridge;
     private OptimizationManager optimizationManager;
@@ -244,6 +245,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         maintenanceManager.initializeRedisListener();
         duelManager.initializeCrossServer();
         discordWebhookManager = new DiscordWebhookManager(this);
+        pingManager = new PingManager(this);
         initializeLunarRichPresenceManager();
 
         // 4. Display managers
@@ -1208,6 +1210,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public HomeBedrockManager getHomeBedrockManager() {
         return homeBedrockManager;
+    }
+
+    public PingManager getPingManager() {
+        return pingManager;
     }
 
     public EnchantmentsManager getEnchantmentsManager() {

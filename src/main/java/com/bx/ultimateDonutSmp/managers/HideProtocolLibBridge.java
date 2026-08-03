@@ -537,7 +537,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
     ) {
         return new PlayerInfoData(
                 target.getUniqueId(),
-                target.getPing(),
+                plugin.getPingManager().getPing(target),
                 true,
                 EnumWrappers.NativeGameMode.fromBukkit(target.getGameMode()),
                 profile,

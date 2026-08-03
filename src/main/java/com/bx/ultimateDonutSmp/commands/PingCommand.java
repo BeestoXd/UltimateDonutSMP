@@ -33,7 +33,7 @@ public class PingCommand implements CommandExecutor {
                             "PING.SELF",
                             "&7ʏᴏᴜʀ ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ",
                             "%ping%",
-                            String.valueOf(player.getPing())
+                            String.valueOf(plugin.getPingManager().getPing(player))
                     ),
                     player
             ));
@@ -53,7 +53,7 @@ public class PingCommand implements CommandExecutor {
                         "%player%",
                         plugin.getHideManager().publicName(target),
                         "%ping%",
-                        String.valueOf(target.getPing())
+                        String.valueOf(plugin.getPingManager().getPing(target))
                 )
         ));
         return true;
