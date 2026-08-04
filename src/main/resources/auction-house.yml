@@ -77,3 +77,46 @@ SORTING:
     - PRICE_HIGHEST
     - EXPIRING_SOON
     - OLDEST
+
+# Automated Auction House Bot System Configuration
+BOTS:
+  # Enable or disable automated bot auction listings (true / false)
+  ENABLED: false
+  # Minimum interval in seconds between bot listing checks
+  MIN_CHECK_INTERVAL_SECONDS: 60
+  # Maximum interval in seconds between bot listing checks
+  MAX_CHECK_INTERVAL_SECONDS: 300
+  # Chance (0.0 to 1.0) for a bot to post a listing on each interval check
+  CHANCE: 0.5
+  # Maximum active bot listings allowed concurrently
+  MAX_ACTIVE_BOT_LISTINGS: 10
+  # Minimum duration in hours for bot auction listings
+  MIN_DURATION_HOURS: 12
+  # Maximum duration in hours for bot auction listings
+  MAX_DURATION_HOURS: 48
+  # List of bot names displayed as sellers
+  BOT_NAMES:
+    - "DonutBot"
+    - "AuctionBot"
+    - "ShopKeeper"
+  # Items that bots can list on the Auction House
+  ITEMS:
+    - MATERIAL: DIAMOND_SWORD
+      MIN_AMOUNT: 1
+      MAX_AMOUNT: 1
+      MIN_PRICE: 5000
+      MAX_PRICE: 15000
+      ENCHANTS:
+        - "SHARPNESS:5"
+        - "UNBREAKING:3"
+    - MATERIAL: GOLDEN_APPLE
+      MIN_AMOUNT: 4
+      MAX_AMOUNT: 16
+      MIN_PRICE: 2000
+      MAX_PRICE: 8000
+    - MATERIAL: COBBLESTONE
+      MIN_AMOUNT: 64
+      MAX_AMOUNT: 320
+      MIN_PRICE: 100
+      MAX_PRICE: 500
+

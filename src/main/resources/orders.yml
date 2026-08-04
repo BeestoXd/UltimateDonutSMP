@@ -184,3 +184,43 @@ PRICE_SIGN:
     - ""
   input-line: 0
 
+# Automated Order Bot System Configuration
+BOTS:
+  # Enable or disable automated bot item orders (true / false)
+  ENABLED: false
+  # Minimum interval in seconds between bot order checks
+  MIN_CHECK_INTERVAL_SECONDS: 60
+  # Maximum interval in seconds between bot order checks
+  MAX_CHECK_INTERVAL_SECONDS: 300
+  # Chance (0.0 to 1.0) for a bot to post an order on each interval check
+  CHANCE: 0.5
+  # Maximum active bot orders allowed concurrently
+  MAX_ACTIVE_BOT_ORDERS: 10
+  # Minimum duration in hours for bot order listings
+  MIN_DURATION_HOURS: 24
+  # Maximum duration in hours for bot order listings
+  MAX_DURATION_HOURS: 72
+  # List of bot names displayed as order buyers
+  BOT_NAMES:
+    - "OrderBot"
+    - "BuyerBot"
+    - "ItemCollector"
+  # Items that bots can request in orders
+  ITEMS:
+    - MATERIAL: DIAMOND
+      MIN_AMOUNT: 16
+      MAX_AMOUNT: 64
+      MIN_PRICE_EACH: 500
+      MAX_PRICE_EACH: 1000
+    - MATERIAL: OAK_LOG
+      MIN_AMOUNT: 64
+      MAX_AMOUNT: 512
+      MIN_PRICE_EACH: 10
+      MAX_PRICE_EACH: 25
+    - MATERIAL: NETHERITE_INGOT
+      MIN_AMOUNT: 1
+      MAX_AMOUNT: 4
+      MIN_PRICE_EACH: 25000
+      MAX_PRICE_EACH: 50000
+
+
