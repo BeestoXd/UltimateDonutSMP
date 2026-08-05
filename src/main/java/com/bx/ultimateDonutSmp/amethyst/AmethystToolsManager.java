@@ -23,6 +23,9 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionType;
+import org.bukkit.block.ShulkerBox;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import com.bx.ultimateDonutSmp.utils.ShulkerBoxSupport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -333,9 +336,128 @@ public class AmethystToolsManager {
         return true;
     }
 
-    private long getConfiguredDuration(AmethystToolType type) {
+    public long getConfiguredDuration(AmethystToolType type) {
         ConfigurationSection section = getToolSection(type);
         return section == null ? 86400L : Math.max(1L, section.getLong("DURATION", 86400L));
+    }
+
+    public long getToolDuration(ItemStack item) {
+        if (!hasAmethystMetadata(item)) {
+            return 0L;
+        }
+        AmethystToolType type = getToolType(item);
+        if (type == null) {
+            return 0L;
+        }
+        return getConfiguredDuration(type);
+    }
+
+    public ItemStack createDisplayCopy(ItemStack template, long durationSeconds) {
+        if (!hasAmethystMetadata(template)) {
+            return template;
+        }
+
+        ItemStack display = template.clone();
+        ItemMeta meta = display.getItemMeta();
+        if (meta == null) {
+            return display;
+        }
+
+        AmethystToolType type = getToolType(display);
+        if (type == null) {
+            return display;
+        }
+
+        long duration = durationSeconds > 0L ? durationSeconds : getConfiguredDuration(type);
+        meta.getPersistentDataContainer().set(KEY_EXPIRY, PersistentDataType.LONG, (System.currentTimeMillis() / 1000L) + Math.max(1L, duration));
+        display.setItemMeta(meta);
+        updateLoreCountdown(display);
+        return display;
+    }
+
+    public boolean refreshAmethystItemsInShulker(ItemStack shulkerItem, UUID ownerUuid, long durationSeconds) {
+        if (!ShulkerBoxSupport.isShulkerBox(shulkerItem)) {
+            return false;
+        }
+
+        ItemMeta itemMeta = shulkerItem.getItemMeta();
+        if (!(itemMeta instanceof BlockStateMeta bsm)) {
+            return false;
+        }
+
+        if (!(bsm.getBlockState() instanceof ShulkerBox box)) {
+            return false;
+        }
+
+        ItemStack[] contents = box.getInventory().getContents();
+        boolean changed = false;
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack current = contents[i];
+            if (current == null || current.getType() == Material.AIR) {
+                continue;
+            }
+
+            if (hasAmethystMetadata(current)) {
+                ItemStack fresh = createRewardCopy(current, ownerUuid, durationSeconds);
+                if (fresh != null) {
+                    contents[i] = fresh;
+                    changed = true;
+                }
+            } else if (ShulkerBoxSupport.isShulkerBox(current)) {
+                if (refreshAmethystItemsInShulker(current, ownerUuid, durationSeconds)) {
+                    contents[i] = current;
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed) {
+            box.getInventory().setContents(contents);
+            bsm.setBlockState(box);
+            shulkerItem.setItemMeta(bsm);
+        }
+        return changed;
+    }
+
+    public boolean prepareCrateDisplayShulker(ItemStack shulkerItem, long durationSeconds) {
+        if (!ShulkerBoxSupport.isShulkerBox(shulkerItem)) {
+            return false;
+        }
+
+        ItemMeta itemMeta = shulkerItem.getItemMeta();
+        if (!(itemMeta instanceof BlockStateMeta bsm)) {
+            return false;
+        }
+
+        if (!(bsm.getBlockState() instanceof ShulkerBox box)) {
+            return false;
+        }
+
+        ItemStack[] contents = box.getInventory().getContents();
+        boolean changed = false;
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack current = contents[i];
+            if (current == null || current.getType() == Material.AIR) {
+                continue;
+            }
+
+            if (hasAmethystMetadata(current)) {
+                contents[i] = createDisplayCopy(current, durationSeconds);
+                changed = true;
+            } else if (ShulkerBoxSupport.isShulkerBox(current)) {
+                if (prepareCrateDisplayShulker(current, durationSeconds)) {
+                    contents[i] = current;
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed) {
+            box.getInventory().setContents(contents);
+            bsm.setBlockState(box);
+            shulkerItem.setItemMeta(bsm);
+        }
+        return changed;
     }
 
     public void sanitizePlayerInventory(Player player, boolean notifyExpired) {
