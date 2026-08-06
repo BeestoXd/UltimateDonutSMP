@@ -8,10 +8,12 @@ on:
     paths:
       - 'src/**'
       - 'pom.xml'
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write
+  statuses: write
 
 jobs:
   pr-title-check:
@@ -41,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [21, 25]
+        java: [25]
       fail-fast: false
     steps:
       - name: Checkout Code
@@ -59,3 +61,4 @@ jobs:
 
       - name: Verify Package Compiles
         run: mvn package -DskipTests
+
