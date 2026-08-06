@@ -23,12 +23,12 @@ public class DuelCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("player only.");
             return true;
         }
 
         if (!plugin.getDuelManager().isEnabled() && (args.length == 0 || !"reload".equalsIgnoreCase(args[0]))) {
-            player.sendMessage(ColorUtils.toComponent("&cᴅᴜᴇʟѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cduels are currently disabled."));
             return true;
         }
 
@@ -44,12 +44,12 @@ public class DuelCommand implements CommandExecutor {
         }
         if (subcommand.equals("reload")) {
             if (!PermissionUtils.has(player, "ultimatedonutsmp.admin.duels")) {
-                player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴅᴜᴇʟѕ."));
+                player.sendMessage(ColorUtils.toComponent("&cyou do not have permission to reload duels."));
                 return true;
             }
             plugin.getConfigManager().reloadDuels();
             plugin.getDuelManager().reload();
-            player.sendMessage(ColorUtils.toComponent("&aᴅᴜᴇʟѕ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&aduels config reloaded."));
             return true;
         }
         if (subcommand.equals("accept")) {
@@ -63,7 +63,7 @@ public class DuelCommand implements CommandExecutor {
 
         Player target = plugin.getHideManager().findOnlinePlayer(player, args[0]);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+            player.sendMessage(ColorUtils.toComponent("&cthat player is not online."));
             return true;
         }
 

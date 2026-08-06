@@ -16,7 +16,7 @@ public class DuelClaimPreviewMenu extends BaseMenu {
     private final long matchId;
 
     public DuelClaimPreviewMenu(UltimateDonutSmp plugin, int returnPage, long matchId) {
-        super(plugin, "&8ᴅᴜᴇʟ ʟᴏᴏᴛ ᴘʀᴇᴠɪᴇᴡ", 54);
+        super(plugin, "&8duel loot preview", 54);
         this.returnPage = Math.max(1, returnPage);
         this.matchId = matchId;
     }
@@ -33,11 +33,11 @@ public class DuelClaimPreviewMenu extends BaseMenu {
         if (claim == null || claim.items() == null || claim.items().isEmpty()) {
             set(22, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cᴄʟᴀɪᴍ ɴᴏᴛ ꜰᴏᴜɴᴅ",
-                    List.of("&7ᴛʜɪѕ ᴅᴜᴇʟ ʟᴏᴏᴛ ᴘᴀᴄᴋᴀɢᴇ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ.")
+                    "&cclaim not found",
+                    List.of("&7this duel loot package no longer exists.")
             ));
-            set(45, ItemUtils.createItem(Material.ARROW, "&aʙᴀᴄᴋ"));
-            set(53, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ"));
+            set(45, ItemUtils.createItem(Material.ARROW, "&aback"));
+            set(53, ItemUtils.createItem(Material.BARRIER, "&cback"));
             return;
         }
 
@@ -57,33 +57,33 @@ public class DuelClaimPreviewMenu extends BaseMenu {
                 ? "unknown"
                 : claim.defeatedName();
 
-        set(45, ItemUtils.createItem(Material.ARROW, "&aʙᴀᴄᴋ"));
+        set(45, ItemUtils.createItem(Material.ARROW, "&aback"));
         set(47, ItemUtils.createItem(
                 Material.CHEST,
-                "&eʟᴏᴏᴛ ѕᴜᴍᴍᴀʀʏ",
+                "&eloot summary",
                 List.of(
-                        "&7ᴅᴇꜰᴇᴀᴛᴇᴅ ᴘʟᴀʏᴇʀ: &f" + defeatedName,
-                        "&7ᴍᴀᴛᴄʜ: &f#" + claim.matchId(),
-                        "&7ѕᴛᴏʀᴇᴅ ɪᴛᴇᴍѕ: &f" + claim.itemCount()
+                        "&7defeated player: &f" + defeatedName,
+                        "&7match: &f#" + claim.matchId(),
+                        "&7stored items: &f" + claim.itemCount()
                 )
         ));
         set(49, ItemUtils.createItem(
                 Material.LIME_STAINED_GLASS_PANE,
-                "&aᴄʟᴀɪᴍ ᴀʟʟ",
+                "&aclaim all",
                 List.of(
-                        "&7ᴍᴏᴠᴇ ᴀʟʟ ꜰɪᴛᴛɪɴɢ ɪᴛᴇᴍѕ ɪɴᴛᴏ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ.",
-                        "&7ɪꜰ ѕᴏᴍᴇ ᴅᴏ ɴᴏᴛ ꜰɪᴛ, ᴛʜᴇʏ ѕᴛᴀʏ ɪɴ ᴄʟᴀɪᴍѕ."
+                        "&7move all fitting items into your inventory.",
+                        "&7if some do not fit, they stay in claims."
                 )
         ));
         set(51, ItemUtils.createItem(
                 Material.RED_STAINED_GLASS_PANE,
-                "&cᴅᴇʟᴇᴛᴇ ᴄʟᴀɪᴍ",
+                "&cdelete claim",
                 List.of(
-                        "&7ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ᴇɴᴛɪʀᴇ ʟᴏᴏᴛ ᴘᴀᴄᴋᴀɢᴇ.",
-                        "&7ᴛʜɪѕ ᴀᴄᴛɪᴏɴ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜɴᴅᴏɴᴇ."
+                        "&7delete this entire loot package.",
+                        "&7this action cannot be undone."
                 )
         ));
-        set(53, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ"));
+        set(53, ItemUtils.createItem(Material.BARRIER, "&cback"));
     }
 
     @Override

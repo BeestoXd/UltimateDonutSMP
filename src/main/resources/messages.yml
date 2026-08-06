@@ -444,9 +444,9 @@ PORTALMANAGER:
 # Configuration section for Worth.
 WORTH:
   # The text or value for Default. Available options: Any valid string text
-  DEFAULT: '&b1 {item} &7is now &a${price}'
+  DEFAULT: '&b1 {item} &fis worth &a{price_formatted}'
   # The text or value for Hand Item. Available options: Any valid string text
-  HAND-ITEM: '&b{amount} {item} &7is now &a${total}'
+  HAND-ITEM: '&b{amount} {item} &fis worth &a{total_formatted}'
   # The text or value for No Sellable. Available options: Any valid string text
   NO-SELLABLE: '&cThis item is not sellable.'
   # The text or value for Container Breakdown. Available options: Any valid string text
@@ -879,9 +879,9 @@ ORDERS:
   # The text or value for Invalid Price. Available options: Any valid string text
   INVALID_PRICE: '&cInvalid price format. Use numbers like 100, 5K, or 1.5M.'
   # The text or value for Price Out Of Range. Available options: Any valid string text
-  PRICE_OUT_OF_RANGE: '&cPrice each must be between &f${min}&c and &f${max}&c.'
+  PRICE_OUT_OF_RANGE: '&cPrice each must be between &f{min_formatted}&c and &f{max_formatted}&c.'
   # The text or value for Total Too High. Available options: Any valid string text
-  TOTAL_TOO_HIGH: '&cTotal order budget cannot exceed &f${max}&c.'
+  TOTAL_TOO_HIGH: '&cTotal order budget cannot exceed &f{max_formatted}&c.'
   # The text or value for Not Enough Money. Available options: Any valid string text
   NOT_ENOUGH_MONEY: '&cYou do not have enough money for that order.'
   # The text or value for Max Active Reached. Available options: Any valid string text
@@ -1106,8 +1106,8 @@ HELPOP:
   # Configuration section for Format.
   FORMAT:
   - ''
-  - '&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ'
-  - '     &9ʀᴇᴀѕᴏɴ: &b%message%'
+  - '&9[request] &7[%server%] &a%player% &bhas requested assistance'
+  - '     &9reason: &b%message%'
   - ''
   # The text or value for Confirmation. Available options: Any valid string text
   CONFIRMATION: '&aYour request has been sent to all staff members.'
@@ -1135,8 +1135,8 @@ REPORT:
   # Configuration section for Format.
   FORMAT:
   - ''
-  - '&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%'
-  - '     &9ʀᴇᴀѕᴏɴ: &b%reason%'
+  - '&9[report] &7[%server%] &c%reported% &bhas been reported by &a%reporter%'
+  - '     &9reason: &b%reason%'
   - ''
   # The text or value for Confirmation. Available options: Any valid string text
   CONFIRMATION: '&aYour report has been sent to all staff members.'

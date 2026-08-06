@@ -111,6 +111,29 @@ public class PrivateMessageManager {
         if (sender instanceof Player player) {
             replyTargets.put(player.getUniqueId(), target.getUniqueId());
             replyTargets.put(target.getUniqueId(), player.getUniqueId());
+
+            plugin.getPlayerLogsManager().log(
+                    player.getUniqueId(),
+                    player.getName(),
+                    "messages",
+                    "MSG_SENT",
+                    "To " + target.getName() + ": " + message
+            );
+            plugin.getPlayerLogsManager().log(
+                    target.getUniqueId(),
+                    target.getName(),
+                    "messages",
+                    "MSG_RECEIVED",
+                    "From " + player.getName() + ": " + message
+            );
+        } else {
+            plugin.getPlayerLogsManager().log(
+                    target.getUniqueId(),
+                    target.getName(),
+                    "messages",
+                    "MSG_RECEIVED",
+                    "From Console: " + message
+            );
         }
         return true;
     }

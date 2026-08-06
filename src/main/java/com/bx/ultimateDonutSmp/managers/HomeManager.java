@@ -28,7 +28,11 @@ public class HomeManager {
 
     public void loadHomes(Player player) {
         List<Home> homes = plugin.getDatabaseManager().loadHomes(player.getUniqueId());
-        cache.put(player.getUniqueId(), homes);
+        if (homes != null) {
+            cache.put(player.getUniqueId(), homes);
+        } else {
+            plugin.getLogger().warning("Failed to load homes from database for " + player.getName() + " (" + player.getUniqueId() + "). Preserving existing state.");
+        }
     }
 
     public void unloadHomes(UUID uuid) {
@@ -177,7 +181,7 @@ public class HomeManager {
             }
             if (!setHome(player.getUniqueId(), input, pending.location)) {
                 pendingInputs.remove(player.getUniqueId());
-                player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀɴᴏᴛʜᴇʀ ʜᴏᴍᴇ ʀɪɢʜᴛ ɴᴏᴡ."));
+                player.sendMessage(ColorUtils.toComponent("&cYou cannot create another home right now."));
                 return;
             }
 
@@ -188,7 +192,7 @@ public class HomeManager {
         }
 
         if (!renameHome(player.getUniqueId(), pending.oldName, input)) {
-            player.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇɴᴀᴍᴇ ʜᴏᴍᴇ. ᴛʀʏ ᴀɴᴏᴛʜᴇʀ ɴᴀᴍᴇ."));
+            player.sendMessage(ColorUtils.toComponent("&cFailed to rename home. Try another name."));
             resendPrompt(player, pending);
             return;
         }

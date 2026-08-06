@@ -1,16 +1,23 @@
-# Configuration section for Banned Words.
+# ==============================================================================
+# UltimateDonutSMP - Anvil Moderation Configuration
+# ==============================================================================
+
+# List of banned words and phrases blocked when renaming items in an anvil
 banned-words:
-- example
-- bannedword
-- inappropriateword
-- offensivephrase
-- slur
-# Configuration section for Punishments.
+  - example
+  - bannedword
+  - inappropriateword
+  - offensivephrase
+  - slur
+
+# Progressive punishments executed when players attempt to rename items using banned words
+# Options: Commands executed sequentially per offense count (%player% placeholder supported)
 punishments:
-- mute %player% 30d Anvil inappropriate content - 1st offense
-- tempban %player% 7d Anvil inappropriate content - 2nd offense
-- tempban %player% 14d Anvil inappropriate content - 3rd offense
-- tempban %player% 30d Anvil inappropriate content - 4th offense
-- tempban %player% 50d Anvil inappropriate content - 5th offense
-# The text or value for Players. Available options: Any valid string text
+  - mute %player% 30d Anvil inappropriate content - 1st offense
+  - tempban %player% 7d Anvil inappropriate content - 2nd offense
+  - tempban %player% 14d Anvil inappropriate content - 3rd offense
+  - tempban %player% 30d Anvil inappropriate content - 4th offense
+  - tempban %player% 50d Anvil inappropriate content - 5th offense
+
+# Persistent player offense tracking data (managed automatically by plugin)
 players: {}

@@ -4,7 +4,7 @@
   <groupId>com.bx</groupId>
   <artifactId>ultimatedonutsmp</artifactId>
   <name>ultimatedonutsmp</name>
-  <version>1.3</version>
+  <version>1.4</version>
   <build>
     <sourceDirectory>${source.directory}</sourceDirectory>
     <defaultGoal>clean package</defaultGoal>
@@ -51,6 +51,10 @@
             <relocation>
               <pattern>org.apache.commons.pool2</pattern>
               <shadedPattern>com.bx.ultimateDonutSmp.libs.commons.pool2</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.zaxxer.hikari</pattern>
+              <shadedPattern>com.bx.ultimateDonutSmp.libs.hikari</shadedPattern>
             </relocation>
           </relocations>
           <filters>

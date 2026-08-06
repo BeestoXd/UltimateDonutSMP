@@ -17,6 +17,8 @@ import java.util.UUID;
 public class FriendsCommand implements CommandExecutor {
 
     private static final String PERMISSION = "ultimatedonutsmp.friends";
+    private static final String COMMAND_PERMISSION = "ultimatedonutsmp.command.friends";
+    private static final String FRIEND_COMMAND_PERMISSION = "ultimatedonutsmp.command.friend";
     private static final String ADMIN_PERMISSION = "donutfriends.admin";
 
     private final UltimateDonutSmp plugin;
@@ -41,7 +43,9 @@ public class FriendsCommand implements CommandExecutor {
             return true;
         }
 
-        if (!PermissionUtils.has(player, PERMISSION)) {
+        if (!PermissionUtils.has(player, PERMISSION) 
+                && !PermissionUtils.has(player, COMMAND_PERMISSION) 
+                && !PermissionUtils.has(player, FRIEND_COMMAND_PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("FRIENDS.NO_PERMISSION"), player));
             return true;
         }

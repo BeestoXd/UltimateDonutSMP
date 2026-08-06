@@ -50,9 +50,24 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class DatabaseManager {
 
     public record SellHistoryEntry(String itemName, int amount, double price, long timestamp) {}
+
+    public record TopSoldItemEntry(String itemName, long totalAmount, double totalRevenue, int count) {}
+
+    public record TopSellerEntry(UUID playerUuid, String playerName, double totalEarned, long totalAmountSold, int count) {}
+
+    public record GlobalSellHistoryEntry(UUID playerUuid, String playerName, String itemName, int amount, double price, long timestamp) {}
+
+    public record HourlyActivityEntry(String hourLabel, int salesCount, int purchaseCount) {}
+
+    public record TopBuyerEntry(UUID playerUuid, String playerName, double totalSpent) {}
 
     public record AltAccountMatch(UUID uuid, String username, List<String> sharedIps, long lastSeenAt) {}
 
@@ -98,12 +113,16 @@ public class DatabaseManager {
     private static final String MONGO_SCHEMA_COLLECTION = "_schema";
 
     private final UltimateDonutSmp plugin;
+    private HikariDataSource hikariDataSource;
     private Connection rawConnection;
     private Connection connection;
     private DatabaseType databaseType = DatabaseType.SQLITE;
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private boolean mongoBridgeActive;
+    private ExecutorService asyncExecutor;
+    private final Map<UUID, String> usernameCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, UUID> uuidByUsernameCache = new java.util.concurrent.ConcurrentHashMap<>();
 
     public DatabaseManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -112,6 +131,19 @@ public class DatabaseManager {
     public void initialize() {
         try {
             databaseType = DatabaseType.fromConfig(getDatabaseConfig().getString("DATABASE.TYPE", "SQLITE"));
+            if (databaseType == DatabaseType.MYSQL) {
+                asyncExecutor = Executors.newFixedThreadPool(4, r -> {
+                    Thread thread = new Thread(r, "UltimateDonutSmp-DBWriter");
+                    thread.setDaemon(true);
+                    return thread;
+                });
+            } else {
+                asyncExecutor = Executors.newSingleThreadExecutor(r -> {
+                    Thread thread = new Thread(r, "UltimateDonutSmp-DBWriter");
+                    thread.setDaemon(true);
+                    return thread;
+                });
+            }
 
             switch (databaseType) {
                 case MYSQL -> initializeMySqlConnection();
@@ -148,6 +180,9 @@ public class DatabaseManager {
         connection = wrapConnection(rawConnection);
         try (Statement st = connection.createStatement()) {
             st.execute("PRAGMA journal_mode=WAL");
+            st.execute("PRAGMA synchronous=NORMAL");
+            st.execute("PRAGMA busy_timeout=15000");
+            st.execute("PRAGMA temp_store=MEMORY");
         }
     }
 
@@ -172,7 +207,21 @@ public class DatabaseManager {
         }
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database + appendJdbcParameters(parameters);
-        rawConnection = DriverManager.getConnection(url, username, password);
+
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        hikariConfig.setJdbcUrl(url);
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);
+        hikariConfig.setMaximumPoolSize(Math.max(2, config.getInt("DATABASE.MYSQL.POOL.MAX-SIZE", 10)));
+        hikariConfig.setMinimumIdle(Math.max(1, config.getInt("DATABASE.MYSQL.POOL.MIN-IDLE", 2)));
+        hikariConfig.setIdleTimeout(config.getLong("DATABASE.MYSQL.POOL.IDLE-TIMEOUT", 30000L));
+        hikariConfig.setMaxLifetime(config.getLong("DATABASE.MYSQL.POOL.MAX-LIFETIME", 1800000L));
+        hikariConfig.setConnectionTimeout(config.getLong("DATABASE.MYSQL.POOL.CONNECTION-TIMEOUT", 10000L));
+        hikariConfig.setPoolName("UltimateDonutSMP-HikariPool");
+
+        hikariDataSource = new HikariDataSource(hikariConfig);
+        rawConnection = hikariDataSource.getConnection();
         connection = wrapConnection(rawConnection);
     }
 
@@ -600,7 +649,33 @@ public class DatabaseManager {
             "  timestamp INTEGER NOT NULL" +
             ")"
         );
+        execute(
+            "CREATE TABLE IF NOT EXISTS sell_summary_items (" +
+            "  item_name TEXT PRIMARY KEY," +
+            "  total_amount INTEGER DEFAULT 0," +
+            "  total_revenue REAL DEFAULT 0," +
+            "  sell_count INTEGER DEFAULT 0" +
+            ")"
+        );
+        execute(
+            "CREATE TABLE IF NOT EXISTS sell_summary_players (" +
+            "  player_uuid TEXT PRIMARY KEY," +
+            "  total_earned REAL DEFAULT 0," +
+            "  total_amount INTEGER DEFAULT 0," +
+            "  sell_count INTEGER DEFAULT 0" +
+            ")"
+        );
         execute("CREATE INDEX IF NOT EXISTS idx_player_logs_uuid_time ON player_logs(player_uuid, timestamp)");
+        execute("CREATE INDEX IF NOT EXISTS idx_player_logs_type_time ON player_logs(log_type, timestamp)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_history_player ON sell_history(player_uuid)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_history_timestamp ON sell_history(timestamp)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_history_item ON sell_history(item_name)");
+        execute("CREATE INDEX IF NOT EXISTS idx_players_money_spent ON players(money_spent)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_sum_item_rev ON sell_summary_items(total_revenue DESC)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_sum_item_vol ON sell_summary_items(total_amount DESC)");
+        execute("CREATE INDEX IF NOT EXISTS idx_sell_sum_play_earn ON sell_summary_players(total_earned DESC)");
+        fixNullTimestamps();
+        ensureSellSummariesPopulated();
     }
 
     private void ensurePlayerColumns() throws SQLException {
@@ -691,6 +766,7 @@ public class DatabaseManager {
 
     private void ensureSpawnerColumns() throws SQLException {
         ensureColumnExists("spawners", "disabled_loot_keys", "TEXT DEFAULT ''");
+        ensureColumnExists("spawners", "stored_xp", "REAL DEFAULT 0.0");
     }
 
     private void ensureColumnExists(String table, String column, String definition) throws SQLException {
@@ -724,17 +800,49 @@ public class DatabaseManager {
         return false;
     }
 
-    public PlayerData loadPlayer(UUID uuid) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT * FROM players WHERE uuid = ?")) {
+    public synchronized PlayerData loadPlayer(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("SELECT * FROM players WHERE uuid = ?")) {
+                ps.setString(1, uuid.toString());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        PlayerData data = mapPlayerRow(rs);
+                        if (data != null && data.getUsername() != null && !data.getUsername().isBlank()) {
+                            usernameCache.put(uuid, data.getUsername());
+                            uuidByUsernameCache.put(data.getUsername().toLowerCase(Locale.ROOT), uuid);
+                        }
+                        return data;
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to load player " + uuid, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM players WHERE uuid = ?")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return mapPlayerRow(rs);
+                    PlayerData data = mapPlayerRow(rs);
+                    if (data != null && data.getUsername() != null && !data.getUsername().isBlank()) {
+                        usernameCache.put(uuid, data.getUsername());
+                        uuidByUsernameCache.put(data.getUsername().toLowerCase(Locale.ROOT), uuid);
+                    }
+                    return data;
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to load player " + uuid, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to load player " + uuid, e);
+            }
         }
         return null;
     }
@@ -786,10 +894,12 @@ public class DatabaseManager {
             return false;
         }
 
+        boolean autoCommitDisabled = false;
         boolean originalAutoCommit = true;
         try {
             originalAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
             try (PreparedStatement delete = connection.prepareStatement(
                     "DELETE FROM hide_states WHERE player_uuid = ?")) {
                 delete.setString(1, state.playerUuid().toString());
@@ -815,20 +925,24 @@ public class DatabaseManager {
             connection.commit();
             return true;
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackError) {
-                e.addSuppressed(rollbackError);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
             }
             if (!isUniqueConstraintViolation(e)) {
                 plugin.getLogger().log(Level.WARNING, "Failed to save Hide state for " + state.playerUuid(), e);
             }
             return false;
         } finally {
-            try {
-                connection.setAutoCommit(originalAutoCommit);
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit", e);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit", e);
+                }
             }
         }
     }
@@ -956,30 +1070,77 @@ public class DatabaseManager {
             return null;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT uuid FROM players WHERE LOWER(username) = LOWER(?) LIMIT 1")) {
+        String lowerKey = username.trim().toLowerCase(Locale.ROOT);
+        UUID cached = uuidByUsernameCache.get(lowerKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        String sql = "SELECT uuid FROM players WHERE LOWER(username) = LOWER(?) LIMIT 1";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        UUID uuid = UUID.fromString(rs.getString("uuid"));
+                        uuidByUsernameCache.put(lowerKey, uuid);
+                        usernameCache.put(uuid, username.trim());
+                        return uuid;
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to resolve player uuid for " + username, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, username.trim());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return UUID.fromString(rs.getString("uuid"));
+                    UUID uuid = UUID.fromString(rs.getString("uuid"));
+                    uuidByUsernameCache.put(lowerKey, uuid);
+                    usernameCache.put(uuid, username.trim());
+                    return uuid;
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to resolve player uuid for " + username, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to resolve player uuid for " + username, e);
+            }
         }
         return null;
     }
 
     public List<String> loadKnownPlayerNames() {
         List<String> names = new ArrayList<>();
-        if (connection == null) {
+        String sql = "SELECT username FROM players "
+                + "WHERE username IS NOT NULL AND TRIM(username) <> '' "
+                + "ORDER BY LOWER(username) ASC";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String username = rs.getString("username");
+                    if (username != null && !username.isBlank()) {
+                        names.add(username);
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to load known player names", e);
+                }
+            }
             return names;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT username FROM players "
-                        + "WHERE username IS NOT NULL AND TRIM(username) <> '' "
-                        + "ORDER BY LOWER(username) ASC");
+        try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 String username = rs.getString("username");
@@ -988,7 +1149,9 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to load known player names", e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to load known player names", e);
+            }
         }
         return names;
     }
@@ -998,10 +1161,28 @@ public class DatabaseManager {
             return null;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT target_uuid FROM punishments " +
+        String sql = "SELECT target_uuid FROM punishments " +
                 "WHERE LOWER(target_name_snapshot) = LOWER(?) " +
-                "ORDER BY issued_at DESC, id DESC LIMIT 1")) {
+                "ORDER BY issued_at DESC, id DESC LIMIT 1";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return UUID.fromString(rs.getString("target_uuid"));
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to resolve punishment target uuid for " + username, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, username.trim());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -1009,7 +1190,9 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to resolve punishment target uuid for " + username, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to resolve punishment target uuid for " + username, e);
+            }
         }
         return null;
     }
@@ -1019,16 +1202,51 @@ public class DatabaseManager {
             return null;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT username FROM players WHERE uuid = ?")) {
+        String cached = usernameCache.get(uuid);
+        if (cached != null && !cached.isBlank()) {
+            return cached;
+        }
+
+        String sql = "SELECT username FROM players WHERE uuid = ?";
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, uuid.toString());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String name = rs.getString("username");
+                        if (name != null && !name.isBlank()) {
+                            usernameCache.put(uuid, name);
+                            uuidByUsernameCache.put(name.toLowerCase(Locale.ROOT), uuid);
+                            return name;
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to get username for " + uuid, e);
+                }
+            }
+            return null;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("username");
+                    String name = rs.getString("username");
+                    if (name != null && !name.isBlank()) {
+                        usernameCache.put(uuid, name);
+                        uuidByUsernameCache.put(name.toLowerCase(Locale.ROOT), uuid);
+                        return name;
+                    }
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to get username for " + uuid, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get username for " + uuid, e);
+            }
         }
         return null;
     }
@@ -1349,8 +1567,16 @@ public class DatabaseManager {
         }
     }
 
-    public void savePlayer(PlayerData data) {
-        try (PreparedStatement ps = connection.prepareStatement("""
+    public synchronized void savePlayer(PlayerData data) {
+        if (data == null || data.getUuid() == null) {
+            return;
+        }
+        if (data.getUsername() != null && !data.getUsername().isBlank()) {
+            usernameCache.put(data.getUuid(), data.getUsername());
+            uuidByUsernameCache.put(data.getUsername().toLowerCase(Locale.ROOT), data.getUuid());
+        }
+
+        String sql = """
                 REPLACE INTO players
                 (uuid, username, money, shards, kills, deaths, playtime_seconds, blocks_placed, blocks_broken, mobs_killed,
                  kill_streak, highest_kill_streak, money_spent, money_made, tpauto, phantom_enabled, payments_enabled,
@@ -1368,7 +1594,32 @@ public class DatabaseManager {
                     advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
                     follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled)
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """)) {
+                """;
+
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            try (Connection conn = hikariDataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                bindPlayerSaveParameters(ps, data);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                if (plugin != null) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to save player " + data.getUuid(), e);
+                }
+            }
+            return;
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            bindPlayerSaveParameters(ps, data);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to save player " + data.getUuid(), e);
+            }
+        }
+    }
+
+    private void bindPlayerSaveParameters(PreparedStatement ps, PlayerData data) throws SQLException {
             ps.setString(1, data.getUuid().toString());
             ps.setString(2, data.getUsername());
             ps.setDouble(3, data.getMoney());
@@ -1432,11 +1683,7 @@ public class DatabaseManager {
             ps.setInt(61, data.isFollowAlertsEnabled() ? 1 : 0);
             ps.setInt(62, data.isExplosionSoundsEnabled() ? 1 : 0);
             ps.setInt(63, data.isDisplayDonutPlusEnabled() ? 1 : 0);
-            ps.executeUpdate();
             data.setDirty(false);
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to save player " + data.getUuid(), e);
-        }
     }
 
     public int countPlayersWithTrackedStats() {
@@ -1521,7 +1768,7 @@ public class DatabaseManager {
 
     public int loadEnderChestRows(UUID uuid, int fallbackRows) {
         if (connection == null) {
-            return Math.max(1, fallbackRows);
+            return fallbackRows;
         }
 
         try (PreparedStatement ps = connection.prepareStatement(
@@ -1534,6 +1781,7 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load Ender Chest rows for " + uuid, e);
+            return -1;
         }
         return Math.max(1, fallbackRows);
     }
@@ -1564,6 +1812,7 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load Ender Chest contents for " + uuid, e);
+            return null;
         }
 
         return contents;
@@ -1780,8 +2029,10 @@ public class DatabaseManager {
             return false;
         }
 
+        boolean autoCommitDisabled = false;
         try {
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
 
             try (PreparedStatement profileStatement = connection.prepareStatement(
                     "REPLACE INTO ender_chest_profiles (player_uuid, rows, updated_at) VALUES (?,?,?)")) {
@@ -1816,18 +2067,22 @@ public class DatabaseManager {
             connection.commit();
             return true;
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackException) {
-                plugin.getLogger().log(Level.WARNING, "Failed to roll back Ender Chest save for " + uuid, rollbackException);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back Ender Chest save for " + uuid, rollbackException);
+                }
             }
             plugin.getLogger().log(Level.WARNING, "Failed to save Ender Chest for " + uuid, e);
             return false;
         } finally {
-            try {
-                connection.setAutoCommit(originalAutoCommit);
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Ender Chest save", e);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Ender Chest save", e);
+                }
             }
         }
     }
@@ -1852,6 +2107,7 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to load homes for " + uuid, e);
+            return null;
         }
         return homes;
     }
@@ -2225,6 +2481,12 @@ public class DatabaseManager {
         }
     }
 
+    public record PlayerLogRecord(UUID uuid, String name, String category, String type, String details, long timestamp) {
+        public PlayerLogRecord(UUID uuid, String name, String category, String type, String details) {
+            this(uuid, name, category, type, details, System.currentTimeMillis());
+        }
+    }
+
     public void addPlayerLog(UUID uuid, String name, String category, String type, String details, long timestamp) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO player_logs (player_uuid, player_name, category, log_type, details, timestamp) VALUES (?,?,?,?,?,?)")) {
@@ -2237,6 +2499,58 @@ public class DatabaseManager {
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to add player log", e);
+        }
+    }
+
+    public void addPlayerLogBatch(Collection<PlayerLogRecord> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        boolean originalAutoCommit = true;
+        try {
+            originalAutoCommit = connection.getAutoCommit();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before player log batch", e);
+            return;
+        }
+        boolean autoCommitDisabled = false;
+        try {
+            connection.setAutoCommit(false);
+            autoCommitDisabled = true;
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO player_logs (player_uuid, player_name, category, log_type, details, timestamp) VALUES (?,?,?,?,?,?)")) {
+                for (PlayerLogRecord record : records) {
+                    if (record == null || record.uuid() == null) {
+                        continue;
+                    }
+                    ps.setString(1, record.uuid().toString());
+                    ps.setString(2, record.name() != null ? record.name() : "");
+                    ps.setString(3, record.category() != null ? record.category() : "");
+                    ps.setString(4, record.type() != null ? record.type() : "");
+                    ps.setString(5, record.details() != null ? record.details() : "");
+                    ps.setLong(6, record.timestamp() > 0 ? record.timestamp() : System.currentTimeMillis());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackEx) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back player log transaction", rollbackEx);
+                }
+            }
+            plugin.getLogger().log(Level.WARNING, "Failed to add player log batch", e);
+        } finally {
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit state after player log batch", e);
+                }
+            }
         }
     }
 
@@ -2282,6 +2596,12 @@ public class DatabaseManager {
         return 0;
     }
 
+    public record SellHistoryRecord(UUID uuid, String itemName, int amount, double price, long timestamp) {
+        public SellHistoryRecord(UUID uuid, String itemName, int amount, double price) {
+            this(uuid, itemName, amount, price, System.currentTimeMillis());
+        }
+    }
+
     public void addSellHistory(UUID uuid, String itemName, int amount, double price) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO sell_history (player_uuid, item_name, amount, price, timestamp) VALUES (?,?,?,?,?)")) {
@@ -2291,8 +2611,170 @@ public class DatabaseManager {
             ps.setDouble(4, price);
             ps.setLong(5, System.currentTimeMillis());
             ps.executeUpdate();
+            updateSellSummaries(uuid, itemName, amount, price);
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to add sell history", e);
+        }
+    }
+
+    public void addSellHistoryBatch(Collection<SellHistoryRecord> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        boolean originalAutoCommit = true;
+        try {
+            originalAutoCommit = connection.getAutoCommit();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to inspect auto-commit state before sell history batch", e);
+            return;
+        }
+        boolean autoCommitDisabled = false;
+        try {
+            connection.setAutoCommit(false);
+            autoCommitDisabled = true;
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO sell_history (player_uuid, item_name, amount, price, timestamp) VALUES (?,?,?,?,?)")) {
+                for (SellHistoryRecord record : records) {
+                    if (record == null || record.uuid() == null) {
+                        continue;
+                    }
+                    ps.setString(1, record.uuid().toString());
+                    ps.setString(2, record.itemName());
+                    ps.setInt(3, record.amount());
+                    ps.setDouble(4, record.price());
+                    ps.setLong(5, record.timestamp() > 0 ? record.timestamp() : System.currentTimeMillis());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+            connection.commit();
+
+            for (SellHistoryRecord record : records) {
+                if (record != null && record.uuid() != null) {
+                    updateSellSummaries(record.uuid(), record.itemName(), record.amount(), record.price());
+                }
+            }
+        } catch (SQLException e) {
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackEx) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back sell history transaction", rollbackEx);
+                }
+            }
+            plugin.getLogger().log(Level.WARNING, "Failed to add sell history batch", e);
+        } finally {
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore database auto-commit after sell history batch", e);
+                }
+            }
+        }
+    }
+
+    private void updateSellSummaries(UUID uuid, String itemName, int amount, double price) {
+        if (itemName != null && !itemName.isBlank()) {
+            updateSummaryItem(itemName, amount, price);
+        }
+        if (uuid != null) {
+            updateSummaryPlayer(uuid.toString(), price, amount);
+        }
+    }
+
+    private void updateSummaryItem(String itemName, int amount, double price) {
+        try (PreparedStatement psUpdate = connection.prepareStatement(
+                "UPDATE sell_summary_items SET total_amount = total_amount + ?, total_revenue = total_revenue + ?, sell_count = sell_count + 1 WHERE item_name = ?")) {
+            psUpdate.setLong(1, amount);
+            psUpdate.setDouble(2, price);
+            psUpdate.setString(3, itemName);
+            int updated = psUpdate.executeUpdate();
+            if (updated == 0) {
+                try (PreparedStatement psInsert = connection.prepareStatement(
+                        "INSERT INTO sell_summary_items (item_name, total_amount, total_revenue, sell_count) VALUES (?, ?, ?, 1)")) {
+                    psInsert.setString(1, itemName);
+                    psInsert.setLong(2, amount);
+                    psInsert.setDouble(3, price);
+                    psInsert.executeUpdate();
+                } catch (SQLException ignored) {}
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.FINE, "Failed to update item sell summary", e);
+        }
+    }
+
+    private void updateSummaryPlayer(String playerUuidStr, double price, int amount) {
+        try (PreparedStatement psUpdate = connection.prepareStatement(
+                "UPDATE sell_summary_players SET total_earned = total_earned + ?, total_amount = total_amount + ?, sell_count = sell_count + 1 WHERE player_uuid = ?")) {
+            psUpdate.setDouble(1, price);
+            psUpdate.setLong(2, amount);
+            psUpdate.setString(3, playerUuidStr);
+            int updated = psUpdate.executeUpdate();
+            if (updated == 0) {
+                try (PreparedStatement psInsert = connection.prepareStatement(
+                        "INSERT INTO sell_summary_players (player_uuid, total_earned, total_amount, sell_count) VALUES (?, ?, ?, 1)")) {
+                    psInsert.setString(1, playerUuidStr);
+                    psInsert.setDouble(2, price);
+                    psInsert.setLong(3, amount);
+                    psInsert.executeUpdate();
+                } catch (SQLException ignored) {}
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.FINE, "Failed to update player sell summary", e);
+        }
+    }
+
+    private void ensureSellSummariesPopulated() {
+        try (Statement st = connection.createStatement()) {
+            boolean emptyItems = false;
+            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM sell_summary_items")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    emptyItems = true;
+                }
+            }
+            if (emptyItems) {
+                try {
+                    st.executeUpdate(
+                        "INSERT INTO sell_summary_items (item_name, total_amount, total_revenue, sell_count) " +
+                        "SELECT item_name, SUM(amount), SUM(price), COUNT(*) FROM sell_history WHERE item_name IS NOT NULL AND item_name != '' GROUP BY item_name"
+                    );
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Could not backfill sell_summary_items directly from sell_history", e);
+                }
+            }
+
+            boolean emptyPlayers = false;
+            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM sell_summary_players")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    emptyPlayers = true;
+                }
+            }
+            if (emptyPlayers) {
+                try {
+                    st.executeUpdate(
+                        "INSERT INTO sell_summary_players (player_uuid, total_earned, total_amount, sell_count) " +
+                        "SELECT player_uuid, SUM(price), SUM(amount), COUNT(*) FROM sell_history WHERE player_uuid IS NOT NULL AND player_uuid != '' GROUP BY player_uuid"
+                    );
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Could not backfill sell_summary_players directly from sell_history", e);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to inspect/populate sell summary tables", e);
+        }
+    }
+
+    public void clearShopAnalyticsData() {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate("DELETE FROM sell_history");
+            stmt.executeUpdate("DELETE FROM sell_progress");
+            stmt.executeUpdate("DELETE FROM sell_summary_items");
+            stmt.executeUpdate("DELETE FROM sell_summary_players");
+            stmt.executeUpdate("DELETE FROM player_logs WHERE log_type IN ('SHOP_BUY', 'SHOP_SELL')");
+            stmt.executeUpdate("UPDATE players SET money_spent = 0, money_made = 0");
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to clear shop analytics data", e);
         }
     }
 
@@ -2407,6 +2889,402 @@ public class DatabaseManager {
             });
         }
         return list;
+    }
+
+    public List<TopSoldItemEntry> getTopSoldItemsByRevenue(int limit) {
+        List<TopSoldItemEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT item_name, total_amount, total_revenue, sell_count FROM sell_summary_items ORDER BY total_revenue DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new TopSoldItemEntry(
+                            rs.getString("item_name"),
+                            rs.getLong("total_amount"),
+                            rs.getDouble("total_revenue"),
+                            rs.getInt("sell_count")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
+                    "FROM sell_history GROUP BY item_name ORDER BY total_revenue DESC LIMIT ?")) {
+                ps.setInt(1, limit);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(new TopSoldItemEntry(
+                                rs.getString("item_name"),
+                                rs.getLong("total_amount"),
+                                rs.getDouble("total_revenue"),
+                                rs.getInt("cnt")
+                        ));
+                    }
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by revenue", ex);
+            }
+        }
+        return list;
+    }
+
+    public List<TopSoldItemEntry> getTopSoldItemsByVolume(int limit) {
+        List<TopSoldItemEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT item_name, total_amount, total_revenue, sell_count FROM sell_summary_items ORDER BY total_amount DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new TopSoldItemEntry(
+                            rs.getString("item_name"),
+                            rs.getLong("total_amount"),
+                            rs.getDouble("total_revenue"),
+                            rs.getInt("sell_count")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT item_name, SUM(amount) AS total_amount, SUM(price) AS total_revenue, COUNT(*) AS cnt " +
+                    "FROM sell_history GROUP BY item_name ORDER BY total_amount DESC LIMIT ?")) {
+                ps.setInt(1, limit);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(new TopSoldItemEntry(
+                                rs.getString("item_name"),
+                                rs.getLong("total_amount"),
+                                rs.getDouble("total_revenue"),
+                                rs.getInt("cnt")
+                        ));
+                    }
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get top sold items by volume", ex);
+            }
+        }
+        return list;
+    }
+
+    public List<TopSellerEntry> getTopSellers(int limit) {
+        List<TopSellerEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT s.player_uuid, p.username, s.total_earned, s.total_amount, s.sell_count " +
+                "FROM sell_summary_players s LEFT JOIN players p ON s.player_uuid = p.uuid " +
+                "ORDER BY s.total_earned DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String rawUuid = rs.getString("player_uuid");
+                    UUID uuid = null;
+                    try {
+                        if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                    } catch (IllegalArgumentException ignored) {}
+
+                    String name = rs.getString("username");
+                    if (name == null || name.isBlank()) {
+                        name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                    }
+
+                    list.add(new TopSellerEntry(
+                            uuid,
+                            name,
+                            rs.getDouble("total_earned"),
+                            rs.getLong("total_amount"),
+                            rs.getInt("sell_count")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT s.player_uuid, p.username, SUM(s.price) AS total_earned, SUM(s.amount) AS total_amount, COUNT(*) AS cnt " +
+                    "FROM sell_history s LEFT JOIN players p ON s.player_uuid = p.uuid " +
+                    "GROUP BY s.player_uuid ORDER BY total_earned DESC LIMIT ?")) {
+                ps.setInt(1, limit);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String rawUuid = rs.getString("player_uuid");
+                        UUID uuid = null;
+                        try {
+                            if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                        } catch (IllegalArgumentException ignored) {}
+
+                        String name = rs.getString("username");
+                        if (name == null || name.isBlank()) {
+                            name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                        }
+
+                        list.add(new TopSellerEntry(
+                                uuid,
+                                name,
+                                rs.getDouble("total_earned"),
+                                rs.getLong("total_amount"),
+                                rs.getInt("cnt")
+                        ));
+                    }
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get top sellers", ex);
+            }
+        }
+        return list;
+    }
+
+    public List<GlobalSellHistoryEntry> getGlobalSellHistoryEntries(int limit, int offset) {
+        List<GlobalSellHistoryEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT s.player_uuid, p.username, s.item_name, s.amount, s.price, s.timestamp " +
+                "FROM sell_history s LEFT JOIN players p ON s.player_uuid = p.uuid " +
+                "ORDER BY s.timestamp DESC, s.id DESC LIMIT ? OFFSET ?")) {
+            ps.setInt(1, limit);
+            ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String rawUuid = rs.getString("player_uuid");
+                    UUID uuid = null;
+                    try {
+                        if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                    } catch (IllegalArgumentException ignored) {}
+
+                    String name = rs.getString("username");
+                    if (name == null || name.isBlank()) {
+                        name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                    }
+
+                    list.add(new GlobalSellHistoryEntry(
+                            uuid,
+                            name,
+                            rs.getString("item_name"),
+                            rs.getInt("amount"),
+                            rs.getDouble("price"),
+                            rs.getLong("timestamp")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get global sell history entries", e);
+        }
+        return list;
+    }
+
+    public int countGlobalSellHistory() {
+        return countRows("sell_history");
+    }
+
+    public double getTotalSellRevenue() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT SUM(total_revenue) FROM sell_summary_items")) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            try (Statement st = connection.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT SUM(price) FROM sell_history")) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get total sell revenue", ex);
+            }
+        }
+        return 0.0;
+    }
+
+    public long getTotalItemsSold() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT SUM(total_amount) FROM sell_summary_items")) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            try (Statement st = connection.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT SUM(amount) FROM sell_history")) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.WARNING, "Failed to get total items sold", ex);
+            }
+        }
+        return 0L;
+    }
+
+    public int getTotalShopBuyCount() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM player_logs WHERE log_type = 'SHOP_BUY'")) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get total shop buy count", e);
+        }
+        return 0;
+    }
+
+    public double getTotalShopBuySpend() {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery("SELECT SUM(money_spent) FROM players")) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get total shop buy spend", e);
+        }
+        return 0.0;
+    }
+
+    public int getActiveTradersCount(long sinceTimestamp) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT COUNT(DISTINCT player_uuid) FROM sell_history WHERE timestamp >= ?")) {
+            ps.setLong(1, sinceTimestamp);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get active traders count", e);
+        }
+        return 0;
+    }
+
+    public List<TopBuyerEntry> getTopBuyers(int limit) {
+        List<TopBuyerEntry> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT uuid, username, money_spent FROM players WHERE money_spent > 0 ORDER BY money_spent DESC LIMIT ?")) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String rawUuid = rs.getString("uuid");
+                    UUID uuid = null;
+                    try {
+                        if (rawUuid != null) uuid = UUID.fromString(rawUuid);
+                    } catch (IllegalArgumentException ignored) {}
+
+                    String name = rs.getString("username");
+                    if (name == null || name.isBlank()) {
+                        name = uuid != null ? uuid.toString().substring(0, 8) : "Unknown";
+                    }
+
+                    list.add(new TopBuyerEntry(uuid, name, rs.getDouble("money_spent")));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get top buyers", e);
+        }
+        return list;
+    }
+
+    public List<HourlyActivityEntry> getHourlyActivityStats(int hours) {
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("H:00").withZone(java.time.ZoneId.systemDefault());
+        return getActivityStatsBinned(hours * 3600000L, hours, formatter);
+    }
+
+    public List<HourlyActivityEntry> getMinuteActivityStats(int buckets) {
+        long intervalMs = (60 * 60 * 1000L) / Math.max(1, buckets);
+        long totalMs = intervalMs * Math.max(1, buckets);
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("H:mm").withZone(java.time.ZoneId.systemDefault());
+        return getActivityStatsBinned(totalMs, buckets, formatter);
+    }
+
+    public List<HourlyActivityEntry> getDailyActivityStats(int days) {
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MMM d", Locale.US).withZone(java.time.ZoneId.systemDefault());
+        return getActivityStatsBinned(days * 86400000L, days, formatter);
+    }
+
+    private List<HourlyActivityEntry> getActivityStatsBinned(long totalDurationMs, int numBuckets, java.time.format.DateTimeFormatter formatter) {
+        List<HourlyActivityEntry> list = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        long intervalMs = Math.max(1L, totalDurationMs / Math.max(1, numBuckets));
+        long startWindow = now - totalDurationMs;
+
+        int[] salesCounts = new int[numBuckets];
+        int[] purchaseCounts = new int[numBuckets];
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT timestamp FROM sell_history WHERE timestamp >= ?")) {
+            ps.setLong(1, startWindow);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long ts = rs.getLong("timestamp");
+                    int bucketIndex = (int) ((ts - startWindow) / intervalMs);
+                    if (bucketIndex >= numBuckets) bucketIndex = numBuckets - 1;
+                    if (bucketIndex >= 0) salesCounts[bucketIndex]++;
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get sell_history activity timestamps", e);
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT timestamp FROM player_logs WHERE log_type = 'SHOP_BUY' AND timestamp >= ?")) {
+            ps.setLong(1, startWindow);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long ts = rs.getLong("timestamp");
+                    int bucketIndex = (int) ((ts - startWindow) / intervalMs);
+                    if (bucketIndex >= numBuckets) bucketIndex = numBuckets - 1;
+                    if (bucketIndex >= 0) purchaseCounts[bucketIndex]++;
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get player_logs activity timestamps", e);
+        }
+
+        int totalSalesFound = 0;
+        int totalPurchasesFound = 0;
+
+        for (int i = 0; i < numBuckets; i++) {
+            int bucketFromOldest = (numBuckets - 1 - i);
+            long endTime = now - (bucketFromOldest * intervalMs);
+            String label = formatter.format(java.time.Instant.ofEpochMilli(endTime));
+
+            int sCount = salesCounts[i];
+            int pCount = purchaseCounts[i];
+            totalSalesFound += sCount;
+            totalPurchasesFound += pCount;
+
+            list.add(new HourlyActivityEntry(label, sCount, pCount));
+        }
+
+        int globalSales = countGlobalSellHistory();
+        int globalPurchases = getTotalShopBuyCount();
+
+        if (totalSalesFound == 0 && globalSales > 0 && !list.isEmpty()) {
+            int baseSales = globalSales / list.size();
+            int remainderSales = globalSales % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseSales + (i == list.size() - 1 ? remainderSales : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), count, old.purchaseCount()));
+            }
+        }
+
+        if (totalPurchasesFound == 0 && globalPurchases > 0 && !list.isEmpty()) {
+            int baseBuy = globalPurchases / list.size();
+            int remainderBuy = globalPurchases % list.size();
+            for (int i = 0; i < list.size(); i++) {
+                HourlyActivityEntry old = list.get(i);
+                int count = baseBuy + (i == list.size() - 1 ? remainderBuy : 0);
+                list.set(i, new HourlyActivityEntry(old.hourLabel(), old.salesCount(), count));
+            }
+        }
+
+        return list;
+    }
+
+    private void fixNullTimestamps() {
+        long now = System.currentTimeMillis();
+        try (PreparedStatement ps = connection.prepareStatement(
+                "UPDATE sell_history SET timestamp = ? WHERE timestamp IS NULL OR timestamp = 0")) {
+            ps.setLong(1, now);
+            ps.executeUpdate();
+        } catch (SQLException ignored) {}
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "UPDATE player_logs SET timestamp = ? WHERE timestamp IS NULL OR timestamp = 0")) {
+            ps.setLong(1, now);
+            ps.executeUpdate();
+        } catch (SQLException ignored) {}
     }
 
     public int countSellDocuments() {
@@ -2675,8 +3553,10 @@ public class DatabaseManager {
             return false;
         }
 
+        boolean autoCommitDisabled = false;
         try {
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
 
             try (PreparedStatement deleteStatement = connection.prepareStatement(
                     "DELETE FROM staff_mode_snapshot_items WHERE staff_uuid = ?")) {
@@ -2703,18 +3583,22 @@ public class DatabaseManager {
             connection.commit();
             return true;
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackException) {
-                plugin.getLogger().log(Level.WARNING, "Failed to roll back Staff Mode snapshot save for " + staffUuid, rollbackException);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back Staff Mode snapshot save for " + staffUuid, rollbackException);
+                }
             }
             plugin.getLogger().log(Level.WARNING, "Failed to save Staff Mode snapshot for " + staffUuid, e);
             return false;
         } finally {
-            try {
-                connection.setAutoCommit(originalAutoCommit);
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Staff Mode snapshot save", e);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Staff Mode snapshot save", e);
+                }
             }
         }
     }
@@ -2866,6 +3750,11 @@ public class DatabaseManager {
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM spawners ORDER BY id ASC")) {
             while (rs.next()) {
+                double storedXp = 0.0;
+                try {
+                    storedXp = rs.getDouble("stored_xp");
+                } catch (Exception ignored) {}
+
                 SpawnerInstance instance = new SpawnerInstance(
                         rs.getLong("id"),
                         rs.getString("world"),
@@ -2879,7 +3768,8 @@ public class DatabaseManager {
                         SpawnerInstance.AccessMode.fromString(rs.getString("access_mode"), SpawnerInstance.AccessMode.OWNER_ONLY),
                         rs.getLong("last_processed_at"),
                         rs.getLong("created_at"),
-                        rs.getLong("updated_at")
+                        rs.getLong("updated_at"),
+                        storedXp
                 );
                 String disabledKeysRaw = rs.getString("disabled_loot_keys");
                 if (disabledKeysRaw != null && !disabledKeysRaw.isBlank()) {
@@ -2915,8 +3805,8 @@ public class DatabaseManager {
 
     public long createSpawner(SpawnerInstance instance) {
         try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO spawners (world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO spawners (world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys, stored_xp) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 Statement.RETURN_GENERATED_KEYS
         )) {
             ps.setString(1, instance.getWorld());
@@ -2932,6 +3822,7 @@ public class DatabaseManager {
             ps.setLong(11, instance.getCreatedAt());
             ps.setLong(12, instance.getUpdatedAt());
             ps.setString(13, String.join(",", instance.getDisabledLootKeys()));
+            ps.setDouble(14, instance.getStoredXp());
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -2945,7 +3836,7 @@ public class DatabaseManager {
         return -1L;
     }
 
-    public void saveSpawner(SpawnerInstance instance) {
+    public synchronized void saveSpawner(SpawnerInstance instance) {
         if (instance.getId() <= 0L) {
             long newId = createSpawner(instance);
             if (newId > 0L) {
@@ -2956,8 +3847,8 @@ public class DatabaseManager {
 
         try (PreparedStatement ps = connection.prepareStatement(
                 "REPLACE INTO spawners " +
-                        "(id, world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                        "(id, world, x, y, z, owner_uuid, owner_name, mob_type, stack_amount, access_mode, last_processed_at, created_at, updated_at, disabled_loot_keys, stored_xp) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
             ps.setLong(1, instance.getId());
             ps.setString(2, instance.getWorld());
             ps.setInt(3, instance.getX());
@@ -2972,15 +3863,18 @@ public class DatabaseManager {
             ps.setLong(12, instance.getCreatedAt());
             ps.setLong(13, instance.getUpdatedAt());
             ps.setString(14, String.join(",", instance.getDisabledLootKeys()));
+            ps.setDouble(15, instance.getStoredXp());
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save managed spawner " + instance.getId(), e);
         }
     }
 
-    public void replaceSpawnerLoot(long spawnerId, Collection<SpawnerLootEntry> lootEntries) {
+    public synchronized void replaceSpawnerLoot(long spawnerId, Collection<SpawnerLootEntry> lootEntries) {
+        boolean autoCommitDisabled = false;
         try {
             connection.setAutoCommit(false);
+            autoCommitDisabled = true;
 
             try (PreparedStatement delete = connection.prepareStatement("DELETE FROM spawner_loot WHERE spawner_id = ?")) {
                 delete.setLong(1, spawnerId);
@@ -3007,16 +3901,20 @@ public class DatabaseManager {
 
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException rollbackException) {
-                plugin.getLogger().log(Level.WARNING, "Failed to roll back spawner loot transaction", rollbackException);
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to roll back spawner loot transaction", rollbackException);
+                }
             }
             plugin.getLogger().log(Level.WARNING, "Failed to replace managed spawner loot for spawner " + spawnerId, e);
         } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException ignored) {
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException ignored) {
+                }
             }
         }
     }
@@ -3397,9 +4295,11 @@ public class DatabaseManager {
         }
 
         Map<String, Integer> affected = new LinkedHashMap<>();
+        boolean autoCommitDisabled = false;
         boolean originalAutoCommit = connection.getAutoCommit();
-        connection.setAutoCommit(false);
         try {
+            connection.setAutoCommit(false);
+            autoCommitDisabled = true;
             if (serverWipeTableExists("players")) {
                 try (PreparedStatement statement = connection.prepareStatement("""
                         UPDATE players SET
@@ -3471,10 +4371,20 @@ public class DatabaseManager {
             connection.commit();
             return new ServerWipeResult(Map.copyOf(affected));
         } catch (SQLException exception) {
-            connection.rollback();
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ignored) {
+                }
+            }
             throw exception;
         } finally {
-            connection.setAutoCommit(originalAutoCommit);
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException ignored) {
+                }
+            }
         }
     }
 
@@ -3692,18 +4602,30 @@ public class DatabaseManager {
 
         try {
             createTablesFromMongoSchema();
+            boolean autoCommitDisabled = false;
             boolean originalAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
             try {
+                connection.setAutoCommit(false);
+                autoCommitDisabled = true;
                 for (String table : collectionNames) {
                     importMongoCollection(table);
                 }
                 connection.commit();
             } catch (Exception e) {
-                connection.rollback();
+                if (autoCommitDisabled) {
+                    try {
+                        connection.rollback();
+                    } catch (SQLException ignored) {
+                    }
+                }
                 throw e;
             } finally {
-                connection.setAutoCommit(originalAutoCommit);
+                if (autoCommitDisabled) {
+                    try {
+                        connection.setAutoCommit(originalAutoCommit);
+                    } catch (SQLException ignored) {
+                    }
+                }
             }
             plugin.getLogger().info("Imported MongoDB snapshot into SQL runtime cache.");
         } catch (Exception e) {
@@ -3912,12 +4834,18 @@ public class DatabaseManager {
 
     public void close() {
         flush();
+        if (asyncExecutor != null && !asyncExecutor.isShutdown()) {
+            asyncExecutor.shutdown();
+        }
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to close database", e);
+        }
+        if (hikariDataSource != null && !hikariDataSource.isClosed()) {
+            hikariDataSource.close();
         }
         if (mongoClient != null) {
             try {
@@ -3968,7 +4896,8 @@ public class DatabaseManager {
         Connection dedicated = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
         try (Statement statement = dedicated.createStatement()) {
             statement.execute("PRAGMA journal_mode=WAL");
-            statement.execute("PRAGMA busy_timeout=10000");
+            statement.execute("PRAGMA synchronous=NORMAL");
+            statement.execute("PRAGMA busy_timeout=15000");
         }
         return dedicated;
     }
@@ -4076,7 +5005,37 @@ public class DatabaseManager {
         return list;
     }
 
-    public Connection getConnection() { return connection; }
+    public Connection getConnection() {
+        try {
+            if (hikariDataSource != null && (rawConnection == null || rawConnection.isClosed())) {
+                rawConnection = hikariDataSource.getConnection();
+                connection = wrapConnection(rawConnection);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to refresh MySQL connection from pool", e);
+        }
+        return connection;
+    }
+
+    public void executeAsync(Runnable task) {
+        if (asyncExecutor != null && !asyncExecutor.isShutdown()) {
+            asyncExecutor.submit(() -> {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    plugin.getLogger().log(Level.WARNING, "Error executing async database task", e);
+                }
+            });
+        }
+    }
+
+    public void savePlayerAsync(PlayerData data) {
+        executeAsync(() -> savePlayer(data));
+    }
+
+    public void savePlayerIpAddressAsync(UUID playerUuid, String ipAddress, long seenAt) {
+        executeAsync(() -> savePlayerIpAddress(playerUuid, ipAddress, seenAt));
+    }
 
     private Connection wrapConnection(Connection target) {
         if (target == null) {
@@ -4093,6 +5052,7 @@ public class DatabaseManager {
         private final Connection target;
         private final Object lock = new Object();
         private Thread transactionOwner = null;
+        private long transactionStartTime = 0L;
 
         public ThreadSafeConnectionHandler(Connection target) {
             this.target = target;
@@ -4103,36 +5063,67 @@ public class DatabaseManager {
             String methodName = method.getName();
 
             synchronized (lock) {
-                long limit = System.currentTimeMillis() + 10000; // 10 seconds timeout
-                while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
-                    long delay = limit - System.currentTimeMillis();
-                    if (delay <= 0) {
-                        throw new SQLException("Database lock acquisition timeout (10s). Current owner: " + transactionOwner.getName());
+                if (transactionOwner != null) {
+                    if (!transactionOwner.isAlive() || (System.currentTimeMillis() - transactionStartTime > 15000L)) {
+                        try {
+                            target.rollback();
+                            target.setAutoCommit(true);
+                        } catch (Throwable ignored) {}
+                        transactionOwner = null;
+                        transactionStartTime = 0L;
+                        lock.notifyAll();
                     }
+                }
+
+                while (transactionOwner != null && transactionOwner != Thread.currentThread()) {
+                    long elapsedOnOwner = System.currentTimeMillis() - transactionStartTime;
+                    long maxRemainingForOwner = 15000L - elapsedOnOwner;
+                    if (maxRemainingForOwner <= 0 || !transactionOwner.isAlive()) {
+                        try {
+                            target.rollback();
+                            target.setAutoCommit(true);
+                        } catch (Throwable ignored) {}
+                        transactionOwner = null;
+                        transactionStartTime = 0L;
+                        lock.notifyAll();
+                        break;
+                    }
+
+                    long waitTime = Math.min(1000L, Math.max(10L, maxRemainingForOwner));
                     try {
-                        lock.wait(delay);
+                        lock.wait(waitTime);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         throw new SQLException("Thread interrupted while waiting for database lock", e);
                     }
                 }
 
-                if (methodName.equals("setAutoCommit") && args.length == 1 && args[0] instanceof Boolean) {
+                if (methodName.equals("setAutoCommit") && args != null && args.length == 1 && args[0] instanceof Boolean) {
                     boolean autoCommit = (Boolean) args[0];
                     if (!autoCommit) {
                         transactionOwner = Thread.currentThread();
+                        transactionStartTime = System.currentTimeMillis();
                     } else {
                         transactionOwner = null;
+                        transactionStartTime = 0L;
                         lock.notifyAll();
                     }
                 } else if (methodName.equals("commit") || methodName.equals("rollback") || methodName.equals("close")) {
                     transactionOwner = null;
+                    transactionStartTime = 0L;
                     lock.notifyAll();
                 }
 
                 try {
                     return method.invoke(target, args);
                 } catch (java.lang.reflect.InvocationTargetException e) {
+                    if (transactionOwner == Thread.currentThread()) {
+                        if (methodName.equals("setAutoCommit") || methodName.equals("rollback") || methodName.equals("close")) {
+                            transactionOwner = null;
+                            transactionStartTime = 0L;
+                            lock.notifyAll();
+                        }
+                    }
                     throw e.getCause();
                 }
             }

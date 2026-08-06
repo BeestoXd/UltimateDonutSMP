@@ -113,6 +113,18 @@ public class StaffModeManager {
         return getConfig().getBoolean("STAFF-MODE.RESTORE-INVENTORY-ON-DISABLE", true);
     }
 
+    public boolean shouldSendFakeLeaveOnVanish() {
+        return getConfig().getBoolean("STAFF-MODE.VANISH-FAKE-MESSAGES.FAKE-LEAVE-ON-VANISH", true);
+    }
+
+    public boolean shouldSendFakeJoinOnUnvanish() {
+        return getConfig().getBoolean("STAFF-MODE.VANISH-FAKE-MESSAGES.FAKE-JOIN-ON-UNVANISH", true);
+    }
+
+    public boolean shouldSendFakeMessagesOnlyToRegularPlayers() {
+        return getConfig().getBoolean("STAFF-MODE.VANISH-FAKE-MESSAGES.ONLY-TO-REGULAR-PLAYERS", true);
+    }
+
     public String getStaffPermission() {
         return getConfig().getString("STAFF-MODE.STAFF-PERMISSION", "ULTIMATEDONUTSMP.STAFF.MODE");
     }
@@ -378,21 +390,23 @@ public class StaffModeManager {
                     PlayerSettingUtils.sendActionBar(plugin, viewer, message);
                 }
             });
-            plugin.getSpigotScheduler().runEntity(target, () -> {
-                if (target.isOnline()) {
-                    target.sendMessage(ColorUtils.toComponent(
-                            formatLegacyMessage(
-                                    getRandomTeleportMessage("NOTIFY", "&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!"),
-                                    viewerName,
-                                    null,
-                                    null,
-                                    viewerName,
-                                    null
-                            ),
-                            target
-                    ));
-                }
-            });
+            if (isRandomTeleportNotifyTargetEnabled()) {
+                plugin.getSpigotScheduler().runEntity(target, () -> {
+                    if (target.isOnline()) {
+                        target.sendMessage(ColorUtils.toComponent(
+                                formatLegacyMessage(
+                                        getRandomTeleportMessage("NOTIFY", "&8[&dʀᴛᴘ&8] &e%player% &7ᴀᴘᴘᴇᴀʀᴇᴅ ɴᴇᴀʀ ʏᴏᴜ!"),
+                                        viewerName,
+                                        null,
+                                        null,
+                                        viewerName,
+                                        null
+                                ),
+                                target
+                        ));
+                    }
+                });
+            }
         });
         return target;
     }
@@ -867,6 +881,9 @@ public class StaffModeManager {
 
         if (state.isVanishActive()) {
             applyVanish(player, false);
+            if (shouldSendFakeJoinOnUnvanish() && player.isOnline()) {
+                broadcastFakeJoin(player);
+            }
         } else {
             refreshViewerVisibility(player);
         }
@@ -930,11 +947,21 @@ public class StaffModeManager {
             return false;
         }
 
+        boolean wasVanished = currentState.isVanishActive();
+
         StaffModeState updatedState = currentState.withVanishActive(active);
         activeStates.put(player.getUniqueId(), updatedState);
         plugin.getDatabaseManager().saveStaffModeState(updatedState);
         applyVanish(player, active);
         refreshTool(player, StaffToolType.VANISH);
+
+        if (wasVanished != active) {
+            if (active && shouldSendFakeLeaveOnVanish()) {
+                broadcastFakeLeave(player);
+            } else if (!active && shouldSendFakeJoinOnUnvanish()) {
+                broadcastFakeJoin(player);
+            }
+        }
 
         if (notify) {
             String path = active ? "VANISH-ON" : "VANISH-OFF";
@@ -944,6 +971,46 @@ public class StaffModeManager {
         }
 
         return active;
+    }
+
+    public void broadcastFakeLeave(Player player) {
+        if (player == null) {
+            return;
+        }
+        String msgTemplate = getMessage("FAKE-LEAVE-MESSAGE", "&e{player} left the game");
+        String message = msgTemplate
+                .replace("{player}", player.getName())
+                .replace("%player%", player.getName());
+        broadcastFakeVanishMessage(player, message);
+    }
+
+    public void broadcastFakeJoin(Player player) {
+        if (player == null) {
+            return;
+        }
+        String msgTemplate = getMessage("FAKE-JOIN-MESSAGE", "&e{player} joined the game");
+        String message = msgTemplate
+                .replace("{player}", player.getName())
+                .replace("%player%", player.getName());
+        broadcastFakeVanishMessage(player, message);
+    }
+
+    private void broadcastFakeVanishMessage(Player staffPlayer, String legacyMessage) {
+        if (staffPlayer == null || legacyMessage == null || legacyMessage.isEmpty()) {
+            return;
+        }
+        boolean onlyRegular = shouldSendFakeMessagesOnlyToRegularPlayers();
+        String seeVanishedPerm = getSeeVanishedPermission();
+
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+            if (viewer.getUniqueId().equals(staffPlayer.getUniqueId())) {
+                continue;
+            }
+            if (onlyRegular && PermissionUtils.has(viewer, seeVanishedPerm)) {
+                continue;
+            }
+            viewer.sendMessage(ColorUtils.toComponent(legacyMessage, viewer));
+        }
     }
 
     private void applyVanish(Player player, boolean active) {
@@ -975,9 +1042,6 @@ public class StaffModeManager {
 
         if (state.isNightVisionOwned()) {
             player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-        }
-        if (isBetterViewFlightEnabled() && isBetterViewAutoFlyEnabled()) {
-            player.setFlying(false);
         }
     }
 
@@ -1194,6 +1258,10 @@ public class StaffModeManager {
 
     private boolean isBetterViewAutoFlyEnabled() {
         return getConfig().getBoolean("STAFF-MODE.BETTER-VIEW.AUTO-FLY", true);
+    }
+
+    public boolean isRandomTeleportNotifyTargetEnabled() {
+        return getConfig().getBoolean("STAFF-MODE.RANDOM-TELEPORT.NOTIFY-TARGET", false);
     }
 
     private int getToolSlot(StaffToolType toolType) {

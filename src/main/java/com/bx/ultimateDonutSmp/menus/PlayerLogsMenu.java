@@ -126,6 +126,8 @@ public class PlayerLogsMenu extends BaseMenu {
             case "economy" -> material = Material.GOLD_INGOT;
             case "crates" -> material = Material.TRIPWIRE_HOOK;
             case "spawners" -> material = Material.SPAWNER;
+            case "deaths" -> material = Material.SKELETON_SKULL;
+            case "messages", "msg" -> material = Material.WRITABLE_BOOK;
             default -> material = Material.PAPER;
         }
 

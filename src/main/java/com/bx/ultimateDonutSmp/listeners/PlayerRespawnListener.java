@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NightVisionUtils;
@@ -38,30 +39,76 @@ public class PlayerRespawnListener implements Listener {
                 && plugin.getFfaManager().consumeRespawn(player, event);
 
         if (!duelRespawnHandled && !ffaRespawnHandled) {
+            Location pearlLocation = plugin.getEnderPearlManager() != null
+                    ? plugin.getEnderPearlManager().consumePendingTeleport(player.getUniqueId())
+                    : null;
+            if (pearlLocation != null) {
+                Location finalPearlLocation = pearlLocation.clone();
+                event.setRespawnLocation(finalPearlLocation);
+                boolean isStaffMode = plugin.getStaffModeManager().isInStaffMode(player.getUniqueId());
+
+                plugin.getSpigotScheduler().runGlobalLater(() -> {
+                    if (!player.isOnline()) {
+                        return;
+                    }
+                    plugin.getSpigotScheduler().teleport(player, finalPearlLocation).thenAccept(success -> {
+                        plugin.getSpigotScheduler().runEntity(player, () -> {
+                            if (player.isOnline()) {
+                                NightVisionUtils.restoreIfEnabled(plugin, player);
+                                if (!isStaffMode) {
+                                    scheduleChainmailKit(plugin, player, 0L);
+                                }
+                            }
+                        });
+                    });
+                }, 1L);
+                return;
+            }
+
             boolean respawnOnBed = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.RESPAWN-ON-BED", false);
             if (!respawnOnBed || !isRespawningAtBedOrAnchor(event, player)) {
-                Location respawnLocation = plugin.getSpawnManager().getSpawnLocation();
+                Location respawnLocation = plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.SPAWN);
+                if (respawnLocation == null) {
+                    respawnLocation = plugin.getSpawnManager().getSpawnLocation();
+                }
                 if (respawnLocation == null) {
                     respawnLocation = plugin.getSpawnManager().makeSafeDestination(event.getRespawnLocation());
                 }
                 if (respawnLocation != null) {
                     Location finalRespawnLocation = respawnLocation.clone();
                     event.setRespawnLocation(finalRespawnLocation);
-                    plugin.getSpigotScheduler().runEntityLater(player, () -> {
-                        if (player.isOnline() && shouldSnapToRespawnLocation(player.getLocation(), finalRespawnLocation)) {
-                            plugin.getSpigotScheduler().teleport(player, finalRespawnLocation);
+                    boolean isStaffMode = plugin.getStaffModeManager().isInStaffMode(player.getUniqueId());
+
+                    plugin.getSpigotScheduler().runGlobalLater(() -> {
+                        if (!player.isOnline()) {
+                            return;
                         }
+                        plugin.getSpigotScheduler().teleport(player, finalRespawnLocation).thenAccept(success -> {
+                            plugin.getSpigotScheduler().runEntity(player, () -> {
+                                if (player.isOnline()) {
+                                    NightVisionUtils.restoreIfEnabled(plugin, player);
+                                    if (!isStaffMode) {
+                                        scheduleChainmailKit(plugin, player, 0L);
+                                    }
+                                }
+                            });
+                        });
                     }, 1L);
+                    return;
                 }
             }
         }
 
         plugin.getStaffModeManager().handleRespawn(player);
-        plugin.getSpigotScheduler().runEntityLater(
-                player,
-                () -> NightVisionUtils.restoreIfEnabled(plugin, player),
-                1L
-        );
+        plugin.getSpigotScheduler().runGlobalLater(() -> {
+            if (player.isOnline()) {
+                plugin.getSpigotScheduler().runEntity(player, () -> {
+                    if (player.isOnline()) {
+                        NightVisionUtils.restoreIfEnabled(plugin, player);
+                    }
+                });
+            }
+        }, 2L);
 
         if (!ffaRespawnHandled) {
             if (plugin.getStaffModeManager().isInStaffMode(player.getUniqueId())) {
@@ -111,11 +158,15 @@ public class PlayerRespawnListener implements Listener {
             return;
         }
 
-        plugin.getSpigotScheduler().runEntityLater(player, () -> {
+        plugin.getSpigotScheduler().runGlobalLater(() -> {
             if (player.isOnline()) {
-                giveChainmailKit(plugin, player);
+                plugin.getSpigotScheduler().runEntity(player, () -> {
+                    if (player.isOnline()) {
+                        giveChainmailKit(plugin, player);
+                    }
+                });
             }
-        }, Math.max(0L, delayTicks));
+        }, Math.max(1L, delayTicks));
     }
 
     private static void giveChainmailKit(UltimateDonutSmp plugin, Player player) {

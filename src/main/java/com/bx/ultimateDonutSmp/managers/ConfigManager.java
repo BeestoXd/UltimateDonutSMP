@@ -874,8 +874,16 @@ public class ConfigManager {
         changed |= syncLegacyScalarDefault(lines, "MAX-CHUNK-SAMPLES:", "128", List.of("0", "1"));
 
         changed |= syncRtpComment(lines, "ATTEMPT-INTERVAL-TICKS:",
-                "# Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 8 use 8.");
-        changed |= syncLegacyScalarDefault(lines, "ATTEMPT-INTERVAL-TICKS:", "8", List.of("1", "2", "4"));
+                "# Ticks between chunk samples. Higher values reduce load but make RTP slower. Values below 1 use 1.");
+        changed |= syncLegacyScalarDefault(lines, "ATTEMPT-INTERVAL-TICKS:", "1", List.of("8"));
+
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "SEARCH-ATTEMPTS-PER-TICK:",
+                "4",
+                "# Number of location attempts evaluated in parallel per sample interval.",
+                "ATTEMPT-INTERVAL-TICKS:"
+        );
 
         changed |= syncRtpComment(lines, "GENERATE-CHUNKS:",
                 "# Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS.");
@@ -889,7 +897,7 @@ public class ConfigManager {
         changed |= syncRtpSettingDefaultAndComment(
                 lines,
                 "GENERATE-FALLBACK-AFTER-SAMPLES:",
-                "48",
+                "8",
                 "# Chunk samples to try before limited fallback generation starts.",
                 "GENERATE-FALLBACK-CHUNKS:"
         );
@@ -905,6 +913,13 @@ public class ConfigManager {
                 "# If chunk generation is disabled, allow loading already-generated chunks from disk.");
         changed |= syncRtpComment(lines, "FALLBACK-TO-LOADED-CHUNKS:",
                 "# If random samples cannot be prepared, try already-loaded chunks as a fallback.");
+        changed |= syncRtpSettingDefaultAndComment(
+                lines,
+                "LOADED-CHUNK-FALLBACK-AFTER-SAMPLES:",
+                "64",
+                "# Chunk samples to try before loaded chunk fallback starts.",
+                "FALLBACK-TO-LOADED-CHUNKS:"
+        );
         changed |= syncRtpComment(lines, "PRELOAD-TELEPORT-CHUNKS:",
                 "# Preload generated chunks around the RTP destination before teleporting to reduce post-teleport ping spikes.");
         changed |= syncRtpComment(lines, "PRELOAD-RADIUS:",
@@ -1806,8 +1821,15 @@ public class ConfigManager {
         }
 
         // Network server entries can be expanded per deployment.
-        return "network.yml".equals(resourceName)
-                && path.startsWith("NETWORK-STATUS.SERVERS.");
+        if ("network.yml".equals(resourceName)
+                && path.startsWith("NETWORK-STATUS.SERVERS.")) {
+            return true;
+        }
+
+        // Shop categories and shop menus are customized by server admins.
+        return "shop.yml".equals(resourceName)
+                && !path.equals("SHOP-GUI") && !path.startsWith("SHOP-GUI.")
+                && !path.equals("BACK-BUTTON") && !path.startsWith("BACK-BUTTON.");
     }
 
     private boolean hasScalarParent(ConfigurationSection configuration, String path) {
@@ -1938,15 +1960,6 @@ public class ConfigManager {
     }
 
     private boolean hasLegacyButtons(YamlConfiguration config) {
-        ConfigurationSection buttons = config.getConfigurationSection("SETTINGS-MENU.BUTTONS");
-        if (buttons == null) {
-            return false;
-        }
-        for (String key : buttons.getKeys(false)) {
-            if (key.startsWith("HEADER_") || "TOTEM_PARTICLES".equals(key) || "TP_AUTO".equals(key)) {
-                return true;
-            }
-        }
         return false;
     }
 

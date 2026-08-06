@@ -233,7 +233,7 @@ public class LunarRichPresenceManager {
         result = replaceToken(result, "team", teamName);
         result = replaceToken(result, "team_size", String.valueOf(teamSize));
         result = replaceToken(result, "team_max_size", String.valueOf(teamMaxSize));
-        result = replaceToken(result, "ping", String.valueOf(player.getPing()));
+        result = replaceToken(result, "ping", String.valueOf(plugin.getPingManager().getPing(player)));
         result = result.replace("%economy_username%", player.getName());
         result = result.replace("%economy_team%", teamName);
         result = result.replace("%economy_money%", money);
@@ -251,7 +251,7 @@ public class LunarRichPresenceManager {
         result = result.replace("%economy_kills%", kills);
         result = result.replace("%economy_deaths%", deaths);
         result = result.replace("%economy_playtime%", playtime);
-        result = result.replace("%economy_ping%", String.valueOf(player.getPing()));
+        result = result.replace("%economy_ping%", String.valueOf(plugin.getPingManager().getPing(player)));
         return result;
     }
 

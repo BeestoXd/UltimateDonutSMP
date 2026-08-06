@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -112,6 +113,9 @@ public class CombatListener implements Listener {
         if (damager instanceof EnderCrystal) {
             return DamageSource.ENDER_CRYSTAL;
         }
+        if (damager instanceof EnderPearl) {
+            return plugin.getCombatManager().isEnderPearlCombatEnabled() ? DamageSource.PLAYER : DamageSource.OTHER;
+        }
         if (resolvePlayerAttacker(damager) != null) {
             return DamageSource.PLAYER;
         }
@@ -131,7 +135,7 @@ public class CombatListener implements Listener {
         if (damager instanceof Player player) {
             return player;
         }
-        if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player player) {
+        if (damager instanceof Projectile projectile && !(damager instanceof EnderPearl) && projectile.getShooter() instanceof Player player) {
             return player;
         }
         return null;

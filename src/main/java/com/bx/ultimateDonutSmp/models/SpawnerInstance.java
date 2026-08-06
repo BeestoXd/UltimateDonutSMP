@@ -47,6 +47,7 @@ public class SpawnerInstance {
     private long lastProcessedAt;
     private final long createdAt;
     private long updatedAt;
+    private double storedXp;
     private final Map<String, SpawnerLootEntry> storedLoot = new LinkedHashMap<>();
     private final Set<String> disabledLootKeys = new LinkedHashSet<>();
 
@@ -65,6 +66,25 @@ public class SpawnerInstance {
             long createdAt,
             long updatedAt
     ) {
+        this(id, world, x, y, z, ownerUuid, ownerNameSnapshot, mobTypeKey, stackAmount, accessMode, lastProcessedAt, createdAt, updatedAt, 0.0);
+    }
+
+    public SpawnerInstance(
+            long id,
+            String world,
+            int x,
+            int y,
+            int z,
+            UUID ownerUuid,
+            String ownerNameSnapshot,
+            String mobTypeKey,
+            long stackAmount,
+            AccessMode accessMode,
+            long lastProcessedAt,
+            long createdAt,
+            long updatedAt,
+            double storedXp
+    ) {
         this.id = id;
         this.world = world == null ? "" : world;
         this.x = x;
@@ -78,6 +98,7 @@ public class SpawnerInstance {
         this.lastProcessedAt = Math.max(0L, lastProcessedAt);
         this.createdAt = Math.max(0L, createdAt);
         this.updatedAt = Math.max(0L, updatedAt);
+        this.storedXp = Math.max(0.0, storedXp);
     }
 
     public long getId() {
@@ -184,6 +205,77 @@ public class SpawnerInstance {
         }
     }
 
+    public void setSlotLoot(int slotIndex, Material material, long amount) {
+        if (slotIndex < 0) {
+            return;
+        }
+        String key = "SLOT_" + slotIndex;
+        if (material == null || material.isAir() || amount <= 0L) {
+            storedLoot.remove(key);
+            return;
+        }
+        storedLoot.put(key, new SpawnerLootEntry(key, material, amount));
+    }
+
+    public SpawnerLootEntry getSlotLoot(int slotIndex) {
+        return storedLoot.get("SLOT_" + slotIndex);
+    }
+
+    public void removeSlotLoot(int slotIndex) {
+        storedLoot.remove("SLOT_" + slotIndex);
+    }
+
+    public void addAutoMobDrop(Material material, long amount, long capPerKey) {
+        if (material == null || amount <= 0L) {
+            return;
+        }
+
+        long currentTotal = 0L;
+        for (SpawnerLootEntry entry : storedLoot.values()) {
+            if (entry.getMaterial() == material) {
+                currentTotal += entry.getAmount();
+            }
+        }
+
+        if (capPerKey > 0L && currentTotal >= capPerKey) {
+            return;
+        }
+
+        long allowedToAdd = amount;
+        if (capPerKey > 0L) {
+            allowedToAdd = Math.min(allowedToAdd, capPerKey - currentTotal);
+        }
+
+        if (allowedToAdd <= 0L) {
+            return;
+        }
+
+        long remaining = allowedToAdd;
+        int maxStack = material.getMaxStackSize();
+        if (maxStack <= 0) maxStack = 64;
+
+        for (SpawnerLootEntry entry : storedLoot.values()) {
+            if (entry.getMaterial() == material && entry.getAmount() < maxStack) {
+                long space = maxStack - entry.getAmount();
+                long add = Math.min(space, remaining);
+                entry.setAmount(entry.getAmount() + add);
+                remaining -= add;
+                if (remaining <= 0) break;
+            }
+        }
+
+        int slotIndex = 0;
+        while (remaining > 0) {
+            while (storedLoot.containsKey("SLOT_" + slotIndex)) {
+                slotIndex++;
+            }
+            long add = Math.min(maxStack, remaining);
+            setSlotLoot(slotIndex, material, add);
+            remaining -= add;
+            slotIndex++;
+        }
+    }
+
     public void addStoredLoot(String key, Material material, long amount, long capPerKey) {
         if (key == null || material == null || amount <= 0L) {
             return;
@@ -259,6 +351,21 @@ public class SpawnerInstance {
                 }
             }
         }
+    }
+
+    public double getStoredXp() {
+        return storedXp;
+    }
+
+    public void setStoredXp(double storedXp) {
+        this.storedXp = Math.max(0.0, storedXp);
+    }
+
+    public void addStoredXp(double amount) {
+        if (amount <= 0.0) {
+            return;
+        }
+        setStoredXp(this.storedXp + amount);
     }
 
     public static String buildLocationKey(String world, int x, int y, int z) {

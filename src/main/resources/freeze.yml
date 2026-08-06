@@ -1,70 +1,81 @@
-# Configuration section for Freeze.
+# ==============================================================================
+# UltimateDonutSMP - Freeze System Configuration
+# ==============================================================================
+
 FREEZE:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the freeze system globally (true / false)
   ENABLED: true
-  # Determines whether Persist On Quit is enabled or disabled. Available options: true, false
+
+  # Preserve frozen status across player logouts (true / false)
   PERSIST-ON-QUIT: true
-  # Determines whether Persist On Restart is enabled or disabled. Available options: true, false
+
+  # Preserve frozen status across server restarts (true / false)
   PERSIST-ON-RESTART: true
-  # Determines whether Allow Look is enabled or disabled. Available options: true, false
+
+  # Allow frozen players to look around (true / false)
   ALLOW-LOOK: true
-  # The numerical value for Alert Interval Ticks. Available options: Any valid integer
+
+  # Interval in ticks between periodic freeze alert messages sent to frozen players (20 ticks = 1s)
   ALERT-INTERVAL-TICKS: 100
-  # Determines whether Log Usage is enabled or disabled. Available options: true, false
+
+  # Log freeze system actions to console/database (true / false)
   LOG-USAGE: true
-  # The text or value for Server Name. Available options: Any valid string text
+
+  # Server identifier used in quit broadcast alerts
   SERVER-NAME: survival-01
-  # The text or value for Staff Permission. Available options: Any valid string text
+
+  # Required permission node to execute /freeze
   STAFF-PERMISSION: ultimatedonutsmp.staff.freeze
-  # The text or value for Alert Permission. Available options: Any valid string text
+
+  # Permission node to receive staff freeze broadcast alerts
   ALERT-PERMISSION: ultimatedonutsmp.staff.freeze.alert
-  # The text or value for Exempt Permission. Available options: Any valid string text
+
+  # Permission node granting exemption from being frozen
   EXEMPT-PERMISSION: ultimatedonutsmp.staff.freeze.exempt
-  # The text or value for Admin Permission. Available options: Any valid string text
+
+  # Permission node to reload/administer freeze system
   ADMIN-PERMISSION: ultimatedonutsmp.admin.freeze
-  # Configuration section for Allowed Commands.
+
+  # Commands allowed for frozen players (e.g., messaging staff or discord)
   ALLOWED-COMMANDS:
-  - /discord
-  - /social
-  - /msg
-  - /r
-  - /helpop
-  # The text or value for Status On. Available options: Any valid string text
+    - /discord
+    - /social
+    - /msg
+    - /r
+    - /helpop
+
+  # Display tag for active freeze status
   STATUS_ON: '&a&lON'
-  # The text or value for Status Off. Available options: Any valid string text
+
+  # Display tag for inactive freeze status
   STATUS_OFF: '&c&lOFF'
-  # The text or value for Message. Available options: Any valid string text
+
+  # Toggle feedback message sent to staff (%player% and %status% placeholders)
   MESSAGE: '&bFreeze &a%player% &7is now %status%'
-  # Configuration section for Alert.
+
+  # Periodic notification screen broadcast to frozen players
   ALERT:
-  - ''
-  - '&c&lYou''re currently frozen!'
-  - ''
-  - '&7- You cannot move or interact'
-  - '&7- Staff members are reviewing your actions'
-  - '&7- Join our Discord for support:'
-  - '&6&ohttps://discord.com'
-  - ''
-  # The text or value for Quit Message. Available options: Any valid string text
+    - ''
+    - '&c&lYou''re currently frozen!'
+    - ''
+    - '&7- You cannot move or interact'
+    - '&7- Staff members are reviewing your actions'
+    - '&7- Join our Discord for support:'
+    - '&6&ohttps://discord.com'
+    - ''
+
+  # Alert broadcast to staff when a frozen player leaves the server
   QUIT_MESSAGE: '&c[Freeze] &4%player% &cleft while frozen on &4%server%'
+
+# System and user feedback messages
 MESSAGES:
-  # The text or value for No Permission. Available options: Any valid string text
   NO-PERMISSION: '&cYou do not have permission.'
-  # The text or value for Feature Disabled. Available options: Any valid string text
   FEATURE-DISABLED: '&cThe Freeze system is disabled.'
-  # The text or value for Player Not Found. Available options: Any valid string text
   PLAYER-NOT-FOUND: '&cPlayer not found.'
-  # The text or value for Target Offline. Available options: Any valid string text
   TARGET-OFFLINE: '&cThat player must be online.'
-  # The text or value for Target Exempt. Available options: Any valid string text
   TARGET-EXEMPT: '&cYou cannot freeze that player.'
-  # The text or value for Self Target. Available options: Any valid string text
   SELF-TARGET: '&cYou cannot freeze yourself.'
-  # The text or value for Command Blocked. Available options: Any valid string text
   COMMAND-BLOCKED: '&cYou cannot use commands while frozen.'
-  # The text or value for Still Frozen. Available options: Any valid string text
   STILL-FROZEN: '&cYou are still frozen. Wait for staff instructions.'
-  # The text or value for Unfrozen. Available options: Any valid string text
   UNFROZEN: '&aYou are no longer frozen.'
-  # The text or value for Reload Success. Available options: Any valid string text
   RELOAD-SUCCESS: '&aFreeze config reloaded.'

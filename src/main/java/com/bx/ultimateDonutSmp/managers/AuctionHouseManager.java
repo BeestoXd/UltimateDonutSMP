@@ -1214,9 +1214,33 @@ public final class AuctionHouseManager {
     }
 
     private boolean hasPermission(Player player, String action) {
-        return PermissionUtils.has(player, "ultimatedonutsmp.auctionhouse." + action)
-                || PermissionUtils.has(player, "donutauction." + action)
-                || PermissionUtils.has(player, "ultimatedonutsmp.admin.auctionhouse");
+        if (PermissionUtils.has(player, "ultimatedonutsmp.admin.auctionhouse")) {
+            return true;
+        }
+        if (PermissionUtils.has(player, "ultimatedonutsmp.auctionhouse." + action)
+                || PermissionUtils.has(player, "donutauction." + action)) {
+            return true;
+        }
+        if ("buy".equalsIgnoreCase(action)
+                && (PermissionUtils.has(player, "ultimatedonutsmp.auctionhouse.use")
+                || PermissionUtils.has(player, "donutauction.use"))) {
+            return !isExplicitlyDenied(player, "ultimatedonutsmp.auctionhouse.buy")
+                    && !isExplicitlyDenied(player, "donutauction.buy");
+        }
+        return false;
+    }
+
+    private boolean isExplicitlyDenied(Player player, String permission) {
+        if (player == null || permission == null) {
+            return false;
+        }
+        String normalized = PermissionUtils.normalizePermissionNode(permission);
+        for (org.bukkit.permissions.PermissionAttachmentInfo info : player.getEffectivePermissions()) {
+            if (PermissionUtils.normalizePermissionNode(info.getPermission()).equals(normalized) && !info.getValue()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Throwable unwrap(Throwable throwable) {

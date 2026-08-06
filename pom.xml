@@ -76,6 +76,10 @@
                             <pattern>org.apache.commons.pool2</pattern>
                             <shadedPattern>com.bx.ultimateDonutSmp.libs.commons.pool2</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>com.bx.ultimateDonutSmp.libs.hikari</shadedPattern>
+                        </relocation>
                     </relocations>
                     <filters>
                         <filter>
@@ -160,6 +164,12 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

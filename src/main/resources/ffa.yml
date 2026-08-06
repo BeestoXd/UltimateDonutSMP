@@ -1,40 +1,57 @@
-# Configuration section for Settings.
+# ==============================================================================
+# UltimateDonutSMP - Free For All (FFA) Configuration
+# ==============================================================================
+
+# General FFA arena settings
 SETTINGS:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the FFA system globally (true / false)
   ENABLED: true
-  # The numerical value for Return Delay Seconds. Available options: Any valid integer
+  # Delay before teleporting players back after leaving/dying in FFA (in seconds)
   RETURN_DELAY_SECONDS: 3
-# Configuration section for Rollback.
+
+# Arena Rollback and restoration settings
 ROLLBACK:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable arena block rollback and cleanup after FFA activity (true / false)
   ENABLED: true
-  # The numerical value for Padding Horizontal. Available options: Any valid integer
+  # Extra horizontal padding blocks preserved around FFA arena (in blocks)
   PADDING_HORIZONTAL: 48
-  # The numerical value for Padding Vertical. Available options: Any valid integer
+  # Extra vertical padding blocks preserved around FFA arena (in blocks)
   PADDING_VERTICAL: 20
-  # The numerical value for Timeout Seconds. Available options: Any valid integer
+  # Delay in seconds before starting block rollback
   TIMEOUT_SECONDS: 10
-  # Determines whether Cleanup Projectiles is enabled or disabled. Available options: true, false
+  # Automatically remove projectiles (arrows, snowballs) in FFA arena (true / false)
   CLEANUP_PROJECTILES: true
-  # Determines whether Cleanup Drops is enabled or disabled. Available options: true, false
+  # Automatically remove dropped item entities in FFA arena (true / false)
   CLEANUP_DROPS: true
-  # Determines whether Cleanup Fire And Fluids is enabled or disabled. Available options: true, false
+  # Automatically extinguish fires and drain fluid blocks placed during FFA (true / false)
   CLEANUP_FIRE_AND_FLUIDS: true
-# Configuration section for Player State.
+
+# Player state management upon entering and exiting FFA
 PLAYER_STATE:
-  # Determines whether Restore Inventory is enabled or disabled. Available options: true, false
+  # Restore player inventory upon exiting FFA match (true / false)
   RESTORE_INVENTORY: true
-  # Determines whether Restore Health is enabled or disabled. Available options: true, false
+  # Restore health to max upon exiting FFA match (true / false)
   RESTORE_HEALTH: true
-  # Determines whether Restore Effects is enabled or disabled. Available options: true, false
+  # Clear active potion effects upon entering/exiting FFA (true / false)
   RESTORE_EFFECTS: true
-# Configuration section for Rules.
+
+# Match rules and restrictions
 RULES:
-  # Determines whether Block Commands is enabled or disabled. Available options: true, false
+  # Block general player commands while inside FFA arena (true / false)
   BLOCK_COMMANDS: true
-  # Determines whether Count Toward Global Stats is enabled or disabled. Available options: true, false
+  # Whether FFA kills/deaths count toward global player statistics (true / false)
   COUNT_TOWARD_GLOBAL_STATS: false
-  # Determines whether Give Survival Rewards is enabled or disabled. Available options: true, false
+  # Whether survival rewards (money/shards) are granted for kills in FFA (true / false)
   GIVE_SURVIVAL_REWARDS: false
-# The text or value for Arena Settings. Available options: Any valid string text
+
+# End match screen titles and subtitles
+RESULT-TITLES:
+  victory:
+    title: '&e&lVICTORY!'
+    subtitle: '&e<player> &fwon the FFA Match!'
+  defeat:
+    title: '&c&lDEFEAT!'
+    subtitle: '&c<opponent> &feliminated you!'
+
+# Configuration for static FFA arena definitions (managed via /ffa commands)
 ARENA_SETTINGS: {}

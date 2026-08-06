@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.TitleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -240,11 +241,7 @@ public class MaintenanceManager {
             }
 
             String subtitle = subtitleMsg.replace("%seconds%", String.valueOf(countdown[0]));
-            player.sendTitle(
-                    ColorUtils.colorize(titleMsg),
-                    ColorUtils.colorize(subtitle),
-                    0, 25, 0
-            );
+            TitleUtils.sendTitle(player, titleMsg, subtitle, 0, 25, 0);
 
             countdown[0]--;
         }, 0L, 20L);

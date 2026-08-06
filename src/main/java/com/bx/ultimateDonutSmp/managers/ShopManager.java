@@ -1599,23 +1599,30 @@ public class ShopManager {
     private SellResult commitSale(Player player, PendingSale sale, boolean sendFeedback) {
         EnumSet<SellCategory> leveledUpCategories = EnumSet.noneOf(SellCategory.class);
 
+        List<DatabaseManager.SellHistoryRecord> historyBatch = new ArrayList<>();
+        List<DatabaseManager.PlayerLogRecord> logBatch = new ArrayList<>();
+        long now = System.currentTimeMillis();
+
         for (PendingSellHistory historyEntry : sale.history) {
-            plugin.getDatabaseManager().addSellHistory(
+            historyBatch.add(new DatabaseManager.SellHistoryRecord(
                     player.getUniqueId(),
                     historyEntry.material().name(),
                     historyEntry.amount(),
-                    historyEntry.payout()
-            );
+                    historyEntry.payout(),
+                    now
+            ));
             String prettyName = plugin.getWorthManager().prettifyMaterial(historyEntry.material());
-            plugin.getPlayerLogsManager().log(
+            logBatch.add(new DatabaseManager.PlayerLogRecord(
                     player.getUniqueId(),
                     player.getName(),
                     "Shop",
                     "SHOP_SELL",
-                    "Sold " + prettyName + " x" + historyEntry.amount() + " for " + plugin.getCurrencyManager().formatMoney(historyEntry.payout())
-            );
+                    "Sold " + prettyName + " x" + historyEntry.amount() + " for " + plugin.getCurrencyManager().formatMoney(historyEntry.payout()),
+                    now
+            ));
         }
 
+        Map<SellCategory, Double> earnedCopy = new EnumMap<>(sale.earnedByCategory);
         for (var entry : sale.earnedByCategory.entrySet()) {
             SellCategory category = entry.getKey();
             double before = sale.currentProgress.getOrDefault(category, 0D);
@@ -1626,8 +1633,15 @@ public class ShopManager {
             }
 
             sale.currentProgress.put(category, after);
-            plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), category, entry.getValue());
         }
+
+        plugin.getDatabaseManager().executeAsync(() -> {
+            plugin.getDatabaseManager().addSellHistoryBatch(historyBatch);
+            plugin.getDatabaseManager().addPlayerLogBatch(logBatch);
+            for (var entry : earnedCopy.entrySet()) {
+                plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), entry.getKey(), entry.getValue());
+            }
+        });
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data != null) {

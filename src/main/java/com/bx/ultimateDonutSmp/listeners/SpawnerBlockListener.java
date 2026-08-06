@@ -42,13 +42,56 @@ public class SpawnerBlockListener implements Listener {
             return;
         }
 
-        if (event.getPlayer().isSneaking() && event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
-            plugin.getSpigotScheduler().runEntity(event.getPlayer(), () -> {
-                event.getPlayer().updateInventory();
-            });
+        Player player = event.getPlayer();
+        org.bukkit.inventory.EquipmentSlot handSlot = event.getHand();
+        final int finalRemaining;
+        if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+            int totalPlaced = result.consumedAmount() > 0 ? result.consumedAmount() : (player.isSneaking() ? item.getAmount() : 1);
+            int currentAmount = item.getAmount();
+            finalRemaining = Math.max(0, currentAmount - totalPlaced);
+
+            if (finalRemaining <= 0) {
+                item.setAmount(1);
+                if (handSlot == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
+                    player.getInventory().setItemInOffHand(null);
+                } else {
+                    player.getInventory().setItemInMainHand(null);
+                }
+            } else {
+                item.setAmount(finalRemaining + 1);
+            }
+        } else {
+            finalRemaining = -1;
         }
 
-        event.getPlayer().sendMessage(ColorUtils.toComponent(result.message()));
+        plugin.getSpigotScheduler().runEntity(player, () -> {
+            if (player.getGameMode() != org.bukkit.GameMode.CREATIVE && finalRemaining >= 0) {
+                if (handSlot == org.bukkit.inventory.EquipmentSlot.OFF_HAND) {
+                    if (finalRemaining <= 0) {
+                        player.getInventory().setItemInOffHand(null);
+                    } else {
+                        ItemStack off = player.getInventory().getItemInOffHand();
+                        if (off != null && plugin.getSpawnerManager().isSpawnerItem(off)) {
+                            off.setAmount(finalRemaining);
+                            player.getInventory().setItemInOffHand(off);
+                        }
+                    }
+                } else {
+                    if (finalRemaining <= 0) {
+                        player.getInventory().setItemInMainHand(null);
+                    } else {
+                        ItemStack main = player.getInventory().getItemInMainHand();
+                        if (main != null && plugin.getSpawnerManager().isSpawnerItem(main)) {
+                            main.setAmount(finalRemaining);
+                            player.getInventory().setItemInMainHand(main);
+                        }
+                    }
+                }
+            }
+            player.updateInventory();
+        });
+
+        player.sendMessage(ColorUtils.toComponent(result.message()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -72,18 +115,73 @@ public class SpawnerBlockListener implements Listener {
             return;
         }
 
-        event.setDropItems(false);
-        event.setExpToDrop(0);
+        if (!result.fullyDestroyed()) {
+            event.setCancelled(true);
+            if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+                damageHeldTool(player);
+            }
+        } else {
+            event.setDropItems(false);
+            event.setExpToDrop(0);
+        }
         player.sendMessage(ColorUtils.toComponent(result.message()));
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onSpawnerSpawn(SpawnerSpawnEvent event) {
-        if (!plugin.getSpawnerManager().isEnabled()) {
+    private void damageHeldTool(Player player) {
+        ItemStack tool = player.getInventory().getItemInMainHand();
+        if (tool == null || tool.getType().isAir()) {
             return;
         }
-        if (plugin.getSpawnerManager().getSpawner(event.getSpawner().getBlock()) != null) {
+        org.bukkit.inventory.meta.ItemMeta meta = tool.getItemMeta();
+        if (meta instanceof org.bukkit.inventory.meta.Damageable damageable) {
+            int unbreakingLevel = tool.getEnchantmentLevel(org.bukkit.enchantments.Enchantment.UNBREAKING);
+            if (unbreakingLevel > 0) {
+                if (java.util.concurrent.ThreadLocalRandom.current().nextInt(unbreakingLevel + 1) != 0) {
+                    return;
+                }
+            }
+            int currentDamage = damageable.getDamage();
+            int maxDurability = tool.getType().getMaxDurability();
+            if (maxDurability > 0) {
+                int newDamage = currentDamage + 1;
+                if (newDamage >= maxDurability) {
+                    player.getInventory().setItemInMainHand(null);
+                    player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+                } else {
+                    damageable.setDamage(newDamage);
+                    tool.setItemMeta(meta);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onSpawnerSpawn(SpawnerSpawnEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled() || !plugin.getSpawnerManager().isCancelMobSpawn()) {
+            return;
+        }
+        Block spawnerBlock = event.getSpawner() != null ? event.getSpawner().getBlock() : null;
+        if (spawnerBlock != null && plugin.getSpawnerManager().getSpawner(spawnerBlock) != null) {
             event.setCancelled(true);
+            if (event.getEntity() != null && event.getEntity().isValid()) {
+                event.getEntity().remove();
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCreatureSpawn(org.bukkit.event.entity.CreatureSpawnEvent event) {
+        if (!plugin.getSpawnerManager().isEnabled() || !plugin.getSpawnerManager().isCancelMobSpawn()) {
+            return;
+        }
+        if (event.getSpawnReason() == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER) {
+            org.bukkit.Location loc = event.getLocation();
+            if (loc != null && plugin.getSpawnerManager().isNearManagedSpawner(loc, 12.0D)) {
+                event.setCancelled(true);
+                if (event.getEntity() != null && event.getEntity().isValid()) {
+                    event.getEntity().remove();
+                }
+            }
         }
     }
 

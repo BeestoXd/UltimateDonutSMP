@@ -1,13 +1,13 @@
 # Configuration section for Categories.
 CATEGORIES:
   # The text or value for Menu Title. Available options: Any valid string text
-  MENU-TITLE: '&8ѕʜᴏᴘ'
+  MENU-TITLE: '&8Shop'
   # The numerical value for Menu Size. Available options: Any valid integer
   MENU-SIZE: 27
   # Configuration section for End.
   END:
     MATERIAL: END_STONE
-    DISPLAY-NAME: '&#6BF18Dᴇɴᴅ'
+    DISPLAY-NAME: '&#6BF18DEnd'
     SLOT: 11
     LORE:
     - '&fClick to view the end shop'
@@ -16,7 +16,7 @@ CATEGORIES:
   # Configuration section for Nether.
   NETHER:
     MATERIAL: NETHERRACK
-    DISPLAY-NAME: '&#6BF18Dɴᴇᴛʜᴇʀ'
+    DISPLAY-NAME: '&#6BF18DNether'
     SLOT: 12
     LORE:
     - '&fClick to view the nether shop'
@@ -25,7 +25,7 @@ CATEGORIES:
   # Configuration section for Gear.
   GEAR:
     MATERIAL: TOTEM_OF_UNDYING
-    DISPLAY-NAME: '&#6BF18Dɢᴇᴀʀ'
+    DISPLAY-NAME: '&#6BF18DGear'
     SLOT: 13
     LORE:
     - '&fClick to view the gear shop'
@@ -34,7 +34,7 @@ CATEGORIES:
   # Configuration section for Food.
   FOOD:
     MATERIAL: COOKED_BEEF
-    DISPLAY-NAME: '&#6BF18Dꜰᴏᴏᴅ'
+    DISPLAY-NAME: '&#6BF18DFood'
     SLOT: 14
     LORE:
     - '&fClick to view the food shop'
@@ -43,7 +43,7 @@ CATEGORIES:
   # Configuration section for Shard.
   SHARD:
     MATERIAL: AMETHYST_SHARD
-    DISPLAY-NAME: '&#6BF18Dѕʜᴀʀᴅ ѕʜᴏᴘ'
+    DISPLAY-NAME: '&#6BF18DShard shop'
     SLOT: 15
     LORE:
     - '&fClick to view the shard shop'
@@ -86,7 +86,7 @@ CATEGORIES:
 END-MENU:
   # The text or value for Currency. Available options: Any valid string text
   CURRENCY: MONEY
-  TITLE: '&8ѕʜᴏᴘ - ᴇɴᴅ'
+  TITLE: '&8shop - end'
   SIZE: 27
   # Configuration section for Ender Chest Item.
   ENDER-CHEST-ITEM:
@@ -157,9 +157,9 @@ END-MENU:
     DISPLAY-NAME: '&fChorus Fruit'
     SLOT: 14
     # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 10.0
+    PRICE-PER-UNIT: 25.0
     LORE:
-    - '&fBuy price: &a$10'
+    - '&fBuy price: &a$25'
   # Configuration section for Popped Chorus Fruit Item.
   POPPED-CHORUS-FRUIT-ITEM:
     # The text or value for Currency. Available options: Any valid string text
@@ -195,7 +195,7 @@ END-MENU:
     - '&fBuy price: &a$800'
 # Configuration section for Nether Menu.
 NETHER-MENU:
-  TITLE: '&8ѕʜᴏᴘ - ɴᴇᴛʜᴇʀ'
+  TITLE: '&8shop - nether'
   SIZE: 27
   # Configuration section for Blaze Rod Item.
   BLAZE-ROD-ITEM:
@@ -216,9 +216,9 @@ NETHER-MENU:
     DISPLAY-NAME: '&fNether Wart'
     SLOT: 10
     # The numerical value for Price Per Unit. Available options: Any valid integer
-    PRICE-PER-UNIT: 15
+    PRICE-PER-UNIT: 25
     LORE:
-    - '&fBuy price: &a$15'
+    - '&fBuy price: &a$25'
   # Configuration section for Glowstone Dust Item.
   GLOWSTONE-DUST-ITEM:
     # The text or value for Currency. Available options: Any valid string text
@@ -238,9 +238,9 @@ NETHER-MENU:
     DISPLAY-NAME: '&fMagma Cream'
     SLOT: 12
     # The numerical value for Price Per Unit. Available options: Any valid integer
-    PRICE-PER-UNIT: 15
+    PRICE-PER-UNIT: 25
     LORE:
-    - '&fBuy price: &a$15'
+    - '&fBuy price: &a$25'
   # Configuration section for Ghast Tear Item.
   GHAST-TEAR-ITEM:
     # The text or value for Currency. Available options: Any valid string text
@@ -298,7 +298,7 @@ NETHER-MENU:
     - '&fBuy price: &a$150'
 # Configuration section for Gear Menu.
 GEAR-MENU:
-  TITLE: '&8ɢᴇᴀʀ - ѕʜᴏᴘ'
+  TITLE: '&8gear - shop'
   SIZE: 27
   # Configuration section for Obsidian Item.
   OBSIDIAN-ITEM:
@@ -388,20 +388,10 @@ GEAR-MENU:
     PRICE-PER-UNIT: 100
     LORE:
     - '&fBuy price: &a$100'
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&eDIRT'
-    SLOT: 17
-    # The numerical value for Price Per Unit. Available options: Any valid integer
-    PRICE-PER-UNIT: 500
-    LORE:
-    - '&fBuy price: &a$500'
+
 # Configuration section for Food Menu.
 FOOD-MENU:
-  TITLE: '&8ꜰᴏᴏᴅ - ѕʜᴏᴘ'
+  TITLE: '&8food - shop'
   SIZE: 27
   # Configuration section for Potato Item.
   POTATO-ITEM:
@@ -504,7 +494,7 @@ FOOD-MENU:
     - '&fBuy price: &a$250'
 # Configuration section for Shard Menu.
 SHARD-MENU:
-  TITLE: '&8ѕʜᴀʀᴅ - ѕʜᴏᴘ'
+  TITLE: '&8shard - shop'
   SIZE: 27
   # Configuration section for Pig Spawner Item.
   PIG-SPAWNER-ITEM:
@@ -652,58 +642,40 @@ SHARD-MENU:
     GIVE-ITEM: false
 # Configuration section for Extra 1 Menu.
 EXTRA-1-MENU:
-  TITLE: '&8ᴇxᴛʀᴀ - ѕʜᴏᴘ'
+  TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&fDirt'
-    SLOT: 9
-    # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 150.0
-    LORE:
-    - '&fBuy price: &a$150'
 # Configuration section for Extra 2 Menu.
 EXTRA-2-MENU:
-  TITLE: '&8ᴇxᴛʀᴀ - ѕʜᴏᴘ'
+  TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&fDirt'
-    SLOT: 9
-    # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 150.0
-    LORE:
-    - '&fBuy price: &a$150'
 # Configuration section for Extra 3 Menu.
 EXTRA-3-MENU:
-  TITLE: '&8ᴇxᴛʀᴀ - ѕʜᴏᴘ'
+  TITLE: '&8extra - shop'
   SIZE: 27
   # The numerical value for Back Button Slot. Available options: Any valid integer
   BACK-BUTTON-SLOT: 18
-  # Configuration section for Dirt Item.
-  DIRT-ITEM:
-    # The text or value for Currency. Available options: Any valid string text
-    CURRENCY: MONEY
-    MATERIAL: DIRT
-    DISPLAY-NAME: '&fDirt'
-    SLOT: 9
-    # The decimal value for Price Per Unit. Available options: Any decimal number
-    PRICE-PER-UNIT: 150.0
-    LORE:
-    - '&fBuy price: &a$150'
 # Configuration section for Back Button.
 BACK-BUTTON:
   MATERIAL: RED_STAINED_GLASS_PANE
-  DISPLAY-NAME: '&cʙᴀᴄᴋ'
+  DISPLAY-NAME: '&cback'
   LORE:
   - '&fClick to return'
+
+# Configuration section for Shop Web Analytics Server
+SHOP-GUI:
+  SHOW-AUCTION-PRICE: true
+  FAVORITES:
+    ENABLED: true
+  WEB-SERVER:
+    # Set to true to enable the embedded Shop Analytics web server
+    ENABLED: false
+    # Port for the embedded web server (e.g. 8080 or 25580)
+    PORT: 8080
+    # Optional custom domain or public URL (e.g. "https://stats.ultimatedonutsmpmc.net" or "http://192.168.1.15:8080/stats")
+    # If left empty (""), it automatically resolves to http://localhost:<PORT>/stats
+    PUBLIC-URL: ""
+

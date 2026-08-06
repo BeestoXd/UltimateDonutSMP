@@ -47,12 +47,8 @@ public final class SignInputUtil {
     private SignInputUtil() {}
 
     public static void openFromConfig(JavaPlugin plugin, Player player, org.bukkit.configuration.ConfigurationSection config, Consumer<String> callback) {
-        if (config == null) {
-            callback.accept(null);
-            return;
-        }
-        List<String> lines = config.getStringList("lines");
-        int inputLine = config.getInt("input-line", 1);
+        List<String> lines = config == null ? null : config.getStringList("lines");
+        int inputLine = config == null ? 0 : config.getInt("input-line", 0);
         open(plugin, player, lines, inputLine, callback);
     }
 
@@ -77,6 +73,11 @@ public final class SignInputUtil {
         }
         if (list.size() > 4) {
             list = list.subList(0, 4);
+        }
+
+        if (list.stream().allMatch(s -> s == null || s.isBlank())) {
+            list.set(1, "^^^^^^^^^^^^^^");
+            list.set(2, "Enter Value");
         }
 
         String[] signLines = new String[4];

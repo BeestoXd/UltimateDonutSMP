@@ -48,6 +48,12 @@ public class SellProgressMenu extends BaseMenu {
 
     @Override
     public void handleClick(int slot, Player player) {
+        if (slot == TYPE_BUTTON_SLOT) {
+            SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+            new WorthMenu(plugin, 1, WorthMenu.SortMode.CATEGORY, category, this).open(player);
+            return;
+        }
+
         if (slot != BACK_BUTTON_SLOT) {
             return;
         }
@@ -63,6 +69,12 @@ public class SellProgressMenu extends BaseMenu {
         );
         String title = menus.getString(path + ".TITLE." + category.getConfigKey(), "&f" + category.name());
         List<String> lore = menus.getStringList(path + ".LORE." + category.getConfigKey());
+        if (lore.isEmpty() || lore.stream().noneMatch(line -> line.toLowerCase(Locale.US).contains("click") || line.contains("►"))) {
+            List<String> updatedLore = new java.util.ArrayList<>(lore);
+            updatedLore.add("");
+            updatedLore.add("&e► Click to view items in this category");
+            lore = updatedLore;
+        }
         set(TYPE_BUTTON_SLOT, ItemUtils.createItem(material, title, lore));
     }
 
@@ -112,7 +124,8 @@ public class SellProgressMenu extends BaseMenu {
 
     private void buildBackButton(FileConfiguration menus) {
         Material material = ItemUtils.parseMaterial(
-                menus.getString("GLOBAL.PAGE-MENU.MATERIAL", "ARROW")
+                menus.getString("PROGRESS-MENU.BACK-BUTTON.MATERIAL",
+                menus.getString("GLOBAL.PAGE-MENU.MATERIAL", "BARRIER"))
         );
         String title = menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cʙᴀᴄᴋ");
         List<String> lore = menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE");

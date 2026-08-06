@@ -14,20 +14,31 @@ public final class PermissionUtils {
     private PermissionUtils() {
     }
 
+    public static boolean isTemporaryPlayer(Permissible permissible) {
+        if (permissible == null) {
+            return false;
+        }
+        return permissible.getClass().getName().contains("TemporaryPlayer");
+    }
+
     public static boolean has(Permissible permissible, String permission) {
-        if (permissible == null || permission == null || permission.isBlank()) {
+        if (permissible == null || permission == null || permission.isBlank() || isTemporaryPlayer(permissible)) {
             return false;
         }
 
-        String normalized = normalizePermissionNode(permission);
-        if (permissible.hasPermission(permission)) {
-            return true;
-        }
-        if (!normalized.equals(permission) && permissible.hasPermission(normalized)) {
-            return true;
-        }
+        try {
+            String normalized = normalizePermissionNode(permission);
+            if (permissible.hasPermission(permission)) {
+                return true;
+            }
+            if (!normalized.equals(permission) && permissible.hasPermission(normalized)) {
+                return true;
+            }
 
-        return hasEffectivePermissionAlias(permissible, normalized);
+            return hasEffectivePermissionAlias(permissible, normalized);
+        } catch (UnsupportedOperationException ignored) {
+            return false;
+        }
     }
 
     public static boolean hasOrUnset(Permissible permissible, String permission) {
@@ -47,23 +58,27 @@ public final class PermissionUtils {
     }
 
     public static boolean hasExact(Permissible permissible, String permission) {
-        if (permissible == null || permission == null || permission.isBlank()) {
+        if (permissible == null || permission == null || permission.isBlank() || isTemporaryPlayer(permissible)) {
             return false;
         }
 
-        String normalized = normalizePermissionNode(permission);
-        boolean matchedTrue = false;
-        for (PermissionAttachmentInfo info : permissible.getEffectivePermissions()) {
-            String normalizedGranted = normalizePermissionNode(info.getPermission());
-            if (!normalizedGranted.equals(normalized)) {
-                continue;
+        try {
+            String normalized = normalizePermissionNode(permission);
+            boolean matchedTrue = false;
+            for (PermissionAttachmentInfo info : permissible.getEffectivePermissions()) {
+                String normalizedGranted = normalizePermissionNode(info.getPermission());
+                if (!normalizedGranted.equals(normalized)) {
+                    continue;
+                }
+                if (!info.getValue()) {
+                    return false;
+                }
+                matchedTrue = true;
             }
-            if (!info.getValue()) {
-                return false;
-            }
-            matchedTrue = true;
+            return matchedTrue;
+        } catch (UnsupportedOperationException ignored) {
+            return false;
         }
-        return matchedTrue;
     }
 
     public static int resolveHighestExactNumberedPermission(Permissible permissible, String prefix, int maxValue) {

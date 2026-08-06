@@ -1,0 +1,72 @@
+# Economy & Marketplaces Guide
+
+UltimateDonutSMP includes a complete dual-currency economy (Vault Money & Virtual Shards), GUI shops, sell menus, worth browsers, Auction House, Orders board, and Billford rotating trades NPC.
+
+---
+
+## Currency Systems
+
+### 1. Money Economy (Vault Integration)
+- **Check Balance**: `/balance [player]` (Aliases: `/bal`, `/money`)
+- **Pay Player**: `/pay <player> <amount>`
+- **Admin Money Management**:
+  - `/addmoney <player> <amount>`
+  - `/removemoney <player> <amount>`
+  - `/setmoney <player> <amount>`
+
+### 2. Virtual Shards Economy
+Shards are an exclusive secondary currency earned from Shard Cuboids, play time, crates, or mob kills.
+- **Check Shards**: `/shards [player]`
+- **Pay Shards**: `/shardpay <player> <amount>`
+- **Admin Shards Command**: `/shards everywhere <status|debug> [player]`
+
+---
+
+## Shop, Sell, & Worth Systems
+
+### 1. Shop GUI (`/shop`)
+Opens the configured multi-category item shop where players can buy blocks, items, spawners, and gear.
+
+### 2. Sell Container & Commands (`/sell`)
+- `/sell` (Aliases: `/sellmulti`, `/sellmultiplier`, `/sellprogress`): Opens a GUI chest container and Sell Multiplier progress menu. Players drop items inside and close the GUI to instantly sell all items for Vault money.
+- **Sell Category Item Preview**: Clicking the category header icon inside `/sellmulti` (or right-clicking category buttons in `/sell`) opens an item catalog GUI in `WorthMenu` showing only the items that fit in that category.
+- **Barrier Back Navigation**: Navigation across sell and progress menus uses a `BARRIER` icon for returning to previous menus.
+- `/sellhand [amount]`: Sells the item currently held in main hand.
+- `/sellall`: Sells all sellable items in inventory.
+- `/sellhistory`: Displays recent sell transactions.
+- `/topsell`: Admin analytical command (`/topsell gui`, `/topsell export`, `/topsell items`).
+
+### 3. Worth Catalog (`/worth`)
+- `/worth`: Opens the full price catalog GUI displaying buy/sell values for every item.
+- `/worth hand`: Checks the sell price of the item currently held in hand.
+
+---
+
+## Marketplaces
+
+### 1. Auction House (`/auctionhouse` or `/ah`)
+Player-driven marketplace where players can list items for sale to other players:
+- `/ah`: Open Auction House browser menu.
+- `/ah sell <price>`: List held item on the Auction House.
+- `/ah my`: View active personal listings.
+- `/ah claims`: Collect money earned from sold items or expired listings.
+- `/ah cancel`: Cancel active listing.
+
+### 2. Orders Board (`/orders`)
+Player buy-order request system where players request items and set a reward price for anyone who fulfills the order:
+- `/orders`: Open Orders Board GUI.
+- `/orders my`: Manage personal buy orders.
+- `/orders collect`: Collect items delivered by suppliers.
+
+### 3. Billford Rotating NPC Trades (`/billford`)
+Billford is a special rotating trade NPC system that offers limited-time, high-value trades refreshed on a scheduled timer.
+- Open Billford menu: `/billford gui` or interact with Billford NPC.
+- Check countdown placeholder: `%economy_billford_countdown%`
+- Admin command: `/billford reload`
+
+### 4. Automated Economy Bots (Auction & Order Bots)
+Simulate player trading activity on the Auction House and Orders board with NPC bot listings and buy orders:
+- **Auction Bot**: Posts random item listings under configured bot names (`auction-house.yml`).
+- **Order Bot**: Posts item purchase requests under configured bot names (`orders.yml`).
+- **Configuration**: Managed via the `BOTS:` section in `auction-house.yml` and `orders.yml`.
+

@@ -279,30 +279,50 @@ public class DuelWorldManager {
         return null;
     }
 
+    public void prepareGeneratedArena(DuelMapSelection selection) {
+        if (!isRandomBiomesEnabled() || selection == null || selection.type() != DuelMapSelection.Type.BIOME) {
+            return;
+        }
+        Biome biome = resolveSelectedBiome(selection);
+        if (biome == null) {
+            return;
+        }
+        if (isVanillaTerrainMode()) {
+            if (canPrepareVanillaArenas()) {
+                requestVanillaArena(selection, biome);
+                ensureVanillaPool();
+            }
+        } else if (canPrepareFlatArenas()) {
+            requestFlatArena(selection, biome);
+            ensureFlatPool();
+        }
+    }
+
     private GeneratedArena takeReadyFlatArena(DuelMapSelection selection, Biome biome) {
         if (readyFlatArenas.isEmpty()) {
             return null;
         }
 
-        GeneratedArena selected = null;
-        if (selection != null && selection.type() == DuelMapSelection.Type.BIOME && biome != null) {
+        if (selection == null || selection.type() == DuelMapSelection.Type.RANDOM_BIOME) {
+            GeneratedArena selected = readyFlatArenas.pollFirst();
+            if (selected != null) {
+                leasedFlatWorldNames.add(selected.worldName());
+            }
+            return selected;
+        }
+
+        if (selection.type() == DuelMapSelection.Type.BIOME && biome != null) {
             String requiredKey = biomeKey(biome);
             for (GeneratedArena arena : new ArrayList<>(readyFlatArenas)) {
                 if (arena != null && arena.biomeKey().equalsIgnoreCase(requiredKey)) {
                     readyFlatArenas.remove(arena);
-                    selected = arena;
-                    break;
+                    leasedFlatWorldNames.add(arena.worldName());
+                    return arena;
                 }
             }
         }
 
-        if (selected == null) {
-            selected = readyFlatArenas.pollFirst();
-        }
-        if (selected != null) {
-            leasedFlatWorldNames.add(selected.worldName());
-        }
-        return selected;
+        return null;
     }
 
     private void requestFlatArena(DuelMapSelection selection, Biome biome) {

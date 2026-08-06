@@ -48,7 +48,11 @@ public class ShulkerPreviewGui extends BaseMenu {
         for (int i = 0; i < 27 && i < contents.size(); i++) {
             ItemStack current = contents.get(i);
             if (current != null) {
-                set(i, current.clone());
+                current = current.clone();
+                if (plugin.getAmethystToolsManager().isAmethystTool(current)) {
+                    plugin.getAmethystToolsManager().updateLoreCountdown(current);
+                }
+                set(i, current);
             }
         }
 

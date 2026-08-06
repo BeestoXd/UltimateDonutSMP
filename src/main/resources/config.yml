@@ -89,9 +89,17 @@ SETTINGS:
   # The numerical value for Phantom Spawn Radius. Available options: Any valid integer
   PHANTOM-SPAWN-RADIUS: 40
   # The numerical value for Disable Mob Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
-  DISABLE-MOB-SPAWN-LIMIT-SECONDS: 3600
+  DISABLE-MOB-SPAWN-LIMIT-SECONDS: -1
   # The numerical value for Disable Phantom Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
   DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS: 3600
+# Configuration section for Features.
+FEATURES_SETTINGS:
+  # Action when executing a command linked to a disabled feature.
+  # Options:
+  # - "MESSAGE": Shows "The <feature> feature is currently disabled."
+  # - "UNKNOWN": Shows default unknown command message.
+  # - "UNREGISTER": Dynamically unregister command from Bukkit command map.
+  DISABLED_COMMAND_ACTION: "MESSAGE"
 # Configuration section for Chat.
 CHAT:
   # Determines whether Format Enabled is enabled or disabled. Available options: true, false
@@ -112,13 +120,13 @@ CHAT:
     HOVER-TEXT:
     - '%luckperms_prefix%%player%'
     - '&7&m----------'
-    - '&#00FC00&l$ &fᴍᴏɴᴇʏ &#00FC00%economy_money%'
-    - '&#FC0000⚔ &fᴋɪʟʟѕ &#FC0000%economy_kills%'
-    - '&#FCE300⌚ &fᴘʟᴀʏᴛɪᴍᴇ &#FCE300%economy_playtime%'
-    - '&#F97603☠ &fᴅᴇᴀᴛʜѕ &#F97603%economy_deaths%'
-    - '&#A303F9★ &fѕʜᴀʀᴅѕ &#A303F9%economy_shards%'
+    - '&#00FC00&l$ &fmoney &#00FC00%economy_money%'
+    - '&#FC0000⚔ &fkills &#FC0000%economy_kills%'
+    - '&#FCE300⌚ &fplaytime &#FCE300%economy_playtime%'
+    - '&#F97603☠ &fdeaths &#F97603%economy_deaths%'
+    - '&#A303F9★ &fshards &#A303F9%economy_shards%'
     - '&7&m----------'
-    - '&7ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕᴛᴀᴛѕ'
+    - '&7click to view stats'
     # The text or value for Suggest Command. Available options: Any valid string text
     SUGGEST-COMMAND: '/msg <player> '
   # Determines whether Global Chat Muted is enabled or disabled. Available options: true, false
@@ -483,7 +491,7 @@ TABLIST:
   # The text or value for Media Badge Permission. Available options: Any valid string text
   MEDIA-BADGE-PERMISSION: rank.media
   # The text or value for Name Format. Available options: Any valid string text
-  NAME-FORMAT: <icon_head_skin> <media_badge>&f<nick>%team_suffix%
+  NAME-FORMAT: <media_badge>&f<nick>%team_suffix%
   # Configuration section for Header.
   HEADER:
   - ''
@@ -546,14 +554,17 @@ CLEAR-LAG:
   # The numerical value for Every. Available options: Any valid integer
   EVERY: 5
   # Determines whether Animals is enabled or disabled. Available options: true, false
-  ANIMALS: true
+  ANIMALS: false
   # Determines whether Monsters is enabled or disabled. Available options: true, false
-  MONSTERS: true
+  MONSTERS: false
   # Determines whether Dropped Items is enabled or disabled. Available options: true, false
   DROPPED-ITEMS: true
   # Configuration section for Excluded Worlds.
   EXCLUDED-WORLDS:
   - duels
+  EXCLUDE-NAMED: true
+  EXCLUDE-TAMED: true
+  EXCLUDE-VILLAGERS: true
 # Configuration section for Combat Manager.
 COMBAT-MANAGER:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

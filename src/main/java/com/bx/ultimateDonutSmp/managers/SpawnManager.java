@@ -585,6 +585,12 @@ public class SpawnManager {
             areasSection = menus.createSection(menuPath + ".AREAS");
         }
 
+        if (areasSection.contains("1")) {
+            ConfigurationSection area1 = areasSection.getConfigurationSection("1");
+            int slot = area1 != null ? area1.getInt("SLOT", 0) : 0;
+            return new SetupAreaTarget(menuPath + ".AREAS.1", "1", slot);
+        }
+
         String selectedKey = null;
         int selectedSlot = Integer.MAX_VALUE;
         int menuSize = normalizeSize(menus.getInt(menuPath + ".SIZE", 54));

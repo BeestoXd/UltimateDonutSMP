@@ -46,6 +46,7 @@ public class AmethystToolsListener implements Listener {
 
     private final UltimateDonutSmp plugin;
     private final AmethystToolsManager manager;
+    private final ThreadLocal<Boolean> isProcessingAoe = ThreadLocal.withInitial(() -> false);
 
     public AmethystToolsListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -54,6 +55,10 @@ public class AmethystToolsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
+        if (isProcessingAoe.get()) {
+            return;
+        }
+
         Player player = event.getPlayer();
         if (player.getGameMode() == GameMode.CREATIVE) {
             return;
@@ -74,8 +79,9 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
-        if (!canUseTool(player, item, type, true, true)) {
+        if (!canUseTool(player, item, type, false, true)) {
             event.setCancelled(true);
+            player.sendBlockChange(event.getBlock().getLocation(), event.getBlock().getBlockData());
             return;
         }
 
@@ -89,7 +95,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleDrill(BlockBreakEvent event, Player player, ItemStack item) {
-        manager.suppressVisualSync(player.getUniqueId());
+        manager.suppressVisualSync(player.getUniqueId(), 3000L);
         Block origin = event.getBlock();
         ConfigurationSection cfg = manager.getToolSection(AmethystToolType.DRILL);
         int radius = cfg != null ? cfg.getInt("RADIUS", 1) : 1;
@@ -103,14 +109,32 @@ public class AmethystToolsListener implements Listener {
         toBreak.remove(origin);
 
         int count = 1;
+        int particlesSpawned = 0;
         manager.spawnAmethystParticles(origin.getLocation());
-        for (Block block : toBreak) {
-            if (disabled.contains(block.getType()) || block.getType().isAir()) {
-                continue;
+
+        isProcessingAoe.set(true);
+        try {
+            for (Block block : toBreak) {
+                if (disabled.contains(block.getType()) || block.getType().isAir()) {
+                    continue;
+                }
+
+                BlockBreakEvent simulated = new BlockBreakEvent(block, player);
+                plugin.getServer().getPluginManager().callEvent(simulated);
+                if (simulated.isCancelled()) {
+                    player.sendBlockChange(block.getLocation(), block.getBlockData());
+                    continue;
+                }
+
+                block.breakNaturally(item);
+                if (particlesSpawned < 4) {
+                    manager.spawnAmethystParticles(block.getLocation());
+                    particlesSpawned++;
+                }
+                count++;
             }
-            block.breakNaturally(item);
-            manager.spawnAmethystParticles(block.getLocation());
-            count++;
+        } finally {
+            isProcessingAoe.set(false);
         }
 
         SoundUtils.play(player, manager.getSound("BREAK"));
@@ -121,7 +145,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleShovel(BlockBreakEvent event, Player player, ItemStack item) {
-        manager.suppressVisualSync(player.getUniqueId());
+        manager.suppressVisualSync(player.getUniqueId(), 3000L);
         Block origin = event.getBlock();
         ConfigurationSection cfg = manager.getToolSection(AmethystToolType.SHOVEL);
         int radius = cfg != null ? cfg.getInt("RADIUS", 1) : 1;
@@ -135,14 +159,32 @@ public class AmethystToolsListener implements Listener {
         toBreak.remove(origin);
 
         int count = 1;
+        int particlesSpawned = 0;
         manager.spawnAmethystParticles(origin.getLocation());
-        for (Block block : toBreak) {
-            if (!allowed.contains(block.getType()) || block.getType().isAir()) {
-                continue;
+
+        isProcessingAoe.set(true);
+        try {
+            for (Block block : toBreak) {
+                if (!allowed.contains(block.getType()) || block.getType().isAir()) {
+                    continue;
+                }
+
+                BlockBreakEvent simulated = new BlockBreakEvent(block, player);
+                plugin.getServer().getPluginManager().callEvent(simulated);
+                if (simulated.isCancelled()) {
+                    player.sendBlockChange(block.getLocation(), block.getBlockData());
+                    continue;
+                }
+
+                block.breakNaturally(item);
+                if (particlesSpawned < 4) {
+                    manager.spawnAmethystParticles(block.getLocation());
+                    particlesSpawned++;
+                }
+                count++;
             }
-            block.breakNaturally(item);
-            manager.spawnAmethystParticles(block.getLocation());
-            count++;
+        } finally {
+            isProcessingAoe.set(false);
         }
 
         SoundUtils.play(player, manager.getSound("BREAK"));
@@ -153,7 +195,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleChopper(BlockBreakEvent event, Player player, ItemStack item) {
-        manager.suppressVisualSync(player.getUniqueId());
+        manager.suppressVisualSync(player.getUniqueId(), 3000L);
         Block origin = event.getBlock();
         Set<Material> logBlocks = manager.getLogBlocks();
         if (!logBlocks.contains(origin.getType())) {
@@ -166,16 +208,39 @@ public class AmethystToolsListener implements Listener {
         List<Block> logs = bfsLogs(origin, logBlocks, maxLogs);
         logs.remove(origin);
 
+        int count = 1;
+        int particlesSpawned = 0;
         manager.spawnAmethystParticles(origin.getLocation());
-        for (Block log : logs) {
-            log.breakNaturally(item);
-            manager.spawnAmethystParticles(log.getLocation());
+
+        isProcessingAoe.set(true);
+        try {
+            for (Block log : logs) {
+                if (log.getType().isAir()) {
+                    continue;
+                }
+
+                BlockBreakEvent simulated = new BlockBreakEvent(log, player);
+                plugin.getServer().getPluginManager().callEvent(simulated);
+                if (simulated.isCancelled()) {
+                    player.sendBlockChange(log.getLocation(), log.getBlockData());
+                    continue;
+                }
+
+                log.breakNaturally(item);
+                if (particlesSpawned < 5) {
+                    manager.spawnAmethystParticles(log.getLocation());
+                    particlesSpawned++;
+                }
+                count++;
+            }
+        } finally {
+            isProcessingAoe.set(false);
         }
 
         SoundUtils.play(player, manager.getSound("BREAK"));
         if (shouldSendBreakMessages(player)) {
             player.sendMessage(ColorUtils.toComponent(
-                    manager.getMessage("CHOP-BREAK", "{count}", String.valueOf(logs.size() + 1))));
+                    manager.getMessage("CHOP-BREAK", "{count}", String.valueOf(count))));
         }
     }
 
@@ -191,6 +256,11 @@ public class AmethystToolsListener implements Listener {
         }
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!manager.isAmethystTool(item)) {
+            return;
+        }
+
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            manager.suppressVisualSync(player.getUniqueId(), 3000L);
             return;
         }
 
@@ -283,7 +353,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {
-        manager.suppressVisualSync(player.getUniqueId());
+        manager.suppressVisualSync(player.getUniqueId(), 3000L);
         Block clicked = event.getClickedBlock();
         if (clicked == null || clicked.getType() != Material.WATER) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("BUCKET-NO-WATER")));
@@ -300,9 +370,13 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
+        int particleCount = 0;
         for (Block water : waterBlocks) {
             water.setType(Material.AIR);
-            manager.spawnAmethystParticles(water.getLocation());
+            if (particleCount < 5) {
+                manager.spawnAmethystParticles(water.getLocation());
+                particleCount++;
+            }
         }
 
         SoundUtils.play(player, manager.getSound("USE"));
@@ -503,12 +577,22 @@ public class AmethystToolsListener implements Listener {
         if (!manager.hasValidSignature(item) || item.getAmount() > 1) {
             event.setCancelled(true);
             manager.sanitizeHeldItem(player, false);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
             return;
         }
 
         if (manager.isExpired(item)) {
             event.setCancelled(true);
             manager.sanitizeHeldItem(player, true);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
             return;
         }
 

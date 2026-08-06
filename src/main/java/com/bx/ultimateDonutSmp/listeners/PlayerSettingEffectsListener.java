@@ -36,6 +36,10 @@ public class PlayerSettingEffectsListener implements Listener {
             return;
         }
 
+        if (plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isVanished(player.getUniqueId())) {
+            return;
+        }
+
         playTotemBurst(player);
     }
 

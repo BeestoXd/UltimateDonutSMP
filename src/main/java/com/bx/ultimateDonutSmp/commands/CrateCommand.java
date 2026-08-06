@@ -31,6 +31,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     private static final String ADMIN_PERMISSION = "ultimatedonutsmp.admin.crate";
     private static final String RELOAD_PERMISSION = "ultimatedonutsmp.admin.crate.reload";
     private static final String KEYALL_PERMISSION = "ultimatedonutsmp.admin.crate.keyall";
+    private static final String CRATES_USE_PERMISSION = "ultimatedonutsmp.command.crates";
     private static final int TARGET_BLOCK_DISTANCE = 6;
     private static final List<String> PLAYER_SUBCOMMANDS = List.of("keys", "open");
     private static final List<String> ADMIN_SUBCOMMANDS = List.of(
@@ -161,6 +162,11 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleCratesCommand(CommandSender sender, String label, String[] args) {
+        if (!PermissionUtils.has(sender, CRATES_USE_PERMISSION)) {
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to use /crates."));
+            return true;
+        }
+
         if (args.length > 0) {
             sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label));
             return true;

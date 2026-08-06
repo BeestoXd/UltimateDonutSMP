@@ -5,6 +5,8 @@ import com.bx.ultimateDonutSmp.models.WorthResult;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorthManagerTest {
 
@@ -60,6 +62,40 @@ class WorthManagerTest {
         assertEquals(1550.0, result.totalWorth());
     }
 
+    @Test
+    void findMaterialResolvesSnakeCaseAndPrettifiedNames() throws Exception {
+        org.bukkit.configuration.file.YamlConfiguration worthConfig = new org.bukkit.configuration.file.YamlConfiguration();
+        worthConfig.set("TYPE.BLOCKS.ACACIA_PRESSURE_PLATE", 25.0);
+        worthConfig.set("TYPE.MISC.DRAGON_EGG", 6400000000.0);
+
+        UltimateDonutSmp plugin = createMockPlugin(worthConfig);
+        WorthManager worthManager = new WorthManager(plugin);
+
+        assertEquals(org.bukkit.Material.ACACIA_PRESSURE_PLATE, worthManager.findMaterial("acacia_pressure_plate"));
+        assertEquals(org.bukkit.Material.ACACIA_PRESSURE_PLATE, worthManager.findMaterial("Acacia Pressure Plate"));
+        assertEquals(org.bukkit.Material.DRAGON_EGG, worthManager.findMaterial("dragon_egg"));
+        assertEquals(org.bukkit.Material.DRAGON_EGG, worthManager.findMaterial("Dragon Egg"));
+    }
+
+    @Test
+    void isSimilarIgnoringWorthComparesMaterialsAndIgnoresWorthLore() throws Exception {
+        setupMockServer();
+
+        org.bukkit.configuration.file.YamlConfiguration worthConfig = new org.bukkit.configuration.file.YamlConfiguration();
+        worthConfig.set("TYPE.MINERALS.DIAMOND", 10.0);
+
+        UltimateDonutSmp plugin = createMockPlugin(worthConfig);
+        WorthManager worthManager = new WorthManager(plugin);
+
+        org.bukkit.inventory.ItemStack item1 = new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND, 5);
+        org.bukkit.inventory.ItemStack item2 = new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND, 36);
+
+        assertTrue(worthManager.isSimilarIgnoringWorth(item1, item2));
+
+        org.bukkit.inventory.ItemStack gold = new org.bukkit.inventory.ItemStack(org.bukkit.Material.GOLD_INGOT, 5);
+        assertFalse(worthManager.isSimilarIgnoringWorth(item1, gold));
+    }
+
     private void setupMockServer() throws Exception {
         java.lang.reflect.Field serverField = org.bukkit.Bukkit.class.getDeclaredField("server");
         serverField.setAccessible(true);
@@ -101,7 +137,7 @@ class WorthManagerTest {
                             java.util.Map<org.bukkit.enchantments.Enchantment, Integer> enchantsMap = new java.util.HashMap<>();
                             org.bukkit.inventory.meta.ItemMeta mockMeta = (org.bukkit.inventory.meta.ItemMeta) java.lang.reflect.Proxy.newProxyInstance(
                                     org.bukkit.inventory.meta.ItemMeta.class.getClassLoader(),
-                                    new Class<?>[]{org.bukkit.inventory.meta.ItemMeta.class},
+                                    new Class<?>[]{org.bukkit.inventory.meta.ItemMeta.class, org.bukkit.inventory.meta.Damageable.class},
                                     (mProxy, mMethod, mArgs) -> {
                                         if (mMethod.getName().equals("addEnchant") || mMethod.getName().equals("addStoredEnchant")) {
                                             enchantsMap.put((org.bukkit.enchantments.Enchantment) mArgs[0], (Integer) mArgs[1]);
@@ -122,8 +158,17 @@ class WorthManagerTest {
                                         if (mMethod.getName().equals("hashCode")) {
                                             return System.identityHashCode(mProxy);
                                         }
-                                        if (mMethod.getName().equals("toString")) {
-                                            return "MockMeta";
+                                        if (mMethod.getName().equals("getDamage")) {
+                                            return 0;
+                                        }
+                                        if (mMethod.getName().equals("hasDamage")) {
+                                            return false;
+                                        }
+                                        if (mMethod.getReturnType() == boolean.class) {
+                                            return false;
+                                        }
+                                        if (mMethod.getReturnType() == int.class) {
+                                            return 0;
                                         }
                                         return null;
                                     }

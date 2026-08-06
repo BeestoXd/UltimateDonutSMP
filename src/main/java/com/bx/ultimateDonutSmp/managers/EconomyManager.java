@@ -515,9 +515,7 @@ public class EconomyManager {
                 plugin.getLeaderboardManager().invalidate(LeaderboardManager.LeaderboardType.MONEY);
             }
         } else {
-            plugin.getSpigotScheduler().runAsync(() -> {
-                plugin.getDatabaseManager().savePlayer(loadedAccount.data());
-            });
+            plugin.getDatabaseManager().savePlayerAsync(loadedAccount.data());
             if (plugin.getLeaderboardManager() != null) {
                 plugin.getLeaderboardManager().invalidate(LeaderboardManager.LeaderboardType.MONEY);
             }

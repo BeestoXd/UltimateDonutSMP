@@ -1,65 +1,79 @@
-# Configuration section for Invsee.
+# ==============================================================================
+# UltimateDonutSMP - Invsee (Staff Inventory View) Configuration
+# ==============================================================================
+
 INVSEE:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the invsee system globally (true / false)
   ENABLED: true
+
+  # Title header displayed on the invsee GUI ({player} placeholder supported)
   TITLE: '&8Inventory of {player}'
-  # Determines whether Require Online is enabled or disabled. Available options: true, false
+
+  # Require target player to be online to open invsee (true / false)
   REQUIRE-ONLINE: true
-  # Determines whether Allow Edit is enabled or disabled. Available options: true, false
+
+  # Allow staff members with modify permission to edit target inventory items (true / false)
   ALLOW-EDIT: false
-  # Determines whether Allow Self View is enabled or disabled. Available options: true, false
+
+  # Allow staff members to view their own inventory via /invsee (true / false)
   ALLOW-SELF-VIEW: false
-  # Determines whether Notify Target is enabled or disabled. Available options: true, false
+
+  # Notify target player when staff opens their inventory (true / false)
   NOTIFY-TARGET: false
-  # Determines whether Log Usage is enabled or disabled. Available options: true, false
+
+  # Log invsee usage and item modifications to console/audit log (true / false)
   LOG-USAGE: true
-  # Determines whether Freeze On Logout is enabled or disabled. Available options: true, false
+
+  # Freeze inventory GUI into a snapshot if target logs out while being viewed (true / false)
   FREEZE-ON-LOGOUT: true
-  # The numerical value for Auto Refresh Ticks. Available options: Any valid integer
+
+  # Auto-refresh interval in ticks to synchronize target inventory updates (20 ticks = 1s)
   AUTO-REFRESH-TICKS: 10
-  # The text or value for View Permission. Available options: Any valid string text
+
+  # Permission node to view target player inventory
   VIEW-PERMISSION: ultimatedonutsmp.staff.invsee
-  # The text or value for Modify Permission. Available options: Any valid string text
+
+  # Permission node to modify items in target player inventory
   MODIFY-PERMISSION: ultimatedonutsmp.staff.invsee.modify
-  # The text or value for Admin Permission. Available options: Any valid string text
+
+  # Permission node for admin invsee commands
   ADMIN-PERMISSION: ultimatedonutsmp.admin.invsee
-# Configuration section for Layout.
+
+# Inventory GUI layout slot mapping
 LAYOUT:
+  # Total GUI container size (must be multiple of 9, max 54)
   SIZE: 54
-  # Configuration section for Armor Slots.
+
+  # GUI slot indexes assigned to armor slots [Helmet, Chestplate, Leggings, Boots]
   ARMOR-SLOTS:
-  - 0
-  - 1
-  - 2
-  - 3
-  # The numerical value for Offhand Slot. Available options: Any valid integer
+    - 0
+    - 1
+    - 2
+    - 3
+
+  # GUI slot index assigned to offhand item
   OFFHAND-SLOT: 4
-  # The numerical value for Summary Slot. Available options: Any valid integer
+
+  # GUI slot index assigned to player stats summary icon
   SUMMARY-SLOT: 6
-  # The numerical value for Status Slot. Available options: Any valid integer
+
+  # GUI slot index assigned to staff connection status icon
   STATUS-SLOT: 8
-  # The numerical value for Main Inventory Start. Available options: Any valid integer
+
+  # GUI slot index start for main inventory items (slots 9-35)
   MAIN-INVENTORY-START: 18
-  # The numerical value for Hotbar Start. Available options: Any valid integer
+
+  # GUI slot index start for player hotbar items (slots 0-8)
   HOTBAR-START: 45
+
+# System and feedback messages
 MESSAGES:
-  # The text or value for No Permission. Available options: Any valid string text
   NO-PERMISSION: '&cYou do not have permission.'
-  # The text or value for Feature Disabled. Available options: Any valid string text
   FEATURE-DISABLED: '&cThe Invsee system is disabled.'
-  # The text or value for Player Not Online. Available options: Any valid string text
   PLAYER-NOT-ONLINE: '&cThat player must be online.'
-  # The text or value for Player Not Found. Available options: Any valid string text
   PLAYER-NOT-FOUND: '&cPlayer not found.'
-  # The text or value for Self View Disabled. Available options: Any valid string text
   SELF-VIEW-DISABLED: '&cYou cannot invsee yourself.'
-  # The text or value for Edit Conflict. Available options: Any valid string text
-  EDIT-CONFLICT: '&eAnother staff member is already editing &f{target}&e. Opened in
-    read-only mode.'
-  # The text or value for Target Logged Out. Available options: Any valid string text
-  TARGET-LOGGED-OUT: '&eThis inventory is now a frozen snapshot because &f{target}&e
-    logged out.'
-  # The text or value for Target Notify. Available options: Any valid string text
+  EDIT-CONFLICT: '&eAnother staff member is already editing &f{target}&e. Opened in read-only mode.'
+  TARGET-LOGGED-OUT: '&eThis inventory is now a frozen snapshot because &f{target}&e logged out.'
   TARGET-NOTIFY: '&eYour inventory is being viewed by &f{viewer}&e in &f{mode}&e mode.'
-  # The text or value for Reload Success. Available options: Any valid string text
   RELOAD-SUCCESS: '&aInvsee config reloaded.'

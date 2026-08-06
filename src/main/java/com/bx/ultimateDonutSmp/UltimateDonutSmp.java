@@ -27,6 +27,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -53,6 +54,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PrivateMessageManager privateMessageManager;
     private TeamManager teamManager;
     private HomeManager homeManager;
+    private HomeBedrockManager homeBedrockManager;
     private BountyManager bountyManager;
     private WarpManager warpManager;
     private CuboidManager cuboidManager;
@@ -87,11 +89,13 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PortalManager portalManager;
     private AmethystToolsManager amethystToolsManager;
     private EnderChestManager enderChestManager;
+    private EnderPearlManager enderPearlManager;
     private FreezeManager freezeManager;
     private GodModeManager godModeManager;
     private InvseeManager invseeManager;
     private ProfileViewerManager profileViewerManager;
     private PunishmentManager punishmentManager;
+    private OffenseManager offenseManager;
     private StatsWipeManager statsWipeManager;
     private ServerWipeManager serverWipeManager;
     private SpawnerManager spawnerManager;
@@ -107,6 +111,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private StaffModeManager staffModeManager;
     private DiscordWebhookManager discordWebhookManager;
     private LunarRichPresenceManager lunarRichPresenceManager;
+    private PingManager pingManager;
     private LuckPermsTablistRefreshBridge luckPermsTablistRefreshBridge;
     private SkinsRestorerTablistRefreshBridge skinsRestorerTablistRefreshBridge;
     private OptimizationManager optimizationManager;
@@ -203,6 +208,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
             } catch (LinkageError error) {
                 getLogger().warning("Floodgate is present but its API could not be loaded; Orders will use Java GUIs.");
             }
+            try {
+                homeBedrockManager = new HomeBedrockManager(this);
+            } catch (LinkageError error) {
+                getLogger().warning("Floodgate is present but its API could not be loaded; Homes will use Java GUIs.");
+            }
         }
         duelManager = new DuelManager(this);
         ffaManager = new FfaManager(this);
@@ -212,12 +222,14 @@ public final class UltimateDonutSmp extends JavaPlugin {
         billfordManager.load();
         leaderboardManager = new LeaderboardManager(this);
         enderChestManager = new EnderChestManager(this);
+        enderPearlManager = new EnderPearlManager(this);
         freezeManager = new FreezeManager(this);
         godModeManager = new GodModeManager();
         staffModeManager = new StaffModeManager(this);
         invseeManager = new InvseeManager(this);
         profileViewerManager = new ProfileViewerManager(this);
         punishmentManager = new PunishmentManager(this);
+        offenseManager = new OffenseManager(this);
         anvilModerationManager = new AnvilModerationManager(this);
         anvilModerationManager.load();
         statsWipeManager = new StatsWipeManager(this);
@@ -235,6 +247,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         maintenanceManager.initializeRedisListener();
         duelManager.initializeCrossServer();
         discordWebhookManager = new DiscordWebhookManager(this);
+        pingManager = new PingManager(this);
         initializeLunarRichPresenceManager();
 
         // 4. Display managers
@@ -294,12 +307,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         updateManager = new UpdateManager(this);
         updateManager.checkForUpdates();
 
+        com.bx.ultimateDonutSmp.managers.SellStatsExporter.startEmbeddedHttpServer(this);
+
         syncCommands();
         getLogger().info("UltimateDonutSmp enabled successfully.");
     }
 
     @Override
     public void onDisable() {
+        com.bx.ultimateDonutSmp.managers.SellStatsExporter.stopEmbeddedHttpServer();
         boolean suppressWipeSaves = serverWipeManager != null
                 && serverWipeManager.shouldSuppressShutdownSaves();
         if (teleportManager != null) {
@@ -480,6 +496,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new InventoryClickListener(this), this);
         pm.registerEvents(new CrateChestListener(this), this);
         pm.registerEvents(new EnderChestListener(this), this);
+        pm.registerEvents(enderPearlManager, this);
         pm.registerEvents(new FreezeListener(this), this);
         pm.registerEvents(new StaffModeListener(this), this);
         pm.registerEvents(new InvseeListener(this), this);
@@ -541,6 +558,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // Spawn / AFK
         setExecutor("spawn", new SpawnCommand(this), FeatureManager.Feature.SPAWN);
         setExecutor("afk", new AFKCommand(this), FeatureManager.Feature.AFK);
+        setExecutor("setspawn", new SetSpawnCommand(this), FeatureManager.Feature.SPAWN);
+        setExecutor("setafk", new SetAfkCommand(this), FeatureManager.Feature.AFK);
 
         // Teleport
         TPACommand tpaCmd = new TPACommand(this);
@@ -598,9 +617,15 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("ecsee", new EcseeCommand(this), FeatureManager.Feature.ENDER_CHEST);
         SellCommand sellCmd = new SellCommand(this);
         setExecutor("sell", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellmulti", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellmultiplier", sellCmd, FeatureManager.Feature.SELL);
+        setExecutor("sellprogress", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellall", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhistory", sellCmd, FeatureManager.Feature.SELL);
+        SellStatsCommand sellStatsCmd = new SellStatsCommand(this);
+        setExecutor("topsell", sellStatsCmd, FeatureManager.Feature.SELL);
+        setTabCompleter("topsell", sellStatsCmd);
         setExecutor("worth", new WorthCommand(this), FeatureManager.Feature.SELL, FeatureManager.Feature.WORTH);
 
         // RTP
@@ -645,6 +670,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("unban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("unmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("unblacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        OffendCommand offendCommand = new OffendCommand(this);
+        setExecutor("offend", offendCommand, FeatureManager.Feature.PUNISHMENTS);
+        setTabCompleter("offend", offendCommand);
 
         // Bounty
         setExecutor("bounty", new BountyCommand(this), FeatureManager.Feature.BOUNTY);
@@ -723,8 +751,26 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setTabCompleter("amod", anvilModCommand);
     }
 
+    private final Map<String, PluginCommand> pluginCommandCache = new HashMap<>();
+
+    public PluginCommand fetchPluginCommand(String commandName) {
+        if (commandName == null) {
+            return null;
+        }
+        String key = commandName.trim().toLowerCase(Locale.ROOT);
+        PluginCommand cached = pluginCommandCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+        PluginCommand command = getCommand(key);
+        if (command != null) {
+            pluginCommandCache.put(key, command);
+        }
+        return command;
+    }
+
     private void setExecutor(String commandName, CommandExecutor executor, FeatureManager.Feature... requiredFeatures) {
-        PluginCommand command = getCommand(commandName);
+        PluginCommand command = fetchPluginCommand(commandName);
         if (command == null) {
             getLogger().warning("Command missing from plugin.yml: " + commandName);
             return;
@@ -868,7 +914,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private boolean checkMinecraftVersionSupport() {
         boolean isFolia = isClassAvailable("io.papermc.paper.threadedregions.RegionizedServer");
         String minVersion = isFolia ? "1.21.11" : "1.21.10";
-        String maxVersion = isFolia ? "26.1.2" : "26.2";
+        String maxVersion = "26.2";
         String platformName = isFolia ? "Folia" : "Spigot/Paper";
 
         String bukkitVersion = getServer().getBukkitVersion();
@@ -952,6 +998,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         shardManager.reloadSettings();
         rtpZoneManager.reloadSettings();
         enderChestManager.reload();
+        if (offenseManager != null) {
+            offenseManager.reload();
+        }
         freezeManager.reload();
         staffModeManager.reload();
         invseeManager.reload();
@@ -1162,6 +1211,14 @@ public final class UltimateDonutSmp extends JavaPlugin {
         return ordersBedrockManager;
     }
 
+    public HomeBedrockManager getHomeBedrockManager() {
+        return homeBedrockManager;
+    }
+
+    public PingManager getPingManager() {
+        return pingManager;
+    }
+
     public EnchantmentsManager getEnchantmentsManager() {
         return enchantmentsManager;
     }
@@ -1226,6 +1283,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
         return enderChestManager;
     }
 
+    public EnderPearlManager getEnderPearlManager() {
+        return enderPearlManager;
+    }
+
     public FreezeManager getFreezeManager() {
         return freezeManager;
     }
@@ -1248,6 +1309,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public PunishmentManager getPunishmentManager() {
         return punishmentManager;
+    }
+
+    public OffenseManager getOffenseManager() {
+        return offenseManager;
     }
 
     public AnvilModerationManager getAnvilModerationManager() {
@@ -1307,17 +1372,27 @@ public final class UltimateDonutSmp extends JavaPlugin {
     }
 
     public void syncCommands() {
-        syncCommandState("spawn", FeatureManager.Feature.SPAWN);
-        syncCommandState("afk", FeatureManager.Feature.AFK);
-        syncCommandState("warp", FeatureManager.Feature.WARPS);
-        syncCommandState("warpmanager", FeatureManager.Feature.WARPS);
-        syncCommandState("setwarp", FeatureManager.Feature.WARPS);
-        syncCommandState("delwarp", FeatureManager.Feature.WARPS);
+        if (getDescription().getCommands() == null) {
+            return;
+        }
+        for (String commandName : getDescription().getCommands().keySet()) {
+            FeatureManager.Feature[] features = FeatureManager.featuresForCommand(commandName);
+            if (features != null && features.length > 0) {
+                syncCommandState(commandName, features);
+            }
+        }
+        for (org.bukkit.entity.Player player : getServer().getOnlinePlayers()) {
+            try {
+                player.updateCommands();
+            } catch (Exception ignored) {
+            }
+        }
     }
 
-    private void syncCommandState(String commandName, FeatureManager.Feature feature) {
-        boolean enabled = featureManager.isEnabled(feature);
-        PluginCommand command = getCommand(commandName);
+    private void syncCommandState(String commandName, FeatureManager.Feature... features) {
+        boolean enabled = featureManager.areEnabled(features);
+        boolean unregisterMode = featureManager.getDisabledCommandAction() == FeatureManager.DisabledCommandAction.UNREGISTER;
+        PluginCommand command = fetchPluginCommand(commandName);
         if (command == null) {
             return;
         }
@@ -1334,17 +1409,25 @@ public final class UltimateDonutSmp extends JavaPlugin {
             String fallbackPrefix = getDescription().getName().toLowerCase(Locale.ROOT);
             String namespacedKey = fallbackPrefix + ":" + commandName;
 
-            if (enabled) {
-                if (!knownCommands.containsKey(commandName)) {
-                    commandMap.register(fallbackPrefix, command);
+            if (enabled || !unregisterMode) {
+                command.register(commandMap);
+                knownCommands.put(commandName, command);
+                knownCommands.put(namespacedKey, command);
+                if (command.getAliases() != null) {
+                    for (String alias : command.getAliases()) {
+                        knownCommands.put(alias, command);
+                        knownCommands.put(fallbackPrefix + ":" + alias, command);
+                    }
                 }
             } else {
                 command.unregister(commandMap);
                 knownCommands.remove(commandName);
                 knownCommands.remove(namespacedKey);
-                for (String alias : command.getAliases()) {
-                    knownCommands.remove(alias);
-                    knownCommands.remove(fallbackPrefix + ":" + alias);
+                if (command.getAliases() != null) {
+                    for (String alias : command.getAliases()) {
+                        knownCommands.remove(alias);
+                        knownCommands.remove(fallbackPrefix + ":" + alias);
+                    }
                 }
             }
         } catch (Exception e) {

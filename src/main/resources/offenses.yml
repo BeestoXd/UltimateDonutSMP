@@ -1,0 +1,440 @@
+# Configuration file for preset offenses and escalating punishment tiers.
+# Syntax per offense:
+#   <key>:
+#     name: "Display Name"
+#     type: BAN | MUTE | WARN | KICK
+#     durations:
+#       - "30d"  # 1st offense
+#       - "60d"  # 2nd offense
+#       - "perm" # 3rd offense (and beyond)
+
+offenses:
+  advertising:
+    name: "Advertising"
+    type: BAN
+    durations:
+      - "30d"
+
+  advertising-invite-rewards:
+    name: "Advertising Invite Rewards"
+    type: BAN
+    durations:
+      - "30d"
+
+  advertising-irl-trade:
+    name: "Advertising IRL Trade"
+    type: BAN
+    durations:
+      - "3d"
+
+  alt-limit:
+    name: "Alt Limit Violation"
+    type: BAN
+    durations:
+      - "perm"
+
+  anticheat:
+    name: "Anticheat Detection"
+    type: BAN
+    durations:
+      - "30d"
+
+  auto-chat-filter:
+    name: "Auto Chat Filter Violation"
+    type: MUTE
+    durations:
+      - "24h"
+      - "3d"
+
+  ban-evasion:
+    name: "Ban Evasion"
+    type: BAN
+    durations:
+      - "perm"
+
+  baritone:
+    name: "Baritone / Automation"
+    type: BAN
+    durations:
+      - "30d"
+      - "60d"
+      - "360d"
+
+  botting:
+    name: "Botting"
+    type: BAN
+    durations:
+      - "perm"
+
+  bug-abuse:
+    name: "Bug Abuse"
+    type: BAN
+    durations:
+      - "14d"
+      - "perm"
+
+  entity-radar:
+    name: "Entity Radar"
+    type: BAN
+    durations:
+      - "3d"
+      - "30d"
+
+  esp:
+    name: "ESP Hacks"
+    type: BAN
+    durations:
+      - "30d"
+      - "60d"
+      - "360d"
+
+  macros:
+    name: "Macros"
+    type: BAN
+    durations:
+      - "7d"
+      - "40d"
+
+  major-inappropriate-build:
+    name: "Major Inappropriate Build"
+    type: BAN
+    durations:
+      - "7d"
+      - "30d"
+
+  major-language:
+    name: "Major Language Violation"
+    type: MUTE
+    durations:
+      - "24h"
+      - "7d"
+
+  make-a-ticket:
+    name: "Ticket Abuse / Ban Appeal Required"
+    type: BAN
+    durations:
+      - "perm"
+
+  chat-capslock:
+    name: "Chat Caps Lock Spam"
+    type: MUTE
+    durations:
+      - "24h"
+      - "3d"
+
+  chat-death-threats:
+    name: "Chat Death Threats"
+    type: BAN
+    durations:
+      - "24h"
+      - "30d"
+      - "perm"
+
+  chat-flooding:
+    name: "Chat Flooding"
+    type: MUTE
+    durations:
+      - "24h"
+      - "3d"
+
+  chat-harassment:
+    name: "Chat Harassment"
+    type: MUTE
+    durations:
+      - "24h"
+      - "3d"
+      - "30d"
+      - "720d"
+      - "perm"
+
+  chat-hate:
+    name: "Chat Hate Speech"
+    type: MUTE
+    durations:
+      - "0s" # Warning
+      - "24h"
+      - "3d"
+      - "30d"
+      - "perm"
+
+  chat-racism:
+    name: "Chat Racism"
+    type: BAN
+    durations:
+      - "30d"
+      - "perm"
+
+  chat-spam:
+    name: "Chat Spam"
+    type: MUTE
+    durations:
+      - "0s" # Warning
+      - "3d"
+      - "30d"
+
+  chat-toxicity:
+    name: "Chat Toxicity"
+    type: MUTE
+    durations:
+      - "24h"
+      - "3d"
+      - "30d"
+      - "perm"
+
+  cheating:
+    name: "Cheating / Unfair Advantage"
+    type: BAN
+    durations:
+      - "14d"
+      - "30d"
+      - "perm"
+
+  compromised-account:
+    name: "Compromised Account"
+    type: BAN
+    durations:
+      - "perm"
+
+  macros-skripts:
+    name: "Macros / Skripts"
+    type: BAN
+    durations:
+      - "7d"
+      - "40d"
+
+  autopunish:
+    name: "Auto Punish Trigger"
+    type: BAN
+    durations:
+      - "14d"
+      - "30d"
+      - "perm"
+
+  ban-evading:
+    name: "Ban Evading"
+    type: BAN
+    durations:
+      - "30d"
+      - "perm"
+
+  cross-trading:
+    name: "Cross Trading"
+    type: BAN
+    durations:
+      - "30d"
+      - "perm"
+
+  doxing:
+    name: "Doxing / PII Leak"
+    type: BAN
+    durations:
+      - "24h"
+      - "30d"
+      - "perm"
+
+  duping:
+    name: "Item Duping"
+    type: BAN
+    durations:
+      - "3d"
+      - "perm"
+
+  external-gambling:
+    name: "External Gambling"
+    type: BAN
+    durations:
+      - "14d"
+
+  gambling-ownership:
+    name: "Gambling Ownership"
+    type: BAN
+    durations:
+      - "3d"
+      - "30d"
+
+  hacking:
+    name: "Hacking"
+    type: BAN
+    durations:
+      - "14d"
+      - "30d"
+      - "perm"
+
+  radar-minimap:
+    name: "Radar / Minimap Hacks"
+    type: BAN
+    durations:
+      - "3d"
+      - "30d"
+
+  ratting:
+    name: "Ratting / Malware"
+    type: BAN
+    durations:
+      - "perm"
+
+  soundboard-proximity:
+    name: "Soundboard Proximity Abuse"
+    type: MUTE
+    durations:
+      - "30d"
+
+  spamming-chat:
+    name: "Spamming Chat"
+    type: MUTE
+    durations:
+      - "24h"
+      - "3d"
+
+  streaming-advertising-rat-clients:
+    name: "Streaming/Advertising Rat Clients"
+    type: BAN
+    durations:
+      - "14d"
+      - "60d"
+      - "180d"
+
+  streaming-cheat-client-pvp:
+    name: "Streaming Cheat Client PVP"
+    type: BAN
+    durations:
+      - "7d"
+      - "30d"
+
+  streaming-just-hack-client-no-advantage:
+    name: "Streaming Hack Client No Advantage"
+    type: BAN
+    durations:
+      - "14d"
+      - "60d"
+
+  suicide-encouragement-proximity:
+    name: "Suicide Encouragement Proximity"
+    type: BAN
+    durations:
+      - "30d"
+      - "perm"
+
+  toxicity-hate-harassment-in-chat-sign:
+    name: "Toxicity/Hate/Harassment in Chat/Sign"
+    type: MUTE
+    durations:
+      - "24h"
+      - "3d"
+      - "30d"
+      - "perm"
+
+  xray-esp-baritone:
+    name: "X-Ray / ESP / Baritone"
+    type: BAN
+    durations:
+      - "30d"
+      - "60d"
+      - "360d"
+
+  bot-owner:
+    name: "Bot Owner"
+    type: BAN
+    durations:
+      - "perm"
+
+  health-indicators:
+    name: "Health Indicators Abuse"
+    type: BAN
+    durations:
+      - "7d"
+      - "30d"
+
+  mute-evasion:
+    name: "Mute Evasion"
+    type: MUTE
+    durations:
+      - "7d"
+      - "30d"
+
+  inappropriate-builds:
+    name: "Inappropriate Builds"
+    type: BAN
+    durations:
+      - "7d"
+      - "30d"
+
+  inappropriate-language:
+    name: "Inappropriate Language"
+    type: MUTE
+    durations:
+      - "30d"
+
+  inappropriate-proximity:
+    name: "Inappropriate Proximity Chat"
+    type: MUTE
+    durations:
+      - "30d"
+
+  inappropriate-skin:
+    name: "Inappropriate Skin"
+    type: BAN
+    durations:
+      - "1d"
+      - "7d"
+
+  invite-rewards:
+    name: "Invite Rewards Exploitation"
+    type: BAN
+    durations:
+      - "14d"
+
+  invite-rewards-ownership:
+    name: "Invite Rewards Ownership Abuse"
+    type: BAN
+    durations:
+      - "30d"
+
+  racism-in-chat-sign:
+    name: "Racism in Chat/Sign"
+    type: BAN
+    durations:
+      - "30d"
+      - "perm"
+
+  proximity-racism:
+    name: "Proximity Racism"
+    type: BAN
+    durations:
+      - "30d"
+      - "perm"
+
+  proximity-toxicity-hate-harassment:
+    name: "Proximity Toxicity/Hate/Harassment"
+    type: MUTE
+    durations:
+      - "30d"
+      - "perm"
+
+  lying-to-staff:
+    name: "Lying to Staff"
+    type: BAN
+    durations:
+      - "7d"
+      - "30d"
+
+  irltrade-booster:
+    name: "IRL Trade / Booster Abuse"
+    type: BAN
+    durations:
+      - "3d"
+      - "14d"
+      - "180d"
+
+  irl-trading-ownership:
+    name: "IRL Trading Ownership"
+    type: BAN
+    durations:
+      - "720d"
+      - "perm"
+
+  teaming-with-cheater:
+    name: "Teaming with Cheater"
+    type: BAN
+    durations:
+      - "perm"

@@ -125,7 +125,7 @@ public class EconomyExpansion extends PlaceholderExpansion {
         // Ping (online only)
         if (params.equalsIgnoreCase("ping")) {
             if (offlinePlayer == null || !offlinePlayer.isOnline()) return "0";
-            return String.valueOf(offlinePlayer.getPlayer().getPing());
+            return String.valueOf(plugin.getPingManager().getPing(offlinePlayer.getPlayer()));
         }
 
         // Username
@@ -189,6 +189,9 @@ public class EconomyExpansion extends PlaceholderExpansion {
         PlayerData data = plugin.getPlayerDataManager().get(offlinePlayer.getUniqueId());
         if (data == null && offlinePlayer.isOnline()) {
             data = plugin.getPlayerDataManager().get(offlinePlayer.getPlayer());
+        }
+        if (data == null && offlinePlayer.getUniqueId() != null) {
+            data = plugin.getDatabaseManager().loadPlayer(offlinePlayer.getUniqueId());
         }
         if (data == null) {
             return switch (params) {

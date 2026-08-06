@@ -31,7 +31,7 @@ public class RTPMenu extends BaseMenu {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
                     "&cɴᴏ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴѕ",
-                    List.of("&7ʙᴇʟᴜᴍ ᴀᴅᴀ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ʀᴛᴘ ʏᴀɴɢ ᴠᴀʟɪᴅ ᴅɪ ᴄᴏɴꜰɪɢ.")
+                    List.of("&7ɴᴏ ᴠᴀʟɪᴅ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴѕ ɪɴ ᴄᴏɴꜰɪɢ.")
             ));
             return;
         }
@@ -74,7 +74,7 @@ public class RTPMenu extends BaseMenu {
 
         return text
                 .replace("{players}", String.valueOf(plugin.getRtpManager().getPlayersInWorld(destination.worldName())))
-                .replace("{ping}", String.valueOf(player.getPing()))
+                .replace("{ping}", String.valueOf(plugin.getPingManager().getPing(player)))
                 .replace("{world}", plugin.getRtpManager().describeWorld(destination.worldName()))
                 .replace("{min_radius}", minRadius)
                 .replace("{max_radius}", maxRadius)

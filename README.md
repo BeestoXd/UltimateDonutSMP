@@ -11,7 +11,7 @@
 
 <p align="center">
   <img alt="Java 21" src="https://img.shields.io/badge/Java-21-007396?style=for-the-badge&logo=openjdk&logoColor=white">
-  <img alt="Paper, Spigot, and Folia" src="https://img.shields.io/badge/Platform-Paper%20%7C%20Spigot%20%7C%20Folia-2ea44f?style=for-the-badge">
+  <img alt="Platform" src="https://img.shields.io/badge/Platform-Paper%20%7C%20Spigot%20%7C%20Folia-2ea44f?style=for-the-badge">
   <img alt="Free" src="https://img.shields.io/badge/Distribution-Free-green?style=for-the-badge">
   <img alt="License" src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge">
 </p>
@@ -61,23 +61,23 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
   <img src="images/uds16.png" alt="UltimateDonutSmp screenshot 16" width="32%">
   <img src="images/uds17.png" alt="UltimateDonutSmp screenshot 17" width="32%">
   <img src="images/uds18.png" alt="UltimateDonutSmp screenshot 18" width="32%">
-  <img src="images/gif1.gif" alt="UltimateDonutSmp screenshot 1" width="32%">
-  <img src="images/gif2.gif" alt="UltimateDonutSmp screenshot 2" width="32%">
-  <img src="images/gif3.gif" alt="UltimateDonutSmp screenshot 3" width="32%">
-  <img src="images/gif4.gif" alt="UltimateDonutSmp screenshot 4" width="32%">
-  <img src="images/gif5.gif" alt="UltimateDonutSmp screenshot 5" width="32%">
-  <img src="images/gif6.gif" alt="UltimateDonutSmp screenshot 6" width="32%">
+  <img src="images/uds19.png" alt="UltimateDonutSmp screenshot 199" width="32%">
+  <img src="images/gif1.gif" alt="UltimateDonutSmp screenshot 19" width="32%">
+  <img src="images/gif2.gif" alt="UltimateDonutSmp screenshot 20" width="32%">
+  <img src="images/gif3.gif" alt="UltimateDonutSmp screenshot 21" width="32%">
+  <img src="images/gif4.gif" alt="UltimateDonutSmp screenshot 22" width="32%">
+  <img src="images/gif5.gif" alt="UltimateDonutSmp screenshot 23" width="32%">
+  <img src="images/gif6.gif" alt="UltimateDonutSmp screenshot 24" width="32%">
 </p>
-
 
 ## Requirements
 
 | Requirement | Notes |
 | --- | --- |
-| Plugin version | `1.3` |
+| Plugin version | `1.4` |
 | Java | Bytecode targets Java 21. Use the Java version required by the selected Minecraft server; Minecraft 26.1+ requires Java 25. |
 | Paper / Spigot | Minecraft `1.21.10` through `26.2` |
-| Folia | Minecraft `1.21.11` through `26.1.2` |
+| Folia | Minecraft `1.21.11` through `26.2` |
 | Hard dependencies | None |
 | Default storage | SQLite, bundled through the shaded JDBC driver |
 | Alternative storage | MySQL or MongoDB |
@@ -91,7 +91,6 @@ Optional integrations:
 - Vault
 - ProtocolLib
 - Apollo
-- NickPlus
 - SkinsRestorer
 - Multiverse-Core
 - floodgate
@@ -116,13 +115,7 @@ The build compiles the codebase against the target API and packages a single uni
 
 Generated artifact is saved to the `target/` directory:
 
-- `UltimateDonutSmp-1.3.jar` (shaded JAR)
-
-To run endpoint startup checks against official Paper and Folia server jars:
-
-```powershell
-.\scripts\smoke-server-matrix.ps1
-```
+- `UltimateDonutSmp-1.4.jar` (shaded JAR)
 
 ## Installation
 
@@ -188,216 +181,378 @@ On startup and reload, missing bundled configuration paths are merged into exist
 
 ## Commands
 
-Commands can be disabled through their related feature toggle. Arguments in `<angle brackets>` are required; arguments in `[square brackets]` are optional.
+Commands can be disabled through their related feature toggle. Arguments in `<angle brackets>` are required; arguments in `[square brackets]` are optional. Every command has a dedicated permission node (`ultimatedonutsmp.command.<command>`) registered in `plugin.yml`.
 
-| Command | Aliases | Usage |
-| --- | --- | --- |
-| `/addmoney` | - | `/addmoney <player> <amount>` |
-| `/addshards` | - | `/addshards <player> <amount>` |
-| `/afk` | - | `/afk` |
-| `/alts` | - | `/alts <player>` |
-| `/amethysttool` | - | `/amethysttool give <player> <type> [duration]` or `/amethysttool reload` |
-| `/amod` | - | `/amod <add\|reload>` |
-| `/arena` | `/duelarena` | `/arena <create\|delete\|setpos1\|setpos2\|setreturn\|setdisplay\|enable\|disable\|queue\|list\|reload>` |
-| `/auctionhouse` | `/ah` | `/auctionhouse [sell\|my\|claims\|cancel\|limit\|fastbuy\|fastsell\|reload]` |
-| `/balance` | `/bal`, `/money` | `/balance [player]` |
-| `/ban` | - | `/ban <player> [reason]` |
-| `/billford` | - | `/billford` |
-| `/blacklist` | - | `/blacklist <player> [reason]` |
-| `/bounty` | - | `/bounty <add\|set\|info\|list> [player] [amount]` |
-| `/chat` | - | `/chat <help\|mute\|unmute\|delay\|clear>` |
-| `/clearlag` | - | `/clearlag` |
-| `/crate` | - | `/crate <create\|delete\|type\|open\|keys\|reload\|key\|take\|set\|keyall\|add\|edit\|remove\|bind\|unbind\|info>` |
-| `/crates` | - | `/crates` |
-| `/create` | - | `/create <invite\|friends> <player> [map]` |
-| `/cuboid` | - | `/cuboid <wand\|create\|delete\|list\|bind <cuboid> <spawn\|shard\|rtp-zone> <true\|false>\|reload>` |
-| `/delhome` | - | `/delhome <name>` |
-| `/delwarp` | - | `/delwarp <name>` |
-| `/discord` | - | `/discord` |
-| `/disguise` | - | `/disguise [player-name\|url]` or `/disguise <alias> <player-name\|url>` |
-| `/draw` | - | `/draw` |
-| `/duel` | - | `/duel [player\|accept\|deny\|claims\|reload]` |
-| `/ecsee` | - | `/ecsee <player>` |
-| `/enderchest` | `/ec` | `/enderchest [reload]` |
-| `/fakeplayer` | `/fplayer` | `/fakeplayer` |
-| `/feed` | - | `/feed [player]` |
-| `/ffa` | - | `/ffa [join\|reload\|arena ...]` |
-| `/ffaarena` | - | `/ffaarena <create\|delete\|setpos\|setdisplay\|settings\|enable\|disable\|list\|reload>` |
-| `/ffastats` | - | `/ffastats [player]` |
-| `/findplayer` | `/fp` | `/findplayer <player>` |
-| `/fly` | - | `/fly [player]` |
-| `/freeze` | - | `/freeze <player>` or `/freeze reload` |
-| `/friends` | `/friend` | `/friends [list\|follow\|remove\|search\|following\|followers\|friends]` |
-| `/gamemode` | `/gm`, `/gmc`, `/gms`, `/gma`, `/gmsp` | `/gamemode <mode> [player]` |
-| `/god` | `/godmode` | `/god [player]` |
-| `/heal` | - | `/heal [player]` |
-| `/help` | - | `/help` |
-| `/helpop` | - | `/helpop <message>` |
-| `/hide` | - | `/hide [status\|scramble\|remove\|check <player>\|list]` |
-| `/home` | - | `/home [name]` |
-| `/homes` | - | `/homes` |
-| `/ignore` | - | `/ignore <player\|list>` |
-| `/invsee` | `/inventorysee` | `/invsee <player>` or `/invsee reload` |
-| `/keys` | - | `/keys` |
-| `/kick` | - | `/kick <player> [reason]` |
-| `/kill` | `/suicide` | `/kill` |
-| `/leaderboard` | `/lb`, `/top`, `/leaderboards`, `/baltop` | `/leaderboard [type]` |
-| `/leave` | - | `/leave` |
-| `/maintenance` | - | `/maintenance <on\|off\|status\|setlobby [server]>` |
-| `/msg` | `/message`, `/tell`, `/whisper`, `/w` | `/msg <player> <message>` |
-| `/mute` | - | `/mute <player> [reason]` |
-| `/nightvision` | `/nv` | `/nightvision` |
-| `/orders` | `/order` | `/orders [my\|collect\|reload\|search query]` |
-| `/pay` | - | `/pay <player> <amount>` |
-| `/phantom` | - | `/phantom` |
-| `/ping` | - | `/ping [player]` |
-| `/playtime` | `/pt` | `/playtime [player]` |
-| `/pm` | `/togglepm`, `/privatemessages` | `/pm` |
-| `/portalmanager` | - | `/portalmanager <list\|info\|create\|delete\|setcuboid\|setdestination\|setdisplay\|toggle\|setpriority\|sethologramhere>` |
-| `/profileviewer` | `/pv` | `/profileviewer <player>` |
-| `/punishments` | `/phistory` | `/punishments <player>` |
-| `/queue` | - | `/queue [join\|leave] [map]` |
-| `/randomteleport` | `/randomtp` | `/randomteleport` |
-| `/removemoney` | - | `/removemoney <player> <amount>` |
-| `/removeshards` | - | `/removeshards <player> <amount>` |
-| `/rename` | - | `/rename <name...\|reset>` |
-| `/renamehome` | - | `/renamehome <old> <new>` |
-| `/reply` | `/r` | `/reply <message>` |
-| `/report` | - | `/report <player> <reason>` |
-| `/rtp` | - | `/rtp [world]` |
-| `/rules` | - | `/rules` |
-| `/safety` | - | `/safety [reload\|add [player]]` |
-| `/sell` | - | `/sell` |
-| `/sellall` | - | `/sellall` |
-| `/sellhand` | - | `/sellhand [amount]` |
-| `/sellhistory` | - | `/sellhistory` |
-| `/servers` | - | `/servers` |
-| `/serverwipe` | - | `/serverwipe <preview\|prepare\|confirm\|cancel\|status>` |
-| `/sethome` | - | `/sethome [name]` |
-| `/setmoney` | - | `/setmoney <player> <amount>` |
-| `/setshards` | - | `/setshards <player> <amount>` |
-| `/settings` | - | `/settings` |
-| `/setwarp` | - | `/setwarp <name>` |
-| `/shardpay` | - | `/shardpay <player> <amount>` |
-| `/shards` | - | `/shards [player]` or `/shards everywhere <status\|debug> [player]` |
-| `/shardshop` | - | `/shardshop` |
-| `/shop` | - | `/shop [reload]` |
-| `/social` | `/media` | `/social` |
-| `/spawn` | - | `/spawn` |
-| `/spawner` | `/spawners` | `/spawner [give\|info\|panel\|reload\|remove]` |
-| `/spawnstash` | `/stash` | `/spawnstash [type\|spawn\|list\|remove\|reload]` |
-| `/staffchat` | `/sc` | `/staffchat <message>` |
-| `/stafflist` | - | `/stafflist` |
-| `/staffmode` | `/staff` | `/staffmode [player\|reload]` |
-| `/stats` | - | `/stats [player]` |
-| `/store` | - | `/store` |
-| `/team` | - | `/team <create\|disband\|invite\|kick\|join\|leave\|home\|sethome\|delhome\|chat\|info\|pvp>` |
-| `/teleport` | `/tp`, `/tphere`, `/tpall` | `/teleport <player\|here <player>\|all\|top\|x y z [world]>` |
-| `/tempban` | - | `/tempban <player> <time> [reason]` |
-| `/tempmute` | - | `/tempmute <player> <time> [reason]` |
-| `/tpa` | - | `/tpa <player>` |
-| `/tpacancel` | - | `/tpacancel` |
-| `/tpaccept` | - | `/tpaccept [player]` |
-| `/tpadeny` | - | `/tpadeny [player]` |
-| `/tpahere` | - | `/tpahere <player>` |
-| `/tpahereauto` | - | `/tpahereauto` |
-| `/tpauto` | - | `/tpauto` |
-| `/twitter` | - | `/twitter` |
-| `/ultimatedonutsmp` | `/uds`, `/udsmp` | `/ultimatedonutsmp <reload\|statswipe\|optimize\|setup\|features\|maintenance>` |
-| `/unban` | `/pardon` | `/unban <player> [reason]` |
-| `/unblacklist` | - | `/unblacklist <player> [reason]` |
-| `/unignore` | - | `/unignore <player>` |
-| `/unmute` | - | `/unmute <player> [reason]` |
-| `/vanish` | - | `/vanish` |
-| `/warn` | - | `/warn <player> [reason]` |
-| `/warp` | - | `/warp [name]` |
-| `/warpmanager` | - | `/warpmanager <create\|delete\|list> [name]` |
-| `/worth` | `/prices` | `/worth [hand\|reload]` |
+| Command | Aliases | Usage | Permission Node |
+| --- | --- | --- | --- |
+| `/addmoney` | - | `/addmoney <player> <amount>` | `ultimatedonutsmp.command.addmoney` |
+| `/addshards` | - | `/addshards <player> <amount>` | `ultimatedonutsmp.command.addshards` |
+| `/afk` | - | `/afk` | `ultimatedonutsmp.command.afk` |
+| `/alts` | - | `/alts <player>` | `ultimatedonutsmp.command.alts` |
+| `/amethysttool` | - | `/amethysttool give <player> <type> [duration]` or `/amethysttool reload` | `ultimatedonutsmp.command.amethysttool` |
+| `/amod` | - | `/amod <add\|reload>` | `ultimatedonutsmp.command.amod` |
+| `/arena` | `/duelarena` | `/arena <create\|delete\|setpos1\|setpos2\|setreturn\|setdisplay\|enable\|disable\|queue\|list\|reload>` | `ultimatedonutsmp.command.arena` |
+| `/auctionhouse` | `/ah` | `/auctionhouse [sell\|my\|claims\|cancel\|limit\|fastbuy\|fastsell\|reload]` | `ultimatedonutsmp.command.auctionhouse` |
+| `/balance` | `/bal`, `/money` | `/balance [player]` | `ultimatedonutsmp.command.balance` |
+| `/ban` | - | `/ban <player> [reason]` | `ultimatedonutsmp.command.ban` |
+| `/billford` | - | `/billford` | `ultimatedonutsmp.command.billford` |
+| `/blacklist` | - | `/blacklist <player> [reason]` | `ultimatedonutsmp.command.blacklist` |
+| `/bounty` | - | `/bounty <add\|set\|info\|list> [player] [amount]` | `ultimatedonutsmp.command.bounty` |
+| `/chat` | - | `/chat <help\|mute\|unmute\|delay\|clear>` | `ultimatedonutsmp.command.chat` |
+| `/clearlag` | - | `/clearlag` | `ultimatedonutsmp.command.clearlag` |
+| `/crate` | - | `/crate <create\|delete\|type\|open\|keys\|reload\|key\|take\|set\|keyall\|add\|edit\|remove\|bind\|unbind\|info>` | `ultimatedonutsmp.command.crate` |
+| `/crates` | - | `/crates` | `ultimatedonutsmp.command.crates` |
+| `/create` | - | `/create <invite\|friends> <player> [map]` | `ultimatedonutsmp.command.create` |
+| `/cuboid` | - | `/cuboid <wand\|create\|delete\|list\|bind <cuboid> <spawn\|shard\|rtp-zone> <true\|false>\|reload>` | `ultimatedonutsmp.command.cuboid` |
+| `/delhome` | - | `/delhome <name>` | `ultimatedonutsmp.command.delhome` |
+| `/delwarp` | - | `/delwarp <name>` | `ultimatedonutsmp.command.delwarp` |
+| `/discord` | - | `/discord` | `ultimatedonutsmp.command.discord` |
+| `/disguise` | - | `/disguise [player-name\|url]` or `/disguise <alias> <player-name\|url>` | `ultimatedonutsmp.command.disguise` |
+| `/draw` | - | `/draw` | `ultimatedonutsmp.command.draw` |
+| `/duel` | - | `/duel [player\|accept\|deny\|claims\|reload]` | `ultimatedonutsmp.command.duel` |
+| `/ecsee` | - | `/ecsee <player>` | `ultimatedonutsmp.command.ecsee` |
+| `/enderchest` | `/ec` | `/enderchest [reload]` | `ultimatedonutsmp.command.enderchest` |
+| `/fakeplayer` | `/fplayer` | `/fakeplayer` | `ultimatedonutsmp.command.fakeplayer` |
+| `/feed` | - | `/feed [player]` | `ultimatedonutsmp.command.feed` |
+| `/ffa` | - | `/ffa [join\|reload\|arena ...]` | `ultimatedonutsmp.command.ffa` |
+| `/ffaarena` | - | `/ffaarena <create\|delete\|setpos\|setdisplay\|settings\|enable\|disable\|list\|reload>` | `ultimatedonutsmp.command.ffaarena` |
+| `/ffastats` | - | `/ffastats [player]` | `ultimatedonutsmp.command.ffastats` |
+| `/findplayer` | `/fp` | `/findplayer <player>` | `ultimatedonutsmp.command.findplayer` |
+| `/fly` | - | `/fly [player]` | `ultimatedonutsmp.command.fly` |
+| `/freeze` | - | `/freeze <player>` or `/freeze reload` | `ultimatedonutsmp.command.freeze` |
+| `/friends` | `/friend` | `/friends [list\|follow\|remove\|search\|following\|followers\|friends]` | `ultimatedonutsmp.command.friends` |
+| `/gamemode` | `/gm`, `/gmc`, `/gms`, `/gma`, `/gmsp` | `/gamemode <mode> [player]` | `ultimatedonutsmp.command.gamemode` |
+| `/god` | `/godmode` | `/god [player]` | `ultimatedonutsmp.staff.god` |
+| `/heal` | - | `/heal [player]` | `ultimatedonutsmp.command.heal` |
+| `/help` | - | `/help` | `ultimatedonutsmp.command.help` |
+| `/helpop` | - | `/helpop <message>` | `ultimatedonutsmp.command.helpop` |
+| `/hide` | - | `/hide [status\|scramble\|remove\|check <player>\|list]` | `ultimatedonutsmp.command.hide` |
+| `/home` | - | `/home [name]` | `ultimatedonutsmp.command.home` |
+| `/homes` | - | `/homes` | `ultimatedonutsmp.command.homes` |
+| `/ignore` | - | `/ignore <player\|list>` | `ultimatedonutsmp.command.ignore` |
+| `/invsee` | `/inventorysee` | `/invsee <player>` or `/invsee reload` | `ultimatedonutsmp.command.invsee` |
+| `/keys` | - | `/keys` | `ultimatedonutsmp.command.keys` |
+| `/kick` | - | `/kick <player> [reason]` | `ultimatedonutsmp.command.kick` |
+| `/kill` | `/suicide` | `/kill` | `ultimatedonutsmp.command.kill` |
+| `/leaderboard` | `/lb`, `/top`, `/leaderboards`, `/baltop` | `/leaderboard [type]` | `ultimatedonutsmp.command.leaderboard` |
+| `/leave` | - | `/leave` | `ultimatedonutsmp.command.leave` |
+| `/logs` | - | `/logs` | `ultimatedonutsmp.command.logs` |
+| `/maintenance` | - | `/maintenance <on\|off\|status\|setlobby [server]>` | `ultimatedonutsmp.command.maintenance` |
+| `/msg` | `/message`, `/tell`, `/whisper`, `/w` | `/msg <player> <message>` | `ultimatedonutsmp.command.msg` |
+| `/mute` | - | `/mute <player> [reason]` | `ultimatedonutsmp.command.mute` |
+| `/nightvision` | `/nv` | `/nightvision` | `ultimatedonutsmp.command.nightvision` |
+| `/orders` | `/order` | `/orders [my\|collect\|reload\|search query]` | `ultimatedonutsmp.command.orders` |
+| `/pay` | - | `/pay <player> <amount>` | `ultimatedonutsmp.command.pay` |
+| `/phantom` | - | `/phantom` | `ultimatedonutsmp.command.phantom` |
+| `/ping` | - | `/ping [player]` | `ultimatedonutsmp.command.ping` |
+| `/playtime` | `/pt` | `/playtime [player]` | `ultimatedonutsmp.command.playtime` |
+| `/pm` | `/togglepm`, `/privatemessages` | `/pm` | `ultimatedonutsmp.command.pm` |
+| `/portalmanager` | - | `/portalmanager <list\|info\|create\|delete\|setcuboid\|setdestination\|setdisplay\|toggle\|setpriority\|sethologramhere>` | `ultimatedonutsmp.command.portalmanager` |
+| `/profileviewer` | `/pv` | `/profileviewer <player>` | `ultimatedonutsmp.command.profileviewer` |
+| `/punishments` | `/phistory` | `/punishments <player>` | `ultimatedonutsmp.command.punishments` |
+| `/queue` | - | `/queue [join\|leave] [map]` | `ultimatedonutsmp.command.queue` |
+| `/randomteleport` | `/randomtp` | `/randomteleport` | `ultimatedonutsmp.command.randomteleport` |
+| `/removemoney` | - | `/removemoney <player> <amount>` | `ultimatedonutsmp.command.removemoney` |
+| `/removeshards` | - | `/removeshards <player> <amount>` | `ultimatedonutsmp.command.removeshards` |
+| `/rename` | - | `/rename <name...\|reset>` | `ultimatedonutsmp.command.rename` |
+| `/renamehome` | - | `/renamehome <old> <new>` | `ultimatedonutsmp.command.renamehome` |
+| `/reply` | `/r` | `/reply <message>` | `ultimatedonutsmp.command.reply` |
+| `/report` | - | `/report <player> <reason>` | `ultimatedonutsmp.command.report` |
+| `/rtp` | - | `/rtp [world]` | `ultimatedonutsmp.command.rtp` |
+| `/rules` | - | `/rules` | `ultimatedonutsmp.command.rules` |
+| `/safety` | - | `/safety [reload\|add [player]]` | `ultimatedonutsmp.command.safety` |
+| `/sell` | - | `/sell` | `ultimatedonutsmp.command.sell` |
+| `/sellall` | - | `/sellall` | `ultimatedonutsmp.command.sellall` |
+| `/sellhand` | - | `/sellhand [amount]` | `ultimatedonutsmp.command.sellhand` |
+| `/sellhistory` | - | `/sellhistory` | `ultimatedonutsmp.command.sellhistory` |
+| `/servers` | - | `/servers` | `ultimatedonutsmp.command.servers` |
+| `/serverwipe` | - | `/serverwipe <preview\|prepare\|confirm\|cancel\|status>` | `ultimatedonutsmp.command.serverwipe` |
+| `/sethome` | - | `/sethome [name]` | `ultimatedonutsmp.command.sethome` |
+| `/setmoney` | - | `/setmoney <player> <amount>` | `ultimatedonutsmp.command.setmoney` |
+| `/setshards` | - | `/setshards <player> <amount>` | `ultimatedonutsmp.command.setshards` |
+| `/settings` | - | `/settings` | `ultimatedonutsmp.command.settings` |
+| `/setwarp` | - | `/setwarp <name>` | `ultimatedonutsmp.command.setwarp` |
+| `/shardpay` | - | `/shardpay <player> <amount>` | `ultimatedonutsmp.command.shardpay` |
+| `/shards` | - | `/shards [player]` or `/shards everywhere <status\|debug> [player]` | `ultimatedonutsmp.command.shards` |
+| `/shardshop` | - | `/shardshop` | `ultimatedonutsmp.command.shardshop` |
+| `/shop` | - | `/shop [reload]` | `ultimatedonutsmp.command.shop` |
+| `/social` | `/media` | `/social` | `ultimatedonutsmp.command.social` |
+| `/spawn` | - | `/spawn` | `ultimatedonutsmp.command.spawn` |
+| `/spawner` | `/spawners` | `/spawner [give\|info\|panel\|reload\|remove]` | `ultimatedonutsmp.command.spawner` |
+| `/spawnstash` | `/stash` | `/spawnstash [type\|spawn\|list\|remove\|reload]` | `ultimatedonutsmp.command.spawnstash` |
+| `/staffchat` | `/sc` | `/staffchat <message>` | `ultimatedonutsmp.command.staffchat` |
+| `/stafflist` | - | `/stafflist` | `ultimatedonutsmp.command.stafflist` |
+| `/staffmode` | `/staff` | `/staffmode [player\|reload]` | `ultimatedonutsmp.command.staffmode` |
+| `/stats` | - | `/stats [player]` | `ultimatedonutsmp.command.stats` |
+| `/store` | - | `/store` | `ultimatedonutsmp.command.store` |
+| `/team` | - | `/team <create\|disband\|invite\|kick\|join\|leave\|home\|sethome\|delhome\|chat\|info\|pvp>` | `ultimatedonutsmp.command.team` |
+| `/teleport` | `/tp`, `/tphere`, `/tpall` | `/teleport <player\|here <player>\|all\|top\|x y z [world]>` | `ultimatedonutsmp.command.teleport` |
+| `/tempban` | - | `/tempban <player> <time> [reason]` | `ultimatedonutsmp.command.tempban` |
+| `/tempmute` | - | `/tempmute <player> <time> [reason]` | `ultimatedonutsmp.command.tempmute` |
+| `/topsell` | `/sellstats` | `/topsell [gui\|items\|volume\|sellers\|export]` | `ultimatedonutsmp.command.topsell` |
+| `/tpa` | - | `/tpa <player>` | `ultimatedonutsmp.command.tpa` |
+| `/tpacancel` | - | `/tpacancel` | `ultimatedonutsmp.command.tpacancel` |
+| `/tpaccept` | - | `/tpaccept [player]` | `ultimatedonutsmp.command.tpaccept` |
+| `/tpadeny` | - | `/tpadeny [player]` | `ultimatedonutsmp.command.tpadeny` |
+| `/tpahere` | - | `/tpahere <player>` | `ultimatedonutsmp.command.tpahere` |
+| `/tpahereauto` | - | `/tpahereauto` | `ultimatedonutsmp.command.tpahereauto` |
+| `/tpauto` | - | `/tpauto` | `ultimatedonutsmp.command.tpauto` |
+| `/twitter` | - | `/twitter` | `ultimatedonutsmp.command.twitter` |
+| `/ultimatedonutsmp` | `/uds`, `/udsmp` | `/ultimatedonutsmp <reload\|statswipe\|optimize\|setup\|features\|maintenance>` | `ultimatedonutsmp.command.ultimatedonutsmp` |
+| `/unban` | `/pardon` | `/unban <player> [reason]` | `ultimatedonutsmp.command.unban` |
+| `/unblacklist` | - | `/unblacklist <player> [reason]` | `ultimatedonutsmp.command.unblacklist` |
+| `/unignore` | - | `/unignore <player>` | `ultimatedonutsmp.command.unignore` |
+| `/unmute` | - | `/unmute <player> [reason]` | `ultimatedonutsmp.command.unmute` |
+| `/vanish` | - | `/vanish` | `ultimatedonutsmp.command.vanish` |
+| `/warn` | - | `/warn <player> [reason]` | `ultimatedonutsmp.command.warn` |
+| `/warp` | - | `/warp [name]` | `ultimatedonutsmp.command.warp` |
+| `/warpmanager` | - | `/warpmanager <create\|delete\|list> [name]` | `ultimatedonutsmp.command.warpmanager` |
+| `/worth` | `/prices` | `/worth [hand\|reload]` | `ultimatedonutsmp.command.worth` |
 
 Temporary punishment durations accept combined values such as `30s`, `15m`, `2h`, `5d`, or `5d 15m 30s`.
 
 ## Permissions
 
-`true` means the permission is granted by default, `op` means it defaults to server operators, and `false` means it must be granted explicitly. `ultimatedonutsmp.admin` is the main admin parent node, while several configurable or specialized nodes remain separate.
+`true` means the permission is granted by default to all players, `op` means it defaults to server operators, and `false` means it must be granted explicitly. `ultimatedonutsmp.admin` is the main admin parent node, and `ultimatedonutsmp.command.*` grants access to all plugin commands.
 
-| Permission | Default | Permission | Default |
-| --- | --- | --- | --- |
-| `anvilmod.admin` | `op` | `ultimatedonutsmp.hide.disguise` | `op` |
-| `donutauction.buy` | `false` | `ultimatedonutsmp.hide.scramble` | `op` |
-| `donutauction.cancel` | `false` | `ultimatedonutsmp.ignore` | `true` |
-| `donutauction.claims` | `false` | `ultimatedonutsmp.ignore.bypass` | `op` |
-| `donutauction.fastbuy` | `false` | `ultimatedonutsmp.message` | `true` |
-| `donutauction.fastsell` | `false` | `ultimatedonutsmp.message.bypass-disabled` | `op` |
-| `donutauction.limit` | `false` | `ultimatedonutsmp.message.toggle` | `true` |
-| `donutauction.my` | `false` | `ultimatedonutsmp.report` | `true` |
-| `donutauction.sell` | `false` | `ultimatedonutsmp.servers` | `false` |
-| `donutauction.use` | `false` | `ultimatedonutsmp.shards.everywhere` | `false` |
-| `safety.add` | `op` | `ultimatedonutsmp.shardshop` | `true` |
-| `safety.reload` | `op` | `ultimatedonutsmp.staff.alerts.bypass-cooldown` | `op` |
-| `safety.use` | `true` | `ultimatedonutsmp.staff.alerts.receive` | `op` |
-| `ultimatedonutsmp.admin` | `op` | `ultimatedonutsmp.staff.alts` | `op` |
-| `ultimatedonutsmp.admin.addmoney` | `op` | `ultimatedonutsmp.staff.chat.bypass.delay` | `op` |
-| `ultimatedonutsmp.admin.amethysttool` | `op` | `ultimatedonutsmp.staff.chat.bypass.filter` | `op` |
-| `ultimatedonutsmp.admin.auctionhouse` | `op` | `ultimatedonutsmp.staff.chat.bypass.mute` | `op` |
-| `ultimatedonutsmp.admin.clearlag` | `op` | `ultimatedonutsmp.staff.chat.clear` | `op` |
-| `ultimatedonutsmp.admin.crate` | `op` | `ultimatedonutsmp.staff.chat.delay` | `op` |
-| `ultimatedonutsmp.admin.crate.keyall` | `op` | `ultimatedonutsmp.staff.chat.mute` | `op` |
-| `ultimatedonutsmp.admin.crate.reload` | `op` | `ultimatedonutsmp.staff.chat.unmute` | `op` |
-| `ultimatedonutsmp.admin.cuboid` | `op` | `ultimatedonutsmp.staff.chat.use` | `op` |
-| `ultimatedonutsmp.admin.delwarp` | `op` | `ultimatedonutsmp.staff.fakeplayer` | `op` |
-| `ultimatedonutsmp.admin.duels` | `op` | `ultimatedonutsmp.staff.fakeplayer.alert` | `op` |
-| `ultimatedonutsmp.admin.ecsee` | `op` | `ultimatedonutsmp.staff.fakeplayer.bypass` | `op` |
-| `ultimatedonutsmp.admin.enderchest` | `op` | `ultimatedonutsmp.staff.feed` | `op` |
-| `ultimatedonutsmp.admin.ffa` | `op` | `ultimatedonutsmp.staff.fly` | `op` |
-| `ultimatedonutsmp.admin.freeze` | `op` | `ultimatedonutsmp.staff.freeze` | `op` |
-| `ultimatedonutsmp.admin.invsee` | `op` | `ultimatedonutsmp.staff.freeze.alert` | `op` |
-| `ultimatedonutsmp.admin.optimize` | `op` | `ultimatedonutsmp.staff.freeze.exempt` | `op` |
-| `ultimatedonutsmp.admin.orders` | `op` | `ultimatedonutsmp.staff.gamemode` | `op` |
-| `ultimatedonutsmp.admin.portalmanager` | `op` | `ultimatedonutsmp.staff.gamemode.others` | `op` |
-| `ultimatedonutsmp.admin.reload` | `op` | `ultimatedonutsmp.staff.god` | `op` |
-| `ultimatedonutsmp.admin.removemoney` | `op` | `ultimatedonutsmp.staff.heal` | `op` |
-| `ultimatedonutsmp.admin.serverwipe` | `op` | `ultimatedonutsmp.staff.helpop.receive` | `op` |
-| `ultimatedonutsmp.admin.setmoney` | `op` | `ultimatedonutsmp.staff.invsee` | `op` |
-| `ultimatedonutsmp.admin.setwarp` | `op` | `ultimatedonutsmp.staff.invsee.modify` | `op` |
-| `ultimatedonutsmp.admin.shards` | `op` | `ultimatedonutsmp.staff.mode` | `op` |
-| `ultimatedonutsmp.admin.shop` | `op` | `ultimatedonutsmp.staff.mode.betterview` | `op` |
-| `ultimatedonutsmp.admin.spawner` | `op` | `ultimatedonutsmp.staff.mode.others` | `op` |
-| `ultimatedonutsmp.admin.spawner.seeall` | `op` | `ultimatedonutsmp.staff.mode.randomtp` | `op` |
-| `ultimatedonutsmp.admin.spawnstash` | `op` | `ultimatedonutsmp.staff.mode.seevanished` | `op` |
-| `ultimatedonutsmp.admin.staffmode` | `op` | `ultimatedonutsmp.staff.mode.stafflist` | `op` |
-| `ultimatedonutsmp.admin.statswipe` | `op` | `ultimatedonutsmp.staff.mode.vanish` | `op` |
-| `ultimatedonutsmp.admin.warpmanager` | `op` | `ultimatedonutsmp.staff.profileviewer` | `op` |
-| `ultimatedonutsmp.admin.worth` | `op` | `ultimatedonutsmp.staff.punishments.ban` | `false` |
-| `ultimatedonutsmp.auctionhouse` | `true` | `ultimatedonutsmp.staff.punishments.blacklist` | `false` |
-| `ultimatedonutsmp.auctionhouse.buy` | `false` | `ultimatedonutsmp.staff.punishments.create` | `op` |
-| `ultimatedonutsmp.auctionhouse.cancel` | `false` | `ultimatedonutsmp.staff.punishments.delete` | `op` |
-| `ultimatedonutsmp.auctionhouse.claims` | `false` | `ultimatedonutsmp.staff.punishments.mute` | `false` |
-| `ultimatedonutsmp.auctionhouse.fastbuy` | `op` | `ultimatedonutsmp.staff.punishments.remove` | `op` |
-| `ultimatedonutsmp.auctionhouse.fastsell` | `op` | `ultimatedonutsmp.staff.punishments.unban` | `false` |
-| `ultimatedonutsmp.auctionhouse.limit` | `false` | `ultimatedonutsmp.staff.punishments.unblacklist` | `false` |
-| `ultimatedonutsmp.auctionhouse.my` | `false` | `ultimatedonutsmp.staff.punishments.unmute` | `false` |
-| `ultimatedonutsmp.auctionhouse.sell` | `false` | `ultimatedonutsmp.staff.punishments.view` | `op` |
-| `ultimatedonutsmp.auctionhouse.use` | `false` | `ultimatedonutsmp.staff.rename` | `op` |
-| `ultimatedonutsmp.enderchest` | `true` | `ultimatedonutsmp.staff.report.receive` | `op` |
-| `ultimatedonutsmp.friends` | `true` | `ultimatedonutsmp.staff.spawnstash` | `op` |
-| `ultimatedonutsmp.helpop` | `true` | `ultimatedonutsmp.staff.spawnstash.alert` | `op` |
-| `ultimatedonutsmp.hide.admin` | `op` | `ultimatedonutsmp.staff.spawnstash.bypass` | `op` |
-| `ultimatedonutsmp.hide.bypass` | `op` | `ultimatedonutsmp.staff.teleport` | `op` |
+### Main Parent Nodes
 
-Additional runtime or configurable permission nodes:
+| Permission Node | Default | Description |
+| --- | --- | --- |
+| `ultimatedonutsmp.admin` | `op` | Main admin parent node giving access to administrative commands, reload, wipe, and management systems |
+| `ultimatedonutsmp.command.*` | `op` | Grants access to execute all UltimateDonutSmp commands |
+| `ultimatedonutsmp.staff.mode` | `op` | Staff moderation mode parent node (vanish, betterview, randomtp, staff list, tools) |
+| `ultimatedonutsmp.staff.alerts.receive` | `op` | Parent node for receiving staff alerts (`helpop` and `report`) |
+| `ultimatedonutsmp.staff.punishments.create` | `op` | Parent node for issuing punishments (`warn`, `kick`, `ban`, `mute`, `blacklist`) |
+| `ultimatedonutsmp.staff.punishments.remove` | `op` | Parent node for removing active punishments (`unban`, `unmute`, `unblacklist`) |
 
-| Permission | Purpose |
-| --- | --- |
-| `ultimatedonutsmp.admin.features` | Open and change runtime feature toggles |
-| `ultimatedonutsmp.admin.maintenance` | Manage maintenance mode |
-| `ultimatedonutsmp.admin.maintenance.bypass` | Join while maintenance mode is active |
-| `ultimatedonutsmp.admin.setup` | Use setup status, apply, location, and command-list tools |
-| `ultimatedonutsmp.admin.teleportareas.delete` | Delete configured teleport areas |
-| `rank.media` | Display the configurable media tablist badge |
-| `rank.media.plus` | Display the configurable media-plus tablist badge |
-| `rank.media.include` | Include a player in media-badge handling |
+### System & Staff Permissions
 
-Shop entries, Billford access, amethyst tools, homes, order limits, Auction House limits, portals, tablist badges, and other content may define additional custom permission strings in their configuration files.
+| Permission | Default | Description |
+| --- | --- | --- |
+| `anvilmod.admin` | `op` | Admin access for anvil word moderation |
+| `safety.add` | `op` | Add players to safety check bypass list |
+| `safety.reload` | `op` | Reload safety configuration |
+| `safety.use` | `true` | Standard safety system permission |
+| `ultimatedonutsmp.admin.addmoney` | `op` | Add money to player balances |
+| `ultimatedonutsmp.admin.amethysttool` | `op` | Give and reload amethyst tools |
+| `ultimatedonutsmp.admin.auctionhouse` | `op` | Reload and manage Auction House settings |
+| `ultimatedonutsmp.admin.clearlag` | `op` | Trigger lag clear manually |
+| `ultimatedonutsmp.admin.crate` | `op` | Manage crate balances, chest bindings, and settings |
+| `ultimatedonutsmp.admin.crate.keyall` | `op` | Trigger key-all rewards manually |
+| `ultimatedonutsmp.admin.crate.reload` | `op` | Reload crate configuration |
+| `ultimatedonutsmp.admin.cuboid` | `op` | Create, bind, and manage cuboid regions |
+| `ultimatedonutsmp.admin.delwarp` | `op` | Delete public warp points |
+| `ultimatedonutsmp.admin.duels` | `op` | Manage duel settings and arenas |
+| `ultimatedonutsmp.admin.ecsee` | `op` | View other players' Ender Chest contents |
+| `ultimatedonutsmp.admin.enderchest` | `op` | Reload Ender Chest settings |
+| `ultimatedonutsmp.admin.features` | `op` | Access and toggle runtime feature switches |
+| `ultimatedonutsmp.admin.ffa` | `op` | Manage FFA arenas and settings |
+| `ultimatedonutsmp.admin.freeze` | `op` | Reload freeze settings |
+| `ultimatedonutsmp.admin.invsee` | `op` | Reload Invsee settings |
+| `ultimatedonutsmp.admin.logs` | `op` | View command log history |
+| `ultimatedonutsmp.admin.maintenance` | `op` | Manage maintenance mode |
+| `ultimatedonutsmp.admin.maintenance.bypass` | `op` | Join server while maintenance mode is enabled |
+| `ultimatedonutsmp.admin.optimize` | `op` | Access runtime optimization controls |
+| `ultimatedonutsmp.admin.orders` | `op` | Manage and reload Orders board settings |
+| `ultimatedonutsmp.admin.portalmanager` | `op` | Create, display, and manage RTP portals |
+| `ultimatedonutsmp.admin.reload` | `op` | Reload all UltimateDonutSmp configurations |
+| `ultimatedonutsmp.admin.removemoney` | `op` | Remove money from player balances |
+| `ultimatedonutsmp.admin.sellstats` | `op` | View top sell statistics and economy metrics |
+| `ultimatedonutsmp.admin.serverwipe` | `op` | Execute guarded server wipe operations |
+| `ultimatedonutsmp.admin.setmoney` | `op` | Set player money balances |
+| `ultimatedonutsmp.admin.setup` | `op` | Use interactive setup status and tools |
+| `ultimatedonutsmp.admin.setwarp` | `op` | Set public warp points |
+| `ultimatedonutsmp.admin.shards` | `op` | Inspect Shards Everywhere status |
+| `ultimatedonutsmp.admin.shop` | `op` | Reload shop settings |
+| `ultimatedonutsmp.admin.spawner` | `op` | Give and manage Donut-style spawners |
+| `ultimatedonutsmp.admin.spawner.seeall` | `op` | Bypass spawner anti-ESP concealment |
+| `ultimatedonutsmp.admin.spawnstash` | `op` | Manage bait spawn stashes |
+| `ultimatedonutsmp.admin.staffmode` | `op` | Reload Staff Mode settings |
+| `ultimatedonutsmp.admin.statswipe` | `op` | Execute player stats wipe |
+| `ultimatedonutsmp.admin.teleportareas.delete` | `op` | Delete configured teleport areas |
+| `ultimatedonutsmp.admin.warpmanager` | `op` | Manage public warps |
+| `ultimatedonutsmp.admin.worth` | `op` | Reload sell/worth settings |
+
+### Staff Moderation & Alert Permissions
+
+| Permission | Default | Description |
+| --- | --- | --- |
+| `ultimatedonutsmp.staff.alerts.bypass-cooldown` | `op` | Bypass report and helpop cooldowns |
+| `ultimatedonutsmp.staff.alerts.receive` | `op` | Receive helpop and report staff alerts |
+| `ultimatedonutsmp.staff.alts` | `op` | Check IP history and alt accounts |
+| `ultimatedonutsmp.staff.chat.bypass.delay` | `op` | Bypass global chat delay |
+| `ultimatedonutsmp.staff.chat.bypass.filter` | `op` | Bypass global chat filter |
+| `ultimatedonutsmp.staff.chat.bypass.mute` | `op` | Bypass global chat mute |
+| `ultimatedonutsmp.staff.chat.clear` | `op` | Clear chat screen visually |
+| `ultimatedonutsmp.staff.chat.delay` | `op` | Set global chat delay |
+| `ultimatedonutsmp.staff.chat.mute` | `op` | Mute global chat |
+| `ultimatedonutsmp.staff.chat.unmute` | `op` | Unmute global chat |
+| `ultimatedonutsmp.staff.chat.use` | `op` | Send and receive staff chat |
+| `ultimatedonutsmp.staff.fakeplayer` | `op` | Spawn fake player bait entities |
+| `ultimatedonutsmp.staff.fakeplayer.alert` | `op` | Receive fake player bait attack alerts |
+| `ultimatedonutsmp.staff.fakeplayer.bypass` | `op` | Bypass fake player bait triggers |
+| `ultimatedonutsmp.staff.feed` | `op` | Feed players |
+| `ultimatedonutsmp.staff.fly` | `op` | Toggle flight mode |
+| `ultimatedonutsmp.staff.freeze` | `op` | Freeze/unfreeze players for inspection |
+| `ultimatedonutsmp.staff.freeze.alert` | `op` | Receive player freeze alerts |
+| `ultimatedonutsmp.staff.freeze.exempt` | `op` | Exempt from being frozen by staff |
+| `ultimatedonutsmp.staff.gamemode` | `op` | Change own gamemode |
+| `ultimatedonutsmp.staff.gamemode.others` | `op` | Change other players' gamemodes |
+| `ultimatedonutsmp.staff.god` | `op` | Toggle god mode |
+| `ultimatedonutsmp.staff.heal` | `op` | Heal players |
+| `ultimatedonutsmp.staff.helpop.receive` | `op` | Receive helpop request alerts |
+| `ultimatedonutsmp.staff.invsee` | `op` | Inspect player inventories |
+| `ultimatedonutsmp.staff.invsee.modify` | `op` | Modify player inventories in invsee |
+| `ultimatedonutsmp.staff.mode.betterview` | `op` | Toggle better view in staff mode |
+| `ultimatedonutsmp.staff.mode.others` | `op` | Toggle staff mode for other players |
+| `ultimatedonutsmp.staff.mode.randomtp` | `op` | Random teleport in staff mode |
+| `ultimatedonutsmp.staff.mode.seevanished` | `op` | See vanished staff members |
+| `ultimatedonutsmp.staff.mode.stafflist` | `op` | Open online staff list |
+| `ultimatedonutsmp.staff.mode.vanish` | `op` | Toggle vanish in staff mode |
+| `ultimatedonutsmp.staff.profileviewer` | `op` | View player profiles and homes |
+| `ultimatedonutsmp.staff.punishments.ban` | `false` | Apply ban and tempban punishments |
+| `ultimatedonutsmp.staff.punishments.blacklist` | `false` | Apply blacklist punishments |
+| `ultimatedonutsmp.staff.punishments.delete` | `op` | Delete punishment logs from GUI |
+| `ultimatedonutsmp.staff.punishments.mute` | `false` | Apply mute and tempmute punishments |
+| `ultimatedonutsmp.staff.punishments.unban` | `false` | Remove active bans |
+| `ultimatedonutsmp.staff.punishments.unblacklist` | `false` | Remove active blacklists |
+| `ultimatedonutsmp.staff.punishments.unmute` | `false` | Remove active mutes |
+| `ultimatedonutsmp.staff.punishments.view` | `op` | View punishment history |
+| `ultimatedonutsmp.staff.rename` | `op` | Rename items |
+| `ultimatedonutsmp.staff.report.receive` | `op` | Receive player report alerts |
+| `ultimatedonutsmp.staff.spawnstash` | `op` | Place and inspect spawn stash bait |
+| `ultimatedonutsmp.staff.spawnstash.alert` | `op` | Receive spawn stash trigger alerts |
+| `ultimatedonutsmp.staff.spawnstash.bypass` | `op` | Bypass spawn stash detection |
+| `ultimatedonutsmp.staff.teleport` | `op` | Access staff teleport tools |
+
+### Player & Feature Permissions
+
+| Permission | Default | Description |
+| --- | --- | --- |
+| `donutauction.use` / `ultimatedonutsmp.auctionhouse.use` | `true` / `false` | Open Auction House GUI |
+| `donutauction.buy` / `ultimatedonutsmp.auctionhouse.buy` | `true` / `false` | Buy items on Auction House |
+| `donutauction.sell` / `ultimatedonutsmp.auctionhouse.sell` | `true` / `false` | Sell items on Auction House |
+| `donutauction.my` / `ultimatedonutsmp.auctionhouse.my` | `true` / `false` | View own listings on Auction House |
+| `donutauction.claims` / `ultimatedonutsmp.auctionhouse.claims` | `true` / `false` | Collect claims from Auction House |
+| `donutauction.cancel` / `ultimatedonutsmp.auctionhouse.cancel` | `true` / `false` | Cancel own listings on Auction House |
+| `donutauction.limit` / `ultimatedonutsmp.auctionhouse.limit` | `true` / `false` | Check listing limits on Auction House |
+| `donutauction.fastbuy` / `ultimatedonutsmp.auctionhouse.fastbuy` | `false` / `op` | Fast buy command access |
+| `donutauction.fastsell` / `ultimatedonutsmp.auctionhouse.fastsell` | `false` / `op` | Fast sell command access |
+| `ultimatedonutsmp.enderchest` | `true` | Open custom Ender Chest |
+| `ultimatedonutsmp.friends` | `true` | Friends and follow system |
+| `ultimatedonutsmp.helpop` | `true` | Use `/helpop` to request staff help |
+| `ultimatedonutsmp.hide.admin` | `op` | Manage and inspect player disguises |
+| `ultimatedonutsmp.hide.bypass` | `op` | Bypass disguise restrictions |
+| `ultimatedonutsmp.hide.disguise` | `op` | Change skin and disguise alias |
+| `ultimatedonutsmp.hide.scramble` | `op` | Scramble public username |
+| `ultimatedonutsmp.ignore` | `true` | Ignore and unignore players |
+| `ultimatedonutsmp.ignore.bypass` | `op` | Bypass private message ignore filter |
+| `ultimatedonutsmp.message` | `true` | Send and reply to private messages |
+| `ultimatedonutsmp.message.bypass-disabled` | `op` | Bypass recipient disabled PMs |
+| `ultimatedonutsmp.message.toggle` | `true` | Toggle private messages on/off |
+| `ultimatedonutsmp.report` | `true` | Report players to online staff |
+| `ultimatedonutsmp.servers` | `false` | View network server status GUI |
+| `ultimatedonutsmp.shards.everywhere` | `false` | Receive passive Shards Everywhere rewards |
+| `ultimatedonutsmp.shardshop` | `true` | Open Shard Shop GUI |
+| `rank.media` | `false` | Display configurable Media tablist badge (requires explicit LuckPerms assignment, not auto-granted to OP) |
+| `rank.media.plus` | `false` | Display configurable Media+ tablist badge (requires explicit LuckPerms assignment, not auto-granted to OP) |
+| `rank.media.include` | `false` | Include player in media badge handling (requires explicit LuckPerms assignment, not auto-granted to OP) |
+
+## Placeholders
+
+UltimateDonutSmp includes built-in [PlaceholderAPI](https://placeholderapi.com/) expansion modules for player economy, statistics, locations, countdowns, leaderboards, player ranks, and disguise states.
+
+Placeholder expansion identifiers supported: `%economy_*%`, `%uds_*%`, `%ultimatedonutsmp_*%`, `%economylb_*%`, `%economyrank_*%`, and `%hide_*%`.
+
+### Economy & Player Placeholders (`%economy_*%` / `%uds_*%` / `%ultimatedonutsmp_*%`)
+
+| Placeholder | Description | Example Output |
+| --- | --- | --- |
+| `%economy_money%` | Raw money balance | `12500.50` |
+| `%economy_money_formatted%` | Formatted money with currency symbol | `$12,500.50` |
+| `%economy_money_short%` / `%economy_nicestMoney%` | Compact formatted money amount | `12.5k` |
+| `%economy_money_short_formatted%` | Formatted compact money with symbol | `$12.5k` |
+| `%economy_shards%` | Raw shards balance | `500` |
+| `%economy_shards_formatted%` | Formatted shards balance | `500 Shards` |
+| `%economy_shards_short%` / `%economy_nicestShards%` | Compact formatted shards amount | `1.2k` |
+| `%economy_shards_short_formatted%` | Formatted compact shards with symbol | `1.2k Shards` |
+| `%economy_kills%` | Total player kill count | `42` |
+| `%economy_deaths%` | Total player death count | `10` |
+| `%economy_killstreak%` | Current active killstreak | `5` |
+| `%economy_highestkillstreak%` | Highest recorded killstreak | `12` |
+| `%economy_playtime%` | Total formatted playtime duration | `3d 14h 22m` |
+| `%economy_blocksplaced%` | Total blocks placed count | `15400` |
+| `%economy_blocksbroken%` | Total blocks broken count | `48200` |
+| `%economy_mobskilled%` | Total mob kills count | `1280` |
+| `%economy_moneyspent%` | Total money spent in shop/marketplaces | `50000.00` |
+| `%economy_moneymade%` | Total money earned from selling/markets | `120000.00` |
+| `%economy_team%` | Player's team name | `TITANS` or `none` |
+| `%economy_username%` | Public display username (respects `/hide` disguise) | `Steve` |
+| `%economy_ping%` | Player ping latency in ms | `24` |
+| `%economy_x%` / `%economy_coord_x%` | Player X coordinate (respects coordinate obfuscation) | `120` |
+| `%economy_y%` / `%economy_coord_y%` | Player Y coordinate (respects coordinate obfuscation) | `64` |
+| `%economy_z%` / `%economy_coord_z%` | Player Z coordinate (respects coordinate obfuscation) | `-350` |
+| `%economy_coords%` / `%economy_location%` | Formatted X, Y, Z coordinates string | `120, 64, -350` |
+| `%economy_randomized_coords%` | Returns `true`/`false` if coordinate obfuscation is active | `false` |
+| `%economy_donutplus%` | Displays Donut+ badge if player has permission | `&d&lDonut+ &r` |
+| `%economy_keyall_countdown%` | Formatted countdown until automatic key-all reward | `05:32` |
+| `%economy_booster_countdown%` | Formatted countdown for active shard booster | `14:20` or `inactive` |
+| `%economy_rtp_countdown%` | Formatted countdown for RTP zone cooldown | `00:45` or `disabled` |
+| `%economy_billford_countdown%` | Formatted countdown for Billford rotation | `02:15:00` or `disabled` |
+| `%economy_shard_cuboid_display%` | Shard cuboid display status indicator | `[Inside Zone]` |
+| `%economy_shard_cuboid_status%` | Shard cuboid status | `inside` or `outside` |
+| `%economy_shard_cuboid_name%` | Name of active shard cuboid region | `MainShardArea` or `none` |
+| `%economy_money_symbol%` | Currency symbol for money | `$` |
+| `%economy_money_symbol_colored%` | Colored currency symbol for money | `&$` |
+| `%economy_shards_symbol%` | Currency symbol for shards | `⬟` |
+| `%economy_shards_symbol_colored%` | Colored currency symbol for shards | `&d⬟` |
+
+### Leaderboard Placeholders (`%economylb_*%` / `%economy_top_*%`)
+
+Syntax: `%economylb_<type>_<position>_<property>%` or `%economy_top_<type>_<position>_<property>%`
+
+- **Leaderboard Types (`<type>`)**: `money`, `shards`, `kills`, `deaths`, `killstreak`, `highestkillstreak`, `playtime`, `blocksplaced`, `blocksbroken`, `mobskilled`, `moneyspent`, `moneymade`
+- **Positions (`<position>`)**: Rank index starting from `1` (e.g. `1`, `2`, `3`, `10`)
+- **Properties (`<property>`)**:
+  - `name`: Username of the player at position
+  - `value`: Full un-truncated value of the player at position
+  - `value_short` / `short`: Compact formatted value (e.g. `15.4M`)
+  - `rank`: Rank number index
+  - `display`: Pre-formatted entry line e.g. `#1 Notch: $15.4M`
+
+Examples:
+
+```
+%economylb_money_1_name%       -> Notch
+%economylb_money_1_value%      -> $15,400,000.00
+%economylb_money_1_value_short% -> 15.4M
+%economylb_kills_3_display%     -> #3 Alex: 450
+%economy_top_shards_1_name%    -> EnderKing
+```
+
+### Rank Leaderboard Placeholders (`%economyrank_*%`)
+
+Syntax: `%economyrank_<type>%`
+
+Returns the player's personal rank position number on the specified leaderboard type (e.g. `1`, `15`, or `0` if unranked).
+
+Examples:
+- `%economyrank_money%` -> `5`
+- `%economyrank_kills%` -> `1`
+
+### Hide & Disguise Placeholders (`%hide_*%`)
+
+Syntax: `%hide_<property>%`
+
+| Placeholder | Description | Example Output |
+| --- | --- | --- |
+| `%hide_active%` | Returns `true` or `false` if player has an active disguise or alias | `true` |
+| `%hide_name%` / `%hide_public_name%` | Player's formatted public display name | `ShadowNinja` |
+| `%hide_plain_name%` | Player's plain unformatted public display name | `ShadowNinja` |
+| `%hide_mode%` | Active disguise mode (`NONE`, `SCRAMBLE`, `ALIAS`, `DISGUISE`) | `ALIAS` |
+| `%hide_alias%` | Active custom alias string | `ShadowNinja` |
+| `%hide_skin%` | Active custom skin username | `CustomSkin123` |
 
 ## License and Terms
 
@@ -405,6 +560,8 @@ UltimateDonutSmp is a free, proprietary software.
 
 - The plugin is free to use but remains under a proprietary license.
 - Redistribution, resale, sublicensing, public mirroring, or unauthorized sharing is not permitted without written permission.
+- For full licensing terms, see the [LICENSE.md](LICENSE.md) file.
+- For contribution guidelines and rules, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Copyright (c) 2026 UltimateDonutSmp. All rights reserved.
 

@@ -9,6 +9,7 @@ import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
+import com.bx.ultimateDonutSmp.utils.ShulkerBoxSupport;
 import org.bukkit.block.Block;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -754,12 +755,23 @@ public class CrateManager {
             item = item.clone();
             item.setAmount(Math.max(1, Math.min(reward.display().amount(), item.getMaxStackSize())));
         }
+        if (plugin.getAmethystToolsManager().hasAmethystMetadata(item)) {
+            item = plugin.getAmethystToolsManager().createDisplayCopy(item, reward.grant().amethystDurationSeconds());
+        } else if (ShulkerBoxSupport.isShulkerBox(item)) {
+            plugin.getAmethystToolsManager().prepareCrateDisplayShulker(item, reward.grant().amethystDurationSeconds());
+        }
+
         var meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ColorUtils.toComponent(applyPlaceholders(reward.display().displayName(), player, crate, reward)));
             meta.setLore(ColorUtils.toComponentList(applyPlaceholders(reward.display().lore(), player, crate, reward)));
             item.setItemMeta(meta);
         }
+
+        if (plugin.getAmethystToolsManager().hasAmethystMetadata(item)) {
+            plugin.getAmethystToolsManager().updateLoreCountdown(item);
+        }
+
         return item;
     }
 
@@ -915,6 +927,12 @@ public class CrateManager {
                 return null;
             }
             grantedItem = amethystReward;
+        } else if (ShulkerBoxSupport.isShulkerBox(grantedItem)) {
+            plugin.getAmethystToolsManager().refreshAmethystItemsInShulker(
+                    grantedItem,
+                    player.getUniqueId(),
+                    grant.amethystDurationSeconds()
+            );
         }
 
         return grantedItem;
@@ -998,11 +1016,16 @@ public class CrateManager {
             if (!plugin.getAmethystToolsManager().hasValidSignature(storedItem)) {
                 return new ActionResult(false, "&cthat amethyst item has invalid metadata and cannot be used as a crate reward.");
             }
-            amethystDuration = plugin.getAmethystToolsManager().getRemainingSeconds(storedItem);
-            if (amethystDuration <= 0L) {
+            if (plugin.getAmethystToolsManager().isExpired(storedItem)) {
                 return new ActionResult(false, "&cexpired amethyst items cannot be used as crate rewards.");
             }
+            amethystDuration = plugin.getAmethystToolsManager().getToolDuration(storedItem);
+            if (amethystDuration <= 0L) {
+                amethystDuration = plugin.getAmethystToolsManager().getRemainingSeconds(storedItem);
+            }
             storedItem.setAmount(1);
+        } else if (ShulkerBoxSupport.isShulkerBox(storedItem)) {
+            amethystDuration = 86400L;
         }
 
         CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()

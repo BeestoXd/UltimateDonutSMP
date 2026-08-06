@@ -53,6 +53,13 @@ final class HideProtocolLibBridge implements HidePacketBridge {
         registerPlayerInfoListener();
     }
 
+    private boolean isTemporaryPlayer(Player player) {
+        if (player == null) {
+            return false;
+        }
+        return player.getClass().getName().contains("TemporaryPlayer");
+    }
+
     private void registerPlayerInfoListener() {
         playerInfoListener = new PacketAdapter(
                 plugin,
@@ -62,12 +69,15 @@ final class HideProtocolLibBridge implements HidePacketBridge {
         ) {
             @Override
             public void onPacketSending(PacketEvent event) {
+                if (event.isPlayerTemporary()) {
+                    return;
+                }
                 if (event.getPacketType() == PacketType.Play.Server.SCOREBOARD_TEAM) {
                     rewriteTeamEntries(event);
                     return;
                 }
                 Player viewer = event.getPlayer();
-                if (viewer == null || event.getPacket().getPlayerInfoDataLists().size() == 0) {
+                if (viewer == null || isTemporaryPlayer(viewer) || event.getPacket().getPlayerInfoDataLists().size() == 0) {
                     return;
                 }
 
@@ -118,8 +128,11 @@ final class HideProtocolLibBridge implements HidePacketBridge {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void rewriteTeamEntries(PacketEvent event) {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
         Player viewer = event.getPlayer();
-        if (viewer == null || hideManager.canSeeRealIdentity(viewer)) {
+        if (viewer == null || isTemporaryPlayer(viewer) || hideManager.canSeeRealIdentity(viewer)) {
             return;
         }
         Set<UUID> obfuscatedProfiles = new HashSet<>();
@@ -308,7 +321,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
     }
 
     private boolean shouldObfuscateFor(Player viewer, HideState state) {
-        if (viewer == null || state == null || !hideManager.usesObfuscatedText(state)) {
+        if (viewer == null || isTemporaryPlayer(viewer) || state == null || !hideManager.usesObfuscatedText(state)) {
             return false;
         }
         return state.playerUuid().equals(viewer.getUniqueId())
@@ -316,12 +329,12 @@ final class HideProtocolLibBridge implements HidePacketBridge {
     }
 
     private void enforceNametagTeamsLater(Player viewer, Collection<UUID> profileIds) {
-        if (viewer == null || profileIds == null || profileIds.isEmpty()) {
+        if (viewer == null || isTemporaryPlayer(viewer) || profileIds == null || profileIds.isEmpty()) {
             return;
         }
         Set<UUID> profiles = Set.copyOf(profileIds);
         plugin.getSpigotScheduler().runEntity(viewer, () -> {
-            if (!viewer.isOnline()) {
+            if (!viewer.isOnline() || isTemporaryPlayer(viewer)) {
                 return;
             }
             for (UUID profileId : profiles) {
@@ -524,7 +537,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
     ) {
         return new PlayerInfoData(
                 target.getUniqueId(),
-                target.getPing(),
+                plugin.getPingManager().getPing(target),
                 true,
                 EnumWrappers.NativeGameMode.fromBukkit(target.getGameMode()),
                 profile,
@@ -611,7 +624,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
     }
 
     private void send(Player viewer, PacketContainer packet) {
-        if (viewer == null || !viewer.isOnline() || packet == null) {
+        if (viewer == null || isTemporaryPlayer(viewer) || !viewer.isOnline() || packet == null) {
             return;
         }
         try {

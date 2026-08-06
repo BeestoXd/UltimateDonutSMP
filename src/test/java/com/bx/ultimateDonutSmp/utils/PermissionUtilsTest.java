@@ -72,6 +72,79 @@ class PermissionUtilsTest {
         assertTrue(PermissionUtils.has(permissible, "ultimatedonutsmp.auctionhouse.limit.10"));
     }
 
+    @Test
+    void temporaryPlayerReturnsFalseWithoutThrowing() {
+        class MockTemporaryPlayer implements Permissible {
+            @Override
+            public boolean isPermissionSet(String name) { throw new UnsupportedOperationException(); }
+            @Override
+            public boolean isPermissionSet(Permission perm) { throw new UnsupportedOperationException(); }
+            @Override
+            public boolean hasPermission(String name) { throw new UnsupportedOperationException(); }
+            @Override
+            public boolean hasPermission(Permission perm) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin, int ticks) { throw new UnsupportedOperationException(); }
+            @Override
+            public void removeAttachment(PermissionAttachment attachment) { throw new UnsupportedOperationException(); }
+            @Override
+            public void recalculatePermissions() { throw new UnsupportedOperationException(); }
+            @Override
+            public Set<PermissionAttachmentInfo> getEffectivePermissions() { throw new UnsupportedOperationException(); }
+            @Override
+            public boolean isOp() { return false; }
+            @Override
+            public void setOp(boolean value) {}
+        }
+
+        MockTemporaryPlayer tempPlayer = new MockTemporaryPlayer();
+        assertTrue(PermissionUtils.isTemporaryPlayer(tempPlayer));
+        assertFalse(PermissionUtils.has(tempPlayer, "ultimatedonutsmp.bypass"));
+        assertFalse(PermissionUtils.hasExact(tempPlayer, "ultimatedonutsmp.bypass"));
+    }
+
+    @Test
+    void unsupportedOperationExceptionInHasPermissionReturnsFalse() {
+        class ThrowingPermissible implements Permissible {
+            @Override
+            public boolean isPermissionSet(String name) { throw new UnsupportedOperationException(); }
+            @Override
+            public boolean isPermissionSet(Permission perm) { throw new UnsupportedOperationException(); }
+            @Override
+            public boolean hasPermission(String name) { throw new UnsupportedOperationException("hasPermission not supported for temporary players"); }
+            @Override
+            public boolean hasPermission(Permission perm) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) { throw new UnsupportedOperationException(); }
+            @Override
+            public PermissionAttachment addAttachment(Plugin plugin, int ticks) { throw new UnsupportedOperationException(); }
+            @Override
+            public void removeAttachment(PermissionAttachment attachment) { throw new UnsupportedOperationException(); }
+            @Override
+            public void recalculatePermissions() { throw new UnsupportedOperationException(); }
+            @Override
+            public Set<PermissionAttachmentInfo> getEffectivePermissions() { throw new UnsupportedOperationException(); }
+            @Override
+            public boolean isOp() { return false; }
+            @Override
+            public void setOp(boolean value) {}
+        }
+
+        ThrowingPermissible permissible = new ThrowingPermissible();
+        assertFalse(PermissionUtils.has(permissible, "ultimatedonutsmp.bypass"));
+        assertFalse(PermissionUtils.hasExact(permissible, "ultimatedonutsmp.bypass"));
+    }
+
     private static final class TestPermissible implements Permissible {
         private final Set<PermissionAttachmentInfo> effectivePermissions = new LinkedHashSet<>();
         private boolean op;

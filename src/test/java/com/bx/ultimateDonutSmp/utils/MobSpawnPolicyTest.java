@@ -20,6 +20,7 @@ class MobSpawnPolicyTest {
     void periodicCleanupPreservesSpawnerMobsAndExistingExcludedTypes() {
         assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, false));
         assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, true));
+        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, false, true));
         assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(false, EntityType.ZOMBIE, false));
 
         assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.PHANTOM, false));
@@ -30,5 +31,8 @@ class MobSpawnPolicyTest {
 
         assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.SLIME, false));
         assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.GHAST, false));
+        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.HOGLIN, false));
+        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.SPIDER, false));
+        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.CAVE_SPIDER, false));
     }
 }

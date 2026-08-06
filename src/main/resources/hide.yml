@@ -62,7 +62,7 @@ SKINS:
 GUI:
   # Configuration section for Main.
   MAIN:
-    TITLE: '&8ʜɪᴅᴇ'
+    TITLE: '&8hide'
     SIZE: 27
   # Configuration section for Aliases.
   ALIASES:
@@ -70,69 +70,69 @@ GUI:
     SIZE: 54
   # Configuration section for Skins.
   SKINS:
-    TITLE: '&8ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}'
+    TITLE: '&8select a skin - {page}/{pages}'
     SIZE: 54
   # Configuration section for List.
   LIST:
-    TITLE: '&8ʜɪᴅᴅᴇɴ ᴘʟᴀʏᴇʀѕ - {page}/{pages}'
+    TITLE: '&8hidden players - {page}/{pages}'
     SIZE: 54
 MESSAGES:
   # The text or value for Player Only. Available options: Any valid string text
-  PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+  PLAYER-ONLY: '&conly players can use this command.'
   # The text or value for No Permission. Available options: Any valid string text
   NO-PERMISSION: '&cyou do not have permission.'
   # The text or value for Dependency Missing. Available options: Any valid string text
-  DEPENDENCY-MISSING: '&cʜɪᴅᴇ ʀᴇǫᴜɪʀᴇѕ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴛᴏ ʙᴇ ɪɴѕᴛᴀʟʟᴇᴅ ᴀɴᴅ ᴇɴᴀʙʟᴇᴅ.'
+  DEPENDENCY-MISSING: '&chide requires protocollib to be installed and enabled.'
   # The text or value for Disabled. Available options: Any valid string text
-  DISABLED: '&cᴛʜᴇ ʜɪᴅᴇ ꜰᴇᴀᴛᴜʀᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+  DISABLED: '&cthe hide feature is currently disabled.'
   # The text or value for In Combat. Available options: Any valid string text
-  IN-COMBAT: '&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʜᴀɴɢᴇ ʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ.'
+  IN-COMBAT: '&cyou cannot change your hide state while in combat.'
   # The text or value for Cooldown. Available options: Any valid string text
-  COOLDOWN: '&cᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀɴɢɪɴɢ ʜɪᴅᴇ ᴀɢᴀɪɴ.'
+  COOLDOWN: '&cwait &f{seconds}s &cbefore changing hide again.'
   # The text or value for Already Hidden. Available options: Any valid string text
-  ALREADY-HIDDEN: '&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴜѕɪɴɢ ᴛʜᴀᴛ ʜɪᴅᴇ ɪᴅᴇɴᴛɪᴛʏ.'
+  ALREADY-HIDDEN: '&cyou are already using that hide identity.'
   # The text or value for Not Hidden. Available options: Any valid string text
-  NOT-HIDDEN: '&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ.'
+  NOT-HIDDEN: '&cthat player is not hidden.'
   # The text or value for Player Not Found. Available options: Any valid string text
-  PLAYER-NOT-FOUND: '&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.'
+  PLAYER-NOT-FOUND: '&cplayer not found.'
   # The text or value for Invalid Alias. Available options: Any valid string text
-  INVALID-ALIAS: '&cᴛʜᴀᴛ ᴅɪѕɢᴜɪѕᴇ ᴀʟɪᴀѕ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴏʀ ɪѕ ɪɴᴠᴀʟɪᴅ.'
+  INVALID-ALIAS: '&cthat disguise alias is not configured or is invalid.'
   # The text or value for Invalid Skin. Available options: Any valid string text
-  INVALID-SKIN: '&cᴜɴᴀʙʟᴇ ᴛᴏ ʀᴇѕᴏʟᴠᴇ ᴛʜᴀᴛ ѕᴋɪɴ ɴᴀᴍᴇ ᴏʀ ᴜʀʟ.'
+  INVALID-SKIN: '&cunable to resolve that skin name or url.'
   # The text or value for Skin Searching. Available options: Any valid string text
-  SKIN-SEARCHING: '&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7...'
+  SKIN-SEARCHING: '&7searching skin for &f{skin}&7...'
   # The text or value for Alias In Use. Available options: Any valid string text
-  ALIAS-IN-USE: '&cᴛʜᴀᴛ ᴀʟɪᴀѕ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴜѕᴇ.'
+  ALIAS-IN-USE: '&cthat alias is already in use.'
   # The text or value for Scrambled. Available options: Any valid string text
-  SCRAMBLED: '&aʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ɪѕ ɴᴏᴡ ѕᴄʀᴀᴍʙʟᴇᴅ ᴀѕ &f{alias}&a.'
+  SCRAMBLED: '&ayour identity is now scrambled as &f{alias}&a.'
   # The text or value for Disguised. Available options: Any valid string text
-  DISGUISED: '&aʏᴏᴜ ᴀʀᴇ ɴᴏᴡ ᴅɪѕɢᴜɪѕᴇᴅ ᴀѕ &f{alias}&a.'
+  DISGUISED: '&ayou are now disguised as &f{alias}&a.'
   # The text or value for Removed. Available options: Any valid string text
-  REMOVED: '&aʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ.'
+  REMOVED: '&ayour hide state has been removed.'
   # The text or value for Admin Removed. Available options: Any valid string text
-  ADMIN-REMOVED: '&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a.'
+  ADMIN-REMOVED: '&asuccessfully removed hide from &f{player}&a.'
   # The text or value for Removed By Admin. Available options: Any valid string text
-  REMOVED-BY-ADMIN: '&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ.'
+  REMOVED-BY-ADMIN: '&cyour hide state has been removed by an administrator.'
   # The text or value for Status None. Available options: Any valid string text
-  STATUS-NONE: '&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &cɪɴᴀᴄᴛɪᴠᴇ'
+  STATUS-NONE: '&7hide status: &cinactive'
   # The text or value for Status Active. Available options: Any valid string text
-  STATUS-ACTIVE: '&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &a{mode} &8- &f{alias}'
+  STATUS-ACTIVE: '&7hide status: &a{mode} &8- &f{alias}'
   # The text or value for Check. Available options: Any valid string text
-  CHECK: '&bʜɪᴅᴇ ᴄʜᴇᴄᴋ
+  CHECK: '&bhide check
 
-    # The text or value for # The Text Or Mode For &7Ʀᴇᴀʟ ɴᴀᴍᴇ. Available Options. Available options: Any valid string text
-    # The text or mode for &7Ʀᴇᴀʟ ɴᴀᴍᴇ. Available options: Any string text &7ʀᴇᴀʟ
-    # The text or value for ɴᴀᴍᴇ. Available options: Any valid string text
-    ɴᴀᴍᴇ: &f{real}
+    # The text or value for # The Text Or Mode For &7Ʀeal name. Available Options. Available options: Any valid string text
+    # The text or mode for &7Ʀeal name. Available options: Any string text &7real
+    # The text or value for name. Available options: Any valid string text
+    name: &f{real}
 
-    # The text or value for # The Text Or Mode For &7ᴀʟɪᴀѕ. Available Options. Available options: Any valid string text
-    # The text or mode for &7ᴀʟɪᴀѕ. Available options: Any string text &7ᴀʟɪᴀѕ: &f{alias}
+    # The text or value for # The Text Or Mode For &7alias. Available Options. Available options: Any valid string text
+    # The text or mode for &7alias. Available options: Any string text &7alias: &f{alias}
 
-    # The text or value for # The Text Or Mode For &7ᴍᴏᴅᴇ. Available Options. Available options: Any valid string text
-    # The text or mode for &7ᴍᴏᴅᴇ. Available options: Any string text &7ᴍᴏᴅᴇ: &f{mode}
+    # The text or value for # The Text Or Mode For &7mode. Available Options. Available options: Any valid string text
+    # The text or mode for &7mode. Available options: Any string text &7mode: &f{mode}
 
-    # The text or value for # The Text Or Mode For &7Ѕᴋɪɴ. Available Options. Available options: Any valid string text
-    # The text or mode for &7Ѕᴋɪɴ. Available options: Any string text &7ѕᴋɪɴ: &f{skin}'
+    # The text or value for # The Text Or Mode For &7Ѕkin. Available Options. Available options: Any valid string text
+    # The text or mode for &7Ѕkin. Available options: Any string text &7skin: &f{skin}'
   # The text or value for Permission Removed. Available options: Any valid string text
-  PERMISSION-REMOVED: '&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡᴀѕ ʀᴇᴍᴏᴠᴇᴅ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴘᴇʀᴍɪѕѕɪᴏɴ ɪѕ ɴᴏ
-    ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ.'
+  PERMISSION-REMOVED: '&cyour hide state was removed because its permission is no
+    longer available.'

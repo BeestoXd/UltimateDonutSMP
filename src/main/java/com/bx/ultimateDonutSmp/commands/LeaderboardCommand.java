@@ -43,7 +43,7 @@ public class LeaderboardCommand implements CommandExecutor {
             String available = plugin.getLeaderboardManager().getTypes().stream()
                     .map(leaderboardType -> leaderboardType.getConfigKey())
                     .collect(Collectors.joining(", "));
-            player.sendMessage(ColorUtils.toComponent("&cᴛɪᴘᴇ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴛɪᴅᴀᴋ ᴠᴀʟɪᴅ. &7ᴀᴠᴀɪʟᴀʙʟᴇ: &f" + available));
+            player.sendMessage(ColorUtils.toComponent("&cɪɴᴠᴀʟɪᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴛʏᴘᴇ. &7ᴀᴠᴀɪʟᴀʙʟᴇ: &f" + available));
             return true;
         }
 

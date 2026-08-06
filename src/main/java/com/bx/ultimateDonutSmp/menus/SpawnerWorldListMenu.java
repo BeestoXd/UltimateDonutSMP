@@ -43,9 +43,9 @@ public class SpawnerWorldListMenu extends BaseMenu {
                     plugin.getSpawnerManager().getWorldIcon(world),
                     "&b" + worldLabel,
                     List.of(
-                            "&7ᴍᴀɴᴀɢᴇᴅ ѕᴘᴀᴡɴᴇʀѕ: &f" + summary.count(),
+                            "&7Managed Spawners: &f" + summary.count(),
                             "",
-                            "&eᴄʟɪᴄᴋ ᴛᴏ ʙʀᴏᴡѕᴇ " + worldLabel + "&e ѕᴘᴀᴡɴᴇʀѕ"
+                            "&eClick to browse " + worldLabel + "&e Spawners"
                     )
             ));
             slotBindings.put(slot, summary);

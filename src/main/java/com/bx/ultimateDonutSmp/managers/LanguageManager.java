@@ -191,8 +191,7 @@ public class LanguageManager {
     }
 
     public static String translateBuiltInText(String text) {
-        LanguageManager manager = current;
-        return manager == null || text == null ? text : manager.builtInTranslations.getOrDefault(text, text);
+        return text;
     }
 
     public String text(String path) {
@@ -255,14 +254,7 @@ public class LanguageManager {
     }
 
     public FileConfiguration localize(String rootPath, FileConfiguration legacyConfiguration) {
-        if (legacyConfiguration == null || !hasLanguageSection(rootPath)) {
-            return legacyConfiguration;
-        }
-        Map<String, FileConfiguration> byRoot = localizedConfigurations.computeIfAbsent(
-                legacyConfiguration,
-                ignored -> new HashMap<>()
-        );
-        return byRoot.computeIfAbsent(rootPath, ignored -> buildLocalizedConfiguration(rootPath, legacyConfiguration));
+        return legacyConfiguration;
     }
 
     public String formatDuration(long totalSeconds, boolean includeDays) {

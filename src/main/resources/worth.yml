@@ -81,7 +81,7 @@ TYPE:
     # The decimal value for Torchflower. Available options: Any decimal number
     TORCHFLOWER: 4.0
     # The decimal value for Nether Wart. Available options: Any decimal number
-    NETHER_WART: 16.0
+    NETHER_WART: 6.0
     # The decimal value for Spruce Sapling. Available options: Any decimal number
     SPRUCE_SAPLING: 3.0
     # The decimal value for Twisting Vines. Available options: Any decimal number
@@ -121,7 +121,7 @@ TYPE:
     # The decimal value for Chorus Flower. Available options: Any decimal number
     CHORUS_FLOWER: 3.0
     # The decimal value for Chorus Fruit. Available options: Any decimal number
-    CHORUS_FRUIT: 18.0
+    CHORUS_FRUIT: 6.0
     # The decimal value for Big Dripleaf. Available options: Any decimal number
     BIG_DRIPLEAF: 3.0
     # The decimal value for Small Dripleaf. Available options: Any decimal number
@@ -331,7 +331,7 @@ TYPE:
     # The decimal value for Gunpowder. Available options: Any decimal number
     GUNPOWDER: 1.0
     # The decimal value for Magma Cream. Available options: Any decimal number
-    MAGMA_CREAM: 16.0
+    MAGMA_CREAM: 6.0
     # The decimal value for Phantom Membrane. Available options: Any decimal number
     PHANTOM_MEMBRANE: 5.0
     # The decimal value for Arrow. Available options: Any decimal number

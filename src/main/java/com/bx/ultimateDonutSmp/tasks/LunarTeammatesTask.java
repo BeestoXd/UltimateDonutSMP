@@ -77,7 +77,11 @@ public class LunarTeammatesTask implements Runnable {
     }
 
     private boolean isParticleTargetValid(Player player) {
-        return player != null && player.isOnline() && player.isValid() && !player.isDead();
+        return player != null
+                && player.isOnline()
+                && player.isValid()
+                && !player.isDead()
+                && (plugin.getStaffModeManager() == null || !plugin.getStaffModeManager().isVanished(player.getUniqueId()));
     }
 
     public static void start(UltimateDonutSmp plugin) {

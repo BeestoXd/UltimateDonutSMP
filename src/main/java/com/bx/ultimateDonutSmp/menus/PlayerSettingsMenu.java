@@ -76,13 +76,11 @@ public final class PlayerSettingsMenu extends BaseMenu {
         }
 
         for (String key : buttons.getKeys(false)) {
-            if (!shouldRenderButton(key)) {
+            ConfigurationSection section = buttons.getConfigurationSection(key);
+            if (section == null || !shouldRenderButton(key, section)) {
                 continue;
             }
-            ConfigurationSection section = buttons.getConfigurationSection(key);
-            if (section != null) {
-                renderButton(player, data, key, section);
-            }
+            renderButton(player, data, key, section);
         }
     }
 
@@ -98,6 +96,32 @@ public final class PlayerSettingsMenu extends BaseMenu {
         }
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+
+        ConfigurationSection section = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".BUTTONS." + key);
+        if (section != null && section.contains("COMMAND")) {
+            String commandStr = section.getString("COMMAND");
+            if (commandStr != null && !commandStr.isBlank()) {
+                commandStr = commandStr.replace("{player}", player.getName()).replace("%player%", player.getName());
+                if (commandStr.toLowerCase(java.util.Locale.ROOT).startsWith("[console] ")) {
+                    String cmd = commandStr.substring(10).trim();
+                    org.bukkit.Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), cmd);
+                } else if (commandStr.toLowerCase(java.util.Locale.ROOT).startsWith("[player] ")) {
+                    String cmd = commandStr.substring(9).trim();
+                    if (cmd.startsWith("/")) cmd = cmd.substring(1);
+                    player.performCommand(cmd);
+                } else {
+                    String cmd = commandStr.startsWith("/") ? commandStr.substring(1) : commandStr;
+                    player.performCommand(cmd);
+                }
+                org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (player.isOnline()) {
+                        build(player);
+                    }
+                });
+                return;
+            }
+        }
 
         switch (key) {
             case "PUBLIC_CHAT" -> toggle(player, "Public Chat",
@@ -273,15 +297,16 @@ public final class PlayerSettingsMenu extends BaseMenu {
             return;
         }
 
-        ButtonState state = buttonState(player, data, key);
+        ButtonState state = buttonState(player, data, key, section);
         List<String> lore = new ArrayList<>();
         for (String line : section.getStringList("LORE")) {
-            lore.add(line.replace("{status}", state.status()));
+            lore.add(ColorUtils.colorize(line.replace("{status}", state.status()), player));
         }
         Material material = ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE"));
+        String displayName = ColorUtils.colorize(section.getString("DISPLAY-NAME", "&fѕᴇᴛᴛɪɴɢ"), player);
         ItemStack item = ItemUtils.createItem(
                 material,
-                section.getString("DISPLAY-NAME", "&fѕᴇᴛᴛɪɴɢ"),
+                displayName,
                 lore
         );
         if ("NIGHT_VISION".equals(key)) {
@@ -302,7 +327,42 @@ public final class PlayerSettingsMenu extends BaseMenu {
         return item;
     }
 
-    private ButtonState buttonState(Player player, PlayerData data, String key) {
+    private ButtonState buttonState(Player player, PlayerData data, String key, ConfigurationSection section) {
+        if (section != null && section.contains("STATUS-PLACEHOLDER")) {
+            String placeholder = section.getString("STATUS-PLACEHOLDER");
+            if (placeholder != null && !placeholder.isBlank()) {
+                String evaluated = ColorUtils.colorize(placeholder, player).trim();
+                if (evaluated.startsWith("%") && evaluated.endsWith("%")) {
+                    if (placeholder.equalsIgnoreCase("%player_is_flying%") || placeholder.equalsIgnoreCase("%player_flying%")) {
+                        boolean flying = player.isFlying() || player.getAllowFlight();
+                        return new ButtonState(flying ? "&aEnabled" : "&cDisabled", true);
+                    }
+                    if (placeholder.equalsIgnoreCase("%player_is_op%")) {
+                        return new ButtonState(player.isOp() ? "&aEnabled" : "&cDisabled", true);
+                    }
+                    if (placeholder.equalsIgnoreCase("%player_is_sneaking%")) {
+                        return new ButtonState(player.isSneaking() ? "&aEnabled" : "&cDisabled", true);
+                    }
+                    return new ButtonState("&cDisabled", true);
+                }
+                String lower = evaluated.toLowerCase(java.util.Locale.ROOT);
+                if (lower.equals("true") || lower.equals("enabled") || lower.equals("yes") || lower.equals("on") || lower.equals("1")) {
+                    return new ButtonState("&aEnabled", true);
+                } else if (lower.equals("false") || lower.equals("disabled") || lower.equals("no") || lower.equals("off") || lower.equals("0")) {
+                    return new ButtonState("&cDisabled", true);
+                } else {
+                    return new ButtonState(evaluated, true);
+                }
+            }
+        }
+        if (section != null && section.contains("COMMAND")) {
+            String cmd = section.getString("COMMAND", "").toLowerCase(java.util.Locale.ROOT);
+            if (cmd.contains("fly")) {
+                boolean flying = player.isFlying() || player.getAllowFlight();
+                return new ButtonState(flying ? "&aEnabled" : "&cDisabled", true);
+            }
+            return new ButtonState("&aEnabled", true);
+        }
         return switch (key) {
             case "PUBLIC_CHAT" -> state(data.isPublicChatEnabled());
             case "PRIVATE_MESSAGES" -> new ButtonState(formatThreeChoice(data.getPrivateMessagesChoice()), true);
@@ -505,13 +565,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             if (!(entity instanceof LivingEntity living)) {
                 continue;
             }
-            if (!(living instanceof Monster || living instanceof org.bukkit.entity.Slime || living instanceof org.bukkit.entity.Ghast)) {
-                continue;
-            }
-            if (living.getType() == EntityType.PHANTOM) {
-                continue;
-            }
-            if (MobSpawnPolicy.isVanillaSpawnerMob(plugin, living)) {
+            if (!MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(plugin, living)) {
                 continue;
             }
             if (living.getLocation().distanceSquared(player.getLocation()) > radiusSquared) {
@@ -567,7 +621,10 @@ public final class PlayerSettingsMenu extends BaseMenu {
         return TwoChoice.values()[nextOrdinal];
     }
 
-    private boolean shouldRenderButton(String key) {
+    private boolean shouldRenderButton(String key, ConfigurationSection section) {
+        if (section != null && (section.contains("COMMAND") || section.contains("STATUS-PLACEHOLDER"))) {
+            return true;
+        }
         if (!VALID_SETTINGS.contains(key)) {
             return false;
         }

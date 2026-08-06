@@ -75,7 +75,11 @@ public class ShardManager {
         }
 
         public boolean matches(Player player, CuboidManager cuboidManager) {
-            if (player.getWorld() == null) {
+            return matches(player, cuboidManager, null);
+        }
+
+        public boolean matches(Player player, CuboidManager cuboidManager, SpawnManager spawnManager) {
+            if (player == null || player.getWorld() == null) {
                 return false;
             }
             if (world != null && !world.isBlank() && !player.getWorld().getName().equalsIgnoreCase(world)) {
@@ -85,7 +89,37 @@ public class ShardManager {
             if (cuboid != null && cuboid.contains(player.getLocation())) {
                 return true;
             }
-            return isInsideRewardRadius(player.getLocation());
+            if (isInsideRewardRadius(player.getLocation())) {
+                return true;
+            }
+            return isInAfkZone(player, cuboidManager, spawnManager);
+        }
+
+        public boolean isInAfkZone(Player player, CuboidManager cuboidManager, SpawnManager spawnManager) {
+            if (player == null || player.getWorld() == null) {
+                return false;
+            }
+            CuboidManager.Cuboid afkCuboid = cuboidManager.getCuboid(afkCuboidName);
+            if (afkCuboid != null && afkCuboid.contains(player.getLocation())) {
+                return true;
+            }
+            if (spawnManager != null && cuboidManager != null) {
+                for (String name : spawnManager.getAreaCuboidNames(SpawnManager.AreaType.AFK)) {
+                    CuboidManager.Cuboid boundAfk = cuboidManager.getCuboid(name);
+                    if (boundAfk != null && boundAfk.contains(player.getLocation())) {
+                        return true;
+                    }
+                }
+            }
+            Location targetAfkLoc = afkLocation != null ? afkLocation : (spawnManager != null ? spawnManager.getAfkLocation() : null);
+            if (targetAfkLoc == null || targetAfkLoc.getWorld() == null) {
+                return false;
+            }
+            if (!player.getWorld().getName().equalsIgnoreCase(targetAfkLoc.getWorld().getName())) {
+                return false;
+            }
+            double radius = rewardRadius > 0D ? rewardRadius : 16D;
+            return player.getLocation().distanceSquared(targetAfkLoc) <= radius * radius;
         }
 
         private boolean isInsideRewardRadius(Location location) {
@@ -370,7 +404,7 @@ public class ShardManager {
             return null;
         }
         for (ShardCuboidConfig config : shardCuboidConfigs) {
-            if (config.matches(player, plugin.getCuboidManager())) {
+            if (config.matches(player, plugin.getCuboidManager(), plugin.getSpawnManager())) {
                 return config;
             }
         }

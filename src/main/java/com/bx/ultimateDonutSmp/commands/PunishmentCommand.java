@@ -296,25 +296,64 @@ public class PunishmentCommand implements CommandExecutor {
     private String[] punishmentPlaceholders(PunishmentRecord record) {
         String expires = formatExpires(record);
         String issuer = formatIssuer(record);
+        String reason = record == null || record.getReason() == null ? "" : record.getReason();
+        String player = record == null || record.getTargetNameSnapshot() == null ? "" : record.getTargetNameSnapshot();
+        String id = record == null ? "" : String.valueOf(record.getId());
+        String type = record == null || record.getType() == null ? "" : record.getType().name();
+
         return new String[]{
-                "%reason%", record.getReason(),
+                "%reason%", reason,
+                "{reason}", reason,
+
                 "%nicest_expiration%", expires,
-                "%issuer%", issuer,
-                "{reason}", record.getReason(),
+                "{nicest_expiration}", expires,
+                "%expires%", expires,
                 "{expires}", expires,
-                "{issuer}", issuer
+                "%expires_at%", expires,
+                "{expires_at}", expires,
+                "%expiration%", expires,
+                "{expiration}", expires,
+                "%expiry%", expires,
+                "{expiry}", expires,
+                "%duration%", expires,
+                "{duration}", expires,
+
+                "%issuer%", issuer,
+                "{issuer}", issuer,
+                "%staff%", issuer,
+                "{staff}", issuer,
+                "%by%", issuer,
+                "{by}", issuer,
+
+                "%player%", player,
+                "{player}", player,
+                "%target%", player,
+                "{target}", player,
+
+                "%id%", id,
+                "{id}", id,
+
+                "%type%", type,
+                "{type}", type
         };
     }
 
     private String formatExpires(PunishmentRecord record) {
-        if (record.getExpiresAt() == null) {
-            return "Never";
+        if (record == null || record.getExpiresAt() == null) {
+            return "Permanent";
         }
         long remainingSeconds = Math.max(0L, (record.getExpiresAt() - System.currentTimeMillis()) / 1000L);
+        if (remainingSeconds <= 0L) {
+            return "Expired";
+        }
+        if (plugin != null && plugin.getLanguageManager() != null) {
+            return plugin.getLanguageManager().formatDuration(remainingSeconds, true);
+        }
         return NumberUtils.formatCountdown(remainingSeconds);
     }
 
     private String formatIssuer(PunishmentRecord record) {
+        if (record == null) return "unknown";
         String issuer = record.getIssuerNameSnapshot();
         return issuer == null || issuer.isBlank() ? "unknown" : issuer;
     }

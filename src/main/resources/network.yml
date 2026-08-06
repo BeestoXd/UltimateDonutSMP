@@ -1,83 +1,113 @@
-# Configuration section for Network.
+# ==============================================================================
+# UltimateDonutSMP - Cross-Server Network System Configuration
+# ==============================================================================
+
 NETWORK:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable or disable the cross-server network system globally (true / false)
   ENABLED: true
-  # Determines whether Staff Chat Enabled is enabled or disabled. Available options: true, false
+
+  # Enable cross-server staff chat sync via Redis (true / false)
   STAFF_CHAT_ENABLED: true
-  # Determines whether Helpop Enabled is enabled or disabled. Available options: true, false
+
+  # Enable cross-server helpop notification sync (true / false)
   HELPOP_ENABLED: true
-  # Determines whether Report Enabled is enabled or disabled. Available options: true, false
+
+  # Enable cross-server report notification sync (true / false)
   REPORT_ENABLED: true
-  # Determines whether Staff Join Leave Enabled is enabled or disabled. Available options: true, false
+
+  # Enable cross-server staff join/leave notifications (true / false)
   STAFF_JOIN_LEAVE_ENABLED: true
-  # Determines whether Server Status Enabled is enabled or disabled. Available options: true, false
+
+  # Enable cross-server status heartbeat monitoring (true / false)
   SERVER_STATUS_ENABLED: true
-  # The text or value for Local Server Id. Available options: Any valid string text
+
+  # Unique server identifier for this local server instance
   LOCAL_SERVER_ID: crystal
-  # The text or value for Local Display Name. Available options: Any valid string text
+
+  # User-friendly server display name
   LOCAL_DISPLAY_NAME: Crystal
-  # The text or value for Redis Channel. Available options: Any valid string text
+
+  # Redis pub/sub channel for staff chat messages
   REDIS_CHANNEL: ultimatedonutsmp:staff-chat
-  # The text or value for Helpop Redis Channel. Available options: Any valid string text
+
+  # Redis pub/sub channel for helpop alerts
   HELPOP_REDIS_CHANNEL: ultimatedonutsmp:staff-alerts
-  # The text or value for Report Redis Channel. Available options: Any valid string text
+
+  # Redis pub/sub channel for player reports
   REPORT_REDIS_CHANNEL: ultimatedonutsmp:staff-alerts
-  # Determines whether Send Local Fallback On Redis Error is enabled or disabled. Available options: true, false
+
+  # Broadcast staff chat locally if Redis connection fails (true / false)
   SEND_LOCAL_FALLBACK_ON_REDIS_ERROR: true
-  # Determines whether Staff Alerts Local Fallback On Redis Error is enabled or disabled. Available options: true, false
+
+  # Broadcast staff alerts locally if Redis connection fails (true / false)
   STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR: true
-  # Determines whether Staff Alerts Warn Sender On Redis Error is enabled or disabled. Available options: true, false
+
+  # Warn sending player if staff alert Redis delivery fails (true / false)
   STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR: false
-  # Determines whether Log To Console is enabled or disabled. Available options: true, false
+
+  # Log staff chat messages to local server console (true / false)
   LOG_TO_CONSOLE: true
-  # Determines whether Staff Alerts Log To Console is enabled or disabled. Available options: true, false
+
+  # Log staff alerts to local server console (true / false)
   STAFF_ALERTS_LOG_TO_CONSOLE: true
-  # The numerical value for Max Message Length. Available options: Any valid integer
+
+  # Maximum allowed staff chat message length (in characters)
   MAX_MESSAGE_LENGTH: 512
-  # The numerical value for Staff Alerts Max Reason Length. Available options: Any valid integer
+
+  # Maximum allowed report/helpop reason text length (in characters)
   STAFF_ALERTS_MAX_REASON_LENGTH: 256
-  # The numerical value for Helpop Cooldown Seconds. Available options: Any valid integer
+
+  # Cooldown between helpop submissions per player (in seconds)
   HELPOP_COOLDOWN_SECONDS: 30
-  # The numerical value for Report Cooldown Seconds. Available options: Any valid integer
+
+  # Cooldown between report submissions per player (in seconds)
   REPORT_COOLDOWN_SECONDS: 60
-  # The text or value for Server Status. Available options: Any valid string text
+
+  # Message format for server online/offline status broadcasts
   SERVER_STATUS: '&6%server% &eis now %status%&e.'
-  # The text or value for Staff Chat. Available options: Any valid string text
+
+  # Message format for cross-server staff chat messages
   STAFF_CHAT: '&8[&dNetwork&8] &7[%server%] &e%player%&8: &f%message%'
-  # The text or value for Staff Join. Available options: Any valid string text
+
+  # Message format for staff member server join alert
   STAFF_JOIN: '&8[&a+&8] &a%player% &7joined &b%server%'
-  # The text or value for Staff Leave. Available options: Any valid string text
+
+  # Message format for staff member server leave alert
   STAFF_LEAVE: '&8[&c-&8] &a%player% &7left &b%server%'
-# Configuration section for Network Status.
+
+# Network status monitoring & HTTP endpoint configuration
 NETWORK-STATUS:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Enable network status monitoring dashboard (true / false)
   ENABLED: true
-  # The text or value for Local Server Id. Available options: Any valid string text
+
+  # Local server ID alias for status check
   LOCAL-SERVER-ID: crystal
-  # The text or value for Local Display Name. Available options: Any valid string text
+
+  # Local display name alias for status check
   LOCAL-DISPLAY-NAME: Crystal
-  # The numerical value for Refresh Seconds. Available options: Any valid integer
+
+  # Interval in seconds between network heartbeat status refreshes
   REFRESH-SECONDS: 5
-  # The numerical value for Timeout Ms. Available options: Any valid integer
+
+  # Timeout in milliseconds for server ping status checks
   TIMEOUT-MS: 1500
-  # Configuration section for Endpoint.
+
+  # Internal REST API HTTP endpoint for external monitoring
   ENDPOINT:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    # Enable HTTP status endpoint server (true / false)
     ENABLED: false
-    # The text or value for Host. Available options: Any valid string text
+    # Host IP address to bind HTTP endpoint server
     HOST: 0.0.0.0
-    # The numerical value for Port. Available options: Any valid integer
+    # Port number for HTTP status endpoint
     PORT: 8123
-    # The text or value for Path. Available options: Any valid string text
+    # Endpoint URI path
     PATH: /status
-    # The text or value for Token. Available options: Any valid string text
+    # Secret authorization token for HTTP status queries
     TOKEN: change-me
-  # Configuration section for Servers.
+
+  # Configuration for remote network servers to monitor
   SERVERS:
-    # Configuration section for Crystal.
     crystal:
-      # The text or value for Display. Available options: Any valid string text
       DISPLAY: Crystal
-      # Configuration section for Source.
       SOURCE:
         TYPE: LOCAL

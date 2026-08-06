@@ -68,7 +68,9 @@ public class ShardCuboidTask implements Runnable {
             return;
         }
 
-        if (plugin.getAFKManager() != null && plugin.getAFKManager().isAfk(uuid)) {
+        boolean inAfkZone = current.isInAfkZone(player, plugin.getCuboidManager(), plugin.getSpawnManager());
+
+        if (!inAfkZone && plugin.getAFKManager() != null && plugin.getAFKManager().isAfk(uuid)) {
             PlayerSettingUtils.sendActionBar(plugin, player,
                     shardManager.replaceCommonPlaceholders(current.afkPausedMessage(), current, progress.getRemainingSeconds(), 0, 1, progress));
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(
@@ -81,7 +83,7 @@ public class ShardCuboidTask implements Runnable {
             return;
         }
 
-        if (progress.getRemainingSeconds() <= 1 && progress.getMovementThisCycle() < current.minimumMovementBlocks()) {
+        if (!inAfkZone && progress.getRemainingSeconds() <= 1 && progress.getMovementThisCycle() < current.minimumMovementBlocks()) {
             PlayerSettingUtils.sendActionBar(plugin, player,
                     shardManager.replaceCommonPlaceholders(current.pausedMessage(), current, progress.getRemainingSeconds(), 0, 1, progress));
             shardManager.setHudState(uuid, new ShardManager.ShardCuboidHudState(

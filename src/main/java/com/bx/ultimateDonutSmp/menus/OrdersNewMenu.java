@@ -141,7 +141,7 @@ public class OrdersNewMenu extends BaseMenu {
 
         if (slot == 13) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("AMOUNT_SIGN");
+            ConfigurationSection config = manager.getSignConfig("AMOUNT_SIGN");
             SignInputUtil.openFromConfig(plugin, player, config, text -> {
                 if (text != null && !text.isBlank()) {
                     try {
@@ -151,14 +151,14 @@ public class OrdersNewMenu extends BaseMenu {
                         } else {
                             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                                     "ORDERS.QUANTITY_OUT_OF_RANGE",
-                                    "&cǫᴜᴀɴᴛɪᴛʏ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ 1 ᴀɴᴅ {max}.",
+                                    "&cQuantity must be between 1 and {max}.",
                                     "{max}", String.valueOf(manager.getMaxQuantityPerOrder())
                             )));
                         }
                     } catch (Exception e) {
                         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                                 "ORDERS.INVALID_QUANTITY",
-                                "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0."
+                                "&cInvalid quantity. Use a whole number greater than 0."
                         )));
                     }
                 }
@@ -169,7 +169,7 @@ public class OrdersNewMenu extends BaseMenu {
 
         if (slot == 14) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            ConfigurationSection config = plugin.getConfigManager().getOrdersConfig().getConfigurationSection("PRICE_SIGN");
+            ConfigurationSection config = manager.getSignConfig("PRICE_SIGN");
             SignInputUtil.openFromConfig(plugin, player, config, text -> {
                 if (text != null && !text.isBlank()) {
                     try {
@@ -180,15 +180,19 @@ public class OrdersNewMenu extends BaseMenu {
                         } else {
                             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                                     "ORDERS.PRICE_OUT_OF_RANGE",
-                                    "&cᴘʀɪᴄᴇ ᴇᴀᴄʜ ᴍᴜѕᴛ ʙᴇ ʙᴇᴛᴡᴇᴇɴ &f{min_formatted}&c ᴀɴᴅ &f{max_formatted}&c.",
+                                    "&cPrice each must be between &f{min_formatted}&c and &f{max_formatted}&c.",
+                                    "{min}", NumberUtils.format(manager.getMinPriceEach()),
                                     "{min_formatted}", plugin.getCurrencyManager().formatMoney(manager.getMinPriceEach()),
-                                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(manager.getMaxPriceEach())
+                                    "${min}", plugin.getCurrencyManager().formatMoney(manager.getMinPriceEach()),
+                                    "{max}", NumberUtils.format(manager.getMaxPriceEach()),
+                                    "{max_formatted}", plugin.getCurrencyManager().formatMoney(manager.getMaxPriceEach()),
+                                    "${max}", plugin.getCurrencyManager().formatMoney(manager.getMaxPriceEach())
                             )));
                         }
                     } catch (Exception e) {
                         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                                 "ORDERS.INVALID_PRICE",
-                                "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ."
+                                "&cInvalid price format. Use numbers like 100, 5k, or 1.5M."
                         )));
                     }
                 }
@@ -224,7 +228,7 @@ public class OrdersNewMenu extends BaseMenu {
 
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.CREATED",
-                        "&aᴏʀᴅᴇʀ ᴄʀᴇᴀᴛᴇᴅ! &7#{order_id} &fꜰᴏʀ &e{quantity} {item}&7 ᴀᴛ {price_each_formatted} &7ᴇᴀᴄʜ. ʙᴜᴅɢᴇᴛ ʟᴏᴄᴋᴇᴅ: {budget_formatted}&7.",
+                        "&aOrder created! &7#{order_id} &ffor &e{quantity} {item}&7 at {price_each_formatted} &7each. Budget locked: {budget_formatted}&7.",
                         "{order_id}", String.valueOf(result.order().id()),
                         "{quantity}", String.valueOf(result.order().requestedQuantity()),
                         "{item}", manager.describeItem(result.order().requestedItem()),
@@ -243,31 +247,37 @@ public class OrdersNewMenu extends BaseMenu {
 
     private String resolveFailureMessage(OrdersManager.CreateOrderResult result) {
         return switch (result.reason()) {
-            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cᴏʀᴅᴇʀѕ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
-            case NO_PENDING_ORDER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NO_PENDING_ORDER", "&cᴛʜᴇʀᴇ ɪѕ ɴᴏ ᴘᴇɴᴅɪɴɢ ᴏʀᴅᴇʀ ᴅʀᴀꜰᴛ ᴛᴏ ᴄᴏɴꜰɪʀᴍ.");
-            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ.";
-            case INVALID_ITEM -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ITEM_BLOCKED", "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴏʀᴅᴇʀᴇᴅ.");
+            case DISABLED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.DISABLED", "&cOrders is currently disabled.");
+            case NO_PENDING_ORDER -> plugin.getConfigManager().getMessageOrDefault("ORDERS.NO_PENDING_ORDER", "&cThere is no pending order draft to confirm.");
+            case NO_PLAYER_DATA -> "&cYour player data could not be loaded.";
+            case INVALID_ITEM -> plugin.getConfigManager().getMessageOrDefault("ORDERS.ITEM_BLOCKED", "&cThat item cannot be ordered.");
             case UNSAFE_ITEM -> plugin.getConfigManager().getMessageOrDefault(
                     "CRASH_PROTECTION.ITEM_BLOCKED",
-                    "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ʜᴇʀᴇ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴅᴀᴛᴀ ʟᴏᴏᴋѕ ᴜɴѕᴀꜰᴇ. &7ᴄᴏɴᴛᴇxᴛ: &f{context}&7. ʀᴇᴀѕᴏɴ: &f{reason}",
-                    "{context}", "ᴏʀᴅᴇʀѕ",
-                    "{reason}", result.safetyResult() == null ? "ᴜɴѕᴀꜰᴇ ɪᴛᴇᴍ ᴅᴀᴛᴀ" : result.safetyResult().reason()
+                    "&cThat item cannot be used here because its data looks unsafe. &7Context: &f{context}&7. Reason: &f{reason}",
+                    "{context}", "Orders",
+                    "{reason}", result.safetyResult() == null ? "Unsafe item data" : result.safetyResult().reason()
             );
-            case INVALID_QUANTITY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_QUANTITY", "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ.");
-            case INVALID_PRICE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_PRICE", "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ.");
+            case INVALID_QUANTITY -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_QUANTITY", "&cInvalid quantity.");
+            case INVALID_PRICE -> plugin.getConfigManager().getMessageOrDefault("ORDERS.INVALID_PRICE", "&cInvalid price.");
             case TOTAL_TOO_HIGH -> plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.TOTAL_TOO_HIGH",
-                    "&cᴛᴏᴛᴀʟ ᴏʀᴅᴇʀ ʙᴜᴅɢᴇᴛ ᴄᴀɴɴᴏᴛ ᴇxᴄᴇᴇᴅ &f{max_formatted}&c.",
+                    "&cTotal order budget cannot exceed &f{max_formatted}&c.",
+                    "{max}", NumberUtils.format(
+                            plugin.getConfigManager().getOrders().getDouble("PRICING.MAX_TOTAL_BUDGET", 250_000_000D)
+                    ),
                     "{max_formatted}", plugin.getCurrencyManager().formatMoney(
+                            plugin.getConfigManager().getOrders().getDouble("PRICING.MAX_TOTAL_BUDGET", 250_000_000D)
+                    ),
+                    "${max}", plugin.getCurrencyManager().formatMoney(
                             plugin.getConfigManager().getOrders().getDouble("PRICING.MAX_TOTAL_BUDGET", 250_000_000D)
                     )
             );
             case NO_MONEY -> plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.NOT_ENOUGH_MONEY",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴍᴏɴᴇʏ ꜰᴏʀ ᴛʜᴀᴛ ᴏʀᴅᴇʀ."
+                    "&cYou do not have enough money for that order."
             );
-            case MAX_ORDERS_REACHED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.MAX_ACTIVE_REACHED", "&cʏᴏᴜ ʜᴀᴠᴇ ʀᴇᴀᴄʜᴇᴅ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀ ʟɪᴍɪᴛ.");
-            case DATABASE_ERROR -> "&cᴏʀᴅᴇʀѕ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ᴏʀᴅᴇʀ ʀɪɢʜᴛ ɴᴏᴡ. ᴛʀʏ ᴀɢᴀɪɴ.";
+            case MAX_ORDERS_REACHED -> plugin.getConfigManager().getMessageOrDefault("ORDERS.MAX_ACTIVE_REACHED", "&cYou have reached your active order limit.");
+            case DATABASE_ERROR -> "&cOrders could not save your order right now. Try again.";
         };
     }
 }

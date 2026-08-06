@@ -36,8 +36,8 @@ public class DuelCreateMenu extends BaseMenu {
 
         Player target = Bukkit.getPlayer(targetUuid);
         if (target == null) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cᴛᴀʀɢᴇᴛ ᴏꜰꜰʟɪɴᴇ", List.of("&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ.")));
-            set(inventory.getSize() - 1, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
+            set(13, ItemUtils.createItem(Material.BARRIER, "&ctarget offline", List.of("&7this player is no longer online.")));
+            set(inventory.getSize() - 1, ItemUtils.createItem(Material.BARRIER, "&cclose"));
             return;
         }
 
@@ -49,28 +49,28 @@ public class DuelCreateMenu extends BaseMenu {
                     materialFor(option.selection()),
                     "&a" + option.displayName(),
                     List.of(
-                            "&7ᴘʀɪᴠᴀᴄʏ: &f" + privacyMode.displayName(),
-                            "&7ᴛᴀʀɢᴇᴛ: &f" + target.getName(),
+                            "&7privacy: &f" + privacyMode.displayName(),
+                            "&7target: &f" + target.getName(),
                             "&7" + option.description(),
-                            "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇɴᴅ ᴄʜᴀʟʟᴇɴɢᴇ."
+                            "&eclick to send challenge."
                     )
             ));
         }
 
         if (options.isEmpty()) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cɴᴏ ᴅᴜᴇʟ ᴍᴀᴘѕ ᴀᴠᴀɪʟᴀʙʟᴇ", List.of("&7ᴄᴏɴꜰɪɢᴜʀᴇ ᴀʀᴇɴᴀѕ ᴏʀ ᴇɴᴀʙʟᴇ ʀᴀɴᴅᴏᴍ ʙɪᴏᴍᴇѕ.")));
+            set(13, ItemUtils.createItem(Material.BARRIER, "&cno duel maps available", List.of("&7configure arenas or enable random biomes.")));
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow + 3, ItemUtils.createPlayerHead(target, "&eᴛᴀʀɢᴇᴛ: &f" + target.getName(), List.of("&7ᴄʜᴏᴏѕᴇ ᴀ ᴍᴀᴘ ᴛᴏ ѕᴇɴᴅ ᴀ ᴅᴜᴇʟ ʀᴇǫᴜᴇѕᴛ.")));
+        set(lastRow + 3, ItemUtils.createPlayerHead(target, "&etarget: &f" + target.getName(), List.of("&7choose a map to send a duel request.")));
         set(lastRow + 5, ItemUtils.createItem(
                 privacyMode == DuelPrivacyMode.FRIENDS_ONLY ? Material.OAK_SIGN : Material.PAPER,
-                "&bᴘʀɪᴠᴀᴄʏ: &f" + privacyMode.displayName(),
+                "&bprivacy: &f" + privacyMode.displayName(),
                 List.of(privacyMode == DuelPrivacyMode.FRIENDS_ONLY
-                        ? "&7ᴏɴʟʏ ѕᴀᴍᴇ-ᴛᴇᴀᴍ ᴍᴇᴍʙᴇʀѕ ᴄᴀɴ ᴀᴄᴄᴇᴘᴛ ᴛʜɪѕ ᴅᴜᴇʟ."
-                        : "&7ᴅɪʀᴇᴄᴛ ɪɴᴠɪᴛᴇ ᴅᴜᴇʟ.")
+                        ? "&7only same-team members can accept this duel."
+                        : "&7direct invite duel.")
         ));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cclose"));
     }
 
     @Override

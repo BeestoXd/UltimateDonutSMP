@@ -90,6 +90,9 @@ public class BillfordManager {
         }
 
         ConfigurationSection countsSection = dataConfig.getConfigurationSection("player-counts");
+        if (countsSection == null) {
+            countsSection = dataConfig.getConfigurationSection("PLAYER-COUNTS");
+        }
         if (countsSection != null) {
             for (String uuidStr : countsSection.getKeys(false)) {
                 try {
@@ -182,7 +185,7 @@ public class BillfordManager {
         dataConfig.set("next-advance-millis", nextAdvanceMillis);
         dataConfig.set("player-counts", null);
         playerTradeCounts.forEach((uuid, count) ->
-                dataConfig.set("PLAYER-COUNTS." + uuid, count));
+                dataConfig.set("player-counts." + uuid, count));
 
         try {
             dataConfig.save(dataFile);
@@ -198,7 +201,18 @@ public class BillfordManager {
     public int getTradeCount() {
         ConfigurationSection section = plugin.getConfigManager().getBillford()
                 .getConfigurationSection("BILLFORD");
-        return section == null ? 0 : section.getKeys(false).size();
+        if (section == null) {
+            return 0;
+        }
+        int count = 0;
+        for (String key : section.getKeys(false)) {
+            try {
+                Integer.parseInt(key);
+                count++;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return count;
     }
 
     public BillfordTrade getTrade(int id) {
@@ -208,7 +222,7 @@ public class BillfordManager {
             return null;
         }
 
-        String displayName = section.getString("DISPLAY_NAME", "ᴛʀᴀᴅᴇ #" + id);
+        String displayName = section.getString("DISPLAY_NAME", "Trade #" + id);
         int tradeLimit = section.getInt("LIMIT", section.getInt("LIMIT_PER_PLAYER", 0));
 
         ConfigurationSection rewardSection = section.getConfigurationSection("REWARD");
@@ -304,11 +318,16 @@ public class BillfordManager {
     }
 
     public boolean isOnCooldown(UUID uuid) {
-        long cooldownMs = plugin.getConfigManager().getBillford()
-                .getLong("SETTINGS.CLICK_COOLDOWN_MS",
-                        plugin.getConfigManager().getBillford().getLong("CLICK_COOLDOWN_MS", 1000L));
+        long cooldownMs = getClickCooldownMs();
         Long lastClick = lastClickTime.get(uuid);
         return lastClick != null && (System.currentTimeMillis() - lastClick) < cooldownMs;
+    }
+
+    public long getClickCooldownMs() {
+        long configured = plugin.getConfigManager().getBillford()
+                .getLong("SETTINGS.CLICK_COOLDOWN_MS",
+                        plugin.getConfigManager().getBillford().getLong("CLICK_COOLDOWN_MS", 1000L));
+        return Math.max(500L, configured);
     }
 
     public void updateCooldown(UUID uuid) {

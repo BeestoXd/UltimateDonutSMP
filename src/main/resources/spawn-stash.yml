@@ -25,49 +25,49 @@ SETTINGS:
 MESSAGES:
   # Configuration section for Usage.
   USAGE:
-  - '&8&m----------- &dѕᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------'
-  - '&f/{label} &7- ѕᴘᴀᴡɴ ʀᴀɴᴅᴏᴍ ʙᴀɪᴛ ѕᴛᴀѕʜ'
-  - '&f/{label} <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
-  - '&f/{label} ѕᴘᴀᴡɴ <type> &7- ѕᴘᴀᴡɴ ᴀ ʙᴀɪᴛ ѕᴛᴀѕʜ'
-  - '&f/{label} ʟɪѕᴛ &7- ʟɪѕᴛ ᴀᴄᴛɪᴠᴇ/configured ѕᴛᴀѕʜᴇѕ'
-  - '&f/{label} ʀᴇᴍᴏᴠᴇ <id|nearest|all> &7- ʀᴏʟʟʙᴀᴄᴋ ѕᴛᴀѕʜᴇѕ'
-  - '&f/{label} ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ѕᴘᴀᴡɴ-ѕᴛᴀѕʜ.ʏᴍʟ'
+  - '&8&m----------- &dspawnstash &8&m-----------'
+  - '&f/{label} &7- spawn random bait stash'
+  - '&f/{label} <type> &7- spawn a bait stash'
+  - '&f/{label} spawn <type> &7- spawn a bait stash'
+  - '&f/{label} list &7- list active/configured stashes'
+  - '&f/{label} remove <id|nearest|all> &7- rollback stashes'
+  - '&f/{label} reload &7- reload spawn-stash.yml'
   # The text or value for Spawned. Available options: Any valid string text
-  SPAWNED: '&aѕᴘᴀᴡɴᴇᴅ ѕᴛᴀѕʜ #{type} ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ. &7(ɪᴅ: {id})'
+  SPAWNED: '&aspawned stash #{type} successfully. &7(id: {id})'
   # The text or value for Removed. Available options: Any valid string text
-  REMOVED: '&aʀᴇᴍᴏᴠᴇᴅ ѕᴛᴀѕʜ &f#{id}&a.'
+  REMOVED: '&aremoved stash &f#{id}&a.'
   # The text or value for Removed All. Available options: Any valid string text
-  REMOVED-ALL: '&aʀᴇᴍᴏᴠᴇᴅ &f{count}&a ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ(ᴇѕ).'
+  REMOVED-ALL: '&aremoved &f{count}&a active stash(es).'
   # The text or value for Expired. Available options: Any valid string text
-  EXPIRED: '&7ѕᴘᴀᴡɴѕᴛᴀѕʜ #{id} ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ᴡᴀѕ ʀᴏʟʟᴇᴅ ʙᴀᴄᴋ.'
+  EXPIRED: '&7spawnstash #{id} expired and was rolled back.'
   # The text or value for Reloaded. Available options: Any valid string text
-  RELOADED: '&aѕᴘᴀᴡɴѕᴛᴀѕʜ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ.'
+  RELOADED: '&aspawnstash settings reloaded.'
   # The text or value for Disabled. Available options: Any valid string text
-  DISABLED: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.'
+  DISABLED: '&cspawnstash is currently disabled.'
   # The text or value for Player Only. Available options: Any valid string text
-  PLAYER-ONLY: '&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ.'
+  PLAYER-ONLY: '&conly players can use this command.'
   # The text or value for No Permission. Available options: Any valid string text
   NO-PERMISSION: '&cyou do not have permission.'
   # The text or value for No Active. Available options: Any valid string text
-  NO-ACTIVE: '&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ.'
+  NO-ACTIVE: '&cno active stash found.'
   # The text or value for Blocked Break. Available options: Any valid string text
-  BLOCKED-BREAK: '&cᴛʜɪѕ ѕᴛᴀѕʜ ɪѕ ᴘʀᴏᴛᴇᴄᴛᴇᴅ. ᴜѕᴇ &f/spawnstash ʀᴇᴍᴏᴠᴇ ɴᴇᴀʀᴇѕᴛ &cᴛᴏ
-    ʀᴏʟʟʙᴀᴄᴋ ɪᴛ.'
+  BLOCKED-BREAK: '&cthis stash is protected. use &f/spawnstash remove nearest &cto
+    rollback it.'
   # The text or value for Spawner Claimed. Available options: Any valid string text
-  SPAWNER-CLAIMED: '&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a ꜰʀᴏᴍ ѕᴘᴀᴡɴѕᴛᴀѕʜ.'
+  SPAWNER-CLAIMED: '&aclaimed &f{amount}x {spawner}&a from spawnstash.'
   # The text or value for Spawner Claimed Dropped. Available options: Any valid string text
-  SPAWNER-CLAIMED-DROPPED: '&aᴄʟᴀɪᴍᴇᴅ &f{amount}x {spawner}&a. &7ɪɴᴠᴇɴᴛᴏʀʏ ꜰᴜʟʟ, ɪᴛᴇᴍ
-    ᴅʀᴏᴘᴘᴇᴅ.'
+  SPAWNER-CLAIMED-DROPPED: '&aclaimed &f{amount}x {spawner}&a. &7inventory full, item
+    dropped.'
   # The text or value for Invalid Type. Available options: Any valid string text
-  INVALID-TYPE: '&cᴜɴᴋɴᴏᴡɴ ѕᴛᴀѕʜ ᴛʏᴘᴇ ''&f{type}&c''. ᴜѕᴇ &f/spawnstash ʟɪѕᴛ&c.'
+  INVALID-TYPE: '&cunknown stash type ''&f{type}&c''. use &f/spawnstash list&c.'
   # The text or value for Invalid Config. Available options: Any valid string text
-  INVALID-CONFIG: '&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: &f{reason}&c.'
+  INVALID-CONFIG: '&cspawnstash config is invalid: &f{reason}&c.'
   # Configuration section for Alert.
   ALERT:
-  - '&8[&dѕᴘᴀᴡɴѕᴛᴀѕʜ&8] &f{player} &7ᴛʀɪɢɢᴇʀᴇᴅ &d{reason}&7 ᴏɴ ѕᴛᴀѕʜ &f#{id}&7 (&f{type}&7)'
-  - '&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}'
+  - '&8[&dspawnstash&8] &f{player} &7triggered &d{reason}&7 on stash &f#{id}&7 (&f{type}&7)'
+  - '&7location: &f{world} {x}, {y}, {z} &8| &7created by: &f{creator}'
   # The text or value for Alert Hover. Available options: Any valid string text
-  ALERT-HOVER: '&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}'
+  ALERT-HOVER: '&eclick to teleport to &f{player}'
 # Configuration section for Types.
 TYPES:
   # Configuration section for '1'.

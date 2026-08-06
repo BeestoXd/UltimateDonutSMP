@@ -180,7 +180,12 @@ public class EnderChestManager {
         }
 
         try {
-            int rows = clampRows(plugin.getDatabaseManager().loadEnderChestRows(uuid, getDefaultRows()));
+            int dbRows = plugin.getDatabaseManager().loadEnderChestRows(uuid, -1);
+            if (dbRows == -1) {
+                throw new java.sql.SQLException("Database load error when reading Ender Chest rows");
+            }
+            int defaultRows = getDefaultRows();
+            int rows = clampRows(dbRows <= 0 ? defaultRows : Math.max(dbRows, defaultRows));
             EnderChestHolder holder = new EnderChestHolder(uuid, rows);
             Inventory inventory = Bukkit.createInventory(
                     holder,
@@ -188,10 +193,11 @@ public class EnderChestManager {
                     ColorUtils.toComponent(getTitle(), player)
             );
             holder.bind(inventory);
-            inventory.setContents(sanitizeLoadedContents(
-                    uuid,
-                    plugin.getDatabaseManager().loadEnderChestContents(uuid, inventory.getSize())
-            ));
+            ItemStack[] rawContents = plugin.getDatabaseManager().loadEnderChestContents(uuid, inventory.getSize());
+            if (rawContents == null) {
+                throw new java.sql.SQLException("Database load error when reading Ender Chest contents");
+            }
+            inventory.setContents(sanitizeLoadedContents(uuid, rawContents));
 
             EnderChestSession session = new EnderChestSession(uuid, inventory, rows);
             activeSessions.put(uuid, session);
@@ -222,9 +228,14 @@ public class EnderChestManager {
 
         try {
             EnderChestSession activeTargetSession = activeSessions.get(targetUuid);
-            int rows = activeTargetSession == null
-                    ? clampRows(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, getDefaultRows()))
+            int dbRows = activeTargetSession == null
+                    ? plugin.getDatabaseManager().loadEnderChestRows(targetUuid, -1)
                     : activeTargetSession.getRows();
+            if (dbRows == -1) {
+                throw new java.sql.SQLException("Database load error when reading Ender Chest rows for inspection");
+            }
+            int defaultRows = getDefaultRows();
+            int rows = clampRows(dbRows <= 0 ? defaultRows : Math.max(dbRows, defaultRows));
             EnderChestInspectionHolder holder = new EnderChestInspectionHolder(
                     viewer.getUniqueId(),
                     targetUuid
@@ -236,11 +247,16 @@ public class EnderChestManager {
             );
             holder.bind(inventory);
 
+            ItemStack[] rawContents = null;
+            if (activeTargetSession == null) {
+                rawContents = plugin.getDatabaseManager().loadEnderChestContents(targetUuid, inventory.getSize());
+                if (rawContents == null) {
+                    throw new java.sql.SQLException("Database load error when reading Ender Chest contents for inspection");
+                }
+            }
+
             ItemStack[] sourceContents = activeTargetSession == null
-                    ? sanitizeLoadedContents(
-                            targetUuid,
-                            plugin.getDatabaseManager().loadEnderChestContents(targetUuid, inventory.getSize())
-                    )
+                    ? sanitizeLoadedContents(targetUuid, rawContents)
                     : activeTargetSession.getInventory().getContents();
             inventory.setContents(copyInspectionContents(sourceContents, inventory.getSize()));
 
@@ -421,7 +437,8 @@ public class EnderChestManager {
             saveSession(activeTargetSession);
         } else {
             ItemStack[] sanitizedContents = sanitizeContents(session.getInventory().getContents());
-            int rows = clampRows(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, getDefaultRows()));
+            int defaultRows = getDefaultRows();
+            int rows = clampRows(Math.max(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, defaultRows), defaultRows));
             plugin.getDatabaseManager().saveEnderChest(targetUuid, rows, sanitizedContents);
         }
     }
@@ -774,8 +791,38 @@ public class EnderChestManager {
         return getConfig().getString("ENDER-CHEST.CLOSE-SOUND", "minecraft:block.ender_chest.close|1.0|1.0");
     }
 
-    private int getDefaultRows() {
-        return clampRows(getConfig().getInt("ENDER-CHEST.DEFAULT-ROWS", 6));
+    public int getDefaultRows() {
+        FileConfiguration ecConfig = getConfig();
+        if (ecConfig != null) {
+            if (ecConfig.contains("ENDER-CHEST.DEFAULT-ROWS")) {
+                return clampRows(ecConfig.getInt("ENDER-CHEST.DEFAULT-ROWS", 6));
+            }
+            if (ecConfig.contains("ENDER-CHEST.ROWS")) {
+                return clampRows(ecConfig.getInt("ENDER-CHEST.ROWS", 6));
+            }
+            if (ecConfig.contains("ENDER-CHEST.SIX-ROWS")) {
+                return ecConfig.getBoolean("ENDER-CHEST.SIX-ROWS", true) ? 6 : 1;
+            }
+            if (ecConfig.contains("ENDER-CHEST.SIX-ROW")) {
+                return ecConfig.getBoolean("ENDER-CHEST.SIX-ROW", true) ? 6 : 1;
+            }
+        }
+        FileConfiguration mainConfig = plugin != null && plugin.getConfigManager() != null ? plugin.getConfigManager().getConfig() : null;
+        if (mainConfig != null) {
+            if (mainConfig.contains("ENDER-CHEST.DEFAULT-ROWS")) {
+                return clampRows(mainConfig.getInt("ENDER-CHEST.DEFAULT-ROWS", 6));
+            }
+            if (mainConfig.contains("ENDER-CHEST.ROWS")) {
+                return clampRows(mainConfig.getInt("ENDER-CHEST.ROWS", 6));
+            }
+            if (mainConfig.contains("ENDER-CHEST.SIX-ROWS")) {
+                return mainConfig.getBoolean("ENDER-CHEST.SIX-ROWS", true) ? 6 : 1;
+            }
+            if (mainConfig.contains("ENDER-CHEST.SIX-ROW")) {
+                return mainConfig.getBoolean("ENDER-CHEST.SIX-ROW", true) ? 6 : 1;
+            }
+        }
+        return 6;
     }
 
     private String getTitle() {

@@ -53,6 +53,11 @@ public class ItemDropListener implements Listener {
 
         if (block) {
             event.setCancelled(true);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
             String message = plugin.getConfigManager().getConfig().getString(
                     "PREVENT-ITEM-DROP.MESSAGE", "&c✗ You are not allowed to drop items in spawn or AFK areas!");
             if (message != null && !message.isBlank()) {

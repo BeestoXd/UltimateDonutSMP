@@ -631,6 +631,16 @@ public class CrateVisualManager {
         }
 
         Location center = new Location(world, key.x() + 0.5, key.y() + getHologramOffsetY() - 0.35, key.z() + 0.5);
+        if (!plugin.isEnabled()) {
+            if (world.isChunkLoaded(center.getBlockX() >> 4, center.getBlockZ() >> 4)) {
+                for (Entity entity : world.getNearbyEntities(center, 0.4, 2.5, 0.4, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
+                    if (isAtCrateHologramColumn(entity, key) || isAtCratePreviewColumn(entity, key)) {
+                        entity.remove();
+                    }
+                }
+            }
+            return;
+        }
         plugin.getSpigotScheduler().runRegion(center, () -> {
             for (Entity entity : world.getNearbyEntities(center, 0.4, 2.5, 0.4, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
                 if (isAtCrateHologramColumn(entity, key) || isAtCratePreviewColumn(entity, key)) {

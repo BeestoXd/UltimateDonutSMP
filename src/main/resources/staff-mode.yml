@@ -20,6 +20,14 @@ STAFF-MODE:
     INTERVAL-TICKS: 40
     # The text or value for Message. Available options: Any valid string text
     MESSAGE: '&aVANISHED &7>> &fYou are hidden from regular players'
+  # Configuration section for Vanish Fake Messages.
+  VANISH-FAKE-MESSAGES:
+    # Determines whether Fake Leave Message on Vanish is enabled. Available options: true, false
+    FAKE-LEAVE-ON-VANISH: true
+    # Determines whether Fake Join Message on Unvanish is enabled. Available options: true, false
+    FAKE-JOIN-ON-UNVANISH: true
+    # If true, fake join/leave messages are only sent to players who cannot see vanished staff. Available options: true, false
+    ONLY-TO-REGULAR-PLAYERS: true
   # The text or value for Staff Permission. Available options: Any valid string text
   STAFF-PERMISSION: ultimatedonutsmp.staff.mode
   # The text or value for Admin Permission. Available options: Any valid string text
@@ -68,6 +76,8 @@ STAFF-MODE:
     EXCLUDE-DUELS: true
     # Determines whether Exclude Ffa is enabled or disabled. Available options: true, false
     EXCLUDE-FFA: true
+    # Determines whether Notify Target is enabled or disabled. Available options: true, false
+    NOTIFY-TARGET: false
 ITEMS:
   # Configuration section for Vanish.
   VANISH:

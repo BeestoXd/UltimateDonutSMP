@@ -56,9 +56,12 @@ import java.util.logging.Level;
 
 public class SpawnerManager {
 
-    public record ActionResult(boolean success, String message, int consumedAmount) {
+    public record ActionResult(boolean success, String message, int consumedAmount, boolean fullyDestroyed) {
+        public ActionResult(boolean success, String message, int consumedAmount) {
+            this(success, message, consumedAmount, true);
+        }
         public ActionResult(boolean success, String message) {
-            this(success, message, 0);
+            this(success, message, 0, true);
         }
     }
 
@@ -82,8 +85,10 @@ public class SpawnerManager {
     private final Map<String, SpawnerTypeDefinition> typeDefinitions = new LinkedHashMap<>();
     private final AtomicLong temporarySpawnerIdSequence = new AtomicLong(-1L);
     private final Set<Long> temporarySpawnerIds = new HashSet<>();
+    private final Map<Long, List<SpawnerLootEntry>> pendingLootMap = new java.util.concurrent.ConcurrentHashMap<>();
     private boolean serverWipeMode;
     private boolean enabled;
+    private boolean xpEnabled;
     private SpawnerInstance.AccessMode defaultAccessMode;
     private long generationIntervalSeconds;
     private boolean processOnlyLoadedChunks;
@@ -92,8 +97,14 @@ public class SpawnerManager {
     private long maxStackPerBlock;
     private long storageCapPerLootKey;
     private boolean dropOnBreakIfInventoryFull;
+    private boolean allowSpawnerSteal;
     private boolean hopperExtractionEnabled;
     private int hopperExtractionAmountPerCycle;
+    private boolean requireSilkTouch;
+    private boolean cancelMobSpawn = true;
+    private double defaultXpPerCycle;
+    private String mainMenuTitle;
+    private int mainMenuSize;
     private String storageTitle;
     private int storageSize;
     private int storageItemsPerPage;
@@ -101,6 +112,15 @@ public class SpawnerManager {
     private int panelSize;
     private String worldListTitle;
     private int worldListSize;
+    private String soundOpenMenu;
+    private String soundCollectLoot;
+    private String soundDropLoot;
+    private String soundCollectXp;
+    private String soundSellConfirmOpen;
+    private String soundSellSuccess;
+    private String soundSellCancel;
+    private String soundFilterOpen;
+    private String soundFilterToggle;
 
     public SpawnerManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -114,10 +134,14 @@ public class SpawnerManager {
     public void reload() {
         FileConfiguration config = plugin.getConfigManager().getSpawners();
         enabled = config.getBoolean("SETTINGS.ENABLED", true);
+        xpEnabled = config.getBoolean("SETTINGS.XP_ENABLED", true);
         defaultAccessMode = SpawnerInstance.AccessMode.fromString(
                 config.getString("SETTINGS.ACCESS_MODE", "OWNER_ONLY"),
                 SpawnerInstance.AccessMode.OWNER_ONLY
         );
+        allowSpawnerSteal = config.getBoolean("SETTINGS.ALLOW_SPAWNER_STEAL",
+                config.getBoolean("SETTINGS.ALLOW_STEAL",
+                        config.getBoolean("SETTINGS.ALLOW_SPAWNER_STEALING", false)));
         generationIntervalSeconds = Math.max(1L, config.getLong("SETTINGS.GENERATION_INTERVAL_SECONDS", 5L));
         processOnlyLoadedChunks = config.getBoolean("SETTINGS.PROCESS_ONLY_LOADED_CHUNKS", true);
         requirePlayerNearby = config.getBoolean("SETTINGS.REQUIRE_PLAYER_NEARBY", false);
@@ -125,15 +149,40 @@ public class SpawnerManager {
         maxStackPerBlock = Math.max(1L, config.getLong("SETTINGS.MAX_STACK_PER_BLOCK", 100_000L));
         storageCapPerLootKey = Math.max(1L, config.getLong("SETTINGS.STORAGE_CAP_PER_LOOT_KEY", 1_000_000L));
         dropOnBreakIfInventoryFull = config.getBoolean("SETTINGS.DROP_ON_BREAK_IF_INVENTORY_FULL", true);
+        requireSilkTouch = config.getBoolean("SETTINGS.REQUIRE_SILK_TOUCH", true);
+        cancelMobSpawn = config.getBoolean("SETTINGS.CANCEL_MOB_SPAWN", true);
+        defaultXpPerCycle = Math.max(0.0, config.getDouble("SETTINGS.XP_PER_CYCLE", 3.7));
         hopperExtractionEnabled = config.getBoolean("SETTINGS.HOPPER_EXTRACTION.ENABLED", false);
         hopperExtractionAmountPerCycle = Math.max(1, config.getInt("SETTINGS.HOPPER_EXTRACTION.AMOUNT_PER_CYCLE", 64));
-        storageTitle = config.getString("GUI.STORAGE.TITLE", "&8{mob} ѕᴘᴀᴡɴᴇʀѕ - {page}/{max_page}");
-        storageSize = normalizeSize(config.getInt("GUI.STORAGE.SIZE", 54));
-        storageItemsPerPage = Math.max(9, Math.min(storageSize - 9, config.getInt("GUI.STORAGE.ITEMS_PER_PAGE", 45)));
-        panelTitle = config.getString("GUI.PANEL.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ");
-        panelSize = normalizeSize(config.getInt("GUI.PANEL.SIZE", 54));
-        worldListTitle = config.getString("GUI.WORLD_LIST.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ");
-        worldListSize = normalizeSize(config.getInt("GUI.WORLD_LIST.SIZE", 27));
+        FileConfiguration menusConfig = plugin.getConfigManager().getMenus();
+        mainMenuTitle = menusConfig.getString("SPAWNER-MENUS.MAIN-MENU.TITLE",
+                config.getString("GUI.MAIN_MENU.TITLE", "{stack} {mob}"));
+        mainMenuSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.MAIN-MENU.SIZE",
+                config.getInt("GUI.MAIN_MENU.SIZE", 27)));
+        storageTitle = menusConfig.getString("SPAWNER-MENUS.STORAGE-MENU.TITLE",
+                config.getString("GUI.STORAGE.TITLE", "&8{mob} ѕᴘᴀᴡɴᴇʀѕ - {page}/{max_page}"));
+        storageSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.STORAGE-MENU.SIZE",
+                config.getInt("GUI.STORAGE.SIZE", 54)));
+        storageItemsPerPage = Math.max(9, Math.min(storageSize - 9, menusConfig.getInt("SPAWNER-MENUS.STORAGE-MENU.ITEMS-PER-PAGE",
+                config.getInt("GUI.STORAGE.ITEMS_PER_PAGE", 45))));
+        panelTitle = menusConfig.getString("SPAWNER-MENUS.PANEL-MENU.TITLE",
+                config.getString("GUI.PANEL.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ"));
+        panelSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.PANEL-MENU.SIZE",
+                config.getInt("GUI.PANEL.SIZE", 54)));
+        worldListTitle = menusConfig.getString("SPAWNER-MENUS.WORLD-LIST-MENU.TITLE",
+                config.getString("GUI.WORLD_LIST.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ"));
+        worldListSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.WORLD-LIST-MENU.SIZE",
+                config.getInt("GUI.WORLD_LIST.SIZE", 27)));
+        FileConfiguration sounds = plugin.getConfigManager().getSounds();
+        soundOpenMenu = sounds.getString("SPAWNERS.OPEN-MENU", "minecraft:block.chest.open|1.0|1.0");
+        soundCollectLoot = sounds.getString("SPAWNERS.COLLECT-LOOT", "minecraft:entity.item.pickup|1.0|1.0");
+        soundDropLoot = sounds.getString("SPAWNERS.DROP-LOOT", "minecraft:entity.item.pickup|1.0|1.2");
+        soundCollectXp = sounds.getString("SPAWNERS.COLLECT-XP", "minecraft:entity.experience_orb.pickup|1.0|1.0");
+        soundSellConfirmOpen = sounds.getString("SPAWNERS.SELL-CONFIRM-OPEN", "minecraft:ui.button.click|1.0|1.0");
+        soundSellSuccess = sounds.getString("SPAWNERS.SELL-SUCCESS", "minecraft:entity.villager.yes|1.0|1.0");
+        soundSellCancel = sounds.getString("SPAWNERS.SELL-CANCEL", "minecraft:ui.button.click|1.0|0.8");
+        soundFilterOpen = sounds.getString("SPAWNERS.FILTER-OPEN", "minecraft:ui.button.click|1.0|1.2");
+        soundFilterToggle = sounds.getString("SPAWNERS.FILTER-TOGGLE", "minecraft:ui.button.click|1.0|1.0");
         loadTypeDefinitions(config);
 
         List<SpawnerInstance> copy;
@@ -187,6 +236,7 @@ public class SpawnerManager {
 
             Material iconMaterial = ItemUtils.parseMaterial(section.getString("ICON_MATERIAL", "SPAWNER"));
             long baseItemsPerCycle = Math.max(1L, section.getLong("BASE_ITEMS_PER_CYCLE", 1L));
+            double xpPerCycle = Math.max(0.0, section.getDouble("XP_PER_CYCLE", defaultXpPerCycle));
             List<SpawnerTypeDefinition.DropDefinition> drops = new ArrayList<>();
             ConfigurationSection dropsSection = section.getConfigurationSection("DROPS");
             if (dropsSection != null) {
@@ -204,12 +254,15 @@ public class SpawnerManager {
                 }
             }
 
+            String headTexture = section.getString("HEAD_TEXTURE", null);
             typeDefinitions.put(key, new SpawnerTypeDefinition(
                     key,
                     section.getString("DISPLAY_NAME", "&d" + prettifyKey(key) + " Spawner"),
                     entityType,
                     iconMaterial,
                     baseItemsPerCycle,
+                    xpPerCycle,
+                    headTexture,
                     drops
             ));
         }
@@ -217,6 +270,18 @@ public class SpawnerManager {
 
     public boolean isEnabled() {
         return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SPAWNERS) && enabled;
+    }
+
+    public boolean isCancelMobSpawn() {
+        return cancelMobSpawn;
+    }
+
+    public boolean isXpEnabled() {
+        return xpEnabled;
+    }
+
+    public long getStorageCapPerLootKey() {
+        return storageCapPerLootKey;
     }
 
     public ItemStack createSpawnerItem(String typeKey, long amount) {
@@ -461,8 +526,12 @@ public class SpawnerManager {
             }
         });
 
-        return ok("&aplaced &f" + NumberUtils.format(instance.getStackAmount()) + "x "
-                + ColorUtils.strip(definition.displayName()) + "&a.");
+        return new ActionResult(
+                true,
+                "&aplaced &f" + NumberUtils.format(instance.getStackAmount()) + "x "
+                        + ColorUtils.strip(definition.displayName()) + "&a.",
+                quantity
+        );
     }
 
     public ActionResult createTemporarySpawner(Player owner, Block block, String typeKey, long amount, SpawnerInstance.AccessMode accessMode) {
@@ -583,7 +652,7 @@ public class SpawnerManager {
 
         existing.setStackAmount(targetAmount);
         existing.setUpdatedAt(System.currentTimeMillis());
-        plugin.getDatabaseManager().saveSpawner(existing);
+        saveSpawnerAsync(existing);
         plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
             syncSpawnerBlockStateImmediate(existing);
             if (plugin.getAntiEspManager() != null) {
@@ -640,6 +709,23 @@ public class SpawnerManager {
         }
     }
 
+    public boolean isNearManagedSpawner(Location loc, double maxDistance) {
+        if (loc == null || loc.getWorld() == null) {
+            return false;
+        }
+        double maxDistSq = maxDistance * maxDistance;
+        List<SpawnerInstance> inWorld = getSpawnersInWorld(loc.getWorld().getName());
+        for (SpawnerInstance instance : inWorld) {
+            double dx = instance.getX() + 0.5D - loc.getX();
+            double dy = instance.getY() + 0.5D - loc.getY();
+            double dz = instance.getZ() + 0.5D - loc.getZ();
+            if ((dx * dx + dy * dy + dz * dz) <= maxDistSq) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<WorldSummary> getWorldSummaries() {
         List<WorldSummary> summaries = new ArrayList<>();
         for (World world : Bukkit.getWorlds()) {
@@ -651,11 +737,56 @@ public class SpawnerManager {
         return summaries;
     }
 
+    public void playSound(Player player, String soundConfig) {
+        if (player != null && soundConfig != null && !soundConfig.isBlank()) {
+            com.bx.ultimateDonutSmp.utils.SoundUtils.play(player, soundConfig);
+        }
+    }
+
+    public void playOpenMenuSound(Player player) { playSound(player, soundOpenMenu); }
+    public void playCollectLootSound(Player player) { playSound(player, soundCollectLoot); }
+    public void playDropLootSound(Player player) { playSound(player, soundDropLoot); }
+    public void playCollectXpSound(Player player) { playSound(player, soundCollectXp); }
+    public void playSellConfirmOpenSound(Player player) { playSound(player, soundSellConfirmOpen); }
+    public void playSellSuccessSound(Player player) { playSound(player, soundSellSuccess); }
+    public void playSellCancelSound(Player player) { playSound(player, soundSellCancel); }
+    public void playFilterOpenSound(Player player) { playSound(player, soundFilterOpen); }
+    public void playFilterToggleSound(Player player) { playSound(player, soundFilterToggle); }
+
     public void openStorage(Player player, SpawnerInstance instance, int page) {
         if (player == null || instance == null) {
             return;
         }
+        playOpenMenuSound(player);
         new SpawnerStorageMenu(plugin, instance.getId(), page).open(player);
+    }
+
+    public void openMainMenu(Player player, SpawnerInstance instance) {
+        if (player == null || instance == null) {
+            return;
+        }
+        playOpenMenuSound(player);
+        new com.bx.ultimateDonutSmp.menus.SpawnerMainMenu(plugin, instance.getId()).open(player);
+    }
+
+    public String getMainMenuTitle(SpawnerInstance instance) {
+        if (instance == null) {
+            return "&8ѕᴘᴀᴡɴᴇʀ";
+        }
+        String cleanMob = prettifyKey(instance.getMobTypeKey());
+        String title = mainMenuTitle
+                .replace("{mob}", cleanMob)
+                .replace("{stack}", String.valueOf(instance.getStackAmount()));
+
+        if (!ColorUtils.strip(title).toLowerCase(Locale.US).endsWith("spawner")) {
+            title = title + " Spawner";
+        }
+        title = title.replaceAll("(?i)\\bspawners?\\s+spawners?\\b", "Spawner");
+        return title;
+    }
+
+    public int getMainMenuSize() {
+        return mainMenuSize;
     }
 
     public void openPanel(Player player) {
@@ -682,7 +813,7 @@ public class SpawnerManager {
                     plugin.getAntiEspManager().refreshNearby(block.getLocation());
                 }
             });
-            return ok("&atemporary spawner removed.");
+            return new ActionResult(true, "&atemporary spawner removed.", 0, true);
         }
         if (instance == null) {
             return fail("&cthat is not a managed spawner.");
@@ -691,37 +822,82 @@ public class SpawnerManager {
             return fail("&cyou do not have permission to break that spawner.");
         }
 
-        String spawnerName = ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey()));
-        plugin.getPlayerLogsManager().log(
-                player.getUniqueId(),
-                player.getName(),
-                "Spawners",
-                "SPAWNER_BREAK",
-                "Broke " + instance.getStackAmount() + "x " + spawnerName + " spawner at "
-                        + block.getWorld().getName() + " " + block.getX() + ", " + block.getY() + ", " + block.getZ()
-        );
+        long totalStack = instance.getStackAmount();
+        boolean stackAll = player != null && player.isSneaking();
+        long breakAmount = stackAll ? Math.min(64L, totalStack) : 1L;
+        long remainingStack = totalStack - breakAmount;
 
-        unregisterSpawner(instance);
-        plugin.getDatabaseManager().deleteSpawner(instance.getId());
-
-        long remaining = instance.getStackAmount();
-        List<ItemStack> itemsToGive = new ArrayList<>();
-        while (remaining > 0) {
-            int amount = (int) Math.min(64, remaining);
-            ItemStack item = createSpawnerItem(instance.getMobTypeKey(), amount);
-            if (item != null) {
-                itemsToGive.add(item);
-            }
-            remaining -= amount;
+        boolean fullyDestroyed;
+        if (remainingStack <= 0L) {
+            unregisterSpawner(instance);
+            deleteSpawnerAsync(instance.getId());
+            fullyDestroyed = true;
+        } else {
+            instance.setStackAmount(remainingStack);
+            instance.setUpdatedAt(System.currentTimeMillis());
+            saveSpawnerAsync(instance);
+            plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
+                syncSpawnerBlockStateImmediate(instance);
+                if (plugin.getAntiEspManager() != null) {
+                    plugin.getAntiEspManager().refreshNearby(block.getLocation());
+                }
+            });
+            fullyDestroyed = false;
         }
 
-        PlayerInventory inventory = player.getInventory();
-        for (ItemStack item : itemsToGive) {
-            Map<Integer, ItemStack> leftovers = inventory.addItem(item);
-            if (dropOnBreakIfInventoryFull) {
-                leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
-            } else if (!leftovers.isEmpty()) {
-                leftovers.values().forEach(leftover -> inventory.addItem(leftover));
+        String spawnerName = ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey()));
+        if (player != null) {
+            plugin.getPlayerLogsManager().log(
+                    player.getUniqueId(),
+                    player.getName(),
+                    "Spawners",
+                    "SPAWNER_BREAK",
+                    "Broke " + breakAmount + "x " + spawnerName + " spawner (Remaining: " + remainingStack + "x) at "
+                            + block.getWorld().getName() + " " + block.getX() + ", " + block.getY() + ", " + block.getZ()
+            );
+        }
+
+        boolean hasSilkTouch = false;
+        if (player != null) {
+            if (player.getGameMode() == GameMode.CREATIVE) {
+                hasSilkTouch = true;
+            } else {
+                ItemStack heldTool = player.getInventory().getItemInMainHand();
+                if (heldTool != null && heldTool.getType().name().endsWith("_PICKAXE") && heldTool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH)) {
+                    hasSilkTouch = true;
+                }
+            }
+        }
+
+        if (requireSilkTouch && !hasSilkTouch) {
+            plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
+                if (plugin.getAntiEspManager() != null) {
+                    plugin.getAntiEspManager().refreshNearby(block.getLocation());
+                }
+            });
+            return new ActionResult(true, "&cYour spawner was destroyed (" + NumberUtils.format(breakAmount) + "x) because you did not use a Silk Touch pickaxe.", (int) breakAmount, fullyDestroyed);
+        }
+
+        if (player != null) {
+            long remaining = breakAmount;
+            List<ItemStack> itemsToGive = new ArrayList<>();
+            while (remaining > 0) {
+                int amount = (int) Math.min(64, remaining);
+                ItemStack item = createSpawnerItem(instance.getMobTypeKey(), amount);
+                if (item != null) {
+                    itemsToGive.add(item);
+                }
+                remaining -= amount;
+            }
+
+            PlayerInventory inventory = player.getInventory();
+            for (ItemStack item : itemsToGive) {
+                Map<Integer, ItemStack> leftovers = inventory.addItem(item);
+                if (dropOnBreakIfInventoryFull) {
+                    leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
+                } else if (!leftovers.isEmpty()) {
+                    leftovers.values().forEach(leftover -> inventory.addItem(leftover));
+                }
             }
         }
 
@@ -730,8 +906,8 @@ public class SpawnerManager {
                 plugin.getAntiEspManager().refreshNearby(block.getLocation());
             }
         });
-        return ok("&apicked up &f" + NumberUtils.format(instance.getStackAmount()) + "x "
-                + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.");
+        return new ActionResult(true, "&apicked up &f" + NumberUtils.format(breakAmount) + "x "
+                + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.", (int) breakAmount, fullyDestroyed);
     }
 
     public List<SpawnerLootEntry> getSortedLootEntries(SpawnerInstance instance) {
@@ -739,18 +915,13 @@ public class SpawnerManager {
             return List.of();
         }
 
-        Map<String, SpawnerLootEntry> merged = new LinkedHashMap<>();
-        SpawnerTypeDefinition definition = getTypeDefinition(instance.getMobTypeKey());
-        if (definition != null) {
-            for (SpawnerTypeDefinition.DropDefinition drop : definition.drops()) {
-                merged.put(drop.key().toUpperCase(Locale.US), new SpawnerLootEntry(drop.key(), drop.material(), 0L));
+        List<SpawnerLootEntry> entries = new ArrayList<>();
+        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
+            if (entry != null && entry.getAmount() > 0L) {
+                entries.add(entry);
             }
         }
-        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
-            merged.put(entry.getKey().toUpperCase(Locale.US), entry);
-        }
 
-        List<SpawnerLootEntry> entries = new ArrayList<>(merged.values());
         entries.sort((a, b) -> {
             int cmp = Long.compare(b.getAmount(), a.getAmount());
             if (cmp != 0) {
@@ -788,6 +959,7 @@ public class SpawnerManager {
         instance.removeStoredLoot(entry.getKey(), moved);
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playCollectLootSound(player);
         return ok("&acollected &f" + NumberUtils.format(moved) + "x "
                 + plugin.getWorthManager().prettifyMaterial(entry.getMaterial()) + "&a.");
     }
@@ -820,6 +992,7 @@ public class SpawnerManager {
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playCollectLootSound(player);
         return ok("&acollected &f" + NumberUtils.format(totalMoved) + "&a items from this spawner.");
     }
 
@@ -837,7 +1010,7 @@ public class SpawnerManager {
             if (instance.isLootDisabled(entry.getKey())) {
                 continue;
             }
-            long droppedForEntry = dropMaterial(dropLocation, entry.getMaterial(), entry.getAmount());
+            long droppedForEntry = dropMaterial(player, dropLocation, entry.getMaterial(), entry.getAmount());
             if (droppedForEntry > 0L) {
                 instance.removeStoredLoot(entry.getKey(), droppedForEntry);
                 dropped += droppedForEntry;
@@ -850,7 +1023,58 @@ public class SpawnerManager {
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playDropLootSound(player);
         return ok("&adropped &f" + NumberUtils.format(dropped) + "&a stored items on the ground.");
+    }
+
+    public record SpawnerSellPreview(double totalPayout, long totalSellableItems, double maxMultiplier) {}
+
+    public SpawnerSellPreview calculateLootSellPreview(Player player, SpawnerInstance instance) {
+        if (player == null || instance == null) {
+            return new SpawnerSellPreview(0D, 0L, 1.0D);
+        }
+
+        Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
+        progress.putAll(plugin.getShopManager().getSellProgress(player.getUniqueId()));
+
+        double totalPayout = 0D;
+        long soldItems = 0L;
+        double maxMultiplier = 1.0D;
+        boolean foundCategory = false;
+
+        for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
+            if (instance.isLootDisabled(entry.getKey()) || entry.getAmount() <= 0) {
+                continue;
+            }
+            ItemStack single = new ItemStack(entry.getMaterial(), 1);
+            WorthResult worthResult = plugin.getWorthManager().resolveWorth(single);
+            if (!worthResult.sellable()) {
+                continue;
+            }
+
+            SellCategory category = plugin.getShopManager().getSellCategory(single);
+            if (category == null) {
+                continue;
+            }
+
+            double unitWorth = worthResult.unitWorth();
+            double baseTotal = unitWorth * entry.getAmount();
+            double multiplier = plugin.getShopManager().getCurrentSellMultiplier(progress, category);
+            double payout = baseTotal * multiplier;
+
+            totalPayout += payout;
+            soldItems += entry.getAmount();
+            if (!foundCategory || multiplier > maxMultiplier) {
+                maxMultiplier = multiplier;
+                foundCategory = true;
+            }
+        }
+
+        if (!foundCategory) {
+            maxMultiplier = plugin.getShopManager().getCurrentSellMultiplier(progress, SellCategory.MOBS);
+        }
+
+        return new SpawnerSellPreview(totalPayout, soldItems, maxMultiplier);
     }
 
     public SellLootResult sellAllLoot(Player player, SpawnerInstance instance) {
@@ -867,6 +1091,8 @@ public class SpawnerManager {
         Map<SellCategory, Double> earnedByCategory = new EnumMap<>(SellCategory.class);
         double totalPayout = 0D;
         long soldItems = 0L;
+
+        List<DatabaseManager.SellHistoryRecord> historyRecords = new ArrayList<>();
 
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
             if (instance.isLootDisabled(entry.getKey())) {
@@ -892,7 +1118,7 @@ public class SpawnerManager {
             earnedByCategory.merge(category, baseTotal, Double::sum);
 
             int historyAmount = (int) Math.min(Integer.MAX_VALUE, entry.getAmount());
-            plugin.getDatabaseManager().addSellHistory(player.getUniqueId(), entry.getMaterial().name(), historyAmount, payout);
+            historyRecords.add(new DatabaseManager.SellHistoryRecord(player.getUniqueId(), entry.getMaterial().name(), historyAmount, payout));
             instance.removeStoredLoot(entry.getKey(), entry.getAmount());
         }
 
@@ -900,9 +1126,13 @@ public class SpawnerManager {
             return failSell("&cthere are no sellable items stored in that spawner.");
         }
 
-        for (Map.Entry<SellCategory, Double> progressEntry : earnedByCategory.entrySet()) {
-            plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), progressEntry.getKey(), progressEntry.getValue());
-        }
+        Map<SellCategory, Double> earnedCopy = new EnumMap<>(earnedByCategory);
+        plugin.getDatabaseManager().executeAsync(() -> {
+            plugin.getDatabaseManager().addSellHistoryBatch(historyRecords);
+            for (Map.Entry<SellCategory, Double> progressEntry : earnedCopy.entrySet()) {
+                plugin.getDatabaseManager().addSellProgress(player.getUniqueId(), progressEntry.getKey(), progressEntry.getValue());
+            }
+        });
 
         var depositResult = plugin.getEconomyManager().deposit(player, totalPayout, EconomyReason.SELL_PAYOUT);
         if (!depositResult.success()) {
@@ -916,6 +1146,7 @@ public class SpawnerManager {
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
+        playSellSuccessSound(player);
         return new SellLootResult(
                 true,
                 "&asold &f" + NumberUtils.format(soldItems) + "&a items for "
@@ -923,6 +1154,64 @@ public class SpawnerManager {
                 totalPayout,
                 soldItems
         );
+    }
+
+    public ActionResult collectXp(Player player, SpawnerInstance instance) {
+        if (!xpEnabled) {
+            return fail("&cXP collection is disabled on this server.");
+        }
+        if (player == null || instance == null) {
+            return fail("&cspawner not found.");
+        }
+        if (!canOpen(player, instance)) {
+            return fail("&cyou do not have access to that spawner.");
+        }
+
+        double xp = instance.getStoredXp();
+        if (xp <= 0.0) {
+            return fail("&cthere is no XP stored in that spawner.");
+        }
+
+        instance.setStoredXp(0.0);
+        instance.setUpdatedAt(System.currentTimeMillis());
+        if (!isTemporarySpawner(instance)) {
+            saveSpawnerAsync(instance);
+        }
+
+        int xpPoints = (int) Math.round(xp);
+        player.giveExp(xpPoints);
+
+        playCollectXpSound(player);
+        return ok("&acollected &f" + String.format("%.1f", xp) + " &aXP points!");
+    }
+
+    public ActionResult sellAndCollectXp(Player player, SpawnerInstance instance) {
+        if (player == null || instance == null) {
+            return fail("&cspawner not found.");
+        }
+        if (!canOpen(player, instance)) {
+            return fail("&cyou do not have access to that spawner.");
+        }
+
+        SellLootResult sellResult = sellAllLoot(player, instance);
+        ActionResult xpResult = xpEnabled ? collectXp(player, instance) : fail("");
+
+        if (!sellResult.success() && (!xpEnabled || !xpResult.success())) {
+            return fail("&cthere are no sellable items stored in that spawner.");
+        }
+
+        String msg = "";
+        if (sellResult.success()) {
+            msg += sellResult.message();
+        }
+        if (xpResult.success()) {
+            if (!msg.isBlank()) {
+                msg += " ";
+            }
+            msg += xpResult.message();
+        }
+
+        return ok(msg);
     }
 
     public ActionResult removeSpawner(SpawnerInstance instance, boolean dropItem, Player actor) {
@@ -936,7 +1225,7 @@ public class SpawnerManager {
         }
 
         unregisterSpawner(instance);
-        plugin.getDatabaseManager().deleteSpawner(instance.getId());
+        deleteSpawnerAsync(instance.getId());
         World world = Bukkit.getWorld(instance.getWorld());
         if (world != null && dropItem) {
             long remaining = instance.getStackAmount();
@@ -995,6 +1284,16 @@ public class SpawnerManager {
                         "Failed to schedule spawner generation for " + instance.getLocationKey(), exception);
             }
         }
+        refreshOpenStorageMenus();
+    }
+
+    public void refreshOpenStorageMenus() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Inventory top = player.getOpenInventory().getTopInventory();
+            if (top != null && top.getHolder() instanceof SpawnerStorageMenu storageMenu) {
+                storageMenu.refresh(player);
+            }
+        }
     }
 
     private void processSpawnerGeneration(SpawnerInstance instance, long now, long intervalMillis) {
@@ -1039,15 +1338,23 @@ public class SpawnerManager {
         }
 
         long totalRolls = cycles * definition.baseItemsPerCycle() * Math.max(1L, instance.getStackAmount());
+        boolean changed = false;
+
+        if (xpEnabled) {
+            double xpGenerated = cycles * definition.xpPerCycle() * Math.max(1L, instance.getStackAmount());
+            if (xpGenerated > 0.0) {
+                instance.addStoredXp(xpGenerated);
+                changed = true;
+            }
+        }
+
         if (totalRolls <= 0L) {
             instance.setLastProcessedAt(now);
             if (!isTemporarySpawner(instance)) {
-                plugin.getDatabaseManager().saveSpawner(instance);
+                saveSpawnerAsync(instance);
             }
             return;
         }
-
-        boolean changed = false;
         for (SpawnerTypeDefinition.DropDefinition drop : definition.drops()) {
             if (instance.isLootDisabled(drop.key())) {
                 continue;
@@ -1063,14 +1370,14 @@ public class SpawnerManager {
                 continue;
             }
 
-            instance.addStoredLoot(drop.key(), drop.material(), generated, storageCapPerLootKey);
+            instance.addAutoMobDrop(drop.material(), generated, storageCapPerLootKey);
             changed = true;
         }
 
         instance.setLastProcessedAt(instance.getLastProcessedAt() + (cycles * intervalMillis));
         instance.setUpdatedAt(now);
         if (!isTemporarySpawner(instance)) {
-            plugin.getDatabaseManager().saveSpawner(instance);
+            saveSpawnerAsync(instance);
         }
         if (changed) {
             saveLoot(instance);
@@ -1127,17 +1434,23 @@ public class SpawnerManager {
 
         if (changed) {
             if (!isTemporarySpawner(instance)) {
-                plugin.getDatabaseManager().saveSpawner(instance);
+                saveSpawnerAsync(instance);
             }
             saveLoot(instance);
         }
     }
 
     public String getStorageTitle(SpawnerInstance instance, int page, int maxPage) {
+        if (instance == null) {
+            return "&8ѕᴘᴀᴡɴᴇʀ ѕᴛᴏʀᴀɢᴇ";
+        }
+        String cleanMob = prettifyKey(instance.getMobTypeKey());
         String title = storageTitle
-                .replace("{mob}", ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())))
+                .replace("{mob}", cleanMob)
                 .replace("{page}", String.valueOf(page))
                 .replace("{max_page}", String.valueOf(maxPage));
+
+        title = title.replaceAll("(?i)\\bspawners?\\s+spawners?\\b", "Spawners");
         return title.length() > 32 ? title.substring(0, 32) : title;
     }
 
@@ -1229,6 +1542,9 @@ public class SpawnerManager {
         if (player == null || instance == null) {
             return false;
         }
+        if (allowSpawnerSteal) {
+            return true;
+        }
         if (PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")) {
             return true;
         }
@@ -1247,8 +1563,21 @@ public class SpawnerManager {
         if (player == null || instance == null) {
             return false;
         }
-        return PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")
-                || player.getUniqueId().equals(instance.getOwnerUuid());
+        if (allowSpawnerSteal) {
+            return true;
+        }
+        if (PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")) {
+            return true;
+        }
+        if (player.getUniqueId().equals(instance.getOwnerUuid())) {
+            return true;
+        }
+
+        return switch (instance.getAccessMode()) {
+            case PUBLIC -> true;
+            case OWNER_AND_TEAM -> plugin.getTeamManager().areTeammates(player.getUniqueId(), instance.getOwnerUuid());
+            case OWNER_ONLY -> false;
+        };
     }
 
     public boolean canModify(Player player, SpawnerInstance instance) {
@@ -1272,7 +1601,8 @@ public class SpawnerManager {
                 continue;
             }
             plugin.getDatabaseManager().saveSpawner(instance);
-            saveLoot(instance);
+            List<SpawnerLootEntry> lootCopy = new ArrayList<>(instance.getStoredLootEntries());
+            plugin.getDatabaseManager().replaceSpawnerLoot(instance.getId(), lootCopy);
         }
     }
 
@@ -1304,8 +1634,23 @@ public class SpawnerManager {
         return moved;
     }
 
-    private long dropMaterial(Location location, Material material, long amount) {
-        if (location == null || location.getWorld() == null || material == null || amount <= 0L) {
+    private long dropMaterial(Player player, Location location, Material material, long amount) {
+        if (material == null || amount <= 0L) {
+            return 0L;
+        }
+
+        World world;
+        Location spawnLoc;
+        org.bukkit.util.Vector velocity = null;
+
+        if (player != null && player.isOnline()) {
+            world = player.getWorld();
+            spawnLoc = player.getLocation().add(0, 1.2, 0);
+            velocity = player.getLocation().getDirection().normalize().multiply(0.35D);
+        } else if (location != null && location.getWorld() != null) {
+            world = location.getWorld();
+            spawnLoc = location;
+        } else {
             return 0L;
         }
 
@@ -1315,7 +1660,10 @@ public class SpawnerManager {
 
         while (remaining > 0L) {
             int stackAmount = (int) Math.min(maxStack, remaining);
-            location.getWorld().dropItemNaturally(location, new ItemStack(material, stackAmount));
+            org.bukkit.entity.Item droppedItem = world.dropItem(spawnLoc, new ItemStack(material, stackAmount));
+            if (velocity != null) {
+                droppedItem.setVelocity(velocity);
+            }
             dropped += stackAmount;
             remaining -= stackAmount;
         }
@@ -1333,18 +1681,46 @@ public class SpawnerManager {
         return false;
     }
 
-    private void saveLoot(SpawnerInstance instance) {
-        if (isTemporarySpawner(instance)) {
+    public void deleteSpawnerAsync(long spawnerId) {
+        if (spawnerId <= 0L) {
             return;
         }
-        plugin.getDatabaseManager().replaceSpawnerLoot(instance.getId(), instance.getStoredLootEntries());
+        plugin.getDatabaseManager().executeAsync(() -> {
+            plugin.getDatabaseManager().deleteSpawner(spawnerId);
+        });
+    }
+
+    public void saveSpawnerAsync(SpawnerInstance instance) {
+        if (instance == null || isTemporarySpawner(instance)) {
+            return;
+        }
+        plugin.getDatabaseManager().executeAsync(() -> {
+            plugin.getDatabaseManager().saveSpawner(instance);
+        });
+    }
+
+    public void saveLoot(SpawnerInstance instance) {
+        if (instance == null || isTemporarySpawner(instance)) {
+            return;
+        }
+        long spawnerId = instance.getId();
+        List<SpawnerLootEntry> latestLoot = new ArrayList<>(instance.getStoredLootEntries());
+        boolean isFirst = (pendingLootMap.put(spawnerId, latestLoot) == null);
+        if (isFirst) {
+            plugin.getDatabaseManager().executeAsync(() -> {
+                List<SpawnerLootEntry> toSave = pendingLootMap.remove(spawnerId);
+                if (toSave != null) {
+                    plugin.getDatabaseManager().replaceSpawnerLoot(spawnerId, toSave);
+                }
+            });
+        }
     }
 
     public void saveSpawnerAndLoot(SpawnerInstance instance) {
         if (instance == null || isTemporarySpawner(instance)) {
             return;
         }
-        plugin.getDatabaseManager().saveSpawner(instance);
+        saveSpawnerAsync(instance);
         saveLoot(instance);
     }
 
@@ -1464,12 +1840,22 @@ public class SpawnerManager {
             return;
         }
 
-        if (spawnerState.getSpawnedType() == definition.entityType()) {
-            return;
+        boolean updated = false;
+        if (spawnerState.getSpawnedType() != definition.entityType()) {
+            spawnerState.setSpawnedType(definition.entityType());
+            updated = true;
         }
 
-        spawnerState.setSpawnedType(definition.entityType());
-        spawnerState.update(true, false);
+        if (spawnerState.getDelay() > 800 || spawnerState.getDelay() < 200) {
+            spawnerState.setMinSpawnDelay(200);
+            spawnerState.setMaxSpawnDelay(800);
+            spawnerState.setDelay(200);
+            updated = true;
+        }
+
+        if (updated) {
+            spawnerState.update(true, true);
+        }
     }
 
     public void consumeHeldSpawnerItem(Player player, boolean all) {
@@ -1505,7 +1891,7 @@ public class SpawnerManager {
         player.getInventory().setItemInMainHand(hand);
     }
 
-    private String prettifyKey(String key) {
+    public String prettifyKey(String key) {
         if (key == null || key.isBlank()) {
             return "Spawner";
         }
@@ -1532,7 +1918,12 @@ public class SpawnerManager {
         return builder.toString();
     }
 
-    private int normalizeSize(int size) {
+    public Material getTypeIcon(String typeKey) {
+        SpawnerTypeDefinition def = getTypeDefinition(typeKey);
+        return def == null || def.iconMaterial() == null ? Material.SPAWNER : def.iconMaterial();
+    }
+
+    public int normalizeSize(int size) {
         int normalized = Math.max(9, ((size + 8) / 9) * 9);
         return Math.min(54, normalized);
     }

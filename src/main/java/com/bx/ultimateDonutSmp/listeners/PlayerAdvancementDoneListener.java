@@ -25,17 +25,27 @@ public class PlayerAdvancementDoneListener implements Listener {
 
     private void disableVanillaAnnouncements() {
         for (World world : Bukkit.getWorlds()) {
-            try {
-                world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-            } catch (Exception ignored) {}
+            setAnnounceAdvancements(world, false);
         }
     }
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
+        setAnnounceAdvancements(event.getWorld(), false);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setAnnounceAdvancements(World world, boolean value) {
+        if (world == null) {
+            return;
+        }
         try {
-            event.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        } catch (Exception ignored) {}
+            GameRule<Boolean> rule = (GameRule<Boolean>) GameRule.getByName("announceAdvancements");
+            if (rule != null) {
+                world.setGameRule(rule, value);
+            }
+        } catch (Throwable ignored) {
+        }
     }
 
     @EventHandler

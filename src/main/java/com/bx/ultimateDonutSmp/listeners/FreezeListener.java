@@ -139,8 +139,14 @@ public class FreezeListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event) {
-        if (deny(event.getPlayer())) {
+        org.bukkit.entity.Player player = event.getPlayer();
+        if (deny(player)) {
             event.setCancelled(true);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.updateInventory();
+                }
+            });
         }
     }
 

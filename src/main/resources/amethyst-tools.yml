@@ -75,7 +75,7 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
-      SLOT: 11
+      SLOT: 18
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
       # The numerical value for Max Quantity. Available options: Any valid integer
@@ -128,7 +128,7 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
-      SLOT: 12
+      SLOT: 19
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
       # The numerical value for Max Quantity. Available options: Any valid integer
@@ -157,7 +157,7 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
-      SLOT: 13
+      SLOT: 20
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
       # The numerical value for Max Quantity. Available options: Any valid integer
@@ -208,7 +208,7 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
-      SLOT: 14
+      SLOT: 21
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
       # The numerical value for Max Quantity. Available options: Any valid integer
@@ -237,7 +237,7 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
-      SLOT: 15
+      SLOT: 22
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
       # The numerical value for Max Quantity. Available options: Any valid integer
@@ -266,7 +266,7 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
-      SLOT: 16
+      SLOT: 23
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
       # The numerical value for Max Quantity. Available options: Any valid integer
@@ -281,7 +281,7 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
-      SLOT: 11
+      SLOT: 18
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
       # The numerical value for Max Quantity. Available options: Any valid integer
