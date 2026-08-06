@@ -1,0 +1,44 @@
+name: ✨ Feature Request
+description: Propose an idea or new feature for UltimateDonutSMP.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Have an idea for UltimateDonutSMP?
+        We welcome community suggestions! Please describe your proposed feature or improvement below.
+
+  - type: textarea
+    id: feature_summary
+    attributes:
+      label: Feature Summary
+      description: Explain the feature you would like to see added.
+      placeholder: "Describe the new feature or improvement..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: Is your feature request related to a problem or limitation?
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this feature to work in detail?
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered.
+    validations:
+      required: false

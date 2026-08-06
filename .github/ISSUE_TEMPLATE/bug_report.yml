@@ -1,0 +1,68 @@
+name: 🐛 Bug Report
+description: Report a bug or error in UltimateDonutSMP plugin.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Thank you for reporting an issue!
+        Please fill out this form with as much detail as possible so we can reproduce and fix the bug quickly.
+
+  - type: input
+    id: environment
+    attributes:
+      label: Server Environment & Versions
+      description: Specify your server core (Paper, Spigot, Folia), Minecraft version, Java version, and plugin version.
+      placeholder: "e.g., Paper 1.21.1 / Java 21 / UltimateDonutSMP v1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: "Describe what went wrong..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior step-by-step.
+      placeholder: |
+        1. Type command '/...'
+        2. Perform action '...'
+        3. Observe error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "What should have happened instead..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: stacktrace
+    attributes:
+      label: Error Logs / Stacktrace
+      description: Paste relevant console errors or stacktraces here (if any).
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate.
+          required: true
+        - label: I am using the latest version of UltimateDonutSMP.
+          required: true
