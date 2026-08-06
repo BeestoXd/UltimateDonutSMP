@@ -1,0 +1,45 @@
+name: 👑 Rank Restoration / Support
+description: Request rank restoration or account support for UltimateDonutSMP.
+title: "[Rank Restoration]: "
+labels: ["support", "rank-restoration"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Need help restoring your rank or permissions?
+        Please provide your account details and proof of rank ownership so our team can verify and assist you.
+
+  - type: input
+    id: player_name
+    attributes:
+      label: Minecraft In-Game Name (IGN)
+      description: Your exact Minecraft username.
+      placeholder: "e.g., Steve"
+    validations:
+      required: true
+
+  - type: input
+    id: rank_name
+    attributes:
+      label: Rank Name
+      description: Specify the rank you are requesting to restore.
+      placeholder: "e.g., VIP, MVP, DonutKing, Media"
+    validations:
+      required: true
+
+  - type: textarea
+    id: proof
+    attributes:
+      label: Proof of Ownership
+      description: Provide purchase receipt, transaction ID, or screenshot links proving your previous rank.
+      placeholder: "Paste links or receipt details here..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: Additional Information
+      description: Any additional context (e.g. name change history, LuckPerms permissions missing).
+    validations:
+      required: false

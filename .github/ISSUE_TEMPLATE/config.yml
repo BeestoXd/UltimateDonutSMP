@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Community & Support (Discord)
+    url: https://dsc.gg/hellstarr
+    about: Got questions, need setup help, or want to chat? Join our Discord community!
+  - name: 📖 Documentation & Guides
+    url: https://github.com/BeestoXd/UltimateDonutSMP#readme
+    about: Read the project documentation and setup guides before opening an issue.
