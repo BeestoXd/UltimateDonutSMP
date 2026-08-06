@@ -705,6 +705,60 @@ public class TablistManager {
                 || text.contains("<media_plus_badge>");
     }
 
+    private boolean isMediaPermission(String permission) {
+        if (permission == null || permission.isBlank()) {
+            return false;
+        }
+        String normalized = PermissionUtils.normalizePermissionNode(permission);
+        String mediaBadgePerm = PermissionUtils.normalizePermissionNode(
+                config().getString("TABLIST.MEDIA-BADGE-PERMISSION", "RANK.MEDIA")
+        );
+        String mediaPlusPerm = PermissionUtils.normalizePermissionNode(
+                config().getString("TABLIST.MEDIA-PLUS-PERMISSION", "RANK.MEDIA.PLUS")
+        );
+        String mediaIncludePerm = PermissionUtils.normalizePermissionNode(
+                config().getString("TABLIST.MEDIA-BADGE-INCLUDE-PERMISSION", "RANK.MEDIA.INCLUDE")
+        );
+
+        return normalized.equals("rank.media")
+                || normalized.equals("rank.media.plus")
+                || normalized.equals("rank.media.include")
+                || normalized.equals(mediaBadgePerm)
+                || normalized.equals(mediaPlusPerm)
+                || normalized.equals(mediaIncludePerm);
+    }
+
+    private Optional<Boolean> resolveExplicitLuckPermsPermission(Player player, String permission) {
+        try {
+            Object adapter = resolveLuckPermsPlayerAdapter();
+            Object user = invokeCompatible(adapter, "getUser", player);
+            Optional<Boolean> directUserValue = resolveLuckPermsUserNodePermission(user, permission);
+            if (directUserValue.isPresent()) {
+                return directUserValue;
+            }
+
+            String normalized = PermissionUtils.normalizePermissionNode(permission);
+            Object permissionData = invokeCompatible(adapter, "getPermissionData", player);
+            if (permissionData != null) {
+                Optional<Boolean> mappedValue = resolveLuckPermsPermissionMap(permissionData, normalized);
+                if (mappedValue.isPresent()) {
+                    return mappedValue;
+                }
+            }
+
+            Object cachedData = invokeNoArg(user, "getCachedData", "cachedData");
+            Object cachedPermissionData = invokeNoArg(cachedData, "getPermissionData", "permissionData");
+            if (cachedPermissionData != null) {
+                Optional<Boolean> mappedValue = resolveLuckPermsPermissionMap(cachedPermissionData, normalized);
+                if (mappedValue.isPresent()) {
+                    return mappedValue;
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return Optional.empty();
+    }
+
     private boolean hasLivePermission(Player player, String permission) {
         if (player == null || permission == null || permission.isBlank()) {
             return false;
@@ -713,6 +767,14 @@ public class TablistManager {
         Optional<Boolean> commandOverride = resolveLuckPermsCommandOverride(player, permission);
         if (commandOverride.isPresent()) {
             return commandOverride.get();
+        }
+
+        if (isMediaPermission(permission)) {
+            Optional<Boolean> explicitLuckPerms = resolveExplicitLuckPermsPermission(player, permission);
+            if (explicitLuckPerms.isPresent()) {
+                return explicitLuckPerms.get();
+            }
+            return PermissionUtils.hasExact(player, permission);
         }
 
         Optional<Boolean> luckPermsValue = resolveLuckPermsPermission(player, permission);

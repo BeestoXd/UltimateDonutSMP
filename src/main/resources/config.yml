@@ -491,7 +491,7 @@ TABLIST:
   # The text or value for Media Badge Permission. Available options: Any valid string text
   MEDIA-BADGE-PERMISSION: rank.media
   # The text or value for Name Format. Available options: Any valid string text
-  NAME-FORMAT: <icon_head_skin> <media_badge>&f<nick>%team_suffix%
+  NAME-FORMAT: <media_badge>&f<nick>%team_suffix%
   # Configuration section for Header.
   HEADER:
   - ''

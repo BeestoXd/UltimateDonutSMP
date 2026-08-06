@@ -1080,6 +1080,15 @@ permissions:
     default: false
   ultimatedonutsmp.admin.ecsee:
     default: op
+  rank.media:
+    description: Display configurable Media tablist badge
+    default: false
+  rank.media.plus:
+    description: Display configurable Media+ tablist badge
+    default: false
+  rank.media.include:
+    description: Include player in media badge handling
+    default: false
   ultimatedonutsmp.auctionhouse.use:
     description: Open the Auction House menu
     default: true
