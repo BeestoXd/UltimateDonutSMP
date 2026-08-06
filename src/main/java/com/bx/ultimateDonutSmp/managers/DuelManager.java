@@ -1204,11 +1204,25 @@ public class DuelManager {
         UUID victimUuid = victim.getUniqueId();
         UUID winnerUuid = match.getOpponent(victimUuid);
         Player winner = winnerUuid == null ? null : Bukkit.getPlayer(winnerUuid);
+
         List<ItemStack> loot = copyLoot(event.getDrops());
+        if (loot.isEmpty()) {
+            collectItems(loot, victim.getInventory().getStorageContents());
+            collectItems(loot, victim.getInventory().getArmorContents());
+            collectItems(loot, new ItemStack[]{victim.getInventory().getItemInOffHand()});
+            collectItems(loot, new ItemStack[]{victim.getItemOnCursor()});
+        }
 
         event.setDeathMessage(null);
         event.getDrops().clear();
         event.setDroppedExp(0);
+        event.setKeepInventory(false);
+
+        victim.getInventory().clear();
+        victim.getInventory().setArmorContents(null);
+        victim.getInventory().setItemInOffHand(null);
+        victim.setItemOnCursor(null);
+        victim.updateInventory();
 
         finishMatch(match, winnerUuid, victimUuid, "DEATH", false, loot, true);
 
@@ -1523,15 +1537,18 @@ public class DuelManager {
         List<ItemStack> claimLoot = loot == null ? List.of() : loot;
         GeneratedInventorySnapshot restoreSnapshot = null;
         if (match.usesGeneratedWorld()) {
-            if (loserUuid == null || !"DEATH".equalsIgnoreCase(endReason)) {
-                restoreGeneratedInventory(match, match.getPlayerOneUuid(),
-                        match.getPlayerOneUuid().equals(loserUuid) ? claimLoot : List.of());
-                restoreGeneratedInventory(match, match.getPlayerTwoUuid(),
-                        match.getPlayerTwoUuid().equals(loserUuid) ? claimLoot : List.of());
+            if (winnerUuid != null && loserUuid != null) {
+                sanitizeGeneratedInventory(match, winnerUuid);
+                if (loser != null && loser.isOnline()) {
+                    loser.getInventory().clear();
+                    loser.getInventory().setArmorContents(null);
+                    loser.getInventory().setItemInOffHand(null);
+                    loser.setItemOnCursor(null);
+                    loser.updateInventory();
+                }
             } else {
-                UUID winnerUuidToRestore = match.getPlayerOneUuid().equals(loserUuid) ? match.getPlayerTwoUuid() : match.getPlayerOneUuid();
-                restoreGeneratedInventory(match, winnerUuidToRestore, List.of());
-                restoreSnapshot = computeRestoredInventory(match, loserUuid, claimLoot);
+                sanitizeGeneratedInventory(match, match.getPlayerOneUuid());
+                sanitizeGeneratedInventory(match, match.getPlayerTwoUuid());
             }
             cleanupGeneratedTransientEntities(match);
             generatedMatchInventorySnapshots.remove(match.getId());
