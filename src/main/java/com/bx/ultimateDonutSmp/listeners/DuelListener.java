@@ -160,6 +160,31 @@ public class DuelListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        if (player == null) {
+            return;
+        }
+
+        UUID uuid = player.getUniqueId();
+        boolean inDuel = plugin.getDuelManager().isInDuel(uuid);
+        boolean transitioning = plugin.getDuelManager().isTransitioning(uuid);
+
+        if (inDuel || transitioning) {
+            if (plugin.getDuelManager().isInternalTeleport(uuid)) {
+                return;
+            }
+
+            if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+                    || event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
+                plugin.getDuelManager().handleArenaBorderTeleport(event);
+                return;
+            }
+
+            event.setCancelled(true);
+            player.sendMessage(ColorUtils.toComponent(plugin.getDuelManager().getCommandBlockedMessage()));
+            return;
+        }
+
         plugin.getDuelManager().handleArenaBorderTeleport(event);
     }
 

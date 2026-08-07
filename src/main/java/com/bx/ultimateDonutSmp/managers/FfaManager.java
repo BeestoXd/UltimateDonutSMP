@@ -232,6 +232,10 @@ public class FfaManager {
                 || transitionStates.containsKey(uuid);
     }
 
+    public boolean isInFfaLocation(Location location) {
+        return isInsideAnyFfaArena(location);
+    }
+
     public boolean shouldSuppressGlobalStats(UUID uuid) {
         return !shouldCountTowardGlobalStats() && (isInQueue(uuid) || isInMatch(uuid) || isTransitioning(uuid));
     }

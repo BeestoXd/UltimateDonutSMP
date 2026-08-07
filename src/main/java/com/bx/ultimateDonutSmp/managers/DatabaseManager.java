@@ -639,6 +639,18 @@ public class DatabaseManager {
             ")"
         );
         execute(
+            "CREATE TABLE IF NOT EXISTS duel_pending_returns (" +
+            "  uuid VARCHAR(36) NOT NULL PRIMARY KEY," +
+            "  world_name VARCHAR(128) NOT NULL," +
+            "  x DOUBLE NOT NULL," +
+            "  y DOUBLE NOT NULL," +
+            "  z DOUBLE NOT NULL," +
+            "  yaw FLOAT NOT NULL," +
+            "  pitch FLOAT NOT NULL," +
+            "  timestamp BIGINT NOT NULL" +
+            ")"
+        );
+        execute(
             "CREATE TABLE IF NOT EXISTS player_logs (" +
             "  id INTEGER PRIMARY KEY AUTOINCREMENT," +
             "  player_uuid TEXT NOT NULL," +
@@ -4985,6 +4997,99 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to delete maintenance location for " + uuid, e);
         }
+    }
+
+    public void savePendingDuelReturn(UUID uuid, Location location) {
+        if (uuid == null || location == null || location.getWorld() == null) {
+            return;
+        }
+        try {
+            try (PreparedStatement del = connection.prepareStatement("DELETE FROM duel_pending_returns WHERE uuid = ?")) {
+                del.setString(1, uuid.toString());
+                del.executeUpdate();
+            }
+            try (PreparedStatement ins = connection.prepareStatement(
+                    "INSERT INTO duel_pending_returns (uuid, world_name, x, y, z, yaw, pitch, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                ins.setString(1, uuid.toString());
+                ins.setString(2, location.getWorld().getName());
+                ins.setDouble(3, location.getX());
+                ins.setDouble(4, location.getY());
+                ins.setDouble(5, location.getZ());
+                ins.setFloat(6, location.getYaw());
+                ins.setFloat(7, location.getPitch());
+                ins.setLong(8, System.currentTimeMillis());
+                ins.executeUpdate();
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save pending duel return for " + uuid, e);
+        }
+    }
+
+    public Location getPendingDuelReturn(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        String sql = "SELECT world_name, x, y, z, yaw, pitch FROM duel_pending_returns WHERE uuid = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String worldName = rs.getString("world_name");
+                    double x = rs.getDouble("x");
+                    double y = rs.getDouble("y");
+                    double z = rs.getDouble("z");
+                    float yaw = rs.getFloat("yaw");
+                    float pitch = rs.getFloat("pitch");
+                    World world = Bukkit.getWorld(worldName);
+                    if (world != null) {
+                        return new Location(world, x, y, z, yaw, pitch);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to load pending duel return for " + uuid, e);
+        }
+        return null;
+    }
+
+    public void deletePendingDuelReturn(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+        String sql = "DELETE FROM duel_pending_returns WHERE uuid = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, uuid.toString());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to delete pending duel return for " + uuid, e);
+        }
+    }
+
+    public Map<UUID, Location> getAllPendingDuelReturns() {
+        Map<UUID, Location> result = new HashMap<>();
+        String sql = "SELECT uuid, world_name, x, y, z, yaw, pitch FROM duel_pending_returns";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                try {
+                    UUID uuid = UUID.fromString(rs.getString("uuid"));
+                    String worldName = rs.getString("world_name");
+                    double x = rs.getDouble("x");
+                    double y = rs.getDouble("y");
+                    double z = rs.getDouble("z");
+                    float yaw = rs.getFloat("yaw");
+                    float pitch = rs.getFloat("pitch");
+                    World world = Bukkit.getWorld(worldName);
+                    Location loc = world != null ? new Location(world, x, y, z, yaw, pitch) : null;
+                    if (loc != null) {
+                        result.put(uuid, loc);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to load all pending duel returns", e);
+        }
+        return result;
     }
 
     public List<UUID> getMaintenancePlayers(String serverId) {

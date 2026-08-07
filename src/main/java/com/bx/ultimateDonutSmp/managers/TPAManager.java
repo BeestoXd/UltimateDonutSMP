@@ -54,11 +54,25 @@ public class TPAManager {
             return false;
         }
 
+        if (isBlockedByDuel(requester) || isBlockedByDuel(target)) {
+            if (requester != null) {
+                requester.sendMessage(ColorUtils.toComponent("&cyou cannot use TPA during a duel."));
+            }
+            return false;
+        }
+
         return storePendingRequest(new TpaRequest(requester.getUniqueId(), target.getUniqueId(), false, false));
     }
 
     public boolean sendTPAHere(Player requester, Player target) {
         if (!target.isOnline()) {
+            return false;
+        }
+
+        if (isBlockedByDuel(requester) || isBlockedByDuel(target)) {
+            if (requester != null) {
+                requester.sendMessage(ColorUtils.toComponent("&cyou cannot use TPA during a duel."));
+            }
             return false;
         }
 
@@ -587,6 +601,14 @@ public class TPAManager {
         return true;
     }
 
+    private boolean isBlockedByDuel(Player player) {
+        if (player == null) {
+            return false;
+        }
+        UUID uuid = player.getUniqueId();
+        return plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(uuid) || plugin.getDuelManager().isTransitioning(uuid));
+    }
+
     private boolean acceptRequest(Player target, TpaRequest request) {
         if (target == null || request == null || !target.isOnline()
                 || !target.getUniqueId().equals(request.target())) {
@@ -596,6 +618,12 @@ public class TPAManager {
         Player requester = Bukkit.getPlayer(request.requester());
         if (requester == null || !requester.isOnline()) {
             target.sendMessage(ColorUtils.toComponent("&cʀᴇǫᴜᴇѕᴛᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ."));
+            return false;
+        }
+
+        if (isBlockedByDuel(target) || isBlockedByDuel(requester)) {
+            target.sendMessage(ColorUtils.toComponent("&cyou cannot use TPA during a duel."));
+            requester.sendMessage(ColorUtils.toComponent("&cyou cannot use TPA during a duel."));
             return false;
         }
 

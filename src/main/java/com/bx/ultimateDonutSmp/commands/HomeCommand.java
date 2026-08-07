@@ -39,6 +39,17 @@ public class HomeCommand implements CommandExecutor {
         }
 
         if (sub.equals("sethome")) {
+            if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(player.getUniqueId())
+                    || plugin.getDuelManager().isTransitioning(player.getUniqueId())
+                    || plugin.getDuelManager().isLocationInDuelArena(player.getLocation()))) {
+                player.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside a duel arena or duel world."));
+                return true;
+            }
+            if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(player.getUniqueId())
+                    || plugin.getFfaManager().isInFfaLocation(player.getLocation()))) {
+                player.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside an FFA arena."));
+                return true;
+            }
             String name = args.length > 0 ? args[0] : "home";
             boolean success = plugin.getHomeManager().setHome(player, name);
             if (success) {
