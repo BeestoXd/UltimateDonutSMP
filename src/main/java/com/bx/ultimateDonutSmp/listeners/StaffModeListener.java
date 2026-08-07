@@ -47,9 +47,17 @@ public class StaffModeListener implements Listener {
         boolean movingBetweenInventories = event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY
                 || event.getClick().isKeyboardClick()
                 || event.getAction() == InventoryAction.COLLECT_TO_CURSOR;
+        boolean isDropAction = event.getAction() == InventoryAction.DROP_ALL_CURSOR
+                || event.getAction() == InventoryAction.DROP_ONE_CURSOR
+                || event.getAction() == InventoryAction.DROP_ALL_SLOT
+                || event.getAction() == InventoryAction.DROP_ONE_SLOT;
+        boolean isOutsideClick = event.getSlotType() == org.bukkit.event.inventory.InventoryType.SlotType.OUTSIDE
+                || event.getClickedInventory() == null;
 
         if (!clickOwnInventory
                 && !movingBetweenInventories
+                && !isDropAction
+                && !isOutsideClick
                 && !plugin.getStaffModeManager().isStaffTool(currentItem)
                 && !plugin.getStaffModeManager().isStaffTool(cursorItem)) {
             return;
