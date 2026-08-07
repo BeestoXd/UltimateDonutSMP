@@ -158,13 +158,9 @@ public class PlayerRespawnListener implements Listener {
             return;
         }
 
-        plugin.getSpigotScheduler().runGlobalLater(() -> {
+        plugin.getSpigotScheduler().runEntityLater(player, () -> {
             if (player.isOnline()) {
-                plugin.getSpigotScheduler().runEntity(player, () -> {
-                    if (player.isOnline()) {
-                        giveChainmailKit(plugin, player);
-                    }
-                });
+                giveChainmailKit(plugin, player);
             }
         }, Math.max(1L, delayTicks));
     }
@@ -245,44 +241,41 @@ public class PlayerRespawnListener implements Listener {
 
     private static boolean equipArmorIfApplicable(Player player, ItemStack item) {
         PlayerInventory inventory = player.getInventory();
+        String matName = item.getType().name();
 
-        switch (item.getType()) {
-            case CHAINMAIL_HELMET -> {
-                if (isEmpty(inventory.getHelmet())) {
-                    inventory.setHelmet(item);
-                } else {
-                    inventory.addItem(item);
-                }
-                return true;
+        if (matName.endsWith("_HELMET")) {
+            if (isEmpty(inventory.getHelmet())) {
+                inventory.setHelmet(item);
+            } else {
+                inventory.addItem(item);
             }
-            case CHAINMAIL_CHESTPLATE -> {
-                if (isEmpty(inventory.getChestplate())) {
-                    inventory.setChestplate(item);
-                } else {
-                    inventory.addItem(item);
-                }
-                return true;
-            }
-            case CHAINMAIL_LEGGINGS -> {
-                if (isEmpty(inventory.getLeggings())) {
-                    inventory.setLeggings(item);
-                } else {
-                    inventory.addItem(item);
-                }
-                return true;
-            }
-            case CHAINMAIL_BOOTS -> {
-                if (isEmpty(inventory.getBoots())) {
-                    inventory.setBoots(item);
-                } else {
-                    inventory.addItem(item);
-                }
-                return true;
-            }
-            default -> {
-                return false;
-            }
+            return true;
         }
+        if (matName.endsWith("_CHESTPLATE")) {
+            if (isEmpty(inventory.getChestplate())) {
+                inventory.setChestplate(item);
+            } else {
+                inventory.addItem(item);
+            }
+            return true;
+        }
+        if (matName.endsWith("_LEGGINGS")) {
+            if (isEmpty(inventory.getLeggings())) {
+                inventory.setLeggings(item);
+            } else {
+                inventory.addItem(item);
+            }
+            return true;
+        }
+        if (matName.endsWith("_BOOTS")) {
+            if (isEmpty(inventory.getBoots())) {
+                inventory.setBoots(item);
+            } else {
+                inventory.addItem(item);
+            }
+            return true;
+        }
+        return false;
     }
 
     private static void placeInPreferredSlot(Player player, ItemStack item) {
