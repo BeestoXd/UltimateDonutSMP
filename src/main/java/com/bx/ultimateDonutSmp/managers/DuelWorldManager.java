@@ -60,6 +60,19 @@ public class DuelWorldManager {
     private static final String VANILLA_POOL_PATH = RANDOM_BIOMES_PATH + ".VANILLA_POOL";
     private static final String WORLDBORDER_PATH = "WORLDBORDER";
 
+    private static final Set<String> DEFAULT_EXCLUDED_BIOMES = Set.of(
+            "minecraft:the_end",
+            "minecraft:end_highlands",
+            "minecraft:end_midlands",
+            "minecraft:end_barrens",
+            "minecraft:small_end_islands",
+            "minecraft:nether_wastes",
+            "minecraft:soul_sand_valley",
+            "minecraft:crimson_forest",
+            "minecraft:warped_forest",
+            "minecraft:basalt_deltas"
+    );
+
     private final UltimateDonutSmp plugin;
     private final Set<String> generatedWorldNames = new HashSet<>();
     private final Set<String> reusableFlatWorldNames = new HashSet<>();
@@ -218,6 +231,9 @@ public class DuelWorldManager {
                 continue;
             }
             if (excluded.contains(key)) {
+                continue;
+            }
+            if (allowed.isEmpty() && DEFAULT_EXCLUDED_BIOMES.contains(key)) {
                 continue;
             }
             result.add(biome);
@@ -929,7 +945,7 @@ public class DuelWorldManager {
         int radius = getArenaRadius();
         border.setCenter(0.5D, 0.5D);
         border.setSize(Math.max(2D, config().getDouble(WORLDBORDER_PATH + ".SIZE", radius * 2D)));
-        border.setDamageAmount(0D);
+        border.setDamageAmount(Math.max(0.1D, config().getDouble(WORLDBORDER_PATH + ".DAMAGE_AMOUNT", 1.0D)));
         border.setDamageBuffer(Math.max(0D, config().getDouble(WORLDBORDER_PATH + ".DAMAGE_BUFFER", 0D)));
         border.setWarningDistance(Math.max(0, config().getInt(WORLDBORDER_PATH + ".WARNING_DISTANCE", 4)));
         border.setWarningTime(Math.max(0, config().getInt(WORLDBORDER_PATH + ".WARNING_TIME", 5)));

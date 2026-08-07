@@ -34,6 +34,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.Damageable;
@@ -1157,6 +1158,23 @@ public class DuelManager {
         if (isInsideGeneratedArenaBorder(match, event.getFrom())) {
             event.setTo(event.getFrom());
         } else {
+            pushPlayerBackToArena(player, match);
+        }
+    }
+
+    public void handleArenaBorderTeleport(PlayerTeleportEvent event) {
+        if (event == null || event.getTo() == null) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        DuelMatch match = getActiveMatch(player.getUniqueId());
+        if (match == null || !match.usesGeneratedWorld() || !worldManager.isBorderEnabled()) {
+            return;
+        }
+
+        if (!isInsideGeneratedArenaBorder(match, event.getTo())) {
+            event.setCancelled(true);
             pushPlayerBackToArena(player, match);
         }
     }
@@ -2771,7 +2789,7 @@ public class DuelManager {
         }
     }
 
-    private DuelMatch getActiveMatch(UUID uuid) {
+    public DuelMatch getActiveMatch(UUID uuid) {
         if (uuid == null) {
             return null;
         }
