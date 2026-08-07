@@ -134,6 +134,7 @@ public class DuelManager {
     private final Map<String, PendingCrossServerMatch> pendingCrossServerMatches = new HashMap<>();
     private final Set<String> seenCrossServerMessages = new HashSet<>();
     private final Set<String> activeClaimOperations = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private final Map<UUID, Long> recentlyFinishedParticipants = new HashMap<>();
     private boolean crossServerSubscribed = false;
     private String crossServerSubscribedChannel = "";
     private long tickCounter = 0L;
@@ -185,6 +186,7 @@ public class DuelManager {
         generatedMatchInventorySnapshots.clear();
         generatedBlockSnapshots.clear();
         pendingCrossServerMatches.clear();
+        recentlyFinishedParticipants.clear();
         seenCrossServerMessages.clear();
         unsubscribeCrossServer();
         worldManager.shutdownFlatPool();
@@ -1198,6 +1200,20 @@ public class DuelManager {
         Player victim = event.getEntity();
         DuelMatch match = getActiveMatch(victim.getUniqueId());
         if (match == null) {
+            if (isTransitioning(victim.getUniqueId())
+                    || pendingRespawns.containsKey(victim.getUniqueId())
+                    || transitionStates.containsKey(victim.getUniqueId())
+                    || isRecentlyFinishedParticipant(victim.getUniqueId())) {
+                event.setDeathMessage(null);
+                event.getDrops().clear();
+                event.setDroppedExp(0);
+                victim.getInventory().clear();
+                victim.getInventory().setArmorContents(null);
+                victim.getInventory().setItemInOffHand(null);
+                victim.setItemOnCursor(null);
+                victim.updateInventory();
+                return true;
+            }
             return false;
         }
 
@@ -1520,6 +1536,8 @@ public class DuelManager {
         reservedArenaIds.remove(match.getArena().getId());
         borderEscapeTicks.remove(match.getPlayerOneUuid());
         borderEscapeTicks.remove(match.getPlayerTwoUuid());
+        recordRecentlyFinishedParticipant(match.getPlayerOneUuid());
+        recordRecentlyFinishedParticipant(match.getPlayerTwoUuid());
 
         Player winner = winnerUuid == null ? null : Bukkit.getPlayer(winnerUuid);
         Player loser = loserUuid == null ? null : Bukkit.getPlayer(loserUuid);
@@ -3598,6 +3616,27 @@ public class DuelManager {
         TitleUtils.clearTitle(player);
         clearTemporaryVanish(player);
         transitioningPlayers.remove(player.getUniqueId());
+    }
+
+    private void recordRecentlyFinishedParticipant(UUID uuid) {
+        if (uuid != null) {
+            recentlyFinishedParticipants.put(uuid, System.currentTimeMillis() + 30000L);
+        }
+    }
+
+    private boolean isRecentlyFinishedParticipant(UUID uuid) {
+        if (uuid == null) {
+            return false;
+        }
+        Long expireAt = recentlyFinishedParticipants.get(uuid);
+        if (expireAt == null) {
+            return false;
+        }
+        if (System.currentTimeMillis() > expireAt) {
+            recentlyFinishedParticipants.remove(uuid);
+            return false;
+        }
+        return true;
     }
 
     private void applyTemporaryVanish(Player hidden) {
