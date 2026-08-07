@@ -22,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -51,6 +52,15 @@ public class AmethystToolsListener implements Listener {
     public AmethystToolsListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
         this.manager = plugin.getAmethystToolsManager();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockDamage(BlockDamageEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (manager.isAmethystTool(item)) {
+            manager.suppressVisualSync(player.getUniqueId(), 10000L);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -95,7 +105,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleDrill(BlockBreakEvent event, Player player, ItemStack item) {
-        manager.suppressVisualSync(player.getUniqueId(), 3000L);
+        manager.suppressVisualSync(player.getUniqueId(), 10000L);
         Block origin = event.getBlock();
         ConfigurationSection cfg = manager.getToolSection(AmethystToolType.DRILL);
         int radius = cfg != null ? cfg.getInt("RADIUS", 1) : 1;
@@ -127,6 +137,7 @@ public class AmethystToolsListener implements Listener {
                 }
 
                 block.breakNaturally(item);
+                player.sendBlockChange(block.getLocation(), Material.AIR.createBlockData());
                 if (particlesSpawned < 4) {
                     manager.spawnAmethystParticles(block.getLocation());
                     particlesSpawned++;
@@ -145,7 +156,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleShovel(BlockBreakEvent event, Player player, ItemStack item) {
-        manager.suppressVisualSync(player.getUniqueId(), 3000L);
+        manager.suppressVisualSync(player.getUniqueId(), 10000L);
         Block origin = event.getBlock();
         ConfigurationSection cfg = manager.getToolSection(AmethystToolType.SHOVEL);
         int radius = cfg != null ? cfg.getInt("RADIUS", 1) : 1;
@@ -177,6 +188,7 @@ public class AmethystToolsListener implements Listener {
                 }
 
                 block.breakNaturally(item);
+                player.sendBlockChange(block.getLocation(), Material.AIR.createBlockData());
                 if (particlesSpawned < 4) {
                     manager.spawnAmethystParticles(block.getLocation());
                     particlesSpawned++;
@@ -195,7 +207,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleChopper(BlockBreakEvent event, Player player, ItemStack item) {
-        manager.suppressVisualSync(player.getUniqueId(), 3000L);
+        manager.suppressVisualSync(player.getUniqueId(), 10000L);
         Block origin = event.getBlock();
         Set<Material> logBlocks = manager.getLogBlocks();
         if (!logBlocks.contains(origin.getType())) {
@@ -227,6 +239,7 @@ public class AmethystToolsListener implements Listener {
                 }
 
                 log.breakNaturally(item);
+                player.sendBlockChange(log.getLocation(), Material.AIR.createBlockData());
                 if (particlesSpawned < 5) {
                     manager.spawnAmethystParticles(log.getLocation());
                     particlesSpawned++;
@@ -260,7 +273,7 @@ public class AmethystToolsListener implements Listener {
         }
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            manager.suppressVisualSync(player.getUniqueId(), 3000L);
+            manager.suppressVisualSync(player.getUniqueId(), 10000L);
             return;
         }
 
@@ -353,7 +366,7 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {
-        manager.suppressVisualSync(player.getUniqueId(), 3000L);
+        manager.suppressVisualSync(player.getUniqueId(), 10000L);
         Block clicked = event.getClickedBlock();
         if (clicked == null || clicked.getType() != Material.WATER) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("BUCKET-NO-WATER")));
@@ -373,6 +386,7 @@ public class AmethystToolsListener implements Listener {
         int particleCount = 0;
         for (Block water : waterBlocks) {
             water.setType(Material.AIR);
+            player.sendBlockChange(water.getLocation(), Material.AIR.createBlockData());
             if (particleCount < 5) {
                 manager.spawnAmethystParticles(water.getLocation());
                 particleCount++;
