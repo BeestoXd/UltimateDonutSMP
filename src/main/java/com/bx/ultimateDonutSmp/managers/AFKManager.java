@@ -38,19 +38,29 @@ public class AFKManager {
                 .getString("AFK-SYSTEM.SPAWN-CUBOID-NAME", "spawn");
     }
 
+    private Set<String> cachedTrackedCuboidNames;
+
+    public void clearCache() {
+        cachedTrackedCuboidNames = null;
+    }
+
     public Set<String> getTrackedSpawnCuboidNames() {
+        if (cachedTrackedCuboidNames != null) {
+            return cachedTrackedCuboidNames;
+        }
+
         LinkedHashSet<String> cuboidNames = new LinkedHashSet<>(
                 plugin.getSpawnManager().getAreaCuboidNames(SpawnManager.AreaType.SPAWN)
         );
-        if (!cuboidNames.isEmpty()) {
-            return cuboidNames;
+        if (cuboidNames.isEmpty()) {
+            String legacy = getSpawnCuboidName();
+            if (legacy != null && !legacy.isBlank()) {
+                cuboidNames.add(legacy.toLowerCase());
+            }
         }
-
-        String legacy = getSpawnCuboidName();
-        if (legacy != null && !legacy.isBlank()) {
-            cuboidNames.add(legacy.toLowerCase());
-        }
-        return cuboidNames;
+        Set<String> unmodifiable = Set.copyOf(cuboidNames);
+        cachedTrackedCuboidNames = unmodifiable;
+        return unmodifiable;
     }
 
     public void recordMovement(UUID uuid) {

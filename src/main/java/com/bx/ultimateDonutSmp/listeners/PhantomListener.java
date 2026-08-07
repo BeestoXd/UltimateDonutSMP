@@ -18,6 +18,7 @@ public class PhantomListener implements Listener {
 
     @EventHandler
     public void onPhantomTarget(EntityTargetEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(com.bx.ultimateDonutSmp.managers.FeatureManager.Feature.PHANTOM)) return;
         if (!(event.getEntity() instanceof Phantom)) return;
         if (!(event.getTarget() instanceof Player player)) return;
 

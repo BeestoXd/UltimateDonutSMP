@@ -23,6 +23,24 @@ public final class ScoreboardNumberHider {
             "net.minecraft.network.chat.numbers.BlankFormat"
     };
 
+    private static final Map<String, Method> METHOD_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<Class<?>, Method> NUMBER_FORMAT_SETTER_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<Class<?>, Field> OBJECTIVE_FIELD_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Method NULL_METHOD_SENTINEL;
+    private static final Field NULL_FIELD_SENTINEL;
+
+    static {
+        Method mSentinel = null;
+        Field fSentinel = null;
+        try {
+            mSentinel = Object.class.getDeclaredMethod("hashCode");
+            fSentinel = ScoreboardNumberHider.class.getDeclaredField("disabled");
+        } catch (Exception ignored) {
+        }
+        NULL_METHOD_SENTINEL = mSentinel;
+        NULL_FIELD_SENTINEL = fSentinel;
+    }
+
     private final UltimateDonutSmp plugin;
     private final Map<String, Long> lastSent = new HashMap<>();
 
@@ -171,6 +189,11 @@ public final class ScoreboardNumberHider {
     }
 
     private Method findNumberFormatSetter(Class<?> type, Object format) {
+        Method cached = NUMBER_FORMAT_SETTER_CACHE.get(type);
+        if (cached != null) {
+            return cached == NULL_METHOD_SENTINEL ? null : cached;
+        }
+
         Method fallback = null;
         for (Class<?> current = type; current != null; current = current.getSuperclass()) {
             for (Method method : current.getDeclaredMethods()) {
@@ -184,6 +207,7 @@ public final class ScoreboardNumberHider {
 
                 String name = method.getName().toLowerCase();
                 if ("setnumberformat".equals(name) || "numberformat".equals(name)) {
+                    NUMBER_FORMAT_SETTER_CACHE.put(type, method);
                     return method;
                 }
                 if (name.contains("number") || name.contains("format")) {
@@ -191,7 +215,9 @@ public final class ScoreboardNumberHider {
                 }
             }
         }
-        return fallback;
+        Method result = fallback;
+        NUMBER_FORMAT_SETTER_CACHE.put(type, result == null ? NULL_METHOD_SENTINEL : result);
+        return result;
     }
 
     private boolean setNumberFormatField(Object target, Object format) throws ReflectiveOperationException {
@@ -361,27 +387,42 @@ public final class ScoreboardNumberHider {
     }
 
     private Method findNoArgMethod(Class<?> type, String name) {
+        String key = type.getName() + "#" + name;
+        Method cached = METHOD_CACHE.get(key);
+        if (cached != null) {
+            return cached == NULL_METHOD_SENTINEL ? null : cached;
+        }
+
         for (Class<?> current = type; current != null; current = current.getSuperclass()) {
             for (Method method : current.getDeclaredMethods()) {
                 if (method.getParameterCount() == 0 && method.getName().equals(name)) {
+                    METHOD_CACHE.put(key, method);
                     return method;
                 }
             }
         }
+        METHOD_CACHE.put(key, NULL_METHOD_SENTINEL);
         return null;
     }
 
     private Field findObjectiveField(Class<?> type) {
+        Field cached = OBJECTIVE_FIELD_CACHE.get(type);
+        if (cached != null) {
+            return cached == NULL_FIELD_SENTINEL ? null : cached;
+        }
+
         for (Class<?> current = type; current != null; current = current.getSuperclass()) {
             for (Field field : current.getDeclaredFields()) {
                 String typeName = field.getType().getName();
                 if ("objective".equalsIgnoreCase(field.getName())
                         || "net.minecraft.world.scores.Objective".equals(typeName)
                         || "net.minecraft.world.scores.ScoreboardObjective".equals(typeName)) {
+                    OBJECTIVE_FIELD_CACHE.put(type, field);
                     return field;
                 }
             }
         }
+        OBJECTIVE_FIELD_CACHE.put(type, NULL_FIELD_SENTINEL);
         return null;
     }
 

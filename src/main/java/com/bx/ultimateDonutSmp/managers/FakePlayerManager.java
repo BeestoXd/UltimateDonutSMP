@@ -104,9 +104,20 @@ public class FakePlayerManager {
         return packetBridge != null;
     }
 
+    private Boolean cachedEnabled = null;
+
+    public void clearCache() {
+        cachedEnabled = null;
+    }
+
     public boolean isEnabled() {
-        return enabled && (plugin.getFeatureManager() == null
+        if (cachedEnabled != null) {
+            return cachedEnabled;
+        }
+        boolean val = enabled && (plugin.getFeatureManager() == null
                 || plugin.getFeatureManager().isEnabled(FeatureManager.Feature.STAFF_MODE));
+        cachedEnabled = val;
+        return val;
     }
 
     public SpawnResult spawn(Player creator) {

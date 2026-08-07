@@ -217,6 +217,10 @@ public class RTPZoneManager {
         return countdowns.getOrDefault(uuid, 0);
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public String getFormattedCountdown(java.util.UUID uuid) {
         int secs = getRemainingSeconds(uuid);
         return secs > 0 ? com.bx.ultimateDonutSmp.utils.NumberUtils.formatCountdown(secs) : "0s";

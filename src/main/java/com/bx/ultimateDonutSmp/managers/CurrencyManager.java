@@ -320,16 +320,23 @@ public class CurrencyManager {
         return Math.max(0, Math.min(8, decimalPlaces));
     }
 
+    private final java.util.Map<String, DecimalFormat> formatCache = new java.util.concurrent.ConcurrentHashMap<>();
+
     private String formatNumber(double amount, int decimalPlaces, CurrencyDefinition definition) {
         if (!Double.isFinite(amount)) {
             amount = 0D;
         }
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        symbols.setGroupingSeparator(definition.groupingSeparator());
-        symbols.setDecimalSeparator(definition.decimalSeparator());
-        DecimalFormat format = new DecimalFormat(pattern(decimalPlaces), symbols);
-        return format.format(amount);
+        String key = decimalPlaces + "|" + definition.groupingSeparator() + "|" + definition.decimalSeparator();
+        DecimalFormat format = formatCache.computeIfAbsent(key, k -> {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+            symbols.setGroupingSeparator(definition.groupingSeparator());
+            symbols.setDecimalSeparator(definition.decimalSeparator());
+            return new DecimalFormat(pattern(decimalPlaces), symbols);
+        });
+        synchronized (format) {
+            return format.format(amount);
+        }
     }
 
     private String formatShortNumber(double amount, CurrencyDefinition definition) {

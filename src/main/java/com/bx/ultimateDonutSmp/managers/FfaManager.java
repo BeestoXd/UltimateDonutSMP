@@ -145,9 +145,20 @@ public class FfaManager {
         transitioningPlayers.clear();
     }
 
+    private Boolean cachedEnabled = null;
+
+    public void clearCache() {
+        cachedEnabled = null;
+    }
+
     public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.FFA)
+        if (cachedEnabled != null) {
+            return cachedEnabled;
+        }
+        boolean val = plugin.getFeatureManager().isEnabled(FeatureManager.Feature.FFA)
                 && config().getBoolean("SETTINGS.ENABLED", true);
+        cachedEnabled = val;
+        return val;
     }
 
     public boolean shouldBlockCommands() {
@@ -568,16 +579,18 @@ public class FfaManager {
 
         processPendingResets();
 
-        for (FfaMatch match : new ArrayList<>(activeMatches.values())) {
-            if (match.getStatus() != FfaMatch.MatchStatus.ACTIVE || !secondPulse) {
-                continue;
-            }
+        if (!activeMatches.isEmpty()) {
+            for (FfaMatch match : new ArrayList<>(activeMatches.values())) {
+                if (match.getStatus() != FfaMatch.MatchStatus.ACTIVE || !secondPulse) {
+                    continue;
+                }
 
-             if (match.hasCombatStarted()
-                    && !isCombatTagged(match.getPlayerOneUuid())
-                    && !isCombatTagged(match.getPlayerTwoUuid())) {
-                finishMatch(match, "COMBAT_EXPIRED", null);
-                continue;
+                 if (match.hasCombatStarted()
+                        && !isCombatTagged(match.getPlayerOneUuid())
+                        && !isCombatTagged(match.getPlayerTwoUuid())) {
+                    finishMatch(match, "COMBAT_EXPIRED", null);
+                    continue;
+                }
             }
         }
 

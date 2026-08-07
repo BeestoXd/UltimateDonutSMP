@@ -21,6 +21,9 @@ public class BillfordTask implements Runnable {
 
     @Override
     public void run() {
+        if (!plugin.getFeatureManager().isEnabled(com.bx.ultimateDonutSmp.managers.FeatureManager.Feature.BILLFORD)) {
+            return;
+        }
         if (plugin.getBillfordManager().isTimeToAdvance()) {
             plugin.getBillfordManager().advanceTrade();
         }

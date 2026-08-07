@@ -65,6 +65,8 @@ public class TablistManager {
     private final Map<UUID, SkinTexture> skinHeadTextures = new ConcurrentHashMap<>();
     private final Map<UUID, Long> skinHeadTextureRefreshTimes = new ConcurrentHashMap<>();
     private final Map<UUID, Map<String, PermissionOverride>> luckPermsCommandOverrides = new ConcurrentHashMap<>();
+    private final Map<UUID, String> lastHeaderFooterCache = new ConcurrentHashMap<>();
+    private final Map<UUID, String> lastNameCache = new ConcurrentHashMap<>();
 
     public TablistManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -78,13 +80,19 @@ public class TablistManager {
     }
 
     public void update(Player player) {
-        if (!isEnabled()) {
+        if (!isEnabled() || player == null) {
             return;
         }
 
         String headerText = applyInternalPlaceholders(getMultilineText("TABLIST.HEADER"), player);
         String footerText = applyInternalPlaceholders(getMultilineText("TABLIST.FOOTER"), player);
+        String key = headerText + "\0" + footerText;
+        String cached = lastHeaderFooterCache.get(player.getUniqueId());
+        if (cached != null && cached.equals(key)) {
+            return;
+        }
         player.setPlayerListHeaderFooter(parseTabText(headerText, player), parseTabText(footerText, player));
+        lastHeaderFooterCache.put(player.getUniqueId(), key);
     }
 
     public void updateAll() {
@@ -108,18 +116,27 @@ public class TablistManager {
     }
 
     public void updateTablistName(Player player) {
-        if (!isEnabled()) {
+        if (!isEnabled() || player == null) {
             return;
         }
 
         String nameFormat = resolveNameFormat(player);
         refreshSkinHeadTextureIfNeeded(player, nameFormat, false);
+        String cached = lastNameCache.get(player.getUniqueId());
+        if (cached != null && cached.equals(nameFormat)) {
+            return;
+        }
+
         Component adventureComponent = parseTabComponent(nameFormat, player);
         if (adventureComponent != null) {
-            if (componentUpdater.updateName(player, adventureComponent)) return;
+            if (componentUpdater.updateName(player, adventureComponent)) {
+                lastNameCache.put(player.getUniqueId(), nameFormat);
+                return;
+            }
         }
 
         player.setPlayerListName(parseTabText(nameFormat, player));
+        lastNameCache.put(player.getUniqueId(), nameFormat);
     }
 
     public void refreshSkinHeads(Player player) {

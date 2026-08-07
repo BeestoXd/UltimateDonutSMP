@@ -50,6 +50,12 @@ public class ScoreboardManager {
     private final ScoreboardNumberHider numberHider;
     private final Map<UUID, Scoreboard> playerBoards;
 
+    // Line and title caching to avoid redundant Bukkit/Packet updates
+    private final Map<UUID, String[]> playerLastLines = new ConcurrentHashMap<>();
+    private final Map<UUID, String> playerLastTitle = new ConcurrentHashMap<>();
+    private final Map<UUID, String[]> foliaLastLines = new ConcurrentHashMap<>();
+    private final Map<UUID, String> foliaLastTitle = new ConcurrentHashMap<>();
+
     private int titleIndex = 0;
 
     public ScoreboardManager(UltimateDonutSmp plugin) {
@@ -66,6 +72,10 @@ public class ScoreboardManager {
             this.numberHider = new ScoreboardNumberHider(plugin);
             this.playerBoards = new HashMap<>();
         }
+    }
+
+    public long getUpdateIntervalTicks() {
+        return Math.max(1L, plugin.getConfigManager().getScoreboard().getLong("SCOREBOARD.UPDATE-INTERVAL-TICKS", 10L));
     }
 
     public boolean isEnabled() {
@@ -161,12 +171,17 @@ public class ScoreboardManager {
     public void invalidateAll() {
         if (!folia) {
             playerBoards.clear();
+            playerLastLines.clear();
+            playerLastTitle.clear();
         }
     }
 
     public void invalidatePlayer(Player player) {
-        if (!folia) {
-            playerBoards.remove(player.getUniqueId());
+        if (!folia && player != null) {
+            UUID uuid = player.getUniqueId();
+            playerBoards.remove(uuid);
+            playerLastLines.remove(uuid);
+            playerLastTitle.remove(uuid);
         }
     }
 
@@ -202,8 +217,26 @@ public class ScoreboardManager {
     }
 
     private void renderPlayerFolia(Player player) {
-        sidebarRenderer.show(player, getTitle(player), getRenderedLines(player));
-        visiblePlayers.add(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        String title = getTitle(player);
+        List<String> renderedLines = getRenderedLines(player);
+        String oldTitle = foliaLastTitle.get(uuid);
+        String[] oldLines = foliaLastLines.get(uuid);
+        boolean changed = oldTitle == null || !oldTitle.equals(title) || oldLines == null || oldLines.length != renderedLines.size();
+        if (!changed) {
+            for (int i = 0; i < renderedLines.size(); i++) {
+                if (!renderedLines.get(i).equals(oldLines[i])) {
+                    changed = true;
+                    break;
+                }
+            }
+        }
+        if (changed) {
+            sidebarRenderer.show(player, title, renderedLines);
+            foliaLastTitle.put(uuid, title);
+            foliaLastLines.put(uuid, renderedLines.toArray(new String[0]));
+        }
+        visiblePlayers.add(uuid);
     }
 
     private void hidePlayerFolia(Player player) {
@@ -211,6 +244,8 @@ public class ScoreboardManager {
     }
 
     private void releaseAllFolia() {
+        foliaLastTitle.clear();
+        foliaLastLines.clear();
         if (visiblePlayers.isEmpty()) {
             return;
         }
@@ -227,7 +262,13 @@ public class ScoreboardManager {
     }
 
     private void releasePlayerFolia(Player player) {
-        if (player == null || !visiblePlayers.remove(player.getUniqueId())) {
+        if (player == null) {
+            return;
+        }
+        UUID uuid = player.getUniqueId();
+        foliaLastTitle.remove(uuid);
+        foliaLastLines.remove(uuid);
+        if (!visiblePlayers.remove(uuid)) {
             return;
         }
         sidebarRenderer.hide(player);
@@ -257,6 +298,8 @@ public class ScoreboardManager {
 
     private void removePlayerSpigot(UUID uuid) {
         playerBoards.remove(uuid);
+        playerLastLines.remove(uuid);
+        playerLastTitle.remove(uuid);
     }
 
     private void updateSpigot(Player player) {
@@ -281,27 +324,45 @@ public class ScoreboardManager {
     }
 
     private void updateTextSpigot(Player player, Scoreboard board, Objective obj) {
+        UUID uuid = player.getUniqueId();
         List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
         if (!titles.isEmpty()) {
             String title = titles.get(titleIndex % titles.size());
-            obj.setDisplayName(ColorUtils.toComponent(title, player));
+            String formattedTitle = ColorUtils.toComponent(title, player);
+            String oldTitle = playerLastTitle.get(uuid);
+            if (oldTitle == null || !oldTitle.equals(formattedTitle)) {
+                obj.setDisplayName(formattedTitle);
+                playerLastTitle.put(uuid, formattedTitle);
+            }
         }
 
         List<String> lines = getLines(player);
         int count = Math.min(lines.size(), MAX_LINES);
         syncLineSlotsSpigot(board, obj, count);
 
+        String[] oldLines = playerLastLines.get(uuid);
+        if (oldLines == null || oldLines.length != MAX_LINES) {
+            oldLines = new String[MAX_LINES];
+            playerLastLines.put(uuid, oldLines);
+        }
+
         for (int i = 0; i < count; i++) {
             Team team = board.getTeam("sb_" + i);
             if (team == null) continue;
             String text = ColorUtils.colorize(lines.get(i), player);
             text = alignSidebarIconColumn(text);
-            applyLineSpigot(team, text);
+            if (!text.equals(oldLines[i])) {
+                applyLineSpigot(team, text);
+                oldLines[i] = text;
+            }
         }
 
         for (int i = count; i < MAX_LINES; i++) {
             Team team = board.getTeam("sb_" + i);
-            if (team != null) applyLineSpigot(team, "");
+            if (team != null && !"".equals(oldLines[i])) {
+                applyLineSpigot(team, "");
+                oldLines[i] = "";
+            }
         }
 
         numberHider.hide(player, obj);
