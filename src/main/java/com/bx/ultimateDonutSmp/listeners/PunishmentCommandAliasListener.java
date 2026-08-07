@@ -28,14 +28,19 @@ public class PunishmentCommandAliasListener implements Listener {
             Map.entry("phistory", "punishments")
     );
 
+    private final UltimateDonutSmp plugin;
     private final String namespace;
 
     public PunishmentCommandAliasListener(UltimateDonutSmp plugin) {
+        this.plugin = plugin;
         this.namespace = plugin.getName().toLowerCase(Locale.ROOT);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(com.bx.ultimateDonutSmp.managers.FeatureManager.Feature.PUNISHMENTS)) {
+            return;
+        }
         String rewritten = rewrite(event.getMessage(), true);
         if (rewritten != null) {
             event.setMessage(rewritten);
@@ -44,6 +49,9 @@ public class PunishmentCommandAliasListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onServerCommand(ServerCommandEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(com.bx.ultimateDonutSmp.managers.FeatureManager.Feature.PUNISHMENTS)) {
+            return;
+        }
         String rewritten = rewrite(event.getCommand(), false);
         if (rewritten != null) {
             event.setCommand(rewritten);

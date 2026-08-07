@@ -222,9 +222,20 @@ public class DuelManager {
         crossServerSubscribedChannel = channel;
     }
 
+    private Boolean cachedEnabled = null;
+
+    public void clearCache() {
+        cachedEnabled = null;
+    }
+
     public boolean isEnabled() {
-        return plugin.getFeatureManager().isEnabled(FeatureManager.Feature.DUELS)
+        if (cachedEnabled != null) {
+            return cachedEnabled;
+        }
+        boolean val = plugin.getFeatureManager().isEnabled(FeatureManager.Feature.DUELS)
                 && config().getBoolean("SETTINGS.ENABLED", true);
+        cachedEnabled = val;
+        return val;
     }
 
     public boolean isVanillaBiomeTerrainMode() {
@@ -1107,9 +1118,10 @@ public class DuelManager {
             attemptQueueMatchmaking();
         }
 
-        long now = System.currentTimeMillis();
-        List<DuelMatch> matches = new ArrayList<>(activeMatches.values());
-        for (DuelMatch match : matches) {
+        if (!activeMatches.isEmpty()) {
+            long now = System.currentTimeMillis();
+            List<DuelMatch> matches = new ArrayList<>(activeMatches.values());
+            for (DuelMatch match : matches) {
             if (match.getStatus() == DuelMatch.MatchStatus.COUNTDOWN) {
                 if (secondPulse) {
                     tickCountdown(match);
@@ -1135,8 +1147,9 @@ public class DuelManager {
 
             long remaining = Math.max(0L, (match.getEndsAt() - now + 999L) / 1000L);
             sendMatchActionBar(match, remaining);
-            if (now >= match.getEndsAt()) {
-                finishMatch(match, null, null, "TIMEOUT", false, List.of(), true);
+                if (now >= match.getEndsAt()) {
+                    finishMatch(match, null, null, "TIMEOUT", false, List.of(), true);
+                }
             }
         }
     }

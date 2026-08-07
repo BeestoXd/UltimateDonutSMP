@@ -13,7 +13,7 @@ public class RTPZoneTask implements Runnable {
 
     @Override
     public void run() {
-        if (plugin.getRtpZoneManager() == null) {
+        if (plugin.getRtpZoneManager() == null || !plugin.getRtpZoneManager().isEnabled()) {
             return;
         }
         plugin.getSpigotScheduler().forEachOnlinePlayer((Player player) -> plugin.getRtpZoneManager().tick(player));

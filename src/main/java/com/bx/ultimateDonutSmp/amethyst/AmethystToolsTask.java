@@ -31,7 +31,7 @@ public class AmethystToolsTask implements Runnable {
         ItemStack[] contents = player.getInventory().getContents();
         for (int slot = 0; slot < contents.length; slot++) {
             ItemStack item = contents[slot];
-            if (item == null) {
+            if (item == null || item.getType().isAir() || !item.hasItemMeta()) {
                 continue;
             }
 

@@ -18,6 +18,9 @@ public class PortalListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
+        if (!plugin.getFeatureManager().isEnabled(com.bx.ultimateDonutSmp.managers.FeatureManager.Feature.PORTALS)) {
+            return;
+        }
         Location to = event.getTo();
         if (to == null) {
             return;

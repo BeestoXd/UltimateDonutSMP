@@ -27,12 +27,13 @@ public class FastCrystalListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCrystalUse(PlayerInteractEvent event) {
+        FastCrystalManager fastCrystalManager = plugin.getFastCrystalManager();
+        if (!fastCrystalManager.isEnabled()) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getClickedBlock() == null) return;
         if (event.getItem() == null || event.getItem().getType() != Material.END_CRYSTAL) return;
 
-        FastCrystalManager fastCrystalManager = plugin.getFastCrystalManager();
         Player player = event.getPlayer();
 
         if (!fastCrystalManager.isEnabledFor(player)) {
@@ -49,12 +50,13 @@ public class FastCrystalListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCrystalBreak(EntityDamageByEntityEvent event) {
+        FastCrystalManager fastCrystalManager = plugin.getFastCrystalManager();
+        if (!fastCrystalManager.isEnabled()) return;
         if (!(event.getEntity() instanceof EnderCrystal)) return;
 
         Player attacker = resolveAttacker(event.getDamager());
         if (attacker == null) return;
 
-        FastCrystalManager fastCrystalManager = plugin.getFastCrystalManager();
         if (!fastCrystalManager.isEnabledFor(attacker)) return;
         if (!fastCrystalManager.shouldClearCooldownAfterHit()) return;
 

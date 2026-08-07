@@ -91,9 +91,6 @@ public class WorthPacketDisplay implements Listener {
                 if (player == null || player.getGameMode() == GameMode.CREATIVE) {
                     return;
                 }
-                if (inPluginMenu.contains(player.getUniqueId())) {
-                    return; // menus render their own worth
-                }
                 org.bukkit.Material suppressedMat = suppressedMaterials.get(player.getUniqueId());
                 if (!uds.getWorthManager().isWorthDisplayEnabledFor(player)) {
                     return;
@@ -164,9 +161,6 @@ public class WorthPacketDisplay implements Listener {
             inPluginMenu.add(event.getPlayer().getUniqueId());
         } else {
             plugin.getWorthManager().sanitizeInventory(event.getInventory());
-            if (event.getPlayer() instanceof Player player) {
-                plugin.getWorthManager().clearWorthDisplay(player);
-            }
         }
     }
 

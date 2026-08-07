@@ -89,6 +89,9 @@ public class EnderChestListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
+        if (!plugin.getEnderChestManager().isEnabled()) {
+            return;
+        }
         if (plugin.getEnderChestManager().isInspectionView(event.getView())) {
             if (event.getWhoClicked() instanceof Player viewer && plugin.getEnderChestManager().isEcseeEditable(viewer)) {
                 plugin.getSpigotScheduler().runEntity(viewer, () -> {
@@ -110,6 +113,9 @@ public class EnderChestListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryDrag(InventoryDragEvent event) {
+        if (!plugin.getEnderChestManager().isEnabled()) {
+            return;
+        }
         if (plugin.getEnderChestManager().isInspectionView(event.getView())) {
             if (event.getWhoClicked() instanceof Player viewer && plugin.getEnderChestManager().isEcseeEditable(viewer)) {
                 plugin.getSpigotScheduler().runEntity(viewer, () -> {

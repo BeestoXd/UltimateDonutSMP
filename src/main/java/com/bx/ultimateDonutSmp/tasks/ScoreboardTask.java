@@ -27,6 +27,7 @@ public class ScoreboardTask implements Runnable {
         if (!plugin.getScoreboardManager().isRuntimeSupported()) {
             return;
         }
-        plugin.getSpigotScheduler().runGlobalTimer(new ScoreboardTask(plugin), 2L, 2L);
+        long interval = plugin.getScoreboardManager().getUpdateIntervalTicks();
+        plugin.getSpigotScheduler().runGlobalTimer(new ScoreboardTask(plugin), interval, interval);
     }
 }

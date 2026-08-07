@@ -1071,6 +1071,13 @@ PROGRESS-MENU:
 SELL-MENU:
   TITLE: '&8Place Items In Here To Sell'
   MULTIPLIER-TITLE: '&8Sell Multipliers'
+  AUTO-SELL: true
+  MODE: "confirm"
+  CONFIRM-BUTTON:
+    MATERIAL: "LIME_STAINED_GLASS_PANE"
+    TITLE: "&a&lConfirm Sell"
+    LORE:
+    - "&7Click to sell all items in the menu."
   CROPS-BUTTON:
     MATERIAL: WHEAT
     TITLE: '&#6BF18DCrops'

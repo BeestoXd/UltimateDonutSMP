@@ -64,6 +64,13 @@ public class ColorUtils {
     }
 
     private static String applyColors(String text) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        if (text.indexOf('&') < 0 && text.indexOf('#') < 0 && text.indexOf('<') < 0
+                && text.indexOf('{') < 0 && text.indexOf('%') < 0 && text.indexOf('\u00A7') < 0) {
+            return text;
+        }
         String result = normalizeText(text);
         result = transformAllCaps(result);
         result = translateTaggedGradients(result);
@@ -382,14 +389,16 @@ public class ColorUtils {
     private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("&#[A-Fa-f0-9]{6}|\\{#[A-Fa-f0-9]{6}\\}|<#?[A-Fa-f0-9]{6}>|</#?[A-Fa-f0-9]{6}>|&x#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{6}");
     private static final Pattern LEGACY_COLOR_PATTERN = Pattern.compile("&[0-9a-fk-orA-FK-OR]");
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{.*?\\}|%.*?%");
+    private static final Pattern CURRENTLY_PATTERN = Pattern.compile("(?i)\\bcurrently\\b");
+    private static final Pattern STATUS_PATTERN = Pattern.compile("(?i)\\bstatus\\b");
 
     public static String stripColorCodesAndPlaceholders(String text) {
-        if (text == null) return "";
+        if (text == null || text.isEmpty()) return "";
         String s = HEX_COLOR_PATTERN.matcher(text).replaceAll("");
         s = LEGACY_COLOR_PATTERN.matcher(s).replaceAll("");
         s = PLACEHOLDER_PATTERN.matcher(s).replaceAll("");
-        s = s.replaceAll("(?i)\\bcurrently\\b", "");
-        s = s.replaceAll("(?i)\\bstatus\\b", "");
+        s = CURRENTLY_PATTERN.matcher(s).replaceAll("");
+        s = STATUS_PATTERN.matcher(s).replaceAll("");
         return s;
     }
 
@@ -409,6 +418,16 @@ public class ColorUtils {
 
     public static String transformAllCaps(String text) {
         if (text == null || text.isEmpty()) {
+            return text;
+        }
+        boolean hasUpper = false;
+        for (int i = 0; i < text.length(); i++) {
+            if (Character.isUpperCase(text.charAt(i))) {
+                hasUpper = true;
+                break;
+            }
+        }
+        if (!hasUpper) {
             return text;
         }
         String stripped = stripColorCodesAndPlaceholders(text);

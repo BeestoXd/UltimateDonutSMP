@@ -158,9 +158,14 @@ public class FeatureManager {
     }
 
     private final UltimateDonutSmp plugin;
+    private final java.util.Map<Feature, Boolean> featureCache = new java.util.concurrent.ConcurrentHashMap<>();
 
     public FeatureManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+    }
+
+    public void clearCache() {
+        featureCache.clear();
     }
 
     public DisabledCommandAction getDisabledCommandAction() {
@@ -173,7 +178,10 @@ public class FeatureManager {
     }
 
     public boolean isEnabled(Feature feature) {
-        return isEnabled(plugin.getConfigManager().getConfig(), feature);
+        if (feature == null) {
+            return true;
+        }
+        return featureCache.computeIfAbsent(feature, f -> isEnabled(plugin.getConfigManager().getConfig(), f));
     }
 
     public boolean areEnabled(Feature... features) {
@@ -280,6 +288,7 @@ public class FeatureManager {
         }
 
         plugin.getConfigManager().getConfig().set(path(feature), enabled);
+        clearCache();
         if (!plugin.getConfigManager().saveConfig()) {
             return false;
         }

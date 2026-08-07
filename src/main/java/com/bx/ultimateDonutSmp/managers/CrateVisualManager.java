@@ -1153,6 +1153,10 @@ public class CrateVisualManager {
     }
 
     private void animatePreviews() {
+        if (previews.isEmpty()) {
+            return;
+        }
+
         double rotationSpeed = plugin.getConfigManager().getCrates().getDouble("SETTINGS.PREVIEW.ROTATION-SPEED", 4.0D);
         double hoverAmplitude = plugin.getConfigManager().getCrates().getDouble("SETTINGS.PREVIEW.HOVER-AMPLITUDE", 0.08D);
         double hoverSpeed = plugin.getConfigManager().getCrates().getDouble("SETTINGS.PREVIEW.HOVER-SPEED", 0.08D);
@@ -1161,12 +1165,20 @@ public class CrateVisualManager {
 
         Map<CrateManager.CrateBlockKey, UUID> copy;
         synchronized (holograms) {
+            if (previews.isEmpty()) {
+                return;
+            }
             copy = new HashMap<>(previews);
         }
 
         for (Map.Entry<CrateManager.CrateBlockKey, UUID> entry : copy.entrySet()) {
             CrateManager.CrateBlockKey key = entry.getKey();
             UUID entityId = entry.getValue();
+
+            World world = Bukkit.getWorld(key.world());
+            if (world == null || world.getPlayers().isEmpty()) {
+                continue;
+            }
 
             Entity entity = Bukkit.getEntity(entityId);
             if (!(entity instanceof ItemDisplay display) || !entity.isValid()) {
