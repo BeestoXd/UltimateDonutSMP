@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [21, 25]
+        java: [25]
       fail-fast: false
     steps:
       - name: Checkout Code
