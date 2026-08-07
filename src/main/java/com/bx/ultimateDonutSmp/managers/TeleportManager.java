@@ -42,6 +42,18 @@ public class TeleportManager {
 
     public void queue(Player player, Location destination, String type,
                       Consumer<Player> onSuccess) {
+        if (player == null) {
+            return;
+        }
+
+        UUID uuid = player.getUniqueId();
+        if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(uuid) || plugin.getDuelManager().isTransitioning(uuid))) {
+            if (!plugin.getDuelManager().isInternalTeleport(uuid)) {
+                player.sendMessage(ColorUtils.toComponent(plugin.getDuelManager().getCommandBlockedMessage()));
+                return;
+            }
+        }
+
         int cooldownSecs = getCooldown(type);
         String normalizedType = normalizeType(type);
         boolean quietSpawn = "SPAWN".equals(normalizedType)

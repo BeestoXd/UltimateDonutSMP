@@ -136,6 +136,8 @@ public class DuelManager {
     private final Set<String> seenCrossServerMessages = new HashSet<>();
     private final Set<String> activeClaimOperations = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final Map<UUID, Long> recentlyFinishedParticipants = new HashMap<>();
+    private final Map<UUID, Location> pendingQuitReturns = new HashMap<>();
+    private final Set<UUID> internalBypassTeleports = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private boolean crossServerSubscribed = false;
     private String crossServerSubscribedChannel = "";
     private long tickCounter = 0L;
@@ -149,6 +151,10 @@ public class DuelManager {
 
     public void reload() {
         loadArenas();
+        if (plugin.getDatabaseManager() != null) {
+            pendingQuitReturns.clear();
+            pendingQuitReturns.putAll(plugin.getDatabaseManager().getAllPendingDuelReturns());
+        }
         worldManager.ensureFlatPool();
         worldManager.ensureVanillaPool();
         initializeCrossServer();
@@ -1191,7 +1197,7 @@ public class DuelManager {
 
         String mode = config().getString("COMMAND_BLOCK.MODE", "ALLOWLIST").trim().toUpperCase(Locale.ROOT);
         if ("BLOCKLIST".equals(mode)) {
-            for (String blocked : commandPatterns("COMMAND_BLOCK.BLOCKLIST", List.of("/tpa", "/home", "/spawn", "/rtp"))) {
+            for (String blocked : commandPatterns("COMMAND_BLOCK.BLOCKLIST", List.of("/tpa", "/home", "/spawn", "/rtp", "/sethome", "/tpaccept", "/tpahere", "/warp", "/back", "/tpdeny", "/tpadeny"))) {
                 if (matchesCommandPattern(raw, blocked)) {
                     return false;
                 }
@@ -1311,6 +1317,32 @@ public class DuelManager {
         return true;
     }
 
+    public boolean isInternalTeleport(UUID uuid) {
+        return uuid != null && internalBypassTeleports.contains(uuid);
+    }
+
+    public java.util.concurrent.CompletableFuture<Boolean> executeInternalTeleportAsync(Player player, Location location) {
+        if (player == null || location == null) {
+            return java.util.concurrent.CompletableFuture.completedFuture(false);
+        }
+        UUID uuid = player.getUniqueId();
+        internalBypassTeleports.add(uuid);
+        return plugin.getSpigotScheduler().teleport(player, location).whenComplete((res, ex) ->
+                plugin.getSpigotScheduler().runEntityLater(player, () -> internalBypassTeleports.remove(uuid), 10L));
+    }
+
+    public boolean isLocationInDuelArena(Location location) {
+        if (location == null || location.getWorld() == null) {
+            return false;
+        }
+
+        if (worldManager != null && worldManager.isManagedGeneratedWorld(location.getWorld().getName())) {
+            return true;
+        }
+
+        return findArenaContainingLocation(location) != null;
+    }
+
     public void handleJoin(Player player) {
         if (player == null) {
             return;
@@ -1321,37 +1353,48 @@ public class DuelManager {
             restoreTransitionState(player);
         }
 
+        Location pendingReturn = pendingQuitReturns.remove(uuid);
+        if (plugin.getDatabaseManager() != null) {
+            plugin.getDatabaseManager().deletePendingDuelReturn(uuid);
+        }
+
         DuelArena arena = findArenaContainingLocation(player.getLocation());
-        if (arena == null) {
+        boolean inDuelLocation = pendingReturn != null || arena != null || isLocationInDuelArena(player.getLocation());
+        if (!inDuelLocation) {
             return;
         }
 
-        Location fallbackLocation = resolveArenaJoinFallbackLocation(arena, player.getLocation());
-        if (fallbackLocation == null || fallbackLocation.getWorld() == null) {
+        Location destination = pendingReturn;
+        if (destination == null || destination.getWorld() == null) {
+            destination = resolveArenaJoinFallbackLocation(arena, player.getLocation());
+        }
+        if (destination == null || destination.getWorld() == null) {
             return;
         }
 
+        final Location finalDestination = destination;
+        String arenaName = arena != null ? arena.getDisplayName() : "duel arena";
         plugin.getSpigotScheduler().runEntity(player, () -> {
             if (!player.isOnline()) {
                 return;
             }
 
-            DuelArena currentArena = findArenaContainingLocation(player.getLocation());
-            if (currentArena == null) {
-                return;
-            }
-
-            Location destination = resolveArenaJoinFallbackLocation(currentArena, player.getLocation());
-            if (destination == null || destination.getWorld() == null) {
-                return;
-            }
-
-            String arenaName = currentArena.getDisplayName();
-            plugin.getSpigotScheduler().teleport(player, destination).thenAccept(success ->
+            executeInternalTeleportAsync(player, finalDestination).thenAccept(success ->
                     plugin.getSpigotScheduler().runEntity(player, () -> {
                         if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
                             return;
                         }
+                        if (player.getGameMode() == GameMode.ADVENTURE || player.getGameMode() == GameMode.SPECTATOR) {
+                            player.setGameMode(GameMode.SURVIVAL);
+                        }
+                        player.setAllowFlight(false);
+                        player.setFlying(false);
+                        boolean inGodMode = plugin.getGodModeManager() != null && plugin.getGodModeManager().isInGodMode(uuid);
+                        boolean inStaffMode = plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isInStaffMode(uuid);
+                        if (!inGodMode && !inStaffMode) {
+                            player.setInvulnerable(false);
+                        }
+                        healPlayer(player);
                         player.resetPlayerTime();
                         player.resetPlayerWeather();
                         player.setNoDamageTicks(60);
@@ -1367,20 +1410,29 @@ public class DuelManager {
             return;
         }
 
-        if (isTransitioning(player.getUniqueId()) || transitionStates.containsKey(player.getUniqueId())) {
+        UUID uuid = player.getUniqueId();
+        if (isTransitioning(uuid) || transitionStates.containsKey(uuid)) {
             restoreTransitionState(player);
         }
 
-        pendingRespawns.remove(player.getUniqueId());
-        queue.remove(player.getUniqueId());
-        queueSelections.remove(player.getUniqueId());
-        removeCrossServerQueueEntry(player.getUniqueId());
-        requestsByTarget.remove(player.getUniqueId());
-        removeOutgoingRequest(player.getUniqueId());
+        pendingRespawns.remove(uuid);
+        queue.remove(uuid);
+        queueSelections.remove(uuid);
+        removeCrossServerQueueEntry(uuid);
+        requestsByTarget.remove(uuid);
+        removeOutgoingRequest(uuid);
 
-        DuelMatch match = getActiveMatch(player.getUniqueId());
+        DuelMatch match = getActiveMatch(uuid);
         if (match == null) {
             return;
+        }
+
+        Location returnLocation = resolveReturnLocation(match, uuid);
+        if (returnLocation != null && returnLocation.getWorld() != null) {
+            pendingQuitReturns.put(uuid, returnLocation);
+            if (plugin.getDatabaseManager() != null) {
+                plugin.getDatabaseManager().savePendingDuelReturn(uuid, returnLocation);
+            }
         }
 
         boolean active = match.getStatus() == DuelMatch.MatchStatus.ACTIVE;
@@ -1706,7 +1758,7 @@ public class DuelManager {
 
         plugin.getSpigotScheduler().runEntityLater(player, () -> {
             if (player.isOnline()) {
-                plugin.getSpigotScheduler().teleport(player, location).thenAccept(success ->
+                executeInternalTeleportAsync(player, location).thenAccept(success ->
                         plugin.getSpigotScheduler().runEntity(player, () -> {
                             if (!player.isOnline()) {
                                 return;
@@ -2067,7 +2119,7 @@ public class DuelManager {
         healPlayer(player);
         applyArenaRules(player, arena);
         if (teleportLocation != null) {
-            plugin.getSpigotScheduler().teleport(player, teleportLocation);
+            executeInternalTeleportAsync(player, teleportLocation);
         }
     }
 
@@ -2250,7 +2302,7 @@ public class DuelManager {
         if (destination == null || destination.getWorld() == null) {
             return;
         }
-        plugin.getSpigotScheduler().teleport(player, destination);
+        executeInternalTeleportAsync(player, destination);
     }
 
     private boolean isSelectionAvailable(DuelMapSelection selection, boolean queueOnly) {
