@@ -41,6 +41,9 @@ public class SpawnerVisibilityListener implements Listener {
 
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent event) {
+        if (plugin.getCrateVisualManager() != null) {
+            plugin.getCrateVisualManager().handleWorldChange(event.getPlayer());
+        }
         if (!plugin.getSpawnerManager().isEnabled()) {
             return;
         }

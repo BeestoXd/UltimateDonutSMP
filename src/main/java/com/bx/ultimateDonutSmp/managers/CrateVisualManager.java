@@ -99,6 +99,13 @@ public class CrateVisualManager {
         }
     }
 
+    public void handleWorldChange(Player player) {
+        if (player != null) {
+            clearPersonalLineDisplays(player.getUniqueId());
+            clearPersonalDisplays(player.getUniqueId());
+        }
+    }
+
     public void refreshHologram(Block block) {
         if (block == null || block.getWorld() == null || !isCratesEnabled()) {
             return;
@@ -295,6 +302,13 @@ public class CrateVisualManager {
 
                 List<TextDisplay> found = new ArrayList<>();
                 for (Entity entity : world.getNearbyEntities(center, 0.5, 1.0, 0.5, candidate -> candidate instanceof TextDisplay)) {
+                    if (!entity.getScoreboardTags().contains(HOLOGRAM_TAG) || entity.getScoreboardTags().contains(PERSONAL_TAG)) {
+                        continue;
+                    }
+                    if (entity.getPersistentDataContainer().has(plugin.getKey("crate_hologram_owner"), PersistentDataType.STRING)
+                            || entity.getPersistentDataContainer().has(plugin.getKey("crate_personal_hologram"), PersistentDataType.STRING)) {
+                        continue;
+                    }
                     String attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_hologram"), PersistentDataType.STRING);
                     if (expectedKey.equals(attachedKey) && entity.isValid()) {
                         found.add((TextDisplay) entity);
@@ -443,7 +457,7 @@ public class CrateVisualManager {
                 textDisplay.setVisibleByDefault(false);
                 textDisplay.addScoreboardTag(PERSONAL_TAG);
                 textDisplay.getPersistentDataContainer().set(
-                        plugin.getKey("crate_hologram"),
+                        plugin.getKey("crate_personal_hologram"),
                         PersistentDataType.STRING,
                         formatBlockKey(key)
                 );
@@ -466,9 +480,7 @@ public class CrateVisualManager {
             display.setText(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(text, player));
             playerDisplayTexts.put(key, text);
         }
-        if (shouldShowToOwner) {
-            player.showEntity(plugin, display);
-        }
+        player.showEntity(plugin, display);
     }
 
     public void removeHologram(String worldName, int x, int y, int z) {
@@ -498,6 +510,9 @@ public class CrateVisualManager {
                 String expected = formatBlockKey(key);
                 for (Entity entity : world.getNearbyEntities(center, 1.0, 3.0, 1.0, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
                     String attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_hologram"), PersistentDataType.STRING);
+                    if (attachedKey == null) {
+                        attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_personal_hologram"), PersistentDataType.STRING);
+                    }
                     if (attachedKey == null) {
                         attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_preview"), PersistentDataType.STRING);
                     }
@@ -919,6 +934,7 @@ public class CrateVisualManager {
         }
 
         return entity.getPersistentDataContainer().has(plugin.getKey("crate_hologram"), PersistentDataType.STRING)
+                || entity.getPersistentDataContainer().has(plugin.getKey("crate_personal_hologram"), PersistentDataType.STRING)
                 || entity.getPersistentDataContainer().has(plugin.getKey("crate_hologram_owner"), PersistentDataType.STRING);
     }
 
