@@ -127,7 +127,17 @@ MAP_SOURCES:
     # Whitelist of biome keys allowed for selection (empty [] = all biomes allowed)
     ALLOWLIST: []
     # Blacklist of biome keys excluded from selection
-    EXCLUDE: []
+    EXCLUDE:
+      - "minecraft:the_end"
+      - "minecraft:end_highlands"
+      - "minecraft:end_midlands"
+      - "minecraft:end_barrens"
+      - "minecraft:small_end_islands"
+      - "minecraft:nether_wastes"
+      - "minecraft:soul_sand_valley"
+      - "minecraft:crimson_forest"
+      - "minecraft:warped_forest"
+      - "minecraft:basalt_deltas"
 
     # Pre-prepared world pool settings for FLAT terrain mode
     FLAT_POOL:

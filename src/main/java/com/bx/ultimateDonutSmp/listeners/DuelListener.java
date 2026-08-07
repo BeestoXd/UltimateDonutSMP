@@ -3,8 +3,12 @@ package com.bx.ultimateDonutSmp.listeners;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.DuelManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Container;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -17,13 +21,19 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -149,6 +159,11 @@ public class DuelListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) {
+        plugin.getDuelManager().handleArenaBorderTeleport(event);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCrystalPlace(EntityPlaceEvent event) {
         if (!(event.getEntity() instanceof EnderCrystal crystal)) {
             return;
@@ -250,6 +265,70 @@ public class DuelListener implements Listener {
                     player.updateInventory();
                 }
             });
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) {
+            return;
+        }
+        UUID uuid = player.getUniqueId();
+        if (!plugin.getDuelManager().isInDuel(uuid) && !plugin.getDuelManager().isTransitioning(uuid)) {
+            return;
+        }
+        com.bx.ultimateDonutSmp.models.DuelMatch match = plugin.getDuelManager().getActiveMatch(uuid);
+        if (match != null && match.usesGeneratedWorld()) {
+            InventoryType type = event.getInventory().getType();
+            if (type != InventoryType.CRAFTING && type != InventoryType.PLAYER) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        if (!plugin.getDuelManager().isInDuel(uuid) && !plugin.getDuelManager().isTransitioning(uuid)) {
+            return;
+        }
+        com.bx.ultimateDonutSmp.models.DuelMatch match = plugin.getDuelManager().getActiveMatch(uuid);
+        if (match != null && match.usesGeneratedWorld()) {
+            if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof Container) {
+                if (!plugin.getDuelManager().canModifyArena(player)) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        if (!plugin.getDuelManager().isInDuel(uuid) && !plugin.getDuelManager().isTransitioning(uuid)) {
+            return;
+        }
+        com.bx.ultimateDonutSmp.models.DuelMatch match = plugin.getDuelManager().getActiveMatch(uuid);
+        if (match != null && match.usesGeneratedWorld()) {
+            if (event.getRightClicked() instanceof ItemFrame || event.getRightClicked() instanceof ArmorStand) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onItemPickup(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+        UUID uuid = player.getUniqueId();
+        if (plugin.getDuelManager().isInDuel(uuid) || plugin.getDuelManager().isTransitioning(uuid)) {
+            if (event.getItem().getItemStack().getType() == Material.ELYTRA) {
+                event.setCancelled(true);
+                event.getItem().remove();
+            }
         }
     }
 
