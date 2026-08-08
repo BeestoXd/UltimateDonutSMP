@@ -37,8 +37,9 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Build Changelog Content
+      - name: Build Changelog Content (Action)
         id: build_changelog
+        continue-on-error: true
         uses: mikepenz/release-changelog-builder-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -49,20 +50,37 @@ jobs:
 
       - name: Update changelog.md File
         env:
-          CHANGELOG_BODY: ${{ steps.build_changelog.outputs.changelog }}
+          ACTION_CHANGELOG: ${{ steps.build_changelog.outputs.changelog }}
+          VERSION: ${{ steps.version_info.outputs.version }}
+          RELEASE_DATE: ${{ steps.version_info.outputs.date }}
         run: |
+          CHANGELOG_BODY="$ACTION_CHANGELOG"
+
+          # Fallback to git log if action output is empty
           if [ -z "$CHANGELOG_BODY" ]; then
-            echo "No new changelog generated."
+            echo "Action changelog empty. Generating from git log..."
+            PREV_TAG=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)
+            if [ -n "$PREV_TAG" ]; then
+              LOG_CONTENT=$(git log --pretty=format:"* %s (%h)" "${PREV_TAG}..HEAD" | grep -v "docs(changelog)" || true)
+            else
+              LOG_CONTENT=$(git log --pretty=format:"* %s (%h)" -n 15 | grep -v "docs(changelog)" || true)
+            fi
+            
+            if [ -n "$LOG_CONTENT" ]; then
+              CHANGELOG_BODY="## [${VERSION}] - ${RELEASE_DATE}"$'\n\n'"${LOG_CONTENT}"$'\n'
+            fi
+          fi
+
+          if [ -z "$CHANGELOG_BODY" ]; then
+            echo "No commit changes found to record in changelog."
             exit 0
           fi
 
-          # Target file fallback check (changelog.md or CHANGELOG.md)
           TARGET_FILE="changelog.md"
           if [ ! -f "$TARGET_FILE" ] && [ -f "CHANGELOG.md" ]; then
             TARGET_FILE="CHANGELOG.md"
           fi
 
-          # Auto-create file with default header if missing
           if [ ! -f "$TARGET_FILE" ]; then
             echo "File $TARGET_FILE not found. Creating new file with default header."
             printf "# Changelog - UltimateDonutSmp\n\nAll notable changes and behavioral modifications for the UltimateDonutSmp plugin.\n\n" > "$TARGET_FILE"
@@ -71,7 +89,7 @@ jobs:
           HEADER=$(head -n 4 "$TARGET_FILE")
           REST=$(tail -n +5 "$TARGET_FILE")
 
-          printf "%s\n\n%s\n\n%s\n" "$HEADER" "$CHANGELOG_BODY" "$REST" > "$TARGET_FILE"
+          printf "%s\n\n%b\n\n%s\n" "$HEADER" "$CHANGELOG_BODY" "$REST" > "$TARGET_FILE"
 
       - name: Commit and Push Updated changelog.md to Main
         run: |
