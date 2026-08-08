@@ -48,33 +48,39 @@ jobs:
             }
 
       - name: Update changelog.md File
+        env:
+          CHANGELOG_BODY: ${{ steps.build_changelog.outputs.changelog }}
         run: |
-          CHANGELOG_BODY='${{ steps.build_changelog.outputs.changelog }}'
-          
           if [ -z "$CHANGELOG_BODY" ]; then
             echo "No new changelog generated."
             exit 0
           fi
 
-          HEADER=$(head -n 4 changelog.md)
-          REST=$(tail -n +5 changelog.md)
+          # Target file fallback check (changelog.md or CHANGELOG.md)
+          TARGET_FILE="changelog.md"
+          if [ ! -f "$TARGET_FILE" ] && [ -f "CHANGELOG.md" ]; then
+            TARGET_FILE="CHANGELOG.md"
+          fi
 
-          cat << EOF > changelog.md
-          $HEADER
+          # Auto-create file with default header if missing
+          if [ ! -f "$TARGET_FILE" ]; then
+            echo "File $TARGET_FILE not found. Creating new file with default header."
+            printf "# Changelog - UltimateDonutSmp\n\nAll notable changes and behavioral modifications for the UltimateDonutSmp plugin.\n\n" > "$TARGET_FILE"
+          fi
 
-          $CHANGELOG_BODY
+          HEADER=$(head -n 4 "$TARGET_FILE")
+          REST=$(tail -n +5 "$TARGET_FILE")
 
-          $REST
-          EOF
+          printf "%s\n\n%s\n\n%s\n" "$HEADER" "$CHANGELOG_BODY" "$REST" > "$TARGET_FILE"
 
       - name: Commit and Push Updated changelog.md to Main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add changelog.md
+          git add changelog.md CHANGELOG.md 2>/dev/null || true
           if git diff --staged --quiet; then
-            echo "No changes in changelog.md to commit."
+            echo "No changes in changelog file to commit."
           else
-            git commit -m "docs(changelog): update changelog.md for version ${{ steps.version_info.outputs.version }}"
+            git commit -m "docs(changelog): update changelog for version ${{ steps.version_info.outputs.version }}"
             git push origin main
           fi
