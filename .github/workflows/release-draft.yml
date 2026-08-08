@@ -62,25 +62,6 @@ jobs:
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Git Tag if Missing
-        run: |
-          set +e
-          TAG_NAME="${{ steps.info.outputs.tag_name }}"
-          echo "Checking tag: $TAG_NAME"
-          
-          EXISTS=$(git ls-remote --tags origin "refs/tags/$TAG_NAME" | grep "$TAG_NAME")
-          
-          if [ -z "$EXISTS" ]; then
-            echo "Tag $TAG_NAME does not exist on remote. Creating tag..."
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git tag "$TAG_NAME" 2>/dev/null || true
-            git push origin "$TAG_NAME"
-          else
-            echo "Tag $TAG_NAME already exists on origin."
-          fi
-          set -e
-
       - name: Sync Maven Version & Build JAR
         run: |
           VERSION="${{ steps.info.outputs.version }}"
@@ -189,6 +170,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.info.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
           name: "UltimateDonutSMP ${{ steps.info.outputs.tag_name }}"
           body: ${{ steps.changelog_gen.outputs.changelog_body }}
           draft: true
