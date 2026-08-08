@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Determine Version & Date
         id: version_info
@@ -37,11 +38,18 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Generate and Update changelog.md
+      - name: Switch to Main Branch & Generate changelog.md
         env:
           VERSION: ${{ steps.version_info.outputs.version }}
           RELEASE_DATE: ${{ steps.version_info.outputs.date }}
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Ensure local working branch is synced with latest origin/main
+          git fetch origin main
+          git checkout -B main origin/main
+
           python3 - << 'EOF'
           import os, sys, subprocess
 
@@ -95,8 +103,6 @@ jobs:
 
       - name: Commit and Push Updated changelog.md to Main
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add changelog.md CHANGELOG.md 2>/dev/null || true
           
           git status
@@ -105,6 +111,6 @@ jobs:
             echo "::warning ::No changes in changelog file to commit."
           else
             git commit -m "docs(changelog): update changelog for version ${{ steps.version_info.outputs.version }}"
-            git push origin HEAD:main
+            git push origin main
             echo "Successfully pushed updated changelog to main branch!"
           fi
