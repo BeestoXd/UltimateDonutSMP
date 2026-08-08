@@ -1,0 +1,196 @@
+name: Create Draft Release & Changelog
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Version tag/name for the release (e.g. 1.5-pre or 1.4)'
+        required: true
+        type: string
+      is_prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Determine Version & Tag Info
+        id: info
+        run: |
+          if [ -n "${{ github.event.inputs.version_name }}" ]; then
+            INPUT_VER="${{ github.event.inputs.version_name }}"
+          else
+            INPUT_VER="${GITHUB_REF_NAME}"
+          fi
+
+          # Ensure tag_name has 'v' prefix and version has no 'v' prefix
+          if [[ "$INPUT_VER" == v* ]]; then
+            TAG_NAME="$INPUT_VER"
+            VERSION="${INPUT_VER#v}"
+          else
+            TAG_NAME="v$INPUT_VER"
+            VERSION="$INPUT_VER"
+          fi
+
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+          # Detect prerelease status
+          if [[ "${{ github.event.inputs.is_prerelease }}" == "true" ]] || [[ "$TAG_NAME" =~ -(pre|alpha|beta|rc) ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Git Tag if Missing
+        run: |
+          TAG_NAME="${{ steps.info.outputs.tag_name }}"
+          if ! git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME does not exist. Creating and pushing tag..."
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi
+
+      - name: Sync Maven Version & Build JAR
+        run: |
+          VERSION="${{ steps.info.outputs.version }}"
+          echo "Syncing pom.xml version to $VERSION"
+          mvn versions:set -DnewVersion="$VERSION" -DgenerateBackupPoms=false
+          mvn clean package -DskipTests
+
+      - name: Generate Structured Changelog Body
+        id: changelog_gen
+        env:
+          VERSION: ${{ steps.info.outputs.version }}
+          TAG_NAME: ${{ steps.info.outputs.tag_name }}
+        run: |
+          python3 - << 'EOF'
+          import os, sys, subprocess, re
+
+          version = os.environ.get("VERSION", "1.0")
+          tag_name = os.environ.get("TAG_NAME", "v1.0")
+
+          # Fetch previous tag
+          prev_tag = ""
+          try:
+              res = subprocess.run(["git", "describe", "--tags", "--abbrev=0", "HEAD^"], capture_output=True, text=True)
+              prev_tag = res.stdout.strip()
+          except Exception:
+              pass
+
+          if prev_tag:
+              cmd = ["git", "log", "--pretty=format:%s", f"{prev_tag}..HEAD"]
+          else:
+              cmd = ["git", "log", "--pretty=format:%s", "-n", "30"]
+
+          log_res = subprocess.run(cmd, capture_output=True, text=True)
+          commits = [line.strip() for line in log_res.stdout.splitlines() if line.strip()]
+
+          added_items = []
+          fixed_items = []
+          changed_items = []
+
+          ignored_keywords = [
+              "rebuilt the jar", "rebuilt jar", "bump version", "ci:", "docs(changelog):",
+              "generate-changelog", "delete note.md", "merge pull request", "merge branch",
+              "sync generate-changelog"
+          ]
+
+          def clean_description(desc):
+              # Strip bold prefixes e.g. **Amethyst Tools:** or **Combat:**
+              desc = re.sub(r'^\*\*[^*]+\*\*:\s*', '', desc)
+              desc = re.sub(r'^\*\*[^*]+\*\*\s*', '', desc)
+              # Strip git conventional scope prefixes e.g. fix(combat): or feat(gui):
+              desc = re.sub(r'^(feat|fix|perf|refactor|style|chore|docs)\([^)]+\):\s*', '', desc, flags=re.IGNORECASE)
+              desc = re.sub(r'^(feat|fix|perf|refactor|style|chore|docs):\s*', '', desc, flags=re.IGNORECASE)
+              desc = desc.strip()
+              if desc and len(desc) > 0:
+                  desc = desc[0].upper() + desc[1:]
+              return desc
+
+          for commit in commits:
+              commit_lower = commit.lower()
+              if any(k in commit_lower for k in ignored_keywords):
+                  continue
+              
+              cleaned = clean_description(commit)
+              if not cleaned:
+                  continue
+              
+              if re.match(r'^(feat|add|added)', commit, re.IGNORECASE):
+                  added_items.append(cleaned)
+              elif re.match(r'^(fix|fixing|fixed|resolved)', commit, re.IGNORECASE):
+                  fixed_items.append(cleaned)
+              elif re.match(r'^(perf|optimize|optimizing|normalize|normalizing|update|updating|refactor|improved|improve)', commit, re.IGNORECASE):
+                  changed_items.append(cleaned)
+              else:
+                  if "fix" in commit_lower or "bug" in commit_lower or "issue" in commit_lower:
+                      fixed_items.append(cleaned)
+                  elif "add" in commit_lower or "new" in commit_lower or "feature" in commit_lower:
+                      added_items.append(cleaned)
+                  else:
+                      changed_items.append(cleaned)
+
+          changelog_sections = []
+
+          if added_items:
+              unique_added = list(dict.fromkeys(added_items))
+              changelog_sections.append("### Added\n" + "\n".join(f"- {item}" for item in unique_added))
+
+          if fixed_items:
+              unique_fixed = list(dict.fromkeys(fixed_items))
+              changelog_sections.append("### Fixed\n" + "\n".join(f"- {item}" for item in unique_fixed))
+
+          if changed_items:
+              unique_changed = list(dict.fromkeys(changed_items))
+              changelog_sections.append("### Changed / Improved\n" + "\n".join(f"- {item}" for item in unique_changed))
+
+          if not changelog_sections:
+              changelog_sections.append("### Changed / Improved\n- General performance and stability improvements.")
+
+          full_changelog = "\n\n".join(changelog_sections)
+
+          # Write output for GitHub Actions step
+          output_file = os.environ.get('GITHUB_OUTPUT')
+          if output_file:
+              with open(output_file, 'a', encoding='utf-8') as f:
+                  f.write("changelog_body<<EOF\n")
+                  f.write(full_changelog + "\n")
+                  f.write("EOF\n")
+          EOF
+
+      - name: Create Draft Release on GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.info.outputs.tag_name }}
+          name: "UltimateDonutSMP ${{ steps.info.outputs.tag_name }}"
+          body: ${{ steps.changelog_gen.outputs.changelog_body }}
+          draft: true # SAVED AS DRAFT (NOT PUBLISHED IMMEDIATELY)
+          prerelease: ${{ steps.info.outputs.is_prerelease == 'true' }}
+          files: target/UltimateDonutSmp-*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
