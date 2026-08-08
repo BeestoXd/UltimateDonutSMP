@@ -1808,6 +1808,13 @@ public class ConfigManager {
             return true;
         }
 
+        // Billford trade definitions are live server content. The bundled BILLFORD tree is only
+        // an initial example and must not be merged back after admins edit/delete it.
+        if ("billford.yml".equals(resourceName)
+                && (path.equals("BILLFORD") || path.startsWith("BILLFORD."))) {
+            return true;
+        }
+
         // Arena sections are written by admin commands and store live map/region data.
         if (("duels.yml".equals(resourceName) || "ffa.yml".equals(resourceName))
                 && (path.equals("ARENA_SETTINGS") || path.startsWith("ARENA_SETTINGS."))) {

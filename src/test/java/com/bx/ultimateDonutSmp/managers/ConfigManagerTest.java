@@ -192,6 +192,34 @@ class ConfigManagerTest {
         assertFalse(shopLines.contains("  END:"));
         assertFalse(shopLines.contains("END-MENU:"));
         assertTrue(shopLines.contains("CUSTOM-MENU:"));
+
+        List<String> billfordLines = lines(
+                "BILLFORD:",
+                "  1:",
+                "    DISPLAY_NAME: \"Custom Billford\"",
+                "    INPUTS:",
+                "      1:",
+                "        MATERIAL: DIAMOND_SHOVEL",
+                "        QUANTITY: 1"
+        );
+        List<String> billfordDefaults = lines(
+                "BILLFORD:",
+                "  1:",
+                "    DISPLAY_NAME: \"Custom Billford\"",
+                "    INPUTS:",
+                "      1:",
+                "        MATERIAL: DIAMOND_SHOVEL",
+                "        QUANTITY: 1",
+                "      2:",
+                "        MATERIAL: BLAZE_ROD",
+                "        QUANTITY: 8"
+        );
+
+        int billfordChanges = mergeBundledDefaults("billford.yml", billfordLines, billfordDefaults);
+
+        assertEquals(0, billfordChanges);
+        assertFalse(billfordLines.contains("        MATERIAL: BLAZE_ROD"));
+        assertTrue(billfordLines.contains("        MATERIAL: DIAMOND_SHOVEL"));
     }
 
     @Test
