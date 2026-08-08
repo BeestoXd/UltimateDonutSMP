@@ -22,10 +22,10 @@ This guide provides step-by-step instructions for installing and configuring **U
      ```bash
      mvn clean package
      ```
-   - Locate `UltimateDonutSmp-1.4.jar` inside the `target/` directory.
+   - Locate `UltimateDonutSmp-1.4.1.jar` inside the `target/` directory.
 
 2. **Place JAR File**:
-   - Copy `UltimateDonutSmp-1.4.jar` into your server's `plugins/` directory.
+   - Copy `UltimateDonutSmp-1.4.1.jar` into your server's `plugins/` directory.
 
 3. **Start the Server**:
    - Run your server start script. On first startup, UltimateDonutSMP will generate the default configuration directory:

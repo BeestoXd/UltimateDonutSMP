@@ -10,7 +10,7 @@ UltimateDonutSMP replaces dozens of separate plugins by integrating economy, mar
 
 | Property | Details |
 | :--- | :--- |
-| **Plugin Version** | `1.4` |
+| **Plugin Version** | `1.4.1` |
 | **Supported Server Engines** | Paper, Spigot, Folia |
 | **Supported Minecraft Versions** | Paper/Spigot: `1.21.10` – `26.2`<br>Folia: `1.21.11` – `26.2` |
 | **Java Requirement** | Java 21+ (Java 25 for MC 26.1+) |
