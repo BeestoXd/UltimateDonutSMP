@@ -1,0 +1,104 @@
+name: Release & Auto Changelog
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag version to release (e.g. v1.4 or v1.5-pre)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Build Project JAR
+        run: mvn clean package -DskipTests
+
+      - name: Determine Pre-release Status
+        id: release_info
+        run: |
+          TAG_NAME="${{ github.event.inputs.tag_name || github.ref_name }}"
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+
+          if [[ "$TAG_NAME" =~ -(pre|alpha|beta|rc) ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+            echo "make_latest=false" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+            echo "make_latest=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Changelog Notes
+        id: changelog_builder
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          configurationJson: |
+            {
+              "template": "## [${{ steps.release_info.outputs.tag_name }}] - $DATE\n\n$CHANGELOG\n"
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepend Entry to changelog.md
+        run: |
+          DATE_STR=$(date +'%Y-%m-%d')
+          ENTRY_HEADER="## [${{ steps.release_info.outputs.tag_name }}] - ${DATE_STR}"
+          
+          # Read existing changelog.md
+          if [ -f changelog.md ]; then
+            # Split after the main document title (line 4)
+            HEADER=$(head -n 4 changelog.md)
+            REST=$(tail -n +5 changelog.md)
+            
+            cat << EOF > changelog.md
+          $HEADER
+
+          ${{ steps.changelog_builder.outputs.changelog }}
+
+          $REST
+          EOF
+          else
+            echo "# Changelog" > changelog.md
+            echo "" >> changelog.md
+            echo "${{ steps.changelog_builder.outputs.changelog }}" >> changelog.md
+          fi
+
+      - name: Commit and Push Updated changelog.md
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add changelog.md
+          git commit -m "docs(changelog): auto-update changelog for ${{ steps.release_info.outputs.tag_name }}" || echo "No changes to commit"
+          git push origin main || echo "Push skipped or not on main"
+
+      - name: Create GitHub Release with Changelog
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_info.outputs.tag_name }}
+          name: "UltimateDonutSMP ${{ steps.release_info.outputs.tag_name }}"
+          body: ${{ steps.changelog_builder.outputs.changelog }}
+          prerelease: ${{ steps.release_info.outputs.is_prerelease == 'true' }}
+          make_latest: ${{ steps.release_info.outputs.make_latest }}
+          files: target/UltimateDonutSmp-*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

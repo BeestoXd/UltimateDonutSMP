@@ -1,0 +1,80 @@
+name: Generate Changelog Only
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Version tag/name for the changelog (e.g. 1.5-pre or 1.4)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Version & Date
+        id: version_info
+        run: |
+          if [ -n "${{ github.event.inputs.version_name }}" ]; then
+            INPUT_VER="${{ github.event.inputs.version_name }}"
+          else
+            INPUT_VER="${GITHUB_REF_NAME}"
+          fi
+          # Strip leading 'v' if present (e.g. v1.5-pre -> 1.5-pre)
+          VERSION="${INPUT_VER#v}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Build Changelog Content
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          configurationJson: |
+            {
+              "template": "## [${{ steps.version_info.outputs.version }}] - ${{ steps.version_info.outputs.date }}\n\n$CHANGELOG\n"
+            }
+
+      - name: Update changelog.md File
+        run: |
+          CHANGELOG_BODY='${{ steps.build_changelog.outputs.changelog }}'
+          
+          if [ -z "$CHANGELOG_BODY" ]; then
+            echo "No new changelog generated."
+            exit 0
+          fi
+
+          HEADER=$(head -n 4 changelog.md)
+          REST=$(tail -n +5 changelog.md)
+
+          cat << EOF > changelog.md
+          $HEADER
+
+          $CHANGELOG_BODY
+
+          $REST
+          EOF
+
+      - name: Commit and Push Updated changelog.md to Main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add changelog.md
+          if git diff --staged --quiet; then
+            echo "No changes in changelog.md to commit."
+          else
+            git commit -m "docs(changelog): update changelog.md for version ${{ steps.version_info.outputs.version }}"
+            git push origin main
+          fi
