@@ -54,51 +54,70 @@ jobs:
           VERSION: ${{ steps.version_info.outputs.version }}
           RELEASE_DATE: ${{ steps.version_info.outputs.date }}
         run: |
-          CHANGELOG_BODY="$ACTION_CHANGELOG"
+          python3 - << 'EOF'
+          import os, sys, subprocess
 
-          # Fallback to git log if action output is empty
-          if [ -z "$CHANGELOG_BODY" ]; then
-            echo "Action changelog empty. Generating from git log..."
-            PREV_TAG=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)
-            if [ -n "$PREV_TAG" ]; then
-              LOG_CONTENT=$(git log --pretty=format:"* %s (%h)" "${PREV_TAG}..HEAD" | grep -v "docs(changelog)" || true)
-            else
-              LOG_CONTENT=$(git log --pretty=format:"* %s (%h)" -n 15 | grep -v "docs(changelog)" || true)
-            fi
-            
-            if [ -n "$LOG_CONTENT" ]; then
-              CHANGELOG_BODY="## [${VERSION}] - ${RELEASE_DATE}"$'\n\n'"${LOG_CONTENT}"$'\n'
-            fi
-          fi
+          version = os.environ.get("VERSION", "1.0")
+          date = os.environ.get("RELEASE_DATE", "")
+          action_changelog = os.environ.get("ACTION_CHANGELOG", "").strip()
 
-          if [ -z "$CHANGELOG_BODY" ]; then
-            echo "No commit changes found to record in changelog."
-            exit 0
-          fi
+          print(f"DEBUG: Version={version}, Date={date}, ActionChangelogLen={len(action_changelog)}")
 
-          TARGET_FILE="changelog.md"
-          if [ ! -f "$TARGET_FILE" ] && [ -f "CHANGELOG.md" ]; then
-            TARGET_FILE="CHANGELOG.md"
-          fi
+          changelog_body = action_changelog
 
-          if [ ! -f "$TARGET_FILE" ]; then
-            echo "File $TARGET_FILE not found. Creating new file with default header."
-            printf "# Changelog - UltimateDonutSmp\n\nAll notable changes and behavioral modifications for the UltimateDonutSmp plugin.\n\n" > "$TARGET_FILE"
-          fi
+          if not changelog_body:
+              print("Action changelog empty. Fetching git log...")
+              try:
+                  prev_tag_cmd = subprocess.run(["git", "describe", "--tags", "--abbrev=0", "HEAD^"], capture_output=True, text=True)
+                  prev_tag = prev_tag_cmd.stdout.strip()
+                  if prev_tag:
+                      log_cmd = subprocess.run(["git", "log", "--pretty=format:* %s (%h)", f"{prev_tag}..HEAD"], capture_output=True, text=True)
+                  else:
+                      log_cmd = subprocess.run(["git", "log", "--pretty=format:* %s (%h)", "-n", "15"], capture_output=True, text=True)
+                  
+                  commits = [line for line in log_cmd.stdout.splitlines() if "docs(changelog)" not in line and line.strip()]
+                  if commits:
+                      changelog_body = f"## [{version}] - {date}\n\n" + "\n".join(commits)
+              except Exception as e:
+                  print(f"Git log error: {e}")
 
-          HEADER=$(head -n 4 "$TARGET_FILE")
-          REST=$(tail -n +5 "$TARGET_FILE")
+          if not changelog_body:
+              print("No changelog content generated. Exiting.")
+              sys.exit(0)
 
-          printf "%s\n\n%b\n\n%s\n" "$HEADER" "$CHANGELOG_BODY" "$REST" > "$TARGET_FILE"
+          target_file = "changelog.md"
+          if not os.path.exists(target_file) and os.path.exists("CHANGELOG.md"):
+              target_file = "CHANGELOG.md"
+
+          if os.path.exists(target_file):
+              with open(target_file, "r", encoding="utf-8") as f:
+                  lines = f.readlines()
+              header = "".join(lines[:4])
+              rest = "".join(lines[4:])
+          else:
+              header = "# Changelog - UltimateDonutSmp\n\nAll notable changes and behavioral modifications for the UltimateDonutSmp plugin.\n\n"
+              rest = ""
+
+          new_content = f"{header.strip()}\n\n{changelog_body.strip()}\n\n{rest.strip()}\n"
+
+          with open(target_file, "w", encoding="utf-8") as f:
+              f.write(new_content)
+
+          print(f"Successfully updated {target_file} for version {version}!")
+          EOF
 
       - name: Commit and Push Updated changelog.md to Main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add changelog.md CHANGELOG.md 2>/dev/null || true
+          
+          git status
+          
           if git diff --staged --quiet; then
-            echo "No changes in changelog file to commit."
+            echo "::warning ::No changes in changelog file to commit."
           else
             git commit -m "docs(changelog): update changelog for version ${{ steps.version_info.outputs.version }}"
             git push origin HEAD:main
+            echo "Successfully pushed updated changelog to main branch!"
           fi
