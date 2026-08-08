@@ -82,5 +82,5 @@ jobs:
             echo "No changes in changelog file to commit."
           else
             git commit -m "docs(changelog): update changelog for version ${{ steps.version_info.outputs.version }}"
-            git push origin main
+            git push origin HEAD:main
           fi
