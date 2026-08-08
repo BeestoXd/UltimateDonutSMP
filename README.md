@@ -86,12 +86,12 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
 
 Optional integrations:
 
-- PlaceholderAPI
+- PlaceholderAPI (**Required**)
 - LuckPerms
 - Vault
-- ProtocolLib
+- ProtocolLib (**Required**)
 - Apollo
-- SkinsRestorer
+- SkinsRestorer (**Required**)
 - Multiverse-Core
 - floodgate
 
