@@ -1,0 +1,65 @@
+# Dependabot Configuration for UltimateDonutSMP
+# Reference: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Maintain Java / Maven dependencies in pom.xml
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "dependabot"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+    # Group related updates to prevent PR clutter
+    groups:
+      database-drivers:
+        patterns:
+          - "org.xerial:sqlite-jdbc"
+          - "com.mysql:mysql-connector-j"
+          - "com.zaxxer:HikariCP"
+          - "org.mongodb:mongodb-driver-sync"
+          - "redis.clients:jedis"
+      adventure-text:
+        patterns:
+          - "net.kyori:*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+
+    # Ignore core Minecraft server API version bumps to prevent unintended API breakage.
+    # Minecraft server API targets should be bumped manually alongside server compatibility updates.
+    ignore:
+      - dependency-name: "org.spigotmc:spigot-api"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.comphenix.protocol:ProtocolLib"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  # Maintain GitHub Actions workflows in .github/workflows/
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "ci"
+      - "dependabot"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+
+    groups:
+      github-actions:
+        patterns:
+          - "*"
