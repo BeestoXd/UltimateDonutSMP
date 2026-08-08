@@ -1,7 +1,7 @@
 name: 🐛 Bug Report
 description: Report a bug or error in UltimateDonutSMP plugin.
 title: "[Bug]: "
-labels: ["bug", "triage"]
+labels: ["type: bug"]
 body:
   - type: markdown
     attributes:

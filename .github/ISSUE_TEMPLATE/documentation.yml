@@ -1,0 +1,27 @@
+name: 📖 Documentation Request
+description: Request new documentation or improvements to existing docs.
+title: "[Docs]: "
+labels: ["type: docs"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Need help with documentation?
+        Thank you for helping us keep our documentation clear and complete!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Documentation Description
+      description: What documentation is missing, out of date, or unclear?
+      placeholder: "Describe what needs to be documented or improved..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested_changes
+    attributes:
+      label: Suggested Content / Changes
+      description: Provide any initial draft, outline, or suggestions if available.
+    validations:
+      required: false

@@ -1,7 +1,7 @@
 name: ✨ Feature Request
 description: Propose an idea or new feature for UltimateDonutSMP.
 title: "[Feature]: "
-labels: ["enhancement"]
+labels: ["type: feature"]
 body:
   - type: markdown
     attributes:
