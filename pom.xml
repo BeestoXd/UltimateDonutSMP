@@ -20,7 +20,7 @@
         -->
         <spigot-api.version>1.21.10-R0.1-SNAPSHOT</spigot-api.version>
         <folia-api.version>1.21.11-R0.1-SNAPSHOT</folia-api.version>
-        <placeholderapi.version>2.12.2</placeholderapi.version>
+        <placeholderapi.version>2.12.3</placeholderapi.version>
         <server-api.groupId>org.spigotmc</server-api.groupId>
         <server-api.artifactId>spigot-api</server-api.artifactId>
         <server-api.version>${spigot-api.version}</server-api.version>
