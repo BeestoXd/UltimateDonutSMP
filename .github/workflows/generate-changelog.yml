@@ -71,19 +71,21 @@ jobs:
                   prev_tag_cmd = subprocess.run(["git", "describe", "--tags", "--abbrev=0", "HEAD^"], capture_output=True, text=True)
                   prev_tag = prev_tag_cmd.stdout.strip()
                   if prev_tag:
+                      print(f"Comparing against previous tag: {prev_tag}")
                       log_cmd = subprocess.run(["git", "log", "--pretty=format:* %s (%h)", f"{prev_tag}..HEAD"], capture_output=True, text=True)
                   else:
+                      print("No previous tag found. Fetching recent 15 commits.")
                       log_cmd = subprocess.run(["git", "log", "--pretty=format:* %s (%h)", "-n", "15"], capture_output=True, text=True)
                   
-                  commits = [line for line in log_cmd.stdout.splitlines() if "docs(changelog)" not in line and line.strip()]
+                  commits = [line.strip() for line in log_cmd.stdout.splitlines() if line.strip()]
                   if commits:
                       changelog_body = f"## [{version}] - {date}\n\n" + "\n".join(commits)
               except Exception as e:
                   print(f"Git log error: {e}")
 
           if not changelog_body:
-              print("No changelog content generated. Exiting.")
-              sys.exit(0)
+              print("No commit changes found. Creating fallback entry.")
+              changelog_body = f"## [{version}] - {date}\n\n* Release build for {version} ({date})"
 
           target_file = "changelog.md"
           if not os.path.exists(target_file) and os.path.exists("CHANGELOG.md"):
