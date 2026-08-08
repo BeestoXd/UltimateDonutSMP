@@ -64,18 +64,22 @@ jobs:
 
       - name: Create Git Tag if Missing
         run: |
+          set +e
           TAG_NAME="${{ steps.info.outputs.tag_name }}"
-          git fetch --tags origin || true
+          echo "Checking tag: $TAG_NAME"
           
-          if ! git rev-parse "$TAG_NAME" >/dev/null 2>&1 && ! git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
-            echo "Tag $TAG_NAME does not exist. Creating and pushing tag..."
+          EXISTS=$(git ls-remote --tags origin "refs/tags/$TAG_NAME" | grep "$TAG_NAME")
+          
+          if [ -z "$EXISTS" ]; then
+            echo "Tag $TAG_NAME does not exist on remote. Creating tag..."
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git tag "$TAG_NAME"
-            git push origin "$TAG_NAME" || echo "Tag push skipped or already exists."
+            git tag "$TAG_NAME" 2>/dev/null || true
+            git push origin "$TAG_NAME"
           else
             echo "Tag $TAG_NAME already exists on origin."
           fi
+          set -e
 
       - name: Sync Maven Version & Build JAR
         run: |
