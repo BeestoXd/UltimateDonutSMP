@@ -1,4 +1,5 @@
 name: Generate Changelog Only
+# Robust Changelog Generator Workflow
 
 on:
   push:
