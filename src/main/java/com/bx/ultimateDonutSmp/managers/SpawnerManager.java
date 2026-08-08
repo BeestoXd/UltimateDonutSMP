@@ -382,11 +382,7 @@ public class SpawnerManager {
             return 1L;
         }
         Long amount = meta.getPersistentDataContainer().get(spawnerItemAmountKey, PersistentDataType.LONG);
-        long nbtAmount = amount == null ? 1L : Math.max(1L, amount);
-        if (item.getAmount() > 1) {
-            return 1L;
-        }
-        return nbtAmount;
+        return amount == null ? 1L : Math.max(1L, amount);
     }
 
     public long getSpawnerItemAmount(ItemStack item) {
@@ -1318,8 +1314,6 @@ public class SpawnerManager {
 
         Block block = world.getBlockAt(instance.getX(), instance.getY(), instance.getZ());
         if (block.getType() != Material.SPAWNER) {
-            plugin.getLogger().warning("[SpawnerManager] Removing orphaned spawner record at " + instance.getLocationKey());
-            removeSpawner(instance, false, null);
             return;
         }
 
