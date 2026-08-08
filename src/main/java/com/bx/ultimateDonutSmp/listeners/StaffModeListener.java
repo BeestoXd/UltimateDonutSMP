@@ -19,12 +19,20 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class StaffModeListener implements Listener {
 
+    private static final long INTERACT_COOLDOWN_MS = 200L;
+
     private final UltimateDonutSmp plugin;
+    private final Map<UUID, Long> lastInteractTimes = new ConcurrentHashMap<>();
 
     public StaffModeListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -47,9 +55,17 @@ public class StaffModeListener implements Listener {
         boolean movingBetweenInventories = event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY
                 || event.getClick().isKeyboardClick()
                 || event.getAction() == InventoryAction.COLLECT_TO_CURSOR;
+        boolean isDropAction = event.getAction() == InventoryAction.DROP_ALL_CURSOR
+                || event.getAction() == InventoryAction.DROP_ONE_CURSOR
+                || event.getAction() == InventoryAction.DROP_ALL_SLOT
+                || event.getAction() == InventoryAction.DROP_ONE_SLOT;
+        boolean isOutsideClick = event.getSlotType() == org.bukkit.event.inventory.InventoryType.SlotType.OUTSIDE
+                || event.getClickedInventory() == null;
 
         if (!clickOwnInventory
                 && !movingBetweenInventories
+                && !isDropAction
+                && !isOutsideClick
                 && !plugin.getStaffModeManager().isStaffTool(currentItem)
                 && !plugin.getStaffModeManager().isStaffTool(cursorItem)) {
             return;
@@ -135,13 +151,23 @@ public class StaffModeListener implements Listener {
         event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
 
         Action action = event.getAction();
-        if ((action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)
-                && toolType == StaffToolType.FREEZE) {
-            plugin.getStaffModeManager().openFrozenPlayers(player);
+        boolean isLeftClickFreeze = (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)
+                && toolType == StaffToolType.FREEZE;
+        boolean isRightClick = (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK);
+
+        if (!isLeftClickFreeze && !isRightClick) {
             return;
         }
 
-        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
+        long now = System.currentTimeMillis();
+        Long last = lastInteractTimes.get(player.getUniqueId());
+        if (last != null && (now - last) < INTERACT_COOLDOWN_MS) {
+            return;
+        }
+        lastInteractTimes.put(player.getUniqueId(), now);
+
+        if (isLeftClickFreeze) {
+            plugin.getStaffModeManager().openFrozenPlayers(player);
             return;
         }
 
@@ -189,6 +215,11 @@ public class StaffModeListener implements Listener {
             default -> {
             }
         }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        lastInteractTimes.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
