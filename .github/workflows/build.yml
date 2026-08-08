@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '25'
@@ -37,7 +37,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Upload Shaded Jar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: UltimateDonutSmp-${{ steps.metadata.outputs.version }}
           path: target/UltimateDonutSmp-*.jar
@@ -51,7 +51,7 @@ jobs:
 
       - name: Release Nightly Build
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: "v${{ steps.metadata.outputs.version }}-pre"
           name: "UltimateDonutSMP v${{ steps.metadata.outputs.version }}-pre (nightly)"
