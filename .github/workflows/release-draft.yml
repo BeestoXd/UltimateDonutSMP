@@ -29,13 +29,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
-
       - name: Determine Version & Tag Info
         id: info
         run: |
@@ -61,13 +54,6 @@ jobs:
           else
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           fi
-
-      - name: Sync Maven Version & Build JAR
-        run: |
-          VERSION="${{ steps.info.outputs.version }}"
-          echo "Syncing pom.xml version to $VERSION"
-          mvn versions:set -DnewVersion="$VERSION" -DgenerateBackupPoms=false
-          mvn clean package -DskipTests
 
       - name: Generate Structured Changelog Body
         id: changelog_gen
@@ -175,6 +161,5 @@ jobs:
           body: ${{ steps.changelog_gen.outputs.changelog_body }}
           draft: true
           prerelease: ${{ steps.info.outputs.is_prerelease == 'true' }}
-          files: target/UltimateDonutSmp-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
