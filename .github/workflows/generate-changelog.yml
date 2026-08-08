@@ -37,20 +37,8 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Build Changelog Content (Action)
-        id: build_changelog
-        continue-on-error: true
-        uses: mikepenz/release-changelog-builder-action@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          configurationJson: |
-            {
-              "template": "## [${{ steps.version_info.outputs.version }}] - ${{ steps.version_info.outputs.date }}\n\n$CHANGELOG\n"
-            }
-
-      - name: Update changelog.md File
+      - name: Generate and Update changelog.md
         env:
-          ACTION_CHANGELOG: ${{ steps.build_changelog.outputs.changelog }}
           VERSION: ${{ steps.version_info.outputs.version }}
           RELEASE_DATE: ${{ steps.version_info.outputs.date }}
         run: |
@@ -59,53 +47,50 @@ jobs:
 
           version = os.environ.get("VERSION", "1.0")
           date = os.environ.get("RELEASE_DATE", "")
-          action_changelog = os.environ.get("ACTION_CHANGELOG", "").strip()
 
-          print(f"DEBUG: Version={version}, Date={date}, ActionChangelogLen={len(action_changelog)}")
+          print(f"Generating changelog for version={version}, date={date}")
 
-          changelog_body = action_changelog
+          prev_tag = ""
+          try:
+              res = subprocess.run(["git", "describe", "--tags", "--abbrev=0", "HEAD^"], capture_output=True, text=True)
+              prev_tag = res.stdout.strip()
+          except Exception:
+              pass
 
-          if not changelog_body:
-              print("Action changelog empty. Fetching git log...")
-              try:
-                  prev_tag_cmd = subprocess.run(["git", "describe", "--tags", "--abbrev=0", "HEAD^"], capture_output=True, text=True)
-                  prev_tag = prev_tag_cmd.stdout.strip()
-                  if prev_tag:
-                      print(f"Comparing against previous tag: {prev_tag}")
-                      log_cmd = subprocess.run(["git", "log", "--pretty=format:* %s (%h)", f"{prev_tag}..HEAD"], capture_output=True, text=True)
-                  else:
-                      print("No previous tag found. Fetching recent 15 commits.")
-                      log_cmd = subprocess.run(["git", "log", "--pretty=format:* %s (%h)", "-n", "15"], capture_output=True, text=True)
-                  
-                  commits = [line.strip() for line in log_cmd.stdout.splitlines() if line.strip()]
-                  if commits:
-                      changelog_body = f"## [{version}] - {date}\n\n" + "\n".join(commits)
-              except Exception as e:
-                  print(f"Git log error: {e}")
+          if prev_tag:
+              print(f"Comparing against previous tag: {prev_tag}")
+              cmd = ["git", "log", "--pretty=format:- %s (%h)", f"{prev_tag}..HEAD"]
+          else:
+              print("No previous tag found. Fetching recent 30 commits.")
+              cmd = ["git", "log", "--pretty=format:- %s (%h)", "-n", "30"]
 
-          if not changelog_body:
-              print("No commit changes found. Creating fallback entry.")
-              changelog_body = f"## [{version}] - {date}\n\n* Release build for {version} ({date})"
+          log_res = subprocess.run(cmd, capture_output=True, text=True)
+          lines = [l.strip() for l in log_res.stdout.splitlines() if l.strip()]
+
+          if not lines:
+              lines = [f"- Release build for {version} ({date})"]
+
+          changelog_entry = f"## [{version}] - {date}\n\n" + "\n".join(lines)
 
           target_file = "changelog.md"
-          if not os.path.exists(target_file) and os.path.exists("CHANGELOG.md"):
-              target_file = "CHANGELOG.md"
 
           if os.path.exists(target_file):
               with open(target_file, "r", encoding="utf-8") as f:
-                  lines = f.readlines()
-              header = "".join(lines[:4])
-              rest = "".join(lines[4:])
+                  content = f.read()
+              
+              header_lines = content.splitlines()[:4]
+              rest_lines = content.splitlines()[4:]
+              header_str = "\n".join(header_lines)
+              rest_str = "\n".join(rest_lines)
+              new_content = f"{header_str.strip()}\n\n{changelog_entry}\n\n{rest_str.strip()}\n"
           else:
-              header = "# Changelog - UltimateDonutSmp\n\nAll notable changes and behavioral modifications for the UltimateDonutSmp plugin.\n\n"
-              rest = ""
-
-          new_content = f"{header.strip()}\n\n{changelog_body.strip()}\n\n{rest.strip()}\n"
+              header_str = "# Changelog - UltimateDonutSmp\n\nAll notable changes and behavioral modifications for the UltimateDonutSmp plugin."
+              new_content = f"{header_str}\n\n{changelog_entry}\n"
 
           with open(target_file, "w", encoding="utf-8") as f:
               f.write(new_content)
 
-          print(f"Successfully updated {target_file} for version {version}!")
+          print(f"Successfully written {target_file}!")
           EOF
 
       - name: Commit and Push Updated changelog.md to Main
