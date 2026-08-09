@@ -420,9 +420,6 @@ public class ItemUtils {
 
         try {
             meta.setEnchantmentGlintOverride(glint);
-            if (!glint && meta.hasEnchants()) {
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            }
             item.setItemMeta(meta);
             return item;
         } catch (NoSuchMethodError | Exception ignored) {
@@ -430,9 +427,6 @@ public class ItemUtils {
 
         if (glint) {
             meta.addEnchant(Enchantment.UNBREAKING, 1, true);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            item.setItemMeta(meta);
-        } else if (meta.hasEnchants()) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             item.setItemMeta(meta);
         }
