@@ -84,7 +84,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             case "ecsee" -> completeEcsee(sender, args);
             case "sellhand" -> singleArg(args, AMOUNTS);
             case "worth" -> completeWorth(sender, args);
-            case "balance", "stats", "playtime", "alts", "profileviewer", "punishments" ->
+            case "balance", "stats", "playtime", "alts", "profileviewer", "punishments", "logs" ->
                     completeKnownPlayer(args, sender, true);
             case "ping", "findplayer" -> completeOnlinePlayer(args, sender, true);
             case "pay", "shardpay" -> completePayment(sender, args);
@@ -93,6 +93,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             case "shards" -> completeShards(sender, args);
             case "freeze" -> completePlayerOrReload(sender, args, "ultimatedonutsmp.admin.freeze", false);
             case "fly", "heal", "feed" -> completeOnlinePlayer(args, sender, true);
+            case "flyspeed" -> completeFlySpeed(args, sender);
             case "staffmode" -> completePlayerOrReload(sender, args, "ultimatedonutsmp.admin.staffmode", true);
             case "helpop", "staffchat" -> List.of();
             case "rename" -> singleArg(args, List.of("reset", "clear", "remove"));
@@ -499,6 +500,16 @@ public class UniversalCommandTabCompleter implements TabCompleter {
 
     private List<String> completeOnlinePlayer(String[] args, CommandSender sender, boolean includeSelf) {
         return args.length == 1 ? partial(args[0], onlinePlayerNames(sender, includeSelf)) : List.of();
+    }
+
+    private List<String> completeFlySpeed(String[] args, CommandSender sender) {
+        if (args.length == 1) {
+            return partial(args[0], List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+        }
+        if (args.length == 2) {
+            return partial(args[1], onlinePlayerNames(sender, true));
+        }
+        return List.of();
     }
 
     private List<String> completeKnownPlayer(String[] args, CommandSender sender, boolean includeSelf) {

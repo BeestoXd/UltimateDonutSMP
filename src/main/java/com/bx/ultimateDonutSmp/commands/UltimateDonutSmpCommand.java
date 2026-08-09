@@ -471,7 +471,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
                     "duel", "queue", "leave", "draw", "arena", "ffa", "ffastats", "ffaarena"
             );
             case "staff" -> List.of(
-                    "staffmode", "stafflist", "staffchat", "helpop", "report", "freeze", "fly",
+                    "staffmode", "stafflist", "staffchat", "helpop", "report", "freeze", "fly", "flyspeed",
                     "heal", "feed", "gamemode", "randomteleport", "teleport", "alts", "vanish",
                     "invsee", "profileviewer", "punishments", "ban", "tempban", "mute", "tempmute",
                     "warn", "kick", "blacklist", "unban", "unmute", "unblacklist", "findplayer", "rename"

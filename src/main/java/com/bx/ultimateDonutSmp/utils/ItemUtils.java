@@ -413,13 +413,16 @@ public class ItemUtils {
         return item;
     }
 
-    public static ItemStack setGlint(ItemStack item, boolean glint) {
-        if (item == null || item.getType().isAir()) return item;
+    public static ItemStack setGlint(ItemStack item, Boolean glint) {
+        if (item == null || item.getType().isAir() || glint == null) return item;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
 
         try {
             meta.setEnchantmentGlintOverride(glint);
+            if (!glint && meta.hasEnchants()) {
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             item.setItemMeta(meta);
             return item;
         } catch (NoSuchMethodError | Exception ignored) {
@@ -427,6 +430,9 @@ public class ItemUtils {
 
         if (glint) {
             meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
+        } else if (meta.hasEnchants()) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             item.setItemMeta(meta);
         }

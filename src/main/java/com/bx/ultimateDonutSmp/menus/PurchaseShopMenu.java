@@ -136,8 +136,8 @@ public class PurchaseShopMenu extends BaseMenu {
         if (item.enchantments() != null && !item.enchantments().isEmpty()) {
             ItemUtils.addEnchantments(preview, item.enchantments());
         }
-        if (item.glint()) {
-            ItemUtils.setGlint(preview, true);
+        if (item.glint() != null) {
+            ItemUtils.setGlint(preview, item.glint());
         }
         preview.setAmount(Math.min(quantity, preview.getMaxStackSize()));
         set(getPreviewSlot(), preview);

@@ -292,8 +292,8 @@ public class ShopMenu extends BaseMenu {
         if (item.enchantments() != null && !item.enchantments().isEmpty()) {
             ItemUtils.addEnchantments(displayStack, item.enchantments());
         }
-        if (item.glint()) {
-            ItemUtils.setGlint(displayStack, true);
+        if (item.glint() != null) {
+            ItemUtils.setGlint(displayStack, item.glint());
         }
         return displayStack;
     }
