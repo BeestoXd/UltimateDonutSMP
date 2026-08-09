@@ -526,7 +526,7 @@ public class ShopManager {
             }
 
             ConfigurationSection itemSec = sourceSection.getConfigurationSection(key);
-            if (itemSec == null || !itemSec.getBoolean("ENABLED", true)) {
+            if (itemSec == null || !itemSec.getBoolean("ENABLED", true) || !itemSec.contains("MATERIAL")) {
                 continue;
             }
 
