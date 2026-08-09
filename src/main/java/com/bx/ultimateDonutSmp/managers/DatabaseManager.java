@@ -542,7 +542,7 @@ public class DatabaseManager {
         execute(
             "CREATE TABLE IF NOT EXISTS ender_chest_profiles (" +
             "  player_uuid TEXT PRIMARY KEY," +
-            "  rows INTEGER DEFAULT 6," +
+            "  `rows` INTEGER DEFAULT 6," +
             "  updated_at INTEGER DEFAULT 0" +
             ")"
         );
@@ -1784,7 +1784,7 @@ public class DatabaseManager {
         }
 
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT rows FROM ender_chest_profiles WHERE player_uuid = ?")) {
+                "SELECT `rows` FROM ender_chest_profiles WHERE player_uuid = ?")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -2047,7 +2047,7 @@ public class DatabaseManager {
             autoCommitDisabled = true;
 
             try (PreparedStatement profileStatement = connection.prepareStatement(
-                    "REPLACE INTO ender_chest_profiles (player_uuid, rows, updated_at) VALUES (?,?,?)")) {
+                    "REPLACE INTO ender_chest_profiles (player_uuid, `rows`, updated_at) VALUES (?,?,?)")) {
                 profileStatement.setString(1, uuid.toString());
                 profileStatement.setInt(2, Math.max(1, rows));
                 profileStatement.setLong(3, System.currentTimeMillis());
@@ -2083,17 +2083,23 @@ public class DatabaseManager {
                 try {
                     connection.rollback();
                 } catch (SQLException rollbackException) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to roll back Ender Chest save for " + uuid, rollbackException);
+                    if (plugin != null) {
+                        plugin.getLogger().log(Level.WARNING, "Failed to roll back Ender Chest save for " + uuid, rollbackException);
+                    }
                 }
             }
-            plugin.getLogger().log(Level.WARNING, "Failed to save Ender Chest for " + uuid, e);
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to save Ender Chest for " + uuid, e);
+            }
             return false;
         } finally {
             if (autoCommitDisabled) {
                 try {
                     connection.setAutoCommit(originalAutoCommit);
                 } catch (SQLException e) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Ender Chest save", e);
+                    if (plugin != null) {
+                        plugin.getLogger().log(Level.WARNING, "Failed to restore auto-commit after Ender Chest save", e);
+                    }
                 }
             }
         }
@@ -3973,6 +3979,7 @@ public class DatabaseManager {
         adapted = adapted.replaceAll("(?i)\\bREAL\\b", "DOUBLE");
         adapted = adapted.replaceAll("(?i)\\b([a-z0-9_]*uuid|[a-z0-9_]*name|ip_address|id|world|section|category|crate_id|loot_key)\\s+TEXT", "$1 VARCHAR(191)");
         adapted = adapted.replaceAll("(?i)\\b(source_server|scope|previous_game_mode|type|status|claim_type|match_type|arena_id|mob_type|access_mode|material|mode|alias_normalized|skin_key|skin_username)\\s+TEXT", "$1 VARCHAR(191)");
+        adapted = adapted.replaceAll("(?i)\\b(?<!`)rows(?!`)\\b", "`rows`");
         return adapted;
     }
 
