@@ -108,35 +108,35 @@ public class WorthPacketDisplay implements Listener {
                 if (player == null || player.getGameMode() == GameMode.CREATIVE) {
                     return;
                 }
-                org.bukkit.Material suppressedMat = suppressedMaterials.get(player.getUniqueId());
                 if (!uds.getWorthManager().isWorthDisplayEnabledFor(player)) {
                     return;
                 }
 
+                UUID uuid = player.getUniqueId();
+                org.bukkit.Material suppressedMat = suppressedMaterials.get(uuid);
                 PacketContainer packet = event.getPacket();
-                int windowId = readWindowId(packet);
-                int topSize = 0;
-                boolean isMenu = false;
 
-                if (windowId > 0) {
-                    try {
-                        org.bukkit.inventory.InventoryView openView = player.getOpenInventory();
-                        if (openView != null) {
-                            org.bukkit.inventory.Inventory topInv = openView.getTopInventory();
-                            if (topInv != null) {
+                boolean isMenu = inPluginMenu.contains(uuid);
+                int topSize = 0;
+
+                try {
+                    org.bukkit.inventory.InventoryView openView = player.getOpenInventory();
+                    if (openView != null) {
+                        org.bukkit.inventory.Inventory topInv = openView.getTopInventory();
+                        if (topInv != null) {
+                            if (topInv.getHolder() instanceof BaseMenu || isMenuInventory(player, topInv)) {
+                                isMenu = true;
+                            }
+                            if (isMenu) {
                                 topSize = topInv.getSize();
-                                isMenu = isMenuInventory(player, topInv);
                             }
                         }
-                    } catch (Exception ignored) {}
-                    if (!isMenu && inPluginMenu.contains(player.getUniqueId())) {
-                        isMenu = true;
                     }
-                }
+                } catch (Exception ignored) {}
 
                 if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
                     int slot = readSlotIndex(packet);
-                    if (windowId > 0 && isMenu && (slot < topSize || slot == -1 || topSize == 0)) {
+                    if (isMenu && (topSize == 0 || slot < topSize || slot == -1)) {
                         return;
                     }
                     ItemStack item = packet.getItemModifier().read(0);
@@ -158,7 +158,7 @@ public class WorthPacketDisplay implements Listener {
                 boolean changed = false;
                 for (int i = 0; i < items.size(); i++) {
                     ItemStack item = items.get(i);
-                    if (windowId > 0 && isMenu && (topSize == 0 || i < topSize)) {
+                    if (isMenu && (topSize == 0 || i < topSize)) {
                         updated.add(item);
                         continue;
                     }
