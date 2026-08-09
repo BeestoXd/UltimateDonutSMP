@@ -284,11 +284,18 @@ public class ShopMenu extends BaseMenu {
             lore.add(replaceShopGuiPlaceholders(line, item, quote, favorite));
         }
 
-        return ItemUtils.createItem(
+        ItemStack displayStack = ItemUtils.createItem(
                 item.material(),
                 plugin.getCurrencyManager().applyStaticPlaceholders(item.displayName()),
                 plugin.getCurrencyManager().applyStaticPlaceholders(lore)
         );
+        if (item.enchantments() != null && !item.enchantments().isEmpty()) {
+            ItemUtils.addEnchantments(displayStack, item.enchantments());
+        }
+        if (item.glint()) {
+            ItemUtils.setGlint(displayStack, true);
+        }
+        return displayStack;
     }
 
     private String replaceShopGuiPlaceholders(
