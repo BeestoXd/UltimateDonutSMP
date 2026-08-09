@@ -84,7 +84,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             case "ecsee" -> completeEcsee(sender, args);
             case "sellhand" -> singleArg(args, AMOUNTS);
             case "worth" -> completeWorth(sender, args);
-            case "balance", "stats", "playtime", "alts", "profileviewer", "punishments" ->
+            case "balance", "stats", "playtime", "alts", "profileviewer", "punishments", "logs" ->
                     completeKnownPlayer(args, sender, true);
             case "ping", "findplayer" -> completeOnlinePlayer(args, sender, true);
             case "pay", "shardpay" -> completePayment(sender, args);
