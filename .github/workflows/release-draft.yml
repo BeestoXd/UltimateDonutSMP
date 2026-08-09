@@ -19,7 +19,7 @@ on:
         description: 'Fetch commits since Commit ID or URL (e.g. c984801c...)'
         required: false
         type: string
-        default: ''
+        default: '572ee9abd1b717bcff78a424dfb00da077b710ea'
       is_prerelease:
         description: 'Mark as pre-release'
         required: false
