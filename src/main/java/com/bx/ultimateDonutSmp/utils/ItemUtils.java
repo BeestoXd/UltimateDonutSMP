@@ -10,6 +10,7 @@ import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
@@ -370,8 +371,31 @@ public class ItemUtils {
     }
 
     public static ItemStack addEnchantments(ItemStack item, List<String> enchantmentStrings) {
-        if (enchantmentStrings == null) return item;
+        if (item == null || enchantmentStrings == null || enchantmentStrings.isEmpty()) return item;
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof EnchantmentStorageMeta storageMeta) {
+            for (String entry : enchantmentStrings) {
+                if (entry == null) continue;
+                String[] parts = entry.split(":");
+                if (parts.length < 2) continue;
+                String name = parts[0].trim().toLowerCase();
+                int level;
+                try {
+                    level = Integer.parseInt(parts[1].trim());
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+                Enchantment ench = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(name));
+                if (ench != null) {
+                    storageMeta.addStoredEnchant(ench, level, true);
+                }
+            }
+            item.setItemMeta(storageMeta);
+            return item;
+        }
+
         for (String entry : enchantmentStrings) {
+            if (entry == null) continue;
             String[] parts = entry.split(":");
             if (parts.length < 2) continue;
             String name = parts[0].trim().toLowerCase();
@@ -385,6 +409,26 @@ public class ItemUtils {
             if (ench != null) {
                 item.addUnsafeEnchantment(ench, level);
             }
+        }
+        return item;
+    }
+
+    public static ItemStack setGlint(ItemStack item, boolean glint) {
+        if (item == null || item.getType().isAir()) return item;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+
+        try {
+            meta.setEnchantmentGlintOverride(glint);
+            item.setItemMeta(meta);
+            return item;
+        } catch (NoSuchMethodError | Exception ignored) {
+        }
+
+        if (glint) {
+            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
         }
         return item;
     }

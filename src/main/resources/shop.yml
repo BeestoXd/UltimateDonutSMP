@@ -300,6 +300,15 @@ NETHER-MENU:
 GEAR-MENU:
   TITLE: '&8gear - shop'
   SIZE: 27
+  # Custom item enchantments and glow effects can be configured per item:
+  # ENCHANTMENTS:
+  #   MENDING: 1
+  #   UNBREAKING: 3
+  # Or list format:
+  # ENCHANTMENTS:
+  #   - "mending:1"
+  #   - "unbreaking:3"
+  # GLINT: true
   # Configuration section for Obsidian Item.
   OBSIDIAN-ITEM:
     # The text or value for Currency. Available options: Any valid string text

@@ -247,8 +247,37 @@ public class ShopManager {
             int defaultQuantity,
             Boolean hideQuantityButtons,
             AmethystToolType amethystToolType,
-            long amethystDurationSeconds
+            long amethystDurationSeconds,
+            List<String> enchantments,
+            boolean glint
     ) {
+        public ShopItem(
+                String key,
+                String menuSection,
+                Material material,
+                String displayName,
+                List<String> lore,
+                int slot,
+                double pricePerUnit,
+                Currency currency,
+                String command,
+                boolean giveItem,
+                String permission,
+                int minQuantity,
+                int maxQuantity,
+                int defaultQuantity,
+                Boolean hideQuantityButtons,
+                AmethystToolType amethystToolType,
+                long amethystDurationSeconds
+        ) {
+            this(
+                    key, menuSection, material, displayName, lore, slot, pricePerUnit,
+                    currency, command, giveItem, permission, minQuantity, maxQuantity,
+                    defaultQuantity, hideQuantityButtons, amethystToolType, amethystDurationSeconds,
+                    List.of(), false
+            );
+        }
+
         public boolean isAmethystToolReward() {
             return amethystToolType != null;
         }
@@ -502,6 +531,22 @@ public class ShopManager {
             }
 
             Material material = ItemUtils.parseMaterial(itemSec.getString("MATERIAL", "STONE"));
+
+            List<String> enchantments = new ArrayList<>();
+            if (itemSec.isConfigurationSection("ENCHANTMENTS")) {
+                ConfigurationSection enchSec = itemSec.getConfigurationSection("ENCHANTMENTS");
+                if (enchSec != null) {
+                    for (String enchKey : enchSec.getKeys(false)) {
+                        int level = enchSec.getInt(enchKey, 1);
+                        enchantments.add(enchKey + ":" + level);
+                    }
+                }
+            } else if (itemSec.isList("ENCHANTMENTS")) {
+                enchantments.addAll(itemSec.getStringList("ENCHANTMENTS"));
+            }
+
+            boolean glint = itemSec.getBoolean("GLINT", false);
+
             items.add(new ShopItem(
                     key,
                     menuSection,
@@ -519,7 +564,9 @@ public class ShopManager {
                     itemSec.contains("DEFAULT-QUANTITY") ? itemSec.getInt("DEFAULT-QUANTITY") : -1,
                     itemSec.contains("HIDE-QUANTITY-BUTTONS") ? itemSec.getBoolean("HIDE-QUANTITY-BUTTONS") : null,
                     null,
-                    -1L
+                    -1L,
+                    enchantments,
+                    glint
             ));
         }
 
@@ -920,7 +967,14 @@ public class ShopManager {
     }
 
     private ItemStack createPurchasedItem(ShopItem item, int amount) {
-        return new ItemStack(item.material(), Math.max(1, amount));
+        ItemStack stack = new ItemStack(item.material(), Math.max(1, amount));
+        if (item.enchantments() != null && !item.enchantments().isEmpty()) {
+            ItemUtils.addEnchantments(stack, item.enchantments());
+        }
+        if (item.glint()) {
+            ItemUtils.setGlint(stack, true);
+        }
+        return stack;
     }
 
     private boolean canFitPurchasedItem(Player player, ShopItem item, int amount) {
