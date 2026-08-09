@@ -240,6 +240,10 @@ FLY-SYSTEM:
   PLAYER-FLY-PERMISSION: 'ultimatedonutsmp.player.fly'
   # Disable flight automatically when the player leaves the allowed areas or enters combat.
   AUTO-DISABLE-OUTSIDE: true
+  # Minimum allowed flying speed (integer/decimal between 1 and 10)
+  MIN-SPEED: 1
+  # Maximum allowed flying speed (integer/decimal between 1 and 10)
+  MAX-SPEED: 10
 # Configuration section for Worth Lore.
 WORTH-LORE:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

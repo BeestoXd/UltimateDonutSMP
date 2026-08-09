@@ -644,6 +644,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("leaderboard", lbCmd, FeatureManager.Feature.LEADERBOARDS);
         setExecutor("freeze", new FreezeCommand(this));
         setExecutor("fly", new FlyCommand(this));
+        setExecutor("flyspeed", new FlySpeedCommand(this));
         setExecutor("kill", new KillCommand(this));
         setExecutor("heal", new HealCommand(this));
         setExecutor("feed", new FeedCommand(this));

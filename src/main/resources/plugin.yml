@@ -311,6 +311,12 @@ commands:
     usage: /fly [player]
     permission: ultimatedonutsmp.command.fly
     permission-message: "&cYou do not have permission to use /fly."
+  flyspeed:
+    description: Adjust flying speed for yourself or another player
+    usage: /flyspeed <1-10> [player]
+    aliases: [fs]
+    permission: ultimatedonutsmp.command.flyspeed
+    permission-message: "&cYou do not have permission to use /flyspeed."
   heal:
     description: Restore health for yourself or another player
     usage: /heal [player]
@@ -901,6 +907,9 @@ permissions:
   ultimatedonutsmp.staff.fly:
     description: Toggle flight mode for yourself or another player
     default: op
+  ultimatedonutsmp.staff.flyspeed:
+    description: Adjust flying speed for yourself or another player
+    default: op
   ultimatedonutsmp.staff.heal:
     description: Restore health for yourself or another player
     default: op
@@ -920,6 +929,7 @@ permissions:
       ultimatedonutsmp.staff.freeze: true
       ultimatedonutsmp.staff.freeze.alert: true
       ultimatedonutsmp.staff.fly: true
+      ultimatedonutsmp.staff.flyspeed: true
       ultimatedonutsmp.staff.heal: true
       ultimatedonutsmp.staff.feed: true
       ultimatedonutsmp.staff.gamemode: true
@@ -1404,6 +1414,9 @@ permissions:
     default: op
   ultimatedonutsmp.command.fly:
     description: Access to /fly command
+    default: op
+  ultimatedonutsmp.command.flyspeed:
+    description: Access to /flyspeed command
     default: op
   ultimatedonutsmp.command.heal:
     description: Access to /heal command
