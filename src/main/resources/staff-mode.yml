@@ -12,6 +12,12 @@ STAFF-MODE:
   LOCK-TOOLS: true
   # Determines whether Restore Inventory On Disable is enabled or disabled. Available options: true, false
   RESTORE-INVENTORY-ON-DISABLE: true
+  # Configuration section for LuckPerms Context.
+  LUCKPERMS-CONTEXT:
+    # Determines whether LuckPerms Context Provider is enabled. Available options: true, false
+    ENABLED: true
+    # The context key registered with LuckPerms (e.g. staffmode=true/false)
+    KEY: "staffmode"
   # Configuration section for Vanish Actionbar.
   VANISH-ACTIONBAR:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
