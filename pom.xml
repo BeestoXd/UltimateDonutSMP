@@ -6,7 +6,7 @@
 
     <groupId>com.bx</groupId>
     <artifactId>ultimatedonutsmp</artifactId>
-    <version>1.4.1</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>ultimatedonutsmp</name>
@@ -218,6 +218,12 @@
             <groupId>org.geysermc.floodgate</groupId>
             <artifactId>api</artifactId>
             <version>2.2.5-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

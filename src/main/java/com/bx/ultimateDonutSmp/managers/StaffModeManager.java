@@ -280,6 +280,10 @@ public class StaffModeManager {
         runtimeSessions.put(player.getUniqueId(), new StaffModeSession(player.getUniqueId()));
         restartRecoveryOnly.remove(player.getUniqueId());
 
+        if (plugin.getLuckPermsStaffModeContextBridge() != null) {
+            plugin.getLuckPermsStaffModeContextBridge().signalContextUpdate(player);
+        }
+
         player.setGameMode(GameMode.CREATIVE);
         player.setAllowFlight(true);
         rebuildTools(player);
@@ -518,7 +522,11 @@ public class StaffModeManager {
 
         refreshViewerVisibility(player);
         if (state.isVanishActive()) {
-            refreshTargetVisibility(player);
+            applyVanish(player, true);
+        }
+
+        if (plugin.getLuckPermsStaffModeContextBridge() != null) {
+            plugin.getLuckPermsStaffModeContextBridge().signalContextUpdate(player);
         }
     }
 
@@ -905,6 +913,10 @@ public class StaffModeManager {
         plugin.getDatabaseManager().deleteStaffModeState(player.getUniqueId());
         plugin.getDatabaseManager().deleteStaffModeSnapshot(player.getUniqueId());
         player.updateInventory();
+
+        if (plugin.getLuckPermsStaffModeContextBridge() != null) {
+            plugin.getLuckPermsStaffModeContextBridge().signalContextUpdate(player);
+        }
         return true;
     }
 

@@ -113,6 +113,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private LunarRichPresenceManager lunarRichPresenceManager;
     private PingManager pingManager;
     private LuckPermsTablistRefreshBridge luckPermsTablistRefreshBridge;
+    private LuckPermsStaffModeContextBridge luckPermsStaffModeContextBridge;
     private SkinsRestorerTablistRefreshBridge skinsRestorerTablistRefreshBridge;
     private OptimizationManager optimizationManager;
     private CrashProtectionManager crashProtectionManager;
@@ -261,6 +262,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         portalManager = new PortalManager(this);
         portalManager.loadAll();
         initializeLuckPermsTablistRefreshBridge();
+        initializeLuckPermsStaffModeContextBridge();
         initializeSkinsRestorerTablistRefreshBridge();
 
         // 5. Listeners
@@ -369,6 +371,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (luckPermsTablistRefreshBridge != null) {
             luckPermsTablistRefreshBridge.shutdown();
+        }
+        if (luckPermsStaffModeContextBridge != null) {
+            luckPermsStaffModeContextBridge.shutdown();
         }
         if (skinsRestorerTablistRefreshBridge != null) {
             skinsRestorerTablistRefreshBridge.shutdown();
@@ -887,6 +892,22 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
     }
 
+    private void initializeLuckPermsStaffModeContextBridge() {
+        if (getServer().getPluginManager().getPlugin("LuckPerms") == null
+                && !isClassAvailable("net.luckperms.api.LuckPermsProvider")) {
+            return;
+        }
+
+        try {
+            luckPermsStaffModeContextBridge = new LuckPermsStaffModeContextBridge(this);
+            luckPermsStaffModeContextBridge.start();
+        } catch (Throwable error) {
+            luckPermsStaffModeContextBridge = null;
+            getLogger().log(java.util.logging.Level.WARNING, "Failed to initialize LuckPerms Staff Mode context bridge.",
+                    error);
+        }
+    }
+
     private void initializeSkinsRestorerTablistRefreshBridge() {
         if (!isClassAvailable("net.skinsrestorer.api.SkinsRestorerProvider")) {
             return;
@@ -1301,6 +1322,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public InvseeManager getInvseeManager() {
         return invseeManager;
+    }
+
+    public LuckPermsStaffModeContextBridge getLuckPermsStaffModeContextBridge() {
+        return luckPermsStaffModeContextBridge;
     }
 
     public ProfileViewerManager getProfileViewerManager() {
