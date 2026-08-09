@@ -77,6 +77,23 @@ public class WorthPacketDisplay implements Listener {
         }
     }
 
+    private boolean isMenuInventory(Player player, org.bukkit.inventory.Inventory topInv) {
+        if (player != null && inPluginMenu.contains(player.getUniqueId())) {
+            return true;
+        }
+        if (topInv == null) {
+            return false;
+        }
+        org.bukkit.inventory.InventoryHolder holder = topInv.getHolder();
+        if (holder instanceof BaseMenu) {
+            return true;
+        }
+        if (holder != null && !(holder instanceof org.bukkit.block.Container) && !(holder instanceof org.bukkit.entity.Player)) {
+            return true;
+        }
+        return false;
+    }
+
     private void registerPacketListener() {
         final UltimateDonutSmp uds = plugin; // packetadapter has its own plugin field
         protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL,
@@ -97,8 +114,31 @@ public class WorthPacketDisplay implements Listener {
                 }
 
                 PacketContainer packet = event.getPacket();
+                int windowId = readWindowId(packet);
+                int topSize = 0;
+                boolean isMenu = false;
+
+                if (windowId > 0) {
+                    try {
+                        org.bukkit.inventory.InventoryView openView = player.getOpenInventory();
+                        if (openView != null) {
+                            org.bukkit.inventory.Inventory topInv = openView.getTopInventory();
+                            if (topInv != null) {
+                                topSize = topInv.getSize();
+                                isMenu = isMenuInventory(player, topInv);
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                    if (!isMenu && inPluginMenu.contains(player.getUniqueId())) {
+                        isMenu = true;
+                    }
+                }
 
                 if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
+                    int slot = readSlotIndex(packet);
+                    if (windowId > 0 && isMenu && (slot < topSize || slot == -1 || topSize == 0)) {
+                        return;
+                    }
                     ItemStack item = packet.getItemModifier().read(0);
                     if (item != null && item.getType() == suppressedMat) {
                         return;
@@ -118,6 +158,10 @@ public class WorthPacketDisplay implements Listener {
                 boolean changed = false;
                 for (int i = 0; i < items.size(); i++) {
                     ItemStack item = items.get(i);
+                    if (windowId > 0 && isMenu && (topSize == 0 || i < topSize)) {
+                        updated.add(item);
+                        continue;
+                    }
                     if (item != null && item.getType() == suppressedMat) {
                         updated.add(item);
                         continue;
