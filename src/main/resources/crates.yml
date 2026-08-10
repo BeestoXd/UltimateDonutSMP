@@ -610,13 +610,27 @@ CRATES:
         SLOT: 14
         DISPLAY:
           MATERIAL: SPAWNER
-          DISPLAY-NAME: '#FF55FF5X Skeleton Spawner'
-          ENCHANTMENTS:
-          - mending:1
+          DISPLAY-NAME: '&dSkeleton Spawner'
+          ENCHANTMENTS: []
+          LORE:
+          - '&7Type: &fSkeleton Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
         GRANT:
-          TYPE: COMMAND
+          TYPE: ITEM
           COMMANDS:
-          - smartspawner give spawner %player% skeleton 5
+          - spawner give {player} skeleton 2
+          MATERIAL: SPAWNER
+          DISPLAY-NAME: '&dSkeleton Spawner'
+          LORE:
+          - '&7Type: &fSkeleton Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          ITEM-DATA: ITEM_BYTES_V1:H4sIAAAAAAAA/52SyU7DMBCGJ3RRGhaxiLsv0BsP0COiJxBUatVr5DrTxIqXyB6r9O1xoLSVODTCB8sj//P788xkAD04f+HEl+i8tAbgbpzCmSzgRkuDwvE1TXzDNwZdDwbCBkMAkGSQCasba9CQH8HVQayswyxKeiMY4Cc53gZnCQwlcSUFJJAFU6BTMaOIUX9lVQFp6x1ToV86vo0au1oHLzh9ay49OVkjVc6GsoriPkVrGC62DU4YHMx/b67nNSoka9j8h33vP9hUknAvhHhq1zFs0hl2uEWl7KYj7uNMcYGMLBMOo5RZxzxxUTOqpGe7Kj8dsWVwfyisCJ6szg3X+D/aCyXLivImuEZhR+Y/hTxBV8RRyuB2FlYR6DnUtaQlVwF9Ag9BkdTtc9YE8rqZaG54iUW++3keG6OTtIOQYt8hnb9O36aLj/c+jE9mcL2b3HYl7fYFTTtal/sCAAA=
+          REQUIRES-INVENTORY-SPACE: true
       ultra_elytra:
         SLOT: 15
         DISPLAY:
@@ -630,13 +644,27 @@ CRATES:
         SLOT: 16
         DISPLAY:
           MATERIAL: SPAWNER
-          DISPLAY-NAME: '#FF55FFIron Golem Spawner'
-          ENCHANTMENTS:
-          - unbreaking:1
+          DISPLAY-NAME: '&dIron Golem Spawner'
+          ENCHANTMENTS: []
+          LORE:
+          - '&7Type: &fIron Golem Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
         GRANT:
-          TYPE: COMMAND
+          TYPE: ITEM
           COMMANDS:
-          - smartspawner give spawner %player% iron_golem
+          - spawner give {player} iron_golem 1
+          MATERIAL: SPAWNER
+          DISPLAY-NAME: '&dIron Golem Spawner'
+          LORE:
+          - '&7Type: &fIron Golem Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          ITEM-DATA: ITEM_BYTES_V1:H4sIAAAAAAAA/52STU8CMRCGZ2EhsH4kYrz3otz8ARyNhpCoEDVcN6U7sM32Y9NOg/x7u4rAwQTiHJpO+s7M05nJANpw9siJz9F5aQ3A9bAHLVnAlZYGheNLGvmarw26NnSEDYYAIMkgE1bX1qAh34fLvVhZh1mUtPvQwU9yvHFaCXQlcSUFJJAFU6BTMaKIXrqwqoBekzuGQrpyfBM1drEMXnD61lx4crJCKp0NqzKKU4qpofuxqXHEYJ/892UwcdawsVWo2fsP/a5CZ11Kwp0U4q2xQ9zkZNzuBpWy6xOB72aKC2RkmXAYpcw65omLilEpPdv2+f6ALYObfWtF8GR1brjG/9GeK7kqKa+DqxWeyPxHK4/wFXGdMhjMwiIiPYSqkjTnKqBP4DYokropaE0gr+uR5oavsMi3f8/jaHTSO0FIcfaQTd6mr/l4+vz0ksLwaAzX2/1tLGmOL6Bg2DQBAwAA
+          REQUIRES-INVENTORY-SPACE: true
       reward_13:
         SLOT: 13
         DISPLAY:
