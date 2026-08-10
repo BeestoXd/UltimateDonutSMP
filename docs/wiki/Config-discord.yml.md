@@ -30,32 +30,25 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FF0000'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':hammer: **Punishment Type:** Ban
+      DESCRIPTION: |-
+        :hammer: **Punishment Type:** Ban
 
-        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
-        # The text or mode for **Player. Available options: Any string text **Player:**
+        **Player:**
         %player%
 
-        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
-        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        **Staff:**
         %staff%
 
-        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
-        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        **Reason:**
         ||%reason%||
 
-        # The text or value for # The Text Or Mode For **Duration. Available Options. Available options: Any valid string text
-        # The text or mode for **Duration. Available options: Any string text **Duration:**
+        **Duration:**
         %duration%
 
-        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
-        # The text or mode for **Date. Available options: Any string text **Date:**
+        **Date:**
         %date%
 
-        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
-        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
-
-        '
+        **ID:** `%id%`
       # The text or value for Thumbnail. Available options: Any valid string text
       THUMBNAIL: '%skin_bust%'
       # The text or value for Author Name. Available options: Any valid string text
@@ -70,26 +63,25 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FFFF00'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':mute: **Punishment Type:** Mute
+      DESCRIPTION: |-
+        :mute: **Punishment Type:** Mute
 
-        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
-        # The text or mode for **Player. Available options: Any string text **Player:**
+        **Player:**
         %player%
 
-        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
-        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        **Staff:**
         %staff%
 
-        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
-        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        **Reason:**
         ||%reason%||
 
-        # The text or value for # The Text Or Mode For **Duration. Available Options. Available options: Any valid string text
-        # The text or mode for **Duration. Available options: Any string text **Duration:**
+        **Duration:**
         %duration%
 
-        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
-        # The text or mode for **Date. Available options: Any string text **Date:**
+        **Date:**
+        %date%
+
+        **ID:** `%id%`
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -104,28 +96,28 @@ WEBHOOKS:
 | `WEBHOOKS.MESSAGES.BAN.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `WEBHOOKS` system. Set to `true` to enable, `false` to disable. |
 | `WEBHOOKS.MESSAGES.BAN.TITLE` | `str` | Any string text | `'Player Banned - %player%'` | Configures the technical `TITLE` parameter for `WEBHOOKS.MESSAGES.BAN.TITLE` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.BAN.COLOR` | `str` | Any string text | `'#FF0000'` | Configures the technical `COLOR` parameter for `WEBHOOKS.MESSAGES.BAN.COLOR` in `discord.yml`. |
-| `WEBHOOKS.MESSAGES.BAN.DESCRIPTION` | `str` | Any string text | `':hammer: **Punishment Type:** Ban #...'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.BAN.DESCRIPTION` in `discord.yml`. |
+| `WEBHOOKS.MESSAGES.BAN.DESCRIPTION` | `str` | Any string text | `':hammer: **Punishment Type:** Ban'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.BAN.DESCRIPTION` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.BAN.THUMBNAIL` | `str` | Any string text | `'%skin_bust%'` | Configures the technical `THUMBNAIL` parameter for `WEBHOOKS.MESSAGES.BAN.THUMBNAIL` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.BAN.AUTHOR_NAME` | `str` | Any string text | `'Ban System'` | Configures the technical `AUTHOR_NAME` parameter for `WEBHOOKS.MESSAGES.BAN.AUTHOR_NAME` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.BAN.FOOTER` | `str` | Any string text | `'Punishment issued via server'` | Configures the technical `FOOTER` parameter for `WEBHOOKS.MESSAGES.BAN.FOOTER` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.MUTE.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `WEBHOOKS` system. Set to `true` to enable, `false` to disable. |
 | `WEBHOOKS.MESSAGES.MUTE.TITLE` | `str` | Any string text | `'Player Muted - %player%'` | Configures the technical `TITLE` parameter for `WEBHOOKS.MESSAGES.MUTE.TITLE` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.MUTE.COLOR` | `str` | Any string text | `'#FFFF00'` | Configures the technical `COLOR` parameter for `WEBHOOKS.MESSAGES.MUTE.COLOR` in `discord.yml`. |
-| `WEBHOOKS.MESSAGES.MUTE.DESCRIPTION` | `str` | Any string text | `':mute: **Punishment Type:** Mute # ...'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.MUTE.DESCRIPTION` in `discord.yml`. |
+| `WEBHOOKS.MESSAGES.MUTE.DESCRIPTION` | `str` | Any string text | `':mute: **Punishment Type:** Mute'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.MUTE.DESCRIPTION` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.MUTE.THUMBNAIL` | `str` | Any string text | `'%skin_bust%'` | Configures the technical `THUMBNAIL` parameter for `WEBHOOKS.MESSAGES.MUTE.THUMBNAIL` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.MUTE.AUTHOR_NAME` | `str` | Any string text | `'Moderation System'` | Configures the technical `AUTHOR_NAME` parameter for `WEBHOOKS.MESSAGES.MUTE.AUTHOR_NAME` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.MUTE.FOOTER` | `str` | Any string text | `'Chat restriction applied'` | Configures the technical `FOOTER` parameter for `WEBHOOKS.MESSAGES.MUTE.FOOTER` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.WARN.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `WEBHOOKS` system. Set to `true` to enable, `false` to disable. |
 | `WEBHOOKS.MESSAGES.WARN.TITLE` | `str` | Any string text | `'Player Warned - %player%'` | Configures the technical `TITLE` parameter for `WEBHOOKS.MESSAGES.WARN.TITLE` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.WARN.COLOR` | `str` | Any string text | `'#FFA500'` | Configures the technical `COLOR` parameter for `WEBHOOKS.MESSAGES.WARN.COLOR` in `discord.yml`. |
-| `WEBHOOKS.MESSAGES.WARN.DESCRIPTION` | `str` | Any string text | `':warning: **Punishment Type:** Warn...'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.WARN.DESCRIPTION` in `discord.yml`. |
+| `WEBHOOKS.MESSAGES.WARN.DESCRIPTION` | `str` | Any string text | `':warning: **Punishment Type:** Warning'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.WARN.DESCRIPTION` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.WARN.THUMBNAIL` | `str` | Any string text | `'%skin_bust%'` | Configures the technical `THUMBNAIL` parameter for `WEBHOOKS.MESSAGES.WARN.THUMBNAIL` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.WARN.AUTHOR_NAME` | `str` | Any string text | `'Moderation System'` | Configures the technical `AUTHOR_NAME` parameter for `WEBHOOKS.MESSAGES.WARN.AUTHOR_NAME` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.WARN.FOOTER` | `str` | Any string text | `'Warning issued'` | Configures the technical `FOOTER` parameter for `WEBHOOKS.MESSAGES.WARN.FOOTER` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.KICK.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `WEBHOOKS` system. Set to `true` to enable, `false` to disable. |
 | `WEBHOOKS.MESSAGES.KICK.TITLE` | `str` | Any string text | `'Player Kicked - %player%'` | Configures the technical `TITLE` parameter for `WEBHOOKS.MESSAGES.KICK.TITLE` in `discord.yml`. |
 | `WEBHOOKS.MESSAGES.KICK.COLOR` | `str` | Any string text | `'#FF6347'` | Configures the technical `COLOR` parameter for `WEBHOOKS.MESSAGES.KICK.COLOR` in `discord.yml`. |
-| `WEBHOOKS.MESSAGES.KICK.DESCRIPTION` | `str` | Any string text | `':boot: **Punishment Type:** Kick # ...'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.KICK.DESCRIPTION` in `discord.yml`. |
+| `WEBHOOKS.MESSAGES.KICK.DESCRIPTION` | `str` | Any string text | `':boot: **Punishment Type:** Kick'` | Configures the technical `DESCRIPTION` parameter for `WEBHOOKS.MESSAGES.KICK.DESCRIPTION` in `discord.yml`. |
 | *(10 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example
