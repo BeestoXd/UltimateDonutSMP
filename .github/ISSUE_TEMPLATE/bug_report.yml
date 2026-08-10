@@ -46,7 +46,7 @@ body:
       description: What did you expect to happen?
       placeholder: "What should have happened instead..."
     validations:
-      required: false
+      required: true
 
   - type: textarea
     id: stacktrace
