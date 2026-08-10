@@ -413,8 +413,8 @@ public class ItemUtils {
         return item;
     }
 
-    public static ItemStack setGlint(ItemStack item, boolean glint) {
-        if (item == null || item.getType().isAir()) return item;
+    public static ItemStack setGlint(ItemStack item, Boolean glint) {
+        if (item == null || item.getType().isAir() || glint == null) return item;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
 

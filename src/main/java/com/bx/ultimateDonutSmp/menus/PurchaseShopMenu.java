@@ -133,6 +133,12 @@ public class PurchaseShopMenu extends BaseMenu {
         lore.add("&7ᴄᴜʀʀᴇɴᴄʏ: &f" + plugin.getCurrencyManager().plural(currencyType()));
 
         ItemStack preview = ItemUtils.createItem(item.material(), item.displayName(), lore);
+        if (item.enchantments() != null && !item.enchantments().isEmpty()) {
+            ItemUtils.addEnchantments(preview, item.enchantments());
+        }
+        if (item.glint() != null) {
+            ItemUtils.setGlint(preview, item.glint());
+        }
         preview.setAmount(Math.min(quantity, preview.getMaxStackSize()));
         set(getPreviewSlot(), preview);
     }

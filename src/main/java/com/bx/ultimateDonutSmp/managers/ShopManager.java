@@ -249,7 +249,7 @@ public class ShopManager {
             AmethystToolType amethystToolType,
             long amethystDurationSeconds,
             List<String> enchantments,
-            boolean glint
+            Boolean glint
     ) {
         public ShopItem(
                 String key,
@@ -274,7 +274,7 @@ public class ShopManager {
                     key, menuSection, material, displayName, lore, slot, pricePerUnit,
                     currency, command, giveItem, permission, minQuantity, maxQuantity,
                     defaultQuantity, hideQuantityButtons, amethystToolType, amethystDurationSeconds,
-                    List.of(), false
+                    List.of(), null
             );
         }
 
@@ -526,7 +526,7 @@ public class ShopManager {
             }
 
             ConfigurationSection itemSec = sourceSection.getConfigurationSection(key);
-            if (itemSec == null || !itemSec.getBoolean("ENABLED", true)) {
+            if (itemSec == null || !itemSec.getBoolean("ENABLED", true) || !itemSec.contains("MATERIAL")) {
                 continue;
             }
 
@@ -545,7 +545,7 @@ public class ShopManager {
                 enchantments.addAll(itemSec.getStringList("ENCHANTMENTS"));
             }
 
-            boolean glint = itemSec.getBoolean("GLINT", false);
+            Boolean glint = itemSec.contains("GLINT") ? itemSec.getBoolean("GLINT") : null;
 
             items.add(new ShopItem(
                     key,
@@ -971,8 +971,8 @@ public class ShopManager {
         if (item.enchantments() != null && !item.enchantments().isEmpty()) {
             ItemUtils.addEnchantments(stack, item.enchantments());
         }
-        if (item.glint()) {
-            ItemUtils.setGlint(stack, true);
+        if (item.glint() != null) {
+            ItemUtils.setGlint(stack, item.glint());
         }
         return stack;
     }
