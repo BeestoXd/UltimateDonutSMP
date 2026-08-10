@@ -181,26 +181,22 @@ commands:
   sell:
     description: Open sell menu
     usage: /sell
-    aliases:
-    - sellmulti
-    - sellmultiplier
-    - sellprogress
     permission: ultimatedonutsmp.command.sell
     permission-message: "&cYou do not have permission to use /sell."
   sellmulti:
     description: Open sell multiplier menu
-    usage: /sellmulti
-    permission: ultimatedonutsmp.command.sell
+    usage: /sellmulti [category]
+    permission: ultimatedonutsmp.command.sellmulti
     permission-message: "&cYou do not have permission to use /sellmulti."
   sellmultiplier:
     description: Open sell multiplier menu
-    usage: /sellmultiplier
-    permission: ultimatedonutsmp.command.sell
+    usage: /sellmultiplier [category]
+    permission: ultimatedonutsmp.command.sellmulti
     permission-message: "&cYou do not have permission to use /sellmultiplier."
   sellprogress:
     description: Open sell multiplier progress menu
-    usage: /sellprogress
-    permission: ultimatedonutsmp.command.sell
+    usage: /sellprogress [category]
+    permission: ultimatedonutsmp.command.sellprogress
     permission-message: "&cYou do not have permission to use /sellprogress."
   sellhand:
     description: Sell item in hand
@@ -1176,6 +1172,8 @@ permissions:
       ultimatedonutsmp.command.auctionhouse: true
       ultimatedonutsmp.command.enderchest: true
       ultimatedonutsmp.command.sell: true
+      ultimatedonutsmp.command.sellmulti: true
+      ultimatedonutsmp.command.sellprogress: true
       ultimatedonutsmp.command.sellhand: true
       ultimatedonutsmp.command.sellall: true
       ultimatedonutsmp.command.sellhistory: true
@@ -1354,6 +1352,12 @@ permissions:
     default: true
   ultimatedonutsmp.command.sell:
     description: Access to /sell command
+    default: true
+  ultimatedonutsmp.command.sellmulti:
+    description: Access to /sellmulti command
+    default: true
+  ultimatedonutsmp.command.sellprogress:
+    description: Access to /sellprogress command
     default: true
   ultimatedonutsmp.command.sellhand:
     description: Access to /sellhand command
