@@ -124,7 +124,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!checkMinecraftVersionSupport()) {
+        if (!checkMinecraftVersionSupport() || !checkProtocolLibInstalled() || !checkPlaceholderApi()) {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -132,8 +132,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         instance = this;
 
         printStartupBanner();
-
-        checkPlaceholderApi();
 
         SpigotScheduler = new SpigotScheduler(this);
 
@@ -479,8 +477,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
             return true;
         }
 
-        getLogger().warning("PlaceholderAPI is unavailable; placeholder expansion and external placeholders are disabled.");
-        getLogger().warning("Core UltimateDonutSmp features will continue with built-in values and fallbacks.");
+        getLogger().severe("====================================================");
+        getLogger().severe("[UltimateDonutSmp] ERROR: PlaceholderAPI is required to run this plugin!");
+        getLogger().severe("[UltimateDonutSmp] Please install PlaceholderAPI and restart your server.");
+        getLogger().severe("[UltimateDonutSmp] Disabling plugin...");
+        getLogger().severe("====================================================");
         return false;
     }
 
@@ -934,6 +935,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
         } catch (ClassNotFoundException ignored) {
             return false;
         }
+    }
+
+    private boolean checkProtocolLibInstalled() {
+        if (!getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            getLogger().severe("====================================================");
+            getLogger().severe("[UltimateDonutSmp] ERROR: ProtocolLib is required to run this plugin!");
+            getLogger().severe("[UltimateDonutSmp] Please install ProtocolLib and restart your server.");
+            getLogger().severe("[UltimateDonutSmp] Disabling plugin...");
+            getLogger().severe("====================================================");
+            return false;
+        }
+        return true;
     }
 
     private boolean checkMinecraftVersionSupport() {

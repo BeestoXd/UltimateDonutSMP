@@ -3,11 +3,12 @@ version: ${project.version}
 main: com.bx.ultimateDonutSmp.UltimateDonutSmp
 api-version: "1.21"
 folia-supported: true
-softdepend:
+depend:
+- ProtocolLib
 - PlaceholderAPI
+softdepend:
 - LuckPerms
 - Vault
-- ProtocolLib
 - Apollo
 - Multiverse-Core
 - floodgate
