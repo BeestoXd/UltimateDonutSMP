@@ -33,6 +33,48 @@ class DatabaseManagerSchemaAdaptationTest {
     }
 
     @Test
+    void adaptSchemaSqlConvertsWipeIdAndLogTypeToVarcharAndPreservesBlacklistedTextFields() throws Exception {
+        DatabaseManager manager = new DatabaseManager(null);
+        Field typeField = DatabaseManager.class.getDeclaredField("databaseType");
+        typeField.setAccessible(true);
+        typeField.set(manager, DatabaseManager.DatabaseType.MYSQL);
+
+        String wipeSql = "CREATE TABLE IF NOT EXISTS server_wipe_commits (" +
+                " wipe_id TEXT PRIMARY KEY," +
+                " committed_at INTEGER NOT NULL" +
+                ")";
+        String adaptedWipe = manager.adaptSchemaSql(wipeSql);
+        assertTrue(adaptedWipe.contains("wipe_id VARCHAR(191) PRIMARY KEY"), "adapted SQL should convert wipe_id TEXT to VARCHAR(191)");
+
+        String logSql = "CREATE TABLE IF NOT EXISTS player_logs (" +
+                " id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                " player_uuid TEXT NOT NULL," +
+                " player_name TEXT NOT NULL," +
+                " category TEXT NOT NULL," +
+                " log_type TEXT NOT NULL," +
+                " details TEXT NOT NULL," +
+                " timestamp INTEGER NOT NULL" +
+                ")";
+        String adaptedLog = manager.adaptSchemaSql(logSql);
+        assertTrue(adaptedLog.contains("log_type VARCHAR(191) NOT NULL"), "adapted SQL should convert log_type TEXT to VARCHAR(191)");
+        assertTrue(adaptedLog.contains("details TEXT NOT NULL"), "adapted SQL should preserve details as TEXT");
+        assertTrue(adaptedLog.contains("player_uuid VARCHAR(191) NOT NULL"), "adapted SQL should convert player_uuid TEXT to VARCHAR(191)");
+
+        String spawnerSql = "CREATE TABLE IF NOT EXISTS spawners (" +
+                " id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                " world TEXT NOT NULL," +
+                " disabled_loot_keys TEXT DEFAULT ''" +
+                ")";
+        String adaptedSpawner = manager.adaptSchemaSql(spawnerSql);
+        assertTrue(adaptedSpawner.contains("world VARCHAR(191) NOT NULL"), "adapted SQL should convert world TEXT to VARCHAR(191)");
+        assertTrue(adaptedSpawner.contains("disabled_loot_keys TEXT DEFAULT ''"), "adapted SQL should preserve disabled_loot_keys as TEXT");
+
+        String backtickSql = "CREATE TABLE IF NOT EXISTS demo (`wipe_id` TEXT PRIMARY KEY)";
+        String adaptedBacktick = manager.adaptSchemaSql(backtickSql);
+        assertTrue(adaptedBacktick.contains("`wipe_id` VARCHAR(191) PRIMARY KEY"), "adapted SQL should handle backticked identifiers");
+    }
+
+    @Test
     void enderChestProfilesCanBeCreatedAndQueriedInDatabase() throws Exception {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
              Statement statement = connection.createStatement()) {
@@ -63,3 +105,4 @@ class DatabaseManagerSchemaAdaptationTest {
         }
     }
 }
+

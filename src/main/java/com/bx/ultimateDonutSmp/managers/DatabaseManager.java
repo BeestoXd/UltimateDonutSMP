@@ -784,7 +784,7 @@ public class DatabaseManager {
     private void ensureColumnExists(String table, String column, String definition) throws SQLException {
         if (hasColumn(table, column)) return;
         try (Statement st = connection.createStatement()) {
-            st.execute("ALTER TABLE " + table + " ADD COLUMN " + column + " " + definition);
+            st.execute(adaptSchemaSql("ALTER TABLE " + table + " ADD COLUMN " + column + " " + definition));
         }
     }
 
@@ -3977,8 +3977,7 @@ public class DatabaseManager {
         String adapted = sql.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "BIGINT PRIMARY KEY AUTO_INCREMENT");
         adapted = adapted.replaceAll("(?i)\\bINTEGER\\b", "BIGINT");
         adapted = adapted.replaceAll("(?i)\\bREAL\\b", "DOUBLE");
-        adapted = adapted.replaceAll("(?i)\\b([a-z0-9_]*uuid|[a-z0-9_]*name|ip_address|id|world|section|category|crate_id|loot_key)\\s+TEXT", "$1 VARCHAR(191)");
-        adapted = adapted.replaceAll("(?i)\\b(source_server|scope|previous_game_mode|type|status|claim_type|match_type|arena_id|mob_type|access_mode|material|mode|alias_normalized|skin_key|skin_username)\\s+TEXT", "$1 VARCHAR(191)");
+        adapted = adapted.replaceAll("(?i)(`?)\\b(?!(?:item_data|details|reason|removal_reason|texture_value|texture_signature|disabled_loot_keys)\\b)([a-z0-9_]+)\\b(`?)\\s+TEXT\\b", "$1$2$3 VARCHAR(191)");
         adapted = adapted.replaceAll("(?i)\\b(?<!`)rows(?!`)\\b", "`rows`");
         return adapted;
     }
@@ -4003,6 +4002,8 @@ public class DatabaseManager {
         }
 
         if (isMySql()) {
+            fixMySqlIndexColumnTypes(table, columns);
+
             DatabaseMetaData metaData = connection.getMetaData();
             try (ResultSet rs = metaData.getIndexInfo(connection.getCatalog(), null, table, false, false)) {
                 while (rs.next()) {
@@ -4021,6 +4022,32 @@ public class DatabaseManager {
 
         try (Statement statement = connection.createStatement()) {
             statement.execute("CREATE INDEX IF NOT EXISTS " + indexName + " ON " + table + " (" + columns + ")");
+        }
+    }
+
+    private void fixMySqlIndexColumnTypes(String table, String columns) {
+        if (!isMySql()) return;
+        String[] colArray = columns.split(",");
+        for (String rawCol : colArray) {
+            String colName = rawCol.trim().split("\\s+")[0].replaceAll("[`\"'\\[\\]]", "");
+            if (colName.isBlank()) continue;
+            try {
+                DatabaseMetaData metaData = connection.getMetaData();
+                try (ResultSet rs = metaData.getColumns(connection.getCatalog(), null, table, colName)) {
+                    if (rs.next()) {
+                        String typeName = rs.getString("TYPE_NAME");
+                        String isNullable = rs.getString("IS_NULLABLE");
+                        if ("TEXT".equalsIgnoreCase(typeName) || "MEDIUMTEXT".equalsIgnoreCase(typeName) || "LONGTEXT".equalsIgnoreCase(typeName)) {
+                            String nullability = "NO".equalsIgnoreCase(isNullable) ? " NOT NULL" : "";
+                            try (Statement stmt = connection.createStatement()) {
+                                stmt.execute("ALTER TABLE " + table + " MODIFY " + colName + " VARCHAR(191)" + nullability);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Could not auto-modify MySQL column " + table + "." + colName + ": " + e.getMessage());
+            }
         }
     }
 
