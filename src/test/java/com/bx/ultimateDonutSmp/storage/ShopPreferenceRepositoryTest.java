@@ -59,6 +59,38 @@ class ShopPreferenceRepositoryTest {
         }
     }
 
+    @Test
+    void reconnectsWhenConnectionIsClosed() throws Exception {
+        Path database = tempDir.resolve("reconnect.db");
+        java.util.concurrent.atomic.AtomicReference<Connection> activeConnection = new java.util.concurrent.atomic.AtomicReference<>();
+        ShopPreferenceRepository repository = new ShopPreferenceRepository(
+                () -> {
+                    Connection conn = open(database);
+                    activeConnection.set(conn);
+                    return conn;
+                },
+                sql -> sql,
+                false,
+                Logger.getLogger("ShopPreferenceRepositoryTest")
+        );
+
+        UUID playerId = UUID.randomUUID();
+        try {
+            repository.initialize().join();
+            repository.setFavorite(playerId, "ITEM_1", true).join();
+
+            Connection connToClose = activeConnection.get();
+            if (connToClose != null) {
+                connToClose.close();
+            }
+
+            ShopPreference pref = repository.load(playerId).join();
+            assertTrue(pref.favorites().contains("ITEM_1"));
+        } finally {
+            repository.shutdown();
+        }
+    }
+
     private ShopPreferenceRepository repository(Path database) {
         return new ShopPreferenceRepository(
                 () -> open(database),

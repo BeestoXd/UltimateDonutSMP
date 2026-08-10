@@ -187,6 +187,53 @@ class AuctionHouseRepositoryTest {
         }
     }
 
+    @Test
+    void reconnectsWhenConnectionIsClosed() throws Exception {
+        Path database = tempDir.resolve("reconnect.db");
+        java.util.concurrent.atomic.AtomicReference<Connection> activeConnection = new java.util.concurrent.atomic.AtomicReference<>();
+        AuctionHouseRepository repository = new AuctionHouseRepository(
+                () -> {
+                    Connection conn = open(database);
+                    activeConnection.set(conn);
+                    return conn;
+                },
+                sql -> sql,
+                false,
+                (item, owner) -> true,
+                new AuctionHouseRepository.ItemCodec() {
+                    @Override
+                    public String serialize(ItemStack item) {
+                        return item.getType().name() + ":" + item.getAmount();
+                    }
+
+                    @Override
+                    public ItemStack deserialize(String encoded) {
+                        String[] parts = encoded.split(":", 2);
+                        ItemStack item = new ItemStack(Material.valueOf(parts[0]));
+                        item.setAmount(Integer.parseInt(parts[1]));
+                        return item;
+                    }
+                },
+                Logger.getLogger("AuctionHouseRepositoryTest")
+        );
+
+        try {
+            repository.initialize().join();
+            AuctionHouseRepository.Snapshot snapshot1 = repository.loadSnapshot().join();
+            assertNotNull(snapshot1);
+
+            Connection connToClose = activeConnection.get();
+            if (connToClose != null) {
+                connToClose.close();
+            }
+
+            AuctionHouseRepository.Snapshot snapshot2 = repository.loadSnapshot().join();
+            assertNotNull(snapshot2);
+        } finally {
+            repository.shutdown();
+        }
+    }
+
     private AuctionHouseRepository repository(Path database) {
         return new AuctionHouseRepository(
                 () -> open(database),
