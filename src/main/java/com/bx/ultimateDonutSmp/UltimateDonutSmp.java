@@ -623,8 +623,11 @@ public final class UltimateDonutSmp extends JavaPlugin {
         SellCommand sellCmd = new SellCommand(this);
         setExecutor("sell", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellmulti", sellCmd, FeatureManager.Feature.SELL);
+        setTabCompleter("sellmulti", sellCmd);
         setExecutor("sellmultiplier", sellCmd, FeatureManager.Feature.SELL);
+        setTabCompleter("sellmultiplier", sellCmd);
         setExecutor("sellprogress", sellCmd, FeatureManager.Feature.SELL);
+        setTabCompleter("sellprogress", sellCmd);
         setExecutor("sellhand", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellall", sellCmd, FeatureManager.Feature.SELL);
         setExecutor("sellhistory", sellCmd, FeatureManager.Feature.SELL);
