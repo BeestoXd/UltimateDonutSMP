@@ -96,6 +96,60 @@ public class CrateEditorMenu extends BaseMenu {
             }
 
             if (selectedTemplate != null) {
+                String display = "";
+                if (selectedTemplate.hasItemMeta() && selectedTemplate.getItemMeta() != null && selectedTemplate.getItemMeta().hasDisplayName()) {
+                    display = selectedTemplate.getItemMeta().getDisplayName();
+                }
+                // Template shorthand: use display name tags to create non-item rewards from the GUI.
+                // Supported tags (place on a held item as the display name):
+                // [CMD] <console command...>
+                // [MONEY] <amount>
+                // [SHARDS] <amount>
+                if (display.startsWith("[CMD] ")) {
+                    String consoleCommand = display.substring(6).strip();
+                    CrateManager.ActionResult result = plugin.getCrateManager().addCommandReward(crateId, rawSlot, List.of(consoleCommand));
+                    player.sendMessage(ColorUtils.toComponent(result.message()));
+                    if (result.success()) {
+                        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+                        build(player);
+                    }
+                    return;
+                } else if (display.startsWith("[MONEY] ")) {
+                    String amountStr = display.substring(8).strip();
+                    Double parsed = null;
+                    try {
+                        parsed = Double.parseDouble(amountStr);
+                    } catch (NumberFormatException ignored) { }
+                    if (parsed == null) {
+                        player.sendMessage(ColorUtils.toComponent("&cInvalid money amount in template display name. Use '[MONEY] 10.5'."));
+                        return;
+                    }
+                    CrateManager.ActionResult result = plugin.getCrateManager().addMoneyReward(crateId, rawSlot, parsed);
+                    player.sendMessage(ColorUtils.toComponent(result.message()));
+                    if (result.success()) {
+                        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+                        build(player);
+                    }
+                    return;
+                } else if (display.startsWith("[SHARDS] ")) {
+                    String amountStr = display.substring(9).strip();
+                    Long parsed = null;
+                    try {
+                        parsed = Long.parseLong(amountStr);
+                    } catch (NumberFormatException ignored) { }
+                    if (parsed == null) {
+                        player.sendMessage(ColorUtils.toComponent("&cInvalid shards amount in template display name. Use '[SHARDS] 100'."));
+                        return;
+                    }
+                    CrateManager.ActionResult result = plugin.getCrateManager().addShardsReward(crateId, rawSlot, parsed);
+                    player.sendMessage(ColorUtils.toComponent(result.message()));
+                    if (result.success()) {
+                        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+                        build(player);
+                    }
+                    return;
+                }
+
                 CrateManager.ActionResult result = plugin.getCrateManager().upsertItemReward(crateId, rawSlot, selectedTemplate);
                 player.sendMessage(ColorUtils.toComponent(result.message()));
                 if (result.success()) {
