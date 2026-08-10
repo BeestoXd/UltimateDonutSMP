@@ -86,10 +86,13 @@ public class DiscordWebhookManager {
 
         addSkinPlaceholders(root, placeholders, avatarUuid);
 
+        String rawDescription = message.getString("DESCRIPTION", "");
+        String description = sanitizeDescription(rawDescription);
+
         String payload = buildPayload(
                 applyPlaceholders(message.getString("TITLE", key), placeholders),
                 parseColor(message.getString("COLOR", "#00A4FC")),
-                applyPlaceholders(message.getString("DESCRIPTION", ""), placeholders),
+                applyPlaceholders(description, placeholders),
                 applyPlaceholders(message.getString("AUTHOR_NAME", ""), placeholders),
                 applyPlaceholders(message.getString("AUTHOR_ICON", ""), placeholders),
                 applyPlaceholders(message.getString("FOOTER", ""), placeholders),
@@ -239,6 +242,32 @@ public class DiscordWebhookManager {
             output = output.replace(entry.getKey(), entry.getValue() == null ? "" : entry.getValue());
         }
         return output;
+    }
+
+    String sanitizeDescription(String input) {
+        if (input == null || input.isBlank()) {
+            return "";
+        }
+        String[] lines = input.split("\\r?\\n");
+        StringBuilder builder = new StringBuilder();
+        for (String line : lines) {
+            String trimmed = line.trim();
+            if (trimmed.startsWith("# The text or")
+                    || trimmed.startsWith("# The Text Or")
+                    || trimmed.startsWith("# The text and")
+                    || trimmed.startsWith("# The text for")
+                    || trimmed.startsWith("# The text mode")
+                    || trimmed.startsWith("# The text option")
+                    || trimmed.contains("Available options:")
+                    || trimmed.contains("Available Options.")) {
+                continue;
+            }
+            if (builder.length() > 0) {
+                builder.append('\n');
+            }
+            builder.append(line);
+        }
+        return builder.toString();
     }
 
     private int parseColor(String input) {
