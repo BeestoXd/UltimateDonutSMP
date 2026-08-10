@@ -99,25 +99,25 @@ public class CrateManager {
         cratesConfig.set(path + ".DISPLAY.MATERIAL", Material.CHEST.name());
         cratesConfig.set(path + ".DISPLAY.DISPLAY-NAME", "&f" + prettifyId(normalized) + " Crate");
         cratesConfig.set(path + ".DISPLAY.LORE", List.of(
-                "&7ᴋᴇʏѕ: &f{keys}",
-                "&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ ᴀɴᴅ ᴄʜᴏᴏѕᴇ 1 ʀᴇᴡᴀʀᴅ."
+                "&7Keys: &f{keys}",
+                "&aClick to open and choose 1 reward."
         ));
         cratesConfig.set(path + ".KEY-ITEM.MATERIAL", Material.TRIPWIRE_HOOK.name());
         cratesConfig.set(path + ".KEY-ITEM.DISPLAY-NAME", "&f" + prettifyId(normalized) + " Key");
         cratesConfig.set(path + ".KEY-ITEM.LORE", List.of(
-                "&7ᴏᴘᴇɴѕ ᴛʜᴇ &f" + prettifyId(normalized) + " crate&7."
+                "&7Opens the &f" + prettifyId(normalized) + " crate&7."
         ));
         cratesConfig.set(path + ".OPEN-TYPE", OpenType.CHOOSE_ONE.name());
         cratesConfig.set(path + ".PERMISSION", "");
         cratesConfig.set(path + ".BROADCAST-ON-CLAIM", false);
-        cratesConfig.set(path + ".MENU.OPEN-TITLE", "&8" + prettifyId(normalized) + " ᴄʀᴀᴛᴇ");
-        cratesConfig.set(path + ".MENU.CONFIRM-TITLE", "&8ᴄᴏɴꜰɪʀᴍ ʀᴇᴡᴀʀᴅ");
+        cratesConfig.set(path + ".MENU.OPEN-TITLE", "&8" + prettifyId(normalized) + " crate");
+        cratesConfig.set(path + ".MENU.CONFIRM-TITLE", "&8Confirm Reward");
         cratesConfig.set(path + ".MENU.SIZE", 27);
         cratesConfig.set(path + ".MENU.FILLER", Material.BLACK_STAINED_GLASS_PANE.name());
         cratesConfig.set(path + ".MENU.BACK-SLOT", 26);
         cratesConfig.set(path + ".MENU.BACK-BUTTON.MATERIAL", Material.BARRIER.name());
-        cratesConfig.set(path + ".MENU.BACK-BUTTON.DISPLAY-NAME", "&cʙᴀᴄᴋ");
-        cratesConfig.set(path + ".MENU.BACK-BUTTON.LORE", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."));
+        cratesConfig.set(path + ".MENU.BACK-BUTTON.DISPLAY-NAME", "&cBack");
+        cratesConfig.set(path + ".MENU.BACK-BUTTON.LORE", List.of("&7Return to the crate list."));
         cratesConfig.createSection(path + ".REWARDS");
 
         if (!plugin.getConfigManager().saveCrates()) {
@@ -284,7 +284,7 @@ public class CrateManager {
         cratesConfig.set(basePath + ".SLOT", slot);
         cratesConfig.set(basePath + ".DISPLAY.MATERIAL", Material.PAPER.name());
         cratesConfig.set(basePath + ".DISPLAY.DISPLAY-NAME", "&fcommand reward");
-        cratesConfig.set(basePath + ".DISPLAY.LORE", List.of("&7ᴄᴏᴍᴍᴀɴᴅ ʀᴇᴡᴀʀᴅ"));
+        cratesConfig.set(basePath + ".DISPLAY.LORE", List.of("&7Command reward"));
         cratesConfig.set(basePath + ".DISPLAY.AMOUNT", 1);
         cratesConfig.set(basePath + ".DISPLAY.ENCHANTMENTS", List.of());
 
@@ -332,7 +332,7 @@ public class CrateManager {
         cratesConfig.set(basePath + ".SLOT", slot);
         cratesConfig.set(basePath + ".DISPLAY.MATERIAL", Material.SUNFLOWER.name());
         cratesConfig.set(basePath + ".DISPLAY.DISPLAY-NAME", "&fMoney reward");
-        cratesConfig.set(basePath + ".DISPLAY.LORE", List.of("&7ᴍᴏɴᴇʏ ʀᴇᴡᴀʀᴅ"));
+        cratesConfig.set(basePath + ".DISPLAY.LORE", List.of("&7Money reward"));
         cratesConfig.set(basePath + ".DISPLAY.AMOUNT", 1);
         cratesConfig.set(basePath + ".DISPLAY.ENCHANTMENTS", List.of());
 
@@ -379,7 +379,7 @@ public class CrateManager {
         cratesConfig.set(basePath + ".SLOT", slot);
         cratesConfig.set(basePath + ".DISPLAY.MATERIAL", Material.AMETHYST_SHARD.name());
         cratesConfig.set(basePath + ".DISPLAY.DISPLAY-NAME", "&fShards reward");
-        cratesConfig.set(basePath + ".DISPLAY.LORE", List.of("&7sʜᴀʀᴅs ʀᴇᴡᴀʀᴅ"));
+        cratesConfig.set(basePath + ".DISPLAY.LORE", List.of("&7Shards reward"));
         cratesConfig.set(basePath + ".DISPLAY.AMOUNT", 1);
         cratesConfig.set(basePath + ".DISPLAY.ENCHANTMENTS", List.of());
 
@@ -1184,7 +1184,7 @@ public class CrateManager {
             );
             return new ActionResult(false, plugin.getConfigManager().getMessageOrDefault(
                     "CRASH_PROTECTION.ITEM_BLOCKED",
-                    "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ʜᴇʀᴇ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴅᴀᴛᴀ ʟᴏᴏᴋѕ ᴜɴѕᴀꜰᴇ. &7ᴄᴏɴᴛᴇxᴛ: &f{context}&7. ʀᴇᴀѕᴏɴ: &f{reason}",
+                    "&cThat item cannot be used here because its data looks unsafe. &7context: &f{context}&7. reason: &f{reason}",
                     "{context}", CrashProtectionManager.Context.CRATES.displayName(),
                     "{reason}", safetyResult.reason()
             ));
@@ -1275,11 +1275,11 @@ public class CrateManager {
 
     private List<String> serializeDisplayLore(ItemMeta meta) {
         if (meta == null || !meta.hasLore() || meta.getLore() == null || meta.getLore().isEmpty()) {
-            return List.of("&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.");
+            return List.of("&7Choose this reward.");
         }
 
         List<String> lore = serializeActualLore(meta);
-        return lore.isEmpty() ? List.of("&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.") : lore;
+        return lore.isEmpty() ? List.of("&7Choose this reward.") : lore;
     }
 
     private List<String> serializeGrantLore(ItemMeta meta) {
@@ -1874,9 +1874,9 @@ public class CrateManager {
                     Material.GRAY_STAINED_GLASS_PANE,
                     List.of(10, 11, 12, 13, 14, 15, 16),
                     13,
-                    new DisplayItem(Material.BARRIER, "&cno crates", List.of("&7ɴᴏ ᴄʀᴀᴛᴇѕ ᴀʀᴇ ᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ."), 1, List.of()),
+                    new DisplayItem(Material.BARRIER, "&cNo crates", List.of("&7no crates are available right now."), 1, List.of()),
                     26,
-                    new DisplayItem(Material.BARRIER, "&cclose", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ."), 1, List.of())
+                    new DisplayItem(Material.BARRIER, "&cclose", List.of("&7Close this menu."), 1, List.of())
             );
         }
     }
@@ -1896,9 +1896,9 @@ public class CrateManager {
                     Material.GRAY_STAINED_GLASS_PANE,
                     13,
                     15,
-                    new DisplayItem(Material.LIME_STAINED_GLASS_PANE, "&aconfirm", List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ {reward}."), 1, List.of()),
+                    new DisplayItem(Material.LIME_STAINED_GLASS_PANE, "&aconfirm", List.of("&7Click to claim {reward}."), 1, List.of()),
                     11,
-                    new DisplayItem(Material.RED_STAINED_GLASS_PANE, "&ccancel", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ʀᴇᴡᴀʀᴅ ʟɪѕᴛ."), 1, List.of())
+                    new DisplayItem(Material.RED_STAINED_GLASS_PANE, "&ccancel", List.of("&7Return to the reward list."), 1, List.of())
             );
         }
     }
@@ -1918,7 +1918,7 @@ public class CrateManager {
                     27,
                     Material.BLACK_STAINED_GLASS_PANE,
                     26,
-                    new DisplayItem(Material.BARRIER, "&cback", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴄʀᴀᴛᴇ ʟɪѕᴛ."), 1, List.of())
+                    new DisplayItem(Material.BARRIER, "&cback", List.of("&7Return to the crate list."), 1, List.of())
             );
         }
     }

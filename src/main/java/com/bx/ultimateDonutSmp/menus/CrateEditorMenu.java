@@ -23,7 +23,7 @@ public class CrateEditorMenu extends BaseMenu {
     private boolean instructionsSent;
 
     public CrateEditorMenu(UltimateDonutSmp plugin, String crateId) {
-        super(plugin, "&8ᴇᴅɪᴛɪɴɢ ᴄʀᴀᴛᴇ: " + crateId, resolveSize(plugin, crateId));
+        super(plugin, "&8Editing crate: " + crateId, resolveSize(plugin, crateId));
         this.crateId = crateId;
     }
 
@@ -53,17 +53,17 @@ public class CrateEditorMenu extends BaseMenu {
 
         set(crate.menuSettings().backSlot(), ItemUtils.createItem(
                 Material.BARRIER,
-                "&cᴄʟᴏѕᴇ ᴇᴅɪᴛᴏʀ",
+                "&cClose Editor",
                 List.of(
-                        "&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴏѕᴇ ᴛʜɪѕ ᴇᴅɪᴛᴏʀ.",
-                        "&7ᴄʜᴀɴɢᴇѕ ᴀʀᴇ ѕᴀᴠᴇᴅ ɪɴѕᴛᴀɴᴛʟʏ."
+                        "&7Click to close this editor.",
+                        "&7Changes are saved instantly."
                 )
         ));
 
         if (!instructionsSent) {
             instructionsSent = true;
-            player.sendMessage(ColorUtils.toComponent("&8[&bᴄʀᴀᴛᴇѕ&8] &7ᴄʟɪᴄᴋ ᴀɴ ɪᴛᴇᴍ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ᴛᴏ ѕᴇʟᴇᴄᴛ ɪᴛ ᴀѕ ᴀ ᴛᴇᴍᴘʟᴀᴛᴇ, ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴀ ᴄʀᴀᴛᴇ ѕʟᴏᴛ ᴛᴏ ᴘʟᴀᴄᴇ ᴏʀ ʀᴇᴘʟᴀᴄᴇ ɪᴛ."));
-            player.sendMessage(ColorUtils.toComponent("&8[&bᴄʀᴀᴛᴇѕ&8] &7ᴄʟɪᴄᴋ ᴀ ʀᴇᴡᴀʀᴅ ѕʟᴏᴛ ᴡɪᴛʜ ɴᴏ ѕᴇʟᴇᴄᴛᴇᴅ ᴛᴇᴍᴘʟᴀᴛᴇ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴛʜᴇ ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ ꜰʀᴏᴍ ᴛʜᴀᴛ ѕʟᴏᴛ."));
+            player.sendMessage(ColorUtils.toComponent("&8[&bCrates&8] &7Click an item in your inventory to select it as a template, then click a crate slot to place or replace it."));
+            player.sendMessage(ColorUtils.toComponent("&8[&bCrates&8] &7Click a reward slot with no selected template to remove the item reward from that slot."));
         }
     }
 
@@ -76,7 +76,7 @@ public class CrateEditorMenu extends BaseMenu {
         if (crate == null) {
             event.setCancelled(true);
             player.closeInventory();
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴄʀᴀᴛᴇ ɴᴏ ʟᴏɴɢᴇʀ ᴇxɪѕᴛѕ."));
+            player.sendMessage(ColorUtils.toComponent("&cThat crate no longer exists."));
             return;
         }
 
@@ -91,7 +91,7 @@ public class CrateEditorMenu extends BaseMenu {
             }
 
             if (lockedSlots.contains(rawSlot)) {
-                player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ѕʟᴏᴛ ᴄᴏɴᴛᴀɪɴѕ ᴀ ɴᴏɴ-ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ. ᴇᴅɪᴛ ɪᴛ ɪɴ crates.yml ɪꜰ ɴᴇᴇᴅᴇᴅ."));
+                player.sendMessage(ColorUtils.toComponent("&cThat slot contains a non-item reward. Edit it in crates.yml if needed."));
                 return;
             }
 
@@ -160,7 +160,7 @@ public class CrateEditorMenu extends BaseMenu {
             }
 
             if (inventory.getItem(rawSlot) == null || inventory.getItem(rawSlot).getType().isAir()) {
-                player.sendMessage(ColorUtils.toComponent("&cѕᴇʟᴇᴄᴛ ᴀɴ ɪᴛᴇᴍ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ꜰɪʀѕᴛ."));
+                player.sendMessage(ColorUtils.toComponent("&cSelect an item from your inventory first."));
                 return;
             }
 
@@ -180,7 +180,7 @@ public class CrateEditorMenu extends BaseMenu {
 
         event.setCancelled(true);
         selectedTemplate = event.getCurrentItem().clone();
-        player.sendMessage(ColorUtils.toComponent("&aѕᴇʟᴇᴄᴛᴇᴅ &f" + readableItemName(selectedTemplate) + "&a. ᴄʟɪᴄᴋ ᴀ ᴄʀᴀᴛᴇ ѕʟᴏᴛ ᴛᴏ ᴘʟᴀᴄᴇ ɪᴛ."));
+        player.sendMessage(ColorUtils.toComponent("&aSelected &f" + readableItemName(selectedTemplate) + "&a. Click a crate slot to place it."));
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
     }
 
@@ -225,8 +225,8 @@ public class CrateEditorMenu extends BaseMenu {
                 reward.display().material(),
                 reward.display().displayName(),
                 List.of(
-                        "&7ᴛʜɪѕ ѕʟᴏᴛ ᴜѕᴇѕ ᴀ ɴᴏɴ-ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅ.",
-                        "&7ɢᴜɪ ᴇᴅɪᴛᴏʀ ᴏɴʟʏ ѕᴜᴘᴘᴏʀᴛѕ ɪᴛᴇᴍ ʀᴇᴡᴀʀᴅѕ."
+                        "&7This slot uses a non-item reward.",
+                        "&7GUI editor only supports item rewards."
                 )
         );
         item.setAmount(1);

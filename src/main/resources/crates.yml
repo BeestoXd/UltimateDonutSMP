@@ -1,5 +1,5 @@
-# SMPCore setup: Crate opening behavior and editable crate reward definitions.
-# SMPCore setup: Keep indentation with spaces; reload with /smpcore reload when the setting supports reload.
+# UltimateDonutSMP setup: Crate opening behavior and editable crate reward definitions.
+# UltimateDonutSMP setup: Keep indentation with spaces; reload with /crate reload when the setting supports reload.
 
 SETTINGS:
   LIST-MENU:
@@ -641,15 +641,15 @@ CRATES:
         SLOT: 13
         DISPLAY:
           MATERIAL: DRAGON_HEAD
-          DISPLAY-NAME: '&fᴅʀᴀɢᴏɴ ʜᴇᴀᴅ'
+          DISPLAY-NAME: '&fDragon Head'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 1
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: DRAGON_HEAD
-          DISPLAY-NAME: '&fᴅʀᴀɢᴏɴ ʜᴇᴀᴅ'
+          DISPLAY-NAME: '&fDragon Head'
           LORE: []
           AMOUNT: 1
           ENCHANTMENTS: []
@@ -658,15 +658,15 @@ CRATES:
         SLOT: 12
         DISPLAY:
           MATERIAL: ENCHANTED_GOLDEN_APPLE
-          DISPLAY-NAME: '&fᴇɴᴄʜᴀɴᴛᴇᴅ ɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ'
+          DISPLAY-NAME: '&fEnchanted Golden Apple'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 1
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: ENCHANTED_GOLDEN_APPLE
-          DISPLAY-NAME: '&fᴇɴᴄʜᴀɴᴛᴇᴅ ɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ'
+          DISPLAY-NAME: '&fEnchanted Golden Apple'
           LORE: []
           AMOUNT: 1
           ENCHANTMENTS: []
@@ -675,15 +675,15 @@ CRATES:
         SLOT: 11
         DISPLAY:
           MATERIAL: NETHERITE_INGOT
-          DISPLAY-NAME: '&fɴᴇᴛʜᴇʀɪᴛᴇ ɪɴɢᴏᴛ'
+          DISPLAY-NAME: '&fNetherite Ingot'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 6
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: NETHERITE_INGOT
-          DISPLAY-NAME: '&fɴᴇᴛʜᴇʀɪᴛᴇ ɪɴɢᴏᴛ'
+          DISPLAY-NAME: '&fNetherite Ingot'
           LORE: []
           AMOUNT: 6
           ENCHANTMENTS: []
@@ -692,15 +692,15 @@ CRATES:
         SLOT: 10
         DISPLAY:
           MATERIAL: NETHERITE_UPGRADE_SMITHING_TEMPLATE
-          DISPLAY-NAME: '&fɴᴇᴛʜᴇʀɪᴛᴇ ᴜᴘɢʀᴀᴅᴇ ѕᴍɪᴛʜɪɴɢ ᴛᴇᴍᴘʟᴀᴛᴇ'
+          DISPLAY-NAME: '&fNetherite Upgrade Smithing Template'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 1
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: NETHERITE_UPGRADE_SMITHING_TEMPLATE
-          DISPLAY-NAME: '&fɴᴇᴛʜᴇʀɪᴛᴇ ᴜᴘɢʀᴀᴅᴇ ѕᴍɪᴛʜɪɴɢ ᴛᴇᴍᴘʟᴀᴛᴇ'
+          DISPLAY-NAME: '&fNetherite Upgrade Smithing Template'
           LORE: []
           AMOUNT: 1
           ENCHANTMENTS: []
@@ -709,15 +709,15 @@ CRATES:
         SLOT: 3
         DISPLAY:
           MATERIAL: GOLDEN_CARROT
-          DISPLAY-NAME: '&fɢᴏʟᴅᴇɴ ᴄᴀʀʀᴏᴛ'
+          DISPLAY-NAME: '&fGolden Carrot'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 64
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: GOLDEN_CARROT
-          DISPLAY-NAME: '&fɢᴏʟᴅᴇɴ ᴄᴀʀʀᴏᴛ'
+          DISPLAY-NAME: '&fGolden Carrot'
           LORE: []
           AMOUNT: 64
           ENCHANTMENTS: []
@@ -726,15 +726,15 @@ CRATES:
         SLOT: 5
         DISPLAY:
           MATERIAL: GOLDEN_APPLE
-          DISPLAY-NAME: '&fɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ'
+          DISPLAY-NAME: '&fGolden Apple'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 32
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: GOLDEN_APPLE
-          DISPLAY-NAME: '&fɢᴏʟᴅᴇɴ ᴀᴘᴘʟᴇ'
+          DISPLAY-NAME: '&fGolden Apple'
           LORE: []
           AMOUNT: 32
           ENCHANTMENTS: []
@@ -743,15 +743,15 @@ CRATES:
         SLOT: 22
         DISPLAY:
           MATERIAL: DIAMOND
-          DISPLAY-NAME: '&fᴅɪᴀᴍᴏɴᴅ'
+          DISPLAY-NAME: '&fDiamond'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 32
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: DIAMOND
-          DISPLAY-NAME: '&fᴅɪᴀᴍᴏɴᴅ'
+          DISPLAY-NAME: '&fDiamond'
           LORE: []
           AMOUNT: 32
           ENCHANTMENTS: []
@@ -760,15 +760,15 @@ CRATES:
         SLOT: 4
         DISPLAY:
           MATERIAL: GOLD_INGOT
-          DISPLAY-NAME: '&fɢᴏʟᴅ ɪɴɢᴏᴛ'
+          DISPLAY-NAME: '&fGold Ingot'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 64
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: GOLD_INGOT
-          DISPLAY-NAME: '&fɢᴏʟᴅ ɪɴɢᴏᴛ'
+          DISPLAY-NAME: '&fGold Ingot'
           LORE: []
           AMOUNT: 64
           ENCHANTMENTS: []
@@ -777,15 +777,15 @@ CRATES:
         SLOT: 23
         DISPLAY:
           MATERIAL: FIREWORK_ROCKET
-          DISPLAY-NAME: '&fꜰɪʀᴇᴡᴏʀᴋ ʀᴏᴄᴋᴇᴛ'
+          DISPLAY-NAME: '&fFirework Rocket'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 64
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: FIREWORK_ROCKET
-          DISPLAY-NAME: '&fꜰɪʀᴇᴡᴏʀᴋ ʀᴏᴄᴋᴇᴛ'
+          DISPLAY-NAME: '&fFirework Rocket'
           LORE: []
           AMOUNT: 64
           ENCHANTMENTS: []
@@ -794,15 +794,15 @@ CRATES:
         SLOT: 21
         DISPLAY:
           MATERIAL: BEACON
-          DISPLAY-NAME: '&fʙᴇᴀᴄᴏɴ'
+          DISPLAY-NAME: '&fBeacon'
           LORE:
-          - '&7ᴄʜᴏᴏѕᴇ ᴛʜɪѕ ʀᴇᴡᴀʀᴅ.'
+          - '&7Choose this reward.'
           AMOUNT: 1
           ENCHANTMENTS: []
         GRANT:
           TYPE: ITEM
           MATERIAL: BEACON
-          DISPLAY-NAME: '&fʙᴇᴀᴄᴏɴ'
+          DISPLAY-NAME: '&fBeacon'
           LORE: []
           AMOUNT: 1
           ENCHANTMENTS: []
