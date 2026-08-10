@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.Arrays;
 
 public class CrateCommand implements CommandExecutor, TabCompleter {
 
@@ -37,7 +38,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     private static final List<String> ADMIN_SUBCOMMANDS = List.of(
             "create", "delete", "type", "key", "take", "set", "add", "edit", "remove", "bind", "unbind", "listbound", "info"
     );
-    private static final List<String> OPEN_TYPE_COMPLETIONS = List.of("choose_one", "gacha");
+    private static final List<String> OPEN_TYPE_COMPLETIONS = List.of("choose_one", "choose-one", "gacha");
     private static final List<String> AMOUNT_COMPLETIONS = List.of("1", "5", "10", "25", "64");
     private static final List<String> SLOT_COMPLETIONS = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
@@ -291,9 +292,9 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
         CrateManager.OpenType openType;
         try {
-            openType = CrateManager.OpenType.valueOf(args[2].trim().toUpperCase());
+            openType = CrateManager.OpenType.valueOf(args[2].trim().toUpperCase().replace('-', '_'));
         } catch (IllegalArgumentException exception) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴛʏᴘᴇ ᴍᴜѕᴛ ʙᴇ &fᴄʜᴏᴏѕᴇ_ᴏɴᴇ &cᴏʀ &fɢᴀᴄʜᴀ&c."));
+            sender.sendMessage(ColorUtils.toComponent("&cᴛʏᴘᴇ ᴍᴜѕᴛ ʙᴇ &fᴄʜᴏᴏѕᴇ_ᴏɴᴇ &c(or &fchoose-one&c) or &fɢᴀᴄʜᴀ&c."));
             return true;
         }
 
@@ -457,11 +458,50 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        CrateManager.ActionResult result = switch (mode) {
-            case ADD -> plugin.getCrateManager().addItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
-            case EDIT -> plugin.getCrateManager().editItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
-            case REMOVE -> plugin.getCrateManager().removeReward(crate.id(), slot);
-        };
+        CrateManager.ActionResult result;
+        // Support: /crate add <crate> <slot> command <console command...>
+        if (mode == RewardMutationMode.ADD && args.length >= 4) {
+            String verb = args[3].toLowerCase(Locale.ROOT);
+            if (verb.equals("command")) {
+                if (args.length < 5) {
+                    sender.sendMessage(ColorUtils.toComponent("&cᴜsᴀɢᴇ: /crate add <crate> <slot> command <console command...>"));
+                    return true;
+                }
+                String consoleCommand = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
+                result = plugin.getCrateManager().addCommandReward(crate.id(), slot, List.of(consoleCommand));
+            } else if (verb.equals("money")) {
+                if (args.length < 5) {
+                    sender.sendMessage(ColorUtils.toComponent("&cᴜsᴀɢᴇ: /crate add <crate> <slot> money <amount>"));
+                    return true;
+                }
+                Double parsed = parseDouble(args[4]);
+                if (parsed == null) {
+                    sender.sendMessage(ColorUtils.toComponent("&camount must be a number."));
+                    return true;
+                }
+                result = plugin.getCrateManager().addMoneyReward(crate.id(), slot, parsed);
+            } else if (verb.equals("shards")) {
+                if (args.length < 5) {
+                    sender.sendMessage(ColorUtils.toComponent("&cᴜsᴀɢᴇ: /crate add <crate> <slot> shards <amount>"));
+                    return true;
+                }
+                Long parsed = parseLong(args[4]);
+                if (parsed == null) {
+                    sender.sendMessage(ColorUtils.toComponent("&camount must be an integer."));
+                    return true;
+                }
+                result = plugin.getCrateManager().addShardsReward(crate.id(), slot, parsed);
+            } else {
+                // fallback to item-handling
+                result = plugin.getCrateManager().addItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
+            }
+        } else {
+            result = switch (mode) {
+                case ADD -> plugin.getCrateManager().addItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
+                case EDIT -> plugin.getCrateManager().editItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
+                case REMOVE -> plugin.getCrateManager().removeReward(crate.id(), slot);
+            };
+        }
 
         sender.sendMessage(ColorUtils.toComponent(result.message()));
         return true;
@@ -633,6 +673,22 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     private Integer parsePositiveInt(String input) {
         try {
             return Integer.parseInt(input);
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    private Double parseDouble(String input) {
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    private Long parseLong(String input) {
+        try {
+            return Long.parseLong(input);
         } catch (NumberFormatException exception) {
             return null;
         }
