@@ -4949,6 +4949,10 @@ public class DatabaseManager {
     }
 
     private Connection openDedicatedMySqlConnection() throws Exception {
+        if (hikariDataSource != null) {
+            return hikariDataSource.getConnection();
+        }
+        
         Class.forName("com.mysql.cj.jdbc.Driver");
         FileConfiguration config = getDatabaseConfig();
         String host = config.getString("DATABASE.MYSQL.HOST", "localhost");

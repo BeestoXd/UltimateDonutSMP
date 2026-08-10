@@ -142,9 +142,27 @@ public final class ShopPreferenceRepository {
     private Connection connection() throws SQLException {
         Connection current = connection;
         if (current == null || current.isClosed()) {
-            throw new SQLException("Shop preference database connection is not available");
+            reconnect();
+            current = connection;
+            if (current == null) {
+                throw new SQLException("Shop preference database connection is not available");
+            }
         }
         return current;
+    }
+
+    private void reconnect() throws SQLException {
+        try {
+            Connection oldConnection = connection;
+            if (oldConnection != null) {
+                try {
+                    oldConnection.close();
+                } catch (Exception ignored) {
+                }
+            }
+        } finally {
+            connection = connectionFactory.open();
+        }
     }
 
     private <T> CompletableFuture<T> submit(Callable<T> task) {
@@ -156,9 +174,21 @@ public final class ShopPreferenceRepository {
                 try {
                     return task.call();
                 } catch (SQLException exception) {
-                    if (attempt >= 4 || !isTransientDatabaseContention(exception)) {
+                    boolean isConnectionError = isConnectionError(exception);
+                    boolean isTransient = isConnectionError || isTransientDatabaseContention(exception);
+                    
+                    if (attempt >= 4 || !isTransient) {
                         throw new CompletionException(exception);
                     }
+                    
+                    if (isConnectionError) {
+                        try {
+                            reconnect();
+                        } catch (SQLException reconnectError) {
+                            throw new CompletionException(reconnectError);
+                        }
+                    }
+                    
                     try {
                         Thread.sleep(25L * (attempt + 1L));
                     } catch (InterruptedException interrupted) {
@@ -170,6 +200,40 @@ public final class ShopPreferenceRepository {
                 }
             }
         }, worker);
+    }
+
+    private boolean isConnectionError(SQLException exception) {
+        String state = exception.getSQLState();
+        int errorCode = exception.getErrorCode();
+        String message = exception.getMessage();
+        
+        if (message == null) {
+            message = "";
+        }
+        String messageLower = message.toLowerCase();
+        
+        return "08S01".equals(state)
+                || errorCode == 2006
+                || errorCode == 2013
+                || errorCode == 2055
+                || messageLower.contains("connection reset")
+                || messageLower.contains("communications exception")
+                || messageLower.contains("gone away")
+                || messageLower.contains("lost connection")
+                || messageLower.contains("timeout")
+                || messageLower.contains("connection is not available")
+                || isCausedBySocketException(exception);
+    }
+
+    private boolean isCausedBySocketException(SQLException exception) {
+        Throwable cause = exception.getCause();
+        while (cause != null) {
+            if (cause instanceof java.net.SocketException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
     }
 
     private boolean isTransientDatabaseContention(SQLException exception) {
