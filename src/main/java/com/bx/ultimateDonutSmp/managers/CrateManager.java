@@ -283,7 +283,7 @@ public class CrateManager {
     private void writeCommandReward(FileConfiguration cratesConfig, String basePath, int slot, List<String> commands) {
         cratesConfig.set(basePath + ".SLOT", slot);
         cratesConfig.set(basePath + ".DISPLAY.MATERIAL", Material.PAPER.name());
-        cratesConfig.set(basePath + ".DISPLAY.DISPLAY-NAME", "&fcommand reward");
+        cratesConfig.set(basePath + ".DISPLAY.DISPLAY-NAME", "&fCommand reward");
         cratesConfig.set(basePath + ".DISPLAY.LORE", List.of("&7Command reward"));
         cratesConfig.set(basePath + ".DISPLAY.AMOUNT", 1);
         cratesConfig.set(basePath + ".DISPLAY.ENCHANTMENTS", List.of());

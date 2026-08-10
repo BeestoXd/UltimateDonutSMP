@@ -98,7 +98,7 @@ public class CrateEditorMenu extends BaseMenu {
             if (selectedTemplate != null) {
                 String display = "";
                 if (selectedTemplate.hasItemMeta() && selectedTemplate.getItemMeta() != null && selectedTemplate.getItemMeta().hasDisplayName()) {
-                    display = selectedTemplate.getItemMeta().getDisplayName();
+                    display = org.bukkit.ChatColor.stripColor(selectedTemplate.getItemMeta().getDisplayName()).trim();
                 }
                 // Template shorthand: use display name tags to create non-item rewards from the GUI.
                 // Supported tags (place on a held item as the display name):
