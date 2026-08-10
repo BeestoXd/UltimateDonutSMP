@@ -212,7 +212,7 @@ public final class ShopPreferenceRepository {
         }
         String messageLower = message.toLowerCase();
         
-        return "08S01".equals(state)
+        return (state != null && state.startsWith("08"))
                 || errorCode == 2006
                 || errorCode == 2013
                 || errorCode == 2055
