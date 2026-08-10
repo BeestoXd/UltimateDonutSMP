@@ -1,12 +1,11 @@
-# Configuration section for Settings.
+# UltimateDonutSMP setup: Crate opening behavior and editable crate reward definitions.
+# UltimateDonutSMP setup: Keep indentation with spaces; reload with /crate reload when the setting supports reload.
+
 SETTINGS:
-  # Configuration section for List Menu.
   LIST-MENU:
     TITLE: '&8Crates'
     SIZE: 27
-    # The text or value for Filler. Available options: Any valid string text
     FILLER: GRAY_STAINED_GLASS_PANE
-    # Configuration section for Content Slots.
     CONTENT-SLOTS:
     - 10
     - 11
@@ -15,67 +14,52 @@ SETTINGS:
     - 14
     - 15
     - 16
-    # The numerical value for Empty Slot. Available options: Any valid integer
     EMPTY-SLOT: 13
-    # Configuration section for Empty.
     EMPTY:
       MATERIAL: BARRIER
       DISPLAY-NAME: '&cNo Crates'
       LORE:
       - '&7No crates are available right now.'
-    # Configuration section for Close Button.
     CLOSE-BUTTON:
       SLOT: 26
       MATERIAL: BARRIER
       DISPLAY-NAME: '&cClose'
       LORE:
       - '&7Close this menu.'
-  # Configuration section for Confirm Menu.
+  
   CONFIRM-MENU:
     SIZE: 27
-    # The text or value for Filler. Available options: Any valid string text
     FILLER: GRAY_STAINED_GLASS_PANE
-    # The numerical value for Preview Slot. Available options: Any valid integer
     PREVIEW-SLOT: 13
-    # The numerical value for Confirm Slot. Available options: Any valid integer
     CONFIRM-SLOT: 15
-    # Configuration section for Confirm Button.
     CONFIRM-BUTTON:
       MATERIAL: LIME_STAINED_GLASS_PANE
       DISPLAY-NAME: '&aConfirm'
       LORE:
       - '&7Claim &f{reward}&7 from'
       - '&b{crate}&7.'
-    # Configuration section for Cancel Button.
     CANCEL-BUTTON:
       SLOT: 11
       MATERIAL: RED_STAINED_GLASS_PANE
       DISPLAY-NAME: '&cCancel'
       LORE:
       - '&7Return to the reward list.'
-  # Configuration section for Hologram.
+  
   HOLOGRAM:
-    # The decimal value for Offset Y. Available options: Any decimal number
     OFFSET-Y: 1.6
-    # Configuration section for Lines.
     LINES:
     - '{crate}'
     - '&7Right-click to open'
-    # The text or value for Key Line. Available options: Any valid string text
     KEY-LINE: '&7Keys: &f{keys}'
-  # Configuration section for Particles.
+  
   PARTICLES:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     TYPE: ENCHANT
-    # The numerical value for Count. Available options: Any valid integer
     COUNT: 4
-  # Configuration section for Gacha.
+  
   GACHA:
     TITLE: '&8Rolling Reward'
-    # The text or value for Filler. Available options: Any valid string text
     FILLER: BLACK_STAINED_GLASS_PANE
-    # Configuration section for Preview Slots.
     PREVIEW-SLOTS:
     - 10
     - 11
@@ -84,407 +68,770 @@ SETTINGS:
     - 14
     - 15
     - 16
-    # The numerical value for Pointer Slot. Available options: Any valid integer
     POINTER-SLOT: 13
-    # The numerical value for Total Steps. Available options: Any valid integer
     TOTAL-STEPS: 38
-    # The numerical value for Tick Interval. Available options: Any valid integer
     TICK-INTERVAL: 2
-# Configuration section for Crates.
+
 CRATES:
-  # Configuration section for Common.
   common:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
-    # The text or value for Open Type. Available options: Any valid string text
     OPEN-TYPE: CHOOSE_ONE
-    # Configuration section for Display.
     DISPLAY:
-      MATERIAL: CHEST
+      MATERIAL: LIME_SHULKER_BOX
       DISPLAY-NAME: '&fCommon Crate'
       LORE:
       - '&7Keys: &f{keys}'
       - '&aClick to open and choose 1 reward.'
-    # Configuration section for Key Item.
     KEY-ITEM:
       MATERIAL: TRIPWIRE_HOOK
-      DISPLAY-NAME: '&fCommon Key'
+      DISPLAY-NAME: '&fcommon key'
       LORE:
       - '&7Opens the &fCommon Crate&7.'
-    # The text or value for Permission. Available options: Any valid string text
     PERMISSION: ''
-    # Determines whether Broadcast On Claim is enabled or disabled. Available options: true, false
     BROADCAST-ON-CLAIM: false
-    # Configuration section for Menu.
     MENU:
-      # The text or value for Open Title. Available options: Any valid string text
-      OPEN-TITLE: '&8Choose 1 Reward'
-      # The text or value for Confirm Title. Available options: Any valid string text
+      OPEN-TITLE: '&8Common Crate'
       CONFIRM-TITLE: '&8Confirm Reward'
       SIZE: 27
-      # The text or value for Filler. Available options: Any valid string text
       FILLER: BLACK_STAINED_GLASS_PANE
-      # The numerical value for Back Slot. Available options: Any valid integer
       BACK-SLOT: 26
-      # Configuration section for Back Button.
       BACK-BUTTON:
         MATERIAL: BARRIER
         DISPLAY-NAME: '&cBack'
         LORE:
         - '&7Return to the crate list.'
-    # Configuration section for Rewards.
     REWARDS:
-      # Configuration section for Iron Helmet.
-      iron_helmet:
-        SLOT: 10
-        # Configuration section for Display.
-        DISPLAY:
-          MATERIAL: IRON_HELMET
-          DISPLAY-NAME: '&fIron Helmet'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
-        GRANT:
-          TYPE: ITEM
-          MATERIAL: IRON_HELMET
-          # The numerical value for Amount. Available options: Any valid integer
-          AMOUNT: 1
-      # Configuration section for Iron Chestplate.
-      iron_chestplate:
-        SLOT: 11
-        # Configuration section for Display.
-        DISPLAY:
-          MATERIAL: IRON_CHESTPLATE
-          DISPLAY-NAME: '&fIron Chestplate'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
-        GRANT:
-          TYPE: ITEM
-          MATERIAL: IRON_CHESTPLATE
-          # The numerical value for Amount. Available options: Any valid integer
-          AMOUNT: 1
-      # Configuration section for Iron Leggings.
-      iron_leggings:
-        SLOT: 12
-        # Configuration section for Display.
-        DISPLAY:
-          MATERIAL: IRON_LEGGINGS
-          DISPLAY-NAME: '&fIron Leggings'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
-        GRANT:
-          TYPE: ITEM
-          MATERIAL: IRON_LEGGINGS
-          # The numerical value for Amount. Available options: Any valid integer
-          AMOUNT: 1
-      # Configuration section for Iron Boots.
-      iron_boots:
-        SLOT: 13
-        # Configuration section for Display.
-        DISPLAY:
-          MATERIAL: IRON_BOOTS
-          DISPLAY-NAME: '&fIron Boots'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
-        GRANT:
-          TYPE: ITEM
-          MATERIAL: IRON_BOOTS
-          # The numerical value for Amount. Available options: Any valid integer
-          AMOUNT: 1
-      # Configuration section for Iron Sword.
-      iron_sword:
-        SLOT: 14
-        # Configuration section for Display.
-        DISPLAY:
-          MATERIAL: IRON_SWORD
-          DISPLAY-NAME: '&fIron Sword'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
-        GRANT:
-          TYPE: ITEM
-          MATERIAL: IRON_SWORD
-          # The numerical value for Amount. Available options: Any valid integer
-          AMOUNT: 1
-      # Configuration section for Money.
-      money:
-        SLOT: 15
-        # Configuration section for Display.
-        DISPLAY:
-          MATERIAL: SUNFLOWER
-          DISPLAY-NAME: '&e$5,000'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
-        GRANT:
-          TYPE: COMMAND
-          # Configuration section for Commands.
-          COMMANDS:
-          - addmoney {player} 5000
-  # Configuration section for Rare.
-  rare:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
-    ENABLED: true
-    # The text or value for Open Type. Available options: Any valid string text
-    OPEN-TYPE: CHOOSE_ONE
-    # Configuration section for Display.
-    DISPLAY:
-      MATERIAL: BARREL
-      DISPLAY-NAME: '&#37BFF9Rare Crate'
-      LORE:
-      - '&7Keys: &f{keys}'
-      - '&aClick to open and choose 1 reward.'
-    # Configuration section for Key Item.
-    KEY-ITEM:
-      MATERIAL: TRIPWIRE_HOOK
-      DISPLAY-NAME: '&#37BFF9Rare Key'
-      LORE:
-      - '&7Opens the &bRare Crate&7.'
-    # The text or value for Permission. Available options: Any valid string text
-    PERMISSION: ''
-    # Determines whether Broadcast On Claim is enabled or disabled. Available options: true, false
-    BROADCAST-ON-CLAIM: false
-    # Configuration section for Menu.
-    MENU:
-      # The text or value for Open Title. Available options: Any valid string text
-      OPEN-TITLE: '&8Rare Crate'
-      # The text or value for Confirm Title. Available options: Any valid string text
-      CONFIRM-TITLE: '&8Confirm Rare Reward'
-      SIZE: 27
-      # The text or value for Filler. Available options: Any valid string text
-      FILLER: BLACK_STAINED_GLASS_PANE
-      # The numerical value for Back Slot. Available options: Any valid integer
-      BACK-SLOT: 26
-      # Configuration section for Back Button.
-      BACK-BUTTON:
-        MATERIAL: BARRIER
-        DISPLAY-NAME: '&cBack'
-        LORE:
-        - '&7Return to the crate list.'
-    # Configuration section for Rewards.
-    REWARDS:
-      # Configuration section for Diamond Helmet.
       diamond_helmet:
         SLOT: 10
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: DIAMOND_HELMET
           DISPLAY-NAME: '&bDiamond Helmet'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          ENCHANTMENTS:
+          - aqua_affinity:1
+          - protection:1
+          - respiration:2
         GRANT:
           TYPE: ITEM
           MATERIAL: DIAMOND_HELMET
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&bDiamond Helmet'
           AMOUNT: 1
-      # Configuration section for Diamond Chestplate.
+          ENCHANTMENTS:
+          - aqua_affinity:1
+          - protection:1
+          - respiration:2
       diamond_chestplate:
         SLOT: 11
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: DIAMOND_CHESTPLATE
           DISPLAY-NAME: '&bDiamond Chestplate'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          ENCHANTMENTS:
+          - protection:1
         GRANT:
           TYPE: ITEM
           MATERIAL: DIAMOND_CHESTPLATE
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&bDiamond Chestplate'
           AMOUNT: 1
-      # Configuration section for Diamond Leggings.
+          ENCHANTMENTS:
+          - protection:1
       diamond_leggings:
         SLOT: 12
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: DIAMOND_LEGGINGS
           DISPLAY-NAME: '&bDiamond Leggings'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          ENCHANTMENTS:
+          - protection:1
+          - swift_sneak:2
         GRANT:
           TYPE: ITEM
           MATERIAL: DIAMOND_LEGGINGS
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&bDiamond Leggings'
           AMOUNT: 1
-      # Configuration section for Diamond Boots.
+          ENCHANTMENTS:
+          - protection:1
+          - swift_sneak:2
       diamond_boots:
         SLOT: 13
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: DIAMOND_BOOTS
           DISPLAY-NAME: '&bDiamond Boots'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          ENCHANTMENTS:
+          - feather_falling:2
+          - depth_strider:2
+          - protection:1
         GRANT:
           TYPE: ITEM
           MATERIAL: DIAMOND_BOOTS
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&bDiamond Boots'
           AMOUNT: 1
-      # Configuration section for Diamond Sword.
+          ENCHANTMENTS:
+          - feather_falling:2
+          - depth_strider:2
+          - protection:1
       diamond_sword:
         SLOT: 14
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: DIAMOND_SWORD
           DISPLAY-NAME: '&bDiamond Sword'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          ENCHANTMENTS:
+          - sharpness:1
+          - looting:2
         GRANT:
           TYPE: ITEM
           MATERIAL: DIAMOND_SWORD
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&bDiamond Sword'
           AMOUNT: 1
-      # Configuration section for Money.
-      money:
+          ENCHANTMENTS:
+          - sharpness:1
+          - looting:2
+      diamond_pickaxe:
         SLOT: 15
-        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: SUNFLOWER
-          DISPLAY-NAME: '&e$15,000'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          MATERIAL: DIAMOND_PICKAXE
+          DISPLAY-NAME: '&bDiamond Pickaxe'
+          ENCHANTMENTS:
+          - efficiency:2
+          - fortune:1
         GRANT:
-          TYPE: COMMAND
-          # Configuration section for Commands.
-          COMMANDS:
-          - addmoney {player} 15000
-  # Configuration section for Epic.
-  epic:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
+          TYPE: ITEM
+          MATERIAL: DIAMOND_PICKAXE
+          DISPLAY-NAME: '&bDiamond Pickaxe'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - efficiency:2
+          - fortune:1
+      diamond_shovel:
+        SLOT: 16
+        DISPLAY:
+          MATERIAL: DIAMOND_SHOVEL
+          DISPLAY-NAME: '&bDiamond Shovel'
+          ENCHANTMENTS:
+          - efficiency:3
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: DIAMOND_SHOVEL
+          DISPLAY-NAME: '&bDiamond Shovel'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - efficiency:3
+  
+  prime:
     ENABLED: true
-    # The text or value for Open Type. Available options: Any valid string text
     OPEN-TYPE: CHOOSE_ONE
-    # Configuration section for Display.
     DISPLAY:
-      MATERIAL: ENDER_CHEST
-      DISPLAY-NAME: '&#A303F9Epic Crate'
+      MATERIAL: BLUE_SHULKER_BOX
+      DISPLAY-NAME: '&9Prime Crate'
       LORE:
       - '&7Keys: &f{keys}'
       - '&aClick to open and choose 1 reward.'
-    # Configuration section for Key Item.
     KEY-ITEM:
       MATERIAL: TRIPWIRE_HOOK
-      DISPLAY-NAME: '&#A303F9Epic Key'
+      DISPLAY-NAME: '&9prime key'
       LORE:
-      - '&7Opens the &5Epic Crate&7.'
-    # The text or value for Permission. Available options: Any valid string text
+      - '&7Opens the &9Prime Crate&7.'
     PERMISSION: ''
-    # Determines whether Broadcast On Claim is enabled or disabled. Available options: true, false
-    BROADCAST-ON-CLAIM: true
-    # Configuration section for Menu.
+    BROADCAST-ON-CLAIM: false
     MENU:
-      # The text or value for Open Title. Available options: Any valid string text
-      OPEN-TITLE: '&8Epic Crate'
-      # The text or value for Confirm Title. Available options: Any valid string text
-      CONFIRM-TITLE: '&8Confirm Epic Reward'
+      OPEN-TITLE: '&8Prime Crate'
+      CONFIRM-TITLE: '&8Confirm Prime Reward'
       SIZE: 27
-      # The text or value for Filler. Available options: Any valid string text
       FILLER: BLACK_STAINED_GLASS_PANE
-      # The numerical value for Back Slot. Available options: Any valid integer
       BACK-SLOT: 26
-      # Configuration section for Back Button.
       BACK-BUTTON:
         MATERIAL: BARRIER
         DISPLAY-NAME: '&cBack'
         LORE:
         - '&7Return to the crate list.'
-    # Configuration section for Rewards.
     REWARDS:
-      # Configuration section for Netherite Helmet.
-      netherite_helmet:
+      prime_helmet:
         SLOT: 10
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: NETHERITE_HELMET
-          DISPLAY-NAME: '&5Netherite Helmet'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          DISPLAY-NAME: '&9Prime Netherite Helmet'
+          ENCHANTMENTS:
+          - aqua_affinity:1
+          - protection:4
+          - respiration:3
+          - unbreaking:3
+          - mending:1
         GRANT:
           TYPE: ITEM
           MATERIAL: NETHERITE_HELMET
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&9Prime Netherite Helmet'
           AMOUNT: 1
-      # Configuration section for Netherite Chestplate.
-      netherite_chestplate:
+          ENCHANTMENTS:
+          - aqua_affinity:1
+          - protection:4
+          - respiration:3
+          - unbreaking:3
+          - mending:1
+      prime_chestplate:
         SLOT: 11
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: NETHERITE_CHESTPLATE
-          DISPLAY-NAME: '&5Netherite Chestplate'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          DISPLAY-NAME: '&9Prime Netherite Chestplate'
+          ENCHANTMENTS:
+          - protection:4
+          - unbreaking:3
+          - mending:1
         GRANT:
           TYPE: ITEM
           MATERIAL: NETHERITE_CHESTPLATE
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&9Prime Netherite Chestplate'
           AMOUNT: 1
-      # Configuration section for Netherite Leggings.
-      netherite_leggings:
+          ENCHANTMENTS:
+          - protection:4
+          - unbreaking:3
+          - mending:1
+      prime_leggings:
         SLOT: 12
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: NETHERITE_LEGGINGS
-          DISPLAY-NAME: '&5Netherite Leggings'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          DISPLAY-NAME: '&9Prime Netherite Leggings'
+          ENCHANTMENTS:
+          - swift_sneak:3
+          - blast_protection:4
+          - unbreaking:3
+          - mending:1
         GRANT:
           TYPE: ITEM
           MATERIAL: NETHERITE_LEGGINGS
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&9Prime Netherite Leggings'
           AMOUNT: 1
-      # Configuration section for Netherite Boots.
-      netherite_boots:
+          ENCHANTMENTS:
+          - swift_sneak:3
+          - blast_protection:4
+          - unbreaking:3
+          - mending:1
+      prime_boots:
         SLOT: 13
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: NETHERITE_BOOTS
-          DISPLAY-NAME: '&5Netherite Boots'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          DISPLAY-NAME: '&9Prime Netherite Boots'
+          ENCHANTMENTS:
+          - depth_strider:3
+          - feather_falling:4
+          - protection:4
+          - soul_speed:3
+          - unbreaking:3
+          - mending:1
         GRANT:
           TYPE: ITEM
           MATERIAL: NETHERITE_BOOTS
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&9Prime Netherite Boots'
           AMOUNT: 1
-      # Configuration section for Netherite Sword.
-      netherite_sword:
+          ENCHANTMENTS:
+          - depth_strider:3
+          - feather_falling:4
+          - protection:4
+          - soul_speed:3
+          - unbreaking:3
+          - mending:1
+      prime_sword:
         SLOT: 14
-        # Configuration section for Display.
         DISPLAY:
           MATERIAL: NETHERITE_SWORD
-          DISPLAY-NAME: '&5Netherite Sword'
-          LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          DISPLAY-NAME: '&9Prime Netherite Sword'
+          ENCHANTMENTS:
+          - looting:3
+          - knockback:1
+          - sharpness:5
+          - sweeping_edge:3
+          - unbreaking:3
+          - mending:1
         GRANT:
           TYPE: ITEM
           MATERIAL: NETHERITE_SWORD
-          # The numerical value for Amount. Available options: Any valid integer
+          DISPLAY-NAME: '&9Prime Netherite Sword'
           AMOUNT: 1
-      # Configuration section for Money.
-      money:
+          ENCHANTMENTS:
+          - looting:3
+          - knockback:1
+          - sharpness:5
+          - sweeping_edge:3
+          - unbreaking:3
+          - mending:1
+      prime_crossbow:
         SLOT: 15
-        # Configuration section for Display.
         DISPLAY:
-          MATERIAL: SUNFLOWER
-          DISPLAY-NAME: '&e$50,000'
+          MATERIAL: CROSSBOW
+          DISPLAY-NAME: '&9Prime Crossbow'
+          ENCHANTMENTS:
+          - multishot:1
+          - quick_charge:3
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: CROSSBOW
+          DISPLAY-NAME: '&9Prime Crossbow'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - multishot:1
+          - quick_charge:3
+          - unbreaking:3
+          - mending:1
+      prime_mace:
+        SLOT: 16
+        DISPLAY:
+          MATERIAL: MACE
+          DISPLAY-NAME: '&9Prime Mace'
+          ENCHANTMENTS:
+          - breach:4
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: MACE
+          DISPLAY-NAME: '&9Prime Mace'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - breach:4
+          - unbreaking:3
+          - mending:1
+  
+  crimson:
+    ENABLED: true
+    OPEN-TYPE: CHOOSE_ONE
+    DISPLAY:
+      MATERIAL: RED_SHULKER_BOX
+      DISPLAY-NAME: '&cCrimson Crate'
+      LORE:
+      - '&7Keys: &f{keys}'
+      - '&aClick to open and choose 1 reward.'
+    KEY-ITEM:
+      MATERIAL: TRIPWIRE_HOOK
+      DISPLAY-NAME: '&ccrimson key'
+      LORE:
+      - '&7Opens the &cCrimson Crate&7.'
+    PERMISSION: ''
+    BROADCAST-ON-CLAIM: true
+    MENU:
+      OPEN-TITLE: '&8Crimson Crate'
+      CONFIRM-TITLE: '&8Confirm Crimson Reward'
+      SIZE: 27
+      FILLER: BLACK_STAINED_GLASS_PANE
+      BACK-SLOT: 26
+      BACK-BUTTON:
+        MATERIAL: BARRIER
+        DISPLAY-NAME: '&cBack'
+        LORE:
+        - '&7Return to the crate list.'
+    REWARDS:
+      crimson_helmet:
+        SLOT: 10
+        DISPLAY:
+          MATERIAL: NETHERITE_HELMET
+          DISPLAY-NAME: '&cCrimson Netherite Helmet'
+          ENCHANTMENTS:
+          - aqua_affinity:1
+          - protection:4
+          - respiration:3
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_HELMET
+          DISPLAY-NAME: '&cCrimson Netherite Helmet'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - aqua_affinity:1
+          - protection:4
+          - respiration:3
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+      crimson_chestplate:
+        SLOT: 11
+        DISPLAY:
+          MATERIAL: NETHERITE_CHESTPLATE
+          DISPLAY-NAME: '&cCrimson Netherite Chestplate'
+          ENCHANTMENTS:
+          - protection:4
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_CHESTPLATE
+          DISPLAY-NAME: '&cCrimson Netherite Chestplate'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - protection:4
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+      crimson_leggings:
+        SLOT: 12
+        DISPLAY:
+          MATERIAL: NETHERITE_LEGGINGS
+          DISPLAY-NAME: '&cCrimson Netherite Leggings'
+          ENCHANTMENTS:
+          - swift_sneak:3
+          - protection:4
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_LEGGINGS
+          DISPLAY-NAME: '&cCrimson Netherite Leggings'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - swift_sneak:3
+          - protection:4
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+      crimson_boots:
+        SLOT: 13
+        DISPLAY:
+          MATERIAL: NETHERITE_BOOTS
+          DISPLAY-NAME: '&cCrimson Netherite Boots'
+          ENCHANTMENTS:
+          - depth_strider:3
+          - feather_falling:4
+          - protection:4
+          - soul_speed:3
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_BOOTS
+          DISPLAY-NAME: '&cCrimson Netherite Boots'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - depth_strider:3
+          - feather_falling:4
+          - protection:4
+          - soul_speed:3
+          - thorns:3
+          - unbreaking:3
+          - mending:1
+      crimson_sword:
+        SLOT: 14
+        DISPLAY:
+          MATERIAL: NETHERITE_SWORD
+          DISPLAY-NAME: '&cCrimson Netherite Sword'
+          ENCHANTMENTS:
+          - knockback:2
+          - fire_aspect:2
+          - sharpness:5
+          - sweeping_edge:3
+          - looting:3
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_SWORD
+          DISPLAY-NAME: '&cCrimson Netherite Sword'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - knockback:2
+          - fire_aspect:2
+          - sharpness:5
+          - sweeping_edge:3
+          - looting:3
+          - unbreaking:3
+          - mending:1
+      crimson_axe:
+        SLOT: 15
+        DISPLAY:
+          MATERIAL: NETHERITE_AXE
+          DISPLAY-NAME: '&cCrimson Netherite Axe'
+          ENCHANTMENTS:
+          - efficiency:5
+          - silk_touch:1
+          - sharpness:5
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_AXE
+          DISPLAY-NAME: '&cCrimson Netherite Axe'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - efficiency:5
+          - silk_touch:1
+          - sharpness:5
+          - unbreaking:3
+          - mending:1
+      crimson_pickaxe:
+        SLOT: 16
+        DISPLAY:
+          MATERIAL: NETHERITE_PICKAXE
+          DISPLAY-NAME: '&cCrimson Netherite Pickaxe'
+          ENCHANTMENTS:
+          - efficiency:5
+          - silk_touch:1
+          - unbreaking:3
+          - mending:1
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_PICKAXE
+          DISPLAY-NAME: '&cCrimson Netherite Pickaxe'
+          AMOUNT: 1
+          ENCHANTMENTS:
+          - efficiency:5
+          - silk_touch:1
+          - unbreaking:3
+          - mending:1
+  
+  gold:
+    ENABLED: true
+    OPEN-TYPE: GACHA
+    DISPLAY:
+      MATERIAL: YELLOW_SHULKER_BOX
+      DISPLAY-NAME: '&6Gold Crate'
+      LORE:
+      - '&7Keys: &f{keys}'
+      - '&aClick to open and choose 1 reward.'
+    KEY-ITEM:
+      MATERIAL: TRIPWIRE_HOOK
+      DISPLAY-NAME: '&6gold key'
+      LORE:
+      - '&7Opens the &6Gold Crate&7.'
+    PERMISSION: ''
+    BROADCAST-ON-CLAIM: true
+    MENU:
+      OPEN-TITLE: '&8Gold Crate'
+      CONFIRM-TITLE: '&8Confirm Gold Reward'
+      SIZE: 27
+      FILLER: BLACK_STAINED_GLASS_PANE
+      BACK-SLOT: 26
+      BACK-BUTTON:
+        MATERIAL: BARRIER
+        DISPLAY-NAME: '&cBack'
+        LORE:
+        - '&7Return to the crate list.'
+    REWARDS:
+      skeleton_spawner:
+        SLOT: 14
+        DISPLAY:
+          MATERIAL: SPAWNER
+          DISPLAY-NAME: '&dSkeleton Spawner'
+          ENCHANTMENTS: []
           LORE:
-          - '&7Choose this reward.'
-        # Configuration section for Grant.
+          - '&7Type: &fSkeleton Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
+        GRANT:
+          TYPE: ITEM
+          COMMANDS:
+          - spawner give {player} skeleton 2
+          MATERIAL: SPAWNER
+          DISPLAY-NAME: '&dSkeleton Spawner'
+          LORE:
+          - '&7Type: &fSkeleton Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          ITEM-DATA: ITEM_BYTES_V1:H4sIAAAAAAAA/52SyU7DMBCGJ3RRGhaxiLsv0BsP0COiJxBUatVr5DrTxIqXyB6r9O1xoLSVODTCB8sj//P788xkAD04f+HEl+i8tAbgbpzCmSzgRkuDwvE1TXzDNwZdDwbCBkMAkGSQCasba9CQH8HVQayswyxKeiMY4Cc53gZnCQwlcSUFJJAFU6BTMaOIUX9lVQFp6x1ToV86vo0au1oHLzh9ay49OVkjVc6GsoriPkVrGC62DU4YHMx/b67nNSoka9j8h33vP9hUknAvhHhq1zFs0hl2uEWl7KYj7uNMcYGMLBMOo5RZxzxxUTOqpGe7Kj8dsWVwfyisCJ6szg3X+D/aCyXLivImuEZhR+Y/hTxBV8RRyuB2FlYR6DnUtaQlVwF9Ag9BkdTtc9YE8rqZaG54iUW++3keG6OTtIOQYt8hnb9O36aLj/c+jE9mcL2b3HYl7fYFTTtal/sCAAA=
+          REQUIRES-INVENTORY-SPACE: true
+      ultra_elytra:
+        SLOT: 15
+        DISPLAY:
+          MATERIAL: ELYTRA
+          DISPLAY-NAME: '#FF55FFUltra Elytra'
         GRANT:
           TYPE: COMMAND
-          # Configuration section for Commands.
           COMMANDS:
-          - addmoney {player} 50000
+          - give %player% elytra
+      iron_golem_spawner:
+        SLOT: 16
+        DISPLAY:
+          MATERIAL: SPAWNER
+          DISPLAY-NAME: '&dIron Golem Spawner'
+          ENCHANTMENTS: []
+          LORE:
+          - '&7Type: &fIron Golem Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
+        GRANT:
+          TYPE: ITEM
+          COMMANDS:
+          - spawner give {player} iron_golem 1
+          MATERIAL: SPAWNER
+          DISPLAY-NAME: '&dIron Golem Spawner'
+          LORE:
+          - '&7Type: &fIron Golem Spawner'
+          - ''
+          - '&ePlace to create or stack this spawner.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          ITEM-DATA: ITEM_BYTES_V1:H4sIAAAAAAAA/52STU8CMRCGZ2EhsH4kYrz3otz8ARyNhpCoEDVcN6U7sM32Y9NOg/x7u4rAwQTiHJpO+s7M05nJANpw9siJz9F5aQ3A9bAHLVnAlZYGheNLGvmarw26NnSEDYYAIMkgE1bX1qAh34fLvVhZh1mUtPvQwU9yvHFaCXQlcSUFJJAFU6BTMaKIXrqwqoBekzuGQrpyfBM1drEMXnD61lx4crJCKp0NqzKKU4qpofuxqXHEYJ/892UwcdawsVWo2fsP/a5CZ11Kwp0U4q2xQ9zkZNzuBpWy6xOB72aKC2RkmXAYpcw65omLilEpPdv2+f6ALYObfWtF8GR1brjG/9GeK7kqKa+DqxWeyPxHK4/wFXGdMhjMwiIiPYSqkjTnKqBP4DYokropaE0gr+uR5oavsMi3f8/jaHTSO0FIcfaQTd6mr/l4+vz0ksLwaAzX2/1tLGmOL6Bg2DQBAwAA
+          REQUIRES-INVENTORY-SPACE: true
+      reward_13:
+        SLOT: 13
+        DISPLAY:
+          MATERIAL: DRAGON_HEAD
+          DISPLAY-NAME: '&fDragon Head'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: DRAGON_HEAD
+          DISPLAY-NAME: '&fDragon Head'
+          LORE: []
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_12:
+        SLOT: 12
+        DISPLAY:
+          MATERIAL: ENCHANTED_GOLDEN_APPLE
+          DISPLAY-NAME: '&fEnchanted Golden Apple'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: ENCHANTED_GOLDEN_APPLE
+          DISPLAY-NAME: '&fEnchanted Golden Apple'
+          LORE: []
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_11:
+        SLOT: 11
+        DISPLAY:
+          MATERIAL: NETHERITE_INGOT
+          DISPLAY-NAME: '&fNetherite Ingot'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 6
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_INGOT
+          DISPLAY-NAME: '&fNetherite Ingot'
+          LORE: []
+          AMOUNT: 6
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_10:
+        SLOT: 10
+        DISPLAY:
+          MATERIAL: NETHERITE_UPGRADE_SMITHING_TEMPLATE
+          DISPLAY-NAME: '&fNetherite Upgrade Smithing Template'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: NETHERITE_UPGRADE_SMITHING_TEMPLATE
+          DISPLAY-NAME: '&fNetherite Upgrade Smithing Template'
+          LORE: []
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_3:
+        SLOT: 3
+        DISPLAY:
+          MATERIAL: GOLDEN_CARROT
+          DISPLAY-NAME: '&fGolden Carrot'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 64
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: GOLDEN_CARROT
+          DISPLAY-NAME: '&fGolden Carrot'
+          LORE: []
+          AMOUNT: 64
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_5:
+        SLOT: 5
+        DISPLAY:
+          MATERIAL: GOLDEN_APPLE
+          DISPLAY-NAME: '&fGolden Apple'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 32
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: GOLDEN_APPLE
+          DISPLAY-NAME: '&fGolden Apple'
+          LORE: []
+          AMOUNT: 32
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_22:
+        SLOT: 22
+        DISPLAY:
+          MATERIAL: DIAMOND
+          DISPLAY-NAME: '&fDiamond'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 32
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: DIAMOND
+          DISPLAY-NAME: '&fDiamond'
+          LORE: []
+          AMOUNT: 32
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_4:
+        SLOT: 4
+        DISPLAY:
+          MATERIAL: GOLD_INGOT
+          DISPLAY-NAME: '&fGold Ingot'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 64
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: GOLD_INGOT
+          DISPLAY-NAME: '&fGold Ingot'
+          LORE: []
+          AMOUNT: 64
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_23:
+        SLOT: 23
+        DISPLAY:
+          MATERIAL: FIREWORK_ROCKET
+          DISPLAY-NAME: '&fFirework Rocket'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 64
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: FIREWORK_ROCKET
+          DISPLAY-NAME: '&fFirework Rocket'
+          LORE: []
+          AMOUNT: 64
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true
+      reward_21:
+        SLOT: 21
+        DISPLAY:
+          MATERIAL: BEACON
+          DISPLAY-NAME: '&fBeacon'
+          LORE:
+          - '&7Choose this reward.'
+          AMOUNT: 1
+          ENCHANTMENTS: []
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: BEACON
+          DISPLAY-NAME: '&fBeacon'
+          LORE: []
+          AMOUNT: 1
+          ENCHANTMENTS: []
+          REQUIRES-INVENTORY-SPACE: true

@@ -293,6 +293,9 @@ CRATES:
 | `CRATES.common.REWARDS.iron_chestplate.DISPLAY.DISPLAY-NAME` | `str` | Any string text | `'&fIron Chestplate'` | Configures the technical `DISPLAY-NAME` parameter for `CRATES.common.REWARDS.iron_chestplate.DISPLAY.DISPLAY-NAME` in `crates.yml`. |
 | `CRATES.common.REWARDS.iron_chestplate.DISPLAY.LORE` | `list` | List of configured items/strings | `['&7Choose this reward.']` | Configures the technical `LORE` parameter for `CRATES.common.REWARDS.iron_chestplate.DISPLAY.LORE` in `crates.yml`. |
 | `CRATES.common.REWARDS.iron_chestplate.GRANT.TYPE` | `str` | Any string text | `'ITEM'` | Configures the technical `TYPE` parameter for `CRATES.common.REWARDS.iron_chestplate.GRANT.TYPE` in `crates.yml`. |
+| `CRATES.common.REWARDS.<id>.GRANT.TYPE` | `str` | `ITEM`, `COMMAND`, `MONEY`, `SHARDS` | `ITEM` | Configures the reward grant type. Use `COMMAND` to run console commands, `MONEY` to grant economy balance, and `SHARDS` for plugin-specific shard currency. |
+| `CRATES.common.REWARDS.<id>.GRANT.COMMANDS` | `list` | List of strings | `-` | Commands executed for `COMMAND` grants. Commands run as console; use `{player}` as placeholder for the recipient's name. |
+| `CRATES.common.REWARDS.<id>.GRANT.AMOUNT` | `float` / `int` | Any numeric value | `-` | Amount used by `MONEY` and `SHARDS` grant types (e.g., `10.5` for money or `100` for shards). |
 | *(147 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example

@@ -4,7 +4,7 @@
   <groupId>com.bx</groupId>
   <artifactId>ultimatedonutsmp</artifactId>
   <name>ultimatedonutsmp</name>
-  <version>1.4</version>
+  <version>1.5</version>
   <build>
     <sourceDirectory>${source.directory}</sourceDirectory>
     <defaultGoal>clean package</defaultGoal>
@@ -18,18 +18,18 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
+        <version>3.15.0</version>
         <configuration>
           <release>${java.version}</release>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
+        <version>3.5.6</version>
       </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.3</version>
+        <version>3.6.2</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -119,19 +119,19 @@
     <dependency>
       <groupId>net.skinsrestorer</groupId>
       <artifactId>skinsrestorer-api</artifactId>
-      <version>15.12.0</version>
+      <version>15.12.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
-      <version>2.12.2</version>
+      <version>2.12.3</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.lunarclient</groupId>
       <artifactId>apollo-api</artifactId>
-      <version>1.2.5</version>
+      <version>1.2.8</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -147,9 +147,15 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>net.luckperms</groupId>
+      <artifactId>api</artifactId>
+      <version>5.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.10.3</version>
+      <version>6.1.2</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -168,7 +174,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <placeholderapi.version>2.12.2</placeholderapi.version>
+    <placeholderapi.version>2.12.3</placeholderapi.version>
     <server-api.version>${spigot-api.version}</server-api.version>
     <java.version>21</java.version>
     <source.directory>src/main/java</source.directory>

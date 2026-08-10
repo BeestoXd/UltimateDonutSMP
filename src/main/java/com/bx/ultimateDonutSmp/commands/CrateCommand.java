@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.Arrays;
 
 public class CrateCommand implements CommandExecutor, TabCompleter {
 
@@ -37,7 +38,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     private static final List<String> ADMIN_SUBCOMMANDS = List.of(
             "create", "delete", "type", "key", "take", "set", "add", "edit", "remove", "bind", "unbind", "listbound", "info"
     );
-    private static final List<String> OPEN_TYPE_COMPLETIONS = List.of("choose_one", "gacha");
+    private static final List<String> OPEN_TYPE_COMPLETIONS = List.of("choose_one", "choose-one", "gacha");
     private static final List<String> AMOUNT_COMPLETIONS = List.of("1", "5", "10", "25", "64");
     private static final List<String> SLOT_COMPLETIONS = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9");
 
@@ -50,7 +51,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!plugin.getConfigManager().isCommandEnabled("CRATE")) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴄʀᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cCrate commands are currently disabled."));
             return true;
         }
 
@@ -168,12 +169,12 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length > 0) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴏᴘᴇɴ ᴛʜᴇ ᴄʀᴀᴛᴇѕ ᴍᴇɴᴜ."));
+            sender.sendMessage(ColorUtils.toComponent("&cOnly players can open the crates menu."));
             return true;
         }
 
@@ -183,7 +184,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleKeysCommand(CommandSender sender, String label, String[] args) {
         if (args.length > 0) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label));
             return true;
         }
 
@@ -192,41 +193,41 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean sendCrateUsage(CommandSender sender, String label) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&c/" + label + " ɪѕ ᴀɴ ᴀᴅᴍɪɴ ᴄʀᴀᴛᴇ ᴄᴏᴍᴍᴀɴᴅ."));
-            sender.sendMessage(ColorUtils.toComponent("&7ᴜѕᴇ &f/crates &7ᴛᴏ ᴏᴘᴇɴ ᴄʀᴀᴛᴇѕ ᴀɴᴅ &f/keys &7ᴛᴏ ᴠɪᴇᴡ ʏᴏᴜʀ ᴋᴇʏѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&c/" + label + " is an admin crate command."));
+            sender.sendMessage(ColorUtils.toComponent("&7Use &f/crates &7to open crates and &f/keys &7to view your keys."));
             return true;
         }
 
-        sender.sendMessage(ColorUtils.toComponent("&8&m----------- &bᴄʀᴀᴛᴇ ᴀᴅᴍɪɴ &8&m-----------"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴄʀᴇᴀᴛᴇ <crate> &7- ᴄʀᴇᴀᴛᴇ ᴀ ᴄʀᴀᴛᴇ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴅᴇʟᴇᴛᴇ <crate> &7- ᴅᴇʟᴇᴛᴇ ᴀ ᴄʀᴀᴛᴇ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴛʏᴘᴇ <crate> <choose_one|gacha> &7- ѕᴇᴛ ᴄʀᴀᴛᴇ ᴛʏᴘᴇ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴏᴘᴇɴ <crate> &7- ᴏᴘᴇɴ ᴀ ᴄʀᴀᴛᴇ ᴅɪʀᴇᴄᴛʟʏ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴋᴇʏ <player> <crate> <amount> &7- ɢɪᴠᴇ ᴋᴇʏѕ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴛᴀᴋᴇ <player> <crate> <amount> &7- ʀᴇᴍᴏᴠᴇ ᴋᴇʏѕ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ѕᴇᴛ <player> <crate> <amount> &7- ѕᴇᴛ ᴋᴇʏ ʙᴀʟᴀɴᴄᴇ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴋᴇʏᴀʟʟ <crate> <amount> &7- ɢʀᴀɴᴛ ᴋᴇʏѕ ᴛᴏ ᴏɴʟɪɴᴇ ᴘʟᴀʏᴇʀѕ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴀᴅᴅ <crate> [ѕʟᴏᴛ] &7- ᴀᴅᴅ ʀᴇᴡᴀʀᴅ ʙʏ ɢᴜɪ ᴏʀ ʜᴀɴᴅ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴇᴅɪᴛ <crate> [ѕʟᴏᴛ] &7- ᴇᴅɪᴛ ʀᴇᴡᴀʀᴅ ʙʏ ɢᴜɪ ᴏʀ ʜᴀɴᴅ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʀᴇᴍᴏᴠᴇ <crate> <slot> &7- ʀᴇᴍᴏᴠᴇ ᴀ ʀᴇᴡᴀʀᴅ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʙɪɴᴅ <crate|cancel> &7- ʙɪɴᴅ ᴀ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ᴜɴʙɪɴᴅ [world x y z] &7- ᴜɴʙɪɴᴅ ʙʏ ʟᴏᴏᴋ-ᴀᴛ ᴏʀ ᴄᴏᴏʀᴅѕ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʟɪѕᴛʙᴏᴜɴᴅ &7- ʟɪѕᴛ ᴀʟʟ ʙᴏᴜɴᴅ ᴄʀᴀᴛᴇѕ ᴀɴᴅ ʟᴏᴄᴀᴛɪᴏɴѕ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ɪɴꜰᴏ &7- ɪɴѕᴘᴇᴄᴛ ᴛʜᴇ ʟᴏᴏᴋᴇᴅ-ᴀᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ"));
-        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " ʀᴇʟᴏᴀᴅ &7- ʀᴇʟᴏᴀᴅ ᴄʀᴀᴛᴇ ѕᴇᴛᴛɪɴɢѕ"));
-        sender.sendMessage(ColorUtils.toComponent("&7ᴘʟᴀʏᴇʀ ᴄᴏᴍᴍᴀɴᴅѕ: &f/crates &7ᴀɴᴅ &f/keys"));
+        sender.sendMessage(ColorUtils.toComponent("&8&m----------- &bCrate admin &8&m-----------"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " create <crate> &7- create a crate"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " delete <crate> &7- delete a crate"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " type <crate> <choose_one|gacha> &7- set crate type"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " open <crate> &7- open a crate directly"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " key <player> <crate> <amount> &7- give keys"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " take <player> <crate> <amount> &7- remove keys"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " set <player> <crate> <amount> &7- set key balance"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " keyall <crate> <amount> &7- grant keys to online players"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " add <crate> [slot] &7- add reward by gui or hand"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " edit <crate> [slot] &7- edit reward by gui or hand"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " remove <crate> <slot> &7- remove a reward"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " bind <crate|cancel> &7- bind a crate chest"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " unbind [world x y z] &7- unbind by look-at or coords"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " listbound &7- list all bound crates and locations"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " info &7- inspect the looked-at crate chest"));
+        sender.sendMessage(ColorUtils.toComponent("&f/" + label + " reload &7- reload crate settings"));
+        sender.sendMessage(ColorUtils.toComponent("&7Player commands: &f/crates &7and &f/keys"));
         sender.sendMessage(ColorUtils.toComponent("&8&m----------------------------------"));
         return true;
     }
 
     private boolean handleOpen(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴏᴘᴇɴ ᴄʀᴀᴛᴇѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cOnly players can open crates."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴏᴘᴇɴ <crate>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " open <crate>"));
             return true;
         }
 
@@ -242,12 +243,12 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleCreate(CommandSender sender, String label, String[] args) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴄʀᴀᴛᴇѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to create crates."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " create <crate>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " create <crate>"));
             return true;
         }
 
@@ -261,12 +262,12 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleDelete(CommandSender sender, String label, String[] args) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴄʀᴀᴛᴇѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to delete crates."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " delete <crate>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " delete <crate>"));
             return true;
         }
 
@@ -280,20 +281,20 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleType(CommandSender sender, String label, String[] args) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʜᴀɴɢᴇ ᴄʀᴀᴛᴇ ᴛʏᴘᴇѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to change crate types."));
             return true;
         }
 
         if (args.length < 3) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴛʏᴘᴇ <crate> <choose_one|gacha>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " type <crate> <choose_one|gacha>"));
             return true;
         }
 
         CrateManager.OpenType openType;
         try {
-            openType = CrateManager.OpenType.valueOf(args[2].trim().toUpperCase());
+            openType = CrateManager.OpenType.valueOf(args[2].trim().toUpperCase().replace('-', '_'));
         } catch (IllegalArgumentException exception) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴛʏᴘᴇ ᴍᴜѕᴛ ʙᴇ &fᴄʜᴏᴏѕᴇ_ᴏɴᴇ &cᴏʀ &fɢᴀᴄʜᴀ&c."));
+            sender.sendMessage(ColorUtils.toComponent("&ctype must be &fchoose_one &c(or &fchoose-one&c) or &fgacha&c."));
             return true;
         }
 
@@ -311,47 +312,47 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleReload(CommandSender sender) {
         if (!PermissionUtils.has(sender, RELOAD_PERMISSION) && !PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴄʀᴀᴛᴇ ѕᴇᴛᴛɪɴɢѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to reload crate settings."));
             return true;
         }
 
         plugin.getConfigManager().reloadCrates();
         plugin.getCrateManager().reload();
         plugin.getCrateVisualManager().reload();
-        sender.sendMessage(ColorUtils.toComponent("&aᴄʀᴀᴛᴇ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ."));
+        sender.sendMessage(ColorUtils.toComponent("&aCrate settings reloaded."));
         return true;
     }
 
     private boolean handleKeyMutation(CommandSender sender, String[] args, MutationMode mode) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴏᴅɪꜰʏ ᴄʀᴀᴛᴇ ᴋᴇʏѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to modify crate keys."));
             return true;
         }
 
         if (args.length < 4) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /crate " + mode.commandName + " <player> <crate> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /crate " + mode.commandName + " <player> <crate> <amount>"));
             return true;
         }
 
         ResolvedTarget target = resolveTarget(args[1]);
         if (target == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ '&f" + args[1] + "&c' ᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cPlayer '&f" + args[1] + "&c' was not found."));
             return true;
         }
 
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(args[2]);
         if (crate == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴄʀᴀᴛᴇ '&f" + args[2] + "&c' ᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cCrate '&f" + args[2] + "&c' was not found."));
             return true;
         }
 
         Integer amount = parsePositiveInt(args[3]);
         if ((amount == null || amount <= 0) && mode != MutationMode.SET) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴀ ᴘᴏѕɪᴛɪᴠᴇ ɪɴᴛᴇɢᴇʀ."));
+            sender.sendMessage(ColorUtils.toComponent("&cAmount must be a positive integer."));
             return true;
         }
         if (mode == MutationMode.SET && (amount == null || amount < 0)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴢᴇʀᴏ ᴏʀ ᴀ ᴘᴏѕɪᴛɪᴠᴇ ɪɴᴛᴇɢᴇʀ."));
+            sender.sendMessage(ColorUtils.toComponent("&cAmount must be zero or a positive integer."));
             return true;
         }
 
@@ -368,71 +369,71 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!success) {
-            sender.sendMessage(ColorUtils.toComponent("&c" + target.name() + " ᴅᴏᴇѕ ɴᴏᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴋᴇʏѕ ᴛᴏ ʀᴇᴍᴏᴠᴇ " + amount + "."));
+            sender.sendMessage(ColorUtils.toComponent("&c" + target.name() + " does not have enough keys to remove " + amount + "."));
             return true;
         }
 
         sender.sendMessage(ColorUtils.toComponent("&a" + mode.successPrefix + " &f" + amount + "x "
                 + plugin.getCrateManager().getReadableCrateName(crate)
-                + "&a ꜰᴏʀ &f" + target.name() + "&a. ʙᴀʟᴀɴᴄᴇ: &f" + balance));
+                + "&a for &f" + target.name() + "&a. balance: &f" + balance));
 
         Player online = Bukkit.getPlayer(target.uuid());
         if (online != null && online.isOnline()) {
-            online.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜʀ &b" + plugin.getCrateManager().getReadableCrateName(crate)
-                    + "&7 ᴋᴇʏ ʙᴀʟᴀɴᴄᴇ ɪѕ ɴᴏᴡ &f" + balance + "&7."));
+            online.sendMessage(ColorUtils.toComponent("&7Your &b" + plugin.getCrateManager().getReadableCrateName(crate)
+                    + "&7 key balance is now &f" + balance + "&7."));
         }
         return true;
     }
 
     private boolean handleKeyAll(CommandSender sender, String label, String[] args) {
         if (!PermissionUtils.has(sender, KEYALL_PERMISSION) && !PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴜɴ ᴄʀᴀᴛᴇ ᴋᴇʏ-ᴀʟʟ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to run crate key-all."));
             return true;
         }
 
         if (args.length < 3) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ᴋᴇʏᴀʟʟ <crate> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " keyall <crate> <amount>"));
             return true;
         }
 
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(args[1]);
         if (crate == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴄʀᴀᴛᴇ '&f" + args[1] + "&c' ᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cCrate '&f" + args[1] + "&c' was not found."));
             return true;
         }
 
         Integer amount = parsePositiveInt(args[2]);
         if (amount == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴀ ᴘᴏѕɪᴛɪᴠᴇ ɪɴᴛᴇɢᴇʀ."));
+            sender.sendMessage(ColorUtils.toComponent("&cAmount must be a positive integer."));
             return true;
         }
 
         int granted = plugin.getKeyAllManager().grantCrateKeys(crate.id(), amount, false);
-        sender.sendMessage(ColorUtils.toComponent("&aɢʀᴀɴᴛᴇᴅ &f" + amount + "x "
+        sender.sendMessage(ColorUtils.toComponent("&aGranted &f" + amount + "x "
                 + plugin.getCrateManager().getReadableCrateName(crate)
-                + "&a ᴋᴇʏ(ѕ) ᴛᴏ &f" + granted + "&a ᴏɴʟɪɴᴇ ᴘʟᴀʏᴇʀ(ѕ)."));
+                + "&a key(s) to &f" + granted + "&a online player(s)."));
         return true;
     }
 
     private boolean handleRewardMutation(CommandSender sender, String label, String[] args, RewardMutationMode mode) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴏᴅɪꜰʏ ᴄʀᴀᴛᴇ ʀᴇᴡᴀʀᴅѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to modify crate rewards."));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ /crate " + mode.commandName + "."));
+            sender.sendMessage(ColorUtils.toComponent("&cOnly players can use /crate " + mode.commandName + "."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " " + mode.commandName + " <crate> [ѕʟᴏᴛ]"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " " + mode.commandName + " <crate> [slot]"));
             return true;
         }
 
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(args[1]);
         if (crate == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴄʀᴀᴛᴇ '&f" + args[1] + "&c' ᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cCrate '&f" + args[1] + "&c' was not found."));
             return true;
         }
 
@@ -442,26 +443,65 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
         }
 
         if (mode == RewardMutationMode.REMOVE && args.length == 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ʀᴇᴍᴏᴠᴇ <crate> <slot>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " remove <crate> <slot>"));
             return true;
         }
 
         if (args.length < 3) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " " + mode.commandName + " <crate> <slot>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " " + mode.commandName + " <crate> <slot>"));
             return true;
         }
 
         Integer slot = parsePositiveInt(args[2]);
         if (slot == null || slot < 0) {
-            sender.sendMessage(ColorUtils.toComponent("&cѕʟᴏᴛ ᴍᴜѕᴛ ʙᴇ ᴀ ᴠᴀʟɪᴅ ɴᴜᴍʙᴇʀ, ꜰᴏʀ ᴇxᴀᴍᴘʟᴇ &f10&c."));
+            sender.sendMessage(ColorUtils.toComponent("&cSlot must be a valid number, for example &f10&c."));
             return true;
         }
 
-        CrateManager.ActionResult result = switch (mode) {
-            case ADD -> plugin.getCrateManager().addItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
-            case EDIT -> plugin.getCrateManager().editItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
-            case REMOVE -> plugin.getCrateManager().removeReward(crate.id(), slot);
-        };
+        CrateManager.ActionResult result;
+        // Support: /crate add <crate> <slot> command <console command...>
+        if (mode == RewardMutationMode.ADD && args.length >= 4) {
+            String verb = args[3].toLowerCase(Locale.ROOT);
+            if (verb.equals("command")) {
+                if (args.length < 5) {
+                    sender.sendMessage(ColorUtils.toComponent("&cUsage: /crate add <crate> <slot> command <console command...>"));
+                    return true;
+                }
+                String consoleCommand = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
+                result = plugin.getCrateManager().addCommandReward(crate.id(), slot, List.of(consoleCommand));
+            } else if (verb.equals("money")) {
+                if (args.length < 5) {
+                    sender.sendMessage(ColorUtils.toComponent("&cUsage: /crate add <crate> <slot> money <amount>"));
+                    return true;
+                }
+                Double parsed = parseDouble(args[4]);
+                if (parsed == null) {
+                    sender.sendMessage(ColorUtils.toComponent("&camount must be a number."));
+                    return true;
+                }
+                result = plugin.getCrateManager().addMoneyReward(crate.id(), slot, parsed);
+            } else if (verb.equals("shards")) {
+                if (args.length < 5) {
+                    sender.sendMessage(ColorUtils.toComponent("&cUsage: /crate add <crate> <slot> shards <amount>"));
+                    return true;
+                }
+                Long parsed = parseLong(args[4]);
+                if (parsed == null) {
+                    sender.sendMessage(ColorUtils.toComponent("&camount must be an integer."));
+                    return true;
+                }
+                result = plugin.getCrateManager().addShardsReward(crate.id(), slot, parsed);
+            } else {
+                // fallback to item-handling
+                result = plugin.getCrateManager().addItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
+            }
+        } else {
+            result = switch (mode) {
+                case ADD -> plugin.getCrateManager().addItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
+                case EDIT -> plugin.getCrateManager().editItemReward(crate.id(), slot, player.getInventory().getItemInMainHand());
+                case REMOVE -> plugin.getCrateManager().removeReward(crate.id(), slot);
+            };
+        }
 
         sender.sendMessage(ColorUtils.toComponent(result.message()));
         return true;
@@ -469,41 +509,41 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleBind(CommandSender sender, String label, String[] args) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʙɪɴᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to bind crate chests."));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ʙɪɴᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cOnly players can bind crate chests."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ʙɪɴᴅ <crate|cancel>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " bind <crate|cancel>"));
             return true;
         }
 
         if (args[1].equalsIgnoreCase("cancel")) {
             plugin.getCrateManager().clearPendingBind(player.getUniqueId());
-            player.sendMessage(ColorUtils.toComponent("&aᴄʀᴀᴛᴇ ʙɪɴᴅ ᴍᴏᴅᴇ ᴄᴀɴᴄᴇʟʟᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&aCrate bind mode cancelled."));
             return true;
         }
 
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(args[1]);
         if (crate == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴄʀᴀᴛᴇ '&f" + args[1] + "&c' ᴡᴀѕ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cCrate '&f" + args[1] + "&c' was not found."));
             return true;
         }
 
         plugin.getCrateManager().startPendingBind(player.getUniqueId(), crate.id());
-        player.sendMessage(ColorUtils.toComponent("&aʙɪɴᴅ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ ꜰᴏʀ &f" + crate.id() + "&a."));
-        player.sendMessage(ColorUtils.toComponent("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴀ ᴄʜᴇѕᴛ, ᴛʀᴀᴘᴘᴇᴅ ᴄʜᴇѕᴛ, ʙᴀʀʀᴇʟ, ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ, ᴏʀ ѕʜᴜʟᴋᴇʀ ʙᴏx ᴛᴏ ʙɪɴᴅ ɪᴛ."));
+        player.sendMessage(ColorUtils.toComponent("&aBind mode enabled for &f" + crate.id() + "&a."));
+        player.sendMessage(ColorUtils.toComponent("&7Left-click a chest, trapped chest, barrel, ender chest, or shulker box to bind it."));
         return true;
     }
 
     private boolean handleUnbind(CommandSender sender, String[] args) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜɴʙɪɴᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to unbind crate chests."));
             return true;
         }
 
@@ -513,60 +553,60 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
             Integer y = parseInteger(args[3]);
             Integer z = parseInteger(args[4]);
             if (x == null || y == null || z == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cɪɴᴠᴀʟɪᴅ ᴄᴏᴏʀᴅɪɴᴀᴛᴇѕ. ᴜѕᴀɢᴇ: /crate unbind <world> <x> <y> <z>"));
+                sender.sendMessage(ColorUtils.toComponent("&cInvalid coordinates. usage: /crate unbind <world> <x> <y> <z>"));
                 return true;
             }
 
             if (!plugin.getCrateManager().unbindCrateBlock(worldName, x, y, z)) {
-                sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴜɴʙɪɴᴅ ᴛʜᴀᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ (ᴏʀ ɪᴛ ᴡᴀѕ ɴᴏᴛ ʙᴏᴜɴᴅ)."));
+                sender.sendMessage(ColorUtils.toComponent("&cFailed to unbind that crate chest (or it was not bound)."));
                 return true;
             }
 
             plugin.getCrateVisualManager().removeHologram(worldName, x, y, z);
-            sender.sendMessage(ColorUtils.toComponent("&aʀᴇᴍᴏᴠᴇᴅ ᴄʀᴀᴛᴇ ʙɪɴᴅɪɴɢ ᴀᴛ &f" + worldName + " " + x + "," + y + "," + z + "&a."));
+            sender.sendMessage(ColorUtils.toComponent("&aRemoved crate binding at &f" + worldName + " " + x + "," + y + "," + z + "&a."));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜɴʙɪɴᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ ʙʏ ʟᴏᴏᴋɪɴɢ ᴀᴛ ᴛʜᴇᴍ. ᴜѕᴇ: /crate unbind <world> <x> <y> <z>"));
+            sender.sendMessage(ColorUtils.toComponent("&cOnly players can unbind crate chests by looking at them. use: /crate unbind <world> <x> <y> <z>"));
             return true;
         }
 
         Block target = getTargetBlock(player);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cʟᴏᴏᴋ ᴀᴛ ᴀ ʙᴏᴜɴᴅ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ ꜰɪʀѕᴛ."));
+            player.sendMessage(ColorUtils.toComponent("&cLook at a bound crate chest first."));
             return true;
         }
 
         String crateId = plugin.getCrateManager().getBoundCrateId(target);
         if (crateId == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ʙʟᴏᴄᴋ ɪѕ ɴᴏᴛ ʙᴏᴜɴᴅ ᴛᴏ ᴀɴʏ ᴄʀᴀᴛᴇ."));
+            player.sendMessage(ColorUtils.toComponent("&cThat block is not bound to any crate."));
             return true;
         }
 
         if (!plugin.getCrateManager().unbindCrateBlock(target)) {
-            player.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴜɴʙɪɴᴅ ᴛʜᴀᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ."));
+            player.sendMessage(ColorUtils.toComponent("&cFailed to unbind that crate chest."));
             return true;
         }
 
         plugin.getCrateVisualManager().removeHologram(target);
-        player.sendMessage(ColorUtils.toComponent("&aʀᴇᴍᴏᴠᴇᴅ ᴄʀᴀᴛᴇ ʙɪɴᴅɪɴɢ ꜰʀᴏᴍ &f" + formatBlockLocation(target) + "&a."));
+        player.sendMessage(ColorUtils.toComponent("&aRemoved crate binding from &f" + formatBlockLocation(target) + "&a."));
         return true;
     }
 
     private boolean handleListBound(CommandSender sender) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʟɪѕᴛ ʙᴏᴜɴᴅ ᴄʀᴀᴛᴇѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to list bound crates."));
             return true;
         }
 
         var bound = plugin.getCrateManager().getBoundBlockIds();
         if (bound.isEmpty()) {
-            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴄʀᴀᴛᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ʙᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cNo crates are currently bound."));
             return true;
         }
 
-        sender.sendMessage(ColorUtils.toComponent("&8&m-------- &bʙᴏᴜɴᴅ ᴄʀᴀᴛᴇѕ &8&m--------"));
+        sender.sendMessage(ColorUtils.toComponent("&8&m-------- &bBound crates &8&m--------"));
         for (var entry : bound.entrySet()) {
             var key = entry.getKey();
             sender.sendMessage(ColorUtils.toComponent("&7- &f" + key.world() + " &7(&f" + key.x() + "," + key.y() + "," + key.z() + "&7) -> &b" + entry.getValue()));
@@ -585,32 +625,32 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleInfo(CommandSender sender) {
         if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ɪɴѕᴘᴇᴄᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to inspect crate chests."));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ɪɴѕᴘᴇᴄᴛ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cOnly players can inspect crate chests."));
             return true;
         }
 
         Block target = getTargetBlock(player);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cʟᴏᴏᴋ ᴀᴛ ᴀ ᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ ꜰɪʀѕᴛ."));
+            player.sendMessage(ColorUtils.toComponent("&cLook at a crate chest first."));
             return true;
         }
 
         String crateId = plugin.getCrateManager().getBoundCrateId(target);
         if (crateId == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ʙʟᴏᴄᴋ ɪѕ ɴᴏᴛ ʙᴏᴜɴᴅ ᴛᴏ ᴀɴʏ ᴄʀᴀᴛᴇ."));
+            player.sendMessage(ColorUtils.toComponent("&cThat block is not bound to any crate."));
             return true;
         }
 
         CrateManager.CrateDefinition crate = plugin.getCrateManager().getCrate(crateId);
-        player.sendMessage(ColorUtils.toComponent("&8&m-------- &bᴄʀᴀᴛᴇ ᴄʜᴇѕᴛ &8&m--------"));
-        player.sendMessage(ColorUtils.toComponent("&7ʟᴏᴄᴀᴛɪᴏɴ: &f" + formatBlockLocation(target)));
-        player.sendMessage(ColorUtils.toComponent("&7ᴄʀᴀᴛᴇ ɪᴅ: &f" + crateId));
-        player.sendMessage(ColorUtils.toComponent("&7ᴅɪѕᴘʟᴀʏ: &f" + plugin.getCrateManager().getReadableCrateName(crate)));
+        player.sendMessage(ColorUtils.toComponent("&8&m-------- &bCrate chest &8&m--------"));
+        player.sendMessage(ColorUtils.toComponent("&7Location: &f" + formatBlockLocation(target)));
+        player.sendMessage(ColorUtils.toComponent("&7Crate id: &f" + crateId));
+        player.sendMessage(ColorUtils.toComponent("&7Display: &f" + plugin.getCrateManager().getReadableCrateName(crate)));
         player.sendMessage(ColorUtils.toComponent("&8&m-------------------------------"));
         return true;
     }
@@ -633,6 +673,22 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
     private Integer parsePositiveInt(String input) {
         try {
             return Integer.parseInt(input);
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    private Double parseDouble(String input) {
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    private Long parseLong(String input) {
+        try {
+            return Long.parseLong(input);
         } catch (NumberFormatException exception) {
             return null;
         }
@@ -664,7 +720,7 @@ public class CrateCommand implements CommandExecutor, TabCompleter {
 
     private boolean openKeysMenu(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴠɪᴇᴡ ᴄʀᴀᴛᴇ ᴋᴇʏѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cOnly players can view crate keys."));
             return true;
         }
 
