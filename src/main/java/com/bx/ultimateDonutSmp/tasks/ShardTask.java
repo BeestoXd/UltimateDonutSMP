@@ -24,13 +24,10 @@ public class ShardTask implements Runnable {
     public void run() {
         ShardManager sm = plugin.getShardManager();
 
-        if (!sm.isEverywhereEnabled()) {
-            return;
-        }
-
         int intervalMinutes = Math.max(1, sm.getEverywhereEveryMinutes());
         minuteTick = (minuteTick + 1) % intervalMinutes;
-        if (minuteTick != 0) {
+
+        if (!sm.isEverywhereEnabled() || minuteTick != 0) {
             return;
         }
 
