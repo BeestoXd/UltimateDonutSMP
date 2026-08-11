@@ -596,7 +596,7 @@ public class ShardManager {
 
     public String getEverywhereRequiredPermission() {
         return emptyToNull(plugin.getConfigManager().getConfig()
-                .getString("SHARDS.EVERYWHERE.REQUIRED-PERMISSION", "ULTIMATEDONUTSMP.SHARDS.EVERYWHERE"));
+                .getString("SHARDS.EVERYWHERE.REQUIRED-PERMISSION", "ultimatedonutsmp.shards.everywhere"));
     }
 
     public boolean hasEverywherePermission(Player player) {
@@ -609,8 +609,13 @@ public class ShardManager {
     }
 
     public int getEverywhereRecentMovementWindowSeconds() {
-        return Math.max(0, plugin.getConfigManager().getConfig()
+        int configured = Math.max(0, plugin.getConfigManager().getConfig()
                 .getInt("SHARDS.EVERYWHERE.RECENT-MOVEMENT-WINDOW", 15));
+        if (configured <= 0) {
+            return 0;
+        }
+        int intervalSeconds = Math.max(1, getEverywhereEveryMinutes()) * 60;
+        return Math.max(configured, intervalSeconds);
     }
 
     public boolean isEverywhereExcludedWorld(String worldName) {
@@ -806,7 +811,7 @@ public class ShardManager {
     }
 
     private String emptyToNull(String value) {
-        if (value == null || value.isBlank()) {
+        if (value == null || value.isBlank() || value.equalsIgnoreCase("none") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("null")) {
             return null;
         }
         return value;

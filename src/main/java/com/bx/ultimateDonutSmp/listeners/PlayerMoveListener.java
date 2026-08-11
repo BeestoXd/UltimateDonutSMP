@@ -22,7 +22,15 @@ public class PlayerMoveListener implements Listener {
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
-        // Only care about block-level movement
+        if (event.getFrom().getX() != event.getTo().getX()
+                || event.getFrom().getY() != event.getTo().getY()
+                || event.getFrom().getZ() != event.getTo().getZ()
+                || event.getFrom().getYaw() != event.getTo().getYaw()
+                || event.getFrom().getPitch() != event.getTo().getPitch()) {
+            plugin.getAFKManager().recordMovement(player.getUniqueId());
+        }
+
+        // Only care about block-level movement for flight checks and cuboids
         if (event.getFrom().getBlockX() == event.getTo().getBlockX()
                 && event.getFrom().getBlockZ() == event.getTo().getBlockZ()
                 && event.getFrom().getBlockY() == event.getTo().getBlockY()) {
