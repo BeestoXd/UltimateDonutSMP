@@ -824,14 +824,14 @@ public class RTPManager {
         }
 
         if (hasActiveRtpFlow(player.getUniqueId()) || plugin.getTeleportManager().hasPendingType(player.getUniqueId(), "RTP")) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜʀ ʀᴛᴘ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴘʀᴏɢʀᴇѕѕ."));
+            player.sendMessage(ColorUtils.toComponent("&cYour RTP is already in progress."));
             return false;
         }
 
         if (isInQueue(player.getUniqueId())) {
             int pos = getQueuePosition(player.getUniqueId());
             String message = plugin.getConfigManager().getRtp()
-                    .getString("MESSAGES.ALREADY-IN-QUEUE", "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ʀᴛᴘ ᴡᴀɪᴛɪɴɢ ǫᴜᴇᴜᴇ ᴀᴛ ᴘᴏѕɪᴛɪᴏɴ #{position}.")
+                    .getString("MESSAGES.ALREADY-IN-QUEUE", "&cYou are already in the RTP waiting queue at position #{position}.")
                     .replace("{position}", String.valueOf(pos));
             player.sendMessage(ColorUtils.toComponent(message));
             return false;
@@ -841,7 +841,7 @@ public class RTPManager {
         if (cooldownRemaining > 0L) {
             long remainingSeconds = Math.max(1L, (long) Math.ceil(cooldownRemaining / 1000.0D));
             String message = plugin.getConfigManager().getRtp()
-                    .getString("MESSAGES.COOLDOWN", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴛᴘ ꜰᴏʀ ᴀɴᴏᴛʜᴇʀ {remaining}ѕ.");
+                    .getString("MESSAGES.COOLDOWN", "&cYou can't RTP for another {remaining}s.");
             message = message.replace("{remaining}", String.valueOf(remainingSeconds))
                     .replace("%remaining%", String.valueOf(remainingSeconds));
             player.sendMessage(ColorUtils.toComponent(message));
@@ -865,7 +865,7 @@ public class RTPManager {
             } else {
                 player.sendMessage(ColorUtils.toComponent(
                         plugin.getConfigManager().getRtp()
-                                .getString("MESSAGES.MAX-PLAYERS", "&cᴛᴏᴏ ᴍᴀɴʏ ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ᴜѕɪɴɢ ʀᴛᴘ ʀɪɢʜᴛ ɴᴏᴡ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.")
+                                .getString("MESSAGES.MAX-PLAYERS", "&cToo many players are using RTP right now. Please try again later.")
                 ));
                 return false;
             }
