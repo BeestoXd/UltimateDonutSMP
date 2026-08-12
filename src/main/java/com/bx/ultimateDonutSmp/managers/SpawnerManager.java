@@ -818,6 +818,24 @@ public class SpawnerManager {
             return fail("&cyou do not have permission to break that spawner.");
         }
 
+        boolean hasSilkTouch = false;
+        if (player != null) {
+            if (player.getGameMode() == GameMode.CREATIVE
+                    || PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")
+                    || PermissionUtils.has(player, "ultimatedonutsmp.spawner.bypass")) {
+                hasSilkTouch = true;
+            } else {
+                ItemStack heldTool = player.getInventory().getItemInMainHand();
+                if (heldTool != null && heldTool.getType().name().endsWith("_PICKAXE") && heldTool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH)) {
+                    hasSilkTouch = true;
+                }
+            }
+        }
+
+        if (requireSilkTouch && !hasSilkTouch) {
+            return fail("&cYou must use a Silk Touch pickaxe to break spawners.");
+        }
+
         long totalStack = instance.getStackAmount();
         boolean stackAll = player != null && player.isSneaking();
         long breakAmount = stackAll ? Math.min(64L, totalStack) : 1L;
@@ -851,27 +869,6 @@ public class SpawnerManager {
                     "Broke " + breakAmount + "x " + spawnerName + " spawner (Remaining: " + remainingStack + "x) at "
                             + block.getWorld().getName() + " " + block.getX() + ", " + block.getY() + ", " + block.getZ()
             );
-        }
-
-        boolean hasSilkTouch = false;
-        if (player != null) {
-            if (player.getGameMode() == GameMode.CREATIVE) {
-                hasSilkTouch = true;
-            } else {
-                ItemStack heldTool = player.getInventory().getItemInMainHand();
-                if (heldTool != null && heldTool.getType().name().endsWith("_PICKAXE") && heldTool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH)) {
-                    hasSilkTouch = true;
-                }
-            }
-        }
-
-        if (requireSilkTouch && !hasSilkTouch) {
-            plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
-                if (plugin.getAntiEspManager() != null) {
-                    plugin.getAntiEspManager().refreshNearby(block.getLocation());
-                }
-            });
-            return new ActionResult(true, "&cYour spawner was destroyed (" + NumberUtils.format(breakAmount) + "x) because you did not use a Silk Touch pickaxe.", (int) breakAmount, fullyDestroyed);
         }
 
         if (player != null) {
