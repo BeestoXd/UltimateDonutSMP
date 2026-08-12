@@ -63,7 +63,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
     private void registerPlayerInfoListener() {
         playerInfoListener = new PacketAdapter(
                 plugin,
-                ListenerPriority.MONITOR,
+                ListenerPriority.HIGHEST,
                 PacketType.Play.Server.PLAYER_INFO,
                 PacketType.Play.Server.SCOREBOARD_TEAM
         ) {
@@ -174,6 +174,9 @@ final class HideProtocolLibBridge implements HidePacketBridge {
             return null;
         }
         UUID profileId = data.getProfileId();
+        if (profileId == null && data.getProfile() != null) {
+            profileId = data.getProfile().getUUID();
+        }
         if (profileId == null) {
             return data;
         }
