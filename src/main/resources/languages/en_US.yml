@@ -1808,6 +1808,10 @@ CONFIG:
       SEARCH-FOUND-ACTIONBAR-HIDDEN: '&aSafe location found in {world}! &7preparing
         teleport...'
       SAFE-LOCATION-FOUND-HIDDEN: '&aSafe location found.'
+      QUEUE-JOINED: '&eRTP slots are full. You are in queue at position &#4B72FF#{position}&e
+        (Priority: &f{priority}&e).'
+      QUEUE-POSITION: '&7Waiting for RTP slot... Your current position: &#4B72FF#{position}&7.'
+      ALREADY-IN-QUEUE: '&cYou are already in the RTP waiting queue at position #{position}.'
     RTP-MENU:
       TITLE: '&8Rtp menu'
       BUTTONS:

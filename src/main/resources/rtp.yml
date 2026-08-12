@@ -31,6 +31,18 @@ SETTINGS:
   FALLBACK-TO-LOADED-CHUNKS: true
   # Chunk samples to try before loaded chunk fallback starts
   LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32
+  # Priority queue settings for RTP requests
+  PRIORITY-QUEUE:
+    # Enable or disable the RTP permission priority queue system
+    ENABLED: true
+    # Default priority for players without explicit priority permissions
+    DEFAULT-PRIORITY: 0
+    # Explicit mapping from permission node to priority weight (higher = higher priority)
+    PERMISSIONS:
+      "ultimatedonutsmp.rtp.priority.vip++": 30
+      "ultimatedonutsmp.rtp.priority.vip+": 20
+      "ultimatedonutsmp.rtp.priority.vip": 10
+      "ultimatedonutsmp.rtp.priority.high": 5
 
 # User feedback and status messages
 MESSAGES:
@@ -49,6 +61,9 @@ MESSAGES:
   UNSAFE-LOCATION: '&cThe location at X:{x} Y:{y} Z:{z} was rejected: {reason}'
   SAFE-LOCATION-FOUND-HIDDEN: '&aSafe location found! Teleporting you blindly...'
   SEARCH-FOUND-ACTIONBAR-HIDDEN: '&aFound safe location'
+  QUEUE-JOINED: '&eRTP slots are full. You are in queue at position &#4B72FF#{position}&e (Priority: &f{priority}&e).'
+  QUEUE-POSITION: '&7Waiting for RTP slot... Your current position: &#4B72FF#{position}&7.'
+  ALREADY-IN-QUEUE: '&cYou are already in the RTP waiting queue at position #{position}.'
 
 # List of world names where RTP execution is denied
 DENIED-WORLDS:
