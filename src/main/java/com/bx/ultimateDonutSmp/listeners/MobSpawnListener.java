@@ -49,29 +49,29 @@ public class MobSpawnListener implements Listener {
     }
 
     private boolean shouldCancelPhantomSpawn(Location location) {
-        Player nearestPlayer = getNearestPlayer2D(
-                location,
-                plugin.getConfigManager().getConfig().getDouble("SETTINGS.PHANTOM-SPAWN-RADIUS", 40)
-        );
-        if (nearestPlayer == null) {
+        if (location == null || location.getWorld() == null) {
             return false;
         }
-
-        PlayerData data = plugin.getPlayerDataManager().get(nearestPlayer);
-        return data != null && !data.isPhantomEnabled();
+        double radius = plugin.getConfigManager().getConfig().getDouble("SETTINGS.PHANTOM-SPAWN-RADIUS", 40);
+        return MobSpawnPolicy.shouldCancelPhantomSpawn(
+                location,
+                location.getWorld().getPlayers(),
+                radius,
+                p -> plugin.getPlayerDataManager().get(p)
+        );
     }
 
     private boolean shouldCancelMobSpawn(Location location) {
-        Player nearestPlayer = getNearestPlayer(
-                location,
-                plugin.getConfigManager().getConfig().getDouble("SETTINGS.MOB-SPAWN-RADIUS", 50)
-        );
-        if (nearestPlayer == null) {
+        if (location == null || location.getWorld() == null) {
             return false;
         }
-
-        PlayerData data = plugin.getPlayerDataManager().get(nearestPlayer);
-        return data != null && !data.isMobSpawnEnabled();
+        double radius = plugin.getConfigManager().getConfig().getDouble("SETTINGS.MOB-SPAWN-RADIUS", 50);
+        return MobSpawnPolicy.shouldCancelMobSpawn(
+                location,
+                location.getWorld().getPlayers(),
+                radius,
+                p -> plugin.getPlayerDataManager().get(p)
+        );
     }
 
     private boolean isPreventableSpawnReason(CreatureSpawnEvent.SpawnReason reason) {
@@ -80,44 +80,6 @@ public class MobSpawnListener implements Listener {
             case CUSTOM, SPAWNER_EGG, BUILD_WITHER, BREEDING -> false;
             default -> true;
         };
-    }
-
-    private Player getNearestPlayer(Location location, double radius) {
-        double radiusSquared = radius * radius;
-        Player nearestPlayer = null;
-        double nearestDistance = radiusSquared;
-
-        for (Player player : location.getWorld().getPlayers()) {
-            double distance = player.getLocation().distanceSquared(location);
-            if (distance > radiusSquared || distance >= nearestDistance) {
-                continue;
-            }
-
-            nearestPlayer = player;
-            nearestDistance = distance;
-        }
-
-        return nearestPlayer;
-    }
-
-    private Player getNearestPlayer2D(Location location, double radius) {
-        double radiusSquared = radius * radius;
-        Player nearestPlayer = null;
-        double nearestDistance = radiusSquared;
-
-        for (Player player : location.getWorld().getPlayers()) {
-            double dx = player.getLocation().getX() - location.getX();
-            double dz = player.getLocation().getZ() - location.getZ();
-            double distance2D = dx * dx + dz * dz;
-            if (distance2D > radiusSquared || distance2D >= nearestDistance) {
-                continue;
-            }
-
-            nearestPlayer = player;
-            nearestDistance = distance2D;
-        }
-
-        return nearestPlayer;
     }
 
     private void startCleanupTask() {

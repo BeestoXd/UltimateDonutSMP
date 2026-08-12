@@ -1,11 +1,17 @@
 package com.bx.ultimateDonutSmp.utils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.models.PlayerData;
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Collection;
+import java.util.function.Function;
 
 public final class MobSpawnPolicy {
 
@@ -53,6 +59,73 @@ public final class MobSpawnPolicy {
             return false;
         }
         return entity.getCustomName() != null && !entity.getCustomName().isEmpty();
+    }
+
+    public static boolean shouldCancelMobSpawn(
+            Location spawnLocation,
+            Collection<? extends Player> players,
+            double radius,
+            Function<Player, PlayerData> dataProvider
+    ) {
+        if (spawnLocation == null || players == null || players.isEmpty()) {
+            return false;
+        }
+        double radiusSquared = radius * radius;
+        for (Player player : players) {
+            if (player == null) continue;
+            PlayerData data = dataProvider != null ? dataProvider.apply(player) : null;
+            if (data == null || data.isMobSpawnEnabled()) {
+                continue;
+            }
+            Location playerLoc = player.getLocation();
+            if (playerLoc == null) {
+                continue;
+            }
+            if (playerLoc.getWorld() != null && spawnLocation.getWorld() != null
+                    && !playerLoc.getWorld().equals(spawnLocation.getWorld())) {
+                continue;
+            }
+            double dx = playerLoc.getX() - spawnLocation.getX();
+            double dy = playerLoc.getY() - spawnLocation.getY();
+            double dz = playerLoc.getZ() - spawnLocation.getZ();
+            if (dx * dx + dy * dy + dz * dz <= radiusSquared) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean shouldCancelPhantomSpawn(
+            Location spawnLocation,
+            Collection<? extends Player> players,
+            double radius,
+            Function<Player, PlayerData> dataProvider
+    ) {
+        if (spawnLocation == null || players == null || players.isEmpty()) {
+            return false;
+        }
+        double radiusSquared = radius * radius;
+        for (Player player : players) {
+            if (player == null) continue;
+            PlayerData data = dataProvider != null ? dataProvider.apply(player) : null;
+            if (data == null || data.isPhantomEnabled()) {
+                continue;
+            }
+            Location playerLoc = player.getLocation();
+            if (playerLoc == null) {
+                continue;
+            }
+            if (playerLoc.getWorld() != null && spawnLocation.getWorld() != null
+                    && !playerLoc.getWorld().equals(spawnLocation.getWorld())) {
+                continue;
+            }
+            double dx = playerLoc.getX() - spawnLocation.getX();
+            double dz = playerLoc.getZ() - spawnLocation.getZ();
+            if (dx * dx + dz * dz <= radiusSquared) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean shouldRemoveFromPeriodicCleanup(
