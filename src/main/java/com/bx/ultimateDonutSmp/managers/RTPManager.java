@@ -111,6 +111,17 @@ public class RTPManager {
     private record LocationAttempt(Location location, boolean countedAttempt) {
     }
 
+    public record RTPQueueEntry(
+            UUID playerId,
+            String worldName,
+            int priority,
+            long queueTimeMillis
+    ) {}
+
+    private static final Comparator<RTPQueueEntry> QUEUE_COMPARATOR = Comparator
+            .comparingInt(RTPQueueEntry::priority).reversed()
+            .thenComparingLong(RTPQueueEntry::queueTimeMillis);
+
     private final UltimateDonutSmp plugin;
     private final Map<UUID, Map<String, Long>> cooldownsByPlayer = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitTask> activeSearchTasks = new ConcurrentHashMap<>();
@@ -119,6 +130,7 @@ public class RTPManager {
     private final Map<UUID, SearchProgress> activeSearches = new ConcurrentHashMap<>();
     private final Map<String, java.util.Queue<Location>> locationPreCache = new ConcurrentHashMap<>();
     private final Set<String> preCacheInFlight = ConcurrentHashMap.newKeySet();
+    private final List<RTPQueueEntry> waitingQueue = java.util.Collections.synchronizedList(new ArrayList<>());
     private List<RTPDestination> configuredDestinations = List.of();
     private List<RTPDestination> menuDestinations = List.of();
 
@@ -129,12 +141,148 @@ public class RTPManager {
 
     public void reload() {
         clearAllSearches();
+        clearQueue();
         cooldownsByPlayer.clear();
         locationPreCache.clear();
         preCacheInFlight.clear();
         configuredDestinations = loadConfiguredDestinations();
         menuDestinations = buildMenuDestinations(configuredDestinations);
         refillPreCacheAllWorlds();
+    }
+
+    public boolean isPriorityQueueEnabled() {
+        if (plugin == null || plugin.getConfigManager() == null || plugin.getConfigManager().getRtp() == null) {
+            return true;
+        }
+        return plugin.getConfigManager().getRtp().getBoolean("SETTINGS.PRIORITY-QUEUE.ENABLED", true);
+    }
+
+    public int getPlayerPriority(Player player) {
+        if (player == null || !isPriorityQueueEnabled()) {
+            return 0;
+        }
+
+        int maxPriority = plugin.getConfigManager().getRtp()
+                .getInt("SETTINGS.PRIORITY-QUEUE.DEFAULT-PRIORITY", 0);
+
+        ConfigurationSection section = plugin.getConfigManager().getRtp()
+                .getConfigurationSection("SETTINGS.PRIORITY-QUEUE.PERMISSIONS");
+        if (section != null) {
+            Map<String, Object> values = section.getValues(true);
+            for (Map.Entry<String, Object> entry : values.entrySet()) {
+                if (entry.getValue() instanceof Number number) {
+                    String permNode = entry.getKey();
+                    if (player.hasPermission(permNode)) {
+                        int val = number.intValue();
+                        if (val > maxPriority) {
+                            maxPriority = val;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (org.bukkit.permissions.PermissionAttachmentInfo pai : player.getEffectivePermissions()) {
+            String perm = pai.getPermission();
+            if (perm != null && pai.getValue() && perm.toLowerCase(Locale.ROOT).startsWith("ultimatedonutsmp.rtp.priority.")) {
+                String sub = perm.substring("ultimatedonutsmp.rtp.priority.".length());
+                try {
+                    int val = Integer.parseInt(sub);
+                    if (val > maxPriority) {
+                        maxPriority = val;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+
+        return maxPriority;
+    }
+
+    public boolean isInQueue(UUID playerId) {
+        if (playerId == null) {
+            return false;
+        }
+        synchronized (waitingQueue) {
+            for (RTPQueueEntry entry : waitingQueue) {
+                if (entry.playerId().equals(playerId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int getQueuePosition(UUID playerId) {
+        if (playerId == null) {
+            return -1;
+        }
+        synchronized (waitingQueue) {
+            List<RTPQueueEntry> sorted = new ArrayList<>(waitingQueue);
+            sorted.sort(QUEUE_COMPARATOR);
+            for (int i = 0; i < sorted.size(); i++) {
+                if (sorted.get(i).playerId().equals(playerId)) {
+                    return i + 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public void removeFromQueue(UUID playerId) {
+        if (playerId == null) {
+            return;
+        }
+        synchronized (waitingQueue) {
+            waitingQueue.removeIf(entry -> entry.playerId().equals(playerId));
+        }
+    }
+
+    public void clearQueue() {
+        synchronized (waitingQueue) {
+            waitingQueue.clear();
+        }
+    }
+
+    public int getQueueSize() {
+        return waitingQueue.size();
+    }
+
+    public synchronized void processNextInQueue() {
+        if (!isPriorityQueueEnabled()) {
+            return;
+        }
+        if (isQueueFull(null)) {
+            return;
+        }
+
+        List<RTPQueueEntry> sorted;
+        synchronized (waitingQueue) {
+            if (waitingQueue.isEmpty()) {
+                return;
+            }
+            sorted = new ArrayList<>(waitingQueue);
+            sorted.sort(QUEUE_COMPARATOR);
+        }
+
+        for (RTPQueueEntry entry : sorted) {
+            removeFromQueue(entry.playerId());
+
+            Player player = Bukkit.getPlayer(entry.playerId());
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
+
+            if (hasActiveRtpFlow(entry.playerId()) || plugin.getTeleportManager().hasPendingType(entry.playerId(), "RTP")) {
+                continue;
+            }
+
+            SearchSettings settings = getWorldSearchSettings(entry.worldName());
+            if (settings != null) {
+                startSearch(player, entry.worldName(), settings);
+                break;
+            }
+        }
     }
 
     public boolean isPreCacheEnabled() {
@@ -196,14 +344,16 @@ public class RTPManager {
             directSearch.complete(null);
         }
 
-        if (!clearActionBar) {
-            return;
+        removeFromQueue(playerId);
+
+        if (clearActionBar) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                PlayerSettingUtils.clearActionBar(player);
+            }
         }
 
-        Player player = plugin.getServer().getPlayer(playerId);
-        if (player != null && player.isOnline()) {
-            PlayerSettingUtils.clearActionBar(player);
-        }
+        processNextInQueue();
     }
 
     public List<RTPDestination> getMenuDestinations() {
@@ -678,6 +828,15 @@ public class RTPManager {
             return false;
         }
 
+        if (isInQueue(player.getUniqueId())) {
+            int pos = getQueuePosition(player.getUniqueId());
+            String message = plugin.getConfigManager().getRtp()
+                    .getString("MESSAGES.ALREADY-IN-QUEUE", "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ʀᴛᴘ ᴡᴀɪᴛɪɴɢ ǫᴜᴇᴜᴇ ᴀᴛ ᴘᴏѕɪᴛɪᴏɴ #{position}.")
+                    .replace("{position}", String.valueOf(pos));
+            player.sendMessage(ColorUtils.toComponent(message));
+            return false;
+        }
+
         long cooldownRemaining = getCooldownRemainingMillis(player.getUniqueId(), worldName);
         if (cooldownRemaining > 0L) {
             long remainingSeconds = Math.max(1L, (long) Math.ceil(cooldownRemaining / 1000.0D));
@@ -690,11 +849,26 @@ public class RTPManager {
         }
 
         if (isQueueFull(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp()
-                            .getString("MESSAGES.MAX-PLAYERS", "&cᴛᴏᴏ ᴍᴀɴʏ ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ᴜѕɪɴɢ ʀᴛᴘ ʀɪɢʜᴛ ɴᴏᴡ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.")
-            ));
-            return false;
+            if (isPriorityQueueEnabled()) {
+                int priority = getPlayerPriority(player);
+                RTPQueueEntry entry = new RTPQueueEntry(player.getUniqueId(), worldName, priority, System.currentTimeMillis());
+                synchronized (waitingQueue) {
+                    waitingQueue.add(entry);
+                }
+                int pos = getQueuePosition(player.getUniqueId());
+                String message = plugin.getConfigManager().getRtp()
+                        .getString("MESSAGES.QUEUE-JOINED", "&eRTP slots are full. You are in queue at position &#4B72FF#{position}&e (Priority: &f{priority}&e).")
+                        .replace("{position}", String.valueOf(pos))
+                        .replace("{priority}", String.valueOf(priority));
+                player.sendMessage(ColorUtils.toComponent(message));
+                return true;
+            } else {
+                player.sendMessage(ColorUtils.toComponent(
+                        plugin.getConfigManager().getRtp()
+                                .getString("MESSAGES.MAX-PLAYERS", "&cᴛᴏᴏ ᴍᴀɴʏ ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ᴜѕɪɴɢ ʀᴛᴘ ʀɪɢʜᴛ ɴᴏᴡ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.")
+                ));
+                return false;
+            }
         }
 
         startSearch(player, worldName, settings);
@@ -723,21 +897,23 @@ public class RTPManager {
         SearchProgress progress = new SearchProgress(worldName, settings);
         activeSearches.put(player.getUniqueId(), progress);
 
-        BukkitTask task = plugin.getSpigotScheduler().runEntityTimer(
-                player,
-                () -> tickSearch(player.getUniqueId()),
-                0L,
-                SEARCH_ACTIONBAR_REFRESH_TICKS
-        );
-        if (task != null) {
-            activeSearchTasks.put(player.getUniqueId(), task);
+        if (plugin.getSpigotScheduler() != null) {
+            BukkitTask task = plugin.getSpigotScheduler().runEntityTimer(
+                    player,
+                    () -> tickSearch(player.getUniqueId()),
+                    0L,
+                    SEARCH_ACTIONBAR_REFRESH_TICKS
+            );
+            if (task != null) {
+                activeSearchTasks.put(player.getUniqueId(), task);
+            }
         }
 
         refillPreCache(worldName);
     }
 
     private void tickSearch(UUID playerId) {
-        Player player = plugin.getServer().getPlayer(playerId);
+        Player player = Bukkit.getPlayer(playerId);
         SearchProgress progress = activeSearches.get(playerId);
         if (player == null || !player.isOnline() || progress == null) {
             clearSearch(playerId);
@@ -856,7 +1032,7 @@ public class RTPManager {
         Location found = attempt == null ? null : attempt.location();
         if (found != null) {
             progress.pendingFoundLocation = found;
-            Player player = plugin.getServer().getPlayer(playerId);
+            Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline() && progress.elapsedTicks >= MIN_SEARCH_DISPLAY_TICKS) {
                 stopSearch(playerId, false);
                 finishSearch(player, progress.worldName, found);
@@ -886,7 +1062,7 @@ public class RTPManager {
                 + "/" + getMaxGenerateFallbackSamples()
                 + ".");
 
-        Player player = plugin.getServer().getPlayer(playerId);
+        Player player = Bukkit.getPlayer(playerId);
         clearSearch(playerId);
         if (player == null || !player.isOnline()) {
             return;
@@ -997,6 +1173,7 @@ public class RTPManager {
         if (player.isOnline()) {
             plugin.getTeleportManager().queue(player, found, "RTP", null);
         }
+        processNextInQueue();
     }
 
     private void sendSearchActionBar(Player player, SearchProgress progress) {
@@ -1843,11 +2020,13 @@ public class RTPManager {
     private boolean isQueueFull(UUID playerId) {
         int maxPlayers = getMaxConcurrentRtp();
         int inProgress = countActiveSearches() + plugin.getTeleportManager().countPendingByType("RTP");
-        if (isSearching(playerId)) {
-            inProgress = Math.max(0, inProgress - 1);
-        }
-        if (plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
-            inProgress = Math.max(0, inProgress - 1);
+        if (playerId != null) {
+            if (isSearching(playerId)) {
+                inProgress = Math.max(0, inProgress - 1);
+            }
+            if (plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
+                inProgress = Math.max(0, inProgress - 1);
+            }
         }
         return inProgress >= maxPlayers;
     }

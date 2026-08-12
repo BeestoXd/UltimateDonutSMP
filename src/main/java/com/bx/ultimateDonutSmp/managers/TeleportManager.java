@@ -160,6 +160,9 @@ public class TeleportManager {
                     if (onSuccess != null) {
                         onSuccess.accept(player);
                     }
+                    if ("RTP".equals(normalizedType) && plugin.getRtpManager() != null) {
+                        plugin.getRtpManager().processNextInQueue();
+                    }
                 }));
     }
 
@@ -168,9 +171,12 @@ public class TeleportManager {
         if (task != null) {
             task.cancel();
         }
-        pendingTypes.remove(uuid);
+        String pendingType = pendingTypes.remove(uuid);
         startLocations.remove(uuid);
         restoreRtpChunkThrottle(uuid);
+        if ("RTP".equals(pendingType) && plugin.getRtpManager() != null) {
+            plugin.getRtpManager().processNextInQueue();
+        }
     }
 
     public boolean hasPending(UUID uuid) {
