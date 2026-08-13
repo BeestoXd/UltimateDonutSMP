@@ -21,6 +21,7 @@ SETTINGS:
   # Determines whether Drop On Break If Inventory Full is enabled or disabled. Available options: true, false
   DROP_ON_BREAK_IF_INVENTORY_FULL: true
   # Determines whether a Silk Touch pickaxe is required to break and collect spawners.
+  # Applies to vanilla spawners as well. Only Creative mode and the ultimatedonutsmp.spawner.bypass permission are exempt (operators are not).
   REQUIRE_SILK_TOUCH: true
   # Determines whether physical vanilla mob spawning is cancelled (set to true for virtual storage anti-lag drops, set to false to allow physical mobs to spawn in world).
   CANCEL_MOB_SPAWN: true

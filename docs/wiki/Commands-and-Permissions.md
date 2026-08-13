@@ -94,6 +94,14 @@ This page contains the complete reference guide for all commands, aliases, synta
 
 ---
 
+## Spawner Permissions
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.spawner.bypass` | `false` | Break spawners without a Silk Touch pickaxe while `SETTINGS.REQUIRE_SILK_TOUCH` is enabled in `spawners.yml`. Registered with `default: false`, so operators do not receive it automatically. Assign it explicitly via LuckPerms. |
+
+---
+
 ## Media Rank & Badge Permissions
 
 Media permissions are registered with `default: false` and require explicit assignment via LuckPerms (or explicit permission attachment). Being an OP player does not automatically grant media badge status.

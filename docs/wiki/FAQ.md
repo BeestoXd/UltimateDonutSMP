@@ -71,8 +71,8 @@ This page provides answers and troubleshooting steps for common questions, confi
 ### Question: Why do custom spawners break into default pig spawners or fail to drop when mined?
 
 #### Solutions:
-- **Silk Touch Requirement**: By default, breaking stacked spawners requires a pickaxe enchanted with Silk Touch unless the player has administrator permission (`ultimatedonutsmp.admin.spawner` or `ultimatedonutsmp.spawner.bypass`).
-- **Check `spawners.yml`**: Ensure `SILK-TOUCH-REQUIRED: true/false` is configured according to your server rules.
+- **Silk Touch Requirement**: By default, breaking spawners requires a pickaxe enchanted with Silk Touch. Only Creative mode and the `ultimatedonutsmp.spawner.bypass` permission are exempt. Operators are **not** exempt: that node is registered with `default: false` and must be assigned explicitly via LuckPerms.
+- **Check `spawners.yml`**: Ensure `SETTINGS.REQUIRE_SILK_TOUCH: true/false` is configured according to your server rules.
 
 ---
 

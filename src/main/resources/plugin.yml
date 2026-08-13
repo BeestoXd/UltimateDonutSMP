@@ -871,6 +871,9 @@ permissions:
   ultimatedonutsmp.admin.spawner.seeall:
     description: Bypass spawner anti-ESP concealment
     default: op
+  ultimatedonutsmp.spawner.bypass:
+    description: Break spawners without a Silk Touch pickaxe while REQUIRE_SILK_TOUCH is enabled
+    default: false
   ultimatedonutsmp.admin.crate:
     description: Manage crate balances, settings, and chest bindings
     default: op
