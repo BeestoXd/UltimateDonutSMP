@@ -1284,3 +1284,89 @@ TABLIST:
 
 ---
 
+## Section: `CLEAR-LAG`
+
+### 1. Commented Setup Code Example
+
+```yaml
+CLEAR-LAG:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Every. Available options: Any valid integer
+  EVERY: 5
+  # Determines whether Animals is enabled or disabled. Available options: true, false
+  ANIMALS: false
+  # Determines whether Monsters is enabled or disabled. Available options: true, false
+  MONSTERS: false
+  # Determines whether Dropped Items is enabled or disabled. Available options: true, false
+  DROPPED-ITEMS: true
+  # The numerical value for Min Item Age Seconds. Dropped items younger than this are kept,
+  # so items dropped just before a cleanup are not wiped. Set to 0 to disable the delay.
+  # Available options: Any valid integer
+  MIN-ITEM-AGE-SECONDS: 60
+  # Configuration section for Excluded Worlds.
+  EXCLUDED-WORLDS:
+  - duels
+  EXCLUDE-NAMED: true
+  EXCLUDE-TAMED: true
+  EXCLUDE-VILLAGERS: true
+  # Configuration section for Excluded Entity Types. Entity types listed here are never
+  # cleared, for example ALLAY or IRON_GOLEM.
+  EXCLUDED-ENTITY-TYPES: []
+  # Configuration section for Excluded Item Materials. Dropped items of these materials are
+  # never cleared, for example NETHERITE_INGOT or ELYTRA.
+  EXCLUDED-ITEM-MATERIALS: []
+# Configuration section for Combat Manager.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `CLEAR-LAG.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for the cleanup task and `/clearlag`. The `CLEAR_LAG` feature toggle must also be enabled. |
+| `CLEAR-LAG.EVERY` | `int` | Any valid integer | `5` | Minutes between cleanup runs. Countdown warnings are broadcast 60, 30, 15, 10, 5, 4, 3, 2 and 1 second before each run. Values below `1` are treated as `1`. |
+| `CLEAR-LAG.ANIMALS` | `bool` | `true`, `false` | `false` | Removes passive animals during a cleanup run. |
+| `CLEAR-LAG.MONSTERS` | `bool` | `true`, `false` | `false` | Removes monsters, slimes and flying hostiles during a cleanup run. |
+| `CLEAR-LAG.DROPPED-ITEMS` | `bool` | `true`, `false` | `true` | Removes dropped item entities during a cleanup run. |
+| `CLEAR-LAG.MIN-ITEM-AGE-SECONDS` | `int` | Any valid integer | `60` | Grace period for dropped items. Items that have existed for fewer seconds than this are skipped, so items dropped shortly before a run survive until the next one. Set to `0` to clear items regardless of age. |
+| `CLEAR-LAG.EXCLUDED-WORLDS` | `list` | List of configured items/strings | `['duels']` | World names that are skipped entirely, so nothing inside them is ever cleared. |
+| `CLEAR-LAG.EXCLUDE-NAMED` | `bool` | `true`, `false` | `true` | Skips entities that carry a custom name. |
+| `CLEAR-LAG.EXCLUDE-TAMED` | `bool` | `true`, `false` | `true` | Skips tamed entities such as pets and horses. |
+| `CLEAR-LAG.EXCLUDE-VILLAGERS` | `bool` | `true`, `false` | `true` | Skips villagers, wandering traders and NPCs. |
+| `CLEAR-LAG.EXCLUDED-ENTITY-TYPES` | `list` | List of configured items/strings | `[]` | Entity type names that are never cleared, for example `ALLAY` or `IRON_GOLEM`. Matched case-insensitively against the entity type. |
+| `CLEAR-LAG.EXCLUDED-ITEM-MATERIALS` | `list` | List of configured items/strings | `[]` | Material names that are never cleared when they lie on the ground, for example `NETHERITE_INGOT` or `ELYTRA`. Matched case-insensitively against the dropped stack. |
+
+### 3. Practical Setup Example
+
+```yaml
+CLEAR-LAG:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Every. Available options: Any valid integer
+  EVERY: 5
+  # Determines whether Animals is enabled or disabled. Available options: true, false
+  ANIMALS: false
+  # Determines whether Monsters is enabled or disabled. Available options: true, false
+  MONSTERS: false
+  # Determines whether Dropped Items is enabled or disabled. Available options: true, false
+  DROPPED-ITEMS: true
+  # The numerical value for Min Item Age Seconds. Dropped items younger than this are kept,
+  # so items dropped just before a cleanup are not wiped. Set to 0 to disable the delay.
+  # Available options: Any valid integer
+  MIN-ITEM-AGE-SECONDS: 60
+  # Configuration section for Excluded Worlds.
+  EXCLUDED-WORLDS:
+  - duels
+  EXCLUDE-NAMED: true
+  EXCLUDE-TAMED: true
+  EXCLUDE-VILLAGERS: true
+  # Configuration section for Excluded Entity Types. Entity types listed here are never
+  # cleared, for example ALLAY or IRON_GOLEM.
+  EXCLUDED-ENTITY-TYPES: []
+  # Configuration section for Excluded Item Materials. Dropped items of these materials are
+  # never cleared, for example NETHERITE_INGOT or ELYTRA.
+  EXCLUDED-ITEM-MATERIALS: []
+# Configuration section for Combat Manager.
+```
+
+---

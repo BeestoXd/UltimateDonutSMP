@@ -25,7 +25,7 @@ public class ClearLagManager {
     }
 
     public int getIntervalMinutes() {
-        return plugin.getConfigManager().getConfig().getInt("CLEAR-LAG.EVERY", 5);
+        return Math.max(1, plugin.getConfigManager().getConfig().getInt("CLEAR-LAG.EVERY", 5));
     }
 
     public boolean clearAnimals() {
@@ -38,6 +38,10 @@ public class ClearLagManager {
 
     public boolean clearDroppedItems() {
         return plugin.getConfigManager().getConfig().getBoolean("CLEAR-LAG.DROPPED-ITEMS", true);
+    }
+
+    public int getMinItemAgeSeconds() {
+        return Math.max(0, plugin.getConfigManager().getConfig().getInt("CLEAR-LAG.MIN-ITEM-AGE-SECONDS", 60));
     }
 
     public List<String> getExcludedWorlds() {
@@ -71,10 +75,14 @@ public class ClearLagManager {
         boolean checkVillagers = excludeVillagers();
         List<String> excludedTypes = getExcludedEntityTypes();
         List<String> excludedMaterials = getExcludedItemMaterials();
+        long minItemAgeTicks = (long) getMinItemAgeSeconds() * 20L;
 
         if (plugin.getSpigotScheduler().isFolia()) {
             java.util.concurrent.atomic.AtomicInteger count = new java.util.concurrent.atomic.AtomicInteger(0);
-            java.util.concurrent.atomic.AtomicInteger pending = new java.util.concurrent.atomic.AtomicInteger(0);
+            // Starts at 1 so the scheduling loop below holds a slot of its own. Entity tasks can
+            // finish while later entities are still being queued, so without that slot the counter
+            // reaches zero early and broadcasts a partial total more than once.
+            java.util.concurrent.atomic.AtomicInteger pending = new java.util.concurrent.atomic.AtomicInteger(1);
 
             for (World world : Bukkit.getWorlds()) {
                 if (excludedWorlds.contains(world.getName())) continue;
@@ -101,7 +109,7 @@ public class ClearLagManager {
 
                             boolean remove = false;
                             if (entity instanceof Item item) {
-                                if (clearDroppedItems()) {
+                                if (clearDroppedItems() && item.getTicksLived() >= minItemAgeTicks) {
                                     String materialName = item.getItemStack().getType().name();
                                     boolean materialExcluded = false;
                                     for (String mat : excludedMaterials) {
@@ -136,8 +144,8 @@ public class ClearLagManager {
                     });
                 }
             }
-            if (pending.get() == 0) {
-                broadcastSuccess(0);
+            if (pending.decrementAndGet() == 0) {
+                broadcastSuccess(count.get());
             }
             return 0;
         }
@@ -170,7 +178,7 @@ public class ClearLagManager {
 
                 boolean remove = false;
                 if (entity instanceof Item item) {
-                    if (clearDroppedItems()) {
+                    if (clearDroppedItems() && item.getTicksLived() >= minItemAgeTicks) {
                         String materialName = item.getItemStack().getType().name();
                         boolean materialExcluded = false;
                         for (String mat : excludedMaterials) {

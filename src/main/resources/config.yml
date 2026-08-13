@@ -577,12 +577,22 @@ CLEAR-LAG:
   MONSTERS: false
   # Determines whether Dropped Items is enabled or disabled. Available options: true, false
   DROPPED-ITEMS: true
+  # The numerical value for Min Item Age Seconds. Dropped items younger than this are kept,
+  # so items dropped just before a cleanup are not wiped. Set to 0 to disable the delay.
+  # Available options: Any valid integer
+  MIN-ITEM-AGE-SECONDS: 60
   # Configuration section for Excluded Worlds.
   EXCLUDED-WORLDS:
   - duels
   EXCLUDE-NAMED: true
   EXCLUDE-TAMED: true
   EXCLUDE-VILLAGERS: true
+  # Configuration section for Excluded Entity Types. Entity types listed here are never
+  # cleared, for example ALLAY or IRON_GOLEM.
+  EXCLUDED-ENTITY-TYPES: []
+  # Configuration section for Excluded Item Materials. Dropped items of these materials are
+  # never cleared, for example NETHERITE_INGOT or ELYTRA.
+  EXCLUDED-ITEM-MATERIALS: []
 # Configuration section for Combat Manager.
 COMBAT-MANAGER:
   # Determines whether Enabled is enabled or disabled. Available options: true, false
