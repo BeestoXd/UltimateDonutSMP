@@ -17,22 +17,15 @@ import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionType;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -46,13 +39,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
-import java.util.regex.Pattern;
 import java.util.logging.Level;
 
 public class ShopManager {
 
-    private static final String NULL_LORE = "__NULL__";
-    private static final String LORE_SEPARATOR = ";";
     private static final Set<String> CATEGORY_META_KEYS = Set.of("MENU-TITLE", "MENU-SIZE", "ORDER");
     private static final Set<String> MENU_META_KEYS = Set.of(
             "TITLE",
@@ -288,15 +278,11 @@ public class ShopManager {
     private final UltimateDonutSmp plugin;
     private final ShopPreferenceRepository preferenceRepository;
     private final Map<UUID, ShopPreference> preferenceCache = new ConcurrentHashMap<>();
-    private final NamespacedKey worthDisplayAppliedKey;
-    private final NamespacedKey worthDisplayOriginalLoreKey;
 
     public ShopManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
         this.preferenceRepository = new ShopPreferenceRepository(plugin);
         this.preferenceRepository.initialize().join();
-        this.worthDisplayAppliedKey = new NamespacedKey(plugin, "worth_display_applied");
-        this.worthDisplayOriginalLoreKey = new NamespacedKey(plugin, "worth_display_original_lore");
         reload();
     }
 
@@ -1115,168 +1101,6 @@ public class ShopManager {
         return plugin.getWorthManager().getWorthLoreLine(item);
     }
 
-    private boolean isWorthDisplayEnabled(Player player) {
-        PlayerData data = plugin.getPlayerDataManager().get(player);
-        return data != null && data.isWorthDisplayEnabled();
-    }
-
-    private ItemStack updateWorthDisplay(ItemStack item, boolean enabled) {
-        if (item == null || item.getType().isAir()) {
-            return item;
-        }
-
-        String loreLine = enabled ? getWorthLoreLine(item) : null;
-        if (loreLine == null || loreLine.isBlank()) {
-            return stripWorthDisplay(item);
-        }
-
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return item;
-        }
-
-        List<String> currentLore = meta.getLore();
-        List<String> originalLore = readOriginalLore(meta);
-        if (originalLore == null) {
-            originalLore = currentLore;
-        }
-        originalLore = stripExistingWorthLore(originalLore);
-
-        List<String> desiredLore = originalLore == null ? new ArrayList<>() : new ArrayList<>(originalLore);
-        desiredLore.add(ColorUtils.toComponent(loreLine));
-
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        String serializedOriginalLore = serializeLore(originalLore);
-        String storedOriginalLore = container.get(worthDisplayOriginalLoreKey, PersistentDataType.STRING);
-        boolean alreadyApplied = container.has(worthDisplayAppliedKey, PersistentDataType.BYTE);
-        if (alreadyApplied
-                && Objects.equals(storedOriginalLore, serializedOriginalLore)
-                && Objects.equals(currentLore, desiredLore)) {
-            return item;
-        }
-
-        ItemStack updated = item.clone();
-        ItemMeta updatedMeta = updated.getItemMeta();
-        if (updatedMeta == null) {
-            return item;
-        }
-
-        PersistentDataContainer updatedContainer = updatedMeta.getPersistentDataContainer();
-        updatedContainer.set(worthDisplayAppliedKey, PersistentDataType.BYTE, (byte) 1);
-        updatedContainer.set(worthDisplayOriginalLoreKey, PersistentDataType.STRING, serializedOriginalLore);
-        updatedMeta.setLore(desiredLore);
-        updated.setItemMeta(updatedMeta);
-        return updated;
-    }
-
-    private List<String> readOriginalLore(ItemMeta meta) {
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        String stored = container.get(worthDisplayOriginalLoreKey, PersistentDataType.STRING);
-        if (stored != null) {
-            return deserializeLore(stored);
-        }
-
-        if (!container.has(worthDisplayAppliedKey, PersistentDataType.BYTE)) {
-            return meta.getLore();
-        }
-
-        List<String> currentLore = meta.getLore();
-        if (currentLore == null || currentLore.isEmpty()) {
-            return null;
-        }
-
-        return new ArrayList<>(currentLore.subList(0, currentLore.size() - 1));
-    }
-
-    private String serializeLore(List<String> lore) {
-        if (lore == null) {
-            return NULL_LORE;
-        }
-        if (lore.isEmpty()) {
-            return "";
-        }
-
-        List<String> encoded = new ArrayList<>();
-        for (String line : lore) {
-            encoded.add(Base64.getEncoder().encodeToString((line == null ? "" : line).getBytes(StandardCharsets.UTF_8)));
-        }
-        return String.join(LORE_SEPARATOR, encoded);
-    }
-
-    private List<String> deserializeLore(String serialized) {
-        if (serialized == null) {
-            return null;
-        }
-        if (NULL_LORE.equals(serialized)) {
-            return null;
-        }
-        if (serialized.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<String> lore = new ArrayList<>();
-        for (String token : serialized.split(LORE_SEPARATOR, -1)) {
-            lore.add(new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8));
-        }
-        return lore;
-    }
-
-    private String replaceWorthPlaceholders(
-            String format,
-            String totalPrice,
-            String unitPrice,
-            String amount,
-            String itemName
-    ) {
-        String resolved = replacePlaceholderVariants(format, "price", totalPrice);
-        resolved = replacePlaceholderVariants(resolved, "unit_price", unitPrice);
-        resolved = replacePlaceholderVariants(resolved, "amount", amount);
-        return replacePlaceholderVariants(resolved, "item", itemName);
-    }
-
-    private String replacePlaceholderVariants(String text, String key, String value) {
-        return text
-                .replace("%" + key + "%", value)
-                .replace("${" + key + "}", value)
-                .replace("{" + key + "}", value);
-    }
-
-    private List<String> stripExistingWorthLore(List<String> lore) {
-        if (lore == null || lore.isEmpty()) {
-            return lore;
-        }
-
-        Pattern worthLorePattern = buildWorthLorePattern();
-        List<String> sanitized = new ArrayList<>();
-        boolean changed = false;
-        for (String line : lore) {
-            if (isWorthLoreLine(line, worthLorePattern)) {
-                changed = true;
-                continue;
-            }
-            sanitized.add(line);
-        }
-        return changed ? sanitized : lore;
-    }
-
-    private boolean isWorthLoreLine(String line, Pattern worthLorePattern) {
-        String plain = ColorUtils.strip(line);
-        if (containsBrokenWorthPlaceholder(plain)) {
-            return true;
-        }
-
-        return worthLorePattern.matcher(plain).matches();
-    }
-
-    private boolean containsBrokenWorthPlaceholder(String plain) {
-        return plain.contains("${price}")
-                || plain.contains("%price%")
-                || plain.contains("{price}")
-                || plain.contains("${unit_price}")
-                || plain.contains("%unit_price%")
-                || plain.contains("{unit_price}");
-    }
-
     private double findWorthRecursively(ConfigurationSection section, ItemStack item) {
         if (section == null || item == null || item.getType().isAir()) {
             return -1;
@@ -1500,100 +1324,6 @@ public class ShopManager {
 
         removeSoldItems.run();
         return commitSale(player, sale, sendFeedback);
-    }
-
-    private String getWorthLoreFormat() {
-        FileConfiguration worthConfig = plugin.getConfigManager().getWorth();
-
-        String format = firstNonBlank(
-                worthConfig.getString("WORTH-LORE.FORMAT"),
-                worthConfig.getString("DISPLAY.FORMAT"),
-                worthConfig.getString("FORMAT")
-        );
-        if (format != null) {
-            return normalizeWorthLoreFormat(format);
-        }
-
-        return normalizeWorthLoreFormat(
-                plugin.getConfigManager().getConfig()
-                        .getString("WORTH-LORE.FORMAT", "&7worth: &a{price_formatted}")
-        );
-    }
-
-    private String firstNonBlank(String... candidates) {
-        for (String candidate : candidates) {
-            if (candidate != null && !candidate.isBlank()) {
-                return candidate;
-            }
-        }
-        return null;
-    }
-
-    private String normalizeWorthLoreFormat(String format) {
-        if (format == null || format.isBlank()) {
-            return "&7worth: &a{price_formatted}";
-        }
-
-        return format;
-    }
-
-    private Pattern buildWorthLorePattern() {
-        String format = stripColorCodes(getWorthLoreFormat());
-        List<String> placeholders = List.of(
-                "%unit_price%", "${unit_price}", "{unit_price}",
-                "%unit_price_formatted%", "${unit_price_formatted}", "{unit_price_formatted}",
-                "%price%", "${price}", "{price}",
-                "%price_formatted%", "${price_formatted}", "{price_formatted}",
-                "%amount%", "${amount}", "{amount}",
-                "%item%", "${item}", "{item}"
-        );
-
-        StringBuilder regex = new StringBuilder("^");
-        int index = 0;
-        while (index < format.length()) {
-            int nextPlaceholderIndex = -1;
-            String nextPlaceholder = null;
-            for (String placeholder : placeholders) {
-                int candidateIndex = format.indexOf(placeholder, index);
-                if (candidateIndex < 0) {
-                    continue;
-                }
-                if (nextPlaceholderIndex < 0 || candidateIndex < nextPlaceholderIndex) {
-                    nextPlaceholderIndex = candidateIndex;
-                    nextPlaceholder = placeholder;
-                }
-            }
-
-            if (nextPlaceholderIndex < 0) {
-                regex.append(Pattern.quote(format.substring(index)));
-                break;
-            }
-
-            String staticPart = format.substring(index, nextPlaceholderIndex);
-            if (isPricePlaceholder(nextPlaceholder) && staticPart.endsWith("$")) {
-                staticPart = staticPart.substring(0, staticPart.length() - 1);
-                regex.append(Pattern.quote(staticPart));
-                regex.append("\\$?");
-            } else {
-                regex.append(Pattern.quote(staticPart));
-            }
-
-            regex.append(".+?");
-            index = nextPlaceholderIndex + nextPlaceholder.length();
-        }
-
-        regex.append("$");
-        return Pattern.compile(regex.toString());
-    }
-
-    private String stripColorCodes(String text) {
-        return text
-                .replaceAll("(?i)&#[0-9a-f]{6}", "")
-                .replaceAll("(?i)&[0-9a-fk-or]", "");
-    }
-
-    private boolean isPricePlaceholder(String placeholder) {
-        return placeholder.contains("price");
     }
 
     public double sellInventory(Player player, boolean handOnly) {

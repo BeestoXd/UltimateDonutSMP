@@ -512,6 +512,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new MobSpawnListener(this), this);
         pm.registerEvents(new PlayerSettingEffectsListener(this), this);
         if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            worthManager.setPacketDisplayActive(true);
             pm.registerEvents(new WorthPacketDisplay(this), this);
         } else {
             pm.registerEvents(new WorthDisplayListener(this), this);

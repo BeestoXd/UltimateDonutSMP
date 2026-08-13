@@ -114,6 +114,7 @@ public class WorthManager {
     private final java.util.Map<WorthCacheKey, java.util.Optional<SellCategory>> sellCategoryCache = new java.util.concurrent.ConcurrentHashMap<>();
     private final java.util.Set<Material> blockedMaterialsCache = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private boolean blockedMaterialsLoaded = false;
+    private volatile boolean packetDisplayActive = false;
 
     private static final DirectWorthData NULL_DIRECT_WORTH = new DirectWorthData(-1.0, "", "", "");
 
@@ -156,6 +157,11 @@ public class WorthManager {
         sellCategoryCache.clear();
         blockedMaterialsCache.clear();
         blockedMaterialsLoaded = false;
+    }
+
+    // toggled on at startup when the packet display is active, so worth is rendered per packet only
+    public void setPacketDisplayActive(boolean active) {
+        this.packetDisplayActive = active;
     }
 
     public double getWorth(Material material) {
@@ -1166,6 +1172,11 @@ public class WorthManager {
     }
 
     private ItemStack updateWorthDisplay(ItemStack item, boolean enabled) {
+        // the packet display renders worth client side, writing it into the real item breaks vanilla stacking
+        if (packetDisplayActive) {
+            return stripWorthDisplay(item);
+        }
+
         if (item == null || item.getType().isAir()) {
             return item;
         }
