@@ -804,7 +804,7 @@ public class ShopManager {
 
         String command = resolveShopCommand(player, item.command(), quantity);
         try {
-            boolean dispatched = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            boolean dispatched = plugin.getSpigotScheduler().dispatchConsoleCommand(command);
             return dispatched
                     ? RewardDeliveryResult.ok()
                     : RewardDeliveryResult.failure("command returned false: " + command);

@@ -78,16 +78,16 @@ public class SettingsMenu extends BaseMenu {
                 commandStr = commandStr.replace("{player}", player.getName()).replace("%player%", player.getName());
                 if (commandStr.toLowerCase(java.util.Locale.ROOT).startsWith("[console] ")) {
                     String cmd = commandStr.substring(10).trim();
-                    org.bukkit.Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), cmd);
+                    plugin.getSpigotScheduler().dispatchConsoleCommand(cmd);
                 } else if (commandStr.toLowerCase(java.util.Locale.ROOT).startsWith("[player] ")) {
                     String cmd = commandStr.substring(9).trim();
                     if (cmd.startsWith("/")) cmd = cmd.substring(1);
-                    player.performCommand(cmd);
+                    plugin.getSpigotScheduler().dispatchPlayerCommand(player, cmd);
                 } else {
                     String cmd = commandStr.startsWith("/") ? commandStr.substring(1) : commandStr;
-                    player.performCommand(cmd);
+                    plugin.getSpigotScheduler().dispatchPlayerCommand(player, cmd);
                 }
-                org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                plugin.getSpigotScheduler().runEntity(player, () -> {
                     if (player.isOnline()) {
                         build(player);
                     }

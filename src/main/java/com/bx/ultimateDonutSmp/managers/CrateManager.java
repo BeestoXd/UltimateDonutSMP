@@ -1042,7 +1042,7 @@ public class CrateManager {
                     .replace("{reward}", reward.id())
                     .replace("{reward_name}", getReadableRewardName(reward))
                     .replace("{amount}", String.valueOf(Math.max(1, grant.item().amount())));
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+            plugin.getSpigotScheduler().dispatchConsoleCommand(resolved);
         }
         return true;
     }

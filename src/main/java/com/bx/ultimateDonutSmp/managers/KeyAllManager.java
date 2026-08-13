@@ -351,7 +351,7 @@ public class KeyAllManager {
             return;
         }
 
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+        plugin.getSpigotScheduler().dispatchConsoleCommand(resolved);
     }
 
     private String resolveCommandReward(String command, Player player, SelectedKeyReward reward) {
