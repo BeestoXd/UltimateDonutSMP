@@ -494,6 +494,10 @@ SETTINGS:
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
   SHARDS-KILL-MESSAGE: '&#A303F9+{shards} Shard'
+  # The text or value for Shards Kill Message Boosted, shown instead of Shards Kill
+  # Message while a shard booster multiplies the kill reward. Supports {multiplier}.
+  # Available options: Any valid string text
+  SHARDS-KILL-MESSAGE-BOOSTED: '&#A303F9+{shards} Shards &7(&ax{multiplier}&7)'
   # The numerical value for Shards Kill Cooldown Seconds. Blocks repeated kill rewards
   # against the same victim until the cooldown expires. Set to 0 to disable.
   # Available options: Any valid integer
@@ -532,6 +536,7 @@ SETTINGS:
 | `SETTINGS.HOME-DEFAULT` | `int` | Any positive integer | `2` | Default maximum `/sethome` limit for non-donor players. |
 | `SETTINGS.SHARDS-PER-KILL` | `int` | Any valid integer | `1` | Configures `SHARDS-PER-KILL` for `SETTINGS`. |
 | `SETTINGS.SHARDS-KILL-MESSAGE` | `str` | Any string text | `&#A303F9+{shards} Shard` | Configures `SHARDS-KILL-MESSAGE` for `SETTINGS`. |
+| `SETTINGS.SHARDS-KILL-MESSAGE-BOOSTED` | `str` | Any string text | `&#A303F9+{shards} Shards &7(&ax{multiplier}&7)` | Action bar shown instead of `SHARDS-KILL-MESSAGE` while a shard booster multiplies the kill reward. Supports `{multiplier}`. |
 | `SETTINGS.SHARDS-KILL-COOLDOWN-SECONDS` | `int` | Any valid integer | `600` | Time a killer must wait before the same victim rewards shards again. Set to `0` to reward every kill. |
 | `SETTINGS.SHARDS-KILL-COOLDOWN-MESSAGE` | `str` | Any string text | `&cNo Shard &7(killed recently, {time} left)` | Action bar shown when a kill reward is skipped by the cooldown. Supports `{time}` and `{seconds}`. Leave empty to stay silent. |
 | `SETTINGS.MONEY-PER-DEFAULT` | `float` | Configured values | `1000.0` | Configures `MONEY-PER-DEFAULT` for `SETTINGS`. |
@@ -905,6 +910,12 @@ SHARDS:
     - duels
   # The numerical value for Booster Multiplier. Available options: Any valid integer
   BOOSTER-MULTIPLIER: 4
+  # Determines whether the shard booster also multiplies player kill rewards.
+  # Available options: true, false
+  BOOSTER-APPLIES-TO-KILLS: true
+  # The numerical value for Booster Kill Multiplier, used only for player kill rewards.
+  # Set to 0 to reuse Booster Multiplier. Available options: Any valid integer
+  BOOSTER-KILL-MULTIPLIER: 0
 # Configuration section for Key All.
 ```
 
@@ -941,6 +952,8 @@ SHARDS:
 | `SHARDS.CUBOIDS.REGIONS.spawn.PAUSED-MESSAGE` | `str` | Any string text | `&eMove to keep earning shards &7(%mov...` | Configures `PAUSED-MESSAGE` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.AFK-PAUSED-MESSAGE` | `str` | Any string text | `&cYou are AFK. Move to resume shard gain` | Configures `AFK-PAUSED-MESSAGE` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.EXCLUDED-WORLD-MESSAGE` | `str` | Any string text | `&cShards are disabled in this world` | Configures `EXCLUDED-WORLD-MESSAGE` for `SHARDS`. |
+| `SHARDS.BOOSTER-APPLIES-TO-KILLS` | `bool` | true, false | `True` | Whether an active shard booster also multiplies player kill rewards. Set to `false` to keep the booster on passive and cuboid shards only. |
+| `SHARDS.BOOSTER-KILL-MULTIPLIER` | `int` | Any valid integer | `0` | Separate booster multiplier used only for kill rewards. Set to `0` to reuse `SHARDS.BOOSTER-MULTIPLIER`. |
 | *(10 additional sub-keys configured in config.yml)* | | | | |
 
 ---

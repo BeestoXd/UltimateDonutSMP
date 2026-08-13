@@ -74,6 +74,10 @@ SETTINGS:
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
   SHARDS-KILL-MESSAGE: '&#A303F9+{shards} Shard'
+  # The text or value for Shards Kill Message Boosted, shown instead of Shards Kill
+  # Message while a shard booster multiplies the kill reward. Supports {multiplier}.
+  # Available options: Any valid string text
+  SHARDS-KILL-MESSAGE-BOOSTED: '&#A303F9+{shards} Shards &7(&ax{multiplier}&7)'
   # The numerical value for Shards Kill Cooldown Seconds. Blocks repeated kill rewards
   # against the same victim until the cooldown expires. Set to 0 to disable.
   # Available options: Any valid integer
@@ -434,6 +438,12 @@ SHARDS:
     - duels
   # The numerical value for Booster Multiplier. Available options: Any valid integer
   BOOSTER-MULTIPLIER: 4
+  # Determines whether the shard booster also multiplies player kill rewards.
+  # Available options: true, false
+  BOOSTER-APPLIES-TO-KILLS: true
+  # The numerical value for Booster Kill Multiplier, used only for player kill rewards.
+  # Set to 0 to reuse Booster Multiplier. Available options: Any valid integer
+  BOOSTER-KILL-MULTIPLIER: 0
 # Configuration section for Key All.
 KEY-ALL:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
+import com.bx.ultimateDonutSmp.managers.ShardManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.TwoChoice;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
@@ -79,8 +80,11 @@ public class PlayerDeathListener implements Listener {
                 killerData.addKillStreak();
                 if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SHARDS)) {
                     if (plugin.getShardManager().tryClaimKillReward(killer.getUniqueId(), victim.getUniqueId())) {
-                        long shardsPerKill = plugin.getShardManager().rollKillReward();
-                        plugin.getShardManager().giveShards(killer, shardsPerKill, true);
+                        long multiplier = plugin.getShardManager().getKillMultiplier(killer.getUniqueId());
+                        long shardsPerKill = ShardManager.applyMultiplier(
+                                plugin.getShardManager().rollKillReward(), multiplier);
+                        plugin.getShardManager().giveShards(killer, shardsPerKill, false);
+                        plugin.getShardManager().sendKillRewardFeedback(killer, shardsPerKill, multiplier);
                     } else {
                         plugin.getShardManager().sendKillRewardCooldownFeedback(killer, victim.getUniqueId());
                     }

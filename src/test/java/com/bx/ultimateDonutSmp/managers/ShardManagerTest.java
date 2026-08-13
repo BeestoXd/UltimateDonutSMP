@@ -73,6 +73,26 @@ class ShardManagerTest {
     }
 
     @Test
+    void multipliesKillRewardsWithoutOverflowing() {
+        assertEquals(40L, ShardManager.applyMultiplier(10L, 4L));
+        assertEquals(10L, ShardManager.applyMultiplier(10L, 1L));
+        assertEquals(0L, ShardManager.applyMultiplier(0L, 4L));
+    }
+
+    @Test
+    void treatsInvalidMultipliersAsNoBoost() {
+        assertEquals(10L, ShardManager.applyMultiplier(10L, 0L));
+        assertEquals(10L, ShardManager.applyMultiplier(10L, -3L));
+        assertEquals(0L, ShardManager.applyMultiplier(-10L, 4L));
+    }
+
+    @Test
+    void saturatesInsteadOfWrappingOnExtremeRewards() {
+        assertEquals(Long.MAX_VALUE, ShardManager.applyMultiplier(Long.MAX_VALUE, 4L));
+        assertEquals(Long.MAX_VALUE - 1L, ShardManager.applyMultiplier((Long.MAX_VALUE - 1L) / 2L, 2L));
+    }
+
+    @Test
     void reportsRemainingCooldownRoundedUpToWholeSeconds() {
         long cooldown = 600_000L;
         long firstKill = 1_000_000L;
