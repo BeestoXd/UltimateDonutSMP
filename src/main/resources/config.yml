@@ -74,6 +74,14 @@ SETTINGS:
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
   SHARDS-KILL-MESSAGE: '&#A303F9+{shards} Shard'
+  # The numerical value for Shards Kill Cooldown Seconds. Blocks repeated kill rewards
+  # against the same victim until the cooldown expires. Set to 0 to disable.
+  # Available options: Any valid integer
+  SHARDS-KILL-COOLDOWN-SECONDS: 600
+  # The text or value for Shards Kill Cooldown Message, shown when the kill reward is
+  # skipped because the same victim was killed recently. Leave empty to stay silent.
+  # Available options: Any valid string text
+  SHARDS-KILL-COOLDOWN-MESSAGE: '&cNo Shard &7(killed recently, {time} left)'
   # The decimal value for Money Per Default. Available options: Any decimal number
   MONEY-PER-DEFAULT: 1000.0
   # The text or value for Sell Message. Available options: Any valid string text

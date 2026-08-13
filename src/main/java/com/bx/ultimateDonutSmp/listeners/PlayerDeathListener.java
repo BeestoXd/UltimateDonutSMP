@@ -78,8 +78,12 @@ public class PlayerDeathListener implements Listener {
                 killerData.addKill();
                 killerData.addKillStreak();
                 if (plugin.getFeatureManager().isEnabled(FeatureManager.Feature.SHARDS)) {
-                    long shardsPerKill = plugin.getShardManager().rollKillReward();
-                    plugin.getShardManager().giveShards(killer, shardsPerKill, true);
+                    if (plugin.getShardManager().tryClaimKillReward(killer.getUniqueId(), victim.getUniqueId())) {
+                        long shardsPerKill = plugin.getShardManager().rollKillReward();
+                        plugin.getShardManager().giveShards(killer, shardsPerKill, true);
+                    } else {
+                        plugin.getShardManager().sendKillRewardCooldownFeedback(killer, victim.getUniqueId());
+                    }
                 }
             }
 

@@ -494,6 +494,14 @@ SETTINGS:
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
   SHARDS-KILL-MESSAGE: '&#A303F9+{shards} Shard'
+  # The numerical value for Shards Kill Cooldown Seconds. Blocks repeated kill rewards
+  # against the same victim until the cooldown expires. Set to 0 to disable.
+  # Available options: Any valid integer
+  SHARDS-KILL-COOLDOWN-SECONDS: 600
+  # The text or value for Shards Kill Cooldown Message, shown when the kill reward is
+  # skipped because the same victim was killed recently. Leave empty to stay silent.
+  # Available options: Any valid string text
+  SHARDS-KILL-COOLDOWN-MESSAGE: '&cNo Shard &7(killed recently, {time} left)'
   # The decimal value for Money Per Default. Available options: Any decimal number
   MONEY-PER-DEFAULT: 1000.0
   # The text or value for Sell Message. Available options: Any valid string text
@@ -524,6 +532,8 @@ SETTINGS:
 | `SETTINGS.HOME-DEFAULT` | `int` | Any positive integer | `2` | Default maximum `/sethome` limit for non-donor players. |
 | `SETTINGS.SHARDS-PER-KILL` | `int` | Any valid integer | `1` | Configures `SHARDS-PER-KILL` for `SETTINGS`. |
 | `SETTINGS.SHARDS-KILL-MESSAGE` | `str` | Any string text | `&#A303F9+{shards} Shard` | Configures `SHARDS-KILL-MESSAGE` for `SETTINGS`. |
+| `SETTINGS.SHARDS-KILL-COOLDOWN-SECONDS` | `int` | Any valid integer | `600` | Time a killer must wait before the same victim rewards shards again. Set to `0` to reward every kill. |
+| `SETTINGS.SHARDS-KILL-COOLDOWN-MESSAGE` | `str` | Any string text | `&cNo Shard &7(killed recently, {time} left)` | Action bar shown when a kill reward is skipped by the cooldown. Supports `{time}` and `{seconds}`. Leave empty to stay silent. |
 | `SETTINGS.MONEY-PER-DEFAULT` | `float` | Configured values | `1000.0` | Configures `MONEY-PER-DEFAULT` for `SETTINGS`. |
 | `SETTINGS.SELL-MESSAGE` | `str` | Any string text | `&a+$%price%` | Configures `SELL-MESSAGE` for `SETTINGS`. |
 | `SETTINGS.SPAWN-MENU` | `bool` | true, false | `True` | Configures `SPAWN-MENU` for `SETTINGS`. |

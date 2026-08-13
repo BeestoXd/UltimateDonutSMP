@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
@@ -187,6 +188,7 @@ public class ShardManager {
     private final Map<UUID, Integer> pendingMovementBlocks = new HashMap<>();
     private final Map<UUID, String> lastMatchedCuboid = new HashMap<>();
     private final Map<UUID, ShardCuboidHudState> hudStates = new HashMap<>();
+    private final Map<UUID, Map<UUID, Long>> killRewardCooldowns = new ConcurrentHashMap<>();
 
     public ShardManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -253,6 +255,85 @@ public class ShardManager {
 
     private static Long numericLong(Object value) {
         return value instanceof Number number ? number.longValue() : null;
+    }
+
+    public long getKillRewardCooldownMillis() {
+        return normalizeKillRewardCooldownMillis(
+                plugin.getConfigManager().getConfig().getLong("SETTINGS.SHARDS-KILL-COOLDOWN-SECONDS", 600L)
+        );
+    }
+
+    /**
+     * Marks a kill reward as claimed for this killer/victim pair when the pair is off cooldown.
+     *
+     * @return {@code true} when the killer may be rewarded for this kill
+     */
+    public boolean tryClaimKillReward(UUID killerId, UUID victimId) {
+        long cooldownMillis = getKillRewardCooldownMillis();
+        if (cooldownMillis <= 0L || killerId == null || victimId == null) {
+            return true;
+        }
+
+        long now = System.currentTimeMillis();
+        Map<UUID, Long> victims = killRewardCooldowns.computeIfAbsent(killerId, id -> new ConcurrentHashMap<>());
+        if (isKillRewardOnCooldown(victims.get(victimId), now, cooldownMillis)) {
+            return false;
+        }
+
+        victims.put(victimId, now);
+        purgeExpiredKillRewardCooldowns(now, cooldownMillis);
+        return true;
+    }
+
+    public long getKillRewardCooldownRemainingSeconds(UUID killerId, UUID victimId) {
+        long cooldownMillis = getKillRewardCooldownMillis();
+        if (cooldownMillis <= 0L || killerId == null || victimId == null) {
+            return 0L;
+        }
+        Map<UUID, Long> victims = killRewardCooldowns.get(killerId);
+        Long lastRewardMillis = victims == null ? null : victims.get(victimId);
+        return killRewardCooldownRemainingSeconds(lastRewardMillis, System.currentTimeMillis(), cooldownMillis);
+    }
+
+    public void sendKillRewardCooldownFeedback(Player killer, UUID victimId) {
+        if (killer == null) {
+            return;
+        }
+        String template = plugin.getConfigManager().getConfig()
+                .getString("SETTINGS.SHARDS-KILL-COOLDOWN-MESSAGE", "");
+        if (template == null || template.isBlank()) {
+            return;
+        }
+        long remainingSeconds = getKillRewardCooldownRemainingSeconds(killer.getUniqueId(), victimId);
+        PlayerSettingUtils.sendActionBar(plugin, killer, template
+                .replace("{time}", NumberUtils.formatTime(remainingSeconds))
+                .replace("{seconds}", String.valueOf(remainingSeconds)));
+    }
+
+    public static long normalizeKillRewardCooldownMillis(long configuredSeconds) {
+        return Math.max(0L, configuredSeconds) * 1000L;
+    }
+
+    public static boolean isKillRewardOnCooldown(Long lastRewardMillis, long nowMillis, long cooldownMillis) {
+        if (cooldownMillis <= 0L || lastRewardMillis == null) {
+            return false;
+        }
+        long elapsed = nowMillis - lastRewardMillis;
+        return elapsed >= 0L && elapsed < cooldownMillis;
+    }
+
+    public static long killRewardCooldownRemainingSeconds(Long lastRewardMillis, long nowMillis, long cooldownMillis) {
+        if (!isKillRewardOnCooldown(lastRewardMillis, nowMillis, cooldownMillis)) {
+            return 0L;
+        }
+        long remainingMillis = cooldownMillis - (nowMillis - lastRewardMillis);
+        return Math.max(1L, (remainingMillis + 999L) / 1000L);
+    }
+
+    private void purgeExpiredKillRewardCooldowns(long nowMillis, long cooldownMillis) {
+        killRewardCooldowns.values().forEach(victims -> victims.values()
+                .removeIf(lastRewardMillis -> !isKillRewardOnCooldown(lastRewardMillis, nowMillis, cooldownMillis)));
+        killRewardCooldowns.values().removeIf(Map::isEmpty);
     }
 
     public boolean hasBooster(UUID uuid) {
