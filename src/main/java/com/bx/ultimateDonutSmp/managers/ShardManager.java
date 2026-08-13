@@ -385,6 +385,75 @@ public class ShardManager {
         return 1;
     }
 
+    public boolean isBoosterAppliedToKills() {
+        return plugin.getConfigManager().getConfig().getBoolean("SHARDS.BOOSTER-APPLIES-TO-KILLS", true);
+    }
+
+    /**
+     * Booster multiplier used for player kill rewards.
+     *
+     * @return the configured kill multiplier, or {@code 1} when no booster applies
+     */
+    public int getKillMultiplier(UUID uuid) {
+        if (!isBoosterAppliedToKills() || !hasBooster(uuid)) {
+            return 1;
+        }
+        FileConfiguration config = plugin.getConfigManager().getConfig();
+        int killMultiplier = config.getInt("SHARDS.BOOSTER-KILL-MULTIPLIER", 0);
+        return Math.max(1, killMultiplier > 0
+                ? killMultiplier
+                : config.getInt("SHARDS.BOOSTER-MULTIPLIER", 4));
+    }
+
+    /** Multiplies a reward without overflowing when the configured range is extreme. */
+    public static long applyMultiplier(long amount, long multiplier) {
+        long safeAmount = Math.max(0L, amount);
+        long safeMultiplier = Math.max(1L, multiplier);
+        if (safeAmount == 0L || safeMultiplier == 1L) {
+            return safeAmount;
+        }
+        return safeAmount > Long.MAX_VALUE / safeMultiplier ? Long.MAX_VALUE : safeAmount * safeMultiplier;
+    }
+
+    public String formatKillRewardMessage(long amount, long multiplier) {
+        boolean boosted = multiplier > 1;
+        String path = boosted
+                ? "SETTINGS.SHARDS-KILL-MESSAGE-BOOSTED"
+                : "SETTINGS.SHARDS-KILL-MESSAGE";
+        String fallback = boosted
+                ? "+{amount_formatted} &7(&ax{multiplier}&7)"
+                : "+{amount_formatted}";
+
+        String message = plugin.getConfigManager().getConfig().getString(path, fallback);
+        if (message == null || message.isBlank()) {
+            message = fallback;
+        }
+        return message
+                .replace("{shards}", String.valueOf(amount))
+                .replace("{amount}", String.valueOf(amount))
+                .replace("{shards_formatted}", plugin.getCurrencyManager().formatShards(amount))
+                .replace("{amount_formatted}", plugin.getCurrencyManager().formatShards(amount))
+                .replace("{multiplier}", String.valueOf(Math.max(1L, multiplier)));
+    }
+
+    public void sendKillRewardFeedback(Player killer, long amount, long multiplier) {
+        if (killer == null) {
+            return;
+        }
+
+        PlayerSettingUtils.sendActionBar(plugin, killer, formatKillRewardMessage(amount, multiplier));
+        if (multiplier <= 1) {
+            // Unboosted kills stay silent, exactly as before the booster applied here.
+            return;
+        }
+
+        String sound = plugin.getConfigManager().getSound("SHARDS.REWARD-BOOSTED");
+        if (sound == null || sound.isBlank()) {
+            sound = "minecraft:entity.player.levelup|0.85|1.45";
+        }
+        SoundUtils.play(killer, sound);
+    }
+
     public void syncBooster(Player player) {
         PlayerData data = plugin.getPlayerDataManager().get(player);
         if (data == null) {
