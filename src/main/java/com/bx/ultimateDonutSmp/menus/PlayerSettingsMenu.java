@@ -11,8 +11,6 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -560,19 +558,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
 
     private void clearNearbyHostileMobs(Player player) {
         double radius = plugin.getConfigManager().getConfig().getDouble("SETTINGS.MOB-SPAWN-RADIUS", 50);
-        double radiusSquared = radius * radius;
-        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (!(entity instanceof LivingEntity living)) {
-                continue;
-            }
-            if (!MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(plugin, living)) {
-                continue;
-            }
-            if (living.getLocation().distanceSquared(player.getLocation()) > radiusSquared) {
-                continue;
-            }
-            living.remove();
-        }
+        MobSpawnPolicy.clearNearbyHostileMobs(plugin, player, radius);
     }
 
     private void toggle(Player player, String label, boolean enabled, BooleanSetter setter) {
