@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorthManagerTest {
@@ -94,6 +95,29 @@ class WorthManagerTest {
 
         org.bukkit.inventory.ItemStack gold = new org.bukkit.inventory.ItemStack(org.bukkit.Material.GOLD_INGOT, 5);
         assertFalse(worthManager.isSimilarIgnoringWorth(item1, gold));
+    }
+
+    @Test
+    void packetDisplayModeLeavesRealItemsUntouchedSoTheyStillStack() throws Exception {
+        setupMockServer();
+
+        org.bukkit.configuration.file.YamlConfiguration worthConfig = new org.bukkit.configuration.file.YamlConfiguration();
+        worthConfig.set("TYPE.MINERALS.DIAMOND", 10.0);
+
+        UltimateDonutSmp plugin = createMockPlugin(worthConfig);
+        WorthManager worthManager = new WorthManager(plugin);
+        worthManager.setPacketDisplayActive(true);
+
+        java.lang.reflect.Method updateWorthDisplay = WorthManager.class.getDeclaredMethod(
+                "updateWorthDisplay", org.bukkit.inventory.ItemStack.class, boolean.class);
+        updateWorthDisplay.setAccessible(true);
+
+        org.bukkit.inventory.ItemStack partialStack = new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND, 5);
+        org.bukkit.inventory.ItemStack fullStack = new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND, 36);
+
+        assertSame(partialStack, updateWorthDisplay.invoke(worthManager, partialStack, true));
+        assertSame(fullStack, updateWorthDisplay.invoke(worthManager, fullStack, true));
+        assertTrue(partialStack.isSimilar(fullStack));
     }
 
     private void setupMockServer() throws Exception {
