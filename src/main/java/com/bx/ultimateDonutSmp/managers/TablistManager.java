@@ -484,6 +484,8 @@ public class TablistManager {
         removeCachedSkinTexture(playerId);
         skinHeadTextureRefreshTimes.remove(playerId);
         luckPermsCommandOverrides.remove(playerId);
+        lastHeaderFooterCache.remove(playerId);
+        lastNameCache.remove(playerId);
     }
 
     public String createPermissionRefreshSnapshot(Player player) {
