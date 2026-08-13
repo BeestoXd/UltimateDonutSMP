@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -101,9 +100,7 @@ public class AnvilModerationManager {
         String template = punishments.get(index);
         String resolvedCommand = template.replace("%player%", player.getName());
 
-        plugin.getSpigotScheduler().runEntity(player, () -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolvedCommand);
-        });
+        plugin.getSpigotScheduler().dispatchConsoleCommand(resolvedCommand);
     }
 
     public List<String> getBannedWords() {

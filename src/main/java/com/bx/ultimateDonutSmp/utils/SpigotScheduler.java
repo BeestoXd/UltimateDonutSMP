@@ -223,6 +223,62 @@ public final class SpigotScheduler {
         return !isFolia() || foliaBridge.isOwnedByCurrentRegion(location);
     }
 
+    /**
+     * Runs a console command. Folia only allows command dispatch from the global tick thread,
+     * so on Folia the dispatch is handed to the global region scheduler instead of running inline.
+     *
+     * @return the dispatch result when the command ran inline, or {@code true} when it was scheduled
+     */
+    public boolean dispatchConsoleCommand(String command) {
+        if (command == null || command.isBlank()) {
+            return false;
+        }
+
+        String resolved = command;
+        if (!isFolia() && Bukkit.isPrimaryThread()) {
+            return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+        }
+
+        runGlobal(() -> {
+            try {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+            } catch (Exception exception) {
+                plugin.getLogger().log(Level.WARNING, "Failed to dispatch console command '" + resolved + "'", exception);
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Runs a command as the given player. Carries the same Folia threading rules as
+     * {@link #dispatchConsoleCommand(String)}.
+     *
+     * @return the dispatch result when the command ran inline, or {@code true} when it was scheduled
+     */
+    public boolean dispatchPlayerCommand(Player player, String command) {
+        if (player == null || command == null || command.isBlank()) {
+            return false;
+        }
+
+        String resolved = command;
+        if (!isFolia() && Bukkit.isPrimaryThread()) {
+            return player.performCommand(resolved);
+        }
+
+        runGlobal(() -> {
+            if (!player.isOnline()) {
+                return;
+            }
+            try {
+                player.performCommand(resolved);
+            } catch (Exception exception) {
+                plugin.getLogger().log(Level.WARNING, "Failed to dispatch command '" + resolved
+                        + "' as " + player.getName(), exception);
+            }
+        });
+        return true;
+    }
+
     private static long ticksToMillis(long ticks) {
         return Math.max(0L, ticks) * MILLIS_PER_TICK;
     }
