@@ -8,9 +8,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ScoreboardNumberHider {
 
@@ -42,7 +43,7 @@ public final class ScoreboardNumberHider {
     }
 
     private final UltimateDonutSmp plugin;
-    private final Map<String, Long> lastSent = new HashMap<>();
+    private final Map<String, Long> lastSent = new ConcurrentHashMap<>();
 
     private boolean disabled;
     private boolean warned;
@@ -58,6 +59,15 @@ public final class ScoreboardNumberHider {
 
     public boolean isEnabled() {
         return plugin.getConfigManager().getScoreboard().getBoolean("SCOREBOARD.HIDE-NUMBERS", true);
+    }
+
+    /** Forgets the resend throttle for a player so a rebuilt objective is blanked immediately. */
+    public void forget(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+        String prefix = uuid + ":";
+        lastSent.keySet().removeIf(key -> key.startsWith(prefix));
     }
 
     public void hide(Player player, Objective objective) {

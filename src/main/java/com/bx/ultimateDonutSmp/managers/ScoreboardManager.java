@@ -75,7 +75,10 @@ public class ScoreboardManager {
     }
 
     public long getUpdateIntervalTicks() {
-        return Math.max(1L, plugin.getConfigManager().getScoreboard().getLong("SCOREBOARD.UPDATE-INTERVAL-TICKS", 10L));
+        FileConfiguration scoreboard = plugin.getConfigManager().getScoreboard();
+        long legacy = scoreboard.getLong("SCOREBOARD.UPDATE-INTERVAL-TICKS", 0L);
+        long ticks = scoreboard.getLong("SCOREBOARD.TITLE-UPDATE-TICKS", legacy > 0L ? legacy : 2L);
+        return Math.max(1L, ticks);
     }
 
     public boolean isEnabled() {
@@ -286,9 +289,11 @@ public class ScoreboardManager {
             return;
         }
 
+        // A fresh board starts with empty teams, so any cached line/title state is stale.
+        clearCacheSpigot(player.getUniqueId());
+
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = board.registerNewObjective("sidebar", Criteria.DUMMY,
-                ColorUtils.toComponent("EconomySMP"));
+        Objective obj = board.registerNewObjective("sidebar", Criteria.DUMMY, getTitle(player));
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         playerBoards.put(player.getUniqueId(), board);
@@ -298,8 +303,7 @@ public class ScoreboardManager {
 
     private void removePlayerSpigot(UUID uuid) {
         playerBoards.remove(uuid);
-        playerLastLines.remove(uuid);
-        playerLastTitle.remove(uuid);
+        clearCacheSpigot(uuid);
     }
 
     private void updateSpigot(Player player) {
@@ -408,15 +412,32 @@ public class ScoreboardManager {
             releaseOwnedBoardSpigot(player);
         }
         playerBoards.clear();
+        playerLastLines.clear();
+        playerLastTitle.clear();
     }
 
     private void releaseOwnedBoardSpigot(Player player) {
-        Scoreboard board = playerBoards.remove(player.getUniqueId());
+        if (player == null) {
+            return;
+        }
+
+        UUID uuid = player.getUniqueId();
+        Scoreboard board = playerBoards.remove(uuid);
+        clearCacheSpigot(uuid);
         if (board == null || Bukkit.getScoreboardManager() == null) {
             return;
         }
         if (player.getScoreboard() == board) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+    }
+
+    /** Drops the diff cache so the next render rewrites every line of a rebuilt board. */
+    private void clearCacheSpigot(UUID uuid) {
+        playerLastLines.remove(uuid);
+        playerLastTitle.remove(uuid);
+        if (numberHider != null) {
+            numberHider.forget(uuid);
         }
     }
 
