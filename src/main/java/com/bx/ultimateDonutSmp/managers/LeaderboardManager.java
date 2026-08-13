@@ -6,7 +6,6 @@ import com.bx.ultimateDonutSmp.utils.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -46,14 +45,22 @@ public class LeaderboardManager {
     public record LeaderboardEntry(int position, PlayerData playerData) {
     }
 
-    private record CachedLeaderboard(long cachedAtMillis, List<PlayerData> players) {
-        private boolean isExpired(long now) {
-            return now - cachedAtMillis >= CACHE_TTL_MS;
+    private record CachedLeaderboard(long cachedAtMillis, List<PlayerData> players, boolean stale) {
+        private CachedLeaderboard(long cachedAtMillis, List<PlayerData> players) {
+            this(cachedAtMillis, players, false);
+        }
+
+        private boolean needsRefresh(long now) {
+            return stale || now - cachedAtMillis >= CACHE_TTL_MS;
+        }
+
+        private CachedLeaderboard markStale() {
+            return stale ? this : new CachedLeaderboard(cachedAtMillis, players, true);
         }
     }
 
     private final UltimateDonutSmp plugin;
-    private final Map<LeaderboardType, CachedLeaderboard> leaderboardCache = new EnumMap<>(LeaderboardType.class);
+    private final Map<LeaderboardType, CachedLeaderboard> leaderboardCache = new java.util.concurrent.ConcurrentHashMap<>();
     private final java.util.Set<LeaderboardType> refreshingTypes = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     public LeaderboardManager(UltimateDonutSmp plugin) {
@@ -154,14 +161,20 @@ public class LeaderboardManager {
         return numericValue(type, data);
     }
 
+    // Keeps the last snapshot readable while a refresh runs; dropping it here made the
+    // next menu open render "no leaderboard data" until the async reload finished.
     public void invalidate(LeaderboardType type) {
-        if (type != null) {
-            leaderboardCache.remove(type);
+        if (type == null) {
+            return;
         }
+        leaderboardCache.computeIfPresent(type, (key, cached) -> cached.markStale());
     }
 
     public void invalidateAll() {
-        leaderboardCache.clear();
+        leaderboardCache.replaceAll((key, cached) -> cached.markStale());
+        for (LeaderboardType type : LeaderboardType.values()) {
+            triggerAsyncRefresh(type);
+        }
     }
 
     private List<PlayerData> getSortedPlayers(LeaderboardType type) {
@@ -175,7 +188,7 @@ public class LeaderboardManager {
             return List.of();
         }
 
-        if (cachedLeaderboard.isExpired(now)) {
+        if (cachedLeaderboard.needsRefresh(now)) {
             triggerAsyncRefresh(type);
         }
         return cachedLeaderboard.players();
