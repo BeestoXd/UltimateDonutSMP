@@ -39,6 +39,17 @@ public class SpawnerStorageMenu extends BaseMenu {
         return page;
     }
 
+    @Override
+    public void open(Player player) {
+        super.open(player);
+        plugin.getSpawnerManager().registerOpenStorageMenu(player, this);
+    }
+
+    @Override
+    public void onClose(Player player) {
+        plugin.getSpawnerManager().unregisterOpenStorageMenu(player, this);
+    }
+
     public void refresh(Player player) {
         if (player == null || !player.isOnline()) {
             return;
@@ -54,12 +65,12 @@ public class SpawnerStorageMenu extends BaseMenu {
             return;
         }
 
+        // compare the view by identity rather than through getHolder(): resolving the
+        // holder of a block backed inventory reads the world, which Folia only allows
+        // from the region owning that block
         Inventory topInventory = player.getOpenInventory().getTopInventory();
-        if (topInventory == null || !(topInventory.getHolder() instanceof SpawnerStorageMenu storageMenu)) {
-            return;
-        }
-
-        if (storageMenu.spawnerId != spawnerId) {
+        if (topInventory != getInventory()) {
+            plugin.getSpawnerManager().unregisterOpenStorageMenu(player, this);
             return;
         }
 
