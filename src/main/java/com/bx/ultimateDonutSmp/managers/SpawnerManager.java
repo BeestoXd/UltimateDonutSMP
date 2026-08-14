@@ -56,6 +56,9 @@ import java.util.logging.Level;
 
 public class SpawnerManager {
 
+    public static final String SILK_TOUCH_BYPASS_PERMISSION = "ultimatedonutsmp.spawner.bypass";
+    public static final String SILK_TOUCH_REQUIRED_MESSAGE = "&cYou need Silk Touch to break this spawner!";
+
     public record ActionResult(boolean success, String message, int consumedAmount, boolean fullyDestroyed) {
         public ActionResult(boolean success, String message, int consumedAmount) {
             this(success, message, consumedAmount, true);
@@ -274,6 +277,24 @@ public class SpawnerManager {
 
     public boolean isCancelMobSpawn() {
         return cancelMobSpawn;
+    }
+
+    public boolean isRequireSilkTouch() {
+        return requireSilkTouch;
+    }
+
+    public boolean hasSilkTouchAccess(Player player) {
+        if (player == null) {
+            return false;
+        }
+        if (player.getGameMode() == GameMode.CREATIVE
+                || PermissionUtils.has(player, SILK_TOUCH_BYPASS_PERMISSION)) {
+            return true;
+        }
+        ItemStack heldTool = player.getInventory().getItemInMainHand();
+        return heldTool != null
+                && heldTool.getType().name().endsWith("_PICKAXE")
+                && heldTool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH);
     }
 
     public boolean isXpEnabled() {
@@ -818,22 +839,8 @@ public class SpawnerManager {
             return fail("&cyou do not have permission to break that spawner.");
         }
 
-        boolean hasSilkTouch = false;
-        if (player != null) {
-            if (player.getGameMode() == GameMode.CREATIVE
-                    || PermissionUtils.has(player, "ultimatedonutsmp.admin.spawner")
-                    || PermissionUtils.has(player, "ultimatedonutsmp.spawner.bypass")) {
-                hasSilkTouch = true;
-            } else {
-                ItemStack heldTool = player.getInventory().getItemInMainHand();
-                if (heldTool != null && heldTool.getType().name().endsWith("_PICKAXE") && heldTool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH)) {
-                    hasSilkTouch = true;
-                }
-            }
-        }
-
-        if (requireSilkTouch && !hasSilkTouch) {
-            return fail("&cYou must use a Silk Touch pickaxe to break spawners.");
+        if (requireSilkTouch && !hasSilkTouchAccess(player)) {
+            return fail(SILK_TOUCH_REQUIRED_MESSAGE);
         }
 
         long totalStack = instance.getStackAmount();

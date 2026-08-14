@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.SpawnerManager;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -103,11 +104,17 @@ public class SpawnerBlockListener implements Listener {
         if (plugin.getSpawnStashManager() != null && plugin.getSpawnStashManager().isActiveBlock(block)) {
             return;
         }
+        Player player = event.getPlayer();
         if (plugin.getSpawnerManager().getSpawner(block) == null) {
+            if (block.getType() == Material.SPAWNER
+                    && plugin.getSpawnerManager().isRequireSilkTouch()
+                    && !plugin.getSpawnerManager().hasSilkTouchAccess(player)) {
+                event.setCancelled(true);
+                player.sendMessage(ColorUtils.toComponent(SpawnerManager.SILK_TOUCH_REQUIRED_MESSAGE));
+            }
             return;
         }
 
-        Player player = event.getPlayer();
         var result = plugin.getSpawnerManager().breakSpawner(player, block);
         if (!result.success()) {
             event.setCancelled(true);
