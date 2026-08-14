@@ -50,6 +50,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -89,6 +90,7 @@ public class SpawnerManager {
     private final AtomicLong temporarySpawnerIdSequence = new AtomicLong(-1L);
     private final Set<Long> temporarySpawnerIds = new HashSet<>();
     private final Map<Long, List<SpawnerLootEntry>> pendingLootMap = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<UUID, SpawnerStorageMenu> openStorageMenus = new java.util.concurrent.ConcurrentHashMap<>();
     private boolean serverWipeMode;
     private boolean enabled;
     private boolean xpEnabled;
@@ -1287,12 +1289,42 @@ public class SpawnerManager {
         refreshOpenStorageMenus();
     }
 
+    public void registerOpenStorageMenu(Player player, SpawnerStorageMenu menu) {
+        if (player == null || menu == null) {
+            return;
+        }
+        openStorageMenus.put(player.getUniqueId(), menu);
+    }
+
+    public void unregisterOpenStorageMenu(Player player, SpawnerStorageMenu menu) {
+        if (player == null || menu == null) {
+            return;
+        }
+        openStorageMenus.remove(player.getUniqueId(), menu);
+    }
+
     public void refreshOpenStorageMenus() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            Inventory top = player.getOpenInventory().getTopInventory();
-            if (top != null && top.getHolder() instanceof SpawnerStorageMenu storageMenu) {
-                storageMenu.refresh(player);
+        if (openStorageMenus.isEmpty()) {
+            return;
+        }
+
+        // this runs on the global/generation thread, so look the menus up from our own
+        // registry instead of asking every open inventory for its holder: block backed
+        // inventories (shulker box, chest, ...) read the world to answer that, which
+        // Folia refuses outside the region owning the block.
+        for (Map.Entry<UUID, SpawnerStorageMenu> entry : openStorageMenus.entrySet()) {
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if (player == null || !player.isOnline()) {
+                openStorageMenus.remove(entry.getKey(), entry.getValue());
+                continue;
             }
+
+            SpawnerStorageMenu menu = entry.getValue();
+            plugin.getSpigotScheduler().runEntity(player, () -> {
+                if (player.isOnline()) {
+                    menu.refresh(player);
+                }
+            });
         }
     }
 

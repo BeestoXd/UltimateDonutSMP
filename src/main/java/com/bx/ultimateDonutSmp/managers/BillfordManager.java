@@ -173,7 +173,9 @@ public class BillfordManager {
             });
         }
 
-        Bukkit.getOnlinePlayers().forEach(player -> {
+        // resolving the holder of a block backed inventory reads the world and closing a
+        // view mutates the player, so hop onto each player's own region thread first
+        plugin.getSpigotScheduler().forEachOnlinePlayer(player -> {
             if (player.getOpenInventory().getTopInventory().getHolder() instanceof BillfordMenu) {
                 player.closeInventory();
             }
