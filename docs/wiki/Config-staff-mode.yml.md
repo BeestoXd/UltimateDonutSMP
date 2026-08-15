@@ -262,6 +262,130 @@ ITEMS:
 
 ---
 
+## Section: `CUSTOM-ITEMS`
+
+Admin defined hotbar items that run commands when a staff member uses them. Every entry is
+free-form: the key is the item id, so add as many as you have free hotbar slots.
+
+### 1. Commented Setup Code Example
+
+```yaml
+# Configuration section for Custom Items.
+# Admin defined hotbar items that run commands. Each entry is free-form: the key is the item id,
+# and the id is what identifies the item in-game, so keep it unique.
+# Slots already taken by the tools above (see STAFF-MODE.HOTBAR-SLOTS) are refused, and so are
+# duplicate slots, so move a built-in tool first if you need its slot.
+# SECURITY: EXECUTE-AS: CONSOLE runs the command with full console rights, which means any staff
+# member holding the item bypasses their own permissions. Always pair CONSOLE items with a
+# PERMISSION so only the ranks you trust receive them.
+CUSTOM-ITEMS:
+  # Example entry. Set ENABLED to true to hand it out, or delete the whole block to remove it.
+  EXAMPLE:
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: false
+    # The numerical value for Slot. Available options: Any valid integer between 0 and 8
+    SLOT: 2
+    MATERIAL: DIRT
+    NAME: '&eCustom Command'
+    LORE:
+    - '&7Click to execute custom command'
+    # Determines who runs the commands. Available options: PLAYER, CONSOLE
+    EXECUTE-AS: PLAYER
+    # The permission needed to receive and use this item. Leave empty to allow every staff member.
+    PERMISSION: ''
+    # Determines whether the item must be right-clicked on a player. Available options: true, false
+    REQUIRE-TARGET: false
+    # The commands to run, without a leading slash.
+    # Placeholders: {player}, {player_uuid}, {world}, and, when REQUIRE-TARGET is true,
+    # {target} and {target_uuid}.
+    COMMANDS:
+    - 'say Hello from {player}'
+```
+
+### 2. Key Options & Technical Breakdown
+
+`<id>` is the config key you choose for the entry, for example `INVSEE`. It is uppercased
+internally, so `invsee` and `INVSEE` are the same item.
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `CUSTOM-ITEMS.<id>.ENABLED` | `bool` | `true`, `false` | `true` | Whether the item is handed out at all. A disabled entry is skipped silently, so you can park items you are still writing. |
+| `CUSTOM-ITEMS.<id>.SLOT` | `int` | `0` - `8` | none (required) | The hotbar slot the item occupies. Slots already used by a built-in tool (`STAFF-MODE.HOTBAR-SLOTS`) or by another custom item are refused, and the entry is skipped with a console warning. With the default layout, slots `2`, `3`, `5` and `6` are free. |
+| `CUSTOM-ITEMS.<id>.MATERIAL` | `str` | Any valid material name | `'STONE'` | The item material. `PLAYER_HEAD` renders the staff member's own head. An unknown material falls back to `STONE` and logs a warning. |
+| `CUSTOM-ITEMS.<id>.NAME` | `str` | Any string text | `'&f<id>'` | The item display name. Supports `&` colour codes. |
+| `CUSTOM-ITEMS.<id>.LORE` | `list` | List of strings | `[]` | The item lore. Supports `&` colour codes. |
+| `CUSTOM-ITEMS.<id>.EXECUTE-AS` | `str` | `PLAYER`, `CONSOLE` | `'PLAYER'` | Who runs the commands. `PLAYER` runs them as the staff member, so their own permissions still apply. `CONSOLE` runs them with full server rights. A typo here drops the item instead of guessing, so a misspelled value never silently runs a command with the wrong rights. |
+| `CUSTOM-ITEMS.<id>.PERMISSION` | `str` | Any permission node | `''` | The permission required to receive the item. Staff without it never get the item in the first place, so they cannot fire it. Leave empty to give it to every staff member. |
+| `CUSTOM-ITEMS.<id>.REQUIRE-TARGET` | `bool` | `true`, `false` | `false` | When `true`, the item only works when right-clicked on a player, and using it on air sends `MESSAGES.CUSTOM-ITEM-NO-TARGET`. Turn this on for anything that uses `{target}`. |
+| `CUSTOM-ITEMS.<id>.COMMANDS` | `list` | List of strings | none (required) | The commands to run, in order. A leading `/` is stripped, and blank entries are ignored. An entry with no runnable command is skipped with a console warning. |
+
+**Placeholders usable in `COMMANDS`**
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{player}` | The staff member's name. |
+| `{player_uuid}` | The staff member's UUID. |
+| `{world}` | The world the staff member is standing in. |
+| `{target}` | The right-clicked player's name. Only filled when the item was used on a player; a command that still contains `{target}` is skipped and logged instead of being sent to the server. |
+| `{target_uuid}` | The right-clicked player's UUID. Only filled when the item was used on a player. |
+
+**Security note.** `EXECUTE-AS: CONSOLE` bypasses the staff member's own permissions entirely, so an
+item running `op {target}` would hand out operator to anyone holding it. Pair every `CONSOLE` item
+with a `PERMISSION` so only the ranks you trust ever receive it.
+
+**Reload behaviour.** `/staffmode reload` re-reads the definitions and rebuilds the hotbar of every
+staff member currently in staff mode, so edits apply without anyone toggling off. Your own entries
+are never restored or overwritten by the config updater, so deleting `EXAMPLE` keeps it deleted.
+
+### 3. Practical Setup Example
+
+```yaml
+CUSTOM-ITEMS:
+  # Right-click a player to open their inventory. Runs as the staff member, so their own
+  # /invsee permission still decides whether it works.
+  INVSEE:
+    ENABLED: true
+    SLOT: 2
+    MATERIAL: CHEST
+    NAME: '&eInspect Inventory'
+    LORE:
+    - '&7Right-click a player to open their inventory'
+    EXECUTE-AS: PLAYER
+    PERMISSION: ''
+    REQUIRE-TARGET: true
+    COMMANDS:
+    - 'invsee {target}'
+  # A console item, so it is locked behind its own permission.
+  BAN:
+    ENABLED: true
+    SLOT: 3
+    MATERIAL: REDSTONE_BLOCK
+    NAME: '&cBan Player'
+    LORE:
+    - '&7Right-click a player to ban them'
+    EXECUTE-AS: CONSOLE
+    PERMISSION: ultimatedonutsmp.staff.mode.custom.ban
+    REQUIRE-TARGET: true
+    COMMANDS:
+    - 'ban {target} Caught by staff'
+    - 'staffchat {player} banned {target}'
+  # No target needed, so it fires on any right-click.
+  SPAWN:
+    ENABLED: true
+    SLOT: 5
+    MATERIAL: COMPASS
+    NAME: '&eReturn to Spawn'
+    LORE:
+    - '&7Click to teleport back to spawn'
+    EXECUTE-AS: PLAYER
+    PERMISSION: ''
+    REQUIRE-TARGET: false
+    COMMANDS:
+    - 'spawn'
+```
+
+---
+
 ## Section: `MENUS`
 
 ### 1. Commented Setup Code Example
@@ -454,6 +578,8 @@ MESSAGES:
     Your inventory was restored.'
   # The text or value for Tool Locked. Available options: Any valid string text
   TOOL-LOCKED: '&cYour staff tools are locked while Staff Mode is active.'
+  # The text or value for Custom Item No Target. Available options: Any valid string text
+  CUSTOM-ITEM-NO-TARGET: '&cRight-click a player to use this tool.'
   # The text or value for Reload Success. Available options: Any valid string text
   RELOAD-SUCCESS: '&aStaff mode config reloaded.'
 ```
@@ -478,6 +604,7 @@ MESSAGES:
 | `MESSAGES.RESTORE-FAILED` | `str` | Any string text | `'&cStaff mode restore failed. Contac...'` | Configures the technical `RESTORE-FAILED` parameter for `MESSAGES.RESTORE-FAILED` in `staff-mode.yml`. |
 | `MESSAGES.RECOVERED-AFTER-RESTART` | `str` | Any string text | `'&eStaff mode was disabled because t...'` | Configures the technical `RECOVERED-AFTER-RESTART` parameter for `MESSAGES.RECOVERED-AFTER-RESTART` in `staff-mode.yml`. |
 | `MESSAGES.TOOL-LOCKED` | `str` | Any string text | `'&cYour staff tools are locked while...'` | Configures the technical `TOOL-LOCKED` parameter for `MESSAGES.TOOL-LOCKED` in `staff-mode.yml`. |
+| `MESSAGES.CUSTOM-ITEM-NO-TARGET` | `str` | Any string text | `'&cRight-click a player to use this...'` | Sent when a `CUSTOM-ITEMS` entry with `REQUIRE-TARGET: true` is used on air instead of on a player. |
 | `MESSAGES.RELOAD-SUCCESS` | `str` | Any string text | `'&aStaff mode config reloaded.'` | Configures the technical `RELOAD-SUCCESS` parameter for `MESSAGES.RELOAD-SUCCESS` in `staff-mode.yml`. |
 
 ### 3. Practical Setup Example

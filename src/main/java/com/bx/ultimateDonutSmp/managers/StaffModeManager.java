@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.menus.FrozenPlayersMenu;
 import com.bx.ultimateDonutSmp.menus.StaffListMenu;
 import com.bx.ultimateDonutSmp.models.FreezeState;
 import com.bx.ultimateDonutSmp.models.StaffModeState;
+import com.bx.ultimateDonutSmp.staff.StaffCustomItem;
 import com.bx.ultimateDonutSmp.staff.StaffInventorySnapshot;
 import com.bx.ultimateDonutSmp.staff.StaffModeSession;
 import com.bx.ultimateDonutSmp.staff.StaffToolType;
@@ -37,12 +38,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 public class StaffModeManager {
 
@@ -58,6 +61,7 @@ public class StaffModeManager {
     private final Map<UUID, StaffModeState> activeStates = new HashMap<>();
     private final Map<UUID, StaffModeSession> runtimeSessions = new HashMap<>();
     private final Set<UUID> restartRecoveryOnly = new HashSet<>();
+    private final Map<String, StaffCustomItem> customItems = new LinkedHashMap<>();
     private BukkitTask vanishActionBarTask;
 
     public StaffModeManager(UltimateDonutSmp plugin) {
@@ -795,6 +799,7 @@ public class StaffModeManager {
     }
 
     private void reloadInternal(boolean startup) {
+        reloadCustomItems();
         Set<UUID> preservedRecoveryOnly = new HashSet<>(restartRecoveryOnly);
         runtimeSessions.clear();
         activeStates.clear();
@@ -1151,6 +1156,13 @@ public class StaffModeManager {
             inventory.setItem(slot, buildToolItem(player, toolType));
         }
 
+        for (StaffCustomItem customItem : customItems.values()) {
+            if (!canUseCustomItem(player, customItem)) {
+                continue;
+            }
+            inventory.setItem(customItem.slot(), buildCustomItem(player, customItem));
+        }
+
         inventory.setHeldItemSlot(Math.max(0, Math.min(8, getToolSlot(StaffToolType.VANISH))));
         player.updateInventory();
     }
@@ -1206,6 +1218,133 @@ public class StaffModeManager {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.getPersistentDataContainer().set(toolKey(), PersistentDataType.STRING, toolType.name());
         item.setItemMeta(meta);
+    }
+
+    private void reloadCustomItems() {
+        customItems.clear();
+
+        Set<Integer> reservedSlots = new HashSet<>();
+        for (StaffToolType toolType : TOOL_ORDER) {
+            reservedSlots.add(getToolSlot(toolType));
+        }
+
+        for (StaffCustomItem customItem : StaffCustomItem.parseAll(
+                getConfig().getConfigurationSection("CUSTOM-ITEMS"),
+                reservedSlots,
+                warning -> plugin.getLogger().warning(warning))) {
+            customItems.put(customItem.id(), customItem);
+        }
+    }
+
+    public List<StaffCustomItem> getCustomItems() {
+        return List.copyOf(customItems.values());
+    }
+
+    /**
+     * Custom items are hidden from staff who lack their configured permission, so a staff member
+     * never carries a tool they are not allowed to fire.
+     */
+    public boolean canUseCustomItem(Player player, StaffCustomItem customItem) {
+        if (player == null || customItem == null) {
+            return false;
+        }
+        return !customItem.hasPermission() || PermissionUtils.has(player, customItem.permission());
+    }
+
+    public StaffCustomItem resolveCustomItem(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return null;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return null;
+        }
+
+        String id = meta.getPersistentDataContainer().get(customItemKey(), PersistentDataType.STRING);
+        return id == null ? null : customItems.get(id.trim().toUpperCase(Locale.ROOT));
+    }
+
+    /**
+     * Runs the commands behind a custom item.
+     *
+     * @param target the right-clicked player, or {@code null} when the item was used on air
+     * @return true when at least one command was dispatched
+     */
+    public boolean useCustomItem(Player staff, ItemStack item, Player target) {
+        StaffCustomItem customItem = resolveCustomItem(item);
+        if (staff == null || customItem == null) {
+            return false;
+        }
+
+        if (!canUseCustomItem(staff, customItem)) {
+            staff.sendMessage(ColorUtils.toComponent(
+                    getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."), staff));
+            return false;
+        }
+
+        if (customItem.requireTarget() && target == null) {
+            staff.sendMessage(ColorUtils.toComponent(
+                    getMessage("CUSTOM-ITEM-NO-TARGET", "&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴀ ᴘʟᴀʏᴇʀ ᴛᴏ ᴜѕᴇ ᴛʜɪѕ ᴛᴏᴏʟ."), staff));
+            return false;
+        }
+
+        boolean dispatched = false;
+        for (String command : customItem.commands()) {
+            String resolved = applyCustomItemPlaceholders(command, staff, target);
+            if (resolved.isBlank()) {
+                continue;
+            }
+            if (resolved.contains("{target}") || resolved.contains("{target_uuid}")) {
+                // A target placeholder with no target left would be sent to the server verbatim.
+                plugin.getLogger().warning("Staff mode custom item '" + customItem.id()
+                        + "' uses a target placeholder without REQUIRE-TARGET, skipping '" + resolved + "'.");
+                continue;
+            }
+
+            try {
+                if (customItem.executeAs() == StaffCustomItem.ExecuteAs.CONSOLE) {
+                    plugin.getSpigotScheduler().dispatchConsoleCommand(resolved);
+                } else {
+                    plugin.getSpigotScheduler().dispatchPlayerCommand(staff, resolved);
+                }
+                dispatched = true;
+            } catch (Exception exception) {
+                plugin.getLogger().log(Level.WARNING, "Staff mode custom item '" + customItem.id()
+                        + "' failed to run '" + resolved + "'", exception);
+            }
+        }
+
+        return dispatched;
+    }
+
+    private String applyCustomItemPlaceholders(String command, Player staff, Player target) {
+        String resolved = command
+                .replace("{player}", staff.getName())
+                .replace("{player_uuid}", staff.getUniqueId().toString())
+                .replace("{world}", staff.getWorld().getName());
+
+        if (target != null) {
+            resolved = resolved
+                    .replace("{target}", target.getName())
+                    .replace("{target_uuid}", target.getUniqueId().toString());
+        }
+        return resolved.trim();
+    }
+
+    private ItemStack buildCustomItem(Player player, StaffCustomItem customItem) {
+        ItemStack item = customItem.material() == Material.PLAYER_HEAD
+                ? ItemUtils.createPlayerHead(player, customItem.name(), customItem.lore())
+                : ItemUtils.createItem(customItem.material(), customItem.name(), customItem.lore());
+
+        tagToolItem(item, StaffToolType.CUSTOM);
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(customItemKey(), PersistentDataType.STRING, customItem.id());
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     private boolean isEligibleRandomTeleportTarget(Player viewer, Player target) {
@@ -1290,11 +1429,17 @@ public class StaffModeManager {
             case STAFF_LIST -> 4;
             case BETTER_VIEW -> 7;
             case RANDOM_TELEPORT -> 8;
+            // Custom items carry their own SLOT, so this branch only exists to keep the switch exhaustive.
+            case CUSTOM -> 0;
         };
     }
 
     private NamespacedKey toolKey() {
         return plugin.getKey("staff_tool_type");
+    }
+
+    private NamespacedKey customItemKey() {
+        return plugin.getKey("staff_custom_item");
     }
 
     private String resolveSourceServer() {

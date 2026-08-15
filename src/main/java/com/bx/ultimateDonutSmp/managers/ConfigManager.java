@@ -1835,6 +1835,14 @@ public class ConfigManager {
             return true;
         }
 
+        // Staff mode custom items are live server content. The bundled example is only a starting
+        // point and must not be merged back after admins edit or delete it. The CUSTOM-ITEMS section
+        // itself stays mergeable so configs that predate the feature still receive it once.
+        if ("staff-mode.yml".equals(resourceName)
+                && path.startsWith("CUSTOM-ITEMS.")) {
+            return true;
+        }
+
         // Network server entries can be expanded per deployment.
         if ("network.yml".equals(resourceName)
                 && path.startsWith("NETWORK-STATUS.SERVERS.")) {

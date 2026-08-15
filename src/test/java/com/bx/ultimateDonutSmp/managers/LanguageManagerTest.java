@@ -220,7 +220,7 @@ class LanguageManagerTest {
                 "NETWORK.LOCAL_DISPLAY_NAME",
                 "NETWORK-STATUS.LOCAL-DISPLAY-NAME"
         ));
-        added += mergeText(target, "CONFIG.STAFF_MODE", "staff-mode.yml", false, List.of());
+        added += mergeText(target, "CONFIG.STAFF_MODE", "staff-mode.yml", false, List.of("CUSTOM-ITEMS"));
         added += mergeText(target, "CONFIG.SERVER_WIPE", "server-wipe.yml", false, List.of());
         added += mergeText(target, "CONFIG.WORTH", "worth.yml", false, List.of("BLOCK-ITEMS"));
         added += LanguageManager.mergeShopText(target, loadResource("shop.yml"));
