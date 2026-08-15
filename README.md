@@ -22,12 +22,30 @@ UltimateDonutSmp is a complete Paper Minecraft server plugin built for DonutSMP-
 
 The goal is to reduce the number of separate plugins required for a modern SMP server while keeping configuration, player data, permissions, placeholders, and staff operations consistent across the entire server experience.
 
+## Documentation
+
+This README is the quick reference. The full documentation set lives in [`docs/wiki/`](docs/wiki):
+
+| Page | Contents |
+| --- | --- |
+| [Home](docs/wiki/Home.md) | Documentation index and technical quick facts |
+| [Installation & Setup](docs/wiki/Installation-and-Setup.md) | Server engine setup, SQLite/MySQL/MongoDB storage, and Redis networking |
+| [Commands & Permissions](docs/wiki/Commands-and-Permissions.md) | Full command syntax, aliases, and permission nodes |
+| [Configuration Reference](docs/wiki/Configuration-Reference.md) | Every configuration file, plus a `Config-*.yml.md` page per file |
+| [Economy & Marketplaces](docs/wiki/Economy-and-Marketplaces.md) | Money, shards, shop, sell, Auction House, Orders, and Billford |
+| [Duels & FFA](docs/wiki/Duels-and-FFA.md) | Duel arenas, queues, rollbacks, and instanced FFA |
+| [Crates & Spawners](docs/wiki/Crates-and-Spawners.md) | Crate definitions, keys, and Donut-style spawners |
+| [Cuboids & Portals](docs/wiki/Cuboids-and-Portals.md) | Region selection, feature zone binding, and portal triggers |
+| [Staff & Security](docs/wiki/Staff-and-Security.md) | Staff mode, punishments, detection tools, and moderation |
+| [Placeholders & Integrations](docs/wiki/Placeholders-and-Integrations.md) | PlaceholderAPI expansions and third-party plugin support |
+| [FAQ](docs/wiki/FAQ.md) | Common questions and troubleshooting |
+
 ## Highlights
 
 | Area | Included systems |
 | --- | --- |
 | Platforms | Separate Paper/Spigot and Folia builds with compatibility checks against the latest published APIs |
-| Economy | Money, shards, player payments, Vault provider, shop, sell workflows, worth browser, and sell history |
+| Economy | Money, shards, player payments, Vault provider, shop, sell workflows, sell multipliers, worth browser, and sell history |
 | Marketplaces | Auction House, Orders board, Billford rotating trades, category filters, claims, delivery, and search |
 | Player systems | Teams, friends/follows, homes, warps, private messages, ignore lists, profiles, settings, and custom Ender Chests |
 | Progression | Stats, playtime, leaderboards, scoreboards, tablists, bounties, and PlaceholderAPI expansions |
@@ -42,60 +60,70 @@ The goal is to reduce the number of separate plugins required for a modern SMP s
 
 ## Screenshots
 
+Feature panels and in-game menus:
+
 <p align="center">
-  <img src="images/uds1.png" alt="UltimateDonutSmp screenshot 1" width="32%">
-  <img src="images/uds2.png" alt="UltimateDonutSmp screenshot 2" width="32%">
-  <img src="images/uds3.png" alt="UltimateDonutSmp screenshot 3" width="32%">
-  <img src="images/uds4.png" alt="UltimateDonutSmp screenshot 4" width="32%">
-  <img src="images/uds5.png" alt="UltimateDonutSmp screenshot 5" width="32%">
-  <img src="images/uds6.png" alt="UltimateDonutSmp screenshot 6" width="32%">
-  <img src="images/uds7.png" alt="UltimateDonutSmp screenshot 7" width="32%">
-  <img src="images/uds8.png" alt="UltimateDonutSmp screenshot 8" width="32%">
-  <img src="images/uds9.png" alt="UltimateDonutSmp screenshot 9" width="32%">
-  <img src="images/uds10.png" alt="UltimateDonutSmp screenshot 10" width="32%">
-  <img src="images/uds11.png" alt="UltimateDonutSmp screenshot 11" width="32%">
-  <img src="images/uds12.png" alt="UltimateDonutSmp screenshot 12" width="32%">
-  <img src="images/uds13.png" alt="UltimateDonutSmp screenshot 13" width="32%">
-  <img src="images/uds14.png" alt="UltimateDonutSmp screenshot 14" width="32%">
-  <img src="images/uds15.png" alt="UltimateDonutSmp screenshot 15" width="32%">
-  <img src="images/uds16.png" alt="UltimateDonutSmp screenshot 16" width="32%">
-  <img src="images/uds17.png" alt="UltimateDonutSmp screenshot 17" width="32%">
-  <img src="images/uds18.png" alt="UltimateDonutSmp screenshot 18" width="32%">
-  <img src="images/uds19.png" alt="UltimateDonutSmp screenshot 199" width="32%">
-  <img src="images/gif1.gif" alt="UltimateDonutSmp screenshot 19" width="32%">
-  <img src="images/gif2.gif" alt="UltimateDonutSmp screenshot 20" width="32%">
-  <img src="images/gif3.gif" alt="UltimateDonutSmp screenshot 21" width="32%">
-  <img src="images/gif4.gif" alt="UltimateDonutSmp screenshot 22" width="32%">
-  <img src="images/gif5.gif" alt="UltimateDonutSmp screenshot 23" width="32%">
-  <img src="images/gif6.gif" alt="UltimateDonutSmp screenshot 24" width="32%">
+  <img src="images/uds1.png" alt="Offend staff moderation command and Topsell web analytics" width="32%">
+  <img src="images/uds2.png" alt="UltimateDonutSmp feature panel 2" width="32%">
+  <img src="images/uds3.png" alt="UltimateDonutSmp feature panel 3" width="32%">
+  <img src="images/uds4.png" alt="UltimateDonutSmp feature panel 4" width="32%">
+  <img src="images/uds5.png" alt="UltimateDonutSmp feature panel 5" width="32%">
+  <img src="images/uds6.png" alt="UltimateDonutSmp feature panel 6" width="32%">
+  <img src="images/uds7.png" alt="UltimateDonutSmp feature panel 7" width="32%">
+  <img src="images/uds8.png" alt="UltimateDonutSmp feature panel 8" width="32%">
+  <img src="images/uds9.png" alt="UltimateDonutSmp feature panel 9" width="32%">
+  <img src="images/uds10.png" alt="UltimateDonutSmp feature panel 10" width="32%">
+  <img src="images/uds11.png" alt="UltimateDonutSmp feature panel 11" width="32%">
+  <img src="images/uds12.png" alt="UltimateDonutSmp feature panel 12" width="32%">
+  <img src="images/uds13.png" alt="UltimateDonutSmp feature panel 13" width="32%">
+  <img src="images/uds14.png" alt="UltimateDonutSmp feature panel 14" width="32%">
+  <img src="images/uds15.png" alt="UltimateDonutSmp feature panel 15" width="32%">
+  <img src="images/uds16.png" alt="UltimateDonutSmp feature panel 16" width="32%">
+  <img src="images/uds17.png" alt="UltimateDonutSmp feature panel 17" width="32%">
+  <img src="images/uds18.png" alt="UltimateDonutSmp feature panel 18" width="32%">
+  <img src="images/uds19.png" alt="UltimateDonutSmp feature panel 19" width="32%">
+</p>
+
+Gameplay clips:
+
+<p align="center">
+  <img src="images/gif1.gif" alt="UltimateDonutSmp gameplay clip 1" width="49%">
+  <img src="images/gif2.gif" alt="UltimateDonutSmp gameplay clip 2" width="49%">
+  <img src="images/gif3.gif" alt="UltimateDonutSmp gameplay clip 3" width="49%">
+  <img src="images/gif4.gif" alt="UltimateDonutSmp gameplay clip 4" width="49%">
+  <img src="images/gif5.gif" alt="UltimateDonutSmp gameplay clip 5" width="49%">
+  <img src="images/gif6.gif" alt="UltimateDonutSmp gameplay clip 6" width="49%">
 </p>
 
 ## Requirements
 
 | Requirement | Notes |
 | --- | --- |
-| Plugin version | `1.4.1` |
+| Plugin version | `1.5` |
 | Java | Bytecode targets Java 21. Use the Java version required by the selected Minecraft server; Minecraft 26.1+ requires Java 25. |
 | Paper / Spigot | Minecraft `1.21.10` through `26.2` |
 | Folia | Minecraft `1.21.11` through `26.2` |
-| Hard dependencies | None |
+| Hard dependencies | PlaceholderAPI and ProtocolLib (declared under `depend` in `plugin.yml`; the plugin will not load without them) |
 | Default storage | SQLite, bundled through the shaded JDBC driver |
 | Alternative storage | MySQL or MongoDB |
 | Optional network layer | Redis for cross-server staff chat, alerts, maintenance, reports, helpop, and server status |
-| Build environment | Windows PowerShell, Maven available as `mvn`, internet access, and a JDK compatible with the target server API |
+| Build environment | Maven available as `mvn`, internet access, and a JDK 21 or newer toolchain (CI builds on JDK 25) |
+
+Required plugins (the server will not enable UltimateDonutSmp without them):
+
+- PlaceholderAPI
+- ProtocolLib
 
 Optional integrations:
 
-- PlaceholderAPI (**Required**)
 - LuckPerms
 - Vault
-- ProtocolLib (**Required**)
 - Apollo
-- SkinsRestorer (**Required**)
+- SkinsRestorer
 - Multiverse-Core
 - floodgate
 
-The plugin starts without these soft dependencies. Their related placeholder, permission, economy, packet, skin, world, Bedrock, and client integrations activate only when the corresponding plugin is installed.
+The plugin starts without the optional integrations. Their related permission, economy, client, skin, world, and Bedrock features activate only when the corresponding plugin is installed.
 
 ## Building
 
@@ -115,7 +143,7 @@ The build compiles the codebase against the target API and packages a single uni
 
 Generated artifact is saved to the `target/` directory:
 
-- `UltimateDonutSmp-1.4.1.jar` (shaded JAR)
+- `UltimateDonutSmp-1.5.jar` (shaded JAR)
 
 ## Installation
 
@@ -165,6 +193,7 @@ For production networks, MySQL plus Redis is recommended. For a single-server se
 | `server-wipe.yml` | Guarded wipe targets, protected worlds, confirmation token lifetime, backups, and messages |
 | `discord.yml` | Discord webhook endpoints and event-specific webhook controls |
 | `anvil-moderation.yml` | Banned anvil words, punishments, and per-player moderation data |
+| `offenses.yml` | Preset offense rules, punishment types, and durations used by `/offend` |
 
 Language files are stored under `languages/`:
 
@@ -181,7 +210,7 @@ On startup and reload, missing bundled configuration paths are merged into exist
 
 ## Commands
 
-Commands can be disabled through their related feature toggle. Arguments in `<angle brackets>` are required; arguments in `[square brackets]` are optional. Every command has a dedicated permission node (`ultimatedonutsmp.command.<command>`) registered in `plugin.yml`.
+Commands can be disabled through their related feature toggle. Arguments in `<angle brackets>` are required; arguments in `[square brackets]` are optional. Every command has a dedicated permission node registered in `plugin.yml`. Most follow the `ultimatedonutsmp.command.<command>` pattern; a few staff commands use a `ultimatedonutsmp.staff.*` node instead, as listed below.
 
 | Command | Aliases | Usage | Permission Node |
 | --- | --- | --- | --- |
@@ -219,8 +248,10 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/ffastats` | - | `/ffastats [player]` | `ultimatedonutsmp.command.ffastats` |
 | `/findplayer` | `/fp` | `/findplayer <player>` | `ultimatedonutsmp.command.findplayer` |
 | `/fly` | - | `/fly [player]` | `ultimatedonutsmp.command.fly` |
+| `/flyspeed` | `/fs` | `/flyspeed <1-10> [player]` | `ultimatedonutsmp.command.flyspeed` |
 | `/freeze` | - | `/freeze <player>` or `/freeze reload` | `ultimatedonutsmp.command.freeze` |
-| `/friends` | `/friend` | `/friends [list\|follow\|remove\|search\|following\|followers\|friends]` | `ultimatedonutsmp.command.friends` |
+| `/friend` | - | `/friend` | `ultimatedonutsmp.command.friend` |
+| `/friends` | - | `/friends [list\|follow\|remove\|search\|following\|followers\|friends]` | `ultimatedonutsmp.command.friends` |
 | `/gamemode` | `/gm`, `/gmc`, `/gms`, `/gma`, `/gmsp` | `/gamemode <mode> [player]` | `ultimatedonutsmp.command.gamemode` |
 | `/god` | `/godmode` | `/god [player]` | `ultimatedonutsmp.staff.god` |
 | `/heal` | - | `/heal [player]` | `ultimatedonutsmp.command.heal` |
@@ -233,7 +264,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/invsee` | `/inventorysee` | `/invsee <player>` or `/invsee reload` | `ultimatedonutsmp.command.invsee` |
 | `/keys` | - | `/keys` | `ultimatedonutsmp.command.keys` |
 | `/kick` | - | `/kick <player> [reason]` | `ultimatedonutsmp.command.kick` |
-| `/kill` | `/suicide` | `/kill` | `ultimatedonutsmp.command.kill` |
+| `/kill` | - | `/kill` | `ultimatedonutsmp.command.kill` |
 | `/leaderboard` | `/lb`, `/top`, `/leaderboards`, `/baltop` | `/leaderboard [type]` | `ultimatedonutsmp.command.leaderboard` |
 | `/leave` | - | `/leave` | `ultimatedonutsmp.command.leave` |
 | `/logs` | - | `/logs` | `ultimatedonutsmp.command.logs` |
@@ -241,7 +272,8 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/msg` | `/message`, `/tell`, `/whisper`, `/w` | `/msg <player> <message>` | `ultimatedonutsmp.command.msg` |
 | `/mute` | - | `/mute <player> [reason]` | `ultimatedonutsmp.command.mute` |
 | `/nightvision` | `/nv` | `/nightvision` | `ultimatedonutsmp.command.nightvision` |
-| `/orders` | `/order` | `/orders [my\|collect\|reload\|search query]` | `ultimatedonutsmp.command.orders` |
+| `/offend` | - | `/offend <player> <reason> [time]` | `ultimatedonutsmp.staff.punishments.offend` |
+| `/orders` | - | `/orders [my\|collect\|reload\|search query]` | `ultimatedonutsmp.command.orders` |
 | `/pay` | - | `/pay <player> <amount>` | `ultimatedonutsmp.command.pay` |
 | `/phantom` | - | `/phantom` | `ultimatedonutsmp.command.phantom` |
 | `/ping` | - | `/ping [player]` | `ultimatedonutsmp.command.ping` |
@@ -265,11 +297,16 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/sellall` | - | `/sellall` | `ultimatedonutsmp.command.sellall` |
 | `/sellhand` | - | `/sellhand [amount]` | `ultimatedonutsmp.command.sellhand` |
 | `/sellhistory` | - | `/sellhistory` | `ultimatedonutsmp.command.sellhistory` |
+| `/sellmulti` | - | `/sellmulti [category]` | `ultimatedonutsmp.command.sellmulti` |
+| `/sellmultiplier` | - | `/sellmultiplier [category]` | `ultimatedonutsmp.command.sellmulti` |
+| `/sellprogress` | - | `/sellprogress [category]` | `ultimatedonutsmp.command.sellprogress` |
 | `/servers` | - | `/servers` | `ultimatedonutsmp.command.servers` |
 | `/serverwipe` | - | `/serverwipe <preview\|prepare\|confirm\|cancel\|status>` | `ultimatedonutsmp.command.serverwipe` |
+| `/setafk` | - | `/setafk` | `ultimatedonutsmp.command.setafk` |
 | `/sethome` | - | `/sethome [name]` | `ultimatedonutsmp.command.sethome` |
 | `/setmoney` | - | `/setmoney <player> <amount>` | `ultimatedonutsmp.command.setmoney` |
 | `/setshards` | - | `/setshards <player> <amount>` | `ultimatedonutsmp.command.setshards` |
+| `/setspawn` | - | `/setspawn` | `ultimatedonutsmp.command.setspawn` |
 | `/settings` | - | `/settings` | `ultimatedonutsmp.command.settings` |
 | `/setwarp` | - | `/setwarp <name>` | `ultimatedonutsmp.command.setwarp` |
 | `/shardpay` | - | `/shardpay <player> <amount>` | `ultimatedonutsmp.command.shardpay` |
@@ -310,6 +347,8 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/worth` | `/prices` | `/worth [hand\|reload]` | `ultimatedonutsmp.command.worth` |
 
 Temporary punishment durations accept combined values such as `30s`, `15m`, `2h`, `5d`, or `5d 15m 30s`.
+
+Running `/baltop` with no arguments opens the money leaderboard directly instead of the leaderboard type menu.
 
 ## Permissions
 
@@ -373,6 +412,8 @@ Temporary punishment durations accept combined values such as `30s`, `15m`, `2h`
 | `ultimatedonutsmp.admin.teleportareas.delete` | `op` | Delete configured teleport areas |
 | `ultimatedonutsmp.admin.warpmanager` | `op` | Manage public warps |
 | `ultimatedonutsmp.admin.worth` | `op` | Reload sell/worth settings |
+| `ultimatedonutsmp.command.flyspeed` | `op` | Use `/flyspeed` |
+| `ultimatedonutsmp.command.offend` | `op` | Use `/offend` (parent of `ultimatedonutsmp.staff.punishments.offend`) |
 
 ### Staff Moderation & Alert Permissions
 
@@ -394,6 +435,7 @@ Temporary punishment durations accept combined values such as `30s`, `15m`, `2h`
 | `ultimatedonutsmp.staff.fakeplayer.bypass` | `op` | Bypass fake player bait triggers |
 | `ultimatedonutsmp.staff.feed` | `op` | Feed players |
 | `ultimatedonutsmp.staff.fly` | `op` | Toggle flight mode |
+| `ultimatedonutsmp.staff.flyspeed` | `op` | Adjust flying speed for yourself or another player |
 | `ultimatedonutsmp.staff.freeze` | `op` | Freeze/unfreeze players for inspection |
 | `ultimatedonutsmp.staff.freeze.alert` | `op` | Receive player freeze alerts |
 | `ultimatedonutsmp.staff.freeze.exempt` | `op` | Exempt from being frozen by staff |
@@ -415,6 +457,7 @@ Temporary punishment durations accept combined values such as `30s`, `15m`, `2h`
 | `ultimatedonutsmp.staff.punishments.blacklist` | `false` | Apply blacklist punishments |
 | `ultimatedonutsmp.staff.punishments.delete` | `op` | Delete punishment logs from GUI |
 | `ultimatedonutsmp.staff.punishments.mute` | `false` | Apply mute and tempmute punishments |
+| `ultimatedonutsmp.staff.punishments.offend` | `op` | Apply preset offense punishments from `offenses.yml` |
 | `ultimatedonutsmp.staff.punishments.unban` | `false` | Remove active bans |
 | `ultimatedonutsmp.staff.punishments.unblacklist` | `false` | Remove active blacklists |
 | `ultimatedonutsmp.staff.punishments.unmute` | `false` | Remove active mutes |
@@ -439,6 +482,9 @@ Temporary punishment durations accept combined values such as `30s`, `15m`, `2h`
 | `donutauction.limit` / `ultimatedonutsmp.auctionhouse.limit` | `true` / `false` | Check listing limits on Auction House |
 | `donutauction.fastbuy` / `ultimatedonutsmp.auctionhouse.fastbuy` | `false` / `op` | Fast buy command access |
 | `donutauction.fastsell` / `ultimatedonutsmp.auctionhouse.fastsell` | `false` / `op` | Fast sell command access |
+| `ultimatedonutsmp.command.friend` | `true` | Use `/friend` |
+| `ultimatedonutsmp.command.sellmulti` | `true` | Open the sell multiplier menu (`/sellmulti`, `/sellmultiplier`) |
+| `ultimatedonutsmp.command.sellprogress` | `true` | Open the sell multiplier progress menu (`/sellprogress`) |
 | `ultimatedonutsmp.enderchest` | `true` | Open custom Ender Chest |
 | `ultimatedonutsmp.friends` | `true` | Friends and follow system |
 | `ultimatedonutsmp.helpop` | `true` | Use `/helpop` to request staff help |
@@ -455,6 +501,7 @@ Temporary punishment durations accept combined values such as `30s`, `15m`, `2h`
 | `ultimatedonutsmp.servers` | `false` | View network server status GUI |
 | `ultimatedonutsmp.shards.everywhere` | `false` | Receive passive Shards Everywhere rewards |
 | `ultimatedonutsmp.shardshop` | `true` | Open Shard Shop GUI |
+| `ultimatedonutsmp.spawner.bypass` | `false` | Break spawners without a Silk Touch pickaxe while `REQUIRE_SILK_TOUCH` is enabled |
 | `rank.media` | `false` | Display configurable Media tablist badge (requires explicit LuckPerms assignment, not auto-granted to OP) |
 | `rank.media.plus` | `false` | Display configurable Media+ tablist badge (requires explicit LuckPerms assignment, not auto-granted to OP) |
 | `rank.media.include` | `false` | Include player in media badge handling (requires explicit LuckPerms assignment, not auto-granted to OP) |
@@ -556,24 +603,32 @@ Syntax: `%hide_<property>%`
 
 ## License and Terms
 
-UltimateDonutSmp is a free, proprietary software.
+UltimateDonutSmp is free, proprietary software.
 
 - The plugin is free to use but remains under a proprietary license.
 - Redistribution, resale, sublicensing, public mirroring, or unauthorized sharing is not permitted without written permission.
-- For full licensing terms, see the [LICENSE.md](LICENSE.md) file.
+- You may modify the source for use on your own server; modified builds may not be distributed.
+- The shaded jar bundles third-party libraries under their own licenses (Apache 2.0, MIT, and GPLv2 with the Universal FOSS Exception).
+- For full licensing terms, see [LICENSE.md](LICENSE.md).
 - For contribution guidelines and rules, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Copyright (c) 2026 UltimateDonutSmp. All rights reserved.
 
 ## Support
 
-Support is handled through the official purchase or customer support channel. When reporting an issue, include:
+| Channel | Use it for |
+| --- | --- |
+| [GitHub Issues](https://github.com/BeestoXd/UltimateDonutSMP/issues) | Bug reports, feature requests, and documentation problems |
+| [Discord](https://dsc.gg/hellstarr) | Setup help, configuration questions, and general discussion |
+| [`docs/wiki/`](docs/wiki) | Guides, configuration reference, and the FAQ |
+
+When reporting an issue, include:
 
 - Plugin version and jar file name
-- Server software and version
+- Server software and version (Paper, Spigot, or Folia)
 - Java version
 - Relevant configuration snippets with secrets removed
 - Console errors or stack traces
 - Steps to reproduce the issue
 
-Do not share private customer files, database credentials, Redis passwords, Discord tokens, or other sensitive server data in public channels.
+Do not share database credentials, Redis passwords, Discord webhook URLs, or other sensitive server data in public channels.

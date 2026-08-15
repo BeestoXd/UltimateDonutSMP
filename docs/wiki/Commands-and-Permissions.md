@@ -27,10 +27,13 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/shards` | `/shards [player]` | None | Check shard balance | `ultimatedonutsmp.command.shards` |
 | `/shardpay` | `/shardpay <player> <amount>` | None | Pay shards to another player | `ultimatedonutsmp.command.shardpay` |
 | `/shop` | `/shop` | None | Open GUI shop | `ultimatedonutsmp.command.shop` |
-| `/sell` | `/sell` | `/sellmulti`, `/sellmultiplier`, `/sellprogress` | Open GUI sell container / multiplier progress | `ultimatedonutsmp.command.sell` |
+| `/sell` | `/sell` | None | Open GUI sell container | `ultimatedonutsmp.command.sell` |
 | `/sellhand` | `/sellhand [amount]` | None | Sell item currently held in hand | `ultimatedonutsmp.command.sellhand` |
 | `/sellall` | `/sellall` | None | Sell all sellable items in inventory | `ultimatedonutsmp.command.sellall` |
 | `/sellhistory`| `/sellhistory` | None | View personal sell transaction history | `ultimatedonutsmp.command.sellhistory` |
+| `/sellmulti` | `/sellmulti [category]` | None | Open sell multiplier menu | `ultimatedonutsmp.command.sellmulti` |
+| `/sellmultiplier` | `/sellmultiplier [category]` | None | Open sell multiplier menu | `ultimatedonutsmp.command.sellmulti` |
+| `/sellprogress` | `/sellprogress [category]` | None | Open sell multiplier progress menu | `ultimatedonutsmp.command.sellprogress` |
 | `/worth` | `/worth [hand]` | `/prices` | Check worth of held item or open price catalog | `ultimatedonutsmp.command.worth` |
 | `/auctionhouse`| `/auctionhouse [sell\|my\|claims]`| `/ah` | Open Auction House marketplace | `ultimatedonutsmp.command.auctionhouse` |
 | `/orders` | `/orders [my\|collect]` | None | Open buy/sell Orders board | `ultimatedonutsmp.command.orders` |
@@ -43,6 +46,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/ffa` | `/ffa [join]` | None | Join instanced FFA arena | `ultimatedonutsmp.command.ffa` |
 | `/ffastats` | `/ffastats [player]` | None | View FFA kill/death/streak stats | `ultimatedonutsmp.command.ffastats` |
 | `/bounty` | `/bounty [place\|list]` | None | Place or view player bounties | `ultimatedonutsmp.command.bounty` |
+| `/leaderboard` | `/leaderboard [type]` | `/lb`, `/top`, `/leaderboards`, `/baltop` | Open leaderboard menus; `/baltop` opens the money leaderboard directly | `ultimatedonutsmp.command.leaderboard` |
 
 ---
 
@@ -51,13 +55,14 @@ This page contains the complete reference guide for all commands, aliases, synta
 | Command | Usage Syntax | Description | Permission Node |
 | :--- | :--- | :--- | :--- |
 | `/staffmode` | `/staffmode` (Alias `/staff`) | Toggle Staff Mode GUI & toolset | `ultimatedonutsmp.admin.staffmode` |
-| `/vanish` | `/vanish` (Alias `/v`) | Toggle complete invisibility to players | `ultimatedonutsmp.admin.vanish` |
+| `/vanish` | `/vanish` | Toggle complete invisibility to players | `ultimatedonutsmp.admin.vanish` |
 | `/freeze` | `/freeze <player>` | Freeze or unfreeze a target player | `ultimatedonutsmp.admin.freeze` |
 | `/invsee` | `/invsee <player>` | Inspect and edit player inventory in real-time | `ultimatedonutsmp.admin.invsee` |
 | `/ecsee` | `/ecsee <player>` | Inspect and edit player Ender Chest | `ultimatedonutsmp.admin.ecsee` |
 | `/chat` | `/chat <mute\|unmute\|delay\|clear>` | Global chat moderation controls | `ultimatedonutsmp.admin.chat` |
-| `/spawnstash` | `/spawnstash <give\|setup\|list>` | Manage spawn stash bait chests | `ultimatedonutsmp.admin.spawnstash` |
-| `/anvilmoderation` | `/anvilmoderation [toggle]` | Toggle anvil rename filter checks | `ultimatedonutsmp.admin.anvilmoderation` |
+| `/spawnstash` | `/spawnstash <give\|setup\|list>` (Alias `/stash`) | Manage spawn stash bait chests | `ultimatedonutsmp.admin.spawnstash` |
+| `/fakeplayer` | `/fakeplayer` (Alias `/fplayer`) | Spawn fake player bait entities | `ultimatedonutsmp.command.fakeplayer` |
+| `/amod` | `/amod <add\|reload>` | Manage the anvil rename word filter | `ultimatedonutsmp.command.amod` |
 | `/offend` | `/offend <player> <reason> [time]` | Issue preset offense-based punishment with escalating duration | `ultimatedonutsmp.staff.punishments.offend` |
 | `/punishments` | `/punishments <player>` | View punishment history GUI for target player | `ultimatedonutsmp.staff.punishments.view` |
 | `/ban` | `/ban <player> [reason]` | Issue permanent ban | `ultimatedonutsmp.staff.punishments.ban` |

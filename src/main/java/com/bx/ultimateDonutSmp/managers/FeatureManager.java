@@ -225,10 +225,10 @@ public class FeatureManager {
             case "leaderboard" -> new Feature[]{Feature.LEADERBOARDS};
             case "freeze" -> new Feature[]{Feature.FREEZE};
             case "gamemode" -> new Feature[]{Feature.GAMEMODE};
-            case "staffmode", "stafflist", "vanish", "fakeplayer", "fplayer" -> new Feature[]{Feature.STAFF_MODE};
+            case "staffmode", "stafflist", "vanish", "fakeplayer" -> new Feature[]{Feature.STAFF_MODE};
             case "staffchat" -> new Feature[]{Feature.STAFF_CHAT};
             case "helpop", "report" -> new Feature[]{Feature.STAFF_ALERTS};
-            case "spawnstash", "stash" -> new Feature[]{Feature.SPAWN_STASH};
+            case "spawnstash" -> new Feature[]{Feature.SPAWN_STASH};
             case "invsee" -> new Feature[]{Feature.INVSEE};
             case "profileviewer" -> new Feature[]{Feature.PROFILE_VIEWER};
             case "punishments", "ban", "tempban", "mute", "tempmute", "warn", "kick", "blacklist",

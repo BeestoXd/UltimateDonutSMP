@@ -521,6 +521,7 @@ commands:
     - lb
     - top
     - leaderboards
+    - baltop
     permission: ultimatedonutsmp.command.leaderboard
     permission-message: "&cYou do not have permission to use /leaderboard."
   warp:
@@ -691,10 +692,14 @@ commands:
     permission-message: "&cYou do not have permission to use /friend."
   spawnstash:
     description: Command spawnstash
+    aliases:
+    - stash
     permission: ultimatedonutsmp.command.spawnstash
     permission-message: "&cYou do not have permission to use /spawnstash."
   fakeplayer:
     description: Command fakeplayer
+    aliases:
+    - fplayer
     permission: ultimatedonutsmp.command.fakeplayer
     permission-message: "&cYou do not have permission to use /fakeplayer."
   hide:
