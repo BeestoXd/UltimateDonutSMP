@@ -124,6 +124,36 @@ ITEMS:
     NAME: '&eRandom Teleport'
     LORE:
     - '&7Click to teleport to a random player'
+# Configuration section for Custom Items.
+# Admin defined hotbar items that run commands. Each entry is free-form: the key is the item id,
+# and the id is what identifies the item in-game, so keep it unique.
+# Slots already taken by the tools above (see STAFF-MODE.HOTBAR-SLOTS) are refused, and so are
+# duplicate slots, so move a built-in tool first if you need its slot.
+# SECURITY: EXECUTE-AS: CONSOLE runs the command with full console rights, which means any staff
+# member holding the item bypasses their own permissions. Always pair CONSOLE items with a
+# PERMISSION so only the ranks you trust receive them.
+CUSTOM-ITEMS:
+  # Example entry. Set ENABLED to true to hand it out, or delete the whole block to remove it.
+  EXAMPLE:
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: false
+    # The numerical value for Slot. Available options: Any valid integer between 0 and 8
+    SLOT: 2
+    MATERIAL: DIRT
+    NAME: '&eCustom Command'
+    LORE:
+    - '&7Click to execute custom command'
+    # Determines who runs the commands. Available options: PLAYER, CONSOLE
+    EXECUTE-AS: PLAYER
+    # The permission needed to receive and use this item. Leave empty to allow every staff member.
+    PERMISSION: ''
+    # Determines whether the item must be right-clicked on a player. Available options: true, false
+    REQUIRE-TARGET: false
+    # The commands to run, without a leading slash.
+    # Placeholders: {player}, {player_uuid}, {world}, and, when REQUIRE-TARGET is true,
+    # {target} and {target_uuid}.
+    COMMANDS:
+    - 'say Hello from {player}'
 # Configuration section for Menus.
 MENUS:
   # Configuration section for Staff List.
@@ -236,5 +266,7 @@ MESSAGES:
     Your inventory was restored.'
   # The text or value for Tool Locked. Available options: Any valid string text
   TOOL-LOCKED: '&cYour staff tools are locked while Staff Mode is active.'
+  # The text or value for Custom Item No Target. Available options: Any valid string text
+  CUSTOM-ITEM-NO-TARGET: '&cRight-click a player to use this tool.'
   # The text or value for Reload Success. Available options: Any valid string text
   RELOAD-SUCCESS: '&aStaff mode config reloaded.'

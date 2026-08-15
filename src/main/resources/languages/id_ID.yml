@@ -2093,6 +2093,7 @@ CONFIG:
       RECOVERED-AFTER-RESTART: "&eStaff mode was disabled because the server restarted.
         your inventory was restored."
       TOOL-LOCKED: "&cYour staff tools are loaff mode is active."
+      CUSTOM-ITEM-NO-TARGET: "&cKlik kanan seorang pemain untuk memakai alat ini."
       RELOAD-SUCCESS: "&aStaff mode config reloaded."
   SERVER_WIPE:
     MESSAGES:

@@ -159,12 +159,9 @@ public class StaffModeListener implements Listener {
             return;
         }
 
-        long now = System.currentTimeMillis();
-        Long last = lastInteractTimes.get(player.getUniqueId());
-        if (last != null && (now - last) < INTERACT_COOLDOWN_MS) {
+        if (isOnInteractCooldown(player)) {
             return;
         }
-        lastInteractTimes.put(player.getUniqueId(), now);
 
         if (isLeftClickFreeze) {
             plugin.getStaffModeManager().openFrozenPlayers(player);
@@ -212,6 +209,7 @@ public class StaffModeListener implements Listener {
                     ));
                 }
             }
+            case CUSTOM -> plugin.getStaffModeManager().useCustomItem(player, event.getItem(), null);
             default -> {
             }
         }
@@ -236,7 +234,20 @@ public class StaffModeListener implements Listener {
         }
 
         event.setCancelled(true);
-        if (toolType != StaffToolType.FREEZE || !(event.getRightClicked() instanceof Player target)) {
+        if (!(event.getRightClicked() instanceof Player target)) {
+            return;
+        }
+
+        if (toolType == StaffToolType.CUSTOM) {
+            if (isOnInteractCooldown(player)) {
+                return;
+            }
+            plugin.getStaffModeManager().useCustomItem(
+                    player, player.getInventory().getItemInMainHand(), target);
+            return;
+        }
+
+        if (toolType != StaffToolType.FREEZE) {
             return;
         }
 
@@ -295,6 +306,16 @@ public class StaffModeListener implements Listener {
         if (result != null) {
             staff.sendMessage(ColorUtils.toComponent(freezeManager.buildToggleMessage(result)));
         }
+    }
+
+    private boolean isOnInteractCooldown(Player player) {
+        long now = System.currentTimeMillis();
+        Long last = lastInteractTimes.get(player.getUniqueId());
+        if (last != null && (now - last) < INTERACT_COOLDOWN_MS) {
+            return true;
+        }
+        lastInteractTimes.put(player.getUniqueId(), now);
+        return false;
     }
 
     private Player resolveDamager(Entity entity) {
