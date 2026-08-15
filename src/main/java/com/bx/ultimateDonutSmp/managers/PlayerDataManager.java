@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingDefaults;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -30,6 +31,7 @@ public class PlayerDataManager {
         data = plugin.getDatabaseManager().loadPlayer(uuid);
         if (data == null) {
             data = new PlayerData(uuid, player.getName());
+            PlayerSettingDefaults.applyDefaults(plugin, data);
             double startMoney = plugin.getConfigManager().getConfig()
                     .getDouble("SETTINGS.MONEY-PER-DEFAULT", 1000.0);
             data.setMoney(startMoney);
@@ -37,6 +39,7 @@ public class PlayerDataManager {
         } else {
             data.setUsername(player.getName());
         }
+        PlayerSettingDefaults.applyDisabledOptions(plugin, data);
         data.setSessionStartMillis(System.currentTimeMillis());
         cache.put(uuid, data);
         return data;
@@ -76,6 +79,13 @@ public class PlayerDataManager {
 
     public boolean isLoaded(UUID uuid) {
         return cache.containsKey(uuid);
+    }
+
+    /** Re-pins options removed with ENABLED: false after menus.yml was reloaded. */
+    public void refreshRemovedSettingOptions() {
+        for (PlayerData data : cache.values()) {
+            PlayerSettingDefaults.applyDisabledOptions(plugin, data);
+        }
     }
 
     /** Periodic dirty-save without committing sessions */

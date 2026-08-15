@@ -1077,6 +1077,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
             initializeLunarRichPresenceManager();
         }
 
+        if (playerDataManager != null) {
+            playerDataManager.refreshRemovedSettingOptions();
+        }
+
         for (Player player : getServer().getOnlinePlayers()) {
             tablistManager.updateTablistName(player);
             worthManager.clearWorthDisplay(player);

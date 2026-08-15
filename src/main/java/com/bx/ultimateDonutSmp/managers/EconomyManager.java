@@ -6,6 +6,7 @@ import com.bx.ultimateDonutSmp.models.EconomyReason;
 import com.bx.ultimateDonutSmp.models.EconomyTransactionResult;
 import com.bx.ultimateDonutSmp.models.EconomyTransferResult;
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingDefaults;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -498,6 +499,7 @@ public class EconomyManager {
 
         String username = resolveDisplayName(uuid, displayNameHint);
         PlayerData created = new PlayerData(uuid, username);
+        PlayerSettingDefaults.applyDefaults(plugin, created);
         double startMoney = plugin.getConfigManager().getConfig()
                 .getDouble("SETTINGS.MONEY-PER-DEFAULT", 1000.0D);
         created.setMoney(roundCurrency(startMoney));
