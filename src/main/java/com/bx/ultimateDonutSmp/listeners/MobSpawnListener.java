@@ -12,10 +12,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.function.Function;
 
+/**
+ * Enforces the per-player mob spawn toggle purely by cancelling {@link CreatureSpawnEvent}. The
+ * toggle governs the spawn cycle only: mobs that are already alive stay alive when a player turns it
+ * off, and turning it back on lets the next natural spawn attempt through immediately. Nothing here
+ * removes entities, so there is no sweep of the loaded world at any point.
+ */
 public class MobSpawnListener implements Listener {
 
     private final UltimateDonutSmp plugin;
@@ -36,10 +41,12 @@ public class MobSpawnListener implements Listener {
 
         if (MobSpawnPolicy.hasCustomName(entity)) return;
 
+        if (!isPreventableSpawnReason(event.getSpawnReason())) return;
+
         refreshSettingsIfNeeded();
 
         if (event.getEntityType() == EntityType.PHANTOM) {
-            if (isPreventableSpawnReason(event.getSpawnReason()) && shouldCancelPhantomSpawn(entity.getLocation())) {
+            if (shouldCancelPhantomSpawn(entity.getLocation())) {
                 event.setCancelled(true);
             }
             return;
@@ -47,36 +54,11 @@ public class MobSpawnListener implements Listener {
 
         if (!MobSpawnPolicy.isHostileMob(entity)) return;
 
-        if (isPreventableSpawnReason(event.getSpawnReason())) {
-            if (shouldCancelMobSpawn(entity.getLocation())) {
-                event.setCancelled(true);
-                return;
-            }
-        }
+        if (MobSpawnPolicy.isBoss(event.getEntityType())) return;
 
-        if (MobSpawnPolicy.isVanillaSpawnerSpawn(event.getSpawnReason())) {
-            MobSpawnPolicy.markVanillaSpawnerMob(plugin, entity);
+        if (shouldCancelMobSpawn(entity.getLocation())) {
+            event.setCancelled(true);
         }
-    }
-
-    /**
-     * Clears hostile mobs that were already loaded around a player who joins with the toggle off.
-     * This is a single scan per join, not a repeating server-wide entity sweep.
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        plugin.getSpigotScheduler().runEntityLater(player, () -> {
-            if (!player.isOnline()) {
-                return;
-            }
-            PlayerData data = dataProvider.apply(player);
-            if (data == null || data.isMobSpawnEnabled()) {
-                return;
-            }
-            refreshSettingsIfNeeded();
-            MobSpawnPolicy.clearNearbyHostileMobs(plugin, player, mobSpawnRadius);
-        }, 20L);
     }
 
     /**

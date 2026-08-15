@@ -6,7 +6,6 @@ import com.bx.ultimateDonutSmp.models.ThreeChoice;
 import com.bx.ultimateDonutSmp.models.TwoChoice;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import com.bx.ultimateDonutSmp.utils.MobSpawnPolicy;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
@@ -154,7 +153,6 @@ public final class PlayerSettingsMenu extends BaseMenu {
             case "DISABLE_MOB_SPAWN" -> {
                 data.setMobSpawnEnabled(!data.isMobSpawnEnabled());
                 if (!data.isMobSpawnEnabled()) {
-                    clearNearbyHostileMobs(player);
                     long limitSeconds = plugin.getConfigManager().getConfig().getLong("SETTINGS.DISABLE-MOB-SPAWN-LIMIT-SECONDS", -1L);
                     if (limitSeconds > 0) {
                         data.setMobSpawnDisabledUntil(System.currentTimeMillis() + (limitSeconds * 1000L));
@@ -554,11 +552,6 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 "ᴛᴇᴀᴍ ᴄʜᴀᴛ ѕᴇɴᴅɪɴɢ ᴍᴏᴅᴇ",
                 plugin.getTeamManager().isTeamChatEnabled(player.getUniqueId())
         );
-    }
-
-    private void clearNearbyHostileMobs(Player player) {
-        double radius = plugin.getConfigManager().getConfig().getDouble("SETTINGS.MOB-SPAWN-RADIUS", 50);
-        MobSpawnPolicy.clearNearbyHostileMobs(plugin, player, radius);
     }
 
     private void toggle(Player player, String label, boolean enabled, BooleanSetter setter) {

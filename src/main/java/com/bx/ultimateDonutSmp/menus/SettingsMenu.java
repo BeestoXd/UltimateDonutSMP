@@ -4,7 +4,6 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
-import com.bx.ultimateDonutSmp.utils.MobSpawnPolicy;
 import com.bx.ultimateDonutSmp.utils.NightVisionUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
@@ -195,7 +194,6 @@ public class SettingsMenu extends BaseMenu {
             case "DISABLE_MOB_SPAWN" -> {
                 data.setMobSpawnEnabled(!data.isMobSpawnEnabled());
                 if (!data.isMobSpawnEnabled()) {
-                    clearNearbyHostileMobs(player);
                     long limitSeconds = plugin.getConfigManager().getConfig().getLong("SETTINGS.DISABLE-MOB-SPAWN-LIMIT-SECONDS", -1L);
                     if (limitSeconds > 0) {
                         data.setMobSpawnDisabledUntil(System.currentTimeMillis() + (limitSeconds * 1000L));
@@ -403,11 +401,6 @@ public class SettingsMenu extends BaseMenu {
         }
 
         player.sendMessage(ColorUtils.toComponent("&7Night vision &aEnabled&7."));
-    }
-
-    private void clearNearbyHostileMobs(Player player) {
-        double radius = plugin.getConfigManager().getConfig().getDouble("SETTINGS.MOB-SPAWN-RADIUS", 50);
-        MobSpawnPolicy.clearNearbyHostileMobs(plugin, player, radius);
     }
 
     private ItemStack toNightVisionPotion(ItemStack item) {

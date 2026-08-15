@@ -4,7 +4,6 @@ import com.bx.ultimateDonutSmp.models.PlayerData;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
@@ -19,30 +18,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MobSpawnPolicyTest {
 
     @Test
-    void onlyVanillaSpawnerReasonReceivesPersistentExemption() {
-        assertTrue(MobSpawnPolicy.isVanillaSpawnerSpawn(CreatureSpawnEvent.SpawnReason.SPAWNER));
-        assertFalse(MobSpawnPolicy.isVanillaSpawnerSpawn(CreatureSpawnEvent.SpawnReason.NATURAL));
-        assertFalse(MobSpawnPolicy.isVanillaSpawnerSpawn(CreatureSpawnEvent.SpawnReason.CUSTOM));
-    }
+    void bossesAreNeverBlockedByTheToggle() {
+        assertTrue(MobSpawnPolicy.isBoss(EntityType.WITHER));
+        assertTrue(MobSpawnPolicy.isBoss(EntityType.ENDER_DRAGON));
+        assertTrue(MobSpawnPolicy.isBoss(EntityType.ELDER_GUARDIAN));
+        assertTrue(MobSpawnPolicy.isBoss(EntityType.WARDEN));
 
-    @Test
-    void periodicCleanupPreservesSpawnerMobsAndExistingExcludedTypes() {
-        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, false));
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, true));
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ZOMBIE, false, true));
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(false, EntityType.ZOMBIE, false));
-
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.PHANTOM, false));
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.WITHER, false));
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ENDER_DRAGON, false));
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.ELDER_GUARDIAN, false));
-        assertFalse(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.WARDEN, false));
-
-        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.SLIME, false));
-        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.GHAST, false));
-        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.HOGLIN, false));
-        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.SPIDER, false));
-        assertTrue(MobSpawnPolicy.shouldRemoveFromPeriodicCleanup(true, EntityType.CAVE_SPIDER, false));
+        assertFalse(MobSpawnPolicy.isBoss(null));
+        assertFalse(MobSpawnPolicy.isBoss(EntityType.ZOMBIE));
+        assertFalse(MobSpawnPolicy.isBoss(EntityType.SLIME));
+        assertFalse(MobSpawnPolicy.isBoss(EntityType.GHAST));
+        assertFalse(MobSpawnPolicy.isBoss(EntityType.HOGLIN));
+        assertFalse(MobSpawnPolicy.isBoss(EntityType.SPIDER));
+        assertFalse(MobSpawnPolicy.isBoss(EntityType.CAVE_SPIDER));
     }
 
     @Test
