@@ -1808,6 +1808,14 @@ public class ConfigManager {
             return true;
         }
 
+        // Key-all random weights are keyed by live crate ids, so the bundled common/rare/epic
+        // examples must not be merged back after admins delete or replace them. The KEYS section
+        // itself stays mergeable so configs that predate the feature still receive it once.
+        if ("config.yml".equals(resourceName)
+                && path.startsWith("KEY-ALL.RANDOM.KEYS.")) {
+            return true;
+        }
+
         // Billford trade definitions are live server content. The bundled BILLFORD tree is only
         // an initial example and must not be merged back after admins edit/delete it.
         if ("billford.yml".equals(resourceName)
