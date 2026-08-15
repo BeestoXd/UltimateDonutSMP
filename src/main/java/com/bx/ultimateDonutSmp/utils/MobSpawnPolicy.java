@@ -1,51 +1,18 @@
 package com.bx.ultimateDonutSmp.utils;
 
-import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collection;
 import java.util.function.Function;
 
 public final class MobSpawnPolicy {
 
-    private static final String VANILLA_SPAWNER_MOB_KEY = "vanilla_spawner_mob";
-    private static final byte TRUE = 1;
-
     private MobSpawnPolicy() {
-    }
-
-    public static boolean isVanillaSpawnerSpawn(CreatureSpawnEvent.SpawnReason reason) {
-        return reason == CreatureSpawnEvent.SpawnReason.SPAWNER;
-    }
-
-    public static void markVanillaSpawnerMob(UltimateDonutSmp plugin, LivingEntity entity) {
-        if (plugin == null || entity == null) {
-            return;
-        }
-        entity.getPersistentDataContainer().set(
-                plugin.getKey(VANILLA_SPAWNER_MOB_KEY),
-                PersistentDataType.BYTE,
-                TRUE
-        );
-    }
-
-    public static boolean isVanillaSpawnerMob(UltimateDonutSmp plugin, LivingEntity entity) {
-        if (plugin == null || entity == null) {
-            return false;
-        }
-        return entity.getPersistentDataContainer().getOrDefault(
-                plugin.getKey(VANILLA_SPAWNER_MOB_KEY),
-                PersistentDataType.BYTE,
-                (byte) 0
-        ) == TRUE;
     }
 
     public static boolean isHostileMob(LivingEntity entity) {
@@ -53,6 +20,22 @@ public final class MobSpawnPolicy {
                 || entity instanceof org.bukkit.entity.Slime
                 || entity instanceof org.bukkit.entity.Ghast
                 || entity instanceof org.bukkit.entity.Hoglin;
+    }
+
+    /**
+     * Bosses stay outside the toggle. They come from one-off world features or player rituals rather
+     * than the ambient spawn cycle the toggle is meant to thin out, so cancelling them would delete
+     * content that never comes back (an elder guardian cancelled at chunk gen leaves the monument
+     * empty forever).
+     */
+    public static boolean isBoss(EntityType type) {
+        if (type == null) {
+            return false;
+        }
+        return switch (type) {
+            case WITHER, ENDER_DRAGON, ELDER_GUARDIAN, WARDEN -> true;
+            default -> false;
+        };
     }
 
     public static boolean hasCustomName(LivingEntity entity) {
@@ -171,65 +154,5 @@ public final class MobSpawnPolicy {
         int playerChunkZ = playerLocation.getBlockZ() >> 4;
         return Math.abs(playerChunkX - spawnChunkX) > chunkRadius
                 || Math.abs(playerChunkZ - spawnChunkZ) > chunkRadius;
-    }
-
-    /**
-     * One-shot removal of the hostile mobs already loaded around {@code player}. Used when a player
-     * turns the toggle off and when they join with it already off, so the toggle stays meaningful
-     * without a repeating server-wide entity scan.
-     */
-    public static void clearNearbyHostileMobs(UltimateDonutSmp plugin, Player player, double radius) {
-        if (plugin == null || player == null || radius <= 0.0D) {
-            return;
-        }
-        double radiusSquared = radius * radius;
-        Location playerLocation = player.getLocation();
-        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (!(entity instanceof LivingEntity living)) {
-                continue;
-            }
-            if (!shouldRemoveFromPeriodicCleanup(plugin, living)) {
-                continue;
-            }
-            if (living.getLocation().distanceSquared(playerLocation) > radiusSquared) {
-                continue;
-            }
-            living.remove();
-        }
-    }
-
-    public static boolean shouldRemoveFromPeriodicCleanup(
-            boolean monster,
-            EntityType type,
-            boolean vanillaSpawnerMob
-    ) {
-        return shouldRemoveFromPeriodicCleanup(monster, type, vanillaSpawnerMob, false);
-    }
-
-    public static boolean shouldRemoveFromPeriodicCleanup(
-            boolean monster,
-            EntityType type,
-            boolean vanillaSpawnerMob,
-            boolean hasCustomName
-    ) {
-        if (!monster || type == null || vanillaSpawnerMob || hasCustomName) {
-            return false;
-        }
-        return switch (type) {
-            case PHANTOM, WITHER, ENDER_DRAGON, ELDER_GUARDIAN, WARDEN -> false;
-            default -> true;
-        };
-    }
-
-    public static boolean shouldRemoveFromPeriodicCleanup(
-            UltimateDonutSmp plugin,
-            LivingEntity entity
-    ) {
-        return entity != null && shouldRemoveFromPeriodicCleanup(
-                isHostileMob(entity),
-                entity.getType(),
-                isVanillaSpawnerMob(plugin, entity),
-                hasCustomName(entity)
-        );
     }
 }
