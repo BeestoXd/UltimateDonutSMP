@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.models.Bounty;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 
@@ -29,7 +30,8 @@ public class LeaderboardManager {
         KILL_STREAK("killStreak"),
         HIGHEST_KILL_STREAK("highestKillStreak"),
         MONEY_SPENT("moneySpent"),
-        MONEY_MADE("moneyMade");
+        MONEY_MADE("moneyMade"),
+        BOUNTIES("bounties");
 
         private final String configKey;
 
@@ -112,6 +114,7 @@ public class LeaderboardManager {
             case HIGHEST_KILL_STREAK -> NumberUtils.format(data.getHighestKillStreak());
             case MONEY_SPENT -> formatCurrencyValue(CurrencyManager.CurrencyType.MONEY, data.getMoneySpent(), compact, includeCurrencySymbol);
             case MONEY_MADE -> formatCurrencyValue(CurrencyManager.CurrencyType.MONEY, data.getMoneyMade(), compact, includeCurrencySymbol);
+            case BOUNTIES -> formatCurrencyValue(CurrencyManager.CurrencyType.MONEY, bountyAmount(data), compact, includeCurrencySymbol);
         };
     }
 
@@ -210,6 +213,11 @@ public class LeaderboardManager {
 
                 List<PlayerData> players = new ArrayList<>(merged.values());
                 players.removeIf(data -> data == null || data.getUsername() == null || data.getUsername().isBlank());
+                if (type == LeaderboardType.BOUNTIES) {
+                    // Every player carries a zero bounty, so an unfiltered board would pad the
+                    // ranking with players nobody placed a bounty on.
+                    players.removeIf(data -> bountyAmount(data) <= 0D);
+                }
                 players.sort(comparator(type));
 
                 List<PlayerData> snapshot = List.copyOf(players);
@@ -245,7 +253,22 @@ public class LeaderboardManager {
             case HIGHEST_KILL_STREAK -> data.getHighestKillStreak();
             case MONEY_SPENT -> data.getMoneySpent();
             case MONEY_MADE -> data.getMoneyMade();
+            case BOUNTIES -> bountyAmount(data);
         };
+    }
+
+    private double bountyAmount(PlayerData data) {
+        if (data == null || data.getUuid() == null) {
+            return 0D;
+        }
+
+        BountyManager bountyManager = plugin.getBountyManager();
+        if (bountyManager == null) {
+            return 0D;
+        }
+
+        Bounty bounty = bountyManager.getBounty(data.getUuid());
+        return bounty == null ? 0D : bounty.getAmount();
     }
 
     private String formatCurrencyValue(

@@ -1117,6 +1117,7 @@ LEADERBOARDS-MENU:
     killStreak: Kill Streak
     highestKillStreak: Highest Kill Streak
     shards: Shards
+    bounties: Bounties
   BUTTONS:
     MONEY:
       TYPE: money
@@ -1199,6 +1200,7 @@ LEADERBOARDS-MENU:
 | `LEADERBOARDS-MENU.TYPE-NAMES.killStreak` | `str` | Any string text | `'Kill Streak'` | Configures the technical `killStreak` parameter for `LEADERBOARDS-MENU.TYPE-NAMES.killStreak` in `menus.yml`. |
 | `LEADERBOARDS-MENU.TYPE-NAMES.highestKillStreak` | `str` | Any string text | `'Highest Kill Streak'` | Configures the technical `highestKillStreak` parameter for `LEADERBOARDS-MENU.TYPE-NAMES.highestKillStreak` in `menus.yml`. |
 | `LEADERBOARDS-MENU.TYPE-NAMES.shards` | `str` | Any string text | `'Shards'` | Configures the technical `shards` parameter for `LEADERBOARDS-MENU.TYPE-NAMES.shards` in `menus.yml`. |
+| `LEADERBOARDS-MENU.TYPE-NAMES.bounties` | `str` | Any string text | `'Bounties'` | Configures the technical `bounties` parameter for `LEADERBOARDS-MENU.TYPE-NAMES.bounties` in `menus.yml`. |
 | `LEADERBOARDS-MENU.BUTTONS.MONEY.TYPE` | `str` | Any string text | `'money'` | Configures the technical `TYPE` parameter for `LEADERBOARDS-MENU.BUTTONS.MONEY.TYPE` in `menus.yml`. |
 | `LEADERBOARDS-MENU.BUTTONS.MONEY.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DMoney Leaderboard'` | Configures the technical `DISPLAY-NAME` parameter for `LEADERBOARDS-MENU.BUTTONS.MONEY.DISPLAY-NAME` in `menus.yml`. |
 | `LEADERBOARDS-MENU.BUTTONS.MONEY.MATERIAL` | `str` | Any string text | `'EMERALD'` | Configures the technical `MATERIAL` parameter for `LEADERBOARDS-MENU.BUTTONS.MONEY.MATERIAL` in `menus.yml`. |
@@ -1210,7 +1212,7 @@ LEADERBOARDS-MENU:
 | `LEADERBOARDS-MENU.BUTTONS.SHARDS.SLOT` | `int` | Any valid integer number | `'11'` | Configures the technical `SLOT` parameter for `LEADERBOARDS-MENU.BUTTONS.SHARDS.SLOT` in `menus.yml`. |
 | `LEADERBOARDS-MENU.BUTTONS.SHARDS.LORE` | `list` | List of configured items/strings | `['&fClick to view SHARDS leaderboard']` | Configures the technical `LORE` parameter for `LEADERBOARDS-MENU.BUTTONS.SHARDS.LORE` in `menus.yml`. |
 | `LEADERBOARDS-MENU.BUTTONS.KILLS.TYPE` | `str` | Any string text | `'kills'` | Configures the technical `TYPE` parameter for `LEADERBOARDS-MENU.BUTTONS.KILLS.TYPE` in `menus.yml`. |
-| *(49 additional sub-keys configured in section)* | | | | |
+| *(54 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example
 
@@ -1238,6 +1240,7 @@ LEADERBOARDS-MENU:
     killStreak: Kill Streak
     highestKillStreak: Highest Kill Streak
     shards: Shards
+    bounties: Bounties
   BUTTONS:
     MONEY:
       TYPE: money

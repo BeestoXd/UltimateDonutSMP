@@ -12,9 +12,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BountyManager {
 
@@ -26,7 +26,8 @@ public class BountyManager {
     }
 
     private final UltimateDonutSmp plugin;
-    private final Map<UUID, Bounty> bounties = new HashMap<>();
+    // Read off the main thread by the async leaderboard refresh, so it must stay concurrent.
+    private final Map<UUID, Bounty> bounties = new ConcurrentHashMap<>();
 
     public BountyManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -40,11 +41,11 @@ public class BountyManager {
     }
 
     public Bounty getBounty(UUID targetUuid) {
-        return bounties.get(targetUuid);
+        return targetUuid == null ? null : bounties.get(targetUuid);
     }
 
     public boolean hasBounty(UUID targetUuid) {
-        return bounties.containsKey(targetUuid);
+        return targetUuid != null && bounties.containsKey(targetUuid);
     }
 
     public Collection<Bounty> getAllBounties() {

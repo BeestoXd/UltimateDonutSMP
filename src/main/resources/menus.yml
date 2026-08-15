@@ -885,6 +885,7 @@ LEADERBOARDS-MENU:
     killStreak: Kill Streak
     highestKillStreak: Highest Kill Streak
     shards: Shards
+    bounties: Bounties
   BUTTONS:
     MONEY:
       TYPE: money
@@ -970,6 +971,13 @@ LEADERBOARDS-MENU:
       SLOT: 23
       LORE:
       - '&fClick to view MONEY MADE ON /SELL leaderboard'
+    BOUNTIES:
+      TYPE: bounties
+      DISPLAY-NAME: '&#6BF18DBounties Leaderboard'
+      MATERIAL: WITHER_SKELETON_SKULL
+      SLOT: 24
+      LORE:
+      - '&fClick to view BOUNTIES leaderboard'
 PROGRESS-MENU:
   PROGRESS-BAR: "■"
   LEVEL:

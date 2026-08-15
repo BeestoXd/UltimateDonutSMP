@@ -61,18 +61,23 @@ Used for scoreboards, holograms, and tablists to display top rankings (`1-10`):
 | `%economylb_<type>_<rank>_value%` | `%economylb_money_1_value%` | Formatted score value at rank 1 |
 | `%economylb_<type>_<rank>_display%` | `%economylb_money_1_display%` | Complete leaderboard row |
 
-*Supported Types*: `money`, `shards`, `kills`, `deaths`, `playtime`, `bounties`.
+*Supported Types*: `money`, `shards`, `kills`, `deaths`, `playtime`, `blocksPlaced`, `blocksBroken`, `mobsKilled`, `killStreak`, `highestKillStreak`, `moneySpent`, `moneyMade`, `bounties`.
+
+> `bounties` ranks players by the bounty currently placed on their head and only lists players who actually have one, so a rank past the last active bounty renders as `none`.
 
 ---
 
 ### 3. Personal Rank Expansion (`%economyrank_*%`)
 
-Displays the player's personal numerical leaderboard rank:
+Displays the player's personal numerical leaderboard rank, using the same type names as the leaderboard expansion above:
 - `%economyrank_money%` – Player's money leaderboard rank
 - `%economyrank_shards%` – Player's shards leaderboard rank
 - `%economyrank_kills%` – Player's kills leaderboard rank
 - `%economyrank_deaths%` – Player's deaths leaderboard rank
 - `%economyrank_playtime%` – Player's playtime leaderboard rank
+- `%economyrank_bounties%` – Player's bounty leaderboard rank (`0` when no bounty is placed on them)
+
+Any unranked player returns `0`.
 
 ---
 

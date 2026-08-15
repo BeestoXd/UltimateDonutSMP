@@ -964,6 +964,10 @@ MENUS:
         DISPLAY-NAME: '&#6BF18DMoney made on /sell'
         LORE:
         - '&fClick to view money made on /sell leaderboard'
+      BOUNTIES:
+        DISPLAY-NAME: '&#6BF18DBounties leaderboard'
+        LORE:
+        - '&fClick to view bounties leaderboard'
   PROGRESS-MENU:
     WORKING-BUTTON:
       TITLE: '&eWorking'
