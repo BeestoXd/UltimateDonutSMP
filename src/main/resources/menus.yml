@@ -572,6 +572,20 @@ SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
   BUTTONS:
+    # Every setting below accepts two optional keys:
+    #   DEFAULT: <value>  Starting value for players who never touched the setting.
+    #                     On/off buttons take true or false. The privacy buttons
+    #                     (PRIVATE_MESSAGES, TPA_REQUESTS, TPA_HERE_REQUESTS, PAYMENTS,
+    #                     ADVANCEMENT_MESSAGES, JOIN_LEAVE_MESSAGES) take ANYONE,
+    #                     FRIENDS_FOLLOWED or OFF, and DEATH_MESSAGES takes
+    #                     FRIENDS_FOLLOWED or OFF. true/false also work as shortcuts.
+    #   ENABLED: false    Removes the option from /settings and pins every player to the
+    #                     DEFAULT above. Use this instead of deleting the block - deleted
+    #                     blocks are restored from the bundled defaults on the next start.
+    # Example, hide advancement messages and keep them off for everyone:
+    # ADVANCEMENT_MESSAGES:
+    #   DEFAULT: OFF
+    #   ENABLED: false
     # Custom redirect buttons can also be added here:
     # EXTERNAL_FLY:
     #   DISPLAY-NAME: '&bFlight Mode'

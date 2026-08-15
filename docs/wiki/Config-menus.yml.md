@@ -871,6 +871,13 @@ SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
   BUTTONS:
+    # Every setting below accepts two optional keys:
+    #   DEFAULT: <value>  Starting value for players who never touched the setting.
+    #   ENABLED: false    Removes the option from /settings and pins every player to DEFAULT.
+    # Example, hide advancement messages and keep them off for everyone:
+    # ADVANCEMENT_MESSAGES:
+    #   DEFAULT: OFF
+    #   ENABLED: false
     # Custom redirect buttons can also be added here:
     # EXTERNAL_FLY:
     #   DISPLAY-NAME: '&bFlight Mode'
@@ -992,6 +999,13 @@ SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
   BUTTONS:
+    # Every setting below accepts two optional keys:
+    #   DEFAULT: <value>  Starting value for players who never touched the setting.
+    #   ENABLED: false    Removes the option from /settings and pins every player to DEFAULT.
+    # Example, hide advancement messages and keep them off for everyone:
+    # ADVANCEMENT_MESSAGES:
+    #   DEFAULT: OFF
+    #   ENABLED: false
     # Custom redirect buttons can also be added here:
     # EXTERNAL_FLY:
     #   DISPLAY-NAME: '&bFlight Mode'
@@ -1026,6 +1040,52 @@ SETTINGS-MENU:
     TEAM_CHAT_VISIBILITY:
     
 ```
+
+### 4. Per-Setting Defaults & Removing Options
+
+Every entry under `SETTINGS-MENU.BUTTONS` accepts two optional keys on top of the display keys
+documented above.
+
+| Key | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SETTINGS-MENU.BUTTONS.<SETTING>.DEFAULT` | `str` / `bool` | `true`, `false`, `ANYONE`, `FRIENDS_FOLLOWED`, `OFF` | Built-in default (`true` / `ANYONE` for most settings) | Value a player starts with before they ever open `/settings`. |
+| `SETTINGS-MENU.BUTTONS.<SETTING>.ENABLED` | `bool` | `true`, `false` | `true` | `false` removes the option from `/settings` and pins every player to `DEFAULT`. |
+
+**Which values a setting accepts.** On/off buttons take `true` or `false` (`on`/`off`, `yes`/`no`
+and `enabled`/`disabled` are accepted too). The privacy buttons — `PRIVATE_MESSAGES`,
+`TPA_REQUESTS`, `TPA_HERE_REQUESTS`, `PAYMENTS`, `ADVANCEMENT_MESSAGES` and
+`JOIN_LEAVE_MESSAGES` — take `ANYONE`, `FRIENDS_FOLLOWED` or `OFF`, and `DEATH_MESSAGES` takes
+`FRIENDS_FOLLOWED` or `OFF`. On those buttons `true` is shorthand for `ANYONE`
+(`FRIENDS_FOLLOWED` for `DEATH_MESSAGES`) and `false` is shorthand for `OFF`. `DISABLE_MOB_SPAWN`
+and `DISABLE_PHANTOM_SPAWN` follow the button label, so `DEFAULT: true` means the prevention is
+on and the mobs stop spawning. An unusable value is ignored and logged as a console warning.
+
+**Turning a setting off for everyone.** `DEFAULT` alone only affects players who have never
+touched that setting; existing players keep whatever they last chose. Pair it with
+`ENABLED: false` to also pin players who already toggled it:
+
+```yaml
+SETTINGS-MENU:
+  BUTTONS:
+    ADVANCEMENT_MESSAGES:
+      DEFAULT: OFF
+      ENABLED: false
+    JOIN_LEAVE_MESSAGES:
+      DEFAULT: OFF
+      ENABLED: false
+```
+
+Notes:
+
+- Use `ENABLED: false` rather than deleting the block. Deleted blocks are restored from the
+  bundled defaults the next time the plugin loads, which is also how new settings reach an
+  existing `menus.yml`.
+- While an option is disabled its `DEFAULT` is authoritative: the value is re-applied every time
+  a player is loaded and on every `/uds reload`, and the button is neither drawn nor clickable.
+  A player's stored choice is not deliberately rewritten, but routine data saves can overwrite
+  it, so treat re-enabling an option as a reset for the players affected.
+- `QUICK_AUCTION_PURCHASE` and `QUICK_AUCTION_SELL` are stored by the auction house instead of
+  the player profile, so they support `ENABLED` but not `DEFAULT`.
 
 ---
 

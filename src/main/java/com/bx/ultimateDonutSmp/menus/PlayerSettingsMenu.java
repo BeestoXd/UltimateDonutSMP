@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.models.TwoChoice;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingDefaults;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,7 +69,8 @@ public final class PlayerSettingsMenu extends BaseMenu {
         if (buttons == null) {
             return;
         }
-        if (buttons.contains("QUICK_AUCTION_PURCHASE") || buttons.contains("QUICK_AUCTION_SELL")) {
+        if (containsEnabledButton(buttons, "QUICK_AUCTION_PURCHASE")
+                || containsEnabledButton(buttons, "QUICK_AUCTION_SELL")) {
             loadPreference(player);
         }
 
@@ -92,10 +94,14 @@ public final class PlayerSettingsMenu extends BaseMenu {
             return;
         }
 
-        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-
         ConfigurationSection section = plugin.getConfigManager().getMenus()
                 .getConfigurationSection(MENU_PATH + ".BUTTONS." + key);
+        if (!PlayerSettingDefaults.isOptionEnabled(section)) {
+            return;
+        }
+
+        SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
+
         if (section != null && section.contains("COMMAND")) {
             String commandStr = section.getString("COMMAND");
             if (commandStr != null && !commandStr.isBlank()) {
@@ -600,7 +606,14 @@ public final class PlayerSettingsMenu extends BaseMenu {
         return TwoChoice.values()[nextOrdinal];
     }
 
+    private boolean containsEnabledButton(ConfigurationSection buttons, String key) {
+        return buttons.contains(key) && PlayerSettingDefaults.isOptionEnabled(buttons, key);
+    }
+
     private boolean shouldRenderButton(String key, ConfigurationSection section) {
+        if (!PlayerSettingDefaults.isOptionEnabled(section)) {
+            return false;
+        }
         if (section != null && (section.contains("COMMAND") || section.contains("STATUS-PLACEHOLDER"))) {
             return true;
         }
