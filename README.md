@@ -62,38 +62,23 @@ This README is the quick reference. The full documentation set lives in [`docs/w
 
 Feature panels and in-game menus:
 
-<p align="center">
-  <img src="images/uds1.png" alt="Offend staff moderation command and Topsell web analytics" width="32%">
-  <img src="images/uds2.png" alt="UltimateDonutSmp feature panel 2" width="32%">
-  <img src="images/uds3.png" alt="UltimateDonutSmp feature panel 3" width="32%">
-  <img src="images/uds4.png" alt="UltimateDonutSmp feature panel 4" width="32%">
-  <img src="images/uds5.png" alt="UltimateDonutSmp feature panel 5" width="32%">
-  <img src="images/uds6.png" alt="UltimateDonutSmp feature panel 6" width="32%">
-  <img src="images/uds7.png" alt="UltimateDonutSmp feature panel 7" width="32%">
-  <img src="images/uds8.png" alt="UltimateDonutSmp feature panel 8" width="32%">
-  <img src="images/uds9.png" alt="UltimateDonutSmp feature panel 9" width="32%">
-  <img src="images/uds10.png" alt="UltimateDonutSmp feature panel 10" width="32%">
-  <img src="images/uds11.png" alt="UltimateDonutSmp feature panel 11" width="32%">
-  <img src="images/uds12.png" alt="UltimateDonutSmp feature panel 12" width="32%">
-  <img src="images/uds13.png" alt="UltimateDonutSmp feature panel 13" width="32%">
-  <img src="images/uds14.png" alt="UltimateDonutSmp feature panel 14" width="32%">
-  <img src="images/uds15.png" alt="UltimateDonutSmp feature panel 15" width="32%">
-  <img src="images/uds16.png" alt="UltimateDonutSmp feature panel 16" width="32%">
-  <img src="images/uds17.png" alt="UltimateDonutSmp feature panel 17" width="32%">
-  <img src="images/uds18.png" alt="UltimateDonutSmp feature panel 18" width="32%">
-  <img src="images/uds19.png" alt="UltimateDonutSmp feature panel 19" width="32%">
-</p>
+|   |   |   |
+| :---: | :---: | :---: |
+| <img src="images/uds1.png" alt="Offend staff moderation command and Topsell web analytics" width="270"> | <img src="images/uds2.png" alt="UltimateDonutSmp feature panel 2" width="270"> | <img src="images/uds3.png" alt="UltimateDonutSmp feature panel 3" width="270"> |
+| <img src="images/uds4.png" alt="UltimateDonutSmp feature panel 4" width="270"> | <img src="images/uds5.png" alt="UltimateDonutSmp feature panel 5" width="270"> | <img src="images/uds6.png" alt="UltimateDonutSmp feature panel 6" width="270"> |
+| <img src="images/uds7.png" alt="UltimateDonutSmp feature panel 7" width="270"> | <img src="images/uds8.png" alt="UltimateDonutSmp feature panel 8" width="270"> | <img src="images/uds9.png" alt="UltimateDonutSmp feature panel 9" width="270"> |
+| <img src="images/uds10.png" alt="UltimateDonutSmp feature panel 10" width="270"> | <img src="images/uds11.png" alt="UltimateDonutSmp feature panel 11" width="270"> | <img src="images/uds12.png" alt="UltimateDonutSmp feature panel 12" width="270"> |
+| <img src="images/uds13.png" alt="UltimateDonutSmp feature panel 13" width="270"> | <img src="images/uds14.png" alt="UltimateDonutSmp feature panel 14" width="270"> | <img src="images/uds15.png" alt="UltimateDonutSmp feature panel 15" width="270"> |
+| <img src="images/uds16.png" alt="UltimateDonutSmp feature panel 16" width="270"> | <img src="images/uds17.png" alt="UltimateDonutSmp feature panel 17" width="270"> | <img src="images/uds18.png" alt="UltimateDonutSmp feature panel 18" width="270"> |
+| <img src="images/uds19.png" alt="UltimateDonutSmp feature panel 19" width="270"> |   |   |
 
 Gameplay clips:
 
-<p align="center">
-  <img src="images/gif1.gif" alt="UltimateDonutSmp gameplay clip 1" width="49%">
-  <img src="images/gif2.gif" alt="UltimateDonutSmp gameplay clip 2" width="49%">
-  <img src="images/gif3.gif" alt="UltimateDonutSmp gameplay clip 3" width="49%">
-  <img src="images/gif4.gif" alt="UltimateDonutSmp gameplay clip 4" width="49%">
-  <img src="images/gif5.gif" alt="UltimateDonutSmp gameplay clip 5" width="49%">
-  <img src="images/gif6.gif" alt="UltimateDonutSmp gameplay clip 6" width="49%">
-</p>
+|   |   |
+| :---: | :---: |
+| <img src="images/gif1.gif" alt="UltimateDonutSmp gameplay clip 1" width="420"> | <img src="images/gif2.gif" alt="UltimateDonutSmp gameplay clip 2" width="420"> |
+| <img src="images/gif3.gif" alt="UltimateDonutSmp gameplay clip 3" width="420"> | <img src="images/gif4.gif" alt="UltimateDonutSmp gameplay clip 4" width="420"> |
+| <img src="images/gif5.gif" alt="UltimateDonutSmp gameplay clip 5" width="420"> | <img src="images/gif6.gif" alt="UltimateDonutSmp gameplay clip 6" width="420"> |
 
 ## Requirements
 
