@@ -86,8 +86,11 @@ public class FfaManager {
     private final Map<Long, FfaMatch> pendingResetMatches = new HashMap<>();
     private final Map<Long, Long> pendingResetEarliestAt = new HashMap<>();
     private final Set<UUID> combatLockedPlayers = new HashSet<>();
+    /** Extra time on top of the configured return delay before a transition is considered stuck. */
+    private static final long TRANSITION_TIMEOUT_GRACE_MILLIS = 10_000L;
     private final Set<UUID> transitioningPlayers = new HashSet<>();
     private final Map<UUID, TransitionPlayerState> transitionStates = new HashMap<>();
+    private final Map<UUID, Long> transitionDeadlines = new HashMap<>();
     private final Map<UUID, TransitionTitleState> transitionTitles = new HashMap<>();
     private final Map<UUID, PendingRespawnState> pendingRespawns = new HashMap<>();
     private long tickCounter = 0L;
@@ -143,6 +146,7 @@ public class FfaManager {
         }
         transitionStates.clear();
         transitioningPlayers.clear();
+        transitionDeadlines.clear();
     }
 
     private Boolean cachedEnabled = null;
@@ -574,6 +578,7 @@ public class FfaManager {
         tickCounter++;
         boolean secondPulse = tickCounter % 20L == 0L;
         if (secondPulse) {
+            expireStuckTransitions();
             cleanupWaitingPlayers();
         }
 
@@ -819,6 +824,18 @@ public class FfaManager {
 
         PendingRespawnState state = pendingRespawns.remove(player.getUniqueId());
         if (state == null || state.respawnLocation() == null || state.respawnLocation().getWorld() == null) {
+            // The lobby is gone, so we cannot place the player there. Drop the transition instead
+            // of leaving them permanently unhittable.
+            if (transitioningPlayers.contains(player.getUniqueId())
+                    || transitionStates.containsKey(player.getUniqueId())) {
+                plugin.getSpigotScheduler().runEntity(player, () -> {
+                    if (player.isOnline()) {
+                        restoreTransitionState(player);
+                    } else {
+                        clearTransitionTracking(player.getUniqueId());
+                    }
+                });
+            }
             return false;
         }
 
@@ -2259,7 +2276,25 @@ public class FfaManager {
     }
 
     private void scheduleReturn(UUID uuid, Location location, long delayTicks) {
-        if (uuid == null || location == null || location.getWorld() == null) {
+        if (uuid == null) {
+            return;
+        }
+
+        if (location == null || location.getWorld() == null) {
+            // Without a destination there is no return callback, so lift the transition directly -
+            // otherwise the player keeps the FFA damage immunity for the rest of the session.
+            Player stranded = Bukkit.getPlayer(uuid);
+            if (stranded != null && stranded.isOnline()) {
+                plugin.getSpigotScheduler().runEntity(stranded, () -> {
+                    if (stranded.isOnline()) {
+                        restoreTransitionState(stranded);
+                    } else {
+                        clearTransitionTracking(uuid);
+                    }
+                });
+            } else {
+                clearTransitionTracking(uuid);
+            }
             return;
         }
 
@@ -2267,25 +2302,35 @@ public class FfaManager {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null || !player.isOnline()) {
                 pendingJoinLocations.put(uuid, location.clone());
-                transitionTitles.remove(uuid);
-                transitionStates.remove(uuid);
-                transitioningPlayers.remove(uuid);
+                clearTransitionTracking(uuid);
                 return;
             }
 
             plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (!player.isOnline()) {
                     pendingJoinLocations.put(uuid, location.clone());
-                    transitionTitles.remove(uuid);
-                    transitionStates.remove(uuid);
-                    transitioningPlayers.remove(uuid);
+                    clearTransitionTracking(uuid);
                     return;
                 }
 
-                teleportPlayer(player, location, () -> {
-                    player.setNoDamageTicks(60);
-                    restoreTransitionState(player);
-                    updateCombatLock(uuid);
+                // whenComplete instead of a success-only callback: a failed teleport must still
+                // clear the transition state.
+                plugin.getSpigotScheduler().teleport(player, location).whenComplete((success, error) -> {
+                    if (error != null) {
+                        plugin.getLogger().warning("FFA return teleport failed for " + player.getName()
+                                + ": " + error.getMessage());
+                    }
+                    plugin.getSpigotScheduler().runEntity(player, () -> {
+                        if (!player.isOnline()) {
+                            clearTransitionTracking(uuid);
+                            return;
+                        }
+                        if (Boolean.TRUE.equals(success)) {
+                            player.setNoDamageTicks(60);
+                        }
+                        restoreTransitionState(player);
+                        updateCombatLock(uuid);
+                    });
                 });
             });
         }, delayTicks);
@@ -2571,6 +2616,7 @@ public class FfaManager {
         }
 
         transitioningPlayers.add(uuid);
+        armTransitionDeadline(uuid);
         transitionStates.putIfAbsent(uuid, new TransitionPlayerState(
                 player.getGameMode(),
                 player.getAllowFlight(),
@@ -2594,10 +2640,12 @@ public class FfaManager {
             return;
         }
 
-        TransitionPlayerState state = transitionStates.remove(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        TransitionPlayerState state = transitionStates.remove(uuid);
+        transitionDeadlines.remove(uuid);
         if (state == null) {
-            transitionTitles.remove(player.getUniqueId());
-            transitioningPlayers.remove(player.getUniqueId());
+            transitionTitles.remove(uuid);
+            transitioningPlayers.remove(uuid);
             TitleUtils.clearTitle(player);
             clearTemporaryVanish(player);
             return;
@@ -2610,10 +2658,82 @@ public class FfaManager {
         player.setFlying(state.allowFlight() && state.flying());
         player.setInvulnerable(state.invulnerable());
         player.setCollidable(state.collidable());
-        transitionTitles.remove(player.getUniqueId());
-        transitioningPlayers.remove(player.getUniqueId());
+        transitionTitles.remove(uuid);
+        transitioningPlayers.remove(uuid);
         TitleUtils.clearTitle(player);
         clearTemporaryVanish(player);
+    }
+
+    private void armTransitionDeadline(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+
+        transitionDeadlines.put(uuid,
+                System.currentTimeMillis() + (getReturnDelayTicks() * 50L) + TRANSITION_TIMEOUT_GRACE_MILLIS);
+    }
+
+    /**
+     * Drops every trace of the transition bookkeeping for a player that is no longer online.
+     * {@link #handleJoin(Player)} and the join listener reset the live player state on reconnect.
+     */
+    private void clearTransitionTracking(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+
+        transitioningPlayers.remove(uuid);
+        transitionStates.remove(uuid);
+        transitionDeadlines.remove(uuid);
+        transitionTitles.remove(uuid);
+    }
+
+    /**
+     * Safety net for the post-match transition state. Players cannot be damaged while they are
+     * flagged as transitioning, so a callback that never fires (failed teleport, unloaded arena,
+     * missing return location) would otherwise leave them unkillable until they relog.
+     */
+    private void expireStuckTransitions() {
+        if (transitioningPlayers.isEmpty() && transitionStates.isEmpty() && transitionDeadlines.isEmpty()) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        for (UUID uuid : new ArrayList<>(transitionDeadlines.keySet())) {
+            Long deadline = transitionDeadlines.get(uuid);
+            if (deadline == null) {
+                continue;
+            }
+
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
+            if (player.isDead() || pendingRespawns.containsKey(uuid)) {
+                // Still on the respawn screen - the countdown only starts once they are back in the world.
+                armTransitionDeadline(uuid);
+                continue;
+            }
+            if (activeMatchIds.containsKey(uuid) || waitingPlayers.contains(uuid) || now < deadline) {
+                continue;
+            }
+
+            transitionDeadlines.remove(uuid);
+            plugin.getLogger().warning("Clearing stuck FFA transition state for " + player.getName()
+                    + "; the return callback never completed after the match ended.");
+            plugin.getSpigotScheduler().runEntity(player, () -> {
+                if (player.isOnline()) {
+                    restoreTransitionState(player);
+                }
+            });
+        }
+
+        for (UUID uuid : new ArrayList<>(transitioningPlayers)) {
+            transitionDeadlines.computeIfAbsent(uuid, key -> now + TRANSITION_TIMEOUT_GRACE_MILLIS);
+        }
+        for (UUID uuid : new ArrayList<>(transitionStates.keySet())) {
+            transitionDeadlines.computeIfAbsent(uuid, key -> now + TRANSITION_TIMEOUT_GRACE_MILLIS);
+        }
     }
 
     private void storeTransitionTitle(UUID uuid, String title, String subtitle) {

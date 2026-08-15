@@ -112,6 +112,8 @@ public class DuelManager {
     }
 
     private static final String TERRAIN_MODE_SETTINGS_PATH = "MAP_SOURCES.RANDOM_BIOMES.TERRAIN_MODE_SETTINGS";
+    /** Extra time on top of the configured return delay before a transition is considered stuck. */
+    private static final long TRANSITION_TIMEOUT_GRACE_MILLIS = 10_000L;
 
     private final UltimateDonutSmp plugin;
     private final DuelWorldManager worldManager;
@@ -128,6 +130,7 @@ public class DuelManager {
     private final Set<UUID> preparingDuelPlayers = new HashSet<>();
     private final Set<UUID> transitioningPlayers = new HashSet<>();
     private final Map<UUID, TransitionPlayerState> transitionStates = new HashMap<>();
+    private final Map<UUID, Long> transitionDeadlines = new HashMap<>();
     private final Map<UUID, TransitionTitleState> transitionTitles = new HashMap<>();
     private final Map<UUID, Integer> borderEscapeTicks = new HashMap<>();
     private final Map<Long, Map<UUID, GeneratedInventorySnapshot>> generatedMatchInventorySnapshots = new HashMap<>();
@@ -188,6 +191,7 @@ public class DuelManager {
         preparingDuelPlayers.clear();
         transitioningPlayers.clear();
         transitionStates.clear();
+        transitionDeadlines.clear();
         transitionTitles.clear();
         borderEscapeTicks.clear();
         generatedMatchInventorySnapshots.clear();
@@ -1108,6 +1112,7 @@ public class DuelManager {
         tickCounter++;
         boolean secondPulse = tickCounter % 20L == 0L;
         if (secondPulse) {
+            expireStuckTransitions();
             expireRequests();
             cleanupQueue();
             initializeCrossServer();
@@ -1312,6 +1317,17 @@ public class DuelManager {
     public boolean consumeRespawn(Player player, org.bukkit.event.player.PlayerRespawnEvent event) {
         PendingRespawnState state = pendingRespawns.remove(player.getUniqueId());
         if (state == null || state.respawnLocation() == null || state.respawnLocation().getWorld() == null) {
+            // The arena is gone (unloaded generated world, missing spawn) so we cannot hold the
+            // player there. Drop the transition instead of leaving them permanently unhittable.
+            if (isTransitioning(player.getUniqueId()) || transitionStates.containsKey(player.getUniqueId())) {
+                plugin.getSpigotScheduler().runEntity(player, () -> {
+                    if (player.isOnline()) {
+                        restoreTransitionState(player);
+                    } else {
+                        clearTransitionTracking(player.getUniqueId());
+                    }
+                });
+            }
             return false;
         }
 
@@ -1732,17 +1748,15 @@ public class DuelManager {
             }
         }
 
-        if (winnerUuid != null) {
-            teleportAfterDelay(winnerUuid, resolveReturnLocation(match, winnerUuid), delayTicks, true);
-        }
-
-        if (loserUuid != null && !"DEATH".equalsIgnoreCase(endReason)) {
-            teleportAfterDelay(loserUuid, resolveReturnLocation(match, loserUuid), delayTicks, true);
-        }
-
-        if (winnerUuid == null && loserUuid == null) {
-            teleportAfterDelay(match.getPlayerOneUuid(), resolveReturnLocation(match, match.getPlayerOneUuid()), delayTicks, true);
-            teleportAfterDelay(match.getPlayerTwoUuid(), resolveReturnLocation(match, match.getPlayerTwoUuid()), delayTicks, true);
+        // Every participant needs a return, not just the ones that ended up as winner/loser -
+        // a participant without a scheduled return would stay flagged as transitioning forever.
+        boolean deathEnd = "DEATH".equalsIgnoreCase(endReason);
+        for (UUID participant : new UUID[]{match.getPlayerOneUuid(), match.getPlayerTwoUuid()}) {
+            if (participant == null || (deathEnd && participant.equals(loserUuid))) {
+                // The loser of a lethal duel is returned from consumeRespawn() instead.
+                continue;
+            }
+            teleportAfterDelay(participant, resolveReturnLocation(match, participant), delayTicks, true);
         }
 
         if (match.usesGeneratedWorld()) {
@@ -1760,30 +1774,59 @@ public class DuelManager {
     }
 
     private void teleportAfterDelay(UUID uuid, Location location, long delayTicks, boolean clearTransition) {
-        if (uuid == null || location == null) {
+        if (uuid == null) {
             return;
         }
 
         Player player = Bukkit.getPlayer(uuid);
-        if (player == null) {
+        if (player == null || location == null) {
+            // No destination or nobody to send there: the transition still has to be lifted,
+            // otherwise the player keeps the duel damage immunity for the rest of the session.
+            if (clearTransition) {
+                if (player == null) {
+                    clearTransitionTracking(uuid);
+                } else {
+                    plugin.getSpigotScheduler().runEntityLater(player, () -> {
+                        if (player.isOnline()) {
+                            restoreTransitionState(player);
+                        } else {
+                            clearTransitionTracking(uuid);
+                        }
+                    }, Math.max(1L, delayTicks));
+                }
+            }
             return;
         }
 
         plugin.getSpigotScheduler().runEntityLater(player, () -> {
-            if (player.isOnline()) {
-                executeInternalTeleportAsync(player, location).thenAccept(success ->
-                        plugin.getSpigotScheduler().runEntity(player, () -> {
-                            if (!player.isOnline()) {
-                                return;
-                            }
-                            if (Boolean.TRUE.equals(success)) {
-                                healPlayer(player);
-                            }
-                            if (clearTransition) {
-                                restoreTransitionState(player);
-                            }
-                        }));
+            if (!player.isOnline()) {
+                if (clearTransition) {
+                    clearTransitionTracking(uuid);
+                }
+                return;
             }
+
+            // whenComplete instead of thenAccept: a failed teleport must still clear the transition.
+            executeInternalTeleportAsync(player, location).whenComplete((success, error) -> {
+                if (error != null) {
+                    plugin.getLogger().warning("Duel return teleport failed for " + player.getName()
+                            + ": " + error.getMessage());
+                }
+                plugin.getSpigotScheduler().runEntity(player, () -> {
+                    if (!player.isOnline()) {
+                        if (clearTransition) {
+                            clearTransitionTracking(uuid);
+                        }
+                        return;
+                    }
+                    if (Boolean.TRUE.equals(success)) {
+                        healPlayer(player);
+                    }
+                    if (clearTransition) {
+                        restoreTransitionState(player);
+                    }
+                });
+            });
         }, delayTicks);
     }
 
@@ -3646,6 +3689,7 @@ public class DuelManager {
         }
 
         transitioningPlayers.add(uuid);
+        armTransitionDeadline(uuid);
         Player player = Bukkit.getPlayer(uuid);
         if (player != null && player.isOnline() && !player.isDead()) {
             applyTransitionState(player);
@@ -3658,6 +3702,7 @@ public class DuelManager {
         }
 
         transitioningPlayers.add(player.getUniqueId());
+        armTransitionDeadline(player.getUniqueId());
         transitionStates.putIfAbsent(player.getUniqueId(), new TransitionPlayerState(
                 player.getGameMode(),
                 player.getAllowFlight(),
@@ -3682,23 +3727,111 @@ public class DuelManager {
             return;
         }
 
-        TransitionPlayerState state = transitionStates.remove(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        TransitionPlayerState state = transitionStates.remove(uuid);
+        transitionDeadlines.remove(uuid);
+        // Without a stored snapshot we fall back to plain survival defaults, so players kept
+        // invulnerable by another feature are left alone instead of losing their god/staff mode.
+        boolean keepExternalProtection = state == null && isProtectedByOtherFeature(uuid);
         if (state == null) {
             state = new TransitionPlayerState(GameMode.SURVIVAL, false, false, false, true);
         }
-        if (player.getGameMode() != state.gameMode()) {
-            player.setGameMode(state.gameMode());
+        if (!keepExternalProtection) {
+            if (player.getGameMode() != state.gameMode()) {
+                player.setGameMode(state.gameMode());
+            }
+            player.setAllowFlight(state.allowFlight());
+            player.setFlying(state.allowFlight() && state.flying());
+            player.setInvulnerable(state.invulnerable());
+            player.setCollidable(state.collidable());
         }
-        player.setAllowFlight(state.allowFlight());
-        player.setFlying(state.allowFlight() && state.flying());
-        player.setInvulnerable(state.invulnerable());
-        player.setCollidable(state.collidable());
         player.resetPlayerTime();
         player.resetPlayerWeather();
-        transitionTitles.remove(player.getUniqueId());
+        transitionTitles.remove(uuid);
         TitleUtils.clearTitle(player);
         clearTemporaryVanish(player);
-        transitioningPlayers.remove(player.getUniqueId());
+        transitioningPlayers.remove(uuid);
+    }
+
+    private boolean isProtectedByOtherFeature(UUID uuid) {
+        if (uuid == null) {
+            return false;
+        }
+
+        return (plugin.getGodModeManager() != null && plugin.getGodModeManager().isInGodMode(uuid))
+                || (plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isInStaffMode(uuid));
+    }
+
+    private void armTransitionDeadline(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+
+        transitionDeadlines.put(uuid,
+                System.currentTimeMillis() + (getReturnDelayTicks() * 50L) + TRANSITION_TIMEOUT_GRACE_MILLIS);
+    }
+
+    /**
+     * Drops every trace of the transition bookkeeping for a player that is no longer online.
+     * {@link #handleJoin(Player)} and the join listener reset the live player state on reconnect.
+     */
+    private void clearTransitionTracking(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+
+        transitioningPlayers.remove(uuid);
+        transitionStates.remove(uuid);
+        transitionDeadlines.remove(uuid);
+        transitionTitles.remove(uuid);
+    }
+
+    /**
+     * Safety net for the post-duel transition state. Players cannot be damaged while they are
+     * flagged as transitioning, so a callback that never fires (failed teleport, unloaded arena,
+     * missing return location) would otherwise leave them unkillable until they relog.
+     */
+    private void expireStuckTransitions() {
+        if (transitioningPlayers.isEmpty() && transitionStates.isEmpty() && transitionDeadlines.isEmpty()) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        for (UUID uuid : new java.util.ArrayList<>(transitionDeadlines.keySet())) {
+            Long deadline = transitionDeadlines.get(uuid);
+            if (deadline == null) {
+                continue;
+            }
+
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
+            if (player.isDead() || pendingRespawns.containsKey(uuid)) {
+                // Still on the respawn screen - the countdown only starts once they are back in the world.
+                armTransitionDeadline(uuid);
+                continue;
+            }
+            if (isInDuel(uuid) || now < deadline) {
+                continue;
+            }
+
+            transitionDeadlines.remove(uuid);
+            plugin.getLogger().warning("Clearing stuck duel transition state for " + player.getName()
+                    + "; the return callback never completed after the duel ended.");
+            plugin.getSpigotScheduler().runEntity(player, () -> {
+                if (player.isOnline()) {
+                    restoreTransitionState(player);
+                }
+            });
+        }
+
+        for (UUID uuid : new java.util.ArrayList<>(transitioningPlayers)) {
+            transitionDeadlines.computeIfAbsent(uuid, key -> now + TRANSITION_TIMEOUT_GRACE_MILLIS);
+        }
+        for (UUID uuid : new java.util.ArrayList<>(transitionStates.keySet())) {
+            transitionDeadlines.computeIfAbsent(uuid, key -> now + TRANSITION_TIMEOUT_GRACE_MILLIS);
+        }
     }
 
     private void recordRecentlyFinishedParticipant(UUID uuid) {
