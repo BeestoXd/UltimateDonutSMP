@@ -368,6 +368,63 @@ class ConfigManagerTest {
         }
     }
 
+    @Test
+    void mergeBundledDefaultsKeepsDeletedKeyAllCratesDeleted() throws Exception {
+        List<String> currentLines = lines(
+                "KEY-ALL:",
+                "  ENABLED: true",
+                "  RANDOM:",
+                "    KEYS:",
+                "      # The numerical value for Common. Available options: Any valid integer",
+                "      common: 90",
+                "      gold: 10"
+        );
+        List<String> bundledLines = lines(
+                "KEY-ALL:",
+                "  ENABLED: true",
+                "  RANDOM:",
+                "    KEYS:",
+                "      # The numerical value for Common. Available options: Any valid integer",
+                "      common: 60",
+                "      # The numerical value for Rare. Available options: Any valid integer",
+                "      rare: 30",
+                "      # The numerical value for Epic. Available options: Any valid integer",
+                "      epic: 10"
+        );
+
+        int changes = mergeBundledDefaults("config.yml", currentLines, bundledLines);
+
+        assertEquals(0, changes);
+        assertFalse(currentLines.contains("      rare: 30"));
+        assertFalse(currentLines.contains("      epic: 10"));
+        assertTrue(currentLines.contains("      common: 90"));
+        assertTrue(currentLines.contains("      gold: 10"));
+    }
+
+    @Test
+    void mergeBundledDefaultsStillAddsMissingKeyAllRandomSection() throws Exception {
+        List<String> currentLines = lines(
+                "KEY-ALL:",
+                "  ENABLED: true"
+        );
+        List<String> bundledLines = lines(
+                "KEY-ALL:",
+                "  ENABLED: true",
+                "  RANDOM:",
+                "    KEYS:",
+                "      common: 60",
+                "      rare: 30",
+                "      epic: 10"
+        );
+
+        int changes = mergeBundledDefaults("config.yml", currentLines, bundledLines);
+
+        assertTrue(changes > 0);
+        assertTrue(currentLines.contains("      common: 60"));
+        assertTrue(currentLines.contains("      rare: 30"));
+        assertTrue(currentLines.contains("      epic: 10"));
+    }
+
     private static int mergeBundledDefaults(
             String resourceName,
             List<String> currentLines,
