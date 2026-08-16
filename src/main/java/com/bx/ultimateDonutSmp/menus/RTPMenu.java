@@ -79,7 +79,7 @@ public class RTPMenu extends BaseMenu {
                 .replace("{min_radius}", minRadius)
                 .replace("{max_radius}", maxRadius)
                 .replace("{required_playtime}", reqPlaytimeStr)
-                .replace("{cooldown}", String.valueOf(plugin.getRtpManager().getWorldCooldownSeconds(destination.worldName())))
+                .replace("{cooldown}", String.valueOf(plugin.getRtpManager().getPlayerCooldownSeconds(player, destination.worldName())))
                 .replace("{status}", destination.enabled() ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ");
     }
 

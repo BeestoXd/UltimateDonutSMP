@@ -43,6 +43,19 @@ SETTINGS:
       "ultimatedonutsmp.rtp.priority.vip+": 20
       "ultimatedonutsmp.rtp.priority.vip": 10
       "ultimatedonutsmp.rtp.priority.high": 5
+  # Per-rank RTP cooldown overrides resolved from permissions
+  RANK-COOLDOWNS:
+    # Enable or disable permission based RTP cooldown overrides
+    ENABLED: true
+    # Explicit mapping from permission node to RTP cooldown in seconds
+    # Players can also be given ultimatedonutsmp.rtp.cooldown.<seconds> directly, for example
+    # ultimatedonutsmp.rtp.cooldown.3 for a 3 second cooldown
+    # The lowest value the player has wins, and 0 removes the cooldown entirely
+    # Players without any of these permissions keep the per-world COOLDOWN below
+    PERMISSIONS:
+      "ultimatedonutsmp.rtp.cooldown.vip++": 3
+      "ultimatedonutsmp.rtp.cooldown.vip+": 10
+      "ultimatedonutsmp.rtp.cooldown.vip": 15
 
 # User feedback and status messages
 MESSAGES:

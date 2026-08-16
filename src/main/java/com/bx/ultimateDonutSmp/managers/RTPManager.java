@@ -21,7 +21,6 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -88,6 +87,7 @@ public class RTPManager {
     private static final String PRELOAD_MAX_TICKS_SETTING = "SETTINGS.PRELOAD-MAX-TICKS";
     private static final String POST_TELEPORT_CHUNK_THROTTLE_SETTING = "SETTINGS.POST-TELEPORT-CHUNK-THROTTLE";
     private static final String POST_TELEPORT_VIEW_DISTANCE_SETTING = "SETTINGS.POST-TELEPORT-VIEW-DISTANCE";
+    private static final String COOLDOWN_PERMISSION_PREFIX = "ultimatedonutsmp.rtp.cooldown.";
     private static final int DEFAULT_GENERATE_FALLBACK_AFTER_SAMPLES = 32;
     private static final int DEFAULT_MAX_GENERATE_FALLBACK_SAMPLES = 32;
 
@@ -123,7 +123,7 @@ public class RTPManager {
             .thenComparingLong(RTPQueueEntry::queueTimeMillis);
 
     private final UltimateDonutSmp plugin;
-    private final Map<UUID, Map<String, Long>> cooldownsByPlayer = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<String, Long>> lastRtpUseByPlayer = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitTask> activeSearchTasks = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitTask> activeResultTasks = new ConcurrentHashMap<>();
     private final Map<UUID, CompletableFuture<Location>> activeDirectSearches = new ConcurrentHashMap<>();
@@ -142,7 +142,7 @@ public class RTPManager {
     public void reload() {
         clearAllSearches();
         clearQueue();
-        cooldownsByPlayer.clear();
+        lastRtpUseByPlayer.clear();
         locationPreCache.clear();
         preCacheInFlight.clear();
         configuredDestinations = loadConfiguredDestinations();
@@ -381,6 +381,63 @@ public class RTPManager {
     public int getWorldCooldownSeconds(String worldName) {
         ConfigurationSection settings = getWorldSettingsSection(worldName);
         return settings == null ? 0 : Math.max(0, settings.getInt("COOLDOWN", 0));
+    }
+
+    public boolean isRankCooldownsEnabled() {
+        if (plugin == null || plugin.getConfigManager() == null || plugin.getConfigManager().getRtp() == null) {
+            return true;
+        }
+        return plugin.getConfigManager().getRtp().getBoolean("SETTINGS.RANK-COOLDOWNS.ENABLED", true);
+    }
+
+    public int getPlayerCooldownSeconds(Player player, String worldName) {
+        int worldCooldown = getWorldCooldownSeconds(worldName);
+        if (player == null || !isRankCooldownsEnabled()) {
+            return worldCooldown;
+        }
+
+        int lowest = Integer.MAX_VALUE;
+
+        ConfigurationSection rtpConfig = plugin == null || plugin.getConfigManager() == null
+                ? null
+                : plugin.getConfigManager().getRtp();
+        ConfigurationSection section = rtpConfig == null
+                ? null
+                : rtpConfig.getConfigurationSection("SETTINGS.RANK-COOLDOWNS.PERMISSIONS");
+        if (section != null) {
+            Map<String, Object> values = section.getValues(true);
+            for (Map.Entry<String, Object> entry : values.entrySet()) {
+                if (entry.getValue() instanceof Number number) {
+                    String permNode = entry.getKey();
+                    if (player.hasPermission(permNode)) {
+                        int val = Math.max(0, number.intValue());
+                        if (val < lowest) {
+                            lowest = val;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (org.bukkit.permissions.PermissionAttachmentInfo pai : player.getEffectivePermissions()) {
+            String perm = pai.getPermission();
+            if (perm == null || !pai.getValue()) {
+                continue;
+            }
+            String normalized = perm.toLowerCase(Locale.ROOT);
+            if (!normalized.startsWith(COOLDOWN_PERMISSION_PREFIX)) {
+                continue;
+            }
+            try {
+                int val = Integer.parseInt(normalized.substring(COOLDOWN_PERMISSION_PREFIX.length()).trim());
+                if (val >= 0 && val < lowest) {
+                    lowest = val;
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return lowest == Integer.MAX_VALUE ? worldCooldown : lowest;
     }
 
     public SearchSettings getWorldSearchSettings(String worldName) {
@@ -865,7 +922,7 @@ public class RTPManager {
             return false;
         }
 
-        long cooldownRemaining = getCooldownRemainingMillis(player.getUniqueId(), worldName);
+        long cooldownRemaining = getCooldownRemainingMillis(player, worldName);
         if (cooldownRemaining > 0L) {
             long remainingSeconds = Math.max(1L, (long) Math.ceil(cooldownRemaining / 1000.0D));
             String message = plugin.getConfigManager().getRtp()
@@ -1138,7 +1195,7 @@ public class RTPManager {
     }
 
     private void finishSearch(Player player, String worldName, Location found) {
-        applyCooldown(player.getUniqueId(), worldName);
+        markRtpUsed(player.getUniqueId(), worldName);
 
         String foundMessage = plugin.getConfigManager().getRtp()
                 .getString("MESSAGES.SAFE-LOCATION-FOUND", "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ᴀᴛ: x:{x} ʏ:{y} ᴢ:{z}")
@@ -2012,37 +2069,44 @@ public class RTPManager {
                 .trim();
     }
 
-    private long getCooldownRemainingMillis(UUID playerId, String worldName) {
-        Map<String, Long> cooldowns = cooldownsByPlayer.get(playerId);
-        if (cooldowns == null) {
+    private long getCooldownRemainingMillis(Player player, String worldName) {
+        if (player == null) {
+            return 0L;
+        }
+
+        UUID playerId = player.getUniqueId();
+        Map<String, Long> lastUses = lastRtpUseByPlayer.get(playerId);
+        if (lastUses == null) {
             return 0L;
         }
 
         String key = normalizeWorldKey(worldName);
-        Long expiresAt = cooldowns.get(key);
-        if (expiresAt == null) {
+        Long lastUsedAt = lastUses.get(key);
+        if (lastUsedAt == null) {
             return 0L;
         }
 
-        long remaining = expiresAt - System.currentTimeMillis();
+        int cooldownSeconds = getPlayerCooldownSeconds(player, worldName);
+        long remaining = cooldownSeconds <= 0
+                ? 0L
+                : (lastUsedAt + (cooldownSeconds * 1000L)) - System.currentTimeMillis();
         if (remaining <= 0L) {
-            cooldowns.remove(key);
-            if (cooldowns.isEmpty()) {
-                cooldownsByPlayer.remove(playerId);
+            lastUses.remove(key);
+            if (lastUses.isEmpty()) {
+                lastRtpUseByPlayer.remove(playerId);
             }
             return 0L;
         }
         return remaining;
     }
 
-    private void applyCooldown(UUID playerId, String worldName) {
-        int cooldownSeconds = getWorldCooldownSeconds(worldName);
-        if (cooldownSeconds <= 0) {
+    private void markRtpUsed(UUID playerId, String worldName) {
+        if (playerId == null) {
             return;
         }
 
-        cooldownsByPlayer.computeIfAbsent(playerId, ignored -> new HashMap<>())
-                .put(normalizeWorldKey(worldName), System.currentTimeMillis() + (cooldownSeconds * 1000L));
+        lastRtpUseByPlayer.computeIfAbsent(playerId, ignored -> new ConcurrentHashMap<>())
+                .put(normalizeWorldKey(worldName), System.currentTimeMillis());
     }
 
     private boolean isQueueFull(UUID playerId) {

@@ -110,6 +110,81 @@ SETTINGS:
 
 ---
 
+## Section: `SETTINGS.RANK-COOLDOWNS`
+
+Per-rank `/rtp` cooldowns resolved from permissions, so different ranks can have different cooldowns
+without a separate config entry per rank.
+
+### 1. Commented Setup Code Example
+
+```yaml
+  # Per-rank RTP cooldown overrides resolved from permissions
+  RANK-COOLDOWNS:
+    # Enable or disable permission based RTP cooldown overrides
+    ENABLED: true
+    # Explicit mapping from permission node to RTP cooldown in seconds
+    # Players can also be given ultimatedonutsmp.rtp.cooldown.<seconds> directly, for example
+    # ultimatedonutsmp.rtp.cooldown.3 for a 3 second cooldown
+    # The lowest value the player has wins, and 0 removes the cooldown entirely
+    # Players without any of these permissions keep the per-world COOLDOWN below
+    PERMISSIONS:
+      "ultimatedonutsmp.rtp.cooldown.vip++": 3
+      "ultimatedonutsmp.rtp.cooldown.vip+": 10
+      "ultimatedonutsmp.rtp.cooldown.vip": 15
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SETTINGS.RANK-COOLDOWNS.ENABLED` | `bool` | `true`, `false` | `true` | Master toggle. When `false` every player uses the per-world `WORLD-SETTINGS.<world>.COOLDOWN` value and all cooldown permissions are ignored. |
+| `SETTINGS.RANK-COOLDOWNS.PERMISSIONS` | `section` | Permission node to seconds | See example | Maps an arbitrary permission node to an RTP cooldown in seconds. Use this to reuse rank nodes you already have instead of adding numeric nodes. |
+
+### 3. Resolution Order
+
+1. Every entry under `PERMISSIONS` the player holds is collected.
+2. Every `ultimatedonutsmp.rtp.cooldown.<seconds>` node the player holds is collected. A non-numeric or
+   negative suffix is ignored.
+3. The **lowest** collected value becomes the player cooldown, so stacked ranks always give the player
+   the fastest cooldown they are entitled to.
+4. If the player holds none of these nodes, the per-world `WORLD-SETTINGS.<world>.COOLDOWN` value applies.
+
+A permission value fully replaces the per-world value, in both directions. `ultimatedonutsmp.rtp.cooldown.60`
+gives a 60 second cooldown even where the world is configured at 30, and `ultimatedonutsmp.rtp.cooldown.0`
+removes the cooldown entirely.
+
+The cooldown is evaluated on every `/rtp` attempt rather than frozen when the previous teleport finished,
+so a rank change applies immediately, including to a cooldown already counting down.
+
+### 4. Practical Setup Example
+
+Give the default rank a 60 second cooldown, VIP 15 seconds and staff no cooldown at all:
+
+```yaml
+SETTINGS:
+  RANK-COOLDOWNS:
+    ENABLED: true
+    PERMISSIONS:
+      "group.vip": 15
+      "group.staff": 0
+
+WORLD-SETTINGS:
+  world:
+    COOLDOWN: 60
+```
+
+Or skip the config entirely and drive it from LuckPerms alone:
+
+```
+/lp group default permission set ultimatedonutsmp.rtp.cooldown.60
+/lp group vip permission set ultimatedonutsmp.rtp.cooldown.15
+/lp group staff permission set ultimatedonutsmp.rtp.cooldown.0
+```
+
+The `{cooldown}` placeholder in the RTP menu shows the viewing player their own resolved cooldown.
+
+---
+
 ## Section: `MESSAGES`
 
 ### 1. Commented Setup Code Example
