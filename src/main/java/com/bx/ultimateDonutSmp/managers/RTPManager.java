@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -90,6 +91,12 @@ public class RTPManager {
     private static final String COOLDOWN_PERMISSION_PREFIX = "ultimatedonutsmp.rtp.cooldown.";
     private static final int DEFAULT_GENERATE_FALLBACK_AFTER_SAMPLES = 32;
     private static final int DEFAULT_MAX_GENERATE_FALLBACK_SAMPLES = 32;
+    private static final String LOCATION_CACHE_ENABLED_SETTING = "SETTINGS.LOCATION-CACHE.ENABLED";
+    private static final String LOCATION_CACHE_SIZE_SETTING = "SETTINGS.LOCATION-CACHE.SIZE";
+    private static final String LOCATION_CACHE_MAX_AGE_SETTING = "SETTINGS.LOCATION-CACHE.MAX-AGE-SECONDS";
+    private static final int DEFAULT_LOCATION_CACHE_SIZE = 3;
+    private static final int MAX_LOCATION_CACHE_SIZE = 16;
+    private static final int DEFAULT_LOCATION_CACHE_MAX_AGE_SECONDS = 600;
 
     private static final class SearchProgress {
         private final String worldName;
@@ -111,6 +118,21 @@ public class RTPManager {
     private record LocationAttempt(Location location, boolean countedAttempt) {
     }
 
+    private record CachedLocation(Location location, long cachedAtMillis) {
+    }
+
+    private static final class DirectSearchState {
+        private final SearchSettings settings;
+        private final AtomicInteger attemptsUsed = new AtomicInteger();
+        private final AtomicInteger chunkSamplesUsed = new AtomicInteger();
+        private final AtomicInteger generateFallbackSamplesUsed = new AtomicInteger();
+        private final AtomicInteger activeChains = new AtomicInteger();
+
+        private DirectSearchState(SearchSettings settings) {
+            this.settings = settings;
+        }
+    }
+
     public record RTPQueueEntry(
             UUID playerId,
             String worldName,
@@ -128,7 +150,7 @@ public class RTPManager {
     private final Map<UUID, BukkitTask> activeResultTasks = new ConcurrentHashMap<>();
     private final Map<UUID, CompletableFuture<Location>> activeDirectSearches = new ConcurrentHashMap<>();
     private final Map<UUID, SearchProgress> activeSearches = new ConcurrentHashMap<>();
-    private final Map<String, java.util.Queue<Location>> locationPreCache = new ConcurrentHashMap<>();
+    private final Map<String, java.util.Queue<CachedLocation>> locationPreCache = new ConcurrentHashMap<>();
     private final Set<String> preCacheInFlight = ConcurrentHashMap.newKeySet();
     private final List<RTPQueueEntry> waitingQueue = java.util.Collections.synchronizedList(new ArrayList<>());
     private List<RTPDestination> configuredDestinations = List.of();
@@ -286,11 +308,18 @@ public class RTPManager {
     }
 
     public boolean isPreCacheEnabled() {
-        return false;
+        if (plugin == null || plugin.getConfigManager() == null || plugin.getConfigManager().getRtp() == null) {
+            return false;
+        }
+        return plugin.getConfigManager().getRtp().getBoolean(LOCATION_CACHE_ENABLED_SETTING, true);
     }
 
     public int getPreCacheSize() {
-        return 0;
+        if (!isPreCacheEnabled()) {
+            return 0;
+        }
+        int size = plugin.getConfigManager().getRtp().getInt(LOCATION_CACHE_SIZE_SETTING, DEFAULT_LOCATION_CACHE_SIZE);
+        return Math.min(MAX_LOCATION_CACHE_SIZE, Math.max(0, size));
     }
 
     public int getSearchAttemptsPerTick() {
@@ -301,19 +330,118 @@ public class RTPManager {
     }
 
     public void refillPreCacheAllWorlds() {
-        // Disabled background pre-caching loop to avoid disk region scanning
+        if (!isPreCacheReady() || getPreCacheSize() <= 0) {
+            return;
+        }
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            return;
+        }
+
+        Set<String> worldNames = new LinkedHashSet<>();
+        for (RTPDestination destination : configuredDestinations) {
+            if (destination.enabled()) {
+                worldNames.add(destination.worldName());
+            }
+        }
+        for (String worldName : worldNames) {
+            refillPreCache(worldName);
+        }
     }
 
     public void refillPreCache(String worldName) {
-        // Disabled background pre-caching loop to avoid disk region scanning
+        if (!isPreCacheReady() || worldName == null || worldName.isBlank()) {
+            return;
+        }
+        int cacheSize = getPreCacheSize();
+        if (cacheSize <= 0) {
+            return;
+        }
+
+        String worldKey = normalizeWorldKey(worldName);
+        java.util.Queue<CachedLocation> cached = locationPreCache
+                .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>());
+        cached.removeIf(entry -> !isCachedLocationUsable(entry));
+        if (cached.size() >= cacheSize) {
+            return;
+        }
+
+        if (isDeniedWorld(worldName) || isConfiguredDestinationDisabled(worldName)) {
+            return;
+        }
+        SearchSettings settings = getWorldSearchSettings(worldName);
+        if (settings == null || getLoadedWorld(worldName) == null) {
+            return;
+        }
+        if (!preCacheInFlight.add(worldKey)) {
+            return;
+        }
+
+        findSafeLocationAsync(settings).whenComplete((location, throwable) -> {
+            preCacheInFlight.remove(worldKey);
+            if (throwable != null || location == null) {
+                return;
+            }
+            java.util.Queue<CachedLocation> target = locationPreCache
+                    .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>());
+            if (target.size() < getPreCacheSize()) {
+                target.add(new CachedLocation(location, System.currentTimeMillis()));
+            }
+        });
+    }
+
+    private boolean isPreCacheReady() {
+        return plugin != null
+                && plugin.getConfigManager() != null
+                && plugin.getConfigManager().getRtp() != null
+                && plugin.getFeatureManager() != null
+                && plugin.getSpigotScheduler() != null;
     }
 
     private Location pollPreCachedLocation(String worldName) {
+        if (worldName == null || worldName.isBlank() || getPreCacheSize() <= 0) {
+            return null;
+        }
+        java.util.Queue<CachedLocation> cached = locationPreCache.get(normalizeWorldKey(worldName));
+        if (cached == null) {
+            return null;
+        }
+
+        CachedLocation entry;
+        while ((entry = cached.poll()) != null) {
+            if (isCachedLocationUsable(entry)) {
+                return entry.location().clone();
+            }
+        }
         return null;
     }
 
+    private boolean isCachedLocationUsable(CachedLocation entry) {
+        if (entry == null) {
+            return false;
+        }
+        long maxAgeMillis = getPreCacheMaxAgeMillis();
+        if (maxAgeMillis > 0L && System.currentTimeMillis() - entry.cachedAtMillis() > maxAgeMillis) {
+            return false;
+        }
+        return isPreCachedLocationValid(entry.location());
+    }
+
+    private long getPreCacheMaxAgeMillis() {
+        int seconds = plugin.getConfigManager().getRtp()
+                .getInt(LOCATION_CACHE_MAX_AGE_SETTING, DEFAULT_LOCATION_CACHE_MAX_AGE_SECONDS);
+        return seconds <= 0 ? 0L : seconds * 1000L;
+    }
+
     private boolean isPreCachedLocationValid(Location loc) {
-        return false;
+        if (loc == null || loc.getWorld() == null) {
+            return false;
+        }
+        World world = getLoadedWorld(loc.getWorld().getName());
+        if (world != loc.getWorld()) {
+            return false;
+        }
+        SearchSettings settings = getWorldSearchSettings(world.getName());
+        return settings == null || isWithinRadius(settings, loc, true);
     }
 
     public boolean isEnabled() {
@@ -657,7 +785,7 @@ public class RTPManager {
             return CompletableFuture.completedFuture(null);
         }
         future.whenComplete((location, throwable) -> activeDirectSearches.remove(playerId, future));
-        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, 0, future, settings.attemptIntervalTicks());
+        startDirectSearch(settings, future);
         return future;
     }
 
@@ -666,7 +794,7 @@ public class RTPManager {
             return CompletableFuture.completedFuture(null);
         }
         CompletableFuture<Location> future = new CompletableFuture<>();
-        scheduleFindSafeLocationAsyncHelper(settings, 0, 0, 0, future, settings.attemptIntervalTicks());
+        startDirectSearch(settings, future);
         return future;
     }
 
@@ -677,189 +805,130 @@ public class RTPManager {
         return settings != null && settings.worldName() != null && !settings.worldName().isBlank();
     }
 
-    private void scheduleFindSafeLocationAsyncHelper(
-            SearchSettings settings,
-            int attemptsUsed,
-            int chunkSamplesUsed,
-            int generateFallbackSamplesUsed,
+    private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future) {
+        DirectSearchState state = new DirectSearchState(settings);
+        int chains = Math.max(1, Math.min(getSearchAttemptsPerTick(), settings.maxChunkSamples()));
+        state.activeChains.set(chains);
+        for (int chain = 0; chain < chains; chain++) {
+            scheduleDirectSearchStep(state, future, settings.attemptIntervalTicks());
+        }
+    }
+
+    private void scheduleDirectSearchStep(
+            DirectSearchState state,
             CompletableFuture<Location> future,
             long delayTicks
     ) {
         if (future.isDone()) {
+            finishDirectSearchChain(state, future);
             return;
         }
         plugin.getSpigotScheduler().runGlobalLater(
-                () -> findSafeLocationAsyncHelper(
-                        settings,
-                        attemptsUsed,
-                        chunkSamplesUsed,
-                        generateFallbackSamplesUsed,
-                        future
-                ),
+                () -> runDirectSearchStep(state, future),
                 Math.max(0L, delayTicks)
         );
     }
 
-    private void retryFindSafeLocationAsyncHelper(
-            SearchSettings settings,
-            int attemptsUsed,
-            int chunkSamplesUsed,
-            int generateFallbackSamplesUsed,
-            CompletableFuture<Location> future
-    ) {
-        scheduleFindSafeLocationAsyncHelper(
-                settings,
-                attemptsUsed,
-                chunkSamplesUsed,
-                generateFallbackSamplesUsed,
-                future,
-                settings.attemptIntervalTicks()
-        );
+    private void finishDirectSearchChain(DirectSearchState state, CompletableFuture<Location> future) {
+        if (state.activeChains.decrementAndGet() > 0) {
+            return;
+        }
+        if (future.complete(null)) {
+            logSearchFailure(
+                    state.settings,
+                    state.attemptsUsed.get(),
+                    state.chunkSamplesUsed.get(),
+                    state.generateFallbackSamplesUsed.get()
+            );
+        }
     }
 
-    private void findSafeLocationAsyncHelper(
-            SearchSettings settings,
-            int attemptsUsed,
-            int chunkSamplesUsed,
-            int generateFallbackSamplesUsed,
-            CompletableFuture<Location> future
-    ) {
+    private void runDirectSearchStep(DirectSearchState state, CompletableFuture<Location> future) {
         if (future.isDone()) {
+            finishDirectSearchChain(state, future);
             return;
         }
-        if (!hasAttemptBudget(attemptsUsed, settings)
-                || !hasChunkSampleBudget(chunkSamplesUsed, settings)) {
-            completeDirectSearchFailure(settings, attemptsUsed, chunkSamplesUsed, generateFallbackSamplesUsed, future);
+
+        SearchSettings settings = state.settings;
+        if (!hasAttemptBudget(state.attemptsUsed.get(), settings)
+                || !hasChunkSampleBudget(state.chunkSamplesUsed.get(), settings)) {
+            finishDirectSearchChain(state, future);
             return;
         }
-        int nextChunkSamplesUsed = chunkSamplesUsed + 1;
-        boolean generateFallback = shouldUseGenerateFallback(chunkSamplesUsed, generateFallbackSamplesUsed);
-        boolean useLoadedFallback = !generateFallback && shouldUseLoadedChunkFallback(chunkSamplesUsed);
-        if (useLoadedFallback) {
-            World world = resolveWorld(settings.worldName());
-            if (world == null) {
-                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, generateFallbackSamplesUsed, future);
-                return;
-            }
+
+        World world = resolveWorld(settings.worldName());
+        if (world == null) {
+            finishDirectSearchChain(state, future);
+            return;
+        }
+
+        int chunkSamplesUsed = state.chunkSamplesUsed.getAndIncrement();
+        boolean generateFallback = shouldUseGenerateFallback(chunkSamplesUsed, state.generateFallbackSamplesUsed.get());
+        if (!generateFallback && shouldUseLoadedChunkFallback(chunkSamplesUsed)) {
             plugin.getSpigotScheduler().runRegion(world, settings.centerX() >> 4, settings.centerZ() >> 4, () -> {
+                Location found = null;
                 try {
                     LocationAttempt attempt = tryLoadedChunkLocationAttempt(settings);
-                    int nextAttemptsUsed = attemptsUsed + (attempt.countedAttempt() ? 1 : 0);
-                    if (attempt.location() != null) {
-                        future.complete(attempt.location());
-                    } else {
-                        retryFindSafeLocationAsyncHelper(
-                                settings,
-                                nextAttemptsUsed,
-                                nextChunkSamplesUsed,
-                                generateFallbackSamplesUsed,
-                                future
-                        );
+                    if (attempt.countedAttempt()) {
+                        state.attemptsUsed.incrementAndGet();
                     }
+                    found = attempt.location();
                 } catch (RuntimeException exception) {
-                    retryFindSafeLocationAsyncHelper(
-                            settings,
-                            attemptsUsed + 1,
-                            nextChunkSamplesUsed,
-                            generateFallbackSamplesUsed,
-                            future
-                    );
+                    state.attemptsUsed.incrementAndGet();
                 }
+                continueDirectSearch(state, future, found);
             });
-        } else {
-            World world = resolveWorld(settings.worldName());
-            if (world == null) {
-                completeDirectSearchFailure(settings, attemptsUsed, nextChunkSamplesUsed, generateFallbackSamplesUsed, future);
-                return;
-            }
-            int minRadius = Math.max(0, settings.minRadius());
-            int maxRadius = Math.max(minRadius, settings.maxRadius());
-            double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
-            double distance = minRadius;
-            if (maxRadius > minRadius) {
-                distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
-            }
-            int x = settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
-            int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
-            int chunkX = x >> 4;
-            int chunkZ = z >> 4;
-            boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
-            boolean generateForSample = generateChunks || generateFallback;
-            int nextGenerateFallbackSamplesUsed = generateFallback
-                    ? generateFallbackSamplesUsed + 1
-                    : generateFallbackSamplesUsed;
-            if (!generateForSample && !plugin.getConfigManager().getRtp().getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
-                retryFindSafeLocationAsyncHelper(
-                        settings,
-                        attemptsUsed,
-                        nextChunkSamplesUsed,
-                        nextGenerateFallbackSamplesUsed,
-                        future
-                );
-                return;
-            }
-            getChunkAtAsync(world, chunkX, chunkZ, generateForSample).thenAccept(chunk -> {
+            return;
+        }
+
+        if (generateFallback) {
+            state.generateFallbackSamplesUsed.incrementAndGet();
+        }
+
+        FileConfiguration rtp = plugin.getConfigManager().getRtp();
+        boolean generateForSample = rtp.getBoolean(GENERATE_CHUNKS_SETTING, false) || generateFallback;
+        if (!generateForSample && !rtp.getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+            continueDirectSearch(state, future, null);
+            return;
+        }
+
+        int[] sample = nextRandomSample(settings);
+        int x = sample[0];
+        int z = sample[1];
+        int chunkX = x >> 4;
+        int chunkZ = z >> 4;
+
+        getChunkAtAsync(world, chunkX, chunkZ, generateForSample).thenAccept(chunk ->
                 plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                    Location found = null;
                     try {
-                        if (chunk == null) {
-                            retryFindSafeLocationAsyncHelper(
-                                    settings,
-                                    attemptsUsed,
-                                    nextChunkSamplesUsed,
-                                    nextGenerateFallbackSamplesUsed,
-                                    future
-                            );
-                            return;
-                        }
-                        Location found = resolveSafeLocationInChunk(world, settings, x, z, chunkX, chunkZ);
-                        int nextAttemptsUsed = attemptsUsed + 1;
-                        if (found != null) {
-                            future.complete(found);
-                        } else {
-                            retryFindSafeLocationAsyncHelper(
-                                    settings,
-                                    nextAttemptsUsed,
-                                    nextChunkSamplesUsed,
-                                    nextGenerateFallbackSamplesUsed,
-                                    future
-                            );
+                        if (chunk != null) {
+                            found = resolveSafeLocationInChunk(world, settings, x, z, chunkX, chunkZ);
+                            state.attemptsUsed.incrementAndGet();
                         }
                     } catch (RuntimeException exception) {
-                        retryFindSafeLocationAsyncHelper(
-                                settings,
-                                attemptsUsed + 1,
-                                nextChunkSamplesUsed,
-                                nextGenerateFallbackSamplesUsed,
-                                future
-                        );
+                        state.attemptsUsed.incrementAndGet();
                     }
-                });
-            }).exceptionally(throwable -> {
-                plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
-                    int nextAttemptsUsed = generateForSample ? attemptsUsed + 1 : attemptsUsed;
-                    retryFindSafeLocationAsyncHelper(
-                            settings,
-                            nextAttemptsUsed,
-                            nextChunkSamplesUsed,
-                            nextGenerateFallbackSamplesUsed,
-                            future
-                    );
-                });
-                return null;
+                    continueDirectSearch(state, future, found);
+                })
+        ).exceptionally(throwable -> {
+            plugin.getSpigotScheduler().runRegion(world, chunkX, chunkZ, () -> {
+                if (generateForSample) {
+                    state.attemptsUsed.incrementAndGet();
+                }
+                continueDirectSearch(state, future, null);
             });
-        }
+            return null;
+        });
     }
 
-    private void completeDirectSearchFailure(
-            SearchSettings settings,
-            int attemptsUsed,
-            int chunkSamplesUsed,
-            int generateFallbackSamplesUsed,
-            CompletableFuture<Location> future
-    ) {
-        if (future.complete(null)) {
-            logSearchFailure(settings, attemptsUsed, chunkSamplesUsed, generateFallbackSamplesUsed);
+    private void continueDirectSearch(DirectSearchState state, CompletableFuture<Location> future, Location found) {
+        if (found != null) {
+            future.complete(found);
+            finishDirectSearchChain(state, future);
+            return;
         }
+        scheduleDirectSearchStep(state, future, state.settings.attemptIntervalTicks());
     }
 
     private boolean queueTeleport(Player player, String worldName) {
@@ -1016,7 +1085,7 @@ public class RTPManager {
             return;
         }
 
-        int maxConcurrent = 4;
+        int maxConcurrent = Math.max(1, getSearchAttemptsPerTick());
         while (progress.activeAttemptsInFlight < maxConcurrent && hasSearchBudget(progress)) {
             beginAsyncLocationAttempt(playerId, progress);
         }
@@ -1042,15 +1111,9 @@ public class RTPManager {
             });
             return;
         }
-        int minRadius = Math.max(0, progress.settings.minRadius());
-        int maxRadius = Math.max(minRadius, progress.settings.maxRadius());
-        double angle = ThreadLocalRandom.current().nextDouble(0, 2 * Math.PI);
-        double distance = minRadius;
-        if (maxRadius > minRadius) {
-            distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
-        }
-        int x = progress.settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
-        int z = progress.settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
+        int[] sample = nextRandomSample(progress.settings);
+        int x = sample[0];
+        int z = sample[1];
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
         progress.chunkSamplesUsed++;
@@ -1311,6 +1374,13 @@ public class RTPManager {
             return new LocationAttempt(null, false);
         }
 
+        int[] sample = nextRandomSample(settings);
+        int x = sample[0];
+        int z = sample[1];
+        return tryResolveSafeLocation(world, x, z, x >> 4, z >> 4);
+    }
+
+    private int[] nextRandomSample(SearchSettings settings) {
         int minRadius = Math.max(0, settings.minRadius());
         int maxRadius = Math.max(minRadius, settings.maxRadius());
 
@@ -1320,9 +1390,10 @@ public class RTPManager {
             distance += ThreadLocalRandom.current().nextDouble(0, maxRadius - minRadius);
         }
 
-        int x = settings.centerX() + (int) Math.round(Math.cos(angle) * distance);
-        int z = settings.centerZ() + (int) Math.round(Math.sin(angle) * distance);
-        return tryResolveSafeLocation(world, x, z, x >> 4, z >> 4);
+        return new int[] {
+                settings.centerX() + (int) Math.round(Math.cos(angle) * distance),
+                settings.centerZ() + (int) Math.round(Math.sin(angle) * distance)
+        };
     }
 
     private LocationAttempt tryResolveSafeLocation(

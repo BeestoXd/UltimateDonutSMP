@@ -277,6 +277,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ShardTask.start(this); // passive "everywhere" shards (per minute)
         ShardCuboidTask.start(this); // spawn cuboid countdown + reward (per second)
         RTPZoneTask.start(this);
+        RTPCacheTask.start(this);
         ClearLagTask.start(this);
         KeyAllTask.start(this);
         AutoSaveTask.start(this);

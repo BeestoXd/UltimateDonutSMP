@@ -61,6 +61,14 @@ SETTINGS:
   FALLBACK-TO-LOADED-CHUNKS: true
   # Chunk samples to try before loaded chunk fallback starts
   LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32
+  # Safe locations found ahead of time in the background so RTP can teleport without searching
+  LOCATION-CACHE:
+    # Enable or disable the background safe location cache
+    ENABLED: true
+    # How many ready locations are kept per RTP world. 0 disables the cache
+    SIZE: 3
+    # Seconds a cached location stays usable before it is thrown away. 0 keeps it until the next reload
+    MAX-AGE-SECONDS: 600
 
 # User feedback and status messages
 ```
@@ -73,7 +81,7 @@ SETTINGS:
 | `SETTINGS.MAX-ATTEMPTS` | `int` | Any valid integer number | `'64'` | Configures the technical `MAX-ATTEMPTS` parameter for `SETTINGS.MAX-ATTEMPTS` in `rtp.yml`. |
 | `SETTINGS.MAX-CHUNK-SAMPLES` | `int` | Any valid integer number | `'128'` | Configures the technical `MAX-CHUNK-SAMPLES` parameter for `SETTINGS.MAX-CHUNK-SAMPLES` in `rtp.yml`. |
 | `SETTINGS.ATTEMPT-INTERVAL-TICKS` | `int` | Any valid integer number | `'1'` | Configures the technical `ATTEMPT-INTERVAL-TICKS` parameter for `SETTINGS.ATTEMPT-INTERVAL-TICKS` in `rtp.yml`. |
-| `SETTINGS.SEARCH-ATTEMPTS-PER-TICK` | `int` | Any valid integer number | `'4'` | Configures the technical `SEARCH-ATTEMPTS-PER-TICK` parameter for `SETTINGS.SEARCH-ATTEMPTS-PER-TICK` in `rtp.yml`. |
+| `SETTINGS.SEARCH-ATTEMPTS-PER-TICK` | `int` | Any valid integer number | `'4'` | How many candidate locations are checked side by side instead of one after another. Higher values find a spot sooner at the cost of more chunk work per search. |
 | `SETTINGS.GENERATE-CHUNKS` | `bool` | `true`, `false` | `false` | Configures the technical `GENERATE-CHUNKS` parameter for `SETTINGS.GENERATE-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.GENERATE-FALLBACK-CHUNKS` | `bool` | `true`, `false` | `true` | Configures the technical `GENERATE-FALLBACK-CHUNKS` parameter for `SETTINGS.GENERATE-FALLBACK-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.GENERATE-FALLBACK-AFTER-SAMPLES` | `int` | Any valid integer number | `'8'` | Configures the technical `GENERATE-FALLBACK-AFTER-SAMPLES` parameter for `SETTINGS.GENERATE-FALLBACK-AFTER-SAMPLES` in `rtp.yml`. |
@@ -81,6 +89,7 @@ SETTINGS:
 | `SETTINGS.LOAD-GENERATED-CHUNKS` | `bool` | `true`, `false` | `false` | Configures the technical `LOAD-GENERATED-CHUNKS` parameter for `SETTINGS.LOAD-GENERATED-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.FALLBACK-TO-LOADED-CHUNKS` | `bool` | `true`, `false` | `true` | Configures the technical `FALLBACK-TO-LOADED-CHUNKS` parameter for `SETTINGS.FALLBACK-TO-LOADED-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` | `int` | Any valid integer number | `'32'` | Configures the technical `LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` parameter for `SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` in `rtp.yml`. |
+| `SETTINGS.LOCATION-CACHE` | `section` | See `SETTINGS.LOCATION-CACHE` below | See example | Keeps safe locations ready in the background so `/rtp` can teleport without running a search first. |
 
 ### 3. Practical Setup Example
 
@@ -106,6 +115,60 @@ SETTINGS:
   MAX-GENERATE-FALLBACK-SAMPLES: 32
   # Allow loading already-generated chunks from disk if chunk generation is disabled
   LOAD-GEN
+```
+
+---
+
+## Section: `SETTINGS.LOCATION-CACHE`
+
+Finding a safe spot is the slow part of `/rtp`, and on a large overworld it can keep a player waiting
+for the best part of a minute. This cache does that work in the background while people are playing,
+so the command usually has a verified location waiting for it and teleports straight away.
+
+The cache is filled by the same search `/rtp` runs, one world at a time, and only while at least one
+player is online. Each entry is re-checked against the current world and radius before it is handed
+out, and a search only starts when a world is short of ready locations. When the cache is empty the
+command falls back to searching live, exactly as before.
+
+### 1. Commented Setup Code Example
+
+```yaml
+  # Safe locations found ahead of time in the background so RTP can teleport without searching
+  LOCATION-CACHE:
+    # Enable or disable the background safe location cache
+    ENABLED: true
+    # How many ready locations are kept per RTP world. 0 disables the cache
+    SIZE: 3
+    # Seconds a cached location stays usable before it is thrown away. 0 keeps it until the next reload
+    MAX-AGE-SECONDS: 600
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SETTINGS.LOCATION-CACHE.ENABLED` | `bool` | `true`, `false` | `true` | Master toggle. When `false` every `/rtp` searches for a location the moment the player runs it. |
+| `SETTINGS.LOCATION-CACHE.SIZE` | `int` | `0` to `16` | `'3'` | Ready locations kept per RTP world. Raise it on a busy server so back to back teleports stay instant, lower it to spend less time searching in the background. `0` turns the cache off. |
+| `SETTINGS.LOCATION-CACHE.MAX-AGE-SECONDS` | `int` | Any valid integer number | `'600'` | How long a cached location may sit unused before it is discarded and searched again. `0` keeps entries until the next reload. |
+
+### 3. Practical Setup Example
+
+Keep more spots ready on a busy server and refresh them more often:
+
+```yaml
+SETTINGS:
+  LOCATION-CACHE:
+    ENABLED: true
+    SIZE: 8
+    MAX-AGE-SECONDS: 300
+```
+
+Turn the cache off entirely and go back to searching on demand:
+
+```yaml
+SETTINGS:
+  LOCATION-CACHE:
+    ENABLED: false
 ```
 
 ---
