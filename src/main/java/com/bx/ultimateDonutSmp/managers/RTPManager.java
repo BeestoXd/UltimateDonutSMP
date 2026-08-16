@@ -97,6 +97,9 @@ public class RTPManager {
     private static final int DEFAULT_LOCATION_CACHE_SIZE = 3;
     private static final int MAX_LOCATION_CACHE_SIZE = 16;
     private static final int DEFAULT_LOCATION_CACHE_MAX_AGE_SECONDS = 600;
+    private static final int PRE_CACHE_PARALLEL_ATTEMPTS = 4;
+    private static final int MAX_PRE_CACHE_SEARCHES_PER_WORLD = 2;
+    private static final long PRE_CACHE_SEARCH_TIMEOUT_MILLIS = 30_000L;
 
     private static final class SearchProgress {
         private final String worldName;
@@ -151,7 +154,7 @@ public class RTPManager {
     private final Map<UUID, CompletableFuture<Location>> activeDirectSearches = new ConcurrentHashMap<>();
     private final Map<UUID, SearchProgress> activeSearches = new ConcurrentHashMap<>();
     private final Map<String, java.util.Queue<CachedLocation>> locationPreCache = new ConcurrentHashMap<>();
-    private final Set<String> preCacheInFlight = ConcurrentHashMap.newKeySet();
+    private final Map<String, java.util.Queue<Long>> preCacheInFlight = new ConcurrentHashMap<>();
     private final List<RTPQueueEntry> waitingQueue = java.util.Collections.synchronizedList(new ArrayList<>());
     private List<RTPDestination> configuredDestinations = List.of();
     private List<RTPDestination> menuDestinations = List.of();
@@ -333,9 +336,6 @@ public class RTPManager {
         if (!isPreCacheReady() || getPreCacheSize() <= 0) {
             return;
         }
-        if (Bukkit.getOnlinePlayers().isEmpty()) {
-            return;
-        }
 
         Set<String> worldNames = new LinkedHashSet<>();
         for (RTPDestination destination : configuredDestinations) {
@@ -361,7 +361,14 @@ public class RTPManager {
         java.util.Queue<CachedLocation> cached = locationPreCache
                 .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>());
         cached.removeIf(entry -> !isCachedLocationUsable(entry));
-        if (cached.size() >= cacheSize) {
+
+        int searches = preCacheSearchesToStart(
+                cacheSize,
+                cached.size(),
+                countPreCacheSearchesInFlight(worldKey),
+                MAX_PRE_CACHE_SEARCHES_PER_WORLD
+        );
+        if (searches <= 0) {
             return;
         }
 
@@ -372,21 +379,82 @@ public class RTPManager {
         if (settings == null || getLoadedWorld(worldName) == null) {
             return;
         }
-        if (!preCacheInFlight.add(worldKey)) {
-            return;
-        }
 
-        findSafeLocationAsync(settings).whenComplete((location, throwable) -> {
-            preCacheInFlight.remove(worldKey);
-            if (throwable != null || location == null) {
-                return;
-            }
-            java.util.Queue<CachedLocation> target = locationPreCache
-                    .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>());
-            if (target.size() < getPreCacheSize()) {
-                target.add(new CachedLocation(location, System.currentTimeMillis()));
-            }
-        });
+        for (int started = 0; started < searches; started++) {
+            startPreCacheSearch(worldKey, settings);
+        }
+    }
+
+    /**
+     * How many background searches a world should start right now, so the cache walks up to its
+     * configured size instead of gaining at most one location per refill, while never running more
+     * than {@code maxConcurrentSearches} of them at a time.
+     */
+    static int preCacheSearchesToStart(
+            int cacheSize,
+            int cachedLocations,
+            int searchesInFlight,
+            int maxConcurrentSearches
+    ) {
+        int missing = cacheSize - cachedLocations - searchesInFlight;
+        int free = maxConcurrentSearches - searchesInFlight;
+        return Math.max(0, Math.min(missing, free));
+    }
+
+    private void startPreCacheSearch(String worldKey, SearchSettings settings) {
+        long startedAt = System.currentTimeMillis();
+        preCacheInFlight
+                .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>())
+                .add(startedAt);
+
+        try {
+            findSafeLocationAsync(settings, getPreCacheParallelAttempts()).whenComplete((location, throwable) -> {
+                releasePreCacheSearch(worldKey, startedAt);
+                if (throwable != null || location == null) {
+                    return;
+                }
+                java.util.Queue<CachedLocation> target = locationPreCache
+                        .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>());
+                if (target.size() < getPreCacheSize()) {
+                    target.add(new CachedLocation(location, System.currentTimeMillis()));
+                }
+            });
+        } catch (RuntimeException exception) {
+            releasePreCacheSearch(worldKey, startedAt);
+            throw exception;
+        }
+    }
+
+    /**
+     * Counts the background searches still running for a world, dropping any that outlived
+     * {@link #PRE_CACHE_SEARCH_TIMEOUT_MILLIS}. A search whose callback never arrives - a scheduled
+     * step the server dropped, say - would otherwise hold its slot for the rest of the uptime and
+     * leave that world without a single cached location.
+     */
+    private int countPreCacheSearchesInFlight(String worldKey) {
+        java.util.Queue<Long> running = preCacheInFlight.get(worldKey);
+        if (running == null) {
+            return 0;
+        }
+        long cutoff = System.currentTimeMillis() - PRE_CACHE_SEARCH_TIMEOUT_MILLIS;
+        running.removeIf(startedAt -> startedAt == null || startedAt < cutoff);
+        return running.size();
+    }
+
+    private void releasePreCacheSearch(String worldKey, long startedAt) {
+        java.util.Queue<Long> running = preCacheInFlight.get(worldKey);
+        if (running != null) {
+            running.remove(startedAt);
+        }
+    }
+
+    /**
+     * Background searches run on fewer parallel chains than a player-facing one. Nobody is waiting
+     * on the result, so the warm-up has no reason to claim the chunk throughput a waiting player
+     * gets.
+     */
+    private int getPreCacheParallelAttempts() {
+        return Math.max(1, Math.min(PRE_CACHE_PARALLEL_ATTEMPTS, getSearchAttemptsPerTick()));
     }
 
     private boolean isPreCacheReady() {
@@ -790,11 +858,15 @@ public class RTPManager {
     }
 
     public CompletableFuture<Location> findSafeLocationAsync(SearchSettings settings) {
+        return findSafeLocationAsync(settings, getSearchAttemptsPerTick());
+    }
+
+    private CompletableFuture<Location> findSafeLocationAsync(SearchSettings settings, int parallelAttempts) {
         if (!isSearchRequestValid(settings)) {
             return CompletableFuture.completedFuture(null);
         }
         CompletableFuture<Location> future = new CompletableFuture<>();
-        startDirectSearch(settings, future);
+        startDirectSearch(settings, future, parallelAttempts);
         return future;
     }
 
@@ -806,8 +878,12 @@ public class RTPManager {
     }
 
     private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future) {
+        startDirectSearch(settings, future, getSearchAttemptsPerTick());
+    }
+
+    private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future, int parallelAttempts) {
         DirectSearchState state = new DirectSearchState(settings);
-        int chains = Math.max(1, Math.min(getSearchAttemptsPerTick(), settings.maxChunkSamples()));
+        int chains = Math.max(1, Math.min(parallelAttempts, settings.maxChunkSamples()));
         state.activeChains.set(chains);
         for (int chain = 0; chain < chains; chain++) {
             scheduleDirectSearchStep(state, future, settings.attemptIntervalTicks());
