@@ -210,8 +210,10 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getPlayerVisibilityManager().handleJoin(player);
 
         if (!player.hasPlayedBefore()) {
+            boolean randomSpawnStarted = plugin.getFirstJoinSpawnManager() != null
+                    && plugin.getFirstJoinSpawnManager().handleFirstJoin(player);
             boolean spawnOnFirstJoin = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN", true);
-            if (spawnOnFirstJoin && plugin.getSpawnManager().hasSpawn()) {
+            if (!randomSpawnStarted && spawnOnFirstJoin && plugin.getSpawnManager().hasSpawn()) {
                 Location spawn = plugin.getSpawnManager().getSpawnLocation();
                 if (spawn != null) {
                     plugin.getSpigotScheduler().teleport(player, spawn);

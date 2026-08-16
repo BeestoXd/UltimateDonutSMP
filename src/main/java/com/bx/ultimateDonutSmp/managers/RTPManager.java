@@ -433,6 +433,34 @@ public class RTPManager {
         );
     }
 
+    public SearchSettings getFirstJoinSearchSettings(String fallbackWorldName) {
+        int minRadius = plugin.getConfigManager().getConfig().getInt("FIRST-JOIN-RTP.WORLD.MIN-RADIUS", 500);
+        int maxRadius = plugin.getConfigManager().getConfig().getInt("FIRST-JOIN-RTP.WORLD.MAX-RADIUS", 5000);
+        int centerX = plugin.getConfigManager().getConfig().getInt("FIRST-JOIN-RTP.WORLD.CENTER-X", 0);
+        int centerZ = plugin.getConfigManager().getConfig().getInt("FIRST-JOIN-RTP.WORLD.CENTER-Z", 0);
+        int maxAttempts = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-ATTEMPTS", DEFAULT_MAX_ATTEMPTS);
+        int maxChunkSamples = plugin.getConfigManager().getRtp().getInt("SETTINGS.MAX-CHUNK-SAMPLES", DEFAULT_MAX_CHUNK_SAMPLES);
+        int attemptIntervalTicks = plugin.getConfigManager().getRtp().getInt("SETTINGS.ATTEMPT-INTERVAL-TICKS", DEFAULT_ATTEMPT_INTERVAL_TICKS);
+        String configuredWorld = plugin.getConfigManager().getConfig().getString("FIRST-JOIN-RTP.WORLD.NAME", "");
+        String worldName = normalizeConfiguredWorldName(
+                configuredWorld == null || configuredWorld.isBlank() ? fallbackWorldName : configuredWorld
+        );
+        if (isDeniedWorld(worldName) || !isWorldAvailable(worldName)) {
+            return null;
+        }
+
+        return new SearchSettings(
+                worldName,
+                minRadius,
+                Math.max(minRadius, maxRadius),
+                centerX,
+                centerZ,
+                normalizeSearchLimit(maxAttempts),
+                normalizeChunkSampleLimit(maxChunkSamples),
+                normalizeAttemptInterval(attemptIntervalTicks)
+        );
+    }
+
     public String describeWorld(String worldName) {
         for (RTPDestination destination : configuredDestinations) {
             if (destination.worldName().equalsIgnoreCase(worldName)) {

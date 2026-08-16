@@ -94,6 +94,10 @@ SETTINGS:
   SPAWN-MENU: true
   # Determines whether Afk Menu is enabled or disabled. Available options: true, false
   AFK-MENU: true
+  # Determines whether players are teleported to the spawn location the first time they
+  # join the server. Ignored while First Join Rtp Enabled is true. Available options:
+  # true, false
+  TELEPORT-SPAWN-ON-FIRST-JOIN: true
   # The decimal value for Worth Default Value. Available options: Any decimal number
   WORTH-DEFAULT-VALUE: 1.0
   # The numerical value for Mob Spawn Radius. Available options: Any valid integer
@@ -657,6 +661,40 @@ RTP-ZONE:
     MAX-RADIUS: 2000
   # The numerical value for Title Fade Out Ticks. Available options: Any valid integer
   TITLE-FADE-OUT-TICKS: 10
+# Configuration section for First Join Rtp. Drops brand new players at a random location
+# the first time they join instead of leaving them on the vanilla world spawn. The search
+# ignores RTP cooldowns, playtime requirements, and the RTP queue, but it does require the
+# RTP feature itself to be enabled.
+FIRST-JOIN-RTP:
+  # Determines whether First Join Rtp is enabled or disabled. Takes priority over Settings
+  # Teleport Spawn On First Join. Available options: true, false
+  ENABLED: false
+  # Determines whether the player is sent to the spawn location when no safe random
+  # location can be found. Available options: true, false
+  FALLBACK-TO-SPAWN: true
+  # The text or value for Searching Message, sent while the safe location is being looked
+  # up. Set to '' to disable. Available options: Any valid string text
+  SEARCHING-MESSAGE: '&7Finding you a safe place to start...'
+  # The text or value for Success Message, sent once the player has been dropped.
+  # Supports {world}, {x}, {y}, {z}. Set to '' to disable. Available options: Any valid
+  # string text
+  SUCCESS-MESSAGE: '&aWelcome! You spawned at &fX:{x} Y:{y} Z:{z}&a.'
+  # The text or value for Failed Message, sent when no safe location could be found. Set
+  # to '' to disable. Available options: Any valid string text
+  FAILED-MESSAGE: '&cCould not find a random spawn location for you.'
+  # Configuration section for World.
+  WORLD:
+    # The world to drop new players in. Leave empty to use the world they join in.
+    # Available options: Any valid string text
+    NAME: ''
+    # The numerical value for Center X. Available options: Any valid integer
+    CENTER-X: 0
+    # The numerical value for Center Z. Available options: Any valid integer
+    CENTER-Z: 0
+    # The numerical value for Min Radius. Available options: Any valid integer
+    MIN-RADIUS: 500
+    # The numerical value for Max Radius. Available options: Any valid integer
+    MAX-RADIUS: 5000
 # Configuration section for Teleport Cooldown.
 TELEPORT-COOLDOWN:
   # The numerical value for Home. Available options: Any valid integer
