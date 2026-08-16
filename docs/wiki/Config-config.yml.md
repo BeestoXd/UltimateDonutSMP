@@ -184,6 +184,10 @@ SETTINGS:
   SPAWN-MENU: true
   # Determines whether Afk Menu is enabled or disabled. Available options: true, false
   AFK-MENU: true
+  # Determines whether players are teleported to the spawn location the first time they
+  # join the server. Ignored while First Join Rtp Enabled is true. Available options:
+  # true, false
+  TELEPORT-SPAWN-ON-FIRST-JOIN: true
   # The decimal value for Worth Default Value. Available options: Any decimal number
   WORTH-DEFAULT-VALUE: 1.0
   # The numerical value for Mob Spawn Radius. Available options: Any valid integer
@@ -214,6 +218,7 @@ SETTINGS:
 | `SETTINGS.SELL-MESSAGE` | `str` | Any string text | `'&a+$%price%'` | Configures the technical `SELL-MESSAGE` parameter for `SETTINGS.SELL-MESSAGE` in `config.yml`. |
 | `SETTINGS.SPAWN-MENU` | `bool` | `true`, `false` | `true` | Configures the technical `SPAWN-MENU` parameter for `SETTINGS.SPAWN-MENU` in `config.yml`. |
 | `SETTINGS.AFK-MENU` | `bool` | `true`, `false` | `true` | Configures the technical `AFK-MENU` parameter for `SETTINGS.AFK-MENU` in `config.yml`. |
+| `SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN` | `bool` | `true`, `false` | `true` | Teleports a player to the spawn location the first time they join. Does nothing until `/setspawn` has been run. Ignored while `FIRST-JOIN-RTP.ENABLED` is `true`. |
 | `SETTINGS.WORTH-DEFAULT-VALUE` | `float` | Any decimal number | `'1.0'` | Configures the technical `WORTH-DEFAULT-VALUE` parameter for `SETTINGS.WORTH-DEFAULT-VALUE` in `config.yml`. |
 | `SETTINGS.MOB-SPAWN-RADIUS` | `int` | Any valid integer number | `'50'` | Configures the technical `MOB-SPAWN-RADIUS` parameter for `SETTINGS.MOB-SPAWN-RADIUS` in `config.yml`. |
 | `SETTINGS.PHANTOM-SPAWN-RADIUS` | `int` | Any valid integer number | `'40'` | Configures the technical `PHANTOM-SPAWN-RADIUS` parameter for `SETTINGS.PHANTOM-SPAWN-RADIUS` in `config.yml`. |
@@ -249,6 +254,85 @@ SETTINGS:
     NAME: '&eChainmail Boots'
     # The numerical val
 ```
+
+---
+
+## Section: `FIRST-JOIN-RTP`
+
+Drops brand new players at a random location the first time they join, instead of leaving them on the vanilla world spawn near `0, 0`.
+The location search reuses the RTP engine but bypasses RTP cooldowns, playtime requirements, and the RTP queue, so a first join is never blocked.
+It does require the `RTP` feature itself to be enabled - with RTP off, the join falls back to `SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN`.
+
+### 1. Commented Setup Code Example
+
+```yaml
+FIRST-JOIN-RTP:
+  # Determines whether First Join Rtp is enabled or disabled. Takes priority over Settings
+  # Teleport Spawn On First Join. Available options: true, false
+  ENABLED: false
+  # Determines whether the player is sent to the spawn location when no safe random
+  # location can be found. Available options: true, false
+  FALLBACK-TO-SPAWN: true
+  # The text or value for Searching Message, sent while the safe location is being looked
+  # up. Set to '' to disable. Available options: Any valid string text
+  SEARCHING-MESSAGE: '&7Finding you a safe place to start...'
+  # The text or value for Success Message, sent once the player has been dropped.
+  # Supports {world}, {x}, {y}, {z}. Set to '' to disable. Available options: Any valid
+  # string text
+  SUCCESS-MESSAGE: '&aWelcome! You spawned at &fX:{x} Y:{y} Z:{z}&a.'
+  # The text or value for Failed Message, sent when no safe location could be found. Set
+  # to '' to disable. Available options: Any valid string text
+  FAILED-MESSAGE: '&cCould not find a random spawn location for you.'
+  # Configuration section for World.
+  WORLD:
+    # The world to drop new players in. Leave empty to use the world they join in.
+    # Available options: Any valid string text
+    NAME: ''
+    # The numerical value for Center X. Available options: Any valid integer
+    CENTER-X: 0
+    # The numerical value for Center Z. Available options: Any valid integer
+    CENTER-Z: 0
+    # The numerical value for Min Radius. Available options: Any valid integer
+    MIN-RADIUS: 500
+    # The numerical value for Max Radius. Available options: Any valid integer
+    MAX-RADIUS: 5000
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `FIRST-JOIN-RTP.ENABLED` | `bool` | `true`, `false` | `false` | Master toggle for the random first-join drop. While `true` it takes priority over `SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN`. |
+| `FIRST-JOIN-RTP.FALLBACK-TO-SPAWN` | `bool` | `true`, `false` | `true` | Sends the player to the spawn location when the search finds nothing safe. Set to `false` to leave them where they landed. |
+| `FIRST-JOIN-RTP.SEARCHING-MESSAGE` | `str` | Any string text | `'&7Finding you a safe place to start...'` | Sent as soon as the search starts, so the player knows why they are waiting. Set to `''` to stay silent. |
+| `FIRST-JOIN-RTP.SUCCESS-MESSAGE` | `str` | Any string text | `'&aWelcome! You spawned at &fX:{x} Y:{y} Z:{z}&a.'` | Sent after the teleport succeeds. Supports `{world}`, `{x}`, `{y}`, `{z}`. Set to `''` to stay silent. |
+| `FIRST-JOIN-RTP.FAILED-MESSAGE` | `str` | Any string text | `'&cCould not find a random spawn location for you.'` | Sent when no safe location was found or the teleport failed. Set to `''` to stay silent. |
+| `FIRST-JOIN-RTP.WORLD.NAME` | `str` | Any string text | `''` | World to search in. Leave empty to use whichever world the player joined in. `world`, `nether`, and `end` resolve to the loaded overworld/nether/end. |
+| `FIRST-JOIN-RTP.WORLD.CENTER-X` | `int` | Any valid integer number | `0` | X coordinate the search radius is measured from. |
+| `FIRST-JOIN-RTP.WORLD.CENTER-Z` | `int` | Any valid integer number | `0` | Z coordinate the search radius is measured from. |
+| `FIRST-JOIN-RTP.WORLD.MIN-RADIUS` | `int` | Any valid integer number | `500` | Closest a new player can be dropped to the center. Raise it to keep new players away from spawn. |
+| `FIRST-JOIN-RTP.WORLD.MAX-RADIUS` | `int` | Any valid integer number | `5000` | Furthest a new player can be dropped from the center. Keep it inside your pregenerated area, otherwise the search has to fall back to chunk generation. |
+
+### 3. Practical Setup Example
+
+Spread new players between 1000 and 8000 blocks from spawn in the overworld, and say nothing while searching:
+
+```yaml
+FIRST-JOIN-RTP:
+  ENABLED: true
+  FALLBACK-TO-SPAWN: true
+  SEARCHING-MESSAGE: ''
+  SUCCESS-MESSAGE: '&aWelcome to the server! You start at &fX:{x} Z:{z}&a.'
+  FAILED-MESSAGE: '&cCould not find a random spawn location for you.'
+  WORLD:
+    NAME: 'world'
+    CENTER-X: 0
+    CENTER-Z: 0
+    MIN-RADIUS: 1000
+    MAX-RADIUS: 8000
+```
+
+The search attempt budget, chunk sample budget, and chunk generation behaviour are shared with `/rtp` and stay in [`rtp.yml`](Config-rtp.yml).
 
 ---
 
