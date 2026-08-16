@@ -1944,6 +1944,81 @@ PUNISHMENT-HISTORY-MENU:
     DISPLAY-NAME: '&cNo Punishment History'
     LORE:
     - '&7This player has no punishment records.'
+PUNISHMENTS-LIST-MENU:
+  TITLE: '&8All Punishments'
+  SIZE: 54
+  MAX-ITEMS-PER-PAGE: 45
+  BUTTONS:
+    BACK:
+      MATERIAL: ARROW
+      DISPLAY-NAME: '&cClose'
+      LORE:
+      - '&7Close this menu'
+    FILTER-STATE:
+      MATERIAL: HOPPER
+      DISPLAY-NAME: '&#6BF18DState Filter'
+      LORE:
+      - '&7Current: &f{state_filter}'
+      - '&aClick to change'
+    FILTER-TYPE:
+      MATERIAL: BOOK
+      DISPLAY-NAME: '&#6BF18DType Filter'
+      LORE:
+      - '&7Current: &f{type_filter}'
+      - '&aClick to change'
+    SORT:
+      MATERIAL: COMPARATOR
+      DISPLAY-NAME: '&#6BF18DSort Order'
+      LORE:
+      - '&7Current: &f{sort_order}'
+      - '&aClick to change'
+    SEARCH:
+      MATERIAL: NAME_TAG
+      DISPLAY-NAME: '&#6BF18DSearch'
+      LORE:
+      - '&7Current: &f{search}'
+      - '&aLeft-click to search a player'
+      - '&cRight-click to clear'
+    REFRESH:
+      MATERIAL: CLOCK
+      DISPLAY-NAME: '&#6BF18DRefresh'
+      LORE:
+      - '&7Reload the punishment list'
+  SEARCH-SIGN:
+    INPUT-LINE: 0
+    LINES:
+    - ''
+    - '^^^^^^^^^^^^^^'
+    - 'Player Name'
+    - ''
+  PUNISHMENT-ITEM:
+    MATERIALS:
+      BAN: IRON_BARS
+      MUTE: PAPER
+      WARN: YELLOW_DYE
+      KICK: LEATHER_BOOTS
+      BLACKLIST: BARRIER
+    DISPLAY-NAME: '{status_color}{player} &8- &f{type}'
+    LORE:
+    - '&7Reason: &f{reason}'
+    - '&7Issued by: &f{issuer}'
+    - '&7Date: &f{issued_at}'
+    - '&7Expires: &f{expires_at}'
+    - '&7Status: {status_color}{status}'
+    - '&7ID: &f#{id}'
+    - ''
+    - '&aLeft-click to view full history'
+    - '&cShift-right-click to delete this record'
+  LOADING-BUTTON:
+    MATERIAL: CLOCK
+    DISPLAY-NAME: '&eLoading Punishments'
+    LORE:
+    - '&7Reading the punishment table.'
+  EMPTY-BUTTON:
+    MATERIAL: BARRIER
+    DISPLAY-NAME: '&cNo Punishments Found'
+    LORE:
+    - '&7No punishments match the current filters.'
 STATS-WIPE-MENU:
   TITLE: '&8Stats Wipe'
   SIZE: 27

@@ -616,7 +616,7 @@ PUNISHMENTS:
   NO-DELETE-PERMISSION: '&cYou do not have permission to delete punishment history
     records.'
   # The text or value for Usage. Available options: Any valid string text
-  USAGE: '&cUsage: /punishments <player>'
+  USAGE: '&cUsage: /punishments [player]'
   # The text or value for Usage Ban. Available options: Any valid string text
   USAGE-BAN: '&cUsage: /ban <player> [reason]'
   # The text or value for Usage Tempban. Available options: Any valid string text

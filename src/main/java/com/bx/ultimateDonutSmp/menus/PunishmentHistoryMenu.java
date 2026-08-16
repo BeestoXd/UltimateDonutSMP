@@ -7,7 +7,6 @@ import com.bx.ultimateDonutSmp.managers.PunishmentManager;
 import com.bx.ultimateDonutSmp.models.PunishmentQuery;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentState;
-import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
@@ -18,20 +17,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 public class PunishmentHistoryMenu extends BaseMenu {
 
     private static final String MENU_PATH = "PUNISHMENT-HISTORY-MENU";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy, HH:mm:ss", Locale.US);
 
     private static final int BACK_SLOT = 45;
     private static final int FILTER_STATE_SLOT = 46;
@@ -272,7 +266,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
     private ItemStack createPunishmentItem(PunishmentRecord record) {
         PunishmentState state = plugin.getPunishmentManager().getState(record);
         String materialPath = MENU_PATH + ".PUNISHMENT-ITEM.MATERIALS." + record.getType().name();
-        Material material = ItemUtils.parseMaterial(menus().getString(materialPath, defaultMaterial(record.getType())));
+        Material material = ItemUtils.parseMaterial(menus().getString(materialPath, PunishmentItemRenderer.defaultMaterial(record.getType())));
         String displayNameTemplate = menus().getString(MENU_PATH + ".PUNISHMENT-ITEM.DISPLAY-NAME", "{status_color}{type}");
         List<String> loreTemplate = defaultIfEmpty(
                 menus().getStringList(MENU_PATH + ".PUNISHMENT-ITEM.LORE"),
@@ -319,41 +313,13 @@ public class PunishmentHistoryMenu extends BaseMenu {
     }
 
     private String replacePunishmentPlaceholders(String value, PunishmentRecord record, PunishmentState state) {
-        if (value == null) {
-            return "";
-        }
-
-        String removedBy = safeText(record.getRemovedByNameSnapshot());
-        String removalReason = safeText(record.getRemovalReason());
-        String removedAt = formatOptionalTimestamp(record.getRemovedAt(), "N/A");
-
-        if (state == PunishmentState.EXPIRED) {
-            if (removedBy.equals("N/A")) {
-                removedBy = "System";
-            }
-            if (removalReason.equals("N/A")) {
-                removalReason = "Expired";
-            }
-            if (removedAt.equals("N/A")) {
-                removedAt = formatOptionalTimestamp(record.getExpiresAt(), "N/A");
-            }
-        }
-
-        return replaceMenuPlaceholders(value)
-                .replace("{status_color}", statusColor(record, state))
-                .replace("{type}", plugin.getPunishmentManager().getDisplayType(record))
-                .replace("{reason}", record.getReason())
-                .replace("{issuer}", safeText(record.getIssuerNameSnapshot()))
-                .replace("{issued_at}", formatOptionalTimestamp(record.getIssuedAt(), "unknown"))
-                .replace("{expires_at}", formatOptionalTimestamp(record.getExpiresAt(), "Never"))
-                .replace("{eXpires_at}", formatOptionalTimestamp(record.getExpiresAt(), "Never"))
-                .replace("{status}", state.getDisplayName())
-                .replace("{removed_by}", removedBy)
-                .replace("{removal_reason}", removalReason)
-                .replace("{removed_at}", removedAt)
-                .replace("{id}", String.valueOf(record.getId()))
-                .replace("{scope}", record.getScope().name())
-                .replace("{source_server}", record.getSourceServer());
+        return PunishmentItemRenderer.applyRecord(
+                replaceMenuPlaceholders(value),
+                record,
+                state,
+                plugin.getPunishmentManager().getDisplayType(record),
+                plugin.getPunishmentManager().resolveTargetName(targetUuid)
+        );
     }
 
     private List<String> replacePunishmentPlaceholders(List<String> lines, PunishmentRecord record, PunishmentState state) {
@@ -366,83 +332,6 @@ public class PunishmentHistoryMenu extends BaseMenu {
 
     private String currentTypeFilterLabel() {
         return query.typeFilter() == null ? "All" : query.typeFilter().name();
-    }
-
-    private String defaultMaterial(PunishmentType type) {
-        return switch (type) {
-            case BAN -> "IRON_BARS";
-            case MUTE -> "PAPER";
-            case WARN -> "YELLOW_DYE";
-            case KICK -> "LEATHER_BOOTS";
-            case BLACKLIST -> "BARRIER";
-        };
-    }
-
-    private String statusColor(PunishmentRecord record, PunishmentState state) {
-        if (state == PunishmentState.EXPIRED) {
-            return "&6";
-        }
-        if (state == PunishmentState.REMOVED) {
-            return "&7";
-        }
-
-        return switch (record.getType()) {
-            case BAN, BLACKLIST -> "&c";
-            case MUTE -> "&d";
-            case WARN -> "&e";
-            case KICK -> "&6";
-        };
-    }
-
-    private String toSmallCaps(String input) {
-        if (input == null) return "";
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-            char lower = Character.toLowerCase(c);
-            switch (lower) {
-                case 'a': sb.append('ᴀ'); break;
-                case 'b': sb.append('ʙ'); break;
-                case 'c': sb.append('ᴄ'); break;
-                case 'd': sb.append('ᴅ'); break;
-                case 'e': sb.append('ᴇ'); break;
-                case 'f': sb.append('ꜰ'); break;
-                case 'g': sb.append('ɢ'); break;
-                case 'h': sb.append('ʜ'); break;
-                case 'i': sb.append('ɪ'); break;
-                case 'j': sb.append('ᴊ'); break;
-                case 'k': sb.append('ᴋ'); break;
-                case 'l': sb.append('ʟ'); break;
-                case 'm': sb.append('ᴍ'); break;
-                case 'n': sb.append('ɴ'); break;
-                case 'o': sb.append('ᴏ'); break;
-                case 'p': sb.append('ᴘ'); break;
-                case 'q': sb.append('ǫ'); break;
-                case 'r': sb.append('ʀ'); break;
-                case 's': sb.append('ѕ'); break;
-                case 't': sb.append('ᴛ'); break;
-                case 'u': sb.append('ᴜ'); break;
-                case 'v': sb.append('ᴠ'); break;
-                case 'w': sb.append('ᴡ'); break;
-                case 'x': sb.append('x'); break;
-                case 'y': sb.append('ʏ'); break;
-                case 'z': sb.append('ᴢ'); break;
-                default: sb.append(c); break;
-            }
-        }
-        return sb.toString();
-    }
-
-    private String formatOptionalTimestamp(Long timestamp, String fallback) {
-        if (timestamp == null || timestamp <= 0L) {
-            return toSmallCaps(fallback);
-        }
-        String formatted = DATE_FORMATTER.format(Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()));
-        return toSmallCaps(formatted);
-    }
-
-    private String safeText(String value) {
-        return value == null || value.isBlank() ? "N/A" : value;
     }
 
     private List<String> defaultIfEmpty(List<String> configured, List<String> fallback) {

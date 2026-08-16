@@ -29,6 +29,33 @@ Freezes the target player on top of an ice block and disables movement, block br
 
 ---
 
+## Punishments
+
+### 1. Punishment List (`/punishments`)
+Run `/punishments` with no arguments to browse every punishment on the server in one GUI, newest first. Each entry shows the punished player, the type, the reason, the staff member who issued it, the date, and the expiry (`Never` for a permanent punishment).
+
+Controls sit along the bottom row:
+
+| Button | Action |
+| --- | --- |
+| State Filter | Cycles All / Active / Inactive. Inactive covers both expired and manually removed records |
+| Type Filter | Cycles All / Ban / Mute / Warn / Kick / Blacklist |
+| Sort Order | Switches between newest and oldest first |
+| Search | Left-click opens a sign to type a player name, right-click clears it |
+| Refresh | Re-reads the list |
+
+Search matches any part of the stored player name and ignores case, so `rod` finds `Cuteboyrodney`. A full UUID also works. Left-clicking an entry opens that player's full history; shift-right-clicking deletes the record if the viewer holds `ultimatedonutsmp.staff.punishments.delete`.
+
+Pages are read in the background rather than on the server thread, so the menu opens on a loading placeholder and fills in once the query returns. On a large history the first frame may be visible for a moment.
+
+### 2. Player History (`/punishments <player>`)
+Passing a player name opens that player's history on its own, with the same state and type filters. This is also reachable from the profile viewer.
+
+- Both views require `ultimatedonutsmp.staff.punishments.view`.
+- Both are styled from `PUNISHMENTS-LIST-MENU` and `PUNISHMENT-HISTORY-MENU` in `menus.yml`.
+
+---
+
 ## Chat & Anvil Moderation
 
 ### 1. Chat Filtering (`filter.yml`)

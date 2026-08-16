@@ -64,7 +64,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/fakeplayer` | `/fakeplayer` (Alias `/fplayer`) | Spawn fake player bait entities | `ultimatedonutsmp.command.fakeplayer` |
 | `/amod` | `/amod <add\|reload>` | Manage the anvil rename word filter | `ultimatedonutsmp.command.amod` |
 | `/offend` | `/offend <player> <reason> [time]` | Issue preset offense-based punishment with escalating duration | `ultimatedonutsmp.staff.punishments.offend` |
-| `/punishments` | `/punishments <player>` | View punishment history GUI for target player | `ultimatedonutsmp.staff.punishments.view` |
+| `/punishments` | `/punishments [player]` | Browse every punishment on the server, or one player's history | `ultimatedonutsmp.staff.punishments.view` |
 | `/ban` | `/ban <player> [reason]` | Issue permanent ban | `ultimatedonutsmp.staff.punishments.ban` |
 | `/tempban` | `/tempban <player> <time> [reason]` | Issue temporary ban | `ultimatedonutsmp.staff.punishments.ban` |
 | `/mute` | `/mute <player> [reason]` | Issue permanent mute | `ultimatedonutsmp.staff.punishments.mute` |

@@ -1410,6 +1410,59 @@ MENUS:
       LORE:
       - "&7Are you sure you want"
       - "&7To end your life?"
+  PUNISHMENTS-LIST-MENU:
+    TITLE: "&8Semua Hukuman"
+    BUTTONS:
+      BACK:
+        DISPLAY-NAME: "&cTutup"
+        LORE:
+        - "&7Tutup menu ini"
+      FILTER-STATE:
+        DISPLAY-NAME: "&#6BF18DFilter Status"
+        LORE:
+        - "&7Saat ini: &f{state_filter}"
+        - "&aKlik untuk mengubah"
+      SORT:
+        DISPLAY-NAME: "&#6BF18DUrutan"
+        LORE:
+        - "&7Saat ini: &f{sort_order}"
+        - "&aKlik untuk mengubah"
+      SEARCH:
+        DISPLAY-NAME: "&#6BF18DCari"
+        LORE:
+        - "&7Saat ini: &f{search}"
+        - "&aKlik kiri untuk mencari pemain"
+        - "&cKlik kanan untuk menghapus"
+      REFRESH:
+        DISPLAY-NAME: "&#6BF18DMuat Ulang"
+        LORE:
+        - "&7Muat ulang daftar hukuman"
+    SEARCH-SIGN:
+      LINES:
+      - ""
+      - "^^^^^^^^^^^^^^"
+      - "Nama Pemain"
+      - ""
+    PUNISHMENT-ITEM:
+      DISPLAY-NAME: "{status_color}{player} &8- &f{type}"
+      LORE:
+      - "&7Alasan: &f{reason}"
+      - "&7Diberikan oleh: &f{issuer}"
+      - "&7Tanggal: &f{issued_at}"
+      - "&7Berakhir: &f{expires_at}"
+      - "&7Status: {status_color}{status}"
+      - "&7ID: &f#{id}"
+      - ""
+      - "&aKlik kiri untuk melihat riwayat lengkap"
+      - "&cShift klik kanan untuk menghapus catatan ini"
+    LOADING-BUTTON:
+      DISPLAY-NAME: "&eMemuat hukuman"
+      LORE:
+      - "&7Membaca tabel hukuman."
+    EMPTY-BUTTON:
+      DISPLAY-NAME: "&cHukuman tidak ditemukan"
+      LORE:
+      - "&7Tidak ada hukuman yang cocok dengan filter saat ini."
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2537,7 +2590,7 @@ MESSAGES:
     NO-REMOVE-PERMISSION: '&cYou do not have permission to remove punishments.'
     NO-DELETE-PERMISSION: '&cYou do not have permission to delete punishment history
       records.'
-    USAGE: "&cUsage: /punishments <player>"
+    USAGE: "&cPenggunaan: /punishments [player]"
     USAGE-BAN: "&cUsage: /ban <player> [reason]"
     USAGE-TEMPBAN: "&cUsage: /tempban <player> <time> [reason] &7(time: 30s, 15m,
       2h, 5d, or 5d 15m 30s)"
