@@ -235,9 +235,19 @@ MESSAGES:
 ### Question: Does `/uds setup setspawn` set where players respawn when they die?
 
 #### Clarification & Actual Purpose:
-- **No**. `/uds setup setspawn` (or `/setspawn`) does **NOT** set an individual player's death respawn point.
-- **Actual Purpose**: It is an administrator setup command used to set the **Global Server Spawn Hub Location** (e.g., Central Marketplace, Server Shop Hub, or Spawn Arena). This is the location where players are sent when executing `/spawn` or walking through Portal triggers (`/portal`).
-- **Player Death Respawn**: Player death respawn locations are governed by vanilla Minecraft **Beds**, **Respawn Anchors**, or player homes (`/sethome`).
+- **Yes, through the spawn hub**. `/uds setup setspawn` (or `/setspawn`) saves one location, the **Global Server Spawn Hub Location** (e.g., Central Marketplace, Server Shop Hub, or Spawn Arena). That is where players land when executing `/spawn` or walking through Portal triggers (`/portal`), and it is also where they land when they die.
+- **Player Death Respawn**: On death the plugin replaces the vanilla respawn point with that same spawn hub. There is no separate death location to configure, so moving spawn moves where your players come back.
+- **The one exception**: `SETTINGS.RESPAWN-ON-BED`. Turn it on and a player who has slept in a bed or charged a **Respawn Anchor** returns there instead. Everybody without one still goes to the spawn hub.
+- **Shipped default**: `RESPAWN-ON-BED` is `false` out of the box, so a fresh install sends every death to the spawn hub. Leave it on `false` to keep beds out of it entirely.
+
+```yaml
+SETTINGS:
+  # false: every death sends the player to the spawn hub
+  # true: beds and charged Respawn Anchors win, everyone else still goes to the spawn hub
+  RESPAWN-ON-BED: false
+```
+
+> If `/setspawn` has never been run there is no hub to send anybody to, and deaths fall back to vanilla behaviour. Run it once while standing where you want players to land.
 
 ---
 
