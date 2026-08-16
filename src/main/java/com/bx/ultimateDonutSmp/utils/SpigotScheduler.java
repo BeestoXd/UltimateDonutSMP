@@ -250,8 +250,13 @@ public final class SpigotScheduler {
     }
 
     /**
-     * Runs a command as the given player. Carries the same Folia threading rules as
-     * {@link #dispatchConsoleCommand(String)}.
+     * Runs a command as the given player.
+     *
+     * <p>Folia splits the world into regions and only lets a player be touched from the region that
+     * currently owns them, so a player command cannot go to the global region scheduler the way a
+     * console command does. The global region owns no players, so a dispatch handed to it fails a
+     * thread check instead of running. When the caller already holds the player's region the command
+     * runs straight away, otherwise it goes to the player's own entity scheduler.</p>
      *
      * @return the dispatch result when the command ran inline, or {@code true} when it was scheduled
      */
@@ -261,11 +266,13 @@ public final class SpigotScheduler {
         }
 
         String resolved = command;
-        if (!isFolia() && Bukkit.isPrimaryThread()) {
+        PlayerCommandRoute route = playerCommandRoute(
+                isFolia(), Bukkit.isPrimaryThread(), isOwnedByCurrentRegion(player));
+        if (route == PlayerCommandRoute.INLINE) {
             return player.performCommand(resolved);
         }
 
-        runGlobal(() -> {
+        Runnable dispatch = () -> {
             if (!player.isOnline()) {
                 return;
             }
@@ -275,8 +282,37 @@ public final class SpigotScheduler {
                 plugin.getLogger().log(Level.WARNING, "Failed to dispatch command '" + resolved
                         + "' as " + player.getName(), exception);
             }
-        });
+        };
+
+        if (route == PlayerCommandRoute.ENTITY_SCHEDULER) {
+            runEntity(player, dispatch);
+        } else {
+            runGlobal(dispatch);
+        }
         return true;
+    }
+
+    /** Where the dispatch of a player command has to happen. */
+    enum PlayerCommandRoute {
+        /** Run it on the calling thread, which already owns the player. */
+        INLINE,
+        /** Hand it to the player's own region through their entity scheduler. */
+        ENTITY_SCHEDULER,
+        /** Hand it to the main thread, which on Paper owns every player. */
+        GLOBAL_SCHEDULER
+    }
+
+    /**
+     * Picks the dispatch route for a player command. Paper has one main thread that owns every
+     * player, so being on it is enough. On Folia the calling thread also has to own the player,
+     * and when it does not the work belongs on that player's entity scheduler rather than on the
+     * global region.
+     */
+    static PlayerCommandRoute playerCommandRoute(boolean folia, boolean tickThread, boolean ownsPlayer) {
+        if (!folia) {
+            return tickThread ? PlayerCommandRoute.INLINE : PlayerCommandRoute.GLOBAL_SCHEDULER;
+        }
+        return tickThread && ownsPlayer ? PlayerCommandRoute.INLINE : PlayerCommandRoute.ENTITY_SCHEDULER;
     }
 
     private static long ticksToMillis(long ticks) {
