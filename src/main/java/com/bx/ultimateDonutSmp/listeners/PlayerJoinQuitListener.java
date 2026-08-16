@@ -25,6 +25,10 @@ import java.util.UUID;
 
 public class PlayerJoinQuitListener implements Listener {
 
+    static final long DEFAULT_FIRST_JOIN_SPAWN_DELAY_TICKS = 20L;
+    static final long MAX_FIRST_JOIN_SPAWN_DELAY_TICKS = 1200L;
+    private static final long FIRST_JOIN_SPAWN_RETRY_DELAY_TICKS = 20L;
+
     private final UltimateDonutSmp plugin;
 
     public PlayerJoinQuitListener(UltimateDonutSmp plugin) {
@@ -213,11 +217,8 @@ public class PlayerJoinQuitListener implements Listener {
             boolean randomSpawnStarted = plugin.getFirstJoinSpawnManager() != null
                     && plugin.getFirstJoinSpawnManager().handleFirstJoin(player);
             boolean spawnOnFirstJoin = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN", true);
-            if (!randomSpawnStarted && spawnOnFirstJoin && plugin.getSpawnManager().hasSpawn()) {
-                Location spawn = plugin.getSpawnManager().getSpawnLocation();
-                if (spawn != null) {
-                    plugin.getSpigotScheduler().teleport(player, spawn);
-                }
+            if (!randomSpawnStarted && spawnOnFirstJoin) {
+                scheduleFirstJoinSpawnTeleport(player);
             }
         }
         if (plugin.getOrdersManager() != null) {
@@ -258,6 +259,48 @@ public class PlayerJoinQuitListener implements Listener {
                 }
             });
         }
+    }
+
+    /**
+     * Sends a brand new player to the spawn location. The teleport waits for the player's
+     * own scheduler instead of running inside the join event, because the server is still
+     * placing the player in the world while that event runs and a teleport issued there is
+     * dropped rather than applied.
+     */
+    private void scheduleFirstJoinSpawnTeleport(Player player) {
+        long delay = firstJoinSpawnDelayTicks(plugin.getConfigManager().getConfig()
+                .getLong("SETTINGS.FIRST-JOIN-SPAWN-DELAY-TICKS", DEFAULT_FIRST_JOIN_SPAWN_DELAY_TICKS));
+        plugin.getSpigotScheduler().runEntityLater(player, () -> firstJoinSpawnTeleport(player, true), delay);
+    }
+
+    private void firstJoinSpawnTeleport(Player player, boolean retryOnFailure) {
+        if (!player.isOnline()) {
+            return;
+        }
+
+        String name = player.getName();
+        Location spawn = plugin.getSpawnManager() == null ? null : plugin.getSpawnManager().getSpawnLocation();
+        if (spawn == null) {
+            plugin.getLogger().warning("SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN is on but there is no spawn to send "
+                    + name + " to. Run /setspawn, or check that the world named in LOCATIONS.SPAWN-LOCATION is loaded.");
+            return;
+        }
+
+        plugin.getSpigotScheduler().teleport(player, spawn).thenAccept(success -> {
+            if (Boolean.TRUE.equals(success)) {
+                return;
+            }
+            if (retryOnFailure) {
+                plugin.getSpigotScheduler().runEntityLater(player, () -> firstJoinSpawnTeleport(player, false),
+                        FIRST_JOIN_SPAWN_RETRY_DELAY_TICKS);
+                return;
+            }
+            plugin.getLogger().warning("Could not send " + name + " to the spawn location on first join.");
+        });
+    }
+
+    static long firstJoinSpawnDelayTicks(long configured) {
+        return Math.max(1L, Math.min(MAX_FIRST_JOIN_SPAWN_DELAY_TICKS, configured));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

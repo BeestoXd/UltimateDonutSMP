@@ -98,6 +98,10 @@ SETTINGS:
   # join the server. Ignored while First Join Rtp Enabled is true. Available options:
   # true, false
   TELEPORT-SPAWN-ON-FIRST-JOIN: true
+  # The numerical value for First Join Spawn Delay Ticks, how long to wait after a new
+  # player joins before sending them to spawn. Raise it when another plugin moves players
+  # around on join. Available options: Any valid integer
+  FIRST-JOIN-SPAWN-DELAY-TICKS: 20
   # The decimal value for Worth Default Value. Available options: Any decimal number
   WORTH-DEFAULT-VALUE: 1.0
   # The numerical value for Mob Spawn Radius. Available options: Any valid integer

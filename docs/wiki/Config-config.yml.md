@@ -188,6 +188,10 @@ SETTINGS:
   # join the server. Ignored while First Join Rtp Enabled is true. Available options:
   # true, false
   TELEPORT-SPAWN-ON-FIRST-JOIN: true
+  # The numerical value for First Join Spawn Delay Ticks, how long to wait after a new
+  # player joins before sending them to spawn. Raise it when another plugin moves players
+  # around on join. Available options: Any valid integer
+  FIRST-JOIN-SPAWN-DELAY-TICKS: 20
   # The decimal value for Worth Default Value. Available options: Any decimal number
   WORTH-DEFAULT-VALUE: 1.0
   # The numerical value for Mob Spawn Radius. Available options: Any valid integer
@@ -219,6 +223,7 @@ SETTINGS:
 | `SETTINGS.SPAWN-MENU` | `bool` | `true`, `false` | `true` | Configures the technical `SPAWN-MENU` parameter for `SETTINGS.SPAWN-MENU` in `config.yml`. |
 | `SETTINGS.AFK-MENU` | `bool` | `true`, `false` | `true` | Configures the technical `AFK-MENU` parameter for `SETTINGS.AFK-MENU` in `config.yml`. |
 | `SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN` | `bool` | `true`, `false` | `true` | Teleports a player to the spawn location the first time they join. Does nothing until `/setspawn` has been run. Ignored while `FIRST-JOIN-RTP.ENABLED` is `true`. |
+| `SETTINGS.FIRST-JOIN-SPAWN-DELAY-TICKS` | `int` | Any valid integer number | `20` | How long the plugin waits after the join before running that teleport. Values below `1` are treated as `1` and anything above `1200` is capped there. |
 | `SETTINGS.WORTH-DEFAULT-VALUE` | `float` | Any decimal number | `'1.0'` | Configures the technical `WORTH-DEFAULT-VALUE` parameter for `SETTINGS.WORTH-DEFAULT-VALUE` in `config.yml`. |
 | `SETTINGS.MOB-SPAWN-RADIUS` | `int` | Any valid integer number | `'50'` | Configures the technical `MOB-SPAWN-RADIUS` parameter for `SETTINGS.MOB-SPAWN-RADIUS` in `config.yml`. |
 | `SETTINGS.PHANTOM-SPAWN-RADIUS` | `int` | Any valid integer number | `'40'` | Configures the technical `PHANTOM-SPAWN-RADIUS` parameter for `SETTINGS.PHANTOM-SPAWN-RADIUS` in `config.yml`. |
