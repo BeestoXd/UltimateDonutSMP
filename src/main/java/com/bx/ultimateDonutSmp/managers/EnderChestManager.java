@@ -16,12 +16,15 @@ import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Lidded;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,6 +38,11 @@ public class EnderChestManager {
 
     private static final int MIN_ROWS = 1;
     private static final int MAX_ROWS = 6;
+    private static final String ROWS_PERMISSION_PREFIX = "ultimatedonutsmp.enderchest.rows.";
+    // Scanned well past MAX_ROWS so a node like rows.9 clamps to the biggest chest instead of
+    // silently falling through to DEFAULT-ROWS.
+    private static final int MAX_ROWS_PERMISSION_VALUE = 54;
+    private static final String RETURN_ITEMS_MODE = "RETURN-ITEMS";
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, EnderChestSession> activeSessions = new HashMap<>();
@@ -184,8 +192,7 @@ public class EnderChestManager {
             if (dbRows == -1) {
                 throw new java.sql.SQLException("Database load error when reading Ender Chest rows");
             }
-            int defaultRows = getDefaultRows();
-            int rows = clampRows(dbRows <= 0 ? defaultRows : Math.max(dbRows, defaultRows));
+            int rows = resolveOpenRows(player, dbRows);
             EnderChestHolder holder = new EnderChestHolder(uuid, rows);
             Inventory inventory = Bukkit.createInventory(
                     holder,
@@ -437,8 +444,7 @@ public class EnderChestManager {
             saveSession(activeTargetSession);
         } else {
             ItemStack[] sanitizedContents = sanitizeContents(session.getInventory().getContents());
-            int defaultRows = getDefaultRows();
-            int rows = clampRows(Math.max(plugin.getDatabaseManager().loadEnderChestRows(targetUuid, defaultRows), defaultRows));
+            int rows = clampRows(session.getInventory().getSize() / 9);
             plugin.getDatabaseManager().saveEnderChest(targetUuid, rows, sanitizedContents);
         }
     }
@@ -791,6 +797,60 @@ public class EnderChestManager {
         return getConfig().getString("ENDER-CHEST.CLOSE-SOUND", "minecraft:block.ender_chest.close|1.0|1.0");
     }
 
+    public boolean isRowPermissionsEnabled() {
+        FileConfiguration config = getConfig();
+        return config == null || config.getBoolean("ENDER-CHEST.ROW-PERMISSIONS.ENABLED", true);
+    }
+
+    public boolean returnsOverflowOnDowngrade() {
+        FileConfiguration config = getConfig();
+        if (config == null) {
+            return false;
+        }
+        return RETURN_ITEMS_MODE.equalsIgnoreCase(
+                config.getString("ENDER-CHEST.ROW-PERMISSIONS.ON-DOWNGRADE", "KEEP-SIZE").trim()
+        );
+    }
+
+    /**
+     * Highest row count the player is entitled to by permission, or 0 when no row permission applies.
+     */
+    public int getPermissionRows(Player player) {
+        if (player == null || !isRowPermissionsEnabled()) {
+            return 0;
+        }
+
+        int resolved = clampToTier(PermissionUtils.resolveHighestExactNumberedPermission(
+                player, ROWS_PERMISSION_PREFIX, MAX_ROWS_PERMISSION_VALUE));
+
+        FileConfiguration config = getConfig();
+        ConfigurationSection section = config == null
+                ? null
+                : config.getConfigurationSection("ENDER-CHEST.ROW-PERMISSIONS.PERMISSIONS");
+        if (section != null) {
+            for (Map.Entry<String, Object> entry : section.getValues(true).entrySet()) {
+                if (!(entry.getValue() instanceof Number number)) {
+                    continue;
+                }
+                if (!PermissionUtils.hasExact(player, entry.getKey())) {
+                    continue;
+                }
+                resolved = Math.max(resolved, clampToTier(number.intValue()));
+            }
+        }
+
+        return resolved;
+    }
+
+    /**
+     * Rows the player should get right now: their permission tier, or the configured default when
+     * they hold no row permission at all.
+     */
+    public int getEntitledRows(Player player) {
+        int permissionRows = getPermissionRows(player);
+        return permissionRows > 0 ? clampRows(permissionRows) : getDefaultRows();
+    }
+
     public int getDefaultRows() {
         FileConfiguration ecConfig = getConfig();
         if (ecConfig != null) {
@@ -835,6 +895,81 @@ public class EnderChestManager {
                 .getString("ENDER-CHEST.ECSEE.TITLE", "&8ender chest of {player}")
                 .replace("{player}", resolvedTargetName)
                 .replace("{target}", resolvedTargetName);
+    }
+
+    /**
+     * Picks the size an ender chest opens at. Stored rows are the size the chest was last saved at,
+     * so honouring them keeps items reachable when nothing entitles the player to that size any more.
+     * Only ON-DOWNGRADE: RETURN-ITEMS shrinks the chest, and only after the overflow has been handed
+     * back and the smaller layout has actually reached the database.
+     */
+    private int resolveOpenRows(Player player, int dbRows) {
+        int defaultRows = getDefaultRows();
+        int storedRows = clampRows(dbRows <= 0 ? defaultRows : dbRows);
+        int entitledRows = clampRows(getEntitledRows(player));
+
+        if (entitledRows < storedRows
+                && returnsOverflowOnDowngrade()
+                && applyRowDowngrade(player, entitledRows)) {
+            return entitledRows;
+        }
+
+        return clampRows(Math.max(entitledRows, storedRows));
+    }
+
+    /**
+     * Trims a chest down to {@code newRows}, returning anything that no longer fits. The smaller
+     * layout is written first so a failed hand-back cannot duplicate items; a failed write leaves the
+     * chest at its old size instead.
+     */
+    private boolean applyRowDowngrade(Player player, int newRows) {
+        UUID uuid = player.getUniqueId();
+        int keptSize = clampRows(newRows) * 9;
+
+        ItemStack[] rawContents = plugin.getDatabaseManager().loadEnderChestContents(uuid, MAX_ROWS * 9);
+        if (rawContents == null) {
+            return false;
+        }
+
+        ItemStack[] storedContents = sanitizeLoadedContents(uuid, rawContents);
+        ItemStack[] kept = Arrays.copyOf(storedContents, keptSize);
+        List<ItemStack> overflow = new ArrayList<>();
+        for (int slot = keptSize; slot < storedContents.length; slot++) {
+            ItemStack item = storedContents[slot];
+            if (item != null && !item.getType().isAir()) {
+                overflow.add(item);
+            }
+        }
+
+        if (!plugin.getDatabaseManager().saveEnderChest(uuid, clampRows(newRows), kept)) {
+            return false;
+        }
+
+        if (!overflow.isEmpty()) {
+            giveBackOverflow(player, overflow);
+            player.sendMessage(ColorUtils.toComponent(formatMessage(
+                    "ROWS-DOWNGRADED",
+                    "&eʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ɪѕ ɴᴏᴡ {rows} ʀᴏᴡѕ. {amount} ɪᴛᴇᴍ(ѕ) ᴛʜᴀᴛ ɴᴏ ʟᴏɴɢᴇʀ ꜰɪᴛ ᴡᴇʀᴇ ʀᴇᴛᴜʀɴᴇᴅ ᴛᴏ ʏᴏᴜ.",
+                    "{rows}", String.valueOf(clampRows(newRows)),
+                    "{amount}", String.valueOf(overflow.size())
+            )));
+        }
+
+        return true;
+    }
+
+    private void giveBackOverflow(Player player, List<ItemStack> overflow) {
+        for (ItemStack item : overflow) {
+            Map<Integer, ItemStack> leftovers = player.getInventory().addItem(item);
+            for (ItemStack leftover : leftovers.values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+            }
+        }
+        player.updateInventory();
+    }
+
+    private int clampToTier(int rows) {
+        return rows <= 0 ? 0 : clampRows(rows);
     }
 
     private int clampRows(int rows) {

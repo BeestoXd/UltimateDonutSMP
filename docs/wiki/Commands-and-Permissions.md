@@ -130,6 +130,33 @@ the per-world value for everyone.
 
 ---
 
+## Ender Chest Size Permissions
+
+These nodes are not registered in `plugin.yml` and are read straight off the player, so they work with
+LuckPerms or any other permission plugin. Assign them per rank.
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.enderchest.rows.<1-6>` | `false` | Size of the player's Ender Chest, in rows. `ultimatedonutsmp.enderchest.rows.3` gives 27 slots, the same as a vanilla Ender Chest, and `ultimatedonutsmp.enderchest.rows.6` gives the full 54. |
+
+One row is 9 slots, so the six tiers are 9, 18, 27, 36, 45 and 54 slots. When a player holds more than
+one node the **highest** value wins, so a player with both `.rows.2` and `.rows.5` gets 45 slots. A
+value above 6 is treated as 6. A player with no row node falls back to `ENDER-CHEST.DEFAULT-ROWS` in
+`ender-chest.yml`, which ships as 6 — lower it if you want these permissions to hand out bigger chests
+as a rank perk.
+
+Wildcards do not grant a tier. `ultimatedonutsmp.*` leaves the player on the default size, the same way
+it does for `ultimatedonutsmp.homes.<amount>`, so a staff wildcard cannot quietly resize everyone.
+
+Named rank nodes can be mapped to a row count instead of using numeric nodes. See
+`ENDER-CHEST.ROW-PERMISSIONS.PERMISSIONS` in [Config-ender-chest.yml](Config-ender-chest.yml) — the
+shipped defaults map `ultimatedonutsmp.enderchest.rows.vip`, `.vip+` and `.vip++` to 4, 5 and 6 rows.
+
+Set `ENDER-CHEST.ROW-PERMISSIONS.ENABLED: false` in `ender-chest.yml` to ignore every row permission
+and give everyone `DEFAULT-ROWS`.
+
+---
+
 ## Media Rank & Badge Permissions
 
 Media permissions are registered with `default: false` and require explicit assignment via LuckPerms (or explicit permission attachment). Being an OP player does not automatically grant media badge status.

@@ -1829,6 +1829,7 @@ CONFIG:
       ECSEE-PLAYER-NOT-FOUND: "&cPlayer &f{player} &cwas not found."
       ECSEE-OPEN-FAILED: "&cFailed to open &f{target}'s &cender chest. please try
         again."
+      ROWS-DOWNGRADED: "&eEnder chest kamu sekarang {rows} baris. {amount} item yang tidak muat lagi sudah dikembalikan ke kamu."
   INVSEE:
     INVSEE:
       TITLE: '&8Inventory of {player}'
