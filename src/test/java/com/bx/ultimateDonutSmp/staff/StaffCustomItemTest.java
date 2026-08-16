@@ -214,6 +214,37 @@ class StaffCustomItemTest {
         assertEquals(StaffCustomItem.ExecuteAs.PLAYER, enabled.get(0).executeAs());
     }
 
+    @Test
+    void aRenamedEnabledEntryOnAFreeSlotLoads() throws Exception {
+        // The shape reported in #145: the bundled example renamed, armed, and moved to a free slot.
+        List<String> warnings = new ArrayList<>();
+        List<StaffCustomItem> items = parse("""
+                CUSTOM-ITEMS:
+                  SUS:
+                    ENABLED: true
+                    SLOT: 6
+                    MATERIAL: TNT
+                    NAME: '&cS&cU&cS'
+                    LORE:
+                    - '&7Click to open /sus'
+                    EXECUTE-AS: PLAYER
+                    PERMISSION: ''
+                    REQUIRE-TARGET: false
+                    COMMANDS:
+                    - 'sus'
+                """, warnings);
+
+        assertEquals(1, items.size(), () -> "the entry was rejected: " + warnings);
+        StaffCustomItem item = items.get(0);
+        assertEquals("SUS", item.id());
+        assertEquals(6, item.slot());
+        assertEquals(Material.TNT, item.material());
+        assertEquals(StaffCustomItem.ExecuteAs.PLAYER, item.executeAs());
+        assertFalse(item.hasPermission(), "an empty PERMISSION must not gate the item");
+        assertEquals(List.of("sus"), item.commands());
+        assertTrue(warnings.isEmpty(), () -> "unexpected warnings: " + warnings);
+    }
+
     private static List<StaffCustomItem> parse(String yaml, List<String> warnings) throws Exception {
         YamlConfiguration config = new YamlConfiguration();
         config.loadFromString(yaml);
