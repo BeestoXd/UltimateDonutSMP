@@ -122,17 +122,13 @@ SETTINGS:
 ## Section: `SETTINGS.LOCATION-CACHE`
 
 Finding a safe spot is the slow part of `/rtp`, and on a large overworld it can keep a player waiting
-for the best part of a minute. This cache does that work in the background, so the command usually
-has a verified location waiting for it and teleports straight away.
+for the best part of a minute. This cache does that work in the background while people are playing,
+so the command usually has a verified location waiting for it and teleports straight away.
 
-Filling starts as soon as the server does and keeps going whether or not anyone is online, which is
-the point: the first player to join should not be the one who pays for the search. Each world runs up
-to two background searches at a time until it holds `SIZE` locations, and those searches check fewer
-candidates side by side than a player-facing one so the warm-up never competes with someone who is
-actually waiting. Every entry is re-checked against the current world and radius before it is handed
-out, and a background search that never reports back is given up on after thirty seconds so a world
-cannot be left without ready locations. When the cache is empty the command falls back to searching
-live, exactly as before.
+The cache is filled by the same search `/rtp` runs, one world at a time, and only while at least one
+player is online. Each entry is re-checked against the current world and radius before it is handed
+out, and a search only starts when a world is short of ready locations. When the cache is empty the
+command falls back to searching live, exactly as before.
 
 ### 1. Commented Setup Code Example
 

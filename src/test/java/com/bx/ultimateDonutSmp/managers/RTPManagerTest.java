@@ -1,13 +1,11 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.utils.SpigotScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,36 +20,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RTPManagerTest {
 
     private Server originalServer;
     private Server mockServer;
     private List<World> mockWorlds;
-    private AtomicInteger scheduledTasks;
 
     @BeforeEach
     void setUp() throws Exception {
         originalServer = Bukkit.getServer();
         mockWorlds = new ArrayList<>();
-        scheduledTasks = new AtomicInteger();
-
-        Object mockScheduler = Proxy.newProxyInstance(
-                BukkitScheduler.class.getClassLoader(),
-                new Class<?>[]{BukkitScheduler.class},
-                (proxy, method, args) -> {
-                    if (method.getName().startsWith("runTask")) {
-                        scheduledTasks.incrementAndGet();
-                    }
-                    return null;
-                }
-        );
 
         mockServer = (Server) Proxy.newProxyInstance(
                 Server.class.getClassLoader(),
@@ -71,12 +54,6 @@ class RTPManagerTest {
                     }
                     if (method.getName().equals("getWorldContainer")) {
                         return new java.io.File(".");
-                    }
-                    if (method.getName().equals("getOnlinePlayers")) {
-                        return List.of();
-                    }
-                    if (method.getName().equals("getScheduler")) {
-                        return mockScheduler;
                     }
                     if (method.getName().equals("getLogger")) {
                         return java.util.logging.Logger.getLogger("Minecraft");
@@ -264,108 +241,6 @@ class RTPManagerTest {
         seedLocationCache(rtpManager, "world", new Location(world, 1000.5, 70.0, 1000.5), System.currentTimeMillis());
 
         assertNull(pollCachedLocation(rtpManager, "world"));
-    }
-
-    /** Gives the mock plugin the two collaborators the background pre-cache needs to run. */
-    private void attachSchedulerAndFeatures(UltimateDonutSmp plugin) throws Exception {
-        Field featureField = UltimateDonutSmp.class.getDeclaredField("featureManager");
-        featureField.setAccessible(true);
-        featureField.set(plugin, new FeatureManager(plugin));
-
-        Field schedulerField = UltimateDonutSmp.class.getDeclaredField("SpigotScheduler");
-        schedulerField.setAccessible(true);
-        schedulerField.set(plugin, new SpigotScheduler(plugin));
-    }
-
-    private YamlConfiguration preCacheRtpConfig() {
-        YamlConfiguration rtpConfig = overworldRtpConfig();
-        rtpConfig.set("SETTINGS.SEARCH-ATTEMPTS-PER-TICK", 25);
-        rtpConfig.set("SETTINGS.LOCATION-CACHE.ENABLED", true);
-        rtpConfig.set("SETTINGS.LOCATION-CACHE.SIZE", 5);
-        rtpConfig.set("RTP-MENU.BUTTONS.OVERWORLD.SLOT", 11);
-        rtpConfig.set("RTP-MENU.BUTTONS.OVERWORLD.WORLD", "world");
-        rtpConfig.set("RTP-MENU.BUTTONS.OVERWORLD.ENABLED", true);
-        return rtpConfig;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<String, Queue<Long>> preCacheInFlight(RTPManager rtpManager) throws Exception {
-        Field field = RTPManager.class.getDeclaredField("preCacheInFlight");
-        field.setAccessible(true);
-        return (Map<String, Queue<Long>>) field.get(rtpManager);
-    }
-
-    private Queue<Long> searchesInFlight(RTPManager rtpManager, String worldKey) throws Exception {
-        Queue<Long> running = preCacheInFlight(rtpManager).get(worldKey);
-        return running == null ? new ConcurrentLinkedQueue<>() : running;
-    }
-
-    private void seedSearchesInFlight(RTPManager rtpManager, String worldKey, long... startedAt) throws Exception {
-        Queue<Long> running = new ConcurrentLinkedQueue<>();
-        for (long value : startedAt) {
-            running.add(value);
-        }
-        preCacheInFlight(rtpManager).put(worldKey, running);
-    }
-
-    @Test
-    void testPreCacheSearchesToStartFillsTheCacheWithinTheConcurrencyLimit() {
-        assertEquals(2, RTPManager.preCacheSearchesToStart(5, 0, 0, 2));
-        assertEquals(1, RTPManager.preCacheSearchesToStart(5, 0, 1, 2));
-        assertEquals(0, RTPManager.preCacheSearchesToStart(5, 0, 2, 2));
-        assertEquals(1, RTPManager.preCacheSearchesToStart(2, 1, 0, 2));
-        assertEquals(0, RTPManager.preCacheSearchesToStart(2, 2, 0, 2));
-        assertEquals(0, RTPManager.preCacheSearchesToStart(0, 0, 0, 2));
-    }
-
-    @Test
-    void testPreCacheWarmsUpWhileTheServerIsEmpty() throws Exception {
-        createMockWorld("world", World.Environment.NORMAL);
-        UltimateDonutSmp plugin = createMockPlugin(preCacheRtpConfig());
-        attachSchedulerAndFeatures(plugin);
-
-        RTPManager rtpManager = new RTPManager(plugin);
-
-        assertEquals(0, Bukkit.getOnlinePlayers().size());
-        assertEquals(2, searchesInFlight(rtpManager, "world").size());
-        assertTrue(scheduledTasks.get() > 0);
-
-        rtpManager.refillPreCacheAllWorlds();
-        assertEquals(2, searchesInFlight(rtpManager, "world").size());
-    }
-
-    @Test
-    void testPreCacheReleasesSearchesThatNeverFinished() throws Exception {
-        createMockWorld("world", World.Environment.NORMAL);
-        UltimateDonutSmp plugin = createMockPlugin(preCacheRtpConfig());
-        attachSchedulerAndFeatures(plugin);
-        RTPManager rtpManager = new RTPManager(plugin);
-
-        long stale = System.currentTimeMillis() - 120_000L;
-        seedSearchesInFlight(rtpManager, "world", stale, stale);
-
-        rtpManager.refillPreCacheAllWorlds();
-
-        Queue<Long> running = searchesInFlight(rtpManager, "world");
-        assertEquals(2, running.size());
-        for (long startedAt : running) {
-            assertTrue(startedAt > stale, "a stale search should have been replaced by a fresh one");
-        }
-    }
-
-    @Test
-    void testPreCacheLeavesRunningSearchesAlone() throws Exception {
-        createMockWorld("world", World.Environment.NORMAL);
-        UltimateDonutSmp plugin = createMockPlugin(preCacheRtpConfig());
-        attachSchedulerAndFeatures(plugin);
-        RTPManager rtpManager = new RTPManager(plugin);
-
-        long now = System.currentTimeMillis();
-        seedSearchesInFlight(rtpManager, "world", now, now);
-
-        rtpManager.refillPreCacheAllWorlds();
-
-        assertEquals(List.of(now, now), new ArrayList<>(searchesInFlight(rtpManager, "world")));
     }
 
     @Test
