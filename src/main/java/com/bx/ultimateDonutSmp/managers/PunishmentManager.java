@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 public class PunishmentManager {
@@ -131,6 +132,49 @@ public class PunishmentManager {
                 Math.max(0, offset),
                 System.currentTimeMillis()
         );
+    }
+
+    public int countAll(PunishmentQuery query, String search) {
+        return plugin.getDatabaseManager().countAllPunishments(
+                query == null ? PunishmentQuery.defaultQuery() : query,
+                search,
+                System.currentTimeMillis()
+        );
+    }
+
+    public List<PunishmentRecord> getAll(PunishmentQuery query, String search, int limit, int offset) {
+        return plugin.getDatabaseManager().loadAllPunishments(
+                query == null ? PunishmentQuery.defaultQuery() : query,
+                search,
+                Math.max(1, limit),
+                Math.max(0, offset),
+                System.currentTimeMillis()
+        );
+    }
+
+    /**
+     * Reads one page of the server-wide punishment list off the main thread. The whole table is in
+     * play here rather than a single indexed target, so a synchronous read would stall the server on
+     * anything but a small history.
+     */
+    public CompletableFuture<PunishmentPage> getAllAsync(PunishmentQuery query, String search, int limit, int offset) {
+        int pageSize = Math.max(1, limit);
+        CompletableFuture<PunishmentPage> future = new CompletableFuture<>();
+        plugin.getDatabaseManager().executeAsync(() -> {
+            try {
+                int total = countAll(query, search);
+                // Filters and deletions can shrink the result set under a viewer who is deep into the
+                // pages, so snap the offset back to the last real page boundary instead of paging past
+                // the end.
+                int lastPageOffset = Math.max(0, (Math.max(0, total - 1) / pageSize) * pageSize);
+                int safeOffset = Math.max(0, Math.min(offset, lastPageOffset));
+                future.complete(new PunishmentPage(getAll(query, search, pageSize, safeOffset), total, safeOffset));
+            } catch (Exception e) {
+                plugin.getLogger().log(java.util.logging.Level.WARNING, "Failed to load server-wide punishment page", e);
+                future.complete(new PunishmentPage(List.of(), 0, 0));
+            }
+        });
+        return future;
     }
 
     public Optional<PunishmentRecord> getActiveRecord(UUID targetUuid, PunishmentType type) {
@@ -363,6 +407,8 @@ public class PunishmentManager {
         }
         return null;
     }
+
+    public record PunishmentPage(List<PunishmentRecord> records, int total, int offset) {}
 
     public record PunishmentCreateRequest(
             UUID targetUuid,

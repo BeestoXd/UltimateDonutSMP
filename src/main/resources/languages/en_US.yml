@@ -1530,6 +1530,59 @@ MENUS:
         - '&7Total Items: &f{item_count}'
     PANEL-MENU:
       TITLE: '&8Spawners'
+  PUNISHMENTS-LIST-MENU:
+    TITLE: '&8All Punishments'
+    BUTTONS:
+      BACK:
+        DISPLAY-NAME: '&cClose'
+        LORE:
+        - '&7Close this menu'
+      FILTER-STATE:
+        DISPLAY-NAME: '&#6BF18DState Filter'
+        LORE:
+        - '&7Current: &f{state_filter}'
+        - '&aClick to change'
+      SORT:
+        DISPLAY-NAME: '&#6BF18DSort Order'
+        LORE:
+        - '&7Current: &f{sort_order}'
+        - '&aClick to change'
+      SEARCH:
+        DISPLAY-NAME: '&#6BF18DSearch'
+        LORE:
+        - '&7Current: &f{search}'
+        - '&aLeft-click to search a player'
+        - '&cRight-click to clear'
+      REFRESH:
+        DISPLAY-NAME: '&#6BF18DRefresh'
+        LORE:
+        - '&7Reload the punishment list'
+    SEARCH-SIGN:
+      LINES:
+      - ''
+      - ^^^^^^^^^^^^^^
+      - Player Name
+      - ''
+    PUNISHMENT-ITEM:
+      DISPLAY-NAME: '{status_color}{player} &8- &f{type}'
+      LORE:
+      - '&7Reason: &f{reason}'
+      - '&7Issued by: &f{issuer}'
+      - '&7Date: &f{issued_at}'
+      - '&7Expires: &f{expires_at}'
+      - '&7Status: {status_color}{status}'
+      - '&7ID: &f#{id}'
+      - ''
+      - '&aLeft-click to view full history'
+      - '&cShift-right-click to delete this record'
+    LOADING-BUTTON:
+      DISPLAY-NAME: '&eLoading Punishments'
+      LORE:
+      - '&7Reading the punishment table.'
+    EMPTY-BUTTON:
+      DISPLAY-NAME: '&cNo Punishments Found'
+      LORE:
+      - '&7No punishments match the current filters.'
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2744,7 +2797,7 @@ MESSAGES:
     NO-REMOVE-PERMISSION: '&cYou do not have permission to remove punishments.'
     NO-DELETE-PERMISSION: '&cYou do not have permission to delete punishment history
       records.'
-    USAGE: '&cUsage: /punishments <player>'
+    USAGE: '&cUsage: /punishments [player]'
     USAGE-BAN: '&cUsage: /ban <player> [reason]'
     USAGE-TEMPBAN: '&cUsage: /tempban <player> <time> [reason] &7(time: 30s, 15m,
       2h, 5d, or 5d 15m 30s)'

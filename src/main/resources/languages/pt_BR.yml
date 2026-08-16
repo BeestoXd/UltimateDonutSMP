@@ -1274,6 +1274,59 @@ MENUS:
       LORE:
       - "&7Are you sure you want"
       - "&7To end your life?"
+  PUNISHMENTS-LIST-MENU:
+    TITLE: "&8Todas as punições"
+    BUTTONS:
+      BACK:
+        DISPLAY-NAME: "&cFechar"
+        LORE:
+        - "&7Fechar este menu"
+      FILTER-STATE:
+        DISPLAY-NAME: "&#6BF18DFiltro de estado"
+        LORE:
+        - "&7Atual: &f{state_filter}"
+        - "&aClique para alterar"
+      SORT:
+        DISPLAY-NAME: "&#6BF18DOrdenação"
+        LORE:
+        - "&7Atual: &f{sort_order}"
+        - "&aClique para alterar"
+      SEARCH:
+        DISPLAY-NAME: "&#6BF18DBuscar"
+        LORE:
+        - "&7Atual: &f{search}"
+        - "&aClique esquerdo para buscar um jogador"
+        - "&cClique direito para limpar"
+      REFRESH:
+        DISPLAY-NAME: "&#6BF18DAtualizar"
+        LORE:
+        - "&7Recarregar a lista de punições"
+    SEARCH-SIGN:
+      LINES:
+      - ""
+      - "^^^^^^^^^^^^^^"
+      - "Nome do jogador"
+      - ""
+    PUNISHMENT-ITEM:
+      DISPLAY-NAME: "{status_color}{player} &8- &f{type}"
+      LORE:
+      - "&7Motivo: &f{reason}"
+      - "&7Aplicada por: &f{issuer}"
+      - "&7Data: &f{issued_at}"
+      - "&7Expira: &f{expires_at}"
+      - "&7Estado: {status_color}{status}"
+      - "&7ID: &f#{id}"
+      - ""
+      - "&aClique esquerdo para ver o histórico completo"
+      - "&cShift + clique direito para excluir este registro"
+    LOADING-BUTTON:
+      DISPLAY-NAME: "&eCarregando punições"
+      LORE:
+      - "&7Lendo a tabela de punições."
+    EMPTY-BUTTON:
+      DISPLAY-NAME: "&cNenhuma punição encontrada"
+      LORE:
+      - "&7Nenhuma punição corresponde aos filtros atuais."
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2405,7 +2458,7 @@ MESSAGES:
     NO-REMOVE-PERMISSION: '&cYou do not have permission to remove punishments.'
     NO-DELETE-PERMISSION: '&cYou do not have permission to delete punishment history
       records.'
-    USAGE: "&cUsage: /punishments <player>"
+    USAGE: "&cUso: /punishments [player]"
     USAGE-BAN: "&cUsage: /ban <player> [reason]"
     USAGE-TEMPBAN: "&cUsage: /tempban <player> <time> [reason] &7(time: 30s, 15m,
       2h, 5d, or 5d 15h30)"

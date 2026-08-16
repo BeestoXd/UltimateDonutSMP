@@ -410,8 +410,8 @@ commands:
     permission: ultimatedonutsmp.command.profileviewer
     permission-message: "&cYou do not have permission to use /profileviewer."
   punishments:
-    description: View a player's punishment history
-    usage: /punishments <player>
+    description: Browse every punishment on the server, or one player's history
+    usage: /punishments [player]
     aliases:
     - phistory
     permission: ultimatedonutsmp.command.punishments

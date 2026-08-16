@@ -487,6 +487,7 @@ public class DatabaseManager {
         execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_issued ON punishments(target_uuid, issued_at DESC)");
         execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_type ON punishments(target_uuid, type)");
         execute("CREATE INDEX IF NOT EXISTS idx_punishments_target_name ON punishments(target_name_snapshot)");
+        execute("CREATE INDEX IF NOT EXISTS idx_punishments_issued ON punishments(issued_at DESC)");
         execute(
             "CREATE TABLE IF NOT EXISTS freeze_states (" +
             "  target_uuid TEXT PRIMARY KEY," +
@@ -3714,6 +3715,54 @@ public class DatabaseManager {
         return records;
     }
 
+    public int countAllPunishments(PunishmentQuery query, String search, long now) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM punishments");
+        List<Object> parameters = new ArrayList<>();
+        appendGlobalPunishmentFilters(sql, parameters, search, query, now);
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            bindParameters(ps, parameters);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to count server-wide punishments", e);
+        }
+
+        return 0;
+    }
+
+    public List<PunishmentRecord> loadAllPunishments(PunishmentQuery query, String search, int limit, int offset, long now) {
+        List<PunishmentRecord> records = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM punishments");
+        List<Object> parameters = new ArrayList<>();
+        appendGlobalPunishmentFilters(sql, parameters, search, query, now);
+
+        PunishmentSortOrder sortOrder = query == null ? PunishmentSortOrder.NEWEST : query.sortOrder();
+        sql.append(sortOrder == PunishmentSortOrder.OLDEST
+                ? " ORDER BY issued_at ASC, id ASC"
+                : " ORDER BY issued_at DESC, id DESC");
+        sql.append(" LIMIT ? OFFSET ?");
+        parameters.add(Math.max(1, limit));
+        parameters.add(Math.max(0, offset));
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            bindParameters(ps, parameters);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    records.add(mapPunishmentRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to load server-wide punishments", e);
+        }
+
+        return records;
+    }
+
     // â”€â”€ Cuboids â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public record CuboidData(String world, int x1, int y1, int z1, int x2, int y2, int z2) {}
@@ -4187,6 +4236,36 @@ public class DatabaseManager {
         }
         sql.append(")");
 
+        appendPunishmentQueryFilters(sql, parameters, query, now);
+    }
+
+    private void appendGlobalPunishmentFilters(StringBuilder sql,
+                                               List<Object> parameters,
+                                               String search,
+                                               PunishmentQuery query,
+                                               long now) {
+        String term = search == null ? "" : search.trim();
+        if (!term.isEmpty()) {
+            sql.append(" WHERE (LOWER(target_name_snapshot) LIKE LOWER(?) ESCAPE '!'");
+            parameters.add("%" + escapeLikeTerm(term) + "%");
+
+            UUID searchUuid = parseUuidOrNull(term);
+            if (searchUuid != null) {
+                sql.append(" OR target_uuid = ?");
+                parameters.add(searchUuid.toString());
+            }
+            sql.append(")");
+        } else {
+            sql.append(" WHERE 1=1");
+        }
+
+        appendPunishmentQueryFilters(sql, parameters, query, now);
+    }
+
+    private void appendPunishmentQueryFilters(StringBuilder sql,
+                                              List<Object> parameters,
+                                              PunishmentQuery query,
+                                              long now) {
         if (query == null) {
             return;
         }
@@ -4202,6 +4281,18 @@ public class DatabaseManager {
         } else if (query.stateFilter() == PunishmentFilterState.INACTIVE) {
             sql.append(" AND (removed_at IS NOT NULL OR (expires_at IS NOT NULL AND expires_at <= ?))");
             parameters.add(now);
+        }
+    }
+
+    private static String escapeLikeTerm(String term) {
+        return term.replace("!", "!!").replace("%", "!%").replace("_", "!_");
+    }
+
+    private static UUID parseUuidOrNull(String value) {
+        try {
+            return UUID.fromString(value);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
