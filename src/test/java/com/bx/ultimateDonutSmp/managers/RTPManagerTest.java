@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,9 +17,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class RTPManagerTest {
 
@@ -128,6 +133,114 @@ class RTPManagerTest {
 
         String normalWorld = (String) getLoadedNormalWorldName.invoke(rtpManager);
         assertEquals("survival", normalWorld);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void seedLocationCache(RTPManager rtpManager, String worldName, Location location, long cachedAtMillis)
+            throws Exception {
+        Class<?> cachedLocationClass = Class.forName("com.bx.ultimateDonutSmp.managers.RTPManager$CachedLocation");
+        Constructor<?> cachedLocationConstructor = cachedLocationClass.getDeclaredConstructor(Location.class, long.class);
+        cachedLocationConstructor.setAccessible(true);
+        Object entry = cachedLocationConstructor.newInstance(location, cachedAtMillis);
+
+        Field cacheField = RTPManager.class.getDeclaredField("locationPreCache");
+        cacheField.setAccessible(true);
+        Map<String, Queue<Object>> cache = (Map<String, Queue<Object>>) cacheField.get(rtpManager);
+        Queue<Object> queue = new ConcurrentLinkedQueue<>();
+        queue.add(entry);
+        cache.put(worldName.toLowerCase(java.util.Locale.ROOT), queue);
+    }
+
+    private Location pollCachedLocation(RTPManager rtpManager, String worldName) throws Exception {
+        Method pollPreCachedLocation = RTPManager.class.getDeclaredMethod("pollPreCachedLocation", String.class);
+        pollPreCachedLocation.setAccessible(true);
+        return (Location) pollPreCachedLocation.invoke(rtpManager, worldName);
+    }
+
+    private YamlConfiguration overworldRtpConfig() {
+        YamlConfiguration rtpConfig = new YamlConfiguration();
+        rtpConfig.set("WORLD-SETTINGS.world.MIN-RADIUS", 500);
+        rtpConfig.set("WORLD-SETTINGS.world.MAX-RADIUS", 5000);
+        return rtpConfig;
+    }
+
+    @Test
+    void testSearchAttemptsPerTickReadsConfiguredValue() throws Exception {
+        YamlConfiguration rtpConfig = new YamlConfiguration();
+        RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
+        assertEquals(1, rtpManager.getSearchAttemptsPerTick());
+
+        rtpConfig.set("SETTINGS.SEARCH-ATTEMPTS-PER-TICK", 8);
+        assertEquals(8, rtpManager.getSearchAttemptsPerTick());
+
+        rtpConfig.set("SETTINGS.SEARCH-ATTEMPTS-PER-TICK", 0);
+        assertEquals(1, rtpManager.getSearchAttemptsPerTick());
+    }
+
+    @Test
+    void testPreCacheSizeIsClampedAndRespectsToggle() throws Exception {
+        YamlConfiguration rtpConfig = new YamlConfiguration();
+        RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
+        assertEquals(3, rtpManager.getPreCacheSize());
+
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.SIZE", 64);
+        assertEquals(16, rtpManager.getPreCacheSize());
+
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.SIZE", -4);
+        assertEquals(0, rtpManager.getPreCacheSize());
+
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.SIZE", 5);
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.ENABLED", false);
+        assertEquals(0, rtpManager.getPreCacheSize());
+    }
+
+    @Test
+    void testPollPreCachedLocationReturnsUsableEntry() throws Exception {
+        World world = createMockWorld("world", World.Environment.NORMAL);
+        RTPManager rtpManager = new RTPManager(createMockPlugin(overworldRtpConfig()));
+
+        Location cached = new Location(world, 1000.5, 70.0, 1000.5);
+        seedLocationCache(rtpManager, "world", cached, System.currentTimeMillis());
+
+        Location polled = pollCachedLocation(rtpManager, "world");
+        assertEquals(cached, polled);
+        assertSame(world, polled.getWorld());
+        assertNull(pollCachedLocation(rtpManager, "world"));
+    }
+
+    @Test
+    void testPollPreCachedLocationDropsEntryOutsideRadius() throws Exception {
+        World world = createMockWorld("world", World.Environment.NORMAL);
+        RTPManager rtpManager = new RTPManager(createMockPlugin(overworldRtpConfig()));
+
+        seedLocationCache(rtpManager, "world", new Location(world, 100.5, 70.0, 100.5), System.currentTimeMillis());
+
+        assertNull(pollCachedLocation(rtpManager, "world"));
+    }
+
+    @Test
+    void testPollPreCachedLocationDropsExpiredEntry() throws Exception {
+        World world = createMockWorld("world", World.Environment.NORMAL);
+        YamlConfiguration rtpConfig = overworldRtpConfig();
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.MAX-AGE-SECONDS", 60);
+        RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
+
+        Location cached = new Location(world, 1000.5, 70.0, 1000.5);
+        seedLocationCache(rtpManager, "world", cached, System.currentTimeMillis() - 120_000L);
+
+        assertNull(pollCachedLocation(rtpManager, "world"));
+    }
+
+    @Test
+    void testPollPreCachedLocationIgnoresCacheWhenDisabled() throws Exception {
+        World world = createMockWorld("world", World.Environment.NORMAL);
+        YamlConfiguration rtpConfig = overworldRtpConfig();
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.ENABLED", false);
+        RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
+
+        seedLocationCache(rtpManager, "world", new Location(world, 1000.5, 70.0, 1000.5), System.currentTimeMillis());
+
+        assertNull(pollCachedLocation(rtpManager, "world"));
     }
 
     @Test

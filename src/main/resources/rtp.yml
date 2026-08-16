@@ -31,6 +31,14 @@ SETTINGS:
   FALLBACK-TO-LOADED-CHUNKS: true
   # Chunk samples to try before loaded chunk fallback starts
   LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32
+  # Safe locations found ahead of time in the background so RTP can teleport without searching
+  LOCATION-CACHE:
+    # Enable or disable the background safe location cache
+    ENABLED: true
+    # How many ready locations are kept per RTP world. 0 disables the cache
+    SIZE: 3
+    # Seconds a cached location stays usable before it is thrown away. 0 keeps it until the next reload
+    MAX-AGE-SECONDS: 600
   # Priority queue settings for RTP requests
   PRIORITY-QUEUE:
     # Enable or disable the RTP permission priority queue system
