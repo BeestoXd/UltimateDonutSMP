@@ -509,11 +509,13 @@ public class SpawnManager {
             return SetupLocationResult.failure("ɴᴏ ꜰʀᴇᴇ " + getLocationLabel(type) + " ᴍᴇɴᴜ ѕʟᴏᴛ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.");
         }
 
+        String previousSetupLocation = config.getString(configPath, "");
+
         config.set(configPath, serialized);
         config.set(getMenuTogglePath(type), true);
         menus.set(target.path() + "." + MENU_LOCATION_KEY, serialized);
         menus.set(target.path() + "." + LEGACY_MENU_LOCATION_KEY, null);
-        configureSetupShardRegion(config, menus, target, location, serialized, type);
+        configureSetupShardRegion(config, menus, target, location, serialized, type, previousSetupLocation);
 
         try {
             if (!plugin.getConfigManager().saveConfig()) {
@@ -546,9 +548,16 @@ public class SpawnManager {
             SetupAreaTarget target,
             Location location,
             String serialized,
-            AreaType type
+            AreaType type,
+            String previousSetupLocation
     ) {
         if (location == null || location.getWorld() == null || serialized == null || serialized.isBlank()) {
+            return;
+        }
+
+        String regionLocationPath = SETUP_SHARD_REGION_PATH + "."
+                + (type == AreaType.SPAWN ? MENU_LOCATION_KEY : "AFK-LOCATION");
+        if (!setupOwnsShardRegion(config.getString(regionLocationPath), previousSetupLocation)) {
             return;
         }
 
@@ -558,9 +567,9 @@ public class SpawnManager {
         }
 
         config.set(SETUP_SHARD_REGION_PATH + ".ENABLED", true);
-        config.set(SETUP_SHARD_REGION_PATH + ".WORLD", location.getWorld().getName());
 
         if (type == AreaType.SPAWN) {
+            config.set(SETUP_SHARD_REGION_PATH + ".WORLD", location.getWorld().getName());
             config.set(SETUP_SHARD_REGION_PATH + ".BOUND", true);
             config.set(SETUP_SHARD_REGION_PATH + ".CUBOID", cuboidName);
             config.set(SETUP_SHARD_REGION_PATH + "." + MENU_LOCATION_KEY, serialized);
@@ -571,6 +580,22 @@ public class SpawnManager {
             config.set(SETUP_SHARD_REGION_PATH + ".AFK-CUBOID", cuboidName);
             config.set(SETUP_SHARD_REGION_PATH + ".AFK-LOCATION", serialized);
         }
+    }
+
+    /**
+     * The spawn shard region is only there to give a fresh server something usable, so /setspawn and
+     * /setafk may fill it in while it still holds whatever the last setup run wrote. Once a server
+     * owner has pointed the region somewhere of their own it belongs to them, and saving a new spawn
+     * or AFK point leaves the whole region untouched.
+     */
+    static boolean setupOwnsShardRegion(String regionLocation, String previousSetupLocation) {
+        String current = regionLocation == null ? "" : regionLocation.trim();
+        if (current.isEmpty()) {
+            return true;
+        }
+
+        String previous = previousSetupLocation == null ? "" : previousSetupLocation.trim();
+        return current.equalsIgnoreCase(previous);
     }
 
     private SetupAreaTarget findNextSetupAreaTarget(AreaType type) {
