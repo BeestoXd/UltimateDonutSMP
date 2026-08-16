@@ -1843,6 +1843,15 @@ public class ConfigManager {
             return true;
         }
 
+        // Rank cooldown permission entries are live server content keyed by the ranks a server
+        // actually runs, so the bundled vip examples must not be merged back after admins delete
+        // or replace them. The RANK-COOLDOWNS section itself stays mergeable so configs that
+        // predate the feature still receive it once.
+        if ("rtp.yml".equals(resourceName)
+                && path.startsWith("SETTINGS.RANK-COOLDOWNS.PERMISSIONS.")) {
+            return true;
+        }
+
         // Network server entries can be expanded per deployment.
         if ("network.yml".equals(resourceName)
                 && path.startsWith("NETWORK-STATUS.SERVERS.")) {

@@ -107,6 +107,29 @@ This page contains the complete reference guide for all commands, aliases, synta
 
 ---
 
+## RTP Rank Permissions
+
+These nodes are not registered in `plugin.yml` and are read straight off the player, so they work with
+LuckPerms or any other permission plugin. Assign them per rank.
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.rtp.cooldown.<seconds>` | `false` | Override the `/rtp` cooldown for this player, in seconds. `ultimatedonutsmp.rtp.cooldown.3` gives a 3 second cooldown, and `ultimatedonutsmp.rtp.cooldown.0` removes the cooldown entirely. |
+| `ultimatedonutsmp.rtp.priority.<weight>` | `false` | Position in the RTP waiting queue when all slots are busy. Higher weight is served first. |
+
+When a player holds more than one cooldown node the **lowest** value wins, so stacked ranks always give
+the player the fastest cooldown they are entitled to. A player with no cooldown node falls back to the
+per-world `WORLD-SETTINGS.<world>.COOLDOWN` value in `rtp.yml`.
+
+Named rank nodes can be mapped to a cooldown instead of using numeric nodes. See
+`SETTINGS.RANK-COOLDOWNS.PERMISSIONS` in [Config-rtp.yml](Config-rtp.yml) — the shipped defaults map
+`ultimatedonutsmp.rtp.cooldown.vip`, `.vip+` and `.vip++` to 15, 10 and 3 seconds.
+
+Set `SETTINGS.RANK-COOLDOWNS.ENABLED: false` in `rtp.yml` to ignore every cooldown permission and use
+the per-world value for everyone.
+
+---
+
 ## Media Rank & Badge Permissions
 
 Media permissions are registered with `default: false` and require explicit assignment via LuckPerms (or explicit permission attachment). Being an OP player does not automatically grant media badge status.
