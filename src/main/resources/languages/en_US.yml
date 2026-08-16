@@ -1955,6 +1955,8 @@ CONFIG:
       ECSEE-PLAYER-NOT-FOUND: '&cPlayer &f{player} &cwas not found.'
       ECSEE-OPEN-FAILED: '&cFailed to open &f{target}''s &cender chest. please try
         again.'
+      ROWS-DOWNGRADED: '&eYour Ender Chest is now {rows} rows. {amount} item(s) that
+        no longer fit were returned to you.'
   INVSEE:
     INVSEE:
       TITLE: '&8Inventory of {player}'

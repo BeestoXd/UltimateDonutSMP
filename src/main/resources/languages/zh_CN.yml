@@ -1686,6 +1686,7 @@ CONFIG:
       ECSEE-PLAYER-NOT-FOUND: "&cPlayer &f{player} &cwas not found."
       ECSEE-OPEN-FAILED: "&cFailed to open &f{target}'s &cender chest. please try
         again."
+      ROWS-DOWNGRADED: "&e你的末影箱现在是 {rows} 行。{amount} 个放不下的物品已归还给你。"
   INVSEE:
     INVSEE:
       TITLE: '&8Inventory of {player}'

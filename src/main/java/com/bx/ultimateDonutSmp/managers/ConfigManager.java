@@ -1852,6 +1852,13 @@ public class ConfigManager {
             return true;
         }
 
+        // Ender Chest row permission entries are keyed by a server's own ranks for the same reason,
+        // so the bundled vip examples must not come back once admins delete or replace them.
+        if ("ender-chest.yml".equals(resourceName)
+                && path.startsWith("ENDER-CHEST.ROW-PERMISSIONS.PERMISSIONS.")) {
+            return true;
+        }
+
         // Network server entries can be expanded per deployment.
         if ("network.yml".equals(resourceName)
                 && path.startsWith("NETWORK-STATUS.SERVERS.")) {
