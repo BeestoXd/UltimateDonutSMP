@@ -15,6 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -328,7 +329,7 @@ public class WorthManager {
             player.setItemOnCursor(updatedCursor);
         }
 
-        if (player.isOnline() && (forceUpdate || shouldUpdateInventory(player))) {
+        if (player.isOnline() && shouldUpdateInventory(player, forceUpdate)) {
             player.updateInventory();
         }
     }
@@ -344,12 +345,16 @@ public class WorthManager {
 
         syncInventoryWorthDisplay(inventory, isWorthDisplayEnabled(player));
 
-        if (player.isOnline() && (forceUpdate || shouldUpdateInventory(player))) {
+        if (player.isOnline() && shouldUpdateInventory(player, forceUpdate)) {
             player.updateInventory();
         }
     }
 
     private boolean shouldUpdateInventory(Player player) {
+        return shouldUpdateInventory(player, false);
+    }
+
+    private boolean shouldUpdateInventory(Player player, boolean forceUpdate) {
         if (player == null || !player.isOnline()) {
             return false;
         }
@@ -359,9 +364,29 @@ public class WorthManager {
             return true;
         }
 
-        org.bukkit.event.inventory.InventoryType type = topInventory.getType();
+        InventoryType type = topInventory.getType();
+        if (holdsClientState(type)) {
+            return false;
+        }
+
+        if (forceUpdate) {
+            return true;
+        }
+
+        return type != InventoryType.CRAFTING && type != InventoryType.CREATIVE;
+    }
+
+    // Resending the whole window is safe on a chest, but these screens carry state the server never
+    // sent the client - the three enchantment offers, a half-typed anvil name, a picked recipe. A
+    // resync drops it. Java quietly redraws, Geyser does not, so a Bedrock player watches the
+    // enchantment offers vanish the moment the item lands in the slot. Kept as a switch rather than
+    // a constant set so nothing here touches the InventoryType registry before the server is up.
+    static boolean holdsClientState(InventoryType type) {
+        if (type == null) {
+            return false;
+        }
+
         switch (type) {
-            case CRAFTING:
             case WORKBENCH:
             case ANVIL:
             case SMITHING:
@@ -371,11 +396,15 @@ public class WorthManager {
             case LOOM:
             case ENCHANTING:
             case MERCHANT:
-            case CREATIVE:
-                return false;
-            default:
+            case BEACON:
                 return true;
+            default:
+                return false;
         }
+    }
+
+    public boolean canResendOpenInventory(Player player) {
+        return shouldUpdateInventory(player, true);
     }
 
     public ItemStack applyWorthDisplayForPlayer(Player player, ItemStack item) {
