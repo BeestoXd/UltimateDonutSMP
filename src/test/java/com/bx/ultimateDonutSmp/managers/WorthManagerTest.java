@@ -120,6 +120,80 @@ class WorthManagerTest {
         assertTrue(partialStack.isSimilar(fullStack));
     }
 
+    @Test
+    void screensThatHoldClientStateAreNotResynced() throws Exception {
+        setupMockServer();
+
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.ENCHANTING));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.ANVIL));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.GRINDSTONE));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.SMITHING));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.STONECUTTER));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.LOOM));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.CARTOGRAPHY));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.MERCHANT));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.BEACON));
+        assertTrue(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.WORKBENCH));
+
+        assertFalse(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.CHEST));
+        assertFalse(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.SHULKER_BOX));
+        assertFalse(WorthManager.holdsClientState(org.bukkit.event.inventory.InventoryType.CRAFTING));
+        assertFalse(WorthManager.holdsClientState(null));
+    }
+
+    @Test
+    void forcedRefreshLeavesAnOpenEnchantingTableAlone() throws Exception {
+        setupMockServer();
+        UltimateDonutSmp plugin = createMockPlugin(new org.bukkit.configuration.file.YamlConfiguration());
+        WorthManager worthManager = new WorthManager(plugin);
+
+        assertFalse(worthManager.canResendOpenInventory(
+                playerWithOpenView(org.bukkit.event.inventory.InventoryType.ENCHANTING)));
+        assertFalse(worthManager.canResendOpenInventory(
+                playerWithOpenView(org.bukkit.event.inventory.InventoryType.ANVIL)));
+
+        assertTrue(worthManager.canResendOpenInventory(
+                playerWithOpenView(org.bukkit.event.inventory.InventoryType.CHEST)));
+        assertTrue(worthManager.canResendOpenInventory(
+                playerWithOpenView(org.bukkit.event.inventory.InventoryType.CRAFTING)));
+    }
+
+    private org.bukkit.entity.Player playerWithOpenView(org.bukkit.event.inventory.InventoryType type) {
+        org.bukkit.inventory.Inventory topInventory = (org.bukkit.inventory.Inventory) java.lang.reflect.Proxy.newProxyInstance(
+                org.bukkit.inventory.Inventory.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.inventory.Inventory.class},
+                (proxy, method, args) -> method.getName().equals("getType") ? type : defaultValue(method));
+
+        org.bukkit.inventory.InventoryView view = (org.bukkit.inventory.InventoryView) java.lang.reflect.Proxy.newProxyInstance(
+                org.bukkit.inventory.InventoryView.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.inventory.InventoryView.class},
+                (proxy, method, args) -> method.getName().equals("getTopInventory") ? topInventory : defaultValue(method));
+
+        return (org.bukkit.entity.Player) java.lang.reflect.Proxy.newProxyInstance(
+                org.bukkit.entity.Player.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.entity.Player.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("isOnline")) {
+                        return true;
+                    }
+                    if (method.getName().equals("getOpenInventory")) {
+                        return view;
+                    }
+                    return defaultValue(method);
+                });
+    }
+
+    private static Object defaultValue(java.lang.reflect.Method method) {
+        Class<?> returnType = method.getReturnType();
+        if (returnType == boolean.class) {
+            return false;
+        }
+        if (returnType == int.class) {
+            return 0;
+        }
+        return null;
+    }
+
     private void setupMockServer() throws Exception {
         java.lang.reflect.Field serverField = org.bukkit.Bukkit.class.getDeclaredField("server");
         serverField.setAccessible(true);

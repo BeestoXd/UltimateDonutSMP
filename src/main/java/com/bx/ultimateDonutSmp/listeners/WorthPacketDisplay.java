@@ -287,7 +287,8 @@ public class WorthPacketDisplay implements Listener {
         }
     }
 
-    // resend a tick later so worth reappears and matches whether the cursor is holding an item
+    // resend a tick later so worth reappears and matches whether the cursor is holding an item,
+    // except on the screens whose client-side state a resend would wipe
     private void scheduleCursorEval(Player player) {
         if (inPluginMenu.contains(player.getUniqueId())) {
             return;
@@ -311,7 +312,7 @@ public class WorthPacketDisplay implements Listener {
             } else {
                 suppressedMaterials.remove(uuid);
             }
-            if (openInventories.contains(uuid)) {
+            if (openInventories.contains(uuid) && plugin.getWorthManager().canResendOpenInventory(player)) {
                 player.updateInventory();
             }
         }, 1L);
