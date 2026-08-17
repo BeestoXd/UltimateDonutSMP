@@ -184,7 +184,7 @@ without a separate config entry per rank.
 4. If the player holds none of these nodes, `DEFAULT-ROWS` applies.
 
 Wildcards do not grant a tier. `ultimatedonutsmp.*` leaves the player on `DEFAULT-ROWS`, the same way it
-does for `ultimatedonutsmp.homes.<amount>`, so a staff wildcard cannot quietly resize everyone.
+does for `ultimatedonutsmp.homes.<1-100>`, so a staff wildcard cannot quietly resize everyone.
 
 The size is evaluated every time the chest is opened, so a rank change applies on the next open.
 

@@ -130,6 +130,37 @@ the per-world value for everyone.
 
 ---
 
+## Home Limit Permissions
+
+These nodes are not registered in `plugin.yml` and are read straight off the player, so they work with
+LuckPerms or any other permission plugin. Assign them per rank.
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.homes.<1-100>` | `false` | How many homes the player may save. `ultimatedonutsmp.homes.10` allows ten homes. |
+| `ultimatedonutsmp.homes.page.<1-100>` | `false` | The same limit expressed in menu pages, five homes each. `ultimatedonutsmp.homes.page.3` allows fifteen homes. |
+
+When a player holds more than one node the **highest** value wins, so a player with both `.homes.5`
+and `.homes.20` gets 20 homes, and mixing the two styles is fine — `.homes.page.2` and `.homes.12`
+together give 12. A player with no home node falls back to `SETTINGS.HOME-DEFAULT` in `config.yml`,
+which ships as 2.
+
+The limit applies everywhere a home is created, so `/sethome`, the `/homes` menu and the Bedrock form
+all stop at the same number, and the menu paginates to fit whatever the player is entitled to.
+
+Wildcards do not grant a limit. `ultimatedonutsmp.*` leaves the player on `HOME-DEFAULT`, the same way
+it does for `ultimatedonutsmp.enderchest.rows.<1-6>`, so a staff wildcard cannot quietly hand every
+player 100 homes.
+
+Named rank nodes can be mapped to a home count instead of using numeric nodes. See
+`SETTINGS.HOME-PERMISSIONS.PERMISSIONS` in [Config-config.yml](Config-config.yml) — the shipped
+defaults map `ultimatedonutsmp.homes.vip`, `.vip+` and `.vip++` to 5, 10 and 15 homes.
+
+Set `SETTINGS.HOME-PERMISSIONS.ENABLED: false` in `config.yml` to ignore every home permission and
+give everyone `HOME-DEFAULT`.
+
+---
+
 ## Ender Chest Size Permissions
 
 These nodes are not registered in `plugin.yml` and are read straight off the player, so they work with
@@ -146,7 +177,7 @@ value above 6 is treated as 6. A player with no row node falls back to `ENDER-CH
 as a rank perk.
 
 Wildcards do not grant a tier. `ultimatedonutsmp.*` leaves the player on the default size, the same way
-it does for `ultimatedonutsmp.homes.<amount>`, so a staff wildcard cannot quietly resize everyone.
+it does for `ultimatedonutsmp.homes.<1-100>`, so a staff wildcard cannot quietly resize everyone.
 
 Named rank nodes can be mapped to a row count instead of using numeric nodes. See
 `ENDER-CHEST.ROW-PERMISSIONS.PERMISSIONS` in [Config-ender-chest.yml](Config-ender-chest.yml) — the
