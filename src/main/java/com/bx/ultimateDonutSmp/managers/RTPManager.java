@@ -97,6 +97,9 @@ public class RTPManager {
     private static final int DEFAULT_LOCATION_CACHE_SIZE = 3;
     private static final int MAX_LOCATION_CACHE_SIZE = 16;
     private static final int DEFAULT_LOCATION_CACHE_MAX_AGE_SECONDS = 600;
+    private static final int PRE_CACHE_PARALLEL_ATTEMPTS = 4;
+    private static final long PRE_CACHE_SEARCH_TIMEOUT_MILLIS = 30_000L;
+    private static final long PRE_CACHE_SEARCH_COOLDOWN_MILLIS = 5_000L;
 
     private static final class SearchProgress {
         private final String worldName;
@@ -151,7 +154,11 @@ public class RTPManager {
     private final Map<UUID, CompletableFuture<Location>> activeDirectSearches = new ConcurrentHashMap<>();
     private final Map<UUID, SearchProgress> activeSearches = new ConcurrentHashMap<>();
     private final Map<String, java.util.Queue<CachedLocation>> locationPreCache = new ConcurrentHashMap<>();
-    private final Set<String> preCacheInFlight = ConcurrentHashMap.newKeySet();
+    private final java.util.concurrent.atomic.AtomicReference<CompletableFuture<Location>> preCacheSearch =
+            new java.util.concurrent.atomic.AtomicReference<>();
+    private final AtomicInteger preCacheRotation = new AtomicInteger();
+    private volatile long preCacheSearchDeadlineMillis;
+    private volatile long nextPreCacheSearchAtMillis;
     private final List<RTPQueueEntry> waitingQueue = java.util.Collections.synchronizedList(new ArrayList<>());
     private List<RTPDestination> configuredDestinations = List.of();
     private List<RTPDestination> menuDestinations = List.of();
@@ -166,7 +173,8 @@ public class RTPManager {
         clearQueue();
         lastRtpUseByPlayer.clear();
         locationPreCache.clear();
-        preCacheInFlight.clear();
+        cancelPreCacheSearch();
+        nextPreCacheSearchAtMillis = 0L;
         configuredDestinations = loadConfiguredDestinations();
         menuDestinations = buildMenuDestinations(configuredDestinations);
         refillPreCacheAllWorlds();
@@ -333,9 +341,8 @@ public class RTPManager {
         if (!isPreCacheReady() || getPreCacheSize() <= 0) {
             return;
         }
-        if (Bukkit.getOnlinePlayers().isEmpty()) {
-            return;
-        }
+
+        expireOverduePreCacheSearch();
 
         Set<String> worldNames = new LinkedHashSet<>();
         for (RTPDestination destination : configuredDestinations) {
@@ -343,18 +350,28 @@ public class RTPManager {
                 worldNames.add(destination.worldName());
             }
         }
-        for (String worldName : worldNames) {
-            refillPreCache(worldName);
+        if (worldNames.isEmpty()) {
+            return;
+        }
+
+        // Rotate where the sweep starts so a world that always finds a spot cannot starve the rest.
+        List<String> ordered = new ArrayList<>(worldNames);
+        int start = Math.floorMod(preCacheRotation.getAndIncrement(), ordered.size());
+        for (int offset = 0; offset < ordered.size(); offset++) {
+            if (refillPreCache(ordered.get((start + offset) % ordered.size()))) {
+                return;
+            }
         }
     }
 
-    public void refillPreCache(String worldName) {
+    /** @return whether a background search was actually started for this world. */
+    public boolean refillPreCache(String worldName) {
         if (!isPreCacheReady() || worldName == null || worldName.isBlank()) {
-            return;
+            return false;
         }
         int cacheSize = getPreCacheSize();
         if (cacheSize <= 0) {
-            return;
+            return false;
         }
 
         String worldKey = normalizeWorldKey(worldName);
@@ -362,22 +379,44 @@ public class RTPManager {
                 .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>());
         cached.removeIf(entry -> !isCachedLocationUsable(entry));
         if (cached.size() >= cacheSize) {
-            return;
+            return false;
         }
 
         if (isDeniedWorld(worldName) || isConfiguredDestinationDisabled(worldName)) {
-            return;
+            return false;
         }
         SearchSettings settings = getWorldSearchSettings(worldName);
-        if (settings == null || getLoadedWorld(worldName) == null) {
-            return;
-        }
-        if (!preCacheInFlight.add(worldKey)) {
-            return;
+        if (settings == null || getLoadedWorld(worldName) == null || !isSearchRequestValid(settings)) {
+            return false;
         }
 
-        findSafeLocationAsync(settings).whenComplete((location, throwable) -> {
-            preCacheInFlight.remove(worldKey);
+        return startPreCacheSearch(worldKey, settings);
+    }
+
+    /**
+     * Starts the one background search this server is allowed to have running.
+     *
+     * <p>The ceiling is deliberately low. A search may generate terrain, and on a world that has
+     * never been walked that is the expensive part, so the warm-up takes one world at a time with a
+     * pause between searches rather than filling every world at once.</p>
+     *
+     * @return whether the search was started
+     */
+    private boolean startPreCacheSearch(String worldKey, SearchSettings settings) {
+        expireOverduePreCacheSearch();
+        if (System.currentTimeMillis() < nextPreCacheSearchAtMillis) {
+            return false;
+        }
+
+        CompletableFuture<Location> future = new CompletableFuture<>();
+        if (!preCacheSearch.compareAndSet(null, future)) {
+            return false;
+        }
+        preCacheSearchDeadlineMillis = System.currentTimeMillis() + PRE_CACHE_SEARCH_TIMEOUT_MILLIS;
+
+        future.whenComplete((location, throwable) -> {
+            preCacheSearch.compareAndSet(future, null);
+            nextPreCacheSearchAtMillis = System.currentTimeMillis() + PRE_CACHE_SEARCH_COOLDOWN_MILLIS;
             if (throwable != null || location == null) {
                 return;
             }
@@ -387,6 +426,46 @@ public class RTPManager {
                 target.add(new CachedLocation(location, System.currentTimeMillis()));
             }
         });
+
+        try {
+            startDirectSearch(settings, future, getPreCacheParallelAttempts());
+        } catch (RuntimeException exception) {
+            future.complete(null);
+            throw exception;
+        }
+        return true;
+    }
+
+    /**
+     * Ends a background search that has outstayed its deadline.
+     *
+     * <p>Completing the future is what stops it. Every chain checks the future before its next step,
+     * so this winds the search down for real. Merely dropping the record of it would leave it
+     * generating chunks alongside the replacement that took its place, and each round of that makes
+     * the next search slower and more likely to overrun in turn.</p>
+     */
+    private void expireOverduePreCacheSearch() {
+        CompletableFuture<Location> running = preCacheSearch.get();
+        if (running == null || System.currentTimeMillis() < preCacheSearchDeadlineMillis) {
+            return;
+        }
+        running.complete(null);
+    }
+
+    private void cancelPreCacheSearch() {
+        CompletableFuture<Location> running = preCacheSearch.getAndSet(null);
+        if (running != null) {
+            running.complete(null);
+        }
+    }
+
+    /**
+     * Background searches run on fewer parallel chains than a player-facing one. Nobody is waiting
+     * on the result, so the warm-up has no business claiming the chunk throughput a waiting player
+     * gets.
+     */
+    private int getPreCacheParallelAttempts() {
+        return Math.max(1, Math.min(PRE_CACHE_PARALLEL_ATTEMPTS, getSearchAttemptsPerTick()));
     }
 
     private boolean isPreCacheReady() {
@@ -806,8 +885,12 @@ public class RTPManager {
     }
 
     private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future) {
+        startDirectSearch(settings, future, getSearchAttemptsPerTick());
+    }
+
+    private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future, int parallelAttempts) {
         DirectSearchState state = new DirectSearchState(settings);
-        int chains = Math.max(1, Math.min(getSearchAttemptsPerTick(), settings.maxChunkSamples()));
+        int chains = Math.max(1, Math.min(parallelAttempts, settings.maxChunkSamples()));
         state.activeChains.set(chains);
         for (int chain = 0; chain < chains; chain++) {
             scheduleDirectSearchStep(state, future, settings.attemptIntervalTicks());
