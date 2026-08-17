@@ -158,8 +158,24 @@ SETTINGS:
   - MATERIAL: COOKED_BEEF
     # The numerical value for Amount. Available options: Any valid integer
     AMOUNT: 16
-  # The numerical value for Home Default. Available options: Any valid integer
+  # Homes every player gets when no HOME-PERMISSIONS entry applies to them
+  # Raise the HOME-PERMISSIONS entries below to hand out extra homes as a rank perk
+  # Available options: Any valid integer
   HOME-DEFAULT: 2
+  # Per-rank home limits resolved from permissions
+  HOME-PERMISSIONS:
+    # Enable or disable permission based home limits
+    ENABLED: true
+    # Explicit mapping from permission node to home limit
+    # Players can also be given ultimatedonutsmp.homes.<1-100> directly, for example
+    # ultimatedonutsmp.homes.10 for ten homes, or ultimatedonutsmp.homes.page.<1-100> to
+    # hand out whole pages of five at a time
+    # The highest value the player has wins
+    # Players without any of these permissions keep HOME-DEFAULT above
+    PERMISSIONS:
+      "ultimatedonutsmp.homes.vip++": 15
+      "ultimatedonutsmp.homes.vip+": 10
+      "ultimatedonutsmp.homes.vip": 5
   # The numerical value for Shards Per Kill. Available options: Any valid integer
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
@@ -213,6 +229,8 @@ SETTINGS:
 | `SETTINGS.CHAINMAIL-ON-RESPAWN` | `bool` | `true`, `false` | `true` | Equips players with starter chainmail armor & stone sword upon death respawn. |
 | `SETTINGS.CHAINMAIL-RESPAWN-ITEMS` | `list` | List of configured items/strings | `[{'MATERIAL': 'STONE_SWORD', 'AMOUNT': 1}, {'MATERIAL': 'CHAINMAIL_HELMET', 'NAME': '&eChainmail Helmet', 'AMOUNT': 1}, {'MATERIAL': 'CHAINMAIL_CHESTPLATE', 'NAME': '&eChainmail Chestplate', 'AMOUNT': 1}...]` | Configures the technical `CHAINMAIL-RESPAWN-ITEMS` parameter for `SETTINGS.CHAINMAIL-RESPAWN-ITEMS` in `config.yml`. |
 | `SETTINGS.HOME-DEFAULT` | `int` | Any valid integer number | `'2'` | Default maximum `/sethome` limit for non-donor players. |
+| `SETTINGS.HOME-PERMISSIONS.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for permission based home limits. Set to `false` to ignore every home permission and give everyone `HOME-DEFAULT`. |
+| `SETTINGS.HOME-PERMISSIONS.PERMISSIONS` | `section` | Permission node to home count | `{'ultimatedonutsmp.homes.vip++': 15, 'ultimatedonutsmp.homes.vip+': 10, 'ultimatedonutsmp.homes.vip': 5}` | Named rank nodes mapped to a home limit, for servers that prefer `ultimatedonutsmp.homes.vip` over the numbered nodes. The highest value a player holds wins. See [Commands-and-Permissions](Commands-and-Permissions). |
 | `SETTINGS.SHARDS-PER-KILL` | `int` | Any valid integer number | `'1'` | Configures the technical `SHARDS-PER-KILL` parameter for `SETTINGS.SHARDS-PER-KILL` in `config.yml`. |
 | `SETTINGS.SHARDS-KILL-MESSAGE` | `str` | Any string text | `'&#A303F9+{shards} Shard'` | Configures the technical `SHARDS-KILL-MESSAGE` parameter for `SETTINGS.SHARDS-KILL-MESSAGE` in `config.yml`. |
 | `SETTINGS.SHARDS-KILL-MESSAGE-BOOSTED` | `str` | Any string text | `'&#A303F9+{shards} Shards &7(&ax{multiplier}&7)'` | Action bar shown instead of `SHARDS-KILL-MESSAGE` while a shard booster multiplies the kill reward. Supports `{multiplier}`. |

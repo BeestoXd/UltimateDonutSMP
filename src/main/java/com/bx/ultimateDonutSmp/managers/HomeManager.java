@@ -8,6 +8,8 @@ import com.bx.ultimateDonutSmp.menus.HomeMenu;
 import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -16,6 +18,8 @@ public class HomeManager {
 
     private static final int HOMES_PER_PAGE = 5;
     private static final int MAX_PERMISSION_VALUE = 100;
+    private static final String HOMES_PERMISSION_PREFIX = "ultimatedonutsmp.homes.";
+    private static final String HOME_PAGES_PERMISSION_PREFIX = "ultimatedonutsmp.homes.page.";
 
     private final UltimateDonutSmp plugin;
     /** UUID → list of homes */
@@ -59,16 +63,58 @@ public class HomeManager {
         return getHomes(uuid).size();
     }
 
-    public int getMaxHomes(Player player) {
-        int defaultHomes = Math.max(1, plugin.getConfigManager().getConfig().getInt("SETTINGS.HOME-DEFAULT", 5));
-        int homesByAmountPermission = PermissionUtils.resolveHighestExactNumberedPermission(
-                player, "ultimatedonutsmp.homes.", MAX_PERMISSION_VALUE);
-        int pagesByPermission = PermissionUtils.resolveHighestExactNumberedPermission(
-                player, "ultimatedonutsmp.homes.page.", MAX_PERMISSION_VALUE);
-        int homesByPagePermission = pagesByPermission * HOMES_PER_PAGE;
-        int permissionHomes = Math.max(homesByAmountPermission, homesByPagePermission);
+    private FileConfiguration getConfig() {
+        return plugin != null && plugin.getConfigManager() != null
+                ? plugin.getConfigManager().getConfig()
+                : null;
+    }
 
-        return permissionHomes > 0 ? permissionHomes : defaultHomes;
+    public boolean isHomePermissionsEnabled() {
+        FileConfiguration config = getConfig();
+        return config == null || config.getBoolean("SETTINGS.HOME-PERMISSIONS.ENABLED", true);
+    }
+
+    public int getDefaultHomes() {
+        FileConfiguration config = getConfig();
+        return Math.max(1, config == null ? 5 : config.getInt("SETTINGS.HOME-DEFAULT", 5));
+    }
+
+    /**
+     * Highest home count the player is entitled to by permission, or 0 when no home permission applies.
+     */
+    public int getPermissionHomes(Player player) {
+        if (player == null || !isHomePermissionsEnabled()) {
+            return 0;
+        }
+
+        int resolved = PermissionUtils.resolveHighestExactNumberedPermission(
+                player, HOMES_PERMISSION_PREFIX, MAX_PERMISSION_VALUE);
+        int pagesByPermission = PermissionUtils.resolveHighestExactNumberedPermission(
+                player, HOME_PAGES_PERMISSION_PREFIX, MAX_PERMISSION_VALUE);
+        resolved = Math.max(resolved, pagesByPermission * HOMES_PER_PAGE);
+
+        FileConfiguration config = getConfig();
+        ConfigurationSection section = config == null
+                ? null
+                : config.getConfigurationSection("SETTINGS.HOME-PERMISSIONS.PERMISSIONS");
+        if (section != null) {
+            for (Map.Entry<String, Object> entry : section.getValues(true).entrySet()) {
+                if (!(entry.getValue() instanceof Number number)) {
+                    continue;
+                }
+                if (!PermissionUtils.hasExact(player, entry.getKey())) {
+                    continue;
+                }
+                resolved = Math.max(resolved, number.intValue());
+            }
+        }
+
+        return Math.max(0, resolved);
+    }
+
+    public int getMaxHomes(Player player) {
+        int permissionHomes = getPermissionHomes(player);
+        return permissionHomes > 0 ? permissionHomes : getDefaultHomes();
     }
 
     public int getMaxHomePages(Player player) {

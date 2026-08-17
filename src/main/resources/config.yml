@@ -68,8 +68,24 @@ SETTINGS:
   - MATERIAL: COOKED_BEEF
     # The numerical value for Amount. Available options: Any valid integer
     AMOUNT: 16
-  # The numerical value for Home Default. Available options: Any valid integer
+  # Homes every player gets when no HOME-PERMISSIONS entry applies to them
+  # Raise the HOME-PERMISSIONS entries below to hand out extra homes as a rank perk
+  # Available options: Any valid integer
   HOME-DEFAULT: 2
+  # Per-rank home limits resolved from permissions
+  HOME-PERMISSIONS:
+    # Enable or disable permission based home limits
+    ENABLED: true
+    # Explicit mapping from permission node to home limit
+    # Players can also be given ultimatedonutsmp.homes.<1-100> directly, for example
+    # ultimatedonutsmp.homes.10 for ten homes, or ultimatedonutsmp.homes.page.<1-100> to
+    # hand out whole pages of five at a time
+    # The highest value the player has wins
+    # Players without any of these permissions keep HOME-DEFAULT above
+    PERMISSIONS:
+      "ultimatedonutsmp.homes.vip++": 15
+      "ultimatedonutsmp.homes.vip+": 10
+      "ultimatedonutsmp.homes.vip": 5
   # The numerical value for Shards Per Kill. Available options: Any valid integer
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text

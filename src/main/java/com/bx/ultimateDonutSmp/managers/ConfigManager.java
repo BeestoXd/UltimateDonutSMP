@@ -1859,6 +1859,13 @@ public class ConfigManager {
             return true;
         }
 
+        // Home limit permission entries are keyed by a server's own ranks for the same reason,
+        // so the bundled vip examples must not come back once admins delete or replace them.
+        if ("config.yml".equals(resourceName)
+                && path.startsWith("SETTINGS.HOME-PERMISSIONS.PERMISSIONS.")) {
+            return true;
+        }
+
         // Network server entries can be expanded per deployment.
         if ("network.yml".equals(resourceName)
                 && path.startsWith("NETWORK-STATUS.SERVERS.")) {
