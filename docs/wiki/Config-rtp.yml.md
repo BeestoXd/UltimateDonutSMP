@@ -122,13 +122,24 @@ SETTINGS:
 ## Section: `SETTINGS.LOCATION-CACHE`
 
 Finding a safe spot is the slow part of `/rtp`, and on a large overworld it can keep a player waiting
-for the best part of a minute. This cache does that work in the background while people are playing,
-so the command usually has a verified location waiting for it and teleports straight away.
+for the best part of a minute. This cache does that work in the background, so the command
+usually has a verified location waiting for it and teleports straight away.
 
-The cache is filled by the same search `/rtp` runs, one world at a time, and only while at least one
-player is online. Each entry is re-checked against the current world and radius before it is handed
-out, and a search only starts when a world is short of ready locations. When the cache is empty the
-command falls back to searching live, exactly as before.
+Filling starts with the server and keeps going whether or not anyone is online, which is the point:
+the first player to join should not be the one who pays for the search. What it will not do is fill
+in a hurry. Exactly one background search runs at a time across the whole server, it takes the
+worlds in turn, it waits a few seconds between searches, and it uses fewer parallel checks than a
+search a player is waiting on. A search that has not finished within thirty seconds is stopped
+outright rather than left running beside its replacement.
+
+That pace matters most when `GENERATE-CHUNKS` is on, because then every search is generating fresh
+terrain and the warm-up is doing real work rather than reading chunks that already exist. On a world
+that has never been walked, expect the cache to take a few minutes to fill rather than seconds. That
+is the intended trade: the generation happens while nobody is waiting instead of while somebody is.
+
+Each entry is re-checked against the current world and radius before it is handed out, and a search
+only starts when a world is short of ready locations. When the cache is empty the command falls back
+to searching live, exactly as before.
 
 ### 1. Commented Setup Code Example
 
