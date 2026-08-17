@@ -866,17 +866,25 @@ public class RTPManager {
         boolean generateFallback = shouldUseGenerateFallback(chunkSamplesUsed, state.generateFallbackSamplesUsed.get());
         if (!generateFallback && shouldUseLoadedChunkFallback(chunkSamplesUsed)) {
             plugin.getSpigotScheduler().runRegion(world, settings.centerX() >> 4, settings.centerZ() >> 4, () -> {
-                Location found = null;
-                try {
-                    LocationAttempt attempt = tryLoadedChunkLocationAttempt(settings);
-                    if (attempt.countedAttempt()) {
+                int[] loadedChunk = nextLoadedChunkSample(world);
+                if (loadedChunk == null) {
+                    continueDirectSearch(state, future, null);
+                    return;
+                }
+                plugin.getSpigotScheduler().runRegion(world, loadedChunk[0], loadedChunk[1], () -> {
+                    Location found = null;
+                    try {
+                        LocationAttempt attempt =
+                                tryLoadedChunkLocationAttempt(settings, loadedChunk[0], loadedChunk[1]);
+                        if (attempt.countedAttempt()) {
+                            state.attemptsUsed.incrementAndGet();
+                        }
+                        found = attempt.location();
+                    } catch (RuntimeException exception) {
                         state.attemptsUsed.incrementAndGet();
                     }
-                    found = attempt.location();
-                } catch (RuntimeException exception) {
-                    state.attemptsUsed.incrementAndGet();
-                }
-                continueDirectSearch(state, future, found);
+                    continueDirectSearch(state, future, found);
+                });
             });
             return;
         }
@@ -1102,12 +1110,20 @@ public class RTPManager {
             progress.chunkSamplesUsed++;
             progress.activeAttemptsInFlight++;
             plugin.getSpigotScheduler().runRegion(world, progress.settings.centerX() >> 4, progress.settings.centerZ() >> 4, () -> {
-                try {
-                    LocationAttempt attempt = tryLoadedChunkLocationAttempt(progress.settings);
-                    completeAsyncLocationAttempt(playerId, progress, attempt, null);
-                } catch (RuntimeException exception) {
-                    completeAsyncLocationAttempt(playerId, progress, null, exception);
+                int[] loadedChunk = nextLoadedChunkSample(world);
+                if (loadedChunk == null) {
+                    completeAsyncLocationAttempt(playerId, progress, new LocationAttempt(null, false), null);
+                    return;
                 }
+                plugin.getSpigotScheduler().runRegion(world, loadedChunk[0], loadedChunk[1], () -> {
+                    try {
+                        LocationAttempt attempt =
+                                tryLoadedChunkLocationAttempt(progress.settings, loadedChunk[0], loadedChunk[1]);
+                        completeAsyncLocationAttempt(playerId, progress, attempt, null);
+                    } catch (RuntimeException exception) {
+                        completeAsyncLocationAttempt(playerId, progress, null, exception);
+                    }
+                });
             });
             return;
         }
@@ -1587,7 +1603,34 @@ public class RTPManager {
         return Math.max(1, plugin.getConfigManager().getRtp().getInt(PRELOAD_MAX_TICKS_SETTING, 40));
     }
 
-    private LocationAttempt tryLoadedChunkLocationAttempt(SearchSettings settings) {
+    /**
+     * Picks one of the world's loaded chunks at random, or {@code null} when it has none. Only the
+     * chunk coordinates are read here, never a block, so the caller can hop to the region that owns
+     * that chunk before touching it.
+     */
+    int[] nextLoadedChunkSample(World world) {
+        if (world == null) {
+            return null;
+        }
+
+        Chunk[] loadedChunks = world.getLoadedChunks();
+        if (loadedChunks.length == 0) {
+            return null;
+        }
+
+        Chunk chunk = loadedChunks[ThreadLocalRandom.current().nextInt(loadedChunks.length)];
+        return new int[] {chunk.getX(), chunk.getZ()};
+    }
+
+    /**
+     * Probes a single column inside one already-loaded chunk.
+     *
+     * <p>Folia splits a world into regions and only lets a thread read the chunks its own region
+     * owns, so this has to run on the region that owns {@code chunkX, chunkZ} and must not wander
+     * outside it. Reading a spread of loaded chunks from one region thread trips Folia's tick
+     * thread check and finds nothing.</p>
+     */
+    private LocationAttempt tryLoadedChunkLocationAttempt(SearchSettings settings, int chunkX, int chunkZ) {
         if (settings == null || settings.worldName() == null || settings.worldName().isBlank()) {
             return new LocationAttempt(null, false);
         }
@@ -1597,29 +1640,12 @@ public class RTPManager {
             return new LocationAttempt(null, false);
         }
 
-        Chunk[] loadedChunks = world.getLoadedChunks();
-        if (loadedChunks.length == 0) {
-            return new LocationAttempt(null, false);
-        }
+        int x = (chunkX << 4) + ThreadLocalRandom.current().nextInt(16);
+        int z = (chunkZ << 4) + ThreadLocalRandom.current().nextInt(16);
 
-        int start = ThreadLocalRandom.current().nextInt(loadedChunks.length);
-        int checked = 0;
-        int maxChecks = Math.min(loadedChunks.length, 32);
-        for (int offset = 0; offset < loadedChunks.length && checked < maxChecks; offset++) {
-            Chunk chunk = loadedChunks[(start + offset) % loadedChunks.length];
-            int baseX = chunk.getX() << 4;
-            int baseZ = chunk.getZ() << 4;
-            int x = baseX + ThreadLocalRandom.current().nextInt(16);
-            int z = baseZ + ThreadLocalRandom.current().nextInt(16);
-            checked++;
-
-            Location found = resolveSafeLocation(world, x, z);
-            if (found == null) {
-                continue;
-            }
-            if (isWithinRadius(settings, found, true)) {
-                return new LocationAttempt(found, true);
-            }
+        Location found = resolveSafeLocation(world, x, z);
+        if (found != null && isWithinRadius(settings, found, true)) {
+            return new LocationAttempt(found, true);
         }
 
         return new LocationAttempt(null, true);

@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -22,8 +23,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RTPManagerTest {
 
@@ -241,6 +244,102 @@ class RTPManagerTest {
         seedLocationCache(rtpManager, "world", new Location(world, 1000.5, 70.0, 1000.5), System.currentTimeMillis());
 
         assertNull(pollCachedLocation(rtpManager, "world"));
+    }
+
+    private Chunk createMockChunk(World world, int x, int z) {
+        return (Chunk) Proxy.newProxyInstance(
+                Chunk.class.getClassLoader(),
+                new Class<?>[]{Chunk.class},
+                (proxy, method, args) -> switch (method.getName()) {
+                    case "getX" -> x;
+                    case "getZ" -> z;
+                    case "getWorld" -> world;
+                    default -> null;
+                }
+        );
+    }
+
+    /**
+     * A world that reports the given loaded chunks and records every column the search probes, so a
+     * test can prove the probe never reads outside the chunk it was handed. The recorded height sits
+     * below the minimum so the probe stops before it reaches any block.
+     */
+    private World createProbeMockWorld(String name, List<int[]> loadedChunkCoords, List<int[]> probes) {
+        List<Chunk> chunks = new ArrayList<>();
+        World mockWorld = (World) Proxy.newProxyInstance(
+                World.class.getClassLoader(),
+                new Class<?>[]{World.class},
+                (proxy, method, args) -> {
+                    switch (method.getName()) {
+                        case "getName":
+                            return name;
+                        case "getEnvironment":
+                            return World.Environment.NORMAL;
+                        case "getLoadedChunks":
+                            return chunks.toArray(new Chunk[0]);
+                        case "getMinHeight":
+                            return 0;
+                        case "getHighestBlockYAt":
+                            if (args != null && args.length == 2 && args[0] instanceof Integer x
+                                    && args[1] instanceof Integer z) {
+                                probes.add(new int[]{x, z});
+                            }
+                            return -1;
+                        default:
+                            return null;
+                    }
+                }
+        );
+        for (int[] coords : loadedChunkCoords) {
+            chunks.add(createMockChunk(mockWorld, coords[0], coords[1]));
+        }
+        mockWorlds.add(mockWorld);
+        return mockWorld;
+    }
+
+    @Test
+    void testNextLoadedChunkSampleReturnsNullWhenNothingIsLoaded() throws Exception {
+        World world = createProbeMockWorld("world", List.of(), new ArrayList<>());
+        RTPManager rtpManager = new RTPManager(createMockPlugin(overworldRtpConfig()));
+
+        assertNull(rtpManager.nextLoadedChunkSample(world));
+    }
+
+    @Test
+    void testNextLoadedChunkSampleReportsTheChunkCoordinates() throws Exception {
+        World world = createProbeMockWorld("world", List.of(new int[]{666, 339}), new ArrayList<>());
+        RTPManager rtpManager = new RTPManager(createMockPlugin(overworldRtpConfig()));
+
+        int[] sample = rtpManager.nextLoadedChunkSample(world);
+
+        assertNotNull(sample);
+        assertEquals(666, sample[0]);
+        assertEquals(339, sample[1]);
+    }
+
+    @Test
+    void testLoadedChunkProbeNeverLeavesTheChunkItWasGiven() throws Exception {
+        List<int[]> probes = new ArrayList<>();
+        // A second loaded chunk sitting in a different region. The probe must never touch it.
+        createProbeMockWorld("world", List.of(new int[]{666, 339}, new int[]{10, 10}), probes);
+        RTPManager rtpManager = new RTPManager(createMockPlugin(overworldRtpConfig()));
+
+        Method probe = RTPManager.class.getDeclaredMethod(
+                "tryLoadedChunkLocationAttempt", RTPManager.SearchSettings.class, int.class, int.class);
+        probe.setAccessible(true);
+        RTPManager.SearchSettings settings = rtpManager.getWorldSearchSettings("world");
+
+        for (int run = 0; run < 200; run++) {
+            probe.invoke(rtpManager, settings, 666, 339);
+        }
+
+        assertEquals(200, probes.size());
+        for (int[] probed : probes) {
+            assertTrue(probed[0] >= 666 * 16 && probed[0] < 666 * 16 + 16,
+                    "probe read x " + probed[0] + ", which is outside chunk 666");
+            assertTrue(probed[1] >= 339 * 16 && probed[1] < 339 * 16 + 16,
+                    "probe read z " + probed[1] + ", which is outside chunk 339");
+        }
     }
 
     @Test
