@@ -39,6 +39,10 @@ SETTINGS:
     SIZE: 3
     # Seconds a cached location stays usable before it is thrown away. 0 keeps it until the next reload
     MAX-AGE-SECONDS: 600
+    # Let the background warm-up generate new terrain. Keep false unless your RTP area is pregenerated
+    # or the server has memory to spare, since generating in the background runs far more often than
+    # generating for one player who asked. Independent of SETTINGS.GENERATE-CHUNKS above
+    GENERATE-CHUNKS: false
   # Priority queue settings for RTP requests
   PRIORITY-QUEUE:
     # Enable or disable the RTP permission priority queue system

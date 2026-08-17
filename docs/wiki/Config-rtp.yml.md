@@ -132,10 +132,15 @@ worlds in turn, it waits a few seconds between searches, and it uses fewer paral
 search a player is waiting on. A search that has not finished within thirty seconds is stopped
 outright rather than left running beside its replacement.
 
-That pace matters most when `GENERATE-CHUNKS` is on, because then every search is generating fresh
-terrain and the warm-up is doing real work rather than reading chunks that already exist. On a world
-that has never been walked, expect the cache to take a few minutes to fill rather than seconds. That
-is the intended trade: the generation happens while nobody is waiting instead of while somebody is.
+By default the warm-up never generates terrain, even when `SETTINGS.GENERATE-CHUNKS` is on for
+players. It fills from chunks that already exist and skips anything that would have to be made. That
+is the safe setting and it is why the cache costs almost nothing on a pregenerated world.
+
+Turning `LOCATION-CACHE.GENERATE-CHUNKS` on lifts that restriction, and it is the one option here
+that can cost real memory. Generating for a player who asked is a short burst; generating in the
+background happens over and over on a world nobody has walked yet, and on a small box that adds up
+fast. Leave it off unless your RTP area is already generated or you know you have the memory to
+spare. If you want a cache on a brand new world and your server can take it, this is the switch.
 
 Each entry is re-checked against the current world and radius before it is handed out, and a search
 only starts when a world is short of ready locations. When the cache is empty the command falls back
@@ -152,6 +157,10 @@ to searching live, exactly as before.
     SIZE: 3
     # Seconds a cached location stays usable before it is thrown away. 0 keeps it until the next reload
     MAX-AGE-SECONDS: 600
+    # Let the background warm-up generate new terrain. Keep false unless your RTP area is pregenerated
+    # or the server has memory to spare, since generating in the background runs far more often than
+    # generating for one player who asked. Independent of SETTINGS.GENERATE-CHUNKS above
+    GENERATE-CHUNKS: false
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -161,6 +170,7 @@ to searching live, exactly as before.
 | `SETTINGS.LOCATION-CACHE.ENABLED` | `bool` | `true`, `false` | `true` | Master toggle. When `false` every `/rtp` searches for a location the moment the player runs it. |
 | `SETTINGS.LOCATION-CACHE.SIZE` | `int` | `0` to `16` | `'3'` | Ready locations kept per RTP world. Raise it on a busy server so back to back teleports stay instant, lower it to spend less time searching in the background. `0` turns the cache off. |
 | `SETTINGS.LOCATION-CACHE.MAX-AGE-SECONDS` | `int` | Any valid integer number | `'600'` | How long a cached location may sit unused before it is discarded and searched again. `0` keeps entries until the next reload. |
+| `SETTINGS.LOCATION-CACHE.GENERATE-CHUNKS` | `bool` | `true`, `false` | `false` | Whether the background warm-up may generate terrain. Separate from `SETTINGS.GENERATE-CHUNKS`, which only covers searches a player asked for. Off means the cache fills from terrain that already exists and costs almost nothing. On means it can fill a world nobody has walked yet, at the price of generating chunks around the clock. |
 
 ### 3. Practical Setup Example
 
@@ -173,6 +183,20 @@ SETTINGS:
     SIZE: 8
     MAX-AGE-SECONDS: 300
 ```
+
+Fill the cache on a world that has never been generated, on a server with memory to spare:
+
+```yaml
+SETTINGS:
+  GENERATE-CHUNKS: true
+  LOCATION-CACHE:
+    ENABLED: true
+    SIZE: 3
+    GENERATE-CHUNKS: true
+```
+
+Watch your memory the first time you run that pairing. If it climbs and does not settle, put
+`LOCATION-CACHE.GENERATE-CHUNKS` back to `false` and pregenerate the area instead.
 
 Turn the cache off entirely and go back to searching on demand:
 
