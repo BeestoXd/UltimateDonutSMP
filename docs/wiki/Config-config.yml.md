@@ -218,6 +218,11 @@ SETTINGS:
   DISABLE-MOB-SPAWN-LIMIT-SECONDS: -1
   # The numerical value for Disable Phantom Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
   DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS: 3600
+  # Determines whether the per player mob spawn toggle also stops trial spawners in trial
+  # chambers. Leave it false so the chamber still has to be fought. A trial spawner ejects
+  # its rewards once the mobs it released are gone, so blocking those spawns hands out the
+  # loot for free. Available options: true, false
+  MOB-SPAWN-TOGGLE-BLOCKS-TRIAL-SPAWNERS: false
 # Configuration section for Features.
 ```
 
@@ -247,6 +252,7 @@ SETTINGS:
 | `SETTINGS.PHANTOM-SPAWN-RADIUS` | `int` | Any valid integer number | `'40'` | Configures the technical `PHANTOM-SPAWN-RADIUS` parameter for `SETTINGS.PHANTOM-SPAWN-RADIUS` in `config.yml`. |
 | `SETTINGS.DISABLE-MOB-SPAWN-LIMIT-SECONDS` | `int` | Any valid integer number | `'-1'` | Configures the technical `DISABLE-MOB-SPAWN-LIMIT-SECONDS` parameter for `SETTINGS.DISABLE-MOB-SPAWN-LIMIT-SECONDS` in `config.yml`. |
 | `SETTINGS.DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS` | `int` | Any valid integer number | `'3600'` | Configures the technical `DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS` parameter for `SETTINGS.DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS` in `config.yml`. |
+| `SETTINGS.MOB-SPAWN-TOGGLE-BLOCKS-TRIAL-SPAWNERS` | `bool` | `true`, `false` | `false` | Whether the `/settings` mob spawn toggle reaches trial spawners in trial chambers. A trial spawner ejects its rewards as soon as the mobs it released are gone, so cancelling those spawns pays out the chamber without a fight. Set it to `true` only if you would rather have the quiet room than the loot. |
 
 ### 3. Practical Setup Example
 

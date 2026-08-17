@@ -6,6 +6,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -35,6 +36,31 @@ public final class MobSpawnPolicy {
         return switch (type) {
             case WITHER, ENDER_DRAGON, ELDER_GUARDIAN, WARDEN -> true;
             default -> false;
+        };
+    }
+
+    /**
+     * Whether the toggle is allowed to cancel a spawn that came from {@code reason}.
+     *
+     * <p>Trial spawners sit outside the toggle by default. A trial spawner counts the mobs it
+     * released and starts ejecting its rewards once none of them are left alive, so cancelling the
+     * spawn does not just keep the room quiet — it hands the player the loot without the fight.
+     * Servers that would rather keep the quiet room can set
+     * {@code SETTINGS.MOB-SPAWN-TOGGLE-BLOCKS-TRIAL-SPAWNERS} to true and take that trade.
+     */
+    public static boolean isPreventableSpawnReason(
+            CreatureSpawnEvent.SpawnReason reason,
+            boolean trialSpawnersBlocked
+    ) {
+        if (reason == null) {
+            return false;
+        }
+        if (reason == CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER) {
+            return trialSpawnersBlocked;
+        }
+        return switch (reason) {
+            case CUSTOM, SPAWNER_EGG, BUILD_WITHER, BREEDING -> false;
+            default -> true;
         };
     }
 

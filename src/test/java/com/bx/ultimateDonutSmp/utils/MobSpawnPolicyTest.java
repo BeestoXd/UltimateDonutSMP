@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.models.PlayerData;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
@@ -31,6 +32,43 @@ class MobSpawnPolicyTest {
         assertFalse(MobSpawnPolicy.isBoss(EntityType.HOGLIN));
         assertFalse(MobSpawnPolicy.isBoss(EntityType.SPIDER));
         assertFalse(MobSpawnPolicy.isBoss(EntityType.CAVE_SPIDER));
+    }
+
+    @Test
+    void trialSpawnersAreLeftAloneByDefault() {
+        // Cancelling a trial spawner spawn empties the mob list it waits on, so the spawner rolls
+        // straight to ejecting its rewards and the chamber pays out without a fight.
+        assertFalse(MobSpawnPolicy.isPreventableSpawnReason(
+                CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER, false));
+    }
+
+    @Test
+    void trialSpawnersComeBackUnderTheToggleWhenTheServerAsksForIt() {
+        assertTrue(MobSpawnPolicy.isPreventableSpawnReason(
+                CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER, true));
+    }
+
+    @Test
+    void theTrialSpawnerSwitchLeavesEveryOtherSpawnReasonAlone() {
+        for (boolean trialSpawnersBlocked : new boolean[]{false, true}) {
+            assertFalse(MobSpawnPolicy.isPreventableSpawnReason(null, trialSpawnersBlocked));
+
+            assertFalse(MobSpawnPolicy.isPreventableSpawnReason(
+                    CreatureSpawnEvent.SpawnReason.CUSTOM, trialSpawnersBlocked));
+            assertFalse(MobSpawnPolicy.isPreventableSpawnReason(
+                    CreatureSpawnEvent.SpawnReason.SPAWNER_EGG, trialSpawnersBlocked));
+            assertFalse(MobSpawnPolicy.isPreventableSpawnReason(
+                    CreatureSpawnEvent.SpawnReason.BUILD_WITHER, trialSpawnersBlocked));
+            assertFalse(MobSpawnPolicy.isPreventableSpawnReason(
+                    CreatureSpawnEvent.SpawnReason.BREEDING, trialSpawnersBlocked));
+
+            assertTrue(MobSpawnPolicy.isPreventableSpawnReason(
+                    CreatureSpawnEvent.SpawnReason.NATURAL, trialSpawnersBlocked));
+            assertTrue(MobSpawnPolicy.isPreventableSpawnReason(
+                    CreatureSpawnEvent.SpawnReason.SPAWNER, trialSpawnersBlocked));
+            assertTrue(MobSpawnPolicy.isPreventableSpawnReason(
+                    CreatureSpawnEvent.SpawnReason.CHUNK_GEN, trialSpawnersBlocked));
+        }
     }
 
     @Test
