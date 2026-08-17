@@ -487,6 +487,42 @@ class RTPManagerTest {
     }
 
     @Test
+    void testBackgroundSearchNeverGeneratesWhenItIsNotAllowedTo() {
+        // The case from #151: GENERATE-CHUNKS on for players, warm-up still must not generate.
+        assertFalse(RTPManager.shouldGenerateForSample(false, true, true));
+        assertFalse(RTPManager.shouldGenerateForSample(false, true, false));
+        assertFalse(RTPManager.shouldGenerateForSample(false, false, true));
+    }
+
+    @Test
+    void testSearchAllowedToGenerateStillFollowsTheConfig() {
+        assertTrue(RTPManager.shouldGenerateForSample(true, true, false));
+        assertTrue(RTPManager.shouldGenerateForSample(true, false, true));
+        assertFalse(RTPManager.shouldGenerateForSample(true, false, false));
+    }
+
+    @Test
+    void testPreCacheChunkGenerationIsOffUnlessTurnedOn() throws Exception {
+        createMockWorld("world", World.Environment.NORMAL);
+
+        YamlConfiguration rtpConfig = overworldRtpConfig();
+        RTPManager offByDefault = new RTPManager(createMockPlugin(rtpConfig));
+        assertFalse(offByDefault.isPreCacheChunkGenerationEnabled(),
+                "an admin who changes nothing should not get background generating");
+
+        YamlConfiguration globalOnly = overworldRtpConfig();
+        globalOnly.set("SETTINGS.GENERATE-CHUNKS", true);
+        RTPManager globalDoesNotLeak = new RTPManager(createMockPlugin(globalOnly));
+        assertFalse(globalDoesNotLeak.isPreCacheChunkGenerationEnabled(),
+                "the player-facing setting must not switch the warm-up on");
+
+        YamlConfiguration optedIn = overworldRtpConfig();
+        optedIn.set("SETTINGS.LOCATION-CACHE.GENERATE-CHUNKS", true);
+        RTPManager turnedOn = new RTPManager(createMockPlugin(optedIn));
+        assertTrue(turnedOn.isPreCacheChunkGenerationEnabled());
+    }
+
+    @Test
     void testGetLoadedNormalWorldNameWithDeniedNormalWorld() throws Exception {
         createMockWorld("world", World.Environment.NORMAL); // denied world
         createMockWorld("smp", World.Environment.NORMAL); // normal world

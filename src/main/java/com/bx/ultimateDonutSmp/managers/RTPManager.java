@@ -94,6 +94,7 @@ public class RTPManager {
     private static final String LOCATION_CACHE_ENABLED_SETTING = "SETTINGS.LOCATION-CACHE.ENABLED";
     private static final String LOCATION_CACHE_SIZE_SETTING = "SETTINGS.LOCATION-CACHE.SIZE";
     private static final String LOCATION_CACHE_MAX_AGE_SETTING = "SETTINGS.LOCATION-CACHE.MAX-AGE-SECONDS";
+    private static final String LOCATION_CACHE_GENERATE_CHUNKS_SETTING = "SETTINGS.LOCATION-CACHE.GENERATE-CHUNKS";
     private static final int DEFAULT_LOCATION_CACHE_SIZE = 3;
     private static final int MAX_LOCATION_CACHE_SIZE = 16;
     private static final int DEFAULT_LOCATION_CACHE_MAX_AGE_SECONDS = 600;
@@ -126,13 +127,16 @@ public class RTPManager {
 
     private static final class DirectSearchState {
         private final SearchSettings settings;
+        /** Whether this particular search may generate terrain, regardless of what the config allows. */
+        private final boolean allowChunkGeneration;
         private final AtomicInteger attemptsUsed = new AtomicInteger();
         private final AtomicInteger chunkSamplesUsed = new AtomicInteger();
         private final AtomicInteger generateFallbackSamplesUsed = new AtomicInteger();
         private final AtomicInteger activeChains = new AtomicInteger();
 
-        private DirectSearchState(SearchSettings settings) {
+        private DirectSearchState(SearchSettings settings, boolean allowChunkGeneration) {
             this.settings = settings;
+            this.allowChunkGeneration = allowChunkGeneration;
         }
     }
 
@@ -428,7 +432,12 @@ public class RTPManager {
         });
 
         try {
-            startDirectSearch(settings, future, getPreCacheParallelAttempts());
+            startDirectSearch(
+                    settings,
+                    future,
+                    getPreCacheParallelAttempts(),
+                    isPreCacheChunkGenerationEnabled()
+            );
         } catch (RuntimeException exception) {
             future.complete(null);
             throw exception;
@@ -457,6 +466,36 @@ public class RTPManager {
         if (running != null) {
             running.complete(null);
         }
+    }
+
+    /**
+     * Whether one sample of a search may generate the chunk it lands on.
+     *
+     * <p>A search that is not allowed to generate never does, whatever the config says. That is what
+     * keeps the background warm-up off chunk generation on servers where {@code GENERATE-CHUNKS} is
+     * on for players.</p>
+     */
+    static boolean shouldGenerateForSample(
+            boolean allowChunkGeneration,
+            boolean generateChunksConfigured,
+            boolean generateFallback
+    ) {
+        return allowChunkGeneration && (generateChunksConfigured || generateFallback);
+    }
+
+    /**
+     * Whether the background warm-up may generate terrain.
+     *
+     * <p>Off by default, and deliberately separate from {@code SETTINGS.GENERATE-CHUNKS}. Generating
+     * on demand for a player who asked costs a burst; generating in the background costs it over and
+     * over on a world nobody has walked yet, which is enough to bury a small box. An admin with the
+     * headroom can turn it on and get a cache that fills on brand new terrain.</p>
+     */
+    public boolean isPreCacheChunkGenerationEnabled() {
+        if (plugin == null || plugin.getConfigManager() == null || plugin.getConfigManager().getRtp() == null) {
+            return false;
+        }
+        return plugin.getConfigManager().getRtp().getBoolean(LOCATION_CACHE_GENERATE_CHUNKS_SETTING, false);
     }
 
     /**
@@ -885,11 +924,16 @@ public class RTPManager {
     }
 
     private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future) {
-        startDirectSearch(settings, future, getSearchAttemptsPerTick());
+        startDirectSearch(settings, future, getSearchAttemptsPerTick(), true);
     }
 
-    private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future, int parallelAttempts) {
-        DirectSearchState state = new DirectSearchState(settings);
+    private void startDirectSearch(
+            SearchSettings settings,
+            CompletableFuture<Location> future,
+            int parallelAttempts,
+            boolean allowChunkGeneration
+    ) {
+        DirectSearchState state = new DirectSearchState(settings, allowChunkGeneration);
         int chains = Math.max(1, Math.min(parallelAttempts, settings.maxChunkSamples()));
         state.activeChains.set(chains);
         for (int chain = 0; chain < chains; chain++) {
@@ -946,7 +990,8 @@ public class RTPManager {
         }
 
         int chunkSamplesUsed = state.chunkSamplesUsed.getAndIncrement();
-        boolean generateFallback = shouldUseGenerateFallback(chunkSamplesUsed, state.generateFallbackSamplesUsed.get());
+        boolean generateFallback = state.allowChunkGeneration
+                && shouldUseGenerateFallback(chunkSamplesUsed, state.generateFallbackSamplesUsed.get());
         if (!generateFallback && shouldUseLoadedChunkFallback(chunkSamplesUsed)) {
             plugin.getSpigotScheduler().runRegion(world, settings.centerX() >> 4, settings.centerZ() >> 4, () -> {
                 int[] loadedChunk = nextLoadedChunkSample(world);
@@ -977,7 +1022,11 @@ public class RTPManager {
         }
 
         FileConfiguration rtp = plugin.getConfigManager().getRtp();
-        boolean generateForSample = rtp.getBoolean(GENERATE_CHUNKS_SETTING, false) || generateFallback;
+        boolean generateForSample = shouldGenerateForSample(
+                state.allowChunkGeneration,
+                rtp.getBoolean(GENERATE_CHUNKS_SETTING, false),
+                generateFallback
+        );
         if (!generateForSample && !rtp.getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
             continueDirectSearch(state, future, null);
             return;
