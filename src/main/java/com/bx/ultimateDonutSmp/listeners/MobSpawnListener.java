@@ -20,6 +20,9 @@ import java.util.function.Function;
  * toggle governs the spawn cycle only: mobs that are already alive stay alive when a player turns it
  * off, and turning it back on lets the next natural spawn attempt through immediately. Nothing here
  * removes entities, so there is no sweep of the loaded world at any point.
+ *
+ * <p>Which spawn reasons are in scope is decided by
+ * {@link MobSpawnPolicy#isPreventableSpawnReason(CreatureSpawnEvent.SpawnReason, boolean)}.
  */
 public class MobSpawnListener implements Listener {
 
@@ -29,6 +32,7 @@ public class MobSpawnListener implements Listener {
     private volatile FileConfiguration cachedConfig;
     private volatile double mobSpawnRadius = 50.0D;
     private volatile double phantomSpawnRadius = 40.0D;
+    private volatile boolean trialSpawnersBlocked = false;
 
     public MobSpawnListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -41,9 +45,9 @@ public class MobSpawnListener implements Listener {
 
         if (MobSpawnPolicy.hasCustomName(entity)) return;
 
-        if (!isPreventableSpawnReason(event.getSpawnReason())) return;
-
         refreshSettingsIfNeeded();
+
+        if (!MobSpawnPolicy.isPreventableSpawnReason(event.getSpawnReason(), trialSpawnersBlocked)) return;
 
         if (event.getEntityType() == EntityType.PHANTOM) {
             if (shouldCancelPhantomSpawn(entity.getLocation())) {
@@ -62,7 +66,7 @@ public class MobSpawnListener implements Listener {
     }
 
     /**
-     * Re-reads the radii only when {@link com.bx.ultimateDonutSmp.managers.ConfigManager} swapped in a
+     * Re-reads the cached settings only when {@link com.bx.ultimateDonutSmp.managers.ConfigManager} swapped in a
      * new {@link FileConfiguration}, so the hot path costs a reference compare instead of a YAML path
      * lookup per spawn attempt.
      */
@@ -73,6 +77,7 @@ public class MobSpawnListener implements Listener {
         }
         mobSpawnRadius = Math.max(0.0D, current.getDouble("SETTINGS.MOB-SPAWN-RADIUS", 50));
         phantomSpawnRadius = Math.max(0.0D, current.getDouble("SETTINGS.PHANTOM-SPAWN-RADIUS", 40));
+        trialSpawnersBlocked = current.getBoolean("SETTINGS.MOB-SPAWN-TOGGLE-BLOCKS-TRIAL-SPAWNERS", false);
         cachedConfig = current;
     }
 
@@ -98,13 +103,5 @@ public class MobSpawnListener implements Listener {
                 mobSpawnRadius,
                 dataProvider
         );
-    }
-
-    private boolean isPreventableSpawnReason(CreatureSpawnEvent.SpawnReason reason) {
-        if (reason == null) return false;
-        return switch (reason) {
-            case CUSTOM, SPAWNER_EGG, BUILD_WITHER, BREEDING -> false;
-            default -> true;
-        };
     }
 }

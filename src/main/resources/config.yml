@@ -128,6 +128,11 @@ SETTINGS:
   DISABLE-MOB-SPAWN-LIMIT-SECONDS: -1
   # The numerical value for Disable Phantom Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
   DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS: 3600
+  # Determines whether the per player mob spawn toggle also stops trial spawners in trial
+  # chambers. Leave it false so the chamber still has to be fought. A trial spawner ejects
+  # its rewards once the mobs it released are gone, so blocking those spawns hands out the
+  # loot for free. Available options: true, false
+  MOB-SPAWN-TOGGLE-BLOCKS-TRIAL-SPAWNERS: false
 # Configuration section for Features.
 FEATURES_SETTINGS:
   # Action when executing a command linked to a disabled feature.
