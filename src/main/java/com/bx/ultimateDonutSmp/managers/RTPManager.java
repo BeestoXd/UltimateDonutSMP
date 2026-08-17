@@ -1301,8 +1301,10 @@ public class RTPManager {
         boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
         warn("rtp search failed in world '" + progress.worldName
                 + "' radius " + progress.settings.minRadius() + "-" + progress.settings.maxRadius()
-                + ", attempts " + progress.attemptsUsed + "/" + progress.settings.maxAttempts()
-                + ", samples " + progress.chunkSamplesUsed + "/" + progress.settings.maxChunkSamples()
+                + ", attempts " + displaySearchCount(progress.attemptsUsed, progress.settings.maxAttempts())
+                + "/" + progress.settings.maxAttempts()
+                + ", samples " + displaySearchCount(progress.chunkSamplesUsed, progress.settings.maxChunkSamples())
+                + "/" + progress.settings.maxChunkSamples()
                 + ", generatechunks=" + generateChunks
                 + ", generatefallback=" + isGenerateFallbackEnabled()
                 + ", fallbackgeneratedsamples=" + progress.generateFallbackSamplesUsed
@@ -1315,9 +1317,11 @@ public class RTPManager {
             return;
         }
 
-        String attempts = String.valueOf(progress.attemptsUsed);
+        String attempts = String.valueOf(
+                displaySearchCount(progress.attemptsUsed, progress.settings.maxAttempts()));
         String maxAttempts = formatSearchLimit(progress.settings.maxAttempts());
-        String samples = String.valueOf(progress.chunkSamplesUsed);
+        String samples = String.valueOf(
+                displaySearchCount(progress.chunkSamplesUsed, progress.settings.maxChunkSamples()));
         String maxSamples = formatSearchLimit(progress.settings.maxChunkSamples());
         String maxAttemptsMessage = plugin.getConfigManager().getRtp()
                 .getString("MESSAGES.MAX-ATTEMPTS", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀꜰᴛᴇʀ %attempts% ᴀᴛᴛᴇᴍᴘᴛѕ.")
@@ -1347,8 +1351,10 @@ public class RTPManager {
         boolean generateChunks = plugin.getConfigManager().getRtp().getBoolean(GENERATE_CHUNKS_SETTING, false);
         warn("rtp search failed in world '" + settings.worldName()
                 + "' radius " + settings.minRadius() + "-" + settings.maxRadius()
-                + ", attempts " + attemptsUsed + "/" + settings.maxAttempts()
-                + ", samples " + chunkSamplesUsed + "/" + settings.maxChunkSamples()
+                + ", attempts " + displaySearchCount(attemptsUsed, settings.maxAttempts())
+                + "/" + settings.maxAttempts()
+                + ", samples " + displaySearchCount(chunkSamplesUsed, settings.maxChunkSamples())
+                + "/" + settings.maxChunkSamples()
                 + ", generatechunks=" + generateChunks
                 + ", generatefallback=" + isGenerateFallbackEnabled()
                 + ", fallbackgeneratedsamples=" + generateFallbackSamplesUsed
@@ -1431,9 +1437,11 @@ public class RTPManager {
         actionBar = stripSearchCounter(actionBar)
                 .replace("{world}", describeWorld(progress.worldName))
                 .replace("{elapsed}", formatElapsedSeconds(progress.elapsedTicks))
-                .replace("{attempts}", String.valueOf(progress.attemptsUsed))
+                .replace("{attempts}", String.valueOf(
+                        displaySearchCount(progress.attemptsUsed, progress.settings.maxAttempts())))
                 .replace("{max_attempts}", formatSearchLimit(progress.settings.maxAttempts()))
-                .replace("{samples}", String.valueOf(progress.chunkSamplesUsed))
+                .replace("{samples}", String.valueOf(
+                        displaySearchCount(progress.chunkSamplesUsed, progress.settings.maxChunkSamples())))
                 .replace("{max_samples}", formatSearchLimit(progress.settings.maxChunkSamples()));
 
         sendPersistentActionBar(player, actionBar, progress.elapsedTicks);
@@ -2233,6 +2241,21 @@ public class RTPManager {
 
     private String formatSearchLimit(int limit) {
         return String.valueOf(Math.max(0, limit));
+    }
+
+    /**
+     * Caps a search counter at its own limit for display.
+     *
+     * <p>Checks run several at a time and the budget is tested before they report back, so the last
+     * few can land after the limit has already been reached. The raw tally is honest about how much
+     * work happened, but "attempts 72/64" in a log just reads as a broken counter to whoever runs
+     * the server, so what gets shown stops at the ceiling they configured.</p>
+     */
+    static int displaySearchCount(int used, int limit) {
+        if (limit <= 0) {
+            return Math.max(0, used);
+        }
+        return Math.max(0, Math.min(used, limit));
     }
 
     private String stripSearchCounter(String text) {

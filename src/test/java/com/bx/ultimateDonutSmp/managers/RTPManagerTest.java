@@ -470,6 +470,23 @@ class RTPManagerTest {
     }
 
     @Test
+    void testSearchCountNeverDisplaysMoreThanTheConfiguredLimit() {
+        // The reporter on #151 saw "attempts 72/64" after several parallel checks landed past the cap.
+        assertEquals(64, RTPManager.displaySearchCount(72, 64));
+        assertEquals(64, RTPManager.displaySearchCount(64, 64));
+        assertEquals(63, RTPManager.displaySearchCount(63, 64));
+        assertEquals(0, RTPManager.displaySearchCount(0, 64));
+    }
+
+    @Test
+    void testSearchCountLeavesUnlimitedAndNegativeAlone() {
+        assertEquals(72, RTPManager.displaySearchCount(72, 0));
+        assertEquals(72, RTPManager.displaySearchCount(72, -1));
+        assertEquals(0, RTPManager.displaySearchCount(-5, 64));
+        assertEquals(0, RTPManager.displaySearchCount(-5, 0));
+    }
+
+    @Test
     void testGetLoadedNormalWorldNameWithDeniedNormalWorld() throws Exception {
         createMockWorld("world", World.Environment.NORMAL); // denied world
         createMockWorld("smp", World.Environment.NORMAL); // normal world
