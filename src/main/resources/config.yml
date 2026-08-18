@@ -720,6 +720,42 @@ FIRST-JOIN-RTP:
     MIN-RADIUS: 500
     # The numerical value for Max Radius. Available options: Any valid integer
     MAX-RADIUS: 5000
+# Configuration section for Respawn Rtp. Sends players back out into the world at a random
+# location after they die, instead of leaving them standing on spawn. The search ignores RTP
+# cooldowns, playtime requirements, and the RTP queue, but it does require the RTP feature
+# itself to be enabled. Players who keep their bed or anchor respawn under Settings Respawn
+# On Bed are left alone.
+RESPAWN-RTP:
+  # Determines whether Respawn Rtp is enabled or disabled. Available options: true, false
+  ENABLED: false
+  # The text or value for Searching Message, sent while the safe location is being looked
+  # up. Set to '' to disable. Available options: Any valid string text
+  SEARCHING-MESSAGE: '&7Finding you a safe place to respawn...'
+  # The text or value for Success Message, sent once the player has been dropped. Supports
+  # {world}, {x}, {y}, {z}. Set to '' to disable. Available options: Any valid string text
+  SUCCESS-MESSAGE: '&aYou respawned at &fX:{x} Y:{y} Z:{z}&a.'
+  # The text or value for Failed Message, sent when no safe location could be found. The
+  # player is left on the normal respawn location. Set to '' to disable. Available options:
+  # Any valid string text
+  FAILED-MESSAGE: '&cCould not find a random respawn location for you.'
+  # Configuration section for World.
+  WORLD:
+    # The world to drop dead players in. Leave empty to use the world they died in.
+    # Available options: Any valid string text
+    NAME: ''
+    # Determines whether the boundaries from World Settings in rtp.yml are reused for that
+    # world. The Center X, Center Z, Min Radius, and Max Radius below are only read when
+    # this is false, or when the world has no entry in rtp.yml. Available options: true,
+    # false
+    USE-RTP-BOUNDS: true
+    # The numerical value for Center X. Available options: Any valid integer
+    CENTER-X: 0
+    # The numerical value for Center Z. Available options: Any valid integer
+    CENTER-Z: 0
+    # The numerical value for Min Radius. Available options: Any valid integer
+    MIN-RADIUS: 500
+    # The numerical value for Max Radius. Available options: Any valid integer
+    MAX-RADIUS: 5000
 # Configuration section for Teleport Cooldown.
 TELEPORT-COOLDOWN:
   # The numerical value for Home. Available options: Any valid integer

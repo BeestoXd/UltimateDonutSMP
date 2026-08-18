@@ -897,6 +897,66 @@ FIRST-JOIN-RTP:
 
 ---
 
+## Section: `RESPAWN-RTP` - Random Drop After A Player Dies
+
+Sends players back out into the world at a random location after they die, instead of leaving them standing on spawn with everyone else.
+The search reuses the RTP engine but skips RTP cooldowns, playtime requirements, and the RTP queue.
+It still needs the `RTP` feature enabled - with RTP off, respawns behave exactly as they did before.
+
+The teleport only starts once the player has landed on their normal respawn location, so a search that finds nothing leaves them at spawn.
+Bed and respawn anchor spawns kept by `SETTINGS.RESPAWN-ON-BED` are left alone, as are duel, FFA, and ender pearl death respawns.
+
+### Fully Commented Setup Code Example
+```yaml
+RESPAWN-RTP:
+  # Determines whether Respawn Rtp is enabled or disabled. Available options: true, false
+  ENABLED: false
+  # The text or value for Searching Message, sent while the safe location is being looked
+  # up. Set to '' to disable. Available options: Any valid string text
+  SEARCHING-MESSAGE: '&7Finding you a safe place to respawn...'
+  # The text or value for Success Message, sent once the player has been dropped. Supports
+  # {world}, {x}, {y}, {z}. Set to '' to disable. Available options: Any valid string text
+  SUCCESS-MESSAGE: '&aYou respawned at &fX:{x} Y:{y} Z:{z}&a.'
+  # The text or value for Failed Message, sent when no safe location could be found. The
+  # player is left on the normal respawn location. Set to '' to disable. Available options:
+  # Any valid string text
+  FAILED-MESSAGE: '&cCould not find a random respawn location for you.'
+  # Configuration section for World.
+  WORLD:
+    # The world to drop dead players in. Leave empty to use the world they died in.
+    # Available options: Any valid string text
+    NAME: ''
+    # Determines whether the boundaries from World Settings in rtp.yml are reused for that
+    # world. The Center X, Center Z, Min Radius, and Max Radius below are only read when
+    # this is false, or when the world has no entry in rtp.yml. Available options: true,
+    # false
+    USE-RTP-BOUNDS: true
+    # The numerical value for Center X. Available options: Any valid integer
+    CENTER-X: 0
+    # The numerical value for Center Z. Available options: Any valid integer
+    CENTER-Z: 0
+    # The numerical value for Min Radius. Available options: Any valid integer
+    MIN-RADIUS: 500
+    # The numerical value for Max Radius. Available options: Any valid integer
+    MAX-RADIUS: 5000
+```
+
+### Key Options
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function |
+| :--- | :--- | :--- | :--- | :--- |
+| `RESPAWN-RTP.ENABLED` | `bool` | true, false | `False` | Master toggle for the random teleport after death. Needs `RTP.ENABLED` in `rtp.yml` too. |
+| `RESPAWN-RTP.SEARCHING-MESSAGE` | `str` | Any string text | `&7Finding you a safe place to respawn...` | Sent when the search starts. Set to `''` to stay silent. |
+| `RESPAWN-RTP.SUCCESS-MESSAGE` | `str` | Any string text | `&aYou respawned at &fX:{x} Y:{y} Z:{z}&a.` | Sent after the teleport lands. Supports `{world}`, `{x}`, `{y}`, `{z}`. |
+| `RESPAWN-RTP.FAILED-MESSAGE` | `str` | Any string text | `&cCould not find a random respawn location for you.` | Sent when nothing safe was found. The player keeps the normal respawn location. |
+| `RESPAWN-RTP.WORLD.NAME` | `str` | Any string text | `''` | World to search in. Empty uses the world the player died in. A world in `DENIED-WORLDS` is skipped. |
+| `RESPAWN-RTP.WORLD.USE-RTP-BOUNDS` | `bool` | true, false | `True` | Reuses `WORLD-SETTINGS.<world>` from `rtp.yml` so `/rtp` and a death drop share one area. |
+| `RESPAWN-RTP.WORLD.CENTER-X` | `int` | Any valid integer | `0` | X the radius is measured from. Read only when `USE-RTP-BOUNDS` is `false` or the world has no `rtp.yml` entry. |
+| `RESPAWN-RTP.WORLD.CENTER-Z` | `int` | Any valid integer | `0` | Z the radius is measured from. Same condition as `CENTER-X`. |
+| `RESPAWN-RTP.WORLD.MIN-RADIUS` | `int` | Any valid integer | `500` | Closest a respawning player can land to the center. |
+| `RESPAWN-RTP.WORLD.MAX-RADIUS` | `int` | Any valid integer | `5000` | Furthest a respawning player can land from the center. Keep inside pregenerated terrain. |
+
+---
+
 ## Section: `SHARDS` - Virtual Shards & Anti-AFK Movement Checks
 
 ### Fully Commented Setup Code Example
