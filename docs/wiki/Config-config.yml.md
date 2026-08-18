@@ -365,6 +365,91 @@ The search attempt budget, chunk sample budget, and chunk generation behaviour a
 
 ---
 
+## Section: `RESPAWN-RTP`
+
+Sends players back out into the world at a random location after they die, instead of leaving them standing on spawn with everyone else.
+The location search reuses the RTP engine but bypasses RTP cooldowns, playtime requirements, and the RTP queue, so dying never leaves a player stuck behind a cooldown.
+It does require the `RTP` feature itself to be enabled - with RTP off, respawns behave exactly as they did before.
+
+The teleport only starts once the player has already landed on their normal respawn location, so a search that finds nothing simply leaves them at spawn.
+Players who keep their bed or respawn anchor under `SETTINGS.RESPAWN-ON-BED` are left where they are, and so are players respawning into a duel, an FFA arena, or an ender pearl death drop.
+
+### 1. Commented Setup Code Example
+
+```yaml
+RESPAWN-RTP:
+  # Determines whether Respawn Rtp is enabled or disabled. Available options: true, false
+  ENABLED: false
+  # The text or value for Searching Message, sent while the safe location is being looked
+  # up. Set to '' to disable. Available options: Any valid string text
+  SEARCHING-MESSAGE: '&7Finding you a safe place to respawn...'
+  # The text or value for Success Message, sent once the player has been dropped. Supports
+  # {world}, {x}, {y}, {z}. Set to '' to disable. Available options: Any valid string text
+  SUCCESS-MESSAGE: '&aYou respawned at &fX:{x} Y:{y} Z:{z}&a.'
+  # The text or value for Failed Message, sent when no safe location could be found. The
+  # player is left on the normal respawn location. Set to '' to disable. Available options:
+  # Any valid string text
+  FAILED-MESSAGE: '&cCould not find a random respawn location for you.'
+  # Configuration section for World.
+  WORLD:
+    # The world to drop dead players in. Leave empty to use the world they died in.
+    # Available options: Any valid string text
+    NAME: ''
+    # Determines whether the boundaries from World Settings in rtp.yml are reused for that
+    # world. The Center X, Center Z, Min Radius, and Max Radius below are only read when
+    # this is false, or when the world has no entry in rtp.yml. Available options: true,
+    # false
+    USE-RTP-BOUNDS: true
+    # The numerical value for Center X. Available options: Any valid integer
+    CENTER-X: 0
+    # The numerical value for Center Z. Available options: Any valid integer
+    CENTER-Z: 0
+    # The numerical value for Min Radius. Available options: Any valid integer
+    MIN-RADIUS: 500
+    # The numerical value for Max Radius. Available options: Any valid integer
+    MAX-RADIUS: 5000
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `RESPAWN-RTP.ENABLED` | `bool` | `true`, `false` | `false` | Master toggle for the random teleport after death. Needs `RTP.ENABLED` in `rtp.yml` to be `true` as well. |
+| `RESPAWN-RTP.SEARCHING-MESSAGE` | `str` | Any string text | `'&7Finding you a safe place to respawn...'` | Sent as soon as the search starts, so the player knows why they are standing on spawn for a moment. Set to `''` to stay silent. |
+| `RESPAWN-RTP.SUCCESS-MESSAGE` | `str` | Any string text | `'&aYou respawned at &fX:{x} Y:{y} Z:{z}&a.'` | Sent after the teleport succeeds. Supports `{world}`, `{x}`, `{y}`, `{z}`. Set to `''` to stay silent. |
+| `RESPAWN-RTP.FAILED-MESSAGE` | `str` | Any string text | `'&cCould not find a random respawn location for you.'` | Sent when no safe location was found or the teleport failed. The player keeps the normal respawn location. Set to `''` to stay silent. |
+| `RESPAWN-RTP.WORLD.NAME` | `str` | Any string text | `''` | World to search in. Leave empty to use whichever world the player died in. `world`, `nether`, and `end` resolve to the loaded overworld/nether/end. A world listed in `DENIED-WORLDS` is skipped entirely. |
+| `RESPAWN-RTP.WORLD.USE-RTP-BOUNDS` | `bool` | `true`, `false` | `true` | Reuses `WORLD-SETTINGS.<world>` from `rtp.yml`, so `/rtp` and a death drop land in the same area. A world with no entry of its own inherits the entry matching its environment. Set to `false` to use the four values below instead. |
+| `RESPAWN-RTP.WORLD.CENTER-X` | `int` | Any valid integer number | `0` | X coordinate the search radius is measured from. Only read when `USE-RTP-BOUNDS` is `false` or the world has no `rtp.yml` entry. |
+| `RESPAWN-RTP.WORLD.CENTER-Z` | `int` | Any valid integer number | `0` | Z coordinate the search radius is measured from. Same condition as `CENTER-X`. |
+| `RESPAWN-RTP.WORLD.MIN-RADIUS` | `int` | Any valid integer number | `500` | Closest a respawning player can land to the center. Raise it to push people away from spawn after they die. |
+| `RESPAWN-RTP.WORLD.MAX-RADIUS` | `int` | Any valid integer number | `5000` | Furthest a respawning player can land from the center. Keep it inside your pregenerated area, otherwise the search has to fall back to chunk generation. |
+
+### 3. Practical Setup Example
+
+Scatter everyone who dies somewhere in the overworld between 1000 and 8000 blocks from spawn, ignoring the `/rtp` boundaries:
+
+```yaml
+RESPAWN-RTP:
+  ENABLED: true
+  SEARCHING-MESSAGE: '&7Sending you back out...'
+  SUCCESS-MESSAGE: '&aYou woke up at &fX:{x} Z:{z}&a.'
+  FAILED-MESSAGE: ''
+  WORLD:
+    NAME: 'world'
+    USE-RTP-BOUNDS: false
+    CENTER-X: 0
+    CENTER-Z: 0
+    MIN-RADIUS: 1000
+    MAX-RADIUS: 8000
+```
+
+Leave `USE-RTP-BOUNDS` at `true` and `NAME` empty instead if you want a death in the nether to drop the player back in the nether, inside the same radius `/rtp` already uses there.
+
+The search attempt budget, chunk sample budget, and chunk generation behaviour are shared with `/rtp` and stay in [`rtp.yml`](Config-rtp.yml).
+
+---
+
 ## Section: `FEATURES_SETTINGS`
 
 ### 1. Commented Setup Code Example

@@ -31,6 +31,8 @@ public class PlayerRespawnListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
+        String deathWorldName = player.getWorld() == null ? null : player.getWorld().getName();
+        boolean respawnRtpAllowed = false;
 
         boolean duelRespawnHandled = plugin.getDuelManager() != null
                 && plugin.getDuelManager().consumeRespawn(player, event);
@@ -66,7 +68,8 @@ public class PlayerRespawnListener implements Listener {
             }
 
             boolean respawnOnBed = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.RESPAWN-ON-BED", false);
-            if (!respawnOnBed || !isRespawningAtBedOrAnchor(event, player)) {
+            respawnRtpAllowed = !respawnOnBed || !isRespawningAtBedOrAnchor(event, player);
+            if (respawnRtpAllowed) {
                 Location respawnLocation = plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.SPAWN);
                 if (respawnLocation == null) {
                     respawnLocation = plugin.getSpawnManager().getSpawnLocation();
@@ -90,6 +93,7 @@ public class PlayerRespawnListener implements Listener {
                                     if (!isStaffMode) {
                                         scheduleChainmailKit(plugin, player, 0L);
                                     }
+                                    startRespawnRtp(player, deathWorldName);
                                 }
                             });
                         });
@@ -99,12 +103,16 @@ public class PlayerRespawnListener implements Listener {
             }
         }
 
+        boolean respawnRtpOnFallback = respawnRtpAllowed;
         plugin.getStaffModeManager().handleRespawn(player);
         plugin.getSpigotScheduler().runGlobalLater(() -> {
             if (player.isOnline()) {
                 plugin.getSpigotScheduler().runEntity(player, () -> {
                     if (player.isOnline()) {
                         NightVisionUtils.restoreIfEnabled(plugin, player);
+                        if (respawnRtpOnFallback) {
+                            startRespawnRtp(player, deathWorldName);
+                        }
                     }
                 });
             }
@@ -116,6 +124,13 @@ public class PlayerRespawnListener implements Listener {
             }
             scheduleChainmailKit(plugin, player, 2L);
         }
+    }
+
+    private void startRespawnRtp(Player player, String deathWorldName) {
+        if (plugin.getRespawnRtpManager() == null) {
+            return;
+        }
+        plugin.getRespawnRtpManager().handleRespawn(player, deathWorldName);
     }
 
     private boolean shouldSnapToRespawnLocation(Location current, Location expected) {

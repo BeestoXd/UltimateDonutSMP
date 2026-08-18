@@ -87,6 +87,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private RTPManager rtpManager;
     private RTPZoneManager rtpZoneManager;
     private FirstJoinSpawnManager firstJoinSpawnManager;
+    private RespawnRtpManager respawnRtpManager;
     private PortalManager portalManager;
     private AmethystToolsManager amethystToolsManager;
     private EnderChestManager enderChestManager;
@@ -259,6 +260,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         rtpManager = new RTPManager(this);
         rtpZoneManager = new RTPZoneManager(this);
         firstJoinSpawnManager = new FirstJoinSpawnManager(this);
+        respawnRtpManager = new RespawnRtpManager(this);
         portalManager = new PortalManager(this);
         portalManager.loadAll();
         initializeLuckPermsTablistRefreshBridge();
@@ -1041,6 +1043,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         shardManager.reloadSettings();
         rtpZoneManager.reloadSettings();
         firstJoinSpawnManager.reloadSettings();
+        respawnRtpManager.reloadSettings();
         enderChestManager.reload();
         if (offenseManager != null) {
             offenseManager.reload();
@@ -1321,6 +1324,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public FirstJoinSpawnManager getFirstJoinSpawnManager() {
         return firstJoinSpawnManager;
+    }
+
+    public RespawnRtpManager getRespawnRtpManager() {
+        return respawnRtpManager;
     }
 
     public PortalManager getPortalManager() {
