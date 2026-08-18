@@ -629,6 +629,15 @@ public class ShardManager {
         return plugin.getSpawnManager().getAfkLocation();
     }
 
+    public static boolean shouldTeleportToShardAfkArea(
+            boolean teleportOnAfk,
+            boolean worldExcluded,
+            boolean insideAfkZone,
+            boolean idleLongEnough
+    ) {
+        return teleportOnAfk && !worldExcluded && !insideAfkZone && idleLongEnough;
+    }
+
     public String formatCountdown(ShardCuboidProgress progress) {
         return NumberUtils.formatCountdown(progress.getRemainingSeconds());
     }

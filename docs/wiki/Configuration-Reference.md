@@ -1031,11 +1031,11 @@ SHARDS:
 | `SHARDS.CUBOIDS.REGIONS.spawn.REWARD-MESSAGE` | `str` | Any string text | `&#A303F9You received %amount% Shard &...` | Configures `REWARD-MESSAGE` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.BOOSTED-REWARD-MESSAGE` | `str` | Any string text | `&#A303F9You received %amount% Shards ...` | Configures `BOOSTED-REWARD-MESSAGE` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.LEAVE-MESSAGE` | `str` | Any string text | `&cShard reward cancelled &7(Left %cub...` | Configures `LEAVE-MESSAGE` for `SHARDS`. |
-| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-TIME` | `int` | Any valid integer | `120` | Configures `AFK-TIME` for `SHARDS`. |
-| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-CUBOID` | `str` | Any string text | `` | Configures `AFK-CUBOID` for `SHARDS`. |
-| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-LOCATION` | `str` | Any string text | `` | Configures `AFK-LOCATION` for `SHARDS`. |
-| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-MESSAGE` | `str` | Any string text | `&7You have been moved to the AFK area...` | Configures `AFK-MESSAGE` for `SHARDS`. |
-| `SHARDS.CUBOIDS.REGIONS.spawn.TELEPORT-ON-AFK` | `bool` | true, false | `True` | Configures `TELEPORT-ON-AFK` for `SHARDS`. |
+| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-TIME` | `int` | Any valid integer | `120` | Seconds a player can stand still inside this region before it moves them to the AFK area. Only used when `TELEPORT-ON-AFK` is `true`. |
+| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-CUBOID` | `str` | Any string text | `` | Cuboid this region sends idle players to. Leave empty to use the AFK area from `AFK-SYSTEM`. |
+| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-LOCATION` | `str` | Any string text | `` | Exact destination for idle players, which takes priority over `AFK-CUBOID` when set. |
+| `SHARDS.CUBOIDS.REGIONS.spawn.AFK-MESSAGE` | `str` | Any string text | `&7You have been moved to the AFK area...` | Message sent after this region moves a player to the AFK area. |
+| `SHARDS.CUBOIDS.REGIONS.spawn.TELEPORT-ON-AFK` | `bool` | true, false | `True` | Whether idle players inside this region are moved to the AFK area. Set to `false` to leave them where they are, in which case they keep their spot and only stop earning shards. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.EXCLUDED-WORLDS` | `list` | Configured values | `['duels']` | Configures `EXCLUDED-WORLDS` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.RECENT-MOVEMENT-WINDOW` | `int` | Any valid integer | `15` | Configures `RECENT-MOVEMENT-WINDOW` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.MIN-MOVEMENT-BLOCKS` | `int` | Any non-negative integer (e.g. `0`, `5`) | `5` | Minimum blocks player must move to keep earning shards. Set to `0` to completely disable movement requirement for passive AFK shard earning. |
