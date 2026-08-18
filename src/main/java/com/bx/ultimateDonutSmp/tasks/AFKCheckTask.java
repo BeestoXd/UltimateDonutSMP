@@ -28,6 +28,7 @@ public class AFKCheckTask implements Runnable {
 
         ShardManager.ShardCuboidConfig active = plugin.getShardManager().findMatchingShardCuboid(player);
         if (active != null) {
+            tickShardCuboidPlayer(player, active);
             return;
         }
 
@@ -35,6 +36,26 @@ public class AFKCheckTask implements Runnable {
                 && plugin.getAFKManager().shouldGoAfk(player.getUniqueId())) {
             plugin.getAFKManager().sendToAfk(player);
         }
+    }
+
+    private void tickShardCuboidPlayer(Player player, ShardManager.ShardCuboidConfig config) {
+        boolean idleLongEnough = plugin.getAFKManager()
+                .shouldGoAfk(player.getUniqueId(), config.afkTimeoutSeconds());
+        boolean insideAfkZone = config.isInAfkZone(player, plugin.getCuboidManager(), plugin.getSpawnManager());
+
+        if (!ShardManager.shouldTeleportToShardAfkArea(
+                config.teleportOnAfk(),
+                config.isWorldExcluded(player.getWorld().getName()),
+                insideAfkZone,
+                idleLongEnough)) {
+            return;
+        }
+
+        plugin.getAFKManager().sendToAfk(
+                player,
+                plugin.getShardManager().resolveAfkLocation(config),
+                config.afkMessage()
+        );
     }
 
     public static void start(UltimateDonutSmp plugin) {

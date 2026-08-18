@@ -102,4 +102,31 @@ class ShardManagerTest {
         assertEquals(1L, ShardManager.killRewardCooldownRemainingSeconds(firstKill, firstKill + cooldown - 1L, cooldown));
         assertEquals(0L, ShardManager.killRewardCooldownRemainingSeconds(firstKill, firstKill + cooldown, cooldown));
     }
+
+    @Test
+    void neverMovesIdlePlayersWhenTeleportOnAfkIsDisabled() {
+        assertFalse(ShardManager.shouldTeleportToShardAfkArea(false, false, false, true));
+        assertFalse(ShardManager.shouldTeleportToShardAfkArea(false, false, true, true));
+        assertFalse(ShardManager.shouldTeleportToShardAfkArea(false, true, false, true));
+    }
+
+    @Test
+    void movesIdlePlayersWhenTeleportOnAfkIsEnabled() {
+        assertTrue(ShardManager.shouldTeleportToShardAfkArea(true, false, false, true));
+    }
+
+    @Test
+    void waitsForTheRegionAfkTimeoutBeforeMoving() {
+        assertFalse(ShardManager.shouldTeleportToShardAfkArea(true, false, false, false));
+    }
+
+    @Test
+    void leavesPlayersAlreadyStandingInTheAfkZone() {
+        assertFalse(ShardManager.shouldTeleportToShardAfkArea(true, false, true, true));
+    }
+
+    @Test
+    void skipsWorldsTheRegionExcludes() {
+        assertFalse(ShardManager.shouldTeleportToShardAfkArea(true, true, false, true));
+    }
 }
