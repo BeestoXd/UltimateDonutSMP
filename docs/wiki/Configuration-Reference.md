@@ -267,6 +267,10 @@ MAP_SOURCES:
       MAX_SYNC_STEP_MS: 2000
       # Pause background chunk generation if a step exceeds MAX_SYNC_STEP_MS (true / false)
       PAUSE_ON_SLOW_STEP: true
+      # Maximum percentage of the arena allowed to be water before it is regenerated (100 = allow any)
+      MAX_WATER_PERCENT: 40
+      # How many times a too-watery arena is regenerated before it is used anyway
+      MAX_TERRAIN_ATTEMPTS: 5
 
 # Cross-server BungeeCord / Velocity Redis sync settings
 ```
@@ -299,6 +303,8 @@ MAP_SOURCES:
 | `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.PREPARE_INTERVAL_TICKS` | `int` | Any valid integer | `1` | Configures `PREPARE_INTERVAL_TICKS` for `MAP_SOURCES`. |
 | `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.MAX_SYNC_STEP_MS` | `int` | Any valid integer | `2000` | Configures `MAX_SYNC_STEP_MS` for `MAP_SOURCES`. |
 | `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.PAUSE_ON_SLOW_STEP` | `bool` | true, false | `True` | Configures `PAUSE_ON_SLOW_STEP` for `MAP_SOURCES`. |
+| `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.MAX_WATER_PERCENT` | `int` | 0 - 100 | `40` | Share of a generated vanilla arena allowed to be water before it is regenerated on a new seed. |
+| `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.MAX_TERRAIN_ATTEMPTS` | `int` | 1 - 20 | `5` | How many regeneration attempts a too-watery arena gets before it is used anyway. |
 
 ---
 

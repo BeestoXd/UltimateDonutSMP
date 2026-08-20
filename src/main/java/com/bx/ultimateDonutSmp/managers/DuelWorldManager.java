@@ -60,6 +60,9 @@ public class DuelWorldManager {
     private static final String VANILLA_POOL_PATH = RANDOM_BIOMES_PATH + ".VANILLA_POOL";
     private static final String WORLDBORDER_PATH = "WORLDBORDER";
 
+    private static final int DEFAULT_MAX_WATER_PERCENT = 40;
+    private static final int DEFAULT_MAX_TERRAIN_ATTEMPTS = 5;
+
     private static final Set<String> DEFAULT_EXCLUDED_BIOMES = Set.of(
             "minecraft:the_end",
             "minecraft:end_highlands",
@@ -85,6 +88,7 @@ public class DuelWorldManager {
     private BukkitTask flatPoolTask;
     private long flatPoolTaskPeriodTicks = -1L;
     private VanillaPreparation activeVanillaPreparation;
+    private int vanillaTerrainAttempts;
     private BukkitTask vanillaPoolTask;
     private long vanillaPoolTaskPeriodTicks = -1L;
     private String lastInvalidTerrainModeWarning = "";
@@ -581,13 +585,13 @@ public class DuelWorldManager {
 
         Biome requestedBiome = requestedVanillaBiomes.pollFirst();
         if (requestedBiome != null) {
-            startVanillaPreparation(requestedBiome);
+            startVanillaPreparation(requestedBiome, true);
             stopVanillaPoolTaskIfIdle();
             return;
         }
 
         if (readyVanillaArenas.size() < getVanillaPoolSize()) {
-            startVanillaPreparation(resolveRandomPoolBiome());
+            startVanillaPreparation(resolveRandomPoolBiome(), false);
         }
         stopVanillaPoolTaskIfIdle();
     }
@@ -604,7 +608,7 @@ public class DuelWorldManager {
         }
     }
 
-    private void startVanillaPreparation(Biome biome) {
+    private void startVanillaPreparation(Biome biome, boolean requested) {
         if (biome == null) {
             return;
         }
@@ -628,7 +632,7 @@ public class DuelWorldManager {
 
         generatedWorldNames.add(world.getName());
         configureGeneratedWorld(world, false);
-        activeVanillaPreparation = new VanillaPreparation(world.getName(), biome, buildPreparationChunks());
+        activeVanillaPreparation = new VanillaPreparation(world.getName(), biome, buildPreparationChunks(), requested);
     }
 
     private void continueVanillaPreparation() {
@@ -749,7 +753,37 @@ public class DuelWorldManager {
         return asyncChunkLoadMethod;
     }
 
+    private boolean rejectTooWateryArena(VanillaPreparation preparation, World world) {
+        int maxWaterPercent = getVanillaMaxWaterPercent();
+        int waterPercent = measureArenaWaterPercent(world);
+        if (!isArenaTooWatery(waterPercent, maxWaterPercent)) {
+            vanillaTerrainAttempts = 0;
+            return false;
+        }
+
+        vanillaTerrainAttempts++;
+        if (vanillaTerrainAttempts >= getVanillaMaxTerrainAttempts()) {
+            plugin.getLogger().warning("Duel vanilla arena for " + prettifyBiomeKey(preparation.biomeKey())
+                    + " is " + waterPercent + "% water after " + vanillaTerrainAttempts
+                    + " attempts and is being used anyway. Raise MAX_WATER_PERCENT, widen the biome pool, "
+                    + "or switch TERRAIN_MODE to FLAT if this keeps happening.");
+            vanillaTerrainAttempts = 0;
+            return false;
+        }
+
+        activeVanillaPreparation = null;
+        if (preparation.requested()) {
+            requestedVanillaBiomes.addFirst(preparation.biome());
+        }
+        cleanupGeneratedWorld(world.getName());
+        return true;
+    }
+
     private void finishVanillaPreparation(VanillaPreparation preparation, World world) {
+        if (rejectTooWateryArena(preparation, world)) {
+            return;
+        }
+
         int radius = getArenaRadius();
         int spawnDistance = getSpawnDistance(radius);
         Location firstSpawn = findSafeSpawn(world, -spawnDistance, 0, null);
@@ -1138,6 +1172,22 @@ public class DuelWorldManager {
         return config().getBoolean(VANILLA_POOL_PATH + ".PAUSE_ON_SLOW_STEP", true);
     }
 
+    private int getVanillaMaxWaterPercent() {
+        return normalizeMaxWaterPercent(config().getInt(VANILLA_POOL_PATH + ".MAX_WATER_PERCENT", DEFAULT_MAX_WATER_PERCENT));
+    }
+
+    static int normalizeMaxWaterPercent(int configuredPercent) {
+        return Math.max(0, Math.min(100, configuredPercent));
+    }
+
+    private int getVanillaMaxTerrainAttempts() {
+        return normalizeMaxTerrainAttempts(config().getInt(VANILLA_POOL_PATH + ".MAX_TERRAIN_ATTEMPTS", DEFAULT_MAX_TERRAIN_ATTEMPTS));
+    }
+
+    static int normalizeMaxTerrainAttempts(int configuredAttempts) {
+        return Math.max(1, Math.min(20, configuredAttempts));
+    }
+
     private void configureGeneratedWorld(World world, boolean loadCenterChunk) {
         world.setPVP(true);
         world.setAutoSave(false);
@@ -1146,6 +1196,46 @@ public class DuelWorldManager {
         if (loadCenterChunk) {
             world.loadChunk(0, 0, true);
         }
+    }
+
+    private int measureArenaWaterPercent(World world) {
+        if (world == null) {
+            return 0;
+        }
+
+        int radius = getArenaRadius();
+        int step = arenaSampleStep(radius);
+        int samples = 0;
+        int water = 0;
+        for (int x = -radius; x <= radius; x += step) {
+            for (int z = -radius; z <= radius; z += step) {
+                samples++;
+                if (isWaterSurface(world, x, z)) {
+                    water++;
+                }
+            }
+        }
+        return waterPercent(water, samples);
+    }
+
+    static int arenaSampleStep(int arenaRadius) {
+        return Math.max(4, (arenaRadius * 2) / 32);
+    }
+
+    static int waterPercent(int waterSamples, int totalSamples) {
+        if (totalSamples <= 0) {
+            return 0;
+        }
+        return Math.round((waterSamples * 100F) / totalSamples);
+    }
+
+    static boolean isArenaTooWatery(int waterPercent, int maxWaterPercent) {
+        return waterPercent > maxWaterPercent;
+    }
+
+    private boolean isWaterSurface(World world, int x, int z) {
+        Block highest = world.getHighestBlockAt(x, z);
+        return highest != null && highest.getType().name().contains("WATER");
     }
 
     private Location findSafeSpawn(World world, int preferredX, int preferredZ, Location avoid) {
@@ -1366,16 +1456,22 @@ public class DuelWorldManager {
         private final Biome biome;
         private final String biomeKey;
         private final Deque<ChunkCoord> chunks;
+        private final boolean requested;
         private int pauseTicks;
         private boolean slowWarningSent;
         private boolean asyncChunkPending;
 
-        private VanillaPreparation(String worldName, Biome biome, Deque<ChunkCoord> chunks) {
+        private VanillaPreparation(String worldName, Biome biome, Deque<ChunkCoord> chunks, boolean requested) {
             this.worldName = worldName;
             this.biome = biome;
             NamespacedKey key = biome == null ? null : biome.getKey();
             this.biomeKey = key == null ? "" : key.toString().toLowerCase(Locale.ROOT);
             this.chunks = chunks == null ? new ArrayDeque<>() : chunks;
+            this.requested = requested;
+        }
+
+        private boolean requested() {
+            return requested;
         }
 
         private String worldName() {
