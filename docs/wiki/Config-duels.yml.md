@@ -392,6 +392,10 @@ MAP_SOURCES:
       MAX_SYNC_STEP_MS: 2000
       # Pause background chunk generation if a step exceeds MAX_SYNC_STEP_MS (true / false)
       PAUSE_ON_SLOW_STEP: true
+      # Maximum percentage of the arena allowed to be water before it is regenerated (100 = allow any)
+      MAX_WATER_PERCENT: 40
+      # How many times a too-watery arena is regenerated before it is used anyway
+      MAX_TERRAIN_ATTEMPTS: 5
 
 # Cross-server BungeeCord / Velocity Redis sync settings
 ```
@@ -425,6 +429,8 @@ MAP_SOURCES:
 | `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.PREPARE_INTERVAL_TICKS` | `int` | Any valid integer number | `'1'` | Configures the technical `PREPARE_INTERVAL_TICKS` parameter for `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.PREPARE_INTERVAL_TICKS` in `duels.yml`. |
 | `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.MAX_SYNC_STEP_MS` | `int` | Any valid integer number | `'2000'` | Configures the technical `MAX_SYNC_STEP_MS` parameter for `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.MAX_SYNC_STEP_MS` in `duels.yml`. |
 | `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.PAUSE_ON_SLOW_STEP` | `bool` | `true`, `false` | `true` | Configures the technical `PAUSE_ON_SLOW_STEP` parameter for `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.PAUSE_ON_SLOW_STEP` in `duels.yml`. |
+| `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.MAX_WATER_PERCENT` | `int` | `0` - `100` | `'40'` | Share of the arena that is allowed to be water. A freshly generated arena above this share is thrown away and generated again on a new seed, which is what keeps duels off the middle of an ocean. Set it to `100` to accept whatever the terrain gives you. |
+| `MAP_SOURCES.RANDOM_BIOMES.VANILLA_POOL.MAX_TERRAIN_ATTEMPTS` | `int` | `1` - `20` | `'5'` | How many times a too-watery arena is regenerated before the last one is used regardless. Stops a narrow biome pool from generating chunks forever, and logs a warning when it happens. |
 
 ### 3. Practical Setup Example
 

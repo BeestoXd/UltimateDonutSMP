@@ -166,6 +166,10 @@ MAP_SOURCES:
       MAX_SYNC_STEP_MS: 2000
       # Pause background chunk generation if a step exceeds MAX_SYNC_STEP_MS (true / false)
       PAUSE_ON_SLOW_STEP: true
+      # Maximum percentage of the arena allowed to be water before it is regenerated (100 = allow any)
+      MAX_WATER_PERCENT: 40
+      # How many times a too-watery arena is regenerated before it is used anyway
+      MAX_TERRAIN_ATTEMPTS: 5
 
 # Cross-server BungeeCord / Velocity Redis sync settings
 CROSS_SERVER:
