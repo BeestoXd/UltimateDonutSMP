@@ -15,39 +15,37 @@ class SpawnerStoragePageTest {
 
     @Test
     void pageEntriesOnlyCoverTheSlotsShownOnThatPage() {
-        SpawnerInstance instance = spawner();
-        instance.setSlotLoot(0, Material.ROTTEN_FLESH, 64);
-        instance.setSlotLoot(44, Material.BONE, 32);
-        instance.setSlotLoot(45, Material.ARROW, 16);
-        instance.setSlotLoot(89, Material.STRING, 8);
-        instance.setSlotLoot(90, Material.GUNPOWDER, 4);
+        SpawnerInstance instance = spawnerWith(
+                slot(0, Material.ROTTEN_FLESH, 64),
+                slot(44, Material.BONE, 32),
+                slot(45, Material.ARROW, 16),
+                slot(89, Material.STRING, 8),
+                slot(90, Material.GUNPOWDER, 4)
+        );
 
-        List<SpawnerLootEntry> firstPage = instance.getPageLootEntries(1, ITEMS_PER_PAGE);
-        assertEquals(List.of("SLOT_0", "SLOT_44"), keys(firstPage));
-
-        List<SpawnerLootEntry> secondPage = instance.getPageLootEntries(2, ITEMS_PER_PAGE);
-        assertEquals(List.of("SLOT_45", "SLOT_89"), keys(secondPage));
-
-        List<SpawnerLootEntry> thirdPage = instance.getPageLootEntries(3, ITEMS_PER_PAGE);
-        assertEquals(List.of("SLOT_90"), keys(thirdPage));
+        assertEquals(List.of("SLOT_0", "SLOT_44"), keys(instance.getPageLootEntries(1, ITEMS_PER_PAGE)));
+        assertEquals(List.of("SLOT_45", "SLOT_89"), keys(instance.getPageLootEntries(2, ITEMS_PER_PAGE)));
+        assertEquals(List.of("SLOT_90"), keys(instance.getPageLootEntries(3, ITEMS_PER_PAGE)));
     }
 
     @Test
     void pageEntriesAreOrderedBySlotRatherThanInsertion() {
-        SpawnerInstance instance = spawner();
-        instance.setSlotLoot(30, Material.BONE, 12);
-        instance.setSlotLoot(2, Material.ARROW, 5);
-        instance.setSlotLoot(17, Material.STRING, 9);
+        SpawnerInstance instance = spawnerWith(
+                slot(30, Material.BONE, 12),
+                slot(2, Material.ARROW, 5),
+                slot(17, Material.STRING, 9)
+        );
 
         assertEquals(List.of("SLOT_2", "SLOT_17", "SLOT_30"), keys(instance.getPageLootEntries(1, ITEMS_PER_PAGE)));
     }
 
     @Test
     void droppingOnePageLeavesEveryOtherPageUntouched() {
-        SpawnerInstance instance = spawner();
-        instance.setSlotLoot(0, Material.ROTTEN_FLESH, 64);
-        instance.setSlotLoot(45, Material.ARROW, 16);
-        instance.setSlotLoot(90, Material.GUNPOWDER, 4);
+        SpawnerInstance instance = spawnerWith(
+                slot(0, Material.ROTTEN_FLESH, 64),
+                slot(45, Material.ARROW, 16),
+                slot(90, Material.GUNPOWDER, 4)
+        );
 
         for (SpawnerLootEntry entry : instance.getPageLootEntries(2, ITEMS_PER_PAGE)) {
             instance.removeStoredLoot(entry.getKey(), entry.getAmount());
@@ -61,8 +59,7 @@ class SpawnerStoragePageTest {
 
     @Test
     void emptyAndOutOfRangePagesYieldNothing() {
-        SpawnerInstance instance = spawner();
-        instance.setSlotLoot(0, Material.ROTTEN_FLESH, 64);
+        SpawnerInstance instance = spawnerWith(slot(0, Material.ROTTEN_FLESH, 64));
 
         assertTrue(instance.getPageLootEntries(2, ITEMS_PER_PAGE).isEmpty());
         assertTrue(instance.getPageLootEntries(500, ITEMS_PER_PAGE).isEmpty());
@@ -72,10 +69,11 @@ class SpawnerStoragePageTest {
 
     @Test
     void smallerPagesSplitTheSameStorageIntoMorePages() {
-        SpawnerInstance instance = spawner();
-        instance.setSlotLoot(0, Material.ROTTEN_FLESH, 64);
-        instance.setSlotLoot(9, Material.BONE, 32);
-        instance.setSlotLoot(18, Material.ARROW, 16);
+        SpawnerInstance instance = spawnerWith(
+                slot(0, Material.ROTTEN_FLESH, 64),
+                slot(9, Material.BONE, 32),
+                slot(18, Material.ARROW, 16)
+        );
 
         assertEquals(List.of("SLOT_0"), keys(instance.getPageLootEntries(1, 9)));
         assertEquals(List.of("SLOT_9"), keys(instance.getPageLootEntries(2, 9)));
@@ -86,8 +84,12 @@ class SpawnerStoragePageTest {
         return entries.stream().map(SpawnerLootEntry::getKey).toList();
     }
 
-    private static SpawnerInstance spawner() {
-        return new SpawnerInstance(
+    private static SpawnerLootEntry slot(int slotIndex, Material material, long amount) {
+        return new SpawnerLootEntry("SLOT_" + slotIndex, material, amount);
+    }
+
+    private static SpawnerInstance spawnerWith(SpawnerLootEntry... entries) {
+        SpawnerInstance instance = new SpawnerInstance(
                 1L,
                 "world",
                 0,
@@ -102,5 +104,7 @@ class SpawnerStoragePageTest {
                 0L,
                 0L
         );
+        instance.setStoredLootEntries(List.of(entries));
+        return instance;
     }
 }
