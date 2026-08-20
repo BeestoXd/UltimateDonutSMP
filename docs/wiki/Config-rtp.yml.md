@@ -55,8 +55,9 @@ SETTINGS:
   GENERATE-FALLBACK-AFTER-SAMPLES: 8
   # Maximum fallback chunks allowed to generate during one RTP search
   MAX-GENERATE-FALLBACK-SAMPLES: 32
-  # Allow loading already-generated chunks from disk if chunk generation is disabled
-  LOAD-GENERATED-CHUNKS: false
+  # Allow loading already-generated chunks from disk if chunk generation is disabled.
+  # Turning this off with GENERATE-CHUNKS off as well leaves the search no way to reach a chunk
+  LOAD-GENERATED-CHUNKS: true
   # If random samples cannot be prepared, try already-loaded chunks as a fallback
   FALLBACK-TO-LOADED-CHUNKS: true
   # Chunk samples to try before loaded chunk fallback starts
@@ -86,7 +87,7 @@ SETTINGS:
 | `SETTINGS.GENERATE-FALLBACK-CHUNKS` | `bool` | `true`, `false` | `true` | Configures the technical `GENERATE-FALLBACK-CHUNKS` parameter for `SETTINGS.GENERATE-FALLBACK-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.GENERATE-FALLBACK-AFTER-SAMPLES` | `int` | Any valid integer number | `'8'` | Configures the technical `GENERATE-FALLBACK-AFTER-SAMPLES` parameter for `SETTINGS.GENERATE-FALLBACK-AFTER-SAMPLES` in `rtp.yml`. |
 | `SETTINGS.MAX-GENERATE-FALLBACK-SAMPLES` | `int` | Any valid integer number | `'32'` | Configures the technical `MAX-GENERATE-FALLBACK-SAMPLES` parameter for `SETTINGS.MAX-GENERATE-FALLBACK-SAMPLES` in `rtp.yml`. |
-| `SETTINGS.LOAD-GENERATED-CHUNKS` | `bool` | `true`, `false` | `false` | Configures the technical `LOAD-GENERATED-CHUNKS` parameter for `SETTINGS.LOAD-GENERATED-CHUNKS` in `rtp.yml`. |
+| `SETTINGS.LOAD-GENERATED-CHUNKS` | `bool` | `true`, `false` | `true` | Whether a search may read terrain that already exists on disk. This is what makes a pregenerated RTP world work while `GENERATE-CHUNKS` stays off. Turning both off leaves the search nothing to read and nothing to make, so every sample comes back empty and the background cache stands down and says so in the console. |
 | `SETTINGS.FALLBACK-TO-LOADED-CHUNKS` | `bool` | `true`, `false` | `true` | Configures the technical `FALLBACK-TO-LOADED-CHUNKS` parameter for `SETTINGS.FALLBACK-TO-LOADED-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` | `int` | Any valid integer number | `'32'` | Configures the technical `LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` parameter for `SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` in `rtp.yml`. |
 | `SETTINGS.LOCATION-CACHE` | `section` | See `SETTINGS.LOCATION-CACHE` below | See example | Keeps safe locations ready in the background so `/rtp` can teleport without running a search first. |
@@ -145,6 +146,14 @@ spare. If you want a cache on a brand new world and your server can take it, thi
 Each entry is re-checked against the current world and radius before it is handed out, and a search
 only starts when a world is short of ready locations. When the cache is empty the command falls back
 to searching live, exactly as before.
+
+A world with no generated terrain inside its RTP radius has nothing for the warm-up to find, and
+retrying cannot change that. So a world that comes back empty is warned about once and then waited
+on for longer and longer, up to ten minutes, rather than being searched again every few seconds. The
+wait belongs to that world alone, so a world that is fine keeps its normal pace, and the first
+location a backed-off world produces puts it straight back to normal too. If `LOAD-GENERATED-CHUNKS`
+and `LOCATION-CACHE.GENERATE-CHUNKS` are both off there is no way to reach a chunk at all, and the
+warm-up says which one to turn on instead of searching.
 
 ### 1. Commented Setup Code Example
 
