@@ -912,33 +912,6 @@ public class SpawnerManager {
                 + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.", (int) breakAmount, fullyDestroyed);
     }
 
-    public List<SpawnerLootEntry> getSortedLootEntries(SpawnerInstance instance) {
-        if (instance == null) {
-            return List.of();
-        }
-
-        List<SpawnerLootEntry> entries = new ArrayList<>();
-        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
-            if (entry != null && entry.getAmount() > 0L) {
-                entries.add(entry);
-            }
-        }
-
-        entries.sort((a, b) -> {
-            int cmp = Long.compare(b.getAmount(), a.getAmount());
-            if (cmp != 0) {
-                return cmp;
-            }
-            boolean aDisabled = instance.isLootDisabled(a.getKey());
-            boolean bDisabled = instance.isLootDisabled(b.getKey());
-            if (aDisabled != bDisabled) {
-                return aDisabled ? 1 : -1;
-            }
-            return a.getMaterial().name().compareTo(b.getMaterial().name());
-        });
-        return entries;
-    }
-
     public ActionResult collectLootEntry(Player player, SpawnerInstance instance, String lootKey, boolean collectAll) {
         if (player == null || instance == null) {
             return fail("&cspawner not found.");
@@ -976,9 +949,6 @@ public class SpawnerManager {
 
         long totalMoved = 0L;
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
-            if (instance.isLootDisabled(entry.getKey())) {
-                continue;
-            }
             long moved = moveMaterialToInventory(player.getInventory(), entry.getMaterial(), entry.getAmount());
             if (moved <= 0L) {
                 continue;
@@ -1042,7 +1012,7 @@ public class SpawnerManager {
         boolean foundCategory = false;
 
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
-            if (instance.isLootDisabled(entry.getKey()) || entry.getAmount() <= 0) {
+            if (entry.getAmount() <= 0) {
                 continue;
             }
             ItemStack single = new ItemStack(entry.getMaterial(), 1);
@@ -1094,9 +1064,6 @@ public class SpawnerManager {
         List<DatabaseManager.SellHistoryRecord> historyRecords = new ArrayList<>();
 
         for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
-            if (instance.isLootDisabled(entry.getKey())) {
-                continue;
-            }
             ItemStack single = new ItemStack(entry.getMaterial(), 1);
             WorthResult worthResult = plugin.getWorthManager().resolveWorth(single);
             if (!worthResult.sellable()) {
@@ -1427,9 +1394,6 @@ public class SpawnerManager {
 
         List<SpawnerLootEntry> entries = new ArrayList<>(instance.getStoredLootEntries());
         for (SpawnerLootEntry entry : entries) {
-            if (instance.isLootDisabled(entry.getKey())) {
-                continue;
-            }
             long storedAmount = entry.getAmount();
             if (storedAmount <= 0L) {
                 continue;
