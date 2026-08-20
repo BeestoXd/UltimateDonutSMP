@@ -101,6 +101,8 @@ public class RTPManager {
     private static final int PRE_CACHE_PARALLEL_ATTEMPTS = 4;
     private static final long PRE_CACHE_SEARCH_TIMEOUT_MILLIS = 30_000L;
     private static final long PRE_CACHE_SEARCH_COOLDOWN_MILLIS = 5_000L;
+    private static final long PRE_CACHE_BACKOFF_START_MILLIS = 30_000L;
+    private static final long PRE_CACHE_BACKOFF_MAX_MILLIS = 600_000L;
 
     private static final class SearchProgress {
         private final String worldName;
@@ -129,14 +131,17 @@ public class RTPManager {
         private final SearchSettings settings;
         /** Whether this particular search may generate terrain, regardless of what the config allows. */
         private final boolean allowChunkGeneration;
+        /** Whether this search is the background warm-up rather than one somebody is waiting on. */
+        private final boolean backgroundWarmUp;
         private final AtomicInteger attemptsUsed = new AtomicInteger();
         private final AtomicInteger chunkSamplesUsed = new AtomicInteger();
         private final AtomicInteger generateFallbackSamplesUsed = new AtomicInteger();
         private final AtomicInteger activeChains = new AtomicInteger();
 
-        private DirectSearchState(SearchSettings settings, boolean allowChunkGeneration) {
+        private DirectSearchState(SearchSettings settings, boolean allowChunkGeneration, boolean backgroundWarmUp) {
             this.settings = settings;
             this.allowChunkGeneration = allowChunkGeneration;
+            this.backgroundWarmUp = backgroundWarmUp;
         }
     }
 
@@ -161,8 +166,11 @@ public class RTPManager {
     private final java.util.concurrent.atomic.AtomicReference<CompletableFuture<Location>> preCacheSearch =
             new java.util.concurrent.atomic.AtomicReference<>();
     private final AtomicInteger preCacheRotation = new AtomicInteger();
+    private final Map<String, Integer> preCacheFailureStreak = new ConcurrentHashMap<>();
+    private final Map<String, Long> preCacheRetryAtMillis = new ConcurrentHashMap<>();
     private volatile long preCacheSearchDeadlineMillis;
     private volatile long nextPreCacheSearchAtMillis;
+    private volatile boolean warnedPreCacheCannotPrepareChunks;
     private final List<RTPQueueEntry> waitingQueue = java.util.Collections.synchronizedList(new ArrayList<>());
     private List<RTPDestination> configuredDestinations = List.of();
     private List<RTPDestination> menuDestinations = List.of();
@@ -179,6 +187,9 @@ public class RTPManager {
         locationPreCache.clear();
         cancelPreCacheSearch();
         nextPreCacheSearchAtMillis = 0L;
+        preCacheFailureStreak.clear();
+        preCacheRetryAtMillis.clear();
+        warnedPreCacheCannotPrepareChunks = false;
         configuredDestinations = loadConfiguredDestinations();
         menuDestinations = buildMenuDestinations(configuredDestinations);
         refillPreCacheAllWorlds();
@@ -389,12 +400,77 @@ public class RTPManager {
         if (isDeniedWorld(worldName) || isConfiguredDestinationDisabled(worldName)) {
             return false;
         }
+        if (!canPrepareChunks(isPreCacheChunkGenerationEnabled())) {
+            warnPreCacheCannotPrepareChunksOnce();
+            return false;
+        }
+        if (System.currentTimeMillis() < preCacheRetryAtMillis.getOrDefault(worldKey, 0L)) {
+            return false;
+        }
         SearchSettings settings = getWorldSearchSettings(worldName);
         if (settings == null || getLoadedWorld(worldName) == null || !isSearchRequestValid(settings)) {
             return false;
         }
 
         return startPreCacheSearch(worldKey, settings);
+    }
+
+    /**
+     * Whether a search under the current config can get hold of a chunk at all.
+     *
+     * <p>A sample is only ever prepared by generating the chunk or by reading one that is already
+     * generated. Forbid both and every random sample returns nothing without so much as touching the
+     * world, so the search burns its whole budget and fails on a world that is perfectly fine. The
+     * background warm-up is the one that suffers for it, because it is not allowed to generate and
+     * so depends entirely on {@code LOAD-GENERATED-CHUNKS} being on.</p>
+     */
+    private boolean canPrepareChunks(boolean allowChunkGeneration) {
+        FileConfiguration rtp = plugin.getConfigManager().getRtp();
+        if (rtp.getBoolean(LOAD_GENERATED_CHUNKS_SETTING, true)) {
+            return true;
+        }
+        return allowChunkGeneration
+                && (rtp.getBoolean(GENERATE_CHUNKS_SETTING, false)
+                || rtp.getBoolean(GENERATE_FALLBACK_CHUNKS_SETTING, true));
+    }
+
+    private void warnPreCacheCannotPrepareChunksOnce() {
+        if (warnedPreCacheCannotPrepareChunks) {
+            return;
+        }
+        warnedPreCacheCannotPrepareChunks = true;
+        warn("the rtp location cache is off because nothing lets it reach a chunk. Turn on"
+                + " SETTINGS.LOAD-GENERATED-CHUNKS to read pregenerated terrain, or"
+                + " SETTINGS.LOCATION-CACHE.GENERATE-CHUNKS to let the warm-up generate its own.");
+    }
+
+    /**
+     * Slows a world's warm-up down after it comes back empty-handed.
+     *
+     * <p>A world nobody has explored has no terrain to offer, and no amount of retrying changes
+     * that. Without a backoff the sweep starts another doomed search every few seconds and buries
+     * the console in warnings for a server that is behaving exactly as configured. Each failure
+     * doubles the wait for that world alone, so a world that is fine keeps its normal cadence, and
+     * one success puts the failing world straight back to it.</p>
+     */
+    private void backOffPreCacheWorld(String worldKey) {
+        int streak = preCacheFailureStreak.merge(worldKey, 1, Integer::sum);
+        long wait = Math.min(
+                PRE_CACHE_BACKOFF_MAX_MILLIS,
+                PRE_CACHE_BACKOFF_START_MILLIS << Math.min(streak - 1, 20)
+        );
+        preCacheRetryAtMillis.put(worldKey, System.currentTimeMillis() + wait);
+        if (streak == 1) {
+            warn("no safe rtp location was found in '" + worldKey + "' while warming the cache up."
+                    + " That world most likely has no generated terrain inside its rtp radius yet."
+                    + " Pregenerate it, or turn on SETTINGS.LOCATION-CACHE.GENERATE-CHUNKS to have the"
+                    + " warm-up build its own. Retrying quietly from here on.");
+        }
+    }
+
+    private void clearPreCacheBackoff(String worldKey) {
+        preCacheFailureStreak.remove(worldKey);
+        preCacheRetryAtMillis.remove(worldKey);
     }
 
     /**
@@ -420,10 +496,15 @@ public class RTPManager {
 
         future.whenComplete((location, throwable) -> {
             preCacheSearch.compareAndSet(future, null);
-            nextPreCacheSearchAtMillis = System.currentTimeMillis() + PRE_CACHE_SEARCH_COOLDOWN_MILLIS;
-            if (throwable != null || location == null) {
+            if (throwable instanceof java.util.concurrent.CancellationException) {
                 return;
             }
+            nextPreCacheSearchAtMillis = System.currentTimeMillis() + PRE_CACHE_SEARCH_COOLDOWN_MILLIS;
+            if (throwable != null || location == null) {
+                backOffPreCacheWorld(worldKey);
+                return;
+            }
+            clearPreCacheBackoff(worldKey);
             java.util.Queue<CachedLocation> target = locationPreCache
                     .computeIfAbsent(worldKey, ignored -> new ConcurrentLinkedQueue<>());
             if (target.size() < getPreCacheSize()) {
@@ -436,7 +517,8 @@ public class RTPManager {
                     settings,
                     future,
                     getPreCacheParallelAttempts(),
-                    isPreCacheChunkGenerationEnabled()
+                    isPreCacheChunkGenerationEnabled(),
+                    true
             );
         } catch (RuntimeException exception) {
             future.complete(null);
@@ -461,10 +543,15 @@ public class RTPManager {
         running.complete(null);
     }
 
+    /**
+     * Drops the running warm-up on reload. Cancelling rather than completing it keeps the search
+     * from being counted as a world that had nothing to offer, which it never got the chance to
+     * decide either way.
+     */
     private void cancelPreCacheSearch() {
         CompletableFuture<Location> running = preCacheSearch.getAndSet(null);
         if (running != null) {
-            running.complete(null);
+            running.cancel(false);
         }
     }
 
@@ -962,16 +1049,17 @@ public class RTPManager {
     }
 
     private void startDirectSearch(SearchSettings settings, CompletableFuture<Location> future) {
-        startDirectSearch(settings, future, getSearchAttemptsPerTick(), true);
+        startDirectSearch(settings, future, getSearchAttemptsPerTick(), true, false);
     }
 
     private void startDirectSearch(
             SearchSettings settings,
             CompletableFuture<Location> future,
             int parallelAttempts,
-            boolean allowChunkGeneration
+            boolean allowChunkGeneration,
+            boolean backgroundWarmUp
     ) {
-        DirectSearchState state = new DirectSearchState(settings, allowChunkGeneration);
+        DirectSearchState state = new DirectSearchState(settings, allowChunkGeneration, backgroundWarmUp);
         int chains = Math.max(1, Math.min(parallelAttempts, settings.maxChunkSamples()));
         state.activeChains.set(chains);
         for (int chain = 0; chain < chains; chain++) {
@@ -998,14 +1086,17 @@ public class RTPManager {
         if (state.activeChains.decrementAndGet() > 0) {
             return;
         }
-        if (future.complete(null)) {
-            logSearchFailure(
-                    state.settings,
-                    state.attemptsUsed.get(),
-                    state.chunkSamplesUsed.get(),
-                    state.generateFallbackSamplesUsed.get()
-            );
+        if (!future.complete(null) || state.backgroundWarmUp) {
+            // The warm-up reports through its own backoff instead, so a world with nothing to offer
+            // costs one warning rather than one every few seconds for as long as the server runs.
+            return;
         }
+        logSearchFailure(
+                state.settings,
+                state.attemptsUsed.get(),
+                state.chunkSamplesUsed.get(),
+                state.generateFallbackSamplesUsed.get()
+        );
     }
 
     private void runDirectSearchStep(DirectSearchState state, CompletableFuture<Location> future) {

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sun.reflect.ReflectionFactory;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,6 +41,7 @@ class RTPManagerTest {
     private Server mockServer;
     private List<World> mockWorlds;
     private AtomicInteger scheduledTasks;
+    private UltimateDonutSmp lastMockPlugin;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -76,6 +78,9 @@ class RTPManagerTest {
                     }
                     if (method.getName().equals("getWorldContainer")) {
                         return new java.io.File(".");
+                    }
+                    if (method.getName().equals("getLogger")) {
+                        return java.util.logging.Logger.getLogger("RTPManagerTest");
                     }
                     if (method.getName().equals("getOnlinePlayers")) {
                         return List.of();
@@ -139,7 +144,52 @@ class RTPManagerTest {
         cmField.setAccessible(true);
         cmField.set(plugin, configManager);
 
+        attachLogger(plugin);
+        lastMockPlugin = plugin;
         return plugin;
+    }
+
+    /** Collects everything the plugin warns about from this point on. */
+    private List<String> captureWarnings() {
+        List<String> warnings = new ArrayList<>();
+        lastMockPlugin.getLogger().addHandler(new java.util.logging.Handler() {
+            @Override
+            public void publish(java.util.logging.LogRecord record) {
+                if (record.getLevel().intValue() >= java.util.logging.Level.WARNING.intValue()) {
+                    warnings.add(record.getMessage());
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        });
+        return warnings;
+    }
+
+    /**
+     * A plugin built without running its constructor has no logger, so anything that warns blows up
+     * with a NullPointerException instead of reaching the assertion the test is actually about.
+     */
+    private void attachLogger(UltimateDonutSmp plugin) throws Exception {
+        Class<?> javaPlugin = org.bukkit.plugin.java.JavaPlugin.class;
+
+        Field serverField = javaPlugin.getDeclaredField("server");
+        serverField.setAccessible(true);
+        serverField.set(plugin, mockServer);
+
+        Field descriptionField = javaPlugin.getDeclaredField("description");
+        descriptionField.setAccessible(true);
+        descriptionField.set(plugin, new org.bukkit.plugin.PluginDescriptionFile(
+                "UltimateDonutSmp", "test", UltimateDonutSmp.class.getName()));
+
+        Field loggerField = javaPlugin.getDeclaredField("logger");
+        loggerField.setAccessible(true);
+        loggerField.set(plugin, new org.bukkit.plugin.PluginLogger(plugin));
     }
 
     @Test
@@ -520,6 +570,113 @@ class RTPManagerTest {
         optedIn.set("SETTINGS.LOCATION-CACHE.GENERATE-CHUNKS", true);
         RTPManager turnedOn = new RTPManager(createMockPlugin(optedIn));
         assertTrue(turnedOn.isPreCacheChunkGenerationEnabled());
+    }
+
+    @Test
+    void testWarmUpStandsDownWhenNothingLetsItReachAChunk() throws Exception {
+        // #175: with generating off and reading generated chunks off too, every sample returns
+        // before it touches the world, so the warm-up burns 128 samples and warns, every few
+        // seconds, forever.
+        createMockWorld("world", World.Environment.NORMAL);
+        createMockWorld("world_nether", World.Environment.NETHER);
+
+        YamlConfiguration rtpConfig = preCacheRtpConfig();
+        rtpConfig.set("SETTINGS.GENERATE-CHUNKS", false);
+        rtpConfig.set("SETTINGS.GENERATE-FALLBACK-CHUNKS", false);
+        rtpConfig.set("SETTINGS.LOAD-GENERATED-CHUNKS", false);
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.GENERATE-CHUNKS", false);
+
+        UltimateDonutSmp plugin = createMockPlugin(rtpConfig);
+        attachSchedulerAndFeatures(plugin);
+        RTPManager rtpManager = new RTPManager(plugin);
+
+        assertNull(preCacheSearch(rtpManager).get(),
+                "a search with no way to reach a chunk should never be started");
+        assertFalse(rtpManager.refillPreCache("world"));
+        assertEquals(0, scheduledTasks.get(), "no search chains should have been scheduled at all");
+    }
+
+    @Test
+    void testWarmUpBacksOffTheWorldThatCameBackEmpty() throws Exception {
+        RTPManager rtpManager = preCacheManager();
+
+        CompletableFuture<Location> first = preCacheSearch(rtpManager).get();
+        assertNotNull(first);
+        first.complete(null);
+
+        setLongField(rtpManager, "nextPreCacheSearchAtMillis", 0L);
+
+        assertFalse(rtpManager.refillPreCache("world"),
+                "a world that just came back empty should not be searched again straight away");
+        assertTrue(rtpManager.refillPreCache("world_nether"),
+                "the backoff belongs to the world that failed, not to the whole sweep");
+    }
+
+    @Test
+    void testAWarmUpThatFindsSomewhereKeepsItsNormalCadence() throws Exception {
+        RTPManager rtpManager = preCacheManager();
+        World world = Bukkit.getWorld("world");
+
+        CompletableFuture<Location> first = preCacheSearch(rtpManager).get();
+        assertNotNull(first);
+        first.complete(new Location(world, 1000.5, 70.0, 1000.5));
+
+        setLongField(rtpManager, "nextPreCacheSearchAtMillis", 0L);
+
+        assertTrue(rtpManager.refillPreCache("world"),
+                "a world that just produced a location should not be held back");
+    }
+
+    @Test
+    void testAWorldWithNothingToOfferIsWarnedAboutOnceRatherThanEverySweep() throws Exception {
+        // The console spam from #175: a doomed warm-up restarted every few seconds, warning each time.
+        createMockWorld("world", World.Environment.NORMAL);
+
+        YamlConfiguration rtpConfig = overworldRtpConfig();
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.ENABLED", true);
+        rtpConfig.set("SETTINGS.LOCATION-CACHE.SIZE", 5);
+        rtpConfig.set("RTP-MENU.BUTTONS.OVERWORLD.SLOT", 11);
+        rtpConfig.set("RTP-MENU.BUTTONS.OVERWORLD.WORLD", "world");
+        rtpConfig.set("RTP-MENU.BUTTONS.OVERWORLD.ENABLED", true);
+
+        UltimateDonutSmp plugin = createMockPlugin(rtpConfig);
+        attachSchedulerAndFeatures(plugin);
+        RTPManager rtpManager = new RTPManager(plugin);
+
+        List<String> warnings = captureWarnings();
+        preCacheSearch(rtpManager).get().complete(null);
+
+        for (int sweep = 0; sweep < 5; sweep++) {
+            setLongField(rtpManager, "nextPreCacheSearchAtMillis", 0L);
+            rtpManager.refillPreCacheAllWorlds();
+        }
+
+        assertNull(preCacheSearch(rtpManager).get(), "the backed-off world should be left alone");
+        assertEquals(1, warnings.size(), "one warning, not one per sweep: " + warnings);
+    }
+
+    @Test
+    void testReloadingDoesNotWarnAboutTheWarmUpItInterrupted() throws Exception {
+        RTPManager rtpManager = preCacheManager();
+        assertNotNull(preCacheSearch(rtpManager).get());
+
+        List<String> warnings = captureWarnings();
+        rtpManager.reload();
+
+        assertTrue(warnings.isEmpty(),
+                "a reload cuts the search short, it does not prove the world had nothing: " + warnings);
+    }
+
+    @Test
+    void testShippedConfigLeavesTheSearchAWayToReachAChunk() {
+        YamlConfiguration shipped = YamlConfiguration.loadConfiguration(new File("src/main/resources/rtp.yml"));
+
+        assertTrue(
+                shipped.getBoolean("SETTINGS.LOAD-GENERATED-CHUNKS")
+                        || shipped.getBoolean("SETTINGS.GENERATE-CHUNKS"),
+                "the bundled rtp.yml must not forbid both loading and generating, or no search can"
+                        + " prepare a single chunk"
+        );
     }
 
     @Test

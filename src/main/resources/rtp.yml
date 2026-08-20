@@ -25,8 +25,9 @@ SETTINGS:
   GENERATE-FALLBACK-AFTER-SAMPLES: 8
   # Maximum fallback chunks allowed to generate during one RTP search
   MAX-GENERATE-FALLBACK-SAMPLES: 32
-  # Allow loading already-generated chunks from disk if chunk generation is disabled
-  LOAD-GENERATED-CHUNKS: false
+  # Allow loading already-generated chunks from disk if chunk generation is disabled.
+  # Turning this off with GENERATE-CHUNKS off as well leaves the search no way to reach a chunk
+  LOAD-GENERATED-CHUNKS: true
   # If random samples cannot be prepared, try already-loaded chunks as a fallback
   FALLBACK-TO-LOADED-CHUNKS: true
   # Chunk samples to try before loaded chunk fallback starts
