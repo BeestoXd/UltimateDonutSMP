@@ -132,6 +132,23 @@ public class SpawnerStorageMenu extends BaseMenu {
         return item;
     }
 
+    static int countStoredPages(SpawnerInstance instance, int itemsPerPage) {
+        if (instance == null || itemsPerPage <= 0) {
+            return 1;
+        }
+
+        int maxSlotIndex = 0;
+        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
+            if (entry.getKey().startsWith("SLOT_")) {
+                try {
+                    int idx = Integer.parseInt(entry.getKey().substring(5));
+                    maxSlotIndex = Math.max(maxSlotIndex, idx);
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        return Math.max(1, (int) Math.ceil((maxSlotIndex + 1) / (double) itemsPerPage));
+    }
+
     public static ItemStack stripStorageMeta(ItemStack item) {
         if (item == null || item.getType().isAir()) {
             return item;
@@ -158,22 +175,12 @@ public class SpawnerStorageMenu extends BaseMenu {
         }
 
         int itemsPerPage = plugin.getSpawnerManager().getStorageItemsPerPage();
-        int maxSlotIndex = 0;
-        for (SpawnerLootEntry entry : instance.getStoredLootEntries()) {
-            if (entry.getKey().startsWith("SLOT_")) {
-                try {
-                    int idx = Integer.parseInt(entry.getKey().substring(5));
-                    maxSlotIndex = Math.max(maxSlotIndex, idx);
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        int totalPages = Math.max(1, (int) Math.ceil((maxSlotIndex + 1) / (double) itemsPerPage));
-        int safePage = Math.min(page, totalPages);
+        int totalPages = countStoredPages(instance, itemsPerPage);
 
         inventory = Bukkit.createInventory(
                 this,
                 plugin.getSpawnerManager().getStorageSize(),
-                ColorUtils.toComponent(plugin.getSpawnerManager().getStorageTitle(instance, safePage, totalPages))
+                ColorUtils.toComponent(plugin.getSpawnerManager().getStorageTitle(instance, page, Math.max(totalPages, page)))
         );
 
         clear();
@@ -183,7 +190,7 @@ public class SpawnerStorageMenu extends BaseMenu {
         }
 
         int contentSlots = Math.min(itemsPerPage, inventory.getSize() - 9);
-        int pageOffset = (safePage - 1) * itemsPerPage;
+        int pageOffset = (page - 1) * itemsPerPage;
 
         for (int slot = 0; slot < contentSlots; slot++) {
             int slotIndex = pageOffset + slot;
@@ -227,7 +234,7 @@ public class SpawnerStorageMenu extends BaseMenu {
 
         // 3. Previous Page Button
         int prevSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.SLOT", lastRow + 4);
-        if (safePage > 1) {
+        if (page > 1) {
             String prevMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.MATERIAL", "ARROW");
             Material prevMat = Material.matchMaterial(prevMatName);
             if (prevMat == null) prevMat = Material.ARROW;
@@ -235,10 +242,10 @@ public class SpawnerStorageMenu extends BaseMenu {
             List<String> rawPrevLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON.LORE");
             List<String> prevLore = new ArrayList<>();
             if (rawPrevLore.isEmpty()) {
-                prevLore.add("&fClick to go back to page " + (safePage - 1));
+                prevLore.add("&fClick to go back to page " + (page - 1));
             } else {
                 for (String line : rawPrevLore) {
-                    prevLore.add(line.replace("{prev_page}", String.valueOf(safePage - 1)));
+                    prevLore.add(line.replace("{prev_page}", String.valueOf(page - 1)));
                 }
             }
             set(prevSlot, ItemUtils.createItem(prevMat, prevTitle, prevLore));
@@ -248,7 +255,7 @@ public class SpawnerStorageMenu extends BaseMenu {
 
         // 4. Next Page Button
         int nextSlot = config.getInt("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.SLOT", lastRow + 6);
-        if (safePage < totalPages) {
+        if (page <= totalPages) {
             String nextMatName = config.getString("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.MATERIAL", "ARROW");
             Material nextMat = Material.matchMaterial(nextMatName);
             if (nextMat == null) nextMat = Material.ARROW;
@@ -256,10 +263,10 @@ public class SpawnerStorageMenu extends BaseMenu {
             List<String> rawNextLore = config.getStringList("SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON.LORE");
             List<String> nextLore = new ArrayList<>();
             if (rawNextLore.isEmpty()) {
-                nextLore.add("&fClick to go to page " + (safePage + 1));
+                nextLore.add("&fClick to go to page " + (page + 1));
             } else {
                 for (String line : rawNextLore) {
-                    nextLore.add(line.replace("{next_page}", String.valueOf(safePage + 1)));
+                    nextLore.add(line.replace("{next_page}", String.valueOf(page + 1)));
                 }
             }
             set(nextSlot, ItemUtils.createItem(nextMat, nextTitle, nextLore));
@@ -386,7 +393,7 @@ public class SpawnerStorageMenu extends BaseMenu {
                 new SpawnerStorageMenu(plugin, spawnerId, page).open(player);
             } else if (rawSlot == prevSlot && page > 1) {
                 new SpawnerStorageMenu(plugin, spawnerId, page - 1).open(player);
-            } else if (rawSlot == nextSlot) {
+            } else if (rawSlot == nextSlot && page <= countStoredPages(instance, itemsPerPage)) {
                 new SpawnerStorageMenu(plugin, spawnerId, page + 1).open(player);
             } else if (rawSlot == dropSlot) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().dropPageLoot(player, instance, page).message()));
