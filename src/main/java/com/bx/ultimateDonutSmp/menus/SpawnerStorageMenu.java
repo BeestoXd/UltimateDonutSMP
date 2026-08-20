@@ -389,7 +389,7 @@ public class SpawnerStorageMenu extends BaseMenu {
             } else if (rawSlot == nextSlot) {
                 new SpawnerStorageMenu(plugin, spawnerId, page + 1).open(player);
             } else if (rawSlot == dropSlot) {
-                player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().dropAllLoot(player, instance).message()));
+                player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().dropPageLoot(player, instance, page).message()));
                 new SpawnerStorageMenu(plugin, spawnerId, page).open(player);
             } else if (rawSlot == sellSlot) {
                 plugin.getSpawnerManager().playSellConfirmOpenSound(player);

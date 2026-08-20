@@ -998,7 +998,7 @@ public class SpawnerManager {
         return ok("&acollected &f" + NumberUtils.format(totalMoved) + "&a items from this spawner.");
     }
 
-    public ActionResult dropAllLoot(Player player, SpawnerInstance instance) {
+    public ActionResult dropPageLoot(Player player, SpawnerInstance instance, int page) {
         if (player == null || instance == null) {
             return fail("&cspawner not found.");
         }
@@ -1008,10 +1008,7 @@ public class SpawnerManager {
 
         Location dropLocation = getSpawnerCenter(instance).add(0, 0.5D, 0);
         long dropped = 0L;
-        for (SpawnerLootEntry entry : new ArrayList<>(instance.getStoredLootEntries())) {
-            if (instance.isLootDisabled(entry.getKey())) {
-                continue;
-            }
+        for (SpawnerLootEntry entry : instance.getPageLootEntries(page, storageItemsPerPage)) {
             long droppedForEntry = dropMaterial(player, dropLocation, entry.getMaterial(), entry.getAmount());
             if (droppedForEntry > 0L) {
                 instance.removeStoredLoot(entry.getKey(), droppedForEntry);
@@ -1020,13 +1017,13 @@ public class SpawnerManager {
         }
 
         if (dropped <= 0L) {
-            return fail("&cthere is no enabled loot stored in that spawner.");
+            return fail("&cthere is no loot stored on this page.");
         }
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
         playDropLootSound(player);
-        return ok("&adropped &f" + NumberUtils.format(dropped) + "&a stored items on the ground.");
+        return ok("&adropped &f" + NumberUtils.format(dropped) + "&a stored items from this page on the ground.");
     }
 
     public record SpawnerSellPreview(double totalPayout, long totalSellableItems, double maxMultiplier) {}
