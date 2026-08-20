@@ -54,6 +54,20 @@ public class AmethystToolsListener implements Listener {
         this.manager = plugin.getAmethystToolsManager();
     }
 
+    /**
+     * Inventory upkeep - splitting stacks, stamping identity, clearing expired tools - stays off in
+     * creative, where the client owns the inventory and correcting it only causes desync. What the
+     * tool itself does is not gated on the game mode.
+     */
+    static boolean shouldManageInventory(GameMode gameMode) {
+        return gameMode != GameMode.CREATIVE;
+    }
+
+    /** Breaking a block in creative drops nothing in vanilla, so neither does an amethyst tool. */
+    static boolean shouldDropAoeLoot(GameMode gameMode) {
+        return gameMode != GameMode.CREATIVE;
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockDamage(BlockDamageEvent event) {
         Player player = event.getPlayer();
@@ -70,20 +84,24 @@ public class AmethystToolsListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (player.getGameMode() == GameMode.CREATIVE) {
-            return;
-        }
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!manager.isAmethystTool(item)) {
             return;
         }
 
+        boolean manageInventory = shouldManageInventory(player.getGameMode());
+
         if (item.getAmount() > 1) {
+            if (!manageInventory) {
+                return;
+            }
             manager.sanitizeHeldItem(player, false);
             return;
         }
 
-        manager.ensureIdentity(item, player.getUniqueId(), false);
+        if (manageInventory) {
+            manager.ensureIdentity(item, player.getUniqueId(), false);
+        }
         AmethystToolType type = manager.getToolType(item);
         if (type != AmethystToolType.DRILL && type != AmethystToolType.SHOVEL && type != AmethystToolType.CHOPPER) {
             return;
@@ -136,8 +154,7 @@ public class AmethystToolsListener implements Listener {
                     continue;
                 }
 
-                block.breakNaturally(item);
-                player.sendBlockChange(block.getLocation(), Material.AIR.createBlockData());
+                breakAoeBlock(player, block, item);
                 if (particlesSpawned < 4) {
                     manager.spawnAmethystParticles(block.getLocation());
                     particlesSpawned++;
@@ -187,8 +204,7 @@ public class AmethystToolsListener implements Listener {
                     continue;
                 }
 
-                block.breakNaturally(item);
-                player.sendBlockChange(block.getLocation(), Material.AIR.createBlockData());
+                breakAoeBlock(player, block, item);
                 if (particlesSpawned < 4) {
                     manager.spawnAmethystParticles(block.getLocation());
                     particlesSpawned++;
@@ -238,8 +254,7 @@ public class AmethystToolsListener implements Listener {
                     continue;
                 }
 
-                log.breakNaturally(item);
-                player.sendBlockChange(log.getLocation(), Material.AIR.createBlockData());
+                breakAoeBlock(player, log, item);
                 if (particlesSpawned < 5) {
                     manager.spawnAmethystParticles(log.getLocation());
                     particlesSpawned++;
@@ -264,9 +279,6 @@ public class AmethystToolsListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (player.getGameMode() == GameMode.CREATIVE) {
-            return;
-        }
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!manager.isAmethystTool(item)) {
             return;
@@ -277,13 +289,20 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
+        boolean manageInventory = shouldManageInventory(player.getGameMode());
+
         if (item.getAmount() > 1) {
+            if (!manageInventory) {
+                return;
+            }
             manager.sanitizeHeldItem(player, false);
             event.setCancelled(true);
             return;
         }
 
-        manager.ensureIdentity(item, player.getUniqueId(), false);
+        if (manageInventory) {
+            manager.ensureIdentity(item, player.getUniqueId(), false);
+        }
         AmethystToolType type = manager.getToolType(item);
         if (type == null) {
             event.setCancelled(true);
@@ -418,15 +437,14 @@ public class AmethystToolsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerConsume(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
-        if (player.getGameMode() == GameMode.CREATIVE) {
-            return;
-        }
         ItemStack item = event.getItem();
         if (!manager.isAmethystTool(item)) {
             return;
         }
 
-        manager.ensureIdentity(item, player.getUniqueId(), false);
+        if (shouldManageInventory(player.getGameMode())) {
+            manager.ensureIdentity(item, player.getUniqueId(), false);
+        }
         AmethystToolType type = manager.getToolType(item);
         if (type != AmethystToolType.SHARD_BOOSTER) {
             return;
@@ -459,28 +477,6 @@ public class AmethystToolsListener implements Listener {
 
         if (currentIsAmethystTool && cursorIsAmethystTool) {
             event.setCancelled(true);
-            if (player.getGameMode() == GameMode.CREATIVE) {
-                Inventory clickedInventory = event.getClickedInventory();
-                int clickedSlot = event.getSlot();
-                ItemStack currentSnapshot = current.clone();
-                ItemStack cursorSnapshot = cursor.clone();
-
-                manager.suppressVisualSync(player.getUniqueId());
-                plugin.getSpigotScheduler().runEntity(player, () -> {
-                    if (!player.isOnline()) {
-                        return;
-                    }
-
-                    manager.suppressVisualSync(player.getUniqueId());
-                    if (clickedInventory != null
-                            && clickedSlot >= 0
-                            && clickedSlot < clickedInventory.getSize()) {
-                        clickedInventory.setItem(clickedSlot, currentSnapshot.clone());
-                    }
-                    player.setItemOnCursor(cursorSnapshot.clone());
-                    player.updateInventory();
-                });
-            }
             return;
         }
 
@@ -696,6 +692,15 @@ public class AmethystToolsListener implements Listener {
     private boolean shouldSendBreakMessages(Player player) {
         PlayerData data = plugin.getPlayerDataManager().get(player);
         return data == null || data.isAmethystBreakMessagesEnabled();
+    }
+
+    private void breakAoeBlock(Player player, Block block, ItemStack item) {
+        if (shouldDropAoeLoot(player.getGameMode())) {
+            block.breakNaturally(item);
+        } else {
+            block.setType(Material.AIR);
+        }
+        player.sendBlockChange(block.getLocation(), Material.AIR.createBlockData());
     }
 
     private List<Block> getAoeBlocks(Block origin, Player player, int radius) {
