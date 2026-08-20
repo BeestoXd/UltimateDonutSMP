@@ -225,6 +225,22 @@ public class SpawnerInstance {
         storedLoot.remove("SLOT_" + slotIndex);
     }
 
+    public List<SpawnerLootEntry> getPageLootEntries(int page, int itemsPerPage) {
+        List<SpawnerLootEntry> entries = new ArrayList<>();
+        if (itemsPerPage <= 0) {
+            return entries;
+        }
+
+        int firstSlotIndex = (Math.max(1, page) - 1) * itemsPerPage;
+        for (int slotIndex = firstSlotIndex; slotIndex < firstSlotIndex + itemsPerPage; slotIndex++) {
+            SpawnerLootEntry entry = getSlotLoot(slotIndex);
+            if (entry != null && entry.getAmount() > 0L) {
+                entries.add(entry);
+            }
+        }
+        return entries;
+    }
+
     public void addAutoMobDrop(Material material, long amount, long capPerKey) {
         if (material == null || amount <= 0L) {
             return;
