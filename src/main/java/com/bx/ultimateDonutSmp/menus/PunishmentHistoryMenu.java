@@ -149,7 +149,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
         if (!PermissionUtils.has(player, PunishmentManager.DELETE_PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-DELETE-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅѕ."
+                    "&cYou do not have permission to delete punishment history records."
             )));
             return;
         }
@@ -158,7 +158,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
         if (!deleted) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.DELETE-FAILED",
-                    "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ #{id}.",
+                    "&cFailed to delete punishment record #{id}.",
                     "{id}", String.valueOf(recordId)
             )));
             return;
@@ -166,7 +166,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
 
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.DELETED-RECORD",
-                "&aᴅᴇʟᴇᴛᴇᴅ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅ &f#{id}&a.",
+                "&aDeleted punishment history record &f#{id}&a.",
                 "{id}", String.valueOf(recordId)
         )));
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
@@ -174,10 +174,10 @@ public class PunishmentHistoryMenu extends BaseMenu {
     }
 
     private void buildEmptyState() {
-        String name = menus().getString(MENU_PATH + ".EMPTY-BUTTON.DISPLAY-NAME", "&cɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ");
+        String name = menus().getString(MENU_PATH + ".EMPTY-BUTTON.DISPLAY-NAME", "&cNo punishment history");
         List<String> lore = menus().getStringList(MENU_PATH + ".EMPTY-BUTTON.LORE");
         if (lore.isEmpty()) {
-            lore = List.of("&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ʜᴀѕ ɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅѕ.");
+            lore = List.of("&7This player has no punishment records.");
         }
 
         set(inventory.getSize() / 2, ItemUtils.createItem(
@@ -188,10 +188,10 @@ public class PunishmentHistoryMenu extends BaseMenu {
     }
 
     private void buildBackButton() {
-        String fallbackName = returnToProfileViewer ? "&cʙᴀᴄᴋ" : "&cᴄʟᴏѕᴇ";
+        String fallbackName = returnToProfileViewer ? "&cBack" : "&cClose";
         List<String> fallbackLore = returnToProfileViewer
-                ? List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴘʀᴏꜰɪʟᴇ ᴠɪᴇᴡᴇʀ.")
-                : List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ʜɪѕᴛᴏʀʏ ᴍᴇɴᴜ.");
+                ? List.of("&7Return to the profile viewer.")
+                : List.of("&7Close this history menu.");
 
         set(BACK_SLOT, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BUTTONS.BACK.MATERIAL", "ARROW")),
@@ -203,10 +203,10 @@ public class PunishmentHistoryMenu extends BaseMenu {
     private void buildFilterStateButton() {
         set(FILTER_STATE_SLOT, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BUTTONS.FILTER-STATE.MATERIAL", "HOPPER")),
-                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".BUTTONS.FILTER-STATE.DISPLAY-NAME", "&dѕᴛᴀᴛᴇ ꜰɪʟᴛᴇʀ")),
+                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".BUTTONS.FILTER-STATE.DISPLAY-NAME", "&dState filter")),
                 replaceMenuPlaceholders(defaultIfEmpty(
                         menus().getStringList(MENU_PATH + ".BUTTONS.FILTER-STATE.LORE"),
-                        List.of("&7ᴄᴜʀʀᴇɴᴛ: &f{state_filter}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ")
+                        List.of("&7Current: &f{state_filter}", "&aClick to change")
                 ))
         ));
     }
@@ -214,10 +214,10 @@ public class PunishmentHistoryMenu extends BaseMenu {
     private void buildFilterTypeButton() {
         set(FILTER_TYPE_SLOT, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BUTTONS.FILTER-TYPE.MATERIAL", "BOOK")),
-                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".BUTTONS.FILTER-TYPE.DISPLAY-NAME", "&dᴛʏᴘᴇ ꜰɪʟᴛᴇʀ")),
+                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".BUTTONS.FILTER-TYPE.DISPLAY-NAME", "&dType filter")),
                 replaceMenuPlaceholders(defaultIfEmpty(
                         menus().getStringList(MENU_PATH + ".BUTTONS.FILTER-TYPE.LORE"),
-                        List.of("&7ᴄᴜʀʀᴇɴᴛ: &f{type_filter}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ")
+                        List.of("&7Current: &f{type_filter}", "&aClick to change")
                 ))
         ));
     }
@@ -225,10 +225,10 @@ public class PunishmentHistoryMenu extends BaseMenu {
     private void buildRefreshButton() {
         set(REFRESH_SLOT, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BUTTONS.REFRESH.MATERIAL", "CLOCK")),
-                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".BUTTONS.REFRESH.DISPLAY-NAME", "&dʀᴇꜰʀᴇѕʜ")),
+                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".BUTTONS.REFRESH.DISPLAY-NAME", "&dRefresh")),
                 replaceMenuPlaceholders(defaultIfEmpty(
                         menus().getStringList(MENU_PATH + ".BUTTONS.REFRESH.LORE"),
-                        List.of("&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ.")
+                        List.of("&7Reload this player's punishment history.")
                 ))
         ));
     }
@@ -239,25 +239,25 @@ public class PunishmentHistoryMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(PREVIOUS_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aʙᴀᴄᴋ"),
+                    menus().getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aBack"),
                     menus().getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(PAGE_INFO_SLOT, ItemUtils.createItem(
                 Material.BOOK,
-                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
+                "&ePage " + (page + 1) + "&7/&e" + totalPages,
                 List.of(
-                        "&fʀᴇᴄᴏʀᴅѕ: &7" + NumberUtils.format(totalItems),
-                        "&fᴛʏᴘᴇ: &7" + currentTypeFilterLabel(),
-                        "&fѕᴛᴀᴛᴇ: &7" + query.stateFilter().getDisplayName()
+                        "&fRecords: &7" + NumberUtils.format(totalItems),
+                        "&fType: &7" + currentTypeFilterLabel(),
+                        "&fState: &7" + query.stateFilter().getDisplayName()
                 )
         ));
 
         if (hasNextPage) {
             set(NEXT_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
+                    menus().getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
                     menus().getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
         }
@@ -271,15 +271,15 @@ public class PunishmentHistoryMenu extends BaseMenu {
         List<String> loreTemplate = defaultIfEmpty(
                 menus().getStringList(MENU_PATH + ".PUNISHMENT-ITEM.LORE"),
                 List.of(
-                        "&7ʀᴇᴀѕᴏɴ: &f{reason}",
-                        "&7ɪѕѕᴜᴇᴅ ʙʏ: &f{issuer}",
-                        "&7ᴅᴀᴛᴇ: &f{issued_at}",
-                        "&7ᴇxᴘɪʀᴇѕ: &f{expires_at}",
-                        "&7ѕᴛᴀᴛᴜѕ: {status_color}{status}",
-                        "&7ʀᴇᴍᴏᴠᴇᴅ ʙʏ: &f{removed_by}",
-                        "&7ʀᴇᴍᴏᴠᴀʟ ʀᴇᴀѕᴏɴ: &f{removal_reason}",
-                        "&7ʀᴇᴍᴏᴠᴇᴅ ᴀᴛ: &f{removed_at}",
-                        "&7ɪᴅ: &f#{id}"
+                        "&7Reason: &f{reason}",
+                        "&7Issued by: &f{issuer}",
+                        "&7Date: &f{issued_at}",
+                        "&7Expires: &f{expires_at}",
+                        "&7Status: {status_color}{status}",
+                        "&7Removed by: &f{removed_by}",
+                        "&7Removal reason: &f{removal_reason}",
+                        "&7Removed at: &f{removed_at}",
+                        "&7ID: &f#{id}"
                 )
         );
 
@@ -343,7 +343,7 @@ public class PunishmentHistoryMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin, UUID targetUuid) {
-        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ᴘᴜɴɪѕʜᴍᴇɴᴛѕ ({player})");
+        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Punishments ({player})");
         return template.replace("{player}", plugin.getPunishmentManager().resolveTargetName(targetUuid));
     }
 

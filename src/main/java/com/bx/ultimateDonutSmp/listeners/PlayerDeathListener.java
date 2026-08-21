@@ -259,6 +259,6 @@ public class PlayerDeathListener implements Listener {
     private String buildPlayerKillMessage(Player victim, Player killer) {
         String victimName = victim == null ? "unknown" : plugin.getHideManager().publicName(victim);
         String killerName = killer == null ? "unknown" : plugin.getHideManager().publicName(killer);
-        return ColorUtils.colorize("&c\u2620 " + victimName + " \u1D21\u1D00\u0455 \u0455\u029F\u1D00\u026A\u0274 \u0299\u028F " + killerName);
+        return ColorUtils.colorize("&c\u2620 " + victimName + " was slain by " + killerName);
     }
 }

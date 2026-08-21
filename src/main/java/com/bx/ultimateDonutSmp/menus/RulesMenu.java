@@ -44,7 +44,7 @@ public class RulesMenu extends BaseMenu {
         for (RulesButton button : buttons) {
             if (slotButtons.containsKey(button.slot())) {
                 plugin.getLogger().warning("skipping duplicate rules menu slot " + button.slot()
-                        + " ꜰᴏʀ ʙᴜᴛᴛᴏɴ " + button.key() + ".");
+                        + " for button " + button.key() + ".");
                 continue;
             }
 
@@ -54,7 +54,7 @@ public class RulesMenu extends BaseMenu {
         }
 
         if (renderedButtons == 0) {
-            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ʀᴜʟᴇѕ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx ʀᴜʟᴇѕ-ᴍᴇɴᴜ.ʙᴜᴛᴛᴏɴѕ ᴛᴏ ᴜѕᴇ ᴛʜᴇ ɢᴜɪ.");
+            setFallbackItem("&cNo usable rules buttons", "&7Fix rules-menu.buttons to use the GUI.");
         }
     }
 
@@ -93,28 +93,28 @@ public class RulesMenu extends BaseMenu {
             ConfigurationSection buttonSection = buttonsSection.getConfigurationSection(key);
             if (buttonSection == null) {
                 plugin.getLogger().warning("Skipping " + BUTTONS_PATH + "." + key
-                        + " ʙᴇᴄᴀᴜѕᴇ ɪᴛ ɪѕ ɴᴏᴛ ᴀ ѕᴇᴄᴛɪᴏɴ.");
+                        + " because it is not a section.");
                 continue;
             }
 
             int slot = buttonSection.getInt("SLOT", -1);
             if (slot < 0 || slot >= inventorySize) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " ʙᴇᴄᴀᴜѕᴇ ѕʟᴏᴛ " + slot + " ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴍᴇɴᴜ ѕɪᴢᴇ " + inventorySize + ".");
+                        + " because slot " + slot + " is outside menu size " + inventorySize + ".");
                 continue;
             }
 
             String rawMaterial = buttonSection.getString("MATERIAL");
             if (rawMaterial == null || rawMaterial.isBlank()) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " ʙᴇᴄᴀᴜѕᴇ ᴍᴀᴛᴇʀɪᴀʟ ɪѕ ᴍɪѕѕɪɴɢ.");
+                        + " because material is missing.");
                 continue;
             }
 
             Material material = Material.matchMaterial(rawMaterial.trim().toUpperCase(Locale.ROOT));
             if (material == null) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " ʙᴇᴄᴀᴜѕᴇ ᴍᴀᴛᴇʀɪᴀʟ '" + rawMaterial + "' ɪѕ ɪɴᴠᴀʟɪᴅ.");
+                        + " because material '" + rawMaterial + "' is invalid.");
                 continue;
             }
 
@@ -133,7 +133,7 @@ public class RulesMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ʀᴜʟᴇѕ");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Rules");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {
@@ -143,7 +143,7 @@ public class RulesMenu extends BaseMenu {
         }
 
         plugin.getLogger().warning("invalid " + MENU_PATH + ".SIZE value '" + rawSize
-                + "'. ꜰᴀʟʟɪɴɢ ʙᴀᴄᴋ ᴛᴏ 27.");
+                + "'. Falling back to 27.");
         return 27;
     }
 
@@ -153,19 +153,19 @@ public class RulesMenu extends BaseMenu {
 
         if (normalizedKey.contains("CHAT") || strippedName.contains("chat")) {
             return List.of(
-                    "&7ᴋᴇᴇᴘ ᴄʜᴀᴛ ʀᴇѕᴘᴇᴄᴛꜰᴜʟ ᴀɴᴅ ʀᴇᴘᴏʀᴛ ѕᴇʀɪᴏᴜѕ ɪѕѕᴜᴇѕ ɪɴ ᴛʜᴇ ᴅɪѕᴄᴏʀᴅ.",
-                    "&7ʙʀᴇᴀᴋɪɴɢ ᴄʜᴀᴛ ʀᴜʟᴇѕ ᴄᴀɴ ʟᴇᴀᴅ ᴛᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
+                    "&7Keep chat respectful and report serious issues in the Discord.",
+                    "&7Breaking chat rules can lead to punishments."
             );
         }
 
         if (normalizedKey.contains("SERVER") || strippedName.contains("server")) {
             return List.of(
-                    "&7ʀᴇᴀᴅ ᴛʜᴇ ꜰᴜʟʟ ѕᴇʀᴠᴇʀ ʀᴜʟᴇѕ ᴄᴀʀᴇꜰᴜʟʟʏ ʙᴇꜰᴏʀᴇ ᴘʟᴀʏɪɴɢ.",
-                    "&7ᴠɪᴏʟᴀᴛɪɴɢ ѕᴇʀᴠᴇʀ ʀᴜʟᴇѕ ᴍᴀʏ ʀᴇѕᴜʟᴛ ɪɴ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
+                    "&7Read the full server rules carefully before playing.",
+                    "&7Violating server rules may result in punishments."
             );
         }
 
-        return List.of("&7ᴍᴀᴋᴇ ѕᴜʀᴇ ʏᴏᴜ ᴜɴᴅᴇʀѕᴛᴀɴᴅ ᴛʜᴇѕᴇ ʀᴜʟᴇѕ ʙᴇꜰᴏʀᴇ ᴄᴏɴᴛɪɴᴜɪɴɢ.");
+        return List.of("&7Make sure you understand these rules before continuing.");
     }
 
     private static String prettifyKey(String key) {

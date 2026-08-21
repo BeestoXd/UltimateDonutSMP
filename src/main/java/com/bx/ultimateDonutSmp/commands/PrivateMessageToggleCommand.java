@@ -24,18 +24,18 @@ public class PrivateMessageToggleCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!plugin.getConfigManager().isCommandEnabled("MESSAGE")) {
             send(sender, message("MESSAGES.DISABLED", "PRIVATE-MESSAGE.DISABLED",
-                    "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+                    "&cPrivate messages are currently disabled."));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            send(sender, message("MESSAGES.PLAYER_ONLY", null, "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
+            send(sender, message("MESSAGES.PLAYER_ONLY", null, "&cOnly players can use this command."));
             return true;
         }
 
         if (!PermissionUtils.has(player, PERMISSION)) {
             send(player, message("MESSAGES.NO_PERMISSION", "PRIVATE-MESSAGE.NO-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+                    "&cYou do not have permission."));
             return true;
         }
 
@@ -51,7 +51,7 @@ public class PrivateMessageToggleCommand implements CommandExecutor {
         send(player, message(
                 enabled ? "PRIVATE_MESSAGES.PM_ENABLED" : "PRIVATE_MESSAGES.PM_DISABLED",
                 enabled ? "PRIVATE-MESSAGE.PM-ENABLED" : "PRIVATE-MESSAGE.PM-DISABLED",
-                enabled ? "&aᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴇɴᴀʙʟᴇᴅ" : "&cᴘʀɪᴠᴀᴛᴇ ᴍᴇѕѕᴀɢᴇѕ ᴀʀᴇ ɴᴏᴡ ᴅɪѕᴀʙʟᴇᴅ"
+                enabled ? "&aPrivate messages are now enabled" : "&cPrivate messages are now disabled"
         ));
         return true;
     }

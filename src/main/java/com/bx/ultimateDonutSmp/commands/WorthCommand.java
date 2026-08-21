@@ -54,7 +54,7 @@ public class WorthCommand implements CommandExecutor {
             plugin.getWorthManager().reload();
             sendMessage(sender, plugin.getConfigManager().getMessages().getString(
                     "WORTH.RELOADED",
-                    "&aᴡᴏʀᴛʜ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ."
+                    "&aWorth config reloaded."
             ));
             return true;
         }
@@ -64,13 +64,13 @@ public class WorthCommand implements CommandExecutor {
                 || subcommand.equals("item")
                 || subcommand.equals("check")) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+                sender.sendMessage("Player only.");
                 return true;
             }
 
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item.getType().isAir()) {
-                sendMessage(player, "&cʜᴏʟᴅ ᴀɴ ɪᴛᴇᴍ ᴛᴏ ᴄʜᴇᴄᴋ ɪᴛѕ ᴡᴏʀᴛʜ.");
+                sendMessage(player, "&cHold an item to check its worth.");
                 return true;
             }
 
@@ -93,7 +93,7 @@ public class WorthCommand implements CommandExecutor {
         if (itemIndex >= args.length) {
             sendMessage(sender, plugin.getConfigManager().getMessages().getString(
                     "WORTH.USAGE",
-                    "&cᴜѕᴀɢᴇ: /ᴡᴏʀᴛʜ [ᴀᴍᴏᴜɴᴛ] <ɪᴛᴇᴍ> or /ᴡᴏʀᴛʜ ʜᴀɴᴅ"
+                    "&cUsage: /worth [amount] <item> or /worth hand"
             ));
             return true;
         }
@@ -104,7 +104,7 @@ public class WorthCommand implements CommandExecutor {
         if (material == null || material.isAir()) {
             String msg = plugin.getConfigManager().getMessages().getString(
                     "WORTH.UNKNOWN-ITEM",
-                    "&cᴜɴᴋɴᴏᴡɴ ɪᴛᴇᴍ: {item}"
+                    "&cUnknown item: {item}"
             ).replace("{item}", itemInput);
             sendMessage(sender, msg);
             return true;
@@ -159,7 +159,7 @@ public class WorthCommand implements CommandExecutor {
 
     private void openBrowser(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("Player only.");
             return;
         }
 

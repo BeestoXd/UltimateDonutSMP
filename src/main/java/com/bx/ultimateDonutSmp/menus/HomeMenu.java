@@ -74,8 +74,8 @@ public class HomeMenu extends BaseMenu {
         if (page > 0) {
             set(PREV_PAGE_SLOT, ItemUtils.createItem(
                     Material.ARROW,
-                    "&fᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ",
-                    List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + page, "&7ᴄᴜʀʀᴇɴᴛ ᴘᴀɢᴇ: &f" + (page + 1) + "/" + totalPages)
+                    "&fPrevious page",
+                    List.of("&7Go to page &f" + page, "&7Current page: &f" + (page + 1) + "/" + totalPages)
             ));
             slotActions.put(PREV_PAGE_SLOT, (p, click) -> {
                 page--;
@@ -86,8 +86,8 @@ public class HomeMenu extends BaseMenu {
         if (page < totalPages - 1) {
             set(NEXT_PAGE_SLOT, ItemUtils.createItem(
                     Material.ARROW,
-                    "&fɴᴇxᴛ ᴘᴀɢᴇ",
-                    List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 2), "&7ᴄᴜʀʀᴇɴᴛ ᴘᴀɢᴇ: &f" + (page + 1) + "/" + totalPages)
+                    "&fNext page",
+                    List.of("&7Go to page &f" + (page + 2), "&7Current page: &f" + (page + 1) + "/" + totalPages)
             ));
             slotActions.put(NEXT_PAGE_SLOT, (p, click) -> {
                 page++;
@@ -107,7 +107,7 @@ public class HomeMenu extends BaseMenu {
 
         set(TEAM_TELEPORT_SLOT, ItemUtils.createItem(
                 material("HOME-MENU.TEAM_HOME.TELEPORT.MATERIALS." + teleportState, Material.WHITE_BANNER),
-                text("HOME-MENU.TEAM_HOME.TELEPORT.DISPLAY_NAME." + teleportState, "&fᴛᴇᴀᴍ ʜᴏᴍᴇ", teleportPlaceholders),
+                text("HOME-MENU.TEAM_HOME.TELEPORT.DISPLAY_NAME." + teleportState, "&fTeam home", teleportPlaceholders),
                 lore("HOME-MENU.TEAM_HOME.TELEPORT.LORE." + teleportState,
                         defaultTeamTeleportLore(team, teleportState), teleportPlaceholders)
         ));
@@ -129,16 +129,16 @@ public class HomeMenu extends BaseMenu {
         );
         if (team != null && !canEditTeamHome) {
             actionLore = new ArrayList<>(actionLore);
-            actionLore.add("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴇᴅɪᴛ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ.");
+            actionLore.add("&cYou cannot edit the team home.");
         }
         if (team != null && team.hasHome() && !canVisitTeamHome) {
             actionLore = new ArrayList<>(actionLore);
-            actionLore.add("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴠɪѕɪᴛ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ.");
+            actionLore.add("&cYou cannot visit the team home.");
         }
 
         set(TEAM_ACTION_SLOT, ItemUtils.createItem(
                 material("HOME-MENU.TEAM_HOME.SAVE.MATERIALS." + actionState, Material.GRAY_DYE),
-                text("HOME-MENU.TEAM_HOME.SAVE.DISPLAY_NAME." + actionState, "&7ᴍᴀɴᴀɢᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ", teleportPlaceholders),
+                text("HOME-MENU.TEAM_HOME.SAVE.DISPLAY_NAME." + actionState, "&7Manage team home", teleportPlaceholders),
                 actionLore
         ));
 
@@ -189,7 +189,7 @@ public class HomeMenu extends BaseMenu {
                 material("HOME-MENU.TELEPORT-USED-MATERIAL", Material.LIGHT_BLUE_BED),
                 text("HOME-MENU.TELEPORT." + key + ".DISPLAY-NAME.USED", "&b{name}", placeholders),
                 lore("HOME-MENU.TELEPORT." + key + ".LORE.USED",
-                        List.of("&7ᴡᴏʀʟᴅ: &f{world}", "&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ"),
+                        List.of("&7World: &f{world}", "&aLeft-click to teleport"),
                         placeholders)
         ));
         slotActions.put(teleportSlot, (p, click) -> {
@@ -201,7 +201,7 @@ public class HomeMenu extends BaseMenu {
                 material("HOME-MENU.CREATE-USED-MATERIAL", Material.BLUE_DYE),
                 text("HOME-MENU.CREATE." + key + ".DISPLAY-NAME.USED", "&b{name}", placeholders),
                 lore("HOME-MENU.CREATE." + key + ".LORE.USED",
-                        List.of("&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʀᴇɴᴀᴍᴇ ᴛʜɪѕ ʜᴏᴍᴇ", "&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ"),
+                        List.of("&eLeft-click to rename this home", "&cRight-click to delete"),
                         placeholders)
         ));
         slotActions.put(actionSlot, (p, click) -> {
@@ -223,13 +223,13 @@ public class HomeMenu extends BaseMenu {
                 material("HOME-MENU.TELEPORT-NO-USED-MATERIAL", Material.LIGHT_GRAY_BED),
                 text("HOME-MENU.TELEPORT." + key + ".DISPLAY-NAME.NO-USED", "&7{slot}", placeholders),
                 lore("HOME-MENU.TELEPORT." + key + ".LORE.NO-USED",
-                        List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."), placeholders)
+                        List.of("&7Click to create a home."), placeholders)
         ));
         set(actionSlot, ItemUtils.createItem(
                 material("HOME-MENU.CREATE-NO-USED-MATERIAL", Material.GRAY_DYE),
                 text("HOME-MENU.CREATE." + key + ".DISPLAY-NAME.NO-USED", "&7{slot}", placeholders),
                 lore("HOME-MENU.CREATE." + key + ".LORE.NO-USED",
-                        List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ɴᴀᴍᴇ ᴀɴᴅ ᴄʀᴇᴀᴛᴇ ᴀ ʜᴏᴍᴇ."), placeholders)
+                        List.of("&7Click to name and create a home."), placeholders)
         ));
 
         slotActions.put(teleportSlot, (p, click) -> {
@@ -237,7 +237,7 @@ public class HomeMenu extends BaseMenu {
                 p.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.SET")));
                 new HomeMenu(plugin).open(p);
             } else {
-                p.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʀᴇᴀᴛᴇ ᴀɴᴏᴛʜᴇʀ ʜᴏᴍᴇ ʀɪɢʜᴛ ɴᴏᴡ."));
+                p.sendMessage(ColorUtils.toComponent("&cYou cannot create another home right now."));
             }
         });
         slotActions.put(actionSlot, (p, click) ->
@@ -249,21 +249,21 @@ public class HomeMenu extends BaseMenu {
 
         set(teleportSlot, ItemUtils.createItem(
                 material("HOME-MENU.TELEPORT-NO-PERMISSION-MATERIAL", Material.RED_BED),
-                text("HOME-MENU.TELEPORT." + key + ".DISPLAY-NAME.NO-PERMISSION", "&cʟᴏᴄᴋᴇᴅ", placeholders),
+                text("HOME-MENU.TELEPORT." + key + ".DISPLAY-NAME.NO-PERMISSION", "&cLocked", placeholders),
                 lore("HOME-MENU.TELEPORT." + key + ".LORE.NO-PERMISSION",
-                        List.of("&7ʏᴏᴜ ɴᴇᴇᴅ ᴀ ʜɪɢʜᴇʀ ʀᴀɴᴋ ꜰᴏʀ ᴛʜɪѕ ʜᴏᴍᴇ."), placeholders)
+                        List.of("&7You need a higher rank for this home."), placeholders)
         ));
         set(actionSlot, ItemUtils.createItem(
                 material("HOME-MENU.CREATE-NO-PERMISSION-MATERIAL", Material.RED_DYE),
-                text("HOME-MENU.CREATE." + key + ".DISPLAY-NAME.NO-PERMISSION", "&cʟᴏᴄᴋᴇᴅ", placeholders),
+                text("HOME-MENU.CREATE." + key + ".DISPLAY-NAME.NO-PERMISSION", "&cLocked", placeholders),
                 lore("HOME-MENU.CREATE." + key + ".LORE.NO-PERMISSION",
-                        List.of("&7ʏᴏᴜ ɴᴇᴇᴅ ᴀ ʜɪɢʜᴇʀ ʀᴀɴᴋ ꜰᴏʀ ᴛʜɪѕ ʜᴏᴍᴇ."), placeholders)
+                        List.of("&7You need a higher rank for this home."), placeholders)
         ));
     }
 
     private void deleteHome(Player player, Home home) {
         if (!plugin.getHomeManager().deleteHome(player.getUniqueId(), home.getName())) {
-            player.sendMessage(ColorUtils.toComponent("&cʜᴏᴍᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cHome not found."));
             return;
         }
 
@@ -323,7 +323,7 @@ public class HomeMenu extends BaseMenu {
     }
 
     private String slotLabel(int index) {
-        return "ʜᴏᴍᴇ " + (index + 1);
+        return "Home " + (index + 1);
     }
 
     private String defaultHomeName(int index) {
@@ -370,15 +370,15 @@ public class HomeMenu extends BaseMenu {
     }
 
     private List<String> defaultTeamTeleportLore(Team team, String state) {
-        if ("NO_TEAM".equals(state)) return List.of("&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɴ ᴀ ᴛᴇᴀᴍ.");
-        if ("NO_HOME".equals(state)) return List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ᴛᴇᴀᴍ ʜᴏᴍᴇ.");
-        return List.of("&7ᴡᴏʀʟᴅ: &f{world}", "&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ");
+        if ("NO_TEAM".equals(state)) return List.of("&7You are not in a team.");
+        if ("NO_HOME".equals(state)) return List.of("&7Click to create your team home.");
+        return List.of("&7World: &f{world}", "&aLeft-click to teleport");
     }
 
     private List<String> defaultTeamActionLore(Team team, String state) {
-        if ("NO_TEAM".equals(state)) return List.of("&7ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ɪɴ ᴀ ᴛᴇᴀᴍ.");
-        if ("NO_HOME".equals(state)) return List.of("&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ѕᴀᴠᴇ ʏᴏᴜʀ ᴛᴇᴀᴍ ʜᴏᴍᴇ.");
-        return List.of("&bʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴜᴘᴅᴀᴛᴇ ᴛʜᴇ ᴛᴇᴀᴍ ʜᴏᴍᴇ", "&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ");
+        if ("NO_TEAM".equals(state)) return List.of("&7You are not in a team.");
+        if ("NO_HOME".equals(state)) return List.of("&7Left-click to save your team home.");
+        return List.of("&bLeft-click to update the team home", "&cRight-click to delete");
     }
 
     private String replacePlaceholders(String value, Map<String, String> placeholders) {
@@ -411,7 +411,7 @@ public class HomeMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString("HOME-MENU.TITLE", "&8ʜᴏᴍᴇѕ");
+        return plugin.getConfigManager().getMenus().getString("HOME-MENU.TITLE", "&8Homes");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {

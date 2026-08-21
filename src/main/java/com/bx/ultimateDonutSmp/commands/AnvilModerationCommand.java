@@ -25,7 +25,7 @@ public class AnvilModerationCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!PermissionUtils.has(sender, "anvilmod.admin")) {
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getLanguageManager().text("MESSAGES.ANVILMOD.NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                    plugin.getLanguageManager().text("MESSAGES.ANVILMOD.NO-PERMISSION", "&cYou do not have permission.")
             ));
             return true;
         }
@@ -46,18 +46,18 @@ public class AnvilModerationCommand implements CommandExecutor, TabCompleter {
             boolean success = plugin.getAnvilModerationManager().addBannedWord(word);
             if (success) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        plugin.getLanguageManager().text("MESSAGES.ANVILMOD.ADDED", "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ᴀᴅᴅᴇᴅ '&e{word}&a' ᴛᴏ ʙᴀɴɴᴇᴅ ᴡᴏʀᴅѕ.", "{word}", word)
+                        plugin.getLanguageManager().text("MESSAGES.ANVILMOD.ADDED", "&aSuccessfully added '&e{word}&a' to banned words.", "{word}", word)
                 ));
             } else {
                 sender.sendMessage(ColorUtils.toComponent(
-                        plugin.getLanguageManager().text("MESSAGES.ANVILMOD.ALREADY-EXISTS", "&cᴛʜᴀᴛ ᴡᴏʀᴅ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛʜᴇ ʙᴀɴɴᴇᴅ ʟɪѕᴛ.")
+                        plugin.getLanguageManager().text("MESSAGES.ANVILMOD.ALREADY-EXISTS", "&cThat word is already in the banned list.")
                 ));
             }
             return true;
         } else if (sub.equals("reload")) {
             plugin.getAnvilModerationManager().load();
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getLanguageManager().text("MESSAGES.ANVILMOD.RELOADED", "&aᴀɴᴠɪʟ ᴍᴏᴅᴇʀᴀᴛɪᴏɴ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.")
+                    plugin.getLanguageManager().text("MESSAGES.ANVILMOD.RELOADED", "&aAnvil moderation config reloaded.")
             ));
             return true;
         }
@@ -68,7 +68,7 @@ public class AnvilModerationCommand implements CommandExecutor, TabCompleter {
 
     private void sendUsage(CommandSender sender) {
         sender.sendMessage(ColorUtils.toComponent(
-                plugin.getLanguageManager().text("MESSAGES.ANVILMOD.USAGE", "&cᴜѕᴀɢᴇ: /amod <add|reload> [ᴡᴏʀᴅ]")
+                plugin.getLanguageManager().text("MESSAGES.ANVILMOD.USAGE", "&cUsage: /amod <add|reload> [word]")
         ));
     }
 

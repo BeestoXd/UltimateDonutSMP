@@ -63,15 +63,15 @@ public class LeaderboardTypeMenu extends BaseMenu {
         if (entries.isEmpty()) {
             set(22, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴅᴀᴛᴀ",
-                    List.of("&7ɴᴏ ᴘʟᴀʏᴇʀѕ ʜᴀᴠᴇ ᴅᴀᴛᴀ ɪɴ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ ʏᴇᴛ.")
+                    "&cNo leaderboard data",
+                    List.of("&7No players have data in this category yet.")
             ));
         }
 
         set(45, ItemUtils.createItem(
                 Material.RED_STAINED_GLASS_PANE,
-                "&cʙᴀᴄᴋ",
-                List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴍᴇɴᴜ.")
+                "&cBack",
+                List.of("&7Return to leaderboard menu.")
         ));
 
         if (page > 0) {
@@ -94,8 +94,8 @@ public class LeaderboardTypeMenu extends BaseMenu {
                 currentTypeMaterial(),
                 "&6" + plugin.getLeaderboardManager().getDisplayName(type),
                 List.of(
-                        "&7ᴘᴀɢᴇ: &f" + (page + 1),
-                        "&7ᴇɴᴛʀɪᴇѕ ѕʜᴏᴡɴ: &f" + entries.size()
+                        "&7Page: &f" + (page + 1),
+                        "&7Entries shown: &f" + entries.size()
                 )
         ));
 
@@ -157,19 +157,19 @@ public class LeaderboardTypeMenu extends BaseMenu {
         if (entry == null) {
             return ItemUtils.createItem(
                     Material.PLAYER_HEAD,
-                    "&eʏᴏᴜʀ ʀᴀɴᴋ",
-                    List.of("&7ɴᴏ ᴅᴀᴛᴀ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ.")
+                    "&eYour rank",
+                    List.of("&7No data available for this category.")
             );
         }
 
         PlayerData data = entry.playerData();
         ItemStack item = ItemUtils.createItem(
                 Material.PLAYER_HEAD,
-                "&eʏᴏᴜʀ ʀᴀɴᴋ",
+                "&eYour rank",
                 List.of(
-                        "&7ᴘʟᴀʏᴇʀ: &f" + data.getUsername(),
-                        "&7ᴘᴏѕɪᴛɪᴏɴ: &f#" + entry.position(),
-                        "&7ᴠᴀʟᴜᴇ: &f" + plugin.getLeaderboardManager().formatValue(type, data)
+                        "&7Player: &f" + data.getUsername(),
+                        "&7Position: &f#" + entry.position(),
+                        "&7Value: &f" + plugin.getLeaderboardManager().formatValue(type, data)
                 )
         );
 
@@ -204,7 +204,7 @@ public class LeaderboardTypeMenu extends BaseMenu {
 
     private String previousPageTitle() {
         return plugin.getConfigManager().getMenus()
-                .getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aʙᴀᴄᴋ");
+                .getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aBack");
     }
 
     private List<String> previousPageLore() {
@@ -213,7 +213,7 @@ public class LeaderboardTypeMenu extends BaseMenu {
 
     private String nextPageTitle() {
         return plugin.getConfigManager().getMenus()
-                .getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ");
+                .getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext");
     }
 
     private List<String> nextPageLore() {

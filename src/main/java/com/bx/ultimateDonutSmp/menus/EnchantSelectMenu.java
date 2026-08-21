@@ -73,21 +73,21 @@ public class EnchantSelectMenu extends BaseMenu {
         // 3. Navigation and action buttons
         set(em.getCancelSlot(), ItemUtils.createItem(
                 Material.RED_STAINED_GLASS_PANE,
-                "&cᴄᴀɴᴄᴇʟ",
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ʀᴇᴛᴜʀɴ ᴡɪᴛʜᴏᴜᴛ ѕᴀᴠɪɴɢ")
+                "&cCancel",
+                List.of("&7Click to return without saving")
         ));
 
         set(em.getConfirmSlot(), ItemUtils.createItem(
                 Material.LIME_STAINED_GLASS_PANE,
-                "&aᴄᴏɴꜰɪʀᴍ",
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ᴛʜᴇѕᴇ ᴇɴᴄʜᴀɴᴛᴍᴇɴᴛѕ")
+                "&aConfirm",
+                List.of("&7Click to confirm these enchantments")
         ));
 
         if (page > 1) {
             set(em.getPrevSlot(), ItemUtils.createItem(
                     Material.ARROW,
-                    "&bᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ",
-                    List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1))
+                    "&bPrevious page",
+                    List.of("&7Go to page &f" + (page - 1))
             ));
         } else {
             set(em.getPrevSlot(), ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
@@ -96,8 +96,8 @@ public class EnchantSelectMenu extends BaseMenu {
         if (page < maxPage) {
             set(em.getNextSlot(), ItemUtils.createItem(
                     Material.ARROW,
-                    "&bɴᴇxᴛ ᴘᴀɢᴇ",
-                    List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1))
+                    "&bNext page",
+                    List.of("&7Go to page &f" + (page + 1))
             ));
         } else {
             set(em.getNextSlot(), ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
@@ -120,7 +120,7 @@ public class EnchantSelectMenu extends BaseMenu {
                 lore.add(em.getMessageSelected());
             } else if (hasConflict) {
                 lore.add(em.getMessageCannot());
-                lore.add("&7(ᴄᴏɴꜰʟɪᴄᴛѕ ᴡɪᴛʜ ᴀɴᴏᴛʜᴇʀ ᴇɴᴄʜᴀɴᴛᴍᴇɴᴛ)");
+                lore.add("&7(Conflicts with another enchantment)");
             } else {
                 lore.add(em.getMessageSelect());
             }

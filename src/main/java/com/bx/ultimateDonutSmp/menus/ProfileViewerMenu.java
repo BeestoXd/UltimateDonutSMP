@@ -51,8 +51,8 @@ public class ProfileViewerMenu extends BaseMenu {
         if (snapshot == null) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ",
-                    List.of("&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ɴᴏ ʟᴏɴɢᴇʀ ʜᴀѕ ᴘʀᴏꜰɪʟᴇ ᴅᴀᴛᴀ.")
+                    "&cProfile not found",
+                    List.of("&7This player no longer has profile data.")
             ));
             return;
         }
@@ -86,11 +86,11 @@ public class ProfileViewerMenu extends BaseMenu {
         );
         if (lore.isEmpty()) {
             lore = List.of(
-                    "&7ѕᴛᴀᴛᴜѕ: &f" + statusLabel(snapshot),
-                    "&7ᴛᴇᴀᴍ: &f" + safeTeamName(snapshot),
-                    "&7ʜᴏᴍᴇѕ: &f" + snapshot.getHomeCount(),
-                    "&7ᴀꜰᴋ: &f" + yesNo(snapshot.isAfk()),
-                    "&7ʟᴏᴄᴀᴛɪᴏɴ: &f" + currentLocationSummary(snapshot)
+                    "&7Status: &f" + statusLabel(snapshot),
+                    "&7Team: &f" + safeTeamName(snapshot),
+                    "&7Homes: &f" + snapshot.getHomeCount(),
+                    "&7AFK: &f" + yesNo(snapshot.isAfk()),
+                    "&7Location: &f" + currentLocationSummary(snapshot)
             );
         }
 
@@ -145,15 +145,15 @@ public class ProfileViewerMenu extends BaseMenu {
         );
         if (lore.isEmpty()) {
             lore = List.of(
-                    "&7ᴠɪᴇᴡ ᴀɴᴅ ɴᴀᴠɪɢᴀᴛᴇ ᴛʜʀᴏᴜɢʜ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ʜᴏᴍᴇѕ.",
-                    "&7ʜᴏᴍᴇѕ ѕᴀᴠᴇᴅ: &f" + snapshot.getHomeCount(),
-                    "&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ"
+                    "&7View and navigate through this player's homes.",
+                    "&7Homes saved: &f" + snapshot.getHomeCount(),
+                    "&aClick to open"
             );
         }
 
         set(slot, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BUTTONS.HOMES.MATERIAL", "RED_BED")),
-                replacePlaceholders(menus().getString(MENU_PATH + ".BUTTONS.HOMES.DISPLAY-NAME", "&bʜᴏᴍᴇѕ"), snapshot),
+                replacePlaceholders(menus().getString(MENU_PATH + ".BUTTONS.HOMES.DISPLAY-NAME", "&bHomes"), snapshot),
                 lore
         ));
         slotActions.put(slot, (player, clickType) -> new ProfileViewerHomesMenu(plugin, targetUuid).open(player));
@@ -169,10 +169,10 @@ public class ProfileViewerMenu extends BaseMenu {
         String lorePath = canTeleport
                 ? MENU_PATH + ".BUTTONS.CURRENT-LOCATION.LORE"
                 : MENU_PATH + ".BUTTONS.CURRENT-LOCATION.LORE-OFFLINE";
-        String fallbackName = canTeleport ? "&bᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ" : "&cᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ";
+        String fallbackName = canTeleport ? "&bCurrent location" : "&cCurrent location";
         List<String> fallbackLore = canTeleport
-                ? List.of("&7" + currentLocationSummary(snapshot), "&aᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ")
-                : List.of("&7ᴛʜɪѕ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ ʀɪɢʜᴛ ɴᴏᴡ.");
+                ? List.of("&7" + currentLocationSummary(snapshot), "&aClick to teleport")
+                : List.of("&7This player is offline right now.");
 
         List<String> lore = replacePlaceholders(menus().getStringList(lorePath), snapshot);
         if (lore.isEmpty()) {
@@ -204,14 +204,14 @@ public class ProfileViewerMenu extends BaseMenu {
         );
         if (lore.isEmpty()) {
             lore = List.of(
-                    "&7ᴠɪᴇᴡ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ.",
-                    "&aᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ"
+                    "&7View this player's punishment history.",
+                    "&aClick to open"
             );
         }
 
         set(slot, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BUTTONS.PUNISHMENTS.MATERIAL", "IRON_BARS")),
-                replacePlaceholders(menus().getString(MENU_PATH + ".BUTTONS.PUNISHMENTS.DISPLAY-NAME", "&bᴘᴜɴɪѕʜᴍᴇɴᴛѕ"), snapshot),
+                replacePlaceholders(menus().getString(MENU_PATH + ".BUTTONS.PUNISHMENTS.DISPLAY-NAME", "&bPunishments"), snapshot),
                 lore
         ));
         slotActions.put(slot, (player, clickType) -> new PunishmentHistoryMenu(plugin, targetUuid, true).open(player));
@@ -224,12 +224,12 @@ public class ProfileViewerMenu extends BaseMenu {
                 snapshot
         );
         if (lore.isEmpty()) {
-            lore = List.of("&7ʀᴇʟᴏᴀᴅ ᴛʜɪѕ ᴘʟᴀʏᴇʀ'ѕ ᴘʀᴏꜰɪʟᴇ.");
+            lore = List.of("&7Reload this player's profile.");
         }
 
         set(slot, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BUTTONS.REFRESH.MATERIAL", "CLOCK")),
-                replacePlaceholders(menus().getString(MENU_PATH + ".BUTTONS.REFRESH.DISPLAY-NAME", "&bʀᴇꜰʀᴇѕʜ"), snapshot),
+                replacePlaceholders(menus().getString(MENU_PATH + ".BUTTONS.REFRESH.DISPLAY-NAME", "&bRefresh"), snapshot),
                 lore
         ));
         slotActions.put(slot, (player, clickType) -> build(player));
@@ -238,7 +238,7 @@ public class ProfileViewerMenu extends BaseMenu {
     private void teleportToCurrentLocation(Player viewer) {
         ProfileSnapshot latest = plugin.getProfileViewerManager().resolveProfile(targetUuid).orElse(null);
         if (latest == null || !latest.isOnline() || !latest.hasCurrentLocation()) {
-            viewer.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴏɴʟɪɴᴇ."));
+            viewer.sendMessage(ColorUtils.toComponent("&cThat player is no longer online."));
             build(viewer);
             return;
         }
@@ -251,7 +251,7 @@ public class ProfileViewerMenu extends BaseMenu {
     private String resolveStatValue(String key) {
         PlayerData data = snapshot.getPlayerData();
         if (data == null) {
-            return "ɴᴏ ᴅᴀᴛᴀ";
+            return "No data";
         }
 
         return switch (key.toUpperCase(Locale.ROOT)) {
@@ -333,7 +333,7 @@ public class ProfileViewerMenu extends BaseMenu {
         if (!snapshot.isOnline()) {
             return "offline";
         }
-        return snapshot.isAfk() ? "ᴏɴʟɪɴᴇ (ᴀꜰᴋ)" : "online";
+        return snapshot.isAfk() ? "Online (AFK)" : "online";
     }
 
     private String currentLocationSummary(ProfileSnapshot snapshot) {
@@ -370,7 +370,7 @@ public class ProfileViewerMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin, UUID uuid) {
-        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8{username}'ѕ ᴘʀᴏꜰɪʟᴇ");
+        String template = plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8{username}'s profile");
         String username = plugin.getProfileViewerManager().resolveProfile(uuid)
                 .map(ProfileSnapshot::getUsername)
                 .orElse("unknown");

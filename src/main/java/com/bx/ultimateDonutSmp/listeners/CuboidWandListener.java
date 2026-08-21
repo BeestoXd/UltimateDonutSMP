@@ -65,13 +65,13 @@ public class CuboidWandListener implements Listener {
 
         if (action == Action.LEFT_CLICK_BLOCK) {
             plugin.getCuboidManager().setPos1(player.getUniqueId(), clicked.getLocation());
-            player.sendMessage(ColorUtils.toComponent("&aꜰɪʀѕᴛ ᴘᴏѕɪᴛɪᴏɴ ѕᴇᴛ ᴀᴛ &f" + formatLoc(clicked)));
+            player.sendMessage(ColorUtils.toComponent("&aFirst position set at &f" + formatLoc(clicked)));
             handleSelectionCompleted(player);
             return;
         }
 
         plugin.getCuboidManager().setPos2(player.getUniqueId(), clicked.getLocation());
-        player.sendMessage(ColorUtils.toComponent("&aѕᴇᴄᴏɴᴅ ᴘᴏѕɪᴛɪᴏɴ ѕᴇᴛ ᴀᴛ &f" + formatLoc(clicked)));
+        player.sendMessage(ColorUtils.toComponent("&aSecond position set at &f" + formatLoc(clicked)));
         handleSelectionCompleted(player);
     }
 
@@ -142,7 +142,7 @@ public class CuboidWandListener implements Listener {
         }
 
         removeWandFromInventory(player);
-        player.sendMessage(ColorUtils.toComponent("&aѕᴇʟᴇᴄᴛɪᴏɴ ᴄᴏᴍᴘʟᴇᴛᴇ. &7ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴍ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ."));
+        player.sendMessage(ColorUtils.toComponent("&aSelection complete. &7Cuboid wand removed from your inventory."));
 
         TextComponent guideMessage = ColorUtils.toBaseComponent("&estep 3/3 &7type ");
         TextComponent commandPart = ColorUtils.toBaseComponent("&f/cuboid create <name>");

@@ -217,7 +217,7 @@ public class EnderChestManager {
                     exception
             );
             player.sendMessage(ColorUtils.toComponent(
-                    getMessage("OPEN-FAILED", "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ.")
+                    getMessage("OPEN-FAILED", "&cFailed to open your ender chest. Please try again.")
             ));
         }
     }
@@ -295,7 +295,7 @@ public class EnderChestManager {
             );
             viewer.sendMessage(ColorUtils.toComponent(formatMessage(
                     "ECSEE-OPEN-FAILED",
-                    "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴏᴘᴇɴ {target}'ѕ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴘʟᴇᴀѕᴇ ᴛʀʏ ᴀɢᴀɪɴ.",
+                    "&cFailed to open {target}'s ender chest. Please try again.",
                     "{player}", targetName,
                     "{target}", targetName
             )));
@@ -340,7 +340,7 @@ public class EnderChestManager {
 
         if (player != null && player.isOnline()) {
             player.sendMessage(ColorUtils.toComponent(
-                    getMessage("SAVE-FAILED", "&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ ʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ. ᴄᴏɴᴛᴀᴄᴛ ѕᴛᴀꜰꜰ.")
+                    getMessage("SAVE-FAILED", "&cFailed to save your ender chest. Contact staff.")
             ));
         }
     }
@@ -949,7 +949,7 @@ public class EnderChestManager {
             giveBackOverflow(player, overflow);
             player.sendMessage(ColorUtils.toComponent(formatMessage(
                     "ROWS-DOWNGRADED",
-                    "&eʏᴏᴜʀ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ɪѕ ɴᴏᴡ {rows} ʀᴏᴡѕ. {amount} ɪᴛᴇᴍ(ѕ) ᴛʜᴀᴛ ɴᴏ ʟᴏɴɢᴇʀ ꜰɪᴛ ᴡᴇʀᴇ ʀᴇᴛᴜʀɴᴇᴅ ᴛᴏ ʏᴏᴜ.",
+                    "&eYour ender chest is now {rows} rows. {amount} item(s) that no longer fit were returned to you.",
                     "{rows}", String.valueOf(clampRows(newRows)),
                     "{amount}", String.valueOf(overflow.size())
             )));

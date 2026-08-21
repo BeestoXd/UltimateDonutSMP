@@ -76,14 +76,14 @@ public class OrdersBrowseMenu extends BaseMenu {
         if (page > 1) {
             set(prevSlot, OrdersMenuSupport.button(
                     plugin, "GUI.MAIN.BUTTONS.PREV", "ORDERS.GUI.MAIN.PREV",
-                    Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ", List.of("&fᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ ᴘᴀɢᴇ {page}"),
+                    Material.ARROW, "&aPrevious", List.of("&fClick to open page {page}"),
                     "{page}", String.valueOf(page - 1)
             ));
         }
         if (hasNextPage(orders.size(), itemsPerPage)) {
             set(nextSlot, OrdersMenuSupport.button(
                     plugin, "GUI.MAIN.BUTTONS.NEXT", "ORDERS.GUI.MAIN.NEXT",
-                    Material.ARROW, "&aɴᴇxᴛ", List.of("&fᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ ᴘᴀɢᴇ {page}"),
+                    Material.ARROW, "&aNext", List.of("&fClick to open page {page}"),
                     "{page}", String.valueOf(page + 1)
             ));
         }
@@ -97,7 +97,7 @@ public class OrdersBrowseMenu extends BaseMenu {
         }
         set(sortSlot, ItemUtils.createItem(
                 OrdersMenuSupport.material(plugin, "GUI.MAIN.BUTTONS.SORT.MATERIAL", Material.CAULDRON),
-                OrdersMenuSupport.text(plugin, "ORDERS.GUI.MAIN.SORT.NAME", "&aѕᴏʀᴛ"),
+                OrdersMenuSupport.text(plugin, "ORDERS.GUI.MAIN.SORT.NAME", "&aSort"),
                 sortLore
         ));
 
@@ -108,35 +108,35 @@ public class OrdersBrowseMenu extends BaseMenu {
         }
         set(filterSlot, ItemUtils.createItem(
                 OrdersMenuSupport.material(plugin, "GUI.MAIN.BUTTONS.FILTER.MATERIAL", Material.HOPPER),
-                OrdersMenuSupport.text(plugin, "ORDERS.GUI.MAIN.FILTER.NAME", "&aꜰɪʟᴛᴇʀ"),
+                OrdersMenuSupport.text(plugin, "ORDERS.GUI.MAIN.FILTER.NAME", "&aFilter"),
                 filterLore
         ));
         set(refreshSlot, OrdersMenuSupport.button(
                 plugin, "GUI.MAIN.BUTTONS.REFRESH", "ORDERS.GUI.MAIN.REFRESH",
-                Material.MAP, "&aʀᴇꜰʀᴇѕʜ", List.of("&fᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ")
+                Material.MAP, "&aRefresh", List.of("&fClick to refresh")
         ));
         set(searchSlot, OrdersMenuSupport.button(
                 plugin, "GUI.MAIN.BUTTONS.SEARCH", "ORDERS.GUI.MAIN.SEARCH",
-                Material.OAK_SIGN, "&aѕᴇᴀʀᴄʜ",
-                List.of("&7ᴄᴜʀʀᴇɴᴛ: &f{query}", "", "&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ &fᴛᴏ ѕᴇᴀʀᴄʜ", "&eʀɪɢʜᴛ-ᴄʟɪᴄᴋ &fᴛᴏ ᴄʟᴇᴀʀ"),
+                Material.OAK_SIGN, "&aSearch",
+                List.of("&7Current: &f{query}", "", "&eLeft-click &fto search", "&eRight-click &fto clear"),
                 "{query}", query.isBlank() ? "none" : query
         ));
         set(myOrdersSlot, OrdersMenuSupport.button(
                 plugin, "GUI.MAIN.BUTTONS.MY_ORDERS", "ORDERS.GUI.MAIN.MY_ORDERS",
-                Material.CHEST, "&aʏᴏᴜʀ ᴏʀᴅᴇʀѕ", List.of("&fᴄʟɪᴄᴋ ᴛᴏ ᴍᴀɴᴀɢᴇ ʏᴏᴜʀ ᴏʀᴅᴇʀѕ")
+                Material.CHEST, "&aYour orders", List.of("&fClick to manage your orders")
         ));
         if (manager.isClaimsEnabled()) {
             set(collectSlot, OrdersMenuSupport.button(
                     plugin, "GUI.MAIN.BUTTONS.COLLECT", "ORDERS.GUI.MAIN.COLLECT",
-                    Material.DROPPER, "&aᴄᴏʟʟᴇᴄᴛ", List.of("&fᴄᴏʟʟᴇᴄᴛ ᴅᴇʟɪᴠᴇʀᴇᴅ ɪᴛᴇᴍѕ ᴀɴᴅ ʀᴇꜰᴜɴᴅѕ")
+                    Material.DROPPER, "&aCollect", List.of("&fCollect delivered items and refunds")
             ));
         }
 
         if (orders.isEmpty()) {
             set(22, ItemUtils.createItem(
                     Material.BARRIER,
-                    OrdersMenuSupport.text(plugin, "ORDERS.GUI.MAIN.EMPTY.NAME", "&cɴᴏ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀѕ"),
-                    OrdersMenuSupport.list(plugin, "ORDERS.GUI.MAIN.EMPTY.LORE", List.of("&7ɴᴏ ᴏʀᴅᴇʀѕ ᴍᴀᴛᴄʜ ᴛʜɪѕ ᴠɪᴇᴡ."))
+                    OrdersMenuSupport.text(plugin, "ORDERS.GUI.MAIN.EMPTY.NAME", "&cNo active orders"),
+                    OrdersMenuSupport.list(plugin, "ORDERS.GUI.MAIN.EMPTY.LORE", List.of("&7No orders match this view."))
             ));
         }
     }

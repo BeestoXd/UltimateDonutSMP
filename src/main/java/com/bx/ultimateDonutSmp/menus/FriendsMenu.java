@@ -51,7 +51,7 @@ public class FriendsMenu extends BaseMenu {
     }
 
     public FriendsMenu(UltimateDonutSmp plugin, int page, String searchQuery, FilterType filterType) {
-        super(plugin, "&8ꜰʀɪᴇɴᴅѕ", 54);
+        super(plugin, "&8Friends", 54);
         this.page = page;
         this.searchQuery = searchQuery;
         this.filterType = filterType;
@@ -141,18 +141,18 @@ public class FriendsMenu extends BaseMenu {
             renderedEntries.add(pe);
 
             boolean isOnline = Bukkit.getPlayer(pe.uuid()) != null && Bukkit.getPlayer(pe.uuid()).isOnline();
-            String status = isOnline ? "&aᴏɴʟɪɴᴇ" : "&cᴏꜰꜰʟɪɴᴇ";
+            String status = isOnline ? "&aOnline" : "&cOffline";
 
             String rel;
-            if (pe.isFriend()) rel = "&dꜰʀɪᴇɴᴅ";
-            else if (pe.following()) rel = "&9ꜰᴏʟʟᴏᴡɪɴɢ";
-            else rel = "&bꜰᴏʟʟᴏᴡᴇʀ";
+            if (pe.isFriend()) rel = "&dFriend";
+            else if (pe.following()) rel = "&9Following";
+            else rel = "&bFollower";
 
             List<String> lore = new ArrayList<>();
-            lore.add("&7ѕᴛᴀᴛᴜѕ: " + status);
-            lore.add("&7ʀᴇʟᴀᴛɪᴏɴѕʜɪᴘ: " + rel);
+            lore.add("&7Status: " + status);
+            lore.add("&7Relationship: " + rel);
             lore.add("");
-            lore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴇᴅɪᴛ");
+            lore.add("&eClick to edit");
 
             ItemStack head = ItemUtils.createPlayerHead(
                     Bukkit.getOfflinePlayer(pe.uuid()),
@@ -171,18 +171,18 @@ public class FriendsMenu extends BaseMenu {
         if (currentPage > 0) {
             set(45, ItemUtils.createItem(
                     Material.ARROW,
-                    "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ",
-                    List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ " + currentPage)
+                    "&aPrevious page",
+                    List.of("&7Go to page " + currentPage)
             ));
         }
 
         // Search Button (48)
         List<String> searchLore = new ArrayList<>();
-        searchLore.add("&7ᴄᴜʀʀᴇɴᴛʟʏ: &f" + (searchQuery == null ? "None" : searchQuery));
+        searchLore.add("&7Currently: &f" + (searchQuery == null ? "None" : searchQuery));
         searchLore.add("");
-        searchLore.add("&eʟᴇꜰᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ѕᴇᴀʀᴄʜ");
-        searchLore.add("&eʀɪɢʜᴛ-ᴄʟɪᴄᴋ &7ᴛᴏ ᴄʟᴇᴀʀ ꜰɪʟᴛᴇʀ");
-        set(48, ItemUtils.createItem(Material.COMPASS, "&eѕᴇᴀʀᴄʜ", searchLore));
+        searchLore.add("&eLeft-click &7to search");
+        searchLore.add("&eRight-click &7to clear filter");
+        set(48, ItemUtils.createItem(Material.COMPASS, "&eSearch", searchLore));
 
         // Filter Button (49)
         List<String> filterLore = new ArrayList<>();
@@ -194,22 +194,22 @@ public class FriendsMenu extends BaseMenu {
             }
         }
         filterLore.add("");
-        filterLore.add("&eᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ");
-        set(49, ItemUtils.createItem(Material.HOPPER, "&eꜰɪʟᴛᴇʀ", filterLore));
+        filterLore.add("&eClick to change");
+        set(49, ItemUtils.createItem(Material.HOPPER, "&eFilter", filterLore));
 
         // Refresh Button (50)
         set(50, ItemUtils.createItem(
                 Material.CLOCK,
-                "&aꜰʀɪᴇɴᴅѕ",
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ʀᴇꜰʀᴇѕʜ")
+                "&aFriends",
+                List.of("&7Click to refresh")
         ));
 
         // Next Page (53)
         if (currentPage < totalPages - 1) {
             set(53, ItemUtils.createItem(
                     Material.ARROW,
-                    "&aɴᴇxᴛ ᴘᴀɢᴇ",
-                    List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ " + (currentPage + 2))
+                    "&aNext page",
+                    List.of("&7Go to page " + (currentPage + 2))
             ));
         }
     }

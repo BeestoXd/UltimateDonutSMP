@@ -86,13 +86,13 @@ public final class AuctionHouseBrowseMenu extends BaseMenu {
                     lore.add(ColorUtils.colorize(AuctionHouseMenuSupport.configText(
                             plugin,
                             "GUI.BROWSE.SHULKER.ITEM_COUNT_LORE",
-                            "&bɪᴛᴇᴍѕ ɪɴѕɪᴅᴇ: &3{count}",
+                            "&bItems inside: &3{count}",
                             "{count}", String.valueOf(ShulkerBoxSupport.getItemCount(display))
                     )));
                     lore.add(ColorUtils.colorize(AuctionHouseMenuSupport.configText(
                             plugin,
                             "GUI.BROWSE.SHULKER.PREVIEW_LORE",
-                            "&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴘʀᴇᴠɪᴇᴡ"
+                            "&8Right-click to preview"
                     )));
                     meta.setLore(lore);
                     display.setItemMeta(meta);
@@ -104,34 +104,34 @@ public final class AuctionHouseBrowseMenu extends BaseMenu {
         }
 
         set(controlSlot("PREVIOUS", 45), renderedPage.hasPrevious()
-                ? control("PREVIOUS", Material.ARROW, "&fᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ",
-                List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"), "{page}", String.valueOf(renderedPage.page() - 1))
+                ? control("PREVIOUS", Material.ARROW, "&fPrevious page",
+                List.of("&7Go to page &f{page}"), "{page}", String.valueOf(renderedPage.page() - 1))
                 : control("FILLER", Material.BLACK_STAINED_GLASS_PANE, "&7 ", List.of()));
         set(controlSlot("SORT", 47), control(
                 "SORT",
                 Material.CAULDRON,
-                "&fᴘʀɪᴄᴇ ѕᴏʀᴛ",
-                List.of("&7ᴄᴜʀʀᴇɴᴛ: &e{sort}", "&8ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ѕᴏʀᴛɪɴɢ"),
+                "&fPrice sort",
+                List.of("&7Current: &e{sort}", "&8Click to cycle sorting"),
                 "{sort}", manager.getSortDisplayName(effective.sort())
         ));
         set(controlSlot("FILTER", 48), control(
                 "FILTER",
                 Material.HOPPER,
-                "&fꜰɪʟᴛᴇʀ",
-                List.of("&7ᴄᴀᴛᴇɢᴏʀʏ: &e{category}", "&8ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ ᴄᴀᴛᴇɢᴏʀʏ"),
+                "&fFilter",
+                List.of("&7Category: &e{category}", "&8Click to change category"),
                 "{category}", manager.getCategoryDisplayName(effective.category())
         ));
         set(controlSlot("REFRESH", 49), control(
                 "REFRESH",
                 Material.ANVIL,
-                "&fᴀᴜᴄᴛɪᴏɴ",
-                List.of("&7ʀᴇꜰʀᴇѕʜ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ")
+                "&fAuction",
+                List.of("&7Refresh the auction house")
         ));
         set(controlSlot("SEARCH", 50), control(
                 "SEARCH",
                 Material.OAK_SIGN,
-                "&fѕᴇᴀʀᴄʜ",
-                List.of("&7ᴄᴜʀʀᴇɴᴛ: &e{search}", "&8ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴀʀᴄʜ", "&8ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴇᴀʀ"),
+                "&fSearch",
+                List.of("&7Current: &e{search}", "&8Left-click to search", "&8Right-click to clear"),
                 "{search}", effective.search().isBlank()
                         ? AuctionHouseMenuSupport.configText(
                                 plugin,
@@ -143,12 +143,12 @@ public final class AuctionHouseBrowseMenu extends BaseMenu {
         set(controlSlot("PLAYER_ITEMS", 51), control(
                 "PLAYER_ITEMS",
                 Material.CHEST,
-                "&fʏᴏᴜʀ ɪᴛᴇᴍѕ",
-                List.of("&7ᴠɪᴇᴡ ᴀᴄᴛɪᴠᴇ, ѕᴏʟᴅ, ᴇxᴘɪʀᴇᴅ, ᴀɴᴅ ᴄᴀɴᴄᴇʟʟᴇᴅ ʟɪѕᴛɪɴɢѕ")
+                "&fYour items",
+                List.of("&7View active, sold, expired, and cancelled listings")
         ));
         set(controlSlot("NEXT", 53), renderedPage.hasNext()
-                ? control("NEXT", Material.ARROW, "&fɴᴇxᴛ ᴘᴀɢᴇ",
-                List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"), "{page}", String.valueOf(renderedPage.page() + 1))
+                ? control("NEXT", Material.ARROW, "&fNext page",
+                List.of("&7Go to page &f{page}"), "{page}", String.valueOf(renderedPage.page() + 1))
                 : control("FILLER", Material.BLACK_STAINED_GLASS_PANE, "&7 ", List.of()));
     }
 

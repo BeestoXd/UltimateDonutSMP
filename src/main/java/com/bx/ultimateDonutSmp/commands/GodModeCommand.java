@@ -58,26 +58,26 @@ public class GodModeCommand extends Command implements CommandExecutor {
 
     private boolean handle(CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
-            send(sender, "GOD.USAGE", "&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]", "%label%", label);
+            send(sender, "GOD.USAGE", "&cUsage: /%label% [player]", "%label%", label);
             return true;
         }
 
         if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
-            send(player, "GOD.NO_PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.");
+            send(player, "GOD.NO_PERMISSION", "&cYou do not have permission.");
             return true;
         }
 
         Player target;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                send(sender, "GOD.CONSOLE_USAGE", "&cᴜѕᴀɢᴇ: /%label% <player>", "%label%", label);
+                send(sender, "GOD.CONSOLE_USAGE", "&cUsage: /%label% <player>", "%label%", label);
                 return true;
             }
             target = player;
         } else {
             target = findOnlinePlayer(args[0]);
             if (target == null) {
-                send(sender, "GOD.PLAYER_NOT_ONLINE", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.");
+                send(sender, "GOD.PLAYER_NOT_ONLINE", "&cPlayer not online.");
                 return true;
             }
         }
@@ -90,24 +90,24 @@ public class GodModeCommand extends Command implements CommandExecutor {
     private void notifyTarget(CommandSender sender, Player target, boolean enabled) {
         String status = plugin.getConfigManager().getMessageOrDefault(
                 enabled ? "GOD.STATUS_ENABLED" : "GOD.STATUS_DISABLED",
-                enabled ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ"
+                enabled ? "&aEnabled" : "&cDisabled"
         );
 
         if (sender instanceof Player player && player.getUniqueId().equals(target.getUniqueId())) {
             send(target,
                     enabled ? "GOD.ENABLED" : "GOD.DISABLED",
-                    enabled ? "&aɢᴏᴅ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ." : "&cɢᴏᴅ ᴍᴏᴅᴇ ᴅɪѕᴀʙʟᴇᴅ.");
+                    enabled ? "&aGod mode enabled." : "&cGod mode disabled.");
             return;
         }
 
         send(sender,
                 "GOD.OTHER",
-                "&7ɢᴏᴅ ᴍᴏᴅᴇ ꜰᴏʀ &e%player% &7ᴡᴀѕ %status%&7.",
+                "&7God mode for &e%player% &7was %status%&7.",
                 "%player%", target.getName(),
                 "%status%", status);
         send(target,
                 "GOD.NOTIFY",
-                "&e%sender% &7ѕᴇᴛ ʏᴏᴜʀ ɢᴏᴅ ᴍᴏᴅᴇ ᴛᴏ %status%&7.",
+                "&e%sender% &7set your god mode to %status%&7.",
                 "%sender%", senderName(sender),
                 "%status%", status);
     }

@@ -17,7 +17,7 @@ public class HideMenu extends BaseMenu {
     public HideMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getHide().getString("GUI.MAIN.TITLE", "&8ʜɪᴅᴇ"),
+                plugin.getConfigManager().getHide().getString("GUI.MAIN.TITLE", "&8Hide"),
                 normalizeSize(plugin.getConfigManager().getHide().getInt("GUI.MAIN.SIZE", 27))
         );
     }
@@ -31,35 +31,35 @@ public class HideMenu extends BaseMenu {
 
         set(4, ItemUtils.createItem(
                 Material.NAME_TAG,
-                "&bʜɪᴅᴇ ѕᴛᴀᴛᴜѕ",
+                "&bHide status",
                 state == null
-                        ? List.of("&7ѕᴛᴀᴛᴜѕ: &cɪɴᴀᴄᴛɪᴠᴇ")
+                        ? List.of("&7Status: &cinactive")
                         : List.of(
-                                "&7ѕᴛᴀᴛᴜѕ: &a" + state.mode().name(),
-                                "&7ᴀʟɪᴀѕ: &f" + state.alias(),
-                                "&7ѕᴋɪɴ: &f" + (state.skinUsername().isBlank() ? "ᴏʀɪɢɪɴᴀʟ" : state.skinUsername())
+                                "&7Status: &a" + state.mode().name(),
+                                "&7Alias: &f" + state.alias(),
+                                "&7Skin: &f" + (state.skinUsername().isBlank() ? "Original" : state.skinUsername())
                         )
         ));
         set(11, ItemUtils.createItem(
                 Material.ENDER_EYE,
-                "&bѕᴄʀᴀᴍʙʟᴇ",
-                List.of("&7ɢᴇɴᴇʀᴀᴛᴇ ᴀ ѕᴛᴀʙʟᴇ ʀᴀɴᴅᴏᴍ ɪᴅᴇɴᴛɪᴛʏ.", "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴛɪᴠᴀᴛᴇ.")
+                "&bScramble",
+                List.of("&7Generate a stable random identity.", "", "&eClick to activate.")
         ));
         set(13, ItemUtils.createItem(
                 Material.PLAYER_HEAD,
-                "&dᴅɪѕɢᴜɪѕᴇ",
-                List.of("&7ᴄʜᴏᴏѕᴇ ᴀ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ɴᴀᴍᴇ ᴀɴᴅ ѕᴋɪɴ.", "", "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ.")
+                "&dDisguise",
+                List.of("&7Choose a configured name and skin.", "", "&eClick to select.")
         ));
         set(15, ItemUtils.createItem(
                 Material.RED_DYE,
-                "&cʀᴇᴍᴏᴠᴇ ʜɪᴅᴇ",
-                List.of("&7ʀᴇѕᴛᴏʀᴇ ʏᴏᴜʀ ʀᴇᴀʟ ɪᴅᴇɴᴛɪᴛʏ.", "", "&eᴄʟɪᴄᴋ ᴛᴏ ʀᴇᴍᴏᴠᴇ.")
+                "&cRemove hide",
+                List.of("&7Restore your real identity.", "", "&eClick to remove.")
         ));
         if (PermissionUtils.has(player, HideManager.ADMIN_PERMISSION)) {
             set(22, ItemUtils.createItem(
                     Material.SPYGLASS,
-                    "&cʜɪᴅᴅᴇɴ ᴘʟᴀʏᴇʀѕ",
-                    List.of("&7ɪɴѕᴘᴇᴄᴛ ᴀɴᴅ ᴍᴀɴᴀɢᴇ ᴀᴄᴛɪᴠᴇ ʜɪᴅᴇ ѕᴛᴀᴛᴇѕ.", "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ.")
+                    "&cHidden players",
+                    List.of("&7Inspect and manage active hide states.", "", "&eClick to open.")
             ));
         }
     }

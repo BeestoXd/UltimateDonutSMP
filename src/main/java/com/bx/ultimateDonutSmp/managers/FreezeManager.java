@@ -230,7 +230,7 @@ public class FreezeManager {
         if (target != null && target.isOnline()) {
             target.sendMessage(ColorUtils.toComponent(getMessage(
                     "UNFROZEN",
-                    "&aʏᴏᴜ ᴀʀᴇ ɴᴏ ʟᴏɴɢᴇʀ ꜰʀᴏᴢᴇɴ."
+                    "&aYou are no longer frozen."
             )));
         }
 
@@ -336,8 +336,8 @@ public class FreezeManager {
         if (lines.isEmpty()) {
             lines = List.of(
                     "",
-                    "&c&lʏᴏᴜ'ʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ꜰʀᴏᴢᴇɴ!",
-                    "&7- ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴍᴏᴠᴇ ᴏʀ ɪɴᴛᴇʀᴀᴄᴛ",
+                    "&c&lYou're currently frozen!",
+                    "&7- You cannot move or interact",
                     ""
             );
         }
@@ -363,7 +363,7 @@ public class FreezeManager {
         session.markReminderSent(now);
         player.sendMessage(ColorUtils.toComponent(getMessage(
                 "STILL-FROZEN",
-                "&cʏᴏᴜ ᴀʀᴇ ѕᴛɪʟʟ ꜰʀᴏᴢᴇɴ. ᴡᴀɪᴛ ꜰᴏʀ ѕᴛᴀꜰꜰ ɪɴѕᴛʀᴜᴄᴛɪᴏɴѕ."
+                "&cYou are still frozen. Wait for staff instructions."
         )));
         return true;
     }
@@ -375,7 +375,7 @@ public class FreezeManager {
 
         player.sendMessage(ColorUtils.toComponent(getMessage(
                 "COMMAND-BLOCKED",
-                "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴡʜɪʟᴇ ꜰʀᴏᴢᴇɴ."
+                "&cYou cannot use commands while frozen."
         )));
     }
 

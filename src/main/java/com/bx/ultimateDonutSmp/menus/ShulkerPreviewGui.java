@@ -34,7 +34,7 @@ public class ShulkerPreviewGui extends BaseMenu {
         return AuctionHouseMenuSupport.configText(
                 plugin,
                 "GUI.SHULKER_PREVIEW.TITLE",
-                "&8ᴘʀᴇᴠɪᴇᴡ: {item}",
+                "&8Preview: {item}",
                 "{item}", plugin.getAuctionHouseManager().describeItem(item)
         );
     }
@@ -61,8 +61,8 @@ public class ShulkerPreviewGui extends BaseMenu {
                         plugin,
                         "GUI.SHULKER_PREVIEW.BACK",
                         Material.ARROW,
-                        "&fʙᴀᴄᴋ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ",
-                        List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʙʀᴏᴡѕᴇʀ")
+                        "&fBack to auction",
+                        List.of("&7Return to the auction browser")
                 ));
     }
 

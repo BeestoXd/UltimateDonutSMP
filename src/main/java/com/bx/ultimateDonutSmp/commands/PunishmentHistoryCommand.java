@@ -24,7 +24,7 @@ public class PunishmentHistoryCommand implements CommandExecutor {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.PLAYER-ONLY",
-                    "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
+                    "&cOnly players can use this command."
             ));
             return true;
         }
@@ -32,7 +32,7 @@ public class PunishmentHistoryCommand implements CommandExecutor {
         if (!plugin.getPunishmentManager().canView(player)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴠɪᴇᴡ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ."
+                    "&cYou do not have permission to view punishment history."
             )));
             return true;
         }
@@ -46,7 +46,7 @@ public class PunishmentHistoryCommand implements CommandExecutor {
         if (targetUuid == null) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NOT-FOUND",
-                    "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."
+                    "&cPlayer not found."
             )));
             return true;
         }

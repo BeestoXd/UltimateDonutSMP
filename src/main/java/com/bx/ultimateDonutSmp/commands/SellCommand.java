@@ -28,7 +28,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
 
         if (label.equalsIgnoreCase("topsell") || label.equalsIgnoreCase("sellstats")) {
             return new SellStatsCommand(plugin).onCommand(sender, command, label, args);

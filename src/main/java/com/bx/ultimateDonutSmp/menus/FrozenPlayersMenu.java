@@ -30,7 +30,7 @@ public class FrozenPlayersMenu extends BaseMenu {
     public FrozenPlayersMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getStaffModeManager().getMenuTitle(MENU_KEY, "&8ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀѕ"),
+                plugin.getStaffModeManager().getMenuTitle(MENU_KEY, "&8Frozen players"),
                 plugin.getStaffModeManager().getMenuSize(MENU_KEY)
         );
     }
@@ -64,7 +64,7 @@ public class FrozenPlayersMenu extends BaseMenu {
 
         Player target = plugin.getServer().getPlayer(targetUuid);
         if (target == null || !target.isOnline()) {
-            player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴏꜰꜰʟɪɴᴇ."));
+            player.sendMessage(ColorUtils.toComponent("&cThat frozen player is currently offline."));
             render();
             return;
         }
@@ -74,7 +74,7 @@ public class FrozenPlayersMenu extends BaseMenu {
         plugin.getSpigotScheduler().teleport(player, target.getLocation()).thenAccept(success ->
                 plugin.getSpigotScheduler().runEntity(player, () -> {
                     if (Boolean.TRUE.equals(success) && player.isOnline()) {
-                        player.sendMessage(ColorUtils.toComponent("&eᴛᴇʟᴇᴘᴏʀᴛᴇᴅ ᴛᴏ ꜰʀᴏᴢᴇɴ ᴘʟᴀʏᴇʀ &f" + target.getName() + "&e."));
+                        player.sendMessage(ColorUtils.toComponent("&eTeleported to frozen player &f" + target.getName() + "&e."));
                     }
                 }));
     }
@@ -122,13 +122,13 @@ public class FrozenPlayersMenu extends BaseMenu {
         long frozenSeconds = Math.max(0L, (System.currentTimeMillis() - state.getFrozenAt()) / 1000L);
 
         List<String> lore = List.of(
-                "&7ѕᴛᴀᴛᴜѕ: " + (online == null ? "&cᴏꜰꜰʟɪɴᴇ" : "&aᴏɴʟɪɴᴇ"),
-                "&7ꜰʀᴏᴢᴇɴ ʙʏ: &f" + state.getFrozenByNameSnapshot(),
-                "&7ᴅᴜʀᴀᴛɪᴏɴ: &f" + NumberUtils.formatTimeLong(frozenSeconds),
-                "&7ѕᴇʀᴠᴇʀ: &f" + state.getSourceServer(),
+                "&7Status: " + (online == null ? "&cOffline" : "&aOnline"),
+                "&7Frozen by: &f" + state.getFrozenByNameSnapshot(),
+                "&7Duration: &f" + NumberUtils.formatTimeLong(frozenSeconds),
+                "&7Server: &f" + state.getSourceServer(),
                 online == null
-                        ? "&7ᴛᴀʀɢᴇᴛ ɪѕ ᴏꜰꜰʟɪɴᴇ."
-                        : "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ"
+                        ? "&7Target is offline."
+                        : "&eClick to teleport"
         );
 
         if (player == null) {

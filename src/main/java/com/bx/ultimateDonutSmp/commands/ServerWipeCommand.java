@@ -29,7 +29,7 @@ public class ServerWipeCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!PermissionUtils.has(sender, PERMISSION)) {
-            send(sender, "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ɪɴѕᴘᴇᴄᴛ ѕᴇʀᴠᴇʀ ᴡɪᴘᴇѕ.");
+            send(sender, "&cYou do not have permission to inspect server wipes.");
             return true;
         }
         if (args.length == 0) {
@@ -39,7 +39,7 @@ public class ServerWipeCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase(Locale.ROOT)) {
             case "preview" -> handlePreview(sender);
-            case "status" -> send(sender, "&7ѕᴇʀᴠᴇʀ ᴡɪᴘᴇ: &f" + plugin.getServerWipeManager().describeStatus());
+            case "status" -> send(sender, "&7Server wipe: &f" + plugin.getServerWipeManager().describeStatus());
             case "prepare" -> {
                 if (!requireConsole(sender)) {
                     return true;
@@ -51,7 +51,7 @@ public class ServerWipeCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args.length < 2) {
-                    send(sender, "&cᴜѕᴀɢᴇ: /" + label + " ᴄᴏɴꜰɪʀᴍ <token>");
+                    send(sender, "&cUsage: /" + label + " confirm <token>");
                     return true;
                 }
                 sendResult(sender, plugin.getServerWipeManager().confirm(args[1]));
@@ -69,24 +69,24 @@ public class ServerWipeCommand implements CommandExecutor, TabCompleter {
 
     private void handlePreview(CommandSender sender) {
         ServerWipeManager.Preview preview = plugin.getServerWipeManager().preview();
-        send(sender, "&6ѕᴇʀᴠᴇʀ ᴡɪᴘᴇ ᴘʀᴇᴠɪᴇᴡ");
-        send(sender, "&7ᴡᴏʀʟᴅѕ: &f" + (preview.worlds().isEmpty() ? "(none)" : String.join(", ", preview.worlds())));
+        send(sender, "&6Server wipe preview");
+        send(sender, "&7Worlds: &f" + (preview.worlds().isEmpty() ? "(none)" : String.join(", ", preview.worlds())));
 
         DatabaseManager.ServerWipePreview database = preview.database();
-        send(sender, "&7ᴘʟᴀʏᴇʀѕ: &f" + database.count("players")
-                + " &8| &7ʜᴏᴍᴇѕ: &f" + database.count("homes")
-                + " &8| &7ᴛᴇᴀᴍѕ: &f" + database.count("teams"));
-        send(sender, "&7ᴋᴇʏѕ: &f" + database.count("crate_keys")
-                + " &8| &7ᴇɴᴅᴇʀ ᴄʜᴇѕᴛѕ: &f" + database.count("ender_chests")
-                + " &8| &7ʙᴏᴜɴᴛɪᴇѕ: &f" + database.count("bounties"));
-        send(sender, "&7ᴀᴜᴄᴛɪᴏɴѕ: &f" + database.count("auctions")
-                + " &8| &7ᴏʀᴅᴇʀѕ: &f" + database.count("orders")
-                + " &8| &7ᴘᴠᴘ ʀᴇᴄᴏʀᴅѕ: &f" + (database.count("duels") + database.count("ffa")));
-        send(sender, "&7ʀᴇѕᴇᴛ-ᴡᴏʀʟᴅ ѕᴘᴀᴡɴᴇʀѕ: &f" + database.count("spawners")
-                + " &8| &7ᴄʀᴀᴛᴇ ʙʟᴏᴄᴋѕ: &f" + database.count("crate_blocks"));
+        send(sender, "&7Players: &f" + database.count("players")
+                + " &8| &7Homes: &f" + database.count("homes")
+                + " &8| &7Teams: &f" + database.count("teams"));
+        send(sender, "&7Keys: &f" + database.count("crate_keys")
+                + " &8| &7Ender chests: &f" + database.count("ender_chests")
+                + " &8| &7Bounties: &f" + database.count("bounties"));
+        send(sender, "&7Auctions: &f" + database.count("auctions")
+                + " &8| &7Orders: &f" + database.count("orders")
+                + " &8| &7PvP records: &f" + (database.count("duels") + database.count("ffa")));
+        send(sender, "&7Reset-world spawners: &f" + database.count("spawners")
+                + " &8| &7Crate blocks: &f" + database.count("crate_blocks"));
 
         if (preview.valid()) {
-            send(sender, "&aᴠᴀʟɪᴅᴀᴛɪᴏɴ ᴘᴀѕѕᴇᴅ. ᴄᴏɴѕᴏʟᴇ ᴄᴀɴ ʀᴜɴ /serverwipe ᴘʀᴇᴘᴀʀᴇ.");
+            send(sender, "&aValidation passed. Console can run /serverwipe prepare.");
             return;
         }
         for (String error : preview.errors()) {
@@ -98,7 +98,7 @@ public class ServerWipeCommand implements CommandExecutor, TabCompleter {
         if (sender instanceof ConsoleCommandSender) {
             return true;
         }
-        send(sender, "&cᴏɴʟʏ ᴛʜᴇ ѕᴇʀᴠᴇʀ ᴄᴏɴѕᴏʟᴇ ᴄᴀɴ ʀᴜɴ ᴛʜɪѕ ᴅᴇѕᴛʀᴜᴄᴛɪᴠᴇ ᴀᴄᴛɪᴏɴ.");
+        send(sender, "&cOnly the server console can run this destructive action.");
         return false;
     }
 
@@ -107,7 +107,7 @@ public class ServerWipeCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender sender, String label) {
-        send(sender, "&cᴜѕᴀɢᴇ: /" + label + " <preview|prepare|confirm <token>|ᴄᴀɴᴄᴇʟ|ѕᴛᴀᴛᴜѕ>");
+        send(sender, "&cUsage: /" + label + " <preview|prepare|confirm <token>|cancel|status>");
     }
 
     private void send(CommandSender sender, String message) {

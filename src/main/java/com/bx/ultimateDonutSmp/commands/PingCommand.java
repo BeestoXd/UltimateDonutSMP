@@ -18,20 +18,20 @@ public class PingCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [ᴘʟᴀʏᴇʀ]"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " [player]"));
             return true;
         }
 
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
+                sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
                 return true;
             }
 
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "PING.SELF",
-                            "&7ʏᴏᴜʀ ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ",
+                            "&7Your ping is &b%ping%ms",
                             "%ping%",
                             String.valueOf(plugin.getPingManager().getPing(player))
                     ),
@@ -42,14 +42,14 @@ public class PingCommand implements CommandExecutor {
 
         Player target = plugin.getHideManager().findOnlinePlayer(sender, args[0]);
         if (target == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+            sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
             return true;
         }
 
         sender.sendMessage(ColorUtils.toComponent(
                 plugin.getConfigManager().getMessageOrDefault(
                         "PING.OTHER",
-                        "&e%player%'ѕ &7ᴘɪɴɢ ɪѕ &b%ping%ᴍѕ",
+                        "&e%player%'s &7ping is &b%ping%ms",
                         "%player%",
                         plugin.getHideManager().publicName(target),
                         "%ping%",

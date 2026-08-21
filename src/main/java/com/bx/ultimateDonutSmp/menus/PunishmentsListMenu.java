@@ -112,17 +112,17 @@ public class PunishmentsListMenu extends BaseMenu {
             }
         }
 
-        buildButton(BACK_SLOT, "BACK", "ARROW", "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ."));
-        buildButton(FILTER_STATE_SLOT, "FILTER-STATE", "HOPPER", "&dѕᴛᴀᴛᴇ ꜰɪʟᴛᴇʀ",
-                List.of("&7ᴄᴜʀʀᴇɴᴛ: &f{state_filter}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ"));
-        buildButton(FILTER_TYPE_SLOT, "FILTER-TYPE", "BOOK", "&dᴛʏᴘᴇ ꜰɪʟᴛᴇʀ",
-                List.of("&7ᴄᴜʀʀᴇɴᴛ: &f{type_filter}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ"));
-        buildButton(REFRESH_SLOT, "REFRESH", "CLOCK", "&dʀᴇꜰʀᴇѕʜ",
-                List.of("&7ʀᴇʟᴏᴀᴅ ᴛʜᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʟɪѕᴛ."));
-        buildButton(SEARCH_SLOT, "SEARCH", "NAME_TAG", "&dѕᴇᴀʀᴄʜ",
-                List.of("&7ᴄᴜʀʀᴇɴᴛ: &f{search}", "&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴀʀᴄʜ ᴀ ᴘʟᴀʏᴇʀ", "&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴇᴀʀ"));
-        buildButton(SORT_SLOT, "SORT", "COMPARATOR", "&dѕᴏʀᴛ",
-                List.of("&7ᴄᴜʀʀᴇɴᴛ: &f{sort_order}", "&aᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ"));
+        buildButton(BACK_SLOT, "BACK", "ARROW", "&cClose", List.of("&7Close this menu."));
+        buildButton(FILTER_STATE_SLOT, "FILTER-STATE", "HOPPER", "&dState filter",
+                List.of("&7Current: &f{state_filter}", "&aClick to change"));
+        buildButton(FILTER_TYPE_SLOT, "FILTER-TYPE", "BOOK", "&dType filter",
+                List.of("&7Current: &f{type_filter}", "&aClick to change"));
+        buildButton(REFRESH_SLOT, "REFRESH", "CLOCK", "&dRefresh",
+                List.of("&7Reload the punishment list."));
+        buildButton(SEARCH_SLOT, "SEARCH", "NAME_TAG", "&dSearch",
+                List.of("&7Current: &f{search}", "&aLeft-click to search a player", "&cRight-click to clear"));
+        buildButton(SORT_SLOT, "SORT", "COMPARATOR", "&dSort",
+                List.of("&7Current: &f{sort_order}", "&aClick to change"));
         buildPageButtons();
     }
 
@@ -237,7 +237,7 @@ public class PunishmentsListMenu extends BaseMenu {
         if (!PermissionUtils.has(player, PunishmentManager.DELETE_PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-DELETE-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅѕ."
+                    "&cYou do not have permission to delete punishment history records."
             )));
             return;
         }
@@ -246,7 +246,7 @@ public class PunishmentsListMenu extends BaseMenu {
         if (!plugin.getPunishmentManager().deleteRecord(recordId)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.DELETE-FAILED",
-                    "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ #{id}.",
+                    "&cFailed to delete punishment record #{id}.",
                     "{id}", String.valueOf(recordId)
             )));
             return;
@@ -254,7 +254,7 @@ public class PunishmentsListMenu extends BaseMenu {
 
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.DELETED-RECORD",
-                "&aᴅᴇʟᴇᴛᴇᴅ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʜɪѕᴛᴏʀʏ ʀᴇᴄᴏʀᴅ &f#{id}&a.",
+                "&aDeleted punishment history record &f#{id}&a.",
                 "{id}", String.valueOf(recordId)
         )));
         clickFeedback(player);
@@ -268,22 +268,22 @@ public class PunishmentsListMenu extends BaseMenu {
     private void buildLoadingState() {
         set(inventory.getSize() / 2, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".LOADING-BUTTON.MATERIAL", "CLOCK")),
-                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".LOADING-BUTTON.DISPLAY-NAME", "&eʟᴏᴀᴅɪɴɢ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ")),
+                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".LOADING-BUTTON.DISPLAY-NAME", "&eLoading punishments")),
                 replaceMenuPlaceholders(defaultIfEmpty(
                         menus().getStringList(MENU_PATH + ".LOADING-BUTTON.LORE"),
-                        List.of("&7ʀᴇᴀᴅɪɴɢ ᴛʜᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ᴛᴀʙʟᴇ.")
+                        List.of("&7Reading the punishment table.")
                 ))
         ));
     }
 
     private void buildEmptyState() {
         List<String> fallbackLore = search.isEmpty()
-                ? List.of("&7ɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ ᴍᴀᴛᴄʜ ᴛʜᴇ ᴄᴜʀʀᴇɴᴛ ꜰɪʟᴛᴇʀѕ.")
-                : List.of("&7ɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ ᴍᴀᴛᴄʜ &f{search}&7.");
+                ? List.of("&7No punishments match the current filters.")
+                : List.of("&7No punishments match &f{search}&7.");
 
         set(inventory.getSize() / 2, ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".EMPTY-BUTTON.MATERIAL", "BARRIER")),
-                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".EMPTY-BUTTON.DISPLAY-NAME", "&cɴᴏ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ ꜰᴏᴜɴᴅ")),
+                replaceMenuPlaceholders(menus().getString(MENU_PATH + ".EMPTY-BUTTON.DISPLAY-NAME", "&cNo punishments found")),
                 replaceMenuPlaceholders(defaultIfEmpty(menus().getStringList(MENU_PATH + ".EMPTY-BUTTON.LORE"), fallbackLore))
         ));
     }
@@ -302,27 +302,27 @@ public class PunishmentsListMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(PREVIOUS_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aʙᴀᴄᴋ"),
+                    menus().getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&aBack"),
                     menus().getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(PAGE_INFO_SLOT, ItemUtils.createItem(
                 Material.BOOK,
-                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
+                "&ePage " + (page + 1) + "&7/&e" + totalPages,
                 List.of(
-                        "&fʀᴇᴄᴏʀᴅѕ: &7" + NumberUtils.format(totalItems),
-                        "&fᴛʏᴘᴇ: &7" + currentTypeFilterLabel(),
-                        "&fѕᴛᴀᴛᴇ: &7" + query.stateFilter().getDisplayName(),
-                        "&fѕᴏʀᴛ: &7" + query.sortOrder().getDisplayName(),
-                        "&fѕᴇᴀʀᴄʜ: &7" + currentSearchLabel()
+                        "&fRecords: &7" + NumberUtils.format(totalItems),
+                        "&fType: &7" + currentTypeFilterLabel(),
+                        "&fState: &7" + query.stateFilter().getDisplayName(),
+                        "&fSort: &7" + query.sortOrder().getDisplayName(),
+                        "&fSearch: &7" + currentSearchLabel()
                 )
         ));
 
         if (hasNextPage) {
             set(NEXT_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus().getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
+                    menus().getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
                     menus().getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
         }
@@ -339,15 +339,15 @@ public class PunishmentsListMenu extends BaseMenu {
         List<String> lore = defaultIfEmpty(
                 menus().getStringList(MENU_PATH + ".PUNISHMENT-ITEM.LORE"),
                 List.of(
-                        "&7ʀᴇᴀѕᴏɴ: &f{reason}",
-                        "&7ɪѕѕᴜᴇᴅ ʙʏ: &f{issuer}",
-                        "&7ᴅᴀᴛᴇ: &f{issued_at}",
-                        "&7ᴇxᴘɪʀᴇѕ: &f{expires_at}",
-                        "&7ѕᴛᴀᴛᴜѕ: {status_color}{status}",
-                        "&7ɪᴅ: &f#{id}",
+                        "&7Reason: &f{reason}",
+                        "&7Issued by: &f{issuer}",
+                        "&7Date: &f{issued_at}",
+                        "&7Expires: &f{expires_at}",
+                        "&7Status: {status_color}{status}",
+                        "&7ID: &f#{id}",
                         "",
-                        "&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ꜰᴜʟʟ ʜɪѕᴛᴏʀʏ",
-                        "&cѕʜɪꜰᴛ-ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴛʜɪѕ ʀᴇᴄᴏʀᴅ"
+                        "&aLeft-click to view full history",
+                        "&cShift-right-click to delete this record"
                 )
         );
 
@@ -418,7 +418,7 @@ public class PunishmentsListMenu extends BaseMenu {
     }
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ᴀʟʟ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8All punishments");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {

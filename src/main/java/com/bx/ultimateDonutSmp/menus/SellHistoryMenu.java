@@ -31,7 +31,7 @@ public class SellHistoryMenu extends BaseMenu {
     public SellHistoryMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("SELL-HISTORY-MENU.TITLE", "&8ѕᴇʟʟ ʜɪѕᴛᴏʀʏ"),
+                plugin.getConfigManager().getMenus().getString("SELL-HISTORY-MENU.TITLE", "&8Sell history"),
                 plugin.getConfigManager().getMenus().getInt("SELL-HISTORY-MENU.SIZE", 54)
         );
     }
@@ -107,8 +107,8 @@ public class SellHistoryMenu extends BaseMenu {
     private void buildSortButton(FileConfiguration menus) {
         String path = "SELL-HISTORY-MENU.BUTTONS.SORT";
         Material material = ItemUtils.parseMaterial(menus.getString(path + ".MATERIAL", "ANVIL"));
-        String name = menus.getString(path + ".NAME", "&aѕᴏʀᴛ");
-        String sortState = sortByPrice ? "ʜɪɢʜᴇѕᴛ ᴘʀɪᴄᴇ" : "Newest";
+        String name = menus.getString(path + ".NAME", "&aSort");
+        String sortState = sortByPrice ? "Highest price" : "Newest";
         List<String> lore = menus.getStringList(path + ".LORE").stream()
                 .map(line -> line.replace("{sort_state}", sortState))
                 .toList();
@@ -121,34 +121,34 @@ public class SellHistoryMenu extends BaseMenu {
         if (hasPreviousPage) {
             set(FIRST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aꜰɪʀѕᴛ ᴘᴀɢᴇ"),
+                    menus.getString("GLOBAL.PAGE-MENU.FIRST-PAGE-BUTTON", "&aFirst page"),
                     menus.getStringList("GLOBAL.PAGE-MENU.FIRST-PAGE-LORE")
             ));
             set(PREVIOUS_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cʙᴀᴄᴋ"),
+                    menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cBack"),
                     menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE")
             ));
         }
 
         set(PAGE_INFO_SLOT, ItemUtils.createItem(
                 Material.BOOK,
-                "&eᴘᴀɢᴇ " + (page + 1) + "&7/&e" + totalPages,
+                "&ePage " + (page + 1) + "&7/&e" + totalPages,
                 List.of(
-                        "&fᴇɴᴛʀɪᴇѕ: &7" + NumberUtils.format(totalItems),
-                        "&fѕᴏʀᴛ: &7" + (sortByPrice ? "ʜɪɢʜᴇѕᴛ ᴘʀɪᴄᴇ" : "ɴᴇᴡᴇѕᴛ")
+                        "&fEntries: &7" + NumberUtils.format(totalItems),
+                        "&fSort: &7" + (sortByPrice ? "Highest price" : "Newest")
                 )
         ));
 
         if (hasNextPage) {
             set(NEXT_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aɴᴇxᴛ"),
+                    menus.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aNext"),
                     menus.getStringList("GLOBAL.PAGE-MENU.NEXT-LORE")
             ));
             set(LAST_PAGE_SLOT, ItemUtils.createItem(
                     material,
-                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aʟᴀѕᴛ ᴘᴀɢᴇ"),
+                    menus.getString("GLOBAL.PAGE-MENU.LAST-PAGE-BUTTON", "&aLast page"),
                     menus.getStringList("GLOBAL.PAGE-MENU.LAST-PAGE-LORE")
             ));
         }

@@ -44,7 +44,7 @@ public class SellStatsAdminMenu extends BaseMenu {
     private int totalPages = 1;
 
     public SellStatsAdminMenu(UltimateDonutSmp plugin) {
-        super(plugin, "&8ѕᴇʟʟ ѕᴛᴀᴛɪѕᴛɪᴄѕ &7(ᴀᴅᴍɪɴ)", 54);
+        super(plugin, "&8Sell statistics &7(admin)", 54);
     }
 
     @Override

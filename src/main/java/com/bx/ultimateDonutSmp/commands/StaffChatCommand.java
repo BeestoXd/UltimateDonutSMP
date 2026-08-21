@@ -23,14 +23,14 @@ public class StaffChatCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("STAFFCHAT.NO_PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ.")
+                    plugin.getConfigManager().getMessageOrDefault("STAFFCHAT.NO_PERMISSION", "&cYou do not have permission to use staff chat.")
             ));
             return true;
         }
 
         if (args.length == 0) {
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("STAFFCHAT.USAGE", "&cᴜѕᴀɢᴇ: /staffchat <message>")
+                    plugin.getConfigManager().getMessageOrDefault("STAFFCHAT.USAGE", "&cUsage: /staffchat <message>")
             ));
             return true;
         }

@@ -16,7 +16,7 @@ public class DuelQueueMapSelectMenu extends BaseMenu {
     private final DuelMapSelection selectedSelection;
 
     public DuelQueueMapSelectMenu(UltimateDonutSmp plugin, DuelMapSelection selectedSelection) {
-        super(plugin, "&8ѕᴇʟᴇᴄᴛ ᴅᴜᴇʟ ᴍᴀᴘ", plugin.getDuelManager().getQueueSize());
+        super(plugin, "&8Select duel map", plugin.getDuelManager().getQueueSize());
         this.selectedSelection = selectedSelection;
     }
 
@@ -33,9 +33,9 @@ public class DuelQueueMapSelectMenu extends BaseMenu {
             List<String> lore = new ArrayList<>();
             lore.add("&7" + option.description());
             if (selected) {
-                lore.add("&aᴄᴜʀʀᴇɴᴛʟʏ ѕᴇʟᴇᴄᴛᴇᴅ.");
+                lore.add("&aCurrently selected.");
             } else {
-                lore.add("&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ.");
+                lore.add("&eClick to select.");
             }
             set(slots[i], ItemUtils.createItem(
                     materialFor(option.selection()),
@@ -45,12 +45,12 @@ public class DuelQueueMapSelectMenu extends BaseMenu {
         }
 
         if (options.isEmpty()) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cɴᴏ ǫᴜᴇᴜᴇ ᴍᴀᴘѕ ᴀᴠᴀɪʟᴀʙʟᴇ", List.of("&7ᴄᴏɴꜰɪɢᴜʀᴇ ǫᴜᴇᴜᴇ ᴀʀᴇɴᴀѕ ᴏʀ ᴇɴᴀʙʟᴇ ʀᴀɴᴅᴏᴍ ʙɪᴏᴍᴇѕ.")));
+            set(13, ItemUtils.createItem(Material.BARRIER, "&cNo queue maps available", List.of("&7Configure queue arenas or enable random biomes.")));
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow + 4, ItemUtils.createItem(Material.ARROW, "&eʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ǫᴜᴇᴜᴇ ᴍᴇɴᴜ.")));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ"));
+        set(lastRow + 4, ItemUtils.createItem(Material.ARROW, "&eBack", List.of("&7Return to queue menu.")));
+        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose"));
     }
 
     @Override

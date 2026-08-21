@@ -289,7 +289,7 @@ public class InvseeManager {
         if (isEditEnabled() && canModify(viewer) && !editable) {
             viewer.sendMessage(ColorUtils.toComponent(formatMessage(
                     "EDIT-CONFLICT",
-                    "&eᴀɴᴏᴛʜᴇʀ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴇᴅɪᴛɪɴɢ ᴛʜɪѕ ɪɴᴠᴇɴᴛᴏʀʏ. ᴏᴘᴇɴᴇᴅ ɪɴ ʀᴇᴀᴅ-ᴏɴʟʏ ᴍᴏᴅᴇ.",
+                    "&eAnother staff member is already editing this inventory. Opened in read-only mode.",
                     "{target}", target.getName(),
                     "{player}", target.getName()
             )));
@@ -298,10 +298,10 @@ public class InvseeManager {
         if (shouldNotifyTarget()) {
             target.sendMessage(ColorUtils.toComponent(formatMessage(
                     "TARGET-NOTIFY",
-                    "&eʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ʙᴇɪɴɢ ᴠɪᴇᴡᴇᴅ ʙʏ ѕᴛᴀꜰꜰ.",
+                    "&eYour inventory is being viewed by staff.",
                     "{viewer}", viewer.getName(),
                     "{player}", viewer.getName(),
-                    "{mode}", editable ? "ᴇᴅɪᴛᴀʙʟᴇ" : "ʀᴇᴀᴅ-ᴏɴʟʏ"
+                    "{mode}", editable ? "Editable" : "Read-only"
             )));
         }
 
@@ -530,19 +530,19 @@ public class InvseeManager {
         List<String> lore = live
                 ? editable
                 ? List.of(
-                "&7ᴛʜɪѕ ᴠɪᴇᴡ ɪѕ ᴍɪʀʀᴏʀɪɴɢ ᴛʜᴇ ᴛᴀʀɢᴇᴛ'ѕ",
-                "&7ɪɴᴠᴇɴᴛᴏʀʏ ᴀɴᴅ ᴡɪʟʟ ᴡʀɪᴛᴇ ᴄʜᴀɴɢᴇѕ ʙᴀᴄᴋ",
-                "&7ᴡʜɪʟᴇ ᴛʜᴇ ᴛᴀʀɢᴇᴛ ʀᴇᴍᴀɪɴѕ ᴏɴʟɪɴᴇ."
+                "&7This view is mirroring the target's",
+                "&7Inventory and will write changes back",
+                "&7While the target remains online."
         )
                 : List.of(
-                "&7ᴛʜɪѕ ᴠɪᴇᴡ ɪѕ ᴍɪʀʀᴏʀɪɴɢ ᴛʜᴇ ᴛᴀʀɢᴇᴛ'ѕ",
-                "&7ɪɴᴠᴇɴᴛᴏʀʏ ᴡʜɪʟᴇ ᴛʜᴇʏ ʀᴇᴍᴀɪɴ ᴏɴʟɪɴᴇ.",
-                "&cᴀʟʟ ɪɴᴛᴇʀᴀᴄᴛɪᴏɴѕ ᴀʀᴇ ʙʟᴏᴄᴋᴇᴅ."
+                "&7This view is mirroring the target's",
+                "&7Inventory while they remain online.",
+                "&cAll interactions are blocked."
         )
                 : List.of(
-                "&7ᴛʜᴇ ᴛᴀʀɢᴇᴛ ᴡᴇɴᴛ ᴏꜰꜰʟɪɴᴇ.",
-                "&7ᴛʜɪѕ ɢᴜɪ ɴᴏᴡ ѕʜᴏᴡѕ ᴛʜᴇ ʟᴀѕᴛ ѕʏɴᴄᴇᴅ ѕᴛᴀᴛᴇ.",
-                "&cᴀʟʟ ɪɴᴛᴇʀᴀᴄᴛɪᴏɴѕ ʀᴇᴍᴀɪɴ ʙʟᴏᴄᴋᴇᴅ."
+                "&7The target went offline.",
+                "&7This GUI now shows the last synced state.",
+                "&cAll interactions remain blocked."
         );
 
         return ItemUtils.createItem(material, name, lore);
@@ -604,7 +604,7 @@ public class InvseeManager {
         if (viewer != null && viewer.isOnline()) {
             viewer.sendMessage(ColorUtils.toComponent(formatMessage(
                     "TARGET-LOGGED-OUT",
-                    "&eᴛʜɪѕ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ɴᴏᴡ ᴀ ꜰʀᴏᴢᴇɴ ѕɴᴀᴘѕʜᴏᴛ ʙᴇᴄᴀᴜѕᴇ ᴛʜᴇ ᴛᴀʀɢᴇᴛ ʟᴏɢɢᴇᴅ ᴏᴜᴛ.",
+                    "&eThis inventory is now a frozen snapshot because the target logged out.",
                     "{player}", session.getTargetName(),
                     "{target}", session.getTargetName()
             )));

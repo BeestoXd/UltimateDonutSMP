@@ -38,22 +38,22 @@ public class OrdersInventoryItemMenu extends BaseMenu {
         int lastRow = inventory.getSize() - 9;
         set(11, ItemUtils.createItem(
                 Material.HOPPER,
-                "&bᴄʜᴏᴏѕᴇ ꜰʀᴏᴍ ɪɴᴠᴇɴᴛᴏʀʏ",
+                "&bChoose from inventory",
                 List.of(
-                        "&7ᴄʟɪᴄᴋ ᴀɴ ɪᴛᴇᴍ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ.",
-                        "&7ᴛʜᴇ ɪᴛᴇᴍ ɪѕ ᴄʟᴏɴᴇᴅ ᴀѕ ᴛʜᴇ ᴏʀᴅᴇʀ ᴛᴇᴍᴘʟᴀᴛᴇ.",
-                        "&7ʏᴏᴜʀ ᴏʀɪɢɪɴᴀʟ ɪᴛᴇᴍ ѕᴛᴀʏѕ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ."
+                        "&7Click an item in your inventory.",
+                        "&7The item is cloned as the order template.",
+                        "&7Your original item stays in your inventory."
                 )
         ));
         set(15, ItemUtils.createItem(
                 Material.CHEST,
-                "&eᴇxᴀᴄᴛ ɪᴛᴇᴍ ᴍᴀᴛᴄʜɪɴɢ",
+                "&eExact item matching",
                 List.of(
-                        "&7ᴄᴜѕᴛᴏᴍ ɴᴀᴍᴇѕ, ʟᴏʀᴇ, ᴇɴᴄʜᴀɴᴛᴍᴇɴᴛѕ,",
-                        "&7ɴʙᴛ, ᴀɴᴅ ѕʜᴜʟᴋᴇʀ ᴄᴏɴᴛᴇɴᴛѕ ᴍᴜѕᴛ ᴍᴀᴛᴄʜ."
+                        "&7Custom names, lore, enchantments,",
+                        "&7NBT, and shulker contents must match."
                 )
         ));
-        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ ᴛᴏ ᴏʀᴅᴇʀѕ", List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴏʀᴅᴇʀ ʙᴏᴀʀᴅ")));
+        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bBack to orders", List.of("&7Return to the order board")));
         set(lastRow + 8, ItemUtils.createPlaceholder(Material.GRAY_STAINED_GLASS_PANE));
     }
 
@@ -120,6 +120,6 @@ public class OrdersInventoryItemMenu extends BaseMenu {
             return;
         }
 
-        player.sendMessage(ColorUtils.toComponent("&7ᴄʟɪᴄᴋ ᴀɴ ɪᴛᴇᴍ ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ᴛᴏ ᴜѕᴇ ɪᴛ ᴀѕ ᴛʜᴇ ᴏʀᴅᴇʀ ᴛᴇᴍᴘʟᴀᴛᴇ."));
+        player.sendMessage(ColorUtils.toComponent("&7Click an item in your inventory to use it as the order template."));
     }
 }

@@ -24,55 +24,55 @@ public class MaintenanceCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("ultimatedonutsmp.admin.maintenance")) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to manage maintenance mode."));
             return true;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <on|off|status|setlobby [server]>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <on|off|status|setlobby [server]>"));
             return true;
         }
 
         var mm = plugin.getMaintenanceManager();
         if (mm == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴀɴᴀɢᴇʀ ɪѕ ɴᴏᴛ ᴀᴠᴀɪʟᴀʙʟᴇ."));
+            sender.sendMessage(ColorUtils.toComponent("&cMaintenance manager is not available."));
             return true;
         }
 
         switch (args[0].toLowerCase(Locale.ROOT)) {
             case "on", "start", "enable" -> {
                 if (mm.isMaintenanceActive()) {
-                    sender.sendMessage(ColorUtils.toComponent("&eᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ᴀʟʀᴇᴀᴅʏ ᴀᴄᴛɪᴠᴇ."));
+                    sender.sendMessage(ColorUtils.toComponent("&eMaintenance mode is already active."));
                     return true;
                 }
                 mm.startMaintenance();
-                sender.sendMessage(ColorUtils.toComponent("&aᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴇɴᴀʙʟᴇᴅ. ᴘʟᴀʏᴇʀѕ ᴀʀᴇ ʙᴇɪɴɢ ʀᴇᴅɪʀᴇᴄᴛᴇᴅ."));
+                sender.sendMessage(ColorUtils.toComponent("&aMaintenance mode has been enabled. Players are being redirected."));
             }
             case "off", "stop", "disable" -> {
                 if (!mm.isMaintenanceActive()) {
-                    sender.sendMessage(ColorUtils.toComponent("&eᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ɴᴏᴛ ᴀᴄᴛɪᴠᴇ."));
+                    sender.sendMessage(ColorUtils.toComponent("&eMaintenance mode is not active."));
                     return true;
                 }
                 mm.stopMaintenance();
-                sender.sendMessage(ColorUtils.toComponent("&aᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴅɪѕᴀʙʟᴇᴅ. ʀᴇᴄᴏɴɴᴇᴄᴛ ѕɪɢɴᴀʟ ѕᴇɴᴛ."));
+                sender.sendMessage(ColorUtils.toComponent("&aMaintenance mode has been disabled. Reconnect signal sent."));
             }
             case "status" -> {
                 boolean active = mm.isMaintenanceActive();
                 String lobby = mm.getLobbyServer();
-                sender.sendMessage(ColorUtils.toComponent("&d&lᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ѕᴛᴀᴛᴜѕ:"));
-                sender.sendMessage(ColorUtils.toComponent("  &fᴀᴄᴛɪᴠᴇ: " + (active ? "&aʏᴇѕ" : "&cɴᴏ")));
-                sender.sendMessage(ColorUtils.toComponent("  &fʟᴏʙʙʏ ѕᴇʀᴠᴇʀ: &b" + lobby));
+                sender.sendMessage(ColorUtils.toComponent("&d&lMaintenance status:"));
+                sender.sendMessage(ColorUtils.toComponent("  &fActive: " + (active ? "&aYes" : "&cNo")));
+                sender.sendMessage(ColorUtils.toComponent("  &fLobby server: &b" + lobby));
             }
             case "setlobby" -> {
                 if (args.length < 2) {
-                    sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " ѕᴇᴛʟᴏʙʙʏ <server>"));
+                    sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " setlobby <server>"));
                     return true;
                 }
                 String lobby = args[1];
                 mm.setLobbyServer(lobby);
-                sender.sendMessage(ColorUtils.toComponent("&aʟᴏʙʙʏ ѕᴇʀᴠᴇʀ ѕᴇᴛ ᴛᴏ &b" + lobby + "&a."));
+                sender.sendMessage(ColorUtils.toComponent("&aLobby server set to &b" + lobby + "&a."));
             }
-            default -> sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <on|off|status|setlobby [server]>"));
+            default -> sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <on|off|status|setlobby [server]>"));
         }
         return true;
     }

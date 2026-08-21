@@ -29,7 +29,7 @@ public class TPACommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("Player only.");
             return true;
         }
 
@@ -57,7 +57,7 @@ public class TPACommand implements CommandExecutor {
 
         Player target = plugin.getHideManager().findOnlinePlayer(player, args[0]);
         if (target == null || target.equals(player)) {
-            send(player, target == null ? "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."
+            send(player, target == null ? "&cPlayer not online."
                     : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
             return;
         }
@@ -71,7 +71,7 @@ public class TPACommand implements CommandExecutor {
             plugin.getSpigotScheduler().runEntity(player, () -> {
                 plugin.getTeleportManager().queue(player, target.getLocation(), "TPA", null);
                 send(player, plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-ACCEPTED", "{player}", target.getName()));
-                target.sendMessage(ColorUtils.toComponent("&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &b" + player.getName() + "&7."));
+                target.sendMessage(ColorUtils.toComponent("&7Auto-accepted teleport request from &b" + player.getName() + "&7."));
             });
             return;
         }
@@ -87,8 +87,8 @@ public class TPACommand implements CommandExecutor {
                 }
 
                 send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", publicName(target)));
-                send(player, "&7ʏᴏᴜʀ /tpa ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ѕᴛᴏʀᴇᴅ ɪɴ &b" + publicName(target)
-                        + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
+                send(player, "&7Your /tpa request was stored in &b" + publicName(target)
+                        + "&7's queue &8(#" + queuePosition + "&8).");
                 playNotification(player, "TPA.REQUEST-SENT");
                 return;
             } else if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
@@ -109,8 +109,8 @@ public class TPACommand implements CommandExecutor {
 
             send(player, plugin.getConfigManager().getMessage("TPA.INVITE-SENT", "{player}", publicName(target)));
             if (queuePosition > 1) {
-                send(player, "&7ʏᴏᴜʀ /tpa ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ѕᴛᴏʀᴇᴅ ɪɴ &b" + publicName(target)
-                        + "&7'ѕ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
+                send(player, "&7Your /tpa request was stored in &b" + publicName(target)
+                        + "&7's auto-accept queue &8(#" + queuePosition + "&8).");
             }
             playNotification(player, "TPA.REQUEST-SENT");
             plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
@@ -134,7 +134,7 @@ public class TPACommand implements CommandExecutor {
 
         Player target = plugin.getHideManager().findOnlinePlayer(player, args[0]);
         if (target == null || target.equals(player)) {
-            send(player, target == null ? "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."
+            send(player, target == null ? "&cPlayer not online."
                     : plugin.getConfigManager().getMessage("TPA.CANNOT-INVITE-YOURSELF"));
             return;
         }
@@ -148,7 +148,7 @@ public class TPACommand implements CommandExecutor {
             plugin.getSpigotScheduler().runEntity(target, () -> {
                 plugin.getTeleportManager().queue(target, player.getLocation(), "TPA", null);
                 send(player, plugin.getConfigManager().getMessage("TPA.YOUR-REQUEST-HERE-ACCEPTED", "{player}", target.getName()));
-                target.sendMessage(ColorUtils.toComponent("&7ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛᴇᴅ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ꜰʀᴏᴍ &b" + player.getName() + "&7."));
+                target.sendMessage(ColorUtils.toComponent("&7Auto-accepted teleport request from &b" + player.getName() + "&7."));
             });
             return;
         }
@@ -164,8 +164,8 @@ public class TPACommand implements CommandExecutor {
                 }
 
                 send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", publicName(target)));
-                send(player, "&7ʏᴏᴜʀ /tpahere ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴀᴅᴅᴇᴅ ᴛᴏ &b" + publicName(target)
-                        + "&7'ѕ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
+                send(player, "&7Your /tpahere request was added to &b" + publicName(target)
+                        + "&7's queue &8(#" + queuePosition + "&8).");
                 playNotification(player, "TPA.REQUEST-SENT");
                 return;
             } else if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
@@ -186,8 +186,8 @@ public class TPACommand implements CommandExecutor {
 
             send(player, plugin.getConfigManager().getMessage("TPA.INVITE-HERE-SENT", "{player}", publicName(target)));
             if (queuePosition > 1) {
-                send(player, "&7ʏᴏᴜʀ /tpahere ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴀᴅᴅᴇᴅ ᴛᴏ &b" + publicName(target)
-                        + "&7'ѕ ᴀᴜᴛᴏ-ᴀᴄᴄᴇᴘᴛ ǫᴜᴇᴜᴇ &8(#" + queuePosition + "&8).");
+                send(player, "&7Your /tpahere request was added to &b" + publicName(target)
+                        + "&7's auto-accept queue &8(#" + queuePosition + "&8).");
             }
             playNotification(player, "TPA.REQUEST-SENT");
             plugin.getTPAManager().processQueuedAutoRequests(target.getUniqueId());
@@ -222,14 +222,14 @@ public class TPACommand implements CommandExecutor {
 
         TPAManager.TpaRequest request = plugin.getTPAManager().getRequest(player.getUniqueId());
         plugin.getTPAManager().removeRequest(player.getUniqueId());
-        send(player, "&7ᴛᴘᴀ ʀᴇǫᴜᴇѕᴛ ᴅᴇɴɪᴇᴅ.");
+        send(player, "&7TPA request denied.");
         if (request == null) {
             return;
         }
 
         Player requester = Bukkit.getPlayer(request.requester());
         if (requester != null) {
-            requester.sendMessage(ColorUtils.toComponent("&7ʏᴏᴜʀ ᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛ ᴡᴀѕ ᴅᴇɴɪᴇᴅ."));
+            requester.sendMessage(ColorUtils.toComponent("&7Your teleport request was denied."));
         }
     }
 

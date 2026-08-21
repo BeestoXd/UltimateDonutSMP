@@ -118,12 +118,12 @@ public class HoverStatsManager {
                 "%prefix%%player%",
                 "&7&m----------",
                 "{money_color}{money_name_plural}: &f%money_formatted%",
-                "&cᴋɪʟʟѕ: &f%kills%",
-                "&eᴘʟᴀʏᴛɪᴍᴇ: &f%playtime%",
-                "&6ᴅᴇᴀᴛʜѕ: &f%deaths%",
+                "&cKills: &f%kills%",
+                "&ePlaytime: &f%playtime%",
+                "&6Deaths: &f%deaths%",
                 "{shards_color}{shards_name_plural}: &f%shards_formatted%",
                 "&7&m----------",
-                "&7ᴄʟɪᴄᴋ ᴛᴏ ᴠɪᴇᴡ ѕᴛᴀᴛѕ"
+                "&7Click to view stats"
         );
     }
 

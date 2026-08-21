@@ -27,7 +27,7 @@ public class OrdersDeleteConfirmMenu extends BaseMenu {
             OrderSort sortMode,
             String categoryFilter
     ) {
-        super(plugin, OrdersMenuSupport.text(plugin, "ORDERS.GUI.DELETE.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟᴇᴛᴇ ᴏʀᴅᴇʀ"), 27);
+        super(plugin, OrdersMenuSupport.text(plugin, "ORDERS.GUI.DELETE.TITLE", "&8Orders -> Delete order"), 27);
         this.orderId = orderId;
         this.backToMyOrders = backToMyOrders;
         this.originPage = Math.max(1, originPage);
@@ -45,12 +45,12 @@ public class OrdersDeleteConfirmMenu extends BaseMenu {
         }
         set(10, OrdersMenuSupport.button(
                 plugin, "GUI.DELETE.BUTTONS.BACK", "ORDERS.GUI.DELETE.BACK",
-                Material.RED_STAINED_GLASS_PANE, "&cʙᴀᴄᴋ", List.of("&fʀᴇᴛᴜʀɴ ᴡɪᴛʜᴏᴜᴛ ᴄᴀɴᴄᴇʟʟɪɴɢ")
+                Material.RED_STAINED_GLASS_PANE, "&cBack", List.of("&fReturn without cancelling")
         ));
         set(16, OrdersMenuSupport.button(
                 plugin, "GUI.DELETE.BUTTONS.CONFIRM", "ORDERS.GUI.DELETE.CONFIRM",
-                Material.LIME_STAINED_GLASS_PANE, "&aᴄᴏɴꜰɪʀᴍ",
-                List.of("&fᴄᴀɴᴄᴇʟ ᴛʜɪѕ ᴏʀᴅᴇʀ", "&7ᴜɴᴜѕᴇᴅ ᴇѕᴄʀᴏᴡ ʙᴇᴄᴏᴍᴇѕ ᴀ ᴄᴏʟʟᴇᴄᴛᴀʙʟᴇ ʀᴇꜰᴜɴᴅ")
+                Material.LIME_STAINED_GLASS_PANE, "&aConfirm",
+                List.of("&fCancel this order", "&7Unused escrow becomes a collectable refund")
         ));
     }
 
@@ -74,7 +74,7 @@ public class OrdersDeleteConfirmMenu extends BaseMenu {
             OrdersManager.CancelOrderResult result = manager.cancelOrder(player, orderId);
             if (!result.success()) {
                 player.sendMessage(ColorUtils.toComponent(OrdersMenuSupport.text(
-                        plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ᴄᴀɴ ɴᴏ ʟᴏɴɢᴇʀ ʙᴇ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                        plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cThat order can no longer be cancelled."
                 )));
                 SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.FAIL"));
                 openEdit(player);
@@ -83,7 +83,7 @@ public class OrdersDeleteConfirmMenu extends BaseMenu {
             player.sendMessage(ColorUtils.toComponent(OrdersMenuSupport.text(
                     plugin,
                     "ORDERS.CANCELLED",
-                    "&eᴏʀᴅᴇʀ #{order_id} ᴡᴀѕ ᴄᴀɴᴄᴇʟʟᴇᴅ. ʀᴇᴍᴀɪɴɪɴɢ ᴇѕᴄʀᴏᴡ ɪѕ ʀᴇᴀᴅʏ ᴛᴏ ᴄᴏʟʟᴇᴄᴛ.",
+                    "&eOrder #{order_id} was cancelled. Remaining escrow is ready to collect.",
                     "{order_id}", String.valueOf(orderId)
             )));
             SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.SUCCESS"));

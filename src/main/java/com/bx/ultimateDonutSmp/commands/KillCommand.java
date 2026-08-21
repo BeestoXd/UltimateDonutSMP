@@ -19,13 +19,13 @@ public class KillCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("Player only.");
             return true;
         }
 
         if (plugin.getCombatManager().isInCombat(player.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getConfig()
-                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ ɪɴ ᴄᴏᴍʙᴀᴛ.")));
+                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cYou can't use this command in combat.")));
             return true;
         }
 

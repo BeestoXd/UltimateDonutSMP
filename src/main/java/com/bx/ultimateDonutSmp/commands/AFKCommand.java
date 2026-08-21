@@ -48,13 +48,13 @@ public class AFKCommand implements CommandExecutor {
         }
 
         if (!plugin.getConfigManager().isCommandEnabled("AFK")) {
-            player.sendMessage(ColorUtils.toComponent("&cᴀꜰᴋ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cAFK command is currently disabled."));
             return true;
         }
 
         if (plugin.getCombatManager().isInCombat(player.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getConfig()
-                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ᴜѕᴇ ᴛʜɪѕ ɪɴ ᴄᴏᴍʙᴀᴛ.")));
+                    .getString("COMBAT-MANAGER.BLOCK-MESSAGE", "&cYou can't use this in combat.")));
             return true;
         }
 
@@ -65,7 +65,7 @@ public class AFKCommand implements CommandExecutor {
 
         Location destination = plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.AFK);
         if (destination == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
+            player.sendMessage(ColorUtils.toComponent("&cAFK location is not set."));
             return true;
         }
 

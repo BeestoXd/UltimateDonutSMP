@@ -22,9 +22,9 @@ public class LeaderboardCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
         if (!plugin.getConfigManager().isCommandEnabled("LEADERBOARDS")) {
-            player.sendMessage(ColorUtils.toComponent("&cʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cLeaderboards are currently disabled."));
             return true;
         }
 
@@ -43,7 +43,7 @@ public class LeaderboardCommand implements CommandExecutor {
             String available = plugin.getLeaderboardManager().getTypes().stream()
                     .map(leaderboardType -> leaderboardType.getConfigKey())
                     .collect(Collectors.joining(", "));
-            player.sendMessage(ColorUtils.toComponent("&cɪɴᴠᴀʟɪᴅ ʟᴇᴀᴅᴇʀʙᴏᴀʀᴅ ᴛʏᴘᴇ. &7ᴀᴠᴀɪʟᴀʙʟᴇ: &f" + available));
+            player.sendMessage(ColorUtils.toComponent("&cInvalid leaderboard type. &7Available: &f" + available));
             return true;
         }
 

@@ -20,7 +20,7 @@ public final class FilterGui extends BaseMenu {
 
     public FilterGui(UltimateDonutSmp plugin, AuctionBrowseRequest request) {
         super(plugin, plugin.getConfigManager().getAuctionHouse()
-                .getString("GUI.FILTER.TITLE", "&8ᴄᴀᴛᴇɢᴏʀʏ ꜰɪʟᴛᴇʀ"), 27);
+                .getString("GUI.FILTER.TITLE", "&8Category filter"), 27);
         this.request = request;
     }
 
@@ -62,18 +62,18 @@ public final class FilterGui extends BaseMenu {
                             : plugin.getAuctionHouseManager().getCategoryIcon(category),
                     (selected ? "&a" : "&f")
                             + plugin.getAuctionHouseManager().getCategoryDisplayName(category),
-                    List.of(selected ? "&aѕᴇʟᴇᴄᴛᴇᴅ" : "&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ"),
+                    List.of(selected ? "&aSelected" : "&7Click to select"),
                     "{category}", plugin.getAuctionHouseManager().getCategoryDisplayName(category),
                     "{state}", selected
                             ? AuctionHouseMenuSupport.configText(
                                     plugin,
                                     "GUI.TEXT.SELECTED.NAME",
-                                    "&aѕᴇʟᴇᴄᴛᴇᴅ"
+                                    "&aSelected"
                             )
                             : AuctionHouseMenuSupport.configText(
                                     plugin,
                                     "GUI.TEXT.CLICK_TO_SELECT.NAME",
-                                    "&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ"
+                                    "&7Click to select"
                             )
             ));
         }
@@ -83,8 +83,8 @@ public final class FilterGui extends BaseMenu {
                         plugin,
                         "GUI.FILTER.CLEAR",
                         Material.BARRIER,
-                        "&cᴄʟᴇᴀʀ ꜰɪʟᴛᴇʀ",
-                        List.of("&7ѕʜᴏᴡ ᴀʟʟ ʟɪѕᴛɪɴɢѕ")
+                        "&cClear filter",
+                        List.of("&7Show all listings")
                 ));
     }
 

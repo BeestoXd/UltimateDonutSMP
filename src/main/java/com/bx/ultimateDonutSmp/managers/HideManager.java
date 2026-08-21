@@ -570,7 +570,7 @@ public class HideManager {
         remove(player, true);
         if (notification != null) {
             notification.accept(message("PERMISSION-REMOVED",
-                    "&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ᴡᴀѕ ʀᴇᴍᴏᴠᴇᴅ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴘᴇʀᴍɪѕѕɪᴏɴ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ."));
+                    "&cYour hide state was removed because its permission is no longer available."));
         }
         return false;
     }

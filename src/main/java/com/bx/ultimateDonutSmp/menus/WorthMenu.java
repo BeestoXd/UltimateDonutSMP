@@ -22,25 +22,25 @@ public class WorthMenu extends BaseMenu {
 
     public enum SortMode {
         CATEGORY(
-                "ᴄᴀᴛᴇɢᴏʀʏ ᴏʀᴅᴇʀ",
+                "Category order",
                 Material.BOOK,
                 null
         ),
         PRICE_HIGH_TO_LOW(
-                "ᴘʀɪᴄᴇ ʜɪɢʜ ᴛᴏ ʟᴏᴡ",
+                "Price high to low",
                 Material.GOLD_INGOT,
                 Comparator.comparingDouble(WorthManager.WorthBrowserEntry::unitWorth)
                         .reversed()
                         .thenComparing(entry -> entry.material().name())
         ),
         PRICE_LOW_TO_HIGH(
-                "ᴘʀɪᴄᴇ ʟᴏᴡ ᴛᴏ ʜɪɢʜ",
+                "Price low to high",
                 Material.IRON_INGOT,
                 Comparator.comparingDouble(WorthManager.WorthBrowserEntry::unitWorth)
                         .thenComparing(entry -> entry.material().name())
         ),
         NAME_A_TO_Z(
-                "ɴᴀᴍᴇ ᴀ ᴛᴏ ᴢ",
+                "Name a to z",
                 Material.NAME_TAG,
                 Comparator.comparing(entry -> entry.material().name())
         );
@@ -161,30 +161,30 @@ public class WorthMenu extends BaseMenu {
         int lastRowStart = inventory.getSize() - 9;
         set(lastRowStart, ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRowStart + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aPrevious page", List.of("&7Go to page &f" + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRowStart + 3, ItemUtils.createItem(
                 Material.BOOK,
-                "&bᴡᴏʀᴛʜ ʙʀᴏᴡѕᴇʀ",
+                "&bWorth browser",
                 List.of(
-                        "&7ᴘᴀɢᴇ: &f" + page + "&7/&f" + getTotalPages(entries.size()),
-                        "&7ᴇɴᴛʀɪᴇѕ: &f" + entries.size()
+                        "&7Page: &f" + page + "&7/&f" + getTotalPages(entries.size()),
+                        "&7Entries: &f" + entries.size()
                 )
         ));
         set(lastRowStart + 4, ItemUtils.createItem(
                 sortMode.icon(),
-                "&eѕᴏʀᴛ: &f" + sortMode.displayName(),
+                "&eSort: &f" + sortMode.displayName(),
                 List.of(
-                        "&7ʟᴇꜰᴛ ᴄʟɪᴄᴋ: &fɴᴇxᴛ ѕᴏʀᴛ",
-                        "&7ʀɪɢʜᴛ ᴄʟɪᴄᴋ: &fᴘʀᴇᴠɪᴏᴜѕ ѕᴏʀᴛ"
+                        "&7Left click: &fnext sort",
+                        "&7Right click: &fprevious sort"
                 )
         ));
         set(lastRowStart + 7, hasNextPage(entries.size())
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f" + (page + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aNext page", List.of("&7Go to page &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRowStart + 8, parentMenu != null
-                ? ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ", List.of("&7ɢᴏ ʙᴀᴄᴋ ᴛᴏ ᴘʀᴇᴠɪᴏᴜѕ ᴍᴇɴᴜ"))
-                : ItemUtils.createItem(Material.BARRIER, "&cᴄʟᴏѕᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ")));
+                ? ItemUtils.createItem(Material.BARRIER, "&cBack", List.of("&7Go back to previous menu"))
+                : ItemUtils.createItem(Material.BARRIER, "&cClose", List.of("&7Close this menu")));
     }
 
     @Override
@@ -234,7 +234,7 @@ public class WorthMenu extends BaseMenu {
         WorthManager.WorthBrowserEntry entry = entries.get(entryIndex);
         player.sendMessage(ColorUtils.toComponent(
                 "&7" + plugin.getWorthManager().prettifyMaterial(entry.material())
-                        + " &7ɪѕ ᴡᴏʀᴛʜ " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth())
+                        + " &7is worth " + plugin.getCurrencyManager().formatMoneyCompact(entry.unitWorth())
                         + " &8(" + formatCategory(entry.categoryKey()) + "&8)"
         ));
     }

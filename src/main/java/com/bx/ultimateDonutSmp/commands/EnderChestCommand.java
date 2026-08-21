@@ -24,7 +24,7 @@ public class EnderChestCommand implements CommandExecutor {
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!PermissionUtils.has(sender, ADMIN_PERMISSION)) {
                 sender.sendMessage(ColorUtils.toComponent(
-                        plugin.getEnderChestManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                        plugin.getEnderChestManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
                 ));
                 return true;
             }
@@ -32,13 +32,13 @@ public class EnderChestCommand implements CommandExecutor {
             plugin.getConfigManager().reloadEnderChest();
             plugin.getEnderChestManager().reload();
             sender.sendMessage(ColorUtils.toComponent(
-                    plugin.getEnderChestManager().getMessage("RELOAD-SUCCESS", "&aᴇɴᴅᴇʀ ᴄʜᴇѕᴛ ᴄᴏɴꜰɪɢ ʀᴇʟᴏᴀᴅᴇᴅ.")
+                    plugin.getEnderChestManager().getMessage("RELOAD-SUCCESS", "&aEnder chest config reloaded.")
             ));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("Player only.");
             return true;
         }
 
@@ -46,7 +46,7 @@ public class EnderChestCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().getMessage(
                             "FEATURE-DISABLED",
-                            "&cᴛʜᴇ ᴇɴᴅᴇʀ ᴄʜᴇѕᴛ 6 ʀᴏᴡѕ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ."
+                            "&cThe ender chest 6 rows system is disabled."
                     )
             ));
             return true;
@@ -56,7 +56,7 @@ public class EnderChestCommand implements CommandExecutor {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().getMessage(
                             "COMMAND-DISABLED",
-                            "&cᴛʜᴇ /enderchest ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴅɪѕᴀʙʟᴇᴅ."
+                            "&cThe /enderchest command is disabled."
                     )
             ));
             return true;
@@ -65,7 +65,7 @@ public class EnderChestCommand implements CommandExecutor {
         if (plugin.getEnderChestManager().commandRequiresPermission()
                 && !PermissionUtils.has(player, plugin.getEnderChestManager().getCommandPermission())) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getEnderChestManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                    plugin.getEnderChestManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
             ));
             return true;
         }

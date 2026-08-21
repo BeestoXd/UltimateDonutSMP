@@ -35,7 +35,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
         if (!(sender instanceof Player player)) {
             sender.sendMessage(plugin.getLanguageManager().message(
                     "AUCTION_HOUSE.PLAYERS_ONLY",
-                    "ᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
+                    "Only players can use this command."
             ));
             return true;
         }
@@ -47,7 +47,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
             return true;
         }
         if (!manager.isEnabled()) {
-            send(player, "AUCTION_HOUSE.DISABLED", "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
+            send(player, "AUCTION_HOUSE.DISABLED", "&cAuction house is currently disabled.");
             return true;
         }
 
@@ -73,7 +73,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
                 }
                 if (!manager.isClaimsEnabled()) {
                     manager.processAutoClaims(player);
-                    send(player, "AUCTION_HOUSE.CLAIMS_AUTOMATIC", "&eᴄʟᴀɪᴍѕ ᴀʀᴇ ᴄᴏʟʟᴇᴄᴛᴇᴅ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ.");
+                    send(player, "AUCTION_HOUSE.CLAIMS_AUTOMATIC", "&eClaims are collected automatically.");
                 } else {
                     openPlayerItems(player);
                 }
@@ -101,17 +101,17 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
 
     private void handleReload(Player player) {
         if (!PermissionUtils.has(player, "ultimatedonutsmp.admin.auctionhouse")) {
-            send(player, "AUCTION_HOUSE.NO_ADMIN_PERMISSION", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʀᴇʟᴏᴀᴅ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴇᴛᴛɪɴɢѕ.");
+            send(player, "AUCTION_HOUSE.NO_ADMIN_PERMISSION", "&cYou cannot reload auction house settings.");
             return;
         }
         plugin.getConfigManager().reloadAuctionHouse();
         plugin.getAuctionHouseManager().reload();
-        send(player, "AUCTION_HOUSE.RELOADED", "&aᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ѕᴇᴛᴛɪɴɢѕ ʀᴇʟᴏᴀᴅᴇᴅ.");
+        send(player, "AUCTION_HOUSE.RELOADED", "&aAuction house settings reloaded.");
     }
 
     private void handleSell(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "AUCTION_HOUSE.SELL_USAGE", "&cᴜѕᴀɢᴇ: /ah ѕᴇʟʟ <price>");
+            send(player, "AUCTION_HOUSE.SELL_USAGE", "&cUsage: /ah sell <price>");
             return;
         }
 
@@ -119,13 +119,13 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
         try {
             price = NumberUtils.parse(args[1]);
         } catch (NumberFormatException exception) {
-            send(player, "AUCTION_HOUSE.INVALID_PRICE", "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ.");
+            send(player, "AUCTION_HOUSE.INVALID_PRICE", "&cInvalid price.");
             return;
         }
 
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand == null || hand.getType().isAir()) {
-            send(player, "AUCTION_HOUSE.NO_ITEM_IN_HAND", "&cʜᴏʟᴅ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ʟɪѕᴛ.");
+            send(player, "AUCTION_HOUSE.NO_ITEM_IN_HAND", "&cHold the item you want to list.");
             return;
         }
 
@@ -142,7 +142,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
                     if (throwable != null || preference == null) {
                         manager.returnEscrow(player, escrow);
                         send(player, "AUCTION_HOUSE.CREATE_DATABASE_ERROR",
-                                "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ʟᴏᴀᴅ ʏᴏᴜʀ ʟɪѕᴛɪɴɢ ѕᴇᴛᴛɪɴɢѕ.");
+                                "&cAuction house could not load your listing settings.");
                         return;
                     }
                     boolean fastSell = preference.fastSellEnabled()
@@ -205,14 +205,14 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
 
     private void handleCancel(Player player, String[] args) {
         if (args.length < 2) {
-            send(player, "AUCTION_HOUSE.CANCEL_USAGE", "&cᴜѕᴀɢᴇ: /ah ᴄᴀɴᴄᴇʟ <listingId>");
+            send(player, "AUCTION_HOUSE.CANCEL_USAGE", "&cUsage: /ah cancel <listingId>");
             return;
         }
         long listingId;
         try {
             listingId = Long.parseLong(args[1]);
         } catch (NumberFormatException exception) {
-            send(player, "AUCTION_HOUSE.INVALID_LISTING_ID", "&cɪɴᴠᴀʟɪᴅ ʟɪѕᴛɪɴɢ ɪᴅ.");
+            send(player, "AUCTION_HOUSE.INVALID_LISTING_ID", "&cInvalid listing ID.");
             return;
         }
 
@@ -227,7 +227,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
                             case NOT_ACTIVE -> "AUCTION_HOUSE.LISTING_NOT_ACTIVE";
                             case DATABASE_ERROR -> "AUCTION_HOUSE.CANCEL_DATABASE_ERROR";
                         };
-                        send(player, key, "&cᴛʜᴇ ʟɪѕᴛɪɴɢ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴄᴀɴᴄᴇʟʟᴇᴅ.");
+                        send(player, key, "&cThe listing could not be cancelled.");
                         return;
                     }
                     player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
@@ -243,11 +243,11 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
         int active = plugin.getAuctionHouseManager().countActiveListings(player.getUniqueId());
         int limit = plugin.getAuctionHouseManager().getMaxActiveListings(player);
         String displayLimit = limit == Integer.MAX_VALUE
-                ? plugin.getAuctionHouseManager().getText("UNLIMITED", "ᴜɴʟɪᴍɪᴛᴇᴅ")
+                ? plugin.getAuctionHouseManager().getText("UNLIMITED", "Unlimited")
                 : String.valueOf(limit);
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "AUCTION_HOUSE.LIMIT",
-                "&6ʟɪѕᴛɪɴɢ ʟɪᴍɪᴛ: &e{active}&7/&e{limit}",
+                "&6Listing limit: &e{active}&7/&e{limit}",
                 "{active}", String.valueOf(active),
                 "{limit}", displayLimit
         )));
@@ -256,7 +256,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
     private void togglePreference(Player player, boolean fastBuy) {
         String permission = fastBuy ? "fastbuy" : "fastsell";
         if (!canUse(player, permission)) {
-            send(player, "AUCTION_HOUSE.NO_FAST_PERMISSION", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴛʜᴀᴛ ꜰᴀѕᴛ-ᴀᴄᴛɪᴏɴ ѕᴇᴛᴛɪɴɢ.");
+            send(player, "AUCTION_HOUSE.NO_FAST_PERMISSION", "&cYou cannot use that fast-action setting.");
             return;
         }
 
@@ -274,13 +274,13 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
             plugin.getSpigotScheduler().runEntity(player, () -> player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             fastBuy ? "AUCTION_HOUSE.FAST_BUY_TOGGLED" : "AUCTION_HOUSE.FAST_SELL_TOGGLED",
-                            "&6&lᴀᴜᴄᴛɪᴏɴʜᴏᴜѕᴇ &8» &e{setting} ɪѕ ɴᴏᴡ {state}&e.",
+                            "&6&lAuctionHouse &8» &e{setting} is now {state}&e.",
                             "{setting}", fastBuy
-                                    ? plugin.getAuctionHouseManager().getText("FAST_BUY", "ꜰᴀѕᴛ ʙᴜʏ")
-                                    : plugin.getAuctionHouseManager().getText("FAST_SELL", "ꜰᴀѕᴛ ѕᴇʟʟ"),
+                                    ? plugin.getAuctionHouseManager().getText("FAST_BUY", "Fast buy")
+                                    : plugin.getAuctionHouseManager().getText("FAST_SELL", "Fast sell"),
                             "{state}", finalEnabled
-                                    ? plugin.getAuctionHouseManager().getText("ENABLED", "&aᴇɴᴀʙʟᴇᴅ")
-                                    : plugin.getAuctionHouseManager().getText("DISABLED", "&cᴅɪѕᴀʙʟᴇᴅ")
+                                    ? plugin.getAuctionHouseManager().getText("ENABLED", "&aEnabled")
+                                    : plugin.getAuctionHouseManager().getText("DISABLED", "&cDisabled")
                     )
             )));
         });
@@ -318,7 +318,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
         if (canUse(player, action)) {
             return true;
         }
-        send(player, "AUCTION_HOUSE.NO_PERMISSION", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴛʜᴀᴛ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴀᴄᴛɪᴏɴ.");
+        send(player, "AUCTION_HOUSE.NO_PERMISSION", "&cYou cannot use that auction house action.");
         return false;
     }
 
@@ -340,20 +340,20 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
             case NO_PERMISSION -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.NO_PERMISSION");
             case NO_PLAYER_DATA -> plugin.getLanguageManager().message(
                     "AUCTION_HOUSE.PLAYER_DATA_UNAVAILABLE",
-                    "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ."
+                    "&cYour player data could not be loaded."
             );
             case NO_ITEM -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.NO_ITEM_IN_HAND");
             case INVALID_ITEM -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.ITEM_BLOCKED");
             case UNSAFE_ITEM -> plugin.getConfigManager().getMessageOrDefault(
                     "CRASH_PROTECTION.ITEM_BLOCKED",
-                    "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ʜᴇʀᴇ. &7ʀᴇᴀѕᴏɴ: &f{reason}",
-                    "{context}", "ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ",
-                    "{reason}", result.safetyResult() == null ? "ᴜɴѕᴀꜰᴇ ɪᴛᴇᴍ ᴅᴀᴛᴀ" : result.safetyResult().reason()
+                    "&cThat item cannot be used here. &7Reason: &f{reason}",
+                    "{context}", "Auction house",
+                    "{reason}", result.safetyResult() == null ? "Unsafe item data" : result.safetyResult().reason()
             );
             case INVALID_PRICE -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.PRICE_OUT_OF_RANGE");
             case INVALID_DURATION -> plugin.getConfigManager().getMessageOrDefault(
                     "AUCTION_HOUSE.INVALID_DURATION",
-                    "&cᴛʜᴀᴛ ʟɪѕᴛɪɴɢ ᴅᴜʀᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ."
+                    "&cThat listing duration is not allowed."
             );
             case NO_MONEY -> plugin.getConfigManager().getMessage(
                     "AUCTION_HOUSE.NO_MONEY_FOR_FEE",
@@ -363,7 +363,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
             case MAX_LISTINGS_REACHED -> plugin.getConfigManager().getMessage("AUCTION_HOUSE.MAX_LISTINGS_REACHED");
             case DATABASE_ERROR -> plugin.getLanguageManager().message(
                     "AUCTION_HOUSE.CREATE_DATABASE_ERROR",
-                    "&cᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ ᴄᴏᴜʟᴅ ɴᴏᴛ ѕᴀᴠᴇ ʏᴏᴜʀ ʟɪѕᴛɪɴɢ."
+                    "&cAuction house could not save your listing."
             );
         };
     }

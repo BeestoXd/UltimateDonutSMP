@@ -19,7 +19,7 @@ public final class AuctionHouseListingMenu extends BaseMenu {
         super(plugin, AuctionHouseMenuSupport.configText(
                 plugin,
                 "GUI.LISTING.TITLE",
-                "&8ᴀᴜᴄᴛɪᴏɴ #{id}",
+                "&8Auction #{id}",
                 "{id}", String.valueOf(listingId)
         ), 27);
         this.listingId = listingId;

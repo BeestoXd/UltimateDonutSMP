@@ -18,12 +18,12 @@ public class NightVisionCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
         boolean enabled = NightVisionUtils.toggle(plugin, player);
         if (!enabled) {
-            player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &cᴅɪѕᴀʙʟᴇᴅ&7."));
+            player.sendMessage(ColorUtils.toComponent("&7Night vision &cdisabled&7."));
         } else {
-            player.sendMessage(ColorUtils.toComponent("&7ɴɪɢʜᴛ ᴠɪѕɪᴏɴ &aᴇɴᴀʙʟᴇᴅ&7."));
+            player.sendMessage(ColorUtils.toComponent("&7Night vision &aenabled&7."));
         }
         return true;
     }

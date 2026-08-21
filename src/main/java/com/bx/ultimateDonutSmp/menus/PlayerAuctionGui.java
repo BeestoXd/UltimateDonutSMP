@@ -63,33 +63,33 @@ public final class PlayerAuctionGui extends BaseMenu {
         int previousSlot = AuctionHouseMenuSupport.slot(plugin, "GUI.PLAYER_ITEMS.CONTROLS.PREVIOUS", 45);
         int nextSlot = AuctionHouseMenuSupport.slot(plugin, "GUI.PLAYER_ITEMS.CONTROLS.NEXT", 53);
         set(previousSlot, page > 1
-                ? control("PREVIOUS", Material.ARROW, "&fᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ",
-                List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"), "{page}", String.valueOf(page - 1))
+                ? control("PREVIOUS", Material.ARROW, "&fPrevious page",
+                List.of("&7Go to page &f{page}"), "{page}", String.valueOf(page - 1))
                 : control("FILLER", Material.BLACK_STAINED_GLASS_PANE, "&7 ", List.of()));
         set(BACK_SLOT, control(
                 "BACK",
                 Material.CHEST,
-                "&fʙᴀᴄᴋ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ",
-                List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴛʜᴇ ᴀᴜᴄᴛɪᴏɴ ʙʀᴏᴡѕᴇʀ")
+                "&fBack to auction",
+                List.of("&7Return to the auction browser")
         ));
         set(REFRESH_SLOT, control(
                 "REFRESH",
                 Material.ANVIL,
-                "&fʀᴇꜰʀᴇѕʜ",
-                List.of("&7ʀᴇʟᴏᴀᴅ ʏᴏᴜʀ ᴀᴜᴄᴛɪᴏɴ ʜɪѕᴛᴏʀʏ")
+                "&fRefresh",
+                List.of("&7Reload your auction history")
         ));
         set(PAGE_SLOT, control(
                 "PAGE",
                 Material.BOOK,
-                "&fᴘᴀɢᴇ {page}/{pages}",
-                List.of("&7ᴇɴᴛʀɪᴇѕ: &f{count}"),
+                "&fPage {page}/{pages}",
+                List.of("&7Entries: &f{count}"),
                 "{page}", String.valueOf(page),
                 "{pages}", String.valueOf(totalPages),
                 "{count}", String.valueOf(entries.size())
         ));
         set(nextSlot, page < totalPages
-                ? control("NEXT", Material.ARROW, "&fɴᴇxᴛ ᴘᴀɢᴇ",
-                List.of("&7ɢᴏ ᴛᴏ ᴘᴀɢᴇ &f{page}"), "{page}", String.valueOf(page + 1))
+                ? control("NEXT", Material.ARROW, "&fNext page",
+                List.of("&7Go to page &f{page}"), "{page}", String.valueOf(page + 1))
                 : control("FILLER", Material.BLACK_STAINED_GLASS_PANE, "&7 ", List.of()));
     }
 
@@ -201,7 +201,7 @@ public final class PlayerAuctionGui extends BaseMenu {
         lore.addAll(AuctionHouseMenuSupport.configList(
                 plugin,
                 "GUI.PLAYER_ITEMS.LISTING.BASE_LORE",
-                List.of("", "&7ᴘʀɪᴄᴇ: {price}", "&7ѕᴛᴀᴛᴜѕ: &f{status}"),
+                List.of("", "&7Price: {price}", "&7Status: &f{status}"),
                 "{price}", plugin.getCurrencyManager().formatMoney(listing.price()),
                 "{status}", status
         ).stream().map(ColorUtils::colorize).toList());
@@ -209,7 +209,7 @@ public final class PlayerAuctionGui extends BaseMenu {
             lore.addAll(AuctionHouseMenuSupport.configList(
                     plugin,
                     "GUI.PLAYER_ITEMS.LISTING.ACTIVE_LORE",
-                    List.of("&7ᴛɪᴍᴇ ʀᴇᴍᴀɪɴɪɴɢ: &f{time}", "&eᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴛʜɪѕ ʟɪѕᴛɪɴɢ."),
+                    List.of("&7Time remaining: &f{time}", "&eClick to cancel this listing."),
                     "{time}", plugin.getAuctionHouseManager().formatRemaining(
                             listing.secondsRemaining(System.currentTimeMillis())
                     )
@@ -218,19 +218,19 @@ public final class PlayerAuctionGui extends BaseMenu {
             lore.addAll(AuctionHouseMenuSupport.configList(
                     plugin,
                     "GUI.PLAYER_ITEMS.LISTING.SOLD_LORE",
-                    List.of("&aѕᴏʟᴅ ᴛᴏ ᴀɴᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀ.")
+                    List.of("&aSold to another player.")
             ).stream().map(ColorUtils::colorize).toList());
         } else if (listing.cancelled()) {
             lore.addAll(AuctionHouseMenuSupport.configList(
                     plugin,
                     "GUI.PLAYER_ITEMS.LISTING.CANCELLED_LORE",
-                    List.of("&cᴄᴀɴᴄᴇʟʟᴇᴅ.")
+                    List.of("&cCancelled.")
             ).stream().map(ColorUtils::colorize).toList());
         } else {
             lore.addAll(AuctionHouseMenuSupport.configList(
                     plugin,
                     "GUI.PLAYER_ITEMS.LISTING.EXPIRED_LORE",
-                    List.of("&cᴇxᴘɪʀᴇᴅ.")
+                    List.of("&cExpired.")
             ).stream().map(ColorUtils::colorize).toList());
         }
         meta.setLore(lore);

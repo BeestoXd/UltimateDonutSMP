@@ -37,7 +37,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                send(sender, manager.message("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
+                send(sender, manager.message("PLAYER-ONLY", "&cOnly players can use this command."));
                 return true;
             }
             new HideMenu(plugin).open(player);
@@ -50,7 +50,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
             case "remove", "removal" -> handleRemove(sender, args, manager);
             case "list" -> handleList(sender, manager);
             default -> {
-                send(sender, "&cᴜѕᴀɢᴇ: /hide [ѕᴛᴀᴛᴜѕ|ѕᴄʀᴀᴍʙʟᴇ|ʀᴇᴍᴏᴠᴇ|ᴄʜᴇᴄᴋ <player>|ʟɪѕᴛ]");
+                send(sender, "&cUsage: /hide [status|scramble|remove|check <player>|list]");
                 yield true;
             }
         };
@@ -58,7 +58,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleDisguise(CommandSender sender, String[] args, HideManager manager) {
         if (!(sender instanceof Player player)) {
-            send(sender, manager.message("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
+            send(sender, manager.message("PLAYER-ONLY", "&cOnly players can use this command."));
             return true;
         }
         if (args.length == 0) {
@@ -66,7 +66,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args.length == 1) {
-            send(player, manager.message("SKIN-SEARCHING", "&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7...",
+            send(player, manager.message("SKIN-SEARCHING", "&7Searching skin for &f{skin}&7...",
                     "{skin}", args[0]));
             if (HideManager.isSkinUrl(args[0])) {
                 manager.disguiseWithScrambledAlias(player, args[0], result -> sendResult(player, result));
@@ -75,7 +75,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
             }
             return true;
         }
-        send(player, manager.message("SKIN-SEARCHING", "&7ѕᴇᴀʀᴄʜɪɴɢ ѕᴋɪɴ ꜰᴏʀ &f{skin}&7...",
+        send(player, manager.message("SKIN-SEARCHING", "&7Searching skin for &f{skin}&7...",
                 "{skin}", args[1]));
         manager.disguise(player, args[0], args[1], result -> sendResult(player, result));
         return true;
@@ -84,36 +84,36 @@ public class HideCommand implements CommandExecutor, TabCompleter {
     private boolean handleStatus(CommandSender sender, String[] args, HideManager manager) {
         if (args.length > 1) {
             if (!PermissionUtils.has(sender, HideManager.ADMIN_PERMISSION)) {
-                send(sender, manager.message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+                send(sender, manager.message("NO-PERMISSION", "&cYou do not have permission."));
                 return true;
             }
             HideState state = manager.findState(args[1]);
             if (state == null) {
-                send(sender, manager.message("NOT-HIDDEN", "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ."));
+                send(sender, manager.message("NOT-HIDDEN", "&cThat player is not hidden."));
                 return true;
             }
             send(sender, manager.message(
                     "CHECK",
-                    "&bʜɪᴅᴇ ᴄʜᴇᴄᴋ\n&7ʀᴇᴀʟ ɴᴀᴍᴇ: &f{real}\n&7ᴀʟɪᴀѕ: &f{alias}\n&7ᴍᴏᴅᴇ: &f{mode}\n&7ѕᴋɪɴ: &f{skin}",
+                    "&bHide check\n&7Real name: &f{real}\n&7Alias: &f{alias}\n&7Mode: &f{mode}\n&7Skin: &f{skin}",
                     "{real}", state.realNameSnapshot(),
                     "{alias}", state.alias(),
                     "{mode}", state.mode().name(),
-                    "{skin}", state.skinUsername().isBlank() ? "ᴏʀɪɢɪɴᴀʟ" : state.skinUsername()
+                    "{skin}", state.skinUsername().isBlank() ? "Original" : state.skinUsername()
             ));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            send(sender, "&cᴜѕᴀɢᴇ: /hide ᴄʜᴇᴄᴋ <player>");
+            send(sender, "&cUsage: /hide check <player>");
             return true;
         }
         HideState state = manager.getState(player.getUniqueId());
         if (state == null) {
-            send(player, manager.message("STATUS-NONE", "&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &cɪɴᴀᴄᴛɪᴠᴇ"));
+            send(player, manager.message("STATUS-NONE", "&7Hide status: &cinactive"));
         } else {
             send(player, manager.message(
                     "STATUS-ACTIVE",
-                    "&7ʜɪᴅᴇ ѕᴛᴀᴛᴜѕ: &a{mode} &8- &f{alias}",
+                    "&7Hide status: &a{mode} &8- &f{alias}",
                     "{mode}", state.mode().name(),
                     "{alias}", manager.publicName(state)
             ));
@@ -123,7 +123,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleScramble(CommandSender sender, HideManager manager) {
         if (!(sender instanceof Player player)) {
-            send(sender, manager.message("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
+            send(sender, manager.message("PLAYER-ONLY", "&cOnly players can use this command."));
             return true;
         }
         sendResult(player, manager.scramble(player));
@@ -133,25 +133,25 @@ public class HideCommand implements CommandExecutor, TabCompleter {
     private boolean handleRemove(CommandSender sender, String[] args, HideManager manager) {
         if (args.length > 1) {
             if (!PermissionUtils.has(sender, HideManager.ADMIN_PERMISSION)) {
-                send(sender, manager.message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+                send(sender, manager.message("NO-PERMISSION", "&cYou do not have permission."));
                 return true;
             }
             HideState state = manager.findState(args[1]);
             if (state == null) {
-                send(sender, manager.message("NOT-HIDDEN", "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ."));
+                send(sender, manager.message("NOT-HIDDEN", "&cThat player is not hidden."));
                 return true;
             }
             HideManager.Result result = manager.remove(state.playerUuid());
             if (result.success()) {
                 send(sender, manager.message(
                         "ADMIN-REMOVED",
-                        "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a.",
+                        "&aSuccessfully removed hide from &f{player}&a.",
                         "{player}", state.realNameSnapshot()
                 ));
                 Player online = plugin.getServer().getPlayer(state.playerUuid());
                 if (online != null) {
                     send(online, manager.message("REMOVED-BY-ADMIN",
-                            "&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ."));
+                            "&cYour hide state has been removed by an administrator."));
                 }
             } else {
                 sendResult(sender, result);
@@ -160,7 +160,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!(sender instanceof Player player)) {
-            send(sender, "&cᴜѕᴀɢᴇ: /hide ʀᴇᴍᴏᴠᴇ <player>");
+            send(sender, "&cUsage: /hide remove <player>");
             return true;
         }
         sendResult(player, manager.remove(player, false));
@@ -169,7 +169,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleList(CommandSender sender, HideManager manager) {
         if (!PermissionUtils.has(sender, HideManager.ADMIN_PERMISSION)) {
-            send(sender, manager.message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            send(sender, manager.message("NO-PERMISSION", "&cYou do not have permission."));
             return true;
         }
         if (!(sender instanceof Player player)) {
@@ -199,24 +199,24 @@ public class HideCommand implements CommandExecutor, TabCompleter {
                 send(sender, manager.message(
                         key,
                         key.equals("removed")
-                                ? "&aʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ."
-                                : "&aʏᴏᴜʀ ɪᴅᴇɴᴛɪᴛʏ ɪѕ ɴᴏᴡ &f{alias}&a.",
+                                ? "&aYour hide state has been removed."
+                                : "&aYour identity is now &f{alias}&a.",
                         "{alias}", manager.publicName(result.state())
                 ));
             }
-            case DISABLED -> send(sender, manager.message("DISABLED", "&cᴛʜᴇ ʜɪᴅᴇ ꜰᴇᴀᴛᴜʀᴇ ɪѕ ᴅɪѕᴀʙʟᴇᴅ."));
+            case DISABLED -> send(sender, manager.message("DISABLED", "&cThe hide feature is disabled."));
             case DEPENDENCY_MISSING -> send(sender, manager.message(
-                    "DEPENDENCY-MISSING", "&cʜɪᴅᴇ ʀᴇǫᴜɪʀᴇѕ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ."));
-            case NO_PERMISSION -> send(sender, manager.message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
-            case IN_COMBAT -> send(sender, manager.message("IN-COMBAT", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴄʜᴀɴɢᴇ ʜɪᴅᴇ ɪɴ ᴄᴏᴍʙᴀᴛ."));
+                    "DEPENDENCY-MISSING", "&cHide requires ProtocolLib."));
+            case NO_PERMISSION -> send(sender, manager.message("NO-PERMISSION", "&cYou do not have permission."));
+            case IN_COMBAT -> send(sender, manager.message("IN-COMBAT", "&cYou cannot change hide in combat."));
             case COOLDOWN -> send(sender, manager.message(
-                    "COOLDOWN", "&cᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀɴɢɪɴɢ ʜɪᴅᴇ ᴀɢᴀɪɴ.",
+                    "COOLDOWN", "&cWait &f{seconds}s &cbefore changing hide again.",
                     "{seconds}", String.valueOf(result.remainingSeconds())));
-            case INVALID_ALIAS -> send(sender, manager.message("INVALID-ALIAS", "&cɪɴᴠᴀʟɪᴅ ᴀʟɪᴀѕ."));
-            case INVALID_SKIN -> send(sender, manager.message("INVALID-SKIN", "&cɪɴᴠᴀʟɪᴅ ѕᴋɪɴ."));
-            case ALIAS_IN_USE -> send(sender, manager.message("ALIAS-IN-USE", "&cᴛʜᴀᴛ ᴀʟɪᴀѕ ɪѕ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴜѕᴇ."));
-            case NOT_HIDDEN -> send(sender, manager.message("NOT-HIDDEN", "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ʜɪᴅᴅᴇɴ."));
-            case DATABASE_ERROR -> send(sender, "&cᴜɴᴀʙʟᴇ ᴛᴏ ѕᴀᴠᴇ ʜɪᴅᴇ ѕᴛᴀᴛᴇ.");
+            case INVALID_ALIAS -> send(sender, manager.message("INVALID-ALIAS", "&cInvalid alias."));
+            case INVALID_SKIN -> send(sender, manager.message("INVALID-SKIN", "&cInvalid skin."));
+            case ALIAS_IN_USE -> send(sender, manager.message("ALIAS-IN-USE", "&cThat alias is already in use."));
+            case NOT_HIDDEN -> send(sender, manager.message("NOT-HIDDEN", "&cThat player is not hidden."));
+            case DATABASE_ERROR -> send(sender, "&cUnable to save hide state.");
         }
     }
 

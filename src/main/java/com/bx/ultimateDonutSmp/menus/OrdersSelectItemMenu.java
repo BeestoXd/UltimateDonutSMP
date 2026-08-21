@@ -57,38 +57,38 @@ public class OrdersSelectItemMenu extends BaseMenu {
                     entry.createPreviewItem(),
                     "&b" + entry.displayName(),
                     List.of(
-                            "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + plugin.getOrdersManager().prettifyCategory(entry.categoryKey()),
+                            "&7Category: &f" + plugin.getOrdersManager().prettifyCategory(entry.categoryKey()),
                             "",
-                            OrdersMenuSupport.text(plugin, "ORDERS.GUI.ITEM.SELECT", "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ")
+                            OrdersMenuSupport.text(plugin, "ORDERS.GUI.ITEM.SELECT", "&eClick to select")
                     ),
                     true
             ));
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bʙᴀᴄᴋ", List.of("&7ʀᴇᴛᴜʀɴ")));
+        set(lastRow, ItemUtils.createItem(Material.COMPASS, "&bBack", List.of("&7Return")));
         set(lastRow + 1, page > 1
-                ? ItemUtils.createItem(Material.ARROW, "&aᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of("&7ᴘᴀɢᴇ " + (page - 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aPrevious page", List.of("&7Page " + (page - 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 2, ItemUtils.createItem(Material.CHEST,
-                "&bꜰɪʟᴛᴇʀ: &f" + plugin.getOrdersManager().prettifyCategory(categoryFilter),
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄʏᴄʟᴇ ᴄᴀᴛᴇɢᴏʀʏ")));
+                "&bFilter: &f" + plugin.getOrdersManager().prettifyCategory(categoryFilter),
+                List.of("&7Click to cycle category")));
         set(lastRow + 3, ItemUtils.createItem(Material.HOPPER,
-                "&eѕᴏʀᴛ: &f" + state.itemSort().name().replace('_', '-'),
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴛᴏɢɢʟᴇ ᴀ-ᴢ / ᴢ-ᴀ")));
-        set(lastRow + 4, ItemUtils.createItem(Material.SPYGLASS, "&bѕᴇᴀʀᴄʜ",
-                List.of("&7ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ ɴᴀᴍᴇѕ ᴀɴᴅ ᴄᴀᴛᴇɢᴏʀɪᴇѕ")));
+                "&eSort: &f" + state.itemSort().name().replace('_', '-'),
+                List.of("&7Click to toggle a-z / z-a")));
+        set(lastRow + 4, ItemUtils.createItem(Material.SPYGLASS, "&bSearch",
+                List.of("&7Search item names and categories")));
         set(lastRow + 5, ItemUtils.createItem(Material.BOOK,
-                "&eᴘᴀɢᴇ " + page + "&7/&e" + totalPages(entries.size(), itemsPerPage),
-                List.of("&7ᴀᴠᴀɪʟᴀʙʟᴇ ɪᴛᴇᴍѕ: &f" + entries.size())));
+                "&ePage " + page + "&7/&e" + totalPages(entries.size(), itemsPerPage),
+                List.of("&7Available items: &f" + entries.size())));
         set(lastRow + 7, page < totalPages(entries.size(), itemsPerPage)
-                ? ItemUtils.createItem(Material.ARROW, "&aɴᴇxᴛ ᴘᴀɢᴇ", List.of("&7ᴘᴀɢᴇ " + (page + 1)))
+                ? ItemUtils.createItem(Material.ARROW, "&aNext page", List.of("&7Page " + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
 
         if (entries.isEmpty()) {
             set(Math.min(itemsPerPage - 1, itemsPerPage / 2),
-                    ItemUtils.createItem(Material.BARRIER, "&cɴᴏ ᴀᴠᴀɪʟᴀʙʟᴇ ɪᴛᴇᴍѕ",
-                            List.of("&7ɴᴏ ᴏʀᴅᴇʀᴀʙʟᴇ ɪᴛᴇᴍѕ ᴇxɪѕᴛ ɪɴ ᴛʜɪѕ ᴄᴀᴛᴇɢᴏʀʏ.")));
+                    ItemUtils.createItem(Material.BARRIER, "&cNo available items",
+                            List.of("&7No orderable items exist in this category.")));
         }
     }
 

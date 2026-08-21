@@ -45,7 +45,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
         if (sub.equals("reload")) {
             if (!PermissionUtils.has(sender, PERMISSION)) {
-                sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+                sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
                 return true;
             }
             plugin.getConfigManager().reloadAmethystTools();
@@ -55,7 +55,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
         if (sub.equals("give")) {
             if (!PermissionUtils.has(sender, PERMISSION)) {
-                sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+                sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
                 return true;
             }
             if (args.length < 3) {
@@ -68,7 +68,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
             Player target = Bukkit.getPlayer(targetName);
             if (target == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ: " + targetName));
+                sender.sendMessage(ColorUtils.toComponent("&cPlayer not found: " + targetName));
                 return true;
             }
 
@@ -80,7 +80,7 @@ public class AmethystToolCommand implements CommandExecutor, TabCompleter {
 
             ItemStack item = mgr.createTool(type, target.getUniqueId(), duration);
             if (item == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ɪᴛᴇᴍ (ᴄʜᴇᴄᴋ ᴄᴏɴꜰɪɢ)."));
+                sender.sendMessage(ColorUtils.toComponent("&cFailed to create item (check config)."));
                 return true;
             }
 

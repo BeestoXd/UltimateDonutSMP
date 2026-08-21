@@ -8,7 +8,7 @@ public class AfkMenu extends TeleportAreaMenu {
     public AfkMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("AFK-MENU.TITLE", "&8ᴀꜰᴋ ᴀʀᴇᴀѕ"),
+                plugin.getConfigManager().getMenus().getString("AFK-MENU.TITLE", "&8AFK areas"),
                 plugin.getConfigManager().getMenus().getInt("AFK-MENU.SIZE", 54)
         );
     }
@@ -30,11 +30,11 @@ public class AfkMenu extends TeleportAreaMenu {
 
     @Override
     protected String getEmptyTitle() {
-        return "&cɴᴏ ᴀꜰᴋ ᴀʀᴇᴀѕ";
+        return "&cNo AFK areas";
     }
 
     @Override
     protected String getEmptyLore() {
-        return "&7ᴛʜᴇʀᴇ ᴀʀᴇ ɴᴏ ᴠᴀʟɪᴅ ᴄᴜʙᴏɪᴅ-ʙᴀѕᴇᴅ ᴀꜰᴋ ᴀʀᴇᴀѕ ʏᴇᴛ.";
+        return "&7There are no valid cuboid-based AFK areas yet.";
     }
 }

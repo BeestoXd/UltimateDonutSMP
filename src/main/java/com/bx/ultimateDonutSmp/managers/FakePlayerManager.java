@@ -134,21 +134,21 @@ public class FakePlayerManager {
             boolean requireSkinTexture
     ) {
         if (creator == null) {
-            return SpawnResult.fail(message("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
+            return SpawnResult.fail(message("PLAYER-ONLY", "&cOnly players can use this command."));
         }
         if (!isAvailable()) {
             return SpawnResult.fail(message(
                     "DEPENDENCY-MISSING",
-                    "&cᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ɪѕ ʀᴇǫᴜɪʀᴇᴅ ꜰᴏʀ /fakeplayer. ɪɴѕᴛᴀʟʟ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴀɴᴅ ʀᴇѕᴛᴀʀᴛ ᴛʜᴇ ѕᴇʀᴠᴇʀ."
+                    "&cProtocolLib is required for /fakeplayer. Install ProtocolLib and restart the server."
             ));
         }
         if (!isEnabled()) {
-            return SpawnResult.fail(message("DISABLED", "&cꜰᴀᴋᴇᴘʟᴀʏᴇʀ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            return SpawnResult.fail(message("DISABLED", "&cFakePlayer is currently disabled."));
         }
 
         Location location = creator.getLocation().clone();
         if (location.getWorld() == null) {
-            return SpawnResult.fail(message("INVALID-LOCATION", "&cᴜɴᴀʙʟᴇ ᴛᴏ ѕᴘᴀᴡɴ ᴀ ꜰᴀᴋᴇᴘʟᴀʏᴇʀ ᴀᴛ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ʟᴏᴄᴀᴛɪᴏɴ."));
+            return SpawnResult.fail(message("INVALID-LOCATION", "&cUnable to spawn a FakePlayer at your current location."));
         }
 
         UUID textureProfileUuid = extractTextureProfileUuid(skinTexture);
@@ -161,7 +161,7 @@ public class FakePlayerManager {
         if (requireSkinTexture && !packetBridge.hasSkinTexture(profile)) {
             return SpawnResult.fail(message(
                     "SKIN-NOT-READY",
-                    "&cѕᴋɪɴ ᴅᴀᴛᴀ ꜰᴏʀ &f{player}&c ɪѕ ɴᴏᴛ ʀᴇᴀᴅʏ. ʀᴇᴀᴘᴘʟʏ ʏᴏᴜʀ ѕᴋɪɴ ᴏʀ ʀᴇᴊᴏɪɴ, ᴛʜᴇɴ ᴛʀʏ ᴀɢᴀɪɴ.",
+                    "&cSkin data for &f{player}&c is not ready. Reapply your skin or rejoin, then try again.",
                     "{player}", creator.getName()
             ));
         }
@@ -189,7 +189,7 @@ public class FakePlayerManager {
         updateViewers(fakePlayer);
         return SpawnResult.success(message(
                 "SPAWNED",
-                "&aꜰᴀᴋᴇᴘʟᴀʏᴇʀ &f{fakeplayer}&a ѕᴘᴀᴡɴᴇᴅ ꜰᴏʀ &f{ttl}ѕ&a.",
+                "&aFakePlayer &f{fakeplayer}&a spawned for &f{ttl}s&a.",
                 "{fakeplayer}", fakePlayer.displayName(),
                 "{ttl}", String.valueOf(ttlSeconds)
         ), fakePlayer);
@@ -275,7 +275,7 @@ public class FakePlayerManager {
 
                 callback.accept(SpawnResult.fail(message(
                         "SKIN-NOT-READY",
-                        "&cѕᴋɪɴ ᴅᴀᴛᴀ ꜰᴏʀ &f{player}&c ɪѕ ɴᴏᴛ ʀᴇᴀᴅʏ. ʀᴇᴀᴘᴘʟʏ ʏᴏᴜʀ ѕᴋɪɴ ᴏʀ ʀᴇᴊᴏɪɴ, ᴛʜᴇɴ ᴛʀʏ ᴀɢᴀɪɴ.",
+                        "&cSkin data for &f{player}&c is not ready. Reapply your skin or rejoin, then try again.",
                         "{player}", creatorName
                 )));
             });
@@ -774,8 +774,8 @@ public class FakePlayerManager {
 
         Location location = suspected.getLocation();
         List<String> lines = messageList("ALERT", List.of(
-                "&8[&cꜰᴀᴋᴇᴘʟᴀʏᴇʀ&8] &f{player} &7ᴛʀᴀᴄᴋᴇᴅ ʙᴀɪᴛ &f{fakeplayer}&7 ᴛʜʀᴏᴜɢʜ ʙʟᴏᴄᴋѕ.",
-                "&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}"
+                "&8[&cFakePlayer&8] &f{player} &7tracked bait &f{fakeplayer}&7 through blocks.",
+                "&7Location: &f{world} {x}, {y}, {z} &8| &7created by: &f{creator}"
         ),
                 "{player}", suspected.getName(),
                 "{fakeplayer}", fakePlayer.displayName(),
@@ -806,7 +806,7 @@ public class FakePlayerManager {
 
     private void sendClickableAlert(Player recipient, Player target, List<String> lines) {
         String command = "/tp " + target.getName();
-        String hover = message("ALERT-HOVER", "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}", "{player}", target.getName());
+        String hover = message("ALERT-HOVER", "&eClick to teleport to &f{player}", "{player}", target.getName());
         for (String line : lines) {
             TextComponent component = ColorUtils.toBaseComponent(line);
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));

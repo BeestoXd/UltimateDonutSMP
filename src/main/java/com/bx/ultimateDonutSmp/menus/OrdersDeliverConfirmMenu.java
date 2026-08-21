@@ -53,7 +53,7 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
     ) {
         super(
                 plugin,
-                OrdersMenuSupport.text(plugin, "ORDERS.GUI.CONFIRM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴄᴏɴꜰɪʀᴍ ᴅᴇʟɪᴠᴇʀʏ"),
+                OrdersMenuSupport.text(plugin, "ORDERS.GUI.CONFIRM.TITLE", "&8Orders -> Confirm delivery"),
                 27
         );
         this.draft = draft;
@@ -72,7 +72,7 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
         if (order == null) {
             returnHeldItems(player);
             finalized = true;
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cᴏʀᴅᴇʀ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ", List.of("&7ᴄʟᴏѕᴇ ᴛʜɪѕ ᴍᴇɴᴜ ᴛᴏ ʀᴇᴛᴜʀɴ.")));
+            set(13, ItemUtils.createItem(Material.BARRIER, "&cOrder unavailable", List.of("&7Close this menu to return.")));
             return;
         }
 
@@ -89,21 +89,21 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
         set(11, OrdersMenuSupport.button(
                 plugin, "GUI.DELIVERY_CONFIRM.BUTTONS.CANCEL", "ORDERS.GUI.CONFIRM.CANCEL",
-                Material.RED_STAINED_GLASS_PANE, "&cᴄᴀɴᴄᴇʟ", List.of("&fʀᴇᴛᴜʀɴ ᴡɪᴛʜᴏᴜᴛ ᴅᴇʟɪᴠᴇʀɪɴɢ")
+                Material.RED_STAINED_GLASS_PANE, "&cCancel", List.of("&fReturn without delivering")
         ));
         set(13, OrdersMenuSupport.decorateItem(
                 plugin,
                 order.requestedItem(),
-                OrdersMenuSupport.text(plugin, "ORDERS.GUI.CONFIRM.SUMMARY.NAME", "&f{owner}'ѕ ᴏʀᴅᴇʀ",
+                OrdersMenuSupport.text(plugin, "ORDERS.GUI.CONFIRM.SUMMARY.NAME", "&f{owner}'s order",
                         "{owner}", order.ownerName()),
                 OrdersMenuSupport.list(
                         plugin,
                         "ORDERS.GUI.CONFIRM.SUMMARY.LORE",
                         List.of(
-                                "&7ɪᴛᴇᴍ: &f{item}",
-                                "&7ᴀᴍᴏᴜɴᴛ: &f{amount}",
-                                "&7ʀᴇᴄᴇɪᴠᴇ: &a{receive}",
-                                "&7ʀᴇᴍᴀɪɴɪɴɢ ᴀꜰᴛᴇʀ: &f{remaining}"
+                                "&7Item: &f{item}",
+                                "&7Amount: &f{amount}",
+                                "&7Receive: &a{receive}",
+                                "&7Remaining after: &f{remaining}"
                         ),
                         "{item}", manager.describeItem(order.requestedItem()),
                         "{amount}", String.valueOf(quantity),
@@ -115,10 +115,10 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
         set(15, OrdersMenuSupport.button(
                 plugin, "GUI.DELIVERY_CONFIRM.BUTTONS.CONFIRM", "ORDERS.GUI.CONFIRM.CONFIRM",
                 quantity > 0 ? Material.LIME_STAINED_GLASS_PANE : Material.BARRIER,
-                quantity > 0 ? "&aᴄᴏɴꜰɪʀᴍ" : "&cᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ",
+                quantity > 0 ? "&aConfirm" : "&cCannot deliver",
                 quantity > 0
-                        ? List.of("&fᴅᴇʟɪᴠᴇʀ {amount} ɪᴛᴇᴍѕ", "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇ {receive}")
-                        : List.of("&7ɴᴏ ᴅᴇʟɪᴠᴇʀᴀʙʟᴇ ɪᴛᴇᴍѕ ᴀʀᴇ ᴀᴠᴀɪʟᴀʙʟᴇ."),
+                        ? List.of("&fDeliver {amount} items", "&7You receive {receive}")
+                        : List.of("&7No deliverable items are available."),
                 "{amount}", String.valueOf(quantity),
                 "{receive}", plugin.getCurrencyManager().formatMoney(payout)
         ));
@@ -176,9 +176,9 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
                 player.sendMessage(ColorUtils.toComponent(OrdersMenuSupport.text(
                         plugin,
                         "ORDERS.DELIVERY_SUCCESS",
-                        "&aᴅᴇʟɪᴠᴇʀᴇᴅ &e{quantity} {item}&a ᴀɴᴅ ʀᴇᴄᴇɪᴠᴇᴅ &a{payout}&a.",
+                        "&aDelivered &e{quantity} {item}&a and received &a{payout}&a.",
                         "{quantity}", String.valueOf(result.deliveredQuantity()),
-                        "{item}", result.order() == null ? "ɪᴛᴇᴍѕ" : manager.describeItem(result.order().requestedItem()),
+                        "{item}", result.order() == null ? "Items" : manager.describeItem(result.order().requestedItem()),
                         "{payout}", plugin.getCurrencyManager().formatMoney(result.payout())
                 )));
                 SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.SUCCESS"));
@@ -205,14 +205,14 @@ public class OrdersDeliverConfirmMenu extends BaseMenu {
 
     private String resolveFailure(OrdersManager.DeliverOrderResult result) {
         if (result == null || result.reason() == null) {
-            return OrdersMenuSupport.text(plugin, "ORDERS.DELIVERY_FAILED", "&cᴅᴇʟɪᴠᴇʀʏ ꜰᴀɪʟᴇᴅ.");
+            return OrdersMenuSupport.text(plugin, "ORDERS.DELIVERY_FAILED", "&cDelivery failed.");
         }
         return switch (result.reason()) {
-            case OWN_ORDER -> OrdersMenuSupport.text(plugin, "ORDERS.CANNOT_DELIVER_OWN", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ ᴛᴏ ʏᴏᴜʀ ᴏᴡɴ ᴏʀᴅᴇʀ.");
-            case NO_MATCHING_ITEMS -> OrdersMenuSupport.text(plugin, "ORDERS.NO_MATCHING_ITEMS", "&cᴛʜᴇ ᴅᴇᴘᴏѕɪᴛᴇᴅ ɪᴛᴇᴍѕ ɴᴏ ʟᴏɴɢᴇʀ ᴍᴀᴛᴄʜ.");
-            case ORDER_FULL -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_FULL", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ꜰᴜʟʟ.");
-            case PAYOUT_ERROR -> OrdersMenuSupport.text(plugin, "ORDERS.DELIVERY_FAILED_ECONOMY", "&cᴛʜᴇ ᴘᴀʏᴏᴜᴛ ᴛʀᴀɴѕᴀᴄᴛɪᴏɴ ꜰᴀɪʟᴇᴅ.");
-            default -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.");
+            case OWN_ORDER -> OrdersMenuSupport.text(plugin, "ORDERS.CANNOT_DELIVER_OWN", "&cYou cannot deliver to your own order.");
+            case NO_MATCHING_ITEMS -> OrdersMenuSupport.text(plugin, "ORDERS.NO_MATCHING_ITEMS", "&cThe deposited items no longer match.");
+            case ORDER_FULL -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_FULL", "&cThat order is already full.");
+            case PAYOUT_ERROR -> OrdersMenuSupport.text(plugin, "ORDERS.DELIVERY_FAILED_ECONOMY", "&cThe payout transaction failed.");
+            default -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cThat order is no longer active.");
         };
     }
 }

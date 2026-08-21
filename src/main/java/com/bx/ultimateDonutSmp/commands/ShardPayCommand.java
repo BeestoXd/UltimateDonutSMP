@@ -25,8 +25,8 @@ public class ShardPayCommand implements CommandExecutor {
             plugin.getFeatureManager().sendDisabledMessage(sender, com.bx.ultimateDonutSmp.managers.FeatureManager.Feature.SHARDS, label);
             return true;
         }
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
-        if (args.length < 2) { player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /shardpay <player> <amount>")); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
+        if (args.length < 2) { player.sendMessage(ColorUtils.toComponent("&cUsage: /shardpay <player> <amount>")); return true; }
 
         if (args[0].equalsIgnoreCase(player.getName())) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("SHARD_PAY.CANT-PAY-SELF")));

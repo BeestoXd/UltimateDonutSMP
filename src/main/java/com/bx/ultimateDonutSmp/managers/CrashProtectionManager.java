@@ -121,7 +121,7 @@ public class CrashProtectionManager {
 
         String message = plugin.getConfigManager().getMessageOrDefault(
                 "CRASH_PROTECTION.ITEM_BLOCKED",
-                "&cᴛʜᴀᴛ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴜѕᴇᴅ ʜᴇʀᴇ ʙᴇᴄᴀᴜѕᴇ ɪᴛѕ ᴅᴀᴛᴀ ʟᴏᴏᴋѕ ᴜɴѕᴀꜰᴇ. &7ᴄᴏɴᴛᴇxᴛ: &f{context}&7. ʀᴇᴀѕᴏɴ: &f{reason}",
+                "&cThat item cannot be used here because its data looks unsafe. &7Context: &f{context}&7. Reason: &f{reason}",
                 "{context}", displayContext(context),
                 "{reason}", result.reason()
         );

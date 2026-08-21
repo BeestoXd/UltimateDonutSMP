@@ -106,14 +106,14 @@ public class MaintenanceManager {
 
         FileConfiguration config = plugin.getConfigManager().getNetwork();
         String bypassPerm = config.getString("MAINTENANCE.BYPASS_PERMISSION", "ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS");
-        String enteringMessage = config.getString("MAINTENANCE.MESSAGES.ENTERING", "&d[ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ] &7ѕᴇʀᴠᴇʀ ɪѕ ᴇɴᴛᴇʀɪɴɢ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ. ᴍᴏᴠɪɴɢ ʏᴏᴜ ᴛᴏ ᴛʜᴇ ʟᴏʙʙʏ...");
+        String enteringMessage = config.getString("MAINTENANCE.MESSAGES.ENTERING", "&d[Maintenance] &7server is entering maintenance. Moving you to the lobby...");
         String lobby = getLobbyServer();
         String localServerId = config.getString("NETWORK.LOCAL_SERVER_ID", "local");
         boolean useProxy = isUseProxy();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(bypassPerm)) {
-                String bypassJoinMsg = config.getString("MAINTENANCE.MESSAGES.BYPASS_JOIN", "&d[ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ] &7ʏᴏᴜ ᴊᴏɪɴᴇᴅ ᴡʜɪʟᴇ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴍᴏᴅᴇ ɪѕ ᴀᴄᴛɪᴠᴇ.");
+                String bypassJoinMsg = config.getString("MAINTENANCE.MESSAGES.BYPASS_JOIN", "&d[Maintenance] &7you joined while maintenance mode is active.");
                 player.sendMessage(ColorUtils.toComponent(bypassJoinMsg));
                 continue;
             }
@@ -153,7 +153,7 @@ public class MaintenanceManager {
         // Kick players who failed to transfer after 2 seconds (only in proxy mode)
         if (useProxy) {
             plugin.getSpigotScheduler().runGlobalLater(() -> {
-                String kickMessage = config.getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cᴛʜɪѕ ѕᴇʀᴠᴇʀ ɪѕ ɪɴ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ ᴀɴᴅ ɴᴏ ʟᴏʙʙʏ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.");
+                String kickMessage = config.getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cThis server is in maintenance and no lobby is available.");
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (!player.hasPermission(bypassPerm)) {
                         player.kickPlayer(ColorUtils.colorize(kickMessage));
@@ -219,8 +219,8 @@ public class MaintenanceManager {
             return;
         }
 
-        String titleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_TITLE", "&a&lѕᴇʀᴠᴇʀ ᴏɴʟɪɴᴇ");
-        String subtitleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_SUBTITLE", "&7ѕᴇɴᴅɪɴɢ ʏᴏᴜ ʙᴀᴄᴋ ɪɴ %seconds% ѕᴇᴄᴏɴᴅѕ...");
+        String titleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_TITLE", "&a&lServer online");
+        String subtitleMsg = config.getString("MAINTENANCE.MESSAGES.RECONNECTING_SUBTITLE", "&7Sending you back in %seconds% seconds...");
 
         final int[] countdown = {delaySeconds};
         final org.bukkit.scheduler.BukkitTask[] taskRef = new org.bukkit.scheduler.BukkitTask[1];

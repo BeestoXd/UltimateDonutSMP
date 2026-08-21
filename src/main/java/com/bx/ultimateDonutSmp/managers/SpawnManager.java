@@ -506,7 +506,7 @@ public class SpawnManager {
         FileConfiguration menus = plugin.getConfigManager().getOriginalMenus();
         SetupAreaTarget target = findNextSetupAreaTarget(type);
         if (target == null) {
-            return SetupLocationResult.failure("ɴᴏ ꜰʀᴇᴇ " + getLocationLabel(type) + " ᴍᴇɴᴜ ѕʟᴏᴛ ɪѕ ᴀᴠᴀɪʟᴀʙʟᴇ.");
+            return SetupLocationResult.failure("No free " + getLocationLabel(type) + " menu slot is available.");
         }
 
         String previousSetupLocation = config.getString(configPath, "");
@@ -750,7 +750,7 @@ public class SpawnManager {
         if (configChanged && plugin.getShardManager() != null) {
             plugin.getShardManager().reloadSettings();
         }
-        return AreaDeleteResult.success("ʀᴇᴍᴏᴠᴇᴅ " + getLocationLabel(area.type()) + " ᴀʀᴇᴀ "
+        return AreaDeleteResult.success("Removed " + getLocationLabel(area.type()) + " area "
                 + area.id() + " from slot " + area.slot() + ".");
     }
 
@@ -1310,8 +1310,8 @@ public class SpawnManager {
 
     private List<String> defaultLore(AreaType type) {
         return type == AreaType.SPAWN
-                ? List.of("&8{players}/200", "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏᴛ ᴛᴏ ᴛʜɪѕ", "&7ѕᴘᴀᴡɴ ᴀʀᴇᴀ.")
-                : List.of("&8{players}/200", "&7ᴄʟɪᴄᴋ ᴛᴏ ɢᴏᴛ ᴛᴏ ᴛʜɪѕ", "&7ᴀꜰᴋ ᴢᴏɴᴇ ᴀʀᴇᴀ.");
+                ? List.of("&8{players}/200", "&7Click to got to this", "&7Spawn area.")
+                : List.of("&8{players}/200", "&7Click to got to this", "&7AFK zone area.");
     }
 
     private int normalizeSize(int size) {

@@ -52,18 +52,18 @@ public class OrdersMyOrdersMenu extends BaseMenu {
 
         set(backSlot, OrdersMenuSupport.button(
                 plugin, "GUI.MY_ORDERS.BUTTONS.BACK", "ORDERS.GUI.MY_ORDERS.BACK",
-                Material.ARROW, "&cʙᴀᴄᴋ", List.of("&fʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴄᴛɪᴠᴇ ᴏʀᴅᴇʀѕ")
+                Material.ARROW, "&cBack", List.of("&fReturn to active orders")
         ));
         set(newSlot, OrdersMenuSupport.button(
                 plugin, "GUI.MY_ORDERS.BUTTONS.NEW", "ORDERS.GUI.MY_ORDERS.NEW",
-                Material.MAP, "&aɴᴇᴡ ᴏʀᴅᴇʀ", List.of("&fᴄʟɪᴄᴋ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴀ ɴᴇᴡ ᴏʀᴅᴇʀ")
+                Material.MAP, "&aNew order", List.of("&fClick to create a new order")
         ));
 
         if (orders.isEmpty()) {
             set(13, ItemUtils.createItem(
                     Material.BARRIER,
-                    OrdersMenuSupport.text(plugin, "ORDERS.GUI.MY_ORDERS.EMPTY.NAME", "&cɴᴏ ᴏʀᴅᴇʀѕ ʏᴇᴛ"),
-                    OrdersMenuSupport.list(plugin, "ORDERS.GUI.MY_ORDERS.EMPTY.LORE", List.of("&7ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ꜰɪʀѕᴛ ʙᴜʏ ᴏʀᴅᴇʀ."))
+                    OrdersMenuSupport.text(plugin, "ORDERS.GUI.MY_ORDERS.EMPTY.NAME", "&cNo orders yet"),
+                    OrdersMenuSupport.list(plugin, "ORDERS.GUI.MY_ORDERS.EMPTY.LORE", List.of("&7Create your first buy order."))
             ));
         }
     }

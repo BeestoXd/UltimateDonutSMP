@@ -18,7 +18,7 @@ public class BalanceCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
 
         if (args.length == 0) {
             double balance = plugin.getEconomyManager().getBalance(player);

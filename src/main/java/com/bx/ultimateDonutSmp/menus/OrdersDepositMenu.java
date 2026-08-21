@@ -35,7 +35,7 @@ public class OrdersDepositMenu extends BaseMenu {
     ) {
         super(
                 plugin,
-                OrdersMenuSupport.text(plugin, "ORDERS.GUI.DEPOSIT.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟɪᴠᴇʀ ɪᴛᴇᴍѕ"),
+                OrdersMenuSupport.text(plugin, "ORDERS.GUI.DEPOSIT.TITLE", "&8Orders -> Deliver items"),
                 36
         );
         this.orderId = orderId;
@@ -50,7 +50,7 @@ public class OrdersDepositMenu extends BaseMenu {
         Order order = plugin.getOrdersManager().getOrder(orderId);
         if (order == null || !order.active() || order.ownerUuid().equals(player.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(OrdersMenuSupport.text(
-                    plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ."
+                    plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cThat order is no longer available."
             )));
             plugin.getSpigotScheduler().runEntityLater(player, () ->
                     new OrdersBrowseMenu(plugin, originPage, sortMode, categoryFilter).open(player), 1L);
@@ -63,13 +63,13 @@ public class OrdersDepositMenu extends BaseMenu {
                 "GUI.DELIVERY_DEPOSIT.BUTTONS.CONFIRM",
                 "ORDERS.GUI.DEPOSIT.CONFIRM",
                 Material.LIME_STAINED_GLASS_PANE,
-                "&aᴄᴏɴꜰɪʀᴍ ᴅᴇʟɪᴠᴇʀʏ",
+                "&aConfirm delivery",
                 List.of(
-                        "&fᴘʟᴀᴄᴇ ᴍᴀᴛᴄʜɪɴɢ ɪᴛᴇᴍѕ ɪɴ ᴛʜɪѕ ᴍᴇɴᴜ.",
-                        "&7ʀᴇᴍᴀɪɴɪɴɢ: &f{remaining}",
-                        "&7ᴘʀɪᴄᴇ ᴇᴀᴄʜ: &f{price_each}",
+                        "&fPlace matching items in this menu.",
+                        "&7Remaining: &f{remaining}",
+                        "&7Price each: &f{price_each}",
                         "",
-                        "&eᴄʟɪᴄᴋ ᴛᴏ ʀᴇᴠɪᴇᴡ"
+                        "&eClick to review"
                 ),
                 "{remaining}", String.valueOf(order.remainingQuantity()),
                 "{price_each}", plugin.getCurrencyManager().formatMoney(order.priceEach()),
@@ -170,11 +170,11 @@ public class OrdersDepositMenu extends BaseMenu {
 
     private String resolveFailure(String failureCode) {
         return switch (failureCode == null ? "" : failureCode) {
-            case "OWN_ORDER" -> OrdersMenuSupport.text(plugin, "ORDERS.CANNOT_DELIVER_OWN", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴅᴇʟɪᴠᴇʀ ᴛᴏ ʏᴏᴜʀ ᴏᴡɴ ᴏʀᴅᴇʀ.");
-            case "NO_MATCHING_ITEMS" -> OrdersMenuSupport.text(plugin, "ORDERS.NO_MATCHING_ITEMS", "&cɴᴏ ᴍᴀᴛᴄʜɪɴɢ ɪᴛᴇᴍѕ ᴡᴇʀᴇ ᴅᴇᴘᴏѕɪᴛᴇᴅ.");
-            case "ORDER_FULL" -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_FULL", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ᴀʟʀᴇᴀᴅʏ ꜰᴜʟʟ.");
-            case "PAYOUT_ERROR" -> OrdersMenuSupport.text(plugin, "ORDERS.DELIVERY_FAILED_ECONOMY", "&cᴛʜᴇ ᴏʀᴅᴇʀ ᴇѕᴄʀᴏᴡ ᴄᴏᴜʟᴅ ɴᴏᴛ ᴄᴏᴠᴇʀ ᴛʜɪѕ ᴅᴇʟɪᴠᴇʀʏ.");
-            default -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cᴛʜᴀᴛ ᴏʀᴅᴇʀ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴄᴛɪᴠᴇ.");
+            case "OWN_ORDER" -> OrdersMenuSupport.text(plugin, "ORDERS.CANNOT_DELIVER_OWN", "&cYou cannot deliver to your own order.");
+            case "NO_MATCHING_ITEMS" -> OrdersMenuSupport.text(plugin, "ORDERS.NO_MATCHING_ITEMS", "&cNo matching items were deposited.");
+            case "ORDER_FULL" -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_FULL", "&cThat order is already full.");
+            case "PAYOUT_ERROR" -> OrdersMenuSupport.text(plugin, "ORDERS.DELIVERY_FAILED_ECONOMY", "&cThe order escrow could not cover this delivery.");
+            default -> OrdersMenuSupport.text(plugin, "ORDERS.ORDER_NOT_ACTIVE", "&cThat order is no longer active.");
         };
     }
 }

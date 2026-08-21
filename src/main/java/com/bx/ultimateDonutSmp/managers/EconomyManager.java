@@ -579,7 +579,7 @@ public class EconomyManager {
                 uuid,
                 displayName != null && !displayName.isBlank()
                         ? displayName
-                        : (uuid != null ? resolveDisplayName(uuid, null) : "ᴜɴᴋɴᴏᴡɴ"),
+                        : (uuid != null ? resolveDisplayName(uuid, null) : "Unknown"),
                 roundCurrency(Math.max(0D, Double.isFinite(amount) ? amount : 0D)),
                 roundCurrency(Math.max(0D, beforeBalance)),
                 roundCurrency(Math.max(0D, afterBalance))
@@ -620,11 +620,11 @@ public class EconomyManager {
                 senderUuid,
                 senderName != null && !senderName.isBlank()
                         ? senderName
-                        : (senderUuid != null ? resolveDisplayName(senderUuid, null) : "ᴜɴᴋɴᴏᴡɴ"),
+                        : (senderUuid != null ? resolveDisplayName(senderUuid, null) : "Unknown"),
                 recipientUuid,
                 recipientName != null && !recipientName.isBlank()
                         ? recipientName
-                        : (recipientUuid != null ? resolveDisplayName(recipientUuid, null) : "ᴜɴᴋɴᴏᴡɴ"),
+                        : (recipientUuid != null ? resolveDisplayName(recipientUuid, null) : "Unknown"),
                 roundCurrency(Math.max(0D, Double.isFinite(amount) ? amount : 0D)),
                 0D,
                 0D,

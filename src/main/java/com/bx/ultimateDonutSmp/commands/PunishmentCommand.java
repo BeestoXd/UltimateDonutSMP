@@ -111,7 +111,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (!hasPermission(sender, usageLabel)) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-CREATE-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
+                    "&cYou do not have permission to create punishments."
             ));
             return true;
         }
@@ -124,7 +124,7 @@ public class PunishmentCommand implements CommandExecutor {
 
         ResolvedTarget target = resolveTarget(args[0]);
         if (target == null || target.uuid() == null) {
-            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cPlayer not found."));
             return true;
         }
 
@@ -132,7 +132,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (onlineOnly && onlineTarget == null) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.TARGET-OFFLINE",
-                    "&cᴛʜᴀᴛ ᴘʟᴀʏᴇʀ ɪѕ ɴᴏᴛ ᴏɴʟɪɴᴇ."
+                    "&cThat player is not online."
             ));
             return true;
         }
@@ -144,7 +144,7 @@ public class PunishmentCommand implements CommandExecutor {
             if (duration.millis() <= 0L) {
                 send(sender, plugin.getConfigManager().getMessageOrDefault(
                         "PUNISHMENTS.INVALID-DURATION",
-                        "&cɪɴᴠᴀʟɪᴅ ᴛɪᴍᴇ. ᴜѕᴇ ᴠᴀʟᴜᴇѕ ʟɪᴋᴇ 30ѕ, 15ᴍ, 2ʜ, 5ᴅ, ᴏʀ ᴄᴏᴍʙɪɴᴇ: 5ᴅ 15ᴍ 30ѕ."
+                        "&cInvalid time. Use values like 30s, 15m, 2h, 5d, or combine: 5d 15m 30s."
                 ));
                 return true;
             }
@@ -170,7 +170,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (record == null) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.CREATE-FAILED",
-                    "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ."
+                    "&cFailed to create punishment record."
             ));
             return true;
         }
@@ -179,7 +179,7 @@ public class PunishmentCommand implements CommandExecutor {
         plugin.getDiscordWebhookManager().sendPunishment(record);
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.CREATED",
-                "&aᴄʀᴇᴀᴛᴇᴅ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏʀ &b{player}&a. ɪᴅ: &f#{id}",
+                "&aCreated &f{type} &apunishment for &b{player}&a. ID: &f#{id}",
                 "{type}", plugin.getPunishmentManager().getDisplayType(record),
                 "{player}", target.name(),
                 "{id}", String.valueOf(record.getId())
@@ -191,7 +191,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (!hasPermission(sender, label)) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-REMOVE-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
+                    "&cYou do not have permission to remove punishments."
             ));
             return true;
         }
@@ -206,7 +206,7 @@ public class PunishmentCommand implements CommandExecutor {
         String targetName = target != null ? target.name() : args[0];
 
         if (targetUuid == null && (targetName == null || targetName.isBlank())) {
-            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            send(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cPlayer not found."));
             return true;
         }
 
@@ -231,7 +231,7 @@ public class PunishmentCommand implements CommandExecutor {
         if (!removed) {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-ACTIVE",
-                    "&cɴᴏ ᴀᴄᴛɪᴠᴇ {type} ᴘᴜɴɪѕʜᴍᴇɴᴛ ꜰᴏᴜɴᴅ ꜰᴏʀ {player}.",
+                    "&cNo active {type} punishment found for {player}.",
                     "{type}", type.name(),
                     "{player}", target.name()
             ));
@@ -240,7 +240,7 @@ public class PunishmentCommand implements CommandExecutor {
 
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.REMOVED",
-                "&aʀᴇᴍᴏᴠᴇᴅ ᴀᴄᴛɪᴠᴇ &f{type} &aᴘᴜɴɪѕʜᴍᴇɴᴛ(ѕ) ꜰᴏʀ &b{player}&a.",
+                "&aRemoved active &f{type} &apunishment(s) for &b{player}&a.",
                 "{type}", type.name(),
                 "{player}", target.name()
         ));
@@ -257,7 +257,7 @@ public class PunishmentCommand implements CommandExecutor {
             case WARN -> onlineTarget.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "PUNISHMENTS.WARN-RECEIVED",
-                            "&cᴡᴀʀɴɪɴɢ: &f{reason}",
+                            "&cWarning: &f{reason}",
                             "{reason}", record.getReason()
                     )
             ));
@@ -393,7 +393,7 @@ public class PunishmentCommand implements CommandExecutor {
 
     private void sendUsage(CommandSender sender, String label) {
         String normalizedLabel = label.toLowerCase(Locale.ROOT);
-        String fallback = USAGE_MESSAGES.getOrDefault(normalizedLabel, "&cᴜѕᴀɢᴇ: /" + normalizedLabel + " <player> [reason]");
+        String fallback = USAGE_MESSAGES.getOrDefault(normalizedLabel, "&cUsage: /" + normalizedLabel + " <player> [reason]");
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.USAGE-" + normalizedLabel.toUpperCase(Locale.ROOT),
                 fallback
