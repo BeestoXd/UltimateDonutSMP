@@ -42,7 +42,7 @@ SCOREBOARD:
     - ''
     - '&7NA East &7(&#0069D6%economy_ping%ms&7)'
 
-  # Formatting template for the team display line
+  # Formatting template for the team display line, only shown while the player is in a team
   TEAM: '&#00A4FC🪓 &fTeam &#00A4FC%economy_team%     '
 
   # Formatting template for the active shard booster display line
@@ -62,7 +62,7 @@ SCOREBOARD:
 | `SCOREBOARD.ICON-COLUMN-WIDTH` | `int` | Any valid integer number | `'10'` | Configures the technical `ICON-COLUMN-WIDTH` parameter for `SCOREBOARD.ICON-COLUMN-WIDTH` in `scoreboard.yml`. |
 | `SCOREBOARD.TITLE` | `list` | List of configured items/strings | `['&#0069d6&lE&#0374da&lc&#067fdf&lo&#0a8be3&ln&#0d96e7&lo&#10a1ec&lm&#13acf0&ly&#17b8f4&lS&#1ac3f9&lM&#1dcefd&lP']` | Configures the technical `TITLE` parameter for `SCOREBOARD.TITLE` in `scoreboard.yml`. |
 | `SCOREBOARD.LINES` | `list` | List of configured items/strings | `[, &#00FC00&l$ &fMoney &#00FC00%economy_nicestMoney%     , &#A303F9★ &fShards &#A303F9%economy_shards%     ...]` | Configures the technical `LINES` parameter for `SCOREBOARD.LINES` in `scoreboard.yml`. |
-| `SCOREBOARD.TEAM` | `str` | Any string text | `'&#00A4FC🪓 &fTeam &#00A4FC%economy_t...'` | Configures the technical `TEAM` parameter for `SCOREBOARD.TEAM` in `scoreboard.yml`. |
+| `SCOREBOARD.TEAM` | `str` | Any string text | `'&#00A4FC🪓 &fTeam &#00A4FC%economy_t...'` | Formatting for the `{team}` entry listed in `SCOREBOARD.LINES`. The line only renders while the player is in a team, so anyone without one sees no Team line at all. To show it unconditionally, remove `{team}` from `LINES` and put the raw text containing `%economy_team%` there instead. |
 | `SCOREBOARD.SHARD-BOOSTER` | `str` | Any string text | `'&#A303F9⚡ &fBooster &#A303F9%econom...'` | Configures the technical `SHARD-BOOSTER` parameter for `SCOREBOARD.SHARD-BOOSTER` in `scoreboard.yml`. |
 | `SCOREBOARD.SHARD-CUBOID` | `str` | Any string text | `'&#A303F9⌛ &fShards &#A303F9%economy...'` | Configures the technical `SHARD-CUBOID` parameter for `SCOREBOARD.SHARD-CUBOID` in `scoreboard.yml`. |
 
