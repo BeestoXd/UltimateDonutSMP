@@ -843,17 +843,18 @@ MONEY-NAMETAGS:
   # The text or value for Format. Supports {balance} and PlaceholderAPI placeholders.
   # Available options: Any valid string text
   FORMAT: '&a${balance}'
-  # Determines whether balances are shortened to 1.25M instead of 1,250,000.
-  # Available options: true, false
-  SHORT-FORMAT: false
+  # Determines whether balances are shortened to 1.1K, 1.1M, 1.1B and so on instead of
+  # being written out as 1,100,000. Available options: true, false
+  SHORT-FORMAT: true
   # How quickly a balance change shows up on the line, in ticks. The line itself is pinned
   # to the player by the client, so this never affects how closely it follows them.
   # Available options: 1 to 40
   UPDATE-INTERVAL-TICKS: 10
-  # Vertical offset from the username, in blocks. The line hangs off the same anchor the
-  # username uses, so negative values drop it below the name and positive values push it
-  # above. Available options: Any decimal number
-  LINE-OFFSET: -0.3
+  # Gap between the bottom of the username and the top of the balance line, in blocks.
+  # The username itself is never touched or hidden, the balance is simply parked under it.
+  # Raise this to push the balance further down, or use a negative number to tuck it
+  # closer. Available options: Any decimal number
+  LINE-GAP: 0.05
   # How far away the line stays readable, in blocks. Available options: Any decimal number
   VIEW-RANGE: 32.0
   # Determines whether the line disappears while the player sneaks, the way the vanilla
@@ -867,9 +868,9 @@ MONEY-NAMETAGS:
 | :--- | :--- | :--- | :--- | :--- |
 | `MONEY-NAMETAGS.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `MONEY-NAMETAGS` system. Set to `false` to take the option out of the game entirely, whatever players picked in `/settings`. |
 | `MONEY-NAMETAGS.FORMAT` | `str` | Any string text | `'&a${balance}'` | The line drawn under the username. `{balance}` is replaced with the player's balance, and PlaceholderAPI placeholders are resolved against the player who owns the line. |
-| `MONEY-NAMETAGS.SHORT-FORMAT` | `bool` | `true`, `false` | `false` | `true` writes `1.25M` where `false` writes `1,250,000`. Worth switching on if your balances run into the billions and the line gets too wide. |
+| `MONEY-NAMETAGS.SHORT-FORMAT` | `bool` | `true`, `false` | `true` | `true` writes `1.1K`, `1.1M`, `1.1B`, `1.1T` and `1.1Q` where `false` writes them out in full as `1,100,000`. Leaving it on keeps the line narrow once balances run into the billions. |
 | `MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS` | `int` | `1` to `40` | `10` | How often each line re-reads its owner's balance. It has nothing to do with how closely the line follows the player, because the viewer's client draws the line riding its owner and pins it there. Lower it if you want balance changes to appear faster. |
-| `MONEY-NAMETAGS.LINE-OFFSET` | `float` | Any decimal number | `-0.3` | Vertical offset from the username, in blocks. The line hangs off the same anchor point the username uses, so negative values drop it below the name and positive values push it above. |
+| `MONEY-NAMETAGS.LINE-GAP` | `float` | Any decimal number | `0.05` | Gap between the bottom of the username and the top of the balance line, in blocks. Raising it pushes the balance further below the name, and a negative value tucks it closer. The username is never moved or hidden to make room. |
 | `MONEY-NAMETAGS.VIEW-RANGE` | `float` | Any decimal number | `32.0` | How far away, in blocks, the line is still drawn. |
 | `MONEY-NAMETAGS.HIDE-WHILE-SNEAKING` | `bool` | `true`, `false` | `true` | Drops the line while the player sneaks, matching what vanilla does with the username above their head. |
 
@@ -881,12 +882,22 @@ MONEY-NAMETAGS:
   FORMAT: '&6&l${balance}'
   SHORT-FORMAT: true
   UPDATE-INTERVAL-TICKS: 10
-  LINE-OFFSET: -0.35
+  LINE-GAP: 0.1
   VIEW-RANGE: 24.0
   HIDE-WHILE-SNEAKING: true
 ```
 
-### 4. Who Sees The Line
+### 4. Where The Line Sits
+
+The username keeps its normal place and is never hidden, moved or replaced. The balance is parked
+directly under it, so the two read as a two line nametag: the name on top, the balance below it.
+
+Minecraft draws a username half a block above the point anything riding a player hangs from, so the
+balance line is lifted back up by that much, minus its own height and the `LINE-GAP` above. If the
+two lines look too close or too far apart on your resource pack, `LINE-GAP` is the only value worth
+touching.
+
+### 5. Who Sees The Line
 
 Every player carries their own switch under `/settings > Money Nametags`, and it starts turned off.
 It only decides what that player sees above other people, never whether their own balance is on

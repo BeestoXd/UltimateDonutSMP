@@ -31,6 +31,15 @@ class MoneyNametagConfigurationTest {
     }
 
     @Test
+    void compactBalancesClimbThroughEverySuffix() {
+        assertEquals("&a$1.1K", MoneyNametagManager.render("&a${balance}", 1_100D, true));
+        assertEquals("&a$1.1M", MoneyNametagManager.render("&a${balance}", 1_100_000D, true));
+        assertEquals("&a$1.1B", MoneyNametagManager.render("&a${balance}", 1_100_000_000D, true));
+        assertEquals("&a$1.1T", MoneyNametagManager.render("&a${balance}", 1_100_000_000_000D, true));
+        assertEquals("&a$2.3M", MoneyNametagManager.render("&a${balance}", 2_300_000D, true));
+    }
+
+    @Test
     void aFormatWithoutThePlaceholderIsLeftAlone() {
         assertEquals("&7Balance hidden", MoneyNametagManager.render("&7Balance hidden", 1_000D, false));
         assertEquals("1,000", MoneyNametagManager.render(null, 1_000D, false));
@@ -44,9 +53,9 @@ class MoneyNametagConfigurationTest {
         assertTrue(config.isConfigurationSection("MONEY-NAMETAGS"));
         assertTrue(config.getBoolean("MONEY-NAMETAGS.ENABLED"));
         assertEquals("&a${balance}", config.getString("MONEY-NAMETAGS.FORMAT"));
-        assertFalse(config.getBoolean("MONEY-NAMETAGS.SHORT-FORMAT"));
+        assertTrue(config.getBoolean("MONEY-NAMETAGS.SHORT-FORMAT"));
         assertEquals(10, config.getInt("MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS"));
-        assertEquals(-0.3D, config.getDouble("MONEY-NAMETAGS.LINE-OFFSET"));
+        assertEquals(0.05D, config.getDouble("MONEY-NAMETAGS.LINE-GAP"));
         assertEquals(32.0D, config.getDouble("MONEY-NAMETAGS.VIEW-RANGE"));
         assertTrue(config.getBoolean("MONEY-NAMETAGS.HIDE-WHILE-SNEAKING"));
     }
