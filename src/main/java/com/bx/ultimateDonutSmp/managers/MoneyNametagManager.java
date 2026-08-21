@@ -40,8 +40,9 @@ import java.util.logging.Level;
  * refuses to teleport a player who is carrying real passengers and mounting it for real would
  * quietly break every warp, home and teleport request on the server.</p>
  *
- * <p>Passengers hang off the same anchor point the username uses, so the height is a small offset
- * from the name rather than a distance off the ground.</p>
+ * <p>The vanilla username is left exactly as it is. Passengers hang from the same anchor the
+ * username is measured against, half a block below the name itself, so the line is pushed back up
+ * to sit directly underneath it and the two read as one two line nametag.</p>
  *
  * <p>Because the ride is a fiction the server does not share, the server keeps broadcasting the
  * display's own movement. A client that hears both puts the line on the player one tick and back on
@@ -56,6 +57,11 @@ public class MoneyNametagManager {
 
     private static final String DISPLAY_TAG = "uds_money_nametag";
     private static final String BALANCE_PLACEHOLDER = "{balance}";
+
+    /** Vanilla draws a username half a block above the point a passenger hangs from. */
+    private static final float NAME_TAG_HEIGHT = 0.5F;
+    /** A line of display text is the same height as a username, both drawn at 0.025 scale. */
+    private static final float LINE_HEIGHT = 0.25F;
 
     private final UltimateDonutSmp plugin;
     private final Map<UUID, UUID> displays = new ConcurrentHashMap<>();
@@ -233,7 +239,7 @@ public class MoneyNametagManager {
         return render(
                 config().getString("MONEY-NAMETAGS.FORMAT", "&a${balance}"),
                 plugin.getEconomyManager().getBalance(owner),
-                config().getBoolean("MONEY-NAMETAGS.SHORT-FORMAT", false));
+                config().getBoolean("MONEY-NAMETAGS.SHORT-FORMAT", true));
     }
 
     /**
@@ -263,7 +269,7 @@ public class MoneyNametagManager {
                 textDisplay.setGravity(false);
                 textDisplay.setSilent(true);
                 textDisplay.setVisibleByDefault(false);
-                applyLineOffset(textDisplay);
+                applyLinePlacement(textDisplay);
             });
             renderedText.remove(owner.getUniqueId());
             displays.put(owner.getUniqueId(), display.getUniqueId());
@@ -276,13 +282,14 @@ public class MoneyNametagManager {
         }
     }
 
-    /** Shifts the text off the anchor it shares with the username so the two do not overlap. */
-    private void applyLineOffset(TextDisplay display) {
+    /**
+     * Lifts the text from the anchor a passenger hangs from up to just under the username, leaving
+     * the configured gap between the bottom of the name and the top of the balance.
+     */
+    private void applyLinePlacement(TextDisplay display) {
         Transformation transformation = display.getTransformation();
-        Vector3f translation = new Vector3f(
-                0.0F,
-                (float) config().getDouble("MONEY-NAMETAGS.LINE-OFFSET", -0.3D),
-                0.0F);
+        float gap = (float) config().getDouble("MONEY-NAMETAGS.LINE-GAP", 0.05D);
+        Vector3f translation = new Vector3f(0.0F, NAME_TAG_HEIGHT - LINE_HEIGHT - gap, 0.0F);
         display.setTransformation(new Transformation(
                 translation,
                 transformation.getLeftRotation(),
