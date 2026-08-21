@@ -640,6 +640,115 @@ CHAT:
 
 ---
 
+## Section: `SERVER-NOTIFICATIONS`
+
+Server-wide announcement lines for joins, leaves, first joins, and the two marketplaces. Every
+line ships switched off, so updating the jar never changes how an existing server's chat looks —
+turn on the ones you want.
+
+### 1. Commented Setup Code Example
+
+```yaml
+SERVER-NOTIFICATIONS:
+  # The line everyone sees when a player connects. While this is off the server's own join
+  # message is relayed instead, exactly as it is today.
+  JOIN:
+    ENABLED: false
+    MESSAGE: '&8[&a+&8] &a{player} &7joined the server.'
+  LEAVE:
+    ENABLED: false
+    MESSAGE: '&8[&c-&8] &c{player} &7left the server.'
+  # Sent in place of the join line the very first time a player ever connects.
+  FIRST-JOIN:
+    ENABLED: false
+    MESSAGE: '&aWelcome &e{player} &ato the server for the first time!'
+  AUCTION-HOUSE:
+    ENABLED: true
+    LISTING:
+      ENABLED: false
+      MESSAGE: '&8[&6AH&8] &f{player} &7listed &e{amount}x {item} &7for &a{price_formatted}&7.'
+    PURCHASE:
+      ENABLED: false
+      MESSAGE: '&8[&6AH&8] &f{player} &7bought &e{amount}x {item} &7for &a{price_formatted}&7.'
+  ORDERS:
+    ENABLED: true
+    CREATE:
+      ENABLED: false
+      MESSAGE: '&8[&6ORDER&8] &f{player} &7created an order for &e{amount}x {item} &7at &a{price_formatted} &7each.'
+    COMPLETE:
+      ENABLED: false
+      MESSAGE: '&8[&6ORDER&8] &f{player} &7completed &e{owner}&7''s order for &e{amount}x {item}&7.'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SERVER-NOTIFICATIONS.JOIN.ENABLED` | `bool` | `true`, `false` | `false` | `true` replaces the server's own join line with `JOIN.MESSAGE`. `false` relays the server's line unchanged. |
+| `SERVER-NOTIFICATIONS.JOIN.MESSAGE` | `str` | Any string text | `'&8[&a+&8] &a{player} &7joined the server.'` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.LEAVE.ENABLED` | `bool` | `true`, `false` | `false` | `true` replaces the server's own quit line with `LEAVE.MESSAGE`. |
+| `SERVER-NOTIFICATIONS.LEAVE.MESSAGE` | `str` | Any string text | `'&8[&c-&8] &c{player} &7left the server.'` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.FIRST-JOIN.ENABLED` | `bool` | `true`, `false` | `false` | `true` sends `FIRST-JOIN.MESSAGE` instead of the join line the first time a player ever connects, so nobody is announced twice. It works on its own — `JOIN` does not have to be on. |
+| `SERVER-NOTIFICATIONS.FIRST-JOIN.MESSAGE` | `str` | Any string text | `'&aWelcome &e{player} &ato the server for the first time!'` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for both Auction House lines. Turning it off silences them whatever `LISTING` and `PURCHASE` say. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.LISTING.ENABLED` | `bool` | `true`, `false` | `false` | Announces every item a player puts up for sale. Bot listings are never announced. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.LISTING.MESSAGE` | `str` | Any string text | `'&8[&6AH&8] &f{player} &7listed &e{amount}x {item} &7for &a{price_formatted}&7.'` | Supports `{player}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}` and `{category}`. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.PURCHASE.ENABLED` | `bool` | `true`, `false` | `false` | Announces every completed purchase. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.PURCHASE.MESSAGE` | `str` | Any string text | `'&8[&6AH&8] &f{player} &7bought &e{amount}x {item} &7for &a{price_formatted}&7.'` | Supports `{player}` (the buyer), `{seller}`, `{item}`, `{amount}`, `{price}` and `{price_formatted}`. |
+| `SERVER-NOTIFICATIONS.ORDERS.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for both Order lines. |
+| `SERVER-NOTIFICATIONS.ORDERS.CREATE.ENABLED` | `bool` | `true`, `false` | `false` | Announces every new order a player opens. Bot orders are never announced. |
+| `SERVER-NOTIFICATIONS.ORDERS.CREATE.MESSAGE` | `str` | Any string text | `'&8[&6ORDER&8] &f{player} &7created an order for &e{amount}x {item} &7at &a{price_formatted} &7each.'` | Supports `{player}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}`, `{total}` and `{total_formatted}`. |
+| `SERVER-NOTIFICATIONS.ORDERS.COMPLETE.ENABLED` | `bool` | `true`, `false` | `false` | Announces an order once it has been filled all the way. Partial deliveries stay quiet. |
+| `SERVER-NOTIFICATIONS.ORDERS.COMPLETE.MESSAGE` | `str` | Any string text | `'&8[&6ORDER&8] &f{player} &7completed &e{owner}&7''s order for &e{amount}x {item}&7.'` | Supports `{player}` (whoever handed over the last of it), `{owner}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}`, `{total}` and `{total_formatted}`. |
+
+### 3. Practical Setup Example
+
+```yaml
+SERVER-NOTIFICATIONS:
+  JOIN:
+    ENABLED: true
+    MESSAGE: '&#57F287+ &f{player}'
+  LEAVE:
+    ENABLED: true
+    MESSAGE: '&#ED4245- &f{player}'
+  FIRST-JOIN:
+    ENABLED: true
+    MESSAGE: '&#FEE75C&l✦ &fwelcome &e{player} &fto the server!'
+  AUCTION-HOUSE:
+    ENABLED: true
+    LISTING:
+      ENABLED: true
+      MESSAGE: '&8[&6AH&8] &f{player} &7listed &e{amount}x {item} &7for &a{price_formatted}&7.'
+    PURCHASE:
+      ENABLED: false
+  ORDERS:
+    ENABLED: true
+    CREATE:
+      ENABLED: true
+    COMPLETE:
+      ENABLED: true
+```
+
+### 4. Colours And Who Sees Them
+
+Messages here take the same colour codes as the rest of the plugin: `&a` style codes, `&#RRGGBB`
+for one hex colour, and `<#RRGGBB>text</#RRGGBB>` for a gradient. Placeholders are filled in
+before the colours are applied, and PlaceholderAPI placeholders resolve too when it is installed.
+
+Two per-player switches under `/settings` still apply on top of everything configured here. Join,
+leave and first-join lines follow **Join/Leave Messages**, which is the same option that already
+governs the server's own join and quit text and can be narrowed to friends only. The Auction House
+and Order lines follow **Server Broadcasts**, plus **Auction Alerts** and **Order Alerts**
+respectively, so a player who muted one marketplace does not get its announcements back through
+this system.
+
+One thing the config cannot override: if another plugin suppresses a join or quit message
+entirely, nothing is announced for that player. The configured line replaces the server's own
+message rather than being sent alongside it, so there is nothing to send when the server had no
+message to begin with.
+
+---
+
 ## Section: `AFK-SYSTEM`
 
 ### 1. Commented Setup Code Example

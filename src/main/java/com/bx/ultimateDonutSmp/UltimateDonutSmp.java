@@ -80,6 +80,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private FfaManager ffaManager;
     private AuctionHouseManager auctionHouseManager;
     private AuctionOrderBotManager auctionOrderBotManager;
+    private ServerNotificationManager serverNotificationManager;
     private BillfordManager billfordManager;
     private LeaderboardManager leaderboardManager;
     private ScoreboardManager scoreboardManager;
@@ -221,6 +222,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ffaManager = new FfaManager(this);
         auctionHouseManager = new AuctionHouseManager(this);
         auctionOrderBotManager = new AuctionOrderBotManager(this);
+        serverNotificationManager = new ServerNotificationManager(this);
         billfordManager = new BillfordManager(this);
         billfordManager.load();
         leaderboardManager = new LeaderboardManager(this);
@@ -1303,6 +1305,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public AuctionOrderBotManager getAuctionOrderBotManager() {
         return auctionOrderBotManager;
+    }
+
+    public ServerNotificationManager getServerNotificationManager() {
+        return serverNotificationManager;
     }
 
     public BillfordManager getBillfordManager() {
