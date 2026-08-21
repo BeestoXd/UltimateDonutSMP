@@ -8,6 +8,9 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.reflect.accessors.FieldAccessor;
+import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedNumberFormat;
@@ -17,7 +20,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,6 +63,7 @@ public class MoneyNametagManager {
     private final Set<UUID> installed = ConcurrentHashMap.newKeySet();
     private ProtocolManager protocolManager;
     private boolean warnedUnsupported;
+    private boolean warnedPacketFailure;
 
     public MoneyNametagManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -169,9 +175,11 @@ public class MoneyNametagManager {
     }
 
     private void push(Player viewer) {
-        if (installed.add(viewer.getUniqueId())) {
-            sendObjective(viewer, OBJECTIVE_CREATE);
-            sendDisplaySlot(viewer);
+        if (!installed.contains(viewer.getUniqueId())) {
+            if (!sendObjective(viewer, OBJECTIVE_CREATE) || !sendDisplaySlot(viewer)) {
+                return;
+            }
+            installed.add(viewer.getUniqueId());
         }
 
         Map<UUID, String> known = sentText.computeIfAbsent(viewer.getUniqueId(), key -> new ConcurrentHashMap<>());
@@ -181,8 +189,7 @@ public class MoneyNametagManager {
                 continue;
             }
             String text = ColorUtils.colorize(currentText(target), target);
-            if (!text.equals(known.get(target.getUniqueId()))) {
-                sendScore(viewer, target.getName(), text);
+            if (!text.equals(known.get(target.getUniqueId())) && sendScore(viewer, target.getName(), text)) {
                 known.put(target.getUniqueId(), text);
             }
         }
@@ -208,36 +215,38 @@ public class MoneyNametagManager {
         return hideManager == null || !hideManager.isHidden(target.getUniqueId());
     }
 
-    private void sendObjective(Player viewer, int method) {
+    private boolean sendObjective(Player viewer, int method) {
         ProtocolManager manager = protocolManager();
         if (manager == null) {
-            return;
+            return false;
         }
         try {
             PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
             packet.getStrings().write(0, OBJECTIVE);
             packet.getChatComponents().writeSafely(0, WrappedChatComponent.fromText(""));
             packet.getRenderTypes().writeSafely(0, EnumWrappers.RenderType.INTEGER);
-            packet.getNumberFormats().writeSafely(0, WrappedNumberFormat.blank());
             packet.getIntegers().write(0, method);
-            send(viewer, packet);
+            emptyEveryOptional(packet);
+            return send(viewer, packet);
         } catch (RuntimeException | LinkageError error) {
-            plugin.getLogger().log(Level.FINE, "Unable to set up the money nametag objective.", error);
+            warnPacketFailure("Unable to set up the money nametag objective.", error);
+            return false;
         }
     }
 
-    private void sendDisplaySlot(Player viewer) {
+    private boolean sendDisplaySlot(Player viewer) {
         ProtocolManager manager = protocolManager();
         if (manager == null) {
-            return;
+            return false;
         }
         try {
             PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
             packet.getDisplaySlots().write(0, EnumWrappers.DisplaySlot.BELOW_NAME);
             packet.getStrings().write(0, OBJECTIVE);
-            send(viewer, packet);
+            return send(viewer, packet);
         } catch (RuntimeException | LinkageError error) {
-            plugin.getLogger().log(Level.FINE, "Unable to place the money nametag under the name.", error);
+            warnPacketFailure("Unable to place the money nametag under the name.", error);
+            return false;
         }
     }
 
@@ -245,32 +254,83 @@ public class MoneyNametagManager {
      * The score itself stays at zero and never reaches the screen. What the client draws is the
      * fixed number format carried alongside it, which is where the formatted balance lives.
      */
-    private void sendScore(Player viewer, String targetName, String text) {
+    private boolean sendScore(Player viewer, String targetName, String text) {
         ProtocolManager manager = protocolManager();
         if (manager == null) {
-            return;
+            return false;
         }
         try {
             PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
             packet.getStrings().write(0, targetName);
             packet.getStrings().write(1, OBJECTIVE);
             packet.getIntegers().write(0, 0);
-            packet.getNumberFormats().write(0, WrappedNumberFormat.fixed(WrappedChatComponent.fromLegacyText(text)));
-            send(viewer, packet);
+            emptyEveryOptional(packet);
+            writeNumberFormat(packet, WrappedNumberFormat.fixed(WrappedChatComponent.fromLegacyText(text)));
+            return send(viewer, packet);
         } catch (RuntimeException | LinkageError error) {
-            plugin.getLogger().log(Level.FINE, "Unable to send a money nametag balance.", error);
+            warnPacketFailure("Unable to send a money nametag balance.", error);
+            return false;
         }
     }
 
-    private void send(Player viewer, PacketContainer packet) {
+    /**
+     * Empties every optional field on a freshly built packet. ProtocolLib fills the ones it has no
+     * default for with a bare {@link Object}, which survives right up to the moment Minecraft tries
+     * to encode it as whatever the field really holds and throws instead.
+     */
+    private void emptyEveryOptional(PacketContainer packet) {
+        StructureModifier<Object> optionals = packet.getModifier().withType(Optional.class);
+        for (int index = 0; index < optionals.size(); index++) {
+            optionals.writeSafely(index, Optional.empty());
+        }
+    }
+
+    /**
+     * Writes the format into whichever optional field actually holds one. The scoreboard packets
+     * carry more than one optional and their order is Minecraft's business, so the field is picked
+     * by what it declares rather than by counting.
+     */
+    private void writeNumberFormat(PacketContainer packet, WrappedNumberFormat format) {
+        StructureModifier<Optional<WrappedNumberFormat>> optionals =
+                packet.getOptionals(BukkitConverters.getWrappedNumberFormatConverter());
+        List<FieldAccessor> fields = optionals.getFields();
+        for (int index = 0; index < fields.size(); index++) {
+            if (holdsNumberFormat(fields.get(index))) {
+                optionals.write(index, Optional.of(format));
+                return;
+            }
+        }
+        throw new IllegalStateException("This server's score packet has nowhere to put a number format.");
+    }
+
+    private boolean holdsNumberFormat(FieldAccessor accessor) {
+        return accessor.getField().getGenericType().getTypeName().contains("NumberFormat");
+    }
+
+    /**
+     * The first packet that will not build or send is worth shouting about, since the line simply
+     * fails to appear and there is nothing else to go on. Everything after it stays quiet.
+     */
+    private void warnPacketFailure(String message, Throwable error) {
+        if (warnedPacketFailure) {
+            plugin.getLogger().log(Level.FINE, message, error);
+            return;
+        }
+        warnedPacketFailure = true;
+        plugin.getLogger().log(Level.WARNING, message + " Money nametags may not show up.", error);
+    }
+
+    private boolean send(Player viewer, PacketContainer packet) {
         ProtocolManager manager = protocolManager();
         if (manager == null || viewer == null || !viewer.isOnline()) {
-            return;
+            return false;
         }
         try {
             manager.sendServerPacket(viewer, packet, false);
+            return true;
         } catch (RuntimeException | LinkageError error) {
-            plugin.getLogger().log(Level.FINE, "Unable to send a money nametag packet.", error);
+            warnPacketFailure("Unable to send a money nametag packet.", error);
+            return false;
         }
     }
 
