@@ -10,6 +10,7 @@ UltimateDonutSMP provides a comprehensive suite of staff moderation tools, anti-
 Toggles Staff Mode for authorized moderators:
 - Gives custom hotbar items: Fast-Fly, Vanish toggle, Freeze tool, Random Teleport, Player Inspector, and Counter.
 - Separates staff inventory from normal player survival inventory.
+- Pins those hotbar items to the moderator so they cannot be dropped or handed to anyone (`LOCK-TOOLS` in `staff-mode.yml`). Other items stay droppable.
 - Permission: `ultimatedonutsmp.admin.staffmode`
 
 ### 2. Vanish (`/vanish` or `/v`)
