@@ -395,8 +395,9 @@ public class ScoreboardManager {
         }
 
         int split = findSafeSplit(text, 64);
+        int end = findSafeSplit(text, split + 64);
         team.setPrefix(ColorUtils.toComponent(text.substring(0, split)));
-        team.setSuffix(ColorUtils.toComponent(text.substring(split, Math.min(text.length(), split + 64))));
+        team.setSuffix(ColorUtils.toComponent(text.substring(split, end)));
     }
 
     private void hidePlayerSpigot(Player player) {
@@ -713,6 +714,8 @@ public class ScoreboardManager {
     private int findSafeSplit(String text, int max) {
         if (max >= text.length()) return text.length();
         int split = max;
+        // A surrogate pair has to stay in one half, or the client draws two broken glyphs.
+        if (split > 0 && Character.isHighSurrogate(text.charAt(split - 1))) split--;
         if (split > 0 && text.charAt(split - 1) == '\u00A7') split--;
         return split;
     }
