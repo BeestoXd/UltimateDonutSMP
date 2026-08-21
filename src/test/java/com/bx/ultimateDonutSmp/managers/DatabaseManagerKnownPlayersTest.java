@@ -43,6 +43,7 @@ class DatabaseManagerKnownPlayersTest {
                     + "money_made REAL DEFAULT 0, tpauto INTEGER DEFAULT 0, phantom_enabled INTEGER DEFAULT 1, "
                     + "payments_enabled INTEGER DEFAULT 1, scoreboard_visible INTEGER DEFAULT 1, pay_alerts_enabled INTEGER DEFAULT 1, "
                     + "hotbar_messages_enabled INTEGER DEFAULT 1, worth_display_enabled INTEGER DEFAULT 1, "
+                    + "money_nametags_enabled INTEGER DEFAULT 0, "
                     + "clear_entities_messages_enabled INTEGER DEFAULT 1, bounty_alerts_enabled INTEGER DEFAULT 1, "
                     + "tpa_confirm_menu_enabled INTEGER DEFAULT 1, chainmail_on_respawn_enabled INTEGER DEFAULT 1, "
                     + "lunar_teammates_enabled INTEGER DEFAULT 1, tpa_requests_enabled INTEGER DEFAULT 1, "

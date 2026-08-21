@@ -291,6 +291,31 @@ WORTH-LORE:
   ENABLED: true
   # The text or value for Format. Available options: Any valid string text
   FORMAT: '&7Worth: &a$%price%'
+# The floating balance line players can switch on under /settings > Money Nametags.
+# Every player keeps their own switch, so turning it on only changes what that player
+# sees above other players' heads.
+MONEY-NAMETAGS:
+  # Determines whether Money Nametags is enabled or disabled. Turning this off hides the
+  # line for everyone and stops the tracking task, whatever players picked in /settings.
+  # Available options: true, false
+  ENABLED: true
+  # The text or value for Format. Supports {balance} and PlaceholderAPI placeholders.
+  # Available options: Any valid string text
+  FORMAT: '&a${balance}'
+  # Determines whether balances are shortened to 1.25M instead of 1,250,000.
+  # Available options: true, false
+  SHORT-FORMAT: false
+  # How often the line follows the player and picks up balance changes, in ticks.
+  # Lower values track movement more closely and cost more. Available options: 1 to 20
+  UPDATE-INTERVAL-TICKS: 2
+  # How far above the player's feet the line sits. Raise it if the line covers the
+  # username, lower it if the line floats too high. Available options: Any decimal number
+  Y-OFFSET: 1.85
+  # How far away the line stays readable, in blocks. Available options: Any decimal number
+  VIEW-RANGE: 32.0
+  # Determines whether the line disappears while the player sneaks, the way the vanilla
+  # username does. Available options: true, false
+  HIDE-WHILE-SNEAKING: true
 # Configuration section for End Crystal.
 END-CRYSTAL:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

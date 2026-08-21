@@ -908,6 +908,11 @@ MENUS:
         LORE:
         - '&7Notify when bounties are set/claimed'
         - '&fCurrently: {status}'
+      MONEY_NAMETAGS:
+        DISPLAY-NAME: '&#6BF18DMoney Nametags'
+        LORE:
+        - '&7Show player balances under their names'
+        - '&fCurrently: {status}'
   LEADERBOARDS-MENU:
     TITLE: '&8Leaderboards'
     TYPE-MENU:

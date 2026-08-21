@@ -70,6 +70,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private AFKManager afkManager;
     private HoverStatsManager hoverStatsManager;
     private WorthManager worthManager;
+    private MoneyNametagManager moneyNametagManager;
     private ShopManager shopManager;
     private OrdersManager ordersManager;
     private OrdersBedrockManager ordersBedrockManager;
@@ -199,6 +200,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         afkManager = new AFKManager(this);
         hoverStatsManager = new HoverStatsManager(this);
         worthManager = new WorthManager(this);
+        moneyNametagManager = new MoneyNametagManager(this);
         shopManager = new ShopManager(this);
         filterManager = new FilterManager(this);
         enchantmentsManager = new EnchantmentsManager(this);
@@ -276,6 +278,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         // 7. Background tasks
         ScoreboardTask.start(this);
         TablistTask.start(this);
+        MoneyNametagTask.start(this);
         ShardTask.start(this); // passive "everywhere" shards (per minute)
         ShardCuboidTask.start(this); // spawn cuboid countdown + reward (per second)
         RTPZoneTask.start(this);
@@ -328,6 +331,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (worthManager != null) {
             getServer().getOnlinePlayers().forEach(worthManager::clearWorthDisplay);
+        }
+        if (moneyNametagManager != null) {
+            moneyNametagManager.clearAll();
         }
 
         if (enderChestManager != null && !suppressWipeSaves) {
@@ -1026,6 +1032,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         warpManager.loadAll();
         spawnManager.load();
         worthManager.reload();
+        moneyNametagManager.reload();
         shopManager.reload();
         ordersManager.reload();
         duelManager.reload();
@@ -1248,6 +1255,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public WorthManager getWorthManager() {
         return worthManager;
+    }
+
+    public MoneyNametagManager getMoneyNametagManager() {
+        return moneyNametagManager;
     }
 
     public ShopManager getShopManager() {

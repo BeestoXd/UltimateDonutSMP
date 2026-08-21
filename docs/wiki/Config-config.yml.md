@@ -830,6 +830,75 @@ WORTH-LORE:
 
 ---
 
+## Section: `MONEY-NAMETAGS`
+
+### 1. Commented Setup Code Example
+
+```yaml
+MONEY-NAMETAGS:
+  # Determines whether Money Nametags is enabled or disabled. Turning this off hides the
+  # line for everyone and stops the tracking task, whatever players picked in /settings.
+  # Available options: true, false
+  ENABLED: true
+  # The text or value for Format. Supports {balance} and PlaceholderAPI placeholders.
+  # Available options: Any valid string text
+  FORMAT: '&a${balance}'
+  # Determines whether balances are shortened to 1.25M instead of 1,250,000.
+  # Available options: true, false
+  SHORT-FORMAT: false
+  # How often the line follows the player and picks up balance changes, in ticks.
+  # Lower values track movement more closely and cost more. Available options: 1 to 20
+  UPDATE-INTERVAL-TICKS: 2
+  # How far above the player's feet the line sits. Raise it if the line covers the
+  # username, lower it if the line floats too high. Available options: Any decimal number
+  Y-OFFSET: 1.85
+  # How far away the line stays readable, in blocks. Available options: Any decimal number
+  VIEW-RANGE: 32.0
+  # Determines whether the line disappears while the player sneaks, the way the vanilla
+  # username does. Available options: true, false
+  HIDE-WHILE-SNEAKING: true
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `MONEY-NAMETAGS.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `MONEY-NAMETAGS` system. Set to `false` to take the option out of the game entirely, whatever players picked in `/settings`. |
+| `MONEY-NAMETAGS.FORMAT` | `str` | Any string text | `'&a${balance}'` | The line drawn under the username. `{balance}` is replaced with the player's balance, and PlaceholderAPI placeholders are resolved against the player who owns the line. |
+| `MONEY-NAMETAGS.SHORT-FORMAT` | `bool` | `true`, `false` | `false` | `true` writes `1.25M` where `false` writes `1,250,000`. Worth switching on if your balances run into the billions and the line gets too wide. |
+| `MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS` | `int` | `1` to `20` | `2` | How often each line catches up with its owner and re-reads their balance. The move is interpolated over the same span, so `2` keeps the line glued to a sprinting player. Raising it saves work at the cost of the line trailing behind. |
+| `MONEY-NAMETAGS.Y-OFFSET` | `float` | Any decimal number | `1.85` | Height above the player's feet, in blocks. The vanilla username sits at roughly `2.05`, so the default leaves the balance just underneath it. |
+| `MONEY-NAMETAGS.VIEW-RANGE` | `float` | Any decimal number | `32.0` | How far away, in blocks, the line is still drawn. |
+| `MONEY-NAMETAGS.HIDE-WHILE-SNEAKING` | `bool` | `true`, `false` | `true` | Drops the line while the player sneaks, matching what vanilla does with the username above their head. |
+
+### 3. Practical Setup Example
+
+```yaml
+MONEY-NAMETAGS:
+  ENABLED: true
+  FORMAT: '&6&l${balance}'
+  SHORT-FORMAT: true
+  UPDATE-INTERVAL-TICKS: 2
+  Y-OFFSET: 1.9
+  VIEW-RANGE: 24.0
+  HIDE-WHILE-SNEAKING: true
+```
+
+### 4. Who Sees The Line
+
+Every player carries their own switch under `/settings > Money Nametags`, and it starts turned off.
+It only decides what that player sees above other people, never whether their own balance is on
+show, so nobody can hide their balance by turning the option off. Lines exist only while at least
+one player online has the option turned on, and a player who has hidden their identity through
+`/hide` never gets one.
+
+Admins who want the option gone can either set `ENABLED: false` here or drop
+`SETTINGS-MENU.BUTTONS.MONEY_NAMETAGS.ENABLED: false` into `menus.yml`; the second one also takes
+the button out of `/settings`. `DEFAULT: true` on that same button turns the line on for everybody
+who has never touched the setting.
+
+---
+
 ## Section: `END-CRYSTAL`
 
 ### 1. Commented Setup Code Example

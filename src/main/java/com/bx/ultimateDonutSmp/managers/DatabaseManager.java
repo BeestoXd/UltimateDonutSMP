@@ -305,6 +305,7 @@ public class DatabaseManager {
             "  pay_alerts_enabled INTEGER DEFAULT 1," +
             "  hotbar_messages_enabled INTEGER DEFAULT 1," +
             "  worth_display_enabled INTEGER DEFAULT 1," +
+            "  money_nametags_enabled INTEGER DEFAULT 0," +
             "  clear_entities_messages_enabled INTEGER DEFAULT 1," +
             "  bounty_alerts_enabled INTEGER DEFAULT 1," +
             "  tpa_confirm_menu_enabled INTEGER DEFAULT 1," +
@@ -703,6 +704,7 @@ public class DatabaseManager {
         ensureColumnExists("players", "pay_alerts_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "hotbar_messages_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "worth_display_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "money_nametags_enabled", "INTEGER DEFAULT 0");
         ensureColumnExists("players", "clear_entities_messages_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "bounty_alerts_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "tpa_confirm_menu_enabled", "INTEGER DEFAULT 1");
@@ -1032,6 +1034,7 @@ public class DatabaseManager {
         data.setPayAlertsEnabled(rs.getInt("pay_alerts_enabled") != 0);
         data.setHotbarMessagesEnabled(rs.getInt("hotbar_messages_enabled") != 0);
         data.setWorthDisplayEnabled(rs.getInt("worth_display_enabled") != 0);
+        data.setMoneyNametagsEnabled(rs.getInt("money_nametags_enabled") != 0);
         data.setClearEntitiesMessagesEnabled(rs.getInt("clear_entities_messages_enabled") != 0);
         data.setBountyAlertsEnabled(rs.getInt("bounty_alerts_enabled") != 0);
         data.setTpaConfirmMenuEnabled(rs.getInt("tpa_confirm_menu_enabled") != 0);
@@ -1594,6 +1597,7 @@ public class DatabaseManager {
                 (uuid, username, money, shards, kills, deaths, playtime_seconds, blocks_placed, blocks_broken, mobs_killed,
                  kill_streak, highest_kill_streak, money_spent, money_made, tpauto, phantom_enabled, payments_enabled,
                  scoreboard_visible, pay_alerts_enabled, hotbar_messages_enabled, worth_display_enabled,
+                 money_nametags_enabled,
                  clear_entities_messages_enabled, bounty_alerts_enabled, tpa_confirm_menu_enabled,
                  chainmail_on_respawn_enabled, lunar_teammates_enabled, tpa_requests_enabled, auto_tpahere_enabled,
                  tpahere_requests_enabled, team_invites_enabled, mob_spawn_enabled, pay_confirm_menu_enabled,
@@ -1606,7 +1610,7 @@ public class DatabaseManager {
                     shard_booster_expiry, mob_spawn_disabled_until, phantom_disabled_until, destroy_pearl_on_death, randomized_coords, death_messages_choice,
                     advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
                     follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """;
 
         if (hikariDataSource != null && !hikariDataSource.isClosed()) {
@@ -1654,48 +1658,49 @@ public class DatabaseManager {
             ps.setInt(19, data.isPayAlertsEnabled() ? 1 : 0);
             ps.setInt(20, data.isHotbarMessagesEnabled() ? 1 : 0);
             ps.setInt(21, data.isWorthDisplayEnabled() ? 1 : 0);
-            ps.setInt(22, data.isClearEntitiesMessagesEnabled() ? 1 : 0);
-            ps.setInt(23, data.isBountyAlertsEnabled() ? 1 : 0);
-            ps.setInt(24, data.isTpaConfirmMenuEnabled() ? 1 : 0);
-            ps.setInt(25, data.isChainmailOnRespawnEnabled() ? 1 : 0);
-            ps.setInt(26, data.isLunarTeammatesEnabled() ? 1 : 0);
-            ps.setInt(27, data.getTpaRequestsChoice().ordinal());
-            ps.setInt(28, data.isAutoTpaHereEnabled() ? 1 : 0);
-            ps.setInt(29, data.getTpaHereRequestsChoice().ordinal());
-            ps.setInt(30, data.isTeamInvitesEnabled() ? 1 : 0);
-            ps.setInt(31, data.isMobSpawnEnabled() ? 1 : 0);
-            ps.setInt(32, data.isPayConfirmMenuEnabled() ? 1 : 0);
-            ps.setInt(33, data.isTotemParticlesEnabled() ? 1 : 0);
-            ps.setInt(34, data.isFastCrystalsEnabled() ? 1 : 0);
-            ps.setInt(35, data.isAmethystBreakMessagesEnabled() ? 1 : 0);
-            ps.setInt(36, data.getPrivateMessagesChoice().ordinal());
-            ps.setInt(37, data.isKeyAllNotificationsEnabled() ? 1 : 0);
-            ps.setInt(38, data.isDuelRequestsEnabled() ? 1 : 0);
-            ps.setInt(39, data.isPublicChatEnabled() ? 1 : 0);
-            ps.setInt(40, data.isServerBroadcastsEnabled() ? 1 : 0);
-            ps.setInt(41, data.isAuctionNotificationsEnabled() ? 1 : 0);
-            ps.setInt(42, data.isExplosionParticlesEnabled() ? 1 : 0);
-            ps.setInt(43, data.isHideAllPlayersEnabled() ? 1 : 0);
-            ps.setInt(44, data.isNotificationSoundsEnabled() ? 1 : 0);
-            ps.setInt(45, data.isRtpCoordinatesEnabled() ? 1 : 0);
-            ps.setInt(46, data.isOrderNotificationsEnabled() ? 1 : 0);
-            ps.setInt(47, data.isTeamChatVisible() ? 1 : 0);
-            ps.setInt(48, data.isDuelMusicEnabled() ? 1 : 0);
-            ps.setInt(49, data.isQuietSpawnEnabled() ? 1 : 0);
-            ps.setInt(50, data.isNightVisionEnabled() ? 1 : 0);
-            ps.setLong(51, data.getKeyAllRemainingSeconds());
-            ps.setLong(52, data.getShardBoosterExpiryMillis());
-            ps.setLong(53, data.getMobSpawnDisabledUntil());
-            ps.setLong(54, data.getPhantomDisabledUntil());
-            ps.setInt(55, data.isDestroyPearlOnDeath() ? 1 : 0);
-            ps.setInt(56, data.isRandomizedCoords() ? 1 : 0);
-            ps.setInt(57, data.getDeathMessagesChoice().ordinal());
-            ps.setInt(58, data.getAdvancementMessagesChoice().ordinal());
-            ps.setInt(59, data.getJoinLeaveMessagesChoice().ordinal());
-            ps.setInt(60, data.isTeleportAlertsEnabled() ? 1 : 0);
-            ps.setInt(61, data.isFollowAlertsEnabled() ? 1 : 0);
-            ps.setInt(62, data.isExplosionSoundsEnabled() ? 1 : 0);
-            ps.setInt(63, data.isDisplayDonutPlusEnabled() ? 1 : 0);
+            ps.setInt(22, data.isMoneyNametagsEnabled() ? 1 : 0);
+            ps.setInt(23, data.isClearEntitiesMessagesEnabled() ? 1 : 0);
+            ps.setInt(24, data.isBountyAlertsEnabled() ? 1 : 0);
+            ps.setInt(25, data.isTpaConfirmMenuEnabled() ? 1 : 0);
+            ps.setInt(26, data.isChainmailOnRespawnEnabled() ? 1 : 0);
+            ps.setInt(27, data.isLunarTeammatesEnabled() ? 1 : 0);
+            ps.setInt(28, data.getTpaRequestsChoice().ordinal());
+            ps.setInt(29, data.isAutoTpaHereEnabled() ? 1 : 0);
+            ps.setInt(30, data.getTpaHereRequestsChoice().ordinal());
+            ps.setInt(31, data.isTeamInvitesEnabled() ? 1 : 0);
+            ps.setInt(32, data.isMobSpawnEnabled() ? 1 : 0);
+            ps.setInt(33, data.isPayConfirmMenuEnabled() ? 1 : 0);
+            ps.setInt(34, data.isTotemParticlesEnabled() ? 1 : 0);
+            ps.setInt(35, data.isFastCrystalsEnabled() ? 1 : 0);
+            ps.setInt(36, data.isAmethystBreakMessagesEnabled() ? 1 : 0);
+            ps.setInt(37, data.getPrivateMessagesChoice().ordinal());
+            ps.setInt(38, data.isKeyAllNotificationsEnabled() ? 1 : 0);
+            ps.setInt(39, data.isDuelRequestsEnabled() ? 1 : 0);
+            ps.setInt(40, data.isPublicChatEnabled() ? 1 : 0);
+            ps.setInt(41, data.isServerBroadcastsEnabled() ? 1 : 0);
+            ps.setInt(42, data.isAuctionNotificationsEnabled() ? 1 : 0);
+            ps.setInt(43, data.isExplosionParticlesEnabled() ? 1 : 0);
+            ps.setInt(44, data.isHideAllPlayersEnabled() ? 1 : 0);
+            ps.setInt(45, data.isNotificationSoundsEnabled() ? 1 : 0);
+            ps.setInt(46, data.isRtpCoordinatesEnabled() ? 1 : 0);
+            ps.setInt(47, data.isOrderNotificationsEnabled() ? 1 : 0);
+            ps.setInt(48, data.isTeamChatVisible() ? 1 : 0);
+            ps.setInt(49, data.isDuelMusicEnabled() ? 1 : 0);
+            ps.setInt(50, data.isQuietSpawnEnabled() ? 1 : 0);
+            ps.setInt(51, data.isNightVisionEnabled() ? 1 : 0);
+            ps.setLong(52, data.getKeyAllRemainingSeconds());
+            ps.setLong(53, data.getShardBoosterExpiryMillis());
+            ps.setLong(54, data.getMobSpawnDisabledUntil());
+            ps.setLong(55, data.getPhantomDisabledUntil());
+            ps.setInt(56, data.isDestroyPearlOnDeath() ? 1 : 0);
+            ps.setInt(57, data.isRandomizedCoords() ? 1 : 0);
+            ps.setInt(58, data.getDeathMessagesChoice().ordinal());
+            ps.setInt(59, data.getAdvancementMessagesChoice().ordinal());
+            ps.setInt(60, data.getJoinLeaveMessagesChoice().ordinal());
+            ps.setInt(61, data.isTeleportAlertsEnabled() ? 1 : 0);
+            ps.setInt(62, data.isFollowAlertsEnabled() ? 1 : 0);
+            ps.setInt(63, data.isExplosionSoundsEnabled() ? 1 : 0);
+            ps.setInt(64, data.isDisplayDonutPlusEnabled() ? 1 : 0);
             data.setDirty(false);
     }
 

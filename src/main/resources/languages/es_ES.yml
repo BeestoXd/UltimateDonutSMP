@@ -702,6 +702,11 @@ MENUS:
         LORE:
         - '&7Show item worth values in item lore'
         - '&fCurrently: {status}'
+      MONEY_NAMETAGS:
+        DISPLAY-NAME: '&#6BF18DMoney nametags'
+        LORE:
+        - '&7Show player balances under their names'
+        - '&fCurrently: {status}'
       JOIN_LEAVE_MESSAGES:
         DISPLAY-NAME: '&#6BF18DJoin/Leave messages'
         LORE:

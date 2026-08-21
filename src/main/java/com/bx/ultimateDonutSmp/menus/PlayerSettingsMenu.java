@@ -33,7 +33,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             "PAY_CONFIRM_MENUS", "AUTO_CONFIRM_TPAS", "HOTBAR_MESSAGES", "NOTIFICATION_SOUNDS",
             "FOLLOW_ALERT_SETTINGS", "DISPLAY_DONUT_PLUS", "CHAINMAIL_ON_RESPAWN", "EXPLOSION_PARTICLES",
             "EXPLOSION_SOUNDS", "TELEPORT_ALERTS", "FAST_CRYSTALS", "RANDOMIZED_COORDS",
-            "TPA_REQUESTS", "TPA_HERE_REQUESTS", "PAYMENTS", "WORTH_DISPLAY",
+            "TPA_REQUESTS", "TPA_HERE_REQUESTS", "PAYMENTS", "WORTH_DISPLAY", "MONEY_NAMETAGS",
             "JOIN_LEAVE_MESSAGES", "PAY_ALERTS", "ADVANCEMENT_MESSAGES", "AUCTION_NOTIFICATIONS",
             "AMETHYST_BREAK_MESSAGES", "DUEL_REQUESTS", "DEATH_MESSAGES", "KEY_ALL_NOTIFICATIONS",
             "QUICK_AUCTION_SELL", "ORDER_NOTIFICATIONS", "DISABLE_MOB_SPAWN", "DISABLE_PHANTOM_SPAWN",
@@ -218,6 +218,11 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 }
                 sendToggleMessage(player, "Worth Display", data.isWorthDisplayEnabled());
             }
+            case "MONEY_NAMETAGS" -> {
+                data.setMoneyNametagsEnabled(!data.isMoneyNametagsEnabled());
+                plugin.getMoneyNametagManager().refreshViewer(player);
+                sendToggleMessage(player, "Money Nametags", data.isMoneyNametagsEnabled());
+            }
             case "DUEL_MUSIC" -> toggle(player, "Duel Music",
                     !data.isDuelMusicEnabled(), data::setDuelMusicEnabled);
             case "QUIET_SPAWN" -> toggle(player, "Quiet Spawn Teleportation",
@@ -401,6 +406,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             case "PAYMENTS" -> new ButtonState(formatThreeChoice(data.getPaymentsChoice()), true);
             case "TEAM_CHAT_VISIBILITY" -> state(data.isTeamChatVisible());
             case "WORTH_DISPLAY" -> state(data.isWorthDisplayEnabled());
+            case "MONEY_NAMETAGS" -> state(data.isMoneyNametagsEnabled());
             case "DUEL_MUSIC" -> state(data.isDuelMusicEnabled());
             case "QUIET_SPAWN" -> state(data.isQuietSpawnEnabled());
             case "CLEAR_ENTITIES_MESSAGES" -> state(data.isClearEntitiesMessagesEnabled());

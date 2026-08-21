@@ -173,6 +173,10 @@ public class PlayerJoinQuitListener implements Listener {
         // Setup scoreboard
         plugin.getScoreboardManager().setupPlayer(player);
 
+        // Give the joining player a money nametag and show them the ones already out there
+        plugin.getMoneyNametagManager().refreshViewer(player);
+        plugin.getMoneyNametagManager().update(player);
+
         // Update tablist name
         plugin.getTablistManager().updateTablistName(player);
         plugin.getTablistManager().update(player);
@@ -366,6 +370,9 @@ public class PlayerJoinQuitListener implements Listener {
 
         // Unload homes
         plugin.getHomeManager().unloadHomes(player.getUniqueId());
+
+        // Remove the money nametag before the player entity goes away
+        plugin.getMoneyNametagManager().remove(player.getUniqueId());
 
         // Remove scoreboard
         plugin.getScoreboardManager().removePlayer(player.getUniqueId());
