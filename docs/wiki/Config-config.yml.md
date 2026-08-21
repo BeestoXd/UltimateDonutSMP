@@ -846,9 +846,9 @@ MONEY-NAMETAGS:
   # Determines whether balances are shortened to 1.1K, 1.1M, 1.1B and so on instead of
   # being written out as 1,100,000. Available options: true, false
   SHORT-FORMAT: true
-  # How quickly a balance change shows up on the line, in ticks. The line itself is pinned
-  # to the player by the client, so this never affects how closely it follows them.
-  # Available options: 1 to 40
+  # How quickly a balance change shows up on the line, in ticks. The line is moved onto its
+  # player every tick no matter what this says, so it never affects how closely the line
+  # follows them. Available options: 1 to 40
   UPDATE-INTERVAL-TICKS: 10
   # Gap between the bottom of the username and the top of the balance line, in blocks.
   # The username itself is never touched or hidden, the balance is simply parked under it.
@@ -869,7 +869,7 @@ MONEY-NAMETAGS:
 | `MONEY-NAMETAGS.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `MONEY-NAMETAGS` system. Set to `false` to take the option out of the game entirely, whatever players picked in `/settings`. |
 | `MONEY-NAMETAGS.FORMAT` | `str` | Any string text | `'&a${balance}'` | The line drawn under the username. `{balance}` is replaced with the player's balance, and PlaceholderAPI placeholders are resolved against the player who owns the line. |
 | `MONEY-NAMETAGS.SHORT-FORMAT` | `bool` | `true`, `false` | `true` | `true` writes `1.1K`, `1.1M`, `1.1B`, `1.1T` and `1.1Q` where `false` writes them out in full as `1,100,000`. Leaving it on keeps the line narrow once balances run into the billions. |
-| `MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS` | `int` | `1` to `40` | `10` | How often each line re-reads its owner's balance. It has nothing to do with how closely the line follows the player, because the viewer's client draws the line riding its owner and pins it there. Lower it if you want balance changes to appear faster. |
+| `MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS` | `int` | `1` to `40` | `10` | How often each line re-reads its owner's balance. It has nothing to do with how closely the line follows the player, since the line is moved onto them every tick regardless. Lower it if you want balance changes to appear faster. |
 | `MONEY-NAMETAGS.LINE-GAP` | `float` | Any decimal number | `0.05` | Gap between the bottom of the username and the top of the balance line, in blocks. Raising it pushes the balance further below the name, and a negative value tucks it closer. The username is never moved or hidden to make room. |
 | `MONEY-NAMETAGS.VIEW-RANGE` | `float` | Any decimal number | `32.0` | How far away, in blocks, the line is still drawn. |
 | `MONEY-NAMETAGS.HIDE-WHILE-SNEAKING` | `bool` | `true`, `false` | `true` | Drops the line while the player sneaks, matching what vanilla does with the username above their head. |
@@ -892,10 +892,15 @@ MONEY-NAMETAGS:
 The username keeps its normal place and is never hidden, moved or replaced. The balance is parked
 directly under it, so the two read as a two line nametag: the name on top, the balance below it.
 
-Minecraft draws a username half a block above the point anything riding a player hangs from, so the
-balance line is lifted back up by that much, minus its own height and the `LINE-GAP` above. If the
-two lines look too close or too far apart on your resource pack, `LINE-GAP` is the only value worth
-touching.
+The balance line stands as its own entity rather than riding the player. Riding would pin it
+perfectly, but Minecraft refuses to draw a username on any player carrying a passenger, so a ride
+costs the very name the balance is meant to sit under. Instead the line is moved onto its player
+every tick, which puts it in the same broadcast as the player's own movement and gives both the same
+smoothing.
+
+Minecraft hangs a username half a block above the player's height and its glyphs drop from there, so
+the balance sits below all of that, its own half height and `LINE-GAP` lower again. If the two lines
+look too close or too far apart on your resource pack, `LINE-GAP` is the only value worth touching.
 
 ### 5. Who Sees The Line
 

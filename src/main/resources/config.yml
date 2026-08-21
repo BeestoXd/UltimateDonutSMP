@@ -305,12 +305,12 @@ MONEY-NAMETAGS:
   # Determines whether balances are shortened to 1.1K, 1.1M, 1.1B and so on instead of
   # being written out as 1,100,000. Available options: true, false
   SHORT-FORMAT: true
-  # How quickly a balance change shows up on the line, in ticks. The line itself is pinned
-  # to the player by the client, so this never affects how closely it follows them.
-  # Available options: 1 to 40
+  # How quickly a balance change shows up on the line, in ticks. The line is moved onto its
+  # player every tick no matter what this says, so it never affects how closely the line
+  # follows them. Available options: 1 to 40
   UPDATE-INTERVAL-TICKS: 10
   # Gap between the bottom of the username and the top of the balance line, in blocks.
-  # The username itself is never touched or hidden, the balance is simply parked under it.
+  # The username is never touched, moved or hidden, the balance is simply parked under it.
   # Raise this to push the balance further down, or use a negative number to tuck it
   # closer. Available options: Any decimal number
   LINE-GAP: 0.05
