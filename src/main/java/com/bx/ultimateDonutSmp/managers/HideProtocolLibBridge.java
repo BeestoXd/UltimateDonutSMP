@@ -25,6 +25,7 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +45,13 @@ final class HideProtocolLibBridge implements HidePacketBridge {
     private final HideManager hideManager;
     private final ProtocolManager protocolManager;
     private final Map<UUID, UUID> nametagDisplays = new ConcurrentHashMap<>();
+    /** A second between position resyncs is plenty: only the entity tracker reads that position. */
+    private static final long NAMETAG_RIDE_INTERVAL_TICKS = 20L;
+
+    /** Entity ids of the alias nametags, so the server's own idea of where they are stays off the wire. */
+    private final Set<Integer> nametagDisplayIds = ConcurrentHashMap.newKeySet();
     private PacketListener playerInfoListener;
+    private BukkitTask nametagRideTask;
 
     HideProtocolLibBridge(UltimateDonutSmp plugin, HideManager hideManager) {
         this.plugin = plugin;
@@ -65,15 +72,27 @@ final class HideProtocolLibBridge implements HidePacketBridge {
                 plugin,
                 ListenerPriority.HIGHEST,
                 PacketType.Play.Server.PLAYER_INFO,
-                PacketType.Play.Server.SCOREBOARD_TEAM
+                PacketType.Play.Server.SCOREBOARD_TEAM,
+                PacketType.Play.Server.ENTITY_TELEPORT,
+                PacketType.Play.Server.REL_ENTITY_MOVE,
+                PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
+                PacketType.Play.Server.ENTITY_LOOK,
+                PacketType.Play.Server.ENTITY_HEAD_ROTATION,
+                PacketType.Play.Server.ENTITY_VELOCITY
         ) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 if (event.isPlayerTemporary()) {
                     return;
                 }
+                if (suppressNametagMovement(event)) {
+                    return;
+                }
                 if (event.getPacketType() == PacketType.Play.Server.SCOREBOARD_TEAM) {
                     rewriteTeamEntries(event);
+                    return;
+                }
+                if (event.getPacketType() != PacketType.Play.Server.PLAYER_INFO) {
                     return;
                 }
                 Player viewer = event.getPlayer();
@@ -441,16 +460,110 @@ final class HideProtocolLibBridge implements HidePacketBridge {
         }
 
         display.setText(ColorUtils.colorize(hideManager.publicName(state)));
-        if (!target.getPassengers().contains(display)) {
-            target.addPassenger(display);
-        }
+        nametagDisplayIds.add(display.getEntityId());
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (viewer.getUniqueId().equals(target.getUniqueId())
                     || hideManager.canSeeRealIdentity(viewer)) {
                 viewer.hideEntity(plugin, display);
             } else {
                 viewer.showEntity(plugin, display);
+                sendNametagRide(viewer, target, display);
             }
+        }
+        startNametagRideTask();
+    }
+
+    /**
+     * Tells one viewer's client that the alias nametag rides its player. The ride lives only in the
+     * packet: mounting it for real would make Spigot refuse to teleport that player at all, which
+     * strands anyone disguised the moment they try to move.
+     */
+    private void sendNametagRide(Player viewer, Player target, TextDisplay display) {
+        if (viewer == null || isTemporaryPlayer(viewer) || !viewer.isOnline()
+                || !viewer.getWorld().equals(target.getWorld())) {
+            return;
+        }
+        try {
+            PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.MOUNT);
+            packet.getIntegers().write(0, target.getEntityId());
+            packet.getIntegerArrays().write(0, ridingEntityIds(target, display));
+            send(viewer, packet);
+        } catch (RuntimeException | LinkageError error) {
+            plugin.getLogger().log(Level.FINE, "Unable to ride an obfuscated nametag on its player.", error);
+        }
+    }
+
+    /** Anything genuinely riding the player is listed too, otherwise the client drops it. */
+    private int[] ridingEntityIds(Player target, TextDisplay display) {
+        List<Entity> riders = target.getPassengers();
+        int[] ids = new int[riders.size() + 1];
+        for (int index = 0; index < riders.size(); index++) {
+            ids[index] = riders.get(index).getEntityId();
+        }
+        ids[riders.size()] = display.getEntityId();
+        return ids;
+    }
+
+    /**
+     * Drops the display's own movement on the way out. The client already draws it on the player it
+     * rides, and hearing the server's version as well makes it flick between the two every tick.
+     */
+    private boolean suppressNametagMovement(PacketEvent event) {
+        if (nametagDisplayIds.isEmpty() || event.getPacketType() == PacketType.Play.Server.PLAYER_INFO
+                || event.getPacketType() == PacketType.Play.Server.SCOREBOARD_TEAM) {
+            return false;
+        }
+        Integer entityId = event.getPacket().getIntegers().readSafely(0);
+        if (entityId != null && nametagDisplayIds.contains(entityId)) {
+            event.setCancelled(true);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Keeps each display sitting on its player server side, which is all the entity tracker uses to
+     * decide who gets sent it, and repeats the ride so a client that has just been sent the entity
+     * knows what it belongs to. Where the line is drawn is the client's business either way.
+     */
+    private void startNametagRideTask() {
+        if (nametagRideTask != null || nametagDisplays.isEmpty()) {
+            return;
+        }
+        nametagRideTask = plugin.getSpigotScheduler().runGlobalTimer(this::refreshNametagRides,
+                NAMETAG_RIDE_INTERVAL_TICKS, NAMETAG_RIDE_INTERVAL_TICKS);
+    }
+
+    private void refreshNametagRides() {
+        if (nametagDisplays.isEmpty()) {
+            stopNametagRideTask();
+            return;
+        }
+        for (UUID targetUuid : Set.copyOf(nametagDisplays.keySet())) {
+            Player target = Bukkit.getPlayer(targetUuid);
+            TextDisplay display = nametagDisplay(targetUuid);
+            if (target == null || !target.isOnline() || display == null) {
+                continue;
+            }
+            if (!display.getWorld().equals(target.getWorld())) {
+                removeNametagDisplay(targetUuid);
+                continue;
+            }
+            if (display.getLocation().distanceSquared(target.getLocation()) > 0.0001D) {
+                display.teleport(target.getLocation());
+            }
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                if (!viewer.getUniqueId().equals(targetUuid) && !hideManager.canSeeRealIdentity(viewer)) {
+                    sendNametagRide(viewer, target, display);
+                }
+            }
+        }
+    }
+
+    private void stopNametagRideTask() {
+        if (nametagRideTask != null) {
+            nametagRideTask.cancel();
+            nametagRideTask = null;
         }
     }
 
@@ -475,13 +588,13 @@ final class HideProtocolLibBridge implements HidePacketBridge {
         Entity entity = Bukkit.getEntity(displayUuid);
         if (entity != null) {
             try {
-                Player player = Bukkit.getPlayer(targetUuid);
-                if (player != null) {
-                    player.removePassenger(entity);
-                }
+                nametagDisplayIds.remove(entity.getEntityId());
                 entity.remove();
             } catch (RuntimeException ignored) {
             }
+        }
+        if (nametagDisplays.isEmpty()) {
+            stopNametagRideTask();
         }
     }
 
@@ -639,6 +752,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
 
     @Override
     public void shutdown() {
+        stopNametagRideTask();
         if (playerInfoListener != null) {
             protocolManager.removePacketListener(playerInfoListener);
             playerInfoListener = null;
@@ -646,6 +760,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
         for (UUID targetUuid : Set.copyOf(nametagDisplays.keySet())) {
             removeNametagDisplay(targetUuid);
         }
+        nametagDisplayIds.clear();
     }
 
     @Override
