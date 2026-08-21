@@ -3,9 +3,8 @@ package com.bx.ultimateDonutSmp.tasks;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 
 /**
- * Keeps every money nametag under its owner and up to date with their balance. It runs every tick
- * so the lines move in step with the players they belong to; the manager decides for itself how
- * much work each tick is worth.
+ * Keeps the balance under every player's name up to date. The client draws the line itself, so
+ * there is no position to maintain and this only has to keep up with money changing hands.
  */
 public class MoneyNametagTask implements Runnable {
 
@@ -17,11 +16,12 @@ public class MoneyNametagTask implements Runnable {
 
     @Override
     public void run() {
-        plugin.getMoneyNametagManager().tick();
+        plugin.getMoneyNametagManager().updateAll();
     }
 
     public static void start(UltimateDonutSmp plugin) {
         plugin.getMoneyNametagManager().purgeOrphanedDisplays();
-        plugin.getSpigotScheduler().runGlobalTimer(new MoneyNametagTask(plugin), 1L, 1L);
+        long interval = plugin.getMoneyNametagManager().getUpdateIntervalTicks();
+        plugin.getSpigotScheduler().runGlobalTimer(new MoneyNametagTask(plugin), interval, interval);
     }
 }

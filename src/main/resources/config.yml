@@ -291,12 +291,15 @@ WORTH-LORE:
   ENABLED: true
   # The text or value for Format. Available options: Any valid string text
   FORMAT: '&7Worth: &a$%price%'
-# The floating balance line players can switch on under /settings > Money Nametags.
-# Every player keeps their own switch, so turning it on only changes what that player
-# sees above other players' heads.
+# The balance line players can switch on under /settings > Money Nametags. It uses the
+# scoreboard slot Minecraft reserves for a line under a username, so the client draws it
+# itself, one line below the name and never anywhere else. Two of the client's own rules
+# come with that: the line only appears within about ten blocks, and only one plugin can
+# own that slot at a time. Every player keeps their own switch, so turning it on only
+# changes what that player sees under other players' names.
 MONEY-NAMETAGS:
-  # Determines whether Money Nametags is enabled or disabled. Turning this off hides the
-  # line for everyone and stops the tracking task, whatever players picked in /settings.
+  # Determines whether Money Nametags is enabled or disabled. Turning this off takes the
+  # line away from everyone, whatever players picked in /settings.
   # Available options: true, false
   ENABLED: true
   # The text or value for Format. Supports {balance} and PlaceholderAPI placeholders.
@@ -305,20 +308,10 @@ MONEY-NAMETAGS:
   # Determines whether balances are shortened to 1.1K, 1.1M, 1.1B and so on instead of
   # being written out as 1,100,000. Available options: true, false
   SHORT-FORMAT: true
-  # How quickly a balance change shows up on the line, in ticks. The line is moved onto its
-  # player every tick no matter what this says, so it never affects how closely the line
-  # follows them. Available options: 1 to 40
+  # How quickly a balance change shows up on the line, in ticks. Where the line sits is the
+  # client's business, so this only decides how fresh the number is.
+  # Available options: 1 to 40
   UPDATE-INTERVAL-TICKS: 10
-  # Gap between the bottom of the username and the top of the balance line, in blocks.
-  # The username is never touched, moved or hidden, the balance is simply parked under it.
-  # Raise this to push the balance further down, or use a negative number to tuck it
-  # closer. Available options: Any decimal number
-  LINE-GAP: 0.05
-  # How far away the line stays readable, in blocks. Available options: Any decimal number
-  VIEW-RANGE: 32.0
-  # Determines whether the line disappears while the player sneaks, the way the vanilla
-  # username does. Available options: true, false
-  HIDE-WHILE-SNEAKING: true
 # Configuration section for End Crystal.
 END-CRYSTAL:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

@@ -4,56 +4,60 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedNumberFormat;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Display;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 /**
- * Renders a player's balance on a floating line under their username.
+ * Renders a player's balance on the line under their username.
  *
- * <p>The line is a {@link TextDisplay} standing on its own rather than riding its owner. A ride
- * would pin it perfectly, but Minecraft refuses to draw a username on any player carrying a
- * passenger, so the ride costs the very name the balance is meant to sit under. Nothing here
- * touches the username: it keeps its normal place and the balance is parked below it.</p>
+ * <p>This is the line Minecraft draws for a scoreboard objective in the {@code BELOW_NAME} slot, so
+ * the client places it itself as part of the nametag. It cannot drift, lag behind a sprint or cover
+ * the username, because it is drawn in the same pass as the name and always one line beneath it.</p>
  *
- * <p>Standing on its own means the line has to be moved onto its owner, which happens every tick so
- * the server broadcasts it in the same breath as the player's own movement. The two then carry
- * matching interpolation and travel together instead of one chasing the other.</p>
+ * <p>The slot normally shows a raw score, which is an integer and no use for a balance in the
+ * billions, so each score carries a fixed number format holding the text to draw instead. That is a
+ * packet level feature with no Bukkit API, which is why everything here is sent through
+ * ProtocolLib.</p>
  *
- * <p>Every player decides for themselves whether they see the line through
- * {@code /settings > Money Nametags}, so a line only exists while somebody online has that setting
- * switched on, and it is only sent to the players who asked for it.</p>
+ * <p>Nothing is written to anybody's real scoreboard. Every packet goes to one viewer, so a player
+ * who left the setting off never hears about the objective at all, and the balances a viewer sees
+ * are decided entirely by which scores were sent to them.</p>
+ *
+ * <p>Two things about the slot are the client's rules rather than ours: it only draws within about
+ * ten blocks, and a server can only show one objective there at a time.</p>
  */
 public class MoneyNametagManager {
 
-    private static final String DISPLAY_TAG = "uds_money_nametag";
+    private static final String OBJECTIVE = "uds_money";
+    private static final String LEGACY_DISPLAY_TAG = "uds_money_nametag";
     private static final String BALANCE_PLACEHOLDER = "{balance}";
 
-    /** Vanilla hangs a username half a block above the player's height. */
-    private static final double NAME_TAG_BASE = 0.5D;
-    /** The username's own glyphs drop about a fifth of a block below where they hang from. */
-    private static final double NAME_TAG_TEXT_HEIGHT = 0.2D;
-    /** Display text is drawn at the same scale as a username, centred on the entity. */
-    private static final double LINE_HALF_HEIGHT = 0.1D;
-    /** Matches the three tick smoothing a client gives any other entity that moves. */
-    private static final int LERP_TICKS = 3;
+    private static final int OBJECTIVE_CREATE = 0;
+    private static final int OBJECTIVE_REMOVE = 1;
 
     private final UltimateDonutSmp plugin;
-    private final Map<UUID, UUID> displays = new ConcurrentHashMap<>();
-    private final Map<UUID, String> renderedText = new ConcurrentHashMap<>();
-    private long tick;
+    /** Viewer to the balance text each player was last sent, so unchanged lines are not resent. */
+    private final Map<UUID, Map<UUID, String>> sentText = new ConcurrentHashMap<>();
+    /** Viewers whose client has been told the objective exists. */
+    private final Set<UUID> installed = ConcurrentHashMap.newKeySet();
+    private ProtocolManager protocolManager;
+    private boolean warnedUnsupported;
 
     public MoneyNametagManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -69,12 +73,11 @@ public class MoneyNametagManager {
         return config().getBoolean("MONEY-NAMETAGS.ENABLED", true);
     }
 
-    /** How often the balance written on a line is re-read, in ticks. */
     public long getUpdateIntervalTicks() {
         return Math.max(1L, config().getLong("MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS", 10L));
     }
 
-    /** Whether {@code viewer} asked to see balances above other players. */
+    /** Whether {@code viewer} asked to see balances under other players. */
     public boolean isEnabledFor(Player viewer) {
         if (viewer == null) {
             return false;
@@ -83,81 +86,62 @@ public class MoneyNametagManager {
         return data != null && data.isMoneyNametagsEnabled();
     }
 
-    /**
-     * Runs every tick. Moving each line onto its owner is cheap and has to happen at the rate the
-     * player moves, while re-reading balances and re-checking who can see what is not, so that part
-     * waits for the configured interval.
-     */
-    public void tick() {
-        if (!isEnabled()) {
+    /** Sends every viewer who wants balances the ones that have changed since their last update. */
+    public void updateAll() {
+        if (!isEnabled() || !isNumberFormatSupported()) {
             clearAll();
             return;
         }
-        Set<UUID> viewers = viewers();
-        if (viewers.isEmpty()) {
-            clearAll();
-            return;
-        }
-        boolean full = tick++ % getUpdateIntervalTicks() == 0L;
-        plugin.getSpigotScheduler().forEachOnlinePlayer(owner -> refresh(owner, viewers, full));
-    }
-
-    /** Brings one player's own line up to date, spawning it when somebody wants to see it. */
-    public void update(Player owner) {
-        if (!isEnabled()) {
-            return;
-        }
-        Set<UUID> viewers = viewers();
-        if (!viewers.isEmpty()) {
-            refresh(owner, viewers, true);
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+            if (isEnabledFor(viewer)) {
+                push(viewer);
+            } else {
+                clearViewer(viewer);
+            }
         }
     }
 
-    /** Re-applies one player's own choice to every line currently in the world. */
+    /** Pushes {@code player}'s balance out again, and gives them the objective if they want one. */
+    public void update(Player player) {
+        if (player == null || !isEnabled() || !isNumberFormatSupported()) {
+            return;
+        }
+        for (Map<UUID, String> known : sentText.values()) {
+            known.remove(player.getUniqueId());
+        }
+        refreshViewer(player);
+    }
+
+    /** Installs or removes the objective on one player's client to match their own choice. */
     public void refreshViewer(Player viewer) {
         if (viewer == null) {
             return;
         }
-        if (!isEnabled()) {
-            clearAll();
+        if (!isEnabled() || !isNumberFormatSupported() || !isEnabledFor(viewer)) {
+            clearViewer(viewer);
             return;
         }
-
-        boolean wanted = isEnabledFor(viewer);
-        for (UUID ownerUuid : Set.copyOf(displays.keySet())) {
-            TextDisplay display = display(ownerUuid);
-            if (display == null) {
-                continue;
-            }
-            Player owner = Bukkit.getPlayer(ownerUuid);
-            if (wanted && owner != null && viewer.canSee(owner)) {
-                viewer.showEntity(plugin, display);
-            } else {
-                viewer.hideEntity(plugin, display);
-            }
-        }
-        if (!wanted && viewers().isEmpty()) {
-            clearAll();
-        }
+        push(viewer);
     }
 
-    public void remove(UUID ownerUuid) {
-        renderedText.remove(ownerUuid);
-        UUID displayUuid = displays.remove(ownerUuid);
-        if (displayUuid == null) {
+    /** Drops everything remembered about a player, as a viewer and as somebody being viewed. */
+    public void remove(UUID playerUuid) {
+        if (playerUuid == null) {
             return;
         }
-        Entity entity = Bukkit.getEntity(displayUuid);
-        if (entity != null) {
-            entity.remove();
+        installed.remove(playerUuid);
+        sentText.remove(playerUuid);
+        for (Map<UUID, String> known : sentText.values()) {
+            known.remove(playerUuid);
         }
     }
 
     public void clearAll() {
-        for (UUID ownerUuid : Set.copyOf(displays.keySet())) {
-            remove(ownerUuid);
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+            clearViewer(viewer);
         }
-        renderedText.clear();
+        installed.clear();
+        sentText.clear();
     }
 
     public void reload() {
@@ -170,168 +154,155 @@ public class MoneyNametagManager {
     }
 
     /**
-     * Deletes lines a crash or a reload left behind. They are spawned non-persistent so they never
-     * reach the region files, but a plugin reload leaves the previous run's entities loaded.
+     * Removes the floating text entities earlier versions used for this feature. They were spawned
+     * non-persistent so a restart clears them on its own, but a plugin reload leaves the previous
+     * run's entities behind.
      */
     public void purgeOrphanedDisplays() {
         for (World world : Bukkit.getWorlds()) {
             for (TextDisplay display : world.getEntitiesByClass(TextDisplay.class)) {
-                if (display.getScoreboardTags().contains(DISPLAY_TAG)
-                        && !displays.containsValue(display.getUniqueId())) {
+                if (display.getScoreboardTags().contains(LEGACY_DISPLAY_TAG)) {
                     display.remove();
                 }
             }
         }
     }
 
-    private void refresh(Player owner, Set<UUID> viewers, boolean full) {
-        if (owner == null || !owner.isOnline()) {
-            return;
-        }
-        if (!shouldDisplayFor(owner)) {
-            remove(owner.getUniqueId());
-            return;
+    private void push(Player viewer) {
+        if (installed.add(viewer.getUniqueId())) {
+            sendObjective(viewer, OBJECTIVE_CREATE);
+            sendDisplaySlot(viewer);
         }
 
-        TextDisplay display = display(owner.getUniqueId());
-        if (display != null && !owner.getWorld().equals(display.getWorld())) {
-            remove(owner.getUniqueId());
-            display = null;
-        }
-        if (display == null) {
-            display = spawn(owner);
-            if (display == null) {
-                return;
+        Map<UUID, String> known = sentText.computeIfAbsent(viewer.getUniqueId(), key -> new ConcurrentHashMap<>());
+        for (Player target : Bukkit.getOnlinePlayers()) {
+            if (!shouldDisplayFor(target) || !viewer.canSee(target)) {
+                known.remove(target.getUniqueId());
+                continue;
             }
-            full = true;
+            String text = ColorUtils.colorize(currentText(target), target);
+            if (!text.equals(known.get(target.getUniqueId()))) {
+                sendScore(viewer, target.getName(), text);
+                known.put(target.getUniqueId(), text);
+            }
         }
-
-        follow(display, owner);
-        if (!full) {
-            return;
-        }
-
-        String text = ColorUtils.colorize(currentText(owner), owner);
-        if (!text.equals(renderedText.get(owner.getUniqueId()))) {
-            display.setText(text);
-            renderedText.put(owner.getUniqueId(), text);
-        }
-        applyVisibility(display, owner, viewers);
     }
 
-    private String currentText(Player owner) {
+    private void clearViewer(Player viewer) {
+        sentText.remove(viewer.getUniqueId());
+        if (installed.remove(viewer.getUniqueId())) {
+            sendObjective(viewer, OBJECTIVE_REMOVE);
+        }
+    }
+
+    private String currentText(Player target) {
         return render(
                 config().getString("MONEY-NAMETAGS.FORMAT", "&a${balance}"),
-                plugin.getEconomyManager().getBalance(owner),
+                plugin.getEconomyManager().getBalance(target),
                 config().getBoolean("MONEY-NAMETAGS.SHORT-FORMAT", true));
     }
 
-    /**
-     * Hidden players keep their balance to themselves, and a sneaking player loses the line the
-     * same way they lose their username.
-     */
-    private boolean shouldDisplayFor(Player owner) {
-        if (owner.isSneaking() && config().getBoolean("MONEY-NAMETAGS.HIDE-WHILE-SNEAKING", true)) {
-            return false;
-        }
+    /** Hidden players keep their balance to themselves. */
+    private boolean shouldDisplayFor(Player target) {
         HideManager hideManager = plugin.getHideManager();
-        return hideManager == null || !hideManager.isHidden(owner.getUniqueId());
+        return hideManager == null || !hideManager.isHidden(target.getUniqueId());
     }
 
-    private TextDisplay spawn(Player owner) {
+    private void sendObjective(Player viewer, int method) {
+        ProtocolManager manager = protocolManager();
+        if (manager == null) {
+            return;
+        }
         try {
-            TextDisplay display = owner.getWorld().spawn(anchor(owner), TextDisplay.class, textDisplay -> {
-                textDisplay.addScoreboardTag(DISPLAY_TAG);
-                textDisplay.setBillboard(Display.Billboard.CENTER);
-                textDisplay.setDefaultBackground(false);
-                textDisplay.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
-                textDisplay.setShadowed(true);
-                textDisplay.setViewRange(viewRange());
-                textDisplay.setLineWidth(200);
-                textDisplay.setPersistent(false);
-                textDisplay.setInvulnerable(true);
-                textDisplay.setGravity(false);
-                textDisplay.setSilent(true);
-                textDisplay.setVisibleByDefault(false);
-                textDisplay.setTeleportDuration(LERP_TICKS);
-            });
-            renderedText.remove(owner.getUniqueId());
-            displays.put(owner.getUniqueId(), display.getUniqueId());
-            return display;
-        } catch (RuntimeException error) {
-            plugin.getLogger().warning("Unable to spawn a money nametag for " + owner.getName() + ".");
-            return null;
+            PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+            packet.getStrings().write(0, OBJECTIVE);
+            packet.getChatComponents().writeSafely(0, WrappedChatComponent.fromText(""));
+            packet.getRenderTypes().writeSafely(0, EnumWrappers.RenderType.INTEGER);
+            packet.getNumberFormats().writeSafely(0, WrappedNumberFormat.blank());
+            packet.getIntegers().write(0, method);
+            send(viewer, packet);
+        } catch (RuntimeException | LinkageError error) {
+            plugin.getLogger().log(Level.FINE, "Unable to set up the money nametag objective.", error);
         }
     }
 
-    /** Moves the line onto its owner, skipping the work while neither of them has moved. */
-    private void follow(TextDisplay display, Player owner) {
-        Location anchor = anchor(owner);
-        if (display.getLocation().distanceSquared(anchor) < 0.0001D) {
+    private void sendDisplaySlot(Player viewer) {
+        ProtocolManager manager = protocolManager();
+        if (manager == null) {
             return;
         }
-        if (plugin.getSpigotScheduler().isFolia()) {
-            plugin.getSpigotScheduler().teleport(display, anchor);
-            return;
+        try {
+            PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
+            packet.getDisplaySlots().write(0, EnumWrappers.DisplaySlot.BELOW_NAME);
+            packet.getStrings().write(0, OBJECTIVE);
+            send(viewer, packet);
+        } catch (RuntimeException | LinkageError error) {
+            plugin.getLogger().log(Level.FINE, "Unable to place the money nametag under the name.", error);
         }
-        display.teleport(anchor);
     }
 
     /**
-     * Sits the line directly under the username. The name hangs half a block above the player's
-     * height and its glyphs drop from there, so the balance goes below all of that, its own half
-     * height and the configured gap lower again.
+     * The score itself stays at zero and never reaches the screen. What the client draws is the
+     * fixed number format carried alongside it, which is where the formatted balance lives.
      */
-    private Location anchor(Player owner) {
-        Location location = owner.getLocation();
-        double gap = config().getDouble("MONEY-NAMETAGS.LINE-GAP", 0.05D);
-        double height = location.getY() + owner.getHeight()
-                + NAME_TAG_BASE - NAME_TAG_TEXT_HEIGHT - gap - LINE_HALF_HEIGHT;
-        return new Location(owner.getWorld(), location.getX(), height, location.getZ());
+    private void sendScore(Player viewer, String targetName, String text) {
+        ProtocolManager manager = protocolManager();
+        if (manager == null) {
+            return;
+        }
+        try {
+            PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
+            packet.getStrings().write(0, targetName);
+            packet.getStrings().write(1, OBJECTIVE);
+            packet.getIntegers().write(0, 0);
+            packet.getNumberFormats().write(0, WrappedNumberFormat.fixed(WrappedChatComponent.fromLegacyText(text)));
+            send(viewer, packet);
+        } catch (RuntimeException | LinkageError error) {
+            plugin.getLogger().log(Level.FINE, "Unable to send a money nametag balance.", error);
+        }
+    }
+
+    private void send(Player viewer, PacketContainer packet) {
+        ProtocolManager manager = protocolManager();
+        if (manager == null || viewer == null || !viewer.isOnline()) {
+            return;
+        }
+        try {
+            manager.sendServerPacket(viewer, packet, false);
+        } catch (RuntimeException | LinkageError error) {
+            plugin.getLogger().log(Level.FINE, "Unable to send a money nametag packet.", error);
+        }
     }
 
     /**
-     * Only the players who asked for balances get the line sent to them, and only while they can
-     * see its owner in the first place.
+     * Without fixed number formats the slot can only draw a raw integer, which no balance worth
+     * showing fits into, so the feature stays off rather than printing a wrong number.
      */
-    private void applyVisibility(TextDisplay display, Player owner, Set<UUID> viewers) {
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (viewers.contains(viewer.getUniqueId()) && viewer.canSee(owner)) {
-                viewer.showEntity(plugin, display);
-            } else {
-                viewer.hideEntity(plugin, display);
+    private boolean isNumberFormatSupported() {
+        try {
+            if (WrappedNumberFormat.isSupported()) {
+                return true;
+            }
+        } catch (RuntimeException | LinkageError ignored) {
+            // Treated the same as an unsupported server below.
+        }
+        if (!warnedUnsupported) {
+            warnedUnsupported = true;
+            plugin.getLogger().warning("Money nametags need a server that supports scoreboard number"
+                    + " formats (Minecraft 1.20.3 or newer). The feature will stay off.");
+        }
+        return false;
+    }
+
+    private ProtocolManager protocolManager() {
+        if (protocolManager == null) {
+            try {
+                protocolManager = ProtocolLibrary.getProtocolManager();
+            } catch (RuntimeException | LinkageError ignored) {
+                return null;
             }
         }
-    }
-
-    /** The players who currently want to see balances, resolved once per pass. */
-    private Set<UUID> viewers() {
-        Set<UUID> viewers = new HashSet<>();
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            if (isEnabledFor(viewer)) {
-                viewers.add(viewer.getUniqueId());
-            }
-        }
-        return viewers;
-    }
-
-    /** The Bukkit view range is a multiplier of the 64 block default rather than a distance. */
-    private float viewRange() {
-        double blocks = Math.max(1.0D, config().getDouble("MONEY-NAMETAGS.VIEW-RANGE", 32.0D));
-        return (float) (blocks / 64.0D);
-    }
-
-    private TextDisplay display(UUID ownerUuid) {
-        UUID displayUuid = displays.get(ownerUuid);
-        if (displayUuid == null) {
-            return null;
-        }
-        Entity entity = Bukkit.getEntity(displayUuid);
-        if (entity instanceof TextDisplay display && display.isValid()) {
-            return display;
-        }
-        displays.remove(ownerUuid, displayUuid);
-        return null;
+        return protocolManager;
     }
 
     private FileConfiguration config() {
