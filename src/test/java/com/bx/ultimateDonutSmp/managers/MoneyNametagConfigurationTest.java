@@ -45,8 +45,8 @@ class MoneyNametagConfigurationTest {
         assertTrue(config.getBoolean("MONEY-NAMETAGS.ENABLED"));
         assertEquals("&a${balance}", config.getString("MONEY-NAMETAGS.FORMAT"));
         assertFalse(config.getBoolean("MONEY-NAMETAGS.SHORT-FORMAT"));
-        assertEquals(2, config.getInt("MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS"));
-        assertEquals(1.85D, config.getDouble("MONEY-NAMETAGS.Y-OFFSET"));
+        assertEquals(10, config.getInt("MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS"));
+        assertEquals(-0.3D, config.getDouble("MONEY-NAMETAGS.LINE-OFFSET"));
         assertEquals(32.0D, config.getDouble("MONEY-NAMETAGS.VIEW-RANGE"));
         assertTrue(config.getBoolean("MONEY-NAMETAGS.HIDE-WHILE-SNEAKING"));
     }

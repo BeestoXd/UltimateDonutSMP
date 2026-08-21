@@ -305,12 +305,14 @@ MONEY-NAMETAGS:
   # Determines whether balances are shortened to 1.25M instead of 1,250,000.
   # Available options: true, false
   SHORT-FORMAT: false
-  # How often the line follows the player and picks up balance changes, in ticks.
-  # Lower values track movement more closely and cost more. Available options: 1 to 20
-  UPDATE-INTERVAL-TICKS: 2
-  # How far above the player's feet the line sits. Raise it if the line covers the
-  # username, lower it if the line floats too high. Available options: Any decimal number
-  Y-OFFSET: 1.85
+  # How quickly a balance change shows up on the line, in ticks. The line itself is pinned
+  # to the player by the client, so this never affects how closely it follows them.
+  # Available options: 1 to 40
+  UPDATE-INTERVAL-TICKS: 10
+  # Vertical offset from the username, in blocks. The line hangs off the same anchor the
+  # username uses, so negative values drop it below the name and positive values push it
+  # above. Available options: Any decimal number
+  LINE-OFFSET: -0.3
   # How far away the line stays readable, in blocks. Available options: Any decimal number
   VIEW-RANGE: 32.0
   # Determines whether the line disappears while the player sneaks, the way the vanilla
