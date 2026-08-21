@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FreezeManager;
+import com.bx.ultimateDonutSmp.managers.StaffModeManager;
 import com.bx.ultimateDonutSmp.staff.StaffToolType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.entity.Entity;
@@ -12,7 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -48,26 +49,7 @@ public class StaffModeListener implements Listener {
             return;
         }
 
-        ItemStack currentItem = event.getCurrentItem();
-        ItemStack cursorItem = event.getCursor();
-        boolean clickOwnInventory = event.getClickedInventory() != null
-                && event.getClickedInventory().equals(player.getInventory());
-        boolean movingBetweenInventories = event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY
-                || event.getClick().isKeyboardClick()
-                || event.getAction() == InventoryAction.COLLECT_TO_CURSOR;
-        boolean isDropAction = event.getAction() == InventoryAction.DROP_ALL_CURSOR
-                || event.getAction() == InventoryAction.DROP_ONE_CURSOR
-                || event.getAction() == InventoryAction.DROP_ALL_SLOT
-                || event.getAction() == InventoryAction.DROP_ONE_SLOT;
-        boolean isOutsideClick = event.getSlotType() == org.bukkit.event.inventory.InventoryType.SlotType.OUTSIDE
-                || event.getClickedInventory() == null;
-
-        if (!clickOwnInventory
-                && !movingBetweenInventories
-                && !isDropAction
-                && !isOutsideClick
-                && !plugin.getStaffModeManager().isStaffTool(currentItem)
-                && !plugin.getStaffModeManager().isStaffTool(cursorItem)) {
+        if (!touchesStaffTool(player, event)) {
             return;
         }
 
@@ -85,6 +67,10 @@ public class StaffModeListener implements Listener {
             return;
         }
 
+        if (!touchesStaffTool(event)) {
+            return;
+        }
+
         event.setCancelled(true);
         event.setResult(org.bukkit.event.Event.Result.DENY);
     }
@@ -94,6 +80,9 @@ public class StaffModeListener implements Listener {
         Player player = event.getPlayer();
         if (!plugin.getStaffModeManager().isInStaffMode(player.getUniqueId())
                 || !plugin.getStaffModeManager().shouldLockTools()) {
+            return;
+        }
+        if (!plugin.getStaffModeManager().isStaffTool(event.getItemDrop().getItemStack())) {
             return;
         }
 
@@ -111,6 +100,10 @@ public class StaffModeListener implements Listener {
         Player player = event.getPlayer();
         if (!plugin.getStaffModeManager().isInStaffMode(player.getUniqueId())
                 || !plugin.getStaffModeManager().shouldLockTools()) {
+            return;
+        }
+        if (!plugin.getStaffModeManager().isStaffTool(event.getMainHandItem())
+                && !plugin.getStaffModeManager().isStaffTool(event.getOffHandItem())) {
             return;
         }
 
@@ -306,6 +299,37 @@ public class StaffModeListener implements Listener {
         if (result != null) {
             staff.sendMessage(ColorUtils.toComponent(freezeManager.buildToggleMessage(result)));
         }
+    }
+
+    private boolean touchesStaffTool(Player player, InventoryClickEvent event) {
+        StaffModeManager manager = plugin.getStaffModeManager();
+        if (manager.isStaffTool(event.getCurrentItem()) || manager.isStaffTool(event.getCursor())) {
+            return true;
+        }
+
+        if (event.getClick() == ClickType.SWAP_OFFHAND) {
+            return manager.isStaffTool(player.getInventory().getItemInOffHand());
+        }
+
+        int hotbarButton = event.getHotbarButton();
+        if (hotbarButton < 0 || hotbarButton > 8) {
+            return false;
+        }
+        return manager.isStaffTool(player.getInventory().getItem(hotbarButton));
+    }
+
+    private boolean touchesStaffTool(InventoryDragEvent event) {
+        StaffModeManager manager = plugin.getStaffModeManager();
+        if (manager.isStaffTool(event.getOldCursor())) {
+            return true;
+        }
+
+        for (int rawSlot : event.getRawSlots()) {
+            if (manager.isStaffTool(event.getView().getItem(rawSlot))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isOnInteractCooldown(Player player) {

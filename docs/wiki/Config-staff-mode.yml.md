@@ -91,7 +91,7 @@ STAFF-MODE:
 | `STAFF-MODE.AUTO-VANISH-ON-ENABLE` | `bool` | `true`, `false` | `false` | Configures the technical `AUTO-VANISH-ON-ENABLE` parameter for `STAFF-MODE.AUTO-VANISH-ON-ENABLE` in `staff-mode.yml`. |
 | `STAFF-MODE.PERSIST-ON-QUIT` | `bool` | `true`, `false` | `true` | Configures the technical `PERSIST-ON-QUIT` parameter for `STAFF-MODE.PERSIST-ON-QUIT` in `staff-mode.yml`. |
 | `STAFF-MODE.PERSIST-ON-RESTART` | `bool` | `true`, `false` | `true` | Configures the technical `PERSIST-ON-RESTART` parameter for `STAFF-MODE.PERSIST-ON-RESTART` in `staff-mode.yml`. |
-| `STAFF-MODE.LOCK-TOOLS` | `bool` | `true`, `false` | `true` | Configures the technical `LOCK-TOOLS` parameter for `STAFF-MODE.LOCK-TOOLS` in `staff-mode.yml`. |
+| `STAFF-MODE.LOCK-TOOLS` | `bool` | `true`, `false` | `true` | Keeps the Staff Mode hotbar items pinned to the moderator while Staff Mode is active. They cannot be dropped, swapped into the off hand, dragged around, or moved into a chest. Anything else the moderator is carrying stays free to move and drop. Set to `false` to leave the tools loose. |
 | `STAFF-MODE.RESTORE-INVENTORY-ON-DISABLE` | `bool` | `true`, `false` | `true` | Configures the technical `RESTORE-INVENTORY-ON-DISABLE` parameter for `STAFF-MODE.RESTORE-INVENTORY-ON-DISABLE` in `staff-mode.yml`. |
 | `STAFF-MODE.VANISH-ACTIONBAR.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `STAFF-MODE` system. Set to `true` to enable, `false` to disable. |
 | `STAFF-MODE.VANISH-ACTIONBAR.INTERVAL-TICKS` | `int` | Any valid integer number | `'40'` | Configures the technical `INTERVAL-TICKS` parameter for `STAFF-MODE.VANISH-ACTIONBAR.INTERVAL-TICKS` in `staff-mode.yml`. |
