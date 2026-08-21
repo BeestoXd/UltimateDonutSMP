@@ -990,7 +990,7 @@ SETTINGS-MENU:
 | `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.MATERIAL` | `str` | Any string text | `'GOLD_NUGGET'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.MATERIAL` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.SLOT` | `int` | Any valid integer number | `'9'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.SLOT` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.LORE` | `list` | List of configured items/strings | `['&7Fast buy auction items directly', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.LORE` in `menus.yml`. |
-| *(124 additional sub-keys configured in section)* | | | | |
+| *(128 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example
 

@@ -27,6 +27,7 @@ public class PlayerData {
     private boolean payAlertsEnabled;
     private boolean hotbarMessagesEnabled;
     private boolean worthDisplayEnabled;
+    private boolean moneyNametagsEnabled;
     private boolean clearEntitiesMessagesEnabled;
     private boolean bountyAlertsEnabled;
     private boolean tpaConfirmMenuEnabled;
@@ -97,6 +98,7 @@ public class PlayerData {
         this.payAlertsEnabled = true;
         this.hotbarMessagesEnabled = true;
         this.worthDisplayEnabled = true;
+        this.moneyNametagsEnabled = false;
         this.clearEntitiesMessagesEnabled = true;
         this.bountyAlertsEnabled = true;
         this.tpaConfirmMenuEnabled = true;
@@ -457,6 +459,15 @@ public class PlayerData {
 
     public void setWorthDisplayEnabled(boolean worthDisplayEnabled) {
         this.worthDisplayEnabled = worthDisplayEnabled;
+        dirty = true;
+    }
+
+    public boolean isMoneyNametagsEnabled() {
+        return moneyNametagsEnabled;
+    }
+
+    public void setMoneyNametagsEnabled(boolean moneyNametagsEnabled) {
+        this.moneyNametagsEnabled = moneyNametagsEnabled;
         dirty = true;
     }
 

@@ -42,7 +42,8 @@ class DatabaseManagerPlayerSettingsTest {
             "teleport_alerts_enabled",
             "follow_alerts_enabled",
             "explosion_sounds_enabled",
-            "display_donutplus_enabled"
+            "display_donutplus_enabled",
+            "money_nametags_enabled"
     );
 
     @Test
@@ -80,6 +81,7 @@ class DatabaseManagerPlayerSettingsTest {
             original.setFollowAlertsEnabled(false);
             original.setExplosionSoundsEnabled(false);
             original.setDisplayDonutPlusEnabled(false);
+            original.setMoneyNametagsEnabled(true);
 
             manager.savePlayer(original);
             PlayerData loaded = manager.loadPlayer(uuid);
@@ -114,6 +116,7 @@ class DatabaseManagerPlayerSettingsTest {
             assertFalse(loaded.isFollowAlertsEnabled());
             assertFalse(loaded.isExplosionSoundsEnabled());
             assertFalse(loaded.isDisplayDonutPlusEnabled());
+            assertTrue(loaded.isMoneyNametagsEnabled());
         }
     }
 
@@ -157,6 +160,7 @@ class DatabaseManagerPlayerSettingsTest {
                     assertTrue(result.getInt("follow_alerts_enabled") != 0);
                     assertTrue(result.getInt("explosion_sounds_enabled") != 0);
                     assertTrue(result.getInt("display_donutplus_enabled") != 0);
+                    assertFalse(result.getInt("money_nametags_enabled") != 0);
                 }
             }
         }

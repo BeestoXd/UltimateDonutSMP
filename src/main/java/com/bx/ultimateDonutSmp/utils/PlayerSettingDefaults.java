@@ -204,6 +204,8 @@ public final class PlayerSettingDefaults {
                 PlayerData::getTpaHereRequestsChoice, PlayerData::setTpaHereRequestsChoice));
         bindings.put("PAYMENTS", threeChoice(PlayerData::getPaymentsChoice, PlayerData::setPaymentsChoice));
         bindings.put("WORTH_DISPLAY", bool(PlayerData::isWorthDisplayEnabled, PlayerData::setWorthDisplayEnabled));
+        bindings.put("MONEY_NAMETAGS", bool(
+                PlayerData::isMoneyNametagsEnabled, PlayerData::setMoneyNametagsEnabled));
         bindings.put("JOIN_LEAVE_MESSAGES", threeChoice(
                 PlayerData::getJoinLeaveMessagesChoice, PlayerData::setJoinLeaveMessagesChoice));
         bindings.put("PAY_ALERTS", bool(PlayerData::isPayAlertsEnabled, PlayerData::setPayAlertsEnabled));
