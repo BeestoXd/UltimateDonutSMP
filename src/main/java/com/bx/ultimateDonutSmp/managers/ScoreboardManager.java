@@ -449,6 +449,7 @@ public class ScoreboardManager {
         String teamLine = scoreboard.getString("SCOREBOARD.TEAM");
         String boosterLine = scoreboard.getString("SCOREBOARD.SHARD-BOOSTER");
         String shardCuboidLine = scoreboard.getString("SCOREBOARD.SHARD-CUBOID");
+        boolean inTeam = plugin.getTeamManager().isInTeam(player.getUniqueId());
         boolean hasBooster = plugin.getShardManager().hasBooster(player.getUniqueId());
         boolean showShardCuboid = plugin.getShardManager().shouldShowShardCuboidLine(player.getUniqueId());
 
@@ -458,6 +459,7 @@ public class ScoreboardManager {
                     teamLine,
                     boosterLine,
                     shardCuboidLine,
+                    inTeam,
                     hasBooster,
                     showShardCuboid
             );
@@ -475,6 +477,7 @@ public class ScoreboardManager {
             String teamLine,
             String boosterLine,
             String shardCuboidLine,
+            boolean inTeam,
             boolean hasBooster,
             boolean showShardCuboid
     ) {
@@ -484,7 +487,7 @@ public class ScoreboardManager {
 
         String trimmed = line.trim();
         if ("{team}".equalsIgnoreCase(trimmed)) {
-            return teamLine;
+            return inTeam ? teamLine : null;
         }
         if ("{shard_booster}".equalsIgnoreCase(trimmed)) {
             return hasBooster ? boosterLine : null;
