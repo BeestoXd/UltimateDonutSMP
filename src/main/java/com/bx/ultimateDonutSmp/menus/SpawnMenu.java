@@ -8,7 +8,7 @@ public class SpawnMenu extends TeleportAreaMenu {
     public SpawnMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("SPAWN-MENU.TITLE", "&8ѕᴘᴀᴡɴ ᴀʀᴇᴀѕ"),
+                plugin.getConfigManager().getMenus().getString("SPAWN-MENU.TITLE", "&8Spawn areas"),
                 plugin.getConfigManager().getMenus().getInt("SPAWN-MENU.SIZE", 54)
         );
     }
@@ -30,11 +30,11 @@ public class SpawnMenu extends TeleportAreaMenu {
 
     @Override
     protected String getEmptyTitle() {
-        return "&cɴᴏ ѕᴘᴀᴡɴ ᴀʀᴇᴀѕ";
+        return "&cNo spawn areas";
     }
 
     @Override
     protected String getEmptyLore() {
-        return "&7ᴛʜᴇʀᴇ ᴀʀᴇ ɴᴏ ᴠᴀʟɪᴅ ᴄᴜʙᴏɪᴅ-ʙᴀѕᴇᴅ ѕᴘᴀᴡɴ ᴀʀᴇᴀѕ ʏᴇᴛ.";
+        return "&7There are no valid cuboid-based spawn areas yet.";
     }
 }

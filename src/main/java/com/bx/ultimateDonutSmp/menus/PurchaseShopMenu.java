@@ -41,7 +41,7 @@ public class PurchaseShopMenu extends BaseMenu {
     ) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("PURCHASE-SHOP-MENU.TITLE", "&8ᴄᴏɴꜰɪʀᴍᴀᴛɪᴏɴ ᴍᴇɴᴜ"),
+                plugin.getConfigManager().getMenus().getString("PURCHASE-SHOP-MENU.TITLE", "&8Confirmation menu"),
                 plugin.getConfigManager().getMenus().getInt("PURCHASE-SHOP-MENU.SIZE", 27)
         );
         this.item = item;
@@ -128,9 +128,9 @@ public class PurchaseShopMenu extends BaseMenu {
         if (!priceLine.isBlank()) {
             lore.add(replaceCommonPlaceholders(priceLine));
         }
-        lore.add("&7ǫᴜᴀɴᴛɪᴛʏ: &f" + quantity);
-        lore.add("&7ᴀʟʟᴏᴡᴇᴅ: &f" + restriction.minQuantity() + "&7 - &f" + restriction.maxQuantity());
-        lore.add("&7ᴄᴜʀʀᴇɴᴄʏ: &f" + plugin.getCurrencyManager().plural(currencyType()));
+        lore.add("&7Quantity: &f" + quantity);
+        lore.add("&7Allowed: &f" + restriction.minQuantity() + "&7 - &f" + restriction.maxQuantity());
+        lore.add("&7Currency: &f" + plugin.getCurrencyManager().plural(currencyType()));
 
         ItemStack preview = ItemUtils.createItem(item.material(), item.displayName(), lore);
         if (item.enchantments() != null && !item.enchantments().isEmpty()) {
@@ -169,7 +169,7 @@ public class PurchaseShopMenu extends BaseMenu {
     private void buildCancelButton() {
         set(getCancelSlot(), ItemUtils.createItem(
                 ItemUtils.parseMaterial(getMenus().getString("PURCHASE-SHOP-MENU.BUTTONS.CANCEL.MATERIAL", "RED_STAINED_GLASS_PANE")),
-                getMenus().getString("PURCHASE-SHOP-MENU.BUTTONS.CANCEL.NAME", "&cᴄᴀɴᴄᴇʟ"),
+                getMenus().getString("PURCHASE-SHOP-MENU.BUTTONS.CANCEL.NAME", "&cCancel"),
                 replaceCommonPlaceholders(readLines("PURCHASE-SHOP-MENU.BUTTONS.CANCEL.LORE"))
         ));
     }
@@ -177,7 +177,7 @@ public class PurchaseShopMenu extends BaseMenu {
     private void buildConfirmButton() {
         set(getConfirmSlot(), ItemUtils.createItem(
                 ItemUtils.parseMaterial(getMenus().getString("PURCHASE-SHOP-MENU.BUTTONS.CONFIRM.MATERIAL", "LIME_STAINED_GLASS_PANE")),
-                replaceCommonPlaceholders(getMenus().getString("PURCHASE-SHOP-MENU.BUTTONS.CONFIRM.NAME", "&aᴄᴏɴꜰɪʀᴍ")),
+                replaceCommonPlaceholders(getMenus().getString("PURCHASE-SHOP-MENU.BUTTONS.CONFIRM.NAME", "&aConfirm")),
                 replaceCommonPlaceholders(readLines("PURCHASE-SHOP-MENU.BUTTONS.CONFIRM.LORE"))
         ));
     }
@@ -223,12 +223,12 @@ public class PurchaseShopMenu extends BaseMenu {
         }
 
         List<String> lore = List.of(
-                "&7ᴄᴜʀʀᴇɴᴛ ǫᴜᴀɴᴛɪᴛʏ: &f" + quantity,
-                "&eᴄʟɪᴄᴋ ᴛᴏ ᴀᴅᴊᴜѕᴛ ᴛʜᴇ ǫᴜᴀɴᴛɪᴛʏ"
+                "&7Current quantity: &f" + quantity,
+                "&eClick to adjust the quantity"
         );
         set(slot, ItemUtils.createItem(
                 material,
-                replaceCommonPlaceholders(getMenus().getString(path + ".NAME", "&fᴀᴅᴊᴜѕᴛ")),
+                replaceCommonPlaceholders(getMenus().getString(path + ".NAME", "&fAdjust")),
                 lore
         ));
     }
@@ -264,8 +264,8 @@ public class PurchaseShopMenu extends BaseMenu {
                 ? "PURCHASE-SHOP-MENU.MESSAGES.SUCCESS.SHARDS"
                 : "PURCHASE-SHOP-MENU.MESSAGES.SUCCESS.MONEY";
         String fallback = result.currency() == ShopManager.Currency.SHARD
-                ? "&7ʏᴏᴜ ʙᴏᴜɢʜᴛ &e{quantity} {item-name}&7 ꜰᴏʀ {price_formatted}"
-                : "&7ʏᴏᴜ ʙᴏᴜɢʜᴛ &e{quantity} {item-name}&7 ꜰᴏʀ {price_formatted}";
+                ? "&7You bought &e{quantity} {item-name}&7 for {price_formatted}"
+                : "&7You bought &e{quantity} {item-name}&7 for {price_formatted}";
         return replaceMessagePlaceholders(getMenus().getString(path, fallback));
     }
 
@@ -273,27 +273,27 @@ public class PurchaseShopMenu extends BaseMenu {
         return switch (result.reason()) {
             case NO_MONEY -> getMenus().getString(
                     "PURCHASE-SHOP-MENU.MESSAGES.ERROR.NO_MONEY",
-                    "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ "
+                    "&cYou don't have enough "
                             + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.MONEY)
                             + "."
             );
             case NO_SHARDS -> getMenus().getString(
                     "PURCHASE-SHOP-MENU.MESSAGES.ERROR.NO_SHARDS",
-                    "&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ "
+                    "&cYou don't have enough "
                             + plugin.getCurrencyManager().plural(CurrencyManager.CurrencyType.SHARDS)
                             + "."
             );
             case INVENTORY_FULL -> getMenus().getString(
                     "PURCHASE-SHOP-MENU.MESSAGES.ERROR.FULL_INVENTORY",
-                    "&cʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ꜰᴜʟʟ."
+                    "&cYour inventory is full."
             );
-            case NO_PERMISSION -> "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʙᴜʏ ᴛʜɪѕ ɪᴛᴇᴍ.";
-            case INVALID_QUANTITY -> "&cᴛʜᴇ ѕᴇʟᴇᴄᴛᴇᴅ ǫᴜᴀɴᴛɪᴛʏ ɪѕ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ ꜰᴏʀ ᴛʜɪѕ ɪᴛᴇᴍ.";
-            case INVALID_ITEM -> "&cᴛʜɪѕ ɪᴛᴇᴍ ᴄᴀɴɴᴏᴛ ʙᴇ ᴘᴜʀᴄʜᴀѕᴇᴅ ʀɪɢʜᴛ ɴᴏᴡ.";
-            case NO_PLAYER_DATA -> "&cʏᴏᴜʀ ᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ. ᴛʀʏ ᴀɢᴀɪɴ.";
+            case NO_PERMISSION -> "&cYou do not have permission to buy this item.";
+            case INVALID_QUANTITY -> "&cThe selected quantity is not allowed for this item.";
+            case INVALID_ITEM -> "&cThis item cannot be purchased right now.";
+            case NO_PLAYER_DATA -> "&cYour player data could not be loaded. Try again.";
             case REWARD_FAILED -> getMenus().getString(
                     "PURCHASE-SHOP-MENU.MESSAGES.ERROR.REWARD_FAILED",
-                    "&cᴘᴜʀᴄʜᴀѕᴇ ꜰᴀɪʟᴇᴅ ʙᴇᴄᴀᴜѕᴇ ᴛʜᴇ ʀᴇᴡᴀʀᴅ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴅᴇʟɪᴠᴇʀᴇᴅ."
+                    "&cPurchase failed because the reward could not be delivered."
             );
         };
     }
@@ -314,10 +314,10 @@ public class PurchaseShopMenu extends BaseMenu {
         String resolved = replaceCommonPlaceholders(text);
         if (currencyType == CurrencyManager.CurrencyType.SHARDS) {
             resolved = resolved
-                    .replace("{amount} ѕʜᴀʀᴅѕ", "{price_formatted}")
-                    .replace("{amount} ѕʜᴀʀᴅѕ", "{price_formatted}")
-                    .replace("%amount% ѕʜᴀʀᴅѕ", "{price_formatted}")
-                    .replace("${amount} ѕʜᴀʀᴅѕ", "{price_formatted}");
+                    .replace("{amount} shards", "{price_formatted}")
+                    .replace("{amount} shards", "{price_formatted}")
+                    .replace("%amount% shards", "{price_formatted}")
+                    .replace("${amount} shards", "{price_formatted}");
         }
         return resolved
                 .replace("{amount}", amount)
@@ -347,11 +347,11 @@ public class PurchaseShopMenu extends BaseMenu {
         String resolved = text;
         if (currencyType == CurrencyManager.CurrencyType.SHARDS) {
             resolved = resolved
-                    .replace("${price}x &lѕʜᴀʀᴅѕ", "{price_formatted}")
-                    .replace("${price}x ѕʜᴀʀᴅѕ", "{price_formatted}")
-                    .replace("${price} ѕʜᴀʀᴅѕ", "{price_formatted}")
-                    .replace("{price} ѕʜᴀʀᴅѕ", "{price_formatted}")
-                    .replace("%price% ѕʜᴀʀᴅѕ", "{price_formatted}");
+                    .replace("${price}x &lshards", "{price_formatted}")
+                    .replace("${price}x shards", "{price_formatted}")
+                    .replace("${price} shards", "{price_formatted}")
+                    .replace("{price} shards", "{price_formatted}")
+                    .replace("%price% shards", "{price_formatted}");
         }
         return resolved
                 .replace("${price}", formattedPrice)

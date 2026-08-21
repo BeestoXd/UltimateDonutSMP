@@ -23,7 +23,7 @@ public class EcseeCommand implements CommandExecutor {
         if (!(sender instanceof Player viewer)) {
             sender.sendMessage(plugin.getEnderChestManager().getMessage(
                     "ECSEE-PLAYER-ONLY",
-                    "ᴘʟᴀʏᴇʀ ᴏɴʟʏ."
+                    "Player only."
             ));
             return true;
         }
@@ -32,7 +32,7 @@ public class EcseeCommand implements CommandExecutor {
             viewer.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().getMessage(
                             "ECSEE-DISABLED",
-                            "&cᴛʜᴇ /ecsee ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴅɪѕᴀʙʟᴇᴅ."
+                            "&cThe /ecsee command is disabled."
                     )
             ));
             return true;
@@ -42,7 +42,7 @@ public class EcseeCommand implements CommandExecutor {
             viewer.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().getMessage(
                             "ECSEE-NO-PERMISSION",
-                            "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
+                            "&cYou do not have permission to use this command."
                     )
             ));
             return true;
@@ -52,7 +52,7 @@ public class EcseeCommand implements CommandExecutor {
             viewer.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().getMessage(
                             "ECSEE-USAGE",
-                            "&cᴜѕᴀɢᴇ: /ecsee <player>"
+                            "&cUsage: /ecsee <player>"
                     )
             ));
             return true;
@@ -67,7 +67,7 @@ public class EcseeCommand implements CommandExecutor {
             viewer.sendMessage(ColorUtils.toComponent(
                     plugin.getEnderChestManager().formatMessage(
                             "ECSEE-PLAYER-NOT-FOUND",
-                            "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.",
+                            "&cPlayer not found.",
                             "{player}", input,
                             "{target}", input
                     )

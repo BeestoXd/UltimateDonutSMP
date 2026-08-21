@@ -22,21 +22,21 @@ public class FakePlayerCommand implements CommandExecutor {
         FakePlayerManager manager = plugin.getFakePlayerManager();
         if (!PermissionUtils.has(sender, FakePlayerManager.USE_PERMISSION)) {
             send(sender, manager == null
-                    ? "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."
+                    ? "&cYou do not have permission."
                     : manager.publicMessage("NO-PERMISSION", "&cyou do not have permission."));
             return true;
         }
 
         if (!(sender instanceof Player player)) {
             send(sender, manager == null
-                    ? "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
+                    ? "&cOnly players can use this command."
                     : manager.publicMessage("PLAYER-ONLY", "&conly players can use this command."));
             return true;
         }
 
         if (manager == null || !manager.isAvailable()) {
             send(sender, manager == null
-                    ? "&cᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ɪѕ ʀᴇǫᴜɪʀᴇᴅ ꜰᴏʀ /fakeplayer. ɪɴѕᴛᴀʟʟ ᴘʀᴏᴛᴏᴄᴏʟʟɪʙ ᴀɴᴅ ʀᴇѕᴛᴀʀᴛ ᴛʜᴇ ѕᴇʀᴠᴇʀ."
+                    ? "&cProtocolLib is required for /fakeplayer. Install ProtocolLib and restart the server."
                     : manager.publicMessage(
                             "DEPENDENCY-MISSING",
                             "&cprotocollib is required for /fakeplayer. install protocollib and restart the server."

@@ -30,7 +30,7 @@ public class CuboidCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.cuboid")) {
-            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
             return true;
         }
 
@@ -46,7 +46,7 @@ public class CuboidCommand implements CommandExecutor {
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("Player only.");
             return true;
         }
 
@@ -68,10 +68,10 @@ public class CuboidCommand implements CommandExecutor {
                 Material.GOLDEN_SHOVEL,
                 CuboidWandListener.getWandName(),
                 List.of(
-                        "&7ѕᴛᴇᴘ 1: ʟᴇꜰᴛ ᴄʟɪᴄᴋ ᴀ ʙʟᴏᴄᴋ ᴛᴏ ѕᴇᴛ &aᴘᴏѕɪᴛɪᴏɴ 1",
-                        "&7ѕᴛᴇᴘ 2: ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴀ ʙʟᴏᴄᴋ ᴛᴏ ѕᴇᴛ &bᴘᴏѕɪᴛɪᴏɴ 2",
-                        "&7ѕᴛᴇᴘ 3: ᴜѕᴇ &f/cuboid ᴄʀᴇᴀᴛᴇ <name> &7ᴛᴏ ѕᴀᴠᴇ",
-                        "&8ᴛʜᴇ ᴡᴀɴᴅ ᴅɪѕᴀᴘᴘᴇᴀʀѕ ᴀꜰᴛᴇʀ ʙᴏᴛʜ ᴘᴏѕɪᴛɪᴏɴѕ ᴀʀᴇ ѕᴇᴛ"
+                        "&7Step 1: left click a block to set &aposition 1",
+                        "&7Step 2: right click a block to set &bposition 2",
+                        "&7Step 3: use &f/cuboid create <name> &7to save",
+                        "&8The wand disappears after both positions are set"
                 )
         );
 
@@ -82,53 +82,53 @@ public class CuboidCommand implements CommandExecutor {
             leftovers.values().forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
         }
 
-        player.sendMessage(ColorUtils.toComponent("&aʏᴏᴜ ʀᴇᴄᴇɪᴠᴇᴅ ᴛʜᴇ &6ᴄᴜʙᴏɪᴅ ᴡᴀɴᴅ&a. &7ѕᴇᴛ ʙᴏᴛʜ ᴘᴏѕɪᴛɪᴏɴѕ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ."));
+        player.sendMessage(ColorUtils.toComponent("&aYou received the &6cuboid wand&a. &7Set both positions to continue."));
     }
 
     private void createCuboid(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /cuboid ᴄʀᴇᴀᴛᴇ <name>"));
+            player.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid create <name>"));
             return;
         }
         if (!plugin.getCuboidManager().hasFullSelection(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cѕᴇʟᴇᴄᴛ ʙᴏᴛʜ ᴘᴏѕɪᴛɪᴏɴѕ ꜰɪʀѕᴛ ᴜѕɪɴɢ &f/cuboid ᴡᴀɴᴅ&c."));
+            player.sendMessage(ColorUtils.toComponent("&cSelect both positions first using &f/cuboid wand&c."));
             return;
         }
 
         Location[] selection = plugin.getCuboidManager().getSelection(player.getUniqueId());
         plugin.getCuboidManager().addCuboid(args[1], selection[0], selection[1]);
-        player.sendMessage(ColorUtils.toComponent("&aᴄᴜʙᴏɪᴅ &b" + args[1] + " &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ."));
+        player.sendMessage(ColorUtils.toComponent("&aCuboid &b" + args[1] + " &ahas been created."));
     }
 
     private void deleteCuboid(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /cuboid ᴅᴇʟᴇᴛᴇ <name>"));
+            player.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid delete <name>"));
             return;
         }
         String cuboidName = args[1].toLowerCase();
         plugin.getCuboidManager().removeCuboid(cuboidName);
         clearDeletedCuboidReferences(cuboidName);
         if (!plugin.getConfigManager().saveConfig()) {
-            player.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ config.yml."));
+            player.sendMessage(ColorUtils.toComponent("&cFailed to save config.yml."));
             return;
         }
         plugin.reloadAllPluginConfigurations();
-        player.sendMessage(ColorUtils.toComponent("&aᴄᴜʙᴏɪᴅ &b" + args[1] + " &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ."));
+        player.sendMessage(ColorUtils.toComponent("&aCuboid &b" + args[1] + " &ahas been deleted."));
     }
 
     private void listCuboids(Player player) {
         Set<String> names = plugin.getCuboidManager().getCuboidNames();
         if (names.isEmpty()) {
-            player.sendMessage(ColorUtils.toComponent("&7ɴᴏ ᴄᴜʙᴏɪᴅѕ ʜᴀᴠᴇ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ ʏᴇᴛ."));
+            player.sendMessage(ColorUtils.toComponent("&7No cuboids have been created yet."));
             return;
         }
-        player.sendMessage(ColorUtils.toComponent("&7ᴄᴜʙᴏɪᴅѕ: &b" + String.join("&7, &b", names)));
+        player.sendMessage(ColorUtils.toComponent("&7Cuboids: &b" + String.join("&7, &b", names)));
     }
 
     private void bindCuboidSystem(Player player, String[] args) {
         if (args.length < 4) {
             player.sendMessage(ColorUtils.toComponent(
-                    "&cᴜѕᴀɢᴇ: /cuboid ʙɪɴᴅ <cuboid> <spawn|shard|rtp-zone> <true|false>"
+                    "&cUsage: /cuboid bind <cuboid> <spawn|shard|rtp-zone> <true|false>"
             ));
             return;
         }
@@ -136,13 +136,13 @@ public class CuboidCommand implements CommandExecutor {
         String cuboidName = args[1].toLowerCase();
         var cuboid = plugin.getCuboidManager().getCuboid(cuboidName);
         if (cuboid == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴄᴜʙᴏɪᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ: &f" + args[1]));
+            player.sendMessage(ColorUtils.toComponent("&cCuboid not found: &f" + args[1]));
             return;
         }
 
         String role = normalizeRole(args[2]);
         if (role == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ʀᴏʟᴇ. ᴜѕᴇ &fѕᴘᴀᴡɴ&c, &fѕʜᴀʀᴅ&c, ᴏʀ &fʀᴛᴘ-ᴢᴏɴᴇ&c."));
+            player.sendMessage(ColorUtils.toComponent("&cUnknown role. Use &fspawn&c, &fshard&c, or &frtp-zone&c."));
             return;
         }
 
@@ -152,7 +152,7 @@ public class CuboidCommand implements CommandExecutor {
         } else if ("false".equalsIgnoreCase(args[3]) || "off".equalsIgnoreCase(args[3])) {
             enabled = false;
         } else {
-            player.sendMessage(ColorUtils.toComponent("&cᴛᴏɢɢʟᴇ ᴍᴜѕᴛ ʙᴇ &fᴛʀᴜᴇ &cᴏʀ &fꜰᴀʟѕᴇ&c."));
+            player.sendMessage(ColorUtils.toComponent("&cToggle must be &ftrue &cor &ffalse&c."));
             return;
         }
 
@@ -186,26 +186,26 @@ public class CuboidCommand implements CommandExecutor {
             }
             case "rtp-zone" -> config.set("RTP-ZONE.CUBOID", enabled ? cuboidName : "");
             default -> {
-                player.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ʀᴏʟᴇ."));
+                player.sendMessage(ColorUtils.toComponent("&cUnknown role."));
                 return;
             }
         }
 
         if (!plugin.getConfigManager().saveConfig()) {
-            player.sendMessage(ColorUtils.toComponent("&cꜰᴀɪʟᴇᴅ ᴛᴏ ѕᴀᴠᴇ config.yml."));
+            player.sendMessage(ColorUtils.toComponent("&cFailed to save config.yml."));
             return;
         }
         plugin.reloadAllPluginConfigurations();
 
         String state = enabled ? "&atrue" : "&cfalse";
         player.sendMessage(ColorUtils.toComponent(
-                "&aᴄᴜʙᴏɪᴅ &b" + cuboidName + " &aѕᴇᴛ ꜰᴏʀ &f" + role + " &a= " + state
+                "&aCuboid &b" + cuboidName + " &aset for &f" + role + " &a= " + state
         ));
     }
 
     private void reloadAllConfigs(CommandSender sender) {
         plugin.reloadAllPluginConfigurations();
-        sender.sendMessage(ColorUtils.toComponent("&aᴀʟʟ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ꜰɪʟᴇѕ ʜᴀᴠᴇ ʙᴇᴇɴ ʀᴇʟᴏᴀᴅᴇᴅ."));
+        sender.sendMessage(ColorUtils.toComponent("&aAll configuration files have been reloaded."));
     }
 
     private void clearDeletedCuboidReferences(String cuboidName) {
@@ -259,6 +259,6 @@ public class CuboidCommand implements CommandExecutor {
     }
 
     private void sendUsage(CommandSender sender) {
-        sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /cuboid <wand|create <name>|ᴅᴇʟᴇᴛᴇ <name>|ʟɪѕᴛ|ʙɪɴᴅ <cuboid> <spawn|shard|rtp-zone> <true|false>|ʀᴇʟᴏᴀᴅ>"));
+        sender.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid <wand|create <name>|delete <name>|list|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>"));
     }
 }

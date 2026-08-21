@@ -44,7 +44,7 @@ public class TeamKickConfirmMenu extends BaseMenu {
                 menus().getInt(cancelPath + ".SLOT", 11),
                 ItemUtils.createItem(
                         material(cancelPath + ".MATERIAL", Material.RED_STAINED_GLASS_PANE),
-                        menus().getString(cancelPath + ".TITLE", "&cᴄᴀɴᴄᴇʟ"),
+                        menus().getString(cancelPath + ".TITLE", "&cCancel"),
                         replace(menus().getStringList(cancelPath + ".LORE"), Map.of("player", targetName))
                 )
         );
@@ -54,7 +54,7 @@ public class TeamKickConfirmMenu extends BaseMenu {
                 menus().getInt(confirmPath + ".SLOT", 15),
                 ItemUtils.createItem(
                         material(confirmPath + ".MATERIAL", Material.LIME_STAINED_GLASS_PANE),
-                        menus().getString(confirmPath + ".TITLE", "&aᴄᴏɴꜰɪʀᴍ"),
+                        menus().getString(confirmPath + ".TITLE", "&aConfirm"),
                         replace(menus().getStringList(confirmPath + ".LORE"), Map.of("player", targetName))
                 )
         );
@@ -77,7 +77,7 @@ public class TeamKickConfirmMenu extends BaseMenu {
 
         Team team = plugin.getTeamManager().getTeam(player);
         if (team == null || !team.isLeader(player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴѕ ᴛᴏ ᴅᴏ ᴛʜɪѕ."));
+            player.sendMessage(ColorUtils.toComponent("&cYou don't have permissions to do this."));
             player.closeInventory();
             return;
         }
@@ -126,7 +126,7 @@ public class TeamKickConfirmMenu extends BaseMenu {
             name = stored != null ? stored : "player";
         }
         return plugin.getConfigManager().getMenus()
-                .getString(MENU_PATH + ".TITLE", "&8ᴄᴏɴꜰɪʀᴍ ᴋɪᴄᴋɪɴɢ {player}")
+                .getString(MENU_PATH + ".TITLE", "&8Confirm kicking {player}")
                 .replace("{player}", name);
     }
 

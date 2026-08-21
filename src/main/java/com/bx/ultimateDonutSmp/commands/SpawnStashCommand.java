@@ -90,23 +90,23 @@ public class SpawnStashCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        send(sender, "&8&m----------- &dѕᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------");
-        send(sender, "&7ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴛʏᴘᴇѕ:");
+        send(sender, "&8&m----------- &dSpawnstash &8&m-----------");
+        send(sender, "&7Configured types:");
         for (SpawnStashTypeDefinition definition : plugin.getSpawnStashManager().getTypeDefinitions()) {
             send(sender, "&f- &d" + definition.key() + " &8| &7" + ColorUtils.strip(definition.displayName())
-                    + " &8| &7ᴛᴛʟ &f" + definition.ttlSeconds() + "s"
-                    + " &8| &7ʀᴀᴅɪᴜѕ &f" + trim(definition.alertRadius()));
+                    + " &8| &7TTL &f" + definition.ttlSeconds() + "s"
+                    + " &8| &7radius &f" + trim(definition.alertRadius()));
         }
 
         List<SpawnStashInstance> active = plugin.getSpawnStashManager().getActiveStashes();
-        send(sender, "&7ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜᴇѕ: &f" + active.size());
+        send(sender, "&7Active stashes: &f" + active.size());
         for (SpawnStashInstance instance : active) {
             send(sender, "&f#" + instance.id()
-                    + " &8| &dᴛʏᴘᴇ " + instance.typeKey()
+                    + " &8| &dtype " + instance.typeKey()
                     + " &8| &7" + instance.worldName() + " "
                     + instance.originX() + ", " + instance.originY() + ", " + instance.originZ()
-                    + " &8| &7ᴛᴛʟ &f" + plugin.getSpawnStashManager().remainingSeconds(instance) + "s"
-                    + " &8| &7ʙʏ &f" + instance.creatorName());
+                    + " &8| &7TTL &f" + plugin.getSpawnStashManager().remainingSeconds(instance) + "s"
+                    + " &8| &7by &f" + instance.creatorName());
         }
         return true;
     }

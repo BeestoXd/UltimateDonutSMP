@@ -47,13 +47,13 @@ public class HideListMenu extends BaseMenu {
                     Bukkit.getOfflinePlayer(state.playerUuid()),
                     "&b" + state.alias(),
                     List.of(
-                            "&7ʀᴇᴀʟ ɴᴀᴍᴇ: &f" + state.realNameSnapshot(),
-                            "&7ᴍᴏᴅᴇ: &f" + state.mode().name(),
-                            "&7ѕᴋɪɴ: &f" + (state.skinUsername().isBlank() ? "ᴏʀɪɢɪɴᴀʟ" : state.skinUsername()),
-                            "&7ѕᴛᴀᴛᴜѕ: " + (online == null ? "&cᴏꜰꜰʟɪɴᴇ" : "&aᴏɴʟɪɴᴇ"),
+                            "&7Real name: &f" + state.realNameSnapshot(),
+                            "&7Mode: &f" + state.mode().name(),
+                            "&7Skin: &f" + (state.skinUsername().isBlank() ? "Original" : state.skinUsername()),
+                            "&7Status: " + (online == null ? "&cOffline" : "&aOnline"),
                             "",
-                            online == null ? "&7ʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ." : "&aʟᴇꜰᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ.",
-                            "&cʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ʀᴇᴍᴏᴠᴇ."
+                            online == null ? "&7Left-click unavailable." : "&aLeft-click to teleport.",
+                            "&cRight-click to remove."
                     )
             ));
             targets.put(slot, state.playerUuid());
@@ -74,14 +74,14 @@ public class HideListMenu extends BaseMenu {
                 plugin.getHideManager().remove(targetUuid);
                 player.sendMessage(ColorUtils.toComponent(plugin.getHideManager().message(
                         "ADMIN-REMOVED",
-                        "&aѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ʜɪᴅᴇ ꜰʀᴏᴍ &f{player}&a.",
+                        "&aSuccessfully removed hide from &f{player}&a.",
                         "{player}", state.realNameSnapshot()
                 ), player));
                 Player target = Bukkit.getPlayer(targetUuid);
                 if (target != null) {
                     target.sendMessage(ColorUtils.toComponent(plugin.getHideManager().message(
                             "REMOVED-BY-ADMIN",
-                            "&cʏᴏᴜʀ ʜɪᴅᴇ ѕᴛᴀᴛᴇ ʜᴀѕ ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ ʙʏ ᴀɴ ᴀᴅᴍɪɴɪѕᴛʀᴀᴛᴏʀ."
+                            "&cYour hide state has been removed by an administrator."
                     ), target));
                 }
                 build(player);
@@ -108,11 +108,11 @@ public class HideListMenu extends BaseMenu {
             set(slot, ItemUtils.createItem(Material.BLACK_STAINED_GLASS_PANE, " ", List.of()));
         }
         if (page > 0) {
-            set(45, ItemUtils.createItem(Material.ARROW, "&bᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of()));
+            set(45, ItemUtils.createItem(Material.ARROW, "&bPrevious page", List.of()));
         }
-        set(49, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ", List.of()));
+        set(49, ItemUtils.createItem(Material.BARRIER, "&cBack", List.of()));
         if ((page + 1) * PAGE_SIZE < total) {
-            set(53, ItemUtils.createItem(Material.ARROW, "&bɴᴇxᴛ ᴘᴀɢᴇ", List.of()));
+            set(53, ItemUtils.createItem(Material.ARROW, "&bNext page", List.of()));
         }
     }
 
@@ -120,7 +120,7 @@ public class HideListMenu extends BaseMenu {
         int total = Math.max(1, plugin.getHideManager().getStates().size());
         int pages = Math.max(1, (int) Math.ceil(total / (double) PAGE_SIZE));
         return plugin.getConfigManager().getHide()
-                .getString("GUI.LIST.TITLE", "&8ʜɪᴅᴅᴇɴ ᴘʟᴀʏᴇʀѕ - {page}/{pages}")
+                .getString("GUI.LIST.TITLE", "&8Hidden players - {page}/{pages}")
                 .replace("{page}", String.valueOf(Math.min(page + 1, pages)))
                 .replace("{pages}", String.valueOf(pages));
     }

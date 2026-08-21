@@ -26,18 +26,18 @@ public class ShardAdminCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!PermissionUtils.has(sender, PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
             return true;
         }
 
         Mode mode = Mode.fromCommand(command.getName());
         if (mode == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜɴᴋɴᴏᴡɴ ѕʜᴀʀᴅ ᴀᴅᴍɪɴ ᴄᴏᴍᴍᴀɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cUnknown shard admin command."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player> <amount>"));
             return true;
         }
 
@@ -45,36 +45,36 @@ public class ShardAdminCommand implements CommandExecutor {
         try {
             amount = NumberUtils.parseLong(args[1]);
         } catch (NumberFormatException exception) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴀ ᴠᴀʟɪᴅ ɴᴜᴍʙᴇʀ."));
+            sender.sendMessage(ColorUtils.toComponent("&cAmount must be a valid number."));
             return true;
         }
 
         if (mode == Mode.SET) {
             if (amount < 0L) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ᴢᴇʀᴏ ᴏʀ ɢʀᴇᴀᴛᴇʀ."));
+                sender.sendMessage(ColorUtils.toComponent("&cAmount must be zero or greater."));
                 return true;
             }
         } else if (amount <= 0L) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴀᴍᴏᴜɴᴛ ᴍᴜѕᴛ ʙᴇ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ ᴢᴇʀᴏ."));
+            sender.sendMessage(ColorUtils.toComponent("&cAmount must be greater than zero."));
             return true;
         }
 
         EconomyManager.AccountReference account = plugin.getEconomyManager().resolveAccount(args[0]);
         if (account == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cPlayer not found."));
             return true;
         }
 
         PlayerData data = loadData(account);
         if (data == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ᴅᴀᴛᴀ ᴄᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ʟᴏᴀᴅᴇᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cPlayer data could not be loaded."));
             return true;
         }
 
         long before = data.getShards();
         if (mode == Mode.REMOVE && before < amount) {
             sender.sendMessage(ColorUtils.toComponent("&c" + account.displayName()
-                    + " ᴏɴʟʏ ʜᴀѕ " + formatShards(before) + "."));
+                    + " only has " + formatShards(before) + "."));
             return true;
         }
 
@@ -90,14 +90,14 @@ public class ShardAdminCommand implements CommandExecutor {
         }
 
         long after = data.getShards();
-        sender.sendMessage(ColorUtils.toComponent("&a" + mode.pastTense() + " ѕʜᴀʀᴅѕ ꜰᴏʀ &f"
-                + account.displayName() + "&a. &7ʙᴇꜰᴏʀᴇ: &f" + formatShards(before)
-                + " &7ᴀꜰᴛᴇʀ: &f" + formatShards(after)));
+        sender.sendMessage(ColorUtils.toComponent("&a" + mode.pastTense() + " shards for &f"
+                + account.displayName() + "&a. &7Before: &f" + formatShards(before)
+                + " &7After: &f" + formatShards(after)));
 
         Player target = Bukkit.getPlayer(account.uuid());
         if (target != null && !target.equals(sender)) {
-            target.sendMessage(ColorUtils.toComponent("&aʏᴏᴜʀ ѕʜᴀʀᴅѕ ᴡᴇʀᴇ ᴜᴘᴅᴀᴛᴇᴅ ʙʏ &f"
-                    + sender.getName() + "&a. &7ʙᴀʟᴀɴᴄᴇ: &f" + formatShards(after)));
+            target.sendMessage(ColorUtils.toComponent("&aYour shards were updated by &f"
+                    + sender.getName() + "&a. &7Balance: &f" + formatShards(after)));
         }
 
         return true;

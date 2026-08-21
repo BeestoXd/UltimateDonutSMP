@@ -65,12 +65,12 @@ final class OrdersMenuSupport {
                 "ORDERS.GUI.ORDER_ITEM.LORE",
                 List.of(
                         "&f{item}",
-                        "&a{price_each} &fᴇᴀᴄʜ",
+                        "&a{price_each} &feach",
                         "",
-                        "&e{delivered}&7/&a{requested} &7ᴅᴇʟɪᴠᴇʀᴇᴅ",
-                        "&e{paid}&7/&a{total} &7ᴘᴀɪᴅ",
+                        "&e{delivered}&7/&a{requested} &7delivered",
+                        "&e{paid}&7/&a{total} &7paid",
                         "",
-                        ownedByViewer ? "&fᴄʟɪᴄᴋ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴛʜɪѕ ᴏʀᴅᴇʀ" : "&fᴄʟɪᴄᴋ ᴛᴏ ᴅᴇʟɪᴠᴇʀ ᴛʜɪѕ ɪᴛᴇᴍ"
+                        ownedByViewer ? "&fClick to manage this order" : "&fClick to deliver this item"
                 ),
                 "{item}", manager.describeItem(order.requestedItem()),
                 "{owner}", order.ownerName(),
@@ -87,7 +87,7 @@ final class OrdersMenuSupport {
         String name = text(
                 plugin,
                 "ORDERS.GUI.ORDER_ITEM.NAME",
-                "&a{owner}'ѕ ᴏʀᴅᴇʀ",
+                "&a{owner}'s order",
                 "{owner}", order.ownerName(),
                 "{item}", manager.describeItem(order.requestedItem())
         );
@@ -102,11 +102,11 @@ final class OrdersMenuSupport {
         if (claim.refundClaim()) {
             return ItemUtils.createItem(
                     Material.SUNFLOWER,
-                    text(plugin, "ORDERS.GUI.CLAIM.REFUND_NAME", "&aᴇѕᴄʀᴏᴡ ʀᴇꜰᴜɴᴅ"),
+                    text(plugin, "ORDERS.GUI.CLAIM.REFUND_NAME", "&aEscrow refund"),
                     list(
                             plugin,
                             "ORDERS.GUI.CLAIM.REFUND_LORE",
-                            List.of("&7ᴀᴍᴏᴜɴᴛ: &f{amount}", "&7ᴏʀᴅᴇʀ: &f#{order_id}", "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴄᴏʟʟᴇᴄᴛ"),
+                            List.of("&7Amount: &f{amount}", "&7Order: &f#{order_id}", "", "&eClick to collect"),
                             "{amount}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
                             "{order_id}", String.valueOf(claim.orderId())
                     )
@@ -117,10 +117,10 @@ final class OrdersMenuSupport {
                 plugin,
                 "ORDERS.GUI.CLAIM.ITEM_LORE",
                 List.of(
-                        "&7ᴏʀᴅᴇʀ: &f#{order_id}",
-                        "&7ᴄʀᴇᴀᴛᴇᴅ: &f{age} ᴀɢᴏ",
+                        "&7Order: &f#{order_id}",
+                        "&7Created: &f{age} ago",
                         "",
-                        "&eᴄʟɪᴄᴋ ᴛᴏ ᴄᴏʟʟᴇᴄᴛ"
+                        "&eClick to collect"
                 ),
                 "{order_id}", String.valueOf(claim.orderId()),
                 "{age}", NumberUtils.formatTimeLong(Math.max(0L,
@@ -143,7 +143,7 @@ final class OrdersMenuSupport {
             boolean preserveOriginalLore
     ) {
         if (source == null || source.getType().isAir()) {
-            return ItemUtils.createItem(Material.BARRIER, "&cᴍɪѕѕɪɴɢ ɪᴛᴇᴍ", List.of("&7ѕᴛᴏʀᴇᴅ ɪᴛᴇᴍ ᴅᴀᴛᴀ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ."));
+            return ItemUtils.createItem(Material.BARRIER, "&cMissing item", List.of("&7Stored item data is unavailable."));
         }
 
         ItemStack display = source.clone();
@@ -156,7 +156,7 @@ final class OrdersMenuSupport {
         List<String> combinedLore = new ArrayList<>();
         List<String> enchantLines = ItemKey.fromStack(source).enchantLoreLines("&7- &d");
         if (!enchantLines.isEmpty()) {
-            combinedLore.add(text(plugin, "ORDERS.GUI.REQUIRED_ENCHANTMENTS", "&bʀᴇǫᴜɪʀᴇᴅ ᴇɴᴄʜᴀɴᴛᴍᴇɴᴛѕ:"));
+            combinedLore.add(text(plugin, "ORDERS.GUI.REQUIRED_ENCHANTMENTS", "&bRequired enchantments:"));
             combinedLore.addAll(enchantLines);
             combinedLore.add("");
         }

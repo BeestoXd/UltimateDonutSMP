@@ -33,7 +33,7 @@ public final class SellGui extends BaseMenu {
             PlayerPreference preference
     ) {
         super(plugin, plugin.getConfigManager().getAuctionHouse()
-                .getString("GUI.SELL.TITLE", "&8ѕᴇʟʟ ɪᴛᴇᴍ"), 45);
+                .getString("GUI.SELL.TITLE", "&8Sell item"), 45);
         this.escrowItem = item.clone();
         this.price = price;
         this.preference = preference;
@@ -62,11 +62,11 @@ public final class SellGui extends BaseMenu {
                         plugin,
                         "GUI.SELL.SUMMARY",
                         Material.GOLD_INGOT,
-                        "&6ʟɪѕᴛɪɴɢ ѕᴜᴍᴍᴀʀʏ",
+                        "&6Listing summary",
                         List.of(
-                                "&7ᴘʀɪᴄᴇ: {price}",
-                                "&7ᴅᴜʀᴀᴛɪᴏɴ: &f{duration}",
-                                "&7ᴄᴀᴛᴇɢᴏʀʏ: &f{category}"
+                                "&7Price: {price}",
+                                "&7Duration: &f{duration}",
+                                "&7Category: &f{category}"
                         ),
                         "{price}", plugin.getCurrencyManager().formatMoney(price),
                         "{duration}", plugin.getAuctionHouseManager().formatDuration(durations.get(selectedDurationIndex)),
@@ -89,12 +89,12 @@ public final class SellGui extends BaseMenu {
                             ? AuctionHouseMenuSupport.configText(
                                     plugin,
                                     "GUI.TEXT.SELECTED.NAME",
-                                    "&aѕᴇʟᴇᴄᴛᴇᴅ"
+                                    "&aSelected"
                             )
                             : AuctionHouseMenuSupport.configText(
                                     plugin,
                                     "GUI.TEXT.CLICK_TO_SELECT.NAME",
-                                    "&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ"
+                                    "&7Click to select"
                             )
             ));
         }
@@ -118,12 +118,12 @@ public final class SellGui extends BaseMenu {
                             ? AuctionHouseMenuSupport.configText(
                                     plugin,
                                     "GUI.TEXT.SELECTED.NAME",
-                                    "&aѕᴇʟᴇᴄᴛᴇᴅ"
+                                    "&aSelected"
                             )
                             : AuctionHouseMenuSupport.configText(
                                     plugin,
                                     "GUI.TEXT.CLICK_TO_SELECT.NAME",
-                                    "&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ"
+                                    "&7Click to select"
                             )
             ));
         }
@@ -133,8 +133,8 @@ public final class SellGui extends BaseMenu {
                         plugin,
                         "GUI.SELL.CONFIRM",
                         Material.LIME_STAINED_GLASS_PANE,
-                        "&aᴄᴏɴꜰɪʀᴍ ʟɪѕᴛɪɴɢ",
-                        List.of("&7ᴘʀɪᴄᴇ: {price}", "&7ᴅᴜʀᴀᴛɪᴏɴ: &f{duration}", "&eᴄʟɪᴄᴋ ᴛᴏ ʟɪѕᴛ"),
+                        "&aConfirm listing",
+                        List.of("&7Price: {price}", "&7Duration: &f{duration}", "&eClick to list"),
                         "{price}", plugin.getCurrencyManager().formatMoney(price),
                         "{duration}", plugin.getAuctionHouseManager().formatDuration(durations.get(selectedDurationIndex))
                 ));
@@ -143,8 +143,8 @@ public final class SellGui extends BaseMenu {
                         plugin,
                         "GUI.SELL.CANCEL",
                         Material.RED_STAINED_GLASS_PANE,
-                        "&cᴄᴀɴᴄᴇʟ",
-                        List.of("&7ʀᴇᴛᴜʀɴ ᴛʜᴇ ɪᴛᴇᴍ ᴡɪᴛʜᴏᴜᴛ ʟɪѕᴛɪɴɢ")
+                        "&cCancel",
+                        List.of("&7Return the item without listing")
                 ));
     }
 

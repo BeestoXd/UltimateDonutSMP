@@ -915,7 +915,7 @@ public class RTPManager {
     public boolean queueMenuTeleport(Player player, RTPDestination destination) {
         if (!isEnabled()) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cʀᴛᴘ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cRTP is disabled.")
             ));
             return false;
         }
@@ -928,14 +928,14 @@ public class RTPManager {
     public boolean queueCommandTeleport(Player player, String selector) {
         if (!isEnabled()) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cʀᴛᴘ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cRTP is disabled.")
             ));
             return false;
         }
         String worldName = resolveWorldSelector(selector);
         if (worldName == null || worldName.isBlank()) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cᴡᴏʀʟᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ.")
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cWorld not found.")
             ));
             return false;
         }
@@ -1202,7 +1202,7 @@ public class RTPManager {
 
     private boolean queueTeleport(Player player, String worldName) {
         if (isDeniedWorld(worldName)) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ʀᴛᴘ ɪɴ ᴛʜɪѕ ᴡᴏʀʟᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cYou cannot RTP in this world."));
             return false;
         }
 
@@ -1212,7 +1212,7 @@ public class RTPManager {
             double playtimeHours = data != null ? data.getTotalPlaytimeSeconds() / 3600.0 : 0.0;
             if (playtimeHours < reqHours) {
                 double currentDisplayHours = data != null ? (data.getTotalPlaytimeSeconds() / 360) / 10.0 : 0.0;
-                String message = plugin.getConfigManager().getRtp().getString("MESSAGES.PLAYTIME-REQUIRED", "&cʏᴏᴜ ɴᴇᴇᴅ ᴀᴛ ʟᴇᴀѕᴛ {required} ʜᴏᴜʀѕ ᴏꜰ ᴘʟᴀʏᴛɪᴍᴇ ᴛᴏ ʀᴛᴘ ᴛᴏ {world}. &7(ᴄᴜʀʀᴇɴᴛ: {current}ʜ)");
+                String message = plugin.getConfigManager().getRtp().getString("MESSAGES.PLAYTIME-REQUIRED", "&cYou need at least {required} hours of playtime to RTP to {world}. &7(Current: {current}h)");
                 message = message.replace("{required}", String.format(Locale.ROOT, "%.1f", reqHours))
                         .replace("{world}", describeWorld(worldName))
                         .replace("{current}", String.format(Locale.ROOT, "%.1f", currentDisplayHours));
@@ -1224,7 +1224,7 @@ public class RTPManager {
         if (isConfiguredDestinationDisabled(worldName)) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
-                            .getString("MESSAGES.DESTINATION-DISABLED", "&cᴛʜɪѕ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")
+                            .getString("MESSAGES.DESTINATION-DISABLED", "&cThis destination is currently disabled.")
             ));
             return false;
         }
@@ -1232,7 +1232,7 @@ public class RTPManager {
         World world = resolveWorld(worldName);
         if (world == null) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cᴡᴏʀʟᴅ ɴᴏᴛ ꜰᴏᴜɴᴅ.")
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.WORLD-NOT-EXIST", "&cWorld not found.")
             ));
             return false;
         }
@@ -1241,7 +1241,7 @@ public class RTPManager {
         if (settings == null) {
             player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getRtp()
-                            .getString("MESSAGES.DESTINATION-DISABLED", "&cᴛʜɪѕ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")
+                            .getString("MESSAGES.DESTINATION-DISABLED", "&cThis destination is currently disabled.")
             ));
             return false;
         }
@@ -1311,7 +1311,7 @@ public class RTPManager {
 
         String worldLabel = describeWorld(worldName);
         String searching = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCHING", "&aѕᴇᴀʀᴄʜɪɴɢ ꜰᴏʀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ɪɴ {world}...")
+                .getString("MESSAGES.SEARCHING", "&aSearching for safe location in {world}...")
                 .replace("{world}", worldLabel);
         player.sendMessage(ColorUtils.toComponent(searching));
 
@@ -1502,7 +1502,7 @@ public class RTPManager {
                 displaySearchCount(progress.chunkSamplesUsed, progress.settings.maxChunkSamples()));
         String maxSamples = formatSearchLimit(progress.settings.maxChunkSamples());
         String maxAttemptsMessage = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.MAX-ATTEMPTS", "&cᴄᴏᴜʟᴅ ɴᴏᴛ ꜰɪɴᴅ ᴀ ѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ᴀꜰᴛᴇʀ %attempts% ᴀᴛᴛᴇᴍᴘᴛѕ.")
+                .getString("MESSAGES.MAX-ATTEMPTS", "&cCould not find a safe location after %attempts% attempts.")
                 .replace("%attempts%", attempts)
                 .replace("{attempts}", attempts)
                 .replace("%max_attempts%", maxAttempts)
@@ -1544,14 +1544,14 @@ public class RTPManager {
         markRtpUsed(player.getUniqueId(), worldName);
 
         String foundMessage = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SAFE-LOCATION-FOUND", "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ᴀᴛ: x:{x} ʏ:{y} ᴢ:{z}")
+                .getString("MESSAGES.SAFE-LOCATION-FOUND", "&aSafe location found at: x:{x} y:{y} z:{z}")
                 .replace("{x}", String.valueOf(found.getBlockX()))
                 .replace("{y}", String.valueOf(found.getBlockY()))
                 .replace("{z}", String.valueOf(found.getBlockZ()));
         if (!PlayerSettingUtils.rtpCoordinatesEnabled(plugin, player)) {
             foundMessage = plugin.getConfigManager().getRtp().getString(
                     "MESSAGES.SAFE-LOCATION-FOUND-HIDDEN",
-                    "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ."
+                    "&aSafe location found."
             );
         }
         player.sendMessage(ColorUtils.toComponent(foundMessage));
@@ -1611,7 +1611,7 @@ public class RTPManager {
         long displayedSeconds = getDisplayedSearchSeconds(progress.elapsedTicks);
 
         String actionBar = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7ѕᴇᴀʀᴄʜɪɴɢ {world}... &b{elapsed}ѕ");
+                .getString("MESSAGES.SEARCH-ACTIONBAR", "&7Searching {world}... &b{elapsed}s");
         actionBar = stripSearchCounter(actionBar)
                 .replace("{world}", describeWorld(progress.worldName))
                 .replace("{elapsed}", formatElapsedSeconds(progress.elapsedTicks))
@@ -1635,7 +1635,7 @@ public class RTPManager {
 
     private void sendFoundActionBar(Player player, String worldName, Location found, long refreshTick) {
         String actionBar = plugin.getConfigManager().getRtp()
-                .getString("MESSAGES.SEARCH-FOUND-ACTIONBAR", "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ɪɴ {world}! &7ᴘʀᴇᴘᴀʀɪɴɢ ᴛᴇʟᴇᴘᴏʀᴛ...")
+                .getString("MESSAGES.SEARCH-FOUND-ACTIONBAR", "&aSafe location found in {world}! &7Preparing teleport...")
                 .replace("{world}", describeWorld(worldName))
                 .replace("{x}", String.valueOf(found.getBlockX()))
                 .replace("{y}", String.valueOf(found.getBlockY()))
@@ -1643,7 +1643,7 @@ public class RTPManager {
         if (!PlayerSettingUtils.rtpCoordinatesEnabled(plugin, player)) {
             actionBar = plugin.getConfigManager().getRtp().getString(
                     "MESSAGES.SEARCH-FOUND-ACTIONBAR-HIDDEN",
-                    "&aѕᴀꜰᴇ ʟᴏᴄᴀᴛɪᴏɴ ꜰᴏᴜɴᴅ ɪɴ {world}! &7ᴘʀᴇᴘᴀʀɪɴɢ ᴛᴇʟᴇᴘᴏʀᴛ..."
+                    "&aSafe location found in {world}! &7Preparing teleport..."
             ).replace("{world}", describeWorld(worldName));
         }
         sendPersistentActionBar(player, actionBar, refreshTick);
@@ -2600,7 +2600,7 @@ public class RTPManager {
         String warning = plugin.getConfigManager().getRtp()
                 .getString(
                         "MESSAGES.TP-WARNING",
-                        "&eᴅᴏ ɴᴏᴛ ᴍᴏᴠᴇ ꜰᴏʀ &b{countdown}&e ѕᴇᴄᴏɴᴅѕ ᴏʀ ᴛʜᴇ ᴛᴇʟᴇᴘᴏʀᴛ ᴡɪʟʟ ʙᴇ ᴄᴀɴᴄᴇʟᴇᴅ."
+                        "&eDo not move for &b{countdown}&e seconds or the teleport will be canceled."
                 )
                 .replace("{world}", describeWorld(worldName))
                 .replace("{countdown}", String.valueOf(teleportCountdown));

@@ -855,7 +855,7 @@ public class CrateVisualManager {
         if (lines.isEmpty()) {
             lines = List.of(
                     "{crate}",
-                    "&7ʀɪɢʜᴛ-ᴄʟɪᴄᴋ ᴛᴏ ᴏᴘᴇɴ"
+                    "&7Right-click to open"
             );
         }
 

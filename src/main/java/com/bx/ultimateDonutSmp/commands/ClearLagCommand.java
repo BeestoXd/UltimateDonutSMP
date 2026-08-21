@@ -19,7 +19,7 @@ public class ClearLagCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.clearlag")) {
-            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
             return true;
         }
         plugin.getClearLagManager().clearEntities();

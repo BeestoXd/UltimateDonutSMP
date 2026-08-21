@@ -136,34 +136,34 @@ public class SpawnStashManager {
 
     public SpawnResult spawn(Player creator, String typeKey) {
         if (creator == null) {
-            return SpawnResult.fail(message("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
+            return SpawnResult.fail(message("PLAYER-ONLY", "&cOnly players can use this command."));
         }
         if (!isEnabled()) {
-            return SpawnResult.fail(message("DISABLED", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            return SpawnResult.fail(message("DISABLED", "&cSpawnstash is currently disabled."));
         }
 
         SpawnStashTypeDefinition definition = getTypeDefinition(typeKey);
         if (definition == null) {
             return SpawnResult.fail(message(
                     "INVALID-TYPE",
-                    "&cᴜɴᴋɴᴏᴡɴ ѕᴛᴀѕʜ ᴛʏᴘᴇ '&f{type}&c'.",
+                    "&cUnknown stash type '&f{type}&c'.",
                     "{type}", typeKey == null ? "" : typeKey
             ));
         }
         if (definition.blocks().isEmpty()) {
-            return SpawnResult.fail(message("INVALID-CONFIG", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: {reason}.",
-                    "{reason}", "ᴛʏᴘᴇ ʜᴀѕ ɴᴏ ʙʟᴏᴄᴋѕ"));
+            return SpawnResult.fail(message("INVALID-CONFIG", "&cSpawnstash config is invalid: {reason}.",
+                    "{reason}", "Type has no blocks"));
         }
         if (definition.blocks().size() > maxBlocksPerStash) {
-            return SpawnResult.fail(message("INVALID-CONFIG", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: {reason}.",
-                    "{reason}", "ᴛʏᴘᴇ ᴇxᴄᴇᴇᴅѕ ᴍᴀx ʙʟᴏᴄᴋѕ"));
+            return SpawnResult.fail(message("INVALID-CONFIG", "&cSpawnstash config is invalid: {reason}.",
+                    "{reason}", "Type exceeds max blocks"));
         }
 
         Location playerLocation = creator.getLocation();
         World world = playerLocation.getWorld();
         if (world == null) {
-            return SpawnResult.fail(message("INVALID-CONFIG", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: {reason}.",
-                    "{reason}", "ᴡᴏʀʟᴅ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ"));
+            return SpawnResult.fail(message("INVALID-CONFIG", "&cSpawnstash config is invalid: {reason}.",
+                    "{reason}", "World is unavailable"));
         }
 
         BlockFace facing = BlockFace.SOUTH;
@@ -181,16 +181,16 @@ public class SpawnStashManager {
                 Block block = world.getBlockAt(originX + offset.x(), originY + offset.y(), originZ + offset.z());
                 String key = blockKey(block);
                 if (!blockKeys.add(key)) {
-                    return SpawnResult.fail(message("INVALID-CONFIG", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: {reason}.",
-                            "{reason}", "ᴅᴜᴘʟɪᴄᴀᴛᴇ ʙʟᴏᴄᴋ ᴏꜰꜰѕᴇᴛ"));
+                    return SpawnResult.fail(message("INVALID-CONFIG", "&cSpawnstash config is invalid: {reason}.",
+                            "{reason}", "Duplicate block offset"));
                 }
                 if (blockIndex.containsKey(key)) {
-                    return SpawnResult.fail(message("INVALID-CONFIG", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: {reason}.",
-                            "{reason}", "ᴛᴀʀɢᴇᴛ ᴏᴠᴇʀʟᴀᴘѕ ᴀɴ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ"));
+                    return SpawnResult.fail(message("INVALID-CONFIG", "&cSpawnstash config is invalid: {reason}.",
+                            "{reason}", "Target overlaps an active stash"));
                 }
                 if (!overwriteBlocks && !block.isEmpty()) {
-                    return SpawnResult.fail(message("INVALID-CONFIG", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: {reason}.",
-                            "{reason}", "ᴛᴀʀɢᴇᴛ ɪѕ ɴᴏᴛ ᴇᴍᴘᴛʏ"));
+                    return SpawnResult.fail(message("INVALID-CONFIG", "&cSpawnstash config is invalid: {reason}.",
+                            "{reason}", "Target is not empty"));
                 }
                 targetBlocks.add(block);
                 blockLocations.add(block.getLocation());
@@ -211,8 +211,8 @@ public class SpawnStashManager {
                 unregisterTemporarySpawners(targetBlocks);
                 restoreSnapshots(snapshots);
                 plugin.getLogger().log(Level.WARNING, "Failed to spawn SpawnStash type " + definition.key(), exception);
-                return SpawnResult.fail(message("INVALID-CONFIG", "&cѕᴘᴀᴡɴѕᴛᴀѕʜ ᴄᴏɴꜰɪɢ ɪѕ ɪɴᴠᴀʟɪᴅ: {reason}.",
-                        "{reason}", exception.getMessage() == null ? "ʙʟᴏᴄᴋ ᴘʟᴀᴄᴇᴍᴇɴᴛ ꜰᴀɪʟᴇᴅ" : exception.getMessage()));
+                return SpawnResult.fail(message("INVALID-CONFIG", "&cSpawnstash config is invalid: {reason}.",
+                        "{reason}", exception.getMessage() == null ? "Block placement failed" : exception.getMessage()));
             }
 
             SpawnStashInstance instance = new SpawnStashInstance(
@@ -241,7 +241,7 @@ public class SpawnStashManager {
 
             return SpawnResult.success(message(
                     "SPAWNED",
-                    "&aѕᴘᴀᴡɴᴇᴅ ѕᴛᴀѕʜ #{type} ѕᴜᴄᴄᴇѕѕꜰᴜʟʟʏ. &7(ɪᴅ: {id})",
+                    "&aSpawned stash #{type} successfully. &7(ID: {id})",
                     "{type}", definition.key(),
                     "{display}", ColorUtils.strip(definition.displayName()),
                     "{id}", String.valueOf(id)
@@ -252,16 +252,16 @@ public class SpawnStashManager {
     public synchronized RemovalResult removeById(long id) {
         SpawnStashInstance instance = activeStashes.get(id);
         if (instance == null) {
-            return RemovalResult.fail(message("NO-ACTIVE", "&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ."));
+            return RemovalResult.fail(message("NO-ACTIVE", "&cNo active stash found."));
         }
         restoreInternal(id, "manual");
-        return RemovalResult.success(message("REMOVED", "&aʀᴇᴍᴏᴠᴇᴅ ѕᴛᴀѕʜ &f#{id}&a.",
+        return RemovalResult.success(message("REMOVED", "&aRemoved stash &f#{id}&a.",
                 "{id}", String.valueOf(id)), 1);
     }
 
     public RemovalResult removeNearest(Player player) {
         if (player == null) {
-            return RemovalResult.fail(message("PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."));
+            return RemovalResult.fail(message("PLAYER-ONLY", "&cOnly players can use this command."));
         }
 
         SpawnStashInstance nearest = null;
@@ -281,7 +281,7 @@ public class SpawnStashManager {
         }
 
         if (nearest == null) {
-            return RemovalResult.fail(message("NO-ACTIVE", "&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ."));
+            return RemovalResult.fail(message("NO-ACTIVE", "&cNo active stash found."));
         }
         return removeById(nearest.id());
     }
@@ -289,9 +289,9 @@ public class SpawnStashManager {
     public synchronized RemovalResult removeAll() {
         int count = restoreAllInternal("manual-all");
         if (count <= 0) {
-            return RemovalResult.fail(message("NO-ACTIVE", "&cɴᴏ ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ ꜰᴏᴜɴᴅ."));
+            return RemovalResult.fail(message("NO-ACTIVE", "&cNo active stash found."));
         }
-        return RemovalResult.success(message("REMOVED-ALL", "&aʀᴇᴍᴏᴠᴇᴅ &f{count}&a ᴀᴄᴛɪᴠᴇ ѕᴛᴀѕʜ(ᴇѕ).",
+        return RemovalResult.success(message("REMOVED-ALL", "&aRemoved &f{count}&a active stash(es).",
                 "{count}", String.valueOf(count)), count);
     }
 
@@ -346,7 +346,7 @@ public class SpawnStashManager {
 
     public void sendUsage(CommandSender sender, String label) {
         for (String line : messageList("USAGE", List.of(
-                "&8&m----------- &dѕᴘᴀᴡɴѕᴛᴀѕʜ &8&m-----------",
+                "&8&m----------- &dSpawnstash &8&m-----------",
                 "&f/" + label + " &7- spawn random bait stash",
                 "&f/" + label + " <type> &7- spawn a bait stash",
                 "&f/" + label + " spawn <type> &7- spawn a bait stash",
@@ -398,7 +398,7 @@ public class SpawnStashManager {
                 continue;
             }
             String normalizedKey = normalizeTypeKey(key);
-            String displayName = typeSection.getString("DISPLAY_NAME", "&dѕᴛᴀѕʜ " + normalizedKey);
+            String displayName = typeSection.getString("DISPLAY_NAME", "&dStash " + normalizedKey);
             long ttl = Math.max(1L, typeSection.getLong("TTL_SECONDS", defaultTtlSeconds));
             double radius = Math.max(1.0D, typeSection.getDouble("ALERT_RADIUS", defaultAlertRadius));
             SpawnStashOffset pasteOffset = parseOffsetValue(typeSection.get("PASTE_OFFSET"), SpawnStashOffset.ZERO);
@@ -526,7 +526,7 @@ public class SpawnStashManager {
                 if (logToConsole) {
                     plugin.getLogger().info(ColorUtils.strip(message(
                             "EXPIRED",
-                            "&7ѕᴘᴀᴡɴѕᴛᴀѕʜ #{id} ᴇxᴘɪʀᴇᴅ ᴀɴᴅ ᴡᴀѕ ʀᴏʟʟᴇᴅ ʙᴀᴄᴋ.",
+                            "&7Spawnstash #{id} expired and was rolled back.",
                             "{id}", String.valueOf(instance.id()),
                             "{type}", instance.typeKey()
                     )));
@@ -580,8 +580,8 @@ public class SpawnStashManager {
 
         Location alertLocation = location == null ? player.getLocation() : location;
         List<String> lines = messageList("ALERT", List.of(
-                "&8[&dѕᴘᴀᴡɴѕᴛᴀѕʜ&8] &f{player} &7ᴛʀɪɢɢᴇʀᴇᴅ &d{reason}&7 ᴏɴ ѕᴛᴀѕʜ &f#{id}&7 (&f{type}&7)",
-                "&7ʟᴏᴄᴀᴛɪᴏɴ: &f{world} {x}, {y}, {z} &8| &7ᴄʀᴇᴀᴛᴇᴅ ʙʏ: &f{creator}"
+                "&8[&dSpawnstash&8] &f{player} &7triggered &d{reason}&7 on stash &f#{id}&7 (&f{type}&7)",
+                "&7Location: &f{world} {x}, {y}, {z} &8| &7created by: &f{creator}"
         ),
                 "{player}", player.getName(),
                 "{reason}", displayReason(normalizedReason),
@@ -618,7 +618,7 @@ public class SpawnStashManager {
         String command = "/tp " + target.getName();
         String hover = message(
                 "ALERT-HOVER",
-                "&eᴄʟɪᴄᴋ ᴛᴏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ &f{player}",
+                "&eClick to teleport to &f{player}",
                 "{player}", target.getName()
         );
         for (String line : lines) {

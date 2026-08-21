@@ -19,18 +19,18 @@ public class RTPCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("Player only.");
             return true;
         }
 
         if (!plugin.getConfigManager().isCommandEnabled("RTP")) {
-            player.sendMessage(ColorUtils.toComponent("&cʀᴛᴘ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cRTP command is currently disabled."));
             return true;
         }
 
         if (!plugin.getRtpManager().isEnabled()) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cʀᴛᴘ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")));
+                    plugin.getConfigManager().getRtp().getString("MESSAGES.DISABLED", "&cRTP is disabled.")));
             return true;
         }
 

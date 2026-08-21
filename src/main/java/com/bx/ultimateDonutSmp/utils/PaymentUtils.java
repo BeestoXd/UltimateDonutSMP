@@ -23,7 +23,7 @@ public final class PaymentUtils {
 
         Player target = plugin.getHideManager().findOnlinePlayer(sender, targetName);
         if (target == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+            sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
             return false;
         }
 
@@ -34,7 +34,7 @@ public final class PaymentUtils {
         PlayerData senderData = plugin.getPlayerDataManager().get(sender);
         PlayerData targetData = plugin.getPlayerDataManager().get(target);
         if (targetData == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴛᴀʀɢᴇᴛ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cTarget profile not found."));
             return false;
         }
         if (targetData.getPaymentsChoice() == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
@@ -98,7 +98,7 @@ public final class PaymentUtils {
 
         Player target = plugin.getHideManager().findOnlinePlayer(sender, targetName);
         if (target == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+            sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
             return false;
         }
 

@@ -55,10 +55,10 @@ public class DisguiseSkinMenu extends BaseMenu {
                 texture == null ? null : texture.value(),
                 "&d" + option.displayName(),
                 List.of(
-                        "&7ᴜѕᴇʀɴᴀᴍᴇ: &f" + option.username(),
-                        "&7ᴋᴇʏ: &f" + option.key(),
+                        "&7Username: &f" + option.username(),
+                        "&7Key: &f" + option.key(),
                         "",
-                        "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ ᴛʜɪѕ ѕᴋɪɴ."
+                        "&eClick to select this skin."
                 )
         );
     }
@@ -104,11 +104,11 @@ public class DisguiseSkinMenu extends BaseMenu {
             set(slot, ItemUtils.createItem(Material.BLACK_STAINED_GLASS_PANE, " ", List.of()));
         }
         if (page > 0) {
-            set(45, ItemUtils.createItem(Material.ARROW, "&bᴘʀᴇᴠɪᴏᴜѕ ᴘᴀɢᴇ", List.of()));
+            set(45, ItemUtils.createItem(Material.ARROW, "&bPrevious page", List.of()));
         }
-        set(49, ItemUtils.createItem(Material.BARRIER, "&cʙᴀᴄᴋ", List.of()));
+        set(49, ItemUtils.createItem(Material.BARRIER, "&cBack", List.of()));
         if ((page + 1) * PAGE_SIZE < total) {
-            set(53, ItemUtils.createItem(Material.ARROW, "&bɴᴇxᴛ ᴘᴀɢᴇ", List.of()));
+            set(53, ItemUtils.createItem(Material.ARROW, "&bNext page", List.of()));
         }
     }
 
@@ -116,7 +116,7 @@ public class DisguiseSkinMenu extends BaseMenu {
         int total = Math.max(1, plugin.getHideManager().skins().size());
         int pages = Math.max(1, (int) Math.ceil(total / (double) PAGE_SIZE));
         return plugin.getConfigManager().getHide()
-                .getString("GUI.SKINS.TITLE", "&8ѕᴇʟᴇᴄᴛ ᴀ ѕᴋɪɴ - {page}/{pages}")
+                .getString("GUI.SKINS.TITLE", "&8Select a skin - {page}/{pages}")
                 .replace("{page}", String.valueOf(Math.min(page + 1, pages)))
                 .replace("{pages}", String.valueOf(pages));
     }

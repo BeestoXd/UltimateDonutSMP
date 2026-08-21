@@ -165,17 +165,17 @@ public class SpawnerManager {
         mainMenuSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.MAIN-MENU.SIZE",
                 config.getInt("GUI.MAIN_MENU.SIZE", 27)));
         storageTitle = menusConfig.getString("SPAWNER-MENUS.STORAGE-MENU.TITLE",
-                config.getString("GUI.STORAGE.TITLE", "&8{mob} ѕᴘᴀᴡɴᴇʀѕ - {page}/{max_page}"));
+                config.getString("GUI.STORAGE.TITLE", "&8{mob} spawners - {page}/{max_page}"));
         storageSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.STORAGE-MENU.SIZE",
                 config.getInt("GUI.STORAGE.SIZE", 54)));
         storageItemsPerPage = Math.max(9, Math.min(storageSize - 9, menusConfig.getInt("SPAWNER-MENUS.STORAGE-MENU.ITEMS-PER-PAGE",
                 config.getInt("GUI.STORAGE.ITEMS_PER_PAGE", 45))));
         panelTitle = menusConfig.getString("SPAWNER-MENUS.PANEL-MENU.TITLE",
-                config.getString("GUI.PANEL.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ"));
+                config.getString("GUI.PANEL.TITLE", "&8Spawners"));
         panelSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.PANEL-MENU.SIZE",
                 config.getInt("GUI.PANEL.SIZE", 54)));
         worldListTitle = menusConfig.getString("SPAWNER-MENUS.WORLD-LIST-MENU.TITLE",
-                config.getString("GUI.WORLD_LIST.TITLE", "&8ѕᴘᴀᴡɴᴇʀѕ ᴘᴀɴᴇʟ"));
+                config.getString("GUI.WORLD_LIST.TITLE", "&8Spawners panel"));
         worldListSize = normalizeSize(menusConfig.getInt("SPAWNER-MENUS.WORLD-LIST-MENU.SIZE",
                 config.getInt("GUI.WORLD_LIST.SIZE", 27)));
         FileConfiguration sounds = plugin.getConfigManager().getSounds();
@@ -469,7 +469,7 @@ public class SpawnerManager {
             leftovers.values().forEach(leftover -> target.getWorld().dropItemNaturally(target.getLocation(), leftover));
             remaining -= stackSize;
         }
-        return ok("&aɢᴀᴠᴇ &f" + NumberUtils.format(amount) + "x " + ColorUtils.strip(definition.displayName()) + "&a ᴛᴏ &f" + target.getName() + "&a.");
+        return ok("&aGave &f" + NumberUtils.format(amount) + "x " + ColorUtils.strip(definition.displayName()) + "&a to &f" + target.getName() + "&a.");
     }
 
     public ActionResult placeSpawner(Player player, Block block, ItemStack item) {
@@ -790,7 +790,7 @@ public class SpawnerManager {
 
     public String getMainMenuTitle(SpawnerInstance instance) {
         if (instance == null) {
-            return "&8ѕᴘᴀᴡɴᴇʀ";
+            return "&8Spawner";
         }
         String cleanMob = prettifyKey(instance.getMobTypeKey());
         String title = mainMenuTitle
@@ -1433,7 +1433,7 @@ public class SpawnerManager {
 
     public String getStorageTitle(SpawnerInstance instance, int page, int maxPage) {
         if (instance == null) {
-            return "&8ѕᴘᴀᴡɴᴇʀ ѕᴛᴏʀᴀɢᴇ";
+            return "&8Spawner storage";
         }
         String cleanMob = prettifyKey(instance.getMobTypeKey());
         String title = storageTitle

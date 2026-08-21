@@ -86,7 +86,7 @@ public class TpaQueueMenu extends BaseMenu {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             if (!plugin.getTPAManager().acceptQueuedRequest(player, requesterUuid, tpaHere)) {
                 player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                        menus().getString(MENU_PATH + ".MESSAGES.REQUEST-MISSING", "&cᴛʜᴀᴛ ǫᴜᴇᴜᴇᴅ ʀᴇǫᴜᴇѕᴛ ɪѕ ɴᴏ ʟᴏɴɢᴇʀ ᴀᴠᴀɪʟᴀʙʟᴇ.")
+                        menus().getString(MENU_PATH + ".MESSAGES.REQUEST-MISSING", "&cThat queued request is no longer available.")
                 ));
             }
             build(player);
@@ -115,7 +115,7 @@ public class TpaQueueMenu extends BaseMenu {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             if (!plugin.getTPAManager().acceptRandomQueuedRequest(player, tpaHere)) {
                 player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                        menus().getString(MENU_PATH + ".MESSAGES.EMPTY", "&cᴛʜᴇʀᴇ ᴀʀᴇ ɴᴏ ǫᴜᴇᴜᴇᴅ ʀᴇǫᴜᴇѕᴛѕ ᴛᴏ ᴀᴄᴄᴇᴘᴛ.")
+                        menus().getString(MENU_PATH + ".MESSAGES.EMPTY", "&cThere are no queued requests to accept.")
                 ));
             }
             build(player);
@@ -126,10 +126,10 @@ public class TpaQueueMenu extends BaseMenu {
         String path = MENU_PATH + ".EMPTY-BUTTON";
         set(menus().getInt(path + ".SLOT", 22), ItemUtils.createItem(
                 ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", "BARRIER")),
-                replaceStaticPlaceholders(menus().getString(path + ".DISPLAY-NAME", "&cɴᴏ ǫᴜᴇᴜᴇᴅ ʀᴇǫᴜᴇѕᴛѕ")),
+                replaceStaticPlaceholders(menus().getString(path + ".DISPLAY-NAME", "&cNo queued requests")),
                 replaceStaticPlaceholders(defaultIfEmpty(
                         menus().getStringList(path + ".LORE"),
-                        List.of("&7ʀᴇǫᴜᴇѕᴛѕ ѕᴇɴᴛ ᴡʜɪʟᴇ ᴛʜɪѕ ѕᴇᴛᴛɪɴɢ ᴡᴀѕ ᴅɪѕᴀʙʟᴇᴅ ᴡɪʟʟ ᴀᴘᴘᴇᴀʀ ʜᴇʀᴇ.")
+                        List.of("&7Requests sent while this setting was disabled will appear here.")
                 ))
         ));
     }
@@ -196,11 +196,11 @@ public class TpaQueueMenu extends BaseMenu {
                 replace(defaultIfEmpty(
                         menus().getStringList(MENU_PATH + ".REQUEST-BUTTON.LORE"),
                         List.of(
-                                "&7ɴɪᴄᴋɴᴀᴍᴇ: &f{player}",
-                                "&7ǫᴜᴇᴜᴇ: &f#{position}",
-                                "&7ᴇxᴘɪʀᴇѕ: &f{expires}",
+                                "&7Nickname: &f{player}",
+                                "&7Queue: &f#{position}",
+                                "&7Expires: &f{expires}",
                                 "",
-                                "&eᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴄᴇᴘᴛ."
+                                "&eClick to accept."
                         )
                 ), placeholders)
         );
@@ -287,7 +287,7 @@ public class TpaQueueMenu extends BaseMenu {
     private static String configuredTitle(UltimateDonutSmp plugin, boolean tpaHere) {
         String type = tpaHere ? "/tpahere" : "/tpa";
         return plugin.getConfigManager().getMenus()
-                .getString(MENU_PATH + ".TITLE", "&8{type} ǫᴜᴇᴜᴇ")
+                .getString(MENU_PATH + ".TITLE", "&8{type} queue")
                 .replace("{type}", type);
     }
 

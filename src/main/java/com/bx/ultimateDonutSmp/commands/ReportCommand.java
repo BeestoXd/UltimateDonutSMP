@@ -27,7 +27,7 @@ public class ReportCommand implements TabExecutor {
         if (!(sender instanceof Player reporter)) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "REPORT.PLAYER_ONLY",
-                    "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ʀᴇᴘᴏʀᴛ."
+                    "&cOnly players can use report."
             )));
             return true;
         }
@@ -35,7 +35,7 @@ public class ReportCommand implements TabExecutor {
         if (!PermissionUtils.has(reporter, PERMISSION)) {
             reporter.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "REPORT.NO_PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇᴘᴏʀᴛ ᴘʟᴀʏᴇʀѕ."
+                    "&cYou do not have permission to report players."
             )));
             return true;
         }
@@ -43,7 +43,7 @@ public class ReportCommand implements TabExecutor {
         if (args.length < 2) {
             reporter.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "REPORT.USAGE",
-                    "&cᴜѕᴀɢᴇ: /report <player> <reason>"
+                    "&cUsage: /report <player> <reason>"
             )));
             return true;
         }
@@ -53,7 +53,7 @@ public class ReportCommand implements TabExecutor {
         if (reported == null) {
             reporter.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "REPORT.PLAYER_NOT_FOUND",
-                    "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."
+                    "&cPlayer not found."
             )));
             return true;
         }

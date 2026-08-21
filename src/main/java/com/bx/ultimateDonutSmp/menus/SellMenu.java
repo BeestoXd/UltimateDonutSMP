@@ -41,7 +41,7 @@ public class SellMenu extends BaseMenu {
     public SellMenu(UltimateDonutSmp plugin) {
         super(plugin, plugin.getConfigManager().getMenus().getString(
                 "SELL-MENU.TITLE",
-                "&8ᴘʟᴀᴄᴇ ɪᴛᴇᴍѕ ɪɴ ʜᴇʀᴇ ᴛᴏ ѕᴇʟʟ"
+                "&8Place items in here to sell"
         ), SIZE);
     }
 
@@ -64,10 +64,10 @@ public class SellMenu extends BaseMenu {
         FileConfiguration menus = plugin.getConfigManager().getMenus();
         
         Material material = ItemUtils.parseMaterial(menus.getString("SELL-MENU.CONFIRM-BUTTON.MATERIAL", "LIME_STAINED_GLASS_PANE"));
-        String title = menus.getString("SELL-MENU.CONFIRM-BUTTON.TITLE", "&a&lᴄᴏɴꜰɪʀᴍ ѕᴇʟʟ");
+        String title = menus.getString("SELL-MENU.CONFIRM-BUTTON.TITLE", "&a&lConfirm sell");
         List<String> lore = menus.getStringList("SELL-MENU.CONFIRM-BUTTON.LORE");
         if (lore.isEmpty()) {
-            lore = List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟʟ ᴀʟʟ ɪᴛᴇᴍѕ ɪɴ ᴛʜᴇ ᴍᴇɴᴜ.");
+            lore = List.of("&7Click to sell all items in the menu.");
         }
         set(53, ItemUtils.createItem(material, title, lore));
     }
@@ -79,7 +79,7 @@ public class SellMenu extends BaseMenu {
             ShopManager.SellResult result = plugin.getShopManager().sellInventoryContents(player, inventory, 0, getSellableSlotEnd());
             if (result.status() == ShopManager.SellStatus.NO_SELLABLE_ITEMS) {
                 player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE", "&cᴛʜɪѕ ɪᴛᴇᴍ ɪѕ ɴᴏᴛ ѕᴇʟʟᴀʙʟᴇ.")
+                        plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE", "&cThis item is not sellable.")
                 ));
             }
             return;

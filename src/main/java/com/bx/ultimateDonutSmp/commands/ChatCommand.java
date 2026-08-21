@@ -31,12 +31,12 @@ public class ChatCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!plugin.getConfigManager().isCommandEnabled("CHAT")) {
-            send(sender, message("DISABLED", "&cᴄʜᴀᴛ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            send(sender, message("DISABLED", "&cChat command is currently disabled."));
             return true;
         }
 
         if (!hasAccess(sender, BASE_PERMISSION, MUTE_PERMISSION, UNMUTE_PERMISSION, DELAY_PERMISSION, CLEAR_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
             return true;
         }
 
@@ -59,34 +59,34 @@ public class ChatCommand implements CommandExecutor {
 
     private boolean handleMute(CommandSender sender) {
         if (!hasAccess(sender, MUTE_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
             return true;
         }
 
         plugin.getChatManager().setGlobalChatMuted(true, true);
-        broadcast(message("MUTED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴍᴜᴛᴇᴅ."), sender);
+        broadcast(message("MUTED", "&aGlobal chat is now muted."), sender);
         return true;
     }
 
     private boolean handleUnmute(CommandSender sender) {
         if (!hasAccess(sender, UNMUTE_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
             return true;
         }
 
         plugin.getChatManager().setGlobalChatMuted(false, true);
-        broadcast(message("UNMUTED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴜɴᴍᴜᴛᴇᴅ."), sender);
+        broadcast(message("UNMUTED", "&aGlobal chat is now unmuted."), sender);
         return true;
     }
 
     private boolean handleDelay(CommandSender sender, String[] args, String label) {
         if (!hasAccess(sender, DELAY_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
             return true;
         }
 
         if (args.length < 2) {
-            send(sender, "&cᴜѕᴀɢᴇ: /" + label + " ᴅᴇʟᴀʏ <seconds|off>");
+            send(sender, "&cUsage: /" + label + " delay <seconds|off>");
             return true;
         }
 
@@ -97,14 +97,14 @@ public class ChatCommand implements CommandExecutor {
             try {
                 delaySeconds = Integer.parseInt(args[1]);
             } catch (NumberFormatException exception) {
-                send(sender, message("INVALID-DELAY", "&cɪɴᴠᴀʟɪᴅ ᴅᴇʟᴀʏ."));
+                send(sender, message("INVALID-DELAY", "&cInvalid delay."));
                 return true;
             }
         }
 
         int maxDelay = plugin.getChatManager().getMaxDelaySeconds();
         if (delaySeconds < 0 || delaySeconds > maxDelay) {
-            send(sender, message("INVALID-DELAY", "&cɪɴᴠᴀʟɪᴅ ᴅᴇʟᴀʏ. ᴜѕᴇ ᴀ ɴᴜᴍʙᴇʀ ʙᴇᴛᴡᴇᴇɴ 0 ᴀɴᴅ {max}.")
+            send(sender, message("INVALID-DELAY", "&cInvalid delay. Use a number between 0 and {max}.")
                     .replace("{max}", String.valueOf(maxDelay))
                     .replace("%max%", String.valueOf(maxDelay)));
             return true;
@@ -114,9 +114,9 @@ public class ChatCommand implements CommandExecutor {
         plugin.getChatManager().setGlobalDelay(delaySeconds, enabled, true);
 
         String status = enabled
-                ? message("STATUS-ENABLED", "ᴇɴᴀʙʟᴇᴅ")
-                : message("STATUS-DISABLED", "ᴅɪѕᴀʙʟᴇᴅ");
-        String response = message("DELAY", "&7ᴄʜᴀᴛ ɪѕ ɴᴏᴡ ᴅᴇʟᴀʏᴇᴅ &a%delay% &7ѕᴇᴄᴏɴᴅѕ ᴀɴᴅ ᴅᴇʟᴀʏ ɪѕ &a%status%")
+                ? message("STATUS-ENABLED", "Enabled")
+                : message("STATUS-DISABLED", "Disabled");
+        String response = message("DELAY", "&7Chat is now delayed &a%delay% &7seconds and delay is &a%status%")
                 .replace("%delay%", String.valueOf(delaySeconds))
                 .replace("%status%", status)
                 .replace("{delay}", String.valueOf(delaySeconds))
@@ -127,12 +127,12 @@ public class ChatCommand implements CommandExecutor {
 
     private boolean handleClear(CommandSender sender) {
         if (!hasAccess(sender, CLEAR_PERMISSION)) {
-            send(sender, message("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            send(sender, message("NO-PERMISSION", "&cYou do not have permission."));
             return true;
         }
 
         plugin.getChatManager().clearChatForAllPlayers();
-        broadcast(message("CLEARED", "&aɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄʟᴇᴀʀᴇᴅ."), sender);
+        broadcast(message("CLEARED", "&aGlobal chat is cleared."), sender);
         return true;
     }
 
@@ -141,12 +141,12 @@ public class ChatCommand implements CommandExecutor {
         if (lines.isEmpty()) {
             lines = List.of(
                     "",
-                    "&b&lᴄʜᴀᴛ ᴍᴀɴᴀɢᴇʀ &7(ᴄᴏᴍᴍᴀɴᴅѕ)",
+                    "&b&lChat manager &7(commands)",
                     "",
-                    "&f/chat ᴍᴜᴛᴇ &7- ᴛᴏ ᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
-                    "&f/chat ᴜɴᴍᴜᴛᴇ &7- ᴛᴏ ᴜɴᴍᴜᴛᴇ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
-                    "&f/chat ᴅᴇʟᴀʏ (ᴛɪᴍᴇ) &7- ᴛᴏ ᴀᴅᴅ ᴅᴇʟᴀʏ ᴛᴏ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
-                    "&f/chat ᴄʟᴇᴀʀ &7- ᴛᴏ ᴄʟᴇᴀʀ ɢʟᴏʙᴀʟ ᴄʜᴀᴛ.",
+                    "&f/Chat mute &7- to mute global chat.",
+                    "&f/Chat unmute &7- to unmute global chat.",
+                    "&f/Chat delay (time) &7- to add delay to global chat.",
+                    "&f/Chat clear &7- to clear global chat.",
                     ""
             );
         }

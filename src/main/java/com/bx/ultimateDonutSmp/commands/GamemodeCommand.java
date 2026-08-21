@@ -33,7 +33,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!plugin.getConfigManager().isCommandEnabled("GAMEMODE")) {
-            send(sender, "GAMEMODE.DISABLED", "&cɢᴀᴍᴇᴍᴏᴅᴇ ᴄᴏᴍᴍᴀɴᴅѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.");
+            send(sender, "GAMEMODE.DISABLED", "&cGamemode commands are currently disabled.");
             return true;
         }
 
@@ -51,7 +51,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleFixedModeCommand(CommandSender sender, String label, String[] args, GameMode mode) {
         if (args.length > 1) {
-            send(sender, "GAMEMODE.USAGE_SHORT", "&cᴜѕᴀɢᴇ: /%label% [ᴘʟᴀʏᴇʀ]", "%label%", label);
+            send(sender, "GAMEMODE.USAGE_SHORT", "&cUsage: /%label% [player]", "%label%", label);
             return true;
         }
 
@@ -70,13 +70,13 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleMainCommand(CommandSender sender, String label, String[] args) {
         if (args.length < 1 || args.length > 2) {
-            send(sender, "GAMEMODE.USAGE", "&cᴜѕᴀɢᴇ: /%label% <survival|creative|adventure|spectator> [ᴘʟᴀʏᴇʀ]", "%label%", label);
+            send(sender, "GAMEMODE.USAGE", "&cUsage: /%label% <survival|creative|adventure|spectator> [player]", "%label%", label);
             return true;
         }
 
         GameMode mode = parseMode(args[0]);
         if (mode == null) {
-            send(sender, "GAMEMODE.INVALID_MODE", "&cɪɴᴠᴀʟɪᴅ ɢᴀᴍᴇᴍᴏᴅᴇ. ᴜѕᴇ ѕᴜʀᴠɪᴠᴀʟ, ᴄʀᴇᴀᴛɪᴠᴇ, ᴀᴅᴠᴇɴᴛᴜʀᴇ, ᴏʀ ѕᴘᴇᴄᴛᴀᴛᴏʀ.");
+            send(sender, "GAMEMODE.INVALID_MODE", "&cInvalid gamemode. Use survival, creative, adventure, or spectator.");
             return true;
         }
 
@@ -108,7 +108,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
 
         Player target = findOnlinePlayer(input);
         if (target == null) {
-            send(sender, "GAMEMODE.PLAYER_NOT_ONLINE", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ.");
+            send(sender, "GAMEMODE.PLAYER_NOT_ONLINE", "&cPlayer not online.");
             return null;
         }
         return target;
@@ -120,12 +120,12 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!PermissionUtils.has(player, PERMISSION)) {
-            send(player, "GAMEMODE.NO_PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.");
+            send(player, "GAMEMODE.NO_PERMISSION", "&cYou do not have permission.");
             return false;
         }
 
         if (!player.getUniqueId().equals(target.getUniqueId()) && !PermissionUtils.has(player, OTHERS_PERMISSION)) {
-            send(player, "GAMEMODE.NO_PERMISSION_OTHERS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʜᴀɴɢᴇ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ' ɢᴀᴍᴇᴍᴏᴅᴇ.");
+            send(player, "GAMEMODE.NO_PERMISSION_OTHERS", "&cYou do not have permission to change other players' gamemode.");
             return false;
         }
 
@@ -136,7 +136,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
         target.setGameMode(mode);
 
         String modeName = displayName(mode);
-        send(sender, "GAMEMODE.MESSAGE", "&d%player% &7ɪѕ ɴᴏᴡ ɪɴ &e%mode% ᴍᴏᴅᴇ",
+        send(sender, "GAMEMODE.MESSAGE", "&d%player% &7is now in &e%mode% mode",
                 "%player%", target.getName(),
                 "%mode%", modeName,
                 "%sender%", senderName(sender));
@@ -145,7 +145,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        send(target, "GAMEMODE.TARGET_MESSAGE", "&7ʏᴏᴜʀ ɢᴀᴍᴇᴍᴏᴅᴇ ʜᴀѕ ʙᴇᴇɴ ᴄʜᴀɴɢᴇᴅ ᴛᴏ &e%mode% &7ʙʏ &d%sender%",
+        send(target, "GAMEMODE.TARGET_MESSAGE", "&7Your gamemode has been changed to &e%mode% &7by &d%sender%",
                 "%player%", target.getName(),
                 "%mode%", modeName,
                 "%sender%", senderName(sender));
@@ -247,7 +247,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
 
     private boolean hasBasePermission(CommandSender sender) {
         if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
-            send(player, "GAMEMODE.NO_PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.");
+            send(player, "GAMEMODE.NO_PERMISSION", "&cYou do not have permission.");
             return false;
         }
         return true;

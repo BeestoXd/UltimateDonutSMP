@@ -26,12 +26,12 @@ public class RemoveMoneyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!PermissionUtils.has(sender, PERMISSION)) {
-            sender.sendMessage(ColorUtils.toComponent("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            sender.sendMessage(ColorUtils.toComponent("&cNo permission."));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /removemoney <player> <amount>"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /removemoney <player> <amount>"));
             return true;
         }
 

@@ -61,7 +61,7 @@ public class ServerInfoMenu extends BaseMenu {
 
         PageDefinition pageDefinition = getCurrentPage();
         if (pageDefinition == null) {
-            setFallbackItem("&cɴᴏ ѕᴇʀᴠᴇʀ ɪɴꜰᴏ ᴘᴀɢᴇѕ", "&7ᴄᴏɴꜰɪɢᴜʀᴇ ѕᴇʀᴠᴇʀ-ɪɴꜰᴏ-ᴍᴇɴᴜ ꜰɪʀѕᴛ.");
+            setFallbackItem("&cNo server info pages", "&7Configure server-info-menu first.");
             return;
         }
 
@@ -69,7 +69,7 @@ public class ServerInfoMenu extends BaseMenu {
         for (ButtonDefinition button : pageDefinition.buttons()) {
             if (slotActions.containsKey(button.slot())) {
                 plugin.getLogger().warning("Skipping duplicated Server Info slot " + button.slot()
-                        + " ᴏɴ ᴘᴀɢᴇ " + page + ".");
+                        + " on page " + page + ".");
                 continue;
             }
 
@@ -83,7 +83,7 @@ public class ServerInfoMenu extends BaseMenu {
         }
 
         if (renderedButtons == 0) {
-            setFallbackItem("&cɴᴏ ᴜѕᴀʙʟᴇ ʜᴇʟᴘ ʙᴜᴛᴛᴏɴѕ", "&7ꜰɪx ᴛʜɪѕ ʜᴇʟᴘ ᴘᴀɢᴇ ᴏʀ ᴜѕᴇ ᴛʜᴇ ʟᴇɢᴀᴄʏ ᴄʜᴀᴛ ꜰᴀʟʟʙᴀᴄᴋ.");
+            setFallbackItem("&cNo usable help buttons", "&7Fix this help page or use the legacy chat fallback.");
         }
     }
 
@@ -110,7 +110,7 @@ public class ServerInfoMenu extends BaseMenu {
 
         if (action.type() == ActionType.COMMAND) {
             if (action.command() == null || action.command().isBlank()) {
-                player.sendMessage(ColorUtils.toComponent("&cᴛʜɪѕ ᴍᴇɴᴜ ʙᴜᴛᴛᴏɴ ɪѕ ᴍɪѕѕɪɴɢ ᴀ ᴄᴏᴍᴍᴀɴᴅ."));
+                player.sendMessage(ColorUtils.toComponent("&cThis menu button is missing a command."));
                 return;
             }
 
@@ -122,14 +122,14 @@ public class ServerInfoMenu extends BaseMenu {
 
                 boolean executed = player.performCommand(action.command());
                 if (!executed) {
-                    player.sendMessage(ColorUtils.toComponent("&cᴛʜᴀᴛ ᴀᴄᴛɪᴏɴ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ʀɪɢʜᴛ ɴᴏᴡ."));
+                    player.sendMessage(ColorUtils.toComponent("&cThat action is unavailable right now."));
                 }
             });
             return;
         }
 
         if (action.messages().isEmpty()) {
-            player.sendMessage(ColorUtils.toComponent("&7ᴛʜɪѕ ʙᴜᴛᴛᴏɴ ɪѕ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴᴀʟ ᴏɴʟʏ."));
+            player.sendMessage(ColorUtils.toComponent("&7This button is informational only."));
             return;
         }
 
@@ -151,7 +151,7 @@ public class ServerInfoMenu extends BaseMenu {
             backSlot = reservedBack;
             set(backSlot, ItemUtils.createItem(
                     navMaterial,
-                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".BACK-BUTTON", "&aʙᴀᴄᴋ"),
+                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".BACK-BUTTON", "&aBack"),
                     plugin.getConfigManager().getMenus().getStringList(GLOBAL_PAGE_PATH + ".BACK-LORE")
             ));
         }
@@ -160,8 +160,8 @@ public class ServerInfoMenu extends BaseMenu {
             set(reservedInfo, ItemUtils.createItem(
                     ItemUtils.parseMaterial(plugin.getConfigManager().getMenus()
                             .getString(NAVIGATION_PATH + ".PAGE-INFO-MATERIAL", "BOOK")),
-                    plugin.getConfigManager().getMenus().getString(NAVIGATION_PATH + ".PAGE-INFO-NAME", "&bʜᴇʟᴘ ᴘᴀɢᴇѕ"),
-                    List.of("&7ᴘᴀɢᴇ: &f" + page + "&7/&f" + pages.size(), "&7ᴄʟɪᴄᴋ ᴛʜᴇ ᴀʀʀᴏᴡѕ ᴛᴏ ᴋᴇᴇᴘ ʀᴇᴀᴅɪɴɢ.")
+                    plugin.getConfigManager().getMenus().getString(NAVIGATION_PATH + ".PAGE-INFO-NAME", "&bHelp pages"),
+                    List.of("&7Page: &f" + page + "&7/&f" + pages.size(), "&7Click the arrows to keep reading.")
             ));
         }
 
@@ -169,7 +169,7 @@ public class ServerInfoMenu extends BaseMenu {
             nextSlot = reservedNext;
             set(nextSlot, ItemUtils.createItem(
                     navMaterial,
-                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".NEXT-BUTTON", "&aɴᴇxᴛ"),
+                    plugin.getConfigManager().getMenus().getString(GLOBAL_PAGE_PATH + ".NEXT-BUTTON", "&aNext"),
                     plugin.getConfigManager().getMenus().getStringList(GLOBAL_PAGE_PATH + ".NEXT-LORE")
             ));
         }
@@ -210,7 +210,7 @@ public class ServerInfoMenu extends BaseMenu {
                 if (!buttons.isEmpty()) {
             loadedPages.add(new PageDefinition(
                     pageKey,
-                    pageSection.getString("TITLE", plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ")),
+                    pageSection.getString("TITLE", plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Server info")),
                     normalizeSize(pageSection.getInt("SIZE", plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 27))),
                     buttons
             ));
@@ -230,7 +230,7 @@ public class ServerInfoMenu extends BaseMenu {
         if (!legacyButtons.isEmpty()) {
             loadedPages.add(new PageDefinition(
                     "1",
-                    plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ"),
+                    plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Server info"),
                     normalizeSize(plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 27)),
                     legacyButtons
             ));
@@ -255,20 +255,20 @@ public class ServerInfoMenu extends BaseMenu {
             ConfigurationSection buttonSection = buttonsSection.getConfigurationSection(key);
             if (buttonSection == null) {
                 plugin.getLogger().warning("Skipping " + buttonsSection.getCurrentPath() + "." + key
-                        + " ʙᴇᴄᴀᴜѕᴇ ɪᴛ ɪѕ ɴᴏᴛ ᴀ ѕᴇᴄᴛɪᴏɴ.");
+                        + " because it is not a section.");
                 continue;
             }
 
             int slot = buttonSection.getInt("SLOT", -1);
             if (slot < 0 || slot >= inventorySize) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " ʙᴇᴄᴀᴜѕᴇ ѕʟᴏᴛ " + slot + " ɪѕ ᴏᴜᴛѕɪᴅᴇ ᴍᴇɴᴜ ѕɪᴢᴇ " + inventorySize + ".");
+                        + " because slot " + slot + " is outside menu size " + inventorySize + ".");
                 continue;
             }
 
             if (slot == reservedBack || slot == reservedInfo || slot == reservedNext) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " ʙᴇᴄᴀᴜѕᴇ ѕʟᴏᴛ " + slot + " ɪѕ ʀᴇѕᴇʀᴠᴇᴅ ꜰᴏʀ ᴘᴀɢᴇ ɴᴀᴠɪɢᴀᴛɪᴏɴ.");
+                        + " because slot " + slot + " is reserved for page navigation.");
                 continue;
             }
 
@@ -281,7 +281,7 @@ public class ServerInfoMenu extends BaseMenu {
             Material material = Material.matchMaterial(rawMaterial.trim().toUpperCase(Locale.ROOT));
             if (material == null) {
                 plugin.getLogger().warning("Skipping " + buttonSection.getCurrentPath()
-                        + " ʙᴇᴄᴀᴜѕᴇ ᴍᴀᴛᴇʀɪᴀʟ '" + rawMaterial + "' ɪѕ ɪɴᴠᴀʟɪᴅ.");
+                        + " because material '" + rawMaterial + "' is invalid.");
                 continue;
             }
 
@@ -326,13 +326,13 @@ public class ServerInfoMenu extends BaseMenu {
             case "SOCIAL", "DISCORD" -> ButtonAction.command("social");
             case "MEDIA" -> ButtonAction.command("media");
             case "SERVER" -> ButtonAction.info(List.of(
-                    "&7ʙᴜɪʟᴅ ʏᴏᴜʀ ʙᴀѕᴇ, ɢᴇᴀʀ ᴜᴘ, ᴀɴᴅ ᴜѕᴇ &f/spawn &7ᴏʀ &f/rtp &7ᴛᴏ ʙᴇɢɪɴ ᴇxᴘʟᴏʀɪɴɢ."
+                    "&7Build your base, gear up, and use &f/spawn &7or &f/rtp &7to begin exploring."
             ));
             case "ECONOMY" -> ButtonAction.info(List.of(
-                    "&7ᴇᴀʀɴ " + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
-                            + " ᴡɪᴛʜ &f/sell &7ᴀɴᴅ ᴛʀᴀᴅᴇ ʙᴇᴛᴛᴇʀ ɢᴇᴀʀ ᴛʜʀᴏᴜɢʜ &f/auctionhouse&7."
+                    "&7Earn " + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY)
+                            + " with &f/sell &7and trade better gear through &f/auctionhouse&7."
             ));
-            default -> ButtonAction.info(List.of("&7ᴛʜɪѕ ʙᴜᴛᴛᴏɴ ɪѕ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴᴀʟ ᴏɴʟʏ."));
+            default -> ButtonAction.info(List.of("&7This button is informational only."));
         };
     }
 
@@ -342,7 +342,7 @@ public class ServerInfoMenu extends BaseMenu {
             return loadedPages.get(safePage - 1).title();
         }
 
-        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ѕᴇʀᴠᴇʀ ɪɴꜰᴏ");
+        return plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Server info");
     }
 
     private static int configuredSize(UltimateDonutSmp plugin, int requestedPage, List<PageDefinition> loadedPages) {
@@ -417,97 +417,97 @@ public class ServerInfoMenu extends BaseMenu {
         String moneyPlural = plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
         return new PageDefinition(
                 "2",
-                "&8ɢᴇᴛᴛɪɴɢ ѕᴛᴀʀᴛᴇᴅ",
+                "&8Getting started",
                 27,
                 List.of(
                         new ButtonDefinition(
                                 10,
                                 Material.BOOK,
-                                "&#00A4FCѕᴛᴀʀᴛ ʜᴇʀᴇ",
+                                "&#00A4FCStart here",
                                 List.of(
-                                        "&f1. ᴜѕᴇ &b/rtp &fᴛᴏ ʟᴇᴀᴠᴇ ѕᴘᴀᴡɴ.",
-                                        "&f2. ɢᴀᴛʜᴇʀ ᴡᴏᴏᴅ, ꜰᴏᴏᴅ, ᴀɴᴅ ɪʀᴏɴ.",
-                                        "&f3. ʙᴜɪʟᴅ ᴀ ѕᴀꜰᴇ ʙᴀѕᴇ.",
-                                        "&f4. ѕᴀᴠᴇ ɪᴛ ᴡɪᴛʜ &b/sethome&f."
+                                        "&f1. Use &b/rtp &fto leave spawn.",
+                                        "&f2. Gather wood, food, and iron.",
+                                        "&f3. Build a safe base.",
+                                        "&f4. Save it with &b/sethome&f."
                                 ),
                                 ButtonAction.info(List.of(
-                                        "&7ѕᴛᴀʀᴛ ᴡɪᴛʜ &f/rtp &7ᴛᴏ ꜰɪɴᴅ ʟᴀɴᴅ ᴀᴡᴀʏ ꜰʀᴏᴍ ѕᴘᴀᴡɴ.",
-                                        "&7ᴀꜰᴛᴇʀ ʙᴜɪʟᴅɪɴɢ ᴀ ʙᴀѕᴇ, ѕᴀᴠᴇ ɪᴛ ᴡɪᴛʜ &f/sethome&7."
+                                        "&7Start with &f/rtp &7to find land away from spawn.",
+                                        "&7After building a base, save it with &f/sethome&7."
                                 ))
                         ),
                         new ButtonDefinition(
                                 11,
                                 Material.GOLD_INGOT,
-                                "&#00A4FCᴍᴀᴋᴇ " + moneyPlural,
+                                "&#00A4FCMake " + moneyPlural,
                                 List.of(
-                                        "&fѕᴇʟʟ ʙʟᴏᴄᴋѕ, ᴏʀᴇѕ, ᴀɴᴅ ᴅʀᴏᴘѕ ᴡɪᴛʜ",
-                                        "&b/sell &fᴏʀ ʟɪѕᴛ ɪᴛᴇᴍѕ ɪɴ &b/auctionhouse&f.",
+                                        "&fSell blocks, ores, and drops with",
+                                        "&b/Sell &for list items in &b/auctionhouse&f.",
                                         "",
-                                        "&#00A4FCᴛɪᴘ: &fᴋᴇᴇᴘ ʀᴀʀᴇ ʟᴏᴏᴛ ᴛᴏ ᴛʀᴀᴅᴇ."
+                                        "&#00A4FCTip: &fkeep rare loot to trade."
                                 ),
                                 ButtonAction.command("sell")
                         ),
                         new ButtonDefinition(
                                 12,
                                 Material.RED_BED,
-                                "&#00A4FCʜᴏᴍᴇѕ",
+                                "&#00A4FCHomes",
                                 List.of(
-                                        "&fᴜѕᴇ &b/sethome <name> &fᴛᴏ ѕᴀᴠᴇ",
-                                        "&fɪᴍᴘᴏʀᴛᴀɴᴛ ᴘʟᴀᴄᴇѕ.",
+                                        "&fUse &b/sethome <name> &fto save",
+                                        "&fImportant places.",
                                         "",
-                                        "&#00A4FCᴏᴘᴇɴ: &f/home"
+                                        "&#00A4FCOpen: &f/home"
                                 ),
                                 ButtonAction.command("home")
                         ),
                         new ButtonDefinition(
                                 13,
                                 Material.IRON_HELMET,
-                                "&#00A4FCᴛᴇᴀᴍѕ",
+                                "&#00A4FCTeams",
                                 List.of(
-                                        "&fᴘʟᴀʏ ᴡɪᴛʜ ꜰʀɪᴇɴᴅѕ, ѕʜᴀʀᴇ ᴀ ʙᴀѕᴇ,",
-                                        "&fᴀɴᴅ ᴍᴀɴᴀɢᴇ ᴛᴇᴀᴍ ᴘᴇʀᴍɪѕѕɪᴏɴѕ.",
+                                        "&fPlay with friends, share a base,",
+                                        "&fAnd manage team permissions.",
                                         "",
-                                        "&#00A4FCᴏᴘᴇɴ: &f/team"
+                                        "&#00A4FCOpen: &f/team"
                                 ),
                                 ButtonAction.command("team")
                         ),
                         new ButtonDefinition(
                                 14,
                                 Material.DIAMOND_SWORD,
-                                "&#00A4FCᴄᴏᴍʙᴀᴛ ᴛɪᴘѕ",
+                                "&#00A4FCCombat tips",
                                 List.of(
-                                        "&fᴅʏɪɴɢ ɪѕ ᴘᴜɴɪѕʜɪɴɢ ʙᴇᴄᴀᴜѕᴇ",
-                                        "&fᴋᴇᴇᴘɪɴᴠᴇɴᴛᴏʀʏ ɪѕ ᴛᴜʀɴᴇᴅ ᴏꜰꜰ.",
+                                        "&fDying is punishing because",
+                                        "&fKeepinventory is turned off.",
                                         "",
-                                        "&#00A4FCᴛɪᴘ: &fᴀᴠᴏɪᴅ ʀɪѕᴋʏ ꜰɪɢʜᴛѕ",
-                                        "&fᴜɴᴛɪʟ ʏᴏᴜ ᴀʀᴇ ɢᴇᴀʀᴇᴅ."
+                                        "&#00A4FCTip: &favoid risky fights",
+                                        "&fUntil you are geared."
                                 ),
                                 ButtonAction.info(List.of(
-                                        "&7ʏᴏᴜ ᴅʀᴏᴘ ʏᴏᴜʀ ɪᴛᴇᴍѕ ᴏɴ ᴅᴇᴀᴛʜ ʜᴇʀᴇ, ѕᴏ ɢᴇᴀʀ ᴜᴘ ʙᴇꜰᴏʀᴇ ᴛᴀᴋɪɴɢ ʙɪɢ ꜰɪɢʜᴛѕ.",
-                                        "&7ᴋᴇᴇᴘ ʙᴀᴄᴋᴜᴘ ᴀʀᴍᴏʀ ᴀɴᴅ ꜰᴏᴏᴅ ɪꜰ ʏᴏᴜ ᴘʟᴀɴ ᴛᴏ ᴘᴠᴘ ᴏꜰᴛᴇɴ."
+                                        "&7You drop your items on death here, so gear up before taking big fights.",
+                                        "&7Keep backup armor and food if you plan to PvP often."
                                 ))
                         ),
                         new ButtonDefinition(
                                 15,
                                 Material.COMPASS,
-                                "&#00A4FCѕᴘᴀᴡɴ",
+                                "&#00A4FCSpawn",
                                 List.of(
-                                        "&fʀᴇᴛᴜʀɴ ᴛᴏ ѕᴘᴀᴡɴ ᴡʜᴇɴ ʏᴏᴜ ɴᴇᴇᴅ",
-                                        "&fѕʜᴏᴘѕ, ѕᴀꜰᴇᴛʏ, ᴏʀ ᴀ ʀᴇѕᴇᴛ.",
+                                        "&fReturn to spawn when you need",
+                                        "&fShops, safety, or a reset.",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/spawn"
+                                        "&#00A4FCCommand: &f/spawn"
                                 ),
                                 ButtonAction.command("spawn")
                         ),
                         new ButtonDefinition(
                                 16,
                                 Material.OAK_SAPLING,
-                                "&#00A4FCʀᴛᴘ ɢᴜɪᴅᴇ",
+                                "&#00A4FCRTP guide",
                                 List.of(
-                                        "&fᴜѕᴇ ʀᴛᴘ ᴡʜᴇɴ ѕᴘᴀᴡɴ ꜰᴇᴇʟѕ ᴄʀᴏᴡᴅᴇᴅ",
-                                        "&fᴏʀ ʏᴏᴜ ɴᴇᴇᴅ ꜰʀᴇѕʜ ʟᴀɴᴅ.",
+                                        "&fUse RTP when spawn feels crowded",
+                                        "&fOr you need fresh land.",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/rtp"
+                                        "&#00A4FCCommand: &f/rtp"
                                 ),
                                 ButtonAction.command("rtp")
                         )
@@ -519,94 +519,94 @@ public class ServerInfoMenu extends BaseMenu {
         String moneyPlural = plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.MONEY);
         return new PageDefinition(
                 "3",
-                "&8ᴜѕᴇꜰᴜʟ ᴄᴏᴍᴍᴀɴᴅѕ",
+                "&8Useful commands",
                 27,
                 List.of(
                         new ButtonDefinition(
                                 10,
                                 Material.EMERALD,
-                                "&#00A4FCѕʜᴏᴘ",
+                                "&#00A4FCShop",
                                 List.of(
-                                        "&fʙᴜʏ ᴜѕᴇꜰᴜʟ ɪᴛᴇᴍѕ, ʙʟᴏᴄᴋѕ,",
-                                        "&fᴀɴᴅ ѕᴛᴀʀᴛᴇʀ ɢᴇᴀʀ.",
+                                        "&fBuy useful items, blocks,",
+                                        "&fAnd starter gear.",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/shop"
+                                        "&#00A4FCCommand: &f/shop"
                                 ),
                                 ButtonAction.command("shop")
                         ),
                         new ButtonDefinition(
                                 11,
                                 Material.CHEST,
-                                "&#00A4FCѕᴇʟʟ",
+                                "&#00A4FCSell",
                                 List.of(
-                                        "&fᴛᴜʀɴ ꜰᴀʀᴍᴇᴅ ᴏʀ ᴍɪɴᴇᴅ ɪᴛᴇᴍѕ",
-                                        "&fɪɴᴛᴏ ǫᴜɪᴄᴋ " + moneyPlural + ".",
+                                        "&fTurn farmed or mined items",
+                                        "&fInto quick " + moneyPlural + ".",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/sell"
+                                        "&#00A4FCCommand: &f/sell"
                                 ),
                                 ButtonAction.command("sell")
                         ),
                         new ButtonDefinition(
                                 12,
                                 Material.ENDER_PEARL,
-                                "&#00A4FCᴛᴇʟᴇᴘᴏʀᴛ ʀᴇǫᴜᴇѕᴛѕ",
+                                "&#00A4FCTeleport requests",
                                 List.of(
-                                        "&fᴜѕᴇ &b/tpa <player> &fᴏʀ",
+                                        "&fUse &b/tpa <player> &for",
                                         "&b/tpahere <player>&f.",
                                         "",
-                                        "&#00A4FCᴛɪᴘ: &fᴏɴʟʏ ᴛᴇʟᴇᴘᴏʀᴛ ᴛᴏ",
-                                        "&fᴘᴇᴏᴘʟᴇ ʏᴏᴜ ᴛʀᴜѕᴛ."
+                                        "&#00A4FCTip: &fonly teleport to",
+                                        "&fPeople you trust."
                                 ),
                                 ButtonAction.info(List.of(
-                                        "&7ᴜѕᴇ &f/tpa <player> &7ᴛᴏ ʀᴇǫᴜᴇѕᴛ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ ᴛᴏ ᴛʜᴇᴍ.",
-                                        "&7ᴜѕᴇ &f/tpahere <player> &7ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛʜᴇᴍ ᴛᴏ ᴄᴏᴍᴇ ᴛᴏ ʏᴏᴜ."
+                                        "&7Use &f/tpa <player> &7to request teleporting to them.",
+                                        "&7Use &f/tpahere <player> &7if you want them to come to you."
                                 ))
                         ),
                         new ButtonDefinition(
                                 13,
                                 Material.CLOCK,
-                                "&#00A4FCʟᴇᴀᴅᴇʀʙᴏᴀʀᴅѕ",
+                                "&#00A4FCLeaderboards",
                                 List.of(
-                                        "&fᴄʜᴇᴄᴋ ᴡʜᴏ ɪѕ ʟᴇᴀᴅɪɴɢ ɪɴ",
-                                        "&f" + moneyPlural + ", ᴋɪʟʟѕ, ᴀɴᴅ ᴍᴏʀᴇ.",
+                                        "&fCheck who is leading in",
+                                        "&f" + moneyPlural + ", kills, and more.",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/leaderboards"
+                                        "&#00A4FCCommand: &f/leaderboards"
                                 ),
                                 ButtonAction.command("leaderboards")
                         ),
                         new ButtonDefinition(
                                 14,
                                 Material.GRAY_DYE,
-                                "&#00A4FCѕᴇᴛᴛɪɴɢѕ",
+                                "&#00A4FCSettings",
                                 List.of(
-                                        "&fᴛᴏɢɢʟᴇ ᴘᴇʀѕᴏɴᴀʟ ᴏᴘᴛɪᴏɴѕ ʟɪᴋᴇ",
-                                        "&fᴀʟᴇʀᴛѕ ᴀɴᴅ ᴍᴇɴᴜ ᴘʀᴇꜰᴇʀᴇɴᴄᴇѕ.",
+                                        "&fToggle personal options like",
+                                        "&fAlerts and menu preferences.",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/settings"
+                                        "&#00A4FCCommand: &f/settings"
                                 ),
                                 ButtonAction.command("settings")
                         ),
                         new ButtonDefinition(
                                 15,
                                 Material.KNOWLEDGE_BOOK,
-                                "&#00A4FCʀᴜʟᴇѕ",
+                                "&#00A4FCRules",
                                 List.of(
-                                        "&fʀᴇᴀᴅ ᴛʜᴇ ʀᴜʟᴇѕ ʙᴇꜰᴏʀᴇ ɢʀɪɴᴅɪɴɢ",
-                                        "&fᴏʀ ᴛʀᴀᴅɪɴɢ ᴡɪᴛʜ ᴘʟᴀʏᴇʀѕ.",
+                                        "&fRead the rules before grinding",
+                                        "&fOr trading with players.",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/rules"
+                                        "&#00A4FCCommand: &f/rules"
                                 ),
                                 ButtonAction.command("rules")
                         ),
                         new ButtonDefinition(
                                 16,
                                 Material.PINK_DYE,
-                                "&#00A4FCѕᴏᴄɪᴀʟ & ᴍᴇᴅɪᴀ",
+                                "&#00A4FCSocial & media",
                                 List.of(
-                                        "&fᴏᴘᴇɴ ѕᴇʀᴠᴇʀ ʟɪɴᴋѕ ᴀɴᴅ ᴄʜᴇᴄᴋ",
-                                        "&fᴍᴇᴅɪᴀ ʀᴀɴᴋ ʀᴇǫᴜɪʀᴇᴍᴇɴᴛѕ.",
+                                        "&fOpen server links and check",
+                                        "&fMedia rank requirements.",
                                         "",
-                                        "&#00A4FCᴄᴏᴍᴍᴀɴᴅ: &f/media"
+                                        "&#00A4FCCommand: &f/media"
                                 ),
                                 ButtonAction.command("media")
                         )

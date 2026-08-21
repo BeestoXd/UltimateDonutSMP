@@ -108,7 +108,7 @@ public class ServerWipeManager {
     public String getMaintenanceMessage() {
         return config().getString(
                 "MESSAGES.MAINTENANCE",
-                "&cᴛʜᴇ ѕᴇʀᴠᴇʀ ɪѕ ᴘʀᴇᴘᴀʀɪɴɢ ᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ. ᴛʀʏ ᴀɢᴀɪɴ ᴀꜰᴛᴇʀ ᴛʜᴇ ʀᴇѕᴛᴀʀᴛ."
+                "&cThe server is preparing a season reset. Try again after the restart."
         );
     }
 
@@ -202,7 +202,7 @@ public class ServerWipeManager {
 
         String kickMessage = config().getString(
                 "MESSAGES.KICK",
-                "&cᴀ ѕᴇᴀѕᴏɴ ʀᴇѕᴇᴛ ɪѕ ѕᴛᴀʀᴛɪɴɢ. ᴛʜᴇ ѕᴇʀᴠᴇʀ ᴡɪʟʟ ʀᴇѕᴛᴀʀᴛ ѕʜᴏʀᴛʟʏ."
+                "&cA season reset is starting. The server will restart shortly."
         );
         for (Player player : List.copyOf(Bukkit.getOnlinePlayers())) {
             player.kickPlayer(ColorUtils.toComponent(kickMessage));

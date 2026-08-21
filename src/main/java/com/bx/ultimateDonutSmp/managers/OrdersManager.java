@@ -528,7 +528,7 @@ public class OrdersManager {
 
     public String getBrowseTitle() {
         return plugin.getLanguageManager().text("ORDERS.GUI.MAIN.TITLE", null,
-                config().getString("GUI.MAIN.TITLE", "&8ᴏʀᴅᴇʀѕ"));
+                config().getString("GUI.MAIN.TITLE", "&8Orders"));
     }
 
     public int getBrowseSize() {
@@ -541,7 +541,7 @@ public class OrdersManager {
 
     public String getMyOrdersTitle() {
         return plugin.getLanguageManager().text("ORDERS.GUI.MY_ORDERS.TITLE", null,
-                config().getString("GUI.MY_ORDERS.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴍʏ ᴏʀᴅᴇʀѕ"));
+                config().getString("GUI.MY_ORDERS.TITLE", "&8Orders -> My orders"));
     }
 
     public int getMyOrdersSize() {
@@ -554,7 +554,7 @@ public class OrdersManager {
 
     public String getCollectTitle() {
         return plugin.getLanguageManager().text("ORDERS.GUI.COLLECT.TITLE", null,
-                config().getString("GUI.COLLECT.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴄᴏʟʟᴇᴄᴛ"));
+                config().getString("GUI.COLLECT.TITLE", "&8Orders -> Collect"));
     }
 
     public int getCollectSize() {
@@ -567,7 +567,7 @@ public class OrdersManager {
 
     public String getSelectItemTitle() {
         return plugin.getLanguageManager().text("ORDERS.GUI.SELECT_ITEM.TITLE", null,
-                config().getString("GUI.SELECT_ITEM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ѕᴇʟᴇᴄᴛ ɪᴛᴇᴍ"));
+                config().getString("GUI.SELECT_ITEM.TITLE", "&8Orders -> Select item"));
     }
 
     public int getSelectItemSize() {
@@ -582,7 +582,7 @@ public class OrdersManager {
     public String getSearchItemTitle(String query) {
         String safeQuery = query == null ? "" : query;
         return plugin.getLanguageManager().text("ORDERS.GUI.SEARCH_ITEM.TITLE", null,
-                config().getString("GUI.SEARCH_ITEM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ѕᴇᴀʀᴄʜ ɪᴛᴇᴍ"),
+                config().getString("GUI.SEARCH_ITEM.TITLE", "&8Orders -> Search item"),
                 "{query}", safeQuery);
     }
 
@@ -597,7 +597,7 @@ public class OrdersManager {
 
     public String getInventoryItemTitle() {
         return plugin.getLanguageManager().text("ORDERS.GUI.INVENTORY_ITEM.TITLE", null,
-                config().getString("GUI.INVENTORY_ITEM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴄʜᴏᴏѕᴇ ɪᴛᴇᴍ"));
+                config().getString("GUI.INVENTORY_ITEM.TITLE", "&8Orders -> Choose item"));
     }
 
     public int getInventoryItemSize() {
@@ -606,7 +606,7 @@ public class OrdersManager {
 
     public String getNewOrderTitle() {
         return plugin.getLanguageManager().text("ORDERS.GUI.NEW_ORDER.TITLE", null,
-                config().getString("GUI.NEW_ORDER.TITLE", "&8ᴏʀᴅᴇʀѕ -> ɴᴇᴡ ᴏʀᴅᴇʀ"));
+                config().getString("GUI.NEW_ORDER.TITLE", "&8Orders -> New order"));
     }
 
     public int getNewOrderSize() {
@@ -615,7 +615,7 @@ public class OrdersManager {
 
     public String getEditOrderTitle(long orderId) {
         return plugin.getLanguageManager().text("ORDERS.GUI.EDIT_ORDER.TITLE", null,
-                config().getString("GUI.EDIT_ORDER.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴇᴅɪᴛ ᴏʀᴅᴇʀ"),
+                config().getString("GUI.EDIT_ORDER.TITLE", "&8Orders -> Edit order"),
                 "{order_id}", String.valueOf(orderId));
     }
 
@@ -625,7 +625,7 @@ public class OrdersManager {
 
     public String getDeliverTitle(long orderId) {
         return plugin.getLanguageManager().text("ORDERS.GUI.CONFIRM.TITLE", null,
-                config().getString("GUI.DELIVER_CONFIRM.TITLE", "&8ᴏʀᴅᴇʀѕ -> ᴅᴇʟɪᴠᴇʀ"),
+                config().getString("GUI.DELIVER_CONFIRM.TITLE", "&8Orders -> Deliver"),
                 "{order_id}", String.valueOf(orderId));
     }
 
@@ -1435,7 +1435,7 @@ public class OrdersManager {
             pendingCreations.remove(uuid);
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.INPUT_CANCELLED",
-                    "&7ᴏʀᴅᴇʀ ᴄʀᴇᴀᴛɪᴏɴ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                    "&7Order creation cancelled."
             )));
             if (pendingSearch != null && pendingSearch.editOrderId() > 0L) {
                 openEditOrderMenu(player, pendingSearch.editOrderId(), pendingSearch.navigation());
@@ -1448,7 +1448,7 @@ public class OrdersManager {
         if (input.isBlank()) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.SEARCH_EMPTY",
-                    "&cᴛʏᴘᴇ ᴀɴ ɪᴛᴇᴍ ᴏʀ ᴄᴀᴛᴇɢᴏʀʏ ɴᴀᴍᴇ ᴛᴏ ѕᴇᴀʀᴄʜ."
+                    "&cType an item or category name to search."
             )));
             if (pendingSearch != null && pendingSearch.editOrderId() > 0L) {
                 promptEditOrderSearchInput(player, pendingSearch.editOrderId(), pendingSearch.navigation());
@@ -1471,7 +1471,7 @@ public class OrdersManager {
             pendingEdits.remove(player.getUniqueId());
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.EDIT_CANCELLED",
-                    "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                    "&7Order edit cancelled."
             )));
             openEditOrderMenu(player, pendingEdit.orderId(), pendingEdit.navigation());
             return;
@@ -1494,7 +1494,7 @@ public class OrdersManager {
         } catch (RuntimeException exception) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.INVALID_QUANTITY",
-                    "&cɪɴᴠᴀʟɪᴅ ǫᴜᴀɴᴛɪᴛʏ. ᴜѕᴇ ᴀ ᴡʜᴏʟᴇ ɴᴜᴍʙᴇʀ ɢʀᴇᴀᴛᴇʀ ᴛʜᴀɴ 0."
+                    "&cInvalid quantity. Use a whole number greater than 0."
             )));
             Order order = getOrder(pendingEdit.orderId());
             if (order != null) {
@@ -1514,7 +1514,7 @@ public class OrdersManager {
         } catch (NumberFormatException exception) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.INVALID_PRICE",
-                    "&cɪɴᴠᴀʟɪᴅ ᴘʀɪᴄᴇ ꜰᴏʀᴍᴀᴛ. ᴜѕᴇ ɴᴜᴍʙᴇʀѕ ʟɪᴋᴇ 100, 5ᴋ, ᴏʀ 1.5ᴍ."
+                    "&cInvalid price format. Use numbers like 100, 5k, or 1.5m."
             )));
             Order order = getOrder(pendingEdit.orderId());
             if (order != null) {
@@ -1540,7 +1540,7 @@ public class OrdersManager {
             pendingEdits.remove(player.getUniqueId());
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "ORDERS.EDIT_UPDATED",
-                    "&aᴏʀᴅᴇʀ #{order_id} ᴜᴘᴅᴀᴛᴇᴅ. ɴᴇᴡ ʙᴜᴅɢᴇᴛ: {budget_formatted}.",
+                    "&aOrder #{order_id} updated. New budget: {budget_formatted}.",
                     "{order_id}", String.valueOf(updatedOrder.id()),
                     "{budget}", NumberUtils.format(updatedOrder.totalBudget()),
                     "{budget_formatted}", plugin.getCurrencyManager().formatMoney(updatedOrder.totalBudget())
@@ -2007,7 +2007,7 @@ public class OrdersManager {
         }
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_EDIT_QUANTITY",
-                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ǫᴜᴀɴᴛɪᴛʏ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: &e{quantity}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
+                "&7Enter the new quantity for order &f#{order_id}&7. Current: &e{quantity}&7. Type &ccancel&7 to abort.",
                 "{order_id}", String.valueOf(order.id()),
                 "{quantity}", String.valueOf(order.requestedQuantity())
         )));
@@ -2017,7 +2017,7 @@ public class OrdersManager {
                 pendingEdits.remove(player.getUniqueId());
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.EDIT_CANCELLED",
-                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                        "&7Order edit cancelled."
                 )));
                 openEditOrderMenu(player, order.id(), pendingEdit.navigation());
             } else {
@@ -2033,7 +2033,7 @@ public class OrdersManager {
         }
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                 "ORDERS.PROMPT_EDIT_PRICE",
-                "&7ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ᴘʀɪᴄᴇ ᴇᴀᴄʜ ꜰᴏʀ ᴏʀᴅᴇʀ &f#{order_id}&7. ᴄᴜʀʀᴇɴᴛ: {price_formatted}&7. ᴛʏᴘᴇ &cᴄᴀɴᴄᴇʟ&7 ᴛᴏ ᴀʙᴏʀᴛ.",
+                "&7Enter the new price each for order &f#{order_id}&7. Current: {price_formatted}&7. Type &ccancel&7 to abort.",
                 "{order_id}", String.valueOf(order.id()),
                 "{price}", NumberUtils.format(order.priceEach()),
                 "{price_formatted}", plugin.getCurrencyManager().formatMoney(order.priceEach())
@@ -2044,7 +2044,7 @@ public class OrdersManager {
                 pendingEdits.remove(player.getUniqueId());
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                         "ORDERS.EDIT_CANCELLED",
-                        "&7ᴏʀᴅᴇʀ ᴇᴅɪᴛ ᴄᴀɴᴄᴇʟʟᴇᴅ."
+                        "&7Order edit cancelled."
                 )));
                 openEditOrderMenu(player, order.id(), pendingEdit.navigation());
             } else {

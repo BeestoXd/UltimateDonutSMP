@@ -124,7 +124,7 @@ public final class SignInputUtil {
             org.bukkit.scheduler.BukkitTask task = scheduler.runEntityLater(player, () -> {
                 if (PLUGINS.containsKey(uuid)) {
                     cancel(player);
-                    player.sendMessage(org.bukkit.ChatColor.RED + "ѕɪɢɴ ɪɴᴘᴜᴛ ᴛɪᴍᴇᴅ ᴏᴜᴛ.");
+                    player.sendMessage(org.bukkit.ChatColor.RED + "sign input timed out.");
                 }
             }, 900L);
             HIDE_TASK.put(uuid, task);

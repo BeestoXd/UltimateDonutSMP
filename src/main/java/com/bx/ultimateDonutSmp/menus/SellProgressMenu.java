@@ -30,7 +30,7 @@ public class SellProgressMenu extends BaseMenu {
     public SellProgressMenu(UltimateDonutSmp plugin, SellCategory category) {
         super(plugin, plugin.getConfigManager().getMenus().getString(
                 "PROGRESS-MENU.TITLE." + category.getConfigKey(),
-                "&8ѕᴇʟʟ ᴘʀᴏɢʀᴇѕѕ"
+                "&8Sell progress"
         ), SIZE);
         this.category = category;
     }
@@ -88,7 +88,7 @@ public class SellProgressMenu extends BaseMenu {
             long targetGoal = levels.get(index);
 
             if (index < info.completedLevels()) {
-                String title = menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.TITLE", "&aᴄᴏᴍᴘʟᴇᴛᴇᴅ");
+                String title = menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.TITLE", "&aCompleted");
                 Material material = ItemUtils.parseMaterial(
                         menus.getString("PROGRESS-MENU.COMPLETED-BUTTON.MATERIAL", "LIME_STAINED_GLASS_PANE")
                 );
@@ -105,7 +105,7 @@ public class SellProgressMenu extends BaseMenu {
             }
 
             if (index == info.completedLevels() && !info.maxed()) {
-                String title = menus.getString("PROGRESS-MENU.WORKING-BUTTON.TITLE", "&eᴡᴏʀᴋɪɴɢ");
+                String title = menus.getString("PROGRESS-MENU.WORKING-BUTTON.TITLE", "&eWorking");
                 Material material = ItemUtils.parseMaterial(
                         menus.getString("PROGRESS-MENU.WORKING-BUTTON.MATERIAL", "YELLOW_STAINED_GLASS_PANE")
                 );
@@ -127,7 +127,7 @@ public class SellProgressMenu extends BaseMenu {
                 menus.getString("PROGRESS-MENU.BACK-BUTTON.MATERIAL",
                 menus.getString("GLOBAL.PAGE-MENU.MATERIAL", "BARRIER"))
         );
-        String title = menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cʙᴀᴄᴋ");
+        String title = menus.getString("GLOBAL.PAGE-MENU.BACK-BUTTON", "&cBack");
         List<String> lore = menus.getStringList("GLOBAL.PAGE-MENU.BACK-LORE");
         set(BACK_BUTTON_SLOT, ItemUtils.createItem(material, title, lore));
     }

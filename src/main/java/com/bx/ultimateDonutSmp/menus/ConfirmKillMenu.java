@@ -15,7 +15,7 @@ public class ConfirmKillMenu extends BaseMenu {
     public ConfirmKillMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.TITLE", "&8ᴄᴏɴꜰɪʀᴍ ᴋɪʟʟ"),
+                plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.TITLE", "&8Confirm kill"),
                 plugin.getConfigManager().getMenus().getInt("CONFIRM-KILL-MENU.SIZE", 27)
         );
     }
@@ -25,31 +25,31 @@ public class ConfirmKillMenu extends BaseMenu {
         clear();
         fill(Material.GRAY_STAINED_GLASS_PANE);
 
-        String cancelTitle = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.CANCEL-BUTTON.TITLE", "&cᴄᴀɴᴄᴇʟ");
+        String cancelTitle = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.CANCEL-BUTTON.TITLE", "&cCancel");
         String cancelMaterialStr = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.CANCEL-BUTTON.MATERIAL", "RED_STAINED_GLASS_PANE");
         Material cancelMaterial = Material.matchMaterial(cancelMaterialStr);
         if (cancelMaterial == null) cancelMaterial = Material.RED_STAINED_GLASS_PANE;
         List<String> cancelLore = plugin.getConfigManager().getMenus().getStringList("CONFIRM-KILL-MENU.CANCEL-BUTTON.LORE");
         if (cancelLore.isEmpty()) {
-            cancelLore = List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴀɴᴅ ʟɪᴠᴇ.");
+            cancelLore = List.of("&7Click to cancel and live.");
         }
 
-        String confirmTitle = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.CONFIRM-BUTTON.TITLE", "&aᴄᴏɴꜰɪʀᴍ");
+        String confirmTitle = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.CONFIRM-BUTTON.TITLE", "&aConfirm");
         String confirmMaterialStr = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.CONFIRM-BUTTON.MATERIAL", "LIME_STAINED_GLASS_PANE");
         Material confirmMaterial = Material.matchMaterial(confirmMaterialStr);
         if (confirmMaterial == null) confirmMaterial = Material.LIME_STAINED_GLASS_PANE;
         List<String> confirmLore = plugin.getConfigManager().getMenus().getStringList("CONFIRM-KILL-MENU.CONFIRM-BUTTON.LORE");
         if (confirmLore.isEmpty()) {
-            confirmLore = List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ ѕᴜɪᴄɪᴅᴇ.");
+            confirmLore = List.of("&7Click to confirm suicide.");
         }
 
-        String skullTitle = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.SKULL-BUTTON.TITLE", "&cᴋɪʟʟ ʏᴏᴜʀѕᴇʟꜰ");
+        String skullTitle = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.SKULL-BUTTON.TITLE", "&cKill yourself");
         String skullMaterialStr = plugin.getConfigManager().getMenus().getString("CONFIRM-KILL-MENU.SKULL-BUTTON.MATERIAL", "SKELETON_SKULL");
         Material skullMaterial = Material.matchMaterial(skullMaterialStr);
         if (skullMaterial == null) skullMaterial = Material.SKELETON_SKULL;
         List<String> skullLore = plugin.getConfigManager().getMenus().getStringList("CONFIRM-KILL-MENU.SKULL-BUTTON.LORE");
         if (skullLore.isEmpty()) {
-            skullLore = List.of("&7ᴀʀᴇ ʏᴏᴜ ѕᴜʀᴇ ʏᴏᴜ ᴡᴀɴᴛ", "&7ᴛᴏ ᴇɴᴅ ʏᴏᴜʀ ʟɪꜰᴇ?");
+            skullLore = List.of("&7Are you sure you want", "&7To end your life?");
         }
 
         int cancelSlot = plugin.getConfigManager().getMenus().getInt("CONFIRM-KILL-MENU.CANCEL-BUTTON.SLOT", 11);

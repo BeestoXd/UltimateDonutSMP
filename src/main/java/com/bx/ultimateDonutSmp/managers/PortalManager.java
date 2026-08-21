@@ -330,25 +330,25 @@ public class PortalManager {
 
         if (!hasValidCuboid(portal)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.INVALID-CUBOID",
-                    "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ɪѕ ɴᴏᴛ ᴄᴏɴꜰɪɢᴜʀᴇᴅ ᴄᴏʀʀᴇᴄᴛʟʏ ʀɪɢʜᴛ ɴᴏᴡ.")));
+                    "&cThis portal is not configured correctly right now.")));
             return false;
         }
 
         if (!isDestinationUsable(portal)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.INVALID-DESTINATION",
-                    "&cᴛʜɪѕ ᴘᴏʀᴛᴀʟ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ.")));
+                    "&cThis portal destination is currently unavailable.")));
             return false;
         }
 
         if (!portal.permission().isBlank() && !PermissionUtils.has(player, portal.permission())) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.NO-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴜѕᴇ ᴛʜɪѕ ᴘᴏʀᴛᴀʟ.")));
+                    "&cYou do not have permission to use this portal.")));
             return false;
         }
 
         if (shouldBlockInCombat() && plugin.getCombatManager().isInCombat(playerId)) {
             player.sendMessage(ColorUtils.toComponent(message("PORTAL.IN-COMBAT",
-                    "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜѕᴇ ᴘᴏʀᴛᴀʟѕ ᴡʜɪʟᴇ ɪɴ ᴄᴏᴍʙᴀᴛ.")));
+                    "&cYou cannot use portals while in combat.")));
             return false;
         }
 
@@ -356,7 +356,7 @@ public class PortalManager {
             if (plugin.getTeleportManager().hasPending(playerId)
                     && !plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
                 player.sendMessage(ColorUtils.toComponent(message("PORTAL.TELEPORT-IN-PROGRESS",
-                        "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.")));
+                        "&cYou are already teleporting.")));
                 return false;
             }
 
@@ -379,13 +379,13 @@ public class PortalManager {
         } else if (DESTINATION_TYPE_AFK.equalsIgnoreCase(portal.destinationType())) {
             if (plugin.getTeleportManager().hasPending(playerId)) {
                 player.sendMessage(ColorUtils.toComponent(message("PORTAL.TELEPORT-IN-PROGRESS",
-                        "&cʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴛᴇʟᴇᴘᴏʀᴛɪɴɢ.")));
+                        "&cYou are already teleporting.")));
                 return false;
             }
 
             Location destination = resolveAfkDestinationLocation(portal);
             if (destination == null) {
-                player.sendMessage(ColorUtils.toComponent("&cᴀꜰᴋ ʟᴏᴄᴀᴛɪᴏɴ ɪѕ ɴᴏᴛ ѕᴇᴛ."));
+                player.sendMessage(ColorUtils.toComponent("&cAFK location is not set."));
                 return false;
             }
 
@@ -763,9 +763,9 @@ public class PortalManager {
         if (configured.isEmpty()) {
             configured = List.of(
                     "&f{portal}",
-                    "&7ʀᴇɢɪᴏɴ {region}",
+                    "&7Region {region}",
                     "",
-                    "&f<total_player> ᴘʟᴀʏᴇʀѕ"
+                    "&f<total_player> players"
             );
         }
 

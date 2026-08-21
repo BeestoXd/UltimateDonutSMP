@@ -29,7 +29,7 @@ public class SellStatsCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!PermissionUtils.has(sender, PERMISSION) && !sender.hasPermission("ultimatedonutsmp.admin")) {
-            sender.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴠɪᴇᴡ ᴀᴅᴍɪɴ ѕᴇʟʟ ѕᴛᴀᴛɪѕᴛɪᴄѕ."));
+            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to view admin sell statistics."));
             return true;
         }
 

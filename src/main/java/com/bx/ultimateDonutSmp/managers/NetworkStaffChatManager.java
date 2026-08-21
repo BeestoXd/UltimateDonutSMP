@@ -67,7 +67,7 @@ public class NetworkStaffChatManager {
         if (!isNetworkEnabled() || !isStaffChatEnabled()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "STAFFCHAT.DISABLED",
-                    "&cɴᴇᴛᴡᴏʀᴋ ѕᴛᴀꜰꜰ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."
+                    "&cNetwork staff chat is currently disabled."
             )));
             return;
         }
@@ -76,7 +76,7 @@ public class NetworkStaffChatManager {
         if (message.isBlank()) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "STAFFCHAT.USAGE",
-                    "&cᴜѕᴀɢᴇ: /staffchat <message>"
+                    "&cUsage: /staffchat <message>"
             )));
             return;
         }
@@ -85,7 +85,7 @@ public class NetworkStaffChatManager {
         if (message.length() > maxLength) {
             sender.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                     "STAFFCHAT.MESSAGE_TOO_LONG",
-                    "&cѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴍᴇѕѕᴀɢᴇ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cStaff chat message is too long. Max: %max% characters.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
@@ -242,7 +242,7 @@ public class NetworkStaffChatManager {
             Runnable feedback = () -> feedbackTarget.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "STAFFCHAT.REDIS_UNAVAILABLE",
-                            "&eѕᴛᴀꜰꜰ ᴄʜᴀᴛ ᴡᴀѕ ᴅᴇʟɪᴠᴇʀᴇᴅ ʟᴏᴄᴀʟʟʏ, ʙᴜᴛ ʀᴇᴅɪѕ ɪѕ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴄʀᴏѕѕ-ѕᴇʀᴠᴇʀ ᴅᴇʟɪᴠᴇʀʏ."
+                            "&eStaff chat was delivered locally, but redis is unavailable for cross-server delivery."
                     )
             ));
             if (feedbackTarget instanceof Player player) {
@@ -267,7 +267,7 @@ public class NetworkStaffChatManager {
                 "NETWORK.STAFF_CHAT",
                 plugin.getConfigManager().getMessageOrDefault(
                         "STAFFCHAT.FORMAT",
-                        "&8[&6ѕᴛᴀꜰꜰᴄʜᴀᴛ&8] &e%player%&7: %message%"
+                        "&8[&6Staffchat&8] &e%player%&7: %message%"
                 )
         );
 

@@ -27,26 +27,26 @@ public class HealCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
             return true;
         }
 
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [ᴘʟᴀʏᴇʀ]"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " [player]"));
             return true;
         }
 
         Player target;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
+                sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
                 return true;
             }
             target = player;
         } else {
             target = findOnlinePlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+                sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
                 return true;
             }
         }
@@ -54,17 +54,17 @@ public class HealCommand implements CommandExecutor {
         heal(target);
         if (sender instanceof Player player && player.getUniqueId().equals(target.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("HEAL.SELF", "&aʏᴏᴜʀ ʜᴇᴀʟᴛʜ ʜᴀѕ ʙᴇᴇɴ ʀᴇѕᴛᴏʀᴇᴅ!")
+                    plugin.getConfigManager().getMessageOrDefault("HEAL.SELF", "&aYour health has been restored!")
             ));
             return true;
         }
 
         String senderName = sender instanceof Player player ? player.getName() : sender.getName();
         sender.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("HEAL.OTHER", "&7ʏᴏᴜ ʜᴇᴀʟᴇᴅ &d%player%", "%player%", target.getName())
+                plugin.getConfigManager().getMessageOrDefault("HEAL.OTHER", "&7You healed &d%player%", "%player%", target.getName())
         ));
         target.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("HEAL.NOTIFY", "&d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴇᴀʟᴛʜ", "%sender%", senderName)
+                plugin.getConfigManager().getMessageOrDefault("HEAL.NOTIFY", "&d%sender% &7restored your health", "%sender%", senderName)
         ));
         return true;
     }

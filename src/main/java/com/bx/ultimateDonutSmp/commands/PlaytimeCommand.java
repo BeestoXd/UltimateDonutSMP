@@ -22,7 +22,7 @@ public class PlaytimeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [ᴘʟᴀʏᴇʀ]"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " [player]"));
             return true;
         }
 
@@ -30,7 +30,7 @@ public class PlaytimeCommand implements CommandExecutor {
         String requestedName = null;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
+                sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
                 return true;
             }
             target = player;
@@ -42,7 +42,7 @@ public class PlaytimeCommand implements CommandExecutor {
 
         PlayerData data = resolvePlayerData(sender, target, requestedName);
         if (data == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sender.sendMessage(ColorUtils.toComponent("&cPlayer not found."));
             return true;
         }
 

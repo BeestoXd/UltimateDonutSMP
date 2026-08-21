@@ -46,7 +46,7 @@ public final class ConfirmPurchaseGui extends BaseMenu {
             Consumer<Player> returnAction
     ) {
         super(plugin, plugin.getConfigManager().getAuctionHouse()
-                .getString("GUI.CONFIRM_PURCHASE.TITLE", "&8ᴄᴏɴꜰɪʀᴍ ᴘᴜʀᴄʜᴀѕᴇ"), 27);
+                .getString("GUI.CONFIRM_PURCHASE.TITLE", "&8Confirm purchase"), 27);
         this.listing = listing;
         this.returnRequest = returnRequest;
         this.returnAction = returnAction;
@@ -68,8 +68,8 @@ public final class ConfirmPurchaseGui extends BaseMenu {
                         plugin,
                         "GUI.CONFIRM_PURCHASE.CONFIRM",
                         Material.LIME_STAINED_GLASS_PANE,
-                        "&aᴄᴏɴꜰɪʀᴍ ᴘᴜʀᴄʜᴀѕᴇ",
-                        List.of("&7ᴘʀɪᴄᴇ: {price}", "&eᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀѕᴇ"),
+                        "&aConfirm purchase",
+                        List.of("&7Price: {price}", "&eClick to purchase"),
                         "{price}", plugin.getCurrencyManager().formatMoney(listing.price())
                 ));
         set(AuctionHouseMenuSupport.slot(plugin, "GUI.CONFIRM_PURCHASE.CANCEL", 22),
@@ -77,8 +77,8 @@ public final class ConfirmPurchaseGui extends BaseMenu {
                         plugin,
                         "GUI.CONFIRM_PURCHASE.CANCEL",
                         Material.RED_STAINED_GLASS_PANE,
-                        "&cᴄᴀɴᴄᴇʟ",
-                        List.of("&7ʀᴇᴛᴜʀɴ ᴛᴏ ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ")
+                        "&cCancel",
+                        List.of("&7Return to auction house")
                 ));
     }
 

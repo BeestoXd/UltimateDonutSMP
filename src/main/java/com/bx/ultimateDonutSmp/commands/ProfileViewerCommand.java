@@ -20,23 +20,23 @@ public class ProfileViewerCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ.");
+            sender.sendMessage("Player only.");
             return true;
         }
 
         if (!plugin.getProfileViewerManager().canView(player)) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴠɪᴇᴡ ᴘʟᴀʏᴇʀ ᴘʀᴏꜰɪʟᴇѕ."));
+            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission to view player profiles."));
             return true;
         }
 
         if (args.length == 0) {
-            player.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
+            player.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
             return true;
         }
 
         ProfileSnapshot snapshot = plugin.getProfileViewerManager().resolveProfile(args[0]).orElse(null);
         if (snapshot == null) {
-            player.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ᴘʀᴏꜰɪʟᴇ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cPlayer profile not found."));
             return true;
         }
 

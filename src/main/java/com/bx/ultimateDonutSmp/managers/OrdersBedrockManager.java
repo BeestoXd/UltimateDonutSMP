@@ -52,7 +52,7 @@ public final class OrdersBedrockManager {
                 .toList();
 
         SimpleForm.Builder form = SimpleForm.builder()
-                .title(text("ORDERS.BEDROCK.MAIN.TITLE", "ᴏʀᴅᴇʀѕ"))
+                .title(text("ORDERS.BEDROCK.MAIN.TITLE", "Orders"))
                 .content(normalizedQuery.isBlank()
                         ? text("ORDERS.BEDROCK.MAIN.CONTENT", "Browse open orders.")
                         : text("ORDERS.BEDROCK.MAIN.SEARCHING", "Search: {query}", "{query}", normalizedQuery))
@@ -93,7 +93,7 @@ public final class OrdersBedrockManager {
                 .limit(maxResults())
                 .toList();
         SimpleForm.Builder form = SimpleForm.builder()
-                .title(text("ORDERS.BEDROCK.MY.TITLE", "ᴍʏ ᴏʀᴅᴇʀѕ"))
+                .title(text("ORDERS.BEDROCK.MY.TITLE", "My orders"))
                 .content(text("ORDERS.BEDROCK.MY.CONTENT", "Select an order to manage it."))
                 .button(text("ORDERS.BEDROCK.BUTTON.BACK", "Back"))
                 .button(text("ORDERS.BEDROCK.BUTTON.NEW", "New Order"));
@@ -125,7 +125,7 @@ public final class OrdersBedrockManager {
                 .limit(maxResults())
                 .toList();
         SimpleForm.Builder form = SimpleForm.builder()
-                .title(text("ORDERS.BEDROCK.COLLECT.TITLE", "ᴄᴏʟʟᴇᴄᴛ"))
+                .title(text("ORDERS.BEDROCK.COLLECT.TITLE", "Collect"))
                 .content(text("ORDERS.BEDROCK.COLLECT.CONTENT", "Pending claims: {count}",
                         "{count}", String.valueOf(claims.size())))
                 .button(text("ORDERS.BEDROCK.BUTTON.BACK", "Back"))
@@ -163,7 +163,7 @@ public final class OrdersBedrockManager {
 
     private void openSearch(Player player, String currentQuery) {
         CustomForm.Builder form = CustomForm.builder()
-                .title(text("ORDERS.BEDROCK.SEARCH.TITLE", "ѕᴇᴀʀᴄʜ ᴏʀᴅᴇʀѕ"))
+                .title(text("ORDERS.BEDROCK.SEARCH.TITLE", "Search orders"))
                 .input(text("ORDERS.BEDROCK.SEARCH.INPUT", "Item, owner, or category"), "", currentQuery);
         form.validResultHandler(response ->
                 schedule(player, () -> openMain(player, response.asInput(0))));
@@ -204,7 +204,7 @@ public final class OrdersBedrockManager {
 
     private void openItemSearch(Player player, String currentQuery) {
         CustomForm.Builder form = CustomForm.builder()
-                .title(text("ORDERS.BEDROCK.ITEM_SEARCH.TITLE", "ѕᴇᴀʀᴄʜ ɪᴛᴇᴍѕ"))
+                .title(text("ORDERS.BEDROCK.ITEM_SEARCH.TITLE", "Search items"))
                 .input(text("ORDERS.BEDROCK.SEARCH.INPUT", "Item or category"), "", currentQuery);
         form.validResultHandler(response ->
                 schedule(player, () -> openItemSelection(player, response.asInput(0))));
@@ -214,7 +214,7 @@ public final class OrdersBedrockManager {
 
     private void openNewOrder(Player player, OrderCatalogEntry entry) {
         CustomForm.Builder form = CustomForm.builder()
-                .title(text("ORDERS.BEDROCK.NEW.TITLE", "ɴᴇᴡ ᴏʀᴅᴇʀ"))
+                .title(text("ORDERS.BEDROCK.NEW.TITLE", "New order"))
                 .input(text("ORDERS.BEDROCK.NEW.AMOUNT", "Amount"), "64", "")
                 .input(text("ORDERS.BEDROCK.NEW.PRICE", "Price each"), "100", "");
         form.validResultHandler(response -> schedule(player, () -> {
@@ -253,7 +253,7 @@ public final class OrdersBedrockManager {
 
     private void openDelivery(Player player, Order order) {
         CustomForm.Builder form = CustomForm.builder()
-                .title(text("ORDERS.BEDROCK.DELIVERY.TITLE", "ᴅᴇʟɪᴠᴇʀ ɪᴛᴇᴍѕ"))
+                .title(text("ORDERS.BEDROCK.DELIVERY.TITLE", "Deliver items"))
                 .input(text("ORDERS.BEDROCK.DELIVERY.AMOUNT", "Amount (max {max})",
                         "{max}", String.valueOf(order.remainingQuantity())), "64", "");
         form.validResultHandler(response -> schedule(player, () -> {
@@ -285,7 +285,7 @@ public final class OrdersBedrockManager {
             return;
         }
         SimpleForm.Builder form = SimpleForm.builder()
-                .title(text("ORDERS.BEDROCK.ORDER.TITLE", "ᴏʀᴅᴇʀ #{id}",
+                .title(text("ORDERS.BEDROCK.ORDER.TITLE", "Order #{id}",
                         "{id}", String.valueOf(order.id())))
                 .content(orderButton(order))
                 .button(text("ORDERS.BEDROCK.BUTTON.BACK", "Back"))
@@ -306,7 +306,7 @@ public final class OrdersBedrockManager {
 
     private void openCancelConfirmation(Player player, Order order) {
         ModalForm.Builder form = ModalForm.builder()
-                .title(text("ORDERS.BEDROCK.CANCEL.TITLE", "ᴄᴀɴᴄᴇʟ ᴏʀᴅᴇʀ"))
+                .title(text("ORDERS.BEDROCK.CANCEL.TITLE", "Cancel order"))
                 .content(text("ORDERS.BEDROCK.CANCEL.CONTENT",
                         "Cancel order #{id}? Remaining escrow will become a refund claim.",
                         "{id}", String.valueOf(order.id())))

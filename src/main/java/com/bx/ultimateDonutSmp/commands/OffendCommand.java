@@ -36,7 +36,7 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
         if (!PermissionUtils.has(sender, OFFEND_PERMISSION) && !PermissionUtils.has(sender, CREATE_PERMISSION)) {
             sendMessage(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.NO-CREATE-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛѕ."
+                    "&cYou do not have permission to create punishments."
             ));
             return true;
         }
@@ -52,7 +52,7 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
         // Resolve Target Player
         ResolvedTarget target = resolveTarget(targetInput);
         if (target == null || target.uuid() == null) {
-            sendMessage(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ."));
+            sendMessage(sender, plugin.getConfigManager().getMessageOrDefault("PUNISHMENTS.NOT-FOUND", "&cPlayer not found."));
             return true;
         }
 
@@ -108,7 +108,7 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
         if (record == null) {
             sendMessage(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.CREATE-FAILED",
-                    "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴘᴜɴɪѕʜᴍᴇɴᴛ ʀᴇᴄᴏʀᴅ."
+                    "&cFailed to create punishment record."
             ));
             return true;
         }
@@ -163,7 +163,7 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
             case WARN -> onlineTarget.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "PUNISHMENTS.WARN-RECEIVED",
-                            "&cᴡᴀʀɴɪɴɢ: &f{reason}",
+                            "&cWarning: &f{reason}",
                             "{reason}", record.getReason()
                     )
             ));

@@ -39,7 +39,7 @@ public class WarpManagerCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendMessage(sender, message("WARPMANAGER.USAGE", "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [ɴᴀᴍᴇ]"));
+            sendMessage(sender, message("WARPMANAGER.USAGE", "&cUsage: /warpmanager <create|delete|list> [name]"));
             return true;
         }
 
@@ -48,14 +48,14 @@ public class WarpManagerCommand implements CommandExecutor {
             case "create" -> handleCreate(sender, args, true);
             case "delete" -> handleDelete(sender, args, true);
             case "list" -> handleList(sender);
-            default -> sendMessage(sender, message("WARPMANAGER.USAGE", "&cᴜѕᴀɢᴇ: /warpmanager <create|delete|list> [ɴᴀᴍᴇ]"));
+            default -> sendMessage(sender, message("WARPMANAGER.USAGE", "&cUsage: /warpmanager <create|delete|list> [name]"));
         }
         return true;
     }
 
     private void handleCreateAlias(CommandSender sender, String[] args) {
         if (args.length != 1) {
-            sendMessage(sender, message("WARPMANAGER.CREATE-USAGE-ALIAS", "&cᴜѕᴀɢᴇ: /setwarp <name>"));
+            sendMessage(sender, message("WARPMANAGER.CREATE-USAGE-ALIAS", "&cUsage: /setwarp <name>"));
             return;
         }
 
@@ -64,7 +64,7 @@ public class WarpManagerCommand implements CommandExecutor {
 
     private void handleDeleteAlias(CommandSender sender, String[] args) {
         if (args.length != 1) {
-            sendMessage(sender, message("WARPMANAGER.DELETE-USAGE-ALIAS", "&cᴜѕᴀɢᴇ: /delwarp <name>"));
+            sendMessage(sender, message("WARPMANAGER.DELETE-USAGE-ALIAS", "&cUsage: /delwarp <name>"));
             return;
         }
 
@@ -73,33 +73,33 @@ public class WarpManagerCommand implements CommandExecutor {
 
     private void handleCreate(CommandSender sender, String[] args, boolean managerCommand) {
         if (!hasCreatePermission(sender)) {
-            sendMessage(sender, message("WARPMANAGER.NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴡᴀʀᴘѕ."));
+            sendMessage(sender, message("WARPMANAGER.NO-PERMISSION", "&cYou do not have permission to manage warps."));
             return;
         }
 
         if (!(sender instanceof Player player)) {
-            sendMessage(sender, message("WARPMANAGER.CREATE-PLAYER-ONLY", "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘѕ."));
+            sendMessage(sender, message("WARPMANAGER.CREATE-PLAYER-ONLY", "&cOnly players can create warps."));
             return;
         }
 
         if (args.length != 2) {
             sendMessage(sender, managerCommand
-                    ? message("WARPMANAGER.CREATE-USAGE", "&cᴜѕᴀɢᴇ: /warpmanager ᴄʀᴇᴀᴛᴇ <name>")
-                    : message("WARPMANAGER.CREATE-USAGE-ALIAS", "&cᴜѕᴀɢᴇ: /setwarp <name>"));
+                    ? message("WARPMANAGER.CREATE-USAGE", "&cUsage: /warpmanager create <name>")
+                    : message("WARPMANAGER.CREATE-USAGE-ALIAS", "&cUsage: /setwarp <name>"));
             return;
         }
 
         String requestedName = args[1];
         if (!plugin.getWarpManager().isValidWarpName(requestedName)) {
             sendMessage(sender, message("WARP.INVALID-NAME",
-                    "&cɪɴᴠᴀʟɪᴅ ᴡᴀʀᴘ ɴᴀᴍᴇ. ᴜѕᴇ ᴏɴʟʏ ʟᴇᴛᴛᴇʀѕ, ɴᴜᴍʙᴇʀѕ, ᴅᴀѕʜᴇѕ, ᴀɴᴅ ᴜɴᴅᴇʀѕᴄᴏʀᴇѕ."));
+                    "&cInvalid warp name. Use only letters, numbers, dashes, and underscores."));
             return;
         }
 
         String normalizedName = plugin.getWarpManager().normalizeName(requestedName);
         if (plugin.getWarpManager().warpExists(normalizedName)) {
             sendMessage(sender, message("WARP.ALREADY-EXISTS",
-                    "&cᴡᴀʀᴘ '&e{name}&c' ᴀʟʀᴇᴀᴅʏ ᴇxɪѕᴛѕ.",
+                    "&cWarp '&e{name}&c' already exists.",
                     "{name}", normalizedName));
             return;
         }
@@ -107,26 +107,26 @@ public class WarpManagerCommand implements CommandExecutor {
         boolean created = plugin.getWarpManager().createWarp(normalizedName, player.getLocation());
         if (!created) {
             sendMessage(sender, message("WARPMANAGER.CREATE-FAILED",
-                    "&cꜰᴀɪʟᴇᴅ ᴛᴏ ᴄʀᴇᴀᴛᴇ ᴡᴀʀᴘ '&e{name}&c'.",
+                    "&cFailed to create warp '&e{name}&c'.",
                     "{name}", normalizedName));
             return;
         }
 
         sendMessage(sender, message("WARP.CREATED",
-                "&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴄʀᴇᴀᴛᴇᴅ.",
+                "&aWarp &b{name} &ahas been created.",
                 "{name}", normalizedName));
     }
 
     private void handleDelete(CommandSender sender, String[] args, boolean managerCommand) {
         if (!hasDeletePermission(sender)) {
-            sendMessage(sender, message("WARPMANAGER.NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴡᴀʀᴘѕ."));
+            sendMessage(sender, message("WARPMANAGER.NO-PERMISSION", "&cYou do not have permission to manage warps."));
             return;
         }
 
         if (args.length != 2) {
             sendMessage(sender, managerCommand
-                    ? message("WARPMANAGER.DELETE-USAGE", "&cᴜѕᴀɢᴇ: /warpmanager ᴅᴇʟᴇᴛᴇ <name>")
-                    : message("WARPMANAGER.DELETE-USAGE-ALIAS", "&cᴜѕᴀɢᴇ: /delwarp <name>"));
+                    ? message("WARPMANAGER.DELETE-USAGE", "&cUsage: /warpmanager delete <name>")
+                    : message("WARPMANAGER.DELETE-USAGE-ALIAS", "&cUsage: /delwarp <name>"));
             return;
         }
 
@@ -138,24 +138,24 @@ public class WarpManagerCommand implements CommandExecutor {
         }
 
         sendMessage(sender, message("WARP.DELETED",
-                "&aᴡᴀʀᴘ &b{name} &aʜᴀѕ ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ.",
+                "&aWarp &b{name} &ahas been deleted.",
                 "{name}", normalizedName));
     }
 
     private void handleList(CommandSender sender) {
         if (!hasListPermission(sender)) {
-            sendMessage(sender, message("WARPMANAGER.NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴡᴀʀᴘѕ."));
+            sendMessage(sender, message("WARPMANAGER.NO-PERMISSION", "&cYou do not have permission to manage warps."));
             return;
         }
 
         List<String> names = plugin.getWarpManager().getSortedWarpNames();
         if (names.isEmpty()) {
-            sendMessage(sender, message("WARP.LIST-EMPTY", "&cɴᴏ ᴡᴀʀᴘѕ ᴀᴠᴀɪʟᴀʙʟᴇ."));
+            sendMessage(sender, message("WARP.LIST-EMPTY", "&cNo warps available."));
             return;
         }
 
         sendMessage(sender, message("WARP.LIST-HEADER",
-                "&8&m---------------- &bᴡᴀʀᴘѕ &7({count}) &8&m----------------",
+                "&8&m---------------- &bWarps &7({count}) &8&m----------------",
                 "{count}", String.valueOf(names.size())));
         for (String name : names) {
             sendMessage(sender, message("WARP.LIST-ENTRY", "&7- &b{name}", "{name}", name));
@@ -163,12 +163,12 @@ public class WarpManagerCommand implements CommandExecutor {
     }
 
     private void sendWarpNotFound(CommandSender sender, String requestedName) {
-        sendMessage(sender, message("WARP.NOT-FOUND", "&cᴡᴀʀᴘ '&e{name}&c' ɴᴏᴛ ꜰᴏᴜɴᴅ.", "{name}", requestedName));
+        sendMessage(sender, message("WARP.NOT-FOUND", "&cWarp '&e{name}&c' not found.", "{name}", requestedName));
 
         List<String> suggestions = plugin.getWarpManager().findWarpSuggestions(requestedName);
         if (!suggestions.isEmpty()) {
             sendMessage(sender, message("WARP.NOT-FOUND-SUGGESTION",
-                    "&7ᴅɪᴅ ʏᴏᴜ ᴍᴇᴀɴ: &b{suggestions}",
+                    "&7Did you mean: &b{suggestions}",
                     "{suggestions}", String.join("&7, &b", suggestions)));
         }
     }

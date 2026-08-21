@@ -26,14 +26,14 @@ public class FlyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [ᴘʟᴀʏᴇʀ]"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " [player]"));
             return true;
         }
 
         Player target;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
+                sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
                 return true;
             }
 
@@ -44,7 +44,7 @@ public class FlyCommand implements CommandExecutor {
 
             if (!isStaff && !isPlayerFly) {
                 player.sendMessage(ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessageOrDefault("STAFF.NO_PERMISSION_OTHERS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                        plugin.getConfigManager().getMessageOrDefault("STAFF.NO_PERMISSION_OTHERS", "&cYou do not have permission.")
                 ));
                 return true;
             }
@@ -81,14 +81,14 @@ public class FlyCommand implements CommandExecutor {
             // Target player specified - staff only
             if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
                 player.sendMessage(ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessageOrDefault("STAFF.NO_PERMISSION_OTHERS", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                        plugin.getConfigManager().getMessageOrDefault("STAFF.NO_PERMISSION_OTHERS", "&cYou do not have permission.")
                 ));
                 return true;
             }
 
             target = findOnlinePlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+                sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
                 return true;
             }
         }
@@ -101,7 +101,7 @@ public class FlyCommand implements CommandExecutor {
 
         if (!(sender instanceof Player player) || !player.getUniqueId().equals(target.getUniqueId())) {
             sender.sendMessage(ColorUtils.toComponent(
-                    "&7ꜰʟɪɢʜᴛ ꜰᴏʀ &e" + target.getName() + " &7ᴡᴀѕ " + (enabled ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ") + "&7."
+                    "&7Flight for &e" + target.getName() + " &7was " + (enabled ? "&aEnabled" : "&cDisabled") + "&7."
             ));
         }
         return true;

@@ -26,7 +26,7 @@ public class ShopCommand implements CommandExecutor {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(ColorUtils.colorize(text(
                     "SHOP-GUI.MESSAGES.PLAYER-ONLY",
-                    "&cᴏɴʟʏ ᴘʟᴀʏᴇʀѕ ᴄᴀɴ ᴜѕᴇ ᴛʜɪѕ ᴄᴏᴍᴍᴀɴᴅ."
+                    "&cOnly players can use this command."
             )));
             return true;
         }
@@ -43,7 +43,7 @@ public class ShopCommand implements CommandExecutor {
 
         player.sendMessage(ColorUtils.toComponent(text(
                 "SHOP-GUI.MESSAGES.USAGE",
-                "&cᴜѕᴀɢᴇ: /shop [ʀᴇʟᴏᴀᴅ]"
+                "&cUsage: /shop [reload]"
         )));
         return true;
     }
@@ -52,7 +52,7 @@ public class ShopCommand implements CommandExecutor {
         if (!PermissionUtils.has(sender, "ultimatedonutsmp.admin.shop")) {
             sender.sendMessage(ColorUtils.colorize(text(
                     "SHOP-GUI.MESSAGES.NO-RELOAD-PERMISSION",
-                    "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ ᴛᴏ ʀᴇʟᴏᴀᴅ ѕʜᴏᴘ ѕᴇᴛᴛɪɴɢѕ."
+                    "&cYou do not have permission to reload shop settings."
             )));
             return true;
         }
@@ -63,7 +63,7 @@ public class ShopCommand implements CommandExecutor {
         plugin.getShopManager().reload();
         sender.sendMessage(ColorUtils.colorize(text(
                 "SHOP-GUI.MESSAGES.RELOADED",
-                "&aѕʜᴏᴘ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ."
+                "&aShop configuration reloaded."
         )));
         return true;
     }

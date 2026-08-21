@@ -18,9 +18,9 @@ public class HelpCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage("ᴘʟᴀʏᴇʀ ᴏɴʟʏ."); return true; }
+        if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
         if (!plugin.getConfigManager().isCommandEnabled("HELP")) {
-            player.sendMessage(ColorUtils.toComponent("&cʜᴇʟᴘ ᴄᴏᴍᴍᴀɴᴅ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ."));
+            player.sendMessage(ColorUtils.toComponent("&cHelp command is currently disabled."));
             return true;
         }
 
@@ -35,7 +35,7 @@ public class HelpCommand implements CommandExecutor {
     }
 
     private void sendLegacyHelp(Player player) {
-        player.sendMessage(ColorUtils.toComponent("&7&m-------- &bʜᴇʟᴘ &7&m--------"));
+        player.sendMessage(ColorUtils.toComponent("&7&m-------- &bHelp &7&m--------"));
         sendHelpLine(player, "team", "&b/team &7- manage your team");
         sendHelpLine(player, "home", "&b/home &7- teleport to your home");
         sendHelpLine(player, "spawn", "&b/spawn &7- teleport to spawn");
@@ -44,7 +44,7 @@ public class HelpCommand implements CommandExecutor {
         sendHelpLine(player, "shop", "&b/shop &7- open the shop");
         sendHelpLine(player, "sell", "&b/sell &7- sell your items");
         sendHelpLine(player, "crate", "&b/crates &7- open the crates menu");
-        player.sendMessage(ColorUtils.toComponent("&b/balance &7- ᴄʜᴇᴄᴋ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ"));
+        player.sendMessage(ColorUtils.toComponent("&b/Balance &7- check your balance"));
         sendHelpLine(player, "shards", "&b/shards &7- check your "
                 + plugin.getCurrencyManager().plural(com.bx.ultimateDonutSmp.managers.CurrencyManager.CurrencyType.SHARDS));
         sendHelpLine(player, "bounty", "&b/bounty &7- view bounties");

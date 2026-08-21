@@ -101,7 +101,7 @@ public class ChatListener implements Listener {
             plugin.getSpigotScheduler().runEntity(player, () -> player.sendMessage(ColorUtils.toComponent(
                     plugin.getConfigManager().getMessageOrDefault(
                             "CHAT-MANAGER.GLOBAL-MUTED-BLOCK",
-                            "&cɢʟᴏʙᴀʟ ᴄʜᴀᴛ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴍᴜᴛᴇᴅ."
+                            "&cGlobal chat is currently muted."
                     )
             )));
             return;
@@ -119,7 +119,7 @@ public class ChatListener implements Listener {
             event.setCancelled(true);
             String delayMessage = plugin.getConfigManager().getMessageOrDefault(
                     "CHAT-MANAGER.GLOBAL-DELAY-BLOCK",
-                    "&cʏᴏᴜ ᴍᴜѕᴛ ᴡᴀɪᴛ &f{seconds}ѕ &cʙᴇꜰᴏʀᴇ ᴄʜᴀᴛᴛɪɴɢ ᴀɢᴀɪɴ."
+                    "&cYou must wait &f{seconds}s &cbefore chatting again."
             ).replace("{seconds}", String.valueOf(delayResult.remainingSeconds()))
                     .replace("%seconds%", String.valueOf(delayResult.remainingSeconds()));
             plugin.getSpigotScheduler().runEntity(player, () -> player.sendMessage(ColorUtils.toComponent(delayMessage)));
@@ -187,7 +187,7 @@ public class ChatListener implements Listener {
     private String mutedChatMessage(PunishmentRecord record) {
         return plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.MUTE",
-                "&c&lʏᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴍᴜᴛᴇᴅ!\n&8&m----------------------------\n&7ʀᴇᴀѕᴏɴ: &f%reason%\n&7ᴇxᴘɪʀᴇѕ: &f%nicest_expiration%\n&7ᴍᴜᴛᴇᴅ ʙʏ: &f%issuer%\n&8&m----------------------------\n&7ʏᴏᴜ ᴄᴀɴɴᴏᴛ ѕᴘᴇᴀᴋ ɪɴ ᴄʜᴀᴛ",
+                "&c&lYou have been muted!\n&8&m----------------------------\n&7Reason: &f%reason%\n&7Expires: &f%nicest_expiration%\n&7Muted by: &f%issuer%\n&8&m----------------------------\n&7You cannot speak in chat",
                 punishmentPlaceholders(record)
         );
     }

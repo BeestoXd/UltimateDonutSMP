@@ -49,7 +49,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
     public PlayerSettingsMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ѕᴇᴛᴛɪɴɢѕ"),
+                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Settings"),
                 plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 54)
         );
     }
@@ -310,7 +310,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             lore.add(ColorUtils.colorize(line.replace("{status}", state.status()), player));
         }
         Material material = ItemUtils.parseMaterial(section.getString("MATERIAL", "STONE"));
-        String displayName = ColorUtils.colorize(section.getString("DISPLAY-NAME", "&fѕᴇᴛᴛɪɴɢ"), player);
+        String displayName = ColorUtils.colorize(section.getString("DISPLAY-NAME", "&fSetting"), player);
         ItemStack item = ItemUtils.createItem(
                 material,
                 displayName,
@@ -445,16 +445,16 @@ public final class PlayerSettingsMenu extends BaseMenu {
         return plugin.getExplosionParticleFilter() != null
                 && plugin.getExplosionParticleFilter().isAvailable()
                 ? state(data.isExplosionParticlesEnabled())
-                : new ButtonState("&cᴜɴᴀᴠᴀɪʟᴀʙʟᴇ", false);
+                : new ButtonState("&cUnavailable", false);
     }
 
     private ButtonState quickBuyState(Player player) {
         if (!PermissionUtils.has(player, "ultimatedonutsmp.auctionhouse.fastbuy")
                 && !PermissionUtils.has(player, "donutauction.fastbuy")) {
-            return new ButtonState("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ", false);
+            return new ButtonState("&cNo permission", false);
         }
         if (preferenceLoading || quickBuyEnabled == null) {
-            return new ButtonState("&eʟᴏᴀᴅɪɴɢ...", false);
+            return new ButtonState("&eLoading...", false);
         }
         return state(quickBuyEnabled);
     }
@@ -462,10 +462,10 @@ public final class PlayerSettingsMenu extends BaseMenu {
     private ButtonState quickSellState(Player player) {
         if (!PermissionUtils.has(player, "ultimatedonutsmp.auctionhouse.fastsell")
                 && !PermissionUtils.has(player, "donutauction.fastsell")) {
-            return new ButtonState("&cɴᴏ ᴘᴇʀᴍɪѕѕɪᴏɴ", false);
+            return new ButtonState("&cNo permission", false);
         }
         if (preferenceLoading || quickSellEnabled == null) {
-            return new ButtonState("&eʟᴏᴀᴅɪɴɢ...", false);
+            return new ButtonState("&eLoading...", false);
         }
         return state(quickSellEnabled);
     }
@@ -512,10 +512,10 @@ public final class PlayerSettingsMenu extends BaseMenu {
                     if (error != null) {
                         quickBuyEnabled = previous;
                         player.sendMessage(ColorUtils.toComponent(
-                                "&cᴜɴᴀʙʟᴇ ᴛᴏ ѕᴀᴠᴇ ǫᴜɪᴄᴋ ᴀᴜᴄᴛɪᴏɴ ᴘᴜʀᴄʜᴀѕᴇ ѕᴇᴛᴛɪɴɢ."
+                                "&cUnable to save quick auction purchase setting."
                         ));
                     } else {
-                        sendToggleMessage(player, "ǫᴜɪᴄᴋ ᴀᴜᴄᴛɪᴏɴ ᴘᴜʀᴄʜᴀѕᴇѕ", enabled);
+                        sendToggleMessage(player, "Quick auction purchases", enabled);
                     }
                     rebuildIfOpen(player);
                 }));
@@ -537,10 +537,10 @@ public final class PlayerSettingsMenu extends BaseMenu {
                     if (error != null) {
                         quickSellEnabled = previous;
                         player.sendMessage(ColorUtils.toComponent(
-                                "&cᴜɴᴀʙʟᴇ ᴛᴏ ѕᴀᴠᴇ ǫᴜɪᴄᴋ ᴀᴜᴄᴛɪᴏɴ ѕᴇʟʟ ѕᴇᴛᴛɪɴɢ."
+                                "&cUnable to save quick auction sell setting."
                         ));
                     } else {
-                        sendToggleMessage(player, "ǫᴜɪᴄᴋ ᴀᴜᴄᴛɪᴏɴ ѕᴇʟʟѕ", enabled);
+                        sendToggleMessage(player, "Quick auction sells", enabled);
                     }
                     rebuildIfOpen(player);
                 }));
@@ -561,7 +561,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
         plugin.getTeamManager().toggleTeamChat(player.getUniqueId());
         sendToggleMessage(
                 player,
-                "ᴛᴇᴀᴍ ᴄʜᴀᴛ ѕᴇɴᴅɪɴɢ ᴍᴏᴅᴇ",
+                "Team chat sending mode",
                 plugin.getTeamManager().isTeamChatEnabled(player.getUniqueId())
         );
     }

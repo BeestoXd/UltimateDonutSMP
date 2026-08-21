@@ -201,7 +201,7 @@ public class PrivateMessageManager {
         sender.sendMessage(ColorUtils.toComponent(configuredMessage(
                 "MESSAGES.NO_CONVERSATION",
                 "PRIVATE-MESSAGE.NO-REPLY-TARGET",
-                "&cʏᴏᴜ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ɴᴏᴛ ɪɴ ᴄᴏɴᴠᴇʀѕᴀᴛɪᴏɴ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ ᴏʀ ᴛʜᴇ ᴘʟᴀʏᴇʀ ɪѕ ᴏꜰꜰʟɪɴᴇ."
+                "&cYou are currently not in conversation with anyone or the player is offline."
         ), sender));
     }
 

@@ -165,7 +165,7 @@ public class StaffModeListener implements Listener {
             case VANISH -> {
                 if (!plugin.getStaffModeManager().canUseVanish(player)) {
                     player.sendMessage(ColorUtils.toComponent(
-                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
                     ));
                     return;
                 }
@@ -174,7 +174,7 @@ public class StaffModeListener implements Listener {
             case STAFF_LIST -> {
                 if (!plugin.getStaffModeManager().canOpenStaffList(player)) {
                     player.sendMessage(ColorUtils.toComponent(
-                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
                     ));
                     return;
                 }
@@ -183,7 +183,7 @@ public class StaffModeListener implements Listener {
             case BETTER_VIEW -> {
                 if (!plugin.getStaffModeManager().canUseBetterView(player)) {
                     player.sendMessage(ColorUtils.toComponent(
-                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
                     ));
                     return;
                 }
@@ -192,13 +192,13 @@ public class StaffModeListener implements Listener {
             case RANDOM_TELEPORT -> {
                 if (!plugin.getStaffModeManager().canUseRandomTeleport(player)) {
                     player.sendMessage(ColorUtils.toComponent(
-                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                            plugin.getStaffModeManager().getMessage("NO-PERMISSION", "&cYou do not have permission.")
                     ));
                     return;
                 }
                 if (plugin.getStaffModeManager().teleportToRandomPlayer(player) == null) {
                     player.sendMessage(ColorUtils.toComponent(
-                            plugin.getStaffModeManager().getRandomTeleportMessage("NO_PLAYERS", "&cɴᴏ ᴏᴛʜᴇʀ ᴘʟᴀʏᴇʀѕ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ʀᴀɴᴅᴏᴍ ᴛᴇʟᴇᴘᴏʀᴛ")
+                            plugin.getStaffModeManager().getRandomTeleportMessage("NO_PLAYERS", "&cNo other players available for random teleport")
                     ));
                 }
             }
@@ -266,19 +266,19 @@ public class StaffModeListener implements Listener {
         FreezeManager freezeManager = plugin.getFreezeManager();
         if (!freezeManager.isEnabled()) {
             staff.sendMessage(ColorUtils.toComponent(
-                    freezeManager.getMessage("FEATURE-DISABLED", "&cᴛʜᴇ ꜰʀᴇᴇᴢᴇ ѕʏѕᴛᴇᴍ ɪѕ ᴅɪѕᴀʙʟᴇᴅ.")
+                    freezeManager.getMessage("FEATURE-DISABLED", "&cThe freeze system is disabled.")
             ));
             return;
         }
         if (!freezeManager.canUse(staff)) {
             staff.sendMessage(ColorUtils.toComponent(
-                    freezeManager.getMessage("NO-PERMISSION", "&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ.")
+                    freezeManager.getMessage("NO-PERMISSION", "&cYou do not have permission.")
             ));
             return;
         }
         if (freezeManager.isSelfTarget(staff, target)) {
             staff.sendMessage(ColorUtils.toComponent(
-                    freezeManager.getMessage("SELF-TARGET", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ʏᴏᴜʀѕᴇʟꜰ.")
+                    freezeManager.getMessage("SELF-TARGET", "&cYou cannot freeze yourself.")
             ));
             return;
         }
@@ -289,7 +289,7 @@ public class StaffModeListener implements Listener {
         } else {
             if (!freezeManager.canFreeze(staff, target)) {
                 staff.sendMessage(ColorUtils.toComponent(
-                        freezeManager.getMessage("TARGET-EXEMPT", "&cʏᴏᴜ ᴄᴀɴɴᴏᴛ ꜰʀᴇᴇᴢᴇ ᴛʜᴀᴛ ᴘʟᴀʏᴇʀ.")
+                        freezeManager.getMessage("TARGET-EXEMPT", "&cYou cannot freeze that player.")
                 ));
                 return;
             }

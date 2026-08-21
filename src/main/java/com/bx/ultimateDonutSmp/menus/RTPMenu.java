@@ -15,7 +15,7 @@ public class RTPMenu extends BaseMenu {
 
     public RTPMenu(UltimateDonutSmp plugin) {
         super(plugin,
-                plugin.getConfigManager().getRtp().getString("RTP-MENU.TITLE", "&8ʀᴛᴘ ᴍᴇɴᴜ"),
+                plugin.getConfigManager().getRtp().getString("RTP-MENU.TITLE", "&8RTP menu"),
                 normalizeSize(plugin.getConfigManager().getRtp().getInt("RTP-MENU.SIZE", 27)));
     }
 
@@ -30,8 +30,8 @@ public class RTPMenu extends BaseMenu {
         if (destinations.isEmpty()) {
             set(inventory.getSize() / 2, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cɴᴏ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴѕ",
-                    List.of("&7ɴᴏ ᴠᴀʟɪᴅ ʀᴛᴘ ᴅᴇѕᴛɪɴᴀᴛɪᴏɴѕ ɪɴ ᴄᴏɴꜰɪɢ.")
+                    "&cNo RTP destinations",
+                    List.of("&7No valid RTP destinations in config.")
             ));
             return;
         }
@@ -80,7 +80,7 @@ public class RTPMenu extends BaseMenu {
                 .replace("{max_radius}", maxRadius)
                 .replace("{required_playtime}", reqPlaytimeStr)
                 .replace("{cooldown}", String.valueOf(plugin.getRtpManager().getPlayerCooldownSeconds(player, destination.worldName())))
-                .replace("{status}", destination.enabled() ? "&aᴇɴᴀʙʟᴇᴅ" : "&cᴅɪѕᴀʙʟᴇᴅ");
+                .replace("{status}", destination.enabled() ? "&aEnabled" : "&cDisabled");
     }
 
     private static int normalizeSize(int size) {

@@ -200,7 +200,7 @@ public final class AuctionHouseManager {
     }
 
     public String getBrowseTitle() {
-        return config().getString("GUI.BROWSE.TITLE", "&8ᴀᴜᴄᴛɪᴏɴ ʜᴏᴜѕᴇ");
+        return config().getString("GUI.BROWSE.TITLE", "&8Auction house");
     }
 
     public int getBrowseSize() {
@@ -244,7 +244,7 @@ public final class AuctionHouseManager {
     }
 
     public String getMyListingsTitle() {
-        return config().getString("GUI.MY_LISTINGS.TITLE", "&8ʏᴏᴜʀ ɪᴛᴇᴍѕ");
+        return config().getString("GUI.MY_LISTINGS.TITLE", "&8Your items");
     }
 
     public int getMyListingsSize() {
@@ -256,7 +256,7 @@ public final class AuctionHouseManager {
     }
 
     public String getClaimsTitle() {
-        return config().getString("GUI.CLAIMS.TITLE", "&8ᴀᴜᴄᴛɪᴏɴ ᴄʟᴀɪᴍѕ");
+        return config().getString("GUI.CLAIMS.TITLE", "&8Auction claims");
     }
 
     public int getClaimsSize() {
@@ -752,7 +752,7 @@ public final class AuctionHouseManager {
                 )) {
                     player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
                             "AUCTION_HOUSE.AUTO_COLLECTED",
-                            "&aᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ᴄᴏʟʟᴇᴄᴛᴇᴅ &f{money} &aᴘᴀʏᴏᴜᴛ(ѕ) ᴀɴᴅ &f{items} &aʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ(ѕ).",
+                            "&aAutomatically collected &f{money} &apayout(s) and &f{items} &areturned item(s).",
                             "{money}", String.valueOf(money),
                             "{items}", String.valueOf(items)
                     )));
@@ -828,7 +828,7 @@ public final class AuctionHouseManager {
 
     public String formatRemaining(long seconds) {
         return seconds <= 0
-                ? config().getString("GUI.TEXT.EXPIRED.NAME", "ᴇxᴘɪʀᴇᴅ")
+                ? config().getString("GUI.TEXT.EXPIRED.NAME", "Expired")
                 : NumberUtils.formatTimeLong(seconds);
     }
 
@@ -838,7 +838,7 @@ public final class AuctionHouseManager {
             String path = weeks == 1 ? "DURATION_WEEK" : "DURATION_WEEKS";
             return config().getString(
                     "GUI.TEXT." + path + ".NAME",
-                    weeks == 1 ? "{value} ᴡᴇᴇᴋ" : "{value} ᴡᴇᴇᴋѕ"
+                    weeks == 1 ? "{value} week" : "{value} weeks"
             ).replace("{value}", String.valueOf(weeks));
         }
         if (hours % 24 == 0) {
@@ -846,13 +846,13 @@ public final class AuctionHouseManager {
             String path = days == 1 ? "DURATION_DAY" : "DURATION_DAYS";
             return config().getString(
                     "GUI.TEXT." + path + ".NAME",
-                    days == 1 ? "{value} ᴅᴀʏ" : "{value} ᴅᴀʏѕ"
+                    days == 1 ? "{value} day" : "{value} days"
             ).replace("{value}", String.valueOf(days));
         }
         String path = hours == 1 ? "DURATION_HOUR" : "DURATION_HOURS";
         return config().getString(
                 "GUI.TEXT." + path + ".NAME",
-                hours == 1 ? "{value} ʜᴏᴜʀ" : "{value} ʜᴏᴜʀѕ"
+                hours == 1 ? "{value} hour" : "{value} hours"
         ).replace("{value}", String.valueOf(hours));
     }
 

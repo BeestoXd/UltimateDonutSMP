@@ -32,8 +32,8 @@ public class OrdersNewMenu extends BaseMenu {
         // Slot 10: Cancel
         set(10, ItemUtils.createItem(
                 Material.RED_STAINED_GLASS_PANE,
-                "&cᴄᴀɴᴄᴇʟ",
-                List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ ᴀɴ ɪᴛᴇᴍ ᴀɴᴅ ʀᴇᴛᴜʀɴ")
+                "&cCancel",
+                List.of("&7Click to cancel an item and return")
         ));
 
         // Slot 12: Item
@@ -41,8 +41,8 @@ public class OrdersNewMenu extends BaseMenu {
         if (session.getChosenItem() == null) {
             itemDisplay = ItemUtils.createItem(
                     Material.BARRIER,
-                    "&bᴄʜᴏᴏѕᴇ ɪᴛᴇᴍ",
-                    List.of("&7ᴄʟɪᴄᴋ ᴛᴏ ѕᴇʟᴇᴄᴛ ᴛʜᴇ ɪᴛᴇᴍ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏʀᴅᴇʀ.")
+                    "&bChoose item",
+                    List.of("&7Click to select the item you want to order.")
             );
         } else {
             itemDisplay = OrdersMenuSupport.decorateItem(
@@ -51,9 +51,9 @@ public class OrdersNewMenu extends BaseMenu {
                     manager.describeItem(session.getChosenItem()),
                     List.of(
                             "",
-                            "&7ᴄᴀᴛᴇɢᴏʀʏ: &f" + manager.prettifyCategory(session.getCategoryKey()),
+                            "&7Category: &f" + manager.prettifyCategory(session.getCategoryKey()),
                             "",
-                            "&eᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴀɴɢᴇ ɪᴛᴇᴍ"
+                            "&eClick to change item"
                     )
             );
         }
@@ -63,11 +63,11 @@ public class OrdersNewMenu extends BaseMenu {
         int amount = session.getAmount();
         ItemStack amountDisplay = ItemUtils.createItem(
                 Material.PAPER,
-                "&bᴏʀᴅᴇʀ ǫᴜᴀɴᴛɪᴛʏ",
+                "&bOrder quantity",
                 List.of(
-                        "&7ᴄᴜʀʀᴇɴᴛ ǫᴜᴀɴᴛɪᴛʏ: &e" + (amount <= 0 ? "ɴᴏᴛ ѕᴇᴛ" : amount),
+                        "&7Current quantity: &e" + (amount <= 0 ? "Not set" : amount),
                         "",
-                        "&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴛ ǫᴜᴀɴᴛɪᴛʏ"
+                        "&eClick to set quantity"
                 )
         );
         if (amount > 0) {
@@ -79,19 +79,19 @@ public class OrdersNewMenu extends BaseMenu {
         double priceEach = session.getPriceEach();
         ItemStack priceDisplay = ItemUtils.createItem(
                 Material.SUNFLOWER,
-                "&bᴘʀɪᴄᴇ ᴇᴀᴄʜ",
+                "&bPrice each",
                 List.of(
-                        "&7ᴄᴜʀʀᴇɴᴛ ᴘʀɪᴄᴇ: &e" + (priceEach <= 0D ? "ɴᴏᴛ ѕᴇᴛ" : plugin.getCurrencyManager().formatMoney(priceEach)),
+                        "&7Current price: &e" + (priceEach <= 0D ? "Not set" : plugin.getCurrencyManager().formatMoney(priceEach)),
                         "",
-                        "&eᴄʟɪᴄᴋ ᴛᴏ ѕ..."
+                        "&eClick to s..."
                 )
         );
         // Let's refine description
         List<String> priceLore = new ArrayList<>();
-        priceLore.add("&7ᴄᴜʀʀᴇɴᴛ ᴘʀɪᴄᴇ: &e" + (priceEach <= 0D ? "ɴᴏᴛ ѕᴇᴛ" : plugin.getCurrencyManager().formatMoney(priceEach)));
+        priceLore.add("&7Current price: &e" + (priceEach <= 0D ? "Not set" : plugin.getCurrencyManager().formatMoney(priceEach)));
         priceLore.add("");
-        priceLore.add("&eᴄʟɪᴄᴋ ᴛᴏ ѕᴇᴛ ᴘʀɪᴄᴇ");
-        priceDisplay = ItemUtils.createItem(Material.SUNFLOWER, "&bᴘʀɪᴄᴇ ᴇᴀᴄʜ", priceLore);
+        priceLore.add("&eClick to set price");
+        priceDisplay = ItemUtils.createItem(Material.SUNFLOWER, "&bPrice each", priceLore);
         set(14, priceDisplay);
 
         // Slot 16: Confirm
@@ -102,20 +102,20 @@ public class OrdersNewMenu extends BaseMenu {
 
         List<String> confirmLore = new ArrayList<>();
         if (!canConfirm) {
-            confirmLore.add("&cᴘʟᴇᴀѕᴇ ѕᴇᴛ ɪᴛᴇᴍ, ǫᴜᴀɴᴛɪᴛʏ, ᴀɴᴅ ᴘʀɪᴄᴇ ꜰɪʀѕᴛ.");
+            confirmLore.add("&cPlease set item, quantity, and price first.");
         } else {
-            confirmLore.add("&7ᴛᴏᴛᴀʟ ʙᴜᴅɢᴇᴛ: &e" + plugin.getCurrencyManager().formatMoney(totalBudget));
-            confirmLore.add("&7ᴄʀᴇᴀᴛɪᴏɴ ꜰᴇᴇ: &e" + plugin.getCurrencyManager().formatMoney(creationFee));
-            confirmLore.add("&7ʀᴇǫᴜɪʀᴇᴅ ᴛᴏᴛᴀʟ: &e" + plugin.getCurrencyManager().formatMoney(requiredTotal));
+            confirmLore.add("&7Total budget: &e" + plugin.getCurrencyManager().formatMoney(totalBudget));
+            confirmLore.add("&7Creation fee: &e" + plugin.getCurrencyManager().formatMoney(creationFee));
+            confirmLore.add("&7Required total: &e" + plugin.getCurrencyManager().formatMoney(requiredTotal));
             confirmLore.add("");
-            confirmLore.add("&7ᴄᴜʀʀᴇɴᴛ ʙᴀʟᴀɴᴄᴇ: " + plugin.getCurrencyManager().formatMoney(plugin.getEconomyManager().getBalance(player)));
+            confirmLore.add("&7Current balance: " + plugin.getCurrencyManager().formatMoney(plugin.getEconomyManager().getBalance(player)));
             confirmLore.add("");
-            confirmLore.add("&aᴄʟɪᴄᴋ ᴛᴏ ᴄᴏɴꜰɪʀᴍ &7(ʟᴏᴄᴋѕ ʙᴜᴅɢᴇᴛ ɪɴ ᴇѕᴄʀᴏᴡ)");
+            confirmLore.add("&aClick to confirm &7(locks budget in escrow)");
         }
 
         ItemStack confirmDisplay = ItemUtils.createItem(
                 canConfirm ? Material.LIME_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE,
-                "&aᴄᴏɴꜰɪʀᴍ ᴏʀᴅᴇʀ",
+                "&aConfirm order",
                 confirmLore
         );
         set(16, confirmDisplay);

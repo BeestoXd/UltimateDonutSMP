@@ -32,11 +32,11 @@ final class AuctionHouseMenuSupport {
                 "AUCTION_HOUSE.ENTRY.LISTING_LORE",
                 List.of(
                         "",
-                        "&7ѕᴇʟʟᴇʀ: &f{seller}",
-                        "&7ᴘʀɪᴄᴇ: {price}",
-                        "&7ʏᴏᴜ ʀᴇᴄᴇɪᴠᴇ: {payout}",
-                        "&7ᴛɪᴍᴇ ʟᴇꜰᴛ: &f{time}",
-                        "&7ʟɪѕᴛɪɴɢ ɪᴅ: &f#{id}",
+                        "&7Seller: &f{seller}",
+                        "&7Price: {price}",
+                        "&7You receive: {payout}",
+                        "&7Time left: &f{time}",
+                        "&7Listing ID: &f#{id}",
                         ""
                 ),
                 "{seller}", plugin.getHideManager().publicName(listing.sellerUuid(), listing.sellerName()),
@@ -46,8 +46,8 @@ final class AuctionHouseMenuSupport {
                 "{id}", String.valueOf(listing.id())
         ));
         extraLore.add(ownedByViewer
-                ? language.menu("AUCTION_HOUSE.ENTRY.MANAGE", "&eᴄʟɪᴄᴋ ᴛᴏ ᴍᴀɴᴀɢᴇ ʟɪѕᴛɪɴɢ")
-                : language.menu("AUCTION_HOUSE.ENTRY.BUY", "&eᴄʟɪᴄᴋ ᴛᴏ ʙᴜʏ"));
+                ? language.menu("AUCTION_HOUSE.ENTRY.MANAGE", "&eClick to manage listing")
+                : language.menu("AUCTION_HOUSE.ENTRY.BUY", "&eClick to buy"));
         return decorateItem(plugin, listing.item(), manager.describeItem(listing.item()), extraLore);
     }
 
@@ -62,13 +62,13 @@ final class AuctionHouseMenuSupport {
                     Material.SUNFLOWER,
                     language.menu(
                             "AUCTION_HOUSE.ENTRY.MONEY_CLAIM_NAME",
-                            "{money_color}{money_name} ᴄʟᴀɪᴍ",
+                            "{money_color}{money_name} claim",
                             "{money_color}", plugin.getCurrencyManager().color(CurrencyManager.CurrencyType.MONEY),
                             "{money_name}", plugin.getCurrencyManager().singular(CurrencyManager.CurrencyType.MONEY)
                     ),
                     language.menuList(
                             "AUCTION_HOUSE.ENTRY.MONEY_CLAIM_LORE",
-                            List.of("&7ᴀᴍᴏᴜɴᴛ: {amount}", "&7ѕᴏᴜʀᴄᴇ ʟɪѕᴛɪɴɢ: &f#{id}", "", "&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ"),
+                            List.of("&7Amount: {amount}", "&7Source listing: &f#{id}", "", "&eClick to claim"),
                             "{amount}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
                             "{id}", String.valueOf(claim.sourceListingId())
                     )
@@ -79,11 +79,11 @@ final class AuctionHouseMenuSupport {
                 "AUCTION_HOUSE.ENTRY.ITEM_CLAIM_LORE",
                 List.of(
                         "",
-                        "&7ᴄʟᴀɪᴍ ᴛʏᴘᴇ: &fʀᴇᴛᴜʀɴᴇᴅ ɪᴛᴇᴍ",
-                        "&7ѕᴏᴜʀᴄᴇ ʟɪѕᴛɪɴɢ: &f#{id}",
-                        "&7ᴄʀᴇᴀᴛᴇᴅ: &f{created}",
+                        "&7Claim type: &freturned item",
+                        "&7Source listing: &f#{id}",
+                        "&7Created: &f{created}",
                         "",
-                        "&eᴄʟɪᴄᴋ ᴛᴏ ᴄʟᴀɪᴍ"
+                        "&eClick to claim"
                 ),
                 "{id}", String.valueOf(claim.sourceListingId()),
                 "{created}", NumberUtils.formatTimeLong(Math.max(0L,
@@ -101,9 +101,9 @@ final class AuctionHouseMenuSupport {
         if (source == null || source.getType().isAir()) {
             return ItemUtils.createItem(
                     Material.BARRIER,
-                    plugin.getLanguageManager().menu("AUCTION_HOUSE.ENTRY.MISSING_NAME", "&cᴍɪѕѕɪɴɢ ɪᴛᴇᴍ"),
+                    plugin.getLanguageManager().menu("AUCTION_HOUSE.ENTRY.MISSING_NAME", "&cMissing item"),
                     plugin.getLanguageManager().menuList("AUCTION_HOUSE.ENTRY.MISSING_LORE",
-                            List.of("&7ᴛʜɪѕ ᴇɴᴛʀʏ ʜᴀѕ ɴᴏ ɪᴛᴇᴍ ᴅᴀᴛᴀ."))
+                            List.of("&7This entry has no item data."))
             );
         }
 

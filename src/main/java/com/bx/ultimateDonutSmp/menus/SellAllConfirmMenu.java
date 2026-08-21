@@ -16,7 +16,7 @@ public class SellAllConfirmMenu extends BaseMenu {
     public SellAllConfirmMenu(UltimateDonutSmp plugin) {
         super(
                 plugin,
-                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8ᴄᴏɴꜰɪʀᴍ ѕᴇʟʟ ᴀʟʟ"),
+                plugin.getConfigManager().getMenus().getString(MENU_PATH + ".TITLE", "&8Confirm sell all"),
                 plugin.getConfigManager().getMenus().getInt(MENU_PATH + ".SIZE", 27)
         );
     }
@@ -33,7 +33,7 @@ public class SellAllConfirmMenu extends BaseMenu {
                 menus.getInt(cancelPath + ".SLOT", 11),
                 ItemUtils.createItem(
                         ItemUtils.parseMaterial(menus.getString(cancelPath + ".MATERIAL", "RED_STAINED_GLASS_PANE")),
-                        menus.getString(cancelPath + ".TITLE", "&cᴄᴀɴᴄᴇʟ"),
+                        menus.getString(cancelPath + ".TITLE", "&cCancel"),
                         menus.getStringList(cancelPath + ".LORE")
                 )
         );
@@ -43,7 +43,7 @@ public class SellAllConfirmMenu extends BaseMenu {
                 menus.getInt(infoPath + ".SLOT", 13),
                 ItemUtils.createItem(
                         ItemUtils.parseMaterial(menus.getString(infoPath + ".MATERIAL", "CHEST")),
-                        menus.getString(infoPath + ".TITLE", "&eѕᴇʟʟ ᴀʟʟ ɪᴛᴇᴍѕ"),
+                        menus.getString(infoPath + ".TITLE", "&eSell all items"),
                         menus.getStringList(infoPath + ".LORE")
                 )
         );
@@ -53,7 +53,7 @@ public class SellAllConfirmMenu extends BaseMenu {
                 menus.getInt(confirmPath + ".SLOT", 15),
                 ItemUtils.createItem(
                         ItemUtils.parseMaterial(menus.getString(confirmPath + ".MATERIAL", "LIME_STAINED_GLASS_PANE")),
-                        menus.getString(confirmPath + ".TITLE", "&aᴄᴏɴꜰɪʀᴍ"),
+                        menus.getString(confirmPath + ".TITLE", "&aConfirm"),
                         menus.getStringList(confirmPath + ".LORE")
                 )
         );
@@ -76,7 +76,7 @@ public class SellAllConfirmMenu extends BaseMenu {
             double total = plugin.getShopManager().sellInventory(player, false);
             if (total <= 0) {
                 player.sendMessage(ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE", "&cᴛʜɪѕ ɪᴛᴇᴍ ɪѕ ɴᴏᴛ ѕᴇʟʟᴀʙʟᴇ.")));
+                        plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE", "&cThis item is not sellable.")));
             }
         }
     }

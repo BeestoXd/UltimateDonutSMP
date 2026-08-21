@@ -70,13 +70,13 @@ public class NetworkStaffAlertManager {
 
     public void sendHelpop(Player sender, String rawMessage) {
         if (!isHelpopEnabled()) {
-            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.DISABLED", "&cʜᴇʟᴘᴏᴘ ɪѕ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")));
+            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.DISABLED", "&cHelpop is currently disabled.")));
             return;
         }
 
         String message = sanitizeUserMessage(rawMessage);
         if (message.isBlank()) {
-            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.USAGE", "&cᴜѕᴀɢᴇ: /helpop <message>")));
+            sender.sendMessage(ColorUtils.toComponent(message("HELPOP.USAGE", "&cUsage: /helpop <message>")));
             return;
         }
 
@@ -84,7 +84,7 @@ public class NetworkStaffAlertManager {
         if (message.length() > maxLength) {
             sender.sendMessage(ColorUtils.toComponent(message(
                     "HELPOP.MESSAGE_TOO_LONG",
-                    "&cʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cYour request is too long. Max: %max% characters.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
@@ -115,29 +115,29 @@ public class NetworkStaffAlertManager {
 
         sender.sendMessage(ColorUtils.toComponent(message(
                 "HELPOP.CONFIRMATION",
-                "&aʏᴏᴜʀ ʀᴇǫᴜᴇѕᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ."
+                "&aYour request has been sent to all staff members."
         )));
     }
 
     public void sendReport(Player reporter, Player reported, String rawReason) {
         if (!isReportEnabled()) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.DISABLED", "&cʀᴇᴘᴏʀᴛѕ ᴀʀᴇ ᴄᴜʀʀᴇɴᴛʟʏ ᴅɪѕᴀʙʟᴇᴅ.")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.DISABLED", "&cReports are currently disabled.")));
             return;
         }
 
         if (reported == null || !reported.isOnline()) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.PLAYER_NOT_FOUND", "&cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ.")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.PLAYER_NOT_FOUND", "&cPlayer not found.")));
             return;
         }
 
         if (reporter.getUniqueId().equals(reported.getUniqueId())) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.CANNOT_REPORT_SELF", "&cʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴇᴘᴏʀᴛ ʏᴏᴜʀѕᴇʟꜰ!")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.CANNOT_REPORT_SELF", "&cYou can't report yourself!")));
             return;
         }
 
         String reason = sanitizeUserMessage(rawReason);
         if (reason.isBlank()) {
-            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.USAGE", "&cᴜѕᴀɢᴇ: /report <player> <reason>")));
+            reporter.sendMessage(ColorUtils.toComponent(message("REPORT.USAGE", "&cUsage: /report <player> <reason>")));
             return;
         }
 
@@ -145,7 +145,7 @@ public class NetworkStaffAlertManager {
         if (reason.length() > maxLength) {
             reporter.sendMessage(ColorUtils.toComponent(message(
                     "REPORT.MESSAGE_TOO_LONG",
-                    "&cʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʀᴇᴀѕᴏɴ ɪѕ ᴛᴏᴏ ʟᴏɴɢ. ᴍᴀx: %max% ᴄʜᴀʀᴀᴄᴛᴇʀѕ.",
+                    "&cYour report reason is too long. Max: %max% characters.",
                     "%max%", Integer.toString(maxLength)
             )));
             return;
@@ -178,7 +178,7 @@ public class NetworkStaffAlertManager {
 
         reporter.sendMessage(ColorUtils.toComponent(message(
                 "REPORT.CONFIRMATION",
-                "&aʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʜᴀѕ ʙᴇᴇɴ ѕᴇɴᴛ ᴛᴏ ᴀʟʟ ѕᴛᴀꜰꜰ ᴍᴇᴍʙᴇʀѕ."
+                "&aYour report has been sent to all staff members."
         )));
     }
 
@@ -481,7 +481,7 @@ public class NetworkStaffAlertManager {
     private List<String> defaultHelpopFormat() {
         return List.of(
                 "",
-                "&9[ʀᴇǫᴜᴇѕᴛ] &7[%server%] &a%player% &bʜᴀѕ ʀᴇǫᴜᴇѕᴛᴇᴅ ᴀѕѕɪѕᴛᴀɴᴄᴇ",
+                "&9[Request] &7[%server%] &a%player% &bhas requested assistance",
                 "     &9reason: &b%message%",
                 ""
         );
@@ -490,7 +490,7 @@ public class NetworkStaffAlertManager {
     private List<String> defaultReportFormat() {
         return List.of(
                 "",
-                "&9[ʀᴇᴘᴏʀᴛ] &7[%server%] &c%reported% &bʜᴀѕ ʙᴇᴇɴ ʀᴇᴘᴏʀᴛᴇᴅ ʙʏ &a%reporter%",
+                "&9[Report] &7[%server%] &c%reported% &bhas been reported by &a%reporter%",
                 "     &9reason: &b%reason%",
                 ""
         );

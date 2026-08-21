@@ -25,26 +25,26 @@ public class FeedCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player && !PermissionUtils.has(player, PERMISSION)) {
-            player.sendMessage(ColorUtils.toComponent("&cʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪѕѕɪᴏɴ."));
+            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
             return true;
         }
 
         if (args.length > 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " [ᴘʟᴀʏᴇʀ]"));
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " [player]"));
             return true;
         }
 
         Player target;
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴜѕᴀɢᴇ: /" + label + " <player>"));
+                sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
                 return true;
             }
             target = player;
         } else {
             target = findOnlinePlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(ColorUtils.toComponent("&cᴘʟᴀʏᴇʀ ɴᴏᴛ ᴏɴʟɪɴᴇ."));
+                sender.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
                 return true;
             }
         }
@@ -52,17 +52,17 @@ public class FeedCommand implements CommandExecutor {
         feed(target);
         if (sender instanceof Player player && player.getUniqueId().equals(target.getUniqueId())) {
             player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault("FEED.SELF", "&7ʏᴏᴜʀ ʜᴜɴɢᴇʀ ʜᴀѕ ʙᴇᴇɴ ѕᴀᴛɪѕꜰɪᴇᴅ!")
+                    plugin.getConfigManager().getMessageOrDefault("FEED.SELF", "&7Your hunger has been satisfied!")
             ));
             return true;
         }
 
         String senderName = sender instanceof Player player ? player.getName() : sender.getName();
         sender.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("FEED.OTHER", "&7ʏᴏᴜ ꜰᴇᴅ &d%player%", "%player%", target.getName())
+                plugin.getConfigManager().getMessageOrDefault("FEED.OTHER", "&7You fed &d%player%", "%player%", target.getName())
         ));
         target.sendMessage(ColorUtils.toComponent(
-                plugin.getConfigManager().getMessageOrDefault("FEED.NOTIFY", "&d%sender% &7ʀᴇѕᴛᴏʀᴇᴅ ʏᴏᴜʀ ʜᴜɴɢᴇʀ", "%sender%", senderName)
+                plugin.getConfigManager().getMessageOrDefault("FEED.NOTIFY", "&d%sender% &7restored your hunger", "%sender%", senderName)
         ));
         return true;
     }
