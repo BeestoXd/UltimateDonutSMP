@@ -677,6 +677,17 @@ BACK-BUTTON:
 # Configuration section for Shop Web Analytics Server
 SHOP-GUI:
   SHOW-AUCTION-PRICE: true
+  # Configuration section for Item.
+  ITEM:
+    # Configuration section for Lore.
+    LORE:
+    - '&7Shop price: {shop_price}'
+    - '{auction_line}'
+    - ''
+    - '{favorite_line}'
+    - '&eLeft-click to buy from the shop'
+    - '{auction_action}'
+    - '{favorite_action}'
   FAVORITES:
     ENABLED: true
   WEB-SERVER:

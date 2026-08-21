@@ -138,15 +138,35 @@ RTP-MENU:
       SLOT: 11
       WORLD: world
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
     NETHER:
       DISPLAY-NAME: '&#FF4B4BNether'
       MATERIAL: NETHERRACK
       SLOT: 13
       WORLD: world_nether
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
+      - '&7Required playtime: &b{required_playtime}'
     THE_END:
       DISPLAY-NAME: '&#A84BFFThe End'
       MATERIAL: END_STONE
       SLOT: 15
       WORLD: world_the_end
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
+      - '&7Required playtime: &b{required_playtime}'
