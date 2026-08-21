@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -212,7 +213,37 @@ public final class SpigotScheduler {
             }
         } catch (Exception ignored) {
         }
-        return CompletableFuture.completedFuture(entity.teleport(location, cause));
+        return CompletableFuture.completedFuture(teleportCarryingPassengers(entity, location, cause));
+    }
+
+    /**
+     * Spigot's own teleport refuses to move anything carrying passengers and quietly answers false,
+     * which strands a player the moment another plugin parks an entity on them. Paper never reaches
+     * here because its {@code teleportAsync} has no such rule.
+     *
+     * <p>Anything riding the entity comes off first and climbs back on once it has arrived, whether
+     * or not the move succeeded, so the ride survives a refused teleport too.</p>
+     */
+    private boolean teleportCarryingPassengers(
+            Entity entity,
+            Location location,
+            PlayerTeleportEvent.TeleportCause cause
+    ) {
+        List<Entity> passengers = entity.getPassengers();
+        if (passengers.isEmpty()) {
+            return entity.teleport(location, cause);
+        }
+
+        passengers.forEach(entity::removePassenger);
+        try {
+            return entity.teleport(location, cause);
+        } finally {
+            for (Entity passenger : passengers) {
+                if (passenger.isValid()) {
+                    entity.addPassenger(passenger);
+                }
+            }
+        }
     }
 
     public boolean isOwnedByCurrentRegion(Entity entity) {
