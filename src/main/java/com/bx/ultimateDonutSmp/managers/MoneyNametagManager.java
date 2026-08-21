@@ -7,7 +7,11 @@ import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -39,6 +43,11 @@ import java.util.logging.Level;
  * <p>Passengers hang off the same anchor point the username uses, so the height is a small offset
  * from the name rather than a distance off the ground.</p>
  *
+ * <p>Because the ride is a fiction the server does not share, the server keeps broadcasting the
+ * display's own movement. A client that hears both puts the line on the player one tick and back on
+ * the entity the next, which reads as a line bobbing up and down, so those movement packets are
+ * dropped on the way out and the vehicle is left as the only thing placing it.</p>
+ *
  * <p>Every player decides for themselves whether they see the line through
  * {@code /settings > Money Nametags}, so a line only exists while somebody online has that setting
  * switched on, and it is only sent to the players who asked for it.</p>
@@ -51,7 +60,9 @@ public class MoneyNametagManager {
     private final UltimateDonutSmp plugin;
     private final Map<UUID, UUID> displays = new ConcurrentHashMap<>();
     private final Map<UUID, String> renderedText = new ConcurrentHashMap<>();
+    private final Set<Integer> displayEntityIds = ConcurrentHashMap.newKeySet();
     private ProtocolManager protocolManager;
+    private PacketListener movementListener;
 
     public MoneyNametagManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -142,6 +153,7 @@ public class MoneyNametagManager {
         }
         Entity entity = Bukkit.getEntity(displayUuid);
         if (entity != null) {
+            displayEntityIds.remove(entity.getEntityId());
             entity.remove();
         }
     }
@@ -156,6 +168,20 @@ public class MoneyNametagManager {
     public void reload() {
         clearAll();
         purgeOrphanedDisplays();
+    }
+
+    public void shutdown() {
+        clearAll();
+        displayEntityIds.clear();
+        ProtocolManager manager = protocolManager();
+        if (movementListener != null && manager != null) {
+            try {
+                manager.removePacketListener(movementListener);
+            } catch (RuntimeException | LinkageError ignored) {
+                // The server is going down anyway, a listener left behind costs nothing.
+            }
+        }
+        movementListener = null;
     }
 
     /**
@@ -224,7 +250,7 @@ public class MoneyNametagManager {
 
     private TextDisplay spawn(Player owner) {
         try {
-            TextDisplay display = owner.getWorld().spawn(owner.getLocation(), TextDisplay.class, textDisplay -> {
+            TextDisplay display = owner.getWorld().spawn(anchor(owner), TextDisplay.class, textDisplay -> {
                 textDisplay.addScoreboardTag(DISPLAY_TAG);
                 textDisplay.setBillboard(Display.Billboard.CENTER);
                 textDisplay.setDefaultBackground(false);
@@ -241,6 +267,8 @@ public class MoneyNametagManager {
             });
             renderedText.remove(owner.getUniqueId());
             displays.put(owner.getUniqueId(), display.getUniqueId());
+            displayEntityIds.add(display.getEntityId());
+            registerMovementListener();
             return display;
         } catch (RuntimeException error) {
             plugin.getLogger().warning("Unable to spawn a money nametag for " + owner.getName() + ".");
@@ -263,20 +291,30 @@ public class MoneyNametagManager {
     }
 
     /**
-     * The client draws the line on its owner, so the entity's own position only decides whether a
-     * viewer is sent it at all. Keeping it on top of the player keeps that decision matching the
-     * player's own.
+     * The client draws the line on its owner and never hears about these moves, so the entity's own
+     * position only decides whether a viewer is sent it at all. Keeping it on top of the player
+     * keeps that decision matching the player's own, and leaves the entity somewhere sensible for
+     * the moment between a client being sent the line and being told what it rides.
      */
     private void keepInTrackingRange(TextDisplay display, Player owner) {
-        Location location = owner.getLocation();
-        if (display.getLocation().distanceSquared(location) < 0.01D) {
+        Location anchor = anchor(owner);
+        if (display.getLocation().distanceSquared(anchor) < 0.01D) {
             return;
         }
         if (plugin.getSpigotScheduler().isFolia()) {
-            plugin.getSpigotScheduler().teleport(display, location);
+            plugin.getSpigotScheduler().teleport(display, anchor);
             return;
         }
-        display.teleport(location);
+        display.teleport(anchor);
+    }
+
+    private Location anchor(Player owner) {
+        Location location = owner.getLocation();
+        return new Location(
+                owner.getWorld(),
+                location.getX(),
+                location.getY() + owner.getHeight(),
+                location.getZ());
     }
 
     /**
@@ -310,6 +348,48 @@ public class MoneyNametagManager {
             manager.sendServerPacket(viewer, packet, false);
         } catch (RuntimeException | LinkageError error) {
             plugin.getLogger().log(Level.FINE, "Unable to pin a money nametag to its player.", error);
+        }
+    }
+
+    /**
+     * Drops the display's own movement packets on the way to the client. The client already places
+     * it on the player it rides, and letting the server's idea of where the entity is arrive as well
+     * makes the line flick between the two positions every tick.
+     */
+    private void registerMovementListener() {
+        if (movementListener != null) {
+            return;
+        }
+        ProtocolManager manager = protocolManager();
+        if (manager == null) {
+            return;
+        }
+        try {
+            movementListener = new PacketAdapter(
+                    plugin,
+                    ListenerPriority.NORMAL,
+                    PacketType.Play.Server.ENTITY_TELEPORT,
+                    PacketType.Play.Server.REL_ENTITY_MOVE,
+                    PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
+                    PacketType.Play.Server.ENTITY_LOOK,
+                    PacketType.Play.Server.ENTITY_HEAD_ROTATION,
+                    PacketType.Play.Server.ENTITY_VELOCITY
+            ) {
+                @Override
+                public void onPacketSending(PacketEvent event) {
+                    if (displayEntityIds.isEmpty()) {
+                        return;
+                    }
+                    Integer entityId = event.getPacket().getIntegers().readSafely(0);
+                    if (entityId != null && displayEntityIds.contains(entityId)) {
+                        event.setCancelled(true);
+                    }
+                }
+            };
+            manager.addPacketListener(movementListener);
+        } catch (RuntimeException | LinkageError error) {
+            movementListener = null;
+            plugin.getLogger().log(Level.FINE, "Unable to silence money nametag movement.", error);
         }
     }
 
