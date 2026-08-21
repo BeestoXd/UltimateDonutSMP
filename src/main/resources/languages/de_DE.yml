@@ -2163,6 +2163,14 @@ CONFIG:
       FORMAT: '&7Wert: &a$${price}'
     BROWSER:
       TITLE: '&8Artikelpreise'
+      ITEM:
+        NAME: '&b{item}'
+        LORE:
+        - '&7Kategorie: &f{category}'
+        - "&7Stückpreis: {unit_price_compact}"
+        - '&7Stapel x{stack_size}: {stack_price_compact}'
+        - ''
+        - "&eKlicke, um den Stückpreis in den Chat zu senden"
   HIDE:
     GUI:
       MAIN:

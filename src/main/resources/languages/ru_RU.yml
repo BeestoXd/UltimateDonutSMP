@@ -2025,6 +2025,14 @@ CONFIG:
       FORMAT: "&7Стоимость: &a$${price}"
     BROWSER:
       TITLE: "&8Цены на предметы"
+      ITEM:
+        NAME: '&b{item}'
+        LORE:
+        - "&7Категория: &f{category}"
+        - "&7Цена за штуку: {unit_price_compact}"
+        - "&7Стак x{stack_size}: {stack_price_compact}"
+        - ''
+        - "&eНажмите, чтобы отправить цену за штуку в чат"
   HIDE:
     GUI:
       MAIN:

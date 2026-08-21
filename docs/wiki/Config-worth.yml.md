@@ -99,6 +99,17 @@ BROWSER:
   - BOOK
   - POTION
   - BLOCKS
+  # Configuration section for Item.
+  ITEM:
+    # The text or value for Name. Available options: Any valid string text
+    NAME: '&b{item}'
+    # Configuration section for Lore.
+    LORE:
+    - '&7Category: &f{category}'
+    - '&7Unit price: {unit_price_compact}'
+    - '&7Stack x{stack_size}: {stack_price_compact}'
+    - ''
+    - '&eClick to send the unit price in chat'
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -110,6 +121,8 @@ BROWSER:
 | `BROWSER.ITEMS-PER-PAGE` | `int` | Any valid integer number | `'45'` | Configures the technical `ITEMS-PER-PAGE` parameter for `BROWSER.ITEMS-PER-PAGE` in `worth.yml`. |
 | `BROWSER.DEFAULT-SORT` | `str` | Any string text | `'CATEGORY'` | Configures the technical `DEFAULT-SORT` parameter for `BROWSER.DEFAULT-SORT` in `worth.yml`. |
 | `BROWSER.CATEGORY-SORT` | `list` | List of configured items/strings | `[CROPS, ORES, MOBS...]` | Configures the technical `CATEGORY-SORT` parameter for `BROWSER.CATEGORY-SORT` in `worth.yml`. |
+| `BROWSER.ITEM.NAME` | `str` | Any string text | `'&b{item}'` | Display name of every item in the `/worth` browser. Supports `{item}` and `{category}`. |
+| `BROWSER.ITEM.LORE` | `list` | List of configured items/strings | `['&7Category: &f{category}', ...]` | Tooltip lines shown under each item in the `/worth` browser. Supports `{item}`, `{category}`, `{stack_size}`, and the price placeholders `{unit_price}`, `{unit_price_formatted}`, `{unit_price_compact}`, `{stack_price}`, `{stack_price_formatted}`, `{stack_price_compact}`. Leave it empty to show no tooltip at all. |
 
 ### 3. Practical Setup Example
 
@@ -132,6 +145,17 @@ BROWSER:
   - BOOK
   - POTION
   - BLOCKS
+  # Configuration section for Item.
+  ITEM:
+    # The text or value for Name. Available options: Any valid string text
+    NAME: '&b{item}'
+    # Configuration section for Lore.
+    LORE:
+    - '&7Category: &f{category}'
+    - '&7Unit price: {unit_price_compact}'
+    - '&7Stack x{stack_size}: {stack_price_compact}'
+    - ''
+    - '&eClick to send the unit price in chat'
 ```
 
 ---

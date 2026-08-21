@@ -2163,6 +2163,14 @@ CONFIG:
       FORMAT: '&7Bernilai: &a$${price}'
     BROWSER:
       TITLE: '&8Harga barang'
+      ITEM:
+        NAME: '&b{item}'
+        LORE:
+        - '&7Kategori: &f{category}'
+        - '&7Harga satuan: {unit_price_compact}'
+        - '&7Tumpukan x{stack_size}: {stack_price_compact}'
+        - ''
+        - '&eKlik untuk mengirim harga satuan ke obrolan'
   HIDE:
     GUI:
       MAIN:
