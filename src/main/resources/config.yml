@@ -247,6 +247,75 @@ CHAT:
         VALUE: 100
         # The text or value for Block Message. Available options: Any valid string text
         BLOCK-MESSAGE: '&cYour message is too long! (Max: %max%)'
+# Server-wide announcements for joins, leaves and the marketplaces. Every message here uses
+# the same colour codes as the rest of the plugin: &a style codes, &#RRGGBB for a single hex
+# colour and <#RRGGBB>text</#RRGGBB> for a gradient. Each announcement ships switched off, so
+# updating the jar never changes how an existing server's chat looks - turn on the ones you
+# want. Join, leave and first-join lines still follow each player's Join/Leave Messages choice
+# under /settings, and the marketplace lines follow their Server Broadcasts switch.
+SERVER-NOTIFICATIONS:
+  # The line everyone sees when a player connects. While this is off the server's own join
+  # message is relayed instead, exactly as it is today.
+  JOIN:
+    # Determines whether Join is enabled or disabled. Available options: true, false
+    ENABLED: false
+    # The text or value for Message. Supports {player}. Available options: Any valid string text
+    MESSAGE: '&8[&a+&8] &a{player} &7joined the server.'
+  # The line everyone sees when a player disconnects. While this is off the server's own quit
+  # message is relayed instead, exactly as it is today.
+  LEAVE:
+    # Determines whether Leave is enabled or disabled. Available options: true, false
+    ENABLED: false
+    # The text or value for Message. Supports {player}. Available options: Any valid string text
+    MESSAGE: '&8[&c-&8] &c{player} &7left the server.'
+  # Sent in place of the join line the very first time a player ever connects. It replaces the
+  # join message rather than arriving alongside it, so nobody gets announced twice.
+  FIRST-JOIN:
+    # Determines whether First Join is enabled or disabled. Available options: true, false
+    ENABLED: false
+    # The text or value for Message. Supports {player}. Available options: Any valid string text
+    MESSAGE: '&aWelcome &e{player} &ato the server for the first time!'
+  # Announcements for the Auction House. Bot listings are never announced.
+  AUCTION-HOUSE:
+    # Determines whether Auction House announcements are enabled or disabled. Turning this off
+    # silences both lines below. Available options: true, false
+    ENABLED: true
+    # Sent when a player puts an item up for sale.
+    LISTING:
+      # Determines whether Listing is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # The text or value for Message. Supports {player}, {item}, {amount}, {price},
+      # {price_formatted} and {category}. Available options: Any valid string text
+      MESSAGE: '&8[&6AH&8] &f{player} &7listed &e{amount}x {item} &7for &a{price_formatted}&7.'
+    # Sent when a player buys a listing.
+    PURCHASE:
+      # Determines whether Purchase is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # The text or value for Message. Supports {player}, {seller}, {item}, {amount}, {price}
+      # and {price_formatted}. Available options: Any valid string text
+      MESSAGE: '&8[&6AH&8] &f{player} &7bought &e{amount}x {item} &7for &a{price_formatted}&7.'
+  # Announcements for Orders. Bot orders are never announced.
+  ORDERS:
+    # Determines whether Order announcements are enabled or disabled. Turning this off silences
+    # both lines below. Available options: true, false
+    ENABLED: true
+    # Sent when a player opens a new order.
+    CREATE:
+      # Determines whether Create is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # The text or value for Message. Supports {player}, {item}, {amount}, {price},
+      # {price_formatted}, {total} and {total_formatted}.
+      # Available options: Any valid string text
+      MESSAGE: '&8[&6ORDER&8] &f{player} &7created an order for &e{amount}x {item} &7at &a{price_formatted} &7each.'
+    # Sent once an order has been filled all the way, not on every partial delivery. {player}
+    # is whoever handed over the last of it and {owner} is whoever opened the order.
+    COMPLETE:
+      # Determines whether Complete is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # The text or value for Message. Supports {player}, {owner}, {item}, {amount}, {price},
+      # {price_formatted}, {total} and {total_formatted}.
+      # Available options: Any valid string text
+      MESSAGE: '&8[&6ORDER&8] &f{player} &7completed &e{owner}&7''s order for &e{amount}x {item}&7.'
 # Configuration section for Afk System.
 AFK-SYSTEM:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

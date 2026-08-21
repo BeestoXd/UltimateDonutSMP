@@ -1128,7 +1128,11 @@ public class OrdersManager {
         plugin.getDatabaseManager().savePlayer(ownerData);
         pendingCreations.remove(player.getUniqueId());
         publishOrderEvent("CREATE", orderId);
-        return new CreateOrderResult(true, null, getOrder(orderId), creationFee);
+        Order created = getOrder(orderId);
+        if (plugin.getServerNotificationManager() != null) {
+            plugin.getServerNotificationManager().announceOrderCreated(player, created);
+        }
+        return new CreateOrderResult(true, null, created, creationFee);
     }
 
     public boolean selectOrderItem(
@@ -2430,7 +2434,12 @@ public class OrdersManager {
                 delivererData.addMoneyMade(payout);
                 plugin.getDatabaseManager().savePlayer(delivererData);
                 publishOrderEvent("DELIVER", liveOrder.id());
-                return new DeliverOrderResult(true, null, getOrder(liveOrder.id()), quantity, payout);
+                Order delivered = getOrder(liveOrder.id());
+                // Announce only once the order is full, so a run of partial deliveries stays quiet.
+                if (delivered != null && delivered.filled() && plugin.getServerNotificationManager() != null) {
+                    plugin.getServerNotificationManager().announceOrderCompleted(player, delivered);
+                }
+                return new DeliverOrderResult(true, null, delivered, quantity, payout);
             } finally {
                 releaseNetworkOrderLock(networkLock);
             }

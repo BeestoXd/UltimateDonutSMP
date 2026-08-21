@@ -761,6 +761,71 @@ CHAT:
 
 ---
 
+## Section: `SERVER-NOTIFICATIONS` - Join, Leave & Marketplace Announcements
+
+### Fully Commented Setup Code Example
+```yaml
+SERVER-NOTIFICATIONS:
+  # The line everyone sees when a player connects. While this is off the server's own join
+  # message is relayed instead, exactly as it is today.
+  JOIN:
+    # Determines whether Join is enabled or disabled. Available options: true, false
+    ENABLED: false
+    # The text or value for Message. Supports {player}. Available options: Any valid string text
+    MESSAGE: '&8[&a+&8] &a{player} &7joined the server.'
+  LEAVE:
+    ENABLED: false
+    MESSAGE: '&8[&c-&8] &c{player} &7left the server.'
+  # Sent in place of the join line the very first time a player ever connects.
+  FIRST-JOIN:
+    ENABLED: false
+    MESSAGE: '&aWelcome &e{player} &ato the server for the first time!'
+  # Announcements for the Auction House. Bot listings are never announced.
+  AUCTION-HOUSE:
+    ENABLED: true
+    LISTING:
+      ENABLED: false
+      MESSAGE: '&8[&6AH&8] &f{player} &7listed &e{amount}x {item} &7for &a{price_formatted}&7.'
+    PURCHASE:
+      ENABLED: false
+      MESSAGE: '&8[&6AH&8] &f{player} &7bought &e{amount}x {item} &7for &a{price_formatted}&7.'
+  # Announcements for Orders. Bot orders are never announced.
+  ORDERS:
+    ENABLED: true
+    CREATE:
+      ENABLED: false
+      MESSAGE: '&8[&6ORDER&8] &f{player} &7created an order for &e{amount}x {item} &7at &a{price_formatted} &7each.'
+    COMPLETE:
+      ENABLED: false
+      MESSAGE: '&8[&6ORDER&8] &f{player} &7completed &e{owner}&7''s order for &e{amount}x {item}&7.'
+```
+
+### Key Options & Setup Breakdown
+| Key / Option Path | Data Type | Allowed Values / Options | Default | Functional Behavior & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SERVER-NOTIFICATIONS.JOIN.ENABLED` | `bool` | true, false | `False` | Replaces the server's own join line with `JOIN.MESSAGE`. Off relays the server's line unchanged. |
+| `SERVER-NOTIFICATIONS.JOIN.MESSAGE` | `str` | Any string text | `&8[&a+&8] &a{player} &7joined the server.` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.LEAVE.ENABLED` | `bool` | true, false | `False` | Replaces the server's own quit line with `LEAVE.MESSAGE`. |
+| `SERVER-NOTIFICATIONS.LEAVE.MESSAGE` | `str` | Any string text | `&8[&c-&8] &c{player} &7left the server.` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.FIRST-JOIN.ENABLED` | `bool` | true, false | `False` | Sends `FIRST-JOIN.MESSAGE` instead of the join line the first time a player ever connects. Works whether or not `JOIN` is on. |
+| `SERVER-NOTIFICATIONS.FIRST-JOIN.MESSAGE` | `str` | Any string text | `&aWelcome &e{player} &ato the server for the first time!` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.ENABLED` | `bool` | true, false | `True` | Master switch for both Auction House lines. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.LISTING.ENABLED` | `bool` | true, false | `False` | Announces every item a player puts up for sale. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.LISTING.MESSAGE` | `str` | Any string text | `&8[&6AH&8] &f{player} &7listed &e{amount}x {item}...` | Supports `{player}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}`, `{category}`. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.PURCHASE.ENABLED` | `bool` | true, false | `False` | Announces every completed purchase. |
+| `SERVER-NOTIFICATIONS.AUCTION-HOUSE.PURCHASE.MESSAGE` | `str` | Any string text | `&8[&6AH&8] &f{player} &7bought &e{amount}x {item}...` | Supports `{player}`, `{seller}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}`. |
+| `SERVER-NOTIFICATIONS.ORDERS.ENABLED` | `bool` | true, false | `True` | Master switch for both Order lines. |
+| `SERVER-NOTIFICATIONS.ORDERS.CREATE.ENABLED` | `bool` | true, false | `False` | Announces every new order a player opens. |
+| `SERVER-NOTIFICATIONS.ORDERS.CREATE.MESSAGE` | `str` | Any string text | `&8[&6ORDER&8] &f{player} &7created an order for...` | Supports `{player}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}`, `{total}`, `{total_formatted}`. |
+| `SERVER-NOTIFICATIONS.ORDERS.COMPLETE.ENABLED` | `bool` | true, false | `False` | Announces an order once it is filled all the way. Partial deliveries stay quiet. |
+| `SERVER-NOTIFICATIONS.ORDERS.COMPLETE.MESSAGE` | `str` | Any string text | `&8[&6ORDER&8] &f{player} &7completed &e{owner}&7's order...` | Supports `{player}`, `{owner}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}`, `{total}`, `{total_formatted}`. |
+
+Join, leave and first-join lines follow each player's **Join/Leave Messages** choice under
+`/settings`. The Auction House and Order lines follow **Server Broadcasts** plus **Auction
+Alerts** and **Order Alerts**. Bot listings and bot orders are never announced.
+
+---
+
 ## Section: `AFK-SYSTEM` - AFK Reward Zone & Auto Teleport
 
 ### Fully Commented Setup Code Example

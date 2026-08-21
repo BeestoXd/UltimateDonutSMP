@@ -544,6 +544,9 @@ public final class AuctionHouseManager {
                             "AUCTION_LIST",
                             "Listed " + describeItem(created.listing().item()) + " for " + plugin.getCurrencyManager().formatMoney(price)
                     );
+                    if (plugin.getServerNotificationManager() != null) {
+                        plugin.getServerNotificationManager().announceAuctionListing(seller, created.listing());
+                    }
                     result.complete(new CreateListingResult(true, null, created.listing(), listingFee));
                 });
             } finally {
@@ -641,6 +644,9 @@ public final class AuctionHouseManager {
                                             "AUCTION_BUY",
                                             "Bought " + describeItem(purchased.item()) + " from " + purchased.sellerName() + " for " + plugin.getCurrencyManager().formatMoney(purchased.price())
                                     );
+                                    if (deliveryError == null && plugin.getServerNotificationManager() != null) {
+                                        plugin.getServerNotificationManager().announceAuctionPurchase(buyer, purchased);
+                                    }
                                     result.complete(new PurchaseListingResult(
                                             deliveryError == null,
                                             deliveryError == null ? null : PurchaseFailureReason.DATABASE_ERROR,

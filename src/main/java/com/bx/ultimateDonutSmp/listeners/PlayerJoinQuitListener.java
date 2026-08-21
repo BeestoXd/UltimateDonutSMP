@@ -217,7 +217,8 @@ public class PlayerJoinQuitListener implements Listener {
         }
         plugin.getPlayerVisibilityManager().handleJoin(player);
 
-        if (!player.hasPlayedBefore()) {
+        boolean firstJoin = !player.hasPlayedBefore();
+        if (firstJoin) {
             boolean randomSpawnStarted = plugin.getFirstJoinSpawnManager() != null
                     && plugin.getFirstJoinSpawnManager().handleFirstJoin(player);
             boolean spawnOnFirstJoin = plugin.getConfigManager().getConfig().getBoolean("SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN", true);
@@ -256,13 +257,28 @@ public class PlayerJoinQuitListener implements Listener {
         }
 
         if (joinMsg != null && !joinMsg.isEmpty()) {
-            final String finalJoinMsg = joinMsg;
-            plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
-                if (shouldReceiveJoinLeaveMessage(p, player)) {
-                    p.sendMessage(ColorUtils.toComponent(finalJoinMsg));
-                }
-            });
+            String announcement = plugin.getServerNotificationManager() == null
+                    ? null
+                    : plugin.getServerNotificationManager().joinAnnouncement(player, firstJoin);
+            broadcastJoinLeave(player, announcement == null ? joinMsg : announcement);
         }
+    }
+
+    /**
+     * Sends a join or leave line to everyone allowed to see it. A configured announcement takes
+     * the place of the server's own message and travels the same route, so a player who turned
+     * join and leave messages off in /settings stays quiet either way. Nothing is sent when the
+     * server had no message to begin with, which is how other plugins suppress a join.
+     */
+    private void broadcastJoinLeave(Player subject, String message) {
+        if (message == null || message.isEmpty()) {
+            return;
+        }
+        plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
+            if (shouldReceiveJoinLeaveMessage(p, subject)) {
+                p.sendMessage(ColorUtils.toComponent(message));
+            }
+        });
     }
 
     /**
@@ -417,12 +433,10 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getTeamManager().clearSearchState(player.getUniqueId());
 
         if (quitMsg != null && !quitMsg.isEmpty()) {
-            final String finalQuitMsg = quitMsg;
-            plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
-                if (shouldReceiveJoinLeaveMessage(p, player)) {
-                    p.sendMessage(ColorUtils.toComponent(finalQuitMsg));
-                }
-            });
+            String announcement = plugin.getServerNotificationManager() == null
+                    ? null
+                    : plugin.getServerNotificationManager().leaveAnnouncement(player);
+            broadcastJoinLeave(player, announcement == null ? quitMsg : announcement);
         }
     }
 
