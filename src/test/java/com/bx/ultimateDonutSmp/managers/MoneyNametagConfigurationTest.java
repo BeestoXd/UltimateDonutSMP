@@ -55,9 +55,11 @@ class MoneyNametagConfigurationTest {
         assertEquals("&a${balance}", config.getString("MONEY-NAMETAGS.FORMAT"));
         assertTrue(config.getBoolean("MONEY-NAMETAGS.SHORT-FORMAT"));
         assertEquals(10, config.getInt("MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS"));
-        assertEquals(0.05D, config.getDouble("MONEY-NAMETAGS.LINE-GAP"));
-        assertEquals(32.0D, config.getDouble("MONEY-NAMETAGS.VIEW-RANGE"));
-        assertTrue(config.getBoolean("MONEY-NAMETAGS.HIDE-WHILE-SNEAKING"));
+
+        // The client decides where the line goes, so nothing here tries to place it.
+        assertFalse(config.contains("MONEY-NAMETAGS.LINE-GAP"));
+        assertFalse(config.contains("MONEY-NAMETAGS.VIEW-RANGE"));
+        assertFalse(config.contains("MONEY-NAMETAGS.HIDE-WHILE-SNEAKING"));
     }
 
     @Test
