@@ -374,7 +374,6 @@ public class ColorUtils {
             return "";
         }
         String result = decodeUnicodeEscapes(text);
-        result = unSmallCaps(result);
         // Fix known translation/spelling typos from old configs
         result = result.replace("PEARH", "PEARL").replace("pearh", "pearl").replace("Pearh", "Pearl");
         result = result.replace("DONT+", "DONUT+").replace("dont+", "donut+").replace("Dont+", "Donut+");
