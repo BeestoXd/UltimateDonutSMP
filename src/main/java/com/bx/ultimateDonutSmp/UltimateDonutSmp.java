@@ -333,7 +333,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
             getServer().getOnlinePlayers().forEach(worthManager::clearWorthDisplay);
         }
         if (moneyNametagManager != null) {
-            moneyNametagManager.clearAll();
+            moneyNametagManager.shutdown();
         }
 
         if (enderChestManager != null && !suppressWipeSaves) {
