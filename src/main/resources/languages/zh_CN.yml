@@ -2020,6 +2020,14 @@ CONFIG:
       FORMAT: "&7价值：&a$${price}"
     BROWSER:
       TITLE: "&8商品价格"
+      ITEM:
+        NAME: '&b{item}'
+        LORE:
+        - "&7类别：&f{category}"
+        - "&7单价：{unit_price_compact}"
+        - "&7一组 x{stack_size}：{stack_price_compact}"
+        - ''
+        - "&e点击将单价发送到聊天栏"
   HIDE:
     GUI:
       MAIN:

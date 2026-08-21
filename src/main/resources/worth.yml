@@ -31,6 +31,17 @@ BROWSER:
   - BOOK
   - POTION
   - BLOCKS
+  # Configuration section for Item.
+  ITEM:
+    # The text or value for Name. Available options: Any valid string text
+    NAME: '&b{item}'
+    # Configuration section for Lore.
+    LORE:
+    - '&7Category: &f{category}'
+    - '&7Unit price: {unit_price_compact}'
+    - '&7Stack x{stack_size}: {stack_price_compact}'
+    - ''
+    - '&eClick to send the unit price in chat'
 TYPE:
   # Configuration section for Crops.
   CROPS:

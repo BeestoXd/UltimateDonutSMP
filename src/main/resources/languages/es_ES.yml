@@ -2028,6 +2028,14 @@ CONFIG:
       FORMAT: '&7Valor: &a$${price}'
     BROWSER:
       TITLE: "&8Precios de los artículos"
+      ITEM:
+        NAME: '&b{item}'
+        LORE:
+        - "&7Categoría: &f{category}"
+        - '&7Precio unitario: {unit_price_compact}'
+        - '&7Pila x{stack_size}: {stack_price_compact}'
+        - ''
+        - "&eHaz clic para enviar el precio unitario al chat"
   HIDE:
     GUI:
       MAIN:

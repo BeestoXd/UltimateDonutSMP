@@ -2306,8 +2306,8 @@ CONFIG:
         NAME: '&b{item}'
         LORE:
         - '&7Category: &f{category}'
-        - '&7Unit price: {unit_price_formatted}'
-        - '&7Stack x{stack_size}: {stack_price_formatted}'
+        - '&7Unit price: {unit_price_compact}'
+        - '&7Stack x{stack_size}: {stack_price_compact}'
         - ''
         - '&eClick to send the unit price in chat'
   SHOP:
