@@ -1108,6 +1108,17 @@ BACK-BUTTON:
 ```yaml
 SHOP-GUI:
   SHOW-AUCTION-PRICE: true
+  # Configuration section for Item.
+  ITEM:
+    # Configuration section for Lore.
+    LORE:
+    - '&7Shop price: {shop_price}'
+    - '{auction_line}'
+    - ''
+    - '{favorite_line}'
+    - '&eLeft-click to buy from the shop'
+    - '{auction_action}'
+    - '{favorite_action}'
   FAVORITES:
     ENABLED: true
   WEB-SERVER:
@@ -1125,6 +1136,7 @@ SHOP-GUI:
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
 | `SHOP-GUI.SHOW-AUCTION-PRICE` | `bool` | `true`, `false` | `true` | Configures the technical `SHOW-AUCTION-PRICE` parameter for `SHOP-GUI.SHOW-AUCTION-PRICE` in `shop.yml`. |
+| `SHOP-GUI.ITEM.LORE` | `list` | List of configured items/strings | `['&7Shop price: {shop_price}', ...]` | Tooltip lines shown under every item in the shop menu. Supports `{shop_price}`, `{shop_unit_price}`, `{item}`, and the lines built from the other `SHOP-GUI.ITEM` keys: `{auction_line}`, `{auction_action}`, `{favorite_line}`, `{favorite_action}`. Leave it empty to show no tooltip. |
 | `SHOP-GUI.FAVORITES.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `SHOP-GUI` system. Set to `true` to enable, `false` to disable. |
 | `SHOP-GUI.WEB-SERVER.ENABLED` | `bool` | `true`, `false` | `false` | Global toggle for `SHOP-GUI` system. Set to `true` to enable, `false` to disable. |
 | `SHOP-GUI.WEB-SERVER.PORT` | `int` | Any valid integer number | `'8080'` | Configures the technical `PORT` parameter for `SHOP-GUI.WEB-SERVER.PORT` in `shop.yml`. |
@@ -1135,6 +1147,17 @@ SHOP-GUI:
 ```yaml
 SHOP-GUI:
   SHOW-AUCTION-PRICE: true
+  # Configuration section for Item.
+  ITEM:
+    # Configuration section for Lore.
+    LORE:
+    - '&7Shop price: {shop_price}'
+    - '{auction_line}'
+    - ''
+    - '{favorite_line}'
+    - '&eLeft-click to buy from the shop'
+    - '{auction_action}'
+    - '{favorite_action}'
   FAVORITES:
     ENABLED: true
   WEB-SERVER:

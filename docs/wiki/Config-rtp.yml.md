@@ -500,18 +500,38 @@ RTP-MENU:
       SLOT: 11
       WORLD: world
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
     NETHER:
       DISPLAY-NAME: '&#FF4B4BNether'
       MATERIAL: NETHERRACK
       SLOT: 13
       WORLD: world_nether
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
+      - '&7Required playtime: &b{required_playtime}'
     THE_END:
       DISPLAY-NAME: '&#A84BFFThe End'
       MATERIAL: END_STONE
       SLOT: 15
       WORLD: world_the_end
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
+      - '&7Required playtime: &b{required_playtime}'
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -526,16 +546,19 @@ RTP-MENU:
 | `RTP-MENU.BUTTONS.OVERWORLD.SLOT` | `int` | Any valid integer number | `'11'` | Configures the technical `SLOT` parameter for `RTP-MENU.BUTTONS.OVERWORLD.SLOT` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.OVERWORLD.WORLD` | `str` | Any string text | `'world'` | Configures the technical `WORLD` parameter for `RTP-MENU.BUTTONS.OVERWORLD.WORLD` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.OVERWORLD.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `RTP-MENU` system. Set to `true` to enable, `false` to disable. |
+| `RTP-MENU.BUTTONS.OVERWORLD.LORE` | `list` | List of configured items/strings | `['&fClick to randomly teleport', ...]` | Tooltip lines on this button in the `/rtp` menu. Supports `{players}`, `{world}`, `{ping}`, `{min_radius}`, `{max_radius}`, `{cooldown}`, `{required_playtime}`, and `{status}`. Leave it empty to show no tooltip. |
 | `RTP-MENU.BUTTONS.NETHER.DISPLAY-NAME` | `str` | Any string text | `'&#FF4B4BNether'` | Configures the technical `DISPLAY-NAME` parameter for `RTP-MENU.BUTTONS.NETHER.DISPLAY-NAME` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.NETHER.MATERIAL` | `str` | Any string text | `'NETHERRACK'` | Configures the technical `MATERIAL` parameter for `RTP-MENU.BUTTONS.NETHER.MATERIAL` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.NETHER.SLOT` | `int` | Any valid integer number | `'13'` | Configures the technical `SLOT` parameter for `RTP-MENU.BUTTONS.NETHER.SLOT` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.NETHER.WORLD` | `str` | Any string text | `'world_nether'` | Configures the technical `WORLD` parameter for `RTP-MENU.BUTTONS.NETHER.WORLD` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.NETHER.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `RTP-MENU` system. Set to `true` to enable, `false` to disable. |
+| `RTP-MENU.BUTTONS.NETHER.LORE` | `list` | List of configured items/strings | `['&fClick to randomly teleport', ...]` | Tooltip lines on this button in the `/rtp` menu. Supports `{players}`, `{world}`, `{ping}`, `{min_radius}`, `{max_radius}`, `{cooldown}`, `{required_playtime}`, and `{status}`. Leave it empty to show no tooltip. |
 | `RTP-MENU.BUTTONS.THE_END.DISPLAY-NAME` | `str` | Any string text | `'&#A84BFFThe End'` | Configures the technical `DISPLAY-NAME` parameter for `RTP-MENU.BUTTONS.THE_END.DISPLAY-NAME` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.THE_END.MATERIAL` | `str` | Any string text | `'END_STONE'` | Configures the technical `MATERIAL` parameter for `RTP-MENU.BUTTONS.THE_END.MATERIAL` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.THE_END.SLOT` | `int` | Any valid integer number | `'15'` | Configures the technical `SLOT` parameter for `RTP-MENU.BUTTONS.THE_END.SLOT` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.THE_END.WORLD` | `str` | Any string text | `'world_the_end'` | Configures the technical `WORLD` parameter for `RTP-MENU.BUTTONS.THE_END.WORLD` in `rtp.yml`. |
 | `RTP-MENU.BUTTONS.THE_END.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `RTP-MENU` system. Set to `true` to enable, `false` to disable. |
+| `RTP-MENU.BUTTONS.THE_END.LORE` | `list` | List of configured items/strings | `['&fClick to randomly teleport', ...]` | Tooltip lines on this button in the `/rtp` menu. Supports `{players}`, `{world}`, `{ping}`, `{min_radius}`, `{max_radius}`, `{cooldown}`, `{required_playtime}`, and `{status}`. Leave it empty to show no tooltip. |
 
 ### 3. Practical Setup Example
 
@@ -552,18 +575,38 @@ RTP-MENU:
       SLOT: 11
       WORLD: world
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
     NETHER:
       DISPLAY-NAME: '&#FF4B4BNether'
       MATERIAL: NETHERRACK
       SLOT: 13
       WORLD: world_nether
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
+      - '&7Required playtime: &b{required_playtime}'
     THE_END:
       DISPLAY-NAME: '&#A84BFFThe End'
       MATERIAL: END_STONE
       SLOT: 15
       WORLD: world_the_end
       ENABLED: true
+      LORE:
+      - '&fClick to randomly teleport'
+      - ''
+      - '&7Players: &b{players}'
+      - '&7Range: &b{min_radius}-{max_radius}'
+      - '&7Cooldown: &b{cooldown}s'
+      - '&7Required playtime: &b{required_playtime}'
 ```
 
 ---
