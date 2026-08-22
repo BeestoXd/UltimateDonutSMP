@@ -658,11 +658,17 @@ OPTIMIZATION:
   RECOVERY-SAMPLES: 3
   # Determines whether Log State Changes is enabled or disabled. Available options: true, false
   LOG-STATE-CHANGES: true
-  # Configuration section for Adaptive Tasks.
+  # Configuration section for Adaptive Tasks. Each entry below decides how often one task is
+  # allowed to run while the server is struggling. None of them switch a feature on or off; the
+  # switches for that live in their own sections, either at the top level of this file or in the
+  # file named after the feature.
   ADAPTIVE-TASKS:
     # Configuration section for Scoreboard.
     SCOREBOARD:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      # Whether the scoreboard task may be slowed down while the server is under load. Setting this
+      # to false removes the slowdown and lets the task keep running at full rate; it does not turn
+      # the scoreboard off. That switch is SCOREBOARD.ENABLED in scoreboard.yml.
+      # Available options: true, false
       ENABLED: true
       # The numerical value for Warn Min Interval Ticks. Available options: Any valid integer
       WARN-MIN-INTERVAL-TICKS: 4
@@ -670,7 +676,10 @@ OPTIMIZATION:
       CRITICAL-MIN-INTERVAL-TICKS: 10
     # Configuration section for Tablist.
     TABLIST:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      # Whether the tablist task may be slowed down while the server is under load. Setting this to
+      # false removes the slowdown and lets the task keep running at full rate; it does not turn the
+      # tablist off. That switch is the TABLIST section near the top of this file.
+      # Available options: true, false
       ENABLED: true
       # The numerical value for Warn Min Interval Ticks. Available options: Any valid integer
       WARN-MIN-INTERVAL-TICKS: 80
@@ -678,7 +687,10 @@ OPTIMIZATION:
       CRITICAL-MIN-INTERVAL-TICKS: 140
     # Configuration section for Lunar Teammates.
     LUNAR-TEAMMATES:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      # Whether the lunar teammates task may be slowed down while the server is under load. Setting
+      # this to false removes the slowdown and lets the task keep running at full rate; it does not
+      # turn the lunar teammate overlay off.
+      # Available options: true, false
       ENABLED: true
       # The numerical value for Warn Min Interval Ticks. Available options: Any valid integer
       WARN-MIN-INTERVAL-TICKS: 40
