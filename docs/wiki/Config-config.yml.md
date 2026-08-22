@@ -1779,14 +1779,6 @@ COMBAT-MANAGER:
   ENDER-PEARL: true
   # Determines whether Respawn Anchor is enabled or disabled. Available options: true, false
   RESPAWN-ANCHOR: true
-  # Configuration section for Anti Stasis Chamber.
-  ANTI-STASIS-CHAMBER:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
-    ENABLED: true
-    # The numerical value for Max Distance. Available options: Any valid integer
-    MAX-DISTANCE: 500
-    # Determines whether Prevent World Change is enabled or disabled. Available options: true, false
-    PREVENT-WORLD-CHANGE: true
   # The text or value for Block Message. Available options: Any valid string text
   BLOCK-MESSAGE: '&cYou can''t use this command in your current status.'
   # Configuration section for Block Commands.
@@ -1813,9 +1805,6 @@ COMBAT-MANAGER:
 | `COMBAT-MANAGER.ENDER-CRYSTAL` | `bool` | `true`, `false` | `true` | Whether end crystal damage tags a player. |
 | `COMBAT-MANAGER.ENDER-PEARL` | `bool` | `true`, `false` | `true` | Tags a player when they teleport with an ender pearl, and counts the damage the pearl deals on landing as player damage rather than ignoring it. |
 | `COMBAT-MANAGER.RESPAWN-ANCHOR` | `bool` | `true`, `false` | `true` | Whether damage from a respawn anchor explosion tags a player. |
-| `COMBAT-MANAGER.ANTI-STASIS-CHAMBER.ENABLED` | `bool` | `true`, `false` | `true` | Ships in the file but nothing reads it yet, so changing it has no effect. |
-| `COMBAT-MANAGER.ANTI-STASIS-CHAMBER.MAX-DISTANCE` | `int` | Any valid integer | `500` | Ships in the file but nothing reads it yet, so changing it has no effect. |
-| `COMBAT-MANAGER.ANTI-STASIS-CHAMBER.PREVENT-WORLD-CHANGE` | `bool` | `true`, `false` | `true` | Ships in the file but nothing reads it yet, so changing it has no effect. |
 | `COMBAT-MANAGER.BLOCK-MESSAGE` | `string` | Any valid string text | `'&cYou can''t use this command in your current status.'` | Sent to the player when one of the blocked commands is refused. |
 | `COMBAT-MANAGER.BLOCK-COMMANDS` | `list` | List of configured items/strings | `['/spawn', '/afk', '/rtp', '/homes', '/tpa']` | Commands refused while a player is tagged. Write each one with its leading slash. Matching is case insensitive and looks at the typed command word on its own, so any alias you also want blocked has to be listed in its own right. |
 | `COMBAT-MANAGER.EXCLUDED-WORLDS` | `list` | List of configured items/strings | `['duels']` | Worlds where none of this applies. Players there are never tagged, never refused a command, and never killed for logging out. |

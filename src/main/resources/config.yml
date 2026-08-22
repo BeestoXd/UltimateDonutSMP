@@ -733,14 +733,6 @@ COMBAT-MANAGER:
   ENDER-PEARL: true
   # Determines whether Respawn Anchor is enabled or disabled. Available options: true, false
   RESPAWN-ANCHOR: true
-  # Configuration section for Anti Stasis Chamber.
-  ANTI-STASIS-CHAMBER:
-    # Determines whether Enabled is enabled or disabled. Available options: true, false
-    ENABLED: true
-    # The numerical value for Max Distance. Available options: Any valid integer
-    MAX-DISTANCE: 500
-    # Determines whether Prevent World Change is enabled or disabled. Available options: true, false
-    PREVENT-WORLD-CHANGE: true
   # The text or value for Block Message. Available options: Any valid string text
   BLOCK-MESSAGE: '&cYou can''t use this command in your current status.'
   # Configuration section for Block Commands.
