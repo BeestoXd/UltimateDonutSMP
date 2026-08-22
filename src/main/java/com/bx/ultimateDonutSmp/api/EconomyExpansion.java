@@ -183,15 +183,18 @@ public class EconomyExpansion extends PlaceholderExpansion {
             return team != null ? team.toUpperCase() : "none";
         }
 
-        if (offlinePlayer == null) return "";
-
-        // All others require player data
-        PlayerData data = plugin.getPlayerDataManager().get(offlinePlayer.getUniqueId());
-        if (data == null && offlinePlayer.isOnline()) {
-            data = plugin.getPlayerDataManager().get(offlinePlayer.getPlayer());
-        }
-        if (data == null && offlinePlayer.getUniqueId() != null) {
-            data = plugin.getDatabaseManager().loadPlayer(offlinePlayer.getUniqueId());
+        // All others require player data. A caller that hands us no player still gets the zeroed
+        // defaults below rather than an empty string, so an unresolved placeholder is never
+        // mistaken for a real blank value.
+        PlayerData data = null;
+        if (offlinePlayer != null) {
+            data = plugin.getPlayerDataManager().get(offlinePlayer.getUniqueId());
+            if (data == null && offlinePlayer.isOnline()) {
+                data = plugin.getPlayerDataManager().get(offlinePlayer.getPlayer());
+            }
+            if (data == null) {
+                data = plugin.getDatabaseManager().loadPlayer(offlinePlayer.getUniqueId());
+            }
         }
         if (data == null) {
             return switch (params) {
