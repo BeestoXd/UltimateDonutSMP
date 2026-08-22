@@ -718,8 +718,15 @@ COMBAT-MANAGER:
   ENABLED: true
   # The numerical value for Cooldown. Available options: Any valid integer
   COOLDOWN: 16
+  # Determines whether Kill On Logout is enabled or disabled. When true, a player who
+  # disconnects while their combat tag is still running is killed, so logging out mid-fight
+  # is not a way to escape a fight. Available options: true, false
+  KILL-ON-LOGOUT: false
   # The text or value for Action Bar. Available options: Any valid string text
   ACTION-BAR: '&fCombat: &b${time}s'
+  # Determines whether Mobs is enabled or disabled. When true, damage from mobs also puts
+  # players into combat, not just damage dealt by other players. Available options: true, false
+  MOBS: false
   # Determines whether Ender Crystal is enabled or disabled. Available options: true, false
   ENDER-CRYSTAL: true
   # Determines whether Ender Pearl is enabled or disabled. Available options: true, false
