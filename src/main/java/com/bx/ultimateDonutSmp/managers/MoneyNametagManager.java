@@ -63,7 +63,8 @@ public class MoneyNametagManager {
     private final Set<UUID> installed = ConcurrentHashMap.newKeySet();
     private ProtocolManager protocolManager;
     private boolean warnedUnsupported;
-    private boolean warnedPacketFailure;
+    /** Set once ProtocolLib proves it cannot build this server's scoreboard packets. */
+    private volatile boolean packetsUnsupported;
 
     public MoneyNametagManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -94,7 +95,7 @@ public class MoneyNametagManager {
 
     /** Sends every viewer who wants balances the ones that have changed since their last update. */
     public void updateAll() {
-        if (!isEnabled() || !isNumberFormatSupported()) {
+        if (!isEnabled() || !isPacketPathUsable()) {
             clearAll();
             return;
         }
@@ -109,7 +110,7 @@ public class MoneyNametagManager {
 
     /** Pushes {@code player}'s balance out again, and gives them the objective if they want one. */
     public void update(Player player) {
-        if (player == null || !isEnabled() || !isNumberFormatSupported()) {
+        if (player == null || !isEnabled() || !isPacketPathUsable()) {
             return;
         }
         for (Map<UUID, String> known : sentText.values()) {
@@ -123,7 +124,7 @@ public class MoneyNametagManager {
         if (viewer == null) {
             return;
         }
-        if (!isEnabled() || !isNumberFormatSupported() || !isEnabledFor(viewer)) {
+        if (!isEnabled() || !isPacketPathUsable() || !isEnabledFor(viewer)) {
             clearViewer(viewer);
             return;
         }
@@ -308,16 +309,30 @@ public class MoneyNametagManager {
     }
 
     /**
-     * The first packet that will not build or send is worth shouting about, since the line simply
-     * fails to appear and there is nothing else to go on. Everything after it stays quiet.
+     * A packet that will not build or send means ProtocolLib does not recognise this server's
+     * scoreboard packets, which nothing short of a ProtocolLib update will change. The feature
+     * turns itself off on the first failure and says so once, in the same plain terms an
+     * unsupported server gets from {@link #isNumberFormatSupported()}. The trace itself is kept at
+     * FINE for anyone debugging it.
      */
     private void warnPacketFailure(String message, Throwable error) {
-        if (warnedPacketFailure) {
+        if (packetsUnsupported) {
             plugin.getLogger().log(Level.FINE, message, error);
             return;
         }
-        warnedPacketFailure = true;
-        plugin.getLogger().log(Level.WARNING, message + " Money nametags may not show up.", error);
+        packetsUnsupported = true;
+        plugin.getLogger().warning("Money nametags need scoreboard packets that the installed"
+                + " ProtocolLib understands, and it cannot build them on this server. The feature"
+                + " will stay off until ProtocolLib supports this Minecraft build.");
+        plugin.getLogger().log(Level.FINE, message, error);
+    }
+
+    /**
+     * Both reasons the packet path can be unusable, checked together everywhere the feature starts
+     * work. Once either is known the answer cannot change while the server is running.
+     */
+    private boolean isPacketPathUsable() {
+        return !packetsUnsupported && isNumberFormatSupported();
     }
 
     private boolean send(Player viewer, PacketContainer packet) {
