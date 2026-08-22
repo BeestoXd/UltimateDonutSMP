@@ -248,6 +248,8 @@ public class ChatManager {
             return;
         }
 
+        logPublicChat(player, rawMessage);
+
         String normalized = normalizeMessage(rawMessage);
         if (!normalized.isBlank()) {
             lastAcceptedGlobalMessageByPlayer.put(player.getUniqueId(), normalized);
@@ -259,6 +261,34 @@ public class ChatManager {
 
         long nextAllowed = System.currentTimeMillis() + (getGlobalDelaySeconds() * 1000L);
         nextAllowedGlobalChatAtByPlayer.put(player.getUniqueId(), nextAllowed);
+    }
+
+    public boolean isChatLoggingEnabled() {
+        return config().getBoolean(CHAT_ROOT + ".LOGGING.ENABLED", true);
+    }
+
+    public boolean isPublicChatLoggingEnabled() {
+        return isChatLoggingEnabled()
+                && config().getBoolean(CHAT_ROOT + ".LOGGING.PUBLIC-MESSAGES", true);
+    }
+
+    public boolean isPrivateChatLoggingEnabled() {
+        return isChatLoggingEnabled()
+                && config().getBoolean(CHAT_ROOT + ".LOGGING.PRIVATE-MESSAGES", true);
+    }
+
+    private void logPublicChat(Player player, String rawMessage) {
+        if (rawMessage == null || rawMessage.isBlank() || !isPublicChatLoggingEnabled()) {
+            return;
+        }
+
+        plugin.getPlayerLogsManager().log(
+                player.getUniqueId(),
+                player.getName(),
+                PlayerLogsManager.CHAT_CATEGORY,
+                PlayerLogsManager.PUBLIC_CHAT_TYPE,
+                rawMessage.trim()
+        );
     }
 
     public void clearChatForAllPlayers() {

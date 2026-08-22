@@ -108,9 +108,15 @@ public class PrivateMessageManager {
         send(sender, applyPlaceholders(sentFormat, targetName, message));
         target.sendMessage(ColorUtils.toComponent(applyPlaceholders(receivedFormat, senderName, message), target));
 
+        boolean logPrivateMessages = plugin.getChatManager().isPrivateChatLoggingEnabled();
+
         if (sender instanceof Player player) {
             replyTargets.put(player.getUniqueId(), target.getUniqueId());
             replyTargets.put(target.getUniqueId(), player.getUniqueId());
+
+            if (!logPrivateMessages) {
+                return true;
+            }
 
             plugin.getPlayerLogsManager().log(
                     player.getUniqueId(),
@@ -126,7 +132,7 @@ public class PrivateMessageManager {
                     "MSG_RECEIVED",
                     "From " + player.getName() + ": " + message
             );
-        } else {
+        } else if (logPrivateMessages) {
             plugin.getPlayerLogsManager().log(
                     target.getUniqueId(),
                     target.getName(),

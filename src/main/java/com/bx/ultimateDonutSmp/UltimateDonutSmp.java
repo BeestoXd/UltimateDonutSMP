@@ -601,6 +601,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("removemoney", new RemoveMoneyCommand(this));
         setExecutor("setmoney", new SetMoneyCommand(this));
         setExecutor("logs", new LogsCommand(this));
+        ChatLogCommand chatLogCommand = new ChatLogCommand(this);
+        setExecutor("chatlog", chatLogCommand);
+        setTabCompleter("chatlog", chatLogCommand);
 
         ShardsCommand shardsCmd = new ShardsCommand(this);
         setExecutor("shards", shardsCmd, FeatureManager.Feature.SHARDS);
