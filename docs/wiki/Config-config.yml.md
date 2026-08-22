@@ -529,6 +529,19 @@ CHAT:
   MAX-DELAY-SECONDS: 30
   # The numerical value for Clear Lines. Available options: Any valid integer
   CLEAR-LINES: 150
+  # Configuration section for Logging. Writes chat into each player's own log, so staff can
+  # read it back with /logs <player> or browse the whole server with /chatlog. None of these
+  # switches change what players see in chat.
+  LOGGING:
+    # Master switch for chat logging. With this off, neither public nor private messages are
+    # recorded, whatever the two switches below say. Available options: true, false
+    ENABLED: true
+    # Records normal public chat. Only messages that actually reach chat are stored, so muted,
+    # filtered and rate-limited messages are left out. Available options: true, false
+    PUBLIC-MESSAGES: true
+    # Records private messages sent with /msg and /reply, on both sides of the conversation.
+    # Available options: true, false
+    PRIVATE-MESSAGES: true
   # Configuration section for Filter.
   FILTER:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
@@ -589,6 +602,9 @@ CHAT:
 | `CHAT.GLOBAL-CHAT-DELAY` | `int` | Any valid integer number | `'3'` | Configures the technical `GLOBAL-CHAT-DELAY` parameter for `CHAT.GLOBAL-CHAT-DELAY` in `config.yml`. |
 | `CHAT.MAX-DELAY-SECONDS` | `int` | Any valid integer number | `'30'` | Configures the technical `MAX-DELAY-SECONDS` parameter for `CHAT.MAX-DELAY-SECONDS` in `config.yml`. |
 | `CHAT.CLEAR-LINES` | `int` | Any valid integer number | `'150'` | Configures the technical `CLEAR-LINES` parameter for `CHAT.CLEAR-LINES` in `config.yml`. |
+| `CHAT.LOGGING.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for chat logging. Turn it off and nothing a player types is written to their log, whichever of the two switches below are on. |
+| `CHAT.LOGGING.PUBLIC-MESSAGES` | `bool` | `true`, `false` | `true` | Records normal public chat into the sender's log, readable with `/logs <player>` or `/chatlog`. Only messages that reach chat are stored, so muted, filtered and rate-limited ones are left out. |
+| `CHAT.LOGGING.PRIVATE-MESSAGES` | `bool` | `true`, `false` | `true` | Records `/msg` and `/reply` conversations into both players' logs, readable with `/logs <player>`. |
 | `CHAT.FILTER.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `CHAT` system. Set to `true` to enable, `false` to disable. |
 | `CHAT.FILTER.BLOCK-MESSAGE` | `str` | Any string text | `'&7Please avoid using inappropriate ...'` | Configures the technical `BLOCK-MESSAGE` parameter for `CHAT.FILTER.BLOCK-MESSAGE` in `config.yml`. |
 | `CHAT.FILTER.WORDS` | `list` | List of configured items/strings | `['fuck', 'shit', 'bitch']` | Configures the technical `WORDS` parameter for `CHAT.FILTER.WORDS` in `config.yml`. |

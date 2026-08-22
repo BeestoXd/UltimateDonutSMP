@@ -61,6 +61,8 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/invsee` | `/invsee <player>` | Inspect and edit player inventory in real-time | `ultimatedonutsmp.admin.invsee` |
 | `/ecsee` | `/ecsee <player>` | Inspect and edit player Ender Chest | `ultimatedonutsmp.admin.ecsee` |
 | `/chat` | `/chat <mute\|unmute\|delay\|clear>` | Global chat moderation controls | `ultimatedonutsmp.admin.chat` |
+| `/logs` | `/logs <player>` | Browse one player's activity log, chat included | `ultimatedonutsmp.admin.logs` |
+| `/chatlog` | `/chatlog [player]` | Browse public chat for the whole server, or for one player | `ultimatedonutsmp.admin.chatlog` |
 | `/spawnstash` | `/spawnstash <give\|setup\|list>` (Alias `/stash`) | Manage spawn stash bait chests | `ultimatedonutsmp.admin.spawnstash` |
 | `/fakeplayer` | `/fakeplayer` (Alias `/fplayer`) | Spawn fake player bait entities | `ultimatedonutsmp.command.fakeplayer` |
 | `/amod` | `/amod <add\|reload>` | Manage the anvil rename word filter | `ultimatedonutsmp.command.amod` |

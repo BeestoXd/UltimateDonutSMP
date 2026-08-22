@@ -2620,6 +2620,60 @@ public class DatabaseManager {
         return 0;
     }
 
+    /** Newest-first log entries of one type. A null uuid reads every player on the server. */
+    public List<PlayerLogEntry> getLogsByType(UUID uuid, String logType, int limit, int offset) {
+        List<PlayerLogEntry> list = new ArrayList<>();
+        String where = uuid == null ? "log_type = ?" : "player_uuid = ? AND log_type = ?";
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT id, player_uuid, player_name, category, log_type, details, timestamp FROM player_logs " +
+                "WHERE " + where + " ORDER BY timestamp DESC, id DESC LIMIT ? OFFSET ?")) {
+            int index = 1;
+            if (uuid != null) {
+                ps.setString(index++, uuid.toString());
+            }
+            ps.setString(index++, logType);
+            ps.setInt(index++, limit);
+            ps.setInt(index, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new PlayerLogEntry(
+                            rs.getLong("id"),
+                            UUID.fromString(rs.getString("player_uuid")),
+                            rs.getString("player_name"),
+                            rs.getString("category"),
+                            rs.getString("log_type"),
+                            rs.getString("details"),
+                            rs.getLong("timestamp")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to get logs by type", e);
+        }
+        return list;
+    }
+
+    /** Number of log entries of one type. A null uuid counts every player on the server. */
+    public int getLogsByTypeCount(UUID uuid, String logType) {
+        String where = uuid == null ? "log_type = ?" : "player_uuid = ? AND log_type = ?";
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT COUNT(*) FROM player_logs WHERE " + where)) {
+            int index = 1;
+            if (uuid != null) {
+                ps.setString(index++, uuid.toString());
+            }
+            ps.setString(index, logType);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to count logs by type", e);
+        }
+        return 0;
+    }
+
     public record SellHistoryRecord(UUID uuid, String itemName, int amount, double price, long timestamp) {
         public SellHistoryRecord(UUID uuid, String itemName, int amount, double price) {
             this(uuid, itemName, amount, price, System.currentTimeMillis());

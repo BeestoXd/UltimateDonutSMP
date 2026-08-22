@@ -659,6 +659,11 @@ commands:
     description: Command logs
     permission: ultimatedonutsmp.command.logs
     permission-message: "&cYou do not have permission to use /logs."
+  chatlog:
+    description: Browse public chat for the whole server, or for one player
+    usage: /chatlog [player]
+    permission: ultimatedonutsmp.command.chatlog
+    permission-message: "&cYou do not have permission to use /chatlog."
   addshards:
     description: Command addshards
     permission: ultimatedonutsmp.command.addshards
@@ -760,6 +765,7 @@ permissions:
       ultimatedonutsmp.admin.freeze: true
       ultimatedonutsmp.admin.staffmode: true
       ultimatedonutsmp.admin.invsee: true
+      ultimatedonutsmp.admin.chatlog: true
       ultimatedonutsmp.admin.spawner: true
       ultimatedonutsmp.admin.spawner.seeall: true
       ultimatedonutsmp.admin.crate: true
@@ -1267,6 +1273,7 @@ permissions:
       ultimatedonutsmp.command.ultimatedonutsmp: true
       ultimatedonutsmp.command.ecsee: true
       ultimatedonutsmp.command.logs: true
+      ultimatedonutsmp.command.chatlog: true
       ultimatedonutsmp.command.addshards: true
       ultimatedonutsmp.command.removeshards: true
       ultimatedonutsmp.command.setshards: true
@@ -1637,6 +1644,12 @@ permissions:
     default: op
   ultimatedonutsmp.command.logs:
     description: Access to /logs command
+    default: op
+  ultimatedonutsmp.command.chatlog:
+    description: Access to /chatlog command
+    default: op
+  ultimatedonutsmp.admin.chatlog:
+    description: Browse logged public chat messages
     default: op
   ultimatedonutsmp.command.addshards:
     description: Access to /addshards command

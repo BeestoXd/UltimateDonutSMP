@@ -69,6 +69,18 @@ Automatically filters player chat for:
 ### 2. Anvil Moderation (`/anvilmoderation` & `anvil-moderation.yml`)
 Filters illegal, profane, or scam links renamed on item anvils before the item is created.
 
+### 3. Chat Logging (`/chatlog` & `CHAT.LOGGING` in `config.yml`)
+Every public chat message is written to the sender's own log, alongside their `/msg` conversations
+and the rest of their activity. `/chatlog` opens the whole server's chat newest first, `/chatlog
+<player>` narrows it to one player, and `/logs <player>` shows that player's chat mixed in with
+their shop, economy and death history. Each entry carries the player, the message and the time it
+was sent.
+
+Only messages that actually reach chat are stored, so anything a mute, the filter or the chat delay
+blocked never appears. Turn the whole thing off with `CHAT.LOGGING.ENABLED`, or drop public and
+private messages separately with `CHAT.LOGGING.PUBLIC-MESSAGES` and
+`CHAT.LOGGING.PRIVATE-MESSAGES`.
+
 ---
 
 ## Discord Webhook Logging (`discord.yml`)

@@ -180,6 +180,19 @@ CHAT:
   MAX-DELAY-SECONDS: 30
   # The numerical value for Clear Lines. Available options: Any valid integer
   CLEAR-LINES: 150
+  # Configuration section for Logging. Writes chat into each player's own log, so staff can
+  # read it back with /logs <player> or browse the whole server with /chatlog. None of these
+  # switches change what players see in chat.
+  LOGGING:
+    # Master switch for chat logging. With this off, neither public nor private messages are
+    # recorded, whatever the two switches below say. Available options: true, false
+    ENABLED: true
+    # Records normal public chat. Only messages that actually reach chat are stored, so muted,
+    # filtered and rate-limited messages are left out. Available options: true, false
+    PUBLIC-MESSAGES: true
+    # Records private messages sent with /msg and /reply, on both sides of the conversation.
+    # Available options: true, false
+    PRIVATE-MESSAGES: true
   # Configuration section for Filter.
   FILTER:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
