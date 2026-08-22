@@ -621,6 +621,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ShopCommand shopCommand = new ShopCommand(this);
         setExecutor("shop", shopCommand, FeatureManager.Feature.SHOP);
         setExecutor("shardshop", shopCommand, FeatureManager.Feature.SHOP, FeatureManager.Feature.SHARDS);
+        ShopEditCommand shopEditCommand = new ShopEditCommand(this);
+        setExecutor("shopedit", shopEditCommand, FeatureManager.Feature.SHOP);
+        setTabCompleter("shopedit", shopEditCommand);
         setExecutor("orders", new OrdersCommand(this), FeatureManager.Feature.ORDERS);
         setExecutor("duel", new DuelCommand(this), FeatureManager.Feature.DUELS);
         setExecutor("create", new CreateCommand(this), FeatureManager.Feature.DUELS);

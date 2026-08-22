@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.listeners;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.BaseMenu;
 import com.bx.ultimateDonutSmp.menus.CrateEditorMenu;
+import com.bx.ultimateDonutSmp.menus.ShopEditorMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersInventoryItemMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersDepositMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersNewMenu;
@@ -46,6 +47,11 @@ public class InventoryClickListener implements Listener {
 
         if (menu instanceof CrateEditorMenu crateEditorMenu) {
             crateEditorMenu.handleInventoryClick(event);
+            return;
+        }
+
+        if (menu instanceof ShopEditorMenu shopEditorMenu) {
+            shopEditorMenu.handleInventoryClick(event);
             return;
         }
 
@@ -99,6 +105,11 @@ public class InventoryClickListener implements Listener {
 
         if (menu instanceof CrateEditorMenu crateEditorMenu) {
             crateEditorMenu.handleInventoryDrag(event);
+            return;
+        }
+
+        if (menu instanceof ShopEditorMenu shopEditorMenu) {
+            shopEditorMenu.handleInventoryDrag(event);
             return;
         }
 
