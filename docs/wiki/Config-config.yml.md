@@ -1753,3 +1753,97 @@ CLEAR-LAG:
 ```
 
 ---
+
+## Section: `COMBAT-MANAGER`
+
+### 1. Commented Setup Code Example
+
+```yaml
+COMBAT-MANAGER:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Cooldown. Available options: Any valid integer
+  COOLDOWN: 16
+  # Determines whether Kill On Logout is enabled or disabled. When true, a player who
+  # disconnects while their combat tag is still running is killed, so logging out mid-fight
+  # is not a way to escape a fight. Available options: true, false
+  KILL-ON-LOGOUT: false
+  # The text or value for Action Bar. Available options: Any valid string text
+  ACTION-BAR: '&fCombat: &b${time}s'
+  # Determines whether Mobs is enabled or disabled. When true, damage from mobs also puts
+  # players into combat, not just damage dealt by other players. Available options: true, false
+  MOBS: false
+  # Determines whether Ender Crystal is enabled or disabled. Available options: true, false
+  ENDER-CRYSTAL: true
+  # Determines whether Ender Pearl is enabled or disabled. Available options: true, false
+  ENDER-PEARL: true
+  # Determines whether Respawn Anchor is enabled or disabled. Available options: true, false
+  RESPAWN-ANCHOR: true
+  # Configuration section for Anti Stasis Chamber.
+  ANTI-STASIS-CHAMBER:
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The numerical value for Max Distance. Available options: Any valid integer
+    MAX-DISTANCE: 500
+    # Determines whether Prevent World Change is enabled or disabled. Available options: true, false
+    PREVENT-WORLD-CHANGE: true
+  # The text or value for Block Message. Available options: Any valid string text
+  BLOCK-MESSAGE: '&cYou can''t use this command in your current status.'
+  # Configuration section for Block Commands.
+  BLOCK-COMMANDS:
+  - /spawn
+  - /afk
+  - /rtp
+  - /homes
+  - /tpa
+  # Configuration section for Excluded Worlds.
+  EXCLUDED-WORLDS:
+  - duels
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `COMBAT-MANAGER.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for combat tagging, the action bar timer, command blocking and the logout kill. The `COMBAT` feature toggle has to be on as well, which it is unless someone has turned it off with `/uds features disable combat`. Being tagged also switches a player's flight off when `FLY-SYSTEM.AUTO-DISABLE-OUTSIDE` is enabled and they do not hold `ultimatedonutsmp.staff.fly`, leaving creative and spectator mode alone. |
+| `COMBAT-MANAGER.COOLDOWN` | `int` | Any valid integer | `16` | How many seconds a player stays tagged. Each new hit resets the full duration rather than adding to it, so a player is clear this many seconds after the last hit lands. |
+| `COMBAT-MANAGER.KILL-ON-LOGOUT` | `bool` | `true`, `false` | `false` | Kills a player who disconnects while still tagged, so logging out mid-fight is not a way to escape. They die where they logged off and drop their items there. Skipped for players who are already dead, who are in an excluded world, or who are in a duel queue, a duel, or an FFA session. |
+| `COMBAT-MANAGER.ACTION-BAR` | `string` | Any valid string text | `'&fCombat: &b${time}s'` | The action bar line shown once a second while a player is tagged. Both `${time}` and `{time}` are replaced with the whole seconds left. |
+| `COMBAT-MANAGER.MOBS` | `bool` | `true`, `false` | `false` | Whether mob damage tags a player as well as damage from other players. Covers any living attacker, and arrows or other projectiles one of them fired. |
+| `COMBAT-MANAGER.ENDER-CRYSTAL` | `bool` | `true`, `false` | `true` | Whether end crystal damage tags a player. |
+| `COMBAT-MANAGER.ENDER-PEARL` | `bool` | `true`, `false` | `true` | Tags a player when they teleport with an ender pearl, and counts the damage the pearl deals on landing as player damage rather than ignoring it. |
+| `COMBAT-MANAGER.RESPAWN-ANCHOR` | `bool` | `true`, `false` | `true` | Whether damage from a respawn anchor explosion tags a player. |
+| `COMBAT-MANAGER.ANTI-STASIS-CHAMBER.ENABLED` | `bool` | `true`, `false` | `true` | Ships in the file but nothing reads it yet, so changing it has no effect. |
+| `COMBAT-MANAGER.ANTI-STASIS-CHAMBER.MAX-DISTANCE` | `int` | Any valid integer | `500` | Ships in the file but nothing reads it yet, so changing it has no effect. |
+| `COMBAT-MANAGER.ANTI-STASIS-CHAMBER.PREVENT-WORLD-CHANGE` | `bool` | `true`, `false` | `true` | Ships in the file but nothing reads it yet, so changing it has no effect. |
+| `COMBAT-MANAGER.BLOCK-MESSAGE` | `string` | Any valid string text | `'&cYou can''t use this command in your current status.'` | Sent to the player when one of the blocked commands is refused. |
+| `COMBAT-MANAGER.BLOCK-COMMANDS` | `list` | List of configured items/strings | `['/spawn', '/afk', '/rtp', '/homes', '/tpa']` | Commands refused while a player is tagged. Write each one with its leading slash. Matching is case insensitive and looks at the typed command word on its own, so any alias you also want blocked has to be listed in its own right. |
+| `COMBAT-MANAGER.EXCLUDED-WORLDS` | `list` | List of configured items/strings | `['duels']` | Worlds where none of this applies. Players there are never tagged, never refused a command, and never killed for logging out. |
+
+### 3. Practical Setup Example
+
+A server that actually punishes combat logging. The tag runs a little longer than the default, disconnecting while it is up is fatal, and mobs stay out of it so nobody gets dragged into combat by a zombie:
+
+```yaml
+COMBAT-MANAGER:
+  ENABLED: true
+  COOLDOWN: 20
+  KILL-ON-LOGOUT: true
+  ACTION-BAR: '&cCombat: &f${time}s'
+  MOBS: false
+  ENDER-CRYSTAL: true
+  ENDER-PEARL: true
+  RESPAWN-ANCHOR: true
+  BLOCK-MESSAGE: '&cYou cannot use that while you are in combat.'
+  BLOCK-COMMANDS:
+  - /spawn
+  - /afk
+  - /rtp
+  - /homes
+  - /tpa
+  - /warp
+  EXCLUDED-WORLDS:
+  - duels
+```
+
+---
