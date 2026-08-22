@@ -147,14 +147,4 @@ public class CombatManager {
                 .getStringList("COMBAT-MANAGER.EXCLUDED-WORLDS")
                 .contains(worldName);
     }
-
-    public boolean isAntiStasisEnabled() {
-        return plugin.getConfigManager().getConfig()
-                .getBoolean("COMBAT-MANAGER.ANTI-STASIS-CHAMBER.ENABLED", true);
-    }
-
-    public int getMaxStasisDistance() {
-        return plugin.getConfigManager().getConfig()
-                .getInt("COMBAT-MANAGER.ANTI-STASIS-CHAMBER.MAX-DISTANCE", 500);
-    }
 }
