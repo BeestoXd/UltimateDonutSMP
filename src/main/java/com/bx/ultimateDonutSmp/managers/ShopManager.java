@@ -11,6 +11,7 @@ import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.models.ShopPreference;
 import com.bx.ultimateDonutSmp.storage.ShopPreferenceRepository;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
@@ -18,13 +19,16 @@ import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -43,6 +47,7 @@ import java.util.logging.Level;
 
 public class ShopManager {
 
+    private static final String PRICE_TAG_PREFIX = "[PRICE] ";
     private static final Set<String> CATEGORY_META_KEYS = Set.of("MENU-TITLE", "MENU-SIZE", "ORDER");
     private static final Set<String> MENU_META_KEYS = Set.of(
             "TITLE",
@@ -239,7 +244,8 @@ public class ShopManager {
             AmethystToolType amethystToolType,
             long amethystDurationSeconds,
             List<String> enchantments,
-            Boolean glint
+            Boolean glint,
+            String serializedItemData
     ) {
         public ShopItem(
                 String key,
@@ -264,8 +270,42 @@ public class ShopManager {
                     key, menuSection, material, displayName, lore, slot, pricePerUnit,
                     currency, command, giveItem, permission, minQuantity, maxQuantity,
                     defaultQuantity, hideQuantityButtons, amethystToolType, amethystDurationSeconds,
-                    List.of(), null
+                    List.of(), null, null
             );
+        }
+
+        /** Kept so callers that predate custom item data keep compiling. */
+        public ShopItem(
+                String key,
+                String menuSection,
+                Material material,
+                String displayName,
+                List<String> lore,
+                int slot,
+                double pricePerUnit,
+                Currency currency,
+                String command,
+                boolean giveItem,
+                String permission,
+                int minQuantity,
+                int maxQuantity,
+                int defaultQuantity,
+                Boolean hideQuantityButtons,
+                AmethystToolType amethystToolType,
+                long amethystDurationSeconds,
+                List<String> enchantments,
+                Boolean glint
+        ) {
+            this(
+                    key, menuSection, material, displayName, lore, slot, pricePerUnit,
+                    currency, command, giveItem, permission, minQuantity, maxQuantity,
+                    defaultQuantity, hideQuantityButtons, amethystToolType, amethystDurationSeconds,
+                    enchantments, glint, null
+            );
+        }
+
+        public boolean hasCustomItemData() {
+            return serializedItemData != null && !serializedItemData.isBlank();
         }
 
         public boolean isAmethystToolReward() {
@@ -278,6 +318,7 @@ public class ShopManager {
     private final UltimateDonutSmp plugin;
     private final ShopPreferenceRepository preferenceRepository;
     private final Map<UUID, ShopPreference> preferenceCache = new ConcurrentHashMap<>();
+    private final Map<String, ItemStack> customItemCache = new ConcurrentHashMap<>();
 
     public ShopManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -287,6 +328,7 @@ public class ShopManager {
     }
 
     public void reload() {
+        customItemCache.clear();
         validateShopConfiguration();
     }
 
@@ -552,7 +594,8 @@ public class ShopManager {
                     null,
                     -1L,
                     enchantments,
-                    glint
+                    glint,
+                    itemSec.getString("ITEM-DATA")
             ));
         }
 
@@ -953,6 +996,12 @@ public class ShopManager {
     }
 
     private ItemStack createPurchasedItem(ShopItem item, int amount) {
+        ItemStack custom = createCustomItem(item);
+        if (custom != null) {
+            custom.setAmount(Math.max(1, amount));
+            return custom;
+        }
+
         ItemStack stack = new ItemStack(item.material(), Math.max(1, amount));
         if (item.enchantments() != null && !item.enchantments().isEmpty()) {
             ItemUtils.addEnchantments(stack, item.enchantments());
@@ -961,6 +1010,326 @@ public class ShopManager {
             ItemUtils.setGlint(stack, item.glint());
         }
         return stack;
+    }
+
+    /**
+     * The exact item an admin stored through the shop editor, or null when the entry is a plain
+     * MATERIAL one. Menus use this so the icon matches what the buyer actually receives.
+     */
+    public ItemStack createCustomItem(ShopItem item) {
+        if (item == null || !item.hasCustomItemData()) {
+            return null;
+        }
+
+        ItemStack cached = customItemCache.get(item.serializedItemData());
+        if (cached != null) {
+            return cached.clone();
+        }
+
+        try {
+            ItemStack stored = ItemSerializationUtils.deserialize(item.serializedItemData());
+            if (stored == null || stored.getType().isAir()) {
+                return null;
+            }
+            customItemCache.put(item.serializedItemData(), stored.clone());
+            return stored;
+        } catch (IOException | ClassNotFoundException | IllegalArgumentException exception) {
+            plugin.getLogger().log(Level.WARNING,
+                    "Failed to read ITEM-DATA for shop item " + item.key() + " in " + item.menuSection(), exception);
+            return null;
+        }
+    }
+
+    // ── Shop editor ─────────────────────────────────────────────────────────────
+
+    /** Outcome of an edit made through the shop editor menu. */
+    public record EditResult(boolean success, String message) {}
+
+    /** An item with its shop price, once a {@code [PRICE] <amount>} rename has been read off it. */
+    public record PricedItem(ItemStack item, Double price) {}
+
+    /**
+     * Reads a {@code [PRICE] <amount>} rename off an item and hands back the item with that rename
+     * removed, so the price tag never ends up baked into what the buyer receives. Items without the
+     * tag come back untouched and with a null price.
+     */
+    public PricedItem readPriceTag(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) {
+            return new PricedItem(item, null);
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasDisplayName()) {
+            return new PricedItem(item, null);
+        }
+
+        Double parsed = parsePriceTag(ColorUtils.strip(meta.getDisplayName()));
+        if (parsed == null) {
+            return new PricedItem(item, null);
+        }
+
+        ItemStack cleaned = item.clone();
+        ItemMeta cleanedMeta = cleaned.getItemMeta();
+        if (cleanedMeta != null) {
+            cleanedMeta.setDisplayName(null);
+            cleaned.setItemMeta(cleanedMeta);
+        }
+        return new PricedItem(cleaned, parsed);
+    }
+
+    /**
+     * Pulls the amount out of a {@code [PRICE] 250} rename, or null when the name is not a price tag
+     * or the amount will not do as a price.
+     */
+    public static Double parsePriceTag(String displayName) {
+        if (displayName == null) {
+            return null;
+        }
+
+        String trimmed = displayName.trim();
+        if (!trimmed.toUpperCase(Locale.US).startsWith(PRICE_TAG_PREFIX)) {
+            return null;
+        }
+
+        double parsed;
+        try {
+            parsed = Double.parseDouble(trimmed.substring(PRICE_TAG_PREFIX.length()).trim().replace(",", ""));
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+
+        return parsed > 0 && Double.isFinite(parsed) ? parsed : null;
+    }
+
+    /** Menu sections an admin can open in the editor, in the order the categories menu shows them. */
+    public List<String> getEditableMenuSections() {
+        List<String> sections = new ArrayList<>();
+        for (ShopCategory category : loadCategories()) {
+            if (!sections.contains(category.menuSection())) {
+                sections.add(category.menuSection());
+            }
+        }
+        return List.copyOf(sections);
+    }
+
+    /** Turns what an admin typed ("end", "end-menu", "{end-menu}") into a real shop.yml section. */
+    public String resolveMenuSection(String input) {
+        if (input == null || input.isBlank()) {
+            return null;
+        }
+
+        String normalized = input.replace("{", "").replace("}", "").trim().toUpperCase(Locale.US);
+        List<String> sections = getEditableMenuSections();
+        if (sections.contains(normalized)) {
+            return normalized;
+        }
+
+        String suffixed = normalized.endsWith("-MENU") ? normalized : normalized + "-MENU";
+        return sections.contains(suffixed) ? suffixed : null;
+    }
+
+    public int getMenuSize(String menuSection) {
+        ConfigurationSection menuConfig = plugin.getConfigManager().getShop()
+                .getConfigurationSection(menuSection);
+        int configured = menuConfig == null ? 27 : menuConfig.getInt("SIZE", 27);
+        int bounded = Math.max(9, Math.min(54, configured));
+        return bounded % 9 == 0 ? bounded : ((bounded / 9) + 1) * 9;
+    }
+
+    /** Where a shop menu puts its back button, which the editor reuses for its close button. */
+    public int getBackButtonSlot(String menuSection) {
+        ConfigurationSection menuConfig = plugin.getConfigManager().getShop()
+                .getConfigurationSection(menuSection);
+        int size = getMenuSize(menuSection);
+        return menuConfig == null ? size - 9 : menuConfig.getInt("BACK-BUTTON-SLOT", size - 9);
+    }
+
+    /**
+     * Slots a shop menu keeps for its own back and paging buttons. An item parked on one of these is
+     * what makes ShopMenu give up on configured slots and fall back to paging, so the editor refuses
+     * to place there.
+     */
+    public Set<Integer> getReservedSlots(String menuSection) {
+        ConfigurationSection menuConfig = plugin.getConfigManager().getShop()
+                .getConfigurationSection(menuSection);
+        int size = getMenuSize(menuSection);
+        if (menuConfig == null) {
+            return Set.of();
+        }
+
+        Set<Integer> reserved = new HashSet<>();
+        reserved.add(getBackButtonSlot(menuSection));
+        reserved.add(menuConfig.getInt("FIRST-PAGE-SLOT", size - 8));
+        reserved.add(menuConfig.getInt("PREVIOUS-PAGE-SLOT", size - 7));
+        reserved.add(menuConfig.getInt("PAGE-INFO-SLOT", size - 5));
+        reserved.add(menuConfig.getInt("NEXT-PAGE-SLOT", size - 3));
+        reserved.add(menuConfig.getInt("LAST-PAGE-SLOT", size - 2));
+        return Set.copyOf(reserved);
+    }
+
+    /**
+     * Stores {@code item} in {@code slot} of {@code menuSection}, replacing whatever was there. The
+     * whole item is written as ITEM-DATA so enchantments and every other bit of item data survive the
+     * round trip, with MATERIAL and friends written alongside so the entry stays readable in shop.yml.
+     */
+    public EditResult upsertMenuItem(String menuSection, int slot, ItemStack item, Double price) {
+        if (item == null || item.getType().isAir()) {
+            return new EditResult(false, "&cSelect an item from your inventory first.");
+        }
+
+        ConfigurationSection menuConfig = plugin.getConfigManager().getOriginalShop()
+                .getConfigurationSection(menuSection);
+        if (menuConfig == null) {
+            return new EditResult(false, "&cThat shop menu no longer exists.");
+        }
+
+        if (slot < 0 || slot >= getMenuSize(menuSection)) {
+            return new EditResult(false, "&cThat slot is outside this shop menu.");
+        }
+
+        if (getReservedSlots(menuSection).contains(slot)) {
+            return new EditResult(false, "&cThat slot belongs to the menu buttons. Pick another one.");
+        }
+
+        ItemStack storedItem = item.clone();
+        storedItem.setAmount(1);
+
+        CrashProtectionManager.ValidationResult safetyResult = plugin.getCrashProtectionManager()
+                .validateForStorage(storedItem, CrashProtectionManager.Context.SHOP);
+        if (!safetyResult.allowed()) {
+            plugin.getCrashProtectionManager().logBlockedItem(
+                    "shop " + menuSection + " slot " + slot,
+                    storedItem,
+                    CrashProtectionManager.Context.SHOP,
+                    safetyResult
+            );
+            return new EditResult(false, plugin.getConfigManager().getMessageOrDefault(
+                    "CRASH_PROTECTION.ITEM_BLOCKED",
+                    "&cThat item cannot be used here because its data looks unsafe. &7context: &f{context}&7. reason: &f{reason}",
+                    "{context}", CrashProtectionManager.Context.SHOP.displayName(),
+                    "{reason}", safetyResult.reason()
+            ));
+        }
+
+        double resolvedPrice = price != null ? price : getWorth(storedItem);
+        if (resolvedPrice <= 0) {
+            return new EditResult(false, "&cThat item has no worth entry, so it needs a price. "
+                    + "Rename it to &f[PRICE] 250&c and place it again.");
+        }
+
+        String serializedItemData;
+        try {
+            serializedItemData = ItemSerializationUtils.serialize(storedItem);
+        } catch (IOException exception) {
+            plugin.getLogger().log(Level.WARNING,
+                    "Failed to serialize shop item for " + menuSection + " slot " + slot, exception);
+            return new EditResult(false, "&cFailed to store that item in the shop.");
+        }
+
+        ConfigurationSection itemsSection = menuConfig.getConfigurationSection("ITEMS");
+        String basePath = menuSection + (itemsSection != null ? ".ITEMS." : ".");
+        String existingKey = findItemKeyBySlot(menuSection, slot);
+        boolean editing = existingKey != null;
+        String itemKey = editing ? existingKey : generateItemKey(menuSection, storedItem.getType(), slot);
+        String path = basePath + itemKey;
+
+        FileConfiguration shopConfig = plugin.getConfigManager().getOriginalShop();
+        ItemMeta meta = storedItem.getItemMeta();
+        String displayName = editorDisplayName(meta, storedItem.getType());
+
+        shopConfig.set(path + ".MATERIAL", storedItem.getType().name());
+        shopConfig.set(path + ".DISPLAY-NAME", displayName);
+        shopConfig.set(path + ".SLOT", slot);
+        shopConfig.set(path + ".PRICE-PER-UNIT", resolvedPrice);
+        shopConfig.set(path + ".ENCHANTMENTS", editorEnchantments(storedItem));
+        shopConfig.set(path + ".ITEM-DATA", serializedItemData);
+
+        if (!plugin.getConfigManager().saveShop()) {
+            return new EditResult(false, "&cFailed to save shop.yml while updating that slot.");
+        }
+
+        reload();
+        return new EditResult(true, "&aStored &f" + ColorUtils.strip(displayName)
+                + "&a in slot &f" + slot + "&a at &f" + NumberUtils.format(resolvedPrice) + "&a.");
+    }
+
+    /** Drops whatever item sits in {@code slot} of {@code menuSection} out of shop.yml. */
+    public EditResult removeMenuItem(String menuSection, int slot) {
+        ConfigurationSection menuConfig = plugin.getConfigManager().getOriginalShop()
+                .getConfigurationSection(menuSection);
+        if (menuConfig == null) {
+            return new EditResult(false, "&cThat shop menu no longer exists.");
+        }
+
+        String itemKey = findItemKeyBySlot(menuSection, slot);
+        if (itemKey == null) {
+            return new EditResult(false, "&cThere is nothing in slot &f" + slot + "&c.");
+        }
+
+        ConfigurationSection itemsSection = menuConfig.getConfigurationSection("ITEMS");
+        String path = menuSection + (itemsSection != null ? ".ITEMS." : ".") + itemKey;
+        plugin.getConfigManager().getOriginalShop().set(path, null);
+
+        if (!plugin.getConfigManager().saveShop()) {
+            return new EditResult(false, "&cFailed to save shop.yml while clearing that slot.");
+        }
+
+        reload();
+        return new EditResult(true, "&aCleared slot &f" + slot + "&a.");
+    }
+
+    private String findItemKeyBySlot(String menuSection, int slot) {
+        ConfigurationSection menuConfig = plugin.getConfigManager().getOriginalShop()
+                .getConfigurationSection(menuSection);
+        if (menuConfig == null) {
+            return null;
+        }
+
+        ConfigurationSection itemsSection = menuConfig.getConfigurationSection("ITEMS");
+        ConfigurationSection sourceSection = itemsSection != null ? itemsSection : menuConfig;
+        for (String key : sourceSection.getKeys(false)) {
+            if (sourceSection == menuConfig && MENU_META_KEYS.contains(key.toUpperCase(Locale.US))) {
+                continue;
+            }
+
+            ConfigurationSection itemSec = sourceSection.getConfigurationSection(key);
+            if (itemSec != null && itemSec.contains("MATERIAL") && itemSec.getInt("SLOT", -1) == slot) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    private String generateItemKey(String menuSection, Material material, int slot) {
+        ConfigurationSection menuConfig = plugin.getConfigManager().getOriginalShop()
+                .getConfigurationSection(menuSection);
+        ConfigurationSection itemsSection = menuConfig == null ? null : menuConfig.getConfigurationSection("ITEMS");
+        ConfigurationSection sourceSection = itemsSection != null ? itemsSection : menuConfig;
+
+        String base = material.name().replace('_', '-') + "-ITEM";
+        if (sourceSection == null || !sourceSection.contains(base)) {
+            return base;
+        }
+        return base + "-" + slot;
+    }
+
+    private String editorDisplayName(ItemMeta meta, Material material) {
+        if (meta == null || !meta.hasDisplayName()) {
+            return "&f" + plugin.getWorthManager().prettifyMaterial(material);
+        }
+        return meta.getDisplayName().replace('\u00A7', '&');
+    }
+
+    private List<String> editorEnchantments(ItemStack item) {
+        if (item == null || item.getEnchantments().isEmpty()) {
+            return List.of();
+        }
+
+        List<String> enchantments = new ArrayList<>();
+        for (Map.Entry<org.bukkit.enchantments.Enchantment, Integer> entry : item.getEnchantments().entrySet()) {
+            enchantments.add(entry.getKey().getKey().getKey() + ":" + entry.getValue());
+        }
+        return enchantments;
     }
 
     private boolean canFitPurchasedItem(Player player, ShopItem item, int amount) {

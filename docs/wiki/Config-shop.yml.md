@@ -1172,3 +1172,40 @@ SHOP-GUI:
 
 ---
 
+## Section: `ITEM-DATA` (written by `/shopedit`)
+
+### 1. Commented Setup Code Example
+
+```yaml
+END-MENU:
+  TITLE: '&8shop - end'
+  SIZE: 27
+  # An ordinary hand-written entry: the buyer gets a plain item of this material.
+  END-STONE-ITEM:
+    MATERIAL: END_STONE
+    DISPLAY-NAME: '&fEnd Stone'
+    SLOT: 11
+    PRICE-PER-UNIT: 8.0
+  # An entry placed through /shopedit: ITEM-DATA carries the whole item.
+  FIREWORK-ROCKET-ITEM:
+    MATERIAL: FIREWORK_ROCKET
+    DISPLAY-NAME: '&fFirework Rocket'
+    SLOT: 12
+    PRICE-PER-UNIT: 120.0
+    ENCHANTMENTS: []
+    ITEM-DATA: 'ITEM_BYTES_V1:CgpGaXJld29yay4uLg=='
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Key Path | Data Type | Allowed Values | Default | Functional Behavior |
+|---|---|---|---|---|
+| `<MENU>.<ITEM>.ITEM-DATA` | `string` | A serialized item written by `/shopedit` | *(absent)* | The complete item, so enchantments, potion data, firework flight duration, trims, custom names and any other item data reach the buyer intact. When present it takes priority over `MATERIAL`, `ENCHANTMENTS` and `GLINT`, which stay in the file so the entry is still readable and still works if the stored data ever fails to load. |
+
+### 3. Practical Setup Example
+
+Rather than writing `ITEM-DATA` by hand, run `/shopedit <menu>` (for example `/shopedit end`), which needs `ultimatedonutsmp.admin.shop`. Click the item you want to sell in your own inventory, then click the shop slot it should sit in. To set a price, rename the item to `[PRICE] 250` in an anvil first — the rename is read as the price and then stripped, so it never reaches the buyer. Without it the price comes from `worth.yml`, and an item with no worth entry is refused instead of being listed for nothing.
+
+Clicking a filled slot with nothing selected removes that entry. Changes are saved to `shop.yml` as you make them, so no reload is needed.
+
+---

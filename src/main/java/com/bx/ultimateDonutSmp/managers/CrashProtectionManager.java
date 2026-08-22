@@ -33,6 +33,7 @@ public class CrashProtectionManager {
         ORDERS("Orders"),
         ENDER_CHEST("Ender Chest"),
         CRATES("Crates"),
+        SHOP("Shop"),
         DUELS("Duels"),
         DATABASE_LOAD("Database Load");
 

@@ -27,6 +27,10 @@ Shards are an exclusive secondary currency earned from Shard Cuboids, play time,
 ### 1. Shop GUI (`/shop`)
 Opens the configured multi-category item shop where players can buy blocks, items, spawners, and gear.
 
+**Editing a shop in game (`/shopedit <menu>`)**: opens the chosen shop menu as an editor, the same way `/crate edit` works for crates. Click an item in your own inventory to pick it up as a template, then click a shop slot to put it there. Clicking a filled slot with nothing selected clears it, and every change is written to `shop.yml` straight away.
+
+Items placed this way are stored whole, so enchantments, potion data, firework flight duration, custom names and any other item data survive into what the buyer receives. Set the price by renaming the item to `[PRICE] 250` before you place it; without that rename the item's `worth.yml` value is used, and an item with no worth entry is refused rather than listed for nothing. The slots the menu keeps for its own back and paging buttons are blocked off in the editor.
+
 ### 2. Sell Container & Commands (`/sell`)
 - `/sell` (Aliases: `/sellmulti`, `/sellmultiplier`, `/sellprogress`): Opens a GUI chest container and Sell Multiplier progress menu. Players drop items inside and close the GUI to instantly sell all items for Vault money.
 - **Sell Category Item Preview**: Clicking the category header icon inside `/sellmulti` (or right-clicking category buttons in `/sell`) opens an item catalog GUI in `WorthMenu` showing only the items that fit in that category.

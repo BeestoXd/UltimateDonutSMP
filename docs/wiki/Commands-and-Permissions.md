@@ -27,6 +27,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/shards` | `/shards [player]` | None | Check shard balance | `ultimatedonutsmp.command.shards` |
 | `/shardpay` | `/shardpay <player> <amount>` | None | Pay shards to another player | `ultimatedonutsmp.command.shardpay` |
 | `/shop` | `/shop` | None | Open GUI shop | `ultimatedonutsmp.command.shop` |
+| `/shopedit` | `/shopedit <menu>` | None | Edit a shop menu in game | `ultimatedonutsmp.admin.shop` |
 | `/sell` | `/sell` | None | Open GUI sell container | `ultimatedonutsmp.command.sell` |
 | `/sellhand` | `/sellhand [amount]` | None | Sell item currently held in hand | `ultimatedonutsmp.command.sellhand` |
 | `/sellall` | `/sellall` | None | Sell all sellable items in inventory | `ultimatedonutsmp.command.sellall` |
