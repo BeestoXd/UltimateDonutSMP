@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,14 +55,58 @@ class CombatListenerTest {
         ));
     }
 
+    /**
+     * Every path CombatManager and CombatListener read off COMBAT-MANAGER. A key the code reads
+     * but the bundled config never ships is invisible to admins and silently keeps its java
+     * fallback, so the feature behind it can never be switched on.
+     */
+    private static final List<String> COMBAT_PATHS = List.of(
+            "COMBAT-MANAGER.ENABLED",
+            "COMBAT-MANAGER.COOLDOWN",
+            "COMBAT-MANAGER.KILL-ON-LOGOUT",
+            "COMBAT-MANAGER.ACTION-BAR",
+            "COMBAT-MANAGER.MOBS",
+            "COMBAT-MANAGER.ENDER-CRYSTAL",
+            "COMBAT-MANAGER.ENDER-PEARL",
+            "COMBAT-MANAGER.RESPAWN-ANCHOR",
+            "COMBAT-MANAGER.ANTI-STASIS-CHAMBER.ENABLED",
+            "COMBAT-MANAGER.ANTI-STASIS-CHAMBER.MAX-DISTANCE",
+            "COMBAT-MANAGER.BLOCK-MESSAGE",
+            "COMBAT-MANAGER.BLOCK-COMMANDS",
+            "COMBAT-MANAGER.EXCLUDED-WORLDS"
+    );
+
+    @Test
+    void bundledConfigShipsEveryCombatPathTheCodeReads() {
+        YamlConfiguration config = bundledConfig();
+        for (String path : COMBAT_PATHS) {
+            assertTrue(
+                    config.contains(path),
+                    "config.yml must ship " + path + " or admins cannot find the setting"
+            );
+        }
+    }
+
     @Test
     void bundledConfigDisablesMobCombatByDefault() {
+        YamlConfiguration config = bundledConfig();
+        assertTrue(config.isBoolean("COMBAT-MANAGER.MOBS"));
+        assertFalse(config.getBoolean("COMBAT-MANAGER.MOBS"));
+    }
+
+    @Test
+    void bundledConfigDisablesKillOnLogoutByDefault() {
+        YamlConfiguration config = bundledConfig();
+        assertTrue(config.isBoolean("COMBAT-MANAGER.KILL-ON-LOGOUT"));
+        assertFalse(config.getBoolean("COMBAT-MANAGER.KILL-ON-LOGOUT"));
+    }
+
+    private static YamlConfiguration bundledConfig() {
         var stream = CombatListenerTest.class.getClassLoader().getResourceAsStream("config.yml");
         assertNotNull(stream);
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(
+        return YamlConfiguration.loadConfiguration(
                 new InputStreamReader(stream, StandardCharsets.UTF_8)
         );
-        assertFalse(config.getBoolean("COMBAT-MANAGER.MOBS"));
     }
 }
