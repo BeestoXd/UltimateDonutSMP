@@ -118,6 +118,11 @@ commands:
     usage: /shop [reload]
     permission: ultimatedonutsmp.command.shop
     permission-message: "&cYou do not have permission to use /shop."
+  shopedit:
+    description: Edit a shop menu in game
+    usage: /shopedit <menu>
+    permission: ultimatedonutsmp.admin.shop
+    permission-message: "&cYou do not have permission to edit the shop."
   orders:
     description: Open the Orders board
     usage: /orders [my|collect|reload]

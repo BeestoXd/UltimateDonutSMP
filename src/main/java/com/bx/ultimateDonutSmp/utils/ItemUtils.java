@@ -49,6 +49,28 @@ public class ItemUtils {
         return createItem(material, displayName, null);
     }
 
+    /**
+     * Puts a menu name and lore on a copy of an existing item, leaving everything else about it
+     * alone. Used where the icon has to stay the real item but still read as a menu entry.
+     */
+    public static ItemStack withDisplay(ItemStack item, String displayName, List<String> lore) {
+        if (item == null) return null;
+
+        ItemStack copy = item.clone();
+        ItemMeta meta = copy.getItemMeta();
+        if (meta == null) return copy;
+
+        if (displayName != null && !displayName.isEmpty()) {
+            meta.setDisplayName(ColorUtils.colorize(displayName));
+        }
+        if (lore != null && !lore.isEmpty()) {
+            meta.setLore(ColorUtils.colorizeList(lore));
+        }
+
+        copy.setItemMeta(meta);
+        return copy;
+    }
+
     public static ItemStack createPlayerHead(OfflinePlayer player, String displayName, List<String> lore) {
         return createPlayerHead(player, null, displayName, lore);
     }

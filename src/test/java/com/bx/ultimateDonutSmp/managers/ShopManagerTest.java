@@ -106,6 +106,23 @@ class ShopManagerTest {
         assertFalse(ShopManager.shouldDeliverConfiguredItem(managedSpawner));
     }
 
+    @Test
+    void readsPriceTagRename() {
+        assertEquals(250D, ShopManager.parsePriceTag("[PRICE] 250"));
+        assertEquals(2500.5D, ShopManager.parsePriceTag("[PRICE] 2,500.5"));
+        assertEquals(75D, ShopManager.parsePriceTag("  [price] 75  "));
+    }
+
+    @Test
+    void ignoresNamesThatAreNotUsablePriceTags() {
+        assertNull(ShopManager.parsePriceTag(null));
+        assertNull(ShopManager.parsePriceTag("Ender Pearl"));
+        assertNull(ShopManager.parsePriceTag("[PRICE] free"));
+        assertNull(ShopManager.parsePriceTag("[PRICE] 0"));
+        assertNull(ShopManager.parsePriceTag("[PRICE] -10"));
+        assertNull(ShopManager.parsePriceTag("[PRICE] "));
+    }
+
     private AuctionListing listing(
             long id,
             UUID seller,

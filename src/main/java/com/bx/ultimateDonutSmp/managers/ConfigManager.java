@@ -2059,6 +2059,7 @@ public class ConfigManager {
     public FileConfiguration getOriginalDuels() { return duels; }
     public FileConfiguration getOriginalFfa() { return ffa; }
     public FileConfiguration getOriginalMenus() { return menus; }
+    public FileConfiguration getOriginalShop() { return shop; }
     public FileConfiguration getSpawners()      { return localized("CONFIG.SPAWNERS", spawners); }
     public FileConfiguration getSpawnStash()    { return localized("CONFIG.SPAWN_STASH", spawnStash); }
     public FileConfiguration getNetwork()       { return localized("CONFIG.NETWORK", network); }
@@ -2104,6 +2105,7 @@ public class ConfigManager {
     public boolean saveDuels() { return save("duels.yml", duels); }
     public boolean saveFfa() { return save("ffa.yml", ffa); }
     public boolean saveCrates() { return save("crates.yml", crates); }
+    public boolean saveShop() { return save("shop.yml", shop); }
     public boolean saveMenus() { return save("menus.yml", menus); }
     public boolean saveAuctionHouse() { return save("auction-house.yml", auctionHouse); }
     public boolean saveDatabase() { return save("database.yml", database); }
