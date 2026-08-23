@@ -136,7 +136,7 @@ It works on offline players as well as online ones, and it clears:
 
 - Kills, deaths, kill streaks, playtime, blocks placed and broken, and mobs killed
 - Money (back to `SETTINGS.MONEY-PER-DEFAULT` in `config.yml`) and shards
-- Homes, and their team — a leader taking a wipe disbands the team
+- Homes, and their team. A leader taking a wipe disbands the team
 - Ender chest contents and crate keys
 - Shop favourites, sell history and sell totals
 - Auction listings and claims, orders and deliveries
