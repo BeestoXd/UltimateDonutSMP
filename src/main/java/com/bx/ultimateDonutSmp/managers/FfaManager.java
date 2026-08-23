@@ -310,6 +310,12 @@ public class FfaManager {
         return statsCache.computeIfAbsent(uuid, this::loadStats);
     }
 
+    public void forgetStats(UUID uuid) {
+        if (uuid != null) {
+            statsCache.remove(uuid);
+        }
+    }
+
     public List<FfaArena> getArenas() {
         List<FfaArena> values = new ArrayList<>(arenas.values());
         values.sort(Comparator.comparing(FfaArena::getId, String.CASE_INSENSITIVE_ORDER));

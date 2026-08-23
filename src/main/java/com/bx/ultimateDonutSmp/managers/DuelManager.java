@@ -421,6 +421,12 @@ public class DuelManager {
         return statsCache.computeIfAbsent(uuid, this::loadStats);
     }
 
+    public void forgetStats(UUID uuid) {
+        if (uuid != null) {
+            statsCache.remove(uuid);
+        }
+    }
+
     public List<DuelClaim> getClaims(UUID uuid) {
         List<DuelClaim> claims = new ArrayList<>();
         if (uuid == null || connection() == null) {

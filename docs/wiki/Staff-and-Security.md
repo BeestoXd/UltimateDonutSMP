@@ -115,3 +115,35 @@ UltimateDonutSMP includes a guarded `/serverwipe` command to safely reset player
 - Command: `/serverwipe confirm`
 - Prompts multi-stage confirmation to prevent accidental wipe execution.
 - Automatically creates a pre-wipe SQL/JSON backup archive before resetting player state.
+
+---
+
+## Wiping One Player (`/playerwipe`)
+
+Where `/serverwipe` resets the whole server, `/playerwipe` clears a single player. It is the command
+to reach for when someone asks for a fresh start, or when a punished account should lose what it
+gained. `/pwipe` and `/wipe` do the same thing.
+
+Running `/playerwipe <player>` on its own shows what would go, broken down by category, and changes
+nothing. Adding `confirm` carries it out:
+
+```
+/playerwipe Notch
+/playerwipe Notch confirm
+```
+
+It works on offline players as well as online ones, and it clears:
+
+- Kills, deaths, kill streaks, playtime, blocks placed and broken, and mobs killed
+- Money (back to `SETTINGS.MONEY-PER-DEFAULT` in `config.yml`) and shards
+- Homes, and their team — a leader taking a wipe disbands the team
+- Ender chest contents and crate keys
+- Shop favourites, sell history and sell totals
+- Auction listings and claims, orders and deliveries
+- Duel and FFA records, bounties on them and bounties they placed
+- Friends, ignores, and their activity log
+
+Punishments, IP history, and freeze or staff-mode state survive a wipe, so a ban history stays intact
+and alt tracking still works. Spawners they placed are left standing as well, since those are blocks
+in the world rather than stored progress. There is no undo, so take a database backup first if the
+account matters.

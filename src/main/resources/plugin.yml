@@ -728,6 +728,14 @@ commands:
     description: Command serverwipe
     permission: ultimatedonutsmp.command.serverwipe
     permission-message: "&cYou do not have permission to use /serverwipe."
+  playerwipe:
+    description: Wipe everything this plugin stores about one player
+    usage: /playerwipe <player> [confirm]
+    aliases:
+    - pwipe
+    - wipe
+    permission: ultimatedonutsmp.command.playerwipe
+    permission-message: "&cYou do not have permission to use /playerwipe."
   amod:
     description: Command amod
     permission: ultimatedonutsmp.command.amod
@@ -773,6 +781,7 @@ permissions:
       ultimatedonutsmp.admin.crate.keyall: true
       ultimatedonutsmp.admin.reload: true
       ultimatedonutsmp.admin.statswipe: true
+      ultimatedonutsmp.admin.playerwipe: true
       ultimatedonutsmp.admin.optimize: true
       ultimatedonutsmp.admin.sellstats: true
       ultimatedonutsmp.admin.shards: true
@@ -904,6 +913,9 @@ permissions:
     default: op
   ultimatedonutsmp.admin.statswipe:
     description: Open and execute Stats Wipe tools
+    default: op
+  ultimatedonutsmp.admin.playerwipe:
+    description: Preview and wipe a single player's stored data
     default: op
   ultimatedonutsmp.admin.optimize:
     description: View and reload runtime optimization controls
@@ -1289,6 +1301,7 @@ permissions:
       ultimatedonutsmp.command.disguise: true
       ultimatedonutsmp.command.maintenance: true
       ultimatedonutsmp.command.serverwipe: true
+      ultimatedonutsmp.command.playerwipe: true
       ultimatedonutsmp.command.amod: true
   ultimatedonutsmp.command.team:
     description: Access to /team command
@@ -1695,6 +1708,9 @@ permissions:
     default: op
   ultimatedonutsmp.command.serverwipe:
     description: Access to /serverwipe command
+    default: op
+  ultimatedonutsmp.command.playerwipe:
+    description: Access to /playerwipe command
     default: op
   ultimatedonutsmp.command.amod:
     description: Access to /amod command

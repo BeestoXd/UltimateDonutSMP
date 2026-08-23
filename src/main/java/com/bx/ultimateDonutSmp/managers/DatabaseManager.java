@@ -83,6 +83,34 @@ public class DatabaseManager {
         }
     }
 
+    public record PlayerWipePreview(Map<String, Integer> counts) {
+        public int count(String key) {
+            return counts.getOrDefault(key, 0);
+        }
+
+        public int total() {
+            int total = 0;
+            for (int value : counts.values()) {
+                total += value;
+            }
+            return total;
+        }
+    }
+
+    public record PlayerWipeResult(Map<String, Integer> affectedCounts) {
+        public int affected(String key) {
+            return affectedCounts.getOrDefault(key, 0);
+        }
+
+        public int total() {
+            int total = 0;
+            for (int value : affectedCounts.values()) {
+                total += value;
+            }
+            return total;
+        }
+    }
+
     public enum DatabaseType {
         SQLITE,
         MYSQL,
@@ -4602,6 +4630,206 @@ public class DatabaseManager {
         } catch (SQLException exception) {
             plugin.getLogger().log(Level.WARNING, "Failed to inspect server wipe commit " + wipeId, exception);
             return false;
+        }
+    }
+
+    private static final Map<String, List<String>> PLAYER_WIPE_TABLES = playerWipeTables();
+
+    private static Map<String, List<String>> playerWipeTables() {
+        Map<String, List<String>> tables = new LinkedHashMap<>();
+        tables.put("homes", List.of("player_uuid"));
+        tables.put("team_members", List.of("player_uuid"));
+        tables.put("ender_chest_items", List.of("player_uuid"));
+        tables.put("ender_chest_profiles", List.of("player_uuid"));
+        tables.put("player_crate_keys", List.of("player_uuid"));
+        tables.put("sell_history", List.of("player_uuid"));
+        tables.put("sell_progress", List.of("player_uuid"));
+        tables.put("sell_summary_players", List.of("player_uuid"));
+        tables.put("shop_favorites", List.of("player_uuid"));
+        tables.put("player_logs", List.of("player_uuid"));
+        tables.put("bounties", List.of("target_uuid", "placer_uuid"));
+        tables.put("player_friends", List.of("follower_uuid", "followed_uuid"));
+        tables.put("player_ignores", List.of("owner_uuid", "ignored_uuid"));
+        tables.put("auction_listings", List.of("seller_uuid"));
+        tables.put("auction_claims", List.of("owner_uuid"));
+        tables.put("player_auction_preferences", List.of("player_uuid"));
+        tables.put("orders", List.of("owner_uuid"));
+        tables.put("order_deliveries", List.of("deliverer_uuid"));
+        tables.put("order_claims", List.of("owner_uuid"));
+        tables.put("order_ui_preferences", List.of("player_uuid"));
+        tables.put("duel_stats", List.of("player_uuid"));
+        tables.put("duel_matches", List.of("player_one_uuid", "player_two_uuid"));
+        tables.put("duel_claims", List.of("player_uuid"));
+        tables.put("ffa_stats", List.of("player_uuid"));
+        tables.put("ffa_matches", List.of("player_one_uuid", "player_two_uuid"));
+        return Collections.unmodifiableMap(tables);
+    }
+
+    private static final Map<String, String> PLAYER_WIPE_GROUPS = playerWipeGroups();
+
+    private static Map<String, String> playerWipeGroups() {
+        Map<String, String> groups = new LinkedHashMap<>();
+        groups.put("homes", "homes");
+        groups.put("team_members", "team");
+        groups.put("ender_chest_items", "ender_chest");
+        groups.put("ender_chest_profiles", "ender_chest");
+        groups.put("player_crate_keys", "crate_keys");
+        groups.put("sell_history", "sell_records");
+        groups.put("sell_progress", "sell_records");
+        groups.put("sell_summary_players", "sell_records");
+        groups.put("shop_favorites", "shop_favorites");
+        groups.put("player_logs", "logs");
+        groups.put("bounties", "bounties");
+        groups.put("player_friends", "friends");
+        groups.put("player_ignores", "ignores");
+        groups.put("auction_listings", "auctions");
+        groups.put("auction_claims", "auctions");
+        groups.put("player_auction_preferences", "auctions");
+        groups.put("orders", "orders");
+        groups.put("order_deliveries", "orders");
+        groups.put("order_claims", "orders");
+        groups.put("order_ui_preferences", "orders");
+        groups.put("duel_stats", "duels");
+        groups.put("duel_matches", "duels");
+        groups.put("duel_claims", "duels");
+        groups.put("ffa_stats", "ffa");
+        groups.put("ffa_matches", "ffa");
+        return Collections.unmodifiableMap(groups);
+    }
+
+    /**
+     * Counts everything a player wipe would clear for one player. Punishments, IP history and staff
+     * records are deliberately left out: they are moderation evidence rather than player progress.
+     */
+    public PlayerWipePreview previewPlayerWipe(UUID playerUuid) {
+        if (playerUuid == null) {
+            return new PlayerWipePreview(Map.of());
+        }
+
+        String uuid = playerUuid.toString();
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        counts.put("stats", countPlayerRows("players", List.of("uuid"), uuid));
+        for (Map.Entry<String, List<String>> entry : PLAYER_WIPE_TABLES.entrySet()) {
+            String group = PLAYER_WIPE_GROUPS.get(entry.getKey());
+            counts.merge(group, countPlayerRows(entry.getKey(), entry.getValue(), uuid), Integer::sum);
+        }
+        return new PlayerWipePreview(Map.copyOf(counts));
+    }
+
+    /**
+     * Clears one player's progress in a single transaction: their stored stats and balances go back
+     * to a fresh account, and every row they own in the per-player tables is deleted. Moderation
+     * records and world objects such as their spawners are left alone.
+     */
+    public PlayerWipeResult resetForPlayerWipe(UUID playerUuid, double startingMoney) throws SQLException {
+        Objects.requireNonNull(playerUuid, "playerUuid");
+        if (connection == null || connection.isClosed()) {
+            throw new SQLException("Database connection is not available.");
+        }
+
+        String uuid = playerUuid.toString();
+        Map<String, Integer> affected = new LinkedHashMap<>();
+        boolean autoCommitDisabled = false;
+        boolean originalAutoCommit = connection.getAutoCommit();
+        try {
+            connection.setAutoCommit(false);
+            autoCommitDisabled = true;
+
+            if (serverWipeTableExists("players")) {
+                try (PreparedStatement statement = connection.prepareStatement("""
+                        UPDATE players SET
+                            money = ?,
+                            shards = 0,
+                            kills = 0,
+                            deaths = 0,
+                            playtime_seconds = 0,
+                            blocks_placed = 0,
+                            blocks_broken = 0,
+                            mobs_killed = 0,
+                            kill_streak = 0,
+                            highest_kill_streak = 0,
+                            money_spent = 0,
+                            money_made = 0,
+                            keyall_remaining_seconds = -1,
+                            shard_booster_expiry = 0,
+                            mob_spawn_disabled_until = 0,
+                            phantom_disabled_until = 0
+                        WHERE uuid = ?
+                        """)) {
+                    statement.setDouble(1, Math.max(0D, startingMoney));
+                    statement.setString(2, uuid);
+                    affected.put("stats", statement.executeUpdate());
+                }
+            }
+
+            for (Map.Entry<String, List<String>> entry : PLAYER_WIPE_TABLES.entrySet()) {
+                String group = PLAYER_WIPE_GROUPS.get(entry.getKey());
+                affected.merge(group, deletePlayerRows(entry.getKey(), entry.getValue(), uuid), Integer::sum);
+            }
+
+            connection.commit();
+            return new PlayerWipeResult(Map.copyOf(affected));
+        } catch (SQLException exception) {
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ignored) {
+                }
+            }
+            throw exception;
+        } finally {
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException ignored) {
+                }
+            }
+        }
+    }
+
+    private int deletePlayerRows(String table, List<String> columns, String uuid) throws SQLException {
+        if (columns.isEmpty() || !serverWipeTableExists(table)) {
+            return 0;
+        }
+        try (PreparedStatement statement = connection.prepareStatement(
+                "DELETE FROM " + quoteIdentifier(table) + " WHERE " + ownerPredicate(columns))) {
+            bindOwnerUuid(statement, columns, uuid);
+            return statement.executeUpdate();
+        }
+    }
+
+    private int countPlayerRows(String table, List<String> columns, String uuid) {
+        if (columns.isEmpty()) {
+            return 0;
+        }
+        try {
+            if (!serverWipeTableExists(table)) {
+                return 0;
+            }
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM " + quoteIdentifier(table) + " WHERE " + ownerPredicate(columns))) {
+                bindOwnerUuid(statement, columns, uuid);
+                try (ResultSet rs = statement.executeQuery()) {
+                    return rs.next() ? rs.getInt(1) : 0;
+                }
+            }
+        } catch (SQLException exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to count player wipe rows in " + table, exception);
+            return 0;
+        }
+    }
+
+    private String ownerPredicate(List<String> columns) {
+        StringJoiner predicate = new StringJoiner(" OR ");
+        for (String column : columns) {
+            predicate.add(quoteIdentifier(column) + " = ?");
+        }
+        return predicate.toString();
+    }
+
+    private void bindOwnerUuid(PreparedStatement statement, List<String> columns, String uuid) throws SQLException {
+        for (int index = 0; index < columns.size(); index++) {
+            statement.setString(index + 1, uuid);
         }
     }
 

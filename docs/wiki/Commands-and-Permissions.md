@@ -98,6 +98,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/booster` | `/booster <give\|list>` | Give global server shard/money boosters | `ultimatedonutsmp.admin.booster` |
 | `/billford` | `/billford <gui\|reload>` | Manage Billford rotating trades NPC | `ultimatedonutsmp.admin.billford` |
 | `/serverwipe` | `/serverwipe <confirm\|cancel>` | Guarded admin server wipe execution | `ultimatedonutsmp.admin.serverwipe` |
+| `/playerwipe` | `/playerwipe <player> [confirm]` | Wipe everything stored about one player | `ultimatedonutsmp.admin.playerwipe` |
 | `/uds` | `/uds <reload|version|status>` | Main plugin administration & hot-reload | `ultimatedonutsmp.admin.uds` |
 
 ---
