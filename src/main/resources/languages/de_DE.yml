@@ -477,6 +477,22 @@ MENUS:
         TITLE: "&#00FC00Confirm"
         LORE:
         - "&fClick to confirm"
+    TEAM-INFO:
+      TITLE: "&8Team {team_name}"
+      PLAYER-BUTTON:
+        LEADER-LORE: "&6Anführer"
+      SUMMARY-BUTTON:
+        TITLE: "&#6BF18DTeam {team_name}"
+        ON-STATE: "&a&lAN"
+        OFF-STATE: "&c&lAUS"
+        LORE:
+        - "&7Anführer: &f{leader}"
+        - "&7Mitglieder: &f{members}&7/&f{max_members}"
+        - "&7PvP: {state}"
+      PAGE-BUTTON:
+        TITLE: "&fSeite {page}&7/&f{total_pages}"
+        LORE:
+        - "&7Teammitglieder durchsehen."
   HOME-MENU-LEGACY:
     TITLE: "&8Homes"
     TELEPORT:

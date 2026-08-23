@@ -342,6 +342,22 @@ MENUS:
         TITLE: "&#00FC00Confirm"
         LORE:
         - "&fClick to confirm"
+    TEAM-INFO:
+      TITLE: "&8Time {team_name}"
+      PLAYER-BUTTON:
+        LEADER-LORE: "&6Líder"
+      SUMMARY-BUTTON:
+        TITLE: "&#6BF18DTime {team_name}"
+        ON-STATE: "&a&lLIGADO"
+        OFF-STATE: "&c&lDESLIGADO"
+        LORE:
+        - "&7Líder: &f{leader}"
+        - "&7Membros: &f{members}&7/&f{max_members}"
+        - "&7PvP: {state}"
+      PAGE-BUTTON:
+        TITLE: "&fPágina {page}&7/&f{total_pages}"
+        LORE:
+        - "&7Veja os membros do time."
   HOME-MENU-LEGACY:
     TITLE: "&8Homes"
     TELEPORT:

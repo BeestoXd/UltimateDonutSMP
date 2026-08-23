@@ -341,6 +341,22 @@ MENUS:
         TITLE: "&#00FC00Confirm"
         LORE:
         - "&fClick to confirm"
+    TEAM-INFO:
+      TITLE: "&8Équipe {team_name}"
+      PLAYER-BUTTON:
+        LEADER-LORE: "&6Chef"
+      SUMMARY-BUTTON:
+        TITLE: "&#6BF18DÉquipe {team_name}"
+        ON-STATE: "&a&lACTIVÉ"
+        OFF-STATE: "&c&lDÉSACTIVÉ"
+        LORE:
+        - "&7Chef : &f{leader}"
+        - "&7Membres : &f{members}&7/&f{max_members}"
+        - "&7PvP : {state}"
+      PAGE-BUTTON:
+        TITLE: "&fPage {page}&7/&f{total_pages}"
+        LORE:
+        - "&7Parcourir les membres de l'équipe."
   HOME-MENU-LEGACY:
     TITLE: "&8Homes"
     TELEPORT:

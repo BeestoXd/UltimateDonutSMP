@@ -34,8 +34,8 @@ public class UniversalCommandTabCompleter implements TabCompleter {
     );
     private static final List<String> DURATIONS = List.of("30s", "15m", "1h", "2h", "1d", "7d");
     private static final List<String> TOGGLES = List.of("true", "false", "on", "off");
-    private static final List<String> TEAM_SUBCOMMANDS = List.of(
-            "create", "disband", "invite", "join", "leave", "kick", "home", "sethome", "delhome", "chat", "pvp"
+    static final List<String> TEAM_SUBCOMMANDS = List.of(
+            "create", "disband", "invite", "join", "leave", "kick", "home", "sethome", "delhome", "chat", "info", "pvp"
     );
     private static final List<String> ARENA_SUBCOMMANDS = List.of(
             "create", "delete", "setpos1", "setpos2", "setreturn", "setdisplay", "enable", "disable", "queue", "list", "reload"
@@ -130,8 +130,15 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             case "invite" -> partial(args[1], onlinePlayerNames(sender, false));
             case "join" -> partial(args[1], plugin.getTeamManager().getPendingInvites(player.getUniqueId()));
             case "kick" -> partial(args[1], teamMemberNames(player, false));
+            case "info" -> partial(args[1], teamNames());
             default -> List.of();
         };
+    }
+
+    private List<String> teamNames() {
+        return plugin.getTeamManager().getAllTeams().stream()
+                .map(Team::getName)
+                .toList();
     }
 
     private List<String> completeHome(CommandSender sender, String commandName, String[] args) {

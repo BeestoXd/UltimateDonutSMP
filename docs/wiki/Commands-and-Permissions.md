@@ -8,7 +8,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 
 | Command | Usage Syntax | Aliases | Description | Permission Node |
 | :--- | :--- | :--- | :--- | :--- |
-| `/team` | `/team <create\|disband\|invite\|kick\|join\|leave\|home\|sethome\|delhome\|chat\|info\|pvp>` | None | Team management & alliance controls | `ultimatedonutsmp.command.team` |
+| `/team` | `/team <create\|disband\|invite\|kick\|join\|leave\|home\|sethome\|delhome\|chat\|info\|pvp>` | None | Team management. `/team info <team>` opens a read-only roster of any team on the server, everything else acts on your own team | `ultimatedonutsmp.command.team` |
 | `/msg` | `/msg <player> <message>` | `/message`, `/tell`, `/whisper`, `/w` | Send private message to player | `ultimatedonutsmp.command.msg` |
 | `/reply` | `/reply <message>` | `/r` | Reply to last private message | `ultimatedonutsmp.command.reply` |
 | `/pm` | `/pm` | `/togglepm`, `/privatemessages` | Toggle private messaging on/off | `ultimatedonutsmp.command.pm` |

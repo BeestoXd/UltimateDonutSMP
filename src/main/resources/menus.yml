@@ -60,6 +60,30 @@ TEAM-MENUS:
       NOT-IN-TEAM: '&cYou are not part of the team.'
       NO-PERMISSION: '&cYou don''t have permissions to do this.'
       CANT-EDIT-SELF: '&cYou can''t do this yourself!'
+  TEAM-INFO:
+    TITLE: '&8Team {team_name}'
+    SIZE: 54
+    MAX-ITEMS-PER-PAGE: 45
+    PLAYER-BUTTON:
+      ONLINE-SYMBOL: "&a■"
+      OFFLINE-SYMBOL: "&4■"
+      LEADER-LORE: '&6Leader'
+    SUMMARY-BUTTON:
+      TITLE: '&#6BF18DTeam {team_name}'
+      MATERIAL: IRON_HELMET
+      SLOT: 49
+      ON-STATE: '&a&lON'
+      OFF-STATE: '&c&lOFF'
+      LORE:
+      - '&7Leader: &f{leader}'
+      - '&7Members: &f{members}&7/&f{max_members}'
+      - '&7PvP: {state}'
+    PAGE-BUTTON:
+      TITLE: '&fPage {page}&7/&f{total_pages}'
+      MATERIAL: PAPER
+      SLOT: 50
+      LORE:
+      - '&7Browse team members.'
   TEAM-EDIT-MEMBER:
     TITLE: '&8Edit {player}'
     SIZE: 27
