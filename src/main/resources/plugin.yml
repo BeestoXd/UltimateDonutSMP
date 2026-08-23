@@ -414,6 +414,13 @@ commands:
     - pv
     permission: ultimatedonutsmp.command.profileviewer
     permission-message: "&cYou do not have permission to use /profileviewer."
+  seehomes:
+    description: Browse another player's homes and teleport to them
+    usage: /seehomes <player>
+    aliases:
+    - homesee
+    permission: ultimatedonutsmp.command.seehomes
+    permission-message: "&cYou do not have permission to use /seehomes."
   punishments:
     description: Browse every punishment on the server, or one player's history
     usage: /punishments [player]
@@ -820,6 +827,7 @@ permissions:
       ultimatedonutsmp.staff.alts: true
       ultimatedonutsmp.staff.invsee: true
       ultimatedonutsmp.staff.profileviewer: true
+      ultimatedonutsmp.staff.seehomes: true
       ultimatedonutsmp.staff.punishments.view: true
       ultimatedonutsmp.staff.punishments.create: true
       ultimatedonutsmp.staff.punishments.remove: true
@@ -976,6 +984,7 @@ permissions:
       ultimatedonutsmp.staff.alerts.bypass-cooldown: true
       ultimatedonutsmp.staff.invsee: true
       ultimatedonutsmp.staff.profileviewer: true
+      ultimatedonutsmp.staff.seehomes: true
       ultimatedonutsmp.staff.punishments.view: true
       ultimatedonutsmp.staff.punishments.create: true
       ultimatedonutsmp.staff.punishments.remove: true
@@ -1059,6 +1068,9 @@ permissions:
     default: op
   ultimatedonutsmp.staff.profileviewer:
     description: View player profiles and homes for moderation purposes
+    default: op
+  ultimatedonutsmp.staff.seehomes:
+    description: Browse any player's homes and teleport to them
     default: op
   ultimatedonutsmp.staff.punishments.view:
     description: View punishment history for moderation purposes
@@ -1241,6 +1253,7 @@ permissions:
       ultimatedonutsmp.command.vanish: true
       ultimatedonutsmp.command.invsee: true
       ultimatedonutsmp.command.profileviewer: true
+      ultimatedonutsmp.command.seehomes: true
       ultimatedonutsmp.command.punishments: true
       ultimatedonutsmp.command.ban: true
       ultimatedonutsmp.command.tempban: true
@@ -1500,6 +1513,9 @@ permissions:
     default: op
   ultimatedonutsmp.command.profileviewer:
     description: Access to /profileviewer command
+    default: op
+  ultimatedonutsmp.command.seehomes:
+    description: Access to /seehomes command
     default: op
   ultimatedonutsmp.command.punishments:
     description: Access to /punishments command

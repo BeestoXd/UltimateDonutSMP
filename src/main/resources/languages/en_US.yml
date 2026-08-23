@@ -1293,6 +1293,10 @@ MENUS:
       DISPLAY-NAME: '&#6BF18DRefresh'
       LORE:
       - '&7Reload this player''s homes'
+    CLOSE-BUTTON:
+      DISPLAY-NAME: '&cClose'
+      LORE:
+      - '&7Close this home list'
   PUNISHMENT-HISTORY-MENU:
     TITLE: '&8Punishments ({player})'
     BUTTONS:

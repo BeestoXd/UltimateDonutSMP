@@ -28,6 +28,24 @@ Freezes the target player on top of an ice block and disables movement, block br
 - Inspect player Ender Chest: `/ecsee <player>`
 - Allows staff to add, remove, or modify items directly inside player inventories.
 
+### 5. Home Inspection (`/seehomes <player>`)
+Opens the target's saved homes as a paged list, one bed per home, and clicking a bed sends the
+staff member there. The world, along with the exact block the home sits on, is written into the
+lore, and a home pointing at a world the server no longer loads shows as a barrier rather than
+teleporting anyone into nothing. Offline players work too, since the homes come from the database
+when nobody is holding them in memory.
+
+This is the same list the profile viewer has always shown behind its Homes button; the command
+skips the profile screen and drops you straight into it, which matters when you only need to check
+where somebody built. `/homesee` does the same thing.
+
+- Permission: `ultimatedonutsmp.staff.seehomes`, plus `ultimatedonutsmp.command.seehomes` to run the
+  command at all. Anyone already carrying `ultimatedonutsmp.staff.profileviewer` passes the first
+  check without a new node, since that permission already opens this menu.
+- Styled from `PROFILE-VIEWER-HOMES-MENU` in `menus.yml`. Arriving from `/seehomes` swaps the Back
+  button for `CLOSE-BUTTON`, because there is no profile screen to go back to.
+- Turning off the `PROFILE_VIEWER` feature disables `/seehomes` alongside `/profileviewer`.
+
 ---
 
 ## Punishments

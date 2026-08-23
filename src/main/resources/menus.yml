@@ -1918,6 +1918,11 @@ PROFILE-VIEWER-HOMES-MENU:
     DISPLAY-NAME: '&cBack'
     LORE:
     - '&7Return to the main profile viewer'
+  CLOSE-BUTTON:
+    MATERIAL: RED_STAINED_GLASS_PANE
+    DISPLAY-NAME: '&cClose'
+    LORE:
+    - '&7Close this home list'
   REFRESH-BUTTON:
     MATERIAL: CLOCK
     DISPLAY-NAME: '&#6BF18DRefresh'

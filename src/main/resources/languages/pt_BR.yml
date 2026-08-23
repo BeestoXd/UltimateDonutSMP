@@ -1153,6 +1153,10 @@ MENUS:
       DISPLAY-NAME: "&cBack"
       LORE:
       - "&7Return to the main profile viewer"
+    CLOSE-BUTTON:
+      DISPLAY-NAME: "&cFechar"
+      LORE:
+      - "&7Fechar esta lista de homes"
     REFRESH-BUTTON:
       DISPLAY-NAME: "&#6BF18DRefresh"
       LORE:
