@@ -60,6 +60,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/freeze` | `/freeze <player>` | Freeze or unfreeze a target player | `ultimatedonutsmp.admin.freeze` |
 | `/invsee` | `/invsee <player>` | Inspect and edit player inventory in real-time | `ultimatedonutsmp.admin.invsee` |
 | `/ecsee` | `/ecsee <player>` | Inspect and edit player Ender Chest | `ultimatedonutsmp.admin.ecsee` |
+| `/seehomes` | `/seehomes <player>` (Alias `/homesee`) | Browse another player's homes and warp to any of them | `ultimatedonutsmp.staff.seehomes` |
 | `/chat` | `/chat <mute\|unmute\|delay\|clear>` | Global chat moderation controls | `ultimatedonutsmp.admin.chat` |
 | `/logs` | `/logs <player>` | Browse one player's activity log, chat included | `ultimatedonutsmp.admin.logs` |
 | `/chatlog` | `/chatlog [player]` | Browse public chat for the whole server, or for one player | `ultimatedonutsmp.admin.chatlog` |

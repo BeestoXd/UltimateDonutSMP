@@ -691,6 +691,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("vanish", new VanishCommand(this), FeatureManager.Feature.STAFF_MODE);
         setExecutor("invsee", new InvseeCommand(this));
         setExecutor("profileviewer", new ProfileViewerCommand(this), FeatureManager.Feature.PROFILE_VIEWER);
+        setExecutor("seehomes", new SeeHomesCommand(this), FeatureManager.Feature.PROFILE_VIEWER);
         setExecutor("punishments", new PunishmentHistoryCommand(this), FeatureManager.Feature.PUNISHMENTS);
         PunishmentCommand punishmentCommand = new PunishmentCommand(this);
         setExecutor("ban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);

@@ -33,6 +33,7 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     private static final int LAST_PAGE_SLOT = 53;
 
     private final UUID targetUuid;
+    private final boolean returnToProfileViewer;
     private final Map<Integer, Home> slotHomes = new HashMap<>();
 
     private ProfileSnapshot snapshot;
@@ -41,9 +42,10 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     private boolean hasPreviousPage;
     private boolean hasNextPage;
 
-    public ProfileViewerHomesMenu(UltimateDonutSmp plugin, UUID targetUuid) {
+    public ProfileViewerHomesMenu(UltimateDonutSmp plugin, UUID targetUuid, boolean returnToProfileViewer) {
         super(plugin, configuredTitle(plugin, targetUuid), configuredSize(plugin));
         this.targetUuid = targetUuid;
+        this.returnToProfileViewer = returnToProfileViewer;
     }
 
     @Override
@@ -98,7 +100,11 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     public void handleClick(int slot, Player player) {
         if (slot == BACK_SLOT) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
-            new ProfileViewerMenu(plugin, targetUuid).open(player);
+            if (returnToProfileViewer && plugin.getProfileViewerManager().canView(player)) {
+                new ProfileViewerMenu(plugin, targetUuid).open(player);
+            } else {
+                player.closeInventory();
+            }
             return;
         }
 
@@ -183,12 +189,16 @@ public class ProfileViewerHomesMenu extends BaseMenu {
     }
 
     private void buildBackButton() {
+        String path = returnToProfileViewer ? MENU_PATH + ".BACK-BUTTON" : MENU_PATH + ".CLOSE-BUTTON";
+        String fallbackName = returnToProfileViewer ? "&cBack" : "&cClose";
+        List<String> fallbackLore = returnToProfileViewer
+                ? List.of("&7Return to the main profile viewer.")
+                : List.of("&7Close this home list.");
+
         set(BACK_SLOT, ItemUtils.createItem(
-                ItemUtils.parseMaterial(menus().getString(MENU_PATH + ".BACK-BUTTON.MATERIAL", "RED_STAINED_GLASS_PANE")),
-                menus().getString(MENU_PATH + ".BACK-BUTTON.DISPLAY-NAME", "&cBack"),
-                menus().getStringList(MENU_PATH + ".BACK-BUTTON.LORE").isEmpty()
-                        ? List.of("&7Return to the main profile viewer.")
-                        : menus().getStringList(MENU_PATH + ".BACK-BUTTON.LORE")
+                ItemUtils.parseMaterial(menus().getString(path + ".MATERIAL", "RED_STAINED_GLASS_PANE")),
+                menus().getString(path + ".DISPLAY-NAME", fallbackName),
+                defaultIfEmpty(menus().getStringList(path + ".LORE"), fallbackLore)
         ));
     }
 

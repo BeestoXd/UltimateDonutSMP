@@ -230,7 +230,7 @@ public class FeatureManager {
             case "helpop", "report" -> new Feature[]{Feature.STAFF_ALERTS};
             case "spawnstash" -> new Feature[]{Feature.SPAWN_STASH};
             case "invsee" -> new Feature[]{Feature.INVSEE};
-            case "profileviewer" -> new Feature[]{Feature.PROFILE_VIEWER};
+            case "profileviewer", "seehomes" -> new Feature[]{Feature.PROFILE_VIEWER};
             case "punishments", "ban", "tempban", "mute", "tempmute", "warn", "kick", "blacklist",
                     "unban", "unmute", "unblacklist" -> new Feature[]{Feature.PUNISHMENTS};
             case "bounty" -> new Feature[]{Feature.BOUNTY};

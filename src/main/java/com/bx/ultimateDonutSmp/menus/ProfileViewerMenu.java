@@ -156,7 +156,7 @@ public class ProfileViewerMenu extends BaseMenu {
                 replacePlaceholders(menus().getString(MENU_PATH + ".BUTTONS.HOMES.DISPLAY-NAME", "&bHomes"), snapshot),
                 lore
         ));
-        slotActions.put(slot, (player, clickType) -> new ProfileViewerHomesMenu(plugin, targetUuid).open(player));
+        slotActions.put(slot, (player, clickType) -> new ProfileViewerHomesMenu(plugin, targetUuid, true).open(player));
     }
 
     private void buildCurrentLocationButton() {
