@@ -101,6 +101,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PunishmentManager punishmentManager;
     private OffenseManager offenseManager;
     private StatsWipeManager statsWipeManager;
+    private PlayerWipeManager playerWipeManager;
     private ServerWipeManager serverWipeManager;
     private SpawnerManager spawnerManager;
     private AntiEspManager antiEspManager;
@@ -238,6 +239,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         anvilModerationManager = new AnvilModerationManager(this);
         anvilModerationManager.load();
         statsWipeManager = new StatsWipeManager(this);
+        playerWipeManager = new PlayerWipeManager(this);
         spawnerManager = new SpawnerManager(this);
         antiEspManager = new AntiEspManager(this);
         spawnStashManager = new SpawnStashManager(this);
@@ -776,6 +778,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ServerWipeCommand serverWipeCommand = new ServerWipeCommand(this);
         setExecutor("serverwipe", serverWipeCommand);
         setTabCompleter("serverwipe", serverWipeCommand);
+        PlayerWipeCommand playerWipeCommand = new PlayerWipeCommand(this);
+        setExecutor("playerwipe", playerWipeCommand);
+        setTabCompleter("playerwipe", playerWipeCommand);
 
         AnvilModerationCommand anvilModCommand = new AnvilModerationCommand(this);
         setExecutor("amod", anvilModCommand);
@@ -1407,6 +1412,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public StatsWipeManager getStatsWipeManager() {
         return statsWipeManager;
+    }
+
+    public PlayerWipeManager getPlayerWipeManager() {
+        return playerWipeManager;
     }
 
     public ServerWipeManager getServerWipeManager() {
