@@ -341,6 +341,22 @@ MENUS:
         TITLE: "&#00FC00Confirm"
         LORE:
         - "&fClick to confirm"
+    TEAM-INFO:
+      TITLE: "&8Команда {team_name}"
+      PLAYER-BUTTON:
+        LEADER-LORE: "&6Лидер"
+      SUMMARY-BUTTON:
+        TITLE: "&#6BF18DКоманда {team_name}"
+        ON-STATE: "&a&lВКЛ"
+        OFF-STATE: "&c&lВЫКЛ"
+        LORE:
+        - "&7Лидер: &f{leader}"
+        - "&7Участники: &f{members}&7/&f{max_members}"
+        - "&7PvP: {state}"
+      PAGE-BUTTON:
+        TITLE: "&fСтраница {page}&7/&f{total_pages}"
+        LORE:
+        - "&7Просмотр участников команды."
   HOME-MENU-LEGACY:
     TITLE: "&8Homes"
     TELEPORT:

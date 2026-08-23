@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.TeamDisbandConfirmMenu;
+import com.bx.ultimateDonutSmp.menus.TeamInfoMenu;
 import com.bx.ultimateDonutSmp.menus.TeamMenu;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.Team;
@@ -48,6 +49,7 @@ public class TeamCommand implements CommandExecutor {
             case "sethome" -> handleSetHome(player);
             case "delhome" -> handleDeleteHome(player);
             case "chat" -> handleChat(player);
+            case "info" -> handleInfo(player, args);
             case "pvp" -> handlePvp(player);
             default -> new TeamMenu(plugin).open(player);
         }
@@ -310,6 +312,21 @@ public class TeamCommand implements CommandExecutor {
         send(player, enabled
                 ? plugin.getConfigManager().getMessage("TEAM.TEAM-CHAT-ENABLED")
                 : plugin.getConfigManager().getMessage("TEAM.TEAM-CHAT-DISABLED"));
+    }
+
+    private void handleInfo(Player player, String[] args) {
+        if (args.length < 2) {
+            send(player, "&cUsage: /team info <team>");
+            return;
+        }
+
+        Team team = plugin.getTeamManager().getTeam(args[1]);
+        if (team == null) {
+            send(player, plugin.getConfigManager().getMessage("TEAM.TEAM-NOT-EXIST"));
+            return;
+        }
+
+        new TeamInfoMenu(plugin, team).open(player);
     }
 
     private void handlePvp(Player player) {

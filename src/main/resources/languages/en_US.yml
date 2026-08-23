@@ -478,6 +478,22 @@ MENUS:
         TITLE: '&#00FC00Confirm'
         LORE:
         - '&fClick to confirm'
+    TEAM-INFO:
+      TITLE: '&8Team {team_name}'
+      PLAYER-BUTTON:
+        LEADER-LORE: '&6Leader'
+      SUMMARY-BUTTON:
+        TITLE: '&#6BF18DTeam {team_name}'
+        ON-STATE: '&a&lON'
+        OFF-STATE: '&c&lOFF'
+        LORE:
+        - '&7Leader: &f{leader}'
+        - '&7Members: &f{members}&7/&f{max_members}'
+        - '&7PvP: {state}'
+      PAGE-BUTTON:
+        TITLE: '&fPage {page}&7/&f{total_pages}'
+        LORE:
+        - '&7Browse team members.'
   HOME-MENU-LEGACY:
     TITLE: '&8Homes'
     TELEPORT:

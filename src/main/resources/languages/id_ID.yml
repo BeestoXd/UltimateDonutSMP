@@ -478,6 +478,22 @@ MENUS:
         TITLE: "&#00FC00Confirm"
         LORE:
         - "&fClick to confirm"
+    TEAM-INFO:
+      TITLE: "&8Tim {team_name}"
+      PLAYER-BUTTON:
+        LEADER-LORE: "&6Ketua"
+      SUMMARY-BUTTON:
+        TITLE: "&#6BF18DTim {team_name}"
+        ON-STATE: "&a&lAKTIF"
+        OFF-STATE: "&c&lMATI"
+        LORE:
+        - "&7Ketua: &f{leader}"
+        - "&7Anggota: &f{members}&7/&f{max_members}"
+        - "&7PvP: {state}"
+      PAGE-BUTTON:
+        TITLE: "&fHalaman {page}&7/&f{total_pages}"
+        LORE:
+        - "&7Lihat anggota tim."
   HOME-MENU-LEGACY:
     TITLE: "&8Homes"
     TELEPORT:

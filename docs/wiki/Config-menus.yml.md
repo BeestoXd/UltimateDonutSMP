@@ -115,6 +115,30 @@ TEAM-MENUS:
       NOT-IN-TEAM: '&cYou are not part of the team.'
       NO-PERMISSION: '&cYou don''t have permissions to do this.'
       CANT-EDIT-SELF: '&cYou can''t do this yourself!'
+  TEAM-INFO:
+    TITLE: '&8Team {team_name}'
+    SIZE: 54
+    MAX-ITEMS-PER-PAGE: 45
+    PLAYER-BUTTON:
+      ONLINE-SYMBOL: "&a■"
+      OFFLINE-SYMBOL: "&4■"
+      LEADER-LORE: '&6Leader'
+    SUMMARY-BUTTON:
+      TITLE: '&#6BF18DTeam {team_name}'
+      MATERIAL: IRON_HELMET
+      SLOT: 49
+      ON-STATE: '&a&lON'
+      OFF-STATE: '&c&lOFF'
+      LORE:
+      - '&7Leader: &f{leader}'
+      - '&7Members: &f{members}&7/&f{max_members}'
+      - '&7PvP: {state}'
+    PAGE-BUTTON:
+      TITLE: '&fPage {page}&7/&f{total_pages}'
+      MATERIAL: PAPER
+      SLOT: 50
+      LORE:
+      - '&7Browse team members.'
   TEAM-EDIT-MEMBER:
     TITLE: '&8Edit {player}'
     SIZE: 27
@@ -184,6 +208,22 @@ TEAM-MENUS:
 | `TEAM-MENUS.TEAM.PVP-BUTTON.SLOT` | `int` | Any valid integer number | `'53'` | Configures the technical `SLOT` parameter for `TEAM-MENUS.TEAM.PVP-BUTTON.SLOT` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.PVP-BUTTON.ON-STATE` | `str` | Any string text | `'&a&lON'` | Configures the technical `ON-STATE` parameter for `TEAM-MENUS.TEAM.PVP-BUTTON.ON-STATE` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.PVP-BUTTON.OFF-STATE` | `str` | Any string text | `'&c&lOFF'` | Configures the technical `OFF-STATE` parameter for `TEAM-MENUS.TEAM.PVP-BUTTON.OFF-STATE` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.TITLE` | `str` | Any string text | `'&8Team {team_name}'` | Title of the read-only menu `/team info <team>` opens. `{team_name}` is the team being looked up. |
+| `TEAM-MENUS.TEAM-INFO.SIZE` | `int` | Any valid integer number | `'54'` | Configures the technical `SIZE` parameter for `TEAM-MENUS.TEAM-INFO.SIZE` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.MAX-ITEMS-PER-PAGE` | `int` | Any valid integer number | `'45'` | How many member heads fit on one page before the arrows appear. |
+| `TEAM-MENUS.TEAM-INFO.PLAYER-BUTTON.ONLINE-SYMBOL` | `str` | Any string text | `'&a■'` | Configures the technical `ONLINE-SYMBOL` parameter for `TEAM-MENUS.TEAM-INFO.PLAYER-BUTTON.ONLINE-SYMBOL` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.PLAYER-BUTTON.OFFLINE-SYMBOL` | `str` | Any string text | `'&4■'` | Configures the technical `OFFLINE-SYMBOL` parameter for `TEAM-MENUS.TEAM-INFO.PLAYER-BUTTON.OFFLINE-SYMBOL` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.PLAYER-BUTTON.LEADER-LORE` | `str` | Any string text | `'&6Leader'` | Extra lore line added to the head of the team leader. |
+| `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.TITLE` | `str` | Any string text | `'&#6BF18DTeam {team_name}'` | Configures the technical `TITLE` parameter for `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.TITLE` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.MATERIAL` | `str` | Any string text | `'IRON_HELMET'` | Configures the technical `MATERIAL` parameter for `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.MATERIAL` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.SLOT` | `int` | Any valid integer number | `'49'` | Configures the technical `SLOT` parameter for `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.SLOT` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.ON-STATE` | `str` | Any string text | `'&a&lON'` | Fills `{state}` in the summary lore while the team has friendly fire on. |
+| `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.OFF-STATE` | `str` | Any string text | `'&c&lOFF'` | Fills `{state}` in the summary lore while the team has friendly fire off. |
+| `TEAM-MENUS.TEAM-INFO.SUMMARY-BUTTON.LORE` | `list` | List of configured items/strings | `['&7Leader: &f{leader}', '&7Members: &f{members}&7/&f{max_members}', '&7PvP: {state}']` | Summary lore. Supports `{team_name}`, `{leader}`, `{members}`, `{max_members}` and `{state}`. |
+| `TEAM-MENUS.TEAM-INFO.PAGE-BUTTON.TITLE` | `str` | Any string text | `'&fPage {page}&7/&f{total_pages}'` | Page counter shown once the roster spans more than one page. Supports `{page}` and `{total_pages}`. |
+| `TEAM-MENUS.TEAM-INFO.PAGE-BUTTON.MATERIAL` | `str` | Any string text | `'PAPER'` | Configures the technical `MATERIAL` parameter for `TEAM-MENUS.TEAM-INFO.PAGE-BUTTON.MATERIAL` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.PAGE-BUTTON.SLOT` | `int` | Any valid integer number | `'50'` | Configures the technical `SLOT` parameter for `TEAM-MENUS.TEAM-INFO.PAGE-BUTTON.SLOT` in `menus.yml`. |
+| `TEAM-MENUS.TEAM-INFO.PAGE-BUTTON.LORE` | `list` | List of configured items/strings | `['&7Browse team members.']` | Lore under the page counter. Supports `{page}` and `{total_pages}`. |
 | *(68 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example
