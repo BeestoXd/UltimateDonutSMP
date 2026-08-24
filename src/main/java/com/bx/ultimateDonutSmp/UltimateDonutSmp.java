@@ -1114,6 +1114,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
             worthManager.clearWorthDisplay(player);
             worthManager.syncWorthDisplay(player);
         }
+
+        com.bx.ultimateDonutSmp.managers.SellStatsExporter.restartEmbeddedHttpServer(this);
+
         syncCommands();
     }
 
