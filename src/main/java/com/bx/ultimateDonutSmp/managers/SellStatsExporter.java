@@ -28,13 +28,15 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 public class SellStatsExporter {
 
     private static HttpServer activeHttpServer = null;
-    private static int actualBoundPort = 8080;
+    private static ExecutorService activeHttpExecutor = null;
+    private static int actualBoundPort = -1;
 
     private static volatile String cachedHtml = null;
     private static volatile long lastCacheTime = 0;
@@ -75,10 +77,12 @@ public class SellStatsExporter {
 
         boolean enabled = plugin.getConfigManager().getShop().getBoolean("SHOP-GUI.WEB-SERVER.ENABLED", true);
         if (!enabled) {
+            plugin.getLogger().info("Shop Analytics Web Server is off. Set SHOP-GUI.WEB-SERVER.ENABLED to true in shop.yml to turn it on.");
             return;
         }
 
-        int targetPort = plugin.getConfigManager().getShop().getInt("SHOP-GUI.WEB-SERVER.PORT", 8080);
+        int configuredPort = plugin.getConfigManager().getShop().getInt("SHOP-GUI.WEB-SERVER.PORT", 8080);
+        int targetPort = configuredPort;
         int mcPort = plugin.getServer().getPort();
 
         if (targetPort == mcPort) {
@@ -88,9 +92,11 @@ public class SellStatsExporter {
 
         int[] tryPorts = new int[]{targetPort, 8080, 8081, 25580, 8888};
         for (int p : tryPorts) {
+            HttpServer server = null;
+            ExecutorService executor = null;
             try {
-                activeHttpServer = HttpServer.create(new InetSocketAddress(p), 0);
-                activeHttpServer.createContext("/stats", exchange -> {
+                server = HttpServer.create(new InetSocketAddress(p), 0);
+                server.createContext("/stats", exchange -> {
                     try {
                         String path = exchange.getRequestURI().getPath();
                         if ("/stats/reset".equals(path) || "/stats/reset/".equals(path)) {
@@ -114,25 +120,66 @@ public class SellStatsExporter {
                         }
                     } catch (Exception e) {
                         plugin.getLogger().log(Level.WARNING, "Error serving stats web page", e);
+                        sendDashboardFailure(exchange);
+                    } finally {
+                        exchange.close();
                     }
                 });
-                activeHttpServer.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
-                activeHttpServer.start();
+                executor = Executors.newVirtualThreadPerTaskExecutor();
+                server.setExecutor(executor);
+                server.start();
+                activeHttpServer = server;
+                activeHttpExecutor = executor;
                 actualBoundPort = p;
                 plugin.getLogger().info("Shop Analytics Web Server started at http://localhost:" + p + "/stats");
+                if (p != configuredPort) {
+                    plugin.getLogger().warning("Port " + configuredPort + " from shop.yml was busy, so the Shop Analytics Web Server took " + p + " instead. Open http://localhost:" + p + "/stats, or free port " + configuredPort + " and reload.");
+                }
                 return;
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+                closeQuietly(server, executor);
+            }
         }
-        plugin.getLogger().warning("Could not bind Shop Analytics Web Server to any open port.");
+        plugin.getLogger().warning("Could not bind the Shop Analytics Web Server to port " + configuredPort + " or to any fallback port. Pick a free SHOP-GUI.WEB-SERVER.PORT in shop.yml.");
+    }
+
+    public static synchronized void restartEmbeddedHttpServer(UltimateDonutSmp plugin) {
+        stopEmbeddedHttpServer();
+        startEmbeddedHttpServer(plugin);
     }
 
     public static synchronized void stopEmbeddedHttpServer() {
-        if (activeHttpServer != null) {
+        closeQuietly(activeHttpServer, activeHttpExecutor);
+        activeHttpServer = null;
+        activeHttpExecutor = null;
+        actualBoundPort = -1;
+    }
+
+    private static void closeQuietly(HttpServer server, ExecutorService executor) {
+        if (server != null) {
             try {
-                activeHttpServer.stop(0);
+                server.stop(0);
             } catch (Exception ignored) {}
-            activeHttpServer = null;
         }
+        if (executor != null) {
+            try {
+                executor.shutdownNow();
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private static void sendDashboardFailure(HttpExchange exchange) {
+        try {
+            if (exchange.getResponseCode() != -1) {
+                return;
+            }
+            byte[] response = "Shop Analytics could not build the dashboard. Check the server console.".getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
+            exchange.sendResponseHeaders(500, response.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response);
+            }
+        } catch (Exception ignored) {}
     }
 
     public void exportHtml(CommandSender sender) {
@@ -161,7 +208,11 @@ public class SellStatsExporter {
         // First make sure HTML file is generated
         exportHtml(null);
 
-        int port = actualBoundPort > 0 ? actualBoundPort : plugin.getConfigManager().getShop().getInt("SHOP-GUI.WEB-SERVER.PORT", 8080);
+        if (activeHttpServer == null) {
+            sendWebServerOfflineNotice(sender);
+            return;
+        }
+
         String configuredUrl = plugin.getConfigManager().getShop().getString("SHOP-GUI.WEB-SERVER.PUBLIC-URL", "");
         if (configuredUrl != null && (configuredUrl.contains("example.com") || configuredUrl.isBlank())) {
             configuredUrl = "";
@@ -169,7 +220,7 @@ public class SellStatsExporter {
 
         String localWebUrl = (configuredUrl != null && !configuredUrl.isBlank())
                 ? configuredUrl
-                : "http://localhost:" + port + "/stats";
+                : "http://localhost:" + actualBoundPort + "/stats";
 
         if (sender instanceof Player player && player.isOnline()) {
             TextComponent linkMsg = new TextComponent(ColorUtils.toComponent("&a&l[Sell Stats Web] &fOpen live Shop Analytics site: &e&n" + localWebUrl));
@@ -179,6 +230,20 @@ public class SellStatsExporter {
         } else if (sender != null) {
             sender.sendMessage(ColorUtils.toComponent("&a&l[Sell Stats Web] &fLive web site: &e" + localWebUrl + " &7(or open plugins/UltimateDonutSMP/sell-stats.html)"));
         }
+    }
+
+    private void sendWebServerOfflineNotice(CommandSender sender) {
+        if (sender == null) {
+            return;
+        }
+
+        boolean enabled = plugin.getConfigManager().getShop().getBoolean("SHOP-GUI.WEB-SERVER.ENABLED", true);
+        if (enabled) {
+            sender.sendMessage(ColorUtils.toComponent("&c&l[Sell Stats Web] &fThe web server could not claim a port. Check the console, then set a free &eSHOP-GUI.WEB-SERVER.PORT &fin &eshop.yml&f."));
+        } else {
+            sender.sendMessage(ColorUtils.toComponent("&c&l[Sell Stats Web] &fThe web server is switched off. Set &eSHOP-GUI.WEB-SERVER.ENABLED &fto &etrue &fin &eshop.yml&f, then run &e/uds reload&f."));
+        }
+        sender.sendMessage(ColorUtils.toComponent("&7An offline copy is still saved to &eplugins/UltimateDonutSMP/sell-stats.html&7."));
     }
 
     public String generateDashboardHtml() {

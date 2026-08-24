@@ -1138,9 +1138,9 @@ SHOP-GUI:
 | `SHOP-GUI.SHOW-AUCTION-PRICE` | `bool` | `true`, `false` | `true` | Configures the technical `SHOW-AUCTION-PRICE` parameter for `SHOP-GUI.SHOW-AUCTION-PRICE` in `shop.yml`. |
 | `SHOP-GUI.ITEM.LORE` | `list` | List of configured items/strings | `['&7Shop price: {shop_price}', ...]` | Tooltip lines shown under every item in the shop menu. Supports `{shop_price}`, `{shop_unit_price}`, `{item}`, and the lines built from the other `SHOP-GUI.ITEM` keys: `{auction_line}`, `{auction_action}`, `{favorite_line}`, `{favorite_action}`. Leave it empty to show no tooltip. |
 | `SHOP-GUI.FAVORITES.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `SHOP-GUI` system. Set to `true` to enable, `false` to disable. |
-| `SHOP-GUI.WEB-SERVER.ENABLED` | `bool` | `true`, `false` | `false` | Global toggle for `SHOP-GUI` system. Set to `true` to enable, `false` to disable. |
-| `SHOP-GUI.WEB-SERVER.PORT` | `int` | Any valid integer number | `'8080'` | Configures the technical `PORT` parameter for `SHOP-GUI.WEB-SERVER.PORT` in `shop.yml`. |
-| `SHOP-GUI.WEB-SERVER.PUBLIC-URL` | `str` | Any string text | `''` | Configures the technical `PUBLIC-URL` parameter for `SHOP-GUI.WEB-SERVER.PUBLIC-URL` in `shop.yml`. |
+| `SHOP-GUI.WEB-SERVER.ENABLED` | `bool` | `true`, `false` | `false` | Turns the built-in Shop Analytics dashboard on. It ships off, so nothing is listening until you set this to `true`. `/uds reload` applies the change without a restart, and the console line tells you the address it came up on. |
+| `SHOP-GUI.WEB-SERVER.PORT` | `int` | Any valid integer number | `'8080'` | The port the dashboard listens on, so the page lives at `http://localhost:<PORT>/stats`. If that port is already taken the server falls back to `8080`, `8081`, `25580` or `8888` and warns in the console which one it settled on. |
+| `SHOP-GUI.WEB-SERVER.PUBLIC-URL` | `str` | Any string text | `''` | The address `/topsell web` hands out, for when the dashboard sits behind a domain or a reverse proxy. Leave it empty and it uses `http://localhost:<PORT>/stats`. |
 
 ### 3. Practical Setup Example
 
