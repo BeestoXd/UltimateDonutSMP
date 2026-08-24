@@ -38,6 +38,7 @@ public class CrateVisualManager {
     private static final String HOLOGRAM_TAG = "uds_crate_hologram";
     private static final String PERSONAL_TAG = "uds_crate_personal_hologram";
     private static final String PREVIEW_TAG = "uds_crate_preview";
+    private static final long GATE_RECHECK_INTERVAL_MS = 1000L;
 
     private final UltimateDonutSmp plugin;
     private final Map<CrateManager.CrateBlockKey, List<UUID>> holograms = new HashMap<>();
@@ -54,6 +55,9 @@ public class CrateVisualManager {
 
     private BukkitTask animationTask;
     private int animationPulse;
+
+    private long gateCheckedAtMillis;
+    private boolean gateOpen = true;
 
     public CrateVisualManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -1018,6 +1022,19 @@ public class CrateVisualManager {
         return plugin.getConfigManager().getCrates().getBoolean("SETTINGS.PREVIEW.ENABLED", true);
     }
 
+    /**
+     * The animation task ticks every couple of ticks, and walking the config tree for both toggles
+     * cost far more than the animation it guards. One second of staleness on a toggle is fine.
+     */
+    private boolean previewGateOpen() {
+        long now = System.currentTimeMillis();
+        if (now - gateCheckedAtMillis >= GATE_RECHECK_INTERVAL_MS) {
+            gateCheckedAtMillis = now;
+            gateOpen = isCratesEnabled() && isPreviewEnabled();
+        }
+        return gateOpen;
+    }
+
     private double getPreviewOffsetY() {
         return plugin.getConfigManager().getCrates().getDouble("SETTINGS.PREVIEW.OFFSET-Y", 1.25D);
     }
@@ -1138,9 +1155,10 @@ public class CrateVisualManager {
             animationTask.cancel();
         }
         animationPulse = 0;
+        gateCheckedAtMillis = 0L;
         long updateInterval = getPreviewUpdateIntervalTicks();
         animationTask = plugin.getSpigotScheduler().runGlobalTimer(() -> {
-            if (!isCratesEnabled() || !isPreviewEnabled()) {
+            if (!previewGateOpen()) {
                 if (animationTask != null) {
                     animationTask.cancel();
                     animationTask = null;

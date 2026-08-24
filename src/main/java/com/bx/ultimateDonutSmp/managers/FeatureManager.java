@@ -181,7 +181,15 @@ public class FeatureManager {
         if (feature == null) {
             return true;
         }
-        return featureCache.computeIfAbsent(feature, f -> isEnabled(plugin.getConfigManager().getConfig(), f));
+        // A capturing lambda would be allocated on every call, cache hit included, and this runs on
+        // per-tick paths. Read first, compute only on a miss.
+        Boolean cached = featureCache.get(feature);
+        if (cached != null) {
+            return cached;
+        }
+        boolean resolved = isEnabled(plugin.getConfigManager().getConfig(), feature);
+        featureCache.put(feature, resolved);
+        return resolved;
     }
 
     public boolean areEnabled(Feature... features) {

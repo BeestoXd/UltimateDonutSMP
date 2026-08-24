@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,6 +28,7 @@ public final class ScoreboardNumberHider {
     private static final Map<String, Method> METHOD_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
     private static final Map<Class<?>, Method> NUMBER_FORMAT_SETTER_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
     private static final Map<Class<?>, Field> OBJECTIVE_FIELD_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<Class<?>, SenderRoute> SENDER_ROUTE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
     private static final Method NULL_METHOD_SENTINEL;
     private static final Field NULL_FIELD_SENTINEL;
 
@@ -44,6 +46,9 @@ public final class ScoreboardNumberHider {
 
     private final UltimateDonutSmp plugin;
     private final Map<String, Long> lastSent = new ConcurrentHashMap<>();
+    // Objectives whose NMS number format is already blank. Re-setting it costs a reflective call and
+    // makes the server broadcast an objective packet of its own on top of the one sent below.
+    private final Set<String> blankedObjectives = ConcurrentHashMap.newKeySet();
 
     private boolean disabled;
     private boolean warned;
@@ -68,10 +73,16 @@ public final class ScoreboardNumberHider {
         }
         String prefix = uuid + ":";
         lastSent.keySet().removeIf(key -> key.startsWith(prefix));
+        blankedObjectives.removeIf(key -> key.startsWith(prefix));
     }
 
     public void hide(Player player, Objective objective) {
-        if (disabled || !isEnabled() || player == null || objective == null || !player.isOnline()) {
+        hide(player, objective, isEnabled());
+    }
+
+    /** Overload for callers that already read {@code SCOREBOARD.HIDE-NUMBERS} for this render pass. */
+    public void hide(Player player, Objective objective, boolean enabled) {
+        if (disabled || !enabled || player == null || objective == null || !player.isOnline()) {
             return;
         }
 
@@ -85,7 +96,13 @@ public final class ScoreboardNumberHider {
         try {
             Object nmsObjective = getObjectiveHandle(objective);
             Object format = getBlankFormat();
-            boolean objectiveUpdated = applyNumberFormatToObjective(nmsObjective, format);
+            boolean objectiveUpdated = blankedObjectives.contains(key);
+            if (!objectiveUpdated) {
+                objectiveUpdated = applyNumberFormatToObjective(nmsObjective, format);
+                if (objectiveUpdated) {
+                    blankedObjectives.add(key);
+                }
+            }
             Object packet = createObjectiveUpdatePacket(nmsObjective, format, objectiveUpdated);
             sendPacket(player, packet);
             lastSent.put(key, now);
@@ -330,9 +347,19 @@ public final class ScoreboardNumberHider {
     }
 
     private PacketSender findPacketSender(Object root, Object packet) throws ReflectiveOperationException {
-        PacketSender sender = findSenderOn(root, packet);
-        if (sender != null) {
-            return sender;
+        // Discovery walks every declared method of the whole player-handle hierarchy, so it must not
+        // run per send. The route it finds is the same for every player on a given server build.
+        SenderRoute known = SENDER_ROUTE_CACHE.get(root.getClass());
+        if (known != null) {
+            PacketSender sender = known.bind(root);
+            if (sender != null) {
+                return sender;
+            }
+        }
+
+        SenderRoute route = findSenderOn(root, packet);
+        if (route != null) {
+            return remember(root, route);
         }
 
         for (Class<?> current = root.getClass(); current != null; current = current.getSuperclass()) {
@@ -342,9 +369,9 @@ public final class ScoreboardNumberHider {
                 if (value == null) {
                     continue;
                 }
-                sender = findSenderOn(value, packet);
-                if (sender != null) {
-                    return sender;
+                route = findSenderOn(value, packet);
+                if (route != null) {
+                    return remember(root, route.through(field));
                 }
             }
         }
@@ -352,24 +379,30 @@ public final class ScoreboardNumberHider {
         return null;
     }
 
-    private PacketSender findSenderOn(Object target, Object packet) {
-        PacketSender fallback = null;
+    private PacketSender remember(Object root, SenderRoute route) throws ReflectiveOperationException {
+        route.prepare();
+        SENDER_ROUTE_CACHE.put(root.getClass(), route);
+        return route.bind(root);
+    }
+
+    private SenderRoute findSenderOn(Object target, Object packet) {
+        SenderRoute fallback = null;
         for (Class<?> current = target.getClass(); current != null; current = current.getSuperclass()) {
             for (Method method : current.getDeclaredMethods()) {
                 Class<?>[] parameters = method.getParameterTypes();
                 if (parameters.length == 1 && acceptsPacket(parameters[0], packet)) {
-                    PacketSender sender = new PacketSender(target, method, false);
+                    SenderRoute route = new SenderRoute(null, method, false);
                     if (isPreferredSendMethod(method)) {
-                        return sender;
+                        return route;
                     }
-                    fallback = sender;
+                    fallback = route;
                 }
                 if (parameters.length == 2 && acceptsPacket(parameters[0], packet)) {
-                    PacketSender sender = new PacketSender(target, method, true);
+                    SenderRoute route = new SenderRoute(null, method, true);
                     if (isPreferredSendMethod(method)) {
-                        return sender;
+                        return route;
                     }
-                    fallback = sender;
+                    fallback = route;
                 }
             }
         }
@@ -392,7 +425,6 @@ public final class ScoreboardNumberHider {
         if (method == null) {
             throw new NoSuchMethodException(name);
         }
-        method.setAccessible(true);
         return method.invoke(target);
     }
 
@@ -406,6 +438,7 @@ public final class ScoreboardNumberHider {
         for (Class<?> current = type; current != null; current = current.getSuperclass()) {
             for (Method method : current.getDeclaredMethods()) {
                 if (method.getParameterCount() == 0 && method.getName().equals(name)) {
+                    method.setAccessible(true);
                     METHOD_CACHE.put(key, method);
                     return method;
                 }
@@ -457,6 +490,37 @@ public final class ScoreboardNumberHider {
                 + ex.getClass().getSimpleName() + ": " + ex.getMessage());
     }
 
+    /** A resolved way to reach the send method, independent of which player it is invoked for. */
+    private static final class SenderRoute {
+
+        private final Field field;
+        private final Method method;
+        private final boolean trailingNull;
+
+        private SenderRoute(Field field, Method method, boolean trailingNull) {
+            this.field = field;
+            this.method = method;
+            this.trailingNull = trailingNull;
+        }
+
+        /** The same route, reached through a field of the player handle rather than the handle itself. */
+        private SenderRoute through(Field owner) {
+            return new SenderRoute(owner, method, trailingNull);
+        }
+
+        private void prepare() {
+            method.setAccessible(true);
+            if (field != null) {
+                field.setAccessible(true);
+            }
+        }
+
+        private PacketSender bind(Object root) throws ReflectiveOperationException {
+            Object target = field == null ? root : field.get(root);
+            return target == null ? null : new PacketSender(target, method, trailingNull);
+        }
+    }
+
     private static final class PacketSender {
 
         private final Object target;
@@ -470,7 +534,6 @@ public final class ScoreboardNumberHider {
         }
 
         private void send(Object packet) throws ReflectiveOperationException {
-            method.setAccessible(true);
             if (trailingNull) {
                 method.invoke(target, packet, null);
             } else {
