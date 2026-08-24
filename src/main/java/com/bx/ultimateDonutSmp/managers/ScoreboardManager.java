@@ -53,8 +53,15 @@ public class ScoreboardManager {
     // Line and title caching to avoid redundant Bukkit/Packet updates
     private final Map<UUID, String[]> playerLastLines = new ConcurrentHashMap<>();
     private final Map<UUID, String> playerLastTitle = new ConcurrentHashMap<>();
+    private final Map<UUID, String> playerLastRawTitle = new ConcurrentHashMap<>();
     private final Map<UUID, String[]> foliaLastLines = new ConcurrentHashMap<>();
     private final Map<UUID, String> foliaLastTitle = new ConcurrentHashMap<>();
+
+    // Bukkit handles for the board a player already owns. Looking these up per frame allocates a
+    // fresh CraftObjective every time and costs three name lookups per line.
+    private final Map<UUID, Objective> playerObjectives = new ConcurrentHashMap<>();
+    private final Map<UUID, Team[]> playerTeams = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> playerLineCounts = new ConcurrentHashMap<>();
 
     private int titleIndex = 0;
 
@@ -91,6 +98,7 @@ public class ScoreboardManager {
     }
 
     public void applyVisibility(Player player) {
+        SidebarSettings settings = readSettings();
         if (folia) {
             if (!isEnabled()) {
                 releasePlayerFolia(player);
@@ -100,7 +108,7 @@ public class ScoreboardManager {
                 hidePlayerFolia(player);
                 return;
             }
-            updateFolia(player);
+            updateFolia(player, settings);
         } else {
             if (!isEnabled()) {
                 releaseOwnedBoardSpigot(player);
@@ -111,19 +119,20 @@ public class ScoreboardManager {
                 return;
             }
             if (!playerBoards.containsKey(player.getUniqueId())) {
-                setupPlayerSpigot(player);
+                setupPlayerSpigot(player, settings);
                 return;
             }
-            updateSpigot(player);
+            updateSpigot(player, settings);
         }
     }
 
     /** Called once on player join. */
     public void setupPlayer(Player player) {
+        SidebarSettings settings = readSettings();
         if (folia) {
-            setupPlayerFolia(player);
+            setupPlayerFolia(player, settings);
         } else {
-            setupPlayerSpigot(player);
+            setupPlayerSpigot(player, settings);
         }
     }
 
@@ -136,10 +145,11 @@ public class ScoreboardManager {
     }
 
     public void update(Player player) {
+        SidebarSettings settings = readSettings();
         if (folia) {
-            updateFolia(player);
+            updateFolia(player, settings);
         } else {
-            updateSpigot(player);
+            updateSpigot(player, settings);
         }
     }
 
@@ -149,16 +159,18 @@ public class ScoreboardManager {
             return;
         }
 
-        List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
-        if (!titles.isEmpty()) {
-            titleIndex = (titleIndex + 1) % titles.size();
+        // One read of the sidebar config for the whole pass. Reading it per player, and again per
+        // line, was the bulk of this task's cost with a full server online.
+        SidebarSettings settings = readSettings();
+        if (!settings.titles().isEmpty()) {
+            titleIndex = (titleIndex + 1) % settings.titles().size();
         }
 
         if (folia) {
-            plugin.getSpigotScheduler().forEachOnlinePlayer(this::updateFolia);
+            plugin.getSpigotScheduler().forEachOnlinePlayer(player -> updateFolia(player, settings));
         } else {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                updateSpigot(player);
+                updateSpigot(player, settings);
             }
         }
     }
@@ -176,6 +188,10 @@ public class ScoreboardManager {
             playerBoards.clear();
             playerLastLines.clear();
             playerLastTitle.clear();
+            playerLastRawTitle.clear();
+            playerObjectives.clear();
+            playerTeams.clear();
+            playerLineCounts.clear();
         }
     }
 
@@ -185,12 +201,16 @@ public class ScoreboardManager {
             playerBoards.remove(uuid);
             playerLastLines.remove(uuid);
             playerLastTitle.remove(uuid);
+            playerLastRawTitle.remove(uuid);
+            playerObjectives.remove(uuid);
+            playerTeams.remove(uuid);
+            playerLineCounts.remove(uuid);
         }
     }
 
     // ── Folia Implementations ──────────────────────────────────────────────────
 
-    private void setupPlayerFolia(Player player) {
+    private void setupPlayerFolia(Player player, SidebarSettings settings) {
         if (!isEnabled()) {
             releasePlayerFolia(player);
             return;
@@ -199,7 +219,7 @@ public class ScoreboardManager {
             hidePlayerFolia(player);
             return;
         }
-        renderPlayerFolia(player);
+        renderPlayerFolia(player, settings);
     }
 
     private void removePlayerFolia(UUID uuid) {
@@ -207,7 +227,7 @@ public class ScoreboardManager {
         sidebarRenderer.remove(uuid);
     }
 
-    private void updateFolia(Player player) {
+    private void updateFolia(Player player, SidebarSettings settings) {
         if (!isEnabled()) {
             releasePlayerFolia(player);
             return;
@@ -216,13 +236,13 @@ public class ScoreboardManager {
             hidePlayerFolia(player);
             return;
         }
-        renderPlayerFolia(player);
+        renderPlayerFolia(player, settings);
     }
 
-    private void renderPlayerFolia(Player player) {
+    private void renderPlayerFolia(Player player, SidebarSettings settings) {
         UUID uuid = player.getUniqueId();
-        String title = getTitle(player);
-        List<String> renderedLines = getRenderedLines(player);
+        String title = getTitle(player, settings);
+        List<String> renderedLines = getRenderedLines(player, settings);
         String oldTitle = foliaLastTitle.get(uuid);
         String[] oldLines = foliaLastLines.get(uuid);
         boolean changed = oldTitle == null || !oldTitle.equals(title) || oldLines == null || oldLines.length != renderedLines.size();
@@ -279,7 +299,7 @@ public class ScoreboardManager {
 
     // ── Spigot/Paper Implementations ───────────────────────────────────────────
 
-    private void setupPlayerSpigot(Player player) {
+    private void setupPlayerSpigot(Player player, SidebarSettings settings) {
         if (!isEnabled()) {
             releaseOwnedBoardSpigot(player);
             return;
@@ -293,12 +313,13 @@ public class ScoreboardManager {
         clearCacheSpigot(player.getUniqueId());
 
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = board.registerNewObjective("sidebar", Criteria.DUMMY, getTitle(player));
+        Objective obj = board.registerNewObjective("sidebar", Criteria.DUMMY, getTitle(player, settings));
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         playerBoards.put(player.getUniqueId(), board);
+        playerObjectives.put(player.getUniqueId(), obj);
         player.setScoreboard(board);
-        updateTextSpigot(player, board, obj);
+        updateTextSpigot(player, board, obj, settings);
     }
 
     private void removePlayerSpigot(UUID uuid) {
@@ -306,7 +327,7 @@ public class ScoreboardManager {
         clearCacheSpigot(uuid);
     }
 
-    private void updateSpigot(Player player) {
+    private void updateSpigot(Player player, SidebarSettings settings) {
         if (!isEnabled()) {
             releaseOwnedBoardSpigot(player);
             return;
@@ -316,33 +337,52 @@ public class ScoreboardManager {
             return;
         }
 
-        Scoreboard board = playerBoards.get(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        Scoreboard board = playerBoards.get(uuid);
         if (board == null) {
-            setupPlayerSpigot(player);
+            setupPlayerSpigot(player, settings);
             return;
         }
 
-        Objective obj = board.getObjective("sidebar");
-        if (obj == null) return;
-        updateTextSpigot(player, board, obj);
+        Objective obj = playerObjectives.get(uuid);
+        if (obj == null) {
+            obj = board.getObjective("sidebar");
+            if (obj == null) return;
+            playerObjectives.put(uuid, obj);
+        }
+
+        try {
+            updateTextSpigot(player, board, obj, settings);
+        } catch (IllegalStateException unregistered) {
+            // Something unregistered the objective or a team out from under us. Drop the handles and
+            // rebuild the board rather than leaving the player with a half-drawn sidebar.
+            playerBoards.remove(uuid);
+            clearCacheSpigot(uuid);
+            setupPlayerSpigot(player, settings);
+        }
     }
 
-    private void updateTextSpigot(Player player, Scoreboard board, Objective obj) {
+    private void updateTextSpigot(Player player, Scoreboard board, Objective obj, SidebarSettings settings) {
         UUID uuid = player.getUniqueId();
-        List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
+        List<String> titles = settings.titles();
         if (!titles.isEmpty()) {
             String title = titles.get(titleIndex % titles.size());
-            String formattedTitle = ColorUtils.toComponent(title, player);
-            String oldTitle = playerLastTitle.get(uuid);
-            if (oldTitle == null || !oldTitle.equals(formattedTitle)) {
-                obj.setDisplayName(formattedTitle);
-                playerLastTitle.put(uuid, formattedTitle);
+            // A title with no placeholder in it renders to the same string every pass, so the render
+            // that is already on screen still stands and there is nothing to format.
+            if (hasPlaceholder(title) || !title.equals(playerLastRawTitle.get(uuid))) {
+                String formattedTitle = ColorUtils.toComponent(title, player);
+                String oldTitle = playerLastTitle.get(uuid);
+                if (oldTitle == null || !oldTitle.equals(formattedTitle)) {
+                    obj.setDisplayName(formattedTitle);
+                    playerLastTitle.put(uuid, formattedTitle);
+                }
+                playerLastRawTitle.put(uuid, title);
             }
         }
 
-        List<String> lines = getLines(player);
+        List<String> lines = getLines(player, settings);
         int count = Math.min(lines.size(), MAX_LINES);
-        syncLineSlotsSpigot(board, obj, count);
+        Team[] teams = syncLineSlotsSpigot(board, obj, count, uuid);
 
         String[] oldLines = playerLastLines.get(uuid);
         if (oldLines == null || oldLines.length != MAX_LINES) {
@@ -351,10 +391,10 @@ public class ScoreboardManager {
         }
 
         for (int i = 0; i < count; i++) {
-            Team team = board.getTeam("sb_" + i);
+            Team team = teams[i];
             if (team == null) continue;
             String text = ColorUtils.colorize(lines.get(i), player);
-            text = alignSidebarIconColumn(text);
+            text = alignSidebarIconColumn(text, settings);
             if (!text.equals(oldLines[i])) {
                 applyLineSpigot(team, text);
                 oldLines[i] = text;
@@ -362,22 +402,46 @@ public class ScoreboardManager {
         }
 
         for (int i = count; i < MAX_LINES; i++) {
-            Team team = board.getTeam("sb_" + i);
+            Team team = teams[i];
             if (team != null && !"".equals(oldLines[i])) {
                 applyLineSpigot(team, "");
                 oldLines[i] = "";
             }
         }
 
-        numberHider.hide(player, obj);
+        numberHider.hide(player, obj, settings.hideNumbers());
     }
 
-    private void syncLineSlotsSpigot(Scoreboard board, Objective obj, int count) {
+    /**
+     * Resolves the team handle for every slot and returns them. Scores are only rewritten when the
+     * line count moves, since that is the only thing they depend on.
+     */
+    private Team[] syncLineSlotsSpigot(Scoreboard board, Objective obj, int count, UUID uuid) {
+        Team[] teams = playerTeams.get(uuid);
+        if (teams == null) {
+            teams = new Team[MAX_LINES];
+            playerTeams.put(uuid, teams);
+        }
+
+        boolean missing = false;
+        for (int i = 0; i < MAX_LINES; i++) {
+            if (teams[i] == null) {
+                teams[i] = board.getTeam("sb_" + i);
+            }
+            if (teams[i] == null && i < count) {
+                missing = true;
+            }
+        }
+
+        Integer lastCount = playerLineCounts.get(uuid);
+        if (!missing && lastCount != null && lastCount == count) {
+            return teams;
+        }
+
         for (int i = 0; i < count; i++) {
-            Team team = board.getTeam("sb_" + i);
-            if (team == null) {
-                team = board.registerNewTeam("sb_" + i);
-                team.addEntry(ENTRIES[i]);
+            if (teams[i] == null) {
+                teams[i] = board.registerNewTeam("sb_" + i);
+                teams[i].addEntry(ENTRIES[i]);
             }
             obj.getScore(ENTRIES[i]).setScore(count - i);
         }
@@ -385,19 +449,24 @@ public class ScoreboardManager {
         for (int i = count; i < MAX_LINES; i++) {
             board.resetScores(ENTRIES[i]);
         }
+
+        playerLineCounts.put(uuid, count);
+        return teams;
     }
 
     private void applyLineSpigot(Team team, String text) {
+        // The caller has already run the text through ColorUtils; a second pass would redo the whole
+        // placeholder and colour pipeline on a string that is finished.
         if (text.length() <= 64) {
-            team.setPrefix(ColorUtils.toComponent(text));
-            team.setSuffix(ColorUtils.toComponent(""));
+            team.setPrefix(text);
+            team.setSuffix("");
             return;
         }
 
         int split = findSafeSplit(text, 64);
         int end = findSafeSplit(text, split + 64);
-        team.setPrefix(ColorUtils.toComponent(text.substring(0, split)));
-        team.setSuffix(ColorUtils.toComponent(text.substring(split, end)));
+        team.setPrefix(text.substring(0, split));
+        team.setSuffix(text.substring(split, end));
     }
 
     private void hidePlayerSpigot(Player player) {
@@ -415,6 +484,10 @@ public class ScoreboardManager {
         playerBoards.clear();
         playerLastLines.clear();
         playerLastTitle.clear();
+        playerLastRawTitle.clear();
+        playerObjectives.clear();
+        playerTeams.clear();
+        playerLineCounts.clear();
     }
 
     private void releaseOwnedBoardSpigot(Player player) {
@@ -437,6 +510,10 @@ public class ScoreboardManager {
     private void clearCacheSpigot(UUID uuid) {
         playerLastLines.remove(uuid);
         playerLastTitle.remove(uuid);
+        playerLastRawTitle.remove(uuid);
+        playerObjectives.remove(uuid);
+        playerTeams.remove(uuid);
+        playerLineCounts.remove(uuid);
         if (numberHider != null) {
             numberHider.forget(uuid);
         }
@@ -444,17 +521,35 @@ public class ScoreboardManager {
 
     // ── Common Shared Utilities ────────────────────────────────────────────────
 
-    private List<String> getLines(Player player) {
+    /** Reads every sidebar config value the render needs, once, for a whole update pass. */
+    private SidebarSettings readSettings() {
         FileConfiguration scoreboard = plugin.getConfigManager().getScoreboard();
+        return new SidebarSettings(
+                scoreboard.getStringList("SCOREBOARD.TITLE"),
+                scoreboard.getStringList("SCOREBOARD.LINES"),
+                scoreboard.getString("SCOREBOARD.TEAM"),
+                scoreboard.getString("SCOREBOARD.SHARD-BOOSTER"),
+                scoreboard.getString("SCOREBOARD.SHARD-CUBOID"),
+                Math.max(0, scoreboard.getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10)),
+                scoreboard.getBoolean("SCOREBOARD.ALIGN-ICON-COLUMN", true),
+                scoreboard.getBoolean("SCOREBOARD.HIDE-NUMBERS", true)
+        );
+    }
+
+    private static boolean hasPlaceholder(String text) {
+        return text != null && (text.indexOf('%') >= 0 || text.indexOf('{') >= 0);
+    }
+
+    private List<String> getLines(Player player, SidebarSettings settings) {
         List<String> lines = new ArrayList<>();
-        String teamLine = scoreboard.getString("SCOREBOARD.TEAM");
-        String boosterLine = scoreboard.getString("SCOREBOARD.SHARD-BOOSTER");
-        String shardCuboidLine = scoreboard.getString("SCOREBOARD.SHARD-CUBOID");
+        String teamLine = settings.teamLine();
+        String boosterLine = settings.boosterLine();
+        String shardCuboidLine = settings.shardCuboidLine();
         boolean inTeam = plugin.getTeamManager().isInTeam(player.getUniqueId());
         boolean hasBooster = plugin.getShardManager().hasBooster(player.getUniqueId());
         boolean showShardCuboid = plugin.getShardManager().shouldShowShardCuboidLine(player.getUniqueId());
 
-        for (String line : scoreboard.getStringList("SCOREBOARD.LINES")) {
+        for (String line : settings.lines()) {
             String resolved = resolveConfiguredLine(
                     line,
                     teamLine,
@@ -466,7 +561,7 @@ public class ScoreboardManager {
             );
             if (resolved != null) {
                 resolved = applySidebarEconomyPlaceholders(resolved, player);
-                lines.add(applySidebarLayoutPlaceholders(resolved));
+                lines.add(applySidebarLayoutPlaceholders(resolved, settings));
             }
         }
 
@@ -521,7 +616,7 @@ public class ScoreboardManager {
                 .replace("%economy_shards%", shardsShort);
     }
 
-    private String applySidebarLayoutPlaceholders(String line) {
+    private String applySidebarLayoutPlaceholders(String line, SidebarSettings settings) {
         if (line == null || line.isEmpty()) {
             return "";
         }
@@ -530,33 +625,37 @@ public class ScoreboardManager {
                 .replace("{money_icon}", paddedSidebarIcon(
                         plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.MONEY)
                                 + "&l"
-                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY)))
+                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY),
+                        settings))
                 .replace("{shards_icon}", paddedSidebarIcon(
                         plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.SHARDS)
                                 + "&l"
-                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS)));
+                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS),
+                        settings));
+
+        if (result.indexOf("{sb_icon:") < 0) {
+            return result;
+        }
 
         Matcher matcher = SIDEBAR_ICON_PATTERN.matcher(result);
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(paddedSidebarIcon(matcher.group(1))));
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(paddedSidebarIcon(matcher.group(1), settings)));
         }
         matcher.appendTail(buffer);
         return buffer.toString();
     }
 
-    private String paddedSidebarIcon(String icon) {
-        int columnWidth = Math.max(0, plugin.getConfigManager().getScoreboard()
-                .getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10));
+    private String paddedSidebarIcon(String icon, SidebarSettings settings) {
+        int columnWidth = settings.iconColumnWidth();
         int iconWidth = minecraftTextWidth(icon);
         int missingWidth = Math.max(0, columnWidth - iconWidth);
         int spaces = Math.max(1, Math.round(missingWidth / 4F));
         return icon + " ".repeat(spaces);
     }
 
-    private String alignSidebarIconColumn(String text) {
-        if (text == null || text.isEmpty() || !plugin.getConfigManager().getScoreboard()
-                .getBoolean("SCOREBOARD.ALIGN-ICON-COLUMN", true)) {
+    private String alignSidebarIconColumn(String text, SidebarSettings settings) {
+        if (text == null || text.isEmpty() || !settings.alignIconColumn()) {
             return text == null ? "" : text;
         }
 
@@ -589,8 +688,7 @@ public class ScoreboardManager {
         }
 
         String iconText = text.substring(0, iconEnd);
-        int columnWidth = Math.max(0, plugin.getConfigManager().getScoreboard()
-                .getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10));
+        int columnWidth = settings.iconColumnWidth();
         int iconWidth = minecraftTextWidth(iconText);
         int missingWidth = Math.max(0, columnWidth - iconWidth);
         int spaces = Math.max(1, Math.round(missingWidth / 4F));
@@ -685,23 +783,23 @@ public class ScoreboardManager {
         };
     }
 
-    private String getTitle(Player player) {
-        List<String> titles = plugin.getConfigManager().getScoreboard().getStringList("SCOREBOARD.TITLE");
+    private String getTitle(Player player, SidebarSettings settings) {
+        List<String> titles = settings.titles();
         if (titles.isEmpty()) {
             return ColorUtils.colorize("EconomySMP", player);
         }
         return ColorUtils.colorize(titles.get(titleIndex % titles.size()), player);
     }
 
-    private List<String> getRenderedLines(Player player) {
-        List<String> lines = getLines(player);
+    private List<String> getRenderedLines(Player player, SidebarSettings settings) {
+        List<String> lines = getLines(player, settings);
         List<String> rendered = new ArrayList<>(Math.min(lines.size(), MAX_LINES));
         for (String line : lines) {
             if (rendered.size() >= MAX_LINES) {
                 break;
             }
             String text = ColorUtils.colorize(line, player);
-            rendered.add(alignSidebarIconColumn(text));
+            rendered.add(alignSidebarIconColumn(text, settings));
         }
         return rendered;
     }
@@ -718,5 +816,18 @@ public class ScoreboardManager {
         if (split > 0 && Character.isHighSurrogate(text.charAt(split - 1))) split--;
         if (split > 0 && text.charAt(split - 1) == '\u00A7') split--;
         return split;
+    }
+
+    /** The sidebar config as it stood at the start of one update pass. */
+    private record SidebarSettings(
+            List<String> titles,
+            List<String> lines,
+            String teamLine,
+            String boosterLine,
+            String shardCuboidLine,
+            int iconColumnWidth,
+            boolean alignIconColumn,
+            boolean hideNumbers
+    ) {
     }
 }

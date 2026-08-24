@@ -98,4 +98,39 @@ class ColorUtilsTest {
         String stripped4 = ColorUtils.strip("<#FF0000>Hello");
         assertEquals("Hello", stripped4);
     }
+
+    private static String legacyHex(String hex) {
+        StringBuilder out = new StringBuilder("§x");
+        for (char digit : hex.toCharArray()) {
+            out.append('§').append(digit);
+        }
+        return out.toString();
+    }
+
+    @Test
+    void testGradientStillExpandsBetweenTags() {
+        String colorized = ColorUtils.colorize("<#FF0000>Ab</#0000FF>");
+        assertEquals(legacyHex("FF0000") + "A" + legacyHex("0000FF") + "b", colorized);
+    }
+
+    @Test
+    void testColorizingTwiceChangesNothing() {
+        // The sidebar hands finished text straight to the team prefix, so a second pass over an
+        // already-colorized line has to be a no-op.
+        String[] lines = {
+                "&#00A4FC §fTeam &#00A4FCAlpha     ",
+                "&f&lBALANCE: &a1,234",
+                "&7ᴘɪɴɢ: &f25ms",
+                "<#FF0000>Kills</#0000FF> &710",
+                "{#FF0000}Shards &f42",
+                "&f\\u1D18\\u026A\\u0274\\u0262",
+                "🗡 &fKills &7★",
+                "plain text with no codes"
+        };
+
+        for (String line : lines) {
+            String once = ColorUtils.colorize(line);
+            assertEquals(once, ColorUtils.colorize(once), "second pass changed: " + line);
+        }
+    }
 }

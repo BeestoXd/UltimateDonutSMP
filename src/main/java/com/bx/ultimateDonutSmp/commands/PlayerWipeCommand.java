@@ -17,12 +17,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PlayerWipeCommand implements CommandExecutor, TabCompleter {
 
     private static final String PERMISSION = "ultimatedonutsmp.admin.playerwipe";
+    private static final long STORED_NAMES_TTL_MS = 60_000L;
 
     private final UltimateDonutSmp plugin;
+    private final AtomicBoolean storedNamesLoading = new AtomicBoolean();
+
+    private volatile List<String> storedNames = List.of();
+    private volatile long storedNamesLoadedAt;
 
     public PlayerWipeCommand(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -116,8 +122,27 @@ public class PlayerWipeCommand implements CommandExecutor, TabCompleter {
         for (Player player : Bukkit.getOnlinePlayers()) {
             names.add(player.getName());
         }
-        names.addAll(plugin.getDatabaseManager().loadKnownPlayerNames());
+        names.addAll(storedNames());
         return names.stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+    }
+
+    /**
+     * Tab completion runs on the main thread and fires on every keystroke, so the stored names come
+     * from a snapshot that is refreshed off-thread rather than from a query the server waits on.
+     */
+    private List<String> storedNames() {
+        long now = System.currentTimeMillis();
+        if (now - storedNamesLoadedAt >= STORED_NAMES_TTL_MS && storedNamesLoading.compareAndSet(false, true)) {
+            plugin.getSpigotScheduler().runAsync(() -> {
+                try {
+                    storedNames = List.copyOf(plugin.getDatabaseManager().loadKnownPlayerNames());
+                    storedNamesLoadedAt = System.currentTimeMillis();
+                } finally {
+                    storedNamesLoading.set(false);
+                }
+            });
+        }
+        return storedNames;
     }
 
     private List<String> matches(List<String> candidates, String input) {

@@ -73,9 +73,18 @@ public class ColorUtils {
         }
         String result = normalizeText(text);
         result = transformAllCaps(result);
-        result = translateTaggedGradients(result);
-        result = translateTaggedHex(result);
-        return translateHex(result).replace('&', SECTION_CHAR);
+        // Every pattern below needs a literal marker character, so a missing marker rules the pass
+        // out without building a Matcher. Scoreboard lines run this ten times a second per player.
+        if (result.indexOf("</#") >= 0) {
+            result = translateTaggedGradients(result);
+        }
+        if (result.indexOf('<') >= 0) {
+            result = translateTaggedHex(result);
+        }
+        if (result.indexOf('#') >= 0) {
+            result = translateHex(result);
+        }
+        return result.replace('&', SECTION_CHAR);
     }
 
     public static String colorize(String text, Player player) {
