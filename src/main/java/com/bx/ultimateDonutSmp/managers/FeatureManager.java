@@ -227,7 +227,7 @@ public class FeatureManager {
             case "auctionhouse" -> new Feature[]{Feature.AUCTION_HOUSE};
             case "enderchest", "ecsee" -> new Feature[]{Feature.ENDER_CHEST};
             case "sell", "sellhand", "sellall", "sellhistory" -> new Feature[]{Feature.SELL};
-            case "worth" -> new Feature[]{Feature.SELL, Feature.WORTH};
+            case "worth", "meta" -> new Feature[]{Feature.SELL, Feature.WORTH};
             case "rtp" -> new Feature[]{Feature.RTP};
             case "stats", "ping", "playtime" -> new Feature[]{Feature.STATS};
             case "leaderboard" -> new Feature[]{Feature.LEADERBOARDS};

@@ -160,6 +160,71 @@ BROWSER:
 
 ---
 
+## Section: `META`
+
+### 1. Commented Setup Code Example
+
+```yaml
+# Configuration section for Meta.
+META:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: false
+  # The decimal value for Multiplier. Available options: Any decimal number
+  MULTIPLIER: 1.15
+  # The numerical value for Interval Days. Available options: Any valid integer
+  INTERVAL_DAYS: 14
+  # The numerical value for Interval Hours. Available options: Any valid integer
+  INTERVAL_HOURS: 0
+  # Determines whether Announce On Rotate is enabled or disabled. Available options: true, false
+  ANNOUNCE_ON_ROTATE: true
+  # The items that take turns being the meta, in rotation order. Every entry needs a price
+  # under TYPE or it is skipped. Available options: Any valid material name
+  ITEMS:
+  - KELP
+  - IRON_INGOT
+  - OAK_LOG
+  - COBBLESTONE
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `META.ENABLED` | `bool` | `true`, `false` | `false` | Turns the farming meta rotation on. While it is off every item keeps the price set under `TYPE`, so updating the plugin never changes an existing economy on its own. |
+| `META.MULTIPLIER` | `dec` | Any decimal number above zero | `1.15` | What the meta item's `TYPE` price is multiplied by. `1.15` means the meta item sells for 15% more; anything at or below zero falls back to no boost. |
+| `META.INTERVAL_DAYS` | `int` | Any whole number | `14` | Days between rotations. Added to `INTERVAL_HOURS`; if both are zero the rotation falls back to 14 days. |
+| `META.INTERVAL_HOURS` | `int` | Any whole number | `0` | Hours between rotations, on top of `INTERVAL_DAYS`. |
+| `META.ANNOUNCE_ON_ROTATE` | `bool` | `true`, `false` | `true` | Broadcasts `MESSAGES.WORTH.META-ROTATED` when the meta changes. Players who turned server broadcasts off in `/settings` do not receive it. |
+| `META.ITEMS` | `list` | List of material names | `[KELP, IRON_INGOT, OAK_LOG, COBBLESTONE]` | The rotation, walked in order and looped. Names that no item matches, duplicates, and items with no price under `TYPE` are skipped. |
+
+### 3. Practical Setup Example
+
+A weekly rotation over four crops with a 20% bonus and no broadcast:
+
+```yaml
+META:
+  ENABLED: true
+  MULTIPLIER: 1.2
+  INTERVAL_DAYS: 7
+  INTERVAL_HOURS: 0
+  ANNOUNCE_ON_ROTATE: false
+  ITEMS:
+  - KELP
+  - SUGAR_CANE
+  - PUMPKIN
+  - CACTUS
+```
+
+The boost reaches every price the item has: `/worth`, the price catalog, the worth lore on the item, `/sell`
+and the sell menus, and spawner auto-sell. `/meta` shows which item holds it, what it is worth with and
+without the bonus, and how long the rotation has left.
+
+The current item and the countdown live in `farming-meta-data.yml` in the plugin folder, so a restart
+picks the rotation up where it left off rather than starting the clock again. Editing this section takes
+effect after `/worth reload`.
+
+---
+
 ## Section: `TYPE`
 
 ### 1. Commented Setup Code Example

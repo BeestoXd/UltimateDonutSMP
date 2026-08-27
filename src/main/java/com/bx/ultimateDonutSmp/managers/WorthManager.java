@@ -173,6 +173,16 @@ public class WorthManager {
         return getWorth(new ItemStack(material));
     }
 
+    // the price before the farming meta multiplier, for callers that need to show both
+    public double getBaseWorth(Material material) {
+        if (material == null || material.isAir()) {
+            return -1;
+        }
+
+        DirectWorthData data = resolveBaseDirectWorth(new ItemStack(material));
+        return data == null ? -1 : data.worth();
+    }
+
     public double getWorth(ItemStack item) {
         DirectWorthData data = resolveDirectWorth(item);
         return data == null ? -1 : data.worth();
@@ -286,7 +296,12 @@ public class WorthManager {
                     continue;
                 }
 
-                entries.add(new WorthBrowserEntry(material, categoryKey, unitWorth, key));
+                entries.add(new WorthBrowserEntry(
+                        material,
+                        categoryKey,
+                        unitWorth * getMetaMultiplier(material),
+                        key
+                ));
             }
         }
 
@@ -877,6 +892,35 @@ public class WorthManager {
     }
 
     private DirectWorthData resolveDirectWorth(ItemStack item) {
+        return applyMetaMultiplier(item == null ? null : item.getType(), resolveBaseDirectWorth(item));
+    }
+
+    // the cache holds base prices, so the meta multiplier is applied on the way out and a
+    // rotation never leaves a stale price behind in it
+    private DirectWorthData applyMetaMultiplier(Material material, DirectWorthData data) {
+        if (data == null) {
+            return null;
+        }
+
+        double multiplier = getMetaMultiplier(material);
+        if (multiplier == 1.0D) {
+            return data;
+        }
+
+        return new DirectWorthData(
+                data.worth() * multiplier,
+                data.sourceKey(),
+                data.categoryKey(),
+                data.resolutionType()
+        );
+    }
+
+    private double getMetaMultiplier(Material material) {
+        FarmingMetaManager farmingMetaManager = plugin.getFarmingMetaManager();
+        return farmingMetaManager == null ? 1.0D : farmingMetaManager.getMultiplierFor(material);
+    }
+
+    private DirectWorthData resolveBaseDirectWorth(ItemStack item) {
         if (item == null || item.getType().isAir()) {
             return null;
         }

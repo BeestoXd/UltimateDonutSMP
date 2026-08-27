@@ -44,6 +44,18 @@ Items placed this way are stored whole, so enchantments, potion data, firework f
 - `/worth`: Opens the full price catalog GUI displaying buy/sell values for every item.
 - `/worth hand`: Checks the sell price of the item currently held in hand.
 
+### 4. Farming Meta Rotation (`/meta`)
+One item from a configured list is the farming meta at any time. It keeps its normal `worth.yml` price
+as a base and sells for a multiple of it, so the item worth farming changes every few weeks without
+anyone editing prices by hand.
+- `/meta` (Alias: `/farmingmeta`): Shows the current meta item, its multiplier, what it sells for now
+  compared to its usual price, and how long is left before the rotation moves on.
+- The boost applies everywhere a price is shown or paid: `/worth`, the price catalog, the worth lore on
+  items, `/sell` and the sell menus, and spawner auto-sell.
+- Rotation is off until `META.ENABLED` is turned on in `worth.yml`, so updating the plugin never moves
+  prices on its own.
+- The countdown is stored in `farming-meta-data.yml`, so restarts do not reset it.
+
 ---
 
 ## Marketplaces

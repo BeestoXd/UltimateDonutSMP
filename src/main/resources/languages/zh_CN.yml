@@ -2410,6 +2410,9 @@ MESSAGES:
     CONTAINER-BREAKDOWN: "&7Base: &f${base} &8| &7contents: &f${contents}"
     RELOADED: "&aWorth config reloaded。"
     NO-ADMIN-PERMISSION: "&cYou do not have permission to reload worth settings。"
+    META-CURRENT: "&b{item} &f是当前的农场热门物品，倍率 &a{multiplier}x&f，售价 &a{price_formatted}&f，原价 &7{base_formatted}&f。下次轮换还有 &e{countdown}&f。"
+    META-INACTIVE: "&c当前没有正在进行的农场热门轮换。"
+    META-ROTATED: "&b{item} &f成为新的农场热门物品，倍率 &a{multiplier}x&f，现在售价 &a{price_formatted}&f。下次轮换还有 &e{countdown}&f。"
   BOUNTY:
     NEW: "&aA new bounty of ${price} has been placed on {player}！"
     INCREASED: "&aThe bounty for {player} has been increased by ${price}！"

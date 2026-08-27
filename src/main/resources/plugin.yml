@@ -240,6 +240,13 @@ commands:
     - prices
     permission: ultimatedonutsmp.command.worth
     permission-message: "&cYou do not have permission to use /worth."
+  meta:
+    description: Show the item that is currently the farming meta
+    usage: /meta
+    aliases:
+    - farmingmeta
+    permission: ultimatedonutsmp.command.meta
+    permission-message: "&cYou do not have permission to use /meta."
   balance:
     description: Check balance
     usage: /balance [player]
@@ -1231,6 +1238,7 @@ permissions:
       ultimatedonutsmp.command.sellhistory: true
       ultimatedonutsmp.command.topsell: true
       ultimatedonutsmp.command.worth: true
+      ultimatedonutsmp.command.meta: true
       ultimatedonutsmp.command.balance: true
       ultimatedonutsmp.command.pay: true
       ultimatedonutsmp.command.addmoney: true
@@ -1431,6 +1439,9 @@ permissions:
     default: op
   ultimatedonutsmp.command.worth:
     description: Access to /worth command
+    default: true
+  ultimatedonutsmp.command.meta:
+    description: Access to /meta command
     default: true
   ultimatedonutsmp.command.balance:
     description: Access to /balance command

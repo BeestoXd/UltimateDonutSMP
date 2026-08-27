@@ -2416,6 +2416,9 @@ MESSAGES:
     CONTAINER-BREAKDOWN: "&7Base: &f${base} &8| &7contents: &f${contents}"
     RELOADED: "&aWorth config reloaded."
     NO-ADMIN-PERMISSION: '&cYou do not have permission to reload worth settings.'
+    META-CURRENT: "&b{item} &fсейчас в мете фарма с множителем &a{multiplier}x&f и продаётся за &a{price_formatted}&f вместо &7{base_formatted}&f. Следующая смена через &e{countdown}&f."
+    META-INACTIVE: "&cСейчас мета фарма не запущена."
+    META-ROTATED: "&b{item} &fтеперь в мете фарма с множителем &a{multiplier}x&f и продаётся за &a{price_formatted}&f. Следующая смена через &e{countdown}&f."
   BOUNTY:
     NEW: "&aA new bounty of ${price} has been placed on {player}!"
     INCREASED: "&aThe bounty for {player} has been increased by ${price}!"

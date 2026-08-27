@@ -42,6 +42,25 @@ BROWSER:
     - '&7Stack x{stack_size}: {stack_price_compact}'
     - ''
     - '&eClick to send the unit price in chat'
+# Configuration section for Meta.
+META:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: false
+  # The decimal value for Multiplier. Available options: Any decimal number
+  MULTIPLIER: 1.15
+  # The numerical value for Interval Days. Available options: Any valid integer
+  INTERVAL_DAYS: 14
+  # The numerical value for Interval Hours. Available options: Any valid integer
+  INTERVAL_HOURS: 0
+  # Determines whether Announce On Rotate is enabled or disabled. Available options: true, false
+  ANNOUNCE_ON_ROTATE: true
+  # The items that take turns being the meta, in rotation order. Every entry needs a price
+  # under TYPE or it is skipped. Available options: Any valid material name
+  ITEMS:
+  - KELP
+  - IRON_INGOT
+  - OAK_LOG
+  - COBBLESTONE
 TYPE:
   # Configuration section for Crops.
   CROPS:
