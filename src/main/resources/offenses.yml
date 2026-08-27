@@ -3,10 +3,17 @@
 #   <key>:
 #     name: "Display Name"
 #     type: BAN | MUTE | WARN | KICK
+#     wipe: false  # optional, defaults to false
 #     durations:
 #       - "30d"  # 1st offense
 #       - "60d"  # 2nd offense
 #       - "perm" # 3rd offense (and beyond)
+#
+# wipe only fires when the offense actually bans someone. It clears their stats, balance, homes,
+# ender chest, crate keys, auctions, orders and the rest of their progress, the same thing
+# /playerwipe does, and there is no undo. Their punishment history, IP history and any spawners
+# they placed are kept. A tier of "0s" is issued as a warning rather than a ban, so it does not
+# wipe, and neither do MUTE, WARN or KICK offenses.
 
 offenses:
   advertising:

@@ -19,6 +19,7 @@ public class OffenseManager {
             String key,
             String name,
             PunishmentType type,
+            boolean wipe,
             List<String> durations
     ) {
         public String getDurationForTier(int tierIndex) {
@@ -59,23 +60,48 @@ public class OffenseManager {
             ConfigurationSection offenseSec = section.getConfigurationSection(key);
             if (offenseSec == null) continue;
 
-            String name = offenseSec.getString("name", key);
-            String typeStr = offenseSec.getString("type", "BAN").toUpperCase(Locale.ROOT);
-            PunishmentType type;
-            try {
-                type = PunishmentType.valueOf(typeStr);
-            } catch (IllegalArgumentException e) {
-                type = PunishmentType.BAN;
-            }
-
-            List<String> durations = offenseSec.getStringList("durations");
-            if (durations.isEmpty() && offenseSec.isString("durations")) {
-                durations = Collections.singletonList(offenseSec.getString("durations"));
-            }
-
-            OffenseRule rule = new OffenseRule(key.toLowerCase(Locale.ROOT), name, type, durations);
-            offenses.put(key.toLowerCase(Locale.ROOT), rule);
+            offenses.put(key.toLowerCase(Locale.ROOT), parseRule(key, offenseSec));
         }
+    }
+
+    static OffenseRule parseRule(String key, ConfigurationSection offenseSec) {
+        String name = offenseSec.getString("name", key);
+        String typeStr = offenseSec.getString("type", "BAN").toUpperCase(Locale.ROOT);
+        PunishmentType type;
+        try {
+            type = PunishmentType.valueOf(typeStr);
+        } catch (IllegalArgumentException e) {
+            type = PunishmentType.BAN;
+        }
+
+        List<String> durations = offenseSec.getStringList("durations");
+        if (durations.isEmpty() && offenseSec.isString("durations")) {
+            durations = Collections.singletonList(offenseSec.getString("durations"));
+        }
+
+        return new OffenseRule(key.toLowerCase(Locale.ROOT), name, type, readWipeFlag(offenseSec), durations);
+    }
+
+    /**
+     * Reads the wipe flag under any casing, since the rest of the file is lower case and admins
+     * reasonably write it as WIPE. A quoted "true" counts as well, so a stray pair of quotes does
+     * not silently turn the flag off.
+     */
+    private static boolean readWipeFlag(ConfigurationSection offenseSec) {
+        for (String key : offenseSec.getKeys(false)) {
+            if (!key.equalsIgnoreCase("wipe")) {
+                continue;
+            }
+            Object raw = offenseSec.get(key);
+            if (raw instanceof Boolean flag) {
+                return flag;
+            }
+            if (raw instanceof String text) {
+                return Boolean.parseBoolean(text.trim());
+            }
+            return false;
+        }
+        return false;
     }
 
     public Optional<OffenseRule> getOffenseRule(String key) {

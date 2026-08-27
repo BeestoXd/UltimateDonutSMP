@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.OffenseManager;
+import com.bx.ultimateDonutSmp.managers.PlayerWipeManager;
 import com.bx.ultimateDonutSmp.managers.PunishmentManager;
 import com.bx.ultimateDonutSmp.models.PunishmentQuery;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
@@ -121,6 +122,10 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
 
         String durationDisplay = expiresAt == null ? "Permanent" : NumberUtils.formatCountdown(Math.max(0L, (expiresAt - System.currentTimeMillis()) / 1000L));
         sendMessage(sender, "&aSuccessfully issued &f" + type.name() + " &apunishment to &b" + target.name() + "&a! [Duration: &f" + durationDisplay + "&a, Reason: &f" + reasonDisplay + "&a]");
+
+        if (ruleOpt.isPresent() && ruleOpt.get().wipe() && isBan(type)) {
+            wipeTarget(sender, target);
+        }
         return true;
     }
 
@@ -151,6 +156,41 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
         }
 
         return Collections.emptyList();
+    }
+
+    private static boolean isBan(PunishmentType type) {
+        return type == PunishmentType.BAN || type == PunishmentType.BLACKLIST;
+    }
+
+    /**
+     * Runs the wipe an offense asked for. It happens after the kick has already gone out, so the
+     * save the quit handler makes on the way out cannot put the old totals back over the rows the
+     * wipe is deleting.
+     */
+    private void wipeTarget(CommandSender sender, ResolvedTarget target) {
+        PlayerWipeManager wipeManager = plugin.getPlayerWipeManager();
+        if (wipeManager == null) {
+            return;
+        }
+
+        PlayerWipeManager.WipeResult result = wipeManager.wipe(
+                new PlayerWipeManager.Target(target.uuid(), target.name()),
+                resolveActor(sender).name()
+        );
+
+        if (result.busy()) {
+            sendMessage(sender, "&cCould not wipe &f" + target.name() + "&c: a player wipe is already running.");
+            return;
+        }
+        if (!result.success()) {
+            String error = result.errorMessage() == null || result.errorMessage().isBlank()
+                    ? "unknown error"
+                    : result.errorMessage();
+            sendMessage(sender, "&cCould not wipe &f" + target.name() + "&c: &f" + error);
+            return;
+        }
+
+        sendMessage(sender, "&aWiped &f" + target.name() + "&a. Records removed: &f" + result.counts().total() + "&a.");
     }
 
     private void applyRuntimeEffect(PunishmentType type, Player onlineTarget, PunishmentRecord record) {
