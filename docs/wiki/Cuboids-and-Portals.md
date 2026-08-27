@@ -75,7 +75,7 @@ the cuboid spawn point is the fallback everything else uses.
 Cuboids can be bound to different server systems to enforce special features or protections:
 
 ```bash
-/cuboid bind <cuboid_name> <spawn|shard|rtp-zone> <true|false>
+/cuboid bind <cuboid_name> <spawn|shard|rtp-zone|rtp-queue> <true|false>
 ```
 
 ### Feature Binds Explained:
@@ -93,6 +93,14 @@ Cuboids can be bound to different server systems to enforce special features or 
 3. **`rtp-zone` Bind**:
    - Defines the exact region where `/rtp` (Random Teleport) will pick safe destination locations.
    *Command*: `/cuboid bind wilderness_bounds rtp-zone true`
+
+4. **`rtp-queue` Bind**:
+   - Puts everyone standing in the region on the RTP matchmaking queue without them typing
+     `/rtpq`, and takes them off again when they walk out. Once enough of them are waiting the
+     whole group is dropped at one shared random location, so a fight starts where they land.
+   - Writes the region name to `QUEUE.CUBOID` in `rtp.yml`, where the match size, destination
+     world and spread radius live.
+   *Command*: `/cuboid bind rtp_pit rtp-queue true`
 
 ---
 

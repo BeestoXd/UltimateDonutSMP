@@ -309,6 +309,11 @@ QUEUE:
   # How far the matched players are scattered around the shared location, in blocks.
   # 0 drops the whole group on the exact same block
   SPREAD-RADIUS: 16
+  # Cuboid that feeds the queue on its own. Standing anywhere inside it puts a player in the
+  # queue without typing /rtpq, and walking back out takes them off it again. Leave empty to
+  # keep the command as the only way in. Bind it in game with
+  # /cuboid bind <cuboid> rtp-queue true
+  CUBOID: ''
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -319,12 +324,18 @@ QUEUE:
 | `QUEUE.MATCH-SIZE` | `int` | `2` - `32` | `2` | How many players have to be waiting before a match fires. Values below 2 are read as 2 and values above 32 are read as 32. |
 | `QUEUE.WORLD` | `string` | Any RTP world name or menu id | `world` | Where matched groups are sent. The name is resolved the same way `/rtp <world>` resolves it, and the world needs its own `WORLD-SETTINGS` entry. |
 | `QUEUE.SPREAD-RADIUS` | `int` | `0` - `512` | `16` | How far apart the group is scattered around the shared location. Each player after the first gets their own safe-location search inside this radius, and `0` drops everyone on the exact same block. |
+| `QUEUE.CUBOID` | `string` | Any cuboid name | `''` | A region that queues players by itself. Anyone standing inside is put on the queue about a second after walking in, and taken back off it on the way out. Leave it empty and `/rtpq` stays the only way in. `/cuboid bind <cuboid> rtp-queue true` writes the name here for you. |
 | `QUEUE.MESSAGES.*` | `string` | Any coloured text | see below | Player feedback for joining, leaving, and being matched. |
 
 The queue deliberately ignores RTP cooldowns, playtime requirements and the `PLAYERS-IN-RTP`
 slot limit, the same way the respawn teleport does, because a match has to move everybody at
 once. It also skips the stand-still countdown: one player stepping sideways would otherwise
 cancel their half of the match and leave the rest alone in the wilderness.
+
+The cuboid only takes back out the players it queued itself, so somebody who ran `/rtpq` before
+walking through keeps their place. Give it a region of its own rather than reusing
+`RTP-ZONE.CUBOID` from `config.yml`: that one runs a countdown and sends every player somewhere
+different, which is the opposite of what a match is for.
 
 ### 3. Practical Setup Example
 
@@ -335,6 +346,8 @@ QUEUE:
   MATCH-SIZE: 3
   WORLD: world_nether
   SPREAD-RADIUS: 30
+  # Players queue by walking into the pit at spawn instead of typing anything
+  CUBOID: rtp_pit
 ```
 
 ---

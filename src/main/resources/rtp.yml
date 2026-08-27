@@ -82,6 +82,11 @@ QUEUE:
   # How far the matched players are scattered around the shared location, in blocks.
   # 0 drops the whole group on the exact same block
   SPREAD-RADIUS: 16
+  # Cuboid that feeds the queue on its own. Standing anywhere inside it puts a player in the
+  # queue without typing /rtpq, and walking back out takes them off it again. Leave empty to
+  # keep the command as the only way in. Bind it in game with
+  # /cuboid bind <cuboid> rtp-queue true
+  CUBOID: ''
   # User feedback for the matchmaking queue
   MESSAGES:
     DISABLED: '&cThe RTP queue is currently disabled.'
