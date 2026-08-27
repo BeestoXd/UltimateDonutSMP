@@ -1,11 +1,13 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.utils.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -17,18 +19,14 @@ public class CuboidManager {
 
     public record Cuboid(String world, int x1, int y1, int z1, int x2, int y2, int z2) {
         public boolean contains(Location loc) {
-            if (loc.getWorld() == null || !loc.getWorld().getName().equalsIgnoreCase(world)) {
+            if (loc.getWorld() == null) {
                 return false;
             }
-
-            int x = loc.getBlockX();
-            int y = loc.getBlockY();
-            int z = loc.getBlockZ();
-            return x >= Math.min(x1, x2) && x <= Math.max(x1, x2)
-                    && y >= Math.min(y1, y2) && y <= Math.max(y1, y2)
-                    && z >= Math.min(z1, z2) && z <= Math.max(z1, z2);
+            return isInside(this, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         }
     }
+
+    private static final String SPAWN_SECTION = "CUBOID-SPAWNS";
 
     private final UltimateDonutSmp plugin;
     private final Map<String, Cuboid> cuboids = new HashMap<>();
@@ -129,10 +127,100 @@ public class CuboidManager {
         return new Location(world, centerX, centerY, centerZ);
     }
 
+    /**
+     * The spawn point an admin saved with /cuboid setspawn, or null when there is none. A point that
+     * no longer sits inside the region counts as none, so redefining a cuboid can never leave players
+     * landing outside it.
+     */
+    public Location getCuboidSpawn(String name) {
+        Cuboid cuboid = getCuboid(name);
+        if (cuboid == null) {
+            return null;
+        }
+
+        String serialized = plugin.getConfigManager().getConfig().getString(spawnPath(name));
+        if (!spawnFitsCuboid(cuboid, serialized)) {
+            return null;
+        }
+        return LocationUtils.parse(serialized);
+    }
+
+    public void setCuboidSpawn(String name, Location location) {
+        plugin.getConfigManager().getConfig().set(spawnPath(name), LocationUtils.serialize(location));
+    }
+
+    public boolean clearCuboidSpawn(String name) {
+        String path = spawnPath(name);
+        FileConfiguration config = plugin.getConfigManager().getConfig();
+        if (config.getString(path) == null) {
+            return false;
+        }
+        config.set(path, null);
+        return true;
+    }
+
+    /**
+     * Drops a saved spawn point that the region no longer covers. Recreating a cuboid under a name
+     * that already had one is the way that happens.
+     */
+    public boolean dropSpawnOutsideBounds(String name) {
+        String serialized = plugin.getConfigManager().getConfig().getString(spawnPath(name));
+        if (serialized == null || serialized.isBlank() || spawnFitsCuboid(getCuboid(name), serialized)) {
+            return false;
+        }
+        return clearCuboidSpawn(name);
+    }
+
+    static String spawnPath(String name) {
+        return SPAWN_SECTION + "." + (name == null ? "" : name.toLowerCase());
+    }
+
+    /**
+     * Bounds check on a serialized location, so a stored spawn can be judged without the world being
+     * loaded. Only the feet block has to be inside, matching how the automatic teleport spot is picked.
+     */
+    static boolean spawnFitsCuboid(Cuboid cuboid, String serialized) {
+        if (cuboid == null || serialized == null || serialized.isBlank()) {
+            return false;
+        }
+
+        String[] parts = serialized.split(",");
+        if (parts.length < 4) {
+            return false;
+        }
+
+        try {
+            return isInside(
+                    cuboid,
+                    parts[0].trim(),
+                    (int) Math.floor(Double.parseDouble(parts[1].trim())),
+                    (int) Math.floor(Double.parseDouble(parts[2].trim())),
+                    (int) Math.floor(Double.parseDouble(parts[3].trim()))
+            );
+        } catch (NumberFormatException exception) {
+            return false;
+        }
+    }
+
+    static boolean isInside(Cuboid cuboid, String worldName, int x, int y, int z) {
+        if (cuboid == null || worldName == null || !worldName.equalsIgnoreCase(cuboid.world())) {
+            return false;
+        }
+
+        return x >= Math.min(cuboid.x1(), cuboid.x2()) && x <= Math.max(cuboid.x1(), cuboid.x2())
+                && y >= Math.min(cuboid.y1(), cuboid.y2()) && y <= Math.max(cuboid.y1(), cuboid.y2())
+                && z >= Math.min(cuboid.z1(), cuboid.z2()) && z <= Math.max(cuboid.z1(), cuboid.z2());
+    }
+
     public Location getCuboidTeleportLocation(String name) {
         Cuboid cuboid = getCuboid(name);
         if (cuboid == null) {
             return null;
+        }
+
+        Location savedSpawn = getCuboidSpawn(name);
+        if (savedSpawn != null) {
+            return savedSpawn;
         }
 
         World world = Bukkit.getWorld(cuboid.world());

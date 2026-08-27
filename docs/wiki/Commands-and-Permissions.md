@@ -87,7 +87,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 
 | Command | Usage Syntax | Description | Permission Node |
 | :--- | :--- | :--- | :--- |
-| `/cuboid` | `/cuboid <wand\|create <name>\|delete <name>\|list\|bind ...>` | Region selection & feature binding | `ultimatedonutsmp.admin.cuboid` |
+| `/cuboid` | `/cuboid <wand\|create <name>\|delete <name>\|list\|setspawn <name>\|delspawn <name>\|bind ...>` | Region selection & feature binding | `ultimatedonutsmp.admin.cuboid` |
 | `/portal` | `/portal <create\|delete\|list\|setcuboid\|setdestination>` | Custom portal trigger setup | `ultimatedonutsmp.admin.portal` |
 | `/arena` | `/arena <create\|delete\|setpos1\|setpos2\|setreturn\|enable>` | Duel arena setup and configuration | `ultimatedonutsmp.admin.arena` |
 | `/ffaarena` | `/ffaarena <create\|delete\|setpos\|enable>` | Instanced FFA arena management | `ultimatedonutsmp.admin.ffaarena` |

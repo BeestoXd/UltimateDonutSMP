@@ -638,7 +638,7 @@ commands:
     permission-message: "&cYou do not have permission to use /clearlag."
   cuboid:
     description: Manage cuboid regions
-    usage: /cuboid <wand|create|delete|list|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>
+    usage: /cuboid <wand|create|delete|list|setspawn|delspawn|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>
     permission: ultimatedonutsmp.command.cuboid
     permission-message: "&cYou do not have permission to use /cuboid."
   setwarp:

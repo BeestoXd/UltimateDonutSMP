@@ -217,7 +217,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/crate` | - | `/crate <create\|delete\|type\|open\|keys\|reload\|key\|take\|set\|keyall\|add\|edit\|remove\|bind\|unbind\|info>` | `ultimatedonutsmp.command.crate` |
 | `/crates` | - | `/crates` | `ultimatedonutsmp.command.crates` |
 | `/create` | - | `/create <invite\|friends> <player> [map]` | `ultimatedonutsmp.command.create` |
-| `/cuboid` | - | `/cuboid <wand\|create\|delete\|list\|bind <cuboid> <spawn\|shard\|rtp-zone> <true\|false>\|reload>` | `ultimatedonutsmp.command.cuboid` |
+| `/cuboid` | - | `/cuboid <wand\|create\|delete\|list\|setspawn\|delspawn\|bind <cuboid> <spawn\|shard\|rtp-zone> <true\|false>\|reload>` | `ultimatedonutsmp.command.cuboid` |
 | `/delhome` | - | `/delhome <name>` | `ultimatedonutsmp.command.delhome` |
 | `/delwarp` | - | `/delwarp <name>` | `ultimatedonutsmp.command.delwarp` |
 | `/discord` | - | `/discord` | `ultimatedonutsmp.command.discord` |
