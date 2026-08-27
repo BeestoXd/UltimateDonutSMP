@@ -967,7 +967,7 @@ MONEY-NAMETAGS:
   ENABLED: true
   # The text or value for Format. Supports {balance} and PlaceholderAPI placeholders.
   # Available options: Any valid string text
-  FORMAT: '&a${balance}'
+  FORMAT: '&a$ &f{balance}'
   # Determines whether balances are shortened to 1.1K, 1.1M, 1.1B and so on instead of
   # being written out as 1,100,000. Available options: true, false
   SHORT-FORMAT: true
@@ -982,7 +982,7 @@ MONEY-NAMETAGS:
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
 | `MONEY-NAMETAGS.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `MONEY-NAMETAGS` system. Set to `false` to take the option out of the game entirely, whatever players picked in `/settings`. |
-| `MONEY-NAMETAGS.FORMAT` | `str` | Any string text | `'&a${balance}'` | The line drawn under the username. `{balance}` is replaced with the player's balance, and PlaceholderAPI placeholders are resolved against the player who owns the line. |
+| `MONEY-NAMETAGS.FORMAT` | `str` | Any string text | `'&a$ &f{balance}'` | The line drawn under the username. `{balance}` is replaced with the player's balance, and PlaceholderAPI placeholders are resolved against the player who owns the line. |
 | `MONEY-NAMETAGS.SHORT-FORMAT` | `bool` | `true`, `false` | `true` | `true` writes `1.1K`, `1.1M`, `1.1B`, `1.1T` and `1.1Q` where `false` writes them out in full as `1,100,000`. Leaving it on keeps the line narrow once balances run into the billions. |
 | `MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS` | `int` | `1` to `40` | `10` | How often balances are re-read and sent out. It has nothing to do with where the line sits or how it follows a player, since the client draws it as part of the nametag. Lower it if you want balance changes to appear faster. |
 

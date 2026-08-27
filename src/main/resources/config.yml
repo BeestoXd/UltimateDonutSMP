@@ -386,7 +386,7 @@ MONEY-NAMETAGS:
   ENABLED: true
   # The text or value for Format. Supports {balance} and PlaceholderAPI placeholders.
   # Available options: Any valid string text
-  FORMAT: '&a${balance}'
+  FORMAT: '&a$ &f{balance}'
   # Determines whether balances are shortened to 1.1K, 1.1M, 1.1B and so on instead of
   # being written out as 1,100,000. Available options: true, false
   SHORT-FORMAT: true

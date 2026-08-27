@@ -40,6 +40,12 @@ class MoneyNametagConfigurationTest {
     }
 
     @Test
+    void theShippedFormatPutsAGreenSignInFrontOfAWhiteAmount() {
+        assertEquals("&a$ &f884M", MoneyNametagManager.render("&a$ &f{balance}", 884_000_000D, true));
+        assertEquals("&a$ &f884,000,000", MoneyNametagManager.render("&a$ &f{balance}", 884_000_000D, false));
+    }
+
+    @Test
     void aFormatWithoutThePlaceholderIsLeftAlone() {
         assertEquals("&7Balance hidden", MoneyNametagManager.render("&7Balance hidden", 1_000D, false));
         assertEquals("1,000", MoneyNametagManager.render(null, 1_000D, false));
@@ -52,7 +58,7 @@ class MoneyNametagConfigurationTest {
 
         assertTrue(config.isConfigurationSection("MONEY-NAMETAGS"));
         assertTrue(config.getBoolean("MONEY-NAMETAGS.ENABLED"));
-        assertEquals("&a${balance}", config.getString("MONEY-NAMETAGS.FORMAT"));
+        assertEquals("&a$ &f{balance}", config.getString("MONEY-NAMETAGS.FORMAT"));
         assertTrue(config.getBoolean("MONEY-NAMETAGS.SHORT-FORMAT"));
         assertEquals(10, config.getInt("MONEY-NAMETAGS.UPDATE-INTERVAL-TICKS"));
 
