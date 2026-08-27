@@ -1795,6 +1795,20 @@ CONFIG:
           - "&7Range: &b{min_radius}-{max_radius}"
           - "&7Cooldown: &b{cooldown}s"
           - "&7Benötigte spielzeit: &b{required_playtime}"
+    QUEUE:
+      MESSAGES:
+        DISABLED: "&cDie RTP-Warteschlange ist derzeit deaktiviert."
+        UNAVAILABLE: "&cDie RTP-Warteschlange ist gerade nicht verfügbar."
+        BUSY: "&cBeende erst deinen laufenden Teleport, bevor du der RTP-Warteschlange beitrittst."
+        JOINED: "&e[RTP Queue] &fDu bist der Warteschlange beigetreten. Warte auf weitere Spieler... &7({waiting}/{needed})"
+        PLAYER-JOINED: "&e[RTP Queue] &f{player} ist der Warteschlange beigetreten. &7({waiting}/{needed})"
+        ALREADY-QUEUED: "&cDu stehst bereits auf Platz #{position} der RTP-Warteschlange."
+        LEFT: "&e[RTP Queue] &fDu hast die Warteschlange verlassen."
+        PLAYER-LEFT: "&e[RTP Queue] &f{player} hat die Warteschlange verlassen. &7({waiting}/{needed})"
+        NOT-QUEUED: "&cDu stehst nicht in der RTP-Warteschlange."
+        MATCH-FOUND: "&a[RTP Queue] &fGegner gefunden! Du wirst in dasselbe Gebiet teleportiert..."
+        MATCH-FAILED: "&c[RTP Queue] &fEs wurde kein sicherer Ort für das Match gefunden, du bist zurück in der Warteschlange."
+        MATCH-ABANDONED: "&c[RTP Queue] &fDie anderen Spieler sind vor dem Start gegangen, du bist zurück in der Warteschlange."
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:

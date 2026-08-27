@@ -292,6 +292,103 @@ The `{cooldown}` placeholder in the RTP menu shows the viewing player their own 
 
 ---
 
+## Section: `QUEUE`
+
+### 1. Commented Setup Code Example
+
+```yaml
+# Matchmaking queue in front of RTP. Players run /rtpq to wait for other players, and the whole
+# group is dropped at one shared random location instead of at a random location each
+QUEUE:
+  # Enable or disable the RTP matchmaking queue and the /rtpq command (true / false)
+  ENABLED: true
+  # How many players have to be waiting before the group is teleported
+  MATCH-SIZE: 2
+  # World the matched group is teleported into
+  WORLD: world
+  # How far the matched players are scattered around the shared location, in blocks.
+  # 0 drops the whole group on the exact same block
+  SPREAD-RADIUS: 16
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `QUEUE.ENABLED` | `bool` | `true`, `false` | `true` | Turns the matchmaking queue and the `/rtpq` command on or off. The queue also follows the global `ENABLED` toggle above, so switching RTP off switches the queue off with it. |
+| `QUEUE.MATCH-SIZE` | `int` | `2` - `32` | `2` | How many players have to be waiting before a match fires. Values below 2 are read as 2 and values above 32 are read as 32. |
+| `QUEUE.WORLD` | `string` | Any RTP world name or menu id | `world` | Where matched groups are sent. The name is resolved the same way `/rtp <world>` resolves it, and the world needs its own `WORLD-SETTINGS` entry. |
+| `QUEUE.SPREAD-RADIUS` | `int` | `0` - `512` | `16` | How far apart the group is scattered around the shared location. Each player after the first gets their own safe-location search inside this radius, and `0` drops everyone on the exact same block. |
+| `QUEUE.MESSAGES.*` | `string` | Any coloured text | see below | Player feedback for joining, leaving, and being matched. |
+
+The queue deliberately ignores RTP cooldowns, playtime requirements and the `PLAYERS-IN-RTP`
+slot limit, the same way the respawn teleport does, because a match has to move everybody at
+once. It also skips the stand-still countdown: one player stepping sideways would otherwise
+cancel their half of the match and leave the rest alone in the wilderness.
+
+### 3. Practical Setup Example
+
+```yaml
+QUEUE:
+  ENABLED: true
+  # Three players per match, dropped within 30 blocks of each other in the nether
+  MATCH-SIZE: 3
+  WORLD: world_nether
+  SPREAD-RADIUS: 30
+```
+
+---
+
+## Section: `QUEUE.MESSAGES`
+
+### 1. Commented Setup Code Example
+
+```yaml
+  # User feedback for the matchmaking queue
+  MESSAGES:
+    DISABLED: '&cThe RTP queue is currently disabled.'
+    UNAVAILABLE: '&cThe RTP queue is not available right now.'
+    BUSY: '&cFinish the teleport you already started before joining the RTP queue.'
+    JOINED: '&e[RTP Queue] &fYou have joined the queue. Waiting for another player... &7({waiting}/{needed})'
+    PLAYER-JOINED: '&e[RTP Queue] &f{player} has joined the queue. &7({waiting}/{needed})'
+    ALREADY-QUEUED: '&cYou are already in the RTP queue at position #{position}.'
+    LEFT: '&e[RTP Queue] &fYou have left the queue.'
+    PLAYER-LEFT: '&e[RTP Queue] &f{player} has left the queue. &7({waiting}/{needed})'
+    NOT-QUEUED: '&cYou are not in the RTP queue.'
+    MATCH-FOUND: '&a[RTP Queue] &fMatch found! Teleporting you to the same area...'
+    MATCH-FAILED: '&c[RTP Queue] &fNo safe location was found for the match, so you are back in the queue.'
+    MATCH-ABANDONED: '&c[RTP Queue] &fThe other players left before the match started, so you are back in the queue.'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Placeholders | Shown When |
+| :--- | :--- | :--- |
+| `DISABLED` | none | `/rtpq` is used while `QUEUE.ENABLED` is `false`. |
+| `UNAVAILABLE` | none | `QUEUE.WORLD` does not resolve to a world with `WORLD-SETTINGS`. |
+| `BUSY` | none | The player already has an RTP search or teleport running. |
+| `JOINED` | `{waiting}`, `{needed}` | The player joins the queue. |
+| `PLAYER-JOINED` | `{player}`, `{waiting}`, `{needed}` | Sent to everyone already waiting when somebody else joins. |
+| `ALREADY-QUEUED` | `{position}` | The player runs `/rtpq` while already waiting. |
+| `LEFT` | none | The player runs `/rtpq leave`. |
+| `PLAYER-LEFT` | `{player}`, `{waiting}`, `{needed}` | Sent to everyone still waiting when somebody leaves. |
+| `NOT-QUEUED` | none | `/rtpq leave` is used by a player who is not in the queue. |
+| `MATCH-FOUND` | none | The queue fills and the search for the shared location starts. |
+| `MATCH-FAILED` | none | No safe location was found, and the group goes back into the queue. |
+| `MATCH-ABANDONED` | none | Too many of the matched players disconnected before the teleport. |
+
+Setting any message to an empty string silences it without disabling the behaviour behind it.
+
+### 3. Practical Setup Example
+
+```yaml
+  MESSAGES:
+    JOINED: '&b&lPVP QUEUE &8» &fWaiting for an opponent &7({waiting}/{needed})'
+    MATCH-FOUND: '&b&lPVP QUEUE &8» &fOpponent found, good luck!'
+```
+
+---
+
 ## Section: `MESSAGES`
 
 ### 1. Commented Setup Code Example

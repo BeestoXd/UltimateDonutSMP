@@ -70,6 +70,33 @@ SETTINGS:
       "ultimatedonutsmp.rtp.cooldown.vip+": 10
       "ultimatedonutsmp.rtp.cooldown.vip": 15
 
+# Matchmaking queue in front of RTP. Players run /rtpq to wait for other players, and the whole
+# group is dropped at one shared random location instead of at a random location each
+QUEUE:
+  # Enable or disable the RTP matchmaking queue and the /rtpq command (true / false)
+  ENABLED: true
+  # How many players have to be waiting before the group is teleported
+  MATCH-SIZE: 2
+  # World the matched group is teleported into
+  WORLD: world
+  # How far the matched players are scattered around the shared location, in blocks.
+  # 0 drops the whole group on the exact same block
+  SPREAD-RADIUS: 16
+  # User feedback for the matchmaking queue
+  MESSAGES:
+    DISABLED: '&cThe RTP queue is currently disabled.'
+    UNAVAILABLE: '&cThe RTP queue is not available right now.'
+    BUSY: '&cFinish the teleport you already started before joining the RTP queue.'
+    JOINED: '&e[RTP Queue] &fYou have joined the queue. Waiting for another player... &7({waiting}/{needed})'
+    PLAYER-JOINED: '&e[RTP Queue] &f{player} has joined the queue. &7({waiting}/{needed})'
+    ALREADY-QUEUED: '&cYou are already in the RTP queue at position #{position}.'
+    LEFT: '&e[RTP Queue] &fYou have left the queue.'
+    PLAYER-LEFT: '&e[RTP Queue] &f{player} has left the queue. &7({waiting}/{needed})'
+    NOT-QUEUED: '&cYou are not in the RTP queue.'
+    MATCH-FOUND: '&a[RTP Queue] &fMatch found! Teleporting you to the same area...'
+    MATCH-FAILED: '&c[RTP Queue] &fNo safe location was found for the match, so you are back in the queue.'
+    MATCH-ABANDONED: '&c[RTP Queue] &fThe other players left before the match started, so you are back in the queue.'
+
 # User feedback and status messages
 MESSAGES:
   DISABLED: '&cRTP is currently disabled.'

@@ -1660,6 +1660,20 @@ CONFIG:
           - "&7Range: &b{min_radius}-{max_radius}"
           - "&7Cooldown: &b{cooldown}s"
           - "&7Tiempo de juego requerido: &b{required_playtime}"
+    QUEUE:
+      MESSAGES:
+        DISABLED: "&cLa cola de RTP está desactivada actualmente."
+        UNAVAILABLE: "&cLa cola de RTP no está disponible en este momento."
+        BUSY: "&cTermina el teletransporte que ya has empezado antes de entrar en la cola de RTP."
+        JOINED: "&e[RTP Queue] &fHas entrado en la cola. Esperando a otro jugador... &7({waiting}/{needed})"
+        PLAYER-JOINED: "&e[RTP Queue] &f{player} ha entrado en la cola. &7({waiting}/{needed})"
+        ALREADY-QUEUED: "&cYa estás en la cola de RTP en la posición #{position}."
+        LEFT: "&e[RTP Queue] &fHas salido de la cola."
+        PLAYER-LEFT: "&e[RTP Queue] &f{player} ha salido de la cola. &7({waiting}/{needed})"
+        NOT-QUEUED: "&cNo estás en la cola de RTP."
+        MATCH-FOUND: "&a[RTP Queue] &f¡Emparejamiento encontrado! Te teletransportamos a la misma zona..."
+        MATCH-FAILED: "&c[RTP Queue] &fNo se encontró un lugar seguro para el encuentro, así que vuelves a la cola."
+        MATCH-ABANDONED: "&c[RTP Queue] &fLos demás jugadores se fueron antes de empezar, así que vuelves a la cola."
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:

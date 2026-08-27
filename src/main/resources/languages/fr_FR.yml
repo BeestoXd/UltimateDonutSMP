@@ -1660,6 +1660,20 @@ CONFIG:
           - "&7Portée : &b{min_radius}-{max_radius}"
           - "&7Recharge : &b{cooldown}s"
           - "&7Temps de jeu requis : &b{required_playtime}"
+    QUEUE:
+      MESSAGES:
+        DISABLED: "&cLa file d'attente RTP est actuellement désactivée."
+        UNAVAILABLE: "&cLa file d'attente RTP n'est pas disponible pour le moment."
+        BUSY: "&cTermine la téléportation déjà en cours avant de rejoindre la file RTP."
+        JOINED: "&e[RTP Queue] &fTu as rejoint la file. En attente d'un autre joueur... &7({waiting}/{needed})"
+        PLAYER-JOINED: "&e[RTP Queue] &f{player} a rejoint la file. &7({waiting}/{needed})"
+        ALREADY-QUEUED: "&cTu es déjà dans la file RTP à la position #{position}."
+        LEFT: "&e[RTP Queue] &fTu as quitté la file."
+        PLAYER-LEFT: "&e[RTP Queue] &f{player} a quitté la file. &7({waiting}/{needed})"
+        NOT-QUEUED: "&cTu n'es pas dans la file RTP."
+        MATCH-FOUND: "&a[RTP Queue] &fAdversaire trouvé ! Téléportation vers la même zone..."
+        MATCH-FAILED: "&c[RTP Queue] &fAucun endroit sûr n'a été trouvé pour la rencontre, tu retournes dans la file."
+        MATCH-ABANDONED: "&c[RTP Queue] &fLes autres joueurs sont partis avant le début, tu retournes dans la file."
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:

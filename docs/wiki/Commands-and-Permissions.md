@@ -22,6 +22,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/spawn` | `/spawn` | None | Teleport to server spawn | `ultimatedonutsmp.command.spawn` |
 | `/afk` | `/afk` | None | Teleport to or enter AFK reward zone | `ultimatedonutsmp.command.afk` |
 | `/rtp` | `/rtp [world]` | None | Random teleport into the wilderness | `ultimatedonutsmp.command.rtp` |
+| `/rtpq` | `/rtpq [join\|leave]` | `/rtpqueue` | Queue up to be random teleported into the wilderness together with other waiting players | `ultimatedonutsmp.command.rtpq` |
 | `/balance` | `/balance [player]` | `/bal`, `/money` | Check money balance | `ultimatedonutsmp.command.balance` |
 | `/pay` | `/pay <player> <amount>` | None | Pay money to another player | `ultimatedonutsmp.command.pay` |
 | `/shards` | `/shards [player]` | None | Check shard balance | `ultimatedonutsmp.command.shards` |
