@@ -52,6 +52,7 @@ public class WorthCommand implements CommandExecutor {
 
             plugin.getConfigManager().reloadWorth();
             plugin.getWorthManager().reload();
+            plugin.getFarmingMetaManager().load();
             sendMessage(sender, plugin.getConfigManager().getMessages().getString(
                     "WORTH.RELOADED",
                     "&aWorth config reloaded."

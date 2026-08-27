@@ -70,6 +70,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private AFKManager afkManager;
     private HoverStatsManager hoverStatsManager;
     private WorthManager worthManager;
+    private FarmingMetaManager farmingMetaManager;
     private MoneyNametagManager moneyNametagManager;
     private ShopManager shopManager;
     private OrdersManager ordersManager;
@@ -203,6 +204,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         afkManager = new AFKManager(this);
         hoverStatsManager = new HoverStatsManager(this);
         worthManager = new WorthManager(this);
+        farmingMetaManager = new FarmingMetaManager(this);
+        farmingMetaManager.load();
         moneyNametagManager = new MoneyNametagManager(this);
         shopManager = new ShopManager(this);
         filterManager = new FilterManager(this);
@@ -295,6 +298,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         AFKCheckTask.start(this);
         LunarTeammatesTask.start(this);
         BillfordTask.start(this); // Billford trade rotation check (every 30 s)
+        FarmingMetaTask.start(this); // farming meta rotation check (every 30 s)
         OrdersExpiryTask.start(this);
         AuctionHouseExpiryTask.start(this);
         AuctionOrderBotTask.start(this);
@@ -661,6 +665,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("topsell", sellStatsCmd, FeatureManager.Feature.SELL);
         setTabCompleter("topsell", sellStatsCmd);
         setExecutor("worth", new WorthCommand(this), FeatureManager.Feature.SELL, FeatureManager.Feature.WORTH);
+        setExecutor("meta", new MetaCommand(this), FeatureManager.Feature.SELL, FeatureManager.Feature.WORTH);
 
         // RTP
         setExecutor("rtp", new RTPCommand(this), FeatureManager.Feature.RTP);
@@ -1049,6 +1054,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         warpManager.loadAll();
         spawnManager.load();
         worthManager.reload();
+        farmingMetaManager.load();
         moneyNametagManager.reload();
         shopManager.reload();
         ordersManager.reload();
@@ -1276,6 +1282,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public WorthManager getWorthManager() {
         return worthManager;
+    }
+
+    public FarmingMetaManager getFarmingMetaManager() {
+        return farmingMetaManager;
     }
 
     public MoneyNametagManager getMoneyNametagManager() {

@@ -2418,6 +2418,9 @@ MESSAGES:
     CONTAINER-BREAKDOWN: "&7Base: &f${base} &8| &7contents: &f${contents}"
     RELOADED: "&aWorth config reloaded."
     NO-ADMIN-PERMISSION: '&cYou do not have permission to reload worth settings.'
+    META-CURRENT: "&b{item} &fes el meta de farmeo con &a{multiplier}x&f y se vende por &a{price_formatted}&f en lugar de &7{base_formatted}&f. Próxima rotación en &e{countdown}&f."
+    META-INACTIVE: "&cAhora mismo no hay ningún meta de farmeo activo."
+    META-ROTATED: "&b{item} &fes el nuevo meta de farmeo con &a{multiplier}x&f y ahora se vende por &a{price_formatted}&f. Próxima rotación en &e{countdown}&f."
   BOUNTY:
     NEW: "&aA new bounty of ${price} has been placed on {player}!"
     INCREASED: "&aThe bounty for {player} has been increased by ${price}!"

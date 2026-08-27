@@ -1233,6 +1233,12 @@ WORTH:
   RELOADED: '&aWorth config reloaded.'
   # The text or value for No Admin Permission. Available options: Any valid string text
   NO-ADMIN-PERMISSION: '&cYou do not have permission to reload worth settings.'
+  # The text or value for Meta Current. Available options: Any valid string text
+  META-CURRENT: '&b{item} &fis the farming meta at &a{multiplier}x&f and sells for &a{price_formatted}&f, up from &7{base_formatted}&f. Next rotation in &e{countdown}&f.'
+  # The text or value for Meta Inactive. Available options: Any valid string text
+  META-INACTIVE: '&cNo farming meta is running right now.'
+  # The text or value for Meta Rotated. Available options: Any valid string text
+  META-ROTATED: '&b{item} &fis the new farming meta at &a{multiplier}x&f and now sells for &a{price_formatted}&f. Next rotation in &e{countdown}&f.'
 # Configuration section for Bounty.
 ```
 
@@ -1246,6 +1252,9 @@ WORTH:
 | `WORTH.CONTAINER-BREAKDOWN` | `str` | Any string text | `'&7Base: &f${base} &8| &7Contents: &...'` | Configures the technical `CONTAINER-BREAKDOWN` parameter for `WORTH.CONTAINER-BREAKDOWN` in `messages.yml`. |
 | `WORTH.RELOADED` | `str` | Any string text | `'&aWorth config reloaded.'` | Configures the technical `RELOADED` parameter for `WORTH.RELOADED` in `messages.yml`. |
 | `WORTH.NO-ADMIN-PERMISSION` | `str` | Any string text | `'&cYou do not have permission to rel...'` | Configures the technical `NO-ADMIN-PERMISSION` parameter for `WORTH.NO-ADMIN-PERMISSION` in `messages.yml`. |
+| `WORTH.META-CURRENT` | `str` | Any string text | `'&b{item} &fis the farming meta at &a{mult...'` | Answer to `/meta` while a rotation is running. Supports `{item}`, `{multiplier}`, `{base}`, `{base_formatted}`, `{price}`, `{price_formatted}`, and `{countdown}`. |
+| `WORTH.META-INACTIVE` | `str` | Any string text | `'&cNo farming meta is running right now.'` | Answer to `/meta` when `META.ENABLED` is off in `worth.yml` or no configured item has a price. |
+| `WORTH.META-ROTATED` | `str` | Any string text | `'&b{item} &fis the new farming meta at &a{mult...'` | Broadcast when the meta moves to the next item, unless `META.ANNOUNCE_ON_ROTATE` is off. Supports the same placeholders as `WORTH.META-CURRENT`. |
 
 ### 3. Practical Setup Example
 
@@ -1263,6 +1272,12 @@ WORTH:
   RELOADED: '&aWorth config reloaded.'
   # The text or value for No Admin Permission. Available options: Any valid string text
   NO-ADMIN-PERMISSION: '&cYou do not have permission to reload worth settings.'
+  # The text or value for Meta Current. Available options: Any valid string text
+  META-CURRENT: '&b{item} &fis the farming meta at &a{multiplier}x&f and sells for &a{price_formatted}&f, up from &7{base_formatted}&f. Next rotation in &e{countdown}&f.'
+  # The text or value for Meta Inactive. Available options: Any valid string text
+  META-INACTIVE: '&cNo farming meta is running right now.'
+  # The text or value for Meta Rotated. Available options: Any valid string text
+  META-ROTATED: '&b{item} &fis the new farming meta at &a{multiplier}x&f and now sells for &a{price_formatted}&f. Next rotation in &e{countdown}&f.'
 # Configuration section for Bounty.
 ```
 

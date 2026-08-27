@@ -254,6 +254,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/leave` | - | `/leave` | `ultimatedonutsmp.command.leave` |
 | `/logs` | - | `/logs` | `ultimatedonutsmp.command.logs` |
 | `/maintenance` | - | `/maintenance <on\|off\|status\|setlobby [server]>` | `ultimatedonutsmp.command.maintenance` |
+| `/meta` | `/farmingmeta` | `/meta` | `ultimatedonutsmp.command.meta` |
 | `/msg` | `/message`, `/tell`, `/whisper`, `/w` | `/msg <player> <message>` | `ultimatedonutsmp.command.msg` |
 | `/mute` | - | `/mute <player> [reason]` | `ultimatedonutsmp.command.mute` |
 | `/nightvision` | `/nv` | `/nightvision` | `ultimatedonutsmp.command.nightvision` |
