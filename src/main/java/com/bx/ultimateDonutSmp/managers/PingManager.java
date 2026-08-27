@@ -34,6 +34,10 @@ public final class PingManager implements Listener {
     private final Map<UUID, Long> pendingKeepAlives = new ConcurrentHashMap<>();
     private boolean protocolLibEnabled = false;
 
+    private volatile boolean geyserAbsent;
+    private volatile Method geyserApiMethod;
+    private volatile Method geyserConnectionMethod;
+
     public PingManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -160,12 +164,26 @@ public final class PingManager implements Listener {
      * Checks GeyserApi via reflection if Geyser is installed on the server.
      */
     private int getGeyserPing(UUID uuid) {
+        // Without Geyser installed this lookup walks the whole plugin classloader graph and builds a
+        // ClassNotFoundException, and it used to run on every ping refresh. The answer cannot change
+        // while the server is up.
+        if (geyserAbsent) {
+            return -1;
+        }
+
         try {
-            Class<?> geyserApiClass = Class.forName("org.geysermc.geyser.api.GeyserApi");
-            Method apiMethod = geyserApiClass.getMethod("api");
+            Method apiMethod = geyserApiMethod;
+            Method connectionMethod = geyserConnectionMethod;
+            if (apiMethod == null || connectionMethod == null) {
+                Class<?> geyserApiClass = Class.forName("org.geysermc.geyser.api.GeyserApi");
+                apiMethod = geyserApiClass.getMethod("api");
+                connectionMethod = geyserApiClass.getMethod("connectionByUuid", UUID.class);
+                geyserApiMethod = apiMethod;
+                geyserConnectionMethod = connectionMethod;
+            }
+
             Object apiInstance = apiMethod.invoke(null);
             if (apiInstance != null) {
-                Method connectionMethod = geyserApiClass.getMethod("connectionByUuid", UUID.class);
                 Object connection = connectionMethod.invoke(apiInstance, uuid);
                 if (connection != null) {
                     Method pingMethod = connection.getClass().getMethod("ping");
@@ -178,8 +196,11 @@ public final class PingManager implements Listener {
                     }
                 }
             }
+        } catch (ClassNotFoundException | NoSuchMethodException | LinkageError absent) {
+            // Geyser is not installed. Stop asking.
+            geyserAbsent = true;
         } catch (Throwable ignored) {
-            // Geyser API not available or player is not a Bedrock player on local Geyser
+            // Geyser is present but this player is not a Bedrock connection, or the call failed.
         }
         return -1;
     }
