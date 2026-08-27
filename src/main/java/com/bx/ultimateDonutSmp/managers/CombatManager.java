@@ -92,7 +92,17 @@ public class CombatManager {
     public long getRemainingSeconds(UUID uuid) {
         Long expiry = combatMap.get(uuid);
         if (expiry == null) return 0;
-        return Math.max(0, (expiry - System.currentTimeMillis()) / 1000L);
+        return remainingSeconds(expiry, System.currentTimeMillis());
+    }
+
+    /**
+     * Rounds the leftover millis up, so a tag with 19.95 seconds on it still reads 20. The action
+     * bar draws its first frame a tick after the expiry is stamped, so truncating here opened a
+     * twenty second tag on 19 and finished on a second of 0 while the player was still tagged.
+     */
+    static long remainingSeconds(long expiryMillis, long nowMillis) {
+        long remainingMillis = expiryMillis - nowMillis;
+        return remainingMillis <= 0L ? 0L : (remainingMillis + 999L) / 1000L;
     }
 
     public boolean isEnabled() {
