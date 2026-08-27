@@ -100,7 +100,7 @@ public class ScoreboardManager {
     public void applyVisibility(Player player) {
         SidebarSettings settings = readSettings();
         if (folia) {
-            if (!isEnabled()) {
+            if (!settings.enabled()) {
                 releasePlayerFolia(player);
                 return;
             }
@@ -110,7 +110,7 @@ public class ScoreboardManager {
             }
             updateFolia(player, settings);
         } else {
-            if (!isEnabled()) {
+            if (!settings.enabled()) {
                 releaseOwnedBoardSpigot(player);
                 return;
             }
@@ -211,7 +211,7 @@ public class ScoreboardManager {
     // ── Folia Implementations ──────────────────────────────────────────────────
 
     private void setupPlayerFolia(Player player, SidebarSettings settings) {
-        if (!isEnabled()) {
+        if (!settings.enabled()) {
             releasePlayerFolia(player);
             return;
         }
@@ -228,7 +228,7 @@ public class ScoreboardManager {
     }
 
     private void updateFolia(Player player, SidebarSettings settings) {
-        if (!isEnabled()) {
+        if (!settings.enabled()) {
             releasePlayerFolia(player);
             return;
         }
@@ -300,7 +300,7 @@ public class ScoreboardManager {
     // ── Spigot/Paper Implementations ───────────────────────────────────────────
 
     private void setupPlayerSpigot(Player player, SidebarSettings settings) {
-        if (!isEnabled()) {
+        if (!settings.enabled()) {
             releaseOwnedBoardSpigot(player);
             return;
         }
@@ -328,7 +328,7 @@ public class ScoreboardManager {
     }
 
     private void updateSpigot(Player player, SidebarSettings settings) {
-        if (!isEnabled()) {
+        if (!settings.enabled()) {
             releaseOwnedBoardSpigot(player);
             return;
         }
@@ -459,14 +459,22 @@ public class ScoreboardManager {
         // placeholder and colour pipeline on a string that is finished.
         if (text.length() <= 64) {
             team.setPrefix(text);
-            team.setSuffix("");
+            // Prefix and suffix each broadcast a team update of their own, and a short line leaves
+            // the suffix empty every pass after the first.
+            applySuffixSpigot(team, "");
             return;
         }
 
         int split = findSafeSplit(text, 64);
         int end = findSafeSplit(text, split + 64);
         team.setPrefix(text.substring(0, split));
-        team.setSuffix(text.substring(split, end));
+        applySuffixSpigot(team, text.substring(split, end));
+    }
+
+    private void applySuffixSpigot(Team team, String suffix) {
+        if (!suffix.equals(team.getSuffix())) {
+            team.setSuffix(suffix);
+        }
     }
 
     private void hidePlayerSpigot(Player player) {
@@ -524,16 +532,27 @@ public class ScoreboardManager {
     /** Reads every sidebar config value the render needs, once, for a whole update pass. */
     private SidebarSettings readSettings() {
         FileConfiguration scoreboard = plugin.getConfigManager().getScoreboard();
+        int iconColumnWidth = Math.max(0, scoreboard.getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10));
+        // Both currency icons are the same for every line and every player in a pass, and building
+        // one asks CurrencyManager for a definition twice.
+        CurrencyManager currency = plugin.getCurrencyManager();
         return new SidebarSettings(
+                isEnabled(),
                 scoreboard.getStringList("SCOREBOARD.TITLE"),
                 scoreboard.getStringList("SCOREBOARD.LINES"),
                 scoreboard.getString("SCOREBOARD.TEAM"),
                 scoreboard.getString("SCOREBOARD.SHARD-BOOSTER"),
                 scoreboard.getString("SCOREBOARD.SHARD-CUBOID"),
-                Math.max(0, scoreboard.getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10)),
+                iconColumnWidth,
                 scoreboard.getBoolean("SCOREBOARD.ALIGN-ICON-COLUMN", true),
-                scoreboard.getBoolean("SCOREBOARD.HIDE-NUMBERS", true)
+                scoreboard.getBoolean("SCOREBOARD.HIDE-NUMBERS", true),
+                sidebarCurrencyIcon(currency, CurrencyManager.CurrencyType.MONEY, iconColumnWidth),
+                sidebarCurrencyIcon(currency, CurrencyManager.CurrencyType.SHARDS, iconColumnWidth)
         );
+    }
+
+    private String sidebarCurrencyIcon(CurrencyManager currency, CurrencyManager.CurrencyType type, int columnWidth) {
+        return paddedSidebarIcon(currency.symbolColor(type) + "&l" + currency.symbol(type), columnWidth);
     }
 
     private static boolean hasPlaceholder(String text) {
@@ -549,6 +568,15 @@ public class ScoreboardManager {
         boolean hasBooster = plugin.getShardManager().hasBooster(player.getUniqueId());
         boolean showShardCuboid = plugin.getShardManager().shouldShowShardCuboidLine(player.getUniqueId());
 
+        // The player's balances read the same for every line of this pass, so format them once
+        // rather than once per line.
+        PlayerData data = plugin.getPlayerDataManager().get(player);
+        CurrencyManager currencyManager = plugin.getCurrencyManager();
+        String moneyShort = currencyManager.formatCompactAmount(
+                CurrencyManager.CurrencyType.MONEY, data != null ? data.getMoney() : 0D);
+        String shardsShort = currencyManager.formatCompactAmount(
+                CurrencyManager.CurrencyType.SHARDS, data != null ? data.getShards() : 0L);
+
         for (String line : settings.lines()) {
             String resolved = resolveConfiguredLine(
                     line,
@@ -560,7 +588,7 @@ public class ScoreboardManager {
                     showShardCuboid
             );
             if (resolved != null) {
-                resolved = applySidebarEconomyPlaceholders(resolved, player);
+                resolved = applySidebarEconomyPlaceholders(resolved, moneyShort, shardsShort);
                 lines.add(applySidebarLayoutPlaceholders(resolved, settings));
             }
         }
@@ -594,17 +622,14 @@ public class ScoreboardManager {
         return line;
     }
 
-    private String applySidebarEconomyPlaceholders(String line, Player player) {
+    private String applySidebarEconomyPlaceholders(String line, String moneyShort, String shardsShort) {
         if (line == null || line.isEmpty()) {
             return line == null ? "" : line;
         }
-
-        PlayerData data = plugin.getPlayerDataManager().get(player);
-        double money = data != null ? data.getMoney() : 0D;
-        long shards = data != null ? data.getShards() : 0L;
-        CurrencyManager currencyManager = plugin.getCurrencyManager();
-        String moneyShort = currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, money);
-        String shardsShort = currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, shards);
+        // One scan rules out all seven replacements below, and most sidebar lines carry none of them.
+        if (line.indexOf("%economy_") < 0) {
+            return line;
+        }
 
         return line
                 .replace("%economy_nicestMoney%", moneyShort)
@@ -622,16 +647,8 @@ public class ScoreboardManager {
         }
 
         String result = line
-                .replace("{money_icon}", paddedSidebarIcon(
-                        plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.MONEY)
-                                + "&l"
-                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.MONEY),
-                        settings))
-                .replace("{shards_icon}", paddedSidebarIcon(
-                        plugin.getCurrencyManager().symbolColor(CurrencyManager.CurrencyType.SHARDS)
-                                + "&l"
-                                + plugin.getCurrencyManager().symbol(CurrencyManager.CurrencyType.SHARDS),
-                        settings));
+                .replace("{money_icon}", settings.moneyIcon())
+                .replace("{shards_icon}", settings.shardsIcon());
 
         if (result.indexOf("{sb_icon:") < 0) {
             return result;
@@ -640,14 +657,14 @@ public class ScoreboardManager {
         Matcher matcher = SIDEBAR_ICON_PATTERN.matcher(result);
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(paddedSidebarIcon(matcher.group(1), settings)));
+            matcher.appendReplacement(buffer,
+                    Matcher.quoteReplacement(paddedSidebarIcon(matcher.group(1), settings.iconColumnWidth())));
         }
         matcher.appendTail(buffer);
         return buffer.toString();
     }
 
-    private String paddedSidebarIcon(String icon, SidebarSettings settings) {
-        int columnWidth = settings.iconColumnWidth();
+    private String paddedSidebarIcon(String icon, int columnWidth) {
         int iconWidth = minecraftTextWidth(icon);
         int missingWidth = Math.max(0, columnWidth - iconWidth);
         int spaces = Math.max(1, Math.round(missingWidth / 4F));
@@ -820,6 +837,7 @@ public class ScoreboardManager {
 
     /** The sidebar config as it stood at the start of one update pass. */
     private record SidebarSettings(
+            boolean enabled,
             List<String> titles,
             List<String> lines,
             String teamLine,
@@ -827,7 +845,9 @@ public class ScoreboardManager {
             String shardCuboidLine,
             int iconColumnWidth,
             boolean alignIconColumn,
-            boolean hideNumbers
+            boolean hideNumbers,
+            String moneyIcon,
+            String shardsIcon
     ) {
     }
 }

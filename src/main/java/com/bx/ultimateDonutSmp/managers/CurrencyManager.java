@@ -2,12 +2,15 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CurrencyManager {
 
@@ -54,12 +57,18 @@ public class CurrencyManager {
 
     private final UltimateDonutSmp plugin;
 
+    // Rebuilding a definition costs a dozen config lookups and three list allocations, and the
+    // sidebar asks for one six times per line. The values only move when the config is reloaded.
+    private final Map<CurrencyType, CurrencyDefinition> definitionCache = new ConcurrentHashMap<>();
+    private volatile FileConfiguration definitionSource;
+
     public CurrencyManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
     }
 
     public void reload() {
-        // Values are read live from config so existing reload flow only needs a hook point.
+        definitionCache.clear();
+        definitionSource = null;
     }
 
     public String formatMoney(double amount) {
@@ -230,8 +239,26 @@ public class CurrencyManager {
     }
 
     private CurrencyDefinition definition(CurrencyType type) {
-        ConfigurationSection section = plugin.getConfigManager().getConfig()
-                .getConfigurationSection("CURRENCY." + type.configKey);
+        FileConfiguration config = plugin.getConfigManager().getConfig();
+        // ConfigManager.reload() swaps in a fresh YamlConfiguration, so an identity change means the
+        // file was reloaded without going through reload() above.
+        if (config != definitionSource) {
+            definitionCache.clear();
+            definitionSource = config;
+        }
+
+        CurrencyDefinition cached = definitionCache.get(type);
+        if (cached != null) {
+            return cached;
+        }
+
+        CurrencyDefinition built = readDefinition(config, type);
+        definitionCache.put(type, built);
+        return built;
+    }
+
+    private CurrencyDefinition readDefinition(FileConfiguration config, CurrencyType type) {
+        ConfigurationSection section = config.getConfigurationSection("CURRENCY." + type.configKey);
 
         String singular = getString(section, "SINGULAR", type.defaultSingular);
         String plural = getString(section, "PLURAL", type.defaultPlural);
