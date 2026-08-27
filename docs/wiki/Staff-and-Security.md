@@ -165,3 +165,32 @@ Punishments, IP history, and freeze or staff-mode state survive a wipe, so a ban
 and alt tracking still works. Spawners they placed are left standing as well, since those are blocks
 in the world rather than stored progress. There is no undo, so take a database backup first if the
 account matters.
+
+### Wiping On A Ban (`offenses.yml`)
+
+A wipe can also ride along with a punishment instead of being a second command. Each preset in
+`offenses.yml` takes an optional `wipe` flag, and when `/offend` issues that offense the account is
+cleared straight after the kick:
+
+```yaml
+offenses:
+  duping:
+    name: "Item Duping"
+    type: BAN
+    wipe: true
+    durations:
+      - "3d"
+      - "perm"
+```
+
+The flag defaults to `false`, so nothing changes on a preset that does not mention it, and it is
+read under any casing, so `wipe`, `WIPE` and `Wipe` all work.
+
+It only fires on a real ban. A `MUTE`, `WARN` or `KICK` preset ignores it, and so does a tier of
+`0s`, since that tier is issued as a warning rather than a ban. Staff running the command see the
+number of records removed underneath the usual punishment confirmation.
+
+The wipe itself is the same one `/playerwipe` performs, down to what survives it, and it cannot be
+undone either. Turning it on for an offense your team hands out often is a good way to delete a lot
+of accounts you meant to keep, so it suits things like duping or botting rather than a first-strike
+chat rule.
