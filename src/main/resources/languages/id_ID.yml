@@ -1796,6 +1796,20 @@ CONFIG:
           - "&7Range: &b{min_radius}-{max_radius}"
           - "&7Cooldown: &b{cooldown}s"
           - "&7Required playtime: &b{required_playtime}"
+    QUEUE:
+      MESSAGES:
+        DISABLED: "&cAntrean RTP sedang dinonaktifkan."
+        UNAVAILABLE: "&cAntrean RTP sedang tidak tersedia."
+        BUSY: "&cSelesaikan dulu teleport yang sedang berjalan sebelum masuk antrean RTP."
+        JOINED: "&e[RTP Queue] &fKamu masuk antrean. Menunggu pemain lain... &7({waiting}/{needed})"
+        PLAYER-JOINED: "&e[RTP Queue] &f{player} masuk antrean. &7({waiting}/{needed})"
+        ALREADY-QUEUED: "&cKamu sudah berada di antrean RTP pada posisi #{position}."
+        LEFT: "&e[RTP Queue] &fKamu keluar dari antrean."
+        PLAYER-LEFT: "&e[RTP Queue] &f{player} keluar dari antrean. &7({waiting}/{needed})"
+        NOT-QUEUED: "&cKamu tidak sedang berada di antrean RTP."
+        MATCH-FOUND: "&a[RTP Queue] &fLawan ditemukan! Kamu dipindahkan ke area yang sama..."
+        MATCH-FAILED: "&c[RTP Queue] &fTidak ada lokasi aman untuk pertemuan ini, kamu kembali ke antrean."
+        MATCH-ABANDONED: "&c[RTP Queue] &fPemain lain keluar sebelum dimulai, kamu kembali ke antrean."
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:

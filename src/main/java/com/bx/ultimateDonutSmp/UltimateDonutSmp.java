@@ -88,6 +88,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private TeleportManager teleportManager;
     private RTPManager rtpManager;
     private RTPZoneManager rtpZoneManager;
+    private RTPQueueManager rtpQueueManager;
     private FirstJoinSpawnManager firstJoinSpawnManager;
     private RespawnRtpManager respawnRtpManager;
     private PortalManager portalManager;
@@ -265,6 +266,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         teleportManager = new TeleportManager(this);
         rtpManager = new RTPManager(this);
         rtpZoneManager = new RTPZoneManager(this);
+        rtpQueueManager = new RTPQueueManager(this);
         firstJoinSpawnManager = new FirstJoinSpawnManager(this);
         respawnRtpManager = new RespawnRtpManager(this);
         portalManager = new PortalManager(this);
@@ -662,6 +664,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         // RTP
         setExecutor("rtp", new RTPCommand(this), FeatureManager.Feature.RTP);
+        setExecutor("rtpq", new RTPQueueCommand(this), FeatureManager.Feature.RTP);
 
         // Stats / Leaderboard
         setExecutor("stats", new StatsCommand(this), FeatureManager.Feature.STATS);
@@ -1057,6 +1060,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         billfordManager.load();
         rtpManager.reload();
+        rtpQueueManager.reload();
         portalManager.loadAll();
         crateManager.reload();
         crateVisualManager.reload();
@@ -1352,6 +1356,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public RTPZoneManager getRtpZoneManager() {
         return rtpZoneManager;
+    }
+
+    public RTPQueueManager getRtpQueueManager() {
+        return rtpQueueManager;
     }
 
     public FirstJoinSpawnManager getFirstJoinSpawnManager() {

@@ -1659,6 +1659,20 @@ CONFIG:
           - "&7Range: &b{min_radius}-{max_radius}"
           - "&7Cooldown: &b{cooldown}s"
           - "&7Требуемое время игры: &b{required_playtime}"
+    QUEUE:
+      MESSAGES:
+        DISABLED: "&cОчередь RTP сейчас отключена."
+        UNAVAILABLE: "&cОчередь RTP сейчас недоступна."
+        BUSY: "&cСначала закончите уже начатую телепортацию, а потом вставайте в очередь RTP."
+        JOINED: "&e[RTP Queue] &fВы встали в очередь. Ждём другого игрока... &7({waiting}/{needed})"
+        PLAYER-JOINED: "&e[RTP Queue] &f{player} встал в очередь. &7({waiting}/{needed})"
+        ALREADY-QUEUED: "&cВы уже стоите в очереди RTP на позиции #{position}."
+        LEFT: "&e[RTP Queue] &fВы вышли из очереди."
+        PLAYER-LEFT: "&e[RTP Queue] &f{player} вышел из очереди. &7({waiting}/{needed})"
+        NOT-QUEUED: "&cВы не стоите в очереди RTP."
+        MATCH-FOUND: "&a[RTP Queue] &fСоперник найден! Телепортируем вас в одно и то же место..."
+        MATCH-FAILED: "&c[RTP Queue] &fБезопасное место для встречи не нашлось, вы снова в очереди."
+        MATCH-ABANDONED: "&c[RTP Queue] &fОстальные игроки вышли до начала, вы снова в очереди."
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:

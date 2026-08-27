@@ -113,6 +113,13 @@ commands:
     usage: /rtp [world]
     permission: ultimatedonutsmp.command.rtp
     permission-message: "&cYou do not have permission to use /rtp."
+  rtpq:
+    description: Join the RTP matchmaking queue
+    usage: /rtpq [join|leave]
+    aliases:
+    - rtpqueue
+    permission: ultimatedonutsmp.command.rtpq
+    permission-message: "&cYou do not have permission to use /rtpq."
   shop:
     description: Open the shop
     usage: /shop [reload]
@@ -1203,6 +1210,7 @@ permissions:
       ultimatedonutsmp.command.afk: true
       ultimatedonutsmp.command.setafk: true
       ultimatedonutsmp.command.rtp: true
+      ultimatedonutsmp.command.rtpq: true
       ultimatedonutsmp.command.shop: true
       ultimatedonutsmp.command.orders: true
       ultimatedonutsmp.command.duel: true
@@ -1360,6 +1368,9 @@ permissions:
     default: true
   ultimatedonutsmp.command.rtp:
     description: Access to /rtp command
+    default: true
+  ultimatedonutsmp.command.rtpq:
+    description: Access to /rtpq command
     default: true
   ultimatedonutsmp.command.shop:
     description: Access to /shop command

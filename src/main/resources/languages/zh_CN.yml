@@ -1655,6 +1655,20 @@ CONFIG:
           - "&7Range: &b{min_radius}-{max_radius}"
           - "&7Cooldown: &b{cooldown}s"
           - "&7需要在线时间: &b{required_playtime}"
+    QUEUE:
+      MESSAGES:
+        DISABLED: "&cRTP 队列当前已关闭。"
+        UNAVAILABLE: "&cRTP 队列暂时不可用。"
+        BUSY: "&c请先完成你已经开始的传送，再加入 RTP 队列。"
+        JOINED: "&e[RTP Queue] &f你已加入队列，正在等待其他玩家... &7({waiting}/{needed})"
+        PLAYER-JOINED: "&e[RTP Queue] &f{player} 加入了队列。&7({waiting}/{needed})"
+        ALREADY-QUEUED: "&c你已经在 RTP 队列中，位置为 #{position}。"
+        LEFT: "&e[RTP Queue] &f你已离开队列。"
+        PLAYER-LEFT: "&e[RTP Queue] &f{player} 离开了队列。&7({waiting}/{needed})"
+        NOT-QUEUED: "&c你不在 RTP 队列中。"
+        MATCH-FOUND: "&a[RTP Queue] &f匹配成功！正在把你传送到同一片区域..."
+        MATCH-FAILED: "&c[RTP Queue] &f没有为这次会合找到安全位置，你已回到队列中。"
+        MATCH-ABANDONED: "&c[RTP Queue] &f其他玩家在开始前离开了，你已回到队列中。"
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:

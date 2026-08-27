@@ -402,6 +402,9 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getShardManager().clearBoosterCache(player.getUniqueId());
         plugin.getRtpZoneManager().clearState(player);
         plugin.getRtpManager().clearSearch(player.getUniqueId());
+        if (plugin.getRtpQueueManager() != null) {
+            plugin.getRtpQueueManager().handleQuit(player.getUniqueId());
+        }
         plugin.getPortalManager().clearPlayerState(player.getUniqueId());
         plugin.getPortalManager().refreshHologramsSoon();
         plugin.getCrateManager().clearSession(player.getUniqueId());

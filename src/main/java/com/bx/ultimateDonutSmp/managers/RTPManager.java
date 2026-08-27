@@ -1301,6 +1301,13 @@ public class RTPManager {
     private void startSearch(Player player, String worldName, SearchSettings settings) {
         clearSearch(player.getUniqueId());
 
+        // A normal RTP replaces whatever the matchmaking queue had lined up, so the player
+        // does not get pulled to a meeting point they have already teleported away from.
+        if (plugin.getRtpQueueManager() != null
+                && plugin.getRtpQueueManager().isInQueue(player.getUniqueId())) {
+            plugin.getRtpQueueManager().leave(player);
+        }
+
         Location preCached = pollPreCachedLocation(worldName);
         if (preCached != null) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("RTP.SEARCH-START"));
@@ -2518,7 +2525,7 @@ public class RTPManager {
         return activeSearches.containsKey(playerId) || activeDirectSearches.containsKey(playerId);
     }
 
-    private boolean hasActiveRtpFlow(UUID playerId) {
+    public boolean hasActiveRtpFlow(UUID playerId) {
         return activeSearches.containsKey(playerId)
                 || activeResultTasks.containsKey(playerId)
                 || activeDirectSearches.containsKey(playerId);

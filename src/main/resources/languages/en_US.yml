@@ -1923,6 +1923,23 @@ CONFIG:
           - '&7Range: &b{min_radius}-{max_radius}'
           - '&7Cooldown: &b{cooldown}s'
           - '&7Required playtime: &b{required_playtime}'
+    QUEUE:
+      MESSAGES:
+        DISABLED: '&cThe RTP queue is currently disabled.'
+        UNAVAILABLE: '&cThe RTP queue is not available right now.'
+        BUSY: '&cFinish the teleport you already started before joining the RTP queue.'
+        JOINED: '&e[RTP Queue] &fYou have joined the queue. Waiting for another player...
+          &7({waiting}/{needed})'
+        PLAYER-JOINED: '&e[RTP Queue] &f{player} has joined the queue. &7({waiting}/{needed})'
+        ALREADY-QUEUED: '&cYou are already in the RTP queue at position #{position}.'
+        LEFT: '&e[RTP Queue] &fYou have left the queue.'
+        PLAYER-LEFT: '&e[RTP Queue] &f{player} has left the queue. &7({waiting}/{needed})'
+        NOT-QUEUED: '&cYou are not in the RTP queue.'
+        MATCH-FOUND: '&a[RTP Queue] &fMatch found! Teleporting you to the same area...'
+        MATCH-FAILED: '&c[RTP Queue] &fNo safe location was found for the match, so
+          you are back in the queue.'
+        MATCH-ABANDONED: '&c[RTP Queue] &fThe other players left before the match
+          started, so you are back in the queue.'
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:
