@@ -56,6 +56,8 @@ public class CuboidCommand implements CommandExecutor {
             case "delete" -> deleteCuboid(player, args);
             case "list" -> listCuboids(player);
             case "bind", "system" -> bindCuboidSystem(player, args);
+            case "setspawn" -> setCuboidSpawn(player, args);
+            case "delspawn" -> deleteCuboidSpawn(player, args);
             default -> sendUsage(player);
         }
         return true;
@@ -98,6 +100,70 @@ public class CuboidCommand implements CommandExecutor {
         Location[] selection = plugin.getCuboidManager().getSelection(player.getUniqueId());
         plugin.getCuboidManager().addCuboid(args[1], selection[0], selection[1]);
         player.sendMessage(ColorUtils.toComponent("&aCuboid &b" + args[1] + " &ahas been created."));
+
+        if (plugin.getCuboidManager().dropSpawnOutsideBounds(args[1]) && plugin.getConfigManager().saveConfig()) {
+            plugin.reloadAllPluginConfigurations();
+            player.sendMessage(ColorUtils.toComponent(
+                    "&7Its old spawn point was outside the new corners, so it has been cleared."
+            ));
+        }
+    }
+
+    private void setCuboidSpawn(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid setspawn <name>"));
+            return;
+        }
+
+        String cuboidName = args[1].toLowerCase();
+        var cuboid = plugin.getCuboidManager().getCuboid(cuboidName);
+        if (cuboid == null) {
+            player.sendMessage(ColorUtils.toComponent("&cCuboid not found: &f" + args[1]));
+            return;
+        }
+
+        Location location = player.getLocation();
+        if (!cuboid.contains(location)) {
+            player.sendMessage(ColorUtils.toComponent(
+                    "&cStand inside &b" + cuboidName + " &cfirst. &7Its spawn point has to be within the region."
+            ));
+            return;
+        }
+
+        plugin.getCuboidManager().setCuboidSpawn(cuboidName, location);
+        if (!plugin.getConfigManager().saveConfig()) {
+            player.sendMessage(ColorUtils.toComponent("&cFailed to save config.yml."));
+            return;
+        }
+        plugin.reloadAllPluginConfigurations();
+        player.sendMessage(ColorUtils.toComponent(
+                "&aCuboid &b" + cuboidName + " &anow spawns players where you are standing. &7(X: &f"
+                        + String.format("%.1f", location.getX()) + "&7, Y: &f"
+                        + String.format("%.1f", location.getY()) + "&7, Z: &f"
+                        + String.format("%.1f", location.getZ()) + "&7)"
+        ));
+    }
+
+    private void deleteCuboidSpawn(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid delspawn <name>"));
+            return;
+        }
+
+        String cuboidName = args[1].toLowerCase();
+        if (!plugin.getCuboidManager().clearCuboidSpawn(cuboidName)) {
+            player.sendMessage(ColorUtils.toComponent("&cCuboid &b" + args[1] + " &chas no spawn point saved."));
+            return;
+        }
+
+        if (!plugin.getConfigManager().saveConfig()) {
+            player.sendMessage(ColorUtils.toComponent("&cFailed to save config.yml."));
+            return;
+        }
+        plugin.reloadAllPluginConfigurations();
+        player.sendMessage(ColorUtils.toComponent(
+                "&aSpawn point for &b" + cuboidName + " &aremoved. &7Players land near the middle of the region again."
+        ));
     }
 
     private void deleteCuboid(Player player, String[] args) {
@@ -210,6 +276,7 @@ public class CuboidCommand implements CommandExecutor {
 
     private void clearDeletedCuboidReferences(String cuboidName) {
         FileConfiguration config = plugin.getConfigManager().getConfig();
+        plugin.getCuboidManager().clearCuboidSpawn(cuboidName);
         updateBindList(config, "CUBOID-BINDS.SPAWN", cuboidName, false);
         updateBindList(config, "CUBOID-BINDS.AFK", cuboidName, false);
 
@@ -259,6 +326,6 @@ public class CuboidCommand implements CommandExecutor {
     }
 
     private void sendUsage(CommandSender sender) {
-        sender.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid <wand|create <name>|delete <name>|list|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>"));
+        sender.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid <wand|create <name>|delete <name>|list|setspawn <name>|delspawn <name>|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>"));
     }
 }

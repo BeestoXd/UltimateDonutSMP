@@ -31,6 +31,43 @@ To view all defined cuboids:
 /cuboid list
 ```
 
+### 3. Choosing Where Players Land
+
+Anything that teleports a player into a cuboid — `/spawn`, a spawn or AFK menu area, the shard AFK
+zone — normally aims for the middle of the region and looks downwards for the first block that is
+safe to stand on. On a hand-built spawn that is rarely the spot you want, and players always arrive
+facing the same direction.
+
+Stand exactly where players should appear, look the way they should be facing, and save it:
+
+```bash
+/cuboid setspawn <name>
+```
+
+*Example*: `/cuboid setspawn spawn_zone`
+
+The position has to be inside the cuboid, otherwise players would land outside the protection the
+region gives them. Your facing is stored along with the coordinates.
+
+To go back to the automatic middle-of-the-region spot:
+
+```bash
+/cuboid delspawn <name>
+```
+
+Saved points live under `CUBOID-SPAWNS` in `config.yml`, keyed by cuboid name:
+
+```yaml
+CUBOID-SPAWNS:
+  spawn_zone: world,128.5,71.0,-64.5,90.0,0.0
+```
+
+Deleting a cuboid removes its spawn point too, and redefining one with the wand clears the old point
+if the new corners no longer cover it.
+
+If a spawn menu area has its own `LOCATION` in `menus.yml`, that still wins for that menu button —
+the cuboid spawn point is the fallback everything else uses.
+
 ---
 
 ## Binding Cuboids to Systems (`/cuboid bind`)
