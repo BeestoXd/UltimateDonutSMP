@@ -425,6 +425,120 @@ class ConfigManagerTest {
         assertTrue(currentLines.contains("      epic: 10"));
     }
 
+    @Test
+    void repairsMiscasedPlaceholdersLeftInExistingMenus() throws Exception {
+        List<String> currentLines = lines(
+                "SELL-MENU:",
+                "  ORES-BUTTON:",
+                "    LORE:",
+                "    - '&7Progress to &f{neXt_multiplier}'",
+                "    - '{porcentage_level} &#6BF18D{porcentage}%'",
+                "PROGRESS-MENU:",
+                "  WORKING-BUTTON:",
+                "    LORE:",
+                "    - '&7{current_earned}/{neXt_goal}'",
+                "SPAWNER-STORAGE-MENU:",
+                "  NEXT-PAGE:",
+                "    LORE:",
+                "    - '&7Go to page &f{neXt_page}&7.' # admin note",
+                "    - '&7Location: &f{world} ({X}, {y}, {z})'"
+        );
+
+        int repaired = repairMiscasedPlaceholders("menus.yml", currentLines);
+        YamlConfiguration merged = yaml(currentLines);
+
+        assertEquals(4, repaired);
+        assertEquals(
+                List.of("&7Progress to &f{next_multiplier}", "{porcentage_level} &#6BF18D{porcentage}%"),
+                merged.getStringList("SELL-MENU.ORES-BUTTON.LORE")
+        );
+        assertEquals(
+                List.of("&7{current_earned}/{next_goal}"),
+                merged.getStringList("PROGRESS-MENU.WORKING-BUTTON.LORE")
+        );
+        assertEquals(
+                List.of("&7Go to page &f{next_page}&7.", "&7Location: &f{world} ({x}, {y}, {z})"),
+                merged.getStringList("SPAWNER-STORAGE-MENU.NEXT-PAGE.LORE")
+        );
+        assertTrue(currentLines.contains("    - '&7Go to page &f{next_page}&7.' # admin note"));
+    }
+
+    @Test
+    void repairsMiscasedPlaceholdersInGeneratedLanguageFiles() throws Exception {
+        List<String> currentLines = lines(
+                "MENUS:",
+                "  SELL-MENU:",
+                "    ORES-BUTTON:",
+                "      LORE:",
+                "      - '&7Progress to &f{neXt_multiplier}'"
+        );
+
+        int repaired = repairMiscasedPlaceholders("languages/id_ID.yml", currentLines);
+
+        assertEquals(1, repaired);
+        assertEquals(
+                List.of("&7Progress to &f{next_multiplier}"),
+                yaml(currentLines).getStringList("MENUS.SELL-MENU.ORES-BUTTON.LORE")
+        );
+    }
+
+    @Test
+    void repairMiscasedPlaceholdersLeavesCleanFilesAndOtherConfigsAlone() throws Exception {
+        List<String> cleanMenus = lines(
+                "SELL-MENU:",
+                "  ORES-BUTTON:",
+                "    LORE:",
+                "    - '&7Progress to &f{next_multiplier}'"
+        );
+        List<String> cleanBefore = new ArrayList<>(cleanMenus);
+
+        assertEquals(0, repairMiscasedPlaceholders("menus.yml", cleanMenus));
+        assertEquals(cleanBefore, cleanMenus);
+
+        List<String> otherConfig = lines(
+                "SETTINGS:",
+                "  TEXT: '&7Page {neXt_page}'"
+        );
+        List<String> otherBefore = new ArrayList<>(otherConfig);
+
+        assertEquals(0, repairMiscasedPlaceholders("config.yml", otherConfig));
+        assertEquals(otherBefore, otherConfig);
+    }
+
+    @Test
+    void bundledMenusAndLanguagesShipNoMiscasedPlaceholders() throws Exception {
+        List<Path> targets = new ArrayList<>();
+        targets.add(Path.of("src/main/resources/menus.yml"));
+        try (Stream<Path> paths = Files.list(Path.of("src/main/resources/languages"))) {
+            paths.filter(ConfigManagerTest::isYamlResource).forEach(targets::add);
+        }
+
+        for (Path target : targets) {
+            String fileName = target.getFileName().toString();
+            String resourceName = "menus.yml".equals(fileName) ? fileName : "languages/" + fileName;
+            List<String> fileLines = new ArrayList<>(Files.readAllLines(target, StandardCharsets.UTF_8));
+
+            assertEquals(
+                    0,
+                    repairMiscasedPlaceholders(resourceName, fileLines),
+                    () -> "Mis-cased placeholder names shipped in " + target
+            );
+        }
+    }
+
+    private static int repairMiscasedPlaceholders(
+            String resourceName,
+            List<String> lines
+    ) throws Exception {
+        Method method = ConfigManager.class.getDeclaredMethod(
+                "repairMiscasedPlaceholders",
+                String.class,
+                List.class
+        );
+        method.setAccessible(true);
+        return (int) method.invoke(new ConfigManager(null), resourceName, lines);
+    }
+
     private static int mergeBundledDefaults(
             String resourceName,
             List<String> currentLines,

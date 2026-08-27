@@ -64,6 +64,7 @@ public class ConfigManager {
     private static final DateTimeFormatter BACKUP_TIMESTAMP_FORMAT =
             DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
     private static final String SETUP_COMMENT_PREFIX = "# UDS setup:";
+    private static final Map<String, String> MISCASED_PLACEHOLDERS = createMiscasedPlaceholders();
 
     private final UltimateDonutSmp plugin;
     private final Set<String> invalidConfigurations = new HashSet<>();
@@ -223,7 +224,8 @@ public class ConfigManager {
         }
 
         int mergedPaths = mergeBundledDefaults(name, currentText.lines(), current, bundledDefault);
-        if (mergedPaths == 0) {
+        int repairedLines = repairMiscasedPlaceholders(name, currentText.lines());
+        if (mergedPaths == 0 && repairedLines == 0) {
             return result;
         }
 
@@ -237,7 +239,13 @@ public class ConfigManager {
             }
             writeTextFileAtomically(targetFile, currentText);
             result.updated = true;
-            plugin.getLogger().info("Added " + mergedPaths + " missing bundled default path(s) to " + name + ".");
+            if (mergedPaths > 0) {
+                plugin.getLogger().info("Added " + mergedPaths + " missing bundled default path(s) to " + name + ".");
+            }
+            if (repairedLines > 0) {
+                plugin.getLogger().info("Repaired " + repairedLines
+                        + " mis-cased placeholder line(s) in " + name + ".");
+            }
         } catch (IOException | InvalidConfigurationException e) {
             result.skipped = true;
             plugin.getLogger().log(Level.WARNING, "Failed to save synced configuration " + targetFile.getPath(), e);
@@ -1250,6 +1258,60 @@ public class ConfigManager {
             index++;
         }
         return line.substring(0, index);
+    }
+
+    /**
+     * A July 2026 casing pass over the bundled text upper-cased the "x" inside placeholder names as
+     * well, so menus.yml and the language files briefly shipped tokens like {neXt_multiplier}. The
+     * bundled copies were corrected a week later, but the merge below only ever adds missing paths,
+     * so a config written during that window keeps the broken spelling and the menu prints it as raw
+     * text. Nothing in the plugin has ever read these spellings, which is what makes rewriting them
+     * safe rather than an edit to an admin's own wording.
+     */
+    private int repairMiscasedPlaceholders(String resourceName, List<String> lines) {
+        if (!isPlaceholderRepairTarget(resourceName)) {
+            return 0;
+        }
+
+        int repaired = 0;
+        for (int index = 0; index < lines.size(); index++) {
+            String line = lines.get(index);
+            String updated = line;
+            for (Map.Entry<String, String> placeholder : MISCASED_PLACEHOLDERS.entrySet()) {
+                updated = updated.replace(placeholder.getKey(), placeholder.getValue());
+            }
+            if (!updated.equals(line)) {
+                lines.set(index, updated);
+                repaired++;
+            }
+        }
+        return repaired;
+    }
+
+    private boolean isPlaceholderRepairTarget(String resourceName) {
+        return resourceName != null
+                && ("menus.yml".equals(resourceName) || resourceName.startsWith("languages/"));
+    }
+
+    private static Map<String, String> createMiscasedPlaceholders() {
+        Map<String, String> placeholders = new LinkedHashMap<>();
+        placeholders.put("{conteXt}", "{context}");
+        placeholders.put("{eXpires_at}", "{expires_at}");
+        placeholders.put("{eXpires}", "{expires}");
+        placeholders.put("{maX_attempts}", "{max_attempts}");
+        placeholders.put("{maX_formatted}", "{max_formatted}");
+        placeholders.put("{maX_members}", "{max_members}");
+        placeholders.put("{maX_page}", "{max_page}");
+        placeholders.put("{maX_radius}", "{max_radius}");
+        placeholders.put("{maX_samples}", "{max_samples}");
+        placeholders.put("{maX}", "{max}");
+        placeholders.put("{neXt_goal}", "{next_goal}");
+        placeholders.put("{neXt_multiplier}", "{next_multiplier}");
+        placeholders.put("{neXt_page}", "{next_page}");
+        placeholders.put("{neXt_rotation}", "{next_rotation}");
+        placeholders.put("{prefiX}", "{prefix}");
+        placeholders.put("{X}", "{x}");
+        return placeholders;
     }
 
     private int mergeBundledDefaults(
@@ -2310,7 +2372,8 @@ public class ConfigManager {
                 current,
                 defaults
         );
-        if (mergedPaths == 0) {
+        int repairedLines = repairMiscasedPlaceholders(name, currentText.lines());
+        if (mergedPaths == 0 && repairedLines == 0) {
             return true;
         }
 
@@ -2322,7 +2385,13 @@ public class ConfigManager {
                 return false;
             }
             writeTextFileAtomically(targetFile, currentText);
-            plugin.getLogger().info("Added " + mergedPaths + " missing generated default path(s) to " + name + ".");
+            if (mergedPaths > 0) {
+                plugin.getLogger().info("Added " + mergedPaths + " missing generated default path(s) to " + name + ".");
+            }
+            if (repairedLines > 0) {
+                plugin.getLogger().info("Repaired " + repairedLines
+                        + " mis-cased placeholder line(s) in " + name + ".");
+            }
             return true;
         } catch (IOException | InvalidConfigurationException e) {
             plugin.getLogger().log(Level.WARNING,
