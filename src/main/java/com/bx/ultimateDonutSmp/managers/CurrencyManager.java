@@ -295,8 +295,25 @@ public class CurrencyManager {
                 compactSuffixes,
                 compactDecimalPlaces,
                 groupingSeparator,
-                decimalSeparator
+                decimalSeparator,
+                buildFormat(decimalPlaces, groupingSeparator, decimalSeparator),
+                buildFormat(compactDecimalPlaces, groupingSeparator, decimalSeparator)
         );
+    }
+
+    private DecimalFormat buildFormat(int decimalPlaces, char groupingSeparator, char decimalSeparator) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        symbols.setGroupingSeparator(groupingSeparator);
+        symbols.setDecimalSeparator(decimalSeparator);
+        return new DecimalFormat(pattern(decimalPlaces), symbols);
+    }
+
+    /**
+     * Identity of the definition currently in use for a currency. It changes when the config is
+     * reloaded, so callers can hold formatted values and drop them when this stops matching.
+     */
+    public Object definitionToken(CurrencyType type) {
+        return definition(type);
     }
 
     private String getString(ConfigurationSection section, String key, String fallback) {
@@ -347,20 +364,22 @@ public class CurrencyManager {
         return Math.max(0, Math.min(8, decimalPlaces));
     }
 
-    private final java.util.Map<String, DecimalFormat> formatCache = new java.util.concurrent.ConcurrentHashMap<>();
-
     private String formatNumber(double amount, int decimalPlaces, CurrencyDefinition definition) {
         if (!Double.isFinite(amount)) {
             amount = 0D;
         }
 
-        String key = decimalPlaces + "|" + definition.groupingSeparator() + "|" + definition.decimalSeparator();
-        DecimalFormat format = formatCache.computeIfAbsent(key, k -> {
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-            symbols.setGroupingSeparator(definition.groupingSeparator());
-            symbols.setDecimalSeparator(definition.decimalSeparator());
-            return new DecimalFormat(pattern(decimalPlaces), symbols);
-        });
+        // Both formats a definition can ask for are built with it. Looking one up used to mean
+        // concatenating a key and allocating a lambda for computeIfAbsent on every call.
+        DecimalFormat format;
+        if (decimalPlaces == definition.decimalPlaces()) {
+            format = definition.amountFormat();
+        } else if (decimalPlaces == definition.compactDecimalPlaces()) {
+            format = definition.compactAmountFormat();
+        } else {
+            format = buildFormat(decimalPlaces, definition.groupingSeparator(), definition.decimalSeparator());
+        }
+
         synchronized (format) {
             return format.format(amount);
         }
@@ -418,6 +437,8 @@ public class CurrencyManager {
             List<String> compactSuffixes,
             int compactDecimalPlaces,
             char groupingSeparator,
-            char decimalSeparator
+            char decimalSeparator,
+            DecimalFormat amountFormat,
+            DecimalFormat compactAmountFormat
     ) {}
 }
