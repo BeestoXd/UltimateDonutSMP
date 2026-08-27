@@ -63,6 +63,14 @@ public class ScoreboardManager {
     private final Map<UUID, Team[]> playerTeams = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> playerLineCounts = new ConcurrentHashMap<>();
 
+    // Formatted balances, and the two sidebar currency icons, held until the value behind them moves.
+    private final Map<UUID, FormattedBalances> balanceCache = new ConcurrentHashMap<>();
+    private Object iconMoneyToken;
+    private Object iconShardsToken;
+    private int iconWidth = -1;
+    private String cachedMoneyIcon;
+    private String cachedShardsIcon;
+
     private int titleIndex = 0;
 
     public ScoreboardManager(UltimateDonutSmp plugin) {
@@ -137,6 +145,7 @@ public class ScoreboardManager {
     }
 
     public void removePlayer(UUID uuid) {
+        balanceCache.remove(uuid);
         if (folia) {
             removePlayerFolia(uuid);
         } else {
@@ -192,6 +201,7 @@ public class ScoreboardManager {
             playerObjectives.clear();
             playerTeams.clear();
             playerLineCounts.clear();
+            balanceCache.clear();
         }
     }
 
@@ -205,6 +215,7 @@ public class ScoreboardManager {
             playerObjectives.remove(uuid);
             playerTeams.remove(uuid);
             playerLineCounts.remove(uuid);
+            balanceCache.remove(uuid);
         }
     }
 
@@ -496,6 +507,7 @@ public class ScoreboardManager {
         playerObjectives.clear();
         playerTeams.clear();
         playerLineCounts.clear();
+        balanceCache.clear();
     }
 
     private void releaseOwnedBoardSpigot(Player player) {
@@ -522,6 +534,7 @@ public class ScoreboardManager {
         playerObjectives.remove(uuid);
         playerTeams.remove(uuid);
         playerLineCounts.remove(uuid);
+        balanceCache.remove(uuid);
         if (numberHider != null) {
             numberHider.forget(uuid);
         }
@@ -533,9 +546,20 @@ public class ScoreboardManager {
     private SidebarSettings readSettings() {
         FileConfiguration scoreboard = plugin.getConfigManager().getScoreboard();
         int iconColumnWidth = Math.max(0, scoreboard.getInt("SCOREBOARD.ICON-COLUMN-WIDTH", 10));
-        // Both currency icons are the same for every line and every player in a pass, and building
-        // one asks CurrencyManager for a definition twice.
         CurrencyManager currency = plugin.getCurrencyManager();
+        Object moneyToken = currency.definitionToken(CurrencyManager.CurrencyType.MONEY);
+        Object shardsToken = currency.definitionToken(CurrencyManager.CurrencyType.SHARDS);
+
+        // An icon only moves when the currency symbol, its colour, or the column width changes.
+        // Rebuilding it every pass meant walking the string for its pixel width every pass.
+        if (moneyToken != iconMoneyToken || shardsToken != iconShardsToken || iconColumnWidth != iconWidth) {
+            cachedMoneyIcon = sidebarCurrencyIcon(currency, CurrencyManager.CurrencyType.MONEY, iconColumnWidth);
+            cachedShardsIcon = sidebarCurrencyIcon(currency, CurrencyManager.CurrencyType.SHARDS, iconColumnWidth);
+            iconMoneyToken = moneyToken;
+            iconShardsToken = shardsToken;
+            iconWidth = iconColumnWidth;
+        }
+
         return new SidebarSettings(
                 isEnabled(),
                 scoreboard.getStringList("SCOREBOARD.TITLE"),
@@ -546,8 +570,10 @@ public class ScoreboardManager {
                 iconColumnWidth,
                 scoreboard.getBoolean("SCOREBOARD.ALIGN-ICON-COLUMN", true),
                 scoreboard.getBoolean("SCOREBOARD.HIDE-NUMBERS", true),
-                sidebarCurrencyIcon(currency, CurrencyManager.CurrencyType.MONEY, iconColumnWidth),
-                sidebarCurrencyIcon(currency, CurrencyManager.CurrencyType.SHARDS, iconColumnWidth)
+                cachedMoneyIcon,
+                cachedShardsIcon,
+                moneyToken,
+                shardsToken
         );
     }
 
@@ -568,14 +594,33 @@ public class ScoreboardManager {
         boolean hasBooster = plugin.getShardManager().hasBooster(player.getUniqueId());
         boolean showShardCuboid = plugin.getShardManager().shouldShowShardCuboidLine(player.getUniqueId());
 
-        // The player's balances read the same for every line of this pass, so format them once
-        // rather than once per line.
+        // Formatting a balance runs it through DecimalFormat, and the result only moves when the
+        // balance does. Hold the last one per player and reuse it until the amount or the currency
+        // config changes underneath it.
         PlayerData data = plugin.getPlayerDataManager().get(player);
-        CurrencyManager currencyManager = plugin.getCurrencyManager();
-        String moneyShort = currencyManager.formatCompactAmount(
-                CurrencyManager.CurrencyType.MONEY, data != null ? data.getMoney() : 0D);
-        String shardsShort = currencyManager.formatCompactAmount(
-                CurrencyManager.CurrencyType.SHARDS, data != null ? data.getShards() : 0L);
+        double money = data != null ? data.getMoney() : 0D;
+        long shards = data != null ? data.getShards() : 0L;
+
+        UUID uuid = player.getUniqueId();
+        FormattedBalances balances = balanceCache.get(uuid);
+        if (balances == null
+                || balances.moneyToken() != settings.moneyToken()
+                || balances.shardsToken() != settings.shardsToken()
+                || Double.compare(balances.money(), money) != 0
+                || balances.shards() != shards) {
+            CurrencyManager currencyManager = plugin.getCurrencyManager();
+            balances = new FormattedBalances(
+                    settings.moneyToken(),
+                    settings.shardsToken(),
+                    money,
+                    shards,
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.MONEY, money),
+                    currencyManager.formatCompactAmount(CurrencyManager.CurrencyType.SHARDS, shards)
+            );
+            balanceCache.put(uuid, balances);
+        }
+        String moneyShort = balances.moneyText();
+        String shardsShort = balances.shardsText();
 
         for (String line : settings.lines()) {
             String resolved = resolveConfiguredLine(
@@ -847,7 +892,20 @@ public class ScoreboardManager {
             boolean alignIconColumn,
             boolean hideNumbers,
             String moneyIcon,
-            String shardsIcon
+            String shardsIcon,
+            Object moneyToken,
+            Object shardsToken
+    ) {
+    }
+
+    /** A player's balances as they were last formatted, with the currency definitions behind them. */
+    private record FormattedBalances(
+            Object moneyToken,
+            Object shardsToken,
+            double money,
+            long shards,
+            String moneyText,
+            String shardsText
     ) {
     }
 }

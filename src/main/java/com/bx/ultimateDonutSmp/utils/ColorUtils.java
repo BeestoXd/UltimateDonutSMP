@@ -292,13 +292,16 @@ public class ColorUtils {
     }
 
     private static String toLegacyHex(String hex) {
-        return String.valueOf(SECTION_CHAR) + "x"
-                + SECTION_CHAR + String.valueOf(hex.charAt(0))
-                + SECTION_CHAR + String.valueOf(hex.charAt(1))
-                + SECTION_CHAR + String.valueOf(hex.charAt(2))
-                + SECTION_CHAR + String.valueOf(hex.charAt(3))
-                + SECTION_CHAR + String.valueOf(hex.charAt(4))
-                + SECTION_CHAR + String.valueOf(hex.charAt(5));
+        // The result is always fourteen characters. Chaining concatenations built a dozen throwaway
+        // strings per colour code, and the sidebar runs this for every line of every player.
+        char[] out = new char[14];
+        out[0] = SECTION_CHAR;
+        out[1] = 'x';
+        for (int i = 0; i < 6; i++) {
+            out[2 + i * 2] = SECTION_CHAR;
+            out[3 + i * 2] = hex.charAt(i);
+        }
+        return new String(out);
     }
 
     private static final Pattern UNICODE_ESCAPE_PATTERN = Pattern.compile("\\\\u([0-9A-Fa-f]{4})");

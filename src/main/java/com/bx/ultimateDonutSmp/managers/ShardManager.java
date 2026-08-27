@@ -187,6 +187,9 @@ public class ShardManager {
     private final Map<UUID, Map<String, ShardCuboidProgress>> cuboidProgress = new HashMap<>();
     private final Map<UUID, Integer> pendingMovementBlocks = new HashMap<>();
     private final Map<UUID, String> lastMatchedCuboid = new HashMap<>();
+    private static final ShardCuboidHudState EMPTY_HUD_STATE =
+            new ShardCuboidHudState("none", "outside", "-", 0, false);
+
     private final Map<UUID, ShardCuboidHudState> hudStates = new HashMap<>();
     private final Map<UUID, Map<UUID, Long>> killRewardCooldowns = new ConcurrentHashMap<>();
 
@@ -594,7 +597,9 @@ public class ShardManager {
     }
 
     public ShardCuboidHudState getHudState(UUID uuid) {
-        return hudStates.getOrDefault(uuid, new ShardCuboidHudState("none", "outside", "-", 0, false));
+        // getOrDefault evaluates its fallback whether or not the key is present, and this runs once
+        // per player per sidebar pass. The fallback never varies, so share one.
+        return hudStates.getOrDefault(uuid, EMPTY_HUD_STATE);
     }
 
     public boolean shouldShowShardCuboidLine(UUID uuid) {
