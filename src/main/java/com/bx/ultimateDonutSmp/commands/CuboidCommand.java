@@ -194,7 +194,7 @@ public class CuboidCommand implements CommandExecutor {
     private void bindCuboidSystem(Player player, String[] args) {
         if (args.length < 4) {
             player.sendMessage(ColorUtils.toComponent(
-                    "&cUsage: /cuboid bind <cuboid> <spawn|shard|rtp-zone> <true|false>"
+                    "&cUsage: /cuboid bind <cuboid> <spawn|shard|rtp-zone|rtp-queue> <true|false>"
             ));
             return;
         }
@@ -208,7 +208,9 @@ public class CuboidCommand implements CommandExecutor {
 
         String role = normalizeRole(args[2]);
         if (role == null) {
-            player.sendMessage(ColorUtils.toComponent("&cUnknown role. Use &fspawn&c, &fshard&c, or &frtp-zone&c."));
+            player.sendMessage(ColorUtils.toComponent(
+                    "&cUnknown role. Use &fspawn&c, &fshard&c, &frtp-zone&c, or &frtp-queue&c."
+            ));
             return;
         }
 
@@ -251,14 +253,19 @@ public class CuboidCommand implements CommandExecutor {
                 config.set("AFK-SYSTEM.AFK-CUBOID-NAME", afkBinds.isEmpty() ? "" : afkBinds.get(0));
             }
             case "rtp-zone" -> config.set("RTP-ZONE.CUBOID", enabled ? cuboidName : "");
+            // The matchmaking cuboid is a queue setting rather than a world setting, so it lives
+            // in rtp.yml next to the rest of QUEUE and is saved from there.
+            case "rtp-queue" -> plugin.getConfigManager().getRtp().set("QUEUE.CUBOID", enabled ? cuboidName : "");
             default -> {
                 player.sendMessage(ColorUtils.toComponent("&cUnknown role."));
                 return;
             }
         }
 
-        if (!plugin.getConfigManager().saveConfig()) {
-            player.sendMessage(ColorUtils.toComponent("&cFailed to save config.yml."));
+        boolean queueRole = "rtp-queue".equals(role);
+        String file = queueRole ? "rtp.yml" : "config.yml";
+        if (!(queueRole ? plugin.getConfigManager().saveRtp() : plugin.getConfigManager().saveConfig())) {
+            player.sendMessage(ColorUtils.toComponent("&cFailed to save " + file + "."));
             return;
         }
         plugin.reloadAllPluginConfigurations();
@@ -321,11 +328,12 @@ public class CuboidCommand implements CommandExecutor {
             case "spawn" -> "spawn";
             case "shard", "shards" -> "shard";
             case "rtp-zone", "rtpzone", "rtp_zone" -> "rtp-zone";
+            case "rtp-queue", "rtpqueue", "rtp_queue", "rtpq" -> "rtp-queue";
             default -> null;
         };
     }
 
     private void sendUsage(CommandSender sender) {
-        sender.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid <wand|create <name>|delete <name>|list|setspawn <name>|delspawn <name>|bind <cuboid> <spawn|shard|rtp-zone> <true|false>|reload>"));
+        sender.sendMessage(ColorUtils.toComponent("&cUsage: /cuboid <wand|create <name>|delete <name>|list|setspawn <name>|delspawn <name>|bind <cuboid> <spawn|shard|rtp-zone|rtp-queue> <true|false>|reload>"));
     }
 }

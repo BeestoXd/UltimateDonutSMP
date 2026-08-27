@@ -2168,6 +2168,7 @@ public class ConfigManager {
     public boolean saveFfa() { return save("ffa.yml", ffa); }
     public boolean saveCrates() { return save("crates.yml", crates); }
     public boolean saveShop() { return save("shop.yml", shop); }
+    public boolean saveRtp() { return save("rtp.yml", rtp); }
     public boolean saveMenus() { return save("menus.yml", menus); }
     public boolean saveAuctionHouse() { return save("auction-house.yml", auctionHouse); }
     public boolean saveDatabase() { return save("database.yml", database); }

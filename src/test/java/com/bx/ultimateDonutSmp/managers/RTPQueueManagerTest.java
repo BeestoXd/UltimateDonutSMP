@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,10 +17,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RTPQueueManagerTest {
@@ -100,6 +104,7 @@ class RTPQueueManagerTest {
         setField(UltimateDonutSmp.class, plugin, "featureManager", new FeatureManager(plugin));
         setField(UltimateDonutSmp.class, plugin, "teleportManager", new TeleportManager(plugin));
         setField(UltimateDonutSmp.class, plugin, "rtpManager", new RTPManager(plugin));
+        setField(UltimateDonutSmp.class, plugin, "cuboidManager", new CuboidManager(plugin));
 
         RTPQueueManager queueManager = new RTPQueueManager(plugin);
         setField(UltimateDonutSmp.class, plugin, "rtpQueueManager", queueManager);
@@ -113,6 +118,10 @@ class RTPQueueManagerTest {
     }
 
     private Player createMockPlayer(UUID uuid, String name) {
+        return createMockPlayer(uuid, name, () -> null);
+    }
+
+    private Player createMockPlayer(UUID uuid, String name, Supplier<Location> standingAt) {
         return (Player) Proxy.newProxyInstance(
                 Player.class.getClassLoader(),
                 new Class<?>[]{Player.class},
@@ -121,9 +130,24 @@ class RTPQueueManagerTest {
                     case "getName" -> name;
                     case "isOnline" -> true;
                     case "hasPermission" -> false;
+                    case "getLocation" -> standingAt.get();
                     default -> null;
                 }
         );
+    }
+
+    @SuppressWarnings("unchecked")
+    private void registerCuboid(UltimateDonutSmp plugin, String name) throws Exception {
+        Field cuboidsField = CuboidManager.class.getDeclaredField("cuboids");
+        cuboidsField.setAccessible(true);
+        ((Map<String, CuboidManager.Cuboid>) cuboidsField.get(plugin.getCuboidManager()))
+                .put(name, new CuboidManager.Cuboid("world", 0, 0, 0, 10, 10, 10));
+    }
+
+    private UltimateDonutSmp pluginOf(RTPQueueManager queueManager) throws Exception {
+        Field pluginField = RTPQueueManager.class.getDeclaredField("plugin");
+        pluginField.setAccessible(true);
+        return (UltimateDonutSmp) pluginField.get(queueManager);
     }
 
     @Test
@@ -232,6 +256,69 @@ class RTPQueueManagerTest {
 
         assertFalse(queueManager.join(createMockPlayer(UUID.randomUUID(), "First")));
         assertEquals(0, queueManager.getQueueSize());
+    }
+
+    @Test
+    void cuboidQueuesWhoeverStandsInItAndDropsThemOnTheWayOut() throws Exception {
+        YamlConfiguration rtpConfig = rtpConfig(4);
+        rtpConfig.set("QUEUE.CUBOID", "rtpqueue");
+        RTPQueueManager queueManager = createQueueManager(rtpConfig);
+        registerCuboid(pluginOf(queueManager), "rtpqueue");
+
+        UUID playerId = UUID.randomUUID();
+        Location[] standingAt = {new Location(mockWorld, 5, 5, 5)};
+        Player player = createMockPlayer(playerId, "First", () -> standingAt[0]);
+
+        assertTrue(queueManager.isZoneActive());
+        queueManager.tickZone(player);
+        assertTrue(queueManager.isInQueue(playerId));
+
+        queueManager.tickZone(player);
+        assertEquals(1, queueManager.getQueueSize());
+
+        standingAt[0] = new Location(mockWorld, 500, 5, 5);
+        queueManager.tickZone(player);
+        assertFalse(queueManager.isInQueue(playerId));
+    }
+
+    @Test
+    void cuboidLeavesPlayersWhoQueuedWithTheCommandWhereTheyAre() throws Exception {
+        YamlConfiguration rtpConfig = rtpConfig(4);
+        rtpConfig.set("QUEUE.CUBOID", "rtpqueue");
+        RTPQueueManager queueManager = createQueueManager(rtpConfig);
+        registerCuboid(pluginOf(queueManager), "rtpqueue");
+
+        UUID playerId = UUID.randomUUID();
+        Location[] standingAt = {new Location(mockWorld, 500, 5, 5)};
+        Player player = createMockPlayer(playerId, "First", () -> standingAt[0]);
+
+        assertTrue(queueManager.join(player));
+
+        standingAt[0] = new Location(mockWorld, 5, 5, 5);
+        queueManager.tickZone(player);
+        standingAt[0] = new Location(mockWorld, 500, 5, 5);
+        queueManager.tickZone(player);
+
+        assertTrue(queueManager.isInQueue(playerId));
+    }
+
+    @Test
+    void cuboidSweepStaysOffWithoutARegionBehindIt() throws Exception {
+        YamlConfiguration rtpConfig = rtpConfig(4);
+        RTPQueueManager queueManager = createQueueManager(rtpConfig);
+
+        UUID playerId = UUID.randomUUID();
+        Player player = createMockPlayer(playerId, "First", () -> new Location(mockWorld, 5, 5, 5));
+
+        assertNull(queueManager.getCuboidName());
+        assertFalse(queueManager.isZoneActive());
+        queueManager.tickZone(player);
+        assertFalse(queueManager.isInQueue(playerId));
+
+        rtpConfig.set("QUEUE.CUBOID", "missing");
+        assertTrue(queueManager.isZoneActive());
+        queueManager.tickZone(player);
+        assertFalse(queueManager.isInQueue(playerId));
     }
 
     @Test

@@ -11,7 +11,9 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Matchmaking in front of RTP. Players run /rtpq to wait for other players, and once enough of
@@ -23,6 +25,10 @@ import java.util.UUID;
  * match is never blocked by RTP cooldowns, playtime requirements, or the RTP slot queue. The
  * waiting list only lives in memory, so leaving the server or reloading the config drops the
  * player from it.
+ *
+ * <p>A server can skip the command entirely by naming a cuboid in {@code QUEUE.CUBOID}. Players
+ * standing inside it are queued a second after they walk in and taken back off the queue when
+ * they walk out, so a group forms by gathering in one room instead of by typing.
  */
 public class RTPQueueManager {
 
@@ -34,6 +40,7 @@ public class RTPQueueManager {
 
     private final UltimateDonutSmp plugin;
     private final LinkedHashSet<UUID> waiting = new LinkedHashSet<>();
+    private final Set<UUID> zoneJoined = ConcurrentHashMap.newKeySet();
 
     public RTPQueueManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -72,6 +79,27 @@ public class RTPQueueManager {
         return plugin.getRtpManager().resolveWorldSelector(configured);
     }
 
+    /**
+     * Name of the cuboid that queues players by standing in it, or null when the server has not
+     * set one and {@code /rtpq} is the only way in.
+     */
+    public String getCuboidName() {
+        FileConfiguration rtp = rtpConfig();
+        String configured = rtp == null ? null : rtp.getString("QUEUE.CUBOID", "");
+        return configured == null || configured.isBlank() ? null : configured;
+    }
+
+    /**
+     * Whether the per-second cuboid sweep has anything to do, so the task can skip walking the
+     * whole player list on servers that never set a queue cuboid.
+     */
+    public boolean isZoneActive() {
+        return plugin != null
+                && plugin.getCuboidManager() != null
+                && getCuboidName() != null
+                && isEnabled();
+    }
+
     public boolean isInQueue(UUID playerId) {
         if (playerId == null) {
             return false;
@@ -104,6 +132,7 @@ public class RTPQueueManager {
     }
 
     public void clear() {
+        zoneJoined.clear();
         synchronized (waiting) {
             waiting.clear();
         }
@@ -115,34 +144,50 @@ public class RTPQueueManager {
      * @return true when the player is waiting in the queue once this returns
      */
     public boolean join(Player player) {
+        return join(player, true);
+    }
+
+    /**
+     * @param notifyRefusal false for the cuboid join, which would otherwise repeat the same
+     *                      refusal once a second at a player who is only standing there
+     */
+    private boolean join(Player player, boolean notifyRefusal) {
         if (player == null) {
             return false;
         }
 
         if (!isEnabled()) {
-            sendMessage(player, "DISABLED", "&cThe RTP queue is currently disabled.");
+            if (notifyRefusal) {
+                sendMessage(player, "DISABLED", "&cThe RTP queue is currently disabled.");
+            }
             return false;
         }
 
         UUID playerId = player.getUniqueId();
         if (isInQueue(playerId)) {
-            sendMessage(
-                    player,
-                    "ALREADY-QUEUED",
-                    "&cYou are already in the RTP queue at position #{position}.",
-                    "{position}", String.valueOf(getQueuePosition(playerId))
-            );
+            if (notifyRefusal) {
+                sendMessage(
+                        player,
+                        "ALREADY-QUEUED",
+                        "&cYou are already in the RTP queue at position #{position}.",
+                        "{position}", String.valueOf(getQueuePosition(playerId))
+                );
+            }
             return false;
         }
 
         if (getSearchSettings() == null) {
-            sendMessage(player, "UNAVAILABLE", "&cThe RTP queue is not available right now.");
+            if (notifyRefusal) {
+                sendMessage(player, "UNAVAILABLE", "&cThe RTP queue is not available right now.");
+            }
             return false;
         }
 
         if (plugin.getRtpManager().hasActiveRtpFlow(playerId)
                 || plugin.getTeleportManager().hasPendingType(playerId, "RTP")) {
-            sendMessage(player, "BUSY", "&cFinish the teleport you already started before joining the RTP queue.");
+            if (notifyRefusal) {
+                sendMessage(player, "BUSY", "&cFinish the teleport you already started before joining the RTP queue.");
+            }
             return false;
         }
 
@@ -172,6 +217,43 @@ public class RTPQueueManager {
 
         startMatchIfReady();
         return true;
+    }
+
+    /**
+     * Queues a player standing in {@code QUEUE.CUBOID} and takes them off again once they walk
+     * out. Only the players the cuboid put there are pulled back out by it, so somebody who ran
+     * {@code /rtpq} elsewhere keeps their place after crossing the region.
+     */
+    public void tickZone(Player player) {
+        if (player == null) {
+            return;
+        }
+
+        UUID playerId = player.getUniqueId();
+        String cuboidName = getCuboidName();
+        if (cuboidName == null || !isEnabled() || plugin.getCuboidManager() == null) {
+            zoneJoined.remove(playerId);
+            return;
+        }
+
+        CuboidManager.Cuboid cuboid = plugin.getCuboidManager().getCuboid(cuboidName);
+        if (cuboid == null) {
+            zoneJoined.remove(playerId);
+            return;
+        }
+
+        if (cuboid.contains(player.getLocation())) {
+            if (!isInQueue(playerId) && join(player, false)) {
+                zoneJoined.add(playerId);
+            }
+            return;
+        }
+
+        // A matched player has already been dropped from the waiting list and teleported out of
+        // the region, so the marker goes without a second "you have left the queue".
+        if (zoneJoined.remove(playerId) && isInQueue(playerId)) {
+            leave(player);
+        }
     }
 
     /**
@@ -206,6 +288,7 @@ public class RTPQueueManager {
      * Drops a player who has disconnected, without telling the rest of the queue they left.
      */
     public void handleQuit(UUID playerId) {
+        zoneJoined.remove(playerId);
         remove(playerId);
     }
 
