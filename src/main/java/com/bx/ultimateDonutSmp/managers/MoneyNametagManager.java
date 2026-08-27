@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.bx.ultimateDonutSmp.utils.PacketBelowNameRenderer;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -37,8 +38,7 @@ import java.util.logging.Level;
  *
  * <p>The slot normally shows a raw score, which is an integer and no use for a balance in the
  * billions, so each score carries a fixed number format holding the text to draw instead. That is a
- * packet level feature with no Bukkit API, which is why everything here is sent through
- * ProtocolLib.</p>
+ * packet level feature with no Bukkit API behind it, which is why everything here is a packet.</p>
  *
  * <p>Nothing is written to anybody's real scoreboard. Every packet goes to one viewer, so a player
  * who left the setting off never hears about the objective at all, and the balances a viewer sees
@@ -46,6 +46,11 @@ import java.util.logging.Level;
  *
  * <p>Two things about the slot are the client's rules rather than ours: it only draws within about
  * ten blocks, and a server can only show one objective there at a time.</p>
+ *
+ * <p>ProtocolLib only knows how to build a packet for a Minecraft build it has been taught about,
+ * and on a newer one it cannot assemble these at all. Rather than lose the feature until it catches
+ * up, the first refusal moves everything onto {@link PacketBelowNameRenderer}, which reads the same
+ * packets off the running server.</p>
  */
 public class MoneyNametagManager {
 
@@ -61,13 +66,18 @@ public class MoneyNametagManager {
     private final Map<UUID, Map<UUID, String>> sentText = new ConcurrentHashMap<>();
     /** Viewers whose client has been told the objective exists. */
     private final Set<UUID> installed = ConcurrentHashMap.newKeySet();
+    /** The standby path, used from the moment ProtocolLib cannot build one of these packets. */
+    private final PacketBelowNameRenderer directPackets;
     private ProtocolManager protocolManager;
     private boolean warnedUnsupported;
     /** Set once ProtocolLib proves it cannot build this server's scoreboard packets. */
+    private volatile boolean protocolLibUnusable;
+    /** Set once neither path can build them, which is the only case that loses the feature. */
     private volatile boolean packetsUnsupported;
 
     public MoneyNametagManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+        this.directPackets = new PacketBelowNameRenderer(plugin, OBJECTIVE);
     }
 
     /** Renders {@code format} for {@code balance}; visible for tests without a running server. */
@@ -205,7 +215,7 @@ public class MoneyNametagManager {
 
     private String currentText(Player target) {
         return render(
-                config().getString("MONEY-NAMETAGS.FORMAT", "&a${balance}"),
+                config().getString("MONEY-NAMETAGS.FORMAT", "&a$ &f{balance}"),
                 plugin.getEconomyManager().getBalance(target),
                 config().getBoolean("MONEY-NAMETAGS.SHORT-FORMAT", true));
     }
@@ -218,37 +228,35 @@ public class MoneyNametagManager {
 
     private boolean sendObjective(Player viewer, int method) {
         ProtocolManager manager = protocolManager();
-        if (manager == null) {
-            return false;
+        if (manager != null && !protocolLibUnusable) {
+            try {
+                PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+                packet.getStrings().write(0, OBJECTIVE);
+                packet.getChatComponents().writeSafely(0, WrappedChatComponent.fromText(""));
+                packet.getRenderTypes().writeSafely(0, EnumWrappers.RenderType.INTEGER);
+                packet.getIntegers().write(0, method);
+                emptyEveryOptional(packet);
+                return send(viewer, packet);
+            } catch (RuntimeException | LinkageError error) {
+                switchToDirectPackets("Unable to set up the money nametag objective.", error);
+            }
         }
-        try {
-            PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
-            packet.getStrings().write(0, OBJECTIVE);
-            packet.getChatComponents().writeSafely(0, WrappedChatComponent.fromText(""));
-            packet.getRenderTypes().writeSafely(0, EnumWrappers.RenderType.INTEGER);
-            packet.getIntegers().write(0, method);
-            emptyEveryOptional(packet);
-            return send(viewer, packet);
-        } catch (RuntimeException | LinkageError error) {
-            warnPacketFailure("Unable to set up the money nametag objective.", error);
-            return false;
-        }
+        return directPackets.sendObjective(viewer, method);
     }
 
     private boolean sendDisplaySlot(Player viewer) {
         ProtocolManager manager = protocolManager();
-        if (manager == null) {
-            return false;
+        if (manager != null && !protocolLibUnusable) {
+            try {
+                PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
+                packet.getDisplaySlots().write(0, EnumWrappers.DisplaySlot.BELOW_NAME);
+                packet.getStrings().write(0, OBJECTIVE);
+                return send(viewer, packet);
+            } catch (RuntimeException | LinkageError error) {
+                switchToDirectPackets("Unable to place the money nametag under the name.", error);
+            }
         }
-        try {
-            PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
-            packet.getDisplaySlots().write(0, EnumWrappers.DisplaySlot.BELOW_NAME);
-            packet.getStrings().write(0, OBJECTIVE);
-            return send(viewer, packet);
-        } catch (RuntimeException | LinkageError error) {
-            warnPacketFailure("Unable to place the money nametag under the name.", error);
-            return false;
-        }
+        return directPackets.sendDisplaySlot(viewer);
     }
 
     /**
@@ -257,21 +265,20 @@ public class MoneyNametagManager {
      */
     private boolean sendScore(Player viewer, String targetName, String text) {
         ProtocolManager manager = protocolManager();
-        if (manager == null) {
-            return false;
+        if (manager != null && !protocolLibUnusable) {
+            try {
+                PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
+                packet.getStrings().write(0, targetName);
+                packet.getStrings().write(1, OBJECTIVE);
+                packet.getIntegers().write(0, 0);
+                emptyEveryOptional(packet);
+                writeNumberFormat(packet, WrappedNumberFormat.fixed(WrappedChatComponent.fromLegacyText(text)));
+                return send(viewer, packet);
+            } catch (RuntimeException | LinkageError error) {
+                switchToDirectPackets("Unable to send a money nametag balance.", error);
+            }
         }
-        try {
-            PacketContainer packet = manager.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
-            packet.getStrings().write(0, targetName);
-            packet.getStrings().write(1, OBJECTIVE);
-            packet.getIntegers().write(0, 0);
-            emptyEveryOptional(packet);
-            writeNumberFormat(packet, WrappedNumberFormat.fixed(WrappedChatComponent.fromLegacyText(text)));
-            return send(viewer, packet);
-        } catch (RuntimeException | LinkageError error) {
-            warnPacketFailure("Unable to send a money nametag balance.", error);
-            return false;
-        }
+        return directPackets.sendScore(viewer, targetName, text);
     }
 
     /**
@@ -310,29 +317,35 @@ public class MoneyNametagManager {
 
     /**
      * A packet that will not build or send means ProtocolLib does not recognise this server's
-     * scoreboard packets, which nothing short of a ProtocolLib update will change. The feature
-     * turns itself off on the first failure and says so once, in the same plain terms an
-     * unsupported server gets from {@link #isNumberFormatSupported()}. The trace itself is kept at
-     * FINE for anyone debugging it.
+     * scoreboard packets, which nothing short of a ProtocolLib update will change. Everything moves
+     * to the direct path from here, once, and the trace is kept at FINE for anyone debugging it.
+     * Only a server where that path cannot run either loses the feature.
      */
-    private void warnPacketFailure(String message, Throwable error) {
-        if (packetsUnsupported) {
-            plugin.getLogger().log(Level.FINE, message, error);
+    private void switchToDirectPackets(String message, Throwable error) {
+        plugin.getLogger().log(Level.FINE, message, error);
+        if (protocolLibUnusable) {
+            return;
+        }
+        protocolLibUnusable = true;
+        if (directPackets.isUsable()) {
+            plugin.getLogger().info("ProtocolLib cannot build this server's scoreboard packets, so money"
+                    + " nametags will be sent to players directly instead.");
             return;
         }
         packetsUnsupported = true;
-        plugin.getLogger().warning("Money nametags need scoreboard packets that the installed"
-                + " ProtocolLib understands, and it cannot build them on this server. The feature"
-                + " will stay off until ProtocolLib supports this Minecraft build.");
-        plugin.getLogger().log(Level.FINE, message, error);
+        plugin.getLogger().warning("Money nametags need scoreboard packets that neither ProtocolLib nor"
+                + " this server itself can build. The feature will stay off.");
     }
 
     /**
-     * Both reasons the packet path can be unusable, checked together everywhere the feature starts
-     * work. Once either is known the answer cannot change while the server is running.
+     * Every reason the packet path can be unusable, checked together everywhere the feature starts
+     * work. Once these are known the answer cannot change while the server is running.
      */
     private boolean isPacketPathUsable() {
-        return !packetsUnsupported && isNumberFormatSupported();
+        if (packetsUnsupported || (protocolLibUnusable && !directPackets.isUsable())) {
+            return false;
+        }
+        return isNumberFormatSupported();
     }
 
     private boolean send(Player viewer, PacketContainer packet) {
@@ -340,13 +353,8 @@ public class MoneyNametagManager {
         if (manager == null || viewer == null || !viewer.isOnline()) {
             return false;
         }
-        try {
-            manager.sendServerPacket(viewer, packet, false);
-            return true;
-        } catch (RuntimeException | LinkageError error) {
-            warnPacketFailure("Unable to send a money nametag packet.", error);
-            return false;
-        }
+        manager.sendServerPacket(viewer, packet, false);
+        return true;
     }
 
     /**
@@ -354,12 +362,8 @@ public class MoneyNametagManager {
      * showing fits into, so the feature stays off rather than printing a wrong number.
      */
     private boolean isNumberFormatSupported() {
-        try {
-            if (WrappedNumberFormat.isSupported()) {
-                return true;
-            }
-        } catch (RuntimeException | LinkageError ignored) {
-            // Treated the same as an unsupported server below.
+        if (protocolLibNumberFormats() || directPackets.isUsable()) {
+            return true;
         }
         if (!warnedUnsupported) {
             warnedUnsupported = true;
@@ -367,6 +371,14 @@ public class MoneyNametagManager {
                     + " formats (Minecraft 1.20.3 or newer). The feature will stay off.");
         }
         return false;
+    }
+
+    private boolean protocolLibNumberFormats() {
+        try {
+            return !protocolLibUnusable && WrappedNumberFormat.isSupported();
+        } catch (RuntimeException | LinkageError unsupportedServer) {
+            return false;
+        }
     }
 
     private ProtocolManager protocolManager() {
