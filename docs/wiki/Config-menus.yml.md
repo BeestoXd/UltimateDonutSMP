@@ -1135,6 +1135,12 @@ Notes:
   `SHOW_KILLS`, `SHOW_DEATHS` and `SHOW_PLAYTIME` each hide one line of it, matched by the
   placeholder the line carries in `SCOREBOARD.LINES`. A server that does not want players hiding
   their statistics can drop the whole row with `ENABLED: false` on those five.
+- `COMBAT_TIMER` hides the `COMBAT-MANAGER.ACTION-BAR` countdown. It only controls whether the
+  countdown is drawn: a player who turns it off is still tagged, still has their commands blocked,
+  and still dies on logout where `KILL-ON-LOGOUT` is on. Turning off `HOTBAR_MESSAGES` hides it as
+  well, since the countdown goes out on the action bar like every other hotbar notification.
+- Lunar teammates has no button. The setting still exists and still defaults to on, so the Apollo
+  team markers keep working; there is simply no longer a way for a player to switch them off.
 - A `menus.yml` written before the current grouping is backed up under `config-backups/` and
   regenerated on the next start, because merging bundled defaults never rewrites a `SLOT` that
   is already in the file.

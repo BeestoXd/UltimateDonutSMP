@@ -381,7 +381,8 @@ public class DatabaseManager {
               "  show_shards_line INTEGER DEFAULT 1," +
               "  show_kills_line INTEGER DEFAULT 1," +
               "  show_deaths_line INTEGER DEFAULT 1," +
-              "  show_playtime_line INTEGER DEFAULT 1" +
+              "  show_playtime_line INTEGER DEFAULT 1," +
+              "  combat_timer_enabled INTEGER DEFAULT 1" +
               ")"
           );
         execute(
@@ -787,6 +788,7 @@ public class DatabaseManager {
         ensureColumnExists("players", "show_kills_line", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "show_deaths_line", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "show_playtime_line", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "combat_timer_enabled", "INTEGER DEFAULT 1");
     }
 
     private void ensurePortalColumns() throws SQLException {
@@ -1126,6 +1128,7 @@ public class DatabaseManager {
         data.setShowKillsLine(rs.getInt("show_kills_line") != 0);
         data.setShowDeathsLine(rs.getInt("show_deaths_line") != 0);
         data.setShowPlaytimeLine(rs.getInt("show_playtime_line") != 0);
+        data.setCombatTimerEnabled(rs.getInt("combat_timer_enabled") != 0);
         data.setDirty(false);
         return data;
     }
@@ -1660,8 +1663,8 @@ public class DatabaseManager {
                     advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
                     follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled,
                     voice_chat_consent, show_money_line, show_shards_line, show_kills_line,
-                    show_deaths_line, show_playtime_line)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    show_deaths_line, show_playtime_line, combat_timer_enabled)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """;
 
         if (hikariDataSource != null && !hikariDataSource.isClosed()) {
@@ -1758,6 +1761,7 @@ public class DatabaseManager {
             ps.setInt(68, data.isShowKillsLine() ? 1 : 0);
             ps.setInt(69, data.isShowDeathsLine() ? 1 : 0);
             ps.setInt(70, data.isShowPlaytimeLine() ? 1 : 0);
+            ps.setInt(71, data.isCombatTimerEnabled() ? 1 : 0);
             data.setDirty(false);
     }
 

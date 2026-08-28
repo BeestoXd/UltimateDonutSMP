@@ -959,6 +959,11 @@ MENUS:
         LORE:
         - '&7Show the playtime line on the scoreboard'
         - '&fCurrently: {status}'
+      COMBAT_TIMER:
+        DISPLAY-NAME: '&#6BF18DCombat Timer'
+        LORE:
+        - '&7Show the combat countdown on your action bar'
+        - '&fCurrently: {status}'
   LEADERBOARDS-MENU:
     TITLE: '&8Leaderboards'
     TYPE-MENU:

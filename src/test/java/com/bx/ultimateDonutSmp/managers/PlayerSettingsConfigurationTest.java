@@ -55,7 +55,8 @@ class PlayerSettingsConfigurationTest {
             "SHOW_SHARDS",
             "SHOW_KILLS",
             "SHOW_DEATHS",
-            "SHOW_PLAYTIME"
+            "SHOW_PLAYTIME",
+            "COMBAT_TIMER"
     );
 
     @Test
@@ -102,7 +103,7 @@ class PlayerSettingsConfigurationTest {
                 Map.entry("CHAINMAIL_ON_RESPAWN", 19),
                 Map.entry("EXPLOSION_PARTICLES", 20),
                 Map.entry("EXPLOSION_SOUNDS", 21),
-                Map.entry("LUNAR_TEAMMATES", 22),
+                Map.entry("COMBAT_TIMER", 22),
                 Map.entry("DISPLAY_DONUT_PLUS", 23),
                 Map.entry("MONEY_NAMETAGS", 24),
                 Map.entry("WORTH_DISPLAY", 25),

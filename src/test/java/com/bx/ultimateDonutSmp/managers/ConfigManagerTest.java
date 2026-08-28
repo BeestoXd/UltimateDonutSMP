@@ -567,6 +567,18 @@ class ConfigManagerTest {
     }
 
     @Test
+    void theLayoutThatStillHadLunarTeammatesAtTwentyTwoIsRegeneratedToo() throws Exception {
+        YamlConfiguration previous = yaml(lines(
+                "SETTINGS-MENU:",
+                "  BUTTONS:",
+                "    LUNAR_TEAMMATES:",
+                "      SLOT: 22"
+        ));
+
+        assertTrue(hasLegacyButtons(previous));
+    }
+
+    @Test
     void aMenuWithoutSettingsButtonsIsLeftAlone() throws Exception {
         assertFalse(hasLegacyButtons(yaml(lines("OTHER-MENU:", "  SIZE: 27"))));
     }

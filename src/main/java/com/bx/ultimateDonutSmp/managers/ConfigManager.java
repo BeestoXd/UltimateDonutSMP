@@ -2084,8 +2084,13 @@ public class ConfigManager {
         }
 
         // The first grouped layout, which put the confirmation prompts on their own row at 36.
-        return buttons.getInt("TPA_CONFIRM_MENUS.SLOT", -1) == 36
-                && buttons.getInt("NOTIFICATION_SOUNDS.SLOT", -1) == 16;
+        if (buttons.getInt("TPA_CONFIRM_MENUS.SLOT", -1) == 36
+                && buttons.getInt("NOTIFICATION_SOUNDS.SLOT", -1) == 16) {
+            return true;
+        }
+
+        // The layout before the combat timer took slot 22 off Lunar teammates.
+        return buttons.getInt("LUNAR_TEAMMATES.SLOT", -1) == 22;
     }
 
     private void backupInvalidFile(File file) {

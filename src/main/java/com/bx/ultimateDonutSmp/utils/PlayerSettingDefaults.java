@@ -158,8 +158,6 @@ public final class PlayerSettingDefaults {
         bindings.put("SERVER_BROADCASTS", bool(
                 PlayerData::isServerBroadcastsEnabled, PlayerData::setServerBroadcastsEnabled));
         bindings.put("TEAM_CHAT_VISIBILITY", bool(PlayerData::isTeamChatVisible, PlayerData::setTeamChatVisible));
-        bindings.put("LUNAR_TEAMMATES", bool(
-                PlayerData::isLunarTeammatesEnabled, PlayerData::setLunarTeammatesEnabled));
         bindings.put("TPA_CONFIRM_MENUS", bool(
                 PlayerData::isTpaConfirmMenuEnabled, PlayerData::setTpaConfirmMenuEnabled));
         bindings.put("DESTROY_PEARL_ON_DEATH", bool(
@@ -259,6 +257,7 @@ public final class PlayerSettingDefaults {
         bindings.put("SHOW_KILLS", bool(PlayerData::isShowKillsLine, PlayerData::setShowKillsLine));
         bindings.put("SHOW_DEATHS", bool(PlayerData::isShowDeathsLine, PlayerData::setShowDeathsLine));
         bindings.put("SHOW_PLAYTIME", bool(PlayerData::isShowPlaytimeLine, PlayerData::setShowPlaytimeLine));
+        bindings.put("COMBAT_TIMER", bool(PlayerData::isCombatTimerEnabled, PlayerData::setCombatTimerEnabled));
 
         return Map.copyOf(bindings);
     }
