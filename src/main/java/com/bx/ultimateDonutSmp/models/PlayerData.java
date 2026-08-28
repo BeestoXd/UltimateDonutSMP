@@ -77,6 +77,7 @@ public class PlayerData {
     private boolean showKillsLine;
     private boolean showDeathsLine;
     private boolean showPlaytimeLine;
+    private boolean combatTimerEnabled;
     private long mobSpawnDisabledUntil;
     private long phantomDisabledUntil;
 
@@ -154,6 +155,7 @@ public class PlayerData {
         this.showKillsLine = true;
         this.showDeathsLine = true;
         this.showPlaytimeLine = true;
+        this.combatTimerEnabled = true;
         this.mobSpawnDisabledUntil = 0L;
         this.phantomDisabledUntil = 0L;
     }
@@ -1009,6 +1011,15 @@ public class PlayerData {
 
     public void setShowPlaytimeLine(boolean showPlaytimeLine) {
         this.showPlaytimeLine = showPlaytimeLine;
+        dirty = true;
+    }
+
+    public boolean isCombatTimerEnabled() {
+        return combatTimerEnabled;
+    }
+
+    public void setCombatTimerEnabled(boolean combatTimerEnabled) {
+        this.combatTimerEnabled = combatTimerEnabled;
         dirty = true;
     }
 }

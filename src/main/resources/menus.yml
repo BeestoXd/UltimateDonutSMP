@@ -773,12 +773,12 @@ SETTINGS-MENU:
       LORE:
       - '&7Play explosion sound effects'
       - '&fCurrently: {status}'
-    LUNAR_TEAMMATES:
-      DISPLAY-NAME: '&#6BF18DLunar Teammates'
-      MATERIAL: LIGHT_BLUE_DYE
+    COMBAT_TIMER:
+      DISPLAY-NAME: '&#6BF18DCombat Timer'
+      MATERIAL: DIAMOND_SWORD
       SLOT: 22
       LORE:
-      - '&7Show teammates on Lunar Client'
+      - '&7Show the combat countdown on your action bar'
       - '&fCurrently: {status}'
     DISPLAY_DONUT_PLUS:
       DISPLAY-NAME: '&#6BF18DDisplay Donut+'

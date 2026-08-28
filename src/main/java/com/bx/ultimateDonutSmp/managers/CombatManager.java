@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import org.bukkit.scheduler.BukkitTask;
@@ -59,6 +60,9 @@ public class CombatManager {
                 if (t != null) t.cancel();
                 return;
             }
+            if (!showsCombatTimer(profileOf(p))) {
+                return;
+            }
             long remaining = getRemainingSeconds(uuid);
             String format = plugin.getConfigManager().getConfig()
                     .getString("COMBAT-MANAGER.ACTION-BAR", "&fcombat: &b${time}s")
@@ -69,6 +73,21 @@ public class CombatManager {
         if (task != null) {
             tasks.put(uuid, task);
         }
+    }
+
+    /**
+     * Whether the countdown should be drawn for this player.
+     *
+     * <p>The tag itself is unaffected: a player who hides the timer is still in combat, still has
+     * their commands blocked, and still dies on logout where the server turns that on. A player the
+     * plugin has no profile for keeps seeing it, so the timer never goes missing by accident.</p>
+     */
+    static boolean showsCombatTimer(PlayerData data) {
+        return data == null || data.isCombatTimerEnabled();
+    }
+
+    private PlayerData profileOf(Player player) {
+        return plugin.getPlayerDataManager() == null ? null : plugin.getPlayerDataManager().get(player);
     }
 
     public void clearTag(UUID uuid) {

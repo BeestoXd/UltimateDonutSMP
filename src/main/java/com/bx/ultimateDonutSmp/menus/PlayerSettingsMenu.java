@@ -29,7 +29,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
 
     private static final Set<String> VALID_SETTINGS = Set.of(
             "PUBLIC_CHAT", "PRIVATE_MESSAGES", "SERVER_BROADCASTS", "TEAM_CHAT_VISIBILITY",
-            "LUNAR_TEAMMATES", "TPA_CONFIRM_MENUS", "QUICK_AUCTION_PURCHASE", "DESTROY_PEARL_ON_DEATH",
+            "TPA_CONFIRM_MENUS", "QUICK_AUCTION_PURCHASE", "DESTROY_PEARL_ON_DEATH",
             "PAY_CONFIRM_MENUS", "AUTO_CONFIRM_TPAS", "HOTBAR_MESSAGES", "NOTIFICATION_SOUNDS",
             "FOLLOW_ALERT_SETTINGS", "DISPLAY_DONUT_PLUS", "CHAINMAIL_ON_RESPAWN", "EXPLOSION_PARTICLES",
             "EXPLOSION_SOUNDS", "TELEPORT_ALERTS", "FAST_CRYSTALS", "RANDOMIZED_COORDS",
@@ -38,7 +38,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             "AMETHYST_BREAK_MESSAGES", "DUEL_REQUESTS", "DEATH_MESSAGES", "KEY_ALL_NOTIFICATIONS",
             "QUICK_AUCTION_SELL", "ORDER_NOTIFICATIONS", "DISABLE_MOB_SPAWN", "DISABLE_PHANTOM_SPAWN",
             "NIGHT_VISION", "BOUNTY_ALERTS", "SCOREBOARD_VISIBILITY", "SHOW_MONEY", "SHOW_SHARDS",
-            "SHOW_KILLS", "SHOW_DEATHS", "SHOW_PLAYTIME"
+            "SHOW_KILLS", "SHOW_DEATHS", "SHOW_PLAYTIME", "COMBAT_TIMER"
     );
 
     private final Map<Integer, String> clickableButtons = new HashMap<>();
@@ -191,6 +191,8 @@ public final class PlayerSettingsMenu extends BaseMenu {
                     !data.isShowDeathsLine(), data::setShowDeathsLine);
             case "SHOW_PLAYTIME" -> toggleSidebarLine(player, "Show Playtime",
                     !data.isShowPlaytimeLine(), data::setShowPlaytimeLine);
+            case "COMBAT_TIMER" -> toggle(player, "Combat Timer",
+                    !data.isCombatTimerEnabled(), data::setCombatTimerEnabled);
             case "AUTO_CONFIRM_TPAS" -> {
                 boolean enabled = !(data.isTpauto() && data.isAutoTpaHereEnabled());
                 data.setTpauto(enabled);
@@ -410,6 +412,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             case "SHOW_KILLS" -> state(data.isShowKillsLine());
             case "SHOW_DEATHS" -> state(data.isShowDeathsLine());
             case "SHOW_PLAYTIME" -> state(data.isShowPlaytimeLine());
+            case "COMBAT_TIMER" -> state(data.isCombatTimerEnabled());
             case "AUTO_CONFIRM_TPAS" -> state(data.isTpauto() && data.isAutoTpaHereEnabled());
             case "NOTIFICATION_SOUNDS" -> state(data.isNotificationSoundsEnabled());
             case "RTP_COORDINATES" -> state(data.isRtpCoordinatesEnabled());

@@ -67,7 +67,8 @@ class DatabaseManagerKnownPlayersTest {
                     + "explosion_sounds_enabled INTEGER DEFAULT 1, display_donutplus_enabled INTEGER DEFAULT 1, "
                     + "voice_chat_consent INTEGER DEFAULT 0, show_money_line INTEGER DEFAULT 1, "
                     + "show_shards_line INTEGER DEFAULT 1, show_kills_line INTEGER DEFAULT 1, "
-                    + "show_deaths_line INTEGER DEFAULT 1, show_playtime_line INTEGER DEFAULT 1)");
+                    + "show_deaths_line INTEGER DEFAULT 1, show_playtime_line INTEGER DEFAULT 1, "
+                    + "combat_timer_enabled INTEGER DEFAULT 1)");
 
             java.util.UUID testUuid = java.util.UUID.randomUUID();
             statement.execute("INSERT INTO players (uuid, username, kills, money) VALUES ('" + testUuid + "', 'Bob', 42, 500.0)");

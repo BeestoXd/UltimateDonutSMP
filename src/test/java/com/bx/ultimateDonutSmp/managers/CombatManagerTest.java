@@ -1,8 +1,13 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import com.bx.ultimateDonutSmp.models.PlayerData;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CombatManagerTest {
 
@@ -37,5 +42,19 @@ class CombatManagerTest {
     void anExpiredTagReadsZero() {
         assertEquals(0L, CombatManager.remainingSeconds(TWENTY_SECOND_EXPIRY, TWENTY_SECOND_EXPIRY));
         assertEquals(0L, CombatManager.remainingSeconds(TWENTY_SECOND_EXPIRY, TWENTY_SECOND_EXPIRY + 5_000L));
+    }
+
+    @Test
+    void theCountdownIsDrawnUntilThePlayerTurnsItOff() {
+        PlayerData data = new PlayerData(UUID.randomUUID(), "Tester");
+        assertTrue(CombatManager.showsCombatTimer(data));
+
+        data.setCombatTimerEnabled(false);
+        assertFalse(CombatManager.showsCombatTimer(data));
+    }
+
+    @Test
+    void aPlayerWithNoProfileKeepsSeeingTheCountdown() {
+        assertTrue(CombatManager.showsCombatTimer(null));
     }
 }
