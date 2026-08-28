@@ -30,6 +30,23 @@ public class ScoreboardManager {
     private static final Pattern SIDEBAR_ICON_PATTERN = Pattern.compile("\\{sb_icon:([^}]*)\\}");
     private static final char SECTION_CHAR = '\u00A7';
 
+    // The sidebar statistics a player can switch off one at a time in /settings. A line belongs to a
+    // statistic when it carries one of that statistic's placeholders. %economy_shard_cuboid_display%
+    // is deliberately absent from the shards list: the cuboid line has its own {shard_cuboid} switch.
+    private static final StatLine[] STAT_LINES = {
+            new StatLine(PlayerData::isShowMoneyLine, new String[]{
+                    "%economy_money%", "%economy_nicestMoney%", "%economy_nicestmoney%",
+                    "%economy_money_short%", "%economy_money_amount_short%", "%economy_money_formatted%",
+                    "%economy_money_short_formatted%", "%economy_nicestMoney_formatted%",
+                    "%economy_nicestmoney_formatted%"}),
+            new StatLine(PlayerData::isShowShardsLine, new String[]{
+                    "%economy_shards%", "%economy_nicestShards%", "%economy_nicestshards%",
+                    "%economy_shards_short%", "%economy_shards_amount_short%"}),
+            new StatLine(PlayerData::isShowKillsLine, new String[]{"%economy_kills%"}),
+            new StatLine(PlayerData::isShowDeathsLine, new String[]{"%economy_deaths%"}),
+            new StatLine(PlayerData::isShowPlaytimeLine, new String[]{"%economy_playtime%"}),
+    };
+
     // Unique invisible entries, one per line slot, so updates stay flicker free.
     private static final String[] ENTRIES = new String[MAX_LINES];
     static {
@@ -632,7 +649,7 @@ public class ScoreboardManager {
                     hasBooster,
                     showShardCuboid
             );
-            if (resolved != null) {
+            if (resolved != null && !isHiddenStatLine(resolved, data)) {
                 resolved = applySidebarEconomyPlaceholders(resolved, moneyShort, shardsShort);
                 lines.add(applySidebarLayoutPlaceholders(resolved, settings));
             }
@@ -665,6 +682,34 @@ public class ScoreboardManager {
             return showShardCuboid ? shardCuboidLine : null;
         }
         return line;
+    }
+
+    /**
+     * Drops the sidebar lines a player switched off in /settings.
+     *
+     * <p>The lines are free-form templates, so the placeholder inside one is what says which
+     * statistic it reports. An admin who rewords a line keeps its toggle as long as the placeholder
+     * survives, and a line carrying none of them is never hidden.</p>
+     */
+    private boolean isHiddenStatLine(String line, PlayerData data) {
+        if (data == null || line == null || line.indexOf("%economy_") < 0) {
+            return false;
+        }
+        for (StatLine stat : STAT_LINES) {
+            if (!stat.visible().test(data) && containsAnyPlaceholder(line, stat.placeholders())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsAnyPlaceholder(String line, String[] placeholders) {
+        for (String placeholder : placeholders) {
+            if (line.contains(placeholder)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String applySidebarEconomyPlaceholders(String line, String moneyShort, String shardsShort) {
@@ -878,6 +923,10 @@ public class ScoreboardManager {
         if (split > 0 && Character.isHighSurrogate(text.charAt(split - 1))) split--;
         if (split > 0 && text.charAt(split - 1) == '\u00A7') split--;
         return split;
+    }
+
+    /** One toggleable sidebar statistic: how to read the player's choice, and what marks its line. */
+    private record StatLine(java.util.function.Predicate<PlayerData> visible, String[] placeholders) {
     }
 
     /** The sidebar config as it stood at the start of one update pass. */

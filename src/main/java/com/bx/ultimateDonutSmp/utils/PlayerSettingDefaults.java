@@ -253,6 +253,12 @@ public final class PlayerSettingDefaults {
                 }));
         bindings.put("NIGHT_VISION", bool(PlayerData::isNightVisionEnabled, PlayerData::setNightVisionEnabled));
         bindings.put("BOUNTY_ALERTS", bool(PlayerData::isBountyAlertsEnabled, PlayerData::setBountyAlertsEnabled));
+        bindings.put("SCOREBOARD_VISIBILITY", bool(PlayerData::isScoreboardVisible, PlayerData::setScoreboardVisible));
+        bindings.put("SHOW_MONEY", bool(PlayerData::isShowMoneyLine, PlayerData::setShowMoneyLine));
+        bindings.put("SHOW_SHARDS", bool(PlayerData::isShowShardsLine, PlayerData::setShowShardsLine));
+        bindings.put("SHOW_KILLS", bool(PlayerData::isShowKillsLine, PlayerData::setShowKillsLine));
+        bindings.put("SHOW_DEATHS", bool(PlayerData::isShowDeathsLine, PlayerData::setShowDeathsLine));
+        bindings.put("SHOW_PLAYTIME", bool(PlayerData::isShowPlaytimeLine, PlayerData::setShowPlaytimeLine));
 
         return Map.copyOf(bindings);
     }

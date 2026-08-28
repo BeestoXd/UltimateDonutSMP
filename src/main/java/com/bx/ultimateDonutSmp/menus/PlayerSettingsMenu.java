@@ -37,7 +37,8 @@ public final class PlayerSettingsMenu extends BaseMenu {
             "JOIN_LEAVE_MESSAGES", "PAY_ALERTS", "ADVANCEMENT_MESSAGES", "AUCTION_NOTIFICATIONS",
             "AMETHYST_BREAK_MESSAGES", "DUEL_REQUESTS", "DEATH_MESSAGES", "KEY_ALL_NOTIFICATIONS",
             "QUICK_AUCTION_SELL", "ORDER_NOTIFICATIONS", "DISABLE_MOB_SPAWN", "DISABLE_PHANTOM_SPAWN",
-            "NIGHT_VISION", "BOUNTY_ALERTS"
+            "NIGHT_VISION", "BOUNTY_ALERTS", "SCOREBOARD_VISIBILITY", "SHOW_MONEY", "SHOW_SHARDS",
+            "SHOW_KILLS", "SHOW_DEATHS", "SHOW_PLAYTIME"
     );
 
     private final Map<Integer, String> clickableButtons = new HashMap<>();
@@ -180,6 +181,16 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 plugin.getScoreboardManager().applyVisibility(player);
                 sendToggleMessage(player, "Scoreboard Visibility", data.isScoreboardVisible());
             }
+            case "SHOW_MONEY" -> toggleSidebarLine(player, "Show Money",
+                    !data.isShowMoneyLine(), data::setShowMoneyLine);
+            case "SHOW_SHARDS" -> toggleSidebarLine(player, "Show Shards",
+                    !data.isShowShardsLine(), data::setShowShardsLine);
+            case "SHOW_KILLS" -> toggleSidebarLine(player, "Show Kills",
+                    !data.isShowKillsLine(), data::setShowKillsLine);
+            case "SHOW_DEATHS" -> toggleSidebarLine(player, "Show Deaths",
+                    !data.isShowDeathsLine(), data::setShowDeathsLine);
+            case "SHOW_PLAYTIME" -> toggleSidebarLine(player, "Show Playtime",
+                    !data.isShowPlaytimeLine(), data::setShowPlaytimeLine);
             case "AUTO_CONFIRM_TPAS" -> {
                 boolean enabled = !(data.isTpauto() && data.isAutoTpaHereEnabled());
                 data.setTpauto(enabled);
@@ -394,6 +405,11 @@ public final class PlayerSettingsMenu extends BaseMenu {
             }
             case "HIDE_ALL_PLAYERS" -> state(data.isHideAllPlayersEnabled());
             case "SCOREBOARD_VISIBILITY" -> state(data.isScoreboardVisible());
+            case "SHOW_MONEY" -> state(data.isShowMoneyLine());
+            case "SHOW_SHARDS" -> state(data.isShowShardsLine());
+            case "SHOW_KILLS" -> state(data.isShowKillsLine());
+            case "SHOW_DEATHS" -> state(data.isShowDeathsLine());
+            case "SHOW_PLAYTIME" -> state(data.isShowPlaytimeLine());
             case "AUTO_CONFIRM_TPAS" -> state(data.isTpauto() && data.isAutoTpaHereEnabled());
             case "NOTIFICATION_SOUNDS" -> state(data.isNotificationSoundsEnabled());
             case "RTP_COORDINATES" -> state(data.isRtpCoordinatesEnabled());
@@ -566,6 +582,13 @@ public final class PlayerSettingsMenu extends BaseMenu {
 
     private void toggle(Player player, String label, boolean enabled, BooleanSetter setter) {
         setter.set(enabled);
+        sendToggleMessage(player, label, enabled);
+    }
+
+    /** Toggles one sidebar line and redraws the scoreboard so the change shows without a relog. */
+    private void toggleSidebarLine(Player player, String label, boolean enabled, BooleanSetter setter) {
+        setter.set(enabled);
+        plugin.getScoreboardManager().applyVisibility(player);
         sendToggleMessage(player, label, enabled);
     }
 

@@ -597,8 +597,8 @@ SETTINGS-MENU:
   SIZE: 54
   BUTTONS:
     # Buttons are grouped a row at a time: chat and messages on the first row,
-    # alerts on the second, gameplay and display on the third, then who may reach
-    # you, the confirmation prompts, and finally the world around you.
+    # alerts on the second, gameplay and display on the third, who may reach you on
+    # the fourth, the scoreboard on the fifth, and the world around you on the last.
     # Every setting below accepts two optional keys:
     #   DEFAULT: <value>  Starting value for players who never touched the setting.
     #                     On/off buttons take true or false. The privacy buttons
@@ -659,30 +659,30 @@ SETTINGS-MENU:
       LORE:
       - '&7Show death message notifications'
       - '&fCurrently: {status}'
-    JOIN_LEAVE_MESSAGES:
-      DISPLAY-NAME: '&#6BF18DJoin/Leave Messages'
-      MATERIAL: JUNGLE_SIGN
-      SLOT: 5
-      LORE:
-      - '&7Show join and leave notifications'
-      - '&fCurrently: {status}'
     ADVANCEMENT_MESSAGES:
       DISPLAY-NAME: '&#6BF18DAdvancement Messages'
       MATERIAL: BIRCH_SIGN
-      SLOT: 6
+      SLOT: 5
       LORE:
       - '&7Show advancement achievement notifications'
       - '&fCurrently: {status}'
+    JOIN_LEAVE_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DJoin/Leave Messages'
+      MATERIAL: JUNGLE_SIGN
+      SLOT: 6
+      LORE:
+      - '&7Show join and leave notifications'
+      - '&fCurrently: {status}'
     TEAM_CHAT_VISIBILITY:
       DISPLAY-NAME: '&#6BF18DTeam Chat Visibility'
-      MATERIAL: ACACIA_SIGN
+      MATERIAL: MANGROVE_SIGN
       SLOT: 7
       LORE:
       - '&7Show team chat in main chat'
       - '&fCurrently: {status}'
     AMETHYST_BREAK_MESSAGES:
       DISPLAY-NAME: '&#6BF18DAmethyst Break Messages'
-      MATERIAL: BAMBOO_SIGN
+      MATERIAL: CHERRY_SIGN
       SLOT: 8
       LORE:
       - '&7Show message when amethyst cluster breaks'
@@ -697,21 +697,21 @@ SETTINGS-MENU:
       - '&fCurrently: {status}'
     TELEPORT_ALERTS:
       DISPLAY-NAME: '&#6BF18DTeleport Alerts'
-      MATERIAL: BELL
+      MATERIAL: ENDER_PEARL
       SLOT: 10
       LORE:
       - '&7Sound and message alerts for TPA'
       - '&fCurrently: {status}'
     BOUNTY_ALERTS:
       DISPLAY-NAME: '&#6BF18DBounty Alerts'
-      MATERIAL: WITHER_SKELETON_SKULL
+      MATERIAL: BAMBOO_SIGN
       SLOT: 11
       LORE:
       - '&7Notify when bounties are set/claimed'
       - '&fCurrently: {status}'
     AUCTION_NOTIFICATIONS:
       DISPLAY-NAME: '&#6BF18DAuction Alerts'
-      MATERIAL: GOLD_INGOT
+      MATERIAL: ACACIA_SIGN
       SLOT: 12
       LORE:
       - '&7Notify when items are bought/sold'
@@ -723,12 +723,12 @@ SETTINGS-MENU:
       LORE:
       - '&7Notify when order transactions occur'
       - '&fCurrently: {status}'
-    KEY_ALL_NOTIFICATIONS:
-      DISPLAY-NAME: '&#6BF18DKey All Notifications'
-      MATERIAL: TRIPWIRE_HOOK
+    NOTIFICATION_SOUNDS:
+      DISPLAY-NAME: '&#6BF18DNotification Sounds'
+      MATERIAL: NOTE_BLOCK
       SLOT: 14
       LORE:
-      - '&7Show key-all event notifications'
+      - '&7Play notification sounds'
       - '&fCurrently: {status}'
     FOLLOW_ALERT_SETTINGS:
       DISPLAY-NAME: '&#6BF18DFollow Alerts'
@@ -737,12 +737,12 @@ SETTINGS-MENU:
       LORE:
       - '&7Notify when players follow you'
       - '&fCurrently: {status}'
-    NOTIFICATION_SOUNDS:
-      DISPLAY-NAME: '&#6BF18DNotification Sounds'
-      MATERIAL: NOTE_BLOCK
+    KEY_ALL_NOTIFICATIONS:
+      DISPLAY-NAME: '&#6BF18DKey All Notifications'
+      MATERIAL: TRIPWIRE_HOOK
       SLOT: 16
       LORE:
-      - '&7Play notification sounds'
+      - '&7Show key-all event notifications'
       - '&fCurrently: {status}'
     # Row 3 - gameplay and display
     FAST_CRYSTALS:
@@ -773,12 +773,12 @@ SETTINGS-MENU:
       LORE:
       - '&7Play explosion sound effects'
       - '&fCurrently: {status}'
-    DESTROY_PEARL_ON_DEATH:
-      DISPLAY-NAME: '&#6BF18DDestroy Pearl on Death'
-      MATERIAL: CHORUS_FRUIT
+    LUNAR_TEAMMATES:
+      DISPLAY-NAME: '&#6BF18DLunar Teammates'
+      MATERIAL: LIGHT_BLUE_DYE
       SLOT: 22
       LORE:
-      - '&7Destroy thrown ender pearls when you die'
+      - '&7Show teammates on Lunar Client'
       - '&fCurrently: {status}'
     DISPLAY_DONUT_PLUS:
       DISPLAY-NAME: '&#6BF18DDisplay Donut+'
@@ -801,12 +801,12 @@ SETTINGS-MENU:
       LORE:
       - '&7Show item worth values in item lore'
       - '&fCurrently: {status}'
-    LUNAR_TEAMMATES:
-      DISPLAY-NAME: '&#6BF18DLunar Teammates'
-      MATERIAL: LIGHT_BLUE_DYE
+    TPA_CONFIRM_MENUS:
+      DISPLAY-NAME: '&#6BF18DTpa Confirm Menus'
+      MATERIAL: COMPASS
       SLOT: 26
       LORE:
-      - '&7Show teammates on Lunar Client'
+      - '&7Show confirmation GUI for TPA'
       - '&fCurrently: {status}'
     # Row 4 - who may reach you
     TPA_REQUESTS:
@@ -830,77 +830,119 @@ SETTINGS-MENU:
       LORE:
       - '&7Incoming payments privacy settings'
       - '&fCurrently: {status}'
-    DUEL_REQUESTS:
-      DISPLAY-NAME: '&#6BF18DDuel Requests'
-      MATERIAL: IRON_SWORD
-      SLOT: 30
-      LORE:
-      - '&7Receive incoming duel requests'
-      - '&fCurrently: {status}'
     RANDOMIZED_COORDS:
       DISPLAY-NAME: '&#6BF18DRandomized Coords'
       MATERIAL: NETHERITE_INGOT
-      SLOT: 31
+      SLOT: 30
       LORE:
       - '&7Show randomized coords on HUD (Kick on toggle)'
       - '&fCurrently: {status}'
-    # Row 5 - confirmation prompts and quick actions
-    TPA_CONFIRM_MENUS:
-      DISPLAY-NAME: '&#6BF18DTpa Confirm Menus'
-      MATERIAL: COMPASS
-      SLOT: 36
+    DUEL_REQUESTS:
+      DISPLAY-NAME: '&#6BF18DDuel Requests'
+      MATERIAL: IRON_SWORD
+      SLOT: 31
       LORE:
-      - '&7Show confirmation GUI for TPA'
+      - '&7Receive incoming duel requests'
       - '&fCurrently: {status}'
     PAY_CONFIRM_MENUS:
       DISPLAY-NAME: '&#6BF18DPay Confirm Menus'
       MATERIAL: PAPER
-      SLOT: 37
+      SLOT: 32
       LORE:
       - '&7Show confirmation GUI for payments'
       - '&fCurrently: {status}'
     AUTO_CONFIRM_TPAS:
       DISPLAY-NAME: '&#6BF18DAuto-Confirm Tpas'
       MATERIAL: CLOCK
-      SLOT: 38
+      SLOT: 33
       LORE:
       - '&7Auto-confirm teleport requests'
       - '&fCurrently: {status}'
+    # Row 5 - the scoreboard and the lines on it
+    SCOREBOARD_VISIBILITY:
+      DISPLAY-NAME: '&#6BF18DShow Scoreboard'
+      MATERIAL: LECTERN
+      SLOT: 36
+      LORE:
+      - '&7Show the sidebar scoreboard'
+      - '&fCurrently: {status}'
+    SHOW_MONEY:
+      DISPLAY-NAME: '&#6BF18DShow Money'
+      MATERIAL: GOLD_INGOT
+      SLOT: 37
+      LORE:
+      - '&7Show the money line on the scoreboard'
+      - '&fCurrently: {status}'
+    SHOW_SHARDS:
+      DISPLAY-NAME: '&#6BF18DShow Shards'
+      MATERIAL: AMETHYST_SHARD
+      SLOT: 38
+      LORE:
+      - '&7Show the shards line on the scoreboard'
+      - '&fCurrently: {status}'
+    SHOW_KILLS:
+      DISPLAY-NAME: '&#6BF18DShow Kills'
+      MATERIAL: IRON_SWORD
+      SLOT: 39
+      LORE:
+      - '&7Show the kills line on the scoreboard'
+      - '&fCurrently: {status}'
+    SHOW_DEATHS:
+      DISPLAY-NAME: '&#6BF18DShow Deaths'
+      MATERIAL: SKELETON_SKULL
+      SLOT: 40
+      LORE:
+      - '&7Show the deaths line on the scoreboard'
+      - '&fCurrently: {status}'
+    SHOW_PLAYTIME:
+      DISPLAY-NAME: '&#6BF18DShow Playtime'
+      MATERIAL: CLOCK
+      SLOT: 41
+      LORE:
+      - '&7Show the playtime line on the scoreboard'
+      - '&fCurrently: {status}'
+    # Row 6 - the world around you
     QUICK_AUCTION_PURCHASE:
       DISPLAY-NAME: '&#6BF18DQuick Auction Purchase'
-      MATERIAL: EMERALD_BLOCK
-      SLOT: 39
+      MATERIAL: GOLD_INGOT
+      SLOT: 45
       LORE:
       - '&7Fast buy auction items directly'
       - '&fCurrently: {status}'
     QUICK_AUCTION_SELL:
       DISPLAY-NAME: '&#6BF18DQuick Auction Sell'
       MATERIAL: GOLD_BLOCK
-      SLOT: 40
+      SLOT: 46
       LORE:
       - '&7Fast sell items to auction house'
       - '&fCurrently: {status}'
-    # Row 6 - the world around you
     DISABLE_MOB_SPAWN:
       DISPLAY-NAME: '&#6BF18DDisable Mob Spawns'
       MATERIAL: ZOMBIE_HEAD
-      SLOT: 45
+      SLOT: 47
       LORE:
       - '&7Prevent mobs spawning around you'
       - '&fCurrently: {status}'
     DISABLE_PHANTOM_SPAWN:
       DISPLAY-NAME: '&#6BF18DDisable Phantom Spawn'
       MATERIAL: PHANTOM_MEMBRANE
-      SLOT: 46
+      SLOT: 48
       LORE:
       - '&7Prevent phantoms spawning above you'
       - '&fCurrently: {status}'
     NIGHT_VISION:
       DISPLAY-NAME: '&#6BF18DNight Vision'
       MATERIAL: GOLDEN_CARROT
-      SLOT: 47
+      SLOT: 49
       LORE:
       - '&7Permanent night vision effect'
+      - '&fCurrently: {status}'
+    DESTROY_PEARL_ON_DEATH:
+      DISPLAY-NAME: '&#6BF18DDestroy Pearl on Death'
+      MATERIAL: PAPER
+      SLOT: 50
+      LORE:
+      - '&7Destroy thrown ender pearls when you die'
       - '&fCurrently: {status}'
 LEADERBOARDS-MENU:
   TITLE: '&8Leaderboards'

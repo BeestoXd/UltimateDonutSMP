@@ -376,7 +376,12 @@ public class DatabaseManager {
               "  teleport_alerts_enabled INTEGER DEFAULT 1," +
               "  follow_alerts_enabled INTEGER DEFAULT 1," +
               "  explosion_sounds_enabled INTEGER DEFAULT 1," +
-              "  display_donutplus_enabled INTEGER DEFAULT 1" +
+              "  display_donutplus_enabled INTEGER DEFAULT 1," +
+              "  show_money_line INTEGER DEFAULT 1," +
+              "  show_shards_line INTEGER DEFAULT 1," +
+              "  show_kills_line INTEGER DEFAULT 1," +
+              "  show_deaths_line INTEGER DEFAULT 1," +
+              "  show_playtime_line INTEGER DEFAULT 1" +
               ")"
           );
         execute(
@@ -777,6 +782,11 @@ public class DatabaseManager {
         ensureColumnExists("players", "follow_alerts_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "explosion_sounds_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "display_donutplus_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "show_money_line", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "show_shards_line", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "show_kills_line", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "show_deaths_line", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "show_playtime_line", "INTEGER DEFAULT 1");
     }
 
     private void ensurePortalColumns() throws SQLException {
@@ -1111,6 +1121,11 @@ public class DatabaseManager {
         data.setFollowAlertsEnabled(rs.getInt("follow_alerts_enabled") != 0);
         data.setExplosionSoundsEnabled(rs.getInt("explosion_sounds_enabled") != 0);
         data.setDisplayDonutPlusEnabled(rs.getInt("display_donutplus_enabled") != 0);
+        data.setShowMoneyLine(rs.getInt("show_money_line") != 0);
+        data.setShowShardsLine(rs.getInt("show_shards_line") != 0);
+        data.setShowKillsLine(rs.getInt("show_kills_line") != 0);
+        data.setShowDeathsLine(rs.getInt("show_deaths_line") != 0);
+        data.setShowPlaytimeLine(rs.getInt("show_playtime_line") != 0);
         data.setDirty(false);
         return data;
     }
@@ -1644,8 +1659,9 @@ public class DatabaseManager {
                     shard_booster_expiry, mob_spawn_disabled_until, phantom_disabled_until, destroy_pearl_on_death, randomized_coords, death_messages_choice,
                     advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
                     follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled,
-                    voice_chat_consent)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    voice_chat_consent, show_money_line, show_shards_line, show_kills_line,
+                    show_deaths_line, show_playtime_line)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """;
 
         if (hikariDataSource != null && !hikariDataSource.isClosed()) {
@@ -1737,6 +1753,11 @@ public class DatabaseManager {
             ps.setInt(63, data.isExplosionSoundsEnabled() ? 1 : 0);
             ps.setInt(64, data.isDisplayDonutPlusEnabled() ? 1 : 0);
             ps.setInt(65, data.getVoiceChatConsent().ordinal());
+            ps.setInt(66, data.isShowMoneyLine() ? 1 : 0);
+            ps.setInt(67, data.isShowShardsLine() ? 1 : 0);
+            ps.setInt(68, data.isShowKillsLine() ? 1 : 0);
+            ps.setInt(69, data.isShowDeathsLine() ? 1 : 0);
+            ps.setInt(70, data.isShowPlaytimeLine() ? 1 : 0);
             data.setDirty(false);
     }
 
