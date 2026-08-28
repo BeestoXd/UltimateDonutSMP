@@ -206,11 +206,11 @@ public final class PlayerSettingDefaults {
         bindings.put("WORTH_DISPLAY", bool(PlayerData::isWorthDisplayEnabled, PlayerData::setWorthDisplayEnabled));
         bindings.put("MONEY_NAMETAGS", bool(
                 PlayerData::isMoneyNametagsEnabled, PlayerData::setMoneyNametagsEnabled));
-        bindings.put("JOIN_LEAVE_MESSAGES", threeChoice(
+        bindings.put("JOIN_LEAVE_MESSAGES", twoChoice(
                 PlayerData::getJoinLeaveMessagesChoice, PlayerData::setJoinLeaveMessagesChoice));
         bindings.put("PAY_ALERTS", bool(PlayerData::isPayAlertsEnabled, PlayerData::setPayAlertsEnabled));
-        bindings.put("ADVANCEMENT_MESSAGES", threeChoice(
-                PlayerData::getAdvancementMessagesChoice, PlayerData::setAdvancementMessagesChoice));
+        bindings.put("ADVANCEMENT_MESSAGES", bool(
+                PlayerData::isAdvancementMessagesEnabled, PlayerData::setAdvancementMessagesEnabled));
         bindings.put("AUCTION_NOTIFICATIONS", bool(
                 PlayerData::isAuctionNotificationsEnabled, PlayerData::setAuctionNotificationsEnabled));
         bindings.put("AMETHYST_BREAK_MESSAGES", bool(

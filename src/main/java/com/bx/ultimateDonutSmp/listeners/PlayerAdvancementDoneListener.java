@@ -2,7 +2,6 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
-import com.bx.ultimateDonutSmp.models.ThreeChoice;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
@@ -84,24 +83,17 @@ public class PlayerAdvancementDoneListener implements Listener {
         final String finalAnnouncement = ColorUtils.colorize(announcement);
 
         plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
-            if (shouldReceiveAdvancement(p, player)) {
+            if (shouldReceiveAdvancement(p)) {
                 p.sendMessage(ColorUtils.toComponent(finalAnnouncement));
             }
         });
     }
 
-    private boolean shouldReceiveAdvancement(Player receiver, Player victim) {
+    private boolean shouldReceiveAdvancement(Player receiver) {
         PlayerData receiverData = plugin.getPlayerDataManager().get(receiver);
         if (receiverData == null) {
             return true;
         }
-        ThreeChoice choice = receiverData.getAdvancementMessagesChoice();
-        if (choice == ThreeChoice.OFF) {
-            return false;
-        }
-        if (choice == ThreeChoice.FRIENDS_FOLLOWED) {
-            return plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(receiver.getUniqueId(), victim.getUniqueId());
-        }
-        return true;
+        return receiverData.isAdvancementMessagesEnabled();
     }
 }

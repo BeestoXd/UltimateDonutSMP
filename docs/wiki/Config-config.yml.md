@@ -753,7 +753,7 @@ before the colours are applied, and PlaceholderAPI placeholders resolve too when
 
 Two per-player switches under `/settings` still apply on top of everything configured here. Join,
 leave and first-join lines follow **Join/Leave Messages**, which is the same option that already
-governs the server's own join and quit text and can be narrowed to friends only. The Auction House
+governs the server's own join and quit text and is limited to people the player follows. The Auction House
 and Order lines follow **Server Broadcasts**, plus **Auction Alerts** and **Order Alerts**
 respectively, so a player who muted one marketplace does not get its announcements back through
 this system.

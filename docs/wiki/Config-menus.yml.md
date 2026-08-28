@@ -911,9 +911,19 @@ SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
   BUTTONS:
+    # Buttons are grouped a row at a time: chat and messages on the first row,
+    # alerts on the second, gameplay and display on the third, then who may reach
+    # you, the confirmation prompts, and finally the world around you.
     # Every setting below accepts two optional keys:
     #   DEFAULT: <value>  Starting value for players who never touched the setting.
-    #   ENABLED: false    Removes the option from /settings and pins every player to DEFAULT.
+    #                     On/off buttons take true or false. The privacy buttons
+    #                     (PRIVATE_MESSAGES, TPA_REQUESTS, TPA_HERE_REQUESTS, PAYMENTS)
+    #                     take ANYONE, FRIENDS_FOLLOWED or OFF, and DEATH_MESSAGES and
+    #                     JOIN_LEAVE_MESSAGES take FRIENDS_FOLLOWED or OFF.
+    #                     true/false also work as shortcuts.
+    #   ENABLED: false    Removes the option from /settings and pins every player to the
+    #                     DEFAULT above. Use this instead of deleting the block - deleted
+    #                     blocks are restored from the bundled defaults on the next start.
     # Example, hide advancement messages and keep them off for everyone:
     # ADVANCEMENT_MESSAGES:
     #   DEFAULT: OFF
@@ -928,6 +938,7 @@ SETTINGS-MENU:
     #   LORE:
     #   - '&7Toggle flight via external plugin'
     #   - '&fCurrently: {status}'
+    # Row 1 - chat and messages
     PUBLIC_CHAT:
       DISPLAY-NAME: '&#6BF18DPublic Chat'
       MATERIAL: OAK_SIGN
@@ -937,7 +948,7 @@ SETTINGS-MENU:
       - '&fCurrently: {status}'
     PRIVATE_MESSAGES:
       DISPLAY-NAME: '&#6BF18DPrivate Messages'
-      MATERIAL: SPRUCE_SIGN
+      MATERIAL: DARK_OAK_SIGN
       SLOT: 1
       LORE:
       - '&7Private messages privacy settings'
@@ -949,51 +960,40 @@ SETTINGS-MENU:
       LORE:
       - '&7Receive server broadcasts'
       - '&fCurrently: {status}'
-    TEAM_CHAT_VISIBILITY:
-      DISPLAY-NAME: '&#6BF18DTeam Chat Visibility'
-      MATERIAL: DARK_OAK_SIGN
+    HOTBAR_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DHotbar Messages'
+      MATERIAL: CRIMSON_SIGN
       SLOT: 3
       LORE:
-      - '&7Show team chat in main chat'
+      - '&7Show action bar status notifications'
       - '&fCurrently: {status}'
-    LUNAR_TEAMMATES:
-      DISPLAY-NAME: '&#6BF18DLunar Teammates'
-      MATERIAL: BIRCH_SIGN
+    DEATH_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DDeath Messages'
+      MATERIAL: SPRUCE_SIGN
       SLOT: 4
       LORE:
-      - '&7Show teammates on Lunar Client'
+      - '&7Show death message notifications'
       - '&fCurrently: {status}'
-    TPA_CONFIRM_MENUS:
-      DISPLAY-NAME: '&#6BF18DTpa Confirm Menus'
+    JOIN_LEAVE_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DJoin/Leave Messages'
       MATERIAL: JUNGLE_SIGN
       SLOT: 5
       LORE:
-      - '&7Show confirmation GUI for TPA'
+      - '&7Show join and leave notifications'
       - '&fCurrently: {status}'
-    QUICK_AUCTION_PURCHASE:
-      DISPLAY-NAME: '&#6BF18DQuick Auction Purchase'
-      MATERIAL: GOLD_NUGGET
-      SLOT: 9
+    ADVANCEMENT_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DAdvancement Messages'
+      MATERIAL: BIRCH_SIGN
+      SLOT: 6
       LORE:
-      - '&7Fast buy auction items directly'
+      - '&7Show advancement achievement notifications'
       - '&fCurrently: {status}'
-    DESTROY_PEARL_ON_DEATH:
-      DISPLAY-NAME: '&#6BF18DDestroy Pearl on Death'
-      MATERIAL: ENDER_PEARL
-      SLOT: 10
-      LORE:
-      - '&7Destroy thrown ender pearls when you die'
-      - '&fCurrently: {status}'
-    PAY_CONFIRM_MENUS:
-      DISPLAY-NAME: '&#6BF18DPay Confirm Menus'
-      MATERIAL: OAK_SIGN
-      SLOT: 11
-      LORE:
-      - '&7Show confirmation GUI for payments'
-      - '&fCurrently: {status}'
-    AUTO_CONFIRM_TPAS:
-      DISPLAY-NAME: '&bTp Auto'
+    TEAM_CHAT_VISIBILITY:
+      DISPLAY-NAME: '&#6BF18DTeam Chat Visibility'
       MATERIAL: ACACIA_SIGN
+      SLOT: 7
+      LORE:
+      - '&7Show team chat in main chat'
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -1007,29 +1007,29 @@ SETTINGS-MENU:
 | `SETTINGS-MENU.BUTTONS.PUBLIC_CHAT.SLOT` | `int` | Any valid integer number | `'0'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.PUBLIC_CHAT.SLOT` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.PUBLIC_CHAT.LORE` | `list` | List of configured items/strings | `['&7Receive public chat messages', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.PUBLIC_CHAT.LORE` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DPrivate Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.MATERIAL` | `str` | Any string text | `'SPRUCE_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.MATERIAL` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.MATERIAL` | `str` | Any string text | `'DARK_OAK_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.MATERIAL` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.SLOT` | `int` | Any valid integer number | `'1'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.SLOT` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Private messages privacy settings', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.PRIVATE_MESSAGES.LORE` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DServer Broadcasts'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.DISPLAY-NAME` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.MATERIAL` | `str` | Any string text | `'WARPED_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.MATERIAL` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.SLOT` | `int` | Any valid integer number | `'2'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.SLOT` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.LORE` | `list` | List of configured items/strings | `['&7Receive server broadcasts', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.SERVER_BROADCASTS.LORE` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DTeam Chat Visibility'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.DISPLAY-NAME` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.MATERIAL` | `str` | Any string text | `'DARK_OAK_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.MATERIAL` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.SLOT` | `int` | Any valid integer number | `'3'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.SLOT` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.LORE` | `list` | List of configured items/strings | `['&7Show team chat in main chat', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.TEAM_CHAT_VISIBILITY.LORE` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DLunar Teammates'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.DISPLAY-NAME` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.MATERIAL` | `str` | Any string text | `'BIRCH_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.MATERIAL` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.SLOT` | `int` | Any valid integer number | `'4'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.SLOT` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.LORE` | `list` | List of configured items/strings | `['&7Show teammates on Lunar Client', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.LUNAR_TEAMMATES.LORE` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DTpa Confirm Menus'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.DISPLAY-NAME` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.MATERIAL` | `str` | Any string text | `'JUNGLE_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.MATERIAL` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.SLOT` | `int` | Any valid integer number | `'5'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.SLOT` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.LORE` | `list` | List of configured items/strings | `['&7Show confirmation GUI for TPA', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.TPA_CONFIRM_MENUS.LORE` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DQuick Auction Purchase'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.DISPLAY-NAME` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.MATERIAL` | `str` | Any string text | `'GOLD_NUGGET'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.MATERIAL` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.SLOT` | `int` | Any valid integer number | `'9'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.SLOT` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.LORE` | `list` | List of configured items/strings | `['&7Fast buy auction items directly', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.QUICK_AUCTION_PURCHASE.LORE` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DHotbar Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.MATERIAL` | `str` | Any string text | `'CRIMSON_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.MATERIAL` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.SLOT` | `int` | Any valid integer number | `'3'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.SLOT` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show action bar status notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.HOTBAR_MESSAGES.LORE` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DDeath Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.MATERIAL` | `str` | Any string text | `'SPRUCE_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.MATERIAL` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.SLOT` | `int` | Any valid integer number | `'4'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.SLOT` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show death message notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.LORE` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DJoin/Leave Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.MATERIAL` | `str` | Any string text | `'JUNGLE_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.MATERIAL` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.SLOT` | `int` | Any valid integer number | `'5'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.SLOT` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show join and leave notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.LORE` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DAdvancement Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.MATERIAL` | `str` | Any string text | `'BIRCH_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.MATERIAL` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.SLOT` | `int` | Any valid integer number | `'6'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.SLOT` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show advancement achievement notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.LORE` in `menus.yml`. |
 | *(128 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example
@@ -1039,9 +1039,19 @@ SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
   BUTTONS:
+    # Buttons are grouped a row at a time: chat and messages on the first row,
+    # alerts on the second, gameplay and display on the third, then who may reach
+    # you, the confirmation prompts, and finally the world around you.
     # Every setting below accepts two optional keys:
     #   DEFAULT: <value>  Starting value for players who never touched the setting.
-    #   ENABLED: false    Removes the option from /settings and pins every player to DEFAULT.
+    #                     On/off buttons take true or false. The privacy buttons
+    #                     (PRIVATE_MESSAGES, TPA_REQUESTS, TPA_HERE_REQUESTS, PAYMENTS)
+    #                     take ANYONE, FRIENDS_FOLLOWED or OFF, and DEATH_MESSAGES and
+    #                     JOIN_LEAVE_MESSAGES take FRIENDS_FOLLOWED or OFF.
+    #                     true/false also work as shortcuts.
+    #   ENABLED: false    Removes the option from /settings and pins every player to the
+    #                     DEFAULT above. Use this instead of deleting the block - deleted
+    #                     blocks are restored from the bundled defaults on the next start.
     # Example, hide advancement messages and keep them off for everyone:
     # ADVANCEMENT_MESSAGES:
     #   DEFAULT: OFF
@@ -1056,6 +1066,7 @@ SETTINGS-MENU:
     #   LORE:
     #   - '&7Toggle flight via external plugin'
     #   - '&fCurrently: {status}'
+    # Row 1 - chat and messages
     PUBLIC_CHAT:
       DISPLAY-NAME: '&#6BF18DPublic Chat'
       MATERIAL: OAK_SIGN
@@ -1065,20 +1076,9 @@ SETTINGS-MENU:
       - '&fCurrently: {status}'
     PRIVATE_MESSAGES:
       DISPLAY-NAME: '&#6BF18DPrivate Messages'
-      MATERIAL: SPRUCE_SIGN
+      MATERIAL: DARK_OAK_SIGN
       SLOT: 1
       LORE:
-      - '&7Private messages privacy settings'
-      - '&fCurrently: {status}'
-    SERVER_BROADCASTS:
-      DISPLAY-NAME: '&#6BF18DServer Broadcasts'
-      MATERIAL: WARPED_SIGN
-      SLOT: 2
-      LORE:
-      - '&7Receive server broadcasts'
-      - '&fCurrently: {status}'
-    TEAM_CHAT_VISIBILITY:
-    
 ```
 
 ### 4. Per-Setting Defaults & Removing Options
@@ -1126,6 +1126,14 @@ Notes:
   it, so treat re-enabling an option as a reset for the players affected.
 - `QUICK_AUCTION_PURCHASE` and `QUICK_AUCTION_SELL` are stored by the auction house instead of
   the player profile, so they support `ENABLED` but not `DEFAULT`.
+- The bundled slots put one theme on each row and leave the rest of the row empty: chat and
+  messages on the first, alerts on the second, gameplay and display on the third, who may reach
+  you on the fourth, the confirmation prompts and auction shortcuts on the fifth, and the world
+  around you on the last. Moving a button is only a matter of changing its `SLOT`, and the
+  trailing gaps are there so a server can slot its own buttons into the row they belong to.
+- A `menus.yml` written before that grouping existed is backed up under `config-backups/` and
+  regenerated on the next start, because merging bundled defaults never rewrites a `SLOT` that
+  is already in the file.
 
 ---
 

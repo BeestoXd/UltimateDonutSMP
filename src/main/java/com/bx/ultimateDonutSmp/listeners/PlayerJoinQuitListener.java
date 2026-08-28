@@ -455,14 +455,11 @@ public class PlayerJoinQuitListener implements Listener {
         if (receiverData == null) {
             return true;
         }
-        com.bx.ultimateDonutSmp.models.ThreeChoice choice = receiverData.getJoinLeaveMessagesChoice();
-        if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.OFF) {
+        com.bx.ultimateDonutSmp.models.TwoChoice choice = receiverData.getJoinLeaveMessagesChoice();
+        if (choice == com.bx.ultimateDonutSmp.models.TwoChoice.OFF) {
             return false;
         }
-        if (choice == com.bx.ultimateDonutSmp.models.ThreeChoice.FRIENDS_FOLLOWED) {
-            return plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(receiver.getUniqueId(), joiner.getUniqueId());
-        }
-        return true;
+        return plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(receiver.getUniqueId(), joiner.getUniqueId());
     }
 
     private String kickMessage(PunishmentRecord record) {

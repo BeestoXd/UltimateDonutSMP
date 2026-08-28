@@ -66,8 +66,8 @@ public class PlayerData {
     private boolean destroyPearlOnDeath;
     private boolean randomizedCoords;
     private TwoChoice deathMessagesChoice;
-    private ThreeChoice advancementMessagesChoice;
-    private ThreeChoice joinLeaveMessagesChoice;
+    private boolean advancementMessagesEnabled;
+    private TwoChoice joinLeaveMessagesChoice;
     private boolean teleportAlertsEnabled;
     private boolean followAlertsEnabled;
     private boolean explosionSoundsEnabled;
@@ -138,8 +138,8 @@ public class PlayerData {
         this.destroyPearlOnDeath = true;
         this.randomizedCoords = false;
         this.deathMessagesChoice = TwoChoice.FRIENDS_FOLLOWED;
-        this.advancementMessagesChoice = ThreeChoice.ANYONE;
-        this.joinLeaveMessagesChoice = ThreeChoice.ANYONE;
+        this.advancementMessagesEnabled = true;
+        this.joinLeaveMessagesChoice = TwoChoice.FRIENDS_FOLLOWED;
         this.teleportAlertsEnabled = true;
         this.followAlertsEnabled = true;
         this.explosionSoundsEnabled = true;
@@ -903,20 +903,20 @@ public class PlayerData {
         dirty = true;
     }
 
-    public ThreeChoice getAdvancementMessagesChoice() {
-        return advancementMessagesChoice;
+    public boolean isAdvancementMessagesEnabled() {
+        return advancementMessagesEnabled;
     }
 
-    public void setAdvancementMessagesChoice(ThreeChoice advancementMessagesChoice) {
-        this.advancementMessagesChoice = advancementMessagesChoice;
+    public void setAdvancementMessagesEnabled(boolean advancementMessagesEnabled) {
+        this.advancementMessagesEnabled = advancementMessagesEnabled;
         dirty = true;
     }
 
-    public ThreeChoice getJoinLeaveMessagesChoice() {
+    public TwoChoice getJoinLeaveMessagesChoice() {
         return joinLeaveMessagesChoice;
     }
 
-    public void setJoinLeaveMessagesChoice(ThreeChoice joinLeaveMessagesChoice) {
+    public void setJoinLeaveMessagesChoice(TwoChoice joinLeaveMessagesChoice) {
         this.joinLeaveMessagesChoice = joinLeaveMessagesChoice;
         dirty = true;
     }

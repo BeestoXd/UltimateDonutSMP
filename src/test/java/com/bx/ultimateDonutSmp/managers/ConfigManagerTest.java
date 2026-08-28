@@ -526,6 +526,42 @@ class ConfigManagerTest {
         }
     }
 
+    @Test
+    void bundledSettingsMenuIsNotMistakenForTheOldLayout() throws Exception {
+        YamlConfiguration bundled = new YamlConfiguration();
+        bundled.options().parseComments(true);
+        bundled.load(Path.of("src/main/resources/menus.yml").toFile());
+
+        assertFalse(hasLegacyButtons(bundled));
+    }
+
+    @Test
+    void theSettingsMenuThatPredatesTheGroupedLayoutIsRegenerated() throws Exception {
+        YamlConfiguration old = yaml(lines(
+                "SETTINGS-MENU:",
+                "  BUTTONS:",
+                "    JOIN_LEAVE_MESSAGES:",
+                "      SLOT: 31",
+                "    PAY_ALERTS:",
+                "      SLOT: 32",
+                "    MONEY_NAMETAGS:",
+                "      SLOT: 33"
+        ));
+
+        assertTrue(hasLegacyButtons(old));
+    }
+
+    @Test
+    void aMenuWithoutSettingsButtonsIsLeftAlone() throws Exception {
+        assertFalse(hasLegacyButtons(yaml(lines("OTHER-MENU:", "  SIZE: 27"))));
+    }
+
+    private static boolean hasLegacyButtons(YamlConfiguration configuration) throws Exception {
+        Method method = ConfigManager.class.getDeclaredMethod("hasLegacyButtons", YamlConfiguration.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(new ConfigManager(null), configuration);
+    }
+
     private static int repairMiscasedPlaceholders(
             String resourceName,
             List<String> lines

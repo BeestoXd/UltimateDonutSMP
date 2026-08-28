@@ -821,7 +821,7 @@ SERVER-NOTIFICATIONS:
 | `SERVER-NOTIFICATIONS.ORDERS.COMPLETE.MESSAGE` | `str` | Any string text | `&8[&6ORDER&8] &f{player} &7completed &e{owner}&7's order...` | Supports `{player}`, `{owner}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}`, `{total}`, `{total_formatted}`. |
 
 Join, leave and first-join lines follow each player's **Join/Leave Messages** choice under
-`/settings`. The Auction House and Order lines follow **Server Broadcasts** plus **Auction
+`/settings`, which is either people they follow or nobody. The Auction House and Order lines follow **Server Broadcasts** plus **Auction
 Alerts** and **Order Alerts**. Bot listings and bot orders are never announced.
 
 ---

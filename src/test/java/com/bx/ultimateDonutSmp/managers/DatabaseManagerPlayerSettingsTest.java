@@ -75,8 +75,8 @@ class DatabaseManagerPlayerSettingsTest {
             original.setDestroyPearlOnDeath(false);
             original.setRandomizedCoords(true);
             original.setDeathMessagesChoice(TwoChoice.OFF);
-            original.setAdvancementMessagesChoice(ThreeChoice.FRIENDS_FOLLOWED);
-            original.setJoinLeaveMessagesChoice(ThreeChoice.OFF);
+            original.setAdvancementMessagesEnabled(false);
+            original.setJoinLeaveMessagesChoice(TwoChoice.OFF);
             original.setTeleportAlertsEnabled(false);
             original.setFollowAlertsEnabled(false);
             original.setExplosionSoundsEnabled(false);
@@ -110,8 +110,8 @@ class DatabaseManagerPlayerSettingsTest {
             assertFalse(loaded.isDestroyPearlOnDeath());
             assertTrue(loaded.isRandomizedCoords());
             assertEquals(TwoChoice.OFF, loaded.getDeathMessagesChoice());
-            assertEquals(ThreeChoice.FRIENDS_FOLLOWED, loaded.getAdvancementMessagesChoice());
-            assertEquals(ThreeChoice.OFF, loaded.getJoinLeaveMessagesChoice());
+            assertFalse(loaded.isAdvancementMessagesEnabled());
+            assertEquals(TwoChoice.OFF, loaded.getJoinLeaveMessagesChoice());
             assertFalse(loaded.isTeleportAlertsEnabled());
             assertFalse(loaded.isFollowAlertsEnabled());
             assertFalse(loaded.isExplosionSoundsEnabled());
