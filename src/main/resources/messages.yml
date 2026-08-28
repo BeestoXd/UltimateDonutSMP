@@ -1162,3 +1162,9 @@ ALTS:
   KNOWN_IPS: '&7Known IPs: &f%ips%'
   # The text or value for Entry. Available options: Any valid string text
   ENTRY: '&8- &e%player% &7[%status%&7] &fshared: %ips%'
+VOICE-CHAT:
+  ACCEPTED: '&aVoice chat is now enabled for you.'
+  DECLINED: '&cVoice chat will stay disabled.'
+  REVOKED: '&cYou withdrew your voice chat consent. Voice chat is disabled again.'
+  NOTHING-TO-REVOKE: '&cYou have not agreed to the voice chat policy yet.'
+  PLAYERS-ONLY: '&cOnly players can use this command.'

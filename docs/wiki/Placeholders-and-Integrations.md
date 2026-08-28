@@ -118,3 +118,4 @@ UltimateDonutSMP seamlessly hooks into the following plugins when installed:
 5. **SkinsRestorer**: Preserves custom player skin textures in GUI menus and head skulls.
 6. **Multiverse-Core**: Inherits world safety flags and spawn points.
 7. **Floodgate (Bedrock)**: Fixes form GUI layouts for Bedrock Geyser players joining from mobile or consoles.
+8. **Simple Voice Chat**: Gates the microphone behind the consent menu. Players who have not accepted the policy can still hear a voice channel, but their microphone audio is dropped before anyone receives it. Without Simple Voice Chat installed the menu still records an answer, it just has nothing to gate.

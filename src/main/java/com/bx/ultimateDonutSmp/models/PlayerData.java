@@ -23,6 +23,7 @@ public class PlayerData {
     private boolean tpauto;
     private boolean phantomEnabled;
     private ThreeChoice paymentsChoice;
+    private VoiceChatConsent voiceChatConsent;
     private boolean scoreboardVisible;
     private boolean payAlertsEnabled;
     private boolean hotbarMessagesEnabled;
@@ -94,6 +95,7 @@ public class PlayerData {
         this.tpauto = false;
         this.phantomEnabled = true;
         this.paymentsChoice = ThreeChoice.ANYONE;
+        this.voiceChatConsent = VoiceChatConsent.UNDECIDED;
         this.scoreboardVisible = true;
         this.payAlertsEnabled = true;
         this.hotbarMessagesEnabled = true;
@@ -495,6 +497,15 @@ public class PlayerData {
 
     public void setTpaConfirmMenuEnabled(boolean tpaConfirmMenuEnabled) {
         this.tpaConfirmMenuEnabled = tpaConfirmMenuEnabled;
+        dirty = true;
+    }
+
+    public VoiceChatConsent getVoiceChatConsent() {
+        return voiceChatConsent;
+    }
+
+    public void setVoiceChatConsent(VoiceChatConsent voiceChatConsent) {
+        this.voiceChatConsent = voiceChatConsent == null ? VoiceChatConsent.UNDECIDED : voiceChatConsent;
         dirty = true;
     }
 

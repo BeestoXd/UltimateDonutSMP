@@ -1608,6 +1608,31 @@ MENUS:
       DISPLAY-NAME: '&cNo Punishments Found'
       LORE:
       - '&7No punishments match the current filters.'
+  VOICE-CHAT-CONSENT-MENU:
+    TITLE: '&8Confirm Voice Chat'
+    INFO-BUTTON:
+      DISPLAY-NAME: '&bVoice Chat Policy'
+      LORE:
+      - '&7Your voice is recorded while you are'
+      - '&7talking in a voice channel.'
+      - ''
+      - '&7Recordings are thrown away unless somebody'
+      - '&7reports you. A reported recording is kept'
+      - '&7as proof for a mute or a ban, and the'
+      - '&7moderation team reviews it.'
+      - ''
+      - '&7You have to be 13 or older to talk.'
+      - ''
+      - '&7Changed your mind later? Run'
+      - '&f/voicechatconsent revoke'
+    CONFIRM-BUTTON:
+      DISPLAY-NAME: '&aConfirm'
+      LORE:
+      - '&fClick to turn voice chat on'
+    DECLINE-BUTTON:
+      DISPLAY-NAME: '&cDecline'
+      LORE:
+      - '&fVoice chat will stay disabled'
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -3169,6 +3194,12 @@ MESSAGES:
     RELOADED: '&aAnvil moderation config reloaded.'
   SAFE-LOCATION-FOUND-HIDDEN: '&aSafe location found! teleporting you blindly...'
   SEARCH-FOUND-ACTIONBAR-HIDDEN: '&aFound safe location'
+  VOICE-CHAT:
+    ACCEPTED: '&aVoice chat is now enabled for you.'
+    DECLINED: '&cVoice chat will stay disabled.'
+    REVOKED: '&cYou withdrew your voice chat consent. Voice chat is disabled again.'
+    NOTHING-TO-REVOKE: '&cYou have not agreed to the voice chat policy yet.'
+    PLAYERS-ONLY: '&cOnly players can use this command.'
 DEATH_MESSAGES:
   MESSAGES:
     PREFIX: '&c☠ '

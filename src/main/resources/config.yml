@@ -1025,6 +1025,14 @@ AMETHYST-TOOLS:
     # A list configuration for Enchantments. Available options: Multiple items
     ENCHANTMENTS: []
 # Configuration section for Commands.
+# Configuration section for Voice Chat.
+VOICE-CHAT:
+  # Determines whether Prompt On Join is enabled or disabled. Available options: true, false
+  PROMPT-ON-JOIN: true
+  # The number for Prompt Delay Ticks. Available options: Any whole number
+  PROMPT-DELAY-TICKS: 40
+  # Determines whether Mute Until Accepted is enabled or disabled. Available options: true, false
+  MUTE-UNTIL-ACCEPTED: true
 COMMANDS:
   # Determines whether Chat is enabled or disabled. Available options: true, false
   CHAT: true

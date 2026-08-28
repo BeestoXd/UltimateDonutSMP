@@ -1852,3 +1852,54 @@ COMBAT-MANAGER:
 ```
 
 ---
+
+## Section: `VOICE-CHAT`
+
+Shows every player a consent menu before their microphone works. The menu opens on its own the first
+time somebody joins and keeps opening on later joins until they pick an answer, so nobody ends up
+talking in a voice channel without having read the policy first. Once they confirm or decline, the
+prompt stops. `/voicechatconsent` reopens it, and `/voicechatconsent revoke` throws the answer away
+and puts them back at undecided.
+
+The policy wording itself is not here. It lives under `VOICE-CHAT-CONSENT-MENU.INFO-BUTTON.LORE` in
+`menus.yml`, because what your server records and how long you keep it is your own policy to write.
+The bundled text is a starting point, not legal advice; edit it before you rely on it.
+
+### 1. Commented Setup Code Example
+
+```yaml
+# Configuration section for Voice Chat.
+VOICE-CHAT:
+  # Determines whether Prompt On Join is enabled or disabled. Available options: true, false
+  PROMPT-ON-JOIN: true
+  # The number for Prompt Delay Ticks. Available options: Any whole number
+  PROMPT-DELAY-TICKS: 40
+  # Determines whether Mute Until Accepted is enabled or disabled. Available options: true, false
+  MUTE-UNTIL-ACCEPTED: true
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Path | Type | Accepted Values | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `VOICE-CHAT.PROMPT-ON-JOIN` | `boolean` | `true`, `false` | `true` | Opens the menu by itself when an undecided player joins. Turn it off to leave the menu behind `/voicechatconsent` only. The answer is still stored either way. |
+| `VOICE-CHAT.PROMPT-DELAY-TICKS` | `integer` | Any whole number, 20 ticks to the second | `40` | How long to wait after the join before the menu opens. Two seconds keeps it clear of join messages and of any other plugin that moves players around on arrival. |
+| `VOICE-CHAT.MUTE-UNTIL-ACCEPTED` | `boolean` | `true`, `false` | `true` | Drops microphone audio from anyone who has not confirmed. Set it to `false` and the menu becomes a record of who agreed, without stopping anybody talking. Needs Simple Voice Chat installed to have any effect. |
+
+The whole feature answers to the `VOICE_CHAT` toggle in `/features`, so disabling it there stops the
+prompt, the command, and the microphone gate together.
+
+### 3. Practical Setup Example
+
+A server that will not carry a recording of anyone who never agreed to being recorded. The prompt
+waits three seconds so it does not collide with a spawn teleport, and nobody transmits until they
+have confirmed:
+
+```yaml
+VOICE-CHAT:
+  PROMPT-ON-JOIN: true
+  PROMPT-DELAY-TICKS: 60
+  MUTE-UNTIL-ACCEPTED: true
+```
+
+---

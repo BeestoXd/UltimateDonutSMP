@@ -337,6 +337,7 @@ public class DatabaseManager {
             "  clear_entities_messages_enabled INTEGER DEFAULT 1," +
             "  bounty_alerts_enabled INTEGER DEFAULT 1," +
             "  tpa_confirm_menu_enabled INTEGER DEFAULT 1," +
+            "  voice_chat_consent INTEGER DEFAULT 0," +
             "  chainmail_on_respawn_enabled INTEGER DEFAULT 1," +
             "  lunar_teammates_enabled INTEGER DEFAULT 1," +
             "  tpa_requests_enabled INTEGER DEFAULT 1," +
@@ -736,6 +737,7 @@ public class DatabaseManager {
         ensureColumnExists("players", "clear_entities_messages_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "bounty_alerts_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "tpa_confirm_menu_enabled", "INTEGER DEFAULT 1");
+        ensureColumnExists("players", "voice_chat_consent", "INTEGER DEFAULT 0");
         ensureColumnExists("players", "chainmail_on_respawn_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "lunar_teammates_enabled", "INTEGER DEFAULT 1");
         ensureColumnExists("players", "tpa_requests_enabled", "INTEGER DEFAULT 1");
@@ -1066,6 +1068,7 @@ public class DatabaseManager {
         data.setClearEntitiesMessagesEnabled(rs.getInt("clear_entities_messages_enabled") != 0);
         data.setBountyAlertsEnabled(rs.getInt("bounty_alerts_enabled") != 0);
         data.setTpaConfirmMenuEnabled(rs.getInt("tpa_confirm_menu_enabled") != 0);
+        data.setVoiceChatConsent(com.bx.ultimateDonutSmp.models.VoiceChatConsent.fromInt(rs.getInt("voice_chat_consent")));
         data.setChainmailOnRespawnEnabled(rs.getInt("chainmail_on_respawn_enabled") != 0);
         data.setLunarTeammatesEnabled(rs.getInt("lunar_teammates_enabled") != 0);
         data.setTpaRequestsChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("tpa_requests_enabled")));
@@ -1637,8 +1640,9 @@ public class DatabaseManager {
                     duel_music_enabled, quiet_spawn_enabled, night_vision_enabled, keyall_remaining_seconds,
                     shard_booster_expiry, mob_spawn_disabled_until, phantom_disabled_until, destroy_pearl_on_death, randomized_coords, death_messages_choice,
                     advancement_messages_choice, join_leave_messages_choice, teleport_alerts_enabled,
-                    follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    follow_alerts_enabled, explosion_sounds_enabled, display_donutplus_enabled,
+                    voice_chat_consent)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """;
 
         if (hikariDataSource != null && !hikariDataSource.isClosed()) {
@@ -1729,6 +1733,7 @@ public class DatabaseManager {
             ps.setInt(62, data.isFollowAlertsEnabled() ? 1 : 0);
             ps.setInt(63, data.isExplosionSoundsEnabled() ? 1 : 0);
             ps.setInt(64, data.isDisplayDonutPlusEnabled() ? 1 : 0);
+            ps.setInt(65, data.getVoiceChatConsent().ordinal());
             data.setDirty(false);
     }
 

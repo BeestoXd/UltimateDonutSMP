@@ -1352,6 +1352,31 @@ MENUS:
       DISPLAY-NAME: "&cNenhuma punição encontrada"
       LORE:
       - "&7Nenhuma punição corresponde aos filtros atuais."
+  VOICE-CHAT-CONSENT-MENU:
+    TITLE: "&8Confirmar chat de voz"
+    INFO-BUTTON:
+      DISPLAY-NAME: "&bPolítica do chat de voz"
+      LORE:
+      - "&7Sua voz é gravada enquanto você fala"
+      - "&7em um canal de voz."
+      - ""
+      - "&7As gravações são descartadas a menos que"
+      - "&7alguém denuncie você. Uma gravação denunciada"
+      - "&7fica guardada como prova de mute ou ban,"
+      - "&7e a equipe de moderação analisa."
+      - ""
+      - "&7Você precisa ter 13 anos ou mais para falar."
+      - ""
+      - "&7Mudou de ideia depois? Use"
+      - "&f/voicechatconsent revoke"
+    CONFIRM-BUTTON:
+      DISPLAY-NAME: "&aConfirmar"
+      LORE:
+      - "&fClique para ligar o chat de voz"
+    DECLINE-BUTTON:
+      DISPLAY-NAME: "&cRecusar"
+      LORE:
+      - "&fO chat de voz vai continuar desligado"
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2790,6 +2815,12 @@ MESSAGES:
     ADDED: "&aSuccessfully added '&e{word}&a' to banned words."
     ALREADY-EXISTS: "&cThat word is already in the banned list."
     RELOADED: "&aAnvil moderation config reloaded."
+  VOICE-CHAT:
+    ACCEPTED: "&aO chat de voz agora está ligado para você."
+    DECLINED: "&cO chat de voz vai continuar desligado."
+    REVOKED: "&cVocê retirou seu consentimento do chat de voz. O chat de voz foi desligado de novo."
+    NOTHING-TO-REVOKE: "&cVocê ainda não aceitou a política do chat de voz."
+    PLAYERS-ONLY: "&cApenas jogadores podem usar este comando."
 DEATH_MESSAGES:
   MESSAGES:
     PREFIX: "&c☠ "

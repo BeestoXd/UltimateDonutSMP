@@ -1351,6 +1351,31 @@ MENUS:
       DISPLAY-NAME: "&cНаказания не найдены"
       LORE:
       - "&7Нет наказаний, соответствующих текущим фильтрам."
+  VOICE-CHAT-CONSENT-MENU:
+    TITLE: "&8Подтверждение голосового чата"
+    INFO-BUTTON:
+      DISPLAY-NAME: "&bПравила голосового чата"
+      LORE:
+      - "&7Твой голос записывается, пока ты"
+      - "&7говоришь в голосовом канале."
+      - ""
+      - "&7Записи удаляются, если на тебя никто"
+      - "&7не пожаловался. Записи по жалобе хранятся"
+      - "&7как доказательство для мута или бана,"
+      - "&7и команда модерации их проверяет."
+      - ""
+      - "&7Чтобы говорить, тебе должно быть 13 лет."
+      - ""
+      - "&7Передумал позже? Введи"
+      - "&f/voicechatconsent revoke"
+    CONFIRM-BUTTON:
+      DISPLAY-NAME: "&aПодтвердить"
+      LORE:
+      - "&fНажми, чтобы включить голосовой чат"
+    DECLINE-BUTTON:
+      DISPLAY-NAME: "&cОтказаться"
+      LORE:
+      - "&fГолосовой чат останется выключенным"
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2787,6 +2812,12 @@ MESSAGES:
     ADDED: "&aSuccessfully added '&e{word}&a' to banned words."
     ALREADY-EXISTS: "&cThat word is already in the banned list."
     RELOADED: "&aAnvil moderation config reloaded."
+  VOICE-CHAT:
+    ACCEPTED: "&aГолосовой чат теперь включён для тебя."
+    DECLINED: "&cГолосовой чат останется выключенным."
+    REVOKED: "&cТы отозвал согласие на голосовой чат. Голосовой чат снова выключен."
+    NOTHING-TO-REVOKE: "&cТы ещё не принял правила голосового чата."
+    PLAYERS-ONLY: "&cТолько игроки могут использовать эту команду."
 DEATH_MESSAGES:
   MESSAGES:
     PREFIX: "&c☠ "

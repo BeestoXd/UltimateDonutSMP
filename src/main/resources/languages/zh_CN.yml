@@ -1350,6 +1350,31 @@ MENUS:
       DISPLAY-NAME: "&c未找到处罚"
       LORE:
       - "&7没有处罚符合当前筛选条件."
+  VOICE-CHAT-CONSENT-MENU:
+    TITLE: "&8确认语音聊天"
+    INFO-BUTTON:
+      DISPLAY-NAME: "&b语音聊天政策"
+      LORE:
+      - "&7你在语音频道里说话时，"
+      - "&7你的声音会被录制。"
+      - ""
+      - "&7除非有人举报你，"
+      - "&7否则录音会被丢弃。被举报的录音"
+      - "&7会作为禁言或封禁的证据保留，"
+      - "&7并由管理团队查看。"
+      - ""
+      - "&7你必须年满 13 岁才能说话。"
+      - ""
+      - "&7以后改变主意？请运行"
+      - "&f/voicechatconsent revoke"
+    CONFIRM-BUTTON:
+      DISPLAY-NAME: "&a确认"
+      LORE:
+      - "&f点击以开启语音聊天"
+    DECLINE-BUTTON:
+      DISPLAY-NAME: "&c拒绝"
+      LORE:
+      - "&f语音聊天将保持关闭"
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2775,6 +2800,12 @@ MESSAGES:
     ADDED: "&aSuccessfully added '&e{word}&a' to banned words."
     ALREADY-EXISTS: "&cThat word is already in the banned list."
     RELOADED: "&aAnvil moderation config reloaded."
+  VOICE-CHAT:
+    ACCEPTED: "&a语音聊天已为你开启。"
+    DECLINED: "&c语音聊天将保持关闭。"
+    REVOKED: "&c你已撤回语音聊天同意。语音聊天已再次关闭。"
+    NOTHING-TO-REVOKE: "&c你还没有同意语音聊天政策。"
+    PLAYERS-ONLY: "&c只有玩家可以使用这个命令。"
 DEATH_MESSAGES:
   MESSAGES:
     PREFIX: "&c☠ "

@@ -110,6 +110,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private SpawnStashManager spawnStashManager;
     private FakePlayerManager fakePlayerManager;
     private HideManager hideManager;
+    private VoiceChatConsentManager voiceChatConsentManager;
     private NetworkStatusManager networkStatusManager;
     private RedisManager redisManager;
     private MaintenanceManager maintenanceManager;
@@ -266,6 +267,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         tablistManager = new TablistManager(this);
         hideManager = new HideManager(this);
         hideManager.loadAll();
+        voiceChatConsentManager = new VoiceChatConsentManager(this);
+        voiceChatConsentManager.registerVoicechatHook();
         teleportManager = new TeleportManager(this);
         rtpManager = new RTPManager(this);
         rtpZoneManager = new RTPZoneManager(this);
@@ -752,6 +755,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
         setExecutor("safety", new SafetyCommand(this), FeatureManager.Feature.SAFETY);
+        setExecutor("voicechatconsent", new VoiceChatConsentCommand(this),
+                FeatureManager.Feature.VOICE_CHAT);
 
         FriendsCommand friendsCommand = new FriendsCommand(this);
         setExecutor("friends", friendsCommand, FeatureManager.Feature.FRIENDS);
@@ -1093,6 +1098,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         spawnStashManager.reload();
         fakePlayerManager.reload();
         hideManager.reload();
+        voiceChatConsentManager.refreshSettings();
         networkStatusManager.reload();
         networkStaffChatManager.reload();
         networkStaffAlertManager.reload();
@@ -1238,6 +1244,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public HideManager getHideManager() {
         return hideManager;
+    }
+
+    public VoiceChatConsentManager getVoiceChatConsentManager() {
+        return voiceChatConsentManager;
     }
 
     public CombatManager getCombatManager() {

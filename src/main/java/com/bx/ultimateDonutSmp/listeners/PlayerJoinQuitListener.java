@@ -189,6 +189,7 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getCrateVisualManager().handleJoin(player);
         plugin.getPortalManager().refreshHologramsSoon();
         plugin.getFreezeManager().handleJoin(player);
+        plugin.getVoiceChatConsentManager().handleJoin(player);
         plugin.getStaffModeManager().handleJoin(player);
         plugin.getNetworkStaffChatManager().handleStaffJoin(player);
         if (plugin.getLunarRichPresenceManager() != null) {
@@ -369,6 +370,7 @@ public class PlayerJoinQuitListener implements Listener {
 
         // Clear combat tag
         plugin.getCombatManager().clearTag(player.getUniqueId());
+        plugin.getVoiceChatConsentManager().handleQuit(player.getUniqueId());
 
         // Cancel any pending teleport
         plugin.getTeleportManager().cancel(player.getUniqueId());

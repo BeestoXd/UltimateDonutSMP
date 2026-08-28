@@ -1351,6 +1351,31 @@ MENUS:
       DISPLAY-NAME: "&cAucune sanction trouvée"
       LORE:
       - "&7Aucune sanction ne correspond aux filtres actuels."
+  VOICE-CHAT-CONSENT-MENU:
+    TITLE: "&8Confirmer le chat vocal"
+    INFO-BUTTON:
+      DISPLAY-NAME: "&bPolitique du chat vocal"
+      LORE:
+      - "&7Ta voix est enregistrée pendant que tu"
+      - "&7parles dans un salon vocal."
+      - ""
+      - "&7Les enregistrements sont supprimés sauf si"
+      - "&7quelqu'un te signale. Un enregistrement signalé"
+      - "&7est gardé comme preuve pour un mute ou un ban,"
+      - "&7et l'équipe de modération l'examine."
+      - ""
+      - "&7Tu dois avoir 13 ans ou plus pour parler."
+      - ""
+      - "&7Tu changes d'avis plus tard ? Lance"
+      - "&f/voicechatconsent revoke"
+    CONFIRM-BUTTON:
+      DISPLAY-NAME: "&aConfirmer"
+      LORE:
+      - "&fClique pour activer le chat vocal"
+    DECLINE-BUTTON:
+      DISPLAY-NAME: "&cRefuser"
+      LORE:
+      - "&fLe chat vocal restera désactivé"
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2789,6 +2814,12 @@ MESSAGES:
     ADDED: "&aSuccessfully added '&e{word}&a' to banned words."
     ALREADY-EXISTS: "&cThat word is already in the banned list."
     RELOADED: "&aAnvil moderation config reloaded."
+  VOICE-CHAT:
+    ACCEPTED: "&aLe chat vocal est maintenant activé pour toi."
+    DECLINED: "&cLe chat vocal restera désactivé."
+    REVOKED: "&cTu as retiré ton consentement au chat vocal. Le chat vocal est de nouveau désactivé."
+    NOTHING-TO-REVOKE: "&cTu n'as pas encore accepté la politique du chat vocal."
+    PLAYERS-ONLY: "&cSeuls les joueurs peuvent utiliser cette commande."
 DEATH_MESSAGES:
   MESSAGES:
     PREFIX: "&c☠ "
