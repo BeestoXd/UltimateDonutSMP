@@ -912,8 +912,8 @@ SETTINGS-MENU:
   SIZE: 54
   BUTTONS:
     # Buttons are grouped a row at a time: chat and messages on the first row,
-    # alerts on the second, gameplay and display on the third, then who may reach
-    # you, the confirmation prompts, and finally the world around you.
+    # alerts on the second, gameplay and display on the third, who may reach you on
+    # the fourth, the scoreboard on the fifth, and the world around you on the last.
     # Every setting below accepts two optional keys:
     #   DEFAULT: <value>  Starting value for players who never touched the setting.
     #                     On/off buttons take true or false. The privacy buttons
@@ -974,23 +974,23 @@ SETTINGS-MENU:
       LORE:
       - '&7Show death message notifications'
       - '&fCurrently: {status}'
-    JOIN_LEAVE_MESSAGES:
-      DISPLAY-NAME: '&#6BF18DJoin/Leave Messages'
-      MATERIAL: JUNGLE_SIGN
-      SLOT: 5
-      LORE:
-      - '&7Show join and leave notifications'
-      - '&fCurrently: {status}'
     ADVANCEMENT_MESSAGES:
       DISPLAY-NAME: '&#6BF18DAdvancement Messages'
       MATERIAL: BIRCH_SIGN
-      SLOT: 6
+      SLOT: 5
       LORE:
       - '&7Show advancement achievement notifications'
       - '&fCurrently: {status}'
+    JOIN_LEAVE_MESSAGES:
+      DISPLAY-NAME: '&#6BF18DJoin/Leave Messages'
+      MATERIAL: JUNGLE_SIGN
+      SLOT: 6
+      LORE:
+      - '&7Show join and leave notifications'
+      - '&fCurrently: {status}'
     TEAM_CHAT_VISIBILITY:
       DISPLAY-NAME: '&#6BF18DTeam Chat Visibility'
-      MATERIAL: ACACIA_SIGN
+      MATERIAL: MANGROVE_SIGN
       SLOT: 7
       LORE:
       - '&7Show team chat in main chat'
@@ -1022,15 +1022,15 @@ SETTINGS-MENU:
 | `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.MATERIAL` | `str` | Any string text | `'SPRUCE_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.MATERIAL` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.SLOT` | `int` | Any valid integer number | `'4'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.SLOT` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show death message notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.DEATH_MESSAGES.LORE` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DJoin/Leave Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.MATERIAL` | `str` | Any string text | `'JUNGLE_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.MATERIAL` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.SLOT` | `int` | Any valid integer number | `'5'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.SLOT` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show join and leave notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.LORE` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DAdvancement Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.MATERIAL` | `str` | Any string text | `'BIRCH_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.MATERIAL` in `menus.yml`. |
-| `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.SLOT` | `int` | Any valid integer number | `'6'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.SLOT` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.SLOT` | `int` | Any valid integer number | `'5'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.SLOT` in `menus.yml`. |
 | `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show advancement achievement notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.ADVANCEMENT_MESSAGES.LORE` in `menus.yml`. |
-| *(128 additional sub-keys configured in section)* | | | | |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.DISPLAY-NAME` | `str` | Any string text | `'&#6BF18DJoin/Leave Messages'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.DISPLAY-NAME` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.MATERIAL` | `str` | Any string text | `'JUNGLE_SIGN'` | Configures the technical `MATERIAL` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.MATERIAL` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.SLOT` | `int` | Any valid integer number | `'6'` | Configures the technical `SLOT` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.SLOT` in `menus.yml`. |
+| `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.LORE` | `list` | List of configured items/strings | `['&7Show join and leave notifications', '&fCurrently: {status}']` | Configures the technical `LORE` parameter for `SETTINGS-MENU.BUTTONS.JOIN_LEAVE_MESSAGES.LORE` in `menus.yml`. |
+| *(152 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example
 
@@ -1040,8 +1040,8 @@ SETTINGS-MENU:
   SIZE: 54
   BUTTONS:
     # Buttons are grouped a row at a time: chat and messages on the first row,
-    # alerts on the second, gameplay and display on the third, then who may reach
-    # you, the confirmation prompts, and finally the world around you.
+    # alerts on the second, gameplay and display on the third, who may reach you on
+    # the fourth, the scoreboard on the fifth, and the world around you on the last.
     # Every setting below accepts two optional keys:
     #   DEFAULT: <value>  Starting value for players who never touched the setting.
     #                     On/off buttons take true or false. The privacy buttons
@@ -1128,10 +1128,14 @@ Notes:
   the player profile, so they support `ENABLED` but not `DEFAULT`.
 - The bundled slots put one theme on each row and leave the rest of the row empty: chat and
   messages on the first, alerts on the second, gameplay and display on the third, who may reach
-  you on the fourth, the confirmation prompts and auction shortcuts on the fifth, and the world
-  around you on the last. Moving a button is only a matter of changing its `SLOT`, and the
-  trailing gaps are there so a server can slot its own buttons into the row they belong to.
-- A `menus.yml` written before that grouping existed is backed up under `config-backups/` and
+  you on the fourth, the scoreboard on the fifth, and the world around you on the last. Moving a
+  button is only a matter of changing its `SLOT`, and the trailing gaps are there so a server can
+  slot its own buttons into the row they belong to.
+- `SCOREBOARD_VISIBILITY` hides the sidebar for that player. `SHOW_MONEY`, `SHOW_SHARDS`,
+  `SHOW_KILLS`, `SHOW_DEATHS` and `SHOW_PLAYTIME` each hide one line of it, matched by the
+  placeholder the line carries in `SCOREBOARD.LINES`. A server that does not want players hiding
+  their statistics can drop the whole row with `ENABLED: false` on those five.
+- A `menus.yml` written before the current grouping is backed up under `config-backups/` and
   regenerated on the next start, because merging bundled defaults never rewrites a `SLOT` that
   is already in the file.
 

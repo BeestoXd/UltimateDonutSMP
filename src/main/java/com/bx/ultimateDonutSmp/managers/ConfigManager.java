@@ -2072,12 +2072,20 @@ public class ConfigManager {
         if (buttons == null) {
             return false;
         }
-        // Slots 31 to 33 held join/leave, pay alerts and money nametags in the old grouping and are
-        // unused by the current one, so all three together identify a menus.yml that predates it.
-        // Merging never rewrites a slot that is already there, so the file has to be regenerated.
-        return buttons.getInt("JOIN_LEAVE_MESSAGES.SLOT", -1) == 31
+        // Merging bundled defaults never rewrites a slot that is already in the file, so every
+        // layout the plugin has shipped has to be recognised here and regenerated. Each fingerprint
+        // is a set of slots that only that layout ever used together.
+
+        // The scattered layout: join/leave, pay alerts and money nametags parked at 31 to 33.
+        if (buttons.getInt("JOIN_LEAVE_MESSAGES.SLOT", -1) == 31
                 && buttons.getInt("PAY_ALERTS.SLOT", -1) == 32
-                && buttons.getInt("MONEY_NAMETAGS.SLOT", -1) == 33;
+                && buttons.getInt("MONEY_NAMETAGS.SLOT", -1) == 33) {
+            return true;
+        }
+
+        // The first grouped layout, which put the confirmation prompts on their own row at 36.
+        return buttons.getInt("TPA_CONFIRM_MENUS.SLOT", -1) == 36
+                && buttons.getInt("NOTIFICATION_SOUNDS.SLOT", -1) == 16;
     }
 
     private void backupInvalidFile(File file) {

@@ -929,6 +929,36 @@ MENUS:
         LORE:
         - '&7Show player balances under their names'
         - '&fCurrently: {status}'
+      SCOREBOARD_VISIBILITY:
+        DISPLAY-NAME: '&#6BF18DShow Scoreboard'
+        LORE:
+        - '&7Show the sidebar scoreboard'
+        - '&fCurrently: {status}'
+      SHOW_MONEY:
+        DISPLAY-NAME: '&#6BF18DShow Money'
+        LORE:
+        - '&7Show the money line on the scoreboard'
+        - '&fCurrently: {status}'
+      SHOW_SHARDS:
+        DISPLAY-NAME: '&#6BF18DShow Shards'
+        LORE:
+        - '&7Show the shards line on the scoreboard'
+        - '&fCurrently: {status}'
+      SHOW_KILLS:
+        DISPLAY-NAME: '&#6BF18DShow Kills'
+        LORE:
+        - '&7Show the kills line on the scoreboard'
+        - '&fCurrently: {status}'
+      SHOW_DEATHS:
+        DISPLAY-NAME: '&#6BF18DShow Deaths'
+        LORE:
+        - '&7Show the deaths line on the scoreboard'
+        - '&fCurrently: {status}'
+      SHOW_PLAYTIME:
+        DISPLAY-NAME: '&#6BF18DShow Playtime'
+        LORE:
+        - '&7Show the playtime line on the scoreboard'
+        - '&fCurrently: {status}'
   LEADERBOARDS-MENU:
     TITLE: '&8Leaderboards'
     TYPE-MENU:

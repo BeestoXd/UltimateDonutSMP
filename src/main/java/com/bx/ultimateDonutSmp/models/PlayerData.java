@@ -72,6 +72,11 @@ public class PlayerData {
     private boolean followAlertsEnabled;
     private boolean explosionSoundsEnabled;
     private boolean displayDonutPlusEnabled;
+    private boolean showMoneyLine;
+    private boolean showShardsLine;
+    private boolean showKillsLine;
+    private boolean showDeathsLine;
+    private boolean showPlaytimeLine;
     private long mobSpawnDisabledUntil;
     private long phantomDisabledUntil;
 
@@ -144,6 +149,11 @@ public class PlayerData {
         this.followAlertsEnabled = true;
         this.explosionSoundsEnabled = true;
         this.displayDonutPlusEnabled = true;
+        this.showMoneyLine = true;
+        this.showShardsLine = true;
+        this.showKillsLine = true;
+        this.showDeathsLine = true;
+        this.showPlaytimeLine = true;
         this.mobSpawnDisabledUntil = 0L;
         this.phantomDisabledUntil = 0L;
     }
@@ -954,6 +964,51 @@ public class PlayerData {
 
     public void setDisplayDonutPlusEnabled(boolean displayDonutPlusEnabled) {
         this.displayDonutPlusEnabled = displayDonutPlusEnabled;
+        dirty = true;
+    }
+
+    public boolean isShowMoneyLine() {
+        return showMoneyLine;
+    }
+
+    public void setShowMoneyLine(boolean showMoneyLine) {
+        this.showMoneyLine = showMoneyLine;
+        dirty = true;
+    }
+
+    public boolean isShowShardsLine() {
+        return showShardsLine;
+    }
+
+    public void setShowShardsLine(boolean showShardsLine) {
+        this.showShardsLine = showShardsLine;
+        dirty = true;
+    }
+
+    public boolean isShowKillsLine() {
+        return showKillsLine;
+    }
+
+    public void setShowKillsLine(boolean showKillsLine) {
+        this.showKillsLine = showKillsLine;
+        dirty = true;
+    }
+
+    public boolean isShowDeathsLine() {
+        return showDeathsLine;
+    }
+
+    public void setShowDeathsLine(boolean showDeathsLine) {
+        this.showDeathsLine = showDeathsLine;
+        dirty = true;
+    }
+
+    public boolean isShowPlaytimeLine() {
+        return showPlaytimeLine;
+    }
+
+    public void setShowPlaytimeLine(boolean showPlaytimeLine) {
+        this.showPlaytimeLine = showPlaytimeLine;
         dirty = true;
     }
 }

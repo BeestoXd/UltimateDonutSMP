@@ -536,8 +536,8 @@ class ConfigManagerTest {
     }
 
     @Test
-    void theSettingsMenuThatPredatesTheGroupedLayoutIsRegenerated() throws Exception {
-        YamlConfiguration old = yaml(lines(
+    void theScatteredSettingsMenuIsRegenerated() throws Exception {
+        YamlConfiguration scattered = yaml(lines(
                 "SETTINGS-MENU:",
                 "  BUTTONS:",
                 "    JOIN_LEAVE_MESSAGES:",
@@ -548,7 +548,22 @@ class ConfigManagerTest {
                 "      SLOT: 33"
         ));
 
-        assertTrue(hasLegacyButtons(old));
+        assertTrue(hasLegacyButtons(scattered));
+    }
+
+    @Test
+    void theFirstGroupedSettingsMenuIsRegeneratedToo() throws Exception {
+        // Servers that picked up the interim layout would otherwise keep it forever.
+        YamlConfiguration interim = yaml(lines(
+                "SETTINGS-MENU:",
+                "  BUTTONS:",
+                "    NOTIFICATION_SOUNDS:",
+                "      SLOT: 16",
+                "    TPA_CONFIRM_MENUS:",
+                "      SLOT: 36"
+        ));
+
+        assertTrue(hasLegacyButtons(interim));
     }
 
     @Test
