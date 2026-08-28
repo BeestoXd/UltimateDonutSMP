@@ -2324,3 +2324,72 @@ SELLALL-CONFIRM-MENU:
 
 ---
 
+
+## Section: `VOICE-CHAT-CONSENT-MENU`
+
+The consent prompt. It opens on its own when an undecided player joins, and `/voicechatconsent`
+reopens it later. Clicking confirm lets the player transmit on Simple Voice Chat; clicking decline
+records the refusal and leaves their microphone gated. Anything the player is meant to have read
+before agreeing belongs in `INFO-BUTTON.LORE`, and the shipped wording is a starting point rather
+than a policy anyone has cleared for your server.
+
+### 1. Commented Setup Code Example
+
+```yaml
+VOICE-CHAT-CONSENT-MENU:
+  TITLE: '&8Confirm Voice Chat'
+  SIZE: 27
+  INFO-BUTTON:
+    DISPLAY-NAME: '&bVoice Chat Policy'
+    MATERIAL: JUKEBOX
+    SLOT: 13
+    LORE:
+    - '&7Your voice is recorded while you are'
+    - '&7talking in a voice channel.'
+    - ''
+    - '&7Recordings are thrown away unless somebody'
+    - '&7reports you. A reported recording is kept'
+    - '&7as proof for a mute or a ban, and the'
+    - '&7moderation team reviews it.'
+    - ''
+    - '&7You have to be 13 or older to talk.'
+    - ''
+    - '&7Changed your mind later? Run'
+    - '&f/voicechatconsent revoke'
+  CONFIRM-BUTTON:
+    DISPLAY-NAME: '&aConfirm'
+    MATERIAL: LIME_STAINED_GLASS_PANE
+    SLOT: 11
+    LORE:
+    - '&fClick to turn voice chat on'
+  DECLINE-BUTTON:
+    DISPLAY-NAME: '&cDecline'
+    MATERIAL: RED_STAINED_GLASS_PANE
+    SLOT: 15
+    LORE:
+    - '&fVoice chat will stay disabled'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `VOICE-CHAT-CONSENT-MENU.TITLE` | `str` | Any string text | `'&8Confirm Voice Chat'` | Inventory title of the consent prompt. |
+| `VOICE-CHAT-CONSENT-MENU.SIZE` | `int` | Any valid integer number | `'27'` | Inventory size in slots. Keep it a multiple of nine and large enough for the three slots below. |
+| `VOICE-CHAT-CONSENT-MENU.INFO-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&bVoice Chat Policy'` | Name of the item holding the policy. |
+| `VOICE-CHAT-CONSENT-MENU.INFO-BUTTON.MATERIAL` | `str` | Any string text | `'JUKEBOX'` | Item shown for the policy. Any material name works. |
+| `VOICE-CHAT-CONSENT-MENU.INFO-BUTTON.SLOT` | `int` | Any valid integer number | `'13'` | Slot the policy item sits in. Clicking it does nothing on purpose, so a misclick cannot answer for the player. |
+| `VOICE-CHAT-CONSENT-MENU.INFO-BUTTON.LORE` | `list` | List of configured items/strings | See the example above | The policy itself. Write what your server actually records, how long it keeps it, and who reads it. Add a line pointing at your own privacy page if you have one. |
+| `VOICE-CHAT-CONSENT-MENU.CONFIRM-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&aConfirm'` | Name of the accept button. |
+| `VOICE-CHAT-CONSENT-MENU.CONFIRM-BUTTON.MATERIAL` | `str` | Any string text | `'LIME_STAINED_GLASS_PANE'` | Item used for the accept button. |
+| `VOICE-CHAT-CONSENT-MENU.CONFIRM-BUTTON.SLOT` | `int` | Any valid integer number | `'11'` | Slot of the accept button. Clicking here records agreement and opens the microphone. |
+| `VOICE-CHAT-CONSENT-MENU.CONFIRM-BUTTON.LORE` | `list` | List of configured items/strings | `['&fClick to turn voice chat on']` | Lore under the accept button. |
+| `VOICE-CHAT-CONSENT-MENU.DECLINE-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&cDecline'` | Name of the decline button. |
+| `VOICE-CHAT-CONSENT-MENU.DECLINE-BUTTON.MATERIAL` | `str` | Any string text | `'RED_STAINED_GLASS_PANE'` | Item used for the decline button. |
+| `VOICE-CHAT-CONSENT-MENU.DECLINE-BUTTON.SLOT` | `int` | Any valid integer number | `'15'` | Slot of the decline button. Clicking here records the refusal, and the prompt stops appearing on later joins. |
+| `VOICE-CHAT-CONSENT-MENU.DECLINE-BUTTON.LORE` | `list` | List of configured items/strings | `['&fVoice chat will stay disabled']` | Lore under the decline button. |
+
+A player who closes the menu without clicking either button stays undecided, so the prompt comes
+back the next time they join.
+
+---

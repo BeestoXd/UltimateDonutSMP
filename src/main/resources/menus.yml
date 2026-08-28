@@ -2332,3 +2332,35 @@ SPAWNER-MENUS:
     TITLE: '&8Spawners Panel'
     SIZE: 27
 
+VOICE-CHAT-CONSENT-MENU:
+  TITLE: '&8Confirm Voice Chat'
+  SIZE: 27
+  INFO-BUTTON:
+    DISPLAY-NAME: '&bVoice Chat Policy'
+    MATERIAL: JUKEBOX
+    SLOT: 13
+    LORE:
+    - '&7Your voice is recorded while you are'
+    - '&7talking in a voice channel.'
+    - ''
+    - '&7Recordings are thrown away unless somebody'
+    - '&7reports you. A reported recording is kept'
+    - '&7as proof for a mute or a ban, and the'
+    - '&7moderation team reviews it.'
+    - ''
+    - '&7You have to be 13 or older to talk.'
+    - ''
+    - '&7Changed your mind later? Run'
+    - '&f/voicechatconsent revoke'
+  CONFIRM-BUTTON:
+    DISPLAY-NAME: '&aConfirm'
+    MATERIAL: LIME_STAINED_GLASS_PANE
+    SLOT: 11
+    LORE:
+    - '&fClick to turn voice chat on'
+  DECLINE-BUTTON:
+    DISPLAY-NAME: '&cDecline'
+    MATERIAL: RED_STAINED_GLASS_PANE
+    SLOT: 15
+    LORE:
+    - '&fVoice chat will stay disabled'

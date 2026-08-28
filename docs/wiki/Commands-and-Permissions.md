@@ -50,6 +50,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/ffastats` | `/ffastats [player]` | None | View FFA kill/death/streak stats | `ultimatedonutsmp.command.ffastats` |
 | `/bounty` | `/bounty [place\|list]` | None | Place or view player bounties | `ultimatedonutsmp.command.bounty` |
 | `/leaderboard` | `/leaderboard [type]` | `/lb`, `/top`, `/leaderboards`, `/baltop` | Open leaderboard menus; `/baltop` opens the money leaderboard directly | `ultimatedonutsmp.command.leaderboard` |
+| `/voicechatconsent` | `/voicechatconsent [revoke]` | `/vcconsent`, `/voiceconsent` | Open the voice chat consent menu, or withdraw an answer already given with `revoke` | `ultimatedonutsmp.command.voicechatconsent` |
 
 ---
 

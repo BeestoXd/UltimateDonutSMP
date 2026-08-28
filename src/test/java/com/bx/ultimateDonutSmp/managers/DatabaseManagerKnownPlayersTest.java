@@ -64,7 +64,8 @@ class DatabaseManagerKnownPlayersTest {
                     + "randomized_coords INTEGER DEFAULT 0, death_messages_choice INTEGER DEFAULT 1, "
                     + "advancement_messages_choice INTEGER DEFAULT 1, join_leave_messages_choice INTEGER DEFAULT 1, "
                     + "teleport_alerts_enabled INTEGER DEFAULT 1, follow_alerts_enabled INTEGER DEFAULT 1, "
-                    + "explosion_sounds_enabled INTEGER DEFAULT 1, display_donutplus_enabled INTEGER DEFAULT 1)");
+                    + "explosion_sounds_enabled INTEGER DEFAULT 1, display_donutplus_enabled INTEGER DEFAULT 1, "
+                    + "voice_chat_consent INTEGER DEFAULT 0)");
 
             java.util.UUID testUuid = java.util.UUID.randomUUID();
             statement.execute("INSERT INTO players (uuid, username, kills, money) VALUES ('" + testUuid + "', 'Bob', 42, 500.0)");

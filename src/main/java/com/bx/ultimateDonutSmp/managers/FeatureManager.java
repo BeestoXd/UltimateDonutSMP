@@ -92,7 +92,9 @@ public class FeatureManager {
         MAINTENANCE("MAINTENANCE", "maintenance", "seamless maintenance system with lobby redirection.", "REDSTONE_LAMP", "MAINTENANCE"),
         HIDE("HIDE", "Hide", "Persistent player identity scrambling and configured disguises.", "NAME_TAG", "HIDE"),
         FRIENDS("FRIENDS", "friends", "player friends/follows system.", "PLAYER_HEAD", "FRIEND"),
-        SAFETY("SAFETY", "safety", "safety command and info.", "BOOK", "SAFETY");
+        SAFETY("SAFETY", "safety", "safety command and info.", "BOOK", "SAFETY"),
+        VOICE_CHAT("VOICE_CHAT", "voice chat",
+                "voice chat consent prompt, menu, and microphone gate.", "JUKEBOX", null);
 
         private final String configKey;
         private final String displayName;
@@ -347,6 +349,11 @@ public class FeatureManager {
             case SHARDS -> {
                 if (plugin.getShardManager() != null) {
                     plugin.getShardManager().reloadSettings();
+                }
+            }
+            case VOICE_CHAT -> {
+                if (plugin.getVoiceChatConsentManager() != null) {
+                    plugin.getVoiceChatConsentManager().refreshSettings();
                 }
             }
             case RTP_ZONE -> {

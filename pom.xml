@@ -133,6 +133,10 @@
             <id>opencollab-snapshots</id>
             <url>https://repo.opencollab.dev/main/</url>
         </repository>
+        <repository>
+            <id>maxhenkel</id>
+            <url>https://maven.maxhenkel.de/repository/public</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -224,6 +228,12 @@
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
             <version>5.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.maxhenkel.voicechat</groupId>
+            <artifactId>voicechat-api</artifactId>
+            <version>2.6.20</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

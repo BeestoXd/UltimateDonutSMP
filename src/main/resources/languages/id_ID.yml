@@ -1488,6 +1488,31 @@ MENUS:
       DISPLAY-NAME: "&cHukuman tidak ditemukan"
       LORE:
       - "&7Tidak ada hukuman yang cocok dengan filter saat ini."
+  VOICE-CHAT-CONSENT-MENU:
+    TITLE: "&8Konfirmasi Voice Chat"
+    INFO-BUTTON:
+      DISPLAY-NAME: "&bKebijakan Voice Chat"
+      LORE:
+      - "&7Suaramu direkam selama kamu berbicara"
+      - "&7di dalam channel suara."
+      - ""
+      - "&7Rekaman akan dibuang kecuali ada yang"
+      - "&7melaporkanmu. Rekaman yang dilaporkan"
+      - "&7disimpan sebagai bukti mute atau ban,"
+      - "&7dan tim moderasi akan meninjaunya."
+      - ""
+      - "&7Kamu harus berusia 13 tahun ke atas."
+      - ""
+      - "&7Berubah pikiran nanti? Jalankan"
+      - "&f/voicechatconsent revoke"
+    CONFIRM-BUTTON:
+      DISPLAY-NAME: "&aKonfirmasi"
+      LORE:
+      - "&fKlik untuk menyalakan voice chat"
+    DECLINE-BUTTON:
+      DISPLAY-NAME: "&cTolak"
+      LORE:
+      - "&fVoice chat akan tetap mati"
 CONFIG:
   AUCTION_HOUSE:
     GUI:
@@ -2922,6 +2947,12 @@ MESSAGES:
     ADDED: "&aSuccessfully added '&e{word}&a' to banned words."
     ALREADY-EXISTS: "&cThat word is already in the banned list."
     RELOADED: "&aAnvil moderation config reloaded."
+  VOICE-CHAT:
+    ACCEPTED: "&aVoice chat sekarang aktif untukmu."
+    DECLINED: "&cVoice chat akan tetap mati."
+    REVOKED: "&cKamu menarik persetujuan voice chat. Voice chat dimatikan lagi."
+    NOTHING-TO-REVOKE: "&cKamu belum menyetujui kebijakan voice chat."
+    PLAYERS-ONLY: "&cHanya pemain yang bisa memakai perintah ini."
 DEATH_MESSAGES:
   MESSAGES:
     PREFIX: "&c☠ "

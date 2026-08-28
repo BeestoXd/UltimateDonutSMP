@@ -12,6 +12,7 @@ softdepend:
 - Apollo
 - Multiverse-Core
 - floodgate
+- voicechat
 loadbefore:
 - EconomyShopGUI
 - EconomyShopGUI-Premium
@@ -713,6 +714,14 @@ commands:
     description: Command safety
     permission: ultimatedonutsmp.command.safety
     permission-message: "&cYou do not have permission to use /safety."
+  voicechatconsent:
+    description: Open the voice chat consent menu
+    usage: /voicechatconsent [revoke]
+    aliases:
+    - vcconsent
+    - voiceconsent
+    permission: ultimatedonutsmp.command.voicechatconsent
+    permission-message: "&cYou do not have permission to use /voicechatconsent."
   friends:
     description: Command friends
     permission: ultimatedonutsmp.command.friends
@@ -1322,6 +1331,7 @@ permissions:
       ultimatedonutsmp.command.create: true
       ultimatedonutsmp.command.kill: true
       ultimatedonutsmp.command.safety: true
+      ultimatedonutsmp.command.voicechatconsent: true
       ultimatedonutsmp.command.friends: true
       ultimatedonutsmp.command.friend: true
       ultimatedonutsmp.command.spawnstash: true
@@ -1723,6 +1733,9 @@ permissions:
   ultimatedonutsmp.command.safety:
     description: Access to /safety command
     default: op
+  ultimatedonutsmp.command.voicechatconsent:
+    description: Access to /voicechatconsent command
+    default: true
   ultimatedonutsmp.command.friends:
     description: Access to /friends command
     default: true
