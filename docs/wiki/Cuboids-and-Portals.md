@@ -91,8 +91,15 @@ Cuboids can be bound to different server systems to enforce special features or 
    *Command*: `/cuboid bind shard_arena shard true`
 
 3. **`rtp-zone` Bind**:
-   - Defines the exact region where `/rtp` (Random Teleport) will pick safe destination locations.
-   *Command*: `/cuboid bind wilderness_bounds rtp-zone true`
+   - Marks a region players stand *in*, not a region they get sent to. Anyone inside it sees the
+     `RTP-ZONE.EVERY` countdown on their screen, and when it reaches zero they are teleported to a
+     random location drawn from the `RTP-ZONE.WORLD` centre and radius settings. Walking back out
+     before the count finishes cancels it.
+   - Each player runs their own countdown and lands somewhere of their own, so a group standing in
+     the region is scattered rather than kept together. Use the `rtp-queue` bind below for that.
+   - Writes the region name to `RTP-ZONE.CUBOID` in `config.yml`, where the countdown length, the
+     titles and the destination world live. `RTP-ZONE.ENABLED` has to be on as well.
+   *Command*: `/cuboid bind rtp_pad rtp-zone true`
 
 4. **`rtp-queue` Bind**:
    - Puts everyone standing in the region on the RTP matchmaking queue without them typing
