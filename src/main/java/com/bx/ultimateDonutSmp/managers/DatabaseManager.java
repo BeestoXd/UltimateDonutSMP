@@ -1102,8 +1102,11 @@ public class DatabaseManager {
         data.setDestroyPearlOnDeath(rs.getInt("destroy_pearl_on_death") != 0);
         data.setRandomizedCoords(rs.getInt("randomized_coords") != 0);
         data.setDeathMessagesChoice(com.bx.ultimateDonutSmp.models.TwoChoice.fromInt(rs.getInt("death_messages_choice")));
-        data.setAdvancementMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("advancement_messages_choice")));
-        data.setJoinLeaveMessagesChoice(com.bx.ultimateDonutSmp.models.ThreeChoice.fromInt(rs.getInt("join_leave_messages_choice")));
+        // Both columns used to hold a ThreeChoice ordinal. Rows written before the two options
+        // became on/off and friends/off still read correctly: 0 was OFF, and 1 (anyone) and
+        // 2 (friends) both mean the option was on.
+        data.setAdvancementMessagesEnabled(rs.getInt("advancement_messages_choice") != 0);
+        data.setJoinLeaveMessagesChoice(com.bx.ultimateDonutSmp.models.TwoChoice.fromInt(rs.getInt("join_leave_messages_choice")));
         data.setTeleportAlertsEnabled(rs.getInt("teleport_alerts_enabled") != 0);
         data.setFollowAlertsEnabled(rs.getInt("follow_alerts_enabled") != 0);
         data.setExplosionSoundsEnabled(rs.getInt("explosion_sounds_enabled") != 0);
@@ -1727,7 +1730,7 @@ public class DatabaseManager {
             ps.setInt(56, data.isDestroyPearlOnDeath() ? 1 : 0);
             ps.setInt(57, data.isRandomizedCoords() ? 1 : 0);
             ps.setInt(58, data.getDeathMessagesChoice().ordinal());
-            ps.setInt(59, data.getAdvancementMessagesChoice().ordinal());
+            ps.setInt(59, data.isAdvancementMessagesEnabled() ? 1 : 0);
             ps.setInt(60, data.getJoinLeaveMessagesChoice().ordinal());
             ps.setInt(61, data.isTeleportAlertsEnabled() ? 1 : 0);
             ps.setInt(62, data.isFollowAlertsEnabled() ? 1 : 0);

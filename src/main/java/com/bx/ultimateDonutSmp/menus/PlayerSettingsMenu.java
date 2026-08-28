@@ -270,13 +270,11 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 data.setDeathMessagesChoice(nextTwoChoice(data.getDeathMessagesChoice()));
                 sendChoiceMessage(player, "Death Messages", formatTwoChoice(data.getDeathMessagesChoice()));
             }
-            case "ADVANCEMENT_MESSAGES" -> {
-                data.setAdvancementMessagesChoice(nextThreeChoice(data.getAdvancementMessagesChoice()));
-                sendChoiceMessage(player, "Advancement Messages", formatThreeChoice(data.getAdvancementMessagesChoice()));
-            }
+            case "ADVANCEMENT_MESSAGES" -> toggle(player, "Advancement Messages",
+                    !data.isAdvancementMessagesEnabled(), data::setAdvancementMessagesEnabled);
             case "JOIN_LEAVE_MESSAGES" -> {
-                data.setJoinLeaveMessagesChoice(nextThreeChoice(data.getJoinLeaveMessagesChoice()));
-                sendChoiceMessage(player, "Join/Leave Messages", formatThreeChoice(data.getJoinLeaveMessagesChoice()));
+                data.setJoinLeaveMessagesChoice(nextTwoChoice(data.getJoinLeaveMessagesChoice()));
+                sendChoiceMessage(player, "Join/Leave Messages", formatTwoChoice(data.getJoinLeaveMessagesChoice()));
             }
             case "TELEPORT_ALERTS" -> toggle(player, "Teleport Alerts",
                     !data.isTeleportAlertsEnabled(), data::setTeleportAlertsEnabled);
@@ -430,8 +428,8 @@ public final class PlayerSettingsMenu extends BaseMenu {
             case "DESTROY_PEARL_ON_DEATH" -> state(data.isDestroyPearlOnDeath());
             case "RANDOMIZED_COORDS" -> state(data.isRandomizedCoords());
             case "DEATH_MESSAGES" -> new ButtonState(formatTwoChoice(data.getDeathMessagesChoice()), true);
-            case "ADVANCEMENT_MESSAGES" -> new ButtonState(formatThreeChoice(data.getAdvancementMessagesChoice()), true);
-            case "JOIN_LEAVE_MESSAGES" -> new ButtonState(formatThreeChoice(data.getJoinLeaveMessagesChoice()), true);
+            case "ADVANCEMENT_MESSAGES" -> state(data.isAdvancementMessagesEnabled());
+            case "JOIN_LEAVE_MESSAGES" -> new ButtonState(formatTwoChoice(data.getJoinLeaveMessagesChoice()), true);
             case "TELEPORT_ALERTS" -> state(data.isTeleportAlertsEnabled());
             case "FOLLOW_ALERT_SETTINGS" -> state(data.isFollowAlertsEnabled());
             case "EXPLOSION_SOUNDS" -> state(data.isExplosionSoundsEnabled());

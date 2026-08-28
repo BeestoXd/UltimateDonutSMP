@@ -2068,7 +2068,16 @@ public class ConfigManager {
     }
 
     private boolean hasLegacyButtons(YamlConfiguration config) {
-        return false;
+        ConfigurationSection buttons = config.getConfigurationSection("SETTINGS-MENU.BUTTONS");
+        if (buttons == null) {
+            return false;
+        }
+        // Slots 31 to 33 held join/leave, pay alerts and money nametags in the old grouping and are
+        // unused by the current one, so all three together identify a menus.yml that predates it.
+        // Merging never rewrites a slot that is already there, so the file has to be regenerated.
+        return buttons.getInt("JOIN_LEAVE_MESSAGES.SLOT", -1) == 31
+                && buttons.getInt("PAY_ALERTS.SLOT", -1) == 32
+                && buttons.getInt("MONEY_NAMETAGS.SLOT", -1) == 33;
     }
 
     private void backupInvalidFile(File file) {

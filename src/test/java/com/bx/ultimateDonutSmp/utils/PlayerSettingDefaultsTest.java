@@ -36,7 +36,7 @@ class PlayerSettingDefaultsTest {
         PlayerSettingDefaults.applyDefaults(buttons, data, warnings::add);
 
         assertEquals(List.of(), warnings);
-        assertEquals(untouched.getAdvancementMessagesChoice(), data.getAdvancementMessagesChoice());
+        assertEquals(untouched.isAdvancementMessagesEnabled(), data.isAdvancementMessagesEnabled());
         assertEquals(untouched.isPublicChatEnabled(), data.isPublicChatEnabled());
     }
 
@@ -53,8 +53,8 @@ class PlayerSettingDefaultsTest {
         PlayerData data = newPlayer();
         PlayerSettingDefaults.applyDefaults(buttons, data);
 
-        assertEquals(ThreeChoice.OFF, data.getAdvancementMessagesChoice());
-        assertEquals(ThreeChoice.OFF, data.getJoinLeaveMessagesChoice());
+        assertFalse(data.isAdvancementMessagesEnabled());
+        assertEquals(TwoChoice.OFF, data.getJoinLeaveMessagesChoice());
         assertEquals(ThreeChoice.FRIENDS_FOLLOWED, data.getPrivateMessagesChoice());
         assertEquals(TwoChoice.OFF, data.getDeathMessagesChoice());
         assertFalse(data.isPublicChatEnabled());
@@ -98,7 +98,7 @@ class PlayerSettingDefaultsTest {
         List<String> warnings = new ArrayList<>();
         PlayerSettingDefaults.applyDefaults(buttons, data, warnings::add);
 
-        assertEquals(ThreeChoice.ANYONE, data.getAdvancementMessagesChoice());
+        assertTrue(data.isAdvancementMessagesEnabled());
         assertEquals(2, warnings.size());
     }
 
@@ -110,13 +110,13 @@ class PlayerSettingDefaultsTest {
         buttons.set("PUBLIC_CHAT.ENABLED", false);
 
         PlayerData data = newPlayer();
-        data.setAdvancementMessagesChoice(ThreeChoice.ANYONE);
+        data.setAdvancementMessagesEnabled(true);
         data.setPublicChatEnabled(false);
         data.setDirty(false);
 
         PlayerSettingDefaults.applyDisabledOptions(buttons, data);
 
-        assertEquals(ThreeChoice.OFF, data.getAdvancementMessagesChoice());
+        assertFalse(data.isAdvancementMessagesEnabled());
         // No DEFAULT configured, so PUBLIC_CHAT falls back to the built-in value.
         assertTrue(data.isPublicChatEnabled());
         assertFalse(data.isDirty(), "pinning a removed option must not schedule a database write");
@@ -128,11 +128,11 @@ class PlayerSettingDefaultsTest {
         buttons.set("ADVANCEMENT_MESSAGES.DEFAULT", "OFF");
 
         PlayerData data = newPlayer();
-        data.setAdvancementMessagesChoice(ThreeChoice.FRIENDS_FOLLOWED);
+        data.setAdvancementMessagesEnabled(true);
 
         PlayerSettingDefaults.applyDisabledOptions(buttons, data);
 
-        assertEquals(ThreeChoice.FRIENDS_FOLLOWED, data.getAdvancementMessagesChoice());
+        assertTrue(data.isAdvancementMessagesEnabled());
     }
 
     @Test

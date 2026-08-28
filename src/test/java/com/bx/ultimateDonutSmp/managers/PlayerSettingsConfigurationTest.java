@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PlayerSettingsConfigurationTest {
@@ -70,49 +72,68 @@ class PlayerSettingsConfigurationTest {
             assertTrue(buttons.isConfigurationSection(setting), setting);
         }
 
-        Map<String, Integer> centeredSlots = Map.ofEntries(
+        // One theme per row, left aligned: chat, alerts, gameplay and display, who may reach you,
+        // confirmation prompts, then the world around you.
+        Map<String, Integer> groupedSlots = Map.ofEntries(
                 Map.entry("PUBLIC_CHAT", 0),
                 Map.entry("PRIVATE_MESSAGES", 1),
                 Map.entry("SERVER_BROADCASTS", 2),
-                Map.entry("TEAM_CHAT_VISIBILITY", 3),
-                Map.entry("LUNAR_TEAMMATES", 4),
-                Map.entry("TPA_CONFIRM_MENUS", 5),
-                Map.entry("QUICK_AUCTION_PURCHASE", 9),
-                Map.entry("DESTROY_PEARL_ON_DEATH", 10),
-                Map.entry("PAY_CONFIRM_MENUS", 11),
-                Map.entry("PAY_ALERTS", 32),
-                Map.entry("AUTO_CONFIRM_TPAS", 12),
-                Map.entry("HOTBAR_MESSAGES", 13),
-                Map.entry("NOTIFICATION_SOUNDS", 14),
+                Map.entry("HOTBAR_MESSAGES", 3),
+                Map.entry("DEATH_MESSAGES", 4),
+                Map.entry("JOIN_LEAVE_MESSAGES", 5),
+                Map.entry("ADVANCEMENT_MESSAGES", 6),
+                Map.entry("TEAM_CHAT_VISIBILITY", 7),
+                Map.entry("AMETHYST_BREAK_MESSAGES", 8),
+                Map.entry("PAY_ALERTS", 9),
+                Map.entry("TELEPORT_ALERTS", 10),
+                Map.entry("BOUNTY_ALERTS", 11),
+                Map.entry("AUCTION_NOTIFICATIONS", 12),
+                Map.entry("ORDER_NOTIFICATIONS", 13),
+                Map.entry("KEY_ALL_NOTIFICATIONS", 14),
                 Map.entry("FOLLOW_ALERT_SETTINGS", 15),
-                Map.entry("DISPLAY_DONUT_PLUS", 18),
+                Map.entry("NOTIFICATION_SOUNDS", 16),
+                Map.entry("FAST_CRYSTALS", 18),
                 Map.entry("CHAINMAIL_ON_RESPAWN", 19),
                 Map.entry("EXPLOSION_PARTICLES", 20),
                 Map.entry("EXPLOSION_SOUNDS", 21),
-                Map.entry("TELEPORT_ALERTS", 22),
-                Map.entry("FAST_CRYSTALS", 23),
-                Map.entry("RANDOMIZED_COORDS", 24),
+                Map.entry("DESTROY_PEARL_ON_DEATH", 22),
+                Map.entry("DISPLAY_DONUT_PLUS", 23),
+                Map.entry("MONEY_NAMETAGS", 24),
+                Map.entry("WORTH_DISPLAY", 25),
+                Map.entry("LUNAR_TEAMMATES", 26),
                 Map.entry("TPA_REQUESTS", 27),
                 Map.entry("TPA_HERE_REQUESTS", 28),
                 Map.entry("PAYMENTS", 29),
-                Map.entry("WORTH_DISPLAY", 30),
-                Map.entry("MONEY_NAMETAGS", 33),
-                Map.entry("JOIN_LEAVE_MESSAGES", 31),
-                Map.entry("ADVANCEMENT_MESSAGES", 36),
-                Map.entry("AUCTION_NOTIFICATIONS", 37),
-                Map.entry("AMETHYST_BREAK_MESSAGES", 38),
-                Map.entry("DUEL_REQUESTS", 39),
-                Map.entry("DEATH_MESSAGES", 40),
-                Map.entry("KEY_ALL_NOTIFICATIONS", 41),
-                Map.entry("QUICK_AUCTION_SELL", 45),
-                Map.entry("ORDER_NOTIFICATIONS", 46),
-                Map.entry("DISABLE_MOB_SPAWN", 47),
-                Map.entry("DISABLE_PHANTOM_SPAWN", 48),
-                Map.entry("NIGHT_VISION", 49),
-                Map.entry("BOUNTY_ALERTS", 50)
+                Map.entry("DUEL_REQUESTS", 30),
+                Map.entry("RANDOMIZED_COORDS", 31),
+                Map.entry("TPA_CONFIRM_MENUS", 36),
+                Map.entry("PAY_CONFIRM_MENUS", 37),
+                Map.entry("AUTO_CONFIRM_TPAS", 38),
+                Map.entry("QUICK_AUCTION_PURCHASE", 39),
+                Map.entry("QUICK_AUCTION_SELL", 40),
+                Map.entry("DISABLE_MOB_SPAWN", 45),
+                Map.entry("DISABLE_PHANTOM_SPAWN", 46),
+                Map.entry("NIGHT_VISION", 47)
         );
-        centeredSlots.forEach((key, slot) ->
+        groupedSlots.forEach((key, slot) ->
                 assertEquals(slot, buttons.getInt(key + ".SLOT"), key));
+        assertEquals(groupedSlots.size(), buttons.getKeys(false).size(),
+                "every button belongs to one of the six groups");
+    }
+
+    @Test
+    void settingsMenuGivesEveryButtonItsOwnIcon() throws Exception {
+        YamlConfiguration menus = load("menus.yml");
+        ConfigurationSection buttons = menus.getConfigurationSection("SETTINGS-MENU.BUTTONS");
+        assertNotNull(buttons);
+
+        Map<String, String> owners = new HashMap<>();
+        for (String key : buttons.getKeys(false)) {
+            String material = buttons.getString(key + ".MATERIAL");
+            assertNotNull(material, key);
+            String previous = owners.put(material, key);
+            assertNull(previous, key + " reuses the " + material + " icon already on " + previous);
+        }
     }
 
     @Test
