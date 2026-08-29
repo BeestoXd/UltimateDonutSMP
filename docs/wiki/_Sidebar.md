@@ -5,6 +5,7 @@
 - **[Commands & Permissions](Commands-and-Permissions)**
 - **[Cuboids & Portals](Cuboids-and-Portals)**
 - **[Duels & Instanced FFA](Duels-and-FFA)**
+- **[Ranked PvP Arena](Ranked-PvP-Arena)**
 - **[Economy & Marketplaces](Economy-and-Marketplaces)**
 - **[Crates & Spawners](Crates-and-Spawners)**
 - **[Staff & Security Utilities](Staff-and-Security)**
@@ -13,7 +14,7 @@
 
 ---
 
-### ⚙️ YAML Configuration Guides (29 Files)
+### ⚙️ YAML Configuration Guides (30 Files)
 
 - **[config.yml Guide](Config-config.yml)**
 - **[messages.yml Guide](Config-messages.yml)**
@@ -40,6 +41,7 @@
 - **[hide.yml Guide](Config-hide.yml)**
 - **[invsee.yml Guide](Config-invsee.yml)**
 - **[orders.yml Guide](Config-orders.yml)**
+- **[pvp.yml Guide](Config-pvp.yml)**
 - **[rtp.yml Guide](Config-rtp.yml)**
 - **[server-wipe.yml Guide](Config-server-wipe.yml)**
 - **[spawn-stash.yml Guide](Config-spawn-stash.yml)**

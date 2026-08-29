@@ -71,6 +71,8 @@ public class FeatureManager {
         ORDERS("ORDERS", "orders", "orders board commands, menus, and expiry task.", "WRITABLE_BOOK", null),
         DUELS("DUELS", "duels", "duel commands, queues, arenas, matches, and tasks.", "DIAMOND_SWORD", null),
         FFA("FFA", "ffa", "ffa commands, arenas, matches, and tasks.", "IRON_SWORD", null),
+        PVP_ARENA("PVP_ARENA", "ranked pvp arena",
+                "ranked pvp arena, kits, elo, levels, and scheduled resets.", "NETHERITE_SWORD", null),
         STAFF_MODE("STAFF_MODE", "staff mode", "staff mode command, hotbar, vanish, and staff tools.", "NETHERITE_CHESTPLATE", null),
         STAFF_CHAT("STAFF_CHAT", "staff chat", "staff chat command and network staff chat.", "ECHO_SHARD", null),
         STAFF_ALERTS("STAFF_ALERTS", "staff alerts", "helpop, reports, and network staff alerts.", "BELL", null),

@@ -49,6 +49,7 @@ public class ConfigManager {
             "filter.yml",
             "duels.yml",
             "ffa.yml",
+            "pvp.yml",
             "crates.yml",
             "spawners.yml",
             "spawn-stash.yml",
@@ -87,6 +88,7 @@ public class ConfigManager {
     private FileConfiguration orders;
     private FileConfiguration duels;
     private FileConfiguration ffa;
+    private FileConfiguration pvp;
     private FileConfiguration crates;
     private FileConfiguration spawners;
     private FileConfiguration spawnStash;
@@ -133,6 +135,7 @@ public class ConfigManager {
         orders       = load("orders.yml", orders);
         duels        = load("duels.yml", duels);
         ffa          = load("ffa.yml", ffa);
+        pvp          = load("pvp.yml", pvp);
         crates       = load("crates.yml", crates);
         spawners     = load("spawners.yml", spawners);
         spawnStash   = load("spawn-stash.yml", spawnStash);
@@ -1891,6 +1894,16 @@ public class ConfigManager {
             return true;
         }
 
+        // The ranked arena writes its geometry and its kits from /pvp, so both trees are live
+        // server content and must survive a config update that would otherwise restore the
+        // bundled empty arena and kit list.
+        if ("pvp.yml".equals(resourceName)
+                && (path.equals("ARENA") || path.startsWith("ARENA.")
+                || path.equals("KITS") || path.startsWith("KITS.")
+                || path.equals("RANKS") || path.startsWith("RANKS."))) {
+            return true;
+        }
+
         // Bot settings and item definitions are customized by server admins.
         if (("orders.yml".equals(resourceName) || "auction-house.yml".equals(resourceName))
                 && (path.equals("BOTS") || path.startsWith("BOTS.") || path.equals("ITEMS") || path.startsWith("ITEMS."))) {
@@ -2138,10 +2151,12 @@ public class ConfigManager {
     public FileConfiguration getOrdersConfig()  { return getOrders(); }
     public FileConfiguration getDuels()         { return localized("CONFIG.DUELS", duels); }
     public FileConfiguration getFfa()           { return localized("CONFIG.FFA", ffa); }
+    public FileConfiguration getPvp()           { return localized("CONFIG.PVP", pvp); }
     public FileConfiguration getCrates()        { return localized("CONFIG.CRATES", crates); }
     public FileConfiguration getOriginalCrates() { return crates; }
     public FileConfiguration getOriginalDuels() { return duels; }
     public FileConfiguration getOriginalFfa() { return ffa; }
+    public FileConfiguration getOriginalPvp() { return pvp; }
     public FileConfiguration getOriginalMenus() { return menus; }
     public FileConfiguration getOriginalShop() { return shop; }
     public FileConfiguration getSpawners()      { return localized("CONFIG.SPAWNERS", spawners); }
@@ -2174,6 +2189,7 @@ public class ConfigManager {
     public void reloadOrders() { orders = load("orders.yml", orders); }
     public void reloadDuels() { duels = load("duels.yml", duels); }
     public void reloadFfa() { ffa = load("ffa.yml", ffa); }
+    public void reloadPvp() { pvp = load("pvp.yml", pvp); }
     public void reloadCrates() { crates = load("crates.yml", crates); }
     public void reloadSpawners() { spawners = load("spawners.yml", spawners); }
     public void reloadSpawnStash() { spawnStash = load("spawn-stash.yml", spawnStash); }
@@ -2188,6 +2204,7 @@ public class ConfigManager {
     public boolean saveConfig() { return save("config.yml", config); }
     public boolean saveDuels() { return save("duels.yml", duels); }
     public boolean saveFfa() { return save("ffa.yml", ffa); }
+    public boolean savePvp() { return save("pvp.yml", pvp); }
     public boolean saveCrates() { return save("crates.yml", crates); }
     public boolean saveShop() { return save("shop.yml", shop); }
     public boolean saveRtp() { return save("rtp.yml", rtp); }

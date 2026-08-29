@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.menus.ShopEditorMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersInventoryItemMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersDepositMenu;
 import com.bx.ultimateDonutSmp.menus.OrdersNewMenu;
+import com.bx.ultimateDonutSmp.menus.PvpKitEditMenu;
 import com.bx.ultimateDonutSmp.menus.RTPMenu;
 import com.bx.ultimateDonutSmp.menus.SellMenu;
 import org.bukkit.entity.Player;
@@ -70,6 +71,11 @@ public class InventoryClickListener implements Listener {
             return;
         }
 
+        if (menu instanceof PvpKitEditMenu pvpKitEditMenu) {
+            pvpKitEditMenu.handleInventoryClick(event);
+            return;
+        }
+
         if (menu instanceof OrdersNewMenu && event.getRawSlot() == 23) {
             handleProtectedMenuClick(event, player, menu);
             return;
@@ -120,6 +126,11 @@ public class InventoryClickListener implements Listener {
 
         if (menu instanceof OrdersDepositMenu ordersDepositMenu) {
             ordersDepositMenu.handleInventoryDrag(event);
+            return;
+        }
+
+        if (menu instanceof PvpKitEditMenu pvpKitEditMenu) {
+            pvpKitEditMenu.handleInventoryDrag(event);
             return;
         }
 

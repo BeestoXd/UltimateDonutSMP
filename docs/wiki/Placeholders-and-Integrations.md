@@ -93,7 +93,38 @@ Used when Staff Mode or Streamer/Disguise mode is enabled:
 
 ---
 
-### 5. Punishment & Expiry Message Placeholders
+### 5. Ranked PvP Arena Expansion (`%pvp_*%`)
+
+Registered by the [ranked PvP arena](Ranked-PvP-Arena). Every number the arena tracks is published here rather than drawn by the plugin, so TAB keeps owning the nametag and any scoreboard or chat plugin can read the same values.
+
+| Placeholder | Output Description |
+| :--- | :--- |
+| `%pvp_rank%` | Rank display text, e.g. `HT5` |
+| `%pvp_rank_id%` | Rank id without colour codes |
+| `%pvp_elo%` | Current Elo |
+| `%pvp_level%` | Current PvP level |
+| `%pvp_xp%` | XP toward the next level |
+| `%pvp_next_xp%` | XP the next level costs |
+| `%pvp_kills%` | Arena kills |
+| `%pvp_deaths%` | Arena deaths |
+| `%pvp_kd%` | Kill/death ratio to two decimals |
+| `%pvp_streak%` | Current kill streak |
+| `%pvp_best_streak%` | Best kill streak |
+| `%pvp_joins%` | Times the player has entered the arena |
+| `%pvp_in_arena%` | `true` while the player is inside the arena |
+| `%pvp_arena%` | Configured arena name |
+| `%pvp_arena_reset%` | Countdown to the next reset, in `SCOREBOARD.RESET_FORMAT` |
+| `%pvp_arena_players%` | How many players are in the arena right now |
+
+A typical TAB nametag format:
+
+```
+%pvp_rank% | %luckperms-prefix% %player%
+```
+
+---
+
+### 6. Punishment & Expiry Message Placeholders
 
 Available for config and language message templates (`messages.yml` & `languages/*.yml`) when issuing punishments (`/offend`, `/ban`, `/mute`, etc.) or sending kick/mute screens:
 

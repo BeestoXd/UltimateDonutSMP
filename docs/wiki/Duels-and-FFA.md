@@ -2,6 +2,8 @@
 
 UltimateDonutSMP provides built-in, production-grade 1v1 Duels and instanced Free-For-All (FFA) PvP systems with automatic map rollbacks, crystal speed optimizations, custom kits, and queue management.
 
+> Looking for a permanent arena where everyone fights at once and keeps an Elo rating between visits? That is the [Ranked PvP Arena](Ranked-PvP-Arena), a separate system. The FFA below is instanced: it pairs players in a throwaway copy of a map and rolls the blocks back afterwards.
+
 ---
 
 ## 1v1 Duels System Setup
