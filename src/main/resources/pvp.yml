@@ -1,0 +1,238 @@
+# ==============================================================================
+# UltimateDonutSMP - Ranked PvP Arena Configuration
+# ==============================================================================
+# The ranked arena is a persistent free-for-all area with kits, Elo, ranks and
+# levels. It does not tag combat on its own - whatever combat plugin you already
+# run stays in charge of that.
+
+# General ranked arena settings
+SETTINGS:
+  # Enable or disable the ranked PvP arena globally (true / false)
+  ENABLED: false
+  # Seconds a player stays in spectator after dying before the kit menu reopens
+  RESPAWN_DELAY_SECONDS: 3
+  # Drop the kit items when a player dies in the arena (true / false)
+  DROP_KIT_ON_DEATH: false
+  # Restore full health, hunger and remove potion effects on every arena spawn (true / false)
+  HEAL_ON_SPAWN: true
+  # Kill and remove a player who leaves the arena boundary (true / false)
+  KILL_OUTSIDE_BOUNDARY: true
+  # Seconds of protection after spawning, during which the player cannot deal or take damage
+  SPAWN_PROTECTION_SECONDS: 3
+  # Send players who disconnect inside the arena to the lobby when they rejoin (true / false)
+  LOBBY_ON_REJOIN: true
+  # Take the kit back when a player leaves the arena (true / false). Turn this off if
+  # Multiverse-Inventories, or anything else that separates inventories per world, already
+  # owns the arena world - it will swap the inventory back on its own.
+  CLEAR_KIT_ON_LEAVE: true
+
+# Arena geometry. These are written by /pvp create, /pvp wand and /pvp setlobby,
+# so there is normally no reason to edit them by hand.
+ARENA:
+  # Display name shown in messages and on the scoreboard
+  NAME: 'Arena'
+  # World the arena lives in. Empty means the world of the spawn point below.
+  WORLD: ''
+  # Where players are put when they join or respawn (world,x,y,z,yaw,pitch)
+  SPAWN: ''
+  # Where players are sent on /pvp leave and after a disconnect (world,x,y,z,yaw,pitch)
+  LOBBY: ''
+  # The two wand corners of the arena boundary (world,x,y,z,yaw,pitch)
+  BOUNDARY_POS1: ''
+  BOUNDARY_POS2: ''
+  # Extra blocks of slack around the boundary before a player counts as outside
+  BOUNDARY_PADDING: 2
+
+# Automatic arena resets, driven by a schematic paste rather than a world regen
+RESET:
+  # Enable the scheduled arena reset (true / false)
+  ENABLED: false
+  # How often the arena resets. Accepts 1d10h15m, 24h, 30m, 90s and combinations.
+  INTERVAL: '24h'
+  # Seconds of warning broadcast before the reset runs
+  WARNING_SECONDS: 30
+  # Teleport everyone in the arena to the lobby before pasting (true / false)
+  EVACUATE: true
+  # Schematic name as WorldEdit/FastAsyncWorldEdit knows it, without the file extension
+  SCHEMATIC: 'arena'
+  # Where the schematic is pasted. Empty pastes at the origin stored in the schematic
+  # itself, which is what -o in the paste command below uses.
+  PASTE_LOCATION: ''
+  # Commands run from console to perform the reset. {schematic} is replaced with the
+  # schematic name and {x} {y} {z} {world} with the paste location when one is set.
+  # FastAsyncWorldEdit understands the same commands as WorldEdit and is much faster
+  # on a large arena, so leaving these alone works with either one installed.
+  COMMANDS:
+  - '//schematic load {schematic}'
+  - '//paste -o -a'
+  # Seconds to wait between the load command and the paste command
+  PASTE_DELAY_SECONDS: 5
+
+# Commands players cannot run while they are inside the arena
+BLOCKED_COMMANDS:
+  # Enable command blocking inside the arena (true / false)
+  ENABLED: true
+  # Commands to block, with or without the leading slash. Subcommands are covered too,
+  # so "shop" also blocks "/shop sell".
+  COMMANDS:
+  - 'shop'
+  - 'sell'
+  - 'ah'
+  - 'auctionhouse'
+  - 'ec'
+  - 'enderchest'
+  - 'orders'
+  # Also block the ender chest when it is opened by clicking the block (true / false)
+  BLOCK_ENDER_CHEST_BLOCK: true
+
+# Elo awarded and taken on every rewarded kill
+ELO:
+  # Elo every player starts on
+  STARTING: 0
+  # Elo the killer gains
+  GAIN_PER_KILL: 25
+  # Elo the victim loses
+  LOSS_PER_DEATH: 20
+  # Elo can never fall below this
+  MINIMUM: 0
+  # Elo can never rise above this. 0 removes the cap.
+  MAXIMUM: 0
+
+# PvP ranks, lowest requirement first. Rank ids are free-form, so LT/HT is only the
+# default naming - rename them, add more or remove some as you like. A player holds
+# the highest rank whose ELO requirement they meet, and drops back down on their own
+# when their Elo falls under it.
+RANKS:
+  LT5:
+    DISPLAY: '&7LT5'
+    ELO: 0
+  LT4:
+    DISPLAY: '&7LT4'
+    ELO: 100
+  LT3:
+    DISPLAY: '&fLT3'
+    ELO: 200
+  LT2:
+    DISPLAY: '&fLT2'
+    ELO: 300
+  LT1:
+    DISPLAY: '&eLT1'
+    ELO: 400
+  HT5:
+    DISPLAY: '&eHT5'
+    ELO: 600
+  HT4:
+    DISPLAY: '&6HT4'
+    ELO: 800
+  HT3:
+    DISPLAY: '&6HT3'
+    ELO: 1000
+  HT2:
+    DISPLAY: '&cHT2'
+    ELO: 1200
+  HT1:
+    DISPLAY: '&c&lHT1'
+    ELO: 1500
+
+# PvP level progression, separate from Elo
+LEVELS:
+  # XP a rewarded kill is worth
+  XP_PER_KILL: 50
+  # XP needed to reach level 2
+  BASE_XP: 100
+  # Extra XP each further level costs on top of the previous one
+  XP_INCREASE_PER_LEVEL: 50
+  # Highest level a player can reach. 0 removes the cap.
+  MAX_LEVEL: 100
+
+# Stops a player farming Elo and XP off the same opponent
+ANTI_KILL_FARMING:
+  # Enable kill-farm protection (true / false)
+  ENABLED: true
+  # Rewarded kills allowed against the same player before rewards drop
+  MAX_REWARDED_KILLS: 3
+  # How long the counter remembers a victim. Accepts the same format as RESET.INTERVAL.
+  COOLDOWN: '5m'
+  # Elo given for a kill past the limit
+  REDUCED_ELO: 0
+  # XP given for a kill past the limit
+  REDUCED_XP: 0
+  # Take Elo from the victim on an unrewarded kill (true / false)
+  APPLY_ELO_LOSS: false
+
+# Broadcasts sent when a player levels up or changes rank
+BROADCASTS:
+  LEVEL_UP:
+    # Announce level ups to the whole server instead of only the player (true / false)
+    GLOBAL: true
+    MESSAGE: '&8[&cPVP&8] &f%player_name% &7has reached PvP Level &c%pvp_level%&7!'
+  RANK_UP:
+    # Announce rank ups to the whole server instead of only the player (true / false)
+    GLOBAL: true
+    MESSAGE: '&8[&cPVP&8] &f%player_name% &7ranked up to %pvp_rank% &7with &c%pvp_elo% &7elo!'
+  RANK_DOWN:
+    # Announce rank downs to the whole server instead of only the player (true / false)
+    GLOBAL: false
+    MESSAGE: '&8[&cPVP&8] &f%player_name% &7dropped to %pvp_rank% &7with &c%pvp_elo% &7elo!'
+
+# The sidebar shown while a player is inside the arena. It replaces the normal
+# scoreboard for as long as they are in there and takes any PlaceholderAPI
+# placeholder, including the %pvp_...% ones this feature registers.
+SCOREBOARD:
+  # Show the arena sidebar instead of the survival one (true / false)
+  ENABLED: true
+  # Animated title frames, cycled at the same speed as the survival scoreboard
+  TITLE:
+  - '&c&lPVP ARENA'
+  # Sidebar lines from top to bottom
+  LINES:
+  - ''
+  - '&fPLAYER: &c%player_name%'
+  - '&fRANK: %pvp_rank%'
+  - '&fLEVEL: &c%pvp_level%'
+  - '&fK/D: &c%pvp_kills%&7/&c%pvp_deaths%'
+  - ''
+  - '&fARENA RESET'
+  - '&c%pvp_arena_reset%'
+  - ''
+  - '&7play.example.net'
+  # How the reset countdown is written. {d} {h} {m} {s} are the padded parts and
+  # {D} {H} {M} {S} the unpadded ones.
+  RESET_FORMAT: '{d}D:{h}H:{m}M:{s}S'
+  # Shown by %pvp_arena_reset% when no reset is scheduled
+  RESET_DISABLED_TEXT: '&7-'
+
+# Kit definitions. These are written by /pvp kit create and /pvp kit edit, which
+# store the real items with their enchantments, names and lore, so hand editing is
+# not expected here.
+KITS: {}
+
+# Messages this feature sends. Every one of them goes through the plugin's colour
+# codes, so &a and &#RRGGBB both work.
+MESSAGES:
+  DISABLED: '&cThe PvP arena is not enabled.'
+  NOT_SET_UP: '&cThe PvP arena has not been set up yet.'
+  NO_KITS: '&cThere are no PvP kits to choose from yet.'
+  JOINED: '&aYou joined the PvP arena.'
+  LEFT: '&aYou left the PvP arena.'
+  ALREADY_IN: '&cYou are already in the PvP arena.'
+  NOT_IN: '&cYou are not in the PvP arena.'
+  KIT_GIVEN: '&aYou picked the &f{kit} &akit.'
+  KIT_NO_PERMISSION: '&cYou do not have access to that kit.'
+  RESPAWN_COUNTDOWN: '&fRespawning in &c{seconds}&f...'
+  BLOCKED_COMMAND: '&cYou cannot use that command inside the PvP arena.'
+  LEFT_BOUNDARY: '&cYou left the arena and were removed from the fight.'
+  KILL_REWARD: '&8[&cPVP&8] &7You killed &f{victim} &8(&c+{elo} elo&8, &c+{xp} xp&8)'
+  DEATH_PENALTY: '&8[&cPVP&8] &f{killer} &7killed you &8(&c-{elo} elo&8)'
+  KILL_FARM_LIMIT: '&7No reward - you have already killed &f{victim} &7too recently.'
+  LEVEL_UP: '&aYou reached PvP Level &f{level}&a!'
+  RANK_UP: '&aYou ranked up to {rank}&a!'
+  RANK_DOWN: '&cYou dropped to {rank}&c.'
+  RESET_WARNING: '&8[&cPVP&8] &7The arena resets in &c{time}&7.'
+  RESET_DONE: '&8[&cPVP&8] &7The arena has been reset.'
+  RESET_NO_SCHEMATIC: '&cNo schematic is configured for the arena reset.'
+  STATS_HEADER: '&8&m--------&r &cPvP stats: &f{player} &8&m--------'
+  STATS_LINE: '&7{label}: &f{value}'
+  TOP_HEADER: '&8&m--------&r &cTop PvP players &8&m--------'
+  TOP_LINE: '&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)'
+  TOP_EMPTY: '&7Nobody has fought in the arena yet.'

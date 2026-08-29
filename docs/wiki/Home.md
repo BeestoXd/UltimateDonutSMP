@@ -2,7 +2,7 @@
 
 Welcome to the official wiki documentation for **UltimateDonutSMP**, an all-in-one, high-performance Paper, Spigot, and Folia plugin designed for DonutSMP-style Minecraft survival networks.
 
-UltimateDonutSMP replaces dozens of separate plugins by integrating economy, marketplaces, team systems, teleportation, PvP duels, FFA arenas, custom spawners, crates, staff utilities, security tools, and multi-server network syncing into a single, cohesive plugin.
+UltimateDonutSMP replaces dozens of separate plugins by integrating economy, marketplaces, team systems, teleportation, PvP duels, FFA and ranked arenas, custom spawners, crates, staff utilities, security tools, and multi-server network syncing into a single, cohesive plugin.
 
 ---
 
@@ -35,6 +35,9 @@ Explore the complete feature guide and documentation pages:
 
 - **[Duels & Instanced FFA](Duels-and-FFA)**  
   Setting up duel arenas (`/arena`), player duel queues (`/duel`, `/queue`), arena rollbacks, crystal speed tweaks, and instanced FFA arenas (`/ffaarena`, `/ffa`).
+
+- **[Ranked PvP Arena](Ranked-PvP-Arena)**  
+  Persistent ranked arena (`/pvp`) with editable kits, Elo, an LT/HT rank ladder, PvP levels, kill-farm protection, its own scoreboard, and scheduled schematic resets through WorldEdit or FAWE.
 
 - **[Economy & Marketplaces](Economy-and-Marketplaces)**  
   Vault economy, Shard currency, shop systems (`/shop`, `/sell`, `/worth`), Auction House (`/ah`), Orders board (`/orders`), and Billford rotating NPC trades (`/billford`).

@@ -603,6 +603,16 @@ public class ScoreboardManager {
     }
 
     private List<String> getLines(Player player, SidebarSettings settings) {
+        // Inside the ranked arena the sidebar is the arena's own, straight out of pvp.yml. None of
+        // the survival extras below apply there, so it returns before any of them are read.
+        if (usesArenaSidebar(player)) {
+            List<String> arenaLines = new ArrayList<>();
+            for (String line : plugin.getPvpManager().getScoreboardLines()) {
+                arenaLines.add(applySidebarLayoutPlaceholders(line, settings));
+            }
+            return arenaLines;
+        }
+
         List<String> lines = new ArrayList<>();
         String teamLine = settings.teamLine();
         String boosterLine = settings.boosterLine();
@@ -891,7 +901,9 @@ public class ScoreboardManager {
     }
 
     private String getTitle(Player player, SidebarSettings settings) {
-        List<String> titles = settings.titles();
+        List<String> titles = usesArenaSidebar(player)
+                ? plugin.getPvpManager().getScoreboardTitles()
+                : settings.titles();
         if (titles.isEmpty()) {
             return ColorUtils.colorize("EconomySMP", player);
         }
@@ -909,6 +921,11 @@ public class ScoreboardManager {
             rendered.add(alignSidebarIconColumn(text, settings));
         }
         return rendered;
+    }
+
+    /** True while the player is in the ranked PvP arena and it wants the sidebar. */
+    private boolean usesArenaSidebar(Player player) {
+        return plugin.getPvpManager() != null && plugin.getPvpManager().hasArenaScoreboard(player);
     }
 
     private boolean isVisibleFor(Player player) {

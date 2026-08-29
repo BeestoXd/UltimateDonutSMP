@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.api.EconomyExpansion;
 import com.bx.ultimateDonutSmp.api.EconomyLeaderboardExpansion;
 import com.bx.ultimateDonutSmp.api.EconomyRankExpansion;
 import com.bx.ultimateDonutSmp.api.HideExpansion;
+import com.bx.ultimateDonutSmp.api.PvpExpansion;
 import com.bx.ultimateDonutSmp.api.UltimateDonutSmpExpansion;
 import com.bx.ultimateDonutSmp.api.UdsExpansion;
 import com.bx.ultimateDonutSmp.commands.*;
@@ -79,6 +80,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private FilterManager filterManager;
     private DuelManager duelManager;
     private FfaManager ffaManager;
+    private PvpManager pvpManager;
     private AuctionHouseManager auctionHouseManager;
     private AuctionOrderBotManager auctionOrderBotManager;
     private ServerNotificationManager serverNotificationManager;
@@ -226,6 +228,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         duelManager = new DuelManager(this);
         ffaManager = new FfaManager(this);
+        pvpManager = new PvpManager(this);
         auctionHouseManager = new AuctionHouseManager(this);
         auctionOrderBotManager = new AuctionOrderBotManager(this);
         serverNotificationManager = new ServerNotificationManager(this);
@@ -309,6 +312,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         SpawnerGenerationTask.start(this);
         DuelMatchTask.start(this);
         FfaMatchTask.start(this);
+        PvpArenaTask.start(this);
 
         // 8. PlaceholderAPI expansion
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -316,6 +320,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
             new UltimateDonutSmpExpansion(this).register();
             new UdsExpansion(this).register();
             new HideExpansion(this).register();
+            new PvpExpansion(this).register();
             new EconomyLeaderboardExpansion(this).register();
             new EconomyRankExpansion(this).register();
             getLogger().info("PlaceholderAPI expansion registered.");
@@ -417,6 +422,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (ffaManager != null) {
             ffaManager.shutdown();
+        }
+        if (pvpManager != null) {
+            pvpManager.shutdown();
         }
         if (spawnerManager != null && !suppressWipeSaves) {
             spawnerManager.shutdown();
@@ -543,6 +551,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         pm.registerEvents(new DuelListener(this), this);
         pm.registerEvents(new FfaListener(this), this);
+        pm.registerEvents(new PvpListener(this), this);
         pm.registerEvents(new AmethystToolsListener(this), this);
         pm.registerEvents(new SpawnerBlockListener(this), this);
         pm.registerEvents(new SpawnerInteractListener(this), this);
@@ -648,6 +657,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("ffa", new FfaCommand(this), FeatureManager.Feature.FFA);
         setExecutor("ffastats", new FfaStatsCommand(this), FeatureManager.Feature.FFA);
         setExecutor("ffaarena", new FfaArenaCommand(this), FeatureManager.Feature.FFA);
+        setExecutor("pvp", new PvpCommand(this), FeatureManager.Feature.PVP_ARENA);
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(this);
         setExecutor("auctionhouse", auctionHouseCommand, FeatureManager.Feature.AUCTION_HOUSE);
         setTabCompleter("auctionhouse", auctionHouseCommand);
@@ -1065,6 +1075,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ordersManager.reload();
         duelManager.reload();
         ffaManager.reload();
+        pvpManager.reload();
         auctionHouseManager.reload();
         if (auctionOrderBotManager != null) {
             auctionOrderBotManager.reload();
@@ -1336,6 +1347,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public FfaManager getFfaManager() {
         return ffaManager;
+    }
+
+    public PvpManager getPvpManager() {
+        return pvpManager;
     }
 
     public AuctionHouseManager getAuctionHouseManager() {

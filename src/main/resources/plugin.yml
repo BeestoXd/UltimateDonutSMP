@@ -178,6 +178,11 @@ commands:
     usage: /ffaarena <create|delete|setpos|setdisplay|settings|enable|disable|list|reload>
     permission: ultimatedonutsmp.command.ffaarena
     permission-message: "&cYou do not have permission to use /ffaarena."
+  pvp:
+    description: Join the ranked PvP arena
+    usage: /pvp [join|leave|kit|stats|top|wand|create|setspawn|setlobby|setboundary|schematic|reset|reload]
+    permission: ultimatedonutsmp.command.pvp
+    permission-message: "&cYou do not have permission to use /pvp."
   auctionhouse:
     description: Open the Auction House
     usage: /auctionhouse [sell|my|claims|cancel|reload]
@@ -787,6 +792,7 @@ permissions:
       ultimatedonutsmp.admin.orders: true
       ultimatedonutsmp.admin.duels: true
       ultimatedonutsmp.admin.ffa: true
+      ultimatedonutsmp.admin.pvp: true
       ultimatedonutsmp.admin.auctionhouse: true
       ultimatedonutsmp.admin.clearlag: true
       ultimatedonutsmp.admin.cuboid: true
@@ -869,6 +875,9 @@ permissions:
     default: op
   ultimatedonutsmp.admin.ffa:
     description: Manage FFA system and arenas
+    default: op
+  ultimatedonutsmp.admin.pvp:
+    description: Manage the ranked PvP arena and its kits
     default: op
   ultimatedonutsmp.admin.cuboid:
     description: Manage cuboid regions
@@ -1237,6 +1246,7 @@ permissions:
       ultimatedonutsmp.command.ffa: true
       ultimatedonutsmp.command.ffastats: true
       ultimatedonutsmp.command.ffaarena: true
+      ultimatedonutsmp.command.pvp: true
       ultimatedonutsmp.command.auctionhouse: true
       ultimatedonutsmp.command.enderchest: true
       ultimatedonutsmp.command.sell: true
@@ -1416,6 +1426,9 @@ permissions:
     default: true
   ultimatedonutsmp.command.ffastats:
     description: Access to /ffastats command
+    default: true
+  ultimatedonutsmp.command.pvp:
+    description: Access to /pvp command
     default: true
   ultimatedonutsmp.command.ffaarena:
     description: Access to /ffaarena command
