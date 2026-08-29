@@ -589,6 +589,12 @@ public class PvpManager {
             send(player, message("NO_KITS", "&cThere are no PvP kits to choose from yet."));
             return false;
         }
+        // Waiting for a ranked match and fighting in the open arena cannot both be true: the match
+        // would drop on them mid-fight and take the session out from under them.
+        if (plugin.getPvpMatchManager() != null && plugin.getPvpMatchManager().isQueued(player.getUniqueId())) {
+            send(player, message("QUEUE_ALREADY_IN", "&cYou are already in the queue."));
+            return false;
+        }
 
         PvpSession session = new PvpSession(player.getUniqueId(), System.currentTimeMillis());
         sessions.put(player.getUniqueId(), session);
@@ -881,6 +887,13 @@ public class PvpManager {
             lobbyOnRejoin.add(player.getUniqueId());
         }
         takeKitBack(player);
+
+        // Spectator is only ever a respawn countdown here, and it outlives the disconnect. Undo it
+        // now rather than on the next login: the login path is skipped entirely when the lobby
+        // return is switched off, which would leave the player a spectator for good.
+        if (player.getGameMode() == GameMode.SPECTATOR) {
+            player.setGameMode(GameMode.SURVIVAL);
+        }
     }
 
     /**

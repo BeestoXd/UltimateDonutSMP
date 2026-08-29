@@ -82,7 +82,8 @@ The rest of a kit is set from the command line:
 ```
 
 A kit with no permission is open to everyone. A kit with no slot is placed automatically, centred in
-the menu alongside the others. `/pvp kit list` shows what exists and `/pvp kit delete <name>`
+the menu alongside the others. The bottom right slot is the leave button, so a kit pointed there is
+placed automatically instead. `/pvp kit list` shows what exists and `/pvp kit delete <name>`
 removes one.
 
 ---
@@ -133,13 +134,18 @@ BROADCASTS:
 ## Ranked 1v1 matches
 
 Alongside the open arena there is a ranked queue. `/pvp queue` opens a menu, the player picks the kit
-they want to fight with, and confirming puts them in line. As soon as a second person is waiting the
-two are paired, dropped on `ARENA.SPAWN` and `ARENA.SPAWN_2`, handed the kit, and held for a short
-countdown during which neither can be hurt.
+they want to fight with, and confirming puts them in line. As soon as somebody else is waiting for
+the same kit the two are paired, dropped on `ARENA.SPAWN` and `ARENA.SPAWN_2`, handed the kit, and
+held for a short countdown during which neither can be hurt.
 
-Pairing is by wait time, not by rating. On a survival server the queue is rarely more than a handful
-of people, and holding a high rated player back to look for a closer opponent mostly means nobody
-gets a fight at all.
+Only the same kit pairs. Both fighters use one loadout, so crossing kits would hand whoever waited
+the gear the other player picked. Within a kit, pairing is by wait time rather than by rating: on a
+survival server the queue is rarely more than a handful of people, and holding a high rated player
+back to look for a closer opponent mostly means nobody gets a fight at all.
+
+The queue and the open arena are mutually exclusive. `/pvp` refuses while you are queued, `/pvp queue`
+refuses while you are in the arena, and `/pvp assign` refuses to pull somebody out of a fight they
+are already in.
 
 The match ends when somebody dies, disconnects, leaves the arena boundary, or `MATCH.MAX_DURATION`
 runs out, which is a draw. The winner gains `MATCH.ELO_WIN`, the loser drops `MATCH.ELO_LOSS`, and
