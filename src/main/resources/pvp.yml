@@ -35,6 +35,8 @@ ARENA:
   WORLD: ''
   # Where players are put when they join or respawn (world,x,y,z,yaw,pitch)
   SPAWN: ''
+  # Where the second player in a ranked 1v1 match starts. Empty puts both on SPAWN.
+  SPAWN_2: ''
   # Where players are sent on /pvp leave and after a disconnect (world,x,y,z,yaw,pitch)
   LOBBY: ''
   # The two wand corners of the arena boundary (world,x,y,z,yaw,pitch)
@@ -67,6 +69,26 @@ RESET:
   - '//paste -o -a'
   # Seconds to wait between the load command and the paste command
   PASTE_DELAY_SECONDS: 5
+
+# Ranked 1v1 matches, the queue that feeds them, and the history they leave behind
+MATCH:
+  # Enable the ranked queue, /pvp assign and the match history (true / false)
+  ENABLED: true
+  # Seconds both players stand protected at the start of a match before the fight opens
+  COUNTDOWN_SECONDS: 5
+  # Longest a match may run before it is called a draw. Accepts the same 1d10h15m format
+  # as RESET.INTERVAL. Set it to 0 to let a match run forever.
+  MAX_DURATION: '5m'
+  # Elo the winner gains
+  ELO_WIN: 20
+  # Elo the loser drops
+  ELO_LOSS: 15
+  # Elo both players take on a draw or an aborted match
+  ELO_DRAW: 0
+  # Heal both players and re-hand the kit when a match starts (true / false)
+  HEAL_ON_START: true
+  # How the date is written in the match history. Standard Java date patterns.
+  DATE_FORMAT: 'dd/MM/yyyy HH:mm'
 
 # Commands players cannot run while they are inside the arena
 BLOCKED_COMMANDS:
@@ -202,6 +224,48 @@ SCOREBOARD:
   # Shown by %pvp_arena_reset% when no reset is scheduled
   RESET_DISABLED_TEXT: '&7-'
 
+# The four menus this feature opens. Titles and sizes are yours; the layouts are fixed
+# so that a size change cannot leave a button with nowhere to sit.
+MENUS:
+  # /pvp queue - pick a kit, then confirm to join the ranked queue
+  QUEUE:
+    TITLE: '&8PvP queue'
+    SIZE: 27
+    CONFIRM:
+      MATERIAL: 'LIME_STAINED_GLASS_PANE'
+      DISPLAY-NAME: '&aCONFIRM'
+    CANCEL:
+      MATERIAL: 'RED_STAINED_GLASS_PANE'
+      DISPLAY-NAME: '&cLEAVE'
+  # /pvp leaderboard - one icon per board, each holding its own ranking
+  LEADERBOARD:
+    TITLE: '&8Leaderboards'
+    SIZE: 27
+    # How many players each board lists
+    ENTRIES: 10
+    # How one ranking row is written
+    LINE: '&7#{position} &f{player} &8- &c{value}'
+    # The icon each board uses
+    ICONS:
+      ELO: 'DIAMOND'
+      LEVEL: 'EXPERIENCE_BOTTLE'
+      KILLS: 'DIAMOND_SWORD'
+      DEATHS: 'SKELETON_SKULL'
+      STREAK: 'BLAZE_POWDER'
+      JOINS: 'IRON_DOOR'
+  # /pvp history - past ranked matches, newest first
+  HISTORY:
+    TITLE: '&8Match history &7- &f{player}'
+  # /pvp assign - put two players into a match without either of them queueing
+  ASSIGN:
+    TITLE: '&8Assign match'
+    SIZE: 27
+    CONFIRM:
+      MATERIAL: 'LIME_STAINED_GLASS_PANE'
+      DISPLAY-NAME: '&aSTART MATCH'
+    BLOCKED:
+      MATERIAL: 'RED_STAINED_GLASS_PANE'
+
 # Kit definitions. These are written by /pvp kit create and /pvp kit edit, which
 # store the real items with their enchantments, names and lore, so hand editing is
 # not expected here.
@@ -236,3 +300,15 @@ MESSAGES:
   TOP_HEADER: '&8&m--------&r &cTop PvP players &8&m--------'
   TOP_LINE: '&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)'
   TOP_EMPTY: '&7Nobody has fought in the arena yet.'
+  QUEUE_JOINED: '&aYou joined the ranked queue. Waiting for an opponent...'
+  QUEUE_LEFT: '&aYou left the ranked queue.'
+  QUEUE_ALREADY_IN: '&cYou are already in the queue.'
+  QUEUE_NOT_IN: '&cYou are not in the queue.'
+  MATCH_ALREADY_IN: '&cYou are already in a ranked match.'
+  MATCH_LEAVE_ARENA_FIRST: '&cLeave the arena before queueing.'
+  MATCH_NEEDS_TWO: '&cA ranked match needs two different players.'
+  MATCH_STARTED: '&8[&cPVP&8] &f{first} &7vs &f{second}'
+  MATCH_COUNTDOWN: '&fStarting in &c{seconds}&f...'
+  MATCH_WIN: '&aYou beat &f{opponent} &8(&a{elo} elo&8, &a{hits} hits&8)'
+  MATCH_LOSS: '&cYou lost to &f{opponent} &8(&c{elo} elo&8, &c{hits} hits&8)'
+  MATCH_DRAW: '&7The match against &f{opponent} &7ended in a draw.'

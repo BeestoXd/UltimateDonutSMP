@@ -21,8 +21,13 @@ public class PvpArenaTask implements Runnable {
 
     @Override
     public void run() {
-        if (plugin.getPvpManager() != null && plugin.getPvpManager().isEnabled()) {
-            plugin.getPvpManager().tick();
+        if (plugin.getPvpManager() == null || !plugin.getPvpManager().isEnabled()) {
+            return;
+        }
+
+        plugin.getPvpManager().tick();
+        if (plugin.getPvpMatchManager() != null) {
+            plugin.getPvpMatchManager().tick();
         }
     }
 }

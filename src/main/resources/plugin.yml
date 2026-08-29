@@ -180,7 +180,7 @@ commands:
     permission-message: "&cYou do not have permission to use /ffaarena."
   pvp:
     description: Join the ranked PvP arena
-    usage: /pvp [join|leave|kit|stats|top|wand|create|setspawn|setlobby|setboundary|schematic|reset|reload]
+    usage: /pvp [join|leave|kit|stats|top|queue|leaderboard|history|assign|wand|create|setspawn|setspawn2|setlobby|setboundary|schematic|reset|reload]
     permission: ultimatedonutsmp.command.pvp
     permission-message: "&cYou do not have permission to use /pvp."
   auctionhouse:

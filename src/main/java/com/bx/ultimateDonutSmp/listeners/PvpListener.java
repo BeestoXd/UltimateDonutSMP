@@ -2,12 +2,14 @@ package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PvpManager;
+import com.bx.ultimateDonutSmp.models.PvpMatch;
 import com.bx.ultimateDonutSmp.models.PvpSession;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -74,7 +76,21 @@ public class PvpListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (pvp() == null || !pvp().isInArena(player.getUniqueId())) {
+        if (pvp() == null) {
+            return;
+        }
+
+        // Losing a ranked match takes the player out of the arena while they are still dead, so the
+        // lobby trip they were owed lands here instead.
+        if (pvp().consumeLobbyOnRespawn(player.getUniqueId())) {
+            Location lobby = pvp().getLobby();
+            if (lobby != null) {
+                event.setRespawnLocation(lobby);
+            }
+            return;
+        }
+
+        if (!pvp().isInArena(player.getUniqueId())) {
             return;
         }
 
@@ -96,8 +112,15 @@ public class PvpListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        if (pvp() != null) {
-            pvp().handleQuit(event.getPlayer());
+        if (pvp() == null) {
+            return;
+        }
+
+        // The arena is told first so it can remember to send the player to the lobby next login.
+        // Ending the match afterwards then awards the win to whoever is left standing.
+        pvp().handleQuit(event.getPlayer());
+        if (plugin.getPvpMatchManager() != null) {
+            plugin.getPvpMatchManager().handleQuit(event.getPlayer());
         }
     }
 
@@ -174,7 +197,7 @@ public class PvpListener implements Listener {
 
         // A player who owes the arena a kit choice is standing there empty handed, and one inside
         // the spawn window has not had a chance to move yet. Neither is a fair fight.
-        if (session.isAwaitingKit() || isSpawnProtected(session)) {
+        if (session.isAwaitingKit() || isSpawnProtected(session) || isCountingDown(player)) {
             event.setCancelled(true);
         }
     }
@@ -191,9 +214,50 @@ public class PvpListener implements Listener {
         }
 
         PvpSession attackerSession = pvp().getSession(attacker.getUniqueId());
-        if (attackerSession != null && (attackerSession.isAwaitingKit() || isSpawnProtected(attackerSession))) {
+        if (attackerSession != null
+                && (attackerSession.isAwaitingKit() || isSpawnProtected(attackerSession) || isCountingDown(attacker))) {
             event.setCancelled(true);
         }
+    }
+
+    /**
+     * Counts what the match history reports: direct hits, and crystals separately.
+     *
+     * <p>A crystal explosion names the crystal as the damager rather than whoever set it off, so in
+     * a ranked match it is credited to the opponent. That is exact here because a match only ever
+     * has two people in it.</p>
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMatchDamage(EntityDamageByEntityEvent event) {
+        if (plugin.getPvpMatchManager() == null || !(event.getEntity() instanceof Player victim)) {
+            return;
+        }
+
+        PvpMatch match = plugin.getPvpMatchManager().getMatch(victim.getUniqueId());
+        if (match == null) {
+            return;
+        }
+
+        if (event.getDamager() instanceof EnderCrystal) {
+            Player opponent = org.bukkit.Bukkit.getPlayer(match.opponentOf(victim.getUniqueId()));
+            if (opponent != null) {
+                plugin.getPvpMatchManager().handleCrystal(opponent, victim);
+            }
+            return;
+        }
+
+        Player attacker = resolveAttacker(event);
+        if (attacker != null && match.involves(attacker.getUniqueId())) {
+            plugin.getPvpMatchManager().handleHit(attacker, victim);
+        }
+    }
+
+    private boolean isCountingDown(Player player) {
+        if (plugin.getPvpMatchManager() == null) {
+            return false;
+        }
+        PvpMatch match = plugin.getPvpMatchManager().getMatch(player.getUniqueId());
+        return match != null && match.isCountingDown(System.currentTimeMillis());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
