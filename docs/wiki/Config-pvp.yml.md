@@ -61,6 +61,8 @@ ARENA:
   WORLD: ''
   # Where players are put when they join or respawn (world,x,y,z,yaw,pitch)
   SPAWN: ''
+  # Where the second player in a ranked 1v1 match starts
+  SPAWN_2: ''
   # Where players are sent on /pvp leave and after a disconnect (world,x,y,z,yaw,pitch)
   LOBBY: ''
   # The two wand corners of the arena boundary (world,x,y,z,yaw,pitch)
@@ -77,6 +79,7 @@ ARENA:
 | `ARENA.NAME` | `string` | Any text | `'Arena'` | Shown by `%pvp_arena%`. Set with `/pvp create <name>`. |
 | `ARENA.WORLD` | `string` | A loaded world name, or empty | `''` | Left empty the arena uses the world of `ARENA.SPAWN`, which is almost always right. |
 | `ARENA.SPAWN` | `string` | `world,x,y,z,yaw,pitch` | `''` | The one required setting. Without it `/pvp` refuses to let anyone in. |
+| `ARENA.SPAWN_2` | `string` | `world,x,y,z,yaw,pitch` | `''` | Where the second fighter in a ranked match starts. Empty puts both of them on `ARENA.SPAWN`. Set with `/pvp setspawn2`. |
 | `ARENA.LOBBY` | `string` | `world,x,y,z,yaw,pitch` | `''` | Falls back to the configured server spawn when empty. |
 | `ARENA.BOUNDARY_POS1` | `string` | `world,x,y,z,yaw,pitch` | `''` | First wand corner. With no corners the whole arena world counts as inside. |
 | `ARENA.BOUNDARY_POS2` | `string` | `world,x,y,z,yaw,pitch` | `''` | Second wand corner. |
@@ -121,6 +124,72 @@ RESET:
 | `RESET.PASTE_LOCATION` | `string` | `world,x,y,z,yaw,pitch`, or empty | `''` | Fills `{world} {x} {y} {z}` in the commands. Empty relies on `-o`, which pastes at the origin stored in the schematic. |
 | `RESET.COMMANDS` | `list` | Console commands | load + paste | Run in order from console. WorldEdit and FastAsyncWorldEdit answer the same two commands, so either works and neither needs to be listed as a dependency. |
 | `RESET.PASTE_DELAY_SECONDS` | `int` | `1` and above | `5` | Wait between one command and the next. A large schematic is still loading when an immediate paste would fire. |
+
+---
+
+## Section: `MATCH`
+
+### 1. Commented Setup Code Example
+
+```yaml
+MATCH:
+  # Enable the ranked queue, /pvp assign and the match history (true / false)
+  ENABLED: true
+  # Seconds both players stand protected at the start of a match
+  COUNTDOWN_SECONDS: 5
+  # Longest a match may run before it is called a draw
+  MAX_DURATION: '5m'
+  # Elo the winner gains
+  ELO_WIN: 20
+  # Elo the loser drops
+  ELO_LOSS: 15
+  # Elo both players take on a draw or an aborted match
+  ELO_DRAW: 0
+  # Heal both players and re-hand the kit when a match starts (true / false)
+  HEAL_ON_START: true
+  # How the date is written in the match history
+  DATE_FORMAT: 'dd/MM/yyyy HH:mm'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `MATCH.ENABLED` | `bool` | `true`, `false` | `true` | Covers the queue, `/pvp assign` and the history menu. The open arena keeps working with this off. |
+| `MATCH.COUNTDOWN_SECONDS` | `int` | `0` and above | `5` | Neither fighter can deal or take damage until it runs out. |
+| `MATCH.MAX_DURATION` | `string` | Same format as `RESET.INTERVAL` | `'5m'` | A match still running at this point is called a draw. `0` lets it run forever. |
+| `MATCH.ELO_WIN` | `int` | `0` and above | `20` | Added to the winner. |
+| `MATCH.ELO_LOSS` | `int` | `0` and above | `15` | Taken from the loser. `ELO.MINIMUM` still applies, and the history stores the change that actually landed. |
+| `MATCH.ELO_DRAW` | `int` | Any integer | `0` | Applied to both on a draw or an aborted match. |
+| `MATCH.HEAL_ON_START` | `bool` | `true`, `false` | `true` | Full health and a fresh kit at the opening countdown. |
+| `MATCH.DATE_FORMAT` | `string` | A Java date pattern | `'dd/MM/yyyy HH:mm'` | Used by the history menu. An unreadable pattern falls back to the default rather than breaking the menu. |
+
+---
+
+## Section: `MENUS`
+
+Titles and sizes are yours; the slot layouts are fixed so a size change cannot leave a button with
+nowhere to sit.
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `MENUS.QUEUE.TITLE` | `string` | Any text | `'&8PvP queue'` | Title of `/pvp queue`. |
+| `MENUS.QUEUE.SIZE` | `int` | 27, 36, 45, 54 | `27` | Anything else falls back to 27. |
+| `MENUS.QUEUE.CONFIRM.MATERIAL` | `string` | A material name | `LIME_STAINED_GLASS_PANE` | The join button. |
+| `MENUS.QUEUE.CONFIRM.DISPLAY-NAME` | `string` | Any text | `'&aCONFIRM'` | |
+| `MENUS.QUEUE.CANCEL.MATERIAL` | `string` | A material name | `RED_STAINED_GLASS_PANE` | Leaves the queue, or closes the menu when not queued. |
+| `MENUS.QUEUE.CANCEL.DISPLAY-NAME` | `string` | Any text | `'&cLEAVE'` | |
+| `MENUS.LEADERBOARD.TITLE` | `string` | Any text | `'&8Leaderboards'` | |
+| `MENUS.LEADERBOARD.SIZE` | `int` | 27, 36, 45, 54 | `27` | |
+| `MENUS.LEADERBOARD.ENTRIES` | `int` | 1-15 | `10` | How many players each board lists in its lore. |
+| `MENUS.LEADERBOARD.LINE` | `string` | `{position}`, `{player}`, `{value}` | `'&7#{position} &f{player} &8- &c{value}'` | One ranking row. |
+| `MENUS.LEADERBOARD.ICONS.<board>` | `string` | A material name | Varies | One per board: `ELO`, `LEVEL`, `KILLS`, `DEATHS`, `STREAK`, `JOINS`. |
+| `MENUS.HISTORY.TITLE` | `string` | `{player}` | `'&8Match history &7- &f{player}'` | The history menu pages 45 matches at a time. |
+| `MENUS.ASSIGN.TITLE` | `string` | Any text | `'&8Assign match'` | |
+| `MENUS.ASSIGN.SIZE` | `int` | 27, 36, 45, 54 | `27` | |
+| `MENUS.ASSIGN.CONFIRM.MATERIAL` | `string` | A material name | `LIME_STAINED_GLASS_PANE` | Shown once two different players and a kit are picked. |
+| `MENUS.ASSIGN.CONFIRM.DISPLAY-NAME` | `string` | Any text | `'&aSTART MATCH'` | |
+| `MENUS.ASSIGN.BLOCKED.MATERIAL` | `string` | A material name | `RED_STAINED_GLASS_PANE` | Shown while the selection is incomplete. |
 
 ---
 
@@ -390,3 +459,13 @@ Every player-facing string the arena sends. All of them go through the plugin's 
 | `MESSAGES.TOP_HEADER` | – | `/pvp top` header. |
 | `MESSAGES.TOP_LINE` | `{position}`, `{player}`, `{elo}`, `{rank}` | Each `/pvp top` row. |
 | `MESSAGES.TOP_EMPTY` | – | `/pvp top` with no records yet. |
+| `MESSAGES.QUEUE_JOINED` | `{kit}` | Confirms a place in the ranked queue. |
+| `MESSAGES.QUEUE_LEFT` | – | Left the queue. |
+| `MESSAGES.QUEUE_ALREADY_IN` / `MESSAGES.QUEUE_NOT_IN` | – | Wrong-state queue responses. |
+| `MESSAGES.MATCH_ALREADY_IN` | – | Already fighting a ranked match. |
+| `MESSAGES.MATCH_LEAVE_ARENA_FIRST` | – | Queueing while inside the open arena. |
+| `MESSAGES.MATCH_NEEDS_TWO` | – | `/pvp assign` with one player, or the same player twice. |
+| `MESSAGES.MATCH_STARTED` | `{first}`, `{second}` | Sent to both fighters when a match opens. |
+| `MESSAGES.MATCH_COUNTDOWN` | `{seconds}` | Sent once a second during the opening countdown. |
+| `MESSAGES.MATCH_WIN` / `MESSAGES.MATCH_LOSS` | `{opponent}`, `{elo}`, `{hits}`, `{crystals}` | The result lines. |
+| `MESSAGES.MATCH_DRAW` | `{opponent}` | Sent when the duration cap runs out. |

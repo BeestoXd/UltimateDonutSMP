@@ -1,8 +1,10 @@
 # Ranked PvP Arena
 
 The ranked arena is a persistent free-for-all area with kits, an Elo rating, a rank ladder, a
-separate level track, and an optional scheduled reset that pastes a schematic back over the map. It
-is configured entirely through `pvp.yml` and the `/pvp` command, and it ships switched off.
+separate level track, and an optional scheduled reset that pastes a schematic back over the map. On
+top of that sits a ranked 1v1 queue with its own match history, leaderboards and an assign menu for
+testers. All of it is configured through `pvp.yml` and the `/pvp` command, and it ships switched
+off.
 
 It is not a second FFA system. [Instanced FFA](Duels-and-FFA) matches two players in a throwaway
 copy of an arena and rolls the blocks back afterwards. The ranked arena is one permanent place that
@@ -38,7 +40,8 @@ Give yourself `ultimatedonutsmp.admin.pvp` and work through this in the world th
 
 `/pvp setspawn` is the only step the arena cannot open without. Run it where players should appear.
 `/pvp setlobby` records where `/pvp leave`, a boundary exit and a reconnect send people; without it
-the arena falls back to the server spawn.
+the arena falls back to the server spawn. `/pvp setspawn2` marks where the second player in a ranked
+1v1 starts; leave it unset and both fighters spawn on the same point.
 
 `/pvp wand` hands you a golden axe. Left click one corner of the arena, right click the opposite
 one, then `/pvp setboundary` stores them. Anyone who steps outside that box - plus the
@@ -124,6 +127,61 @@ BROADCASTS:
     GLOBAL: true
     MESSAGE: '&8[&cPVP&8] &f%player_name% &7has reached PvP Level &c%pvp_level%&7!'
 ```
+
+---
+
+## Ranked 1v1 matches
+
+Alongside the open arena there is a ranked queue. `/pvp queue` opens a menu, the player picks the kit
+they want to fight with, and confirming puts them in line. As soon as a second person is waiting the
+two are paired, dropped on `ARENA.SPAWN` and `ARENA.SPAWN_2`, handed the kit, and held for a short
+countdown during which neither can be hurt.
+
+Pairing is by wait time, not by rating. On a survival server the queue is rarely more than a handful
+of people, and holding a high rated player back to look for a closer opponent mostly means nobody
+gets a fight at all.
+
+The match ends when somebody dies, disconnects, leaves the arena boundary, or `MATCH.MAX_DURATION`
+runs out, which is a draw. The winner gains `MATCH.ELO_WIN`, the loser drops `MATCH.ELO_LOSS`, and
+both are sent back to the lobby. Ranked deaths never trigger the open arena's per-kill rewards or its
+respawn countdown, so a match scores itself once and only once.
+
+```yaml
+MATCH:
+  ENABLED: true
+  COUNTDOWN_SECONDS: 5
+  MAX_DURATION: '5m'
+  ELO_WIN: 20
+  ELO_LOSS: 15
+```
+
+---
+
+## The menus
+
+Four menus cover the ranked side.
+
+`/pvp queue` is the queue itself: the available kits in the middle, a confirm button on the right, a
+leave button on the left. The kit is chosen before queueing rather than after being paired, so two
+matched players arrive already agreed on the loadout.
+
+`/pvp leaderboard` shows one icon per board, with its ranking in the icon's lore. Elo, level, kills,
+deaths, best streak and arena joins each get their own, and the icon materials and the row format are
+config. Clicking an icon refreshes it.
+
+`/pvp history [player]` lists past matches newest first, one item each. The lore carries the date,
+how long the match ran, who won, and both fighters' hits, crystals and Elo change. Those numbers come
+from the stored match row rather than from the players' current totals, so an old entry still reads
+correctly long after the ladder has moved on.
+
+`/pvp assign` is the tester's menu. Click the two player slots to cycle through everyone online,
+click the middle slot to pick the kit, then confirm to start the match without either player having
+queued. `/pvp assign <player> <player> [kit]` does the same thing from the command line, which is
+what you want when running the same fixture repeatedly. Both need `ultimatedonutsmp.admin.pvp`.
+
+Hits and crystals are counted separately during a match. A crystal explosion names the crystal as
+the damager rather than whoever set it off, so in a ranked match it is credited to the opponent,
+which is exact because a match only ever has two people in it.
 
 ---
 
@@ -234,6 +292,10 @@ it.
 | `/pvp kit` | Reopen the kit menu |
 | `/pvp stats [player]` | Elo, rank, level, XP, K/D and streaks |
 | `/pvp top [amount]` | The Elo ladder, offline players included |
+| `/pvp queue` | Open the ranked 1v1 queue |
+| `/pvp queue leave` | Leave the queue |
+| `/pvp leaderboard` | Open the leaderboards |
+| `/pvp history [player]` | Browse ranked match history |
 
 See [Config-pvp.yml](Config-pvp.yml) for every option, and
 [Placeholders & Integrations](Placeholders-and-Integrations) for the `%pvp_*%` catalog.

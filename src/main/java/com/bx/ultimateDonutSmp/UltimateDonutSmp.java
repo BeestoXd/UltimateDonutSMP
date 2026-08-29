@@ -81,6 +81,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private DuelManager duelManager;
     private FfaManager ffaManager;
     private PvpManager pvpManager;
+    private PvpMatchManager pvpMatchManager;
     private AuctionHouseManager auctionHouseManager;
     private AuctionOrderBotManager auctionOrderBotManager;
     private ServerNotificationManager serverNotificationManager;
@@ -229,6 +230,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         duelManager = new DuelManager(this);
         ffaManager = new FfaManager(this);
         pvpManager = new PvpManager(this);
+        pvpMatchManager = new PvpMatchManager(this);
         auctionHouseManager = new AuctionHouseManager(this);
         auctionOrderBotManager = new AuctionOrderBotManager(this);
         serverNotificationManager = new ServerNotificationManager(this);
@@ -422,6 +424,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (ffaManager != null) {
             ffaManager.shutdown();
+        }
+        if (pvpMatchManager != null) {
+            pvpMatchManager.shutdown();
         }
         if (pvpManager != null) {
             pvpManager.shutdown();
@@ -1076,6 +1081,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         duelManager.reload();
         ffaManager.reload();
         pvpManager.reload();
+        pvpMatchManager.reload();
         auctionHouseManager.reload();
         if (auctionOrderBotManager != null) {
             auctionOrderBotManager.reload();
@@ -1351,6 +1357,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public PvpManager getPvpManager() {
         return pvpManager;
+    }
+
+    public PvpMatchManager getPvpMatchManager() {
+        return pvpMatchManager;
     }
 
     public AuctionHouseManager getAuctionHouseManager() {

@@ -69,6 +69,44 @@ class PvpConfigurationTest {
     }
 
     @Test
+    void theRankedQueueShipsWithAScoringSpreadAndACountdown() throws Exception {
+        YamlConfiguration pvp = pvp();
+
+        assertTrue(pvp.getBoolean("MATCH.ENABLED"));
+        assertTrue(pvp.getInt("MATCH.COUNTDOWN_SECONDS") > 0, "both players need a moment before the fight opens");
+        assertTrue(pvp.getInt("MATCH.ELO_WIN") > 0);
+        assertTrue(pvp.getInt("MATCH.ELO_LOSS") > 0);
+        assertEquals(0, pvp.getInt("MATCH.ELO_DRAW"), "a draw should not move anyone by default");
+        assertFalse(pvp.getString("MATCH.DATE_FORMAT", "").isBlank());
+    }
+
+    @Test
+    void everyLeaderboardHasAnIconConfigured() throws Exception {
+        YamlConfiguration pvp = pvp();
+
+        for (String board : List.of("ELO", "LEVEL", "KILLS", "DEATHS", "STREAK", "JOINS")) {
+            assertFalse(
+                    pvp.getString("MENUS.LEADERBOARD.ICONS." + board, "").isBlank(),
+                    "expected an icon for the " + board + " leaderboard"
+            );
+        }
+        assertTrue(pvp.getInt("MENUS.LEADERBOARD.ENTRIES") > 0);
+        assertTrue(pvp.getString("MENUS.LEADERBOARD.LINE", "").contains("{player}"));
+    }
+
+    @Test
+    void everyMenuHasATitleAndAWorkableSize() throws Exception {
+        YamlConfiguration pvp = pvp();
+
+        for (String menu : List.of("QUEUE", "LEADERBOARD", "ASSIGN")) {
+            assertFalse(pvp.getString("MENUS." + menu + ".TITLE", "").isBlank(), menu + " needs a title");
+            int size = pvp.getInt("MENUS." + menu + ".SIZE");
+            assertTrue(size >= 27 && size <= 54 && size % 9 == 0, menu + " has an unusable size: " + size);
+        }
+        assertTrue(pvp.getString("MENUS.HISTORY.TITLE", "").contains("{player}"));
+    }
+
+    @Test
     void theCommandAndItsPermissionsAreRegistered() throws Exception {
         YamlConfiguration plugin = new YamlConfiguration();
         plugin.load(new File("src/main/resources/plugin.yml"));

@@ -67,6 +67,7 @@ public class PvpManager {
     private final Map<String, PvpKit> kits = new LinkedHashMap<>();
     private final List<PvpRank> ranks = new ArrayList<>();
     private final java.util.Set<UUID> lobbyOnRejoin = ConcurrentHashMap.newKeySet();
+    private final java.util.Set<UUID> lobbyOnRespawn = ConcurrentHashMap.newKeySet();
 
     private long nextResetAt;
     private boolean resetWarningSent;
@@ -187,14 +188,25 @@ public class PvpManager {
 
     /** The Elo ladder, best first. Reads straight from the database so offline players count. */
     public List<TopEntry> getTop(int limit) {
+        return getTop(TopCategory.ELO, limit);
+    }
+
+    /**
+     * One leaderboard, best first.
+     *
+     * <p>The column comes from {@link TopCategory} rather than from a caller-supplied string, so
+     * the ordering can be chosen freely without ever building SQL out of user input.</p>
+     */
+    public List<TopEntry> getTop(TopCategory category, int limit) {
         List<TopEntry> top = new ArrayList<>();
         Connection connection = connection();
-        if (connection == null) {
+        if (connection == null || category == null) {
             return top;
         }
 
         try (PreparedStatement ps = connection.prepareStatement(
-                "select player_uuid, elo from pvp_stats order by elo desc limit ?")) {
+                "select player_uuid, " + category.column() + " as value from pvp_stats"
+                        + " order by value desc limit ?")) {
             ps.setInt(1, Math.max(1, limit));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -206,7 +218,7 @@ public class PvpManager {
                     if (name == null || name.isBlank()) {
                         name = Bukkit.getOfflinePlayer(uuid).getName();
                     }
-                    top.add(new TopEntry(uuid, name == null ? uuid.toString() : name, rs.getInt("elo")));
+                    top.add(new TopEntry(uuid, name == null ? uuid.toString() : name, rs.getInt("value")));
                 }
             }
         } catch (SQLException exception) {
@@ -223,6 +235,12 @@ public class PvpManager {
 
     public Location getSpawn() {
         return LocationUtils.parse(config().getString("ARENA.SPAWN", ""));
+    }
+
+    /** Where the second player in a ranked match starts. Falls back to the single arena spawn. */
+    public Location getSpawn2() {
+        Location second = LocationUtils.parse(config().getString("ARENA.SPAWN_2", ""));
+        return second != null ? second : getSpawn();
     }
 
     public Location getLobby() {
@@ -250,6 +268,10 @@ public class PvpManager {
         if (location != null && location.getWorld() != null) {
             writeConfig("ARENA.WORLD", location.getWorld().getName());
         }
+    }
+
+    public void setSpawn2(Location location) {
+        writeConfig("ARENA.SPAWN_2", LocationUtils.serialize(location));
     }
 
     public void setLobby(Location location) {
@@ -609,7 +631,13 @@ public class PvpManager {
 
         Location lobby = getLobby();
         if (lobby != null && !silent) {
-            plugin.getSpigotScheduler().teleport(player, lobby);
+            // Losing a ranked match removes the player while they are still on the death screen,
+            // and a teleport there does not survive the respawn. Hand it to the respawn instead.
+            if (player.isDead()) {
+                lobbyOnRespawn.add(player.getUniqueId());
+            } else {
+                plugin.getSpigotScheduler().teleport(player, lobby);
+            }
         }
         if (plugin.getScoreboardManager() != null) {
             plugin.getScoreboardManager().invalidatePlayer(player);
@@ -635,6 +663,25 @@ public class PvpManager {
         for (PotionEffect effect : new ArrayList<>(player.getActivePotionEffects())) {
             player.removePotionEffect(effect.getType());
         }
+    }
+
+    /**
+     * Opens a session for a player the ranked queue is about to drop into a match.
+     *
+     * <p>Unlike {@link #join(Player)} there is no kit menu: the match already decided the kit, and
+     * the pair have to arrive holding it at the same moment.</p>
+     */
+    public void startSession(Player player) {
+        if (player == null) {
+            return;
+        }
+
+        PvpSession session = new PvpSession(player.getUniqueId(), System.currentTimeMillis());
+        session.setAwaitingKit(false);
+        session.setSpawnedAt(System.currentTimeMillis());
+        sessions.put(player.getUniqueId(), session);
+        updateStats(player.getUniqueId(), getStats(player.getUniqueId()).recordArenaJoin());
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void openKitMenu(Player player) {
@@ -693,6 +740,10 @@ public class PvpManager {
                 .replace("{kit}", ColorUtils.strip(ColorUtils.colorize(kit.getDisplayName()))));
     }
 
+    public void healPlayer(Player player) {
+        heal(player);
+    }
+
     private void heal(Player player) {
         player.setHealth(Math.max(1.0D, AttributeUtils.getMaxHealth(player)));
         player.setFoodLevel(20);
@@ -709,6 +760,13 @@ public class PvpManager {
     public void handleDeath(Player victim, Player killer) {
         PvpSession session = getSession(victim.getUniqueId());
         if (session == null) {
+            return;
+        }
+
+        // A ranked match scores itself: the win and the Elo come from the match result, so the
+        // open arena's per-kill rewards and respawn countdown must not also fire here.
+        if (plugin.getPvpMatchManager() != null && plugin.getPvpMatchManager().isInMatch(victim.getUniqueId())) {
+            plugin.getPvpMatchManager().handleDeath(victim);
             return;
         }
 
@@ -825,6 +883,15 @@ public class PvpManager {
         takeKitBack(player);
     }
 
+    /**
+     * Whether this player still owes the arena a trip to the lobby when they respawn.
+     *
+     * <p>Reading it clears it, so the respawn that acts on it is the only one that can.</p>
+     */
+    public boolean consumeLobbyOnRespawn(UUID uuid) {
+        return uuid != null && lobbyOnRespawn.remove(uuid);
+    }
+
     /** Sends a player who logged out inside the arena back to the lobby on their next join. */
     public void handleJoin(Player player) {
         if (player == null || !lobbyOnRejoin.remove(player.getUniqueId())) {
@@ -841,6 +908,38 @@ public class PvpManager {
                     }
                 }
             }, 10L);
+        }
+    }
+
+    /**
+     * Moves a player's Elo by a ranked match result and announces any rank change.
+     *
+     * @return the change that actually landed, which the floor or ceiling may have cut short
+     */
+    public int applyMatchElo(UUID uuid, int delta) {
+        if (uuid == null) {
+            return 0;
+        }
+
+        PvpStats before = getStats(uuid);
+        PvpRank oldRank = getRankFor(before.getElo());
+        PvpStats after = before.withElo(clampElo(before.getElo() + delta));
+        updateStats(uuid, after);
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            announceRank(player, oldRank, getRankFor(after.getElo()), after);
+        }
+        return after.getElo() - before.getElo();
+    }
+
+    /** Books a ranked match win and loss against the same kill and death counters the arena uses. */
+    public void recordMatchOutcome(UUID winner, UUID loser) {
+        if (winner != null) {
+            updateStats(winner, getStats(winner).recordKill());
+        }
+        if (loser != null) {
+            updateStats(loser, getStats(loser).recordDeath());
         }
     }
 
@@ -1118,7 +1217,11 @@ public class PvpManager {
                     && config().getBoolean("SETTINGS.KILL_OUTSIDE_BOUNDARY", true)
                     && !isInsideArena(player.getLocation())) {
                 send(player, message("LEFT_BOUNDARY", "&cYou left the arena and were removed from the fight."));
-                removeFromArena(player, false);
+                if (plugin.getPvpMatchManager() != null && plugin.getPvpMatchManager().isInMatch(uuid)) {
+                    plugin.getPvpMatchManager().handleBoundaryExit(player);
+                } else {
+                    removeFromArena(player, false);
+                }
             }
         }
 
@@ -1356,7 +1459,39 @@ public class PvpManager {
     private record KillRecord(int count, long lastKillAt) {
     }
 
-    /** One row of the Elo ladder. */
-    public record TopEntry(UUID uuid, String name, int elo) {
+    /** One row of a leaderboard: who, and their score in whichever category was asked for. */
+    public record TopEntry(UUID uuid, String name, int value) {
+    }
+
+    /** The leaderboards the menu offers, each naming the column it sorts on. */
+    public enum TopCategory {
+        ELO("elo", "Elo", "DIAMOND"),
+        LEVEL("pvp_level", "Level", "EXPERIENCE_BOTTLE"),
+        KILLS("kills", "Kills", "DIAMOND_SWORD"),
+        DEATHS("deaths", "Deaths", "SKELETON_SKULL"),
+        STREAK("best_streak", "Best streak", "BLAZE_POWDER"),
+        JOINS("arena_joins", "Arena joins", "IRON_DOOR");
+
+        private final String column;
+        private final String displayName;
+        private final String icon;
+
+        TopCategory(String column, String displayName, String icon) {
+            this.column = column;
+            this.displayName = displayName;
+            this.icon = icon;
+        }
+
+        public String column() {
+            return column;
+        }
+
+        public String displayName() {
+            return displayName;
+        }
+
+        public String icon() {
+            return icon;
+        }
     }
 }

@@ -2,7 +2,11 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PvpManager;
+import com.bx.ultimateDonutSmp.menus.PvpAssignMatchMenu;
 import com.bx.ultimateDonutSmp.menus.PvpKitEditMenu;
+import com.bx.ultimateDonutSmp.menus.PvpLeaderboardMenu;
+import com.bx.ultimateDonutSmp.menus.PvpMatchHistoryMenu;
+import com.bx.ultimateDonutSmp.menus.PvpQueueMenu;
 import com.bx.ultimateDonutSmp.models.PvpKit;
 import com.bx.ultimateDonutSmp.models.PvpRank;
 import com.bx.ultimateDonutSmp.models.PvpStats;
@@ -29,9 +33,12 @@ import java.util.UUID;
 public class PvpCommand implements CommandExecutor, TabCompleter {
 
     private static final DecimalFormat RATIO_FORMAT = new DecimalFormat("0.00");
-    private static final List<String> PLAYER_SUBCOMMANDS = List.of("join", "leave", "kit", "stats", "top");
+    private static final List<String> PLAYER_SUBCOMMANDS = List.of(
+            "join", "leave", "kit", "stats", "top", "queue", "leaderboard", "history"
+    );
     private static final List<String> ADMIN_SUBCOMMANDS = List.of(
-            "wand", "create", "setspawn", "setlobby", "setboundary", "schematic", "reset", "reload"
+            "wand", "create", "setspawn", "setspawn2", "setlobby", "setboundary",
+            "schematic", "assign", "reset", "reload"
     );
 
     private final UltimateDonutSmp plugin;
@@ -64,9 +71,14 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
             case "kit" -> handleKit(sender, label, args);
             case "stats" -> handleStats(sender, args);
             case "top" -> handleTop(sender, args);
+            case "queue" -> handleQueue(sender, args);
+            case "leaderboard", "lb" -> requirePlayer(sender, p -> new PvpLeaderboardMenu(plugin).open(p));
+            case "history" -> handleHistory(sender, args);
+            case "assign" -> handleAssign(sender, args);
             case "wand" -> handleWand(sender);
             case "create" -> handleCreate(sender, args);
             case "setspawn" -> handleSetSpawn(sender);
+            case "setspawn2" -> handleSetSpawn2(sender);
             case "setlobby" -> handleSetLobby(sender);
             case "setboundary" -> handleSetBoundary(sender);
             case "schematic" -> handleSchematic(sender, label, args);
@@ -264,14 +276,72 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
         send(sender, pvp.message("TOP_HEADER", "&8&m--------&r &cTop PvP players &8&m--------"));
         int position = 1;
         for (PvpManager.TopEntry entry : top) {
-            PvpRank rank = pvp.getRankFor(entry.elo());
+            PvpRank rank = pvp.getRankFor(entry.value());
             send(sender, pvp.message("TOP_LINE", "&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)")
                     .replace("{position}", String.valueOf(position++))
                     .replace("{player}", entry.name())
-                    .replace("{elo}", String.valueOf(entry.elo()))
+                    .replace("{elo}", String.valueOf(entry.value()))
                     .replace("{rank}", rank == null ? "-" : rank.getDisplay()));
         }
         return true;
+    }
+
+    private boolean handleQueue(CommandSender sender, String[] args) {
+        return requirePlayer(sender, player -> {
+            if (args.length > 1 && args[1].equalsIgnoreCase("leave")) {
+                boolean left = plugin.getPvpMatchManager().leaveQueue(player.getUniqueId());
+                send(player, left
+                        ? plugin.getPvpManager().message("QUEUE_LEFT", "&aYou left the ranked queue.")
+                        : plugin.getPvpManager().message("QUEUE_NOT_IN", "&cYou are not in the queue."));
+                return;
+            }
+            new PvpQueueMenu(plugin).open(player);
+        });
+    }
+
+    private boolean handleHistory(CommandSender sender, String[] args) {
+        UUID target;
+        if (args.length > 1) {
+            OfflinePlayer offline = Bukkit.getOfflinePlayer(args[1]);
+            target = offline.getUniqueId();
+        } else if (sender instanceof Player player) {
+            target = player.getUniqueId();
+        } else {
+            send(sender, "&e/pvp history <player>");
+            return true;
+        }
+
+        UUID resolved = target;
+        return requirePlayer(sender, player -> new PvpMatchHistoryMenu(plugin, resolved).open(player));
+    }
+
+    /**
+     * Opens the assign menu, or starts the match straight away when both names are given.
+     *
+     * <p>Naming both players skips the menu entirely, which is what a tester running the same
+     * fixture repeatedly actually wants.</p>
+     */
+    private boolean handleAssign(CommandSender sender, String[] args) {
+        if (!requireAdmin(sender)) {
+            return true;
+        }
+
+        if (args.length >= 3) {
+            Player first = Bukkit.getPlayerExact(args[1]);
+            Player second = Bukkit.getPlayerExact(args[2]);
+            if (first == null || second == null) {
+                send(sender, "&cBoth players have to be online.");
+                return true;
+            }
+            String kitId = args.length >= 4 ? args[3] : null;
+            plugin.getPvpMatchManager().startMatch(first, second, kitId, sender);
+            return true;
+        }
+
+        UUID first = args.length >= 2 && Bukkit.getPlayerExact(args[1]) != null
+                ? Bukkit.getPlayerExact(args[1]).getUniqueId()
+                : null;
+        return requirePlayer(sender, player -> new PvpAssignMatchMenu(plugin, first, null).open(player));
     }
 
     // ── Admin subcommands ─────────────────────────────────────────────────────
@@ -308,6 +378,16 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
         return requirePlayer(sender, player -> {
             plugin.getPvpManager().setSpawn(player.getLocation());
             send(player, "&aArena spawn set to where you are standing.");
+        });
+    }
+
+    private boolean handleSetSpawn2(CommandSender sender) {
+        if (!requireAdmin(sender)) {
+            return true;
+        }
+        return requirePlayer(sender, player -> {
+            plugin.getPvpManager().setSpawn2(player.getLocation());
+            send(player, "&aSecond ranked match spawn set to where you are standing.");
         });
     }
 
@@ -425,12 +505,16 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
         send(sender, "&e/" + label + " kit &7- pick a kit again");
         send(sender, "&e/" + label + " stats [player] &7- see a record");
         send(sender, "&e/" + label + " top [amount] &7- see the elo ladder");
+        send(sender, "&e/" + label + " queue &7- join the ranked 1v1 queue");
+        send(sender, "&e/" + label + " leaderboard &7- open the leaderboards");
+        send(sender, "&e/" + label + " history [player] &7- browse ranked matches");
         if (!admin) {
             return;
         }
         send(sender, "&e/" + label + " wand &7- get the boundary wand");
         send(sender, "&e/" + label + " create <name> &7- name the arena");
-        send(sender, "&e/" + label + " setspawn &8| &esetlobby &8| &esetboundary");
+        send(sender, "&e/" + label + " setspawn &8| &esetspawn2 &8| &esetlobby &8| &esetboundary");
+        send(sender, "&e/" + label + " assign [player] [player] [kit] &7- put two players in a match");
         send(sender, "&e/" + label + " kit <create|edit|delete|list|icon|permission|slot|display>");
         send(sender, "&e/" + label + " schematic <load <name>|location>");
         send(sender, "&e/" + label + " reset &8| &ereload");
@@ -466,6 +550,25 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
                 options.add(kit.getId());
             }
             return filter(options, args[2]);
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("queue")) {
+            return filter(List.of("leave"), args[1]);
+        }
+
+        if (args.length == 4 && args[0].equalsIgnoreCase("assign") && pvp != null && isAdmin(sender)) {
+            for (PvpKit kit : pvp.getKits()) {
+                options.add(kit.getId());
+            }
+            return filter(options, args[3]);
+        }
+
+        if ((args.length == 2 || args.length == 3)
+                && (args[0].equalsIgnoreCase("history") || args[0].equalsIgnoreCase("assign"))) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                options.add(online.getName());
+            }
+            return filter(options, args[args.length - 1]);
         }
 
         if (args.length == 2 && args[0].equalsIgnoreCase("stats")) {

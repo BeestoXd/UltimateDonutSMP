@@ -48,7 +48,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/leave` | `/leave` | None | Leave active duel or FFA instance | `ultimatedonutsmp.command.leave` |
 | `/ffa` | `/ffa [join]` | None | Join instanced FFA arena | `ultimatedonutsmp.command.ffa` |
 | `/ffastats` | `/ffastats [player]` | None | View FFA kill/death/streak stats | `ultimatedonutsmp.command.ffastats` |
-| `/pvp` | `/pvp [join\|leave\|kit\|stats\|top]` | None | Join the ranked PvP arena, pick a kit, or read the Elo ladder | `ultimatedonutsmp.command.pvp` |
+| `/pvp` | `/pvp [join\|leave\|kit\|stats\|top\|queue\|leaderboard\|history]` | None | Join the ranked PvP arena, queue for a 1v1, or browse leaderboards and match history | `ultimatedonutsmp.command.pvp` |
 | `/bounty` | `/bounty [place\|list]` | None | Place or view player bounties | `ultimatedonutsmp.command.bounty` |
 | `/leaderboard` | `/leaderboard [type]` | `/lb`, `/top`, `/leaderboards`, `/baltop` | Open leaderboard menus; `/baltop` opens the money leaderboard directly | `ultimatedonutsmp.command.leaderboard` |
 | `/voicechatconsent` | `/voicechatconsent [revoke]` | `/vcconsent`, `/voiceconsent` | Open the voice chat consent menu, or withdraw an answer already given with `revoke` | `ultimatedonutsmp.command.voicechatconsent` |
@@ -94,7 +94,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/portal` | `/portal <create\|delete\|list\|setcuboid\|setdestination>` | Custom portal trigger setup | `ultimatedonutsmp.admin.portal` |
 | `/arena` | `/arena <create\|delete\|setpos1\|setpos2\|setreturn\|enable>` | Duel arena setup and configuration | `ultimatedonutsmp.admin.arena` |
 | `/ffaarena` | `/ffaarena <create\|delete\|setpos\|enable>` | Instanced FFA arena management | `ultimatedonutsmp.admin.ffaarena` |
-| `/pvp` | `/pvp <wand\|create\|setspawn\|setlobby\|setboundary\|kit\|schematic\|reset\|reload>` | Ranked PvP arena setup, kit editing, and schematic resets | `ultimatedonutsmp.admin.pvp` |
+| `/pvp` | `/pvp <wand\|create\|setspawn\|setspawn2\|setlobby\|setboundary\|kit\|schematic\|assign\|reset\|reload>` | Ranked PvP arena setup, kit editing, assigned matches, and schematic resets | `ultimatedonutsmp.admin.pvp` |
 | `/crate` | `/crate <create\|delete\|key\|keyall\|bind\|edit>` | Crate & virtual key administration | `ultimatedonutsmp.admin.crate` |
 | `/spawner` | `/spawner <give\|set\|type\|stack>` | Custom spawner stack administration | `ultimatedonutsmp.admin.spawner` |
 | `/addmoney` | `/addmoney <player> <amount>` | Add money to player balance | `ultimatedonutsmp.admin.addmoney` |
