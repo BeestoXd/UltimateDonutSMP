@@ -139,7 +139,7 @@ public class PvpMatchManager {
                 return false;
             }
             queue.put(player.getUniqueId(), new QueueEntry(kit.getId(), System.currentTimeMillis()));
-            opponent = findOpponent(player.getUniqueId());
+            opponent = findOpponent(player.getUniqueId(), kit.getId());
         }
 
         send(player, message("QUEUE_JOINED", "&aYou joined the ranked queue. Waiting for an opponent...")
@@ -165,15 +165,22 @@ public class PvpMatchManager {
     }
 
     /**
-     * The first other player waiting.
+     * The player who has waited longest for the same kit.
      *
-     * <p>Pairing is by wait time rather than by rating. The queue on a survival server is rarely
-     * more than a handful of people, and holding a high rated player back to look for a closer
-     * match would mostly mean nobody gets a fight at all.</p>
+     * <p>Only the same kit counts. Both fighters use one loadout, so pairing across kits would hand
+     * whoever waited the gear the other one picked, which is the opposite of what choosing a kit in
+     * the queue menu is for.</p>
+     *
+     * <p>Within a kit, pairing is by wait time rather than by rating. The queue on a survival server
+     * is rarely more than a handful of people, and holding a high rated player back to look for a
+     * closer match would mostly mean nobody gets a fight at all.</p>
      */
-    private UUID findOpponent(UUID self) {
+    private UUID findOpponent(UUID self, String kitId) {
         for (Map.Entry<UUID, QueueEntry> entry : queue.entrySet()) {
-            if (!entry.getKey().equals(self) && Bukkit.getPlayer(entry.getKey()) != null) {
+            if (entry.getKey().equals(self) || !entry.getValue().kitId().equals(kitId)) {
+                continue;
+            }
+            if (Bukkit.getPlayer(entry.getKey()) != null) {
                 return entry.getKey();
             }
         }
@@ -223,6 +230,17 @@ public class PvpMatchManager {
         }
         if (isInMatch(first.getUniqueId()) || isInMatch(second.getUniqueId())) {
             send(initiator, message("MATCH_ALREADY_IN", "&cYou are already in a ranked match."));
+            return false;
+        }
+
+        // An assigned match must not pull somebody out of an open arena fight they are in the
+        // middle of. The queue already refuses arena players, so this only bites on /pvp assign.
+        Player busy = pvp().isInArena(first.getUniqueId())
+                ? first
+                : (pvp().isInArena(second.getUniqueId()) ? second : null);
+        if (busy != null) {
+            send(initiator, message("MATCH_BUSY", "&c{player} is already in the arena.")
+                    .replace("{player}", busy.getName()));
             return false;
         }
 

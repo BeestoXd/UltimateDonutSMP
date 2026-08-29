@@ -307,6 +307,7 @@ MESSAGES:
   MATCH_ALREADY_IN: '&cYou are already in a ranked match.'
   MATCH_LEAVE_ARENA_FIRST: '&cLeave the arena before queueing.'
   MATCH_NEEDS_TWO: '&cA ranked match needs two different players.'
+  MATCH_BUSY: '&c{player} is already in the arena.'
   MATCH_STARTED: '&8[&cPVP&8] &f{first} &7vs &f{second}'
   MATCH_COUNTDOWN: '&fStarting in &c{seconds}&f...'
   MATCH_WIN: '&aYou beat &f{opponent} &8(&a{elo} elo&8, &a{hits} hits&8)'

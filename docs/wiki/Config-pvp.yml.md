@@ -421,7 +421,7 @@ from the config updater so a plugin update never restores the empty default over
 | `KITS.<id>.DISPLAY` | `string` | Any text | `&f<id>` | Menu name. Set with `/pvp kit display <name> <text>`. |
 | `KITS.<id>.ICON` | `string` | A material name | `IRON_SWORD` | Menu icon. Set with `/pvp kit icon <name> <material>`. |
 | `KITS.<id>.PERMISSION` | `string` | A permission node, or empty | `''` | Empty leaves the kit open to everyone. `/pvp kit permission <name> none` clears it. |
-| `KITS.<id>.SLOT` | `int` | `0`-`26`, or `-1` | `-1` | Fixed menu slot. `-1` places the kit automatically, centred with the others. |
+| `KITS.<id>.SLOT` | `int` | `0`-`25`, or `-1` | `-1` | Fixed menu slot. `-1` places the kit automatically, centred with the others. Slot 26 belongs to the leave button, and a kit pointed at it is placed automatically instead. |
 | `KITS.<id>.CONTENTS` | `section` | Serialized items by slot | – | The 36 inventory slots. Written by the editor. |
 | `KITS.<id>.ARMOR` | `section` | Serialized items by slot | – | Boots, leggings, chestplate, helmet, in that order. |
 | `KITS.<id>.OFFHAND` | `string` | A serialized item | – | Offhand item. |
@@ -465,6 +465,7 @@ Every player-facing string the arena sends. All of them go through the plugin's 
 | `MESSAGES.MATCH_ALREADY_IN` | – | Already fighting a ranked match. |
 | `MESSAGES.MATCH_LEAVE_ARENA_FIRST` | – | Queueing while inside the open arena. |
 | `MESSAGES.MATCH_NEEDS_TWO` | – | `/pvp assign` with one player, or the same player twice. |
+| `MESSAGES.MATCH_BUSY` | `{player}` | `/pvp assign` naming somebody who is already fighting in the open arena. |
 | `MESSAGES.MATCH_STARTED` | `{first}`, `{second}` | Sent to both fighters when a match opens. |
 | `MESSAGES.MATCH_COUNTDOWN` | `{seconds}` | Sent once a second during the opening countdown. |
 | `MESSAGES.MATCH_WIN` / `MESSAGES.MATCH_LOSS` | `{opponent}`, `{elo}`, `{hits}`, `{crystals}` | The result lines. |

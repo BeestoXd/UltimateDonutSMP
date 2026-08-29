@@ -81,6 +81,20 @@ class PvpConfigurationTest {
     }
 
     @Test
+    void everyStateTheQueueAndMatchCanRefuseHasAMessage() throws Exception {
+        YamlConfiguration pvp = pvp();
+
+        for (String key : List.of(
+                "QUEUE_JOINED", "QUEUE_LEFT", "QUEUE_ALREADY_IN", "QUEUE_NOT_IN",
+                "MATCH_ALREADY_IN", "MATCH_LEAVE_ARENA_FIRST", "MATCH_NEEDS_TWO", "MATCH_BUSY",
+                "MATCH_STARTED", "MATCH_COUNTDOWN", "MATCH_WIN", "MATCH_LOSS", "MATCH_DRAW"
+        )) {
+            assertFalse(pvp.getString("MESSAGES." + key, "").isBlank(), "MESSAGES." + key + " is missing");
+        }
+        assertTrue(pvp.getString("MESSAGES.MATCH_BUSY", "").contains("{player}"));
+    }
+
+    @Test
     void everyLeaderboardHasAnIconConfigured() throws Exception {
         YamlConfiguration pvp = pvp();
 
