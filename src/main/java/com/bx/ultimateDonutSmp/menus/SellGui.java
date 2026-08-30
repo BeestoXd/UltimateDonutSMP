@@ -150,6 +150,9 @@ public final class SellGui extends BaseMenu {
 
     @Override
     public void handleClick(int slot, Player player, ClickType clickType) {
+        if (submitted) {
+            return;
+        }
         List<Integer> durations = plugin.getAuctionHouseManager().getAllowedDurations();
         int durationStart = plugin.getConfigManager().getAuctionHouse()
                 .getInt("GUI.SELL.DURATION_START_SLOT", 18);
