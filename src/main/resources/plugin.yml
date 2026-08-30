@@ -864,6 +864,11 @@ permissions:
       ultimatedonutsmp.servers: true
       ultimatedonutsmp.shards.everywhere: true
       ultimatedonutsmp.admin.ecsee: true
+      ultimatedonutsmp.admin.logs: true
+      ultimatedonutsmp.admin.maintenance: true
+      ultimatedonutsmp.admin.serverwipe: true
+      ultimatedonutsmp.admin.setup: true
+      ultimatedonutsmp.admin.features: true
   ultimatedonutsmp.servers:
     description: Access the network servers status menu
     default: false
@@ -960,6 +965,12 @@ permissions:
   ultimatedonutsmp.admin.optimize:
     description: View and reload runtime optimization controls
     default: op
+  ultimatedonutsmp.admin.setup:
+    description: Run the setup tools and set the spawn and AFK zone locations
+    default: op
+  ultimatedonutsmp.admin.features:
+    description: Manage feature toggles
+    default: op
   ultimatedonutsmp.admin.shards:
     description: Inspect Shards Everywhere eligibility and status
     default: op
@@ -977,6 +988,9 @@ permissions:
     default: op
   ultimatedonutsmp.staff.flyspeed:
     description: Adjust flying speed for yourself or another player
+    default: op
+  ultimatedonutsmp.staff.god:
+    description: Toggle god mode for yourself or another online player
     default: op
   ultimatedonutsmp.staff.heal:
     description: Restore health for yourself or another player
@@ -1020,6 +1034,7 @@ permissions:
       ultimatedonutsmp.staff.punishments.view: true
       ultimatedonutsmp.staff.punishments.create: true
       ultimatedonutsmp.staff.punishments.remove: true
+      ultimatedonutsmp.staff.god: true
   ultimatedonutsmp.staff.mode.others:
     description: Toggle staff mode for other players
     default: op
@@ -1514,6 +1529,9 @@ permissions:
   ultimatedonutsmp.command.flyspeed:
     description: Access to /flyspeed command
     default: op
+  ultimatedonutsmp.command.flyspeed.others:
+    description: Adjust another player's flying speed with /flyspeed
+    default: op
   ultimatedonutsmp.command.heal:
     description: Access to /heal command
     default: op
@@ -1719,6 +1737,9 @@ permissions:
   ultimatedonutsmp.command.logs:
     description: Access to /logs command
     default: op
+  ultimatedonutsmp.admin.logs:
+    description: Browse a player's logged shop, auction and admin activity
+    default: op
   ultimatedonutsmp.command.chatlog:
     description: Access to /chatlog command
     default: op
@@ -1770,8 +1791,14 @@ permissions:
   ultimatedonutsmp.command.maintenance:
     description: Access to /maintenance command
     default: op
+  ultimatedonutsmp.admin.maintenance:
+    description: Toggle maintenance mode and manage the allowed player list
+    default: op
   ultimatedonutsmp.command.serverwipe:
     description: Access to /serverwipe command
+    default: op
+  ultimatedonutsmp.admin.serverwipe:
+    description: Preview and run a full server data wipe
     default: op
   ultimatedonutsmp.command.playerwipe:
     description: Access to /playerwipe command
