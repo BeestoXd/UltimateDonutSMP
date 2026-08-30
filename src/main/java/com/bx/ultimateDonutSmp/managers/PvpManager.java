@@ -674,8 +674,9 @@ public class PvpManager {
     /**
      * Opens a session for a player the ranked queue is about to drop into a match.
      *
-     * <p>Unlike {@link #join(Player)} there is no kit menu: the match already decided the kit, and
-     * the pair have to arrive holding it at the same moment.</p>
+     * <p>Unlike {@link #join(Player)} there is no kit menu: the match already decided the kit. It
+     * still arrives later than the session does, because the match waits for the teleport into the
+     * arena before handing it over, so the session opens awaiting a kit like any other.</p>
      */
     public void startSession(Player player) {
         if (player == null) {
@@ -683,11 +684,27 @@ public class PvpManager {
         }
 
         PvpSession session = new PvpSession(player.getUniqueId(), System.currentTimeMillis());
-        session.setAwaitingKit(false);
-        session.setSpawnedAt(System.currentTimeMillis());
         sessions.put(player.getUniqueId(), session);
         updateStats(player.getUniqueId(), getStats(player.getUniqueId()).recordArenaJoin());
         player.setGameMode(GameMode.SURVIVAL);
+    }
+
+    /**
+     * Records that a ranked fighter has landed in the arena holding the match kit.
+     *
+     * <p>Kept apart from {@link #startSession(Player)} because the two no longer happen together.
+     * Between them the player is still on their way in, and a session that says it is awaiting a
+     * kit is what keeps them out of the damage and boundary checks until they arrive.</p>
+     */
+    public void markKitGiven(Player player, PvpKit kit) {
+        PvpSession session = player == null ? null : getSession(player.getUniqueId());
+        if (session == null || kit == null) {
+            return;
+        }
+
+        session.setKitId(kit.getId());
+        session.setAwaitingKit(false);
+        session.setSpawnedAt(System.currentTimeMillis());
     }
 
     public void openKitMenu(Player player) {
