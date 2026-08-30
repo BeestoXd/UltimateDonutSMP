@@ -291,13 +291,34 @@ public class PvpMatchManager {
     /** Drops a player onto their side of the arena with the match kit in hand. */
     private void prepare(Player player, PvpKit kit, Location spawn) {
         pvp().startSession(player);
-        if (spawn != null) {
-            plugin.getSpigotScheduler().teleport(player, spawn);
+        if (spawn == null) {
+            equip(player, kit);
+            return;
+        }
+
+        // The kit has to land after the teleport rather than beside it. Moving a player is
+        // asynchronous, so handing the kit over here writes it into the inventory they are still
+        // standing in - the survival one - and whatever keeps inventories apart per world then
+        // files the kit away as everything they queued with.
+        plugin.getSpigotScheduler().teleport(player, spawn).thenRun(() ->
+                plugin.getSpigotScheduler().runEntity(player, () -> equip(player, kit)));
+    }
+
+    /**
+     * Hands the match kit over once the player is standing in the arena.
+     *
+     * <p>The match can already be over by the time the teleport lands - a disconnect during those
+     * few ticks ends it - so this checks it is still running before clearing anything.</p>
+     */
+    private void equip(Player player, PvpKit kit) {
+        if (player == null || !player.isOnline() || !isInMatch(player.getUniqueId())) {
+            return;
         }
         if (config().getBoolean("MATCH.HEAL_ON_START", true)) {
             pvp().healPlayer(player);
         }
         pvp().giveKit(player, kit);
+        pvp().markKitGiven(player, kit);
     }
 
     /** Called when a player in a ranked match dies. The other one wins. */
