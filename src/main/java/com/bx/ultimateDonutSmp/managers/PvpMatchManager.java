@@ -354,6 +354,7 @@ public class PvpMatchManager {
         active.remove(match.getFirstUuid());
         active.remove(match.getSecondUuid());
         match.setEndedAt(System.currentTimeMillis());
+        captureFinalHealth(match);
         match.setWinnerUuid(winner);
         match.setResult(result);
 
@@ -398,6 +399,26 @@ public class PvpMatchManager {
         if (second != null) {
             pvp().removeFromArena(second, silent);
         }
+    }
+
+    /**
+     * Reads the health both fighters ended on, before either is cleaned up.
+     *
+     * <p>A player who is offline or already gone counts as zero, which is what a disconnect
+     * forfeit should look like in the record.</p>
+     */
+    private void captureFinalHealth(PvpMatch match) {
+        Player first = Bukkit.getPlayer(match.getFirstUuid());
+        Player second = Bukkit.getPlayer(match.getSecondUuid());
+        match.setFinalHealth(healthOf(first), healthOf(second));
+        Player reference = first != null ? first : second;
+        if (reference != null) {
+            match.setMaxHealth(com.bx.ultimateDonutSmp.utils.AttributeUtils.getMaxHealth(reference));
+        }
+    }
+
+    private double healthOf(Player player) {
+        return player == null || player.isDead() ? 0.0D : player.getHealth();
     }
 
     private void announceResult(PvpMatch match, Player player) {
@@ -475,7 +496,8 @@ public class PvpMatchManager {
         try (PreparedStatement ps = connection.prepareStatement(
                 "select id, player_one_uuid, player_one_name, player_two_uuid, player_two_name, kit_id,"
                         + " winner_uuid, result, started_at, ended_at, one_hits, two_hits, one_crystals,"
-                        + " two_crystals, one_elo_before, two_elo_before, one_elo_delta, two_elo_delta"
+                        + " two_crystals, one_elo_before, two_elo_before, one_elo_delta, two_elo_delta,"
+                        + " one_final_health, two_final_health, max_health"
                         + " from pvp_matches where player_one_uuid = ? or player_two_uuid = ?"
                         + " order by ended_at desc limit ? offset ?")) {
             ps.setString(1, uuid.toString());
@@ -516,6 +538,8 @@ public class PvpMatchManager {
         match.setCrystals(rs.getInt("one_crystals"), rs.getInt("two_crystals"));
         match.setEloBefore(rs.getInt("one_elo_before"), rs.getInt("two_elo_before"));
         match.setEloDelta(rs.getInt("one_elo_delta"), rs.getInt("two_elo_delta"));
+        match.setFinalHealth(rs.getDouble("one_final_health"), rs.getDouble("two_final_health"));
+        match.setMaxHealth(rs.getDouble("max_health"));
         try {
             match.setResult(PvpMatch.Result.valueOf(rs.getString("result")));
         } catch (IllegalArgumentException | NullPointerException exception) {
@@ -625,12 +649,38 @@ public class PvpMatchManager {
                       one_elo_before INTEGER DEFAULT 0,
                       two_elo_before INTEGER DEFAULT 0,
                       one_elo_delta INTEGER DEFAULT 0,
-                      two_elo_delta INTEGER DEFAULT 0
+                      two_elo_delta INTEGER DEFAULT 0,
+                      one_final_health REAL DEFAULT 0,
+                      two_final_health REAL DEFAULT 0,
+                      max_health REAL DEFAULT 20
                     )
                     """);
+            plugin.getDatabaseManager().executeSchema(st, """
+                    CREATE TABLE IF NOT EXISTS pvp_sync_codes (
+                      code TEXT PRIMARY KEY,
+                      player_uuid TEXT NOT NULL,
+                      player_name TEXT,
+                      created_at INTEGER DEFAULT 0,
+                      expires_at INTEGER DEFAULT 0
+                    )
+                    """);
+
+            // The match table shipped before the health columns existed, so a server updating from
+            // that build gets them added rather than a create that quietly does nothing.
+            addColumn(st, "one_final_health", "REAL DEFAULT 0");
+            addColumn(st, "two_final_health", "REAL DEFAULT 0");
+            addColumn(st, "max_health", "REAL DEFAULT 20");
         } catch (SQLException exception) {
             plugin.getLogger().log(Level.WARNING, "Failed to create the PvP match tables", exception);
         }
+    }
+
+    private void addColumn(Statement statement, String column, String definition) throws SQLException {
+        if (plugin.getDatabaseManager().hasColumn("pvp_matches", column)) {
+            return;
+        }
+        statement.execute(plugin.getDatabaseManager().adaptSchemaSql(
+                "ALTER TABLE pvp_matches ADD COLUMN " + column + " " + definition));
     }
 
     private void insertMatch(PvpMatch match) {
@@ -642,8 +692,9 @@ public class PvpMatchManager {
         try (PreparedStatement ps = connection.prepareStatement(
                 "insert into pvp_matches (player_one_uuid, player_one_name, player_two_uuid, player_two_name,"
                         + " kit_id, winner_uuid, result, started_at, ended_at, one_hits, two_hits, one_crystals,"
-                        + " two_crystals, one_elo_before, two_elo_before, one_elo_delta, two_elo_delta)"
-                        + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                        + " two_crystals, one_elo_before, two_elo_before, one_elo_delta, two_elo_delta,"
+                        + " one_final_health, two_final_health, max_health)"
+                        + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
             ps.setString(1, match.getFirstUuid().toString());
             ps.setString(2, match.getFirstName());
             ps.setString(3, match.getSecondUuid().toString());
@@ -661,6 +712,9 @@ public class PvpMatchManager {
             ps.setInt(15, match.getSecondEloBefore());
             ps.setInt(16, match.getFirstEloDelta());
             ps.setInt(17, match.getSecondEloDelta());
+            ps.setDouble(18, match.getFirstFinalHealth());
+            ps.setDouble(19, match.getSecondFinalHealth());
+            ps.setDouble(20, match.getMaxHealth());
             ps.executeUpdate();
         } catch (SQLException exception) {
             plugin.getLogger().log(Level.WARNING, "Failed to store a PvP match", exception);

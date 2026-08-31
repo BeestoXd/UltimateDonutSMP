@@ -48,7 +48,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/leave` | `/leave` | None | Leave active duel or FFA instance | `ultimatedonutsmp.command.leave` |
 | `/ffa` | `/ffa [join]` | None | Join instanced FFA arena | `ultimatedonutsmp.command.ffa` |
 | `/ffastats` | `/ffastats [player]` | None | View FFA kill/death/streak stats | `ultimatedonutsmp.command.ffastats` |
-| `/pvp` | `/pvp [join\|leave\|kit\|stats\|top\|queue\|leaderboard\|history]` | None | Join the ranked PvP arena, queue for a 1v1, or browse leaderboards and match history | `ultimatedonutsmp.command.pvp` |
+| `/pvp` | `/pvp [join\|leave\|kit\|stats\|top\|queue\|leaderboard\|history\|sync]` | None | Join the ranked PvP arena, queue for a 1v1, browse leaderboards and match history, or get a Discord sync code | `ultimatedonutsmp.command.pvp` |
 | `/bounty` | `/bounty [place\|list]` | None | Place or view player bounties | `ultimatedonutsmp.command.bounty` |
 | `/leaderboard` | `/leaderboard [type]` | `/lb`, `/top`, `/leaderboards`, `/baltop` | Open leaderboard menus; `/baltop` opens the money leaderboard directly | `ultimatedonutsmp.command.leaderboard` |
 | `/voicechatconsent` | `/voicechatconsent [revoke]` | `/vcconsent`, `/voiceconsent` | Open the voice chat consent menu, or withdraw an answer already given with `revoke` | `ultimatedonutsmp.command.voicechatconsent` |

@@ -193,6 +193,34 @@ nowhere to sit.
 
 ---
 
+## Section: `SYNC`
+
+One-time codes players use to link their Minecraft account to the Discord bot. The bot reads this
+table, checks the code and stores the link on its own side, so the plugin never has to know anybody's
+Discord id and the bot never has to write to the server database.
+
+### 1. Commented Setup Code Example
+
+```yaml
+SYNC:
+  # Enable /pvp sync (true / false)
+  ENABLED: true
+  # How many characters a code has
+  CODE_LENGTH: 6
+  # How long a code stays valid
+  EXPIRES: '10m'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SYNC.ENABLED` | `bool` | `true`, `false` | `true` | Turns `/pvp sync` on. Off, the command answers with `MESSAGES.SYNC_DISABLED`. |
+| `SYNC.CODE_LENGTH` | `int` | `4`-`16` | `6` | Characters per code. The alphabet leaves out characters that read as each other, so a player copying one out of chat by eye does not get it wrong. |
+| `SYNC.EXPIRES` | `string` | Same format as `RESET.INTERVAL` | `'10m'` | How long a code stays claimable. Asking for another replaces the one before it. |
+
+---
+
 ## Section: `BLOCKED_COMMANDS`
 
 ### 1. Commented Setup Code Example
@@ -466,6 +494,11 @@ Every player-facing string the arena sends. All of them go through the plugin's 
 | `MESSAGES.MATCH_LEAVE_ARENA_FIRST` | – | Queueing while inside the open arena. |
 | `MESSAGES.MATCH_NEEDS_TWO` | – | `/pvp assign` with one player, or the same player twice. |
 | `MESSAGES.MATCH_BUSY` | `{player}` | `/pvp assign` naming somebody who is already fighting in the open arena. |
+| `MESSAGES.SYNC_DISABLED` | – | `/pvp sync` while `SYNC.ENABLED` is off. |
+| `MESSAGES.SYNC_FAILED` | – | `/pvp sync` when the code could not be stored. |
+| `MESSAGES.SYNC_HEADER` | – | First line of the sync code message. |
+| `MESSAGES.SYNC_CODE` | `{code}` | The code itself. |
+| `MESSAGES.SYNC_HINT` | `{code}` | What to do with it on Discord. |
 | `MESSAGES.MATCH_STARTED` | `{first}`, `{second}` | Sent to both fighters when a match opens. |
 | `MESSAGES.MATCH_COUNTDOWN` | `{seconds}` | Sent once a second during the opening countdown. |
 | `MESSAGES.MATCH_WIN` / `MESSAGES.MATCH_LOSS` | `{opponent}`, `{elo}`, `{hits}`, `{crystals}` | The result lines. |

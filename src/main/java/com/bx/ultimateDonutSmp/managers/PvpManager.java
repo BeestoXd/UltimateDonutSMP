@@ -956,6 +956,73 @@ public class PvpManager {
         }
     }
 
+    // ── Discord account sync ──────────────────────────────────────────────────
+
+    public boolean isSyncEnabled() {
+        return config().getBoolean("SYNC.ENABLED", true);
+    }
+
+    /**
+     * Issues a one-time code a player types into the Discord bot to claim this account.
+     *
+     * <p>Any code the player already had is replaced, so the newest one is the only one that
+     * works and a code read over someone's shoulder stops being useful as soon as they ask for
+     * another. The bot verifies the code and stores the link on its own side; nothing here needs
+     * to know a Discord id.</p>
+     *
+     * @return the code, or null when syncing is off or the database is unavailable
+     */
+    public String createSyncCode(Player player) {
+        Connection connection = connection();
+        if (player == null || connection == null || !isSyncEnabled()) {
+            return null;
+        }
+
+        long ttl = parseDuration(config().getString("SYNC.EXPIRES", "10m"));
+        long now = System.currentTimeMillis();
+        String code = generateSyncCode(Math.max(4, Math.min(16, config().getInt("SYNC.CODE_LENGTH", 6))));
+
+        try (PreparedStatement clear = connection.prepareStatement(
+                "delete from pvp_sync_codes where player_uuid = ? or expires_at < ?")) {
+            clear.setString(1, player.getUniqueId().toString());
+            clear.setLong(2, now);
+            clear.executeUpdate();
+        } catch (SQLException exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to clear old PvP sync codes", exception);
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "insert into pvp_sync_codes (code, player_uuid, player_name, created_at, expires_at)"
+                        + " values (?,?,?,?,?)")) {
+            ps.setString(1, code);
+            ps.setString(2, player.getUniqueId().toString());
+            ps.setString(3, player.getName());
+            ps.setLong(4, now);
+            ps.setLong(5, ttl > 0 ? now + ttl : now + 600_000L);
+            ps.executeUpdate();
+            return code;
+        } catch (SQLException exception) {
+            plugin.getLogger().log(Level.WARNING, "Failed to store a PvP sync code", exception);
+            return null;
+        }
+    }
+
+    /**
+     * Builds a code from an alphabet with no characters that read as each other.
+     *
+     * <p>The player has to copy this out of chat by eye, so 0/o/O, 1/l/I and their neighbours are
+     * left out rather than turned into a support question.</p>
+     */
+    private static String generateSyncCode(int length) {
+        String alphabet = "abcdefghjkmnpqrstuvwxyz23456789";
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        StringBuilder code = new StringBuilder(length);
+        for (int index = 0; index < length; index++) {
+            code.append(alphabet.charAt(random.nextInt(alphabet.length())));
+        }
+        return code.toString();
+    }
+
     // ── Anti kill-farming ─────────────────────────────────────────────────────
 
     /**

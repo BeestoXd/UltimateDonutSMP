@@ -39,6 +39,9 @@ public class PvpMatch {
     private int secondEloBefore;
     private int firstEloDelta;
     private int secondEloDelta;
+    private double firstFinalHealth;
+    private double secondFinalHealth;
+    private double maxHealth = 20.0D;
 
     public PvpMatch(
             long id,
@@ -230,5 +233,32 @@ public class PvpMatch {
     public void setEloDelta(int first, int second) {
         this.firstEloDelta = first;
         this.secondEloDelta = second;
+    }
+
+    /** Health each fighter was left on. The loser is on zero; the winner is what survived. */
+    public double getFinalHealth(UUID uuid) {
+        return isFirst(uuid) ? firstFinalHealth : secondFinalHealth;
+    }
+
+    public double getFirstFinalHealth() {
+        return firstFinalHealth;
+    }
+
+    public double getSecondFinalHealth() {
+        return secondFinalHealth;
+    }
+
+    public void setFinalHealth(double first, double second) {
+        this.firstFinalHealth = Math.max(0.0D, first);
+        this.secondFinalHealth = Math.max(0.0D, second);
+    }
+
+    /** The scale the two health values are on, so a server with modified max health still reads right. */
+    public double getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(double maxHealth) {
+        this.maxHealth = maxHealth <= 0.0D ? 20.0D : maxHealth;
     }
 }

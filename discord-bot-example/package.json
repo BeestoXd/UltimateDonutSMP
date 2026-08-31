@@ -9,7 +9,8 @@
   "scripts": {
     "deploy": "node src/deploy-commands.js",
     "start": "node src/index.js",
-    "check": "node --check src/index.js && node --check src/deploy-commands.js && node --check src/register-commands.js && node --check src/database.js && node --check src/embeds.js && node --check src/format.js"
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "check": "node --check src/index.js && node --check src/deploy-commands.js && node --check src/register-commands.js && node --check src/commands.js && node --check src/database.js && node --check src/embeds.js && node --check src/format.js && node --check src/pvp.js && node --check src/pvp-embeds.js && node --check src/links.js && node --check src/ranks.js && node --check src/match-watcher.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.8.1",
