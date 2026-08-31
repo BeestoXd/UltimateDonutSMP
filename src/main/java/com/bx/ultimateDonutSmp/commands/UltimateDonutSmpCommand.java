@@ -457,7 +457,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
                     "spawn", "afk", "home", "homes", "sethome", "delhome", "renamehome",
                     "rtp", "warp", "tpa", "tpahere", "tpaccept", "tpadeny", "tpacancel",
                     "settings", "stats", "ping", "playtime", "social", "discord", "twitter",
-                    "store", "rules", "help", "servers"
+                    "store", "rules", "ranks", "help", "servers"
             );
             case "economy" -> List.of(
                     "balance", "pay", "addmoney", "removemoney", "setmoney", "shards", "shardpay",

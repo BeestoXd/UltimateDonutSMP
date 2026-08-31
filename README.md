@@ -270,6 +270,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/punishments` | `/phistory` | `/punishments <player>` | `ultimatedonutsmp.command.punishments` |
 | `/queue` | - | `/queue [join\|leave] [map]` | `ultimatedonutsmp.command.queue` |
 | `/randomteleport` | `/randomtp` | `/randomteleport` | `ultimatedonutsmp.command.randomteleport` |
+| `/ranks` | `/rank` | `/ranks` | `ultimatedonutsmp.command.ranks` |
 | `/removemoney` | - | `/removemoney <player> <amount>` | `ultimatedonutsmp.command.removemoney` |
 | `/removeshards` | - | `/removeshards <player> <amount>` | `ultimatedonutsmp.command.removeshards` |
 | `/rename` | - | `/rename <name...\|reset>` | `ultimatedonutsmp.command.rename` |

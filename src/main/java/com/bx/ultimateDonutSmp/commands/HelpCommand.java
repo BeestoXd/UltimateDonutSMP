@@ -55,6 +55,7 @@ public class HelpCommand implements CommandExecutor {
         sendHelpLine(player, "social", "&b/discord &7- discord link");
         sendHelpLine(player, "social", "&b/media &7- view media rank requirements");
         sendHelpLine(player, "rules", "&b/rules &7- view server rules");
+        sendHelpLine(player, "ranks", "&b/ranks &7- view rank perks");
         player.sendMessage(ColorUtils.toComponent("&7&m---------------------"));
     }
 

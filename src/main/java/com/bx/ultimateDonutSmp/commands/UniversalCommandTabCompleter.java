@@ -99,7 +99,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             case "rename" -> singleArg(args, List.of("reset", "clear", "remove"));
             case "randomteleport", "leave", "draw", "pm", "spawn", "afk", "sell", "sellall", "sellhistory",
                     "stafflist", "vanish", "tpauto", "tpahereauto", "nightvision", "phantom", "settings",
-                    "discord", "twitter", "store", "social", "rules", "help", "servers", "billford",
+                    "discord", "twitter", "store", "social", "rules", "ranks", "help", "servers", "billford",
                     "clearlag", "crates", "keys" -> List.of();
             case "teleport" -> completeTeleport(sender, label, args);
             case "invsee" -> completePlayerOrReload(sender, args, "ultimatedonutsmp.admin.invsee", false);

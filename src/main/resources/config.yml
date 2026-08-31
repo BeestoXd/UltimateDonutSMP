@@ -1092,6 +1092,8 @@ COMMANDS:
   CRATE: true
   # Determines whether Shardpay is enabled or disabled. Available options: true, false
   SHARDPAY: false
+  # Determines whether Ranks is enabled or disabled. Available options: true, false
+  RANKS: true
   # Determines whether Rules is enabled or disabled. Available options: true, false
   RULES: true
   # Determines whether Help is enabled or disabled. Available options: true, false

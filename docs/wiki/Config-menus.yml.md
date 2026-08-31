@@ -728,6 +728,79 @@ MEDIA-MENU:
 
 ---
 
+## Section: `RANKS-MENU`
+
+Opened with `/ranks` (alias `/rank`). Every button is a rank advert: the icon plus its lore lists what
+that rank unlocks, so players can compare ranks without leaving the game.
+
+### 1. Commented Setup Code Example
+
+```yaml
+RANKS-MENU:
+  TITLE: '&8Ranks'
+  SIZE: 27
+  BUTTONS:
+    # Each key under BUTTONS is one rank. Add or delete keys freely.
+    DEFAULT:
+      MATERIAL: PLAYER_HEAD
+      SLOT: 11
+      DISPLAY-NAME: '&fDefault'
+      LORE:
+      - '&73 Homes'
+      - '&718 Auction Slots'
+      - '&718 Order Slots'
+      # Leave COMMAND empty for a button that only shows perks.
+      COMMAND: ''
+    DONUT_PLUS:
+      MATERIAL: PLAYER_HEAD
+      SLOT: 13
+      DISPLAY-NAME: '&fDonut&#00A4FC+'
+      LORE:
+      - '&79 Homes'
+      - '&745 Auction Slots'
+      - '&745 Order Slots'
+      COMMAND: ''
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `RANKS-MENU.TITLE` | `str` | Any string text | `'&8Ranks'` | Inventory title shown at the top of the menu. |
+| `RANKS-MENU.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Inventory size. Anything else falls back to `27` with a console warning. |
+| `RANKS-MENU.FILLER-MATERIAL` | `str` | Any valid material name | unset | Optional. Fills the slots no rank uses, e.g. `BLACK_STAINED_GLASS_PANE`. Unset leaves them empty. |
+| `RANKS-MENU.BUTTONS.<RANK>.MATERIAL` | `str` | Any valid material name | `PLAYER_HEAD` | Icon material. A button with a missing or invalid material is skipped. |
+| `RANKS-MENU.BUTTONS.<RANK>.SLOT` | `int` | `0` to `SIZE - 1` | - | Slot the rank renders in. Out-of-range and duplicate slots are skipped. |
+| `RANKS-MENU.BUTTONS.<RANK>.DISPLAY-NAME` | `str` | Any string text | Prettified button key | Icon name. `NAME` also works for consistency with the other menus. |
+| `RANKS-MENU.BUTTONS.<RANK>.LORE` | `list` | List of strings | `[]` | The perk list shown under the rank name. |
+| `RANKS-MENU.BUTTONS.<RANK>.HEAD-TEXTURE` | `str` | Skin URL or base64 texture | `''` | Optional. Applied when `MATERIAL` is `PLAYER_HEAD` so a rank can use a custom head. |
+| `RANKS-MENU.BUTTONS.<RANK>.COMMAND` | `str` | Any command, with or without `/` | `''` | Run as the player on click. Empty keeps the button informational. |
+
+### 3. Practical Setup Example
+
+Custom heads plus a click that sends the player to the store page:
+
+```yaml
+RANKS-MENU:
+  TITLE: '&8Ranks'
+  SIZE: 27
+  BUTTONS:
+    DONUT_PLUS:
+      MATERIAL: PLAYER_HEAD
+      SLOT: 13
+      DISPLAY-NAME: '&fDonut&#00A4FC+'
+      HEAD-TEXTURE: 'https://textures.minecraft.net/texture/d875eb45aca34a4d24c3dc1395fc020ccf37f825a17b054a22fd24b189c24c'
+      LORE:
+      - '&79 Homes'
+      - '&745 Auction Slots'
+      - '&745 Order Slots'
+      - ''
+      - '&7Click to open the store'
+      COMMAND: 'store'
+```
+
+---
+
 ## Section: `STATS-MENU`
 
 ### 1. Commented Setup Code Example
