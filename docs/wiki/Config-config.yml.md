@@ -928,7 +928,9 @@ FLY-SYSTEM:
 
 ```yaml
 WORTH-LORE:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Determines whether the worth line is shown at all. Turning this off takes the line away
+  # from everyone, whatever players picked under /settings > Worth Display.
+  # Available options: true, false
   ENABLED: true
   # The text or value for Format. Available options: Any valid string text
   FORMAT: '&7Worth: &a$%price%'
@@ -939,14 +941,16 @@ WORTH-LORE:
 
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `WORTH-LORE.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `WORTH-LORE` system. Set to `true` to enable, `false` to disable. |
+| `WORTH-LORE.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for the worth lore line. `false` hides it from every player, overriding whatever each of them picked under `/settings` > Worth Display. Takes effect on `/uds reload`. |
 | `WORTH-LORE.FORMAT` | `str` | Any string text | `'&7Worth: &a$%price%'` | Configures the technical `FORMAT` parameter for `WORTH-LORE.FORMAT` in `config.yml`. |
 
 ### 3. Practical Setup Example
 
 ```yaml
 WORTH-LORE:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Determines whether the worth line is shown at all. Turning this off takes the line away
+  # from everyone, whatever players picked under /settings > Worth Display.
+  # Available options: true, false
   ENABLED: true
   # The text or value for Format. Available options: Any valid string text
   FORMAT: '&7Worth: &a$%price%'

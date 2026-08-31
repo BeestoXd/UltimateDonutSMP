@@ -158,6 +158,37 @@ class WorthManagerTest {
                 playerWithOpenView(org.bukkit.event.inventory.InventoryType.CRAFTING)));
     }
 
+    @Test
+    void theBundledConfigShipsTheWorthLoreSwitchTurnedOn() throws Exception {
+        org.bukkit.configuration.file.YamlConfiguration config = new org.bukkit.configuration.file.YamlConfiguration();
+        config.load(java.nio.file.Path.of("src/main/resources", "config.yml").toFile());
+
+        assertTrue(config.isConfigurationSection("WORTH-LORE"));
+        assertTrue(config.getBoolean("WORTH-LORE.ENABLED"));
+        assertEquals("&7Worth: &a$%price%", config.getString("WORTH-LORE.FORMAT"));
+    }
+
+    @Test
+    void theWorthLoreSwitchStaysOnWhenAnAdminHasNotTouchedIt() throws Exception {
+        UltimateDonutSmp plugin = createMockPlugin(new org.bukkit.configuration.file.YamlConfiguration(), new org.bukkit.configuration.file.YamlConfiguration());
+
+        assertTrue(new WorthManager(plugin).isWorthLoreEnabled());
+    }
+
+    @Test
+    void turningTheWorthLoreSwitchOffHidesTheLineFromEveryone() throws Exception {
+        org.bukkit.configuration.file.YamlConfiguration mainConfig = new org.bukkit.configuration.file.YamlConfiguration();
+        mainConfig.set("WORTH-LORE.ENABLED", false);
+
+        UltimateDonutSmp plugin = createMockPlugin(new org.bukkit.configuration.file.YamlConfiguration(), mainConfig);
+        WorthManager worthManager = new WorthManager(plugin);
+
+        assertFalse(worthManager.isWorthLoreEnabled());
+        // the switch is read before the player's own preference, so this answers false with no
+        // player data manager behind it at all
+        assertFalse(worthManager.isWorthDisplayEnabledFor(null));
+    }
+
     private org.bukkit.entity.Player playerWithOpenView(org.bukkit.event.inventory.InventoryType type) {
         org.bukkit.inventory.Inventory topInventory = (org.bukkit.inventory.Inventory) java.lang.reflect.Proxy.newProxyInstance(
                 org.bukkit.inventory.Inventory.class.getClassLoader(),
@@ -301,6 +332,19 @@ class WorthManagerTest {
         );
 
         serverField.set(null, mockServer);
+    }
+
+    private UltimateDonutSmp createMockPlugin(
+            org.bukkit.configuration.file.YamlConfiguration worthConfig,
+            org.bukkit.configuration.file.YamlConfiguration mainConfig
+    ) throws Exception {
+        UltimateDonutSmp plugin = createMockPlugin(worthConfig);
+
+        java.lang.reflect.Field configField = ConfigManager.class.getDeclaredField("config");
+        configField.setAccessible(true);
+        configField.set(plugin.getConfigManager(), mainConfig);
+
+        return plugin;
     }
 
     private UltimateDonutSmp createMockPlugin(org.bukkit.configuration.file.YamlConfiguration worthConfig) throws Exception {

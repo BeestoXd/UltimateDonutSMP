@@ -1074,6 +1074,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         warpManager.loadAll();
         spawnManager.load();
         worthManager.reload();
+        worthManager.resyncOnlineWorthDisplays();
         farmingMetaManager.load();
         moneyNametagManager.reload();
         shopManager.reload();
