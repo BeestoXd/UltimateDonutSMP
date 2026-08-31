@@ -73,6 +73,27 @@ Passing a player name opens that player's history on its own, with the same stat
 - Both views require `ultimatedonutsmp.staff.punishments.view`.
 - Both are styled from `PUNISHMENTS-LIST-MENU` and `PUNISHMENT-HISTORY-MENU` in `menus.yml`.
 
+### 3. Protecting Ranks From Punishment
+
+A punishment permission carries no notion of who it may be used on. A rank given
+`ultimatedonutsmp.staff.punishments.offend` so it can hand out preset offenses can point `/offend` at
+the owner just as easily as at a rule breaker, and the same goes for `/ban`, `/mute`, `/warn`,
+`/kick` and `/blacklist`.
+
+Give the ranks you want protected `ultimatedonutsmp.admin.punishments.exempt`. Staff below them are
+told they cannot punish that player and nothing is recorded. Ranks that should still be able to act
+on each other get `ultimatedonutsmp.admin.punishments.exempt.bypass` as well — `ultimatedonutsmp.admin.*`
+covers both, so an admin group keeps its protection without losing the ability to punish other admins.
+
+Both nodes default to `op`, so operators are protected from non-operator staff out of the box and can
+still punish one another. The console is never blocked.
+
+Keep the nodes out of `ultimatedonutsmp.staff.punishments.*`. A wildcard over that branch is a normal
+way to set up a moderator rank, and it would hand the exemption to every moderator on the server.
+
+Permissions are read off the player, so the check only applies while the target is online. Banning an
+exempt player while they are offline still works.
+
 ---
 
 ## Chat & Anvil Moderation

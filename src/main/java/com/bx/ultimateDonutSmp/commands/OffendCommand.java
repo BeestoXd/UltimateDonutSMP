@@ -11,6 +11,7 @@ import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+import com.bx.ultimateDonutSmp.utils.PunishmentExemptPolicy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -58,6 +59,14 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
         }
 
         Player onlineTarget = Bukkit.getPlayer(target.uuid());
+        if (!PunishmentExemptPolicy.canPunish(sender, onlineTarget)) {
+            sendMessage(sender, plugin.getConfigManager().getMessageOrDefault(
+                    "PUNISHMENTS.TARGET-EXEMPT",
+                    "&cYou cannot punish that player."
+            ));
+            return true;
+        }
+
         OffenseManager offenseManager = plugin.getOffenseManager();
         Optional<OffenseManager.OffenseRule> ruleOpt = offenseManager.getOffenseRule(reasonKeyInput);
 

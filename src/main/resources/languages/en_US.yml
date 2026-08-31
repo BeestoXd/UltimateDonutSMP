@@ -2995,6 +2995,7 @@ MESSAGES:
       &7Blacklisted by: &f%issuer%
       &8&m----------------------------
       &4You cannot join the server
+    TARGET-EXEMPT: '&cYou cannot punish that player.'
   SOCIAL:
     DISCORD:
     - ''

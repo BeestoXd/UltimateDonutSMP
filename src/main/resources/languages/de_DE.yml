@@ -2683,6 +2683,7 @@ MESSAGES:
     USAGE-UNBLACKLIST: "&cUsage: /unblacklist <player> [reason]"
     NOT-FOUND: "&cPlayer not found."
     TARGET-OFFLINE: "&cThat player is not online."
+    TARGET-EXEMPT: "&cYou cannot punish that player."
     INVALID-DURATION: "&cInvalid time. use values like 30s, 15m, 2h, 5d, or combine:
       5d 15m 30s."
     CREATE-FAILED: "&cFailed to create punishment record."

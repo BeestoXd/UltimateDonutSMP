@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+import com.bx.ultimateDonutSmp.utils.PunishmentExemptPolicy;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PunishmentManager;
@@ -133,6 +134,14 @@ public class PunishmentCommand implements CommandExecutor {
             send(sender, plugin.getConfigManager().getMessageOrDefault(
                     "PUNISHMENTS.TARGET-OFFLINE",
                     "&cThat player is not online."
+            ));
+            return true;
+        }
+
+        if (!PunishmentExemptPolicy.canPunish(sender, onlineTarget)) {
+            send(sender, plugin.getConfigManager().getMessageOrDefault(
+                    "PUNISHMENTS.TARGET-EXEMPT",
+                    "&cYou cannot punish that player."
             ));
             return true;
         }
