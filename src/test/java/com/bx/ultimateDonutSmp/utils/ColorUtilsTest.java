@@ -125,12 +125,108 @@ class ColorUtilsTest {
                 "{#FF0000}Shards &f42",
                 "&f\\u1D18\\u026A\\u0274\\u0262",
                 "🗡 &fKills &7★",
-                "plain text with no codes"
+                "plain text with no codes",
+                "<red>Kills</red> &710",
+                "<bold>one<red>two</red>three",
+                "<gradient:#FF0000:#0000FF>Kills</gradient>",
+                "<rainbow>kills</rainbow>",
+                "&7give <player>"
         };
 
         for (String line : lines) {
             String once = ColorUtils.colorize(line);
             assertEquals(once, ColorUtils.colorize(once), "second pass changed: " + line);
         }
+    }
+
+    @Test
+    void testMiniMessageNamedColor() {
+        assertEquals("§cHello World", ColorUtils.colorize("<red>Hello World"));
+        assertEquals("§7Hello World", ColorUtils.colorize("<gray>Hello World"));
+        assertEquals("§7Hello World", ColorUtils.colorize("<grey>Hello World"));
+    }
+
+    @Test
+    void testMiniMessageHexColorTag() {
+        assertEquals(legacyHex("FF0000") + "Hello World", ColorUtils.colorize("<color:#FF0000>Hello World"));
+        assertEquals("§cHello World", ColorUtils.colorize("<c:red>Hello World"));
+    }
+
+    @Test
+    void testMiniMessageDecorationSurvivesAColorChange() {
+        // A legacy colour code wipes bold, so the translator has to write it again behind the colour.
+        assertEquals("§l§c§lhi", ColorUtils.colorize("<bold><red>hi"));
+        assertEquals("§l§c§lhi", ColorUtils.colorize("<b><red>hi"));
+    }
+
+    @Test
+    void testMiniMessageClosingTagRestoresTheOuterStyle() {
+        assertEquals("§lone§c§ltwo§r§lthree",
+                ColorUtils.colorize("<bold>one<red>two</red>three"));
+        assertEquals("§cone§ltwo§r§cthree",
+                ColorUtils.colorize("<red>one<bold>two</bold>three"));
+    }
+
+    @Test
+    void testMiniMessageResetDropsEverything() {
+        assertEquals("§c§lone§rtwo", ColorUtils.colorize("<red><bold>one<reset>two"));
+    }
+
+    @Test
+    void testMiniMessageGradientUsesTheExistingGradientRenderer() {
+        assertEquals(legacyHex("FF0000") + "A" + legacyHex("0000FF") + "b" + "§r",
+                ColorUtils.colorize("<gradient:#FF0000:#0000FF>Ab</gradient>"));
+    }
+
+    @Test
+    void testMiniMessageGradientAcceptsNamedStops() {
+        assertEquals(legacyHex("FF5555") + "A" + legacyHex("5555FF") + "b" + "§r",
+                ColorUtils.colorize("<gradient:red:blue>Ab</gradient>"));
+    }
+
+    @Test
+    void testMiniMessageGradientSpansThreeStops() {
+        assertEquals(legacyHex("FF0000") + "a" + legacyHex("00FF00") + "b"
+                        + legacyHex("00FF00") + "c" + legacyHex("0000FF") + "d" + "§r",
+                ColorUtils.colorize("<gradient:#FF0000:#00FF00:#0000FF>abcd</gradient>"));
+    }
+
+    @Test
+    void testMiniMessageRainbowColorsEveryCharacter() {
+        assertEquals(legacyHex("FF0000") + "a" + legacyHex("00FF00") + "b"
+                        + legacyHex("0000FF") + "c" + "§r",
+                ColorUtils.colorize("<rainbow>abc</rainbow>"));
+    }
+
+    @Test
+    void testMiniMessageGradientKeepsBoldFromOutside() {
+        assertEquals("§l" + legacyHex("FF0000") + "§la" + legacyHex("0000FF") + "§lb"
+                        + "§r§l",
+                ColorUtils.colorize("<bold><gradient:#FF0000:#0000FF>ab</gradient>"));
+    }
+
+    @Test
+    void testUnknownTagsAreLeftAlone() {
+        // menus.yml and messages.yml are full of these; swallowing them would gut every usage line.
+        assertEquals("§7Usage: §f/amethysttool give <player> <type>",
+                ColorUtils.colorize("&7Usage: &f/amethysttool give <player> <type>"));
+        assertEquals("§fSold §a<amount>§f items",
+                ColorUtils.colorize("&fSold &a<amount>&f items"));
+    }
+
+    @Test
+    void testPluginGradientSyntaxStillWins() {
+        // <#RRGGBB>text</#RRGGBB> is the plugin's own syntax, not MiniMessage, and it has to keep
+        // rendering the way every existing config expects.
+        assertEquals(legacyHex("FF0000") + "A" + legacyHex("0000FF") + "b",
+                ColorUtils.colorize("<#FF0000>Ab</#0000FF>"));
+    }
+
+    @Test
+    void testStripRemovesMiniMessageTags() {
+        assertEquals("Shop", ColorUtils.strip("<red><bold>Shop</bold></red>"));
+        assertEquals("Shop", ColorUtils.strip("<gradient:#FF0000:#0000FF>Shop</gradient>"));
+        assertEquals("Shop", ColorUtils.strip("<color:#FF0000>Shop"));
+        assertEquals("give <player>", ColorUtils.strip("&7give <player>"));
     }
 }

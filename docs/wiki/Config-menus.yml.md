@@ -5,6 +5,34 @@ Each section details the exact commented setup code block, allowed option values
 
 ---
 
+## Text Formatting
+
+Every title, button name and lore line on this page runs through the same formatter, so you can
+write them with `&` codes, hex colours, or MiniMessage tags:
+
+```yaml
+RANKS-MENU:
+  TITLE: '<gradient:#FF7A00:#FFD400>Ranks</gradient>'
+  BUTTONS:
+    DONUT_PLUS:
+      DISPLAY-NAME: '<white>Donut<#00A4FC>+'
+      LORE:
+      - '<gray>9 Homes'
+      - '<bold><rainbow>Best value</rainbow>'
+```
+
+Named colours (`<red>`, `<gray>`, `<dark_purple>` and the rest of the sixteen), decorations
+(`<bold>`, `<italic>`, `<underlined>`, `<strikethrough>`, `<obfuscated>`), `<reset>`,
+`<gradient:...>` with two or more stops, and `<rainbow>` are all understood. Closing tags such as
+`</bold>` put the surrounding style back rather than wiping it. Tags that carry click or hover
+behaviour are ignored, because an item name sitting in a chest menu has nowhere to put them.
+
+Anything the formatter doesn't recognise stays on screen exactly as you typed it. That is why
+`<player>` and `<amount>` in the message files still come through as placeholders instead of
+vanishing.
+
+---
+
 ## Section: `GLOBAL`
 
 ### 1. Commented Setup Code Example
