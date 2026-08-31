@@ -369,7 +369,9 @@ FLY-SYSTEM:
   MAX-SPEED: 10
 # Configuration section for Worth Lore.
 WORTH-LORE:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  # Determines whether the worth line is shown at all. Turning this off takes the line away
+  # from everyone, whatever players picked under /settings > Worth Display.
+  # Available options: true, false
   ENABLED: true
   # The text or value for Format. Available options: Any valid string text
   FORMAT: '&7Worth: &a$%price%'

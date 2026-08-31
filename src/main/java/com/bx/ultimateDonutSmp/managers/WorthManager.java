@@ -6,6 +6,7 @@ import com.bx.ultimateDonutSmp.models.SellCategory;
 import com.bx.ultimateDonutSmp.models.WorthResult;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -158,6 +159,14 @@ public class WorthManager {
         sellCategoryCache.clear();
         blockedMaterialsCache.clear();
         blockedMaterialsLoaded = false;
+    }
+
+    // flipping WORTH-LORE.ENABLED otherwise only reaches a player once they next touch an item,
+    // so a config reload pushes the new answer out to everyone already on the server
+    public void resyncOnlineWorthDisplays() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            syncWorthDisplay(player, true);
+        }
     }
 
     // toggled on at startup when the packet display is active, so worth is rendered per packet only
@@ -427,6 +436,11 @@ public class WorthManager {
             return item;
         }
         return updateWorthDisplay(item, isWorthDisplayEnabled(player));
+    }
+
+    // the server wide switch. off means nobody sees the line, whatever they picked in /settings
+    public boolean isWorthLoreEnabled() {
+        return plugin.getConfigManager().getConfig().getBoolean("WORTH-LORE.ENABLED", true);
     }
 
     public boolean isWorthDisplayEnabledFor(Player player) {
@@ -1179,6 +1193,10 @@ public class WorthManager {
     }
 
     private boolean isWorthDisplayEnabled(Player player) {
+        if (!isWorthLoreEnabled()) {
+            return false;
+        }
+
         PlayerData data = plugin.getPlayerDataManager().get(player);
         return data != null && data.isWorthDisplayEnabled();
     }
