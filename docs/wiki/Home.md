@@ -1,6 +1,6 @@
 # Welcome to the UltimateDonutSMP Wiki
 
-Welcome to the official wiki documentation for **UltimateDonutSMP**, an all-in-one, high-performance Paper, Spigot, and Folia plugin designed for DonutSMP-style Minecraft survival networks.
+Welcome to the official wiki documentation for **UltimateDonutSMP**, an all-in-one, high-performance Paper, Purpur, Pufferfish, Spigot, and Folia plugin designed for DonutSMP-style Minecraft survival networks.
 
 UltimateDonutSMP replaces dozens of separate plugins by integrating economy, marketplaces, team systems, teleportation, PvP duels, FFA and ranked arenas, custom spawners, crates, staff utilities, security tools, and multi-server network syncing into a single, cohesive plugin.
 
@@ -11,8 +11,8 @@ UltimateDonutSMP replaces dozens of separate plugins by integrating economy, mar
 | Property | Details |
 | :--- | :--- |
 | **Plugin Version** | `1.4.1` |
-| **Supported Server Engines** | Paper, Spigot, Folia |
-| **Supported Minecraft Versions** | Paper/Spigot: `1.21.10` – `26.2`<br>Folia: `1.21.11` – `26.2` |
+| **Supported Server Engines** | Paper, Purpur, Pufferfish, Spigot, Folia |
+| **Supported Minecraft Versions** | Paper/Purpur/Pufferfish/Spigot: `1.21.10` – `26.2`<br>Folia: `1.21.11` – `26.2` |
 | **Java Requirement** | Java 21+ (Java 25 for MC 26.1+) |
 | **Storage Engines** | SQLite (Default), MySQL, MongoDB |
 | **Network Sync Layer** | Redis (Cross-server staff chat, alerts, maintenance) |

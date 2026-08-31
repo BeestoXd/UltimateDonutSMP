@@ -9,7 +9,7 @@ This guide provides step-by-step instructions for installing and configuring **U
 | Requirement | Minimum / Supported | Notes |
 | :--- | :--- | :--- |
 | **Java Version** | Java 21+ | Minecraft 26.1 / 26.2 requires Java 25 |
-| **Server Engine** | Paper, Spigot, **Folia 26.2+** | Native multi-threaded region scheduling on Folia |
+| **Server Engine** | Paper, Purpur, Pufferfish, Spigot, **Folia 26.2+** | Purpur and other Paper forks run the Paper/Spigot path; native multi-threaded region scheduling on Folia |
 | **Minecraft Versions** | `1.21.10` – `26.2` | Folia: `1.21.11` – `26.2` |
 | **Build Tools** | Maven (`mvn`), Windows PowerShell | Tested on Windows / Linux environments |
 
@@ -35,7 +35,7 @@ This guide provides step-by-step instructions for installing and configuring **U
 
 ## Folia 26.2 Engine Compatibility & Multi-Threaded Architecture
 
-UltimateDonutSMP is built from the ground up to support **Folia 26.2+** multi-threaded region ticking servers alongside Paper and Spigot.
+UltimateDonutSMP is built from the ground up to support **Folia 26.2+** multi-threaded region ticking servers alongside Paper, Purpur, Pufferfish, and Spigot.
 
 ### Key Architecture Features under Folia:
 - **Region-Aware Schedulers**: Uses Paper/Folia `RegionScheduler`, `EntityScheduler`, `GlobalRegionScheduler`, and `AsyncScheduler` to ensure that region cuboids, portal triggers, Fast Crystal placements, and spawner ticks run safely on their respective region threads without throwing `ConcurrentModificationException` or thread safety errors.

@@ -5,13 +5,13 @@
 <h1 align="center">UltimateDonutSmp</h1>
 
 <p align="center">
-  Free Paper, Spigot, and Folia plugin for DonutSMP-style Minecraft servers.
+  Free Paper, Purpur, Pufferfish, Spigot, and Folia plugin for DonutSMP-style Minecraft servers.
   Economy, PvP, marketplace, staff tools, menus, and network utilities in one production-focused plugin.
 </p>
 
 <p align="center">
   <img alt="Java 21" src="https://img.shields.io/badge/Java-21-007396?style=for-the-badge&logo=openjdk&logoColor=white">
-  <img alt="Platform" src="https://img.shields.io/badge/Platform-Paper%20%7C%20Spigot%20%7C%20Folia-2ea44f?style=for-the-badge">
+  <img alt="Platform" src="https://img.shields.io/badge/Platform-Paper%20%7C%20Purpur%20%7C%20Pufferfish%20%7C%20Spigot%20%7C%20Folia-2ea44f?style=for-the-badge">
   <img alt="Free" src="https://img.shields.io/badge/Distribution-Free-green?style=for-the-badge">
   <img alt="License" src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge">
 </p>
@@ -44,7 +44,7 @@ This README is the quick reference. The full documentation set lives in [`docs/w
 
 | Area | Included systems |
 | --- | --- |
-| Platforms | Separate Paper/Spigot and Folia builds with compatibility checks against the latest published APIs |
+| Platforms | Separate Paper/Purpur/Pufferfish/Spigot and Folia builds with compatibility checks against the latest published APIs |
 | Economy | Money, shards, player payments, Vault provider, shop, sell workflows, sell multipliers, worth browser, and sell history |
 | Marketplaces | Auction House, Orders board, Billford rotating trades, category filters, claims, delivery, and search |
 | Player systems | Teams, friends/follows, homes, warps, private messages, ignore lists, profiles, settings, and custom Ender Chests |
@@ -86,7 +86,7 @@ Gameplay clips:
 | --- | --- |
 | Plugin version | `1.5` |
 | Java | Bytecode targets Java 21. Use the Java version required by the selected Minecraft server; Minecraft 26.1+ requires Java 25. |
-| Paper / Spigot | Minecraft `1.21.10` through `26.2` |
+| Paper / Purpur / Pufferfish / Spigot | Minecraft `1.21.10` through `26.2` |
 | Folia | Minecraft `1.21.11` through `26.2` |
 | Hard dependencies | PlaceholderAPI and ProtocolLib (declared under `depend` in `plugin.yml`; the plugin will not load without them) |
 | Default storage | SQLite, bundled through the shaded JDBC driver |
@@ -124,7 +124,7 @@ Or run Maven directly:
 mvn clean package
 ```
 
-The build compiles the codebase against the target API and packages a single unified JAR that automatically detects and adapts to Paper, Spigot, or Folia at runtime.
+The build compiles the codebase against the target API and packages a single unified JAR that automatically detects and adapts to Paper, Purpur, Pufferfish, Spigot, or Folia at runtime.
 
 Generated artifact is saved to the `target/` directory:
 
@@ -612,7 +612,7 @@ Copyright (c) 2026 UltimateDonutSmp. All rights reserved.
 When reporting an issue, include:
 
 - Plugin version and jar file name
-- Server software and version (Paper, Spigot, or Folia)
+- Server software and version (Paper, Purpur, Pufferfish, Spigot, or Folia)
 - Java version
 - Relevant configuration snippets with secrets removed
 - Console errors or stack traces
