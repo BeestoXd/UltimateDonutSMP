@@ -651,6 +651,8 @@ PUNISHMENTS:
   NOT-FOUND: '&cPlayer not found.'
   # The text or value for Target Offline. Available options: Any valid string text
   TARGET-OFFLINE: '&cThat player is not online.'
+  # The text or value for Target Exempt. Available options: Any valid string text
+  TARGET-EXEMPT: '&cYou cannot punish that player.'
   # The text or value for Invalid Duration. Available options: Any valid string text
   INVALID-DURATION: '&cInvalid time. Use values like 30s, 15m, 2h, 5d, or combine:
     5d 15m 30s.'

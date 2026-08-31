@@ -109,6 +109,30 @@ This page contains the complete reference guide for all commands, aliases, synta
 
 ---
 
+## Punishment Exemption Permissions
+
+Holding `/offend`, `/ban` or `/mute` says nothing about who the command may be used on, so a rank
+handed one of those nodes can otherwise punish anybody on the server, the owner included. Give a rank
+the exempt node and staff who lack the bypass are turned away instead.
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.admin.punishments.exempt` | `op` | The player cannot be punished. `/offend`, `/ban`, `/tempban`, `/mute`, `/tempmute`, `/warn`, `/kick` and `/blacklist` all refuse to touch them. |
+| `ultimatedonutsmp.admin.punishments.exempt.bypass` | `op` | Punish players who hold the exempt node anyway. Give it to the ranks that are allowed to act on each other. |
+
+Both nodes sit under `ultimatedonutsmp.admin.` rather than beside the other punishment nodes on
+purpose. A server that hands its moderators `ultimatedonutsmp.staff.punishments.*` would otherwise
+make every one of them unpunishable. `ultimatedonutsmp.admin.*` grants both, so an admin rank keeps
+its protection and can still act on other admins.
+
+The check reads the target's permissions off the player, which only works while they are online.
+Punishing someone who is offline goes through as it always has, so an exempt player can still be
+banned in absentia.
+
+The refusal message is `PUNISHMENTS.TARGET-EXEMPT` in `messages.yml`.
+
+---
+
 ## Spawner Permissions
 
 | Permission Node | Default | Description |

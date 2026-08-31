@@ -1146,6 +1146,12 @@ permissions:
   ultimatedonutsmp.staff.punishments.delete:
     description: Delete punishment history records from the GUI
     default: op
+  ultimatedonutsmp.admin.punishments.exempt:
+    description: Cannot be punished by staff who lack the exempt bypass
+    default: op
+  ultimatedonutsmp.admin.punishments.exempt.bypass:
+    description: Punish players who are exempt from being punished
+    default: op
   ultimatedonutsmp.shards.everywhere:
     description: Receive passive Shards Everywhere rewards
     default: false
