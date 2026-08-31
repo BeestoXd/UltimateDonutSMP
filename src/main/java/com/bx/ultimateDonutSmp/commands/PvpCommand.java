@@ -34,7 +34,7 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
 
     private static final DecimalFormat RATIO_FORMAT = new DecimalFormat("0.00");
     private static final List<String> PLAYER_SUBCOMMANDS = List.of(
-            "join", "leave", "kit", "stats", "top", "queue", "leaderboard", "history"
+            "join", "leave", "kit", "stats", "top", "queue", "leaderboard", "history", "sync"
     );
     private static final List<String> ADMIN_SUBCOMMANDS = List.of(
             "wand", "create", "setspawn", "setspawn2", "setlobby", "setboundary",
@@ -74,6 +74,7 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
             case "queue" -> handleQueue(sender, args);
             case "leaderboard", "lb" -> requirePlayer(sender, p -> new PvpLeaderboardMenu(plugin).open(p));
             case "history" -> handleHistory(sender, args);
+            case "sync" -> handleSync(sender);
             case "assign" -> handleAssign(sender, args);
             case "wand" -> handleWand(sender);
             case "create" -> handleCreate(sender, args);
@@ -344,6 +345,28 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
         return requirePlayer(sender, player -> new PvpAssignMatchMenu(plugin, first, null).open(player));
     }
 
+    /** Hands the player a code to type into the Discord bot. */
+    private boolean handleSync(CommandSender sender) {
+        return requirePlayer(sender, player -> {
+            PvpManager pvp = plugin.getPvpManager();
+            if (!pvp.isSyncEnabled()) {
+                send(player, pvp.message("SYNC_DISABLED", "&cAccount syncing is switched off."));
+                return;
+            }
+
+            String code = pvp.createSyncCode(player);
+            if (code == null) {
+                send(player, pvp.message("SYNC_FAILED", "&cCould not create a sync code right now."));
+                return;
+            }
+
+            send(player, pvp.message("SYNC_HEADER", "&e&lTier Sync"));
+            send(player, pvp.message("SYNC_CODE", "&fYour sync code: &e{code}").replace("{code}", code));
+            send(player, pvp.message("SYNC_HINT", "&7Use &f/sync {code} &7on our Discord to link your account.")
+                    .replace("{code}", code));
+        });
+    }
+
     // ── Admin subcommands ─────────────────────────────────────────────────────
 
     private boolean handleWand(CommandSender sender) {
@@ -508,6 +531,7 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
         send(sender, "&e/" + label + " queue &7- join the ranked 1v1 queue");
         send(sender, "&e/" + label + " leaderboard &7- open the leaderboards");
         send(sender, "&e/" + label + " history [player] &7- browse ranked matches");
+        send(sender, "&e/" + label + " sync &7- get a code to link your Discord account");
         if (!admin) {
             return;
         }

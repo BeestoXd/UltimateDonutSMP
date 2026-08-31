@@ -191,6 +191,31 @@ which is exact because a match only ever has two people in it.
 
 ---
 
+## Discord
+
+The bundled [Discord bot example](https://github.com/BeestoXd/UltimateDonutSMP/tree/main/discord-bot-example)
+reads the ranked tables and adds `/mystats`, `/tier stats`, `/tier leaderboard`, `/sync` and
+`/unsync`, plus a result posted into a channel after every ranked match showing the winner, the
+duration, and both fighters' rank, Elo change, hits, crystals and final health.
+
+Linking works from the game outward. A player runs `/pvp sync`, the plugin gives them a short
+one-time code, and they hand that code to the bot with `/sync <code>` on Discord. The bot verifies
+the code and stores the link on its own side, so the plugin never learns anybody's Discord id and
+the bot never needs to write to the server database.
+
+```yaml
+SYNC:
+  ENABLED: true
+  CODE_LENGTH: 6
+  EXPIRES: '10m'
+```
+
+Codes are drawn from an alphabet with no characters that read as each other, since a player has to
+copy one out of chat by eye. Asking for another replaces the one before it, so a code somebody read
+over a shoulder stops working as soon as its owner asks again.
+
+---
+
 ## Kill farming
 
 Killing the same player over and over stops paying:
@@ -302,6 +327,7 @@ it.
 | `/pvp queue leave` | Leave the queue |
 | `/pvp leaderboard` | Open the leaderboards |
 | `/pvp history [player]` | Browse ranked match history |
+| `/pvp sync` | Get a one-time code to link a Discord account |
 
 See [Config-pvp.yml](Config-pvp.yml) for every option, and
 [Placeholders & Integrations](Placeholders-and-Integrations) for the `%pvp_*%` catalog.

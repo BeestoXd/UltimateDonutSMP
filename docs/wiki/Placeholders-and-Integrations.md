@@ -122,6 +122,11 @@ A typical TAB nametag format:
 %pvp_rank% | %luckperms-prefix% %player%
 ```
 
+The bundled [Discord bot example](https://github.com/BeestoXd/UltimateDonutSMP/tree/main/discord-bot-example)
+reads the same ranked data straight from the database rather than through placeholders, and adds
+`/mystats`, `/tier stats`, `/tier leaderboard`, `/sync` and `/unsync` along with a match result
+posted after every ranked fight. See [Ranked PvP Arena](Ranked-PvP-Arena) for the linking flow.
+
 ---
 
 ### 6. Punishment & Expiry Message Placeholders

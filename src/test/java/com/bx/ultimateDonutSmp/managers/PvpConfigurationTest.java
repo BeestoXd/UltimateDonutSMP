@@ -95,6 +95,21 @@ class PvpConfigurationTest {
     }
 
     @Test
+    void discordSyncShipsOnWithAShortLivedCode() throws Exception {
+        YamlConfiguration pvp = pvp();
+
+        assertTrue(pvp.getBoolean("SYNC.ENABLED"));
+        assertTrue(pvp.getInt("SYNC.CODE_LENGTH") >= 4, "a code short enough to guess is not a code");
+        assertFalse(pvp.getString("SYNC.EXPIRES", "").isBlank(), "a code that never expires stays claimable forever");
+
+        for (String key : List.of("SYNC_DISABLED", "SYNC_FAILED", "SYNC_HEADER", "SYNC_CODE", "SYNC_HINT")) {
+            assertFalse(pvp.getString("MESSAGES." + key, "").isBlank(), "MESSAGES." + key + " is missing");
+        }
+        assertTrue(pvp.getString("MESSAGES.SYNC_CODE", "").contains("{code}"));
+        assertTrue(pvp.getString("MESSAGES.SYNC_HINT", "").contains("{code}"));
+    }
+
+    @Test
     void everyLeaderboardHasAnIconConfigured() throws Exception {
         YamlConfiguration pvp = pvp();
 

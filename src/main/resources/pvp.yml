@@ -90,6 +90,18 @@ MATCH:
   # How the date is written in the match history. Standard Java date patterns.
   DATE_FORMAT: 'dd/MM/yyyy HH:mm'
 
+# One-time codes players use to link their Minecraft account to the Discord bot.
+# The bot reads this table, verifies the code and stores the link on its own side, so the
+# plugin never has to know anybody's Discord id.
+SYNC:
+  # Enable /pvp sync (true / false)
+  ENABLED: true
+  # How many characters a code has. The alphabet leaves out characters that read as each
+  # other, so a player copying it out of chat by eye does not get it wrong.
+  CODE_LENGTH: 6
+  # How long a code stays valid. Accepts the same 1d10h15m format as RESET.INTERVAL.
+  EXPIRES: '10m'
+
 # Commands players cannot run while they are inside the arena
 BLOCKED_COMMANDS:
   # Enable command blocking inside the arena (true / false)
@@ -308,6 +320,11 @@ MESSAGES:
   MATCH_LEAVE_ARENA_FIRST: '&cLeave the arena before queueing.'
   MATCH_NEEDS_TWO: '&cA ranked match needs two different players.'
   MATCH_BUSY: '&c{player} is already in the arena.'
+  SYNC_DISABLED: '&cAccount syncing is switched off.'
+  SYNC_FAILED: '&cCould not create a sync code right now.'
+  SYNC_HEADER: '&e&lTier Sync'
+  SYNC_CODE: '&fYour sync code: &e{code}'
+  SYNC_HINT: '&7Use &f/sync {code} &7on our Discord to link your account.'
   MATCH_STARTED: '&8[&cPVP&8] &f{first} &7vs &f{second}'
   MATCH_COUNTDOWN: '&fStarting in &c{seconds}&f...'
   MATCH_WIN: '&aYou beat &f{opponent} &8(&a{elo} elo&8, &a{hits} hits&8)'
