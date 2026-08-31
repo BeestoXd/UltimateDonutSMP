@@ -4,6 +4,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,22 @@ class RanksMenuTest {
         }
 
         assertFalse(usedSlots.isEmpty(), BUTTONS_PATH + " must ship at least one button");
+    }
+
+    @Test
+    void theCommentedHeadTextureHintSurvivesAConfigRewrite() throws Exception {
+        String bundled = Files.readString(Path.of("src/main/resources/menus.yml"), StandardCharsets.UTF_8);
+        assertTrue(bundled.contains("# HEAD-TEXTURE:"),
+                "menus.yml must keep the commented HEAD-TEXTURE hint so owners can find the option");
+
+        // The plugin rewrites menus.yml whenever it merges bundled defaults, so the hint has to
+        // survive a load and save the same way ConfigManager does them.
+        String rewritten = loadMenus().saveToString();
+        assertEquals(
+                4,
+                rewritten.split("# HEAD-TEXTURE:", -1).length - 1,
+                "all four rank buttons must keep their commented HEAD-TEXTURE hint after a rewrite"
+        );
     }
 
     @Test

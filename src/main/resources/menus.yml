@@ -519,6 +519,9 @@ MEDIA-MENU:
 RANKS-MENU:
   TITLE: '&8Ranks'
   SIZE: 27
+  # Every button takes an optional HEAD-TEXTURE, used when its MATERIAL is PLAYER_HEAD. It accepts a
+  # skin url or a base64 texture value. Uncomment the line inside a button to give that rank its own
+  # head; leaving it commented renders a plain player head.
   BUTTONS:
     DEFAULT:
       MATERIAL: PLAYER_HEAD
@@ -528,6 +531,7 @@ RANKS-MENU:
       - '&73 Homes'
       - '&718 Auction Slots'
       - '&718 Order Slots'
+      # HEAD-TEXTURE: 'https://textures.minecraft.net/texture/<texture id>'
       COMMAND: ''
     DONUT_PLUS:
       MATERIAL: PLAYER_HEAD
@@ -537,6 +541,7 @@ RANKS-MENU:
       - '&79 Homes'
       - '&745 Auction Slots'
       - '&745 Order Slots'
+      # HEAD-TEXTURE: 'https://textures.minecraft.net/texture/<texture id>'
       COMMAND: ''
     DONUT_PLUS_PLUS:
       MATERIAL: PLAYER_HEAD
@@ -546,6 +551,7 @@ RANKS-MENU:
       - '&727 Homes'
       - '&790 Auction Slots'
       - '&790 Order Slots'
+      # HEAD-TEXTURE: 'https://textures.minecraft.net/texture/<texture id>'
       COMMAND: ''
     DONUT_PLUS_PLUS_PLUS:
       MATERIAL: PLAYER_HEAD
@@ -555,6 +561,7 @@ RANKS-MENU:
       - '&790 Homes'
       - '&790 Auction Slots'
       - '&790 Order Slots'
+      # HEAD-TEXTURE: 'https://textures.minecraft.net/texture/<texture id>'
       COMMAND: ''
 STATS-MENU:
   TITLE: '&8{username} Stats'
