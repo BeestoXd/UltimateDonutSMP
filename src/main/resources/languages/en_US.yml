@@ -1668,6 +1668,33 @@ MENUS:
       DISPLAY-NAME: '&cDecline'
       LORE:
       - '&fVoice chat will stay disabled'
+  RANKS-MENU:
+    TITLE: '&8Ranks'
+    BUTTONS:
+      DEFAULT:
+        DISPLAY-NAME: '&fDefault'
+        LORE:
+        - '&73 Homes'
+        - '&718 Auction Slots'
+        - '&718 Order Slots'
+      DONUT_PLUS:
+        DISPLAY-NAME: '&fDonut&#00A4FC+'
+        LORE:
+        - '&79 Homes'
+        - '&745 Auction Slots'
+        - '&745 Order Slots'
+      DONUT_PLUS_PLUS:
+        DISPLAY-NAME: '&fDonut&#00A4FC++'
+        LORE:
+        - '&727 Homes'
+        - '&790 Auction Slots'
+        - '&790 Order Slots'
+      DONUT_PLUS_PLUS_PLUS:
+        DISPLAY-NAME: '&fDonut&#00A4FC+++'
+        LORE:
+        - '&790 Homes'
+        - '&790 Auction Slots'
+        - '&790 Order Slots'
 CONFIG:
   AUCTION_HOUSE:
     GUI:

@@ -516,6 +516,46 @@ MEDIA-MENU:
     - '&8- &7Create ticket in discord for the rank'
     - '&8- &7It lasts 90 days and has all top ranks perks'
     - ''
+RANKS-MENU:
+  TITLE: '&8Ranks'
+  SIZE: 27
+  BUTTONS:
+    DEFAULT:
+      MATERIAL: PLAYER_HEAD
+      SLOT: 11
+      DISPLAY-NAME: '&fDefault'
+      LORE:
+      - '&73 Homes'
+      - '&718 Auction Slots'
+      - '&718 Order Slots'
+      COMMAND: ''
+    DONUT_PLUS:
+      MATERIAL: PLAYER_HEAD
+      SLOT: 13
+      DISPLAY-NAME: '&fDonut&#00A4FC+'
+      LORE:
+      - '&79 Homes'
+      - '&745 Auction Slots'
+      - '&745 Order Slots'
+      COMMAND: ''
+    DONUT_PLUS_PLUS:
+      MATERIAL: PLAYER_HEAD
+      SLOT: 14
+      DISPLAY-NAME: '&fDonut&#00A4FC++'
+      LORE:
+      - '&727 Homes'
+      - '&790 Auction Slots'
+      - '&790 Order Slots'
+      COMMAND: ''
+    DONUT_PLUS_PLUS_PLUS:
+      MATERIAL: PLAYER_HEAD
+      SLOT: 15
+      DISPLAY-NAME: '&fDonut&#00A4FC+++'
+      LORE:
+      - '&790 Homes'
+      - '&790 Auction Slots'
+      - '&790 Order Slots'
+      COMMAND: ''
 STATS-MENU:
   TITLE: '&8{username} Stats'
   SIZE: 36

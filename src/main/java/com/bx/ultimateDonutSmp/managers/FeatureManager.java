@@ -63,6 +63,7 @@ public class FeatureManager {
         FIND_PLAYER("FIND_PLAYER", "find player", "staff find player command.", "SPYGLASS", "FINDPLAYER"),
         CRATES("CRATES", "crates", "crate commands, menus, key-all, and visual effects.", "TRIPWIRE_HOOK", "CRATE"),
         RULES("RULES", "rules", "rules command and rules menu.", "BOOKSHELF", "RULES"),
+        RANKS("RANKS", "ranks", "ranks command and ranks menu.", "PLAYER_HEAD", "RANKS"),
         HELP("HELP", "help", "help command and server info menu.", "KNOWLEDGE_BOOK", "HELP"),
         NETWORK_SERVERS("NETWORK_SERVERS", "network servers", "network server status command and menu.", "NETHER_STAR", "SERVERS"),
         SCOREBOARD("SCOREBOARD", "scoreboard", "sidebar scoreboard task and display.", "MAP", null),
@@ -254,6 +255,7 @@ public class FeatureManager {
             case "settings" -> new Feature[]{Feature.SETTINGS};
             case "discord", "twitter", "store", "social" -> new Feature[]{Feature.SOCIAL};
             case "rules" -> new Feature[]{Feature.RULES};
+            case "ranks", "rank" -> new Feature[]{Feature.RANKS};
             case "help" -> new Feature[]{Feature.HELP};
             case "servers" -> new Feature[]{Feature.NETWORK_SERVERS};
             case "billford" -> new Feature[]{Feature.BILLFORD};

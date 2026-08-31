@@ -769,6 +769,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
 
         setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
+        setExecutor("ranks", new RanksCommand(this), FeatureManager.Feature.RANKS);
         setExecutor("safety", new SafetyCommand(this), FeatureManager.Feature.SAFETY);
         setExecutor("voicechatconsent", new VoiceChatConsentCommand(this),
                 FeatureManager.Feature.VOICE_CHAT);
