@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +73,9 @@ public class ColorUtils {
             return text;
         }
         String result = normalizeText(text);
+        if (result.indexOf('<') >= 0) {
+            result = translateMiniMessage(result);
+        }
         result = transformAllCaps(result);
         // Every pattern below needs a literal marker character, so a missing marker rules the pass
         // out without building a Matcher. Scoreboard lines run this ten times a second per player.
@@ -186,7 +190,8 @@ public class ColorUtils {
             return "";
         }
 
-        return text.replaceAll("&#[A-Fa-f0-9]{6}", "")
+        String base = text.indexOf('<') >= 0 ? stripMiniMessageTags(text) : text;
+        return base.replaceAll("&#[A-Fa-f0-9]{6}", "")
                 .replaceAll("\\{#[A-Fa-f0-9]{6}\\}", "")
                 .replaceAll("<#?[A-Fa-f0-9]{6}>", "")
                 .replaceAll("</#?[A-Fa-f0-9]{6}>", "")
@@ -717,5 +722,441 @@ public class ColorUtils {
         } else {
             return word;
         }
+    }
+
+    // MiniMessage support. Config text stays a legacy string the whole way to the client, so the
+    // tags are translated into the codes below rather than handed to the Adventure parser. That
+    // keeps the plugin's own <#RRGGBB>text</#RRGGBB> gradients working, and it leaves anything the
+    // translator does not recognise -- <player>, <amount>, <type> and the rest of the usage
+    // strings -- exactly as the admin typed it.
+
+    private static final int MAX_MINI_TAG_LENGTH = 96;
+    private static final Pattern MINI_HEX_PATTERN = Pattern.compile("[A-Fa-f0-9]{6}");
+    private static final java.util.Map<String, Character> MINI_COLOR_CODES = new java.util.HashMap<>();
+    private static final java.util.Map<String, String> MINI_COLOR_HEXES = new java.util.HashMap<>();
+
+    static {
+        registerMiniColor("black", '0', "000000");
+        registerMiniColor("dark_blue", '1', "0000AA");
+        registerMiniColor("dark_green", '2', "00AA00");
+        registerMiniColor("dark_aqua", '3', "00AAAA");
+        registerMiniColor("dark_red", '4', "AA0000");
+        registerMiniColor("dark_purple", '5', "AA00AA");
+        registerMiniColor("gold", '6', "FFAA00");
+        registerMiniColor("gray", '7', "AAAAAA");
+        registerMiniColor("grey", '7', "AAAAAA");
+        registerMiniColor("dark_gray", '8', "555555");
+        registerMiniColor("dark_grey", '8', "555555");
+        registerMiniColor("blue", '9', "5555FF");
+        registerMiniColor("green", 'a', "55FF55");
+        registerMiniColor("aqua", 'b', "55FFFF");
+        registerMiniColor("red", 'c', "FF5555");
+        registerMiniColor("light_purple", 'd', "FF55FF");
+        registerMiniColor("yellow", 'e', "FFFF55");
+        registerMiniColor("white", 'f', "FFFFFF");
+    }
+
+    private static void registerMiniColor(String name, char code, String hex) {
+        MINI_COLOR_CODES.put(name, code);
+        MINI_COLOR_HEXES.put(name, hex);
+    }
+
+    public static String translateMiniMessage(String text) {
+        if (text == null) {
+            return "";
+        }
+        if (text.indexOf('<') < 0) {
+            return text;
+        }
+        return renderMiniMessage(text, null, new ArrayList<>());
+    }
+
+    private static String renderMiniMessage(String text, String inheritedColor, List<Character> inheritedDecorations) {
+        StringBuilder out = new StringBuilder(text.length() + 16);
+        List<Character> decorations = new ArrayList<>(inheritedDecorations);
+        String color = inheritedColor;
+        int i = 0;
+        int length = text.length();
+
+        while (i < length) {
+            char current = text.charAt(i);
+            if (current != '<') {
+                out.append(current);
+                i++;
+                continue;
+            }
+
+            int close = text.indexOf('>', i + 1);
+            if (close < 0 || close - i > MAX_MINI_TAG_LENGTH) {
+                out.append(current);
+                i++;
+                continue;
+            }
+
+            String raw = text.substring(i + 1, close);
+            // <#RRGGBB> and </#RRGGBB> belong to the gradient pass further down applyColors.
+            if (raw.startsWith("#") || raw.startsWith("/#")) {
+                out.append(text, i, close + 1);
+                i = close + 1;
+                continue;
+            }
+
+            boolean closing = raw.startsWith("/");
+            String body = closing ? raw.substring(1) : raw;
+            int separator = body.indexOf(':');
+            String name = (separator < 0 ? body : body.substring(0, separator)).toLowerCase(Locale.ROOT);
+            String argument = separator < 0 ? "" : body.substring(separator + 1);
+            boolean gradientTag = name.equals("gradient") || name.equals("rainbow");
+
+            if (gradientTag && !closing) {
+                int contentStart = close + 1;
+                int contentEnd = findMiniClosingTag(text, contentStart, name);
+                if (contentEnd < 0) {
+                    out.append(text, i, close + 1);
+                    i = close + 1;
+                    continue;
+                }
+
+                StringBuilder content = new StringBuilder();
+                appendActiveStyle(content, null, decorations);
+                content.append(renderMiniMessage(text.substring(contentStart, contentEnd), null, decorations));
+                String inner = content.toString();
+
+                out.append(name.equals("gradient")
+                        ? expandGradient(inner, gradientStops(argument))
+                        : expandRainbow(inner, argument));
+                out.append("&r");
+                appendActiveStyle(out, color, decorations);
+                i = text.indexOf('>', contentEnd) + 1;
+                continue;
+            }
+
+            if (gradientTag) {
+                out.append("&r");
+                appendActiveStyle(out, color, decorations);
+                i = close + 1;
+                continue;
+            }
+
+            if (closing && isMiniColorTag(name)) {
+                color = null;
+                out.append("&r");
+                appendActiveStyle(out, null, decorations);
+                i = close + 1;
+                continue;
+            }
+
+            Character decoration = miniDecorationCode(name);
+            if (decoration != null) {
+                if (closing || argument.equalsIgnoreCase("false")) {
+                    decorations.remove(decoration);
+                    out.append("&r");
+                    appendActiveStyle(out, color, decorations);
+                } else if (!decorations.contains(decoration)) {
+                    decorations.add(decoration);
+                    out.append('&').append(decoration.charValue());
+                }
+                i = close + 1;
+                continue;
+            }
+
+            if (!closing && name.equals("reset")) {
+                color = null;
+                decorations.clear();
+                out.append("&r");
+                i = close + 1;
+                continue;
+            }
+
+            if (!closing && (name.equals("newline") || name.equals("br"))) {
+                out.append('\n');
+                i = close + 1;
+                continue;
+            }
+
+            if (!closing) {
+                String resolved = resolveMiniColor(name, argument);
+                if (resolved != null) {
+                    color = resolved;
+                    out.append(resolved);
+                    appendActiveStyle(out, null, decorations);
+                    i = close + 1;
+                    continue;
+                }
+            }
+
+            out.append(text, i, close + 1);
+            i = close + 1;
+        }
+
+        return out.toString();
+    }
+
+    // A legacy colour code clears every decoration with it, so anything still open has to be
+    // written again behind the colour.
+    private static void appendActiveStyle(StringBuilder out, String color, List<Character> decorations) {
+        if (color != null) {
+            out.append(color);
+        }
+        for (char decoration : decorations) {
+            out.append('&').append(decoration);
+        }
+    }
+
+    private static int findMiniClosingTag(String text, int from, String name) {
+        int depth = 0;
+        int i = from;
+        while (i < text.length()) {
+            int open = text.indexOf('<', i);
+            if (open < 0) {
+                return -1;
+            }
+            int close = text.indexOf('>', open + 1);
+            if (close < 0) {
+                return -1;
+            }
+            String raw = text.substring(open + 1, close);
+            boolean closing = raw.startsWith("/");
+            String body = closing ? raw.substring(1) : raw;
+            int separator = body.indexOf(':');
+            String tag = (separator < 0 ? body : body.substring(0, separator)).toLowerCase(Locale.ROOT);
+            if (tag.equals(name)) {
+                if (!closing) {
+                    depth++;
+                } else if (depth == 0) {
+                    return open;
+                } else {
+                    depth--;
+                }
+            }
+            i = close + 1;
+        }
+        return -1;
+    }
+
+    private static boolean isMiniColorTag(String name) {
+        return name.equals("color") || name.equals("colour") || name.equals("c")
+                || MINI_COLOR_CODES.containsKey(name);
+    }
+
+    private static String resolveMiniColor(String name, String argument) {
+        if (name.equals("color") || name.equals("colour") || name.equals("c")) {
+            return resolveMiniColorValue(argument);
+        }
+        return argument.isEmpty() ? resolveMiniColorValue(name) : null;
+    }
+
+    private static String resolveMiniColorValue(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        Character code = MINI_COLOR_CODES.get(value.toLowerCase(Locale.ROOT));
+        if (code != null) {
+            return "&" + code;
+        }
+        String hex = miniColorHex(value);
+        return hex == null ? null : "&#" + hex;
+    }
+
+    private static String miniColorHex(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.startsWith("#")) {
+            String hex = trimmed.substring(1);
+            return MINI_HEX_PATTERN.matcher(hex).matches() ? hex.toUpperCase(Locale.ROOT) : null;
+        }
+        return MINI_COLOR_HEXES.get(trimmed.toLowerCase(Locale.ROOT));
+    }
+
+    private static Character miniDecorationCode(String name) {
+        return switch (name) {
+            case "bold", "b" -> 'l';
+            case "italic", "i", "em" -> 'o';
+            case "underlined", "underline", "u" -> 'n';
+            case "strikethrough", "st" -> 'm';
+            case "obfuscated", "obf" -> 'k';
+            default -> null;
+        };
+    }
+
+    private static List<String> gradientStops(String argument) {
+        List<String> stops = new ArrayList<>();
+        if (argument != null && !argument.isEmpty()) {
+            for (String part : argument.split(":")) {
+                String hex = miniColorHex(part);
+                if (hex != null) {
+                    stops.add(hex);
+                }
+            }
+        }
+        if (stops.size() < 2) {
+            stops.clear();
+            stops.add("FFFFFF");
+            stops.add("000000");
+        }
+        return stops;
+    }
+
+    // Every pair of stops becomes one of the plugin's own <#start>text</#end> gradients, so the
+    // colour maths stays in applyGradient instead of gaining a second implementation here.
+    private static String expandGradient(String content, List<String> stops) {
+        int segments = stops.size() - 1;
+        if (segments == 1) {
+            return "<#" + stops.get(0) + ">" + content + "</#" + stops.get(1) + ">";
+        }
+
+        int visible = countVisibleCharacters(content);
+        if (visible <= 0) {
+            return content;
+        }
+
+        StringBuilder out = new StringBuilder(content.length() + segments * 20);
+        int consumed = 0;
+        int cursor = 0;
+        for (int segment = 0; segment < segments; segment++) {
+            int target = (int) Math.round((double) visible * (segment + 1) / segments);
+            StringBuilder chunk = new StringBuilder();
+            while (cursor < content.length() && consumed < target) {
+                char current = content.charAt(cursor);
+                if ((current == '&' || current == SECTION_CHAR) && cursor + 1 < content.length()) {
+                    chunk.append(current).append(content.charAt(cursor + 1));
+                    cursor += 2;
+                    continue;
+                }
+                chunk.append(current);
+                cursor++;
+                consumed++;
+            }
+            if (chunk.length() == 0) {
+                continue;
+            }
+            out.append("<#").append(stops.get(segment)).append('>')
+                    .append(chunk)
+                    .append("</#").append(stops.get(segment + 1)).append('>');
+        }
+        if (cursor < content.length()) {
+            out.append(content, cursor, content.length());
+        }
+        return out.toString();
+    }
+
+    private static String expandRainbow(String content, String argument) {
+        int visible = countVisibleCharacters(content);
+        if (visible <= 0) {
+            return content;
+        }
+
+        boolean reversed = argument.startsWith("!");
+        String phaseText = reversed ? argument.substring(1) : argument;
+        double phase = 0.0D;
+        if (!phaseText.isEmpty()) {
+            try {
+                phase = Double.parseDouble(phaseText);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        List<String> stops = new ArrayList<>(visible + 1);
+        for (int index = 0; index <= visible; index++) {
+            double hue = (double) index / visible + phase;
+            stops.add(hueToHex(hue - Math.floor(hue)));
+        }
+        if (reversed) {
+            java.util.Collections.reverse(stops);
+        }
+        return expandGradient(content, stops);
+    }
+
+    private static String hueToHex(double hue) {
+        double scaled = hue * 6.0D;
+        int sector = (int) Math.floor(scaled) % 6;
+        if (sector < 0) {
+            sector += 6;
+        }
+        int rising = (int) Math.round((scaled - Math.floor(scaled)) * 255.0D);
+        int falling = 255 - rising;
+        int red;
+        int green;
+        int blue;
+        switch (sector) {
+            case 0 -> {
+                red = 255;
+                green = rising;
+                blue = 0;
+            }
+            case 1 -> {
+                red = falling;
+                green = 255;
+                blue = 0;
+            }
+            case 2 -> {
+                red = 0;
+                green = 255;
+                blue = rising;
+            }
+            case 3 -> {
+                red = 0;
+                green = falling;
+                blue = 255;
+            }
+            case 4 -> {
+                red = rising;
+                green = 0;
+                blue = 255;
+            }
+            default -> {
+                red = 255;
+                green = 0;
+                blue = falling;
+            }
+        }
+        return String.format("%02X%02X%02X", red, green, blue);
+    }
+
+    private static String stripMiniMessageTags(String text) {
+        StringBuilder out = new StringBuilder(text.length());
+        int i = 0;
+        int length = text.length();
+        while (i < length) {
+            char current = text.charAt(i);
+            if (current != '<') {
+                out.append(current);
+                i++;
+                continue;
+            }
+
+            int close = text.indexOf('>', i + 1);
+            if (close < 0 || close - i > MAX_MINI_TAG_LENGTH) {
+                out.append(current);
+                i++;
+                continue;
+            }
+
+            String raw = text.substring(i + 1, close);
+            // The hex and gradient tags are taken out by the regexes in strip() instead.
+            if (!raw.startsWith("#") && !raw.startsWith("/#") && isRecognisedMiniTag(raw)) {
+                i = close + 1;
+                continue;
+            }
+
+            out.append(text, i, close + 1);
+            i = close + 1;
+        }
+        return out.toString();
+    }
+
+    private static boolean isRecognisedMiniTag(String raw) {
+        boolean closing = raw.startsWith("/");
+        String body = closing ? raw.substring(1) : raw;
+        int separator = body.indexOf(':');
+        String name = (separator < 0 ? body : body.substring(0, separator)).toLowerCase(Locale.ROOT);
+        String argument = separator < 0 ? "" : body.substring(separator + 1);
+        return switch (name) {
+            case "gradient", "rainbow", "reset", "newline", "br" -> true;
+            case "color", "colour", "c" -> closing || miniColorHex(argument) != null;
+            default -> miniDecorationCode(name) != null || MINI_COLOR_CODES.containsKey(name);
+        };
     }
 }

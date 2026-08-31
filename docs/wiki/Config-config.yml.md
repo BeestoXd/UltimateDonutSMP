@@ -748,7 +748,9 @@ SERVER-NOTIFICATIONS:
 ### 4. Colours And Who Sees Them
 
 Messages here take the same colour codes as the rest of the plugin: `&a` style codes, `&#RRGGBB`
-for one hex colour, and `<#RRGGBB>text</#RRGGBB>` for a gradient. Placeholders are filled in
+for one hex colour, and `<#RRGGBB>text</#RRGGBB>` for a gradient. MiniMessage tags work as well,
+so `<red>`, `<bold>`, `<gradient:#FF0000:#0000FF>` and `<rainbow>` all render, and nothing stops
+you mixing them with the `&` codes on the same line. Placeholders are filled in
 before the colours are applied, and PlaceholderAPI placeholders resolve too when it is installed.
 
 Two per-player switches under `/settings` still apply on top of everything configured here. Join,
