@@ -299,23 +299,6 @@ AMETHYST-TOOLS:
       DEFAULT-QUANTITY: 1
       # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
       HIDE-QUANTITY-BUTTONS: true
-  # Configuration section for Chop.
-  CHOP:
-    # Configuration section for Shard Shop.
-    SHARD-SHOP:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
-      ENABLED: false
-      # The currency this tool is sold for. Available options: SHARD, MONEY
-      CURRENCY: SHARD
-      SLOT: 18
-      # The numerical value for Min Quantity. Available options: Any valid integer
-      MIN-QUANTITY: 1
-      # The numerical value for Max Quantity. Available options: Any valid integer
-      MAX-QUANTITY: 1
-      # The numerical value for Default Quantity. Available options: Any valid integer
-      DEFAULT-QUANTITY: 1
-      # Determines whether Hide Quantity Buttons is enabled or disabled. Available options: true, false
-      HIDE-QUANTITY-BUTTONS: true
 # Configuration section for Amethyst Messages.
 AMETHYST-MESSAGES:
   # The text or value for Prefix. Available options: Any valid string text
