@@ -1033,18 +1033,26 @@ RESPAWN-RTP:
 ### Fully Commented Setup Code Example
 ```yaml
 SHARDS:
-  # The numerical value for Every. Available options: Any valid integer
+  # EVERY down to CANCELLED-MESSAGE are a fallback for servers that have no shard region
+  # at all. They are read only when CUBOIDS.REGIONS below is empty, and this file ships a
+  # 'spawn' region, so on a normal install they do nothing. The settings that actually run
+  # are the ones inside CUBOIDS.REGIONS.<region>. RESET-ON-LEAVE is not part of this group:
+  # it stays live as the default for the matching per-region key.
+  # Minutes between rewards in the fallback zone. Watch the unit, because the per-region
+  # INTERVAL is in seconds and this one is multiplied by 60.
   EVERY: 1
-  # The numerical value for Amount. Available options: Any valid integer
+  # Shards paid out each time the fallback timer runs down.
   AMOUNT: 1
-  # The text or value for Countdown. Available options: Any valid string text
+  # Countdown shown on the action bar in the fallback zone. %time% is the time remaining,
+  # %seconds% the same thing as a plain number.
   COUNTDOWN: '&7Next shard in &#A303F9%time%'
-  # The text or value for Received. Available options: Any valid string text
+  # Shown when a fallback reward lands. %amount% is the payout and %total% the new balance.
   RECEIVED: '&#A303F9You received %amount% Shard &7(Total: &#A303F9%total%&7)'
-  # The text or value for Received Boosted. Available options: Any valid string text
+  # Replaces RECEIVED while a shard booster is running. %multiplier% is the boost.
   RECEIVED-BOOSTED: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7) &7(Total:
     &#A303F9%total%&7)'
-  # The text or value for Cancelled Message. Available options: Any valid string text
+  # Shown when a player leaves the fallback zone before the timer finishes. %cuboid% is the
+  # zone name. There is no %total% here, since nothing was paid out.
   CANCELLED-MESSAGE: '&cShard reward cancelled &7(Left %cuboid% zone)'
   # Determines whether Reset On Leave is enabled or disabled. Available options: true, false
   RESET-ON-LEAVE: true
@@ -1142,12 +1150,12 @@ SHARDS:
 ### Key Options & Setup Breakdown
 | Key / Option Path | Data Type | Allowed Values / Options | Default | Functional Behavior & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `SHARDS.EVERY` | `int` | Any valid integer | `1` | Configures `EVERY` for `SHARDS`. |
-| `SHARDS.AMOUNT` | `int` | Any valid integer | `1` | Configures `AMOUNT` for `SHARDS`. |
-| `SHARDS.COUNTDOWN` | `str` | Any string text | `&7Next shard in &#A303F9%time%` | Configures `COUNTDOWN` for `SHARDS`. |
-| `SHARDS.RECEIVED` | `str` | Any string text | `&#A303F9You received %amount% Shard &...` | Configures `RECEIVED` for `SHARDS`. |
-| `SHARDS.RECEIVED-BOOSTED` | `str` | Any string text | `&#A303F9You received %amount% Shards ...` | Configures `RECEIVED-BOOSTED` for `SHARDS`. |
-| `SHARDS.CANCELLED-MESSAGE` | `str` | Any string text | `&cShard reward cancelled &7(Left %cub...` | Configures `CANCELLED-MESSAGE` for `SHARDS`. |
+| `SHARDS.EVERY` | `int` | Any valid integer | `1` | Fallback only, read when `SHARDS.CUBOIDS.REGIONS` has no entries. Minutes between rewards in the fallback zone; the per-region `INTERVAL` is in seconds instead. |
+| `SHARDS.AMOUNT` | `int` | Any valid integer | `1` | Fallback only. Shards paid out each time the fallback timer runs down. The setting that runs on a normal install is `SHARDS.CUBOIDS.REGIONS.<region>.AMOUNT`. |
+| `SHARDS.COUNTDOWN` | `str` | Any string text | `&7Next shard in &#A303F9%time%` | Fallback only. Action bar countdown in the fallback zone, supporting `%time%` and `%seconds%`. |
+| `SHARDS.RECEIVED` | `str` | Any string text | `&#A303F9You received %amount% Shard &...` | Fallback only. Shown when a fallback reward lands, supporting `%amount%` and `%total%`. |
+| `SHARDS.RECEIVED-BOOSTED` | `str` | Any string text | `&#A303F9You received %amount% Shards ...` | Fallback only. Replaces `SHARDS.RECEIVED` while a shard booster is running, adding `%multiplier%`. |
+| `SHARDS.CANCELLED-MESSAGE` | `str` | Any string text | `&cShard reward cancelled &7(Left %cub...` | Fallback only. Shown when a player leaves the fallback zone before the timer finishes, supporting `%cuboid%`. |
 | `SHARDS.RESET-ON-LEAVE` | `bool` | true, false | `True` | Configures `RESET-ON-LEAVE` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.ENABLED` | `bool` | true, false | `False` | Configures `ENABLED` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.BOUND` | `bool` | true, false | `False` | Configures `BOUND` for `SHARDS`. |
