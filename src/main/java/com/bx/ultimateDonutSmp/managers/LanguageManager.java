@@ -254,7 +254,17 @@ public class LanguageManager {
     }
 
     public FileConfiguration localize(String rootPath, FileConfiguration legacyConfiguration) {
-        return legacyConfiguration;
+        if (legacyConfiguration == null || !hasLanguageSection(rootPath)) {
+            return legacyConfiguration;
+        }
+        Map<String, FileConfiguration> byRoot = localizedConfigurations.computeIfAbsent(
+                legacyConfiguration,
+                ignored -> new HashMap<>()
+        );
+        return byRoot.computeIfAbsent(
+                rootPath,
+                ignored -> buildLocalizedConfiguration(rootPath, legacyConfiguration)
+        );
     }
 
     public String formatDuration(long totalSeconds, boolean includeDays) {
@@ -303,18 +313,41 @@ public class LanguageManager {
                 localized.set(key, copyValue(legacyConfiguration.get(key)));
             }
         }
-        applyLanguageSection(localized, languages.get(fallbackLocale), fallbackLocale, rootPath);
+        Set<String> customized = customizedLegacyKeys(rootPath, legacyConfiguration);
+        applyLanguageSection(localized, languages.get(fallbackLocale), fallbackLocale, rootPath, customized);
         if (!activeLocale.equals(fallbackLocale)) {
-            applyLanguageSection(localized, languages.get(activeLocale), activeLocale, rootPath);
+            applyLanguageSection(localized, languages.get(activeLocale), activeLocale, rootPath, customized);
         }
         return localized;
+    }
+
+    private Set<String> customizedLegacyKeys(String rootPath, FileConfiguration legacyConfiguration) {
+        YamlConfiguration baseline = bundledLanguages.get(fallbackLocale.toLowerCase(Locale.ROOT));
+        ConfigurationSection baselineSection = baseline != null
+                ? baseline.getConfigurationSection(rootPath)
+                : null;
+        if (baselineSection == null) {
+            return Set.of();
+        }
+        Set<String> customized = new HashSet<>();
+        for (String key : baselineSection.getKeys(true)) {
+            if (baselineSection.isConfigurationSection(key)) {
+                continue;
+            }
+            Object legacyValue = legacyConfiguration.get(key);
+            if (legacyValue != null && !legacyValue.equals(baselineSection.get(key))) {
+                customized.add(key);
+            }
+        }
+        return customized;
     }
 
     private void applyLanguageSection(
             YamlConfiguration target,
             YamlConfiguration language,
             String locale,
-            String rootPath
+            String rootPath,
+            Set<String> customizedLegacyKeys
     ) {
         if (language == null) {
             return;
@@ -331,21 +364,18 @@ public class LanguageManager {
                 continue;
             }
             Object value = section.get(key);
-            if (value instanceof String || isStringList(value)) {
-                if (target.contains(key)) {
-                    Object existingTargetValue = target.get(key);
-                    if (bundledSection != null && bundledSection.contains(key)) {
-                        Object bundledValue = bundledSection.get(key);
-                        if (existingTargetValue != null && !existingTargetValue.equals(bundledValue)) {
-                            continue;
-                        }
-                        if (value.equals(bundledValue)) {
-                            continue;
-                        }
-                    }
-                }
-                target.set(key, copyValue(value));
+            if (!(value instanceof String) && !isStringList(value)) {
+                continue;
             }
+            if (customizedLegacyKeys.contains(key)) {
+                continue;
+            }
+            if (locale.equals(fallbackLocale)
+                    && bundledSection != null
+                    && value.equals(bundledSection.get(key))) {
+                continue;
+            }
+            target.set(key, copyValue(value));
         }
     }
 

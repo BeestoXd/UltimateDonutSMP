@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.managers;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +17,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LanguageManagerTest {
@@ -318,5 +321,105 @@ class LanguageManagerTest {
     private static boolean isYaml(Path path) {
         String name = path.getFileName().toString();
         return name.endsWith(".yml") || name.endsWith(".yaml");
+    }
+    @Test
+    void activeLocaleTranslationReachesLegacyMessages() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration bundledEnglish = language("MESSAGES.SOCIAL.DISCORD", "&fJoin our discord");
+        YamlConfiguration bundledIndonesian = language("MESSAGES.SOCIAL.DISCORD", "&fGabung discord kami");
+        useLanguages(
+                manager,
+                "id_ID",
+                "en_US",
+                Map.of("en_US", bundledEnglish, "id_ID", bundledIndonesian),
+                Map.of("en_us", bundledEnglish, "id_id", bundledIndonesian)
+        );
+
+        YamlConfiguration legacy = new YamlConfiguration();
+        legacy.set("SOCIAL.DISCORD", "&fJoin our discord");
+
+        FileConfiguration localized = manager.localize("MESSAGES", legacy);
+
+        assertEquals("&fGabung discord kami", localized.getString("SOCIAL.DISCORD"));
+        assertEquals("&fJoin our discord", legacy.getString("SOCIAL.DISCORD"));
+    }
+
+    @Test
+    void customizedLegacyValueSurvivesTranslation() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration bundledEnglish = language("MESSAGES.SOCIAL.DISCORD", "&fJoin our discord");
+        YamlConfiguration bundledIndonesian = language("MESSAGES.SOCIAL.DISCORD", "&fGabung discord kami");
+        useLanguages(
+                manager,
+                "id_ID",
+                "en_US",
+                Map.of("en_US", bundledEnglish, "id_ID", bundledIndonesian),
+                Map.of("en_us", bundledEnglish, "id_id", bundledIndonesian)
+        );
+
+        YamlConfiguration legacy = new YamlConfiguration();
+        legacy.set("SOCIAL.DISCORD", "&fJoin the Donut discord");
+
+        assertEquals(
+                "&fJoin the Donut discord",
+                manager.localize("MESSAGES", legacy).getString("SOCIAL.DISCORD")
+        );
+    }
+
+    @Test
+    void localizeLeavesConfigurationsWithoutALanguageSectionAlone() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration bundledEnglish = language("MESSAGES.SOCIAL.DISCORD", "&fJoin our discord");
+        useLanguages(
+                manager,
+                "en_US",
+                "en_US",
+                Map.of("en_US", bundledEnglish),
+                Map.of("en_us", bundledEnglish)
+        );
+
+        YamlConfiguration legacy = new YamlConfiguration();
+        legacy.set("SOCIAL.DISCORD", "&fJoin our discord");
+
+        assertSame(legacy, manager.localize("CONFIG.SHOP", legacy));
+    }
+
+    private static YamlConfiguration language(String path, String value) {
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.set(path, value);
+        return configuration;
+    }
+
+    private static void useLanguages(
+            LanguageManager manager,
+            String activeLocale,
+            String fallbackLocale,
+            java.util.Map<String, YamlConfiguration> languages,
+            java.util.Map<String, YamlConfiguration> bundledLanguages
+    ) throws Exception {
+        replaceMap(manager, "languages", languages);
+        replaceMap(manager, "bundledLanguages", bundledLanguages);
+        setField(manager, "activeLocale", activeLocale);
+        setField(manager, "fallbackLocale", fallbackLocale);
+    }
+
+    private static void replaceMap(
+            LanguageManager manager,
+            String name,
+            java.util.Map<String, YamlConfiguration> values
+    ) throws Exception {
+        java.lang.reflect.Field field = LanguageManager.class.getDeclaredField(name);
+        field.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, YamlConfiguration> target =
+                (java.util.Map<String, YamlConfiguration>) field.get(manager);
+        target.clear();
+        target.putAll(values);
+    }
+
+    private static void setField(LanguageManager manager, String name, String value) throws Exception {
+        java.lang.reflect.Field field = LanguageManager.class.getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(manager, value);
     }
 }
