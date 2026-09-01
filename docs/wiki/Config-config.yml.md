@@ -5,6 +5,48 @@ Each section details the exact commented setup code block, allowed option values
 
 ---
 
+## Section: `LANGUAGE`
+
+### 1. Commented Setup Code Example
+
+```yaml
+LANGUAGE:
+  # The language players see, taken from the matching file in the languages folder
+  # Bundled locales: en_US, es_ES, id_ID, pt_BR, de_DE, fr_FR, ru_RU, zh_CN
+  # Names such as Bahasa Indonesia, Spanish or pt-BR resolve to those, and a custom
+  # file dropped into the languages folder can be selected by its file name
+  # Available options: Any valid string text
+  ACTIVE: en_US
+  # Supplies any message the active language is missing
+  # Available options: Any valid string text
+  FALLBACK: en_US
+# Configuration section for Locations.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `LANGUAGE.ACTIVE` | `str` | Any bundled locale, a locale alias, or the file name of a custom language file | `en_US` | Selects the language file under `languages/` that supplies player-facing text. Aliases such as `Bahasa Indonesia`, `Spanish` and `pt-BR` resolve to the bundled locales. Anything you have edited yourself in `messages.yml` still takes priority over the translation. |
+| `LANGUAGE.FALLBACK` | `str` | Same values as `LANGUAGE.ACTIVE` | `en_US` | Supplies any key the active language file does not define, so a partial translation still shows text rather than a missing key. |
+
+### 3. Practical Setup Example
+
+```yaml
+LANGUAGE:
+  # The language players see, taken from the matching file in the languages folder
+  # Bundled locales: en_US, es_ES, id_ID, pt_BR, de_DE, fr_FR, ru_RU, zh_CN
+  # Names such as Bahasa Indonesia, Spanish or pt-BR resolve to those, and a custom
+  # file dropped into the languages folder can be selected by its file name
+  # Available options: Any valid string text
+  ACTIVE: en_US
+  # Supplies any message the active language is missing
+  # Available options: Any valid string text
+  FALLBACK: en_US
+# Configuration section for Locations.
+```
+
+---
 ## Section: `LOCATIONS`
 
 ### 1. Commented Setup Code Example
