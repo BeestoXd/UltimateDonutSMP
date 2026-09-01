@@ -323,6 +323,14 @@ class LanguageManagerTest {
         return name.endsWith(".yml") || name.endsWith(".yaml");
     }
     @Test
+    void bundledConfigShipsTheLocaleSelectionKeys() throws Exception {
+        YamlConfiguration config = loadResource("config.yml");
+
+        assertEquals(LanguageManager.DEFAULT_LOCALE, config.getString("LANGUAGE.ACTIVE"));
+        assertEquals(LanguageManager.DEFAULT_LOCALE, config.getString("LANGUAGE.FALLBACK"));
+    }
+
+    @Test
     void activeLocaleTranslationReachesLegacyMessages() throws Exception {
         LanguageManager manager = new LanguageManager(null);
         YamlConfiguration bundledEnglish = language("MESSAGES.SOCIAL.DISCORD", "&fJoin our discord");
