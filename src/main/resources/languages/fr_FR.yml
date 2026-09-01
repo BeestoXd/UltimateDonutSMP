@@ -2240,6 +2240,7 @@ MESSAGES:
     HOVER-JOIN: "&eClick to join the {team} team."
     OR-TYPE-COMMAND: '&7Or type &f{command}&7 to join.'
     JOINED-BROADCAST: "&a{player} &eHas joined the team."
+    CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself !"
   CHAT-MANAGER:
     HELP:
     - ''
