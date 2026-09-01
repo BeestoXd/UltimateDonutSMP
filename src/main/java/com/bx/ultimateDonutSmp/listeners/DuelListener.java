@@ -285,7 +285,7 @@ public class DuelListener implements Listener {
                 || (plugin.getDuelManager().isInDuel(uuid)
                 && !plugin.getDuelManager().hasArenaSetting(uuid, DuelManager.ArenaSetting.ALLOW_ITEM_DROP))) {
             event.setCancelled(true);
-            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.updateInventory();
                 }

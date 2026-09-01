@@ -172,7 +172,7 @@ public class FfaListener implements Listener {
                 || plugin.getFfaManager().isInMatch(uuid)
                 || plugin.getFfaManager().isTransitioning(uuid)) {
             event.setCancelled(true);
-            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.updateInventory();
                 }

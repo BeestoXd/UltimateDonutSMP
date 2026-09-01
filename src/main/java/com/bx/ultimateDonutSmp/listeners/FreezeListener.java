@@ -142,7 +142,7 @@ public class FreezeListener implements Listener {
         org.bukkit.entity.Player player = event.getPlayer();
         if (deny(player)) {
             event.setCancelled(true);
-            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.updateInventory();
                 }

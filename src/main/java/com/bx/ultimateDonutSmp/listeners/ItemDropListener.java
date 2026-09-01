@@ -53,7 +53,7 @@ public class ItemDropListener implements Listener {
 
         if (block) {
             event.setCancelled(true);
-            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.updateInventory();
                 }
