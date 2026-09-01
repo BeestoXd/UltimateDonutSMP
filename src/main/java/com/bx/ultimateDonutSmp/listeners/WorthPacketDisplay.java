@@ -81,17 +81,30 @@ public class WorthPacketDisplay implements Listener {
         if (player != null && inPluginMenu.contains(player.getUniqueId())) {
             return true;
         }
-        if (topInv == null) {
+        return topInv != null && isMenuHolder(topInv.getHolder());
+    }
+
+    // a chest belongs to the player, so its contents are worth something and get the line. anything
+    // held by a plugin is a screen made of items, and pricing its buttons is nonsense: the sell menu
+    // confirms with a lime pane, which worth.yml prices at 3, so the button read "Worth: $3"
+    static boolean isMenuHolder(org.bukkit.inventory.InventoryHolder holder) {
+        if (holder == null) {
             return false;
         }
-        org.bukkit.inventory.InventoryHolder holder = topInv.getHolder();
         if (holder instanceof BaseMenu) {
             return true;
         }
-        if (holder != null && !(holder instanceof org.bukkit.block.Container) && !(holder instanceof org.bukkit.entity.Player)) {
-            return true;
+        return !(holder instanceof org.bukkit.block.Container) && !(holder instanceof org.bukkit.entity.Player);
+    }
+
+    // window 0 is the player's own inventory and always keeps the line. above that, only the menu's
+    // own rows are skipped; the player rows underneath still show what their items are worth. a
+    // topSize the server would not give us means skip the window rather than guess at the boundary
+    static boolean shouldSkipSlot(boolean isMenu, int windowId, int slot, int topSize) {
+        if (!isMenu || windowId <= 0) {
+            return false;
         }
-        return false;
+        return topSize == 0 || slot == -1 || slot < topSize;
     }
 
     private void registerPacketListener() {
@@ -136,7 +149,7 @@ public class WorthPacketDisplay implements Listener {
 
                 if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
                     int slot = readSlotIndex(packet);
-                    if (windowId > 0 && isMenu && (slot < topSize || slot == -1 || topSize == 0)) {
+                    if (shouldSkipSlot(isMenu, windowId, slot, topSize)) {
                         return;
                     }
                     ItemStack item = packet.getItemModifier().read(0);
@@ -158,7 +171,7 @@ public class WorthPacketDisplay implements Listener {
                 boolean changed = false;
                 for (int i = 0; i < items.size(); i++) {
                     ItemStack item = items.get(i);
-                    if (windowId > 0 && isMenu && (topSize == 0 || i < topSize)) {
+                    if (shouldSkipSlot(isMenu, windowId, i, topSize)) {
                         updated.add(item);
                         continue;
                     }
