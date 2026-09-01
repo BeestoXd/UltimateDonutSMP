@@ -35,6 +35,8 @@ TEAM:
   NO-PENDING-INVITES: '&cYou have no pending invites for &6{team}&c.'
   # The text or value for Join Success. Available options: Any valid string text
   JOIN-SUCCESS: '&aYou have joined to &e{team}&a.'
+  # The text or value for Cannot Invite Yourself. Available options: Any valid string text
+  CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Cant Kick Self. Available options: Any valid string text
   CANT-KICK-SELF: '&cYou cannot kick yourself!'
   # The text or value for Kick Success. Available options: Any valid string text
@@ -98,6 +100,7 @@ TEAM:
 | `TEAM.INVITE-SENT` | `str` | Any string text | `'&eYou have invited &a{player} &eto ...'` | Configures the technical `INVITE-SENT` parameter for `TEAM.INVITE-SENT` in `messages.yml`. |
 | `TEAM.NO-PENDING-INVITES` | `str` | Any string text | `'&cYou have no pending invites for &...'` | Configures the technical `NO-PENDING-INVITES` parameter for `TEAM.NO-PENDING-INVITES` in `messages.yml`. |
 | `TEAM.JOIN-SUCCESS` | `str` | Any string text | `'&aYou have joined to &e{team}&a.'` | Configures the technical `JOIN-SUCCESS` parameter for `TEAM.JOIN-SUCCESS` in `messages.yml`. |
+| `TEAM.CANNOT-INVITE-YOURSELF` | `str` | Any string text | `'&cYou cannot invite yourself!'` | Configures the technical `CANNOT-INVITE-YOURSELF` parameter for `TEAM.CANNOT-INVITE-YOURSELF` in `messages.yml`. |
 | `TEAM.CANT-KICK-SELF` | `str` | Any string text | `'&cYou cannot kick yourself!'` | Configures the technical `CANT-KICK-SELF` parameter for `TEAM.CANT-KICK-SELF` in `messages.yml`. |
 | `TEAM.KICK-SUCCESS` | `str` | Any string text | `'&aSuccessfully kicked &7({player}).'` | Configures the technical `KICK-SUCCESS` parameter for `TEAM.KICK-SUCCESS` in `messages.yml`. |
 | `TEAM.KICKED-FROM-TEAM` | `str` | Any string text | `'&aYou have been kicked from the tea...'` | Configures the technical `KICKED-FROM-TEAM` parameter for `TEAM.KICKED-FROM-TEAM` in `messages.yml`. |

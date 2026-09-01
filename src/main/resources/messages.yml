@@ -24,6 +24,8 @@ TEAM:
   NO-PENDING-INVITES: '&cYou have no pending invites for &6{team}&c.'
   # The text or value for Join Success. Available options: Any valid string text
   JOIN-SUCCESS: '&aYou have joined to &e{team}&a.'
+  # The text or value for Cannot Invite Yourself. Available options: Any valid string text
+  CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Cant Kick Self. Available options: Any valid string text
   CANT-KICK-SELF: '&cYou cannot kick yourself!'
   # The text or value for Kick Success. Available options: Any valid string text
