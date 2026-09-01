@@ -50,7 +50,7 @@ public class SellMenu extends BaseMenu {
         this.player = player;
         FileConfiguration menus = plugin.getConfigManager().getMenus();
         String modeStr = menus.getString("SELL-MENU.MODE", "instant");
-        this.confirmMode = "confirm".equalsIgnoreCase(modeStr);
+        this.confirmMode = isConfirmMode(modeStr);
 
         clear();
         if (confirmMode) {
@@ -150,7 +150,7 @@ public class SellMenu extends BaseMenu {
     @Override
     public void onClose(Player player) {
         int sellableEnd = getSellableSlotEnd();
-        if (isAutoSellEnabled()) {
+        if (sellsOnClose(confirmMode)) {
             plugin.getShopManager().sellInventoryContents(player, inventory, 0, sellableEnd);
         }
 
@@ -235,9 +235,23 @@ public class SellMenu extends BaseMenu {
     }
 
     private boolean isAutoSellEnabled() {
-        if (confirmMode) {
-            return false;
-        }
-        return plugin.getConfigManager().getMenus().getBoolean("SELL-MENU.AUTO-SELL", true);
+        return sellsWhileOpen(
+                confirmMode,
+                plugin.getConfigManager().getMenus().getBoolean("SELL-MENU.AUTO-SELL", true)
+        );
+    }
+
+    static boolean isConfirmMode(String mode) {
+        return "confirm".equalsIgnoreCase(mode);
+    }
+
+    static boolean sellsWhileOpen(boolean confirmMode, boolean autoSell) {
+        return !confirmMode && autoSell;
+    }
+
+    // AUTO-SELL only governs selling while the menu is open, so closing it still settles the grid.
+    // Confirm mode is the exception: it has its own button, so closing cancels instead.
+    static boolean sellsOnClose(boolean confirmMode) {
+        return !confirmMode;
     }
 }
