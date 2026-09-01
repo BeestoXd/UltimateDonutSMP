@@ -315,6 +315,8 @@ AMETHYST-MESSAGES:
   SELL-SUCCESS: '{prefix}&#BDC3C7Sold all chest contents for &a${amount}&7.'
   # The text or value for Sell Empty. Available options: Any valid string text
   SELL-EMPTY: '{prefix}&#BDC3C7That chest is empty or has no sellable items.'
+  # The text or value for Sell Failed. Available options: Any valid string text
+  SELL-FAILED: '{prefix}&#BDC3C7The sale failed. no items were removed.'
   # The text or value for Sell No Chest. Available options: Any valid string text
   SELL-NO-CHEST: '{prefix}&#BDC3C7You must right-click a chest.'
   # The text or value for Bucket Drain. Available options: Any valid string text

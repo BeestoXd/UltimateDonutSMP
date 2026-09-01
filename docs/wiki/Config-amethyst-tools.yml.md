@@ -184,6 +184,8 @@ AMETHYST-MESSAGES:
   SELL-SUCCESS: '{prefix}&#BDC3C7Sold all chest contents for &a${amount}&7.'
   # The text or value for Sell Empty. Available options: Any valid string text
   SELL-EMPTY: '{prefix}&#BDC3C7That chest is empty or has no sellable items.'
+  # The text or value for Sell Failed. Available options: Any valid string text
+  SELL-FAILED: '{prefix}&#BDC3C7The sale failed. no items were removed.'
   # The text or value for Sell No Chest. Available options: Any valid string text
   SELL-NO-CHEST: '{prefix}&#BDC3C7You must right-click a chest.'
   # The text or value for Bucket Drain. Available options: Any valid string text
@@ -221,6 +223,7 @@ AMETHYST-MESSAGES:
 | `AMETHYST-MESSAGES.CHOP-BREAK` | `str` | Any string text | `'{prefix}&#BDC3C7&dAmethyst Tree Cho...'` | Configures the technical `CHOP-BREAK` parameter for `AMETHYST-MESSAGES.CHOP-BREAK` in `amethyst-tools.yml`. |
 | `AMETHYST-MESSAGES.SELL-SUCCESS` | `str` | Any string text | `'{prefix}&#BDC3C7Sold all chest cont...'` | Configures the technical `SELL-SUCCESS` parameter for `AMETHYST-MESSAGES.SELL-SUCCESS` in `amethyst-tools.yml`. |
 | `AMETHYST-MESSAGES.SELL-EMPTY` | `str` | Any string text | `'{prefix}&#BDC3C7That chest is empty...'` | Configures the technical `SELL-EMPTY` parameter for `AMETHYST-MESSAGES.SELL-EMPTY` in `amethyst-tools.yml`. |
+| `AMETHYST-MESSAGES.SELL-FAILED` | `str` | Any string text | `'{prefix}&#BDC3C7The sale failed. no...'` | Configures the technical `SELL-FAILED` parameter for `AMETHYST-MESSAGES.SELL-FAILED` in `amethyst-tools.yml`. |
 | `AMETHYST-MESSAGES.SELL-NO-CHEST` | `str` | Any string text | `'{prefix}&#BDC3C7You must right-clic...'` | Configures the technical `SELL-NO-CHEST` parameter for `AMETHYST-MESSAGES.SELL-NO-CHEST` in `amethyst-tools.yml`. |
 | `AMETHYST-MESSAGES.BUCKET-DRAIN` | `str` | Any string text | `'{prefix}&#BDC3C7Drained &d{count} &...'` | Configures the technical `BUCKET-DRAIN` parameter for `AMETHYST-MESSAGES.BUCKET-DRAIN` in `amethyst-tools.yml`. |
 | `AMETHYST-MESSAGES.BUCKET-NO-WATER` | `str` | Any string text | `'{prefix}&#BDC3C7No water blocks fou...'` | Configures the technical `BUCKET-NO-WATER` parameter for `AMETHYST-MESSAGES.BUCKET-NO-WATER` in `amethyst-tools.yml`. |
