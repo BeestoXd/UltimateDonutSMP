@@ -1941,12 +1941,16 @@ public class ConfigManager {
             return true;
         }
 
-        // Ranks menu buttons are one advert per rank a server actually sells, so a renamed or
-        // deleted bundled rank must not come back on its old slot and collide with the button
-        // that replaced it. The BUTTONS section itself stays mergeable so configs that predate
-        // the ranks menu still receive it once.
+        // Ranks menu buttons, rules pages and servers menu entries are each keyed by something
+        // the server owns rather than the plugin: a rank it sells, a rules page it wrote, a
+        // network id whose network.yml counterpart is already excluded below. A renamed or
+        // deleted entry must not come back on its old slot and collide with whatever replaced
+        // it. The sections themselves stay mergeable so configs that predate any of these menus
+        // still receive them once.
         if ("menus.yml".equals(resourceName)
-                && path.startsWith("RANKS-MENU.BUTTONS.")) {
+                && (path.startsWith("RANKS-MENU.BUTTONS.")
+                || path.startsWith("RULES-MENU.BUTTONS.")
+                || path.startsWith("SERVERS-MENU.SERVERS."))) {
             return true;
         }
 
