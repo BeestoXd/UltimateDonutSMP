@@ -302,7 +302,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/shop` | - | `/shop [reload]` | `ultimatedonutsmp.command.shop` |
 | `/social` | `/media` | `/social` | `ultimatedonutsmp.command.social` |
 | `/spawn` | - | `/spawn` | `ultimatedonutsmp.command.spawn` |
-| `/spawner` | `/spawners` | `/spawner [give\|info\|panel\|reload\|remove]` | `ultimatedonutsmp.command.spawner` |
+| `/spawner` | `/spawners` | `/spawner [give\|info\|panel\|reload\|remove\|split]` | `ultimatedonutsmp.command.spawner` |
 | `/spawnstash` | `/stash` | `/spawnstash [type\|spawn\|list\|remove\|reload]` | `ultimatedonutsmp.command.spawnstash` |
 | `/staffchat` | `/sc` | `/staffchat <message>` | `ultimatedonutsmp.command.staffchat` |
 | `/stafflist` | - | `/stafflist` | `ultimatedonutsmp.command.stafflist` |

@@ -31,12 +31,17 @@ UltimateDonutSMP includes custom mob spawners engineered for high-performance mo
 - **Upgrade System**: Upgrade spawner rate, spawn count, and mob drop multipliers via GUI.
 - **Break Safeguards**: Requires Silk Touch or admin bypass permissions to break stacked spawners without losing count.
 
+### Player Spawner Commands (`/spawner`):
+- `/spawner info` – Inspect the spawner block you are looking at.
+- `/spawner split <amount>` – Split the spawner item in your hand into a smaller stack.
+
 ### Admin Spawner Commands (`/spawner`):
-- `/spawner give <player> <entity_type> <amount>` – Give stacked spawner item to player.
-- `/spawner set <entity_type>` – Change targeted spawner type.
-- `/spawner type <entity_type>` – Change spawner type in hand.
-- `/spawner stack <amount>` – Set stack count of targeted spawner block.
+- `/spawner` or `/spawner panel` – Open the spawner admin panel.
+- `/spawner give <player> <entity_type> [amount]` – Give a stacked spawner item to a player.
+- `/spawner remove` – Remove the spawner block you are looking at. `/spawner forcebreak` does the same thing.
 - `/spawner reload` – Reload `spawners.yml`.
+
+The admin entries need `ultimatedonutsmp.admin.spawner`, and the command itself is gated by `ultimatedonutsmp.command.spawner`.
 
 ---
 
