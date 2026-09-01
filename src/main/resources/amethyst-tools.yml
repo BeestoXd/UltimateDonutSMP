@@ -75,6 +75,8 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
       SLOT: 18
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -128,6 +130,8 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
       SLOT: 19
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -157,6 +161,8 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
       SLOT: 20
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -208,6 +214,8 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
       SLOT: 21
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -237,6 +245,8 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
       SLOT: 22
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -266,6 +276,8 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
       SLOT: 23
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -281,6 +293,8 @@ AMETHYST-TOOLS:
     SHARD-SHOP:
       # Determines whether Enabled is enabled or disabled. Available options: true, false
       ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
       SLOT: 18
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
