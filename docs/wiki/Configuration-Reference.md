@@ -1064,6 +1064,11 @@ SHARDS:
         CUBOID: ''
         # The text or value for World. Available options: Any valid string text
         WORLD: world
+        # Radius in blocks for the point-based fallbacks. LOCATION gets a sphere this wide
+        # that pays shards alongside CUBOID, and the AFK point gets one that counts as the
+        # AFK area when no AFK cuboid is bound. One number covers both. Set 0 to switch the
+        # shard sphere off and leave the AFK sphere at its built-in 16.
+        RADIUS: 16
         # The numerical value for Interval. Available options: Any valid integer
         INTERVAL: 60
         # The numerical value for Amount. Available options: Any valid integer
@@ -1156,6 +1161,7 @@ SHARDS:
 | `SHARDS.CUBOIDS.REGIONS.spawn.PRIORITY` | `int` | Any valid integer | `100` | Configures `PRIORITY` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.CUBOID` | `str` | Any string text | `` | Configures `CUBOID` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.WORLD` | `str` | Any string text | `world` | Configures `WORLD` for `SHARDS`. |
+| `SHARDS.CUBOIDS.REGIONS.spawn.RADIUS` | `int` | Any valid integer | `16` | Radius in blocks for the point-based fallbacks. `LOCATION` gets a sphere this wide that pays shards alongside `CUBOID`, and the AFK point gets one that counts as the AFK area when no AFK cuboid is bound. One number covers both. Set `0` to switch the shard sphere off and leave the AFK sphere at its built-in 16. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.INTERVAL` | `int` | Any valid integer | `60` | Configures `INTERVAL` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.AMOUNT` | `int` | Any valid integer | `1` | Configures `AMOUNT` for `SHARDS`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.COUNTDOWN-MESSAGE` | `str` | Any string text | `&7Next shard in &#A303F9%time%` | Configures `COUNTDOWN-MESSAGE` for `SHARDS`. |

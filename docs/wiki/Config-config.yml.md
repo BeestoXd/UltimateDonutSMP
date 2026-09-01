@@ -1378,6 +1378,11 @@ SHARDS:
         CUBOID: ''
         # The text or value for World. Available options: Any valid string text
         WORLD: world
+        # Radius in blocks for the point-based fallbacks. LOCATION gets a sphere this wide
+        # that pays shards alongside CUBOID, and the AFK point gets one that counts as the
+        # AFK area when no AFK cuboid is bound. One number covers both. Set 0 to switch the
+        # shard sphere off and leave the AFK sphere at its built-in 16.
+        RADIUS: 16
         # The numerical value for Interval. Available options: Any valid integer
         INTERVAL: 60
         # The numerical value for Amount. Available options: Any valid integer
@@ -1444,6 +1449,7 @@ SHARDS:
 | `SHARDS.CUBOIDS.REGIONS.spawn.PRIORITY` | `int` | Any valid integer number | `'100'` | Configures the technical `PRIORITY` parameter for `SHARDS.CUBOIDS.REGIONS.spawn.PRIORITY` in `config.yml`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.CUBOID` | `str` | Any string text | `''` | Configures the technical `CUBOID` parameter for `SHARDS.CUBOIDS.REGIONS.spawn.CUBOID` in `config.yml`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.WORLD` | `str` | Any string text | `'world'` | Configures the technical `WORLD` parameter for `SHARDS.CUBOIDS.REGIONS.spawn.WORLD` in `config.yml`. |
+| `SHARDS.CUBOIDS.REGIONS.spawn.RADIUS` | `int` | Any valid integer number | `'16'` | Radius in blocks for the point-based fallbacks. `LOCATION` gets a sphere this wide that pays shards alongside `CUBOID`, and the AFK point gets one that counts as the AFK area when no AFK cuboid is bound. One number covers both. Set `0` to switch the shard sphere off and leave the AFK sphere at its built-in 16. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.INTERVAL` | `int` | Any valid integer number | `'60'` | Configures the technical `INTERVAL` parameter for `SHARDS.CUBOIDS.REGIONS.spawn.INTERVAL` in `config.yml`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.AMOUNT` | `int` | Any valid integer number | `'1'` | Configures the technical `AMOUNT` parameter for `SHARDS.CUBOIDS.REGIONS.spawn.AMOUNT` in `config.yml`. |
 | `SHARDS.CUBOIDS.REGIONS.spawn.COUNTDOWN-MESSAGE` | `str` | Any string text | `'&7Next shard in &#A303F9%time%'` | Configures the technical `COUNTDOWN-MESSAGE` parameter for `SHARDS.CUBOIDS.REGIONS.spawn.COUNTDOWN-MESSAGE` in `config.yml`. |
