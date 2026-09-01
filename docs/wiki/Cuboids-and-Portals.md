@@ -7,7 +7,7 @@ The **Cuboid** system in UltimateDonutSMP provides lightweight, high-performance
 ## Cuboid Management (`/cuboid`)
 
 ### 1. Selection Wand
-Get the selection tool (Golden Hoe or Wooden Axe):
+Get the selection tool (a golden shovel):
 ```bash
 /cuboid wand
 ```
