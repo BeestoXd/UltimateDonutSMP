@@ -365,3 +365,17 @@ SPLASH-STRENGTH-POTION:
 2. Locate your target menu section (e.g., `GEAR-MENU` or create a new `POTION-MENU`).
 3. Paste the potion configuration entry into the `ITEMS:` section.
 4. Save `shop.yml` and run `/uds reload` in-game or from console.
+
+---
+
+## 15. Keeping `Buy price:` Lore in Step With `PRICE-PER-UNIT` (`shop.yml`)
+
+### Question: I changed a shop item's price, or moved a menu from shards to money. Do I have to rewrite every `Buy price:` lore line by hand?
+
+No. A lore line that reads `Buy price:` and carries no `{price` placeholder has everything after its first colon replaced with the live price, in that item's own currency, every time the menu is drawn. The amount sitting in the file is never shown, so `'&fBuy price: &a$1'` still displays the real figure. `Harga beli:` behaves the same way on Indonesian menus, and the confirm screen hides the duplicate line rather than printing the price twice.
+
+If you would rather write the label yourself, `{price_formatted}` renders the price with its symbol and colour anywhere in the line, and `{price}` renders the bare number.
+
+The full list of placeholders, and what the auto-filled line does with colour codes and small caps, is on the [`shop.yml` configuration page](Config-shop.yml).
+
+Wording you invented is still yours to maintain: effect lines, menu titles and anything else that mentions a currency by name does not update itself.
