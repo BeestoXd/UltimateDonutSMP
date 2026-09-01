@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class PurchaseShopMenu extends BaseMenu {
 
@@ -150,26 +149,10 @@ public class PurchaseShopMenu extends BaseMenu {
     }
 
     private boolean isRedundantPriceLore(String line) {
-        String plain = normalizePriceLabel(ColorUtils.strip(line));
+        String plain = ColorUtils.normalizeLabel(ColorUtils.strip(line));
         return plain.contains("buy price")
                 || plain.contains("buyprice")
                 || plain.contains("harga beli");
-    }
-
-    private String normalizePriceLabel(String value) {
-        return (value == null ? "" : value.toLowerCase(Locale.ROOT))
-                .replace('b', 'b')
-                .replace('u', 'u')
-                .replace('y', 'y')
-                .replace('p', 'p')
-                .replace('r', 'r')
-                .replace('i', 'i')
-                .replace('c', 'c')
-                .replace('e', 'e')
-                .replace('h', 'h')
-                .replace('a', 'a')
-                .replace('g', 'g')
-                .replace('l', 'l');
     }
 
     private void buildCancelButton() {

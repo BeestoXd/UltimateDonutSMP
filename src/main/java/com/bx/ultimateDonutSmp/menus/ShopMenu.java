@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -367,7 +366,7 @@ public class ShopMenu extends BaseMenu {
                 .replace("{price}", rawPrice)
                 .replace("%price%", rawPrice);
 
-        String normalizedLine = normalizePriceLabel(line);
+        String normalizedLine = ColorUtils.normalizeLabel(line);
         if ((normalizedLine.contains("buy price:") || normalizedLine.contains("harga beli:")) && !line.contains("{price")) {
             int colonIndex = line.indexOf(':');
             if (colonIndex >= 0) {
@@ -375,22 +374,6 @@ public class ShopMenu extends BaseMenu {
             }
         }
         return result;
-    }
-
-    private String normalizePriceLabel(String value) {
-        return (value == null ? "" : value.toLowerCase(Locale.ROOT))
-                .replace('b', 'b')
-                .replace('u', 'u')
-                .replace('y', 'y')
-                .replace('p', 'p')
-                .replace('r', 'r')
-                .replace('i', 'i')
-                .replace('c', 'c')
-                .replace('e', 'e')
-                .replace('h', 'h')
-                .replace('a', 'a')
-                .replace('g', 'g')
-                .replace('l', 'l');
     }
 
     private void buildBackButton() {

@@ -229,4 +229,13 @@ class ColorUtilsTest {
         assertEquals("Shop", ColorUtils.strip("<color:#FF0000>Shop"));
         assertEquals("give <player>", ColorUtils.strip("&7give <player>"));
     }
+
+    @Test
+    void testNormalizeLabelFoldsSmallCaps() {
+        assertTrue(ColorUtils.normalizeLabel("&fʙᴜʏ ᴘʀɪᴄᴇ: &a$250").contains("buy price:"));
+        assertTrue(ColorUtils.normalizeLabel("&fʜᴀʀɢᴀ ʙᴇʟɪ: &a$250").contains("harga beli:"));
+        assertTrue(ColorUtils.normalizeLabel("&fBuy Price: &a$250").contains("buy price:"));
+        assertEquals("", ColorUtils.normalizeLabel(null));
+        assertEquals("&5250x shards", ColorUtils.normalizeLabel("&5250x Shards"));
+    }
 }
