@@ -281,7 +281,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             }
             case "DEATH_MESSAGES" -> {
                 data.setDeathMessagesChoice(nextTwoChoice(data.getDeathMessagesChoice()));
-                sendChoiceMessage(player, "Death Messages", formatTwoChoice(data.getDeathMessagesChoice()));
+                sendToggleMessage(player, "Death Messages", data.isDeathMessagesEnabled());
             }
             case "ADVANCEMENT_MESSAGES" -> toggle(player, "Advancement Messages",
                     !data.isAdvancementMessagesEnabled(), data::setAdvancementMessagesEnabled);
@@ -446,7 +446,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
             case "TEAM_CHAT" -> state(plugin.getTeamManager().isTeamChatEnabled(player.getUniqueId()));
             case "DESTROY_PEARL_ON_DEATH" -> state(data.isDestroyPearlOnDeath());
             case "RANDOMIZED_COORDS" -> state(data.isRandomizedCoords());
-            case "DEATH_MESSAGES" -> new ButtonState(formatTwoChoice(data.getDeathMessagesChoice()), true);
+            case "DEATH_MESSAGES" -> state(data.isDeathMessagesEnabled());
             case "ADVANCEMENT_MESSAGES" -> state(data.isAdvancementMessagesEnabled());
             case "JOIN_LEAVE_MESSAGES" -> new ButtonState(formatTwoChoice(data.getJoinLeaveMessagesChoice()), true);
             case "TELEPORT_ALERTS" -> state(data.isTeleportAlertsEnabled());
