@@ -96,7 +96,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/ffaarena` | `/ffaarena <create\|delete\|setpos\|enable>` | Instanced FFA arena management | `ultimatedonutsmp.admin.ffaarena` |
 | `/pvp` | `/pvp <wand\|create\|setspawn\|setspawn2\|setlobby\|setboundary\|kit\|schematic\|assign\|reset\|reload>` | Ranked PvP arena setup, kit editing, assigned matches, and schematic resets | `ultimatedonutsmp.admin.pvp` |
 | `/crate` | `/crate <create\|delete\|key\|keyall\|bind\|edit>` | Crate & virtual key administration | `ultimatedonutsmp.admin.crate` |
-| `/spawner` | `/spawner <give\|set\|type\|stack>` | Custom spawner stack administration | `ultimatedonutsmp.admin.spawner` |
+| `/spawner` | `/spawner [give\|info\|panel\|reload\|remove\|split]` | Custom spawner stack administration. `info` and `split` need only `ultimatedonutsmp.command.spawner` | `ultimatedonutsmp.admin.spawner` |
 | `/addmoney` | `/addmoney <player> <amount>` | Add money to player balance | `ultimatedonutsmp.admin.addmoney` |
 | `/removemoney` | `/removemoney <player> <amount>` | Deduct money from player balance | `ultimatedonutsmp.admin.removemoney` |
 | `/setmoney` | `/setmoney <player> <amount>` | Set player money balance | `ultimatedonutsmp.admin.setmoney` |
