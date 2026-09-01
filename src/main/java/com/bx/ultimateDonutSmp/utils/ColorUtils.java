@@ -364,6 +364,16 @@ public class ColorUtils {
         return capitalizeFirstTextChar(sb.toString());
     }
 
+    // Lowercased text with small caps folded back to ASCII, so a config label typed as
+    // "ʙᴜʏ ᴘʀɪᴄᴇ:" still matches a plain lowercase needle. The fold runs first because
+    // unSmallCaps capitalizes the first letter it finds.
+    public static String normalizeLabel(String value) {
+        if (value == null) {
+            return "";
+        }
+        return unSmallCaps(value).toLowerCase(Locale.ROOT);
+    }
+
     private static String capitalizeFirstTextChar(String text) {
         if (text == null || text.isEmpty()) return text;
         int i = 0;
