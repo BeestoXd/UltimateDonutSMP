@@ -1729,7 +1729,7 @@ permissions:
     default: true
   ultimatedonutsmp.command.spawner:
     description: Access to /spawner command
-    default: op
+    default: true
   ultimatedonutsmp.command.clearlag:
     description: Access to /clearlag command
     default: op

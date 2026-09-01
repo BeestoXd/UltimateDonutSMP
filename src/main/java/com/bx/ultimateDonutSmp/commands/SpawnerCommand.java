@@ -135,6 +135,10 @@ public class SpawnerCommand implements CommandExecutor {
 
         player.sendMessage(ColorUtils.toComponent("&8&m----------- &bSpawner Info &8&m-----------"));
         player.sendMessage(ColorUtils.toComponent("&7Type: &f" + plugin.getSpawnerManager().getPlainTypeDisplayName(instance.getMobTypeKey())));
+        if (!plugin.getSpawnerManager().canOpen(player, instance)) {
+            player.sendMessage(ColorUtils.toComponent("&7The rest is hidden on spawners you cannot access."));
+            return true;
+        }
         player.sendMessage(ColorUtils.toComponent("&7Owner: &f" + instance.getOwnerNameSnapshot()));
         player.sendMessage(ColorUtils.toComponent("&7Stack: &f" + NumberUtils.format(instance.getStackAmount())));
         player.sendMessage(ColorUtils.toComponent("&7Stored Loot: &f" + NumberUtils.format(instance.getTotalStoredItems())));

@@ -32,7 +32,7 @@ UltimateDonutSMP includes custom mob spawners engineered for high-performance mo
 - **Break Safeguards**: Requires Silk Touch or admin bypass permissions to break stacked spawners without losing count.
 
 ### Player Spawner Commands (`/spawner`):
-- `/spawner info` – Inspect the spawner block you are looking at.
+- `/spawner info` – Inspect the spawner block you are looking at. Owner, stack size, stored loot and coordinates only show on spawners you are allowed to access: your own, a teammate's under `OWNER_AND_TEAM`, any of them under `PUBLIC` or while `ALLOW_SPAWNER_STEAL` is on. Anyone else sees the mob type and nothing further.
 - `/spawner split <amount>` – Split the spawner item in your hand into a smaller stack.
 
 ### Admin Spawner Commands (`/spawner`):
@@ -41,7 +41,7 @@ UltimateDonutSMP includes custom mob spawners engineered for high-performance mo
 - `/spawner remove` – Remove the spawner block you are looking at. `/spawner forcebreak` does the same thing.
 - `/spawner reload` – Reload `spawners.yml`.
 
-The admin entries need `ultimatedonutsmp.admin.spawner`, and the command itself is gated by `ultimatedonutsmp.command.spawner`.
+The admin entries need `ultimatedonutsmp.admin.spawner`, which also unlocks the full `/spawner info` breakdown on any spawner. The command itself is gated by `ultimatedonutsmp.command.spawner`, and every player holds that one by default.
 
 ---
 
