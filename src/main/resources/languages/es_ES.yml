@@ -2860,7 +2860,6 @@ DEATH_MESSAGES:
       NORMAL: "{player} Was blown up"
       PVP: "{player} Was blown up by {killer}"
     DEFAULT: "{player} Died"
-  SETTINGS: {}
 BUILTIN:
   f644b07bb7d7194c2190: '&7(Intentos: &f'
   39f0408258ee4724d5ba: '&7-> &e'
