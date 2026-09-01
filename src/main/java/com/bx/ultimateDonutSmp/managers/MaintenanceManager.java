@@ -97,6 +97,14 @@ public class MaintenanceManager {
         return lobbyServer != null && !lobbyServer.isBlank();
     }
 
+    /**
+     * Blank is stored as no lobby at all, so clearing it falls back to MAINTENANCE.LOBBY_SERVER
+     * rather than leaving an empty name in the state file.
+     */
+    static String normalizeLobbyServer(String lobbyServer) {
+        return isLobbyServerSet(lobbyServer) ? lobbyServer : null;
+    }
+
     public Location resolveLocalDestination() {
         World world = Bukkit.getWorld(getLobbyWorld());
         if (world != null) {
@@ -106,7 +114,7 @@ public class MaintenanceManager {
     }
 
     public void setLobbyServer(String lobbyServer) {
-        this.customLobbyServer = lobbyServer;
+        this.customLobbyServer = normalizeLobbyServer(lobbyServer);
         save();
     }
 
