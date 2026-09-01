@@ -96,7 +96,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/ffaarena` | `/ffaarena <create\|delete\|setpos\|enable>` | Instanced FFA arena management | `ultimatedonutsmp.admin.ffaarena` |
 | `/pvp` | `/pvp <wand\|create\|setspawn\|setspawn2\|setlobby\|setboundary\|kit\|schematic\|assign\|reset\|reload>` | Ranked PvP arena setup, kit editing, assigned matches, and schematic resets | `ultimatedonutsmp.admin.pvp` |
 | `/crate` | `/crate <create\|delete\|key\|keyall\|bind\|edit>` | Crate & virtual key administration | `ultimatedonutsmp.admin.crate` |
-| `/spawner` | `/spawner [give\|info\|panel\|reload\|remove\|split]` | Custom spawner stack administration. `info` and `split` need only `ultimatedonutsmp.command.spawner` | `ultimatedonutsmp.admin.spawner` |
+| `/spawner` | `/spawner [give\|info\|panel\|reload\|remove\|split]` | Custom spawner stack administration. `info` and `split` are open to every player; the rest needs the admin node | `ultimatedonutsmp.admin.spawner` |
 | `/addmoney` | `/addmoney <player> <amount>` | Add money to player balance | `ultimatedonutsmp.admin.addmoney` |
 | `/removemoney` | `/removemoney <player> <amount>` | Deduct money from player balance | `ultimatedonutsmp.admin.removemoney` |
 | `/setmoney` | `/setmoney <player> <amount>` | Set player money balance | `ultimatedonutsmp.admin.setmoney` |
@@ -138,6 +138,8 @@ The refusal message is `PUNISHMENTS.TARGET-EXEMPT` in `messages.yml`.
 | Permission Node | Default | Description |
 | :--- | :--- | :--- |
 | `ultimatedonutsmp.spawner.bypass` | `false` | Break spawners without a Silk Touch pickaxe while `SETTINGS.REQUIRE_SILK_TOUCH` is enabled in `spawners.yml`. Registered with `default: false`, so operators do not receive it automatically. Assign it explicitly via LuckPerms. |
+| `ultimatedonutsmp.command.spawner` | `true` | Reach `/spawner` at all. Every player has it, which is what makes `/spawner info` and `/spawner split` usable; the admin subcommands stay behind their own node. |
+| `ultimatedonutsmp.admin.spawner` | `op` | Run `/spawner give`, `panel`, `reload`, `remove` and `forcebreak`, and see the full `/spawner info` breakdown on any spawner regardless of who owns it. |
 
 ---
 
