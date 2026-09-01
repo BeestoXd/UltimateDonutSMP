@@ -123,6 +123,16 @@ class ShopManagerTest {
         assertNull(ShopManager.parsePriceTag("[PRICE] "));
     }
 
+    @Test
+    void readsCurrencyNames() {
+        assertEquals(ShopManager.Currency.SHARD, ShopManager.parseCurrency("SHARD"));
+        assertEquals(ShopManager.Currency.SHARD, ShopManager.parseCurrency("shards"));
+        assertEquals(ShopManager.Currency.MONEY, ShopManager.parseCurrency("MONEY"));
+        assertEquals(ShopManager.Currency.MONEY, ShopManager.parseCurrency("gold bars"));
+        assertEquals(ShopManager.Currency.MONEY, ShopManager.parseCurrency(""));
+        assertEquals(ShopManager.Currency.MONEY, ShopManager.parseCurrency(null));
+    }
+
     private AuctionListing listing(
             long id,
             UUID seller,

@@ -643,7 +643,7 @@ public class ShopManager {
                     lore,
                     shopSection.getInt("SLOT", 0),
                     price,
-                    Currency.SHARD,
+                    parseCurrency(shopSection.getString("CURRENCY", Currency.SHARD.name())),
                     "",
                     true,
                     shopSection.getString("PERMISSION", ""),
@@ -978,7 +978,7 @@ public class ShopManager {
         );
     }
 
-    private Currency parseCurrency(String currencyName) {
+    static Currency parseCurrency(String currencyName) {
         if (currencyName == null || currencyName.isBlank()) {
             return Currency.MONEY;
         }
