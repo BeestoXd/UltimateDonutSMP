@@ -31,6 +31,9 @@ class AmethystShardShopConfigurationTest {
             assertNotNull(shardShop, path + ".SHARD-SHOP");
             assertFalse(shardShop.getBoolean("ENABLED"), "Default must not change the live economy");
             assertEquals("SHARD", shardShop.getString("CURRENCY"), path + ".SHARD-SHOP.CURRENCY");
+            // A tool with no usable price is skipped when the menu loads, so enabling the
+            // section would leave an empty slot behind.
+            assertTrue(shardShop.getDouble("PRICE-PER-UNIT") > 0D, path + ".SHARD-SHOP.PRICE-PER-UNIT");
             assertTrue(slots.add(shardShop.getInt("SLOT")), "Shard-shop slots must be unique");
             assertEquals(1, shardShop.getInt("MIN-QUANTITY"));
             assertEquals(1, shardShop.getInt("MAX-QUANTITY"));

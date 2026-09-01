@@ -77,6 +77,8 @@ AMETHYST-TOOLS:
       ENABLED: false
       # The currency this tool is sold for. Available options: SHARD, MONEY
       CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 750.0
       SLOT: 18
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -132,6 +134,8 @@ AMETHYST-TOOLS:
       ENABLED: false
       # The currency this tool is sold for. Available options: SHARD, MONEY
       CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 600.0
       SLOT: 19
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -163,6 +167,8 @@ AMETHYST-TOOLS:
       ENABLED: false
       # The currency this tool is sold for. Available options: SHARD, MONEY
       CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 900.0
       SLOT: 20
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -216,6 +222,8 @@ AMETHYST-TOOLS:
       ENABLED: false
       # The currency this tool is sold for. Available options: SHARD, MONEY
       CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 500.0
       SLOT: 21
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -247,6 +255,8 @@ AMETHYST-TOOLS:
       ENABLED: false
       # The currency this tool is sold for. Available options: SHARD, MONEY
       CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 400.0
       SLOT: 22
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -278,6 +288,8 @@ AMETHYST-TOOLS:
       ENABLED: false
       # The currency this tool is sold for. Available options: SHARD, MONEY
       CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 1500.0
       SLOT: 23
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1

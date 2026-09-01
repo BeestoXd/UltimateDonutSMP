@@ -88,6 +88,8 @@ AMETHYST-TOOLS:
       ENABLED: false
       # The currency this tool is sold for. Available options: SHARD, MONEY
       CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 750.0
       SLOT: 18
       # The numerical value for Min Quantity. Available options: Any valid integer
       MIN-QUANTITY: 1
@@ -121,6 +123,7 @@ AMETHYST-TOOLS:
 | `AMETHYST-TOOLS.DRILL.DURATION` | `int` | Any valid integer number | `'86400'` | Configures the technical `DURATION` parameter for `AMETHYST-TOOLS.DRILL.DURATION` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.DRILL.SHARD-SHOP.ENABLED` | `bool` | `true`, `false` | `false` | Global toggle for `AMETHYST-TOOLS` system. Set to `true` to enable, `false` to disable. |
 | `AMETHYST-TOOLS.DRILL.SHARD-SHOP.CURRENCY` | `str` | `SHARD`, `MONEY` | `'SHARD'` | Currency this tool is priced in when it shows up in the shard menu. `SHARD` spends shards, `MONEY` charges the player's balance. Every tool has its own key, so a menu can mix both. |
+| `AMETHYST-TOOLS.DRILL.SHARD-SHOP.PRICE-PER-UNIT` | `float` | Any decimal number above zero | `'750.0'` | What one purchase costs, in the currency above. A tool priced at zero or below is skipped when the menu loads, leaving an empty slot, and the console says so on startup and on `/shop reload`. |
 | `AMETHYST-TOOLS.DRILL.SHARD-SHOP.SLOT` | `int` | Any valid integer number | `'18'` | Configures the technical `SLOT` parameter for `AMETHYST-TOOLS.DRILL.SHARD-SHOP.SLOT` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.DRILL.SHARD-SHOP.MIN-QUANTITY` | `int` | Any valid integer number | `'1'` | Configures the technical `MIN-QUANTITY` parameter for `AMETHYST-TOOLS.DRILL.SHARD-SHOP.MIN-QUANTITY` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.DRILL.SHARD-SHOP.MAX-QUANTITY` | `int` | Any valid integer number | `'1'` | Configures the technical `MAX-QUANTITY` parameter for `AMETHYST-TOOLS.DRILL.SHARD-SHOP.MAX-QUANTITY` in `amethyst-tools.yml`. |
