@@ -118,21 +118,12 @@ MESSAGES:
   # The text or value for Status Active. Available options: Any valid string text
   STATUS-ACTIVE: '&7hide status: &a{mode} &8- &f{alias}'
   # The text or value for Check. Available options: Any valid string text
-  CHECK: '&bhide check
-
-    # The text or value for # The Text Or Mode For &7Ʀeal name. Available Options. Available options: Any valid string text
-    # The text or mode for &7Ʀeal name. Available options: Any string text &7real
-    # The text or value for name. Available options: Any valid string text
-    name: &f{real}
-
-    # The text or value for # The Text Or Mode For &7alias. Available Options. Available options: Any valid string text
-    # The text or mode for &7alias. Available options: Any string text &7alias: &f{alias}
-
-    # The text or value for # The Text Or Mode For &7mode. Available Options. Available options: Any valid string text
-    # The text or mode for &7mode. Available options: Any string text &7mode: &f{mode}
-
-    # The text or value for # The Text Or Mode For &7Ѕkin. Available Options. Available options: Any valid string text
-    # The text or mode for &7Ѕkin. Available options: Any string text &7skin: &f{skin}'
+  CHECK: |-
+    &bhide check
+    &7real name: &f{real}
+    &7alias: &f{alias}
+    &7mode: &f{mode}
+    &7skin: &f{skin}
   # The text or value for Permission Removed. Available options: Any valid string text
   PERMISSION-REMOVED: '&cyour hide state was removed because its permission is no
     longer available.'

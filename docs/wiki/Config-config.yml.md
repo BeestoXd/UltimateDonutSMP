@@ -1392,10 +1392,7 @@ SHARDS:
         # The text or value for Reward Message. Available options: Any valid string text
         REWARD-MESSAGE: '&#A303F9You received %amount% Shard &7(Total: &#A303F9%total%&7)'
         # The text or value for Boosted Reward Message. Available options: Any valid string text
-        BOOSTED-REWARD-MESSAGE: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7)
-          # The text or value for # The Text Or Mode For &7(Total. Available Options. Available options: Any valid string text
-          # The text or mode for &7(Total. Available options: Any string text &7(Total:
-          &#A303F9%total%&7)'
+        BOOSTED-REWARD-MESSAGE: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7) &7(Total: &#A303F9%total%&7)'
         # The text or value for Leave Message. Available options: Any valid string text
         LEAVE-MESSAGE: '&cShard reward cancelled &7(Left %cuboid% zone)'
         # The numerical value for Afk Time. Available options: Any valid integer

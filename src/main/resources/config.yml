@@ -578,11 +578,7 @@ SHARDS:
     # The text or value for Received. Available options: Any valid string text
     RECEIVED: '&#A303F9You received %amount% Shard &8[Everywhere] &7(Total: &#A303F9%total%&7)'
     # The text or value for Received Boosted. Available options: Any valid string text
-    RECEIVED-BOOSTED: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7)
-      # The text or value for # The Text Or Mode For &8[Everywhere] &7(Total. Available Options. Available options: Any valid string text
-      # The text or mode for &8[Everywhere] &7(Total. Available options: Any string
-      # The text or value for Text &8[Everywhere] &7(Total. Available options: Any valid string text
-      text &8[Everywhere] &7(Total: &#A303F9%total%&7)'
+    RECEIVED-BOOSTED: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7) &8[Everywhere] &7(Total: &#A303F9%total%&7)'
     # Configuration section for Excluded Worlds.
     EXCLUDED-WORLDS:
     - duels

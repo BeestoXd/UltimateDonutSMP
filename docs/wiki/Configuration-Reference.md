@@ -1078,10 +1078,7 @@ SHARDS:
         # The text or value for Reward Message. Available options: Any valid string text
         REWARD-MESSAGE: '&#A303F9You received %amount% Shard &7(Total: &#A303F9%total%&7)'
         # The text or value for Boosted Reward Message. Available options: Any valid string text
-        BOOSTED-REWARD-MESSAGE: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7)
-          # The text or value for # The Text Or Mode For &7(Total. Available Options. Available options: Any valid string text
-          # The text or mode for &7(Total. Available options: Any string text &7(Total:
-          &#A303F9%total%&7)'
+        BOOSTED-REWARD-MESSAGE: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7) &7(Total: &#A303F9%total%&7)'
         # The text or value for Leave Message. Available options: Any valid string text
         LEAVE-MESSAGE: '&cShard reward cancelled &7(Left %cuboid% zone)'
         # The numerical value for Afk Time. Available options: Any valid integer
@@ -1127,11 +1124,7 @@ SHARDS:
     # The text or value for Received. Available options: Any valid string text
     RECEIVED: '&#A303F9You received %amount% Shard &8[Everywhere] &7(Total: &#A303F9%total%&7)'
     # The text or value for Received Boosted. Available options: Any valid string text
-    RECEIVED-BOOSTED: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7)
-      # The text or value for # The Text Or Mode For &8[Everywhere] &7(Total. Available Options. Available options: Any valid string text
-      # The text or mode for &8[Everywhere] &7(Total. Available options: Any string
-      # The text or value for Text &8[Everywhere] &7(Total. Available options: Any valid string text
-      text &8[Everywhere] &7(Total: &#A303F9%total%&7)'
+    RECEIVED-BOOSTED: '&#A303F9You received %amount% Shards &7(&ax%multiplier%&7) &8[Everywhere] &7(Total: &#A303F9%total%&7)'
     # Configuration section for Excluded Worlds.
     EXCLUDED-WORLDS:
     - duels
@@ -1495,32 +1488,25 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FF0000'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':hammer: **Punishment Type:** Ban
+      DESCRIPTION: |-
+        :hammer: **Punishment Type:** Ban
 
-        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
-        # The text or mode for **Player. Available options: Any string text **Player:**
+        **Player:**
         %player%
 
-        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
-        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        **Staff:**
         %staff%
 
-        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
-        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        **Reason:**
         ||%reason%||
 
-        # The text or value for # The Text Or Mode For **Duration. Available Options. Available options: Any valid string text
-        # The text or mode for **Duration. Available options: Any string text **Duration:**
+        **Duration:**
         %duration%
 
-        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
-        # The text or mode for **Date. Available options: Any string text **Date:**
+        **Date:**
         %date%
 
-        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
-        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
-
-        '
+        **ID:** `%id%`
       # The text or value for Thumbnail. Available options: Any valid string text
       THUMBNAIL: '%skin_bust%'
       # The text or value for Author Name. Available options: Any valid string text
@@ -1535,32 +1521,25 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FFFF00'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':mute: **Punishment Type:** Mute
+      DESCRIPTION: |-
+        :mute: **Punishment Type:** Mute
 
-        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
-        # The text or mode for **Player. Available options: Any string text **Player:**
+        **Player:**
         %player%
 
-        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
-        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        **Staff:**
         %staff%
 
-        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
-        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        **Reason:**
         ||%reason%||
 
-        # The text or value for # The Text Or Mode For **Duration. Available Options. Available options: Any valid string text
-        # The text or mode for **Duration. Available options: Any string text **Duration:**
+        **Duration:**
         %duration%
 
-        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
-        # The text or mode for **Date. Available options: Any string text **Date:**
+        **Date:**
         %date%
 
-        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
-        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
-
-        '
+        **ID:** `%id%`
       # The text or value for Thumbnail. Available options: Any valid string text
       THUMBNAIL: '%skin_bust%'
       # The text or value for Author Name. Available options: Any valid string text
@@ -1575,28 +1554,22 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FFA500'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':warning: **Punishment Type:** Warning
+      DESCRIPTION: |-
+        :warning: **Punishment Type:** Warning
 
-        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
-        # The text or mode for **Player. Available options: Any string text **Player:**
+        **Player:**
         %player%
 
-        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
-        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        **Staff:**
         %staff%
 
-        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
-        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        **Reason:**
         ||%reason%||
 
-        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
-        # The text or mode for **Date. Available options: Any string text **Date:**
+        **Date:**
         %date%
 
-        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
-        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
-
-        '
+        **ID:** `%id%`
       # The text or value for Thumbnail. Available options: Any valid string text
       THUMBNAIL: '%skin_bust%'
       # The text or value for Author Name. Available options: Any valid string text
@@ -1611,25 +1584,20 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FF6347'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':boot: **Punishment Type:** Kick
+      DESCRIPTION: |-
+        :boot: **Punishment Type:** Kick
 
-        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
-        # The text or mode for **Player. Available options: Any string text **Player:**
+        **Player:**
         %player%
 
-        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
-        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        **Staff:**
         %staff%
 
-        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
-        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        **Reason:**
         ||%reason%||
 
-        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
-        # The text or mode for **Date. Available options: Any string text **Date:**
+        **Date:**
         %date%
-
-        '
       # The text or value for Thumbnail. Available options: Any valid string text
       THUMBNAIL: '%skin_bust%'
       # The text or value for Author Name. Available options: Any valid string text
@@ -1644,32 +1612,25 @@ WEBHOOKS:
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#000000'
       # The text or value for Description. Available options: Any valid string text
-      DESCRIPTION: ':no_entry: **PERMANENT NETWORK BAN**
+      DESCRIPTION: |-
+        :no_entry: **PERMANENT NETWORK BAN**
 
-        # The text or value for # The Text Or Mode For **Player. Available Options. Available options: Any valid string text
-        # The text or mode for **Player. Available options: Any string text **Player:**
+        **Player:**
         %player%
 
-        # The text or value for # The Text Or Mode For **Staff. Available Options. Available options: Any valid string text
-        # The text or mode for **Staff. Available options: Any string text **Staff:**
+        **Staff:**
         %staff%
 
-        # The text or value for # The Text Or Mode For **Reason. Available Options. Available options: Any valid string text
-        # The text or mode for **Reason. Available options: Any string text **Reason:**
+        **Reason:**
         ||%reason%||
 
-        # The text or value for # The Text Or Mode For **Date. Available Options. Available options: Any valid string text
-        # The text or mode for **Date. Available options: Any string text **Date:**
+        **Date:**
         %date%
 
-        # The text or value for # The Text Or Mode For **Id. Available Options. Available options: Any valid string text
-        # The text or mode for **Id. Available options: Any string text **ID:** `%id%`
+        **ID:** `%id%`
 
-        # The text or value for # The Text Or Mode For . Available Options. Available options: Any valid string text
-        # The text or mode for . Available options: Any string text :exclamation:
+        :exclamation:
         This is a permanent network-wide ban
-
-        '
       # The text or value for Thumbnail. Available options: Any valid string text
       THUMBNAIL: '%skin_bust%'
       # The text or value for Author Name. Available options: Any valid string text
