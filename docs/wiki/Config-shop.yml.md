@@ -1209,3 +1209,37 @@ Rather than writing `ITEM-DATA` by hand, run `/shopedit <menu>` (for example `/s
 Clicking a filled slot with nothing selected removes that entry. Changes are saved to `shop.yml` as you make them, so no reload is needed.
 
 ---
+
+## Prices in Item Lore
+
+You do not keep the price in an item's `LORE` in step with `PRICE-PER-UNIT` by hand. Every lore line on a shop item runs through a substitution pass first, and the amount you typed there is a placeholder rather than the number players see.
+
+### Placeholders
+
+| Placeholder | What it renders |
+|---|---|
+| `{price_formatted}`, `%price_formatted%`, `${price_formatted}`, `${price}` | The full price with its symbol, colour and currency name: `$25,000.00` under `MONEY`, `★ 250 Shards` under `SHARD` |
+| `{price}`, `%price%` | The bare number, `25,000.00`, with no symbol and no colour of its own |
+
+Both follow the item's own `CURRENCY`, so an entry moved from `SHARD` to `MONEY` re-renders itself with no lore edit.
+
+These describe the currency rather than this item's price, and work on any lore line: `{money_symbol}`, `{money_symbol_color}`, `{money_symbol_colored}`, `{money_name}`, `{money_name_singular}`, `{money_name_plural}`, `{money_color}`, and the same seven with a `shards_` prefix.
+
+### The `Buy price:` line fills itself in
+
+A lore line containing `Buy price:` that carries no `{price` placeholder has everything after its first colon replaced with the live formatted price. `Harga beli:` does the same on Indonesian menus. Capitalisation does not matter, a colour code in front of the label does not interfere, and a label typed in unicode small caps is recognised too.
+
+So the amount written here never reaches anybody:
+
+```yaml
+    LORE:
+    - '&fBuy price: &a$1'
+```
+
+That is also why the confirm screen does not show the line twice. Any lore line reading `Buy price`, `buyprice` or `Harga beli` is dropped there, because the purchase menu prints the total itself.
+
+### What you do still maintain
+
+Wording you invented stays yours. A line like `&7Effect: Strength II`, or a menu `TITLE` that mentions shards, is untouched by any of the above and needs editing by hand when the item or the currency changes.
+
+---
