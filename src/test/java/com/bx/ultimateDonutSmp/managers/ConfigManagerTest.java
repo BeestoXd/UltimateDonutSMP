@@ -223,6 +223,67 @@ class ConfigManagerTest {
     }
 
     @Test
+    void mergeBundledDefaultsKeepsRanksMenuButtonsAdminsRenamed() throws Exception {
+        List<String> currentLines = lines(
+                "RANKS-MENU:",
+                "  TITLE: '&8Ranks'",
+                "  SIZE: 27",
+                "  BUTTONS:",
+                "    OWNER:",
+                "      MATERIAL: PLAYER_HEAD",
+                "      SLOT: 11",
+                "    MVP:",
+                "      MATERIAL: PLAYER_HEAD",
+                "      SLOT: 13"
+        );
+        List<String> bundledLines = lines(
+                "RANKS-MENU:",
+                "  TITLE: '&8Ranks'",
+                "  SIZE: 27",
+                "  BUTTONS:",
+                "    DEFAULT:",
+                "      MATERIAL: PLAYER_HEAD",
+                "      SLOT: 11",
+                "    DONUT_PLUS:",
+                "      MATERIAL: PLAYER_HEAD",
+                "      SLOT: 13"
+        );
+
+        int changes = mergeBundledDefaults("menus.yml", currentLines, bundledLines);
+
+        assertEquals(0, changes);
+        assertFalse(currentLines.contains("    DEFAULT:"),
+                "a renamed bundled rank must not come back on the slot its replacement now uses");
+        assertFalse(currentLines.contains("    DONUT_PLUS:"));
+        assertTrue(currentLines.contains("    OWNER:"));
+        assertTrue(currentLines.contains("    MVP:"));
+    }
+
+    @Test
+    void mergeBundledDefaultsStillInstallsTheRanksMenuOnConfigsThatPredateIt() throws Exception {
+        List<String> currentLines = lines(
+                "GLOBAL:",
+                "  ENABLED: true"
+        );
+        List<String> bundledLines = lines(
+                "GLOBAL:",
+                "  ENABLED: true",
+                "RANKS-MENU:",
+                "  TITLE: '&8Ranks'",
+                "  BUTTONS:",
+                "    DEFAULT:",
+                "      SLOT: 11"
+        );
+
+        int changes = mergeBundledDefaults("menus.yml", currentLines, bundledLines);
+
+        assertTrue(changes > 0);
+        assertTrue(currentLines.contains("RANKS-MENU:"));
+        assertTrue(currentLines.contains("    DEFAULT:"),
+                "the first install of the ranks menu still needs its bundled buttons");
+    }
+
+    @Test
     void mergeBundledDefaultsLeavesCompleteFileByteEquivalent() throws Exception {
         List<String> currentLines = lines(
                 "# admin header",

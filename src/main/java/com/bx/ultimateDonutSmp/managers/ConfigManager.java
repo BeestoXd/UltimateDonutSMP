@@ -1941,6 +1941,15 @@ public class ConfigManager {
             return true;
         }
 
+        // Ranks menu buttons are one advert per rank a server actually sells, so a renamed or
+        // deleted bundled rank must not come back on its old slot and collide with the button
+        // that replaced it. The BUTTONS section itself stays mergeable so configs that predate
+        // the ranks menu still receive it once.
+        if ("menus.yml".equals(resourceName)
+                && path.startsWith("RANKS-MENU.BUTTONS.")) {
+            return true;
+        }
+
         // Network server entries can be expanded per deployment.
         if ("network.yml".equals(resourceName)
                 && path.startsWith("NETWORK-STATUS.SERVERS.")) {
