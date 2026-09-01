@@ -2451,6 +2451,191 @@ SELLALL-CONFIRM-MENU:
 
 ---
 
+## Section: `RULES-MENU`
+
+Opened with `/rules`. Each button is one page of rules: the icon name is the heading, the lore is the
+list itself, so a server can split its rules across as many books as it likes. Clicking a page also
+sends a short line in chat.
+
+### 1. Commented Setup Code Example
+
+```yaml
+RULES-MENU:
+  TITLE: '&8Rules'
+  SIZE: 27
+  BUTTONS:
+    # Each key under BUTTONS is one rules page. Add or delete keys freely.
+    RULE_1:
+      MATERIAL: KNOWLEDGE_BOOK
+      SLOT: 12
+      NAME: '&#00A4FCServer Rules'
+      LORE:
+      - "&#00A4FC● &fNo Hacked Clients"
+      - "&#00A4FC● &fNo Movement Mods"
+    RULE_2:
+      MATERIAL: KNOWLEDGE_BOOK
+      SLOT: 14
+      NAME: '&#00A4FC&lChat Rules'
+      LORE:
+      - "&#00A4FC● &fNo Spamming"
+      # Leave CLICK-MESSAGE out and the plugin picks a line to suit the page.
+      CLICK-MESSAGE:
+      - '&7Read these before you type in chat.'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `RULES-MENU.TITLE` | `str` | Any string text | `'&8Rules'` | Inventory title shown at the top of the menu. |
+| `RULES-MENU.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Inventory size. Anything else falls back to `27` with a console warning. |
+| `RULES-MENU.BUTTONS.<PAGE>.MATERIAL` | `str` | Any valid material name | - | Icon material. A page with a missing or invalid material is skipped. |
+| `RULES-MENU.BUTTONS.<PAGE>.SLOT` | `int` | `0` to `SIZE - 1` | - | Slot the page renders in. Out-of-range and duplicate slots are skipped with a console warning. |
+| `RULES-MENU.BUTTONS.<PAGE>.NAME` | `str` | Any string text | Prettified button key | Icon name, which acts as the heading for that page. |
+| `RULES-MENU.BUTTONS.<PAGE>.LORE` | `list` | List of strings | `[]` | The rules themselves, one per line. |
+| `RULES-MENU.BUTTONS.<PAGE>.CLICK-MESSAGE` | `list` | List of strings | Built-in line | Sent in chat on click. Left out, the plugin reads the key and the name: a key or name mentioning chat gets the chat wording, one mentioning server gets the server wording, anything else gets a generic line. |
+
+Empty slots are always filled with `BLACK_STAINED_GLASS_PANE`. Unlike `RANKS-MENU` there is no
+`FILLER-MATERIAL` option here. If no page renders at all the menu shows a barrier instead, which
+means every page was skipped for a bad slot or a bad material. Turning `COMMANDS.RULES` off in
+`config.yml` disables the command.
+
+### 3. Practical Setup Example
+
+Three pages on one row, each with wording of its own:
+
+```yaml
+RULES-MENU:
+  TITLE: '&8Server Rules'
+  SIZE: 27
+  BUTTONS:
+    GAMEPLAY:
+      MATERIAL: DIAMOND_SWORD
+      SLOT: 11
+      NAME: '&bGameplay'
+      LORE:
+      - '&7No cheating of any kind'
+      - '&7No abusing bugs'
+      CLICK-MESSAGE:
+      - '&7Caught cheating is an instant ban.'
+    CHAT:
+      MATERIAL: PAPER
+      SLOT: 13
+      NAME: '&bChat'
+      LORE:
+      - '&7No spam, no harassment'
+    BUILDING:
+      MATERIAL: BRICKS
+      SLOT: 15
+      NAME: '&bBuilding'
+      LORE:
+      - '&7No lag machines'
+```
+
+`GAMEPLAY` and `BUILDING` have no wording of their own, so both fall back to the generic line;
+`CHAT` matches on its key and would get the chat wording even without a `CLICK-MESSAGE`.
+
+---
+
+## Section: `SERVERS-MENU`
+
+Opened with `/servers`. One icon per server on the network, coloured by whether that server answered
+the last status check, with the player count and software read from `network.yml`. The menu redraws
+itself while it stays open, and clicking an icon asks for an immediate refresh of that one server.
+
+### 1. Commented Setup Code Example
+
+```yaml
+SERVERS-MENU:
+  TITLE: '&8Ongoing Servers'
+  SIZE: 27
+  # How often the open menu redraws, in ticks. Anything under 10 is raised to 10.
+  REFRESH-TICKS: 40
+  PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
+  # One template, reused for every server icon.
+  SERVER_STATUS:
+    SERVER_NAME: '&b%server%'
+    LORE:
+    - '&8&m---------------------'
+    - '&bStatus: %status%'
+    - '&aPlayers: &a%players% online'
+    - '&eSoftware: &a%software%'
+    - '&6Performance: %performance%'
+    - '&8&m---------------------'
+    MATERIALS:
+      ONLINE: LIME_CONCRETE
+      OFFLINE: RED_CONCRETE
+  SERVERS:
+    # Each key is a server id from network.yml. Add or delete keys freely.
+    crystal:
+      SLOT: 13
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SERVERS-MENU.TITLE` | `str` | Any string text | `SERVER_STATUS.TITLE`, then `'&8Ongoing servers'` | Inventory title shown at the top of the menu. |
+| `SERVERS-MENU.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Inventory size. Anything else falls back to `27` with a console warning. |
+| `SERVERS-MENU.REFRESH-TICKS` | `int` | `10` or more | `40` | How often the open menu redraws, in ticks. Lower values are raised to `10` so the menu cannot redraw every tick. |
+| `SERVERS-MENU.PLACEHOLDER-MATERIAL` | `str` | Any valid material name | `BLACK_STAINED_GLASS_PANE` | Fills every slot no server uses. An invalid name falls back to the default. |
+| `SERVERS-MENU.SERVER_STATUS.SERVER_NAME` | `str` | Any string text | `SERVER_STATUS.NAME`, then `'&b%server%'` | Icon name template, applied to every server. |
+| `SERVERS-MENU.SERVER_STATUS.LORE` | `list` | List of strings | Built-in six-line block | Icon lore template. An empty list restores the built-in block rather than leaving the lore blank. |
+| `SERVERS-MENU.SERVER_STATUS.MATERIALS.ONLINE` | `str` | Any valid material name | `LIME_CONCRETE` | Icon material for a server that answered. Invalid names warn and fall back. |
+| `SERVERS-MENU.SERVER_STATUS.MATERIALS.OFFLINE` | `str` | Any valid material name | `RED_CONCRETE` | Icon material for a server that did not answer. Invalid names warn and fall back. |
+| `SERVERS-MENU.SERVERS.<ID>.SLOT` | `int` | `0` to `SIZE - 1` | - | Slot that server renders in. Out-of-range and duplicate slots are skipped with a console warning. |
+
+`SERVER_NAME` and `LORE` both understand these placeholders:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `%server%` | The server's display name from `network.yml` |
+| `%status%` | `&aOnline` or `&cOffline` |
+| `%players%` | Player count from the last successful check |
+| `%software%` | The software label that server reported |
+| `%performance%` | The performance label that server reported |
+| `%latency%` | Round-trip time in milliseconds |
+
+Server ids should match the keys under `NETWORK-STATUS.SERVERS` in `network.yml`. An id with no entry
+there still draws, permanently offline, and clicking it answers that the server is not configured in
+`network.yml`. Leave `SERVERS` out altogether and the menu places every server from `network.yml`
+itself, filling the inner area of the inventory in the order they are listed. Deleting or renaming an
+entry sticks, so the bundled `crystal` does not come back on the next start.
+
+`/servers` needs three things on: `COMMANDS.SERVERS` in `config.yml`, the network status feature in
+`network.yml`, and at least one server that resolves to a slot. Miss any of them and the command says
+which.
+
+### 3. Practical Setup Example
+
+A four-server network on one row, with a shorter icon:
+
+```yaml
+SERVERS-MENU:
+  TITLE: '&8Network'
+  SIZE: 27
+  REFRESH-TICKS: 20
+  SERVER_STATUS:
+    SERVER_NAME: '&b%server% &8(%latency%ms)'
+    LORE:
+    - '&bStatus: %status%'
+    - '&aPlayers: &a%players% online'
+    MATERIALS:
+      ONLINE: LIME_CONCRETE
+      OFFLINE: GRAY_CONCRETE
+  SERVERS:
+    survival:
+      SLOT: 10
+    creative:
+      SLOT: 12
+    skyblock:
+      SLOT: 14
+    events:
+      SLOT: 16
+```
+
+---
+
 
 ## Section: `VOICE-CHAT-CONSENT-MENU`
 
