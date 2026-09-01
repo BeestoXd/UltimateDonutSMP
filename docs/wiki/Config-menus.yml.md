@@ -1607,6 +1607,8 @@ PROGRESS-MENU:
 SELL-MENU:
   TITLE: '&8Place Items In Here To Sell'
   MULTIPLIER-TITLE: '&8Sell Multipliers'
+  AUTO-SELL: true
+  MODE: 'confirm'
   CROPS-BUTTON:
     MATERIAL: WHEAT
     TITLE: '&#6BF18DCrops'
@@ -1692,6 +1694,8 @@ SELL-MENU:
 | :--- | :--- | :--- | :--- | :--- |
 | `SELL-MENU.TITLE` | `str` | Any string text | `'&8Place Items In Here To Sell'` | Configures the technical `TITLE` parameter for `SELL-MENU.TITLE` in `menus.yml`. |
 | `SELL-MENU.MULTIPLIER-TITLE` | `str` | Any string text | `'&8Sell Multipliers'` | Configures the technical `MULTIPLIER-TITLE` parameter for `SELL-MENU.MULTIPLIER-TITLE` in `menus.yml`. |
+| `SELL-MENU.MODE` | `str` | `confirm`, `close`, `instant` | `'confirm'` | Decides when the menu takes payment. `confirm` shows the Confirm Sell button and gives items back if the player closes without clicking it. `close` sells the whole grid the moment the menu is shut. `instant` pays out item by item as things land, and still settles whatever is left on close. An unrecognised value falls back to `instant`. |
+| `SELL-MENU.AUTO-SELL` | `bool` | `true`, `false` | `true` | Only applies to `MODE: instant`. Leave it `true` for the item-by-item payout as things land in the grid; set it `false` and instant mode holds everything until the player shuts the menu, the same as `MODE: close`. Both `confirm` and `close` ignore it. |
 | `SELL-MENU.CROPS-BUTTON.MATERIAL` | `str` | Any string text | `'WHEAT'` | Configures the technical `MATERIAL` parameter for `SELL-MENU.CROPS-BUTTON.MATERIAL` in `menus.yml`. |
 | `SELL-MENU.CROPS-BUTTON.TITLE` | `str` | Any string text | `'&#6BF18DCrops'` | Configures the technical `TITLE` parameter for `SELL-MENU.CROPS-BUTTON.TITLE` in `menus.yml`. |
 | `SELL-MENU.CROPS-BUTTON.LORE` | `list` | List of configured items/strings | `[&7Sell crops and farming materials to, &7upgrade your sell multiplier!, ...]` | Configures the technical `LORE` parameter for `SELL-MENU.CROPS-BUTTON.LORE` in `menus.yml`. |
@@ -1726,6 +1730,8 @@ SELL-MENU:
 SELL-MENU:
   TITLE: '&8Place Items In Here To Sell'
   MULTIPLIER-TITLE: '&8Sell Multipliers'
+  AUTO-SELL: true
+  MODE: 'confirm'
   CROPS-BUTTON:
     MATERIAL: WHEAT
     TITLE: '&#6BF18DCrops'

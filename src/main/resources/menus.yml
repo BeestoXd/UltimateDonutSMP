@@ -1222,6 +1222,10 @@ PROGRESS-MENU:
 SELL-MENU:
   TITLE: '&8Place Items In Here To Sell'
   MULTIPLIER-TITLE: '&8Sell Multipliers'
+  # MODE decides when the menu takes payment. 'confirm' shows the Confirm Sell button and gives
+  # items back if the player closes without clicking it. 'close' sells the whole grid the moment
+  # the menu is shut. 'instant' pays out item by item as things land, and AUTO-SELL only applies
+  # there: set it false and instant behaves like 'close'.
   AUTO-SELL: true
   MODE: "confirm"
   CONFIRM-BUTTON:
