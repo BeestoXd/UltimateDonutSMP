@@ -82,6 +82,29 @@ public class MaintenanceManager {
         return plugin.getConfigManager().getNetwork().getString("MAINTENANCE.LOBBY_WORLD", "WORLD");
     }
 
+    /**
+     * Whether maintenance has somewhere to put a player. When it does not, the player is refused at
+     * login instead of being allowed into the world and kicked a couple of seconds later.
+     */
+    public boolean hasLobbyDestination() {
+        if (isUseProxy()) {
+            return isLobbyServerSet(getLobbyServer());
+        }
+        return resolveLocalDestination() != null;
+    }
+
+    static boolean isLobbyServerSet(String lobbyServer) {
+        return lobbyServer != null && !lobbyServer.isBlank();
+    }
+
+    public Location resolveLocalDestination() {
+        World world = Bukkit.getWorld(getLobbyWorld());
+        if (world != null) {
+            return world.getSpawnLocation();
+        }
+        return plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.SPAWN);
+    }
+
     public void setLobbyServer(String lobbyServer) {
         this.customLobbyServer = lobbyServer;
         save();
@@ -137,15 +160,9 @@ public class MaintenanceManager {
             if (useProxy) {
                 sendToLobby(player, lobby);
             } else {
-                String worldName = getLobbyWorld();
-                World world = Bukkit.getWorld(worldName);
-                if (world != null) {
-                    plugin.getSpigotScheduler().teleport(player, world.getSpawnLocation());
-                } else {
-                    Location defaultSpawn = plugin.getSpawnManager().resolveCommandDestination(SpawnManager.AreaType.SPAWN);
-                    if (defaultSpawn != null) {
-                        plugin.getSpigotScheduler().teleport(player, defaultSpawn);
-                    }
+                Location destination = resolveLocalDestination();
+                if (destination != null) {
+                    plugin.getSpigotScheduler().teleport(player, destination);
                 }
             }
         }

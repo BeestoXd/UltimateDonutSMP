@@ -253,6 +253,54 @@ NETWORK-STATUS:
       SOURCE:
         TYPE: LOCAL
 ```
-
 ---
 
+## Section: `MAINTENANCE`
+
+### 1. Commented Setup Code Example
+
+```yaml
+# Maintenance mode behaviour (/maintenance on|off|status|setlobby)
+MAINTENANCE:
+  # Permission node that lets a player join while maintenance mode is active
+  BYPASS_PERMISSION: ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS
+
+  # Move players to another server through the proxy (true) or keep them on this one (false)
+  USE_PROXY: true
+
+  # Proxy server players are moved to while maintenance is active, used when USE_PROXY is true.
+  # Leave it empty when this server has no lobby to hand players to: maintenance then refuses
+  # the connection at login instead of letting players in and kicking them a moment later
+  LOBBY_SERVER: lobby
+
+  # World players are teleported to while maintenance is active, used when USE_PROXY is false.
+  # Falls back to the spawn location when that world is not loaded, and refuses the connection
+  # at login when neither one resolves
+  LOBBY_WORLD: WORLD
+
+  # Countdown in seconds shown before players are sent back once the server returns
+  RECONNECT_DELAY_SECONDS: 5
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `MAINTENANCE.BYPASS_PERMISSION` | `str` | Any permission node | `'ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS'` | Players holding this node join normally while maintenance is active and are never moved or kicked by it. |
+| `MAINTENANCE.USE_PROXY` | `bool` | `true`, `false` | `true` | `true` hands players to another server over the BungeeCord/Velocity plugin channel. `false` keeps them on this server and teleports them instead. |
+| `MAINTENANCE.LOBBY_SERVER` | `str` | Any proxy server name, or empty | `'lobby'` | Destination used when `USE_PROXY` is `true`. `/maintenance setlobby <server>` overrides it at runtime. Leave it empty on a server with no lobby: the connection is then refused during login, so players never enter the world. |
+| `MAINTENANCE.LOBBY_WORLD` | `str` | Any loaded world name | `'WORLD'` | Destination used when `USE_PROXY` is `false`. When that world is not loaded the spawn location is used, and when neither resolves the connection is refused during login. |
+| `MAINTENANCE.RECONNECT_DELAY_SECONDS` | `int` | Any valid integer number | `'5'` | Countdown shown to players waiting to be sent back once the server reports itself online again over Redis. `0` sends them back straight away. |
+
+### 3. Practical Setup Example
+
+A single server with no lobby to hand players to. `/maintenance on` refuses every connection except staff holding the bypass node:
+
+```yaml
+MAINTENANCE:
+  BYPASS_PERMISSION: ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS
+  USE_PROXY: true
+  LOBBY_SERVER: ''
+```
+
+---

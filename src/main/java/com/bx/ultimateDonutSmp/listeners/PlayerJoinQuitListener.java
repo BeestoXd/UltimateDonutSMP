@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import com.bx.ultimateDonutSmp.models.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -43,6 +42,18 @@ public class PlayerJoinQuitListener implements Listener {
                     ColorUtils.colorize(plugin.getServerWipeManager().getMaintenanceMessage())
             );
             return;
+        }
+        if (plugin.getMaintenanceManager() != null) {
+            String bypassPerm = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.BYPASS_PERMISSION", "ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS");
+            if (deniesMaintenanceLogin(
+                    plugin.getMaintenanceManager().isMaintenanceActive(),
+                    event.getPlayer().hasPermission(bypassPerm),
+                    plugin.getMaintenanceManager().hasLobbyDestination()
+            )) {
+                String kickMessage = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cThis server is in maintenance and no lobby is available.");
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ColorUtils.colorize(kickMessage));
+                return;
+            }
         }
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
@@ -114,12 +125,11 @@ public class PlayerJoinQuitListener implements Listener {
                         }
                     }
 
-                    String lobbyWorld = plugin.getConfigManager().getNetwork().getString("MAINTENANCE.LOBBY_WORLD", "WORLD");
-                    org.bukkit.World world = Bukkit.getWorld(lobbyWorld);
-                    if (world != null) {
+                    Location destination = plugin.getMaintenanceManager().resolveLocalDestination();
+                    if (destination != null) {
                         plugin.getSpigotScheduler().runEntityLater(player, () -> {
                             if (player.isOnline()) {
-                                plugin.getSpigotScheduler().teleport(player, world.getSpawnLocation());
+                                plugin.getSpigotScheduler().teleport(player, destination);
                             }
                         }, 1L);
                     }
@@ -322,6 +332,10 @@ public class PlayerJoinQuitListener implements Listener {
 
     static long firstJoinSpawnDelayTicks(long configured) {
         return Math.max(1L, Math.min(MAX_FIRST_JOIN_SPAWN_DELAY_TICKS, configured));
+    }
+
+    static boolean deniesMaintenanceLogin(boolean maintenanceActive, boolean hasBypass, boolean hasLobbyDestination) {
+        return maintenanceActive && !hasBypass && !hasLobbyDestination;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
