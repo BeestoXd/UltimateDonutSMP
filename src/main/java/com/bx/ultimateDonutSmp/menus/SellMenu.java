@@ -35,6 +35,7 @@ public class SellMenu extends BaseMenu {
     );
 
     private boolean processScheduled;
+    private String mode = "instant";
     private boolean confirmMode;
     private Player player;
 
@@ -49,8 +50,8 @@ public class SellMenu extends BaseMenu {
     public void build(Player player) {
         this.player = player;
         FileConfiguration menus = plugin.getConfigManager().getMenus();
-        String modeStr = menus.getString("SELL-MENU.MODE", "instant");
-        this.confirmMode = isConfirmMode(modeStr);
+        this.mode = menus.getString("SELL-MENU.MODE", "instant");
+        this.confirmMode = isConfirmMode(mode);
 
         clear();
         if (confirmMode) {
@@ -150,7 +151,7 @@ public class SellMenu extends BaseMenu {
     @Override
     public void onClose(Player player) {
         int sellableEnd = getSellableSlotEnd();
-        if (sellsOnClose(confirmMode)) {
+        if (sellsOnClose(mode)) {
             plugin.getShopManager().sellInventoryContents(player, inventory, 0, sellableEnd);
         }
 
@@ -236,7 +237,7 @@ public class SellMenu extends BaseMenu {
 
     private boolean isAutoSellEnabled() {
         return sellsWhileOpen(
-                confirmMode,
+                mode,
                 plugin.getConfigManager().getMenus().getBoolean("SELL-MENU.AUTO-SELL", true)
         );
     }
@@ -245,13 +246,18 @@ public class SellMenu extends BaseMenu {
         return "confirm".equalsIgnoreCase(mode);
     }
 
-    static boolean sellsWhileOpen(boolean confirmMode, boolean autoSell) {
-        return !confirmMode && autoSell;
+    static boolean isCloseMode(String mode) {
+        return "close".equalsIgnoreCase(mode);
+    }
+
+    // Close mode ignores AUTO-SELL outright: waiting for the close is the whole point of it.
+    static boolean sellsWhileOpen(String mode, boolean autoSell) {
+        return !isConfirmMode(mode) && !isCloseMode(mode) && autoSell;
     }
 
     // AUTO-SELL only governs selling while the menu is open, so closing it still settles the grid.
     // Confirm mode is the exception: it has its own button, so closing cancels instead.
-    static boolean sellsOnClose(boolean confirmMode) {
-        return !confirmMode;
+    static boolean sellsOnClose(String mode) {
+        return !isConfirmMode(mode);
     }
 }
