@@ -5,37 +5,6 @@ Each section details the exact commented setup code block, allowed option values
 
 ---
 
-## Section: `SETTINGS`
-
-### 1. Commented Setup Code Example
-
-```yaml
-SETTINGS:
-  # Determines whether Radius is enabled or disabled. Available options: true, false
-  RADIUS: true
-  # The numerical value for Chunks. Available options: Any valid integer
-  CHUNKS: 5
-```
-
-### 2. Key Options & Technical Breakdown
-
-| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
-| :--- | :--- | :--- | :--- | :--- |
-| `SETTINGS.RADIUS` | `bool` | `true`, `false` | `true` | If `true`, death messages are restricted to nearby chunk radii. Set to `false` to broadcast death messages GLOBALLY server-wide. |
-| `SETTINGS.CHUNKS` | `int` | Any valid integer number | `'5'` | Configures the technical `CHUNKS` parameter for `SETTINGS.CHUNKS` in `death-messages.yml`. |
-
-### 3. Practical Setup Example
-
-```yaml
-SETTINGS:
-  # Determines whether Radius is enabled or disabled. Available options: true, false
-  RADIUS: true
-  # The numerical value for Chunks. Available options: Any valid integer
-  CHUNKS: 5
-```
-
----
-
 ## Section: `MESSAGES`
 
 ### 1. Commented Setup Code Example

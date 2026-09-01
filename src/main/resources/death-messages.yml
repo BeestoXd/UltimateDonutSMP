@@ -1,9 +1,3 @@
-# Configuration section for Settings.
-SETTINGS:
-  # Determines whether Radius is enabled or disabled. Available options: true, false
-  RADIUS: true
-  # The numerical value for Chunks. Available options: Any valid integer
-  CHUNKS: 5
 MESSAGES:
   # Determines whether Enabled is enabled or disabled. Available options: true, false
   ENABLED: true

@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,15 +53,29 @@ class DeathMessageAudienceTest {
 
     @Test
     void bundledDeathMessagesShipEnabled() {
+        YamlConfiguration config = bundledDeathMessages();
+        assertTrue(config.isBoolean("MESSAGES.ENABLED"));
+        assertTrue(config.getBoolean("MESSAGES.ENABLED"));
+    }
+
+    /**
+     * The file used to ship a SETTINGS block promising a radius the plugin never read, so an owner
+     * could set it either way and watch nothing happen. Only MESSAGES is wired up; a key here that
+     * nothing reads is a setting admins waste an evening on.
+     */
+    @Test
+    void bundledDeathMessagesShipNothingTheCodeIgnores() {
+        assertEquals(Set.of("MESSAGES"), bundledDeathMessages().getKeys(false));
+    }
+
+    private static YamlConfiguration bundledDeathMessages() {
         var stream = DeathMessageAudienceTest.class.getClassLoader()
                 .getResourceAsStream("death-messages.yml");
         assertNotNull(stream);
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(
+        return YamlConfiguration.loadConfiguration(
                 new InputStreamReader(stream, StandardCharsets.UTF_8)
         );
-        assertTrue(config.isBoolean("MESSAGES.ENABLED"));
-        assertTrue(config.getBoolean("MESSAGES.ENABLED"));
     }
 
     private static PlayerData newPlayer() {
