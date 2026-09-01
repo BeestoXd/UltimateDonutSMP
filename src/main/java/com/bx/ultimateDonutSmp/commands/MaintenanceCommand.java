@@ -61,11 +61,14 @@ public class MaintenanceCommand implements CommandExecutor, TabCompleter {
                 String lobby = mm.getLobbyServer();
                 sender.sendMessage(ColorUtils.toComponent("&d&lMaintenance status:"));
                 sender.sendMessage(ColorUtils.toComponent("  &fActive: " + (active ? "&aYes" : "&cNo")));
-                sender.sendMessage(ColorUtils.toComponent("  &fLobby server: &b" + lobby));
+                sender.sendMessage(ColorUtils.toComponent("  &fLobby server: " + describeLobbyServer(lobby)));
             }
             case "setlobby" -> {
-                if (args.length < 2) {
-                    sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " setlobby <server>"));
+                if (clearsLobbyServer(args)) {
+                    mm.setLobbyServer(null);
+                    sender.sendMessage(ColorUtils.toComponent(
+                            "&aLobby server cleared. network.yml decides it now: "
+                                    + describeLobbyServer(mm.getLobbyServer()) + "&a."));
                     return true;
                 }
                 String lobby = args[1];
@@ -75,6 +78,21 @@ public class MaintenanceCommand implements CommandExecutor, TabCompleter {
             default -> sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <on|off|status|setlobby [server]>"));
         }
         return true;
+    }
+
+    /**
+     * Leaving the server name off clears the stored lobby, which is the only way back to the
+     * MAINTENANCE.LOBBY_SERVER value in network.yml once one has been set in game.
+     */
+    static boolean clearsLobbyServer(String[] args) {
+        return args.length < 2 || args[1].isBlank();
+    }
+
+    static String describeLobbyServer(String lobby) {
+        if (lobby == null || lobby.isBlank()) {
+            return "&7none, so players without the bypass permission cannot connect";
+        }
+        return "&b" + lobby;
     }
 
     @Override

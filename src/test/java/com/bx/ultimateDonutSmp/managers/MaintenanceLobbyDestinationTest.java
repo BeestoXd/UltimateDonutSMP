@@ -7,6 +7,7 @@ import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaintenanceLobbyDestinationTest {
@@ -31,5 +32,13 @@ class MaintenanceLobbyDestinationTest {
         assertFalse(MaintenanceManager.isLobbyServerSet(""));
         assertFalse(MaintenanceManager.isLobbyServerSet("   "));
         assertFalse(MaintenanceManager.isLobbyServerSet(null));
+    }
+
+    @Test
+    void clearingTheStoredLobbyLeavesNothingBehindInTheStateFile() {
+        assertNull(MaintenanceManager.normalizeLobbyServer(null));
+        assertNull(MaintenanceManager.normalizeLobbyServer(""));
+        assertNull(MaintenanceManager.normalizeLobbyServer("   "));
+        assertEquals("hub", MaintenanceManager.normalizeLobbyServer("hub"));
     }
 }

@@ -288,7 +288,7 @@ MAINTENANCE:
 | :--- | :--- | :--- | :--- | :--- |
 | `MAINTENANCE.BYPASS_PERMISSION` | `str` | Any permission node | `'ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS'` | Players holding this node join normally while maintenance is active and are never moved or kicked by it. |
 | `MAINTENANCE.USE_PROXY` | `bool` | `true`, `false` | `true` | `true` hands players to another server over the BungeeCord/Velocity plugin channel. `false` keeps them on this server and teleports them instead. |
-| `MAINTENANCE.LOBBY_SERVER` | `str` | Any proxy server name, or empty | `'lobby'` | Destination used when `USE_PROXY` is `true`. `/maintenance setlobby <server>` overrides it at runtime. Leave it empty on a server with no lobby: the connection is then refused during login, so players never enter the world. |
+| `MAINTENANCE.LOBBY_SERVER` | `str` | Any proxy server name, or empty | `'lobby'` | Destination used when `USE_PROXY` is `true`. `/maintenance setlobby <server>` overrides it at runtime, and `/maintenance setlobby` with no name clears that override and hands the decision back to this key. Leave it empty on a server with no lobby: the connection is then refused during login, so players never enter the world. |
 | `MAINTENANCE.LOBBY_WORLD` | `str` | Any loaded world name | `'WORLD'` | Destination used when `USE_PROXY` is `false`. When that world is not loaded the spawn location is used, and when neither resolves the connection is refused during login. |
 | `MAINTENANCE.RECONNECT_DELAY_SECONDS` | `int` | Any valid integer number | `'5'` | Countdown shown to players waiting to be sent back once the server reports itself online again over Redis. `0` sends them back straight away. |
 
