@@ -555,15 +555,18 @@ public class SpawnManager {
             return;
         }
 
-        String regionLocationPath = SETUP_SHARD_REGION_PATH + "."
-                + (type == AreaType.SPAWN ? MENU_LOCATION_KEY : "AFK-LOCATION");
-        if (!setupOwnsShardRegion(config.getString(regionLocationPath), previousSetupLocation)) {
-            return;
-        }
-
         String cuboidName = trimToNull(menus.getString(target.path() + ".CUBOID"));
         if (cuboidName == null) {
             cuboidName = defaultCuboidName(type, parsePositiveInt(target.areaId(), 1));
+        }
+
+        String regionLocationPath = SETUP_SHARD_REGION_PATH + "."
+                + (type == AreaType.SPAWN ? MENU_LOCATION_KEY : "AFK-LOCATION");
+        String regionCuboidPath = SETUP_SHARD_REGION_PATH + "."
+                + (type == AreaType.SPAWN ? "CUBOID" : "AFK-CUBOID");
+        if (!setupOwnsShardRegion(config.getString(regionLocationPath), previousSetupLocation)
+                || !setupOwnsShardCuboid(config.getString(regionCuboidPath), cuboidName)) {
+            return;
         }
 
         config.set(SETUP_SHARD_REGION_PATH + ".ENABLED", true);
@@ -596,6 +599,23 @@ public class SpawnManager {
 
         String previous = previousSetupLocation == null ? "" : previousSetupLocation.trim();
         return current.equalsIgnoreCase(previous);
+    }
+
+    /**
+     * The bound cuboid half of the same question. A region setup filled in names the cuboid setup
+     * would pick for the area being saved, so that name is still setup's to move. Any other name got
+     * there from /cuboid bind, which sets the cuboid without ever writing a LOCATION, so the check
+     * above still reads the region as empty and this is the only thing keeping a bound shard zone
+     * from being pointed back at spawn.
+     */
+    static boolean setupOwnsShardCuboid(String regionCuboid, String setupCuboidName) {
+        String current = regionCuboid == null ? "" : regionCuboid.trim();
+        if (current.isEmpty()) {
+            return true;
+        }
+
+        String setupName = setupCuboidName == null ? "" : setupCuboidName.trim();
+        return current.equalsIgnoreCase(setupName);
     }
 
     private SetupAreaTarget findNextSetupAreaTarget(AreaType type) {
