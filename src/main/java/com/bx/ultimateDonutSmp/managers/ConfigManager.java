@@ -1722,23 +1722,6 @@ public class ConfigManager {
         return index;
     }
 
-    private void removeYamlNodeBlock(List<String> lines, YamlPathLine node) {
-        int start = attachedCommentStart(lines, node.lineIndex);
-        int end = findYamlNodeEnd(lines, node);
-        lines.subList(start, end).clear();
-        collapseBlankLinesAt(lines, Math.max(0, start - 1));
-    }
-
-    private void collapseBlankLinesAt(List<String> lines, int aroundIndex) {
-        int index = Math.max(1, Math.min(aroundIndex + 1, lines.size() - 1));
-        while (index < lines.size()
-                && index > 0
-                && lines.get(index).trim().isEmpty()
-                && lines.get(index - 1).trim().isEmpty()) {
-            lines.remove(index);
-        }
-    }
-
     private void appendYamlTopLevelBlock(List<String> target, List<String> block) {
         List<String> cleanBlock = trimYamlBlock(block);
         if (cleanBlock.isEmpty()) {
