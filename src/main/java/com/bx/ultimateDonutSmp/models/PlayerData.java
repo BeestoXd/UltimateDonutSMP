@@ -915,6 +915,15 @@ public class PlayerData {
         dirty = true;
     }
 
+    /**
+     * Death lines go to the whole server, so this setting is only a mute switch. The value is
+     * stored as a {@link TwoChoice} because join and leave messages share the type, and there the
+     * second value narrows the feed to followed players.
+     */
+    public boolean isDeathMessagesEnabled() {
+        return deathMessagesChoice != TwoChoice.OFF;
+    }
+
     public boolean isAdvancementMessagesEnabled() {
         return advancementMessagesEnabled;
     }

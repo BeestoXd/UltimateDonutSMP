@@ -1019,8 +1019,9 @@ SETTINGS-MENU:
     #   DEFAULT: <value>  Starting value for players who never touched the setting.
     #                     On/off buttons take true or false. The privacy buttons
     #                     (PRIVATE_MESSAGES, TPA_REQUESTS, TPA_HERE_REQUESTS, PAYMENTS)
-    #                     take ANYONE, FRIENDS_FOLLOWED or OFF, and DEATH_MESSAGES and
-    #                     JOIN_LEAVE_MESSAGES take FRIENDS_FOLLOWED or OFF.
+    #                     take ANYONE, FRIENDS_FOLLOWED or OFF, and JOIN_LEAVE_MESSAGES
+    #                     takes FRIENDS_FOLLOWED or OFF. DEATH_MESSAGES is on or off:
+    #                     the death feed is server wide, so the button only mutes it.
     #                     true/false also work as shortcuts.
     #   ENABLED: false    Removes the option from /settings and pins every player to the
     #                     DEFAULT above. Use this instead of deleting the block - deleted
@@ -1147,8 +1148,9 @@ SETTINGS-MENU:
     #   DEFAULT: <value>  Starting value for players who never touched the setting.
     #                     On/off buttons take true or false. The privacy buttons
     #                     (PRIVATE_MESSAGES, TPA_REQUESTS, TPA_HERE_REQUESTS, PAYMENTS)
-    #                     take ANYONE, FRIENDS_FOLLOWED or OFF, and DEATH_MESSAGES and
-    #                     JOIN_LEAVE_MESSAGES take FRIENDS_FOLLOWED or OFF.
+    #                     take ANYONE, FRIENDS_FOLLOWED or OFF, and JOIN_LEAVE_MESSAGES
+    #                     takes FRIENDS_FOLLOWED or OFF. DEATH_MESSAGES is on or off:
+    #                     the death feed is server wide, so the button only mutes it.
     #                     true/false also work as shortcuts.
     #   ENABLED: false    Removes the option from /settings and pins every player to the
     #                     DEFAULT above. Use this instead of deleting the block - deleted
@@ -1195,9 +1197,9 @@ documented above.
 **Which values a setting accepts.** On/off buttons take `true` or `false` (`on`/`off`, `yes`/`no`
 and `enabled`/`disabled` are accepted too). The privacy buttons — `PRIVATE_MESSAGES`,
 `TPA_REQUESTS`, `TPA_HERE_REQUESTS`, `PAYMENTS`, `ADVANCEMENT_MESSAGES` and
-`JOIN_LEAVE_MESSAGES` — take `ANYONE`, `FRIENDS_FOLLOWED` or `OFF`, and `DEATH_MESSAGES` takes
-`FRIENDS_FOLLOWED` or `OFF`. On those buttons `true` is shorthand for `ANYONE`
-(`FRIENDS_FOLLOWED` for `DEATH_MESSAGES`) and `false` is shorthand for `OFF`. `DISABLE_MOB_SPAWN`
+`JOIN_LEAVE_MESSAGES` — take `ANYONE`, `FRIENDS_FOLLOWED` or `OFF`. On those buttons `true` is
+shorthand for `ANYONE` and `false` is shorthand for `OFF`. `DEATH_MESSAGES` is a plain on/off
+button: the death feed goes to the whole server, so the setting only mutes it. `DISABLE_MOB_SPAWN`
 and `DISABLE_PHANTOM_SPAWN` follow the button label, so `DEFAULT: true` means the prevention is
 on and the mobs stop spawning. An unusable value is ignored and logged as a console warning.
 

@@ -4,7 +4,6 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
 import com.bx.ultimateDonutSmp.managers.ShardManager;
 import com.bx.ultimateDonutSmp.models.PlayerData;
-import com.bx.ultimateDonutSmp.models.TwoChoice;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -136,29 +135,27 @@ public class PlayerDeathListener implements Listener {
                 .getBoolean("MESSAGES.ENABLED", true)) {
             final String finalDeathMsg = deathMsg;
             plugin.getSpigotScheduler().forEachOnlinePlayer(p -> {
-                if (shouldReceiveDeathMessage(p, victim)) {
+                if (shouldReceiveDeathMessage(plugin.getPlayerDataManager().get(p))) {
                     p.sendMessage(ColorUtils.toComponent(finalDeathMsg));
                 }
             });
+            // Clearing the vanilla message above also takes the death out of the server log, which
+            // is where an owner looks when nobody was online to read the chat line.
+            org.bukkit.Bukkit.getConsoleSender().sendMessage(finalDeathMsg);
         }
 
         plugin.getCombatManager().clearTag(victim.getUniqueId());
         plugin.getRtpZoneManager().clearState(victim);
     }
 
-    private boolean shouldReceiveDeathMessage(Player receiver, Player victim) {
-        PlayerData receiverData = plugin.getPlayerDataManager().get(receiver);
-        if (receiverData == null) {
-            return true;
-        }
-        TwoChoice choice = receiverData.getDeathMessagesChoice();
-        if (choice == TwoChoice.OFF) {
-            return false;
-        }
-        if (choice == TwoChoice.FRIENDS_FOLLOWED) {
-            return plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(receiver.getUniqueId(), victim.getUniqueId());
-        }
-        return true;
+    /**
+     * Everyone online reads the death feed unless they muted it, and a player the store has no row
+     * for yet is treated as not having muted it. Narrowing the feed to players who follow the
+     * victim, the way join and leave messages are narrowed, emptied it completely: a fresh server
+     * has nobody following anybody, and the victim does not follow themselves either.
+     */
+    static boolean shouldReceiveDeathMessage(PlayerData receiverData) {
+        return receiverData == null || receiverData.isDeathMessagesEnabled();
     }
 
     private String buildDeathMessage(PlayerDeathEvent event, Player victim, Player killer) {
