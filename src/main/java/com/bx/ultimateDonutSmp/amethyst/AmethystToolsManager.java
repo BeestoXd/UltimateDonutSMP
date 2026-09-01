@@ -569,8 +569,8 @@ public class AmethystToolsManager {
         }
     }
 
-    public void expireHeldItem(Player player) {
-        int slot = player.getInventory().getHeldItemSlot();
+    /** Expires whatever amethyst tool sits in the given slot, main hand or off hand alike. */
+    public void expireItemInSlot(Player player, int slot) {
         ItemStack item = player.getInventory().getItem(slot);
         if (isAmethystTool(item)) {
             expireItem(player, slot, item, true);

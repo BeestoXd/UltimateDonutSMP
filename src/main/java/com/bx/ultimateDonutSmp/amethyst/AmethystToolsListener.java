@@ -45,6 +45,9 @@ import java.util.Set;
 
 public class AmethystToolsListener implements Listener {
 
+    /** PlayerInventory keeps the off hand at slot 40; the main hand moves with the hotbar cursor. */
+    private static final int OFF_HAND_SLOT = 40;
+
     private final UltimateDonutSmp plugin;
     private final AmethystToolsManager manager;
     private final ThreadLocal<Boolean> isProcessingAoe = ThreadLocal.withInitial(() -> false);
@@ -66,6 +69,16 @@ public class AmethystToolsListener implements Listener {
     /** Breaking a block in creative drops nothing in vanilla, so neither does an amethyst tool. */
     static boolean shouldDropAoeLoot(GameMode gameMode) {
         return gameMode != GameMode.CREATIVE;
+    }
+
+    /**
+     * Where a consumed item actually sat. Drinking is not always main-hand - a potion in the off
+     * hand is used whenever the main-hand item has no use of its own - so the slot has to come from
+     * the hand the event reports rather than from whatever the hotbar cursor happens to be on.
+     * A null hand falls back to the held slot, which is what the pre-1.19.2 event assumed.
+     */
+    static int consumedSlot(EquipmentSlot hand, int heldSlot) {
+        return hand == EquipmentSlot.OFF_HAND ? OFF_HAND_SLOT : heldSlot;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -107,7 +120,7 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
-        if (!canUseTool(player, item, type, false, true)) {
+        if (!canUseTool(player, item, type, false, true, EquipmentSlot.HAND)) {
             event.setCancelled(true);
             player.sendBlockChange(event.getBlock().getLocation(), event.getBlock().getBlockData());
             return;
@@ -314,7 +327,7 @@ public class AmethystToolsListener implements Listener {
                 if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                     return;
                 }
-                if (!canUseTool(player, item, type, true, true)) {
+                if (!canUseTool(player, item, type, true, true, EquipmentSlot.HAND)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -325,7 +338,7 @@ public class AmethystToolsListener implements Listener {
                 if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
                     return;
                 }
-                if (!canUseTool(player, item, type, true, true)) {
+                if (!canUseTool(player, item, type, true, true, EquipmentSlot.HAND)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -417,7 +430,7 @@ public class AmethystToolsListener implements Listener {
                 manager.getMessage("BUCKET-DRAIN", "{count}", String.valueOf(waterBlocks.size()))));
     }
 
-    private void handleShardBooster(Player player) {
+    private void handleShardBooster(Player player, EquipmentSlot hand) {
         manager.suppressVisualSync(player.getUniqueId());
         ShardManager shardManager = plugin.getShardManager();
         long durationMillis = manager.getShardBoosterDurationSeconds() * 1000L;
@@ -427,7 +440,7 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
-        int slot = player.getInventory().getHeldItemSlot();
+        int slot = consumedSlot(hand, player.getInventory().getHeldItemSlot());
         player.getInventory().setItem(slot, null);
         SoundUtils.play(player, manager.getSound("ACTIVATE"));
         manager.spawnAmethystParticles(player.getLocation().add(0, 1, 0));
@@ -442,6 +455,8 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
+        EquipmentSlot hand = event.getHand();
+
         if (shouldManageInventory(player.getGameMode())) {
             manager.ensureIdentity(item, player.getUniqueId(), false);
         }
@@ -450,12 +465,12 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
-        if (!canUseTool(player, item, type, false, true)) {
+        if (!canUseTool(player, item, type, false, true, hand)) {
             event.setCancelled(true);
             return;
         }
 
-        handleShardBooster(player);
+        handleShardBooster(player, hand);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -646,7 +661,7 @@ public class AmethystToolsListener implements Listener {
         itemEntity.setItemStack(stack);
     }
 
-    private boolean canUseTool(Player player, ItemStack item, AmethystToolType type, boolean checkCooldown, boolean sendFeedback) {
+    private boolean canUseTool(Player player, ItemStack item, AmethystToolType type, boolean checkCooldown, boolean sendFeedback, EquipmentSlot hand) {
         if (!manager.hasValidSignature(item)) {
             return false;
         }
@@ -659,7 +674,7 @@ public class AmethystToolsListener implements Listener {
         }
 
         if (manager.isExpired(item)) {
-            manager.expireHeldItem(player);
+            manager.expireItemInSlot(player, consumedSlot(hand, player.getInventory().getHeldItemSlot()));
             return false;
         }
 
