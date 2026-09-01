@@ -87,7 +87,7 @@ public class StaffModeListener implements Listener {
         }
 
         event.setCancelled(true);
-        org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+        plugin.getSpigotScheduler().runEntity(player, () -> {
             if (player.isOnline()) {
                 player.updateInventory();
             }

@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.listeners;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.StaffModeManager;
 import com.bx.ultimateDonutSmp.staff.StaffToolType;
+import com.bx.ultimateDonutSmp.utils.SpigotScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -130,6 +131,12 @@ class StaffModeListenerTest {
         Field smmField = UltimateDonutSmp.class.getDeclaredField("staffModeManager");
         smmField.setAccessible(true);
         smmField.set(mockPlugin, mockStaffModeManager);
+
+        // Blocked drops schedule the inventory refresh through SpigotScheduler, so the mock plugin
+        // needs one; off Folia it routes straight back to the mock server's scheduler.
+        Field schedulerField = UltimateDonutSmp.class.getDeclaredField("SpigotScheduler");
+        schedulerField.setAccessible(true);
+        schedulerField.set(mockPlugin, new SpigotScheduler(mockPlugin));
 
         staffModeManager = mockStaffModeManager;
         listener = new StaffModeListener(mockPlugin);

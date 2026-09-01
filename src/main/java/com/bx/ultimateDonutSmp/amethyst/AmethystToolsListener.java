@@ -602,7 +602,7 @@ public class AmethystToolsListener implements Listener {
         if (!manager.hasValidSignature(item) || item.getAmount() > 1) {
             event.setCancelled(true);
             manager.sanitizeHeldItem(player, false);
-            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.updateInventory();
                 }
@@ -613,7 +613,7 @@ public class AmethystToolsListener implements Listener {
         if (manager.isExpired(item)) {
             event.setCancelled(true);
             manager.sanitizeHeldItem(player, true);
-            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+            plugin.getSpigotScheduler().runEntity(player, () -> {
                 if (player.isOnline()) {
                     player.updateInventory();
                 }
