@@ -42,6 +42,28 @@ class AmethystShardShopConfigurationTest {
         }
     }
 
+    @Test
+    void everyShardShopSectionBelongsToAToolTheCodeReads() {
+        YamlConfiguration configuration = loadResource();
+        ConfigurationSection tools = configuration.getConfigurationSection("AMETHYST-TOOLS");
+        assertNotNull(tools, "AMETHYST-TOOLS");
+
+        Set<String> known = new HashSet<>();
+        for (AmethystToolType type : AmethystToolType.values()) {
+            known.add(type.getConfigKey());
+        }
+
+        for (String key : tools.getKeys(false)) {
+            ConfigurationSection section = tools.getConfigurationSection(key);
+            if (section == null || !section.isConfigurationSection("SHARD-SHOP")) {
+                continue;
+            }
+            // Both the loader and the validator walk AmethystToolType, so a shard shop under
+            // any other key is config nobody ever reads.
+            assertTrue(known.contains(key), "AMETHYST-TOOLS." + key + " has a SHARD-SHOP but no tool type reads it");
+        }
+    }
+
     private YamlConfiguration loadResource() {
         var file = new java.io.File("src/main/resources/amethyst-tools.yml");
         return YamlConfiguration.loadConfiguration(file);
