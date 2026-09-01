@@ -111,3 +111,24 @@ NETWORK-STATUS:
       DISPLAY: Crystal
       SOURCE:
         TYPE: LOCAL
+
+# Maintenance mode behaviour (/maintenance on|off|status|setlobby)
+MAINTENANCE:
+  # Permission node that lets a player join while maintenance mode is active
+  BYPASS_PERMISSION: ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS
+
+  # Move players to another server through the proxy (true) or keep them on this one (false)
+  USE_PROXY: true
+
+  # Proxy server players are moved to while maintenance is active, used when USE_PROXY is true.
+  # Leave it empty when this server has no lobby to hand players to: maintenance then refuses
+  # the connection at login instead of letting players in and kicking them a moment later
+  LOBBY_SERVER: lobby
+
+  # World players are teleported to while maintenance is active, used when USE_PROXY is false.
+  # Falls back to the spawn location when that world is not loaded, and refuses the connection
+  # at login when neither one resolves
+  LOBBY_WORLD: WORLD
+
+  # Countdown in seconds shown before players are sent back once the server returns
+  RECONNECT_DELAY_SECONDS: 5
