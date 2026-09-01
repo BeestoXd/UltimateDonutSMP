@@ -284,6 +284,95 @@ class ConfigManagerTest {
     }
 
     @Test
+    void mergeBundledDefaultsKeepsRulesButtonsAdminsRenamed() throws Exception {
+        List<String> currentLines = lines(
+                "RULES-MENU:",
+                "  TITLE: '&8Rules'",
+                "  SIZE: 27",
+                "  BUTTONS:",
+                "    HOUSE_RULES:",
+                "      MATERIAL: KNOWLEDGE_BOOK",
+                "      SLOT: 12"
+        );
+        List<String> bundledLines = lines(
+                "RULES-MENU:",
+                "  TITLE: '&8Rules'",
+                "  SIZE: 27",
+                "  BUTTONS:",
+                "    RULE_1:",
+                "      MATERIAL: KNOWLEDGE_BOOK",
+                "      SLOT: 12",
+                "    RULE_2:",
+                "      MATERIAL: KNOWLEDGE_BOOK",
+                "      SLOT: 14"
+        );
+
+        int changes = mergeBundledDefaults("menus.yml", currentLines, bundledLines);
+
+        assertEquals(0, changes);
+        assertFalse(currentLines.contains("    RULE_1:"),
+                "a renamed rules page must not come back on the slot its replacement now uses");
+        assertFalse(currentLines.contains("    RULE_2:"),
+                "a deleted rules page must not come back carrying the bundled server's rules");
+        assertTrue(currentLines.contains("    HOUSE_RULES:"));
+    }
+
+    @Test
+    void mergeBundledDefaultsKeepsServersMenuEntriesAdminsRenamed() throws Exception {
+        List<String> currentLines = lines(
+                "SERVERS-MENU:",
+                "  TITLE: '&8Ongoing Servers'",
+                "  SIZE: 27",
+                "  SERVERS:",
+                "    survival:",
+                "      SLOT: 13"
+        );
+        List<String> bundledLines = lines(
+                "SERVERS-MENU:",
+                "  TITLE: '&8Ongoing Servers'",
+                "  SIZE: 27",
+                "  SERVERS:",
+                "    crystal:",
+                "      SLOT: 13"
+        );
+
+        int changes = mergeBundledDefaults("menus.yml", currentLines, bundledLines);
+
+        assertEquals(0, changes);
+        assertFalse(currentLines.contains("    crystal:"),
+                "a renamed network id must not come back and render as a permanently offline server");
+        assertTrue(currentLines.contains("    survival:"));
+    }
+
+    @Test
+    void mergeBundledDefaultsStillInstallsTheRulesAndServersMenusOnConfigsThatPredateThem() throws Exception {
+        List<String> currentLines = lines(
+                "GLOBAL:",
+                "  ENABLED: true"
+        );
+        List<String> bundledLines = lines(
+                "GLOBAL:",
+                "  ENABLED: true",
+                "RULES-MENU:",
+                "  BUTTONS:",
+                "    RULE_1:",
+                "      SLOT: 12",
+                "SERVERS-MENU:",
+                "  SERVERS:",
+                "    crystal:",
+                "      SLOT: 13"
+        );
+
+        int changes = mergeBundledDefaults("menus.yml", currentLines, bundledLines);
+
+        assertTrue(changes > 0);
+        assertTrue(currentLines.contains("    RULE_1:"),
+                "the first install of the rules menu still needs its bundled pages");
+        assertTrue(currentLines.contains("    crystal:"),
+                "the first install of the servers menu still needs its bundled example");
+    }
+
+    @Test
     void mergeBundledDefaultsLeavesCompleteFileByteEquivalent() throws Exception {
         List<String> currentLines = lines(
                 "# admin header",
