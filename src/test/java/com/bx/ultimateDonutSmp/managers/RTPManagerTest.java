@@ -235,6 +235,17 @@ class RTPManagerTest {
         return (Location) pollPreCachedLocation.invoke(rtpManager, worldName);
     }
 
+    private int preloadRadius(RTPManager rtpManager) throws Exception {
+        Method method = RTPManager.class.getDeclaredMethod("getPreloadRadius");
+        method.setAccessible(true);
+        return (int) method.invoke(rtpManager);
+    }
+
+    private int preloadChunksPerTick(RTPManager rtpManager) throws Exception {
+        Method method = RTPManager.class.getDeclaredMethod("getPreloadChunksPerTick");
+        method.setAccessible(true);
+        return (int) method.invoke(rtpManager);
+    }
     private YamlConfiguration overworldRtpConfig() {
         YamlConfiguration rtpConfig = new YamlConfiguration();
         rtpConfig.set("WORLD-SETTINGS.world.MIN-RADIUS", 500);
@@ -287,6 +298,38 @@ class RTPManagerTest {
 
         rtpConfig.set("SETTINGS.FOUND-DISPLAY-TICKS", -20);
         assertEquals(0L, rtpManager.getFoundDisplayTicks());
+    }
+
+    @Test
+    void testPreloadDefaultsMatchTheFloorsTheyPassThrough() throws Exception {
+        YamlConfiguration rtpConfig = new YamlConfiguration();
+        RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
+
+        // Both settings floor at 2, so a default below that could never be the value in use.
+        // These two assertions are what keeps the number in rtp.yml honest.
+        assertEquals(2, preloadChunksPerTick(rtpManager));
+        rtpConfig.set("SETTINGS.PRELOAD-CHUNKS-PER-TICK", 1);
+        assertEquals(2, preloadChunksPerTick(rtpManager));
+        rtpConfig.set("SETTINGS.PRELOAD-CHUNKS-PER-TICK", 6);
+        assertEquals(6, preloadChunksPerTick(rtpManager));
+
+        // With the throttle off the radius is the admin's, floored at 2 and capped at 4.
+        rtpConfig.set("SETTINGS.POST-TELEPORT-CHUNK-THROTTLE", false);
+        assertEquals(2, preloadRadius(rtpManager));
+        rtpConfig.set("SETTINGS.PRELOAD-RADIUS", 1);
+        assertEquals(2, preloadRadius(rtpManager));
+        rtpConfig.set("SETTINGS.PRELOAD-RADIUS", 3);
+        assertEquals(3, preloadRadius(rtpManager));
+        rtpConfig.set("SETTINGS.PRELOAD-RADIUS", 9);
+        assertEquals(4, preloadRadius(rtpManager));
+
+        // Back on, the throttled view distance raises the radius, which is why the config
+        // comment calls PRELOAD-RADIUS a floor rather than a cap.
+        rtpConfig.set("SETTINGS.POST-TELEPORT-CHUNK-THROTTLE", true);
+        rtpConfig.set("SETTINGS.PRELOAD-RADIUS", 2);
+        assertEquals(4, preloadRadius(rtpManager));
+        rtpConfig.set("SETTINGS.POST-TELEPORT-VIEW-DISTANCE", 2);
+        assertEquals(2, preloadRadius(rtpManager));
     }
 
     @Test

@@ -459,7 +459,7 @@ public class TeleportManager {
     }
 
     private int getRtpChunkStabilizationRadius() {
-        int configuredRadius = plugin.getConfigManager().getRtp().getInt("SETTINGS.PRELOAD-RADIUS", 1);
+        int configuredRadius = plugin.getConfigManager().getRtp().getInt("SETTINGS.PRELOAD-RADIUS", 2);
         int radius = Math.max(0, Math.min(4, configuredRadius));
         if (plugin.getConfigManager().getRtp().getBoolean("SETTINGS.POST-TELEPORT-CHUNK-THROTTLE", true)) {
             radius = Math.max(radius, Math.min(4, getRtpThrottleDistance("SETTINGS.POST-TELEPORT-VIEW-DISTANCE", 4)));
@@ -468,7 +468,7 @@ public class TeleportManager {
     }
 
     private int getRtpChunkStabilizationChunksPerTick() {
-        return Math.max(2, plugin.getConfigManager().getRtp().getInt("SETTINGS.PRELOAD-CHUNKS-PER-TICK", 1));
+        return Math.max(2, plugin.getConfigManager().getRtp().getInt("SETTINGS.PRELOAD-CHUNKS-PER-TICK", 2));
     }
 
     private void refreshLoadedChunk(World world, int chunkX, int chunkZ) {
