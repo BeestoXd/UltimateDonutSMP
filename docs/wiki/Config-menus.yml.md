@@ -590,6 +590,11 @@ HOME-MENU:
 | `HOME-MENU.TELEPORT.HOME-1.LORE.NO-USED` | `list` | List of configured items/strings | `['&7Click to create a home.']` | Configures the technical `NO-USED` parameter for `HOME-MENU.TELEPORT.HOME-1.LORE.NO-USED` in `menus.yml`. |
 | *(56 additional sub-keys configured in section)* | | | | |
 
+Both `&cRight-click to delete` lines mean what they say, but the click opens a confirmation screen
+rather than removing anything on the spot, so a missed left-click no longer costs a player a home.
+Cancelling puts them back on the page they were reading. Bedrock players get the Floodgate form
+instead, which asks the same question.
+
 ### 3. Practical Setup Example
 
 ```yaml
