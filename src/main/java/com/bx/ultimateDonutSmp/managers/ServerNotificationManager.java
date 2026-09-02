@@ -5,10 +5,15 @@ import com.bx.ultimateDonutSmp.models.AuctionListing;
 import com.bx.ultimateDonutSmp.models.Order;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Builds and sends the server-wide announcements configured under SERVER-NOTIFICATIONS.
@@ -34,12 +39,12 @@ public class ServerNotificationManager {
      */
     public String joinAnnouncement(Player player, boolean firstJoin) {
         if (firstJoin && isEnabled("FIRST-JOIN")) {
-            return format(message("FIRST-JOIN"), "{player}", publicName(player));
+            return format(message("FIRST-JOIN", player), "{player}", publicName(player));
         }
         if (!isEnabled("JOIN")) {
             return null;
         }
-        return format(message("JOIN"), "{player}", publicName(player));
+        return format(message("JOIN", player), "{player}", publicName(player));
     }
 
     /** The leave line for a player, or null to relay the server's own message. */
@@ -47,7 +52,7 @@ public class ServerNotificationManager {
         if (!isEnabled("LEAVE")) {
             return null;
         }
-        return format(message("LEAVE"), "{player}", publicName(player));
+        return format(message("LEAVE", player), "{player}", publicName(player));
     }
 
     public void announceAuctionListing(Player seller, AuctionListing listing) {
@@ -207,6 +212,58 @@ public class ServerNotificationManager {
 
     private String message(String path) {
         return config().getString(ROOT + path + ".MESSAGE", "");
+    }
+
+    /**
+     * The wording for one announcement, taking the player's rank into account.
+     *
+     * <p>An announcement may carry a BY-PERMISSION map of permission node to wording. The first
+     * node the player holds wins, so a server lists its highest rank first, and a player holding
+     * none of them falls back to the plain MESSAGE.</p>
+     */
+    private String message(String path, Player player) {
+        return resolveByPermission(
+                config().getConfigurationSection(ROOT + path + ".BY-PERMISSION"),
+                message(path),
+                permission -> PermissionUtils.hasExact(player, permission)
+        );
+    }
+
+    /**
+     * Picks the wording for the first permission in the section that the player holds, falling
+     * back to {@code fallback} when the section is absent, empty, or matches nothing.
+     *
+     * <p>The section's own order decides the winner because there is no way to rank two pieces of
+     * wording against each other the way a home limit picks its highest number. Config order is
+     * the one ordering the admin can see and change, and Bukkit hands the keys back in the order
+     * the file lists them.</p>
+     *
+     * <p>The values are read deeply, exactly as the home limits are, because a permission node
+     * carries dots and Bukkit reads those as a path. A node written as one quoted key arrives as a
+     * tree of sections, so only a deep read hands back the whole node again; the sections it walks
+     * through on the way are not wording and are skipped.</p>
+     *
+     * <p>Matching is deliberately on the exact node rather than the usual inherited check: these
+     * maps are keyed by a server's own ranks, and a wildcard would otherwise match every entry and
+     * hand the top rank's wording to anybody holding it.</p>
+     */
+    static String resolveByPermission(
+            ConfigurationSection byPermission,
+            String fallback,
+            Predicate<String> holdsPermission
+    ) {
+        if (byPermission == null || holdsPermission == null) {
+            return fallback;
+        }
+        for (Map.Entry<String, Object> entry : byPermission.getValues(true).entrySet()) {
+            if (!(entry.getValue() instanceof String wording) || wording.isBlank()) {
+                continue;
+            }
+            if (holdsPermission.test(entry.getKey())) {
+                return wording;
+            }
+        }
+        return fallback;
     }
 
     private FileConfiguration config() {

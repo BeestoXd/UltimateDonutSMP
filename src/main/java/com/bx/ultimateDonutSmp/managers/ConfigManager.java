@@ -812,6 +812,17 @@ public class ConfigManager {
             return true;
         }
 
+        // Per-rank join, leave and first-join wording is keyed by a server's own ranks too, so the
+        // bundled vip examples must not come back once admins delete or replace them. Each
+        // BY-PERMISSION section itself stays mergeable so configs that predate the feature still
+        // receive it once.
+        if ("config.yml".equals(resourceName)
+                && (path.startsWith("SERVER-NOTIFICATIONS.JOIN.BY-PERMISSION.")
+                || path.startsWith("SERVER-NOTIFICATIONS.LEAVE.BY-PERMISSION.")
+                || path.startsWith("SERVER-NOTIFICATIONS.FIRST-JOIN.BY-PERMISSION."))) {
+            return true;
+        }
+
         // Ranks menu buttons, rules pages and servers menu entries are each keyed by something
         // the server owns rather than the plugin: a rank it sells, a rules page it wrote, a
         // network id whose network.yml counterpart is already excluded below. A renamed or

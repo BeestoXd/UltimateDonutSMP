@@ -734,6 +734,11 @@ Server-wide announcement lines for joins, leaves, first joins, and the two marke
 line ships switched off, so updating the jar never changes how an existing server's chat looks —
 turn on the ones you want.
 
+The join, leave and first-join lines can each read differently per rank. Put the permission a rank
+carries under that line's `BY-PERMISSION` map with the wording it should get; the first entry a
+player matches wins, so the highest rank goes first. A player matching nothing keeps the plain
+`MESSAGE`, which is also what an empty map gives you.
+
 ### 1. Commented Setup Code Example
 
 ```yaml
@@ -743,13 +748,26 @@ SERVER-NOTIFICATIONS:
   JOIN:
     ENABLED: false
     MESSAGE: '&8[&a+&8] &a{player} &7joined the server.'
+    # Per-rank wording. The first node the player holds wins, so list the highest rank first.
+    BY-PERMISSION:
+      "ultimatedonutsmp.notifications.join.vip++": '&8[&a+&8] &6{player} &7joined the server.'
+      "ultimatedonutsmp.notifications.join.vip+": '&8[&a+&8] &b{player} &7joined the server.'
+      "ultimatedonutsmp.notifications.join.vip": '&8[&a+&8] &e{player} &7joined the server.'
   LEAVE:
     ENABLED: false
     MESSAGE: '&8[&c-&8] &c{player} &7left the server.'
+    BY-PERMISSION:
+      "ultimatedonutsmp.notifications.leave.vip++": '&8[&c-&8] &6{player} &7left the server.'
+      "ultimatedonutsmp.notifications.leave.vip+": '&8[&c-&8] &b{player} &7left the server.'
+      "ultimatedonutsmp.notifications.leave.vip": '&8[&c-&8] &e{player} &7left the server.'
   # Sent in place of the join line the very first time a player ever connects.
   FIRST-JOIN:
     ENABLED: false
     MESSAGE: '&aWelcome &e{player} &ato the server for the first time!'
+    BY-PERMISSION:
+      "ultimatedonutsmp.notifications.first-join.vip++": '&aWelcome &6{player} &ato the server for the first time!'
+      "ultimatedonutsmp.notifications.first-join.vip+": '&aWelcome &b{player} &ato the server for the first time!'
+      "ultimatedonutsmp.notifications.first-join.vip": '&aWelcome &e{player} &ato the server for the first time!'
   AUCTION-HOUSE:
     ENABLED: true
     LISTING:
@@ -773,11 +791,14 @@ SERVER-NOTIFICATIONS:
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
 | `SERVER-NOTIFICATIONS.JOIN.ENABLED` | `bool` | `true`, `false` | `false` | `true` replaces the server's own join line with `JOIN.MESSAGE`. `false` relays the server's line unchanged. |
-| `SERVER-NOTIFICATIONS.JOIN.MESSAGE` | `str` | Any string text | `'&8[&a+&8] &a{player} &7joined the server.'` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.JOIN.MESSAGE` | `str` | Any string text | `'&8[&a+&8] &a{player} &7joined the server.'` | Supports `{player}`. Used for any player no `JOIN.BY-PERMISSION` entry applies to. |
+| `SERVER-NOTIFICATIONS.JOIN.BY-PERMISSION` | `map` | Permission node to wording | Three `vip` examples | Per-rank join wording. Supports `{player}` like `MESSAGE`. The first node the player holds wins, so list the highest rank first. Matching is on the exact node, so a wildcard such as `ultimatedonutsmp.*` does not pick these up. Deleted entries are never merged back. |
 | `SERVER-NOTIFICATIONS.LEAVE.ENABLED` | `bool` | `true`, `false` | `false` | `true` replaces the server's own quit line with `LEAVE.MESSAGE`. |
-| `SERVER-NOTIFICATIONS.LEAVE.MESSAGE` | `str` | Any string text | `'&8[&c-&8] &c{player} &7left the server.'` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.LEAVE.MESSAGE` | `str` | Any string text | `'&8[&c-&8] &c{player} &7left the server.'` | Supports `{player}`. Used for any player no `LEAVE.BY-PERMISSION` entry applies to. |
+| `SERVER-NOTIFICATIONS.LEAVE.BY-PERMISSION` | `map` | Permission node to wording | Three `vip` examples | Per-rank leave wording, resolved exactly as `JOIN.BY-PERMISSION` is. |
 | `SERVER-NOTIFICATIONS.FIRST-JOIN.ENABLED` | `bool` | `true`, `false` | `false` | `true` sends `FIRST-JOIN.MESSAGE` instead of the join line the first time a player ever connects, so nobody is announced twice. It works on its own — `JOIN` does not have to be on. |
-| `SERVER-NOTIFICATIONS.FIRST-JOIN.MESSAGE` | `str` | Any string text | `'&aWelcome &e{player} &ato the server for the first time!'` | Supports `{player}`. |
+| `SERVER-NOTIFICATIONS.FIRST-JOIN.MESSAGE` | `str` | Any string text | `'&aWelcome &e{player} &ato the server for the first time!'` | Supports `{player}`. Used for any player no `FIRST-JOIN.BY-PERMISSION` entry applies to. |
+| `SERVER-NOTIFICATIONS.FIRST-JOIN.BY-PERMISSION` | `map` | Permission node to wording | Three `vip` examples | Per-rank first-join wording, resolved exactly as `JOIN.BY-PERMISSION` is. |
 | `SERVER-NOTIFICATIONS.AUCTION-HOUSE.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for both Auction House lines. Turning it off silences them whatever `LISTING` and `PURCHASE` say. |
 | `SERVER-NOTIFICATIONS.AUCTION-HOUSE.LISTING.ENABLED` | `bool` | `true`, `false` | `false` | Announces every item a player puts up for sale. Bot listings are never announced. |
 | `SERVER-NOTIFICATIONS.AUCTION-HOUSE.LISTING.MESSAGE` | `str` | Any string text | `'&8[&6AH&8] &f{player} &7listed &e{amount}x {item} &7for &a{price_formatted}&7.'` | Supports `{player}`, `{item}`, `{amount}`, `{price}`, `{price_formatted}` and `{category}`. |
@@ -796,6 +817,11 @@ SERVER-NOTIFICATIONS:
   JOIN:
     ENABLED: true
     MESSAGE: '&#57F287+ &f{player}'
+    # Donors get announced in their rank colour, everyone else gets the plain line above.
+    # Highest rank first: the first node the player holds is the one that wins.
+    BY-PERMISSION:
+      "ultimatedonutsmp.notifications.join.mvp": '&#FEE75C✦ &e{player}'
+      "ultimatedonutsmp.notifications.join.vip": '&#57F287+ &a{player}'
   LEAVE:
     ENABLED: true
     MESSAGE: '&#ED4245- &f{player}'
