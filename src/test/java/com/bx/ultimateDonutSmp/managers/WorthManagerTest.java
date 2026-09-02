@@ -121,6 +121,55 @@ class WorthManagerTest {
     }
 
     @Test
+    void anOrdinaryItemStillSellsWhileContainerPricingIsOff() throws Exception {
+        setupMockServer();
+
+        org.bukkit.configuration.file.YamlConfiguration worthConfig = new org.bukkit.configuration.file.YamlConfiguration();
+        worthConfig.set("CONTAINER.ENABLED", false);
+        worthConfig.set("TYPE.ORES.DIAMOND", 100.0);
+
+        WorthManager worthManager = new WorthManager(createMockPlugin(worthConfig));
+        WorthResult result = worthManager.resolveWorth(
+                new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND)
+        );
+
+        assertTrue(result.sellable(), "refusing unpriced containers must not stop ordinary items selling");
+        assertEquals(100.0, result.totalWorth());
+    }
+
+    @Test
+    void containerContentsArePricedWhileTheConfigLetsThemBe() throws Exception {
+        setupMockServer();
+
+        org.bukkit.configuration.file.YamlConfiguration worthConfig = new org.bukkit.configuration.file.YamlConfiguration();
+        worthConfig.set("CONTAINER.ENABLED", true);
+        worthConfig.set("CONTAINER.MAX-CONTAINER-DEPTH", 1);
+
+        WorthManager worthManager = new WorthManager(createMockPlugin(worthConfig));
+
+        assertTrue(worthManager.willPriceContainerContents(0, true));
+    }
+
+    @Test
+    void containerContentsGoUnpricedWheneverTheSaleWouldNotReachThem() throws Exception {
+        setupMockServer();
+
+        org.bukkit.configuration.file.YamlConfiguration off = new org.bukkit.configuration.file.YamlConfiguration();
+        off.set("CONTAINER.ENABLED", false);
+        assertFalse(
+                new WorthManager(createMockPlugin(off)).willPriceContainerContents(0, true),
+                "container pricing switched off"
+        );
+
+        org.bukkit.configuration.file.YamlConfiguration depth = new org.bukkit.configuration.file.YamlConfiguration();
+        depth.set("CONTAINER.ENABLED", true);
+        depth.set("CONTAINER.MAX-CONTAINER-DEPTH", 1);
+        WorthManager depthManager = new WorthManager(createMockPlugin(depth));
+        assertFalse(depthManager.willPriceContainerContents(1, true), "already at the depth limit");
+        assertFalse(depthManager.willPriceContainerContents(0, false), "nesting closed off");
+    }
+
+    @Test
     void screensThatHoldClientStateAreNotResynced() throws Exception {
         setupMockServer();
 
