@@ -379,3 +379,48 @@ If you would rather write the label yourself, `{price_formatted}` renders the pr
 The full list of placeholders, and what the auto-filled line does with colour codes and small caps, is on the [`shop.yml` configuration page](Config-shop.yml).
 
 Wording you invented is still yours to maintain: effect lines, menu titles and anything else that mentions a currency by name does not update itself.
+
+---
+
+## 16. Text Written In Capitals Comes Back In Title Case
+
+### Question: I put `'&cWELCOME TO THE SERVER'` in my config and players see `Welcome To The Server`. What is rewriting it?
+
+The plugin is, on purpose. It checks every line it colours, and any line whose visible letters are
+all uppercase gets retyped in Title Case before it reaches the screen. The same check covers chat
+lines, menu titles and lore, scoreboard rows, the tablist and the server list MOTD, since all of
+them run through the one formatter.
+
+Two conditions have to hold before a line is touched. It needs at least one colour code, hex code,
+MiniMessage tag or placeholder in it, and every letter outside those markers has to be uppercase.
+Break either one and the line is printed exactly as you typed it:
+
+```yaml
+# shown as: Welcome To The Server
+'&cWELCOME TO THE SERVER'
+
+# shown as written, because no colour code or placeholder is there to trigger the check
+'WELCOME TO THE SERVER'
+
+# shown as written, because "to the server" is lowercase
+'&cWELCOME to the server'
+```
+
+Colour codes, hex codes and placeholders are stepped over rather than rewritten, so `%player%` and
+`&#FF0000` survive intact. Capitalisation starts again after a space, a hyphen, a slash or an
+underscore, which is why `'&cWELCOME-TO/THE_SERVER'` reads back as `Welcome-To/The_Server`.
+Acronyms come off worst: `'&c&lDONUT SMP'` lands as `Donut Smp`, and there is no list of words you
+can exempt.
+
+The check also ignores the words `currently` and `status` while it looks, so `'&aStatus: ONLINE'`
+counts as all caps even though it is not, and shows as `Status: Online`.
+
+If you want a shouty line and its colour at the same time, unicode small caps get through. The check
+does not read them as uppercase letters, so they survive untouched. Paste the characters straight
+in, or write them as escapes if your editor makes that awkward:
+
+```yaml
+# both shown as: ᴡᴇʟᴄᴏᴍᴇ
+'&cᴡᴇʟᴄᴏᴍᴇ'
+'&c\u1D21\u1D07\u029F\u1D04\u1D0F\u1D0D\u1D07'
+```

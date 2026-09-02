@@ -31,6 +31,11 @@ Anything the formatter doesn't recognise stays on screen exactly as you typed it
 `<player>` and `<amount>` in the message files still come through as placeholders instead of
 vanishing.
 
+One more thing it does, less obviously: a title, button name or lore line whose visible letters
+are all uppercase comes back in Title Case, so `'&cDONUT SMP'` reads `Donut Smp`. Mixed case is
+left alone. [FAQ entry 16](FAQ) covers when the rule applies and the unicode small caps trick
+that keeps a line shouting.
+
 ---
 
 ## Section: `GLOBAL`

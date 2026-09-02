@@ -50,6 +50,24 @@ class ColorUtilsTest {
     }
 
     @Test
+    void testAllCapsWithoutAnyMarkerIsLeftAsTyped() {
+        String input = "WELCOME TO THE SERVER";
+        assertEquals(input, ColorUtils.colorize(input));
+    }
+
+    @Test
+    void testAllCapsIsRetypedWhenOnlyAPlaceholderCarriesTheLine() {
+        String input = "PLAIN CAPS %player%";
+        assertEquals("Plain Caps %player%", ColorUtils.colorize(input));
+    }
+
+    @Test
+    void testOneLowercaseWordKeepsTheCapitalsIntact() {
+        String input = "&cWELCOME to the server";
+        assertEquals("§cWELCOME to the server", ColorUtils.colorize(input));
+    }
+
+    @Test
     void testSmallCapsPreservation() {
         String input = "&fᴏᴡɴᴇʀ";
         String colorized = ColorUtils.colorize(input);
