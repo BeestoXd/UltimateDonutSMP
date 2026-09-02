@@ -474,6 +474,11 @@ commands:
       30s)'
     permission: ultimatedonutsmp.staff.punishments.mute
     permission-message: "&cYou do not have permission to use /tempmute."
+  vcmute:
+    description: Mute a player in voice chat and record punishment history
+    usage: /vcmute <player> [reason]
+    permission: ultimatedonutsmp.staff.vcmute
+    permission-message: "&cYou do not have permission to use /vcmute."
   warn:
     description: Warn a player and record punishment history
     usage: /warn <player> [reason]
@@ -501,6 +506,11 @@ commands:
     usage: /unmute <player> [reason]
     permission: ultimatedonutsmp.staff.punishments.unmute
     permission-message: "&cYou do not have permission to use /unmute."
+  vcunmute:
+    description: Remove active voice chat mute records for a player
+    usage: /vcunmute <player> [reason]
+    permission: ultimatedonutsmp.staff.vcunmute
+    permission-message: "&cYou do not have permission to use /vcunmute."
   unblacklist:
     description: Remove active blacklist records for a player
     usage: /unblacklist <player> [reason]
@@ -1147,6 +1157,7 @@ permissions:
     children:
       ultimatedonutsmp.staff.punishments.ban: true
       ultimatedonutsmp.staff.punishments.mute: true
+      ultimatedonutsmp.staff.vcmute: true
       ultimatedonutsmp.staff.punishments.blacklist: true
   ultimatedonutsmp.staff.punishments.remove:
     description: Remove active punishment records
@@ -1154,6 +1165,7 @@ permissions:
     children:
       ultimatedonutsmp.staff.punishments.unban: true
       ultimatedonutsmp.staff.punishments.unmute: true
+      ultimatedonutsmp.staff.vcunmute: true
       ultimatedonutsmp.staff.punishments.unblacklist: true
   ultimatedonutsmp.staff.punishments.delete:
     description: Delete punishment history records from the GUI
@@ -1199,6 +1211,10 @@ permissions:
   ultimatedonutsmp.staff.punishments.unmute:
     default: false
   ultimatedonutsmp.staff.punishments.unblacklist:
+    default: false
+  ultimatedonutsmp.staff.vcmute:
+    default: false
+  ultimatedonutsmp.staff.vcunmute:
     default: false
   ultimatedonutsmp.admin.ecsee:
     default: op
@@ -1635,6 +1651,11 @@ permissions:
     default: op
     children:
       ultimatedonutsmp.staff.punishments.mute: true
+  ultimatedonutsmp.command.vcmute:
+    description: Access to /vcmute command
+    default: op
+    children:
+      ultimatedonutsmp.staff.vcmute: true
   ultimatedonutsmp.command.warn:
     description: Access to /warn command
     default: op
@@ -1660,6 +1681,11 @@ permissions:
     default: op
     children:
       ultimatedonutsmp.staff.punishments.unmute: true
+  ultimatedonutsmp.command.vcunmute:
+    description: Access to /vcunmute command
+    default: op
+    children:
+      ultimatedonutsmp.staff.vcunmute: true
   ultimatedonutsmp.command.unblacklist:
     description: Access to /unblacklist command
     default: op

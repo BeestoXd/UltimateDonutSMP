@@ -81,6 +81,7 @@ final class PunishmentItemRenderer {
         return switch (type) {
             case BAN -> "IRON_BARS";
             case MUTE -> "PAPER";
+            case VOICE_MUTE -> "NOTE_BLOCK";
             case WARN -> "YELLOW_DYE";
             case KICK -> "LEATHER_BOOTS";
             case BLACKLIST -> "BARRIER";
@@ -98,6 +99,7 @@ final class PunishmentItemRenderer {
         return switch (record.getType()) {
             case BAN, BLACKLIST -> "&c";
             case MUTE -> "&d";
+            case VOICE_MUTE -> "&b";
             case WARN -> "&e";
             case KICK -> "&6";
         };

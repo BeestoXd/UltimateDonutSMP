@@ -77,11 +77,13 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/tempban` | `/tempban <player> <time> [reason]` | Issue temporary ban | `ultimatedonutsmp.staff.punishments.ban` |
 | `/mute` | `/mute <player> [reason]` | Issue permanent mute | `ultimatedonutsmp.staff.punishments.mute` |
 | `/tempmute` | `/tempmute <player> <time> [reason]` | Issue temporary mute | `ultimatedonutsmp.staff.punishments.mute` |
+| `/vcmute` | `/vcmute <player> [reason]` | Mute a player in voice chat, leaving text chat alone | `ultimatedonutsmp.staff.vcmute` |
 | `/warn` | `/warn <player> [reason]` | Issue formal warning | `ultimatedonutsmp.staff.punishments.create` |
 | `/kick` | `/kick <player> [reason]` | Kick online player from server | `ultimatedonutsmp.staff.punishments.create` |
 | `/blacklist` | `/blacklist <player> [reason]` | Issue IP/account blacklist | `ultimatedonutsmp.staff.punishments.blacklist` |
 | `/unban` | `/unban <player> [reason]` | Remove active ban | `ultimatedonutsmp.staff.punishments.unban` |
 | `/unmute` | `/unmute <player> [reason]` | Remove active mute | `ultimatedonutsmp.staff.punishments.unmute` |
+| `/vcunmute` | `/vcunmute <player> [reason]` | Remove active voice chat mute | `ultimatedonutsmp.staff.vcunmute` |
 | `/unblacklist` | `/unblacklist <player> [reason]` | Remove active blacklist | `ultimatedonutsmp.staff.punishments.unblacklist` |
 
 ---
@@ -118,7 +120,7 @@ the exempt node and staff who lack the bypass are turned away instead.
 
 | Permission Node | Default | Description |
 | :--- | :--- | :--- |
-| `ultimatedonutsmp.admin.punishments.exempt` | `op` | The player cannot be punished. `/offend`, `/ban`, `/tempban`, `/mute`, `/tempmute`, `/warn`, `/kick` and `/blacklist` all refuse to touch them. |
+| `ultimatedonutsmp.admin.punishments.exempt` | `op` | The player cannot be punished. `/offend`, `/ban`, `/tempban`, `/mute`, `/tempmute`, `/vcmute`, `/warn`, `/kick` and `/blacklist` all refuse to touch them. |
 | `ultimatedonutsmp.admin.punishments.exempt.bypass` | `op` | Punish players who hold the exempt node anyway. Give it to the ranks that are allowed to act on each other. |
 
 Both nodes sit under `ultimatedonutsmp.admin.` rather than beside the other punishment nodes on

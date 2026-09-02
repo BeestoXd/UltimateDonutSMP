@@ -6,6 +6,7 @@ import com.bx.ultimateDonutSmp.utils.PunishmentExemptPolicy;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PunishmentManager;
+import com.bx.ultimateDonutSmp.managers.VoiceChatConsentManager;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentScope;
 import com.bx.ultimateDonutSmp.models.PunishmentType;
@@ -30,6 +31,8 @@ public class PunishmentCommand implements CommandExecutor {
     private static final String BAN_PERMISSION = "ultimatedonutsmp.staff.punishments.ban";
     private static final String UNBAN_PERMISSION = "ultimatedonutsmp.staff.punishments.unban";
     private static final String MUTE_PERMISSION = "ultimatedonutsmp.staff.punishments.mute";
+    private static final String VCMUTE_PERMISSION = "ultimatedonutsmp.staff.vcmute";
+    private static final String VCUNMUTE_PERMISSION = "ultimatedonutsmp.staff.vcunmute";
     private static final String UNMUTE_PERMISSION = "ultimatedonutsmp.staff.punishments.unmute";
     private static final String BLACKLIST_PERMISSION = "ultimatedonutsmp.staff.punishments.blacklist";
     private static final String UNBLACKLIST_PERMISSION = "ultimatedonutsmp.staff.punishments.unblacklist";
@@ -39,12 +42,14 @@ public class PunishmentCommand implements CommandExecutor {
             Map.entry("tempban", "&cusage: /tempban <player> <time> [reason] &7(time: 30s, 15m, 2h, 5d, or 5d 15m 30s)"),
             Map.entry("mute", "&cusage: /mute <player> [reason]"),
             Map.entry("tempmute", "&cusage: /tempmute <player> <time> [reason] &7(time: 30s, 15m, 2h, 5d, or 5d 15m 30s)"),
+            Map.entry("vcmute", "&cusage: /vcmute <player> [reason]"),
             Map.entry("warn", "&cusage: /warn <player> [reason]"),
             Map.entry("kick", "&cusage: /kick <player> [reason]"),
             Map.entry("blacklist", "&cusage: /blacklist <player> [reason]"),
             Map.entry("unban", "&cusage: /unban <player> [reason]"),
             Map.entry("pardon", "&cusage: /pardon <player> [reason]"),
             Map.entry("unmute", "&cusage: /unmute <player> [reason]"),
+            Map.entry("vcunmute", "&cusage: /vcunmute <player> [reason]"),
             Map.entry("unblacklist", "&cusage: /unblacklist <player> [reason]")
     );
 
@@ -63,11 +68,13 @@ public class PunishmentCommand implements CommandExecutor {
             case "tempban" -> handleCreate(sender, PunishmentType.BAN, args, true, false, action);
             case "mute" -> handleCreate(sender, PunishmentType.MUTE, args, false, false, action);
             case "tempmute" -> handleCreate(sender, PunishmentType.MUTE, args, true, false, action);
+            case "vcmute" -> handleCreate(sender, PunishmentType.VOICE_MUTE, args, false, false, action);
             case "warn" -> handleCreate(sender, PunishmentType.WARN, args, false, false, action);
             case "kick" -> handleCreate(sender, PunishmentType.KICK, args, false, true, action);
             case "blacklist" -> handleCreate(sender, PunishmentType.BLACKLIST, args, false, false, action);
             case "unban", "pardon" -> handleRemove(sender, PunishmentType.BAN, args, action);
             case "unmute" -> handleRemove(sender, PunishmentType.MUTE, args, action);
+            case "vcunmute" -> handleRemove(sender, PunishmentType.VOICE_MUTE, args, action);
             case "unblacklist" -> handleRemove(sender, PunishmentType.BLACKLIST, args, action);
             default -> false;
         };
@@ -82,6 +89,8 @@ public class PunishmentCommand implements CommandExecutor {
             case "ban", "tempban" -> BAN_PERMISSION;
             case "unban", "pardon" -> UNBAN_PERMISSION;
             case "mute", "tempmute" -> MUTE_PERMISSION;
+            case "vcmute" -> VCMUTE_PERMISSION;
+            case "vcunmute" -> VCUNMUTE_PERMISSION;
             case "unmute" -> UNMUTE_PERMISSION;
             case "blacklist" -> BLACKLIST_PERMISSION;
             case "unblacklist" -> UNBLACKLIST_PERMISSION;
@@ -239,6 +248,10 @@ public class PunishmentCommand implements CommandExecutor {
             return true;
         }
 
+        if (type == PunishmentType.VOICE_MUTE) {
+            refreshVoiceMute(targetUuid, targetName);
+        }
+
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.REMOVED",
                 "&aRemoved active &f{type} &apunishment(s) for &b{player}&a.",
@@ -263,6 +276,21 @@ public class PunishmentCommand implements CommandExecutor {
                     )
             ));
             case MUTE -> onlineTarget.sendMessage(ColorUtils.toComponent(buildPunishmentMessage(record)));
+            case VOICE_MUTE -> {
+                refreshVoiceMute(onlineTarget.getUniqueId(), onlineTarget.getName());
+                onlineTarget.sendMessage(ColorUtils.toComponent(buildPunishmentMessage(record)));
+            }
+        }
+    }
+
+    /**
+     * The microphone gate reads a cache rather than the database, so a voice mute only takes hold
+     * once that cache has been told about the record that was just written or removed.
+     */
+    private void refreshVoiceMute(UUID targetUuid, String targetName) {
+        VoiceChatConsentManager manager = plugin.getVoiceChatConsentManager();
+        if (manager != null) {
+            manager.refreshVoiceMute(targetUuid, targetName);
         }
     }
 
@@ -279,6 +307,7 @@ public class PunishmentCommand implements CommandExecutor {
             case BAN -> "PUNISHMENTS.BAN";
             case KICK -> "PUNISHMENTS.KICK";
             case MUTE -> "PUNISHMENTS.MUTE";
+            case VOICE_MUTE -> "PUNISHMENTS.VOICE-MUTE";
             case BLACKLIST -> "PUNISHMENTS.BLACKLIST";
             case WARN -> "PUNISHMENTS.WARN-RECEIVED";
         };
@@ -288,6 +317,7 @@ public class PunishmentCommand implements CommandExecutor {
         return switch (type) {
             case BAN -> "&c&lyou have been banned!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7banned by: &f%issuer%\n&8&m----------------------------\n&7appeal at: &fdiscord.example.space";
             case KICK -> "&c&lyou have been kicked!\n&8&m----------------------------\n&7reason: &f%reason%\n&7kicked by: &f%issuer%\n&8&m----------------------------\n&7you may reconnect";
+            case VOICE_MUTE -> "&c&lyou have been voice muted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7muted by: &f%issuer%\n&8&m----------------------------\n&7you cannot speak in voice chat";
             case MUTE -> "&c&lyou have been muted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7muted by: &f%issuer%\n&8&m----------------------------\n&7you cannot speak in chat";
             case BLACKLIST -> "&4&lyou have been blacklisted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7blacklisted by: &f%issuer%\n&8&m----------------------------\n&4you cannot join the server";
             case WARN -> "&cwarning: &f{reason}";

@@ -726,11 +726,13 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("tempban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("mute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("tempmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("vcmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("warn", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("kick", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("blacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("unban", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("unmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
+        setExecutor("vcunmute", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         setExecutor("unblacklist", punishmentCommand, FeatureManager.Feature.PUNISHMENTS);
         OffendCommand offendCommand = new OffendCommand(this);
         setExecutor("offend", offendCommand, FeatureManager.Feature.PUNISHMENTS);

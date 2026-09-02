@@ -1956,6 +1956,11 @@ VOICE-CHAT:
 The whole feature answers to the `VOICE_CHAT` toggle in `/features`, so disabling it there stops the
 prompt, the command, and the microphone gate together.
 
+A voice mute issued by staff is a separate thing and none of the settings above reach it. `/vcmute`
+writes a punishment record, so it survives a relog, appears in `/punishments` alongside bans and
+chat mutes, and keeps the player off the microphone whether or not `MUTE-UNTIL-ACCEPTED` is on.
+`/vcunmute` lifts it.
+
 ### 3. Practical Setup Example
 
 A server that will not carry a recording of anyone who never agreed to being recorded. The prompt

@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PunishmentCommandPermissionTest {
 
     private static final String PREFIX = "ultimatedonutsmp.staff.punishments.";
+    private static final String STAFF = "ultimatedonutsmp.staff.";
 
     @Test
     void mapsCommandsAndAliasesToExpectedPermissions() {
@@ -35,6 +36,8 @@ class PunishmentCommandPermissionTest {
                 Map.entry("mute", PREFIX + "mute"),
                 Map.entry("tempmute", PREFIX + "mute"),
                 Map.entry("unmute", PREFIX + "unmute"),
+                Map.entry("vcmute", STAFF + "vcmute"),
+                Map.entry("vcunmute", STAFF + "vcunmute"),
                 Map.entry("blacklist", PREFIX + "blacklist"),
                 Map.entry("unblacklist", PREFIX + "unblacklist"),
                 Map.entry("warn", PREFIX + "create"),
@@ -53,6 +56,7 @@ class PunishmentCommandPermissionTest {
         assertTrue(PunishmentCommand.hasPermissionForAction(permissible, "ban"));
         assertTrue(PunishmentCommand.hasPermissionForAction(permissible, "tempban"));
         assertFalse(PunishmentCommand.hasPermissionForAction(permissible, "mute"));
+        assertFalse(PunishmentCommand.hasPermissionForAction(permissible, "vcmute"));
         assertFalse(PunishmentCommand.hasPermissionForAction(permissible, "blacklist"));
         assertFalse(PunishmentCommand.hasPermissionForAction(permissible, "unban"));
     }
@@ -71,6 +75,8 @@ class PunishmentCommandPermissionTest {
         assertEquals(PREFIX + "unblacklist", pluginYaml.getString("commands.unblacklist.permission"));
         assertEquals(PREFIX + "create", pluginYaml.getString("commands.warn.permission"));
         assertEquals(PREFIX + "create", pluginYaml.getString("commands.kick.permission"));
+        assertEquals(STAFF + "vcmute", pluginYaml.getString("commands.vcmute.permission"));
+        assertEquals(STAFF + "vcunmute", pluginYaml.getString("commands.vcunmute.permission"));
         assertTrue(pluginYaml.getStringList("commands.unban.aliases").contains("pardon"));
 
         assertTrue(pluginYaml.getBoolean("permissions." + PREFIX + "create.children." + PREFIX + "ban"));
@@ -79,6 +85,14 @@ class PunishmentCommandPermissionTest {
         assertTrue(pluginYaml.getBoolean("permissions." + PREFIX + "remove.children." + PREFIX + "unban"));
         assertTrue(pluginYaml.getBoolean("permissions." + PREFIX + "remove.children." + PREFIX + "unmute"));
         assertTrue(pluginYaml.getBoolean("permissions." + PREFIX + "remove.children." + PREFIX + "unblacklist"));
+        assertTrue(pluginYaml.getBoolean("permissions." + PREFIX + "create.children." + STAFF + "vcmute"));
+        assertTrue(pluginYaml.getBoolean("permissions." + PREFIX + "remove.children." + STAFF + "vcunmute"));
+
+        for (String node : Set.of("vcmute", "vcunmute")) {
+            assertEquals(Boolean.FALSE, pluginYaml.get("permissions." + STAFF + node + ".default"), node);
+            assertTrue(pluginYaml.getBoolean(
+                    "permissions.ultimatedonutsmp.command." + node + ".children." + STAFF + node), node);
+        }
 
         for (String action : Set.of("ban", "mute", "blacklist", "unban", "unmute", "unblacklist")) {
             String path = "permissions." + PREFIX + action + ".default";

@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.OffenseManager;
 import com.bx.ultimateDonutSmp.managers.PlayerWipeManager;
 import com.bx.ultimateDonutSmp.managers.PunishmentManager;
+import com.bx.ultimateDonutSmp.managers.VoiceChatConsentManager;
 import com.bx.ultimateDonutSmp.models.PunishmentQuery;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentScope;
@@ -217,6 +218,13 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
                     )
             ));
             case MUTE -> onlineTarget.sendMessage(ColorUtils.toComponent(buildPunishmentMessage(record)));
+            case VOICE_MUTE -> {
+                VoiceChatConsentManager voiceChat = plugin.getVoiceChatConsentManager();
+                if (voiceChat != null) {
+                    voiceChat.refreshVoiceMute(onlineTarget.getUniqueId(), onlineTarget.getName());
+                }
+                onlineTarget.sendMessage(ColorUtils.toComponent(buildPunishmentMessage(record)));
+            }
         }
     }
 
@@ -233,6 +241,7 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
             case BAN -> "PUNISHMENTS.BAN";
             case KICK -> "PUNISHMENTS.KICK";
             case MUTE -> "PUNISHMENTS.MUTE";
+            case VOICE_MUTE -> "PUNISHMENTS.VOICE-MUTE";
             case BLACKLIST -> "PUNISHMENTS.BLACKLIST";
             case WARN -> "PUNISHMENTS.WARN-RECEIVED";
         };
@@ -242,6 +251,7 @@ public class OffendCommand implements CommandExecutor, TabCompleter {
         return switch (type) {
             case BAN -> "&c&lyou have been banned!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7banned by: &f%issuer%\n&8&m----------------------------";
             case KICK -> "&c&lyou have been kicked!\n&8&m----------------------------\n&7reason: &f%reason%\n&7kicked by: &f%issuer%\n&8&m----------------------------";
+            case VOICE_MUTE -> "&c&lyou have been voice muted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7muted by: &f%issuer%\n&8&m----------------------------";
             case MUTE -> "&c&lyou have been muted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7muted by: &f%issuer%\n&8&m----------------------------";
             case BLACKLIST -> "&4&lyou have been blacklisted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7blacklisted by: &f%issuer%\n&8&m----------------------------";
             case WARN -> "&cwarning: &f{reason}";

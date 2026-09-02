@@ -2672,6 +2672,8 @@ MESSAGES:
     USAGE-UNBAN: "&cUsage: /unban <player> [reason]"
     USAGE-PARDON: "&cUsage: /pardon <player> [reason]"
     USAGE-UNMUTE: "&cUsage: /unmute <player> [reason]"
+    USAGE-VCMUTE: "&cUsage: /vcmute <player> [reason]"
+    USAGE-VCUNMUTE: "&cUsage: /vcunmute <player> [reason]"
     USAGE-UNBLACKLIST: "&cUsage: /unblacklist <player> [reason]"
     NOT-FOUND: "&cPlayer not found."
     TARGET-OFFLINE: "&cThat player dan is not online."
@@ -2699,6 +2701,9 @@ MESSAGES:
     MUTE: "&c&lYou have been muted!\n&8&m----------------------------\n&7Reason: &f%reason%\n\
       &7Expires: &f%nicest_expiration%\n&7Muted by: &f%issuer%\n&8&m----------------------------\n\
       &7You cannot speak in chat"
+    VOICE-MUTE: "&c&lYou have been voice muted!\n&8&m----------------------------\n&7Reason: &f%reason%\n\
+      &7Expires: &f%nicest_expiration%\n&7Muted by: &f%issuer%\n&8&m----------------------------\n\
+      &7You cannot speak in voice chat"
     BLACKLIST: "&4&lYou have been blacklisted!\n&8&m----------------------------\n\
       &7Reason: &f%reason%\n&7Blacklisted by: &f%issuer%\n&8&m----------------------------\n\
       &4You cannot join the server"
