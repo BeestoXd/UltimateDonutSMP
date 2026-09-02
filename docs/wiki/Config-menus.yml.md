@@ -2984,6 +2984,489 @@ PROFILE-VIEWER-HOMES-MENU:
 
 ---
 
+## Section: `PUNISHMENT-HISTORY-MENU`
+
+Opened with `/punishments <player>`, and from the punishments button on a profile. Every record the
+plugin holds for one player, newest first, with filters for state and type. Staff who hold the delete
+permission can remove a record from here.
+
+Note before you start moving things: the buttons on this menu have no `SLOT` option. Their positions
+are fixed along the bottom row, so this section controls what they look like rather than where they
+sit.
+
+### 1. Commented Setup Code Example
+
+```yaml
+PUNISHMENT-HISTORY-MENU:
+  TITLE: '&8Punishments ({player})'
+  SIZE: 54
+  MAX-ITEMS-PER-PAGE: 45
+  BUTTONS:
+    # Positions are fixed: back 45, state filter 46, type filter 47, refresh 49.
+    BACK:
+      MATERIAL: ARROW
+      DISPLAY-NAME: '&cBack'
+    FILTER-STATE:
+      MATERIAL: HOPPER
+      DISPLAY-NAME: '&#6BF18DState Filter'
+      LORE:
+      - '&7Current: &f{state_filter}'
+    FILTER-TYPE:
+      MATERIAL: BOOK
+      DISPLAY-NAME: '&#6BF18DType Filter'
+      LORE:
+      - '&7Current: &f{type_filter}'
+    REFRESH:
+      MATERIAL: CLOCK
+      DISPLAY-NAME: '&#6BF18DRefresh'
+  # One template for every record, with the icon picked by punishment type.
+  PUNISHMENT-ITEM:
+    MATERIALS:
+      BAN: IRON_BARS
+      MUTE: PAPER
+      WARN: YELLOW_DYE
+      KICK: LEATHER_BOOTS
+      BLACKLIST: BARRIER
+    DISPLAY-NAME: '{status_color}{type}'
+    LORE:
+    - '&7Reason: &f{reason}'
+    - '&7Issued by: &f{issuer}'
+    - '&7Status: {status_color}{status}'
+    - '&7ID: &f#{id}'
+  EMPTY-BUTTON:
+    MATERIAL: BARRIER
+    DISPLAY-NAME: '&cNo Punishment History'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `PUNISHMENT-HISTORY-MENU.TITLE` | `str` | Any string text | `'&8Punishments ({player})'` | Inventory title. |
+| `PUNISHMENT-HISTORY-MENU.SIZE` | `int` | `27`, `36`, `45`, `54` | `54` | Inventory size. Anything under `27` or not a multiple of nine falls back to `54`. Leave it at `54`, since the fixed button row sits on slots 45 to 52. |
+| `PUNISHMENT-HISTORY-MENU.MAX-ITEMS-PER-PAGE` | `int` | `1` to `45` | `45` | Records per page. Values outside the range are pulled back into it. |
+| `PUNISHMENT-HISTORY-MENU.BUTTONS.BACK` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `ARROW`, `'&cBack'` | Returns to the profile. Fixed on slot 45. |
+| `PUNISHMENT-HISTORY-MENU.BUTTONS.FILTER-STATE` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `HOPPER` | Cycles the state filter on click. Fixed on slot 46. |
+| `PUNISHMENT-HISTORY-MENU.BUTTONS.FILTER-TYPE` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `BOOK` | Cycles the type filter on click. Fixed on slot 47. |
+| `PUNISHMENT-HISTORY-MENU.BUTTONS.REFRESH` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `CLOCK` | Re-reads the records. Fixed on slot 49. |
+| `PUNISHMENT-HISTORY-MENU.PUNISHMENT-ITEM.MATERIALS.<TYPE>` | `str` | Any valid material name | see example | Icon per punishment type: `BAN`, `MUTE`, `WARN`, `KICK`, `BLACKLIST`. |
+| `PUNISHMENT-HISTORY-MENU.PUNISHMENT-ITEM.DISPLAY-NAME` | `str` | Any string text | `'{status_color}{type}'` | Record icon name. |
+| `PUNISHMENT-HISTORY-MENU.PUNISHMENT-ITEM.LORE` | `list` | List of strings | Built-in block | Record icon lore. |
+| `PUNISHMENT-HISTORY-MENU.EMPTY-BUTTON` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `BARRIER` | Shown when the player has no records. |
+
+Menu-level text, meaning the title and the filter buttons, reads these:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{player}` | The player whose history this is |
+| `{state_filter}`, `{type_filter}` | The filters as they currently stand |
+| `{page}`, `{pages}`, `{total}` | Page position and the record count |
+
+A record icon reads a larger set, and four of them are worth calling out because the shipped lore
+leaves them out: `{scope}` and `{source_server}` exist alongside the obvious ones.
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{type}` | Ban, mute, warn, kick or blacklist |
+| `{player}` | Who it was issued against |
+| `{reason}` | The reason given |
+| `{issuer}` | Who issued it |
+| `{issued_at}`, `{expires_at}` | When it started and when it ends |
+| `{status}`, `{status_color}` | Active or lifted, and the colour that matches |
+| `{removed_by}`, `{removal_reason}`, `{removed_at}` | Who lifted it, why and when |
+| `{id}` | The record id |
+| `{scope}` | Whether the punishment is network-wide or local |
+| `{source_server}` | Which server issued it |
+
+Paging arrows come from the shared `GLOBAL.PAGE-MENU` block. Deleting a record is a shift-right-click
+and needs `ultimatedonutsmp.staff.punishments.delete`; without that permission the click does
+nothing, so leave the hint line out of the lore for servers where only admins hold it.
+
+### 3. Practical Setup Example
+
+A shorter record card that surfaces the network scope, useful when punishments are shared between
+servers:
+
+```yaml
+PUNISHMENT-HISTORY-MENU:
+  TITLE: '&8History: {player}'
+  SIZE: 54
+  MAX-ITEMS-PER-PAGE: 27
+  PUNISHMENT-ITEM:
+    MATERIALS:
+      BAN: BARRIER
+      MUTE: PAPER
+      WARN: YELLOW_DYE
+      KICK: LEATHER_BOOTS
+      BLACKLIST: BEDROCK
+    DISPLAY-NAME: '{status_color}{type} &8#{id}'
+    LORE:
+    - '&7Reason: &f{reason}'
+    - '&7By &f{issuer} &7on &f{issued_at}'
+    - '&7Scope: &f{scope} &8({source_server})'
+    - '&7Status: {status_color}{status}'
+```
+
+---
+
+## Section: `PUNISHMENTS-LIST-MENU`
+
+Opened with `/punishments` and no player named. Every record on the server rather than one player's,
+with the same state and type filters plus a sort order and a search. Clicking a record opens that
+player's history.
+
+Button positions are fixed here too, along the bottom row, so this section sets their appearance
+rather than their slots.
+
+### 1. Commented Setup Code Example
+
+```yaml
+PUNISHMENTS-LIST-MENU:
+  TITLE: '&8All Punishments'
+  SIZE: 54
+  MAX-ITEMS-PER-PAGE: 45
+  BUTTONS:
+    # Fixed: back 45, state 46, type 47, refresh 49, search 51, sort 53.
+    BACK:
+      MATERIAL: ARROW
+      DISPLAY-NAME: '&cClose'
+    FILTER-STATE:
+      MATERIAL: HOPPER
+      DISPLAY-NAME: '&#6BF18DState Filter'
+      LORE:
+      - '&7Current: &f{state_filter}'
+    FILTER-TYPE:
+      MATERIAL: BOOK
+      DISPLAY-NAME: '&#6BF18DType Filter'
+      LORE:
+      - '&7Current: &f{type_filter}'
+    SORT:
+      MATERIAL: COMPARATOR
+      DISPLAY-NAME: '&#6BF18DSort Order'
+      LORE:
+      - '&7Current: &f{sort_order}'
+    SEARCH:
+      MATERIAL: NAME_TAG
+      DISPLAY-NAME: '&#6BF18DSearch'
+      LORE:
+      - '&7Current: &f{search}'
+      - '&aLeft-click to search a player'
+      - '&cRight-click to clear'
+    REFRESH:
+      MATERIAL: CLOCK
+      DISPLAY-NAME: '&#6BF18DRefresh'
+  # The sign that opens when search is clicked.
+  SEARCH-SIGN:
+    INPUT-LINE: 0
+    LINES:
+    - ''
+    - '^^^^^^^^^^^^^^'
+    - 'Player Name'
+    - ''
+  PUNISHMENT-ITEM:
+    MATERIALS:
+      BAN: IRON_BARS
+      MUTE: PAPER
+      WARN: YELLOW_DYE
+      KICK: LEATHER_BOOTS
+      BLACKLIST: BARRIER
+    DISPLAY-NAME: '{status_color}{player} &8- &f{type}'
+    LORE:
+    - '&7Reason: &f{reason}'
+    - '&7Status: {status_color}{status}'
+  # Drawn while the punishment table is still being read.
+  LOADING-BUTTON:
+    MATERIAL: CLOCK
+    DISPLAY-NAME: '&eLoading Punishments'
+  EMPTY-BUTTON:
+    MATERIAL: BARRIER
+    DISPLAY-NAME: '&cNo Punishments Found'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `PUNISHMENTS-LIST-MENU.TITLE` | `str` | Any string text | `'&8All punishments'` | Inventory title. |
+| `PUNISHMENTS-LIST-MENU.SIZE` | `int` | `27`, `36`, `45`, `54` | `54` | Inventory size. Under `27` or not a multiple of nine falls back to `54`. The fixed row uses slots 45 to 53, so `54` is the only size that fits all of it. |
+| `PUNISHMENTS-LIST-MENU.MAX-ITEMS-PER-PAGE` | `int` | `1` to `45` | `45` | Records per page, clamped into range. |
+| `PUNISHMENTS-LIST-MENU.BUTTONS.BACK` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `ARROW` | Closes the menu. Fixed on slot 45. |
+| `PUNISHMENTS-LIST-MENU.BUTTONS.FILTER-STATE` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `HOPPER` | Cycles the state filter. Fixed on slot 46. |
+| `PUNISHMENTS-LIST-MENU.BUTTONS.FILTER-TYPE` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `BOOK` | Cycles the type filter. Fixed on slot 47. |
+| `PUNISHMENTS-LIST-MENU.BUTTONS.REFRESH` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `CLOCK` | Re-reads the table. Fixed on slot 49. |
+| `PUNISHMENTS-LIST-MENU.BUTTONS.SEARCH` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `NAME_TAG` | Left-click opens the search sign, right-click clears the search. Fixed on slot 51. |
+| `PUNISHMENTS-LIST-MENU.BUTTONS.SORT` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `COMPARATOR` | Cycles the sort order. Fixed on slot 53. |
+| `PUNISHMENTS-LIST-MENU.SEARCH-SIGN.INPUT-LINE` | `int` | `0` to `3` | `0` | Which line of the sign the staff member types the name on. |
+| `PUNISHMENTS-LIST-MENU.SEARCH-SIGN.LINES` | `list` | Four strings | see example | The sign as it opens. Keep the input line blank and use the others as the prompt. |
+| `PUNISHMENTS-LIST-MENU.PUNISHMENT-ITEM` | `section` | `MATERIALS`, `DISPLAY-NAME`, `LORE` | see example | Record template, the same shape as the history menu's. |
+| `PUNISHMENTS-LIST-MENU.LOADING-BUTTON` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `CLOCK` | Drawn while the table is still loading. |
+| `PUNISHMENTS-LIST-MENU.EMPTY-BUTTON` | `section` | `MATERIAL`, `DISPLAY-NAME`, `LORE` | `BARRIER` | Drawn when nothing matches the filters. |
+
+Record icons take the same placeholders as the history menu, `{scope}` and `{source_server}`
+included. Menu-level text here adds two of its own to that menu's set:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{sort_order}` | The sort as it currently stands |
+| `{search}` | The active search term, or a blank when there is none |
+
+`LOADING-BUTTON` is the one that only shows up on a busy server: the list reads the punishment table
+off the main thread, so on a large database staff see this icon first and the records a moment later.
+If it never appears, that is fine, it just means the read finished quickly.
+
+Left-clicking a record opens that player's `PUNISHMENT-HISTORY-MENU`, and shift-right-click deletes
+it for staff holding `ultimatedonutsmp.staff.punishments.delete`. Paging arrows come from
+`GLOBAL.PAGE-MENU`.
+
+### 3. Practical Setup Example
+
+A denser list that leans on the search, for a server with a long history:
+
+```yaml
+PUNISHMENTS-LIST-MENU:
+  TITLE: '&8Punishments &7({total})'
+  SIZE: 54
+  MAX-ITEMS-PER-PAGE: 36
+  BUTTONS:
+    SEARCH:
+      MATERIAL: NAME_TAG
+      DISPLAY-NAME: '&eSearch: &f{search}'
+      LORE:
+      - '&aLeft-click to type a name'
+      - '&cRight-click to clear'
+    SORT:
+      MATERIAL: COMPARATOR
+      DISPLAY-NAME: '&eSort: &f{sort_order}'
+  SEARCH-SIGN:
+    INPUT-LINE: 0
+    LINES:
+    - ''
+    - '^^^^^^^^^^^^^^'
+    - 'Type a name'
+    - ''
+  PUNISHMENT-ITEM:
+    DISPLAY-NAME: '{status_color}{player}'
+    LORE:
+    - '&7{type} &8- &f{reason}'
+    - '&7By &f{issuer}'
+    - '&8#{id}'
+```
+
+---
+
+## Section: `STATS-WIPE-MENU`
+
+Opened with `/ultimatedonutsmp statswipe`, and it needs `ultimatedonutsmp.admin.statswipe`. One
+button per kind of stored data, each showing how many records a wipe would touch, and each leading to
+a confirmation menu rather than firing straight away.
+
+The seven buttons map to a fixed list of wipe targets. Adding a key of your own does nothing, but
+deleting one removes that option from the GUI, which is the supported way to keep a destructive wipe
+off the menu on a live server.
+
+### 1. Commented Setup Code Example
+
+```yaml
+STATS-WIPE-MENU:
+  TITLE: '&8Stats Wipe'
+  SIZE: 27
+  PLACEHOLDER: true
+  PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
+  # Replaces the button grid entirely while another wipe is still running.
+  STATUS:
+    SLOT: 13
+    MATERIAL: BARRIER
+    DISPLAY-NAME: '&cWipe In Progress'
+    LORE:
+    - '&7Another wipe is currently running.'
+  BUTTONS:
+    # Delete a block to take that wipe off the menu. New keys are ignored.
+    MONEY:
+      SLOT: 9
+      MATERIAL: GOLD_INGOT
+      DISPLAY-NAME: '&#6BF18DPlayer Money'
+      LORE:
+      - '&7Players with custom balances: &f{count}'
+    PLAYER_STATS:
+      SLOT: 10
+      MATERIAL: PAPER
+      DISPLAY-NAME: '&#6BF18DPlayer Stats'
+      LORE:
+      - '&7Players with tracked stats: &f{count}'
+    REFRESH:
+      SLOT: 22
+      MATERIAL: CLOCK
+      DISPLAY-NAME: '&#6BF18DRefresh'
+    CLOSE:
+      SLOT: 26
+      MATERIAL: BARRIER
+      DISPLAY-NAME: '&cClose'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `STATS-WIPE-MENU.TITLE` | `str` | Any string text | `'&8Stats wipe'` | Inventory title. |
+| `STATS-WIPE-MENU.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Inventory size. Anything else falls back to `27`. |
+| `STATS-WIPE-MENU.PLACEHOLDER` | `bool` | `true`, `false` | `true` | Whether the unused slots get filled at all. |
+| `STATS-WIPE-MENU.PLACEHOLDER-MATERIAL` | `str` | Any valid material name | `BLACK_STAINED_GLASS_PANE` | What fills them when it is on. |
+| `STATS-WIPE-MENU.STATUS.SLOT` | `int` | `0` to `SIZE - 1` | `13` | Where the in-progress notice sits. |
+| `STATS-WIPE-MENU.STATUS.MATERIAL` | `str` | Any valid material name | `BARRIER` | Icon for the in-progress notice. |
+| `STATS-WIPE-MENU.STATUS.DISPLAY-NAME` | `str` | Any string text | - | Name of the in-progress notice. |
+| `STATS-WIPE-MENU.STATUS.LORE` | `list` | List of strings | `[]` | Lore of the in-progress notice. |
+| `STATS-WIPE-MENU.BUTTONS.<TARGET>.SLOT` | `int` | `0` to `SIZE - 1` | `-1` | Slot for that wipe. A slot outside the menu drops the button silently. |
+| `STATS-WIPE-MENU.BUTTONS.<TARGET>.MATERIAL` | `str` | Any valid material name | - | Icon material. |
+| `STATS-WIPE-MENU.BUTTONS.<TARGET>.DISPLAY-NAME` | `str` | Any string text | - | Icon name. |
+| `STATS-WIPE-MENU.BUTTONS.<TARGET>.LORE` | `list` | List of strings | `[]` | Icon lore, where `{count}` belongs. |
+| `STATS-WIPE-MENU.BUTTONS.REFRESH` | `section` | `SLOT`, `MATERIAL`, `DISPLAY-NAME`, `LORE` | slot `22` | Recounts the records. |
+| `STATS-WIPE-MENU.BUTTONS.CLOSE` | `section` | `SLOT`, `MATERIAL`, `DISPLAY-NAME`, `LORE` | slot `26` | Closes the menu. |
+
+`<TARGET>` is one of exactly seven keys:
+
+| Key | Wipes |
+| :--- | :--- |
+| `PLAYER_STATS` | Kills, deaths, playtime, blocks, mobs, streaks and money-flow stats |
+| `TEAM_DOCUMENTS` | Every team and its members |
+| `HOME_DOCUMENTS` | Every saved home |
+| `BOUNTIES` | Every active bounty |
+| `SELL_DOCUMENTS` | Sell history and sell progress |
+| `MONEY` | Resets balances to the configured starting money |
+| `SHARDS` | Resets every player's shards to zero |
+
+`{count}` in a button's lore is that target's live record count, read when the menu opens and again
+when refresh is clicked, so it previews what the wipe would touch rather than reporting a stored
+number.
+
+While a wipe is running the whole button grid is replaced by the `STATUS` icon, which is why that
+block sits outside `BUTTONS`. Refresh once it finishes to get the grid back.
+
+### 3. Practical Setup Example
+
+A menu cut down to the two wipes a seasonal reset needs, with the other blocks deleted so nobody
+clicks them by accident:
+
+```yaml
+STATS-WIPE-MENU:
+  TITLE: '&8Season Reset'
+  SIZE: 27
+  PLACEHOLDER: true
+  PLACEHOLDER-MATERIAL: GRAY_STAINED_GLASS_PANE
+  BUTTONS:
+    PLAYER_STATS:
+      SLOT: 11
+      MATERIAL: PAPER
+      DISPLAY-NAME: '&eReset Stats'
+      LORE:
+      - '&7Tracked players: &f{count}'
+      - '&cCannot be undone.'
+    MONEY:
+      SLOT: 15
+      MATERIAL: GOLD_INGOT
+      DISPLAY-NAME: '&eReset Money'
+      LORE:
+      - '&7Custom balances: &f{count}'
+      - '&cCannot be undone.'
+    CLOSE:
+      SLOT: 26
+      MATERIAL: BARRIER
+      DISPLAY-NAME: '&cClose'
+```
+
+---
+
+## Section: `STATS-WIPE-CONFIRM-MENU`
+
+The second step of a wipe. Clicking any button on `STATS-WIPE-MENU` opens this rather than running
+anything, so a wipe always takes two deliberate clicks in two different menus.
+
+### 1. Commented Setup Code Example
+
+```yaml
+STATS-WIPE-CONFIRM-MENU:
+  TITLE: '&8Confirm {target}'
+  SIZE: 27
+  PLACEHOLDER: true
+  PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
+  BUTTONS:
+    # What is about to be wiped, and how much of it. Clicking it does nothing.
+    TARGET:
+      SLOT: 13
+      MATERIAL: PAPER
+      DISPLAY-NAME: '&#6BF18D{target}'
+      LORE:
+      - '&7Affected records: &f{count}'
+      - '&cThis action cannot be undone.'
+    CANCEL:
+      SLOT: 11
+      MATERIAL: RED_STAINED_GLASS_PANE
+      DISPLAY-NAME: '&cCancel'
+      LORE:
+      - '&7Return to the Stats Wipe menu.'
+    CONFIRM:
+      SLOT: 15
+      MATERIAL: LIME_STAINED_GLASS_PANE
+      DISPLAY-NAME: '&aConfirm'
+      LORE:
+      - '&7Run wipe for &f{target}&7.'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `STATS-WIPE-CONFIRM-MENU.TITLE` | `str` | Any string text | `'&8Confirm {target}'` | Inventory title. |
+| `STATS-WIPE-CONFIRM-MENU.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Inventory size. Anything else falls back to `27`. |
+| `STATS-WIPE-CONFIRM-MENU.PLACEHOLDER` | `bool` | `true`, `false` | `true` | Whether the unused slots get filled. |
+| `STATS-WIPE-CONFIRM-MENU.PLACEHOLDER-MATERIAL` | `str` | Any valid material name | `BLACK_STAINED_GLASS_PANE` | What fills them. |
+| `STATS-WIPE-CONFIRM-MENU.BUTTONS.TARGET` | `section` | `SLOT`, `MATERIAL`, `DISPLAY-NAME`, `LORE` | slot `13` | Summary of what is about to run. Inert on click. |
+| `STATS-WIPE-CONFIRM-MENU.BUTTONS.CANCEL` | `section` | `SLOT`, `MATERIAL`, `DISPLAY-NAME`, `LORE` | slot `11` | Goes back to `STATS-WIPE-MENU` without running anything. |
+| `STATS-WIPE-CONFIRM-MENU.BUTTONS.CONFIRM` | `section` | `SLOT`, `MATERIAL`, `DISPLAY-NAME`, `LORE` | slot `15` | Runs the wipe. |
+
+Every name and lore here reads two placeholders:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{target}` | The readable name of the wipe, such as `player stats` or `player money` |
+| `{count}` | How many records the wipe will touch |
+
+Worth resisting the urge to tidy this menu by putting confirm next to cancel. They ship two slots
+apart with the summary between them, so a misclick on the way to cancel does not land on confirm. If
+you do rearrange it, keep them separated.
+
+### 3. Practical Setup Example
+
+Confirm moved to the far end of the row and dressed as a warning, for admins who want more distance
+between the two:
+
+```yaml
+STATS-WIPE-CONFIRM-MENU:
+  TITLE: '&cConfirm: {target}'
+  SIZE: 27
+  PLACEHOLDER: true
+  PLACEHOLDER-MATERIAL: RED_STAINED_GLASS_PANE
+  BUTTONS:
+    TARGET:
+      SLOT: 13
+      MATERIAL: PAPER
+      DISPLAY-NAME: '&f{target}'
+      LORE:
+      - '&7About to delete &f{count} &7records.'
+      - '&cThere is no undo.'
+    CANCEL:
+      SLOT: 9
+      MATERIAL: LIME_STAINED_GLASS_PANE
+      DISPLAY-NAME: '&aKeep everything'
+    CONFIRM:
+      SLOT: 17
+      MATERIAL: TNT
+      DISPLAY-NAME: '&4Wipe {target}'
+      LORE:
+      - '&7Deletes &f{count} &7records now.'
+```
+
+---
+
 ## Section: `SERVERS-MENU`
 
 Opened with `/servers`. One icon per server on the network, coloured by whether that server answered
