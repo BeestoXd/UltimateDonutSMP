@@ -52,7 +52,7 @@ Explore the complete feature guide and documentation pages:
   Full catalog of `%economy_*%` PlaceholderAPI placeholders, LuckPerms integration, Apollo (Lunar Client) support, and Bedrock/Floodgate compatibility.
 
 - **[Configuration Reference](Configuration-Reference)**  
-  In-depth guide to customizing `config.yml`, `messages.yml`, `menus.yml`, `duels.yml`, `crates.yml`, `spawners.yml`, `database.yml`, and `network.yml`.
+  In-depth setup guidance for `duels.yml`, `config.yml`, `database.yml`, `network.yml`, `crates.yml` and the marketplace files. Per-file guides for everything else are listed in the sidebar.
 
 - **[FAQ & Troubleshooting](FAQ)**  
   100% complete answers and troubleshooting steps for PlaceholderAPI issues, Vault hook failures, database persistence, cuboids, spawners, vanish, and fast crystal settings.
