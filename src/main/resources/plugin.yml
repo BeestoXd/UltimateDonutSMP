@@ -875,6 +875,7 @@ permissions:
       ultimatedonutsmp.staff.chat.bypass.mute: true
       ultimatedonutsmp.staff.chat.bypass.delay: true
       ultimatedonutsmp.staff.chat.bypass.filter: true
+      ultimatedonutsmp.chat.color: true
       ultimatedonutsmp.staff.alerts.receive: true
       ultimatedonutsmp.staff.alerts.bypass-cooldown: true
       ultimatedonutsmp.staff.teleport: true
@@ -1052,6 +1053,7 @@ permissions:
       ultimatedonutsmp.staff.mode.seevanished: true
       ultimatedonutsmp.staff.mode.others: true
       ultimatedonutsmp.staff.chat.use: true
+      ultimatedonutsmp.chat.color: true
       ultimatedonutsmp.staff.teleport: true
       ultimatedonutsmp.staff.rename: true
       ultimatedonutsmp.staff.alts: true
@@ -1199,6 +1201,9 @@ permissions:
     default: true
   ultimatedonutsmp.message.bypass-disabled:
     description: Bypass target private-message disabled checks
+    default: op
+  ultimatedonutsmp.chat.color:
+    description: Use colour codes and gradients in private messages and staff chat
     default: op
   ultimatedonutsmp.staff.punishments.ban:
     default: false

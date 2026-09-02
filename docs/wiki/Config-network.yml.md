@@ -132,6 +132,11 @@ unfilled.
 
 A placeholder typed into the message itself is not expanded; it prints as the text that was typed.
 
+Colour codes typed into the message follow `ultimatedonutsmp.chat.color`, which defaults to `op` and
+comes with the `ultimatedonutsmp.admin` and `ultimatedonutsmp.staff.mode` bundles. A sender holding
+it can colour their own staff chat text; for anyone else the codes are removed before the line goes
+out, on the server the message was sent from rather than the ones it arrives at.
+
 ```yaml
 NETWORK:
   STAFF_CHAT: '&8[&dNetwork&8] &7[%server%] %luckperms_prefix%&e%player%&8: &f%message%'

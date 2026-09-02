@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.TypedColorPolicy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,6 +29,10 @@ public class PrivateMessageManager {
         if (sender == null || target == null || message == null || message.isBlank()) {
             return false;
         }
+
+        // Both formats colour the whole line after the message goes into it, so the codes have to
+        // come out here for anyone not allowed to colour their own text. reply() lands here too.
+        message = TypedColorPolicy.apply(sender, message);
 
         String senderName = sender instanceof Player player ? player.getName() : "console";
         if (sender instanceof Player publicSender) {
