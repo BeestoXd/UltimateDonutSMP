@@ -2244,13 +2244,13 @@ CONFIG:
       ALERT-HOVER: '&eClick to teleport to &f{player}'
   NETWORK:
     NETWORK:
-      SERVER_STATUS: '&6%server% &eIs now %status%&e.'
+      SERVER_STATUS: '&6%server% &eis now %status%&e.'
     MAINTENANCE:
       MESSAGES:
-        ENTERING: '&d[Maintenance] &7server is entering maintenance. moving you to
+        ENTERING: '&d[Maintenance] &7server is entering maintenance. Moving you to
           the lobby...'
         BYPASS_JOIN: '&d[Maintenance] &7you joined while maintenance mode is active.'
-        NOT_ALLOWED: '&d[Maintenance] &cthis server is currently in maintenance. redirecting
+        NOT_ALLOWED: '&d[Maintenance] &cthis server is currently in maintenance. Redirecting
           to lobby...'
         KICK_FALLBACK: '&cThis server is in maintenance and no lobby is available.'
         RECONNECTING_TITLE: '&a&lServer online'
