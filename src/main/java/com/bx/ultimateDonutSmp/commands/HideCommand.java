@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.menus.DisguiseSkinMenu;
 import com.bx.ultimateDonutSmp.menus.HideListMenu;
 import com.bx.ultimateDonutSmp.menus.HideMenu;
 import com.bx.ultimateDonutSmp.models.HideState;
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import org.bukkit.command.Command;
@@ -31,7 +32,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         HideManager manager = plugin.getHideManager();
-        if (label.equalsIgnoreCase("disguise")) {
+        if (CommandLabelUtils.normalizeLabel(label, command).equals("disguise")) {
             return handleDisguise(sender, args, manager);
         }
 

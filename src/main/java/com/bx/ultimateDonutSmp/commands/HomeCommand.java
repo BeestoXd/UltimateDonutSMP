@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.commands;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.HomeMenu;
 import com.bx.ultimateDonutSmp.models.Home;
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,7 +28,7 @@ public class HomeCommand implements CommandExecutor {
             return true;
         }
 
-        String sub = label.toLowerCase();
+        String sub = CommandLabelUtils.normalizeLabel(label, command);
 
         if (sub.equals("homes")) {
             if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {

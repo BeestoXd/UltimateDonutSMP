@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.commands;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.menus.MediaMenu;
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,7 +27,7 @@ public class SocialCommand implements CommandExecutor {
             return true;
         }
 
-        String normalizedLabel = label.toLowerCase();
+        String normalizedLabel = CommandLabelUtils.normalizeLabel(label, cmd);
         if (normalizedLabel.equals("media")) {
             new MediaMenu(plugin).open(player);
             return true;

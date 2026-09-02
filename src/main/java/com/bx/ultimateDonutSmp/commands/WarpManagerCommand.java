@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
@@ -26,7 +27,7 @@ public class WarpManagerCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        String loweredLabel = label.toLowerCase(Locale.ROOT);
+        String loweredLabel = CommandLabelUtils.normalizeLabel(label, command);
 
         if (loweredLabel.equals("setwarp")) {
             handleCreateAlias(sender, args);

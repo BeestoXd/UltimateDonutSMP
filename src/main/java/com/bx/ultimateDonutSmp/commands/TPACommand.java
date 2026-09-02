@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.managers.TPAManager;
 import com.bx.ultimateDonutSmp.menus.TpaConfirmMenu;
 import com.bx.ultimateDonutSmp.menus.TpaQueueMenu;
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
@@ -33,7 +34,7 @@ public class TPACommand implements CommandExecutor {
             return true;
         }
 
-        String sub = label.toLowerCase();
+        String sub = CommandLabelUtils.normalizeLabel(label, command);
         switch (sub) {
             case "tpa" -> handleTpa(player, args);
             case "tpahere" -> handleTpaHere(player, args);

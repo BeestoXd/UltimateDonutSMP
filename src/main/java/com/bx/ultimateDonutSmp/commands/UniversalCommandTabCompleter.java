@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
@@ -63,7 +64,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         }
 
         String commandName = normalize(command.getName());
-        String label = normalize(alias);
+        String label = CommandLabelUtils.normalizeLabel(alias, command);
         return switch (commandName) {
             case "team" -> completeTeam(sender, args);
             case "home", "homes", "sethome", "delhome", "renamehome" -> completeHome(sender, commandName, args);

@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.menus.SellMenu;
 import com.bx.ultimateDonutSmp.menus.SellProgressMenu;
 import com.bx.ultimateDonutSmp.menus.SellStatsAdminMenu;
 import com.bx.ultimateDonutSmp.models.SellCategory;
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,7 +31,9 @@ public class SellCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) { sender.sendMessage("Player only."); return true; }
 
-        if (label.equalsIgnoreCase("topsell") || label.equalsIgnoreCase("sellstats")) {
+        String sub = CommandLabelUtils.normalizeLabel(label, command);
+
+        if (sub.equals("topsell") || sub.equals("sellstats")) {
             return new SellStatsCommand(plugin).onCommand(sender, command, label, args);
         }
 
@@ -38,7 +41,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
             return new SellStatsCommand(plugin).onCommand(sender, command, label, args);
         }
 
-        switch (label.toLowerCase()) {
+        switch (sub) {
             case "sell" -> new SellMenu(plugin).open(player);
             case "sellmulti", "sellmultiplier", "sellprogress" -> {
                 SellCategory category = SellCategory.CROPS;
