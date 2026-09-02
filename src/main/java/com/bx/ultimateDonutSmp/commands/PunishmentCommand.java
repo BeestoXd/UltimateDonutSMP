@@ -6,12 +6,10 @@ import com.bx.ultimateDonutSmp.utils.PunishmentExemptPolicy;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.PunishmentManager;
-import com.bx.ultimateDonutSmp.managers.VoiceChatConsentManager;
 import com.bx.ultimateDonutSmp.models.PunishmentRecord;
 import com.bx.ultimateDonutSmp.models.PunishmentScope;
 import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
-import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -54,9 +52,11 @@ public class PunishmentCommand implements CommandExecutor {
     );
 
     private final UltimateDonutSmp plugin;
+    private final PunishmentMessages messages;
 
     public PunishmentCommand(UltimateDonutSmp plugin) {
         this.plugin = plugin;
+        this.messages = new PunishmentMessages(plugin, true);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class PunishmentCommand implements CommandExecutor {
             return true;
         }
 
-        applyRuntimeEffect(type, onlineTarget, record);
+        messages.applyRuntimeEffect(type, onlineTarget, record);
         plugin.getDiscordWebhookManager().sendPunishment(record);
         send(sender, plugin.getConfigManager().getMessageOrDefault(
                 "PUNISHMENTS.CREATED",
@@ -249,7 +249,7 @@ public class PunishmentCommand implements CommandExecutor {
         }
 
         if (type == PunishmentType.VOICE_MUTE) {
-            refreshVoiceMute(targetUuid, targetName);
+            messages.refreshVoiceMute(targetUuid, targetName);
         }
 
         send(sender, plugin.getConfigManager().getMessageOrDefault(
@@ -259,134 +259,6 @@ public class PunishmentCommand implements CommandExecutor {
                 "{player}", targetName
         ));
         return true;
-    }
-
-    private void applyRuntimeEffect(PunishmentType type, Player onlineTarget, PunishmentRecord record) {
-        if (onlineTarget == null) {
-            return;
-        }
-
-        switch (type) {
-            case BAN, BLACKLIST, KICK -> onlineTarget.kickPlayer(ColorUtils.toComponent(buildPunishmentMessage(record)));
-            case WARN -> onlineTarget.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessageOrDefault(
-                            "PUNISHMENTS.WARN-RECEIVED",
-                            "&cWarning: &f{reason}",
-                            "{reason}", record.getReason()
-                    )
-            ));
-            case MUTE -> onlineTarget.sendMessage(ColorUtils.toComponent(buildPunishmentMessage(record)));
-            case VOICE_MUTE -> {
-                refreshVoiceMute(onlineTarget.getUniqueId(), onlineTarget.getName());
-                onlineTarget.sendMessage(ColorUtils.toComponent(buildPunishmentMessage(record)));
-            }
-        }
-    }
-
-    /**
-     * The microphone gate reads a cache rather than the database, so a voice mute only takes hold
-     * once that cache has been told about the record that was just written or removed.
-     */
-    private void refreshVoiceMute(UUID targetUuid, String targetName) {
-        VoiceChatConsentManager manager = plugin.getVoiceChatConsentManager();
-        if (manager != null) {
-            manager.refreshVoiceMute(targetUuid, targetName);
-        }
-    }
-
-    private String buildPunishmentMessage(PunishmentRecord record) {
-        return plugin.getConfigManager().getMessageOrDefault(
-                punishmentMessagePath(record.getType()),
-                defaultPunishmentMessage(record.getType()),
-                punishmentPlaceholders(record)
-        );
-    }
-
-    private String punishmentMessagePath(PunishmentType type) {
-        return switch (type) {
-            case BAN -> "PUNISHMENTS.BAN";
-            case KICK -> "PUNISHMENTS.KICK";
-            case MUTE -> "PUNISHMENTS.MUTE";
-            case VOICE_MUTE -> "PUNISHMENTS.VOICE-MUTE";
-            case BLACKLIST -> "PUNISHMENTS.BLACKLIST";
-            case WARN -> "PUNISHMENTS.WARN-RECEIVED";
-        };
-    }
-
-    private String defaultPunishmentMessage(PunishmentType type) {
-        return switch (type) {
-            case BAN -> "&c&lyou have been banned!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7banned by: &f%issuer%\n&8&m----------------------------\n&7appeal at: &fdiscord.example.space";
-            case KICK -> "&c&lyou have been kicked!\n&8&m----------------------------\n&7reason: &f%reason%\n&7kicked by: &f%issuer%\n&8&m----------------------------\n&7you may reconnect";
-            case VOICE_MUTE -> "&c&lyou have been voice muted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7muted by: &f%issuer%\n&8&m----------------------------\n&7you cannot speak in voice chat";
-            case MUTE -> "&c&lyou have been muted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7expires: &f%nicest_expiration%\n&7muted by: &f%issuer%\n&8&m----------------------------\n&7you cannot speak in chat";
-            case BLACKLIST -> "&4&lyou have been blacklisted!\n&8&m----------------------------\n&7reason: &f%reason%\n&7blacklisted by: &f%issuer%\n&8&m----------------------------\n&4you cannot join the server";
-            case WARN -> "&cwarning: &f{reason}";
-        };
-    }
-
-    private String[] punishmentPlaceholders(PunishmentRecord record) {
-        String expires = formatExpires(record);
-        String issuer = formatIssuer(record);
-        String reason = record == null || record.getReason() == null ? "" : record.getReason();
-        String player = record == null || record.getTargetNameSnapshot() == null ? "" : record.getTargetNameSnapshot();
-        String id = record == null ? "" : String.valueOf(record.getId());
-        String type = record == null || record.getType() == null ? "" : record.getType().name();
-
-        return new String[]{
-                "%reason%", reason,
-                "{reason}", reason,
-
-                "%nicest_expiration%", expires,
-                "{nicest_expiration}", expires,
-                "%expires%", expires,
-                "{expires}", expires,
-                "%expires_at%", expires,
-                "{expires_at}", expires,
-                "%expiration%", expires,
-                "{expiration}", expires,
-                "%expiry%", expires,
-                "{expiry}", expires,
-                "%duration%", expires,
-                "{duration}", expires,
-
-                "%issuer%", issuer,
-                "{issuer}", issuer,
-                "%staff%", issuer,
-                "{staff}", issuer,
-                "%by%", issuer,
-                "{by}", issuer,
-
-                "%player%", player,
-                "{player}", player,
-                "%target%", player,
-                "{target}", player,
-
-                "%id%", id,
-                "{id}", id,
-
-                "%type%", type,
-                "{type}", type
-        };
-    }
-
-    private String formatExpires(PunishmentRecord record) {
-        if (record == null || record.getExpiresAt() == null) {
-            return "Permanent";
-        }
-        long remainingSeconds = Math.max(0L, (record.getExpiresAt() - System.currentTimeMillis()) / 1000L);
-        if (remainingSeconds <= 0L) {
-            return "Expired";
-        }
-        if (plugin != null && plugin.getLanguageManager() != null) {
-            return plugin.getLanguageManager().formatDuration(remainingSeconds, true);
-        }
-        return NumberUtils.formatCountdown(remainingSeconds);
-    }
-
-    private String formatIssuer(PunishmentRecord record) {
-        if (record == null) return "unknown";
-        String issuer = record.getIssuerNameSnapshot();
-        return issuer == null || issuer.isBlank() ? "unknown" : issuer;
     }
 
     private ResolvedTarget resolveTarget(String input) {

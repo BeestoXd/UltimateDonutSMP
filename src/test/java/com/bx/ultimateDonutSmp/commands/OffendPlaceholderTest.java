@@ -5,7 +5,6 @@ import com.bx.ultimateDonutSmp.models.PunishmentScope;
 import com.bx.ultimateDonutSmp.models.PunishmentType;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class OffendPlaceholderTest {
 
     @Test
-    void testPunishmentPlaceholdersContainAllExpiryVariants() throws Exception {
+    void testPunishmentPlaceholdersContainAllExpiryVariants() {
         PunishmentRecord record = new PunishmentRecord(
                 101L,
                 UUID.randomUUID(),
@@ -34,10 +33,7 @@ class OffendPlaceholderTest {
                 PunishmentScope.SERVER
         );
 
-        OffendCommand command = new OffendCommand(null);
-        Method method = OffendCommand.class.getDeclaredMethod("punishmentPlaceholders", PunishmentRecord.class);
-        method.setAccessible(true);
-        String[] placeholdersArray = (String[]) method.invoke(command, record);
+        String[] placeholdersArray = new PunishmentMessages(null, false).placeholders(record);
 
         assertNotNull(placeholdersArray);
         assertTrue(placeholdersArray.length >= 10);
@@ -76,7 +72,7 @@ class OffendPlaceholderTest {
     }
 
     @Test
-    void testPermanentPunishmentExpirationFormat() throws Exception {
+    void testPermanentPunishmentExpirationFormat() {
         PunishmentRecord record = new PunishmentRecord(
                 102L,
                 UUID.randomUUID(),
@@ -95,10 +91,7 @@ class OffendPlaceholderTest {
                 PunishmentScope.SERVER
         );
 
-        OffendCommand command = new OffendCommand(null);
-        Method method = OffendCommand.class.getDeclaredMethod("punishmentPlaceholders", PunishmentRecord.class);
-        method.setAccessible(true);
-        String[] placeholdersArray = (String[]) method.invoke(command, record);
+        String[] placeholdersArray = new PunishmentMessages(null, false).placeholders(record);
 
         Map<String, String> map = new HashMap<>();
         for (int i = 0; i + 1 < placeholdersArray.length; i += 2) {
