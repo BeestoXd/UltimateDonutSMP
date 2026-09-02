@@ -1394,8 +1394,8 @@ NETWORK:
 | `NETWORK.REDIS_CHANNEL` | `str` | Any string text | `ultimatedonutsmp:staff-chat` | Configures `REDIS_CHANNEL` for `NETWORK`. |
 | `NETWORK.HELPOP_REDIS_CHANNEL` | `str` | Any string text | `ultimatedonutsmp:staff-alerts` | Configures `HELPOP_REDIS_CHANNEL` for `NETWORK`. |
 | `NETWORK.REPORT_REDIS_CHANNEL` | `str` | Any string text | `ultimatedonutsmp:staff-alerts` | Configures `REPORT_REDIS_CHANNEL` for `NETWORK`. |
-| `NETWORK.SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | true, false | `True` | Configures `SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` for `NETWORK`. |
-| `NETWORK.STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` | `bool` | true, false | `False` | Configures `STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` for `NETWORK`. |
+| `NETWORK.SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | true, false | `True` | The name oversells it: local delivery is not optional and never was. A staff chat message reaches the staff on this server before Redis is attempted at all, and this key decides only whether the sender is told, once per session, that it did not reach the other servers. |
+| `NETWORK.STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` | `bool` | true, false | `False` | The `/helpop` and `/report` counterpart of the key above. Warns a player, once per session, that their alert reached local staff but could not be published to the other servers. Off by default, since somebody did receive it. |
 | `NETWORK.LOG_TO_CONSOLE` | `bool` | true, false | `True` | Configures `LOG_TO_CONSOLE` for `NETWORK`. |
 | `NETWORK.STAFF_ALERTS_LOG_TO_CONSOLE` | `bool` | true, false | `True` | Configures `STAFF_ALERTS_LOG_TO_CONSOLE` for `NETWORK`. |
 | `NETWORK.MAX_MESSAGE_LENGTH` | `int` | Any valid integer | `512` | Configures `MAX_MESSAGE_LENGTH` for `NETWORK`. |
