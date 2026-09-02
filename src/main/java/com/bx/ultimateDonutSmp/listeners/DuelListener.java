@@ -370,10 +370,6 @@ public class DuelListener implements Listener {
 
         event.setCancelled(true);
         event.getPlayer().sendMessage(ColorUtils.toComponent(plugin.getDuelManager().getCommandBlockedMessage()));
-        if (plugin.getDuelManager() != null) {
-            return;
-        }
-        event.getPlayer().sendMessage(ColorUtils.toComponent("&cyou cannot use that command during a duel."));
     }
 
     @EventHandler
