@@ -287,6 +287,88 @@ public class ColorUtils {
         return count;
     }
 
+    public static int visibleLength(String text) {
+        return text == null ? 0 : countVisibleCharacters(text);
+    }
+
+    /**
+     * Splits already-coloured text so that its last {@code trailingVisible} visible characters come
+     * back as the second half, with whatever colour and formatting was active at the cut repeated at
+     * the start of it. Chat colours a whole line at once and then hangs a hover event on the player's
+     * name alone, and the name has to keep the colour the line gave it once it is on its own.
+     */
+    public static String[] splitTrailingVisible(String text, int trailingVisible) {
+        if (text == null || text.isEmpty()) {
+            return new String[]{"", ""};
+        }
+        if (trailingVisible <= 0) {
+            return new String[]{text, ""};
+        }
+        int total = countVisibleCharacters(text);
+        if (trailingVisible >= total) {
+            return new String[]{"", text};
+        }
+
+        int cutAt = total - trailingVisible;
+        String activeColor = "";
+        StringBuilder activeFormats = new StringBuilder();
+        int visible = 0;
+        int index = 0;
+        while (index < text.length() && visible < cutAt) {
+            char current = text.charAt(index);
+            if ((current == '&' || current == SECTION_CHAR) && index + 1 < text.length()) {
+                int hexLength = legacyHexLength(text, index);
+                if (hexLength > 0) {
+                    activeColor = text.substring(index, index + hexLength);
+                    activeFormats.setLength(0);
+                    index += hexLength;
+                    continue;
+                }
+                char code = Character.toLowerCase(text.charAt(index + 1));
+                if (code == 'r') {
+                    activeColor = "";
+                    activeFormats.setLength(0);
+                } else if ("0123456789abcdef".indexOf(code) >= 0) {
+                    activeColor = text.substring(index, index + 2);
+                    activeFormats.setLength(0);
+                } else if (isFormatCode(code)) {
+                    String marker = text.substring(index, index + 2);
+                    if (activeFormats.indexOf(marker) < 0) {
+                        activeFormats.append(marker);
+                    }
+                }
+                index += 2;
+                continue;
+            }
+            visible++;
+            index++;
+        }
+
+        return new String[]{
+                text.substring(0, index),
+                activeColor + activeFormats + text.substring(index)
+        };
+    }
+
+    // A hex colour is one §x§R§R§G§G§B§B run rather than seven separate codes, so the cut has to
+    // read it whole or it carries half a colour into the second half.
+    private static int legacyHexLength(String text, int start) {
+        if (start + 14 > text.length()) {
+            return 0;
+        }
+        char marker = text.charAt(start);
+        if (Character.toLowerCase(text.charAt(start + 1)) != 'x') {
+            return 0;
+        }
+        for (int i = 0; i < 6; i++) {
+            if (text.charAt(start + 2 + i * 2) != marker
+                    || Character.digit(text.charAt(start + 3 + i * 2), 16) < 0) {
+                return 0;
+            }
+        }
+        return 14;
+    }
+
     private static boolean isFormatCode(char code) {
         return code == 'k' || code == 'l' || code == 'm' || code == 'n' || code == 'o';
     }
@@ -821,15 +903,15 @@ public class ColorUtils {
             if (gradientTag && !closing) {
                 int contentStart = close + 1;
                 int contentEnd = findMiniClosingTag(text, contentStart, name);
-                if (contentEnd < 0) {
-                    out.append(text, i, close + 1);
-                    i = close + 1;
-                    continue;
-                }
+                // A tag left open runs to the end of the text, the way MiniMessage itself reads it.
+                // Emitting it verbatim instead put the raw "<gradient:...>" on screen whenever a
+                // caller coloured one line in pieces, which is how chat formats are assembled.
+                boolean closed = contentEnd >= 0;
+                int contentLimit = closed ? contentEnd : length;
 
                 StringBuilder content = new StringBuilder();
                 appendActiveStyle(content, null, decorations);
-                content.append(renderMiniMessage(text.substring(contentStart, contentEnd), null, decorations));
+                content.append(renderMiniMessage(text.substring(contentStart, contentLimit), null, decorations));
                 String inner = content.toString();
 
                 out.append(name.equals("gradient")
@@ -837,7 +919,7 @@ public class ColorUtils {
                         : expandRainbow(inner, argument));
                 out.append("&r");
                 appendActiveStyle(out, color, decorations);
-                i = text.indexOf('>', contentEnd) + 1;
+                i = closed ? text.indexOf('>', contentEnd) + 1 : length;
                 continue;
             }
 
