@@ -99,7 +99,15 @@ INVSEE:
   AUTO-REFRESH-TICKS: 10
 
   # Permission node to view target player inventory
+  VIEW-PERMISSION: ultimatedonutsmp.staff.invsee
 
+  # Permission node to modify items in target player inventory
+  MODIFY-PERMISSION: ultimatedonutsmp.staff.invsee.modify
+
+  # Permission node for admin invsee commands
+  ADMIN-PERMISSION: ultimatedonutsmp.admin.invsee
+
+# Inventory GUI layout slot mapping
 ```
 
 ---

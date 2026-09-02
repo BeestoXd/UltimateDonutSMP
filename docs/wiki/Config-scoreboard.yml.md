@@ -99,7 +99,20 @@ SCOREBOARD:
     - '&#F97603☠ &fDeaths &#F97603%economy_deaths%   '
     - '&#00A4FC⌛ &fKeyall &#00A4FC%economy_keyall_countdown%'
     - '&#FCE300⌚ &fPlaytime &#FCE300%economy_playtime%   '
+    - '{team}'
+    - '{shard_cuboid}'
+    - '{shard_booster}'
+    - ''
+    - '&7NA East &7(&#0069D6%economy_ping%ms&7)'
 
+  # Formatting template for the team display line, only shown while the player is in a team
+  TEAM: '&#00A4FC🪓 &fTeam &#00A4FC%economy_team%     '
+
+  # Formatting template for the active shard booster display line
+  SHARD-BOOSTER: '&#A303F9⚡ &fBooster &#A303F9%economy_booster_countdown%     '
+
+  # Formatting template for the shard cuboid display line
+  SHARD-CUBOID: '&#A303F9⌛ &fShards &#A303F9%economy_shard_cuboid_display%     '
 ```
 
 ---

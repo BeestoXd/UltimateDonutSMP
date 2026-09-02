@@ -174,7 +174,46 @@ NETWORK:
   HELPOP_REDIS_CHANNEL: ultimatedonutsmp:staff-alerts
 
   # Redis pub/sub channel for player reports
-  REPORT_REDIS_CHANNEL: ulti
+  REPORT_REDIS_CHANNEL: ultimatedonutsmp:staff-alerts
+
+  # Warn the sender when their staff chat message reached this server's staff but could not be
+  # published to the other servers. Local delivery happens either way (true / false)
+  SEND_LOCAL_FALLBACK_ON_REDIS_ERROR: true
+
+  # Warn sending player if staff alert Redis delivery fails (true / false)
+  STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR: false
+
+  # Log staff chat messages to local server console (true / false)
+  LOG_TO_CONSOLE: true
+
+  # Log staff alerts to local server console (true / false)
+  STAFF_ALERTS_LOG_TO_CONSOLE: true
+
+  # Maximum allowed staff chat message length (in characters)
+  MAX_MESSAGE_LENGTH: 512
+
+  # Maximum allowed report/helpop reason text length (in characters)
+  STAFF_ALERTS_MAX_REASON_LENGTH: 256
+
+  # Cooldown between helpop submissions per player (in seconds)
+  HELPOP_COOLDOWN_SECONDS: 30
+
+  # Cooldown between report submissions per player (in seconds)
+  REPORT_COOLDOWN_SECONDS: 60
+
+  # Message format for server online/offline status broadcasts
+  SERVER_STATUS: '&6%server% &eis now %status%&e.'
+
+  # Message format for cross-server staff chat messages
+  STAFF_CHAT: '&8[&dNetwork&8] &7[%server%] &e%player%&8: &f%message%'
+
+  # Message format for staff member server join alert
+  STAFF_JOIN: '&8[&a+&8] &a%player% &7joined &b%server%'
+
+  # Message format for staff member server leave alert
+  STAFF_LEAVE: '&8[&c-&8] &a%player% &7left &b%server%'
+
+# Network status monitoring & HTTP endpoint configuration
 ```
 
 ---

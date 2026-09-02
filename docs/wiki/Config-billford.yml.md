@@ -377,7 +377,49 @@ GUI:
   - ''
   - '&8Must already be in your inventory.'
   # The text or value for Reward Name. Available options: Any valid string text
-  REWARD
+  REWARD_NAME: '&aReward'
+  # Configuration section for Reward Lore.
+  REWARD_LORE:
+  - '&7Reward: &a{amount}x &f{item}'
+  - '{money_line}'
+  - '{shard_line}'
+  - ''
+  - '&8Granted when the trade succeeds.'
+  # The text or value for Countdown Name. Available options: Any valid string text
+  COUNTDOWN_NAME: '&e{trade_name}'
+  # Configuration section for Countdown Lore.
+  COUNTDOWN_LORE:
+  - '&7Next rotation: &b{countdown}'
+  - ''
+  - '&8Trade &f{trade_id} &8of &f{trade_count}'
+  # The text or value for Info Name. Available options: Any valid string text
+  INFO_NAME: '&6Trade Info'
+  # Configuration section for Info Limited Lore.
+  INFO_LIMITED_LORE:
+  - '&7Trades: &f{used} &7/ &f{limit}'
+  - '{status_line}'
+  # Configuration section for Info Unlimited Lore.
+  INFO_UNLIMITED_LORE:
+  - '&7Trades done: &f{used}'
+  - '&aUnlimited trades this rotation.'
+  # Configuration section for Confirm Button.
+  CONFIRM_BUTTON:
+    MATERIAL: EMERALD
+    NAME: '&a&lConfirm Trade'
+    LORE:
+    - '&7Bring the required items,'
+    - '&7then click to exchange them.'
+    - ''
+    - '&a&lClick to Confirm'
+  # Configuration section for Limit Button.
+  LIMIT_BUTTON:
+    MATERIAL: BARRIER
+    NAME: '&c&lLimit Reached'
+    LORE:
+    - '&cYou already used this deal enough'
+    - '&cfor the current rotation.'
+    - '&7Come back after the next refresh.'
+# Configuration section for Feedback.
 ```
 
 ---
@@ -576,7 +618,58 @@ BILLFORD:
       QUANTITY: 64
       # The numerical value for Shard Bonus. Available options: Any valid integer
       SHARD_BONUS: 0
-      # The numerical value for Money B
+      # The numerical value for Money Bonus. Available options: Any valid integer
+      MONEY_BONUS: 0
+  # Configuration section for 2.
+  2:
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: The Utility Crate
+    # The numerical value for Limit. Available options: Any valid integer
+    LIMIT: 2
+    # Configuration section for Inputs.
+    INPUTS:
+      # Configuration section for 1.
+      1:
+        SLOT: 10
+        MATERIAL: IRON_INGOT
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 32
+      # Configuration section for 2.
+      2:
+        SLOT: 11
+        MATERIAL: REDSTONE
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 16
+      # Configuration section for 3.
+      3:
+        SLOT: 12
+        MATERIAL: EMERALD
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 12
+    # Configuration section for Reward.
+    REWARD:
+      MATERIAL: OBSERVER
+      # The numerical value for Quantity. Available options: Any valid integer
+      QUANTITY: 32
+      # The numerical value for Shard Bonus. Available options: Any valid integer
+      SHARD_BONUS: 40
+      # The numerical value for Money Bonus. Available options: Any valid integer
+      MONEY_BONUS: 0
+  # Configuration section for 3.
+  3:
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: The Ingot Deal
+    # The numerical value for Limit. Available options: Any valid integer
+    LIMIT: 1
+    # Configuration section for Inputs.
+    INPUTS:
+      # Configuration section for 1.
+      1:
+        SLOT: 11
+        MATERIAL: NETHERITE_INGOT
+        # The numerical value for Quantity. Available options: Any valid integer
+        QUANTITY: 1
+      # Configuration section for 2.
 ```
 
 ---

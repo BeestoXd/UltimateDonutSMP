@@ -87,7 +87,18 @@ DATABASE:
     # Determines whether Create Database is enabled or disabled. Available options: true, false
     CREATE-DATABASE: true
     # The text or value for Parameters. Available options: Any valid string text
-    PARAMETERS: useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncodin
+    PARAMETERS: useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8
+  # Configuration section for Mongodb.
+  MONGODB:
+    # The text or value for Uri. Available options: Any valid string text
+    URI: mongodb://localhost:27017
+    # The text or value for Database. Available options: Any valid string text
+    DATABASE: ultimatedonutsmp
+    # The text or value for Cache File. Available options: Any valid string text
+    CACHE-FILE: data/mongodb-cache.db
+    # Determines whether Sync On Autosave is enabled or disabled. Available options: true, false
+    SYNC-ON-AUTOSAVE: true
+# Configuration section for Redis.
 ```
 
 ---
@@ -168,7 +179,12 @@ REDIS:
   MIN-IDLE: 5
   # Determines whether Test On Borrow is enabled or disabled. Available options: true, false
   TEST-ON-BORROW: false
-  # Determines whether Test On Return is enabled or disa
+  # Determines whether Test On Return is enabled or disabled. Available options: true, false
+  TEST-ON-RETURN: false
+  # Determines whether Test While Idle is enabled or disabled. Available options: true, false
+  TEST-WHILE-IDLE: false
+  # The numerical value for Reconnect Delay Ms. Available options: Any valid integer
+  RECONNECT-DELAY-MS: 5000
 ```
 
 ---

@@ -77,7 +77,18 @@ SETTINGS:
   # The numerical value for Player Nearby Radius. Available options: Any valid integer
   PLAYER_NEARBY_RADIUS: 16
   # The numerical value for Max Stack Per Block. Available options: Any valid integer
-  MAX_STACK_
+  MAX_STACK_PER_BLOCK: 100000
+  # The numerical value for Storage Cap Per Loot Key. Available options: Any valid integer
+  STORAGE_CAP_PER_LOOT_KEY: 1000000
+  # Determines whether Drop On Break If Inventory Full is enabled or disabled. Available options: true, false
+  DROP_ON_BREAK_IF_INVENTORY_FULL: true
+  # Determines whether a Silk Touch pickaxe is required to break and collect spawners.
+  REQUIRE_SILK_TOUCH: true
+  # Determines whether physical vanilla mob spawning is cancelled (set to true for virtual storage anti-lag drops, set to false to allow physical mobs to spawn in world).
+  CANCEL_MOB_SPAWN: true
+  # Determines whether XP generation and XP collection is enabled for spawners. Available options: true, false
+  XP_ENABLED: true
+# Configuration section for Anti Esp.
 ```
 
 ---
@@ -147,7 +158,9 @@ ANTI_ESP:
     OVERWORLD: DEEPSLATE
     # The text or value for Nether. Available options: Any valid string text
     NETHER: NETHERRACK
-    # The text or value for The
+    # The text or value for The End. Available options: Any valid string text
+    THE_END: END_STONE
+# Configuration section for Gui.
 ```
 
 ---
@@ -366,7 +379,66 @@ TYPES:
         MATERIAL: PORKCHOP
         # The numerical value for Min. Available options: Any valid integer
         MIN: 1
-        # The numerical value for Max. Available options: Any valid integ
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 3
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Leather.
+      LEATHER:
+        MATERIAL: LEATHER
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 0
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 1
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.35
+  # Configuration section for Cow.
+  COW:
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dCow Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: COW
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: ''
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: BEEF
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # The decimal value for XP generated per spawner cycle per stack.
+    XP_PER_CYCLE: 3.7
+    # Configuration section for Drops.
+    DROPS:
+      # Configuration section for Beef.
+      BEEF:
+        MATERIAL: BEEF
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 3
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 1.0
+      # Configuration section for Leather.
+      LEATHER:
+        MATERIAL: LEATHER
+        # The numerical value for Min. Available options: Any valid integer
+        MIN: 1
+        # The numerical value for Max. Available options: Any valid integer
+        MAX: 2
+        # The decimal value for Chance. Available options: Any decimal number
+        CHANCE: 0.8
+  # Configuration section for Zombie.
+  ZOMBIE:
+    # The text or value for Display Name. Available options: Any valid string text
+    DISPLAY_NAME: '&dZombie Spawner'
+    # The text or value for Entity Type. Available options: Any valid string text
+    ENTITY_TYPE: ZOMBIE
+    # Custom head texture URL or Base64 (leave empty to use default mob head).
+    HEAD_TEXTURE: ''
+    # The text or value for Icon Material. Available options: Any valid string text
+    ICON_MATERIAL: ROTTEN_FLESH
+    # The numerical value for Base Items Per Cycle. Available options: Any valid integer
+    BASE_ITEMS_PER_CYCLE: 1
+    # Configuration section for Drops.
 ```
 
 ---

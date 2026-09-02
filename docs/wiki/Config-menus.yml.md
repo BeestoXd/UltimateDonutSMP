@@ -302,7 +302,70 @@ TEAM-MENUS:
       TITLE: '&#6BF18DPVP'
       MATERIAL: IRON_SWORD
       SLOT: 53
-      ON-STATE: '&
+      ON-STATE: '&a&lON'
+      OFF-STATE: '&c&lOFF'
+      LORE: '&fCurrently: {state}'
+    MESSAGES:
+      NOT-IN-TEAM: '&cYou are not part of the team.'
+      NO-PERMISSION: '&cYou don''t have permissions to do this.'
+      CANT-EDIT-SELF: '&cYou can''t do this yourself!'
+  TEAM-INFO:
+    TITLE: '&8Team {team_name}'
+    SIZE: 54
+    MAX-ITEMS-PER-PAGE: 45
+    PLAYER-BUTTON:
+      ONLINE-SYMBOL: "&a■"
+      OFFLINE-SYMBOL: "&4■"
+      LEADER-LORE: '&6Leader'
+    SUMMARY-BUTTON:
+      TITLE: '&#6BF18DTeam {team_name}'
+      MATERIAL: IRON_HELMET
+      SLOT: 49
+      ON-STATE: '&a&lON'
+      OFF-STATE: '&c&lOFF'
+      LORE:
+      - '&7Leader: &f{leader}'
+      - '&7Members: &f{members}&7/&f{max_members}'
+      - '&7PvP: {state}'
+    PAGE-BUTTON:
+      TITLE: '&fPage {page}&7/&f{total_pages}'
+      MATERIAL: PAPER
+      SLOT: 50
+      LORE:
+      - '&7Browse team members.'
+  TEAM-EDIT-MEMBER:
+    TITLE: '&8Edit {player}'
+    SIZE: 27
+    PLACEHOLDER: false
+    PLACEHOLDER-MATERIAL: BLACK_STAINED_GLASS_PANE
+    EDIT-HOME-BUTTON:
+      TITLE: '&#6BF18DEdit Home'
+      MATERIAL: WHITE_BANNER
+      SLOT: 10
+      ON-STATE: '&a&lON'
+      OFF-STATE: '&c&lOFF'
+      LORE:
+      - '&fLet {player} set and remove the team home'
+      - '&fCurrently: {state}'
+    KICK-BUTTON:
+      TITLE: '&#6BF18DKick'
+      MATERIAL: OAK_DOOR
+      SLOT: 11
+      LORE:
+      - '&fClick to kick {player}'
+    MANAGE-TEAMMATES-BUTTON:
+      TITLE: '&#6BF18DManage Teammates'
+      MATERIAL: IRON_HELMET
+      SLOT: 12
+      ON-STATE: '&a&lON'
+      OFF-STATE: '&c&lOFF'
+      LORE:
+      - '&fLet {player} invite and kick teammates'
+      - '&fCurrently: {state}'
+    PVP-BUTTON:
+      TITLE: '&#6BF18DPVP'
+      MATERIAL: IRON_SWORD
+      SLOT: 13
 ```
 
 ---
@@ -476,7 +539,48 @@ HOME-MENU:
         HAS_HOME: '&bManage Team Home'
       LORE:
         NO_TEAM:
-
+        - '&7You are not in a team.'
+        NO_HOME:
+        - '&7Left-click to save your team home.'
+        HAS_HOME:
+        - '&bLeft-click to update the team home'
+        - '&cRight-click to delete'
+  TELEPORT:
+    HOME-1:
+      DISPLAY-NAME:
+        NO-USED: '&7{slot}'
+        USED: '&b{name}'
+        NO-PERMISSION: '&cLocked'
+      LORE:
+        NO-USED:
+        - '&7Click to create a home.'
+        USED:
+        - '&7World: &f{world}'
+        - '&aLeft-click to teleport'
+        NO-PERMISSION:
+        - '&7You need a higher rank for this home.'
+    HOME-2:
+      DISPLAY-NAME:
+        NO-USED: '&7{slot}'
+        USED: '&b{name}'
+        NO-PERMISSION: '&cLocked'
+      LORE:
+        NO-USED:
+        - '&7Click to create a home.'
+        USED:
+        - '&7World: &f{world}'
+        - '&aLeft-click to teleport'
+        NO-PERMISSION:
+        - '&7You need a higher rank for this home.'
+    HOME-3:
+      DISPLAY-NAME:
+        NO-USED: '&7{slot}'
+        USED: '&b{name}'
+        NO-PERMISSION: '&cLocked'
+      LORE:
+        NO-USED:
+        - '&7Click to create a home.'
+        USED:
 ```
 
 ---
@@ -788,7 +892,35 @@ STATS-MENU:
       LORE:
       - '&7{value}'
     MOBS_KILLED:
-      DISPLAY-NAME: '&#6BF18DMo
+      DISPLAY-NAME: '&#6BF18DMobs Killed'
+      MATERIAL: ZOMBIE_HEAD
+      SLOT: 19
+      LORE:
+      - '&7{value}'
+    KILL_STREAK:
+      DISPLAY-NAME: '&#6BF18DKill Streak'
+      MATERIAL: DIAMOND_AXE
+      SLOT: 20
+      LORE:
+      - '&7{value}'
+    HIGHEST_KILL_STREAK:
+      DISPLAY-NAME: '&#6BF18DHighest Kill Streak'
+      MATERIAL: NETHERITE_SWORD
+      SLOT: 21
+      LORE:
+      - '&7{value}'
+    MONEY_SPENT:
+      DISPLAY-NAME: '&#6BF18DMoney Spent On Shop'
+      MATERIAL: GOLD_NUGGET
+      SLOT: 22
+      LORE:
+      - '&7{value}'
+    MONEY_MADE:
+      DISPLAY-NAME: '&#6BF18DMoney Made On /Sell'
+      MATERIAL: IRON_NUGGET
+      SLOT: 23
+      LORE:
+      - '&7{value}'
 ```
 
 ---
@@ -1386,7 +1518,40 @@ PROGRESS-MENU:
       BLOCKS: '&#6BF18DBLOCKS'
     LORE:
       CROPS:
-   
+      - '&7Sell crops and farming materials to'
+      - '&7upgrade your sell multiplier!'
+      ORES:
+      - '&7Sell ores and mining materials to'
+      - '&7upgrade your sell multiplier!'
+      MOBS:
+      - '&7Sell mob drops and combat materials to'
+      - '&7upgrade your sell multiplier!'
+      NATURAL:
+      - '&7Sell natural materials and trees to'
+      - '&7upgrade your sell multiplier!'
+      ARMOR_AND_TOOLS:
+      - '&7Sell armor and tools to'
+      - '&7upgrade your sell multiplier!'
+      FISH:
+      - '&7Sell fish and other fishing loot to'
+      - '&7upgrade your sell multiplier!'
+      BOOK:
+      - '&7Sell books and enchanted books to'
+      - '&7upgrade your sell multiplier!'
+      POTIONS:
+      - '&7Sell potions and brewing materials to'
+      - '&7upgrade your sell multiplier!'
+      BLOCKS:
+      - '&7Sell blocks and placeable items to'
+      - '&7upgrade your sell multiplier!'
+    MATERIAL:
+      CROPS: WHEAT
+      ORES: DIAMOND
+      MOBS: BONE
+      NATURAL: OAK_LEAVES
+      ARMOR_AND_TOOLS: NETHERITE_HELMET
+      FISH: TROPICAL_FISH
+      BOOK: BOOK
 ```
 
 ---
@@ -2097,6 +2262,34 @@ PURCHASE-SHOP-MENU:
           DECREMENT: 1
         REMOVE_10:
           SLOT: 10
+          NAME: '&cRemove 10'
+          DECREMENT: 10
+        REMOVE_64:
+          SLOT: 9
+          NAME: '&cRemove 64'
+          DECREMENT: 64
+  RESTRICTIONS:
+    TOTEM_OF_UNDYING:
+      MAX_QUANTITY: 1
+      MIN_QUANTITY: 1
+      HIDE_QUANTITY_BUTTONS: true
+    ENDER_PEARL:
+      MAX_QUANTITY: 16
+      MIN_QUANTITY: 1
+    DEFAULT:
+      MAX_QUANTITY: 64
+      MIN_QUANTITY: 1
+  MESSAGES:
+    SUCCESS:
+      MONEY: '&7You bought &e{Quantity} {item-name}&7 for &a${amount}'
+      SHARDS: '&7You bought {item-name}&7 for &5{amount} shards'
+    ERROR:
+      NO_MONEY: '&cYOU DON''T HAVE ENOUGH MONEY.'
+      NO_SHARDS: '&cYOU DON''T HAVE ENOUGH SHARDS.'
+      FULL_INVENTORY: '&cYOUR INVENTORY IS FULL.'
+  SOUNDS:
+    SUCCESS: ENTITY_EXPERIENCE_ORB_PICKUP
+    ERROR: ENTITY_VILLAGER_NO
 ```
 
 ---

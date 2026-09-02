@@ -146,7 +146,64 @@ MESSAGES:
   ENTITY-ATTACK: '{player} was slain by {killer}'
   # Configuration section for Fall.
   FALL:
-    # The text or value for Normal. Available options: Any valid string
+    # The text or value for Normal. Available options: Any valid string text
+    NORMAL: '{player} hit the ground too hard'
+    # The text or value for Pvp. Available options: Any valid string text
+    PVP: '{player} was doomed to fall by {killer}'
+  # The text or value for Falling Block. Available options: Any valid string text
+  FALLING-BLOCK: '{player} got freaking squashed by a block'
+  # Configuration section for Fire.
+  FIRE:
+    # The text or value for Normal. Available options: Any valid string text
+    NORMAL: '{player} went up in flames'
+    # The text or value for Pvp. Available options: Any valid string text
+    PVP: '{player} walked into a fire whilst fighting {killer}'
+  # Configuration section for Fire Tick.
+  FIRE-TICK:
+    # The text or value for Normal. Available options: Any valid string text
+    NORMAL: '{player} burned to death'
+    # The text or value for Pvp. Available options: Any valid string text
+    PVP: '{player} was burnt to a crisp whilst fighting {killer}'
+  # Configuration section for Lava.
+  LAVA:
+    # The text or value for Normal. Available options: Any valid string text
+    NORMAL: '{player} tried to swim in lava'
+    # The text or value for Pvp. Available options: Any valid string text
+    PVP: '{player} tried to swim in lava while trying to escape {killer}'
+  # The text or value for Lightning. Available options: Any valid string text
+  LIGHTNING: '{player} got lit the hell up by a lightning'
+  # The text or value for Poison. Available options: Any valid string text
+  POISON: '{player} was poisoned'
+  # Configuration section for Projectile.
+  PROJECTILE:
+    # The text or value for Normal. Available options: Any valid string text
+    NORMAL: '{player} was shot'
+    # The text or value for Pvp. Available options: Any valid string text
+    PVP: '{player} was shot by {killer}'
+  # The text or value for Starvation. Available options: Any valid string text
+  STARVATION: '{player} starved to death'
+  # The text or value for Suffocation. Available options: Any valid string text
+  SUFFOCATION: '{player} suffocated in a wall'
+  # The text or value for Suicide. Available options: Any valid string text
+  SUICIDE: '{player} took his own life like a peasant'
+  # The text or value for Thorns. Available options: Any valid string text
+  THORNS: '{player} killed themself by trying to kill someone'
+  # Configuration section for Void.
+  VOID:
+    # The text or value for Normal. Available options: Any valid string text
+    NORMAL: '{player} fell out of the world'
+    # The text or value for Pvp. Available options: Any valid string text
+    PVP: '{player} was knocked into the void by {killer}'
+  # The text or value for Wither. Available options: Any valid string text
+  WITHER: '{player} withered away'
+  # Configuration section for Entity Explosion.
+  ENTITY-EXPLOSION:
+    # The text or value for Normal. Available options: Any valid string text
+    NORMAL: '{player} was blown up'
+    # The text or value for Pvp. Available options: Any valid string text
+    PVP: '{player} was blown up by {killer}'
+  # The text or value for Default. Available options: Any valid string text
+  DEFAULT: '{player} died'
 ```
 
 ---
