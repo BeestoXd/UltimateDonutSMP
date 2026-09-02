@@ -90,9 +90,15 @@ public abstract class TeleportAreaMenu extends BaseMenu {
             return;
         }
 
-        if (randomAreaCount > 1) {
+        if (shouldDrawRandomButton(randomAreaCount)) {
             buildRandomButton(randomAreaCount);
         }
+    }
+
+    // A random pick between fewer than two areas is just the area itself, so the button only
+    // earns its slot once a second area resolves. Configuring it with one area draws nothing.
+    static boolean shouldDrawRandomButton(int resolvedAreaCount) {
+        return resolvedAreaCount > 1;
     }
 
     @Override
