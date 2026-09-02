@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.utils.ItemSerializationUtils;
 import com.bx.ultimateDonutSmp.utils.LazyLocation;
 import com.bx.ultimateDonutSmp.models.Bounty;
 import com.bx.ultimateDonutSmp.models.PlayerLogEntry;
+import com.bx.ultimateDonutSmp.models.PlayerWipeArchive;
 import com.bx.ultimateDonutSmp.models.FreezeState;
 import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.models.HideMode;
@@ -4700,6 +4701,35 @@ public class DatabaseManager {
 
     private static final Map<String, String> PLAYER_WIPE_GROUPS = playerWipeGroups();
 
+    private static final Map<String, Object> PLAYER_WIPE_STAT_RESETS = playerWipeStatResets();
+
+    /**
+     * The player columns a wipe resets, each beside the value it goes back to. The wipe, the backup
+     * and the restore all read this one map, so a column added here cannot quietly drop out of a
+     * backup and leave a restored player short. {@code money} is the exception: it is overwritten
+     * with the configured starting balance rather than the placeholder below.
+     */
+    private static Map<String, Object> playerWipeStatResets() {
+        Map<String, Object> resets = new LinkedHashMap<>();
+        resets.put("money", 0D);
+        resets.put("shards", 0);
+        resets.put("kills", 0);
+        resets.put("deaths", 0);
+        resets.put("playtime_seconds", 0);
+        resets.put("blocks_placed", 0);
+        resets.put("blocks_broken", 0);
+        resets.put("mobs_killed", 0);
+        resets.put("kill_streak", 0);
+        resets.put("highest_kill_streak", 0);
+        resets.put("money_spent", 0);
+        resets.put("money_made", 0);
+        resets.put("keyall_remaining_seconds", -1);
+        resets.put("shard_booster_expiry", 0);
+        resets.put("mob_spawn_disabled_until", 0);
+        resets.put("phantom_disabled_until", 0);
+        return Collections.unmodifiableMap(resets);
+    }
+
     private static Map<String, String> playerWipeGroups() {
         Map<String, String> groups = new LinkedHashMap<>();
         groups.put("homes", "homes");
@@ -4769,28 +4799,20 @@ public class DatabaseManager {
             autoCommitDisabled = true;
 
             if (serverWipeTableExists("players")) {
-                try (PreparedStatement statement = connection.prepareStatement("""
-                        UPDATE players SET
-                            money = ?,
-                            shards = 0,
-                            kills = 0,
-                            deaths = 0,
-                            playtime_seconds = 0,
-                            blocks_placed = 0,
-                            blocks_broken = 0,
-                            mobs_killed = 0,
-                            kill_streak = 0,
-                            highest_kill_streak = 0,
-                            money_spent = 0,
-                            money_made = 0,
-                            keyall_remaining_seconds = -1,
-                            shard_booster_expiry = 0,
-                            mob_spawn_disabled_until = 0,
-                            phantom_disabled_until = 0
-                        WHERE uuid = ?
-                        """)) {
-                    statement.setDouble(1, Math.max(0D, startingMoney));
-                    statement.setString(2, uuid);
+                StringJoiner assignments = new StringJoiner(", ");
+                for (String column : PLAYER_WIPE_STAT_RESETS.keySet()) {
+                    assignments.add(quoteIdentifier(column) + " = ?");
+                }
+                try (PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE players SET " + assignments + " WHERE uuid = ?")) {
+                    int index = 1;
+                    for (Map.Entry<String, Object> reset : PLAYER_WIPE_STAT_RESETS.entrySet()) {
+                        Object value = "money".equals(reset.getKey())
+                                ? Math.max(0D, startingMoney)
+                                : reset.getValue();
+                        statement.setObject(index++, value);
+                    }
+                    statement.setString(index, uuid);
                     affected.put("stats", statement.executeUpdate());
                 }
             }
@@ -4818,6 +4840,233 @@ public class DatabaseManager {
                 }
             }
         }
+    }
+
+    /** The count group a player wipe prints one table's rows under, so callers can label a restore. */
+    public static String playerWipeGroup(String table) {
+        return PLAYER_WIPE_GROUPS.get(table);
+    }
+
+    /**
+     * Reads back every row a player wipe is about to delete, along with the player stats it is about
+     * to reset. Nothing is modified here: the caller writes the result to disk first, so a wipe that
+     * fails halfway leaves an unused backup rather than an unrecoverable player.
+     */
+    public PlayerWipeArchive capturePlayerWipeArchive(UUID playerUuid, String playerName, String actorName)
+            throws SQLException {
+        Objects.requireNonNull(playerUuid, "playerUuid");
+        if (connection == null || connection.isClosed()) {
+            throw new SQLException("Database connection is not available.");
+        }
+
+        String uuid = playerUuid.toString();
+        List<String> statColumns = List.copyOf(PLAYER_WIPE_STAT_RESETS.keySet());
+        List<Object> statValues = readPlayerStats(uuid, statColumns);
+
+        Map<String, PlayerWipeArchive.TableRows> tables = new LinkedHashMap<>();
+        for (Map.Entry<String, List<String>> entry : PLAYER_WIPE_TABLES.entrySet()) {
+            PlayerWipeArchive.TableRows rows = readPlayerRows(entry.getKey(), entry.getValue(), uuid);
+            if (rows != null && !rows.rows().isEmpty()) {
+                tables.put(entry.getKey(), rows);
+            }
+        }
+
+        return new PlayerWipeArchive(
+                playerUuid,
+                playerName,
+                System.currentTimeMillis(),
+                actorName,
+                statValues.isEmpty() ? List.of() : statColumns,
+                statValues,
+                tables
+        );
+    }
+
+    /**
+     * Puts an archived player back in a single transaction. Every table a wipe touches is cleared for
+     * them first, so they land on the state the backup holds instead of a merge of that and whatever
+     * they picked up since. Rows belonging to anybody else are never read or written.
+     */
+    public PlayerWipeResult restorePlayerWipeArchive(PlayerWipeArchive archive) throws SQLException {
+        Objects.requireNonNull(archive, "archive");
+        if (connection == null || connection.isClosed()) {
+            throw new SQLException("Database connection is not available.");
+        }
+
+        String uuid = archive.playerUuid().toString();
+        Map<String, Integer> affected = new LinkedHashMap<>();
+        boolean autoCommitDisabled = false;
+        boolean originalAutoCommit = connection.getAutoCommit();
+        try {
+            connection.setAutoCommit(false);
+            autoCommitDisabled = true;
+
+            if (archive.hasStats() && serverWipeTableExists("players")) {
+                affected.put("stats", restorePlayerStats(uuid, archive));
+            }
+
+            for (Map.Entry<String, List<String>> entry : PLAYER_WIPE_TABLES.entrySet()) {
+                String table = entry.getKey();
+                if (!serverWipeTableExists(table)) {
+                    continue;
+                }
+                deletePlayerRows(table, entry.getValue(), uuid);
+
+                PlayerWipeArchive.TableRows archived = archive.tables().get(table);
+                if (archived == null) {
+                    continue;
+                }
+                if ("team_members".equals(table)) {
+                    archived = withoutDisbandedTeams(archived);
+                }
+                affected.merge(PLAYER_WIPE_GROUPS.get(table), insertArchivedRows(table, archived), Integer::sum);
+            }
+
+            connection.commit();
+            return new PlayerWipeResult(Map.copyOf(affected));
+        } catch (SQLException exception) {
+            if (autoCommitDisabled) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ignored) {
+                }
+            }
+            throw exception;
+        } finally {
+            if (autoCommitDisabled) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException ignored) {
+                }
+            }
+        }
+    }
+
+    private List<Object> readPlayerStats(String uuid, List<String> columns) throws SQLException {
+        if (!serverWipeTableExists("players")) {
+            return List.of();
+        }
+
+        StringJoiner selected = new StringJoiner(", ");
+        for (String column : columns) {
+            selected.add(quoteIdentifier(column));
+        }
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT " + selected + " FROM players WHERE uuid = ?")) {
+            statement.setString(1, uuid);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (!rs.next()) {
+                    return List.of();
+                }
+                List<Object> values = new ArrayList<>(columns.size());
+                for (int index = 1; index <= columns.size(); index++) {
+                    values.add(rs.getObject(index));
+                }
+                return values;
+            }
+        }
+    }
+
+    private PlayerWipeArchive.TableRows readPlayerRows(String table, List<String> owners, String uuid)
+            throws SQLException {
+        if (owners.isEmpty() || !serverWipeTableExists(table)) {
+            return null;
+        }
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM " + quoteIdentifier(table) + " WHERE " + ownerPredicate(owners))) {
+            bindOwnerUuid(statement, owners, uuid);
+            try (ResultSet rs = statement.executeQuery()) {
+                ResultSetMetaData metadata = rs.getMetaData();
+                int columnCount = metadata.getColumnCount();
+
+                List<String> columns = new ArrayList<>(columnCount);
+                for (int index = 1; index <= columnCount; index++) {
+                    columns.add(metadata.getColumnName(index));
+                }
+
+                List<List<Object>> rows = new ArrayList<>();
+                while (rs.next()) {
+                    List<Object> row = new ArrayList<>(columnCount);
+                    for (int index = 1; index <= columnCount; index++) {
+                        row.add(rs.getObject(index));
+                    }
+                    rows.add(row);
+                }
+                return new PlayerWipeArchive.TableRows(columns, rows);
+            }
+        }
+    }
+
+    private int restorePlayerStats(String uuid, PlayerWipeArchive archive) throws SQLException {
+        StringJoiner assignments = new StringJoiner(", ");
+        for (String column : archive.statColumns()) {
+            assignments.add(quoteIdentifier(column) + " = ?");
+        }
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE players SET " + assignments + " WHERE uuid = ?")) {
+            List<Object> values = archive.statValues();
+            for (int index = 0; index < values.size(); index++) {
+                statement.setObject(index + 1, values.get(index));
+            }
+            statement.setString(values.size() + 1, uuid);
+            return statement.executeUpdate();
+        }
+    }
+
+    /**
+     * Drops archived team memberships whose team is gone. Wiping a team leader disbands the team, so
+     * restoring the row unchanged would leave the player holding the only membership of a team that
+     * no longer exists — and because that row owns their primary key, it would block them from ever
+     * joining another one.
+     */
+    private PlayerWipeArchive.TableRows withoutDisbandedTeams(PlayerWipeArchive.TableRows archived)
+            throws SQLException {
+        int nameIndex = archived.columns().indexOf("team_name");
+        if (nameIndex < 0 || !serverWipeTableExists("teams")) {
+            return archived;
+        }
+
+        List<List<Object>> kept = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement("SELECT 1 FROM teams WHERE name = ?")) {
+            for (List<Object> row : archived.rows()) {
+                Object teamName = row.get(nameIndex);
+                if (teamName == null) {
+                    continue;
+                }
+                statement.setString(1, String.valueOf(teamName));
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        kept.add(row);
+                    }
+                }
+            }
+        }
+        return new PlayerWipeArchive.TableRows(archived.columns(), kept);
+    }
+
+    private int insertArchivedRows(String table, PlayerWipeArchive.TableRows archived) throws SQLException {
+        if (archived.columns().isEmpty() || archived.rows().isEmpty()) {
+            return 0;
+        }
+
+        StringJoiner columns = new StringJoiner(", ");
+        StringJoiner placeholders = new StringJoiner(", ");
+        for (String column : archived.columns()) {
+            columns.add(quoteIdentifier(column));
+            placeholders.add("?");
+        }
+
+        int inserted = 0;
+        try (PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO " + quoteIdentifier(table) + " (" + columns + ") VALUES (" + placeholders + ")")) {
+            for (List<Object> row : archived.rows()) {
+                for (int index = 0; index < row.size(); index++) {
+                    statement.setObject(index + 1, row.get(index));
+                }
+                inserted += statement.executeUpdate();
+            }
+        }
+        return inserted;
     }
 
     private int deletePlayerRows(String table, List<String> columns, String uuid) throws SQLException {

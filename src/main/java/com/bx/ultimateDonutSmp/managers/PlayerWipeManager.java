@@ -1,12 +1,15 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.models.PlayerWipeArchive;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +22,10 @@ import java.util.logging.Level;
  * which clears a single category across everybody. Moderation records — punishments, IP history,
  * freeze and staff-mode state — survive a player wipe, and so do world objects such as the
  * spawners they placed.
+ *
+ * <p>Every wipe writes what it removed to a backup file first, so
+ * {@link PlayerUnwipeManager} can put the player back if the wipe turns out to have been a
+ * mistake.
  */
 public class PlayerWipeManager {
 
@@ -69,14 +76,15 @@ public class PlayerWipeManager {
             boolean success,
             boolean busy,
             DatabaseManager.PlayerWipeResult counts,
-            String errorMessage
+            String errorMessage,
+            File backupFile
     ) {
         public static WipeResult alreadyRunning() {
-            return new WipeResult(false, true, null, null);
+            return new WipeResult(false, true, null, null, null);
         }
 
         public static WipeResult failure(String errorMessage) {
-            return new WipeResult(false, false, null, errorMessage);
+            return new WipeResult(false, false, null, errorMessage, null);
         }
     }
 
@@ -140,9 +148,12 @@ public class PlayerWipeManager {
             return WipeResult.alreadyRunning();
         }
 
+        File backupFile = null;
         try {
             Team team = plugin.getTeamManager().getTeam(target.uuid());
             boolean wasLeader = team != null && team.isLeader(target.uuid());
+
+            backupFile = writeBackup(target, actorName);
 
             discardOpenState(target.uuid());
             DatabaseManager.PlayerWipeResult counts = plugin.getDatabaseManager()
@@ -153,13 +164,31 @@ public class PlayerWipeManager {
             refreshDisplays(target.uuid());
 
             plugin.getLogger().info("Player wipe completed by " + actorName + " for "
-                    + target.name() + " (" + target.uuid() + ").");
-            return new WipeResult(true, false, counts, null);
-        } catch (SQLException | RuntimeException exception) {
+                    + target.name() + " (" + target.uuid() + "). Backup: " + backupFile.getName());
+            return new WipeResult(true, false, counts, null, backupFile);
+        } catch (SQLException | IOException | RuntimeException exception) {
+            discardBackup(backupFile);
             plugin.getLogger().log(Level.SEVERE, "player wipe failed for " + target.uuid(), exception);
             return WipeResult.failure(exception.getMessage());
         } finally {
             wipeInProgress.set(false);
+        }
+    }
+
+    /**
+     * Captures the player as they are now and writes it to disk before anything is deleted, so a
+     * wipe that fails partway through still leaves a complete copy to restore from.
+     */
+    private File writeBackup(Target target, String actorName) throws SQLException, IOException {
+        PlayerWipeArchive archive = plugin.getDatabaseManager()
+                .capturePlayerWipeArchive(target.uuid(), target.name(), actorName);
+        return plugin.getPlayerUnwipeManager().write(archive);
+    }
+
+    /** Removes the backup of a wipe that never happened, so it cannot be restored by mistake. */
+    private void discardBackup(File backupFile) {
+        if (backupFile != null && backupFile.exists() && !backupFile.delete()) {
+            plugin.getLogger().warning("Could not remove the backup of a failed wipe: " + backupFile);
         }
     }
 

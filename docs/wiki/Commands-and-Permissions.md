@@ -105,6 +105,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/billford` | `/billford <gui\|reload>` | Manage Billford rotating trades NPC | `ultimatedonutsmp.admin.billford` |
 | `/serverwipe` | `/serverwipe <confirm\|cancel>` | Guarded admin server wipe execution | `ultimatedonutsmp.admin.serverwipe` |
 | `/playerwipe` | `/playerwipe <player> [confirm]` | Wipe everything stored about one player | `ultimatedonutsmp.admin.playerwipe` |
+| `/playerunwipe` | `/playerunwipe <player> [confirm]` | Restore a wiped player from the backup their wipe left behind | `ultimatedonutsmp.admin.playerunwipe` |
 | `/uds` | `/uds <reload|version|status>` | Main plugin administration & hot-reload | `ultimatedonutsmp.admin.uds` |
 
 ---
