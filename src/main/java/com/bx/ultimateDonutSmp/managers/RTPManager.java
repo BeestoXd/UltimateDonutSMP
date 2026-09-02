@@ -1894,7 +1894,7 @@ public class RTPManager {
     }
 
     private int getPreloadRadius() {
-        int configured = plugin.getConfigManager().getRtp().getInt(PRELOAD_RADIUS_SETTING, 1);
+        int configured = plugin.getConfigManager().getRtp().getInt(PRELOAD_RADIUS_SETTING, 2);
         int radius = Math.max(0, Math.min(4, configured));
         if (plugin.getConfigManager().getRtp().getBoolean(POST_TELEPORT_CHUNK_THROTTLE_SETTING, true)) {
             int throttledViewDistance = Math.max(2, plugin.getConfigManager().getRtp()
@@ -1905,7 +1905,7 @@ public class RTPManager {
     }
 
     private int getPreloadChunksPerTick() {
-        return Math.max(2, plugin.getConfigManager().getRtp().getInt(PRELOAD_CHUNKS_PER_TICK_SETTING, 1));
+        return Math.max(2, plugin.getConfigManager().getRtp().getInt(PRELOAD_CHUNKS_PER_TICK_SETTING, 2));
     }
 
     private int getPreloadMaxTicks() {

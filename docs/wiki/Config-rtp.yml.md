@@ -69,6 +69,29 @@ SETTINGS:
   FALLBACK-TO-LOADED-CHUNKS: true
   # Chunk samples to try before loaded chunk fallback starts
   LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32
+  # Load the chunks around the destination before the teleport lands, so a player does not
+  # arrive in terrain the server has not read yet. Off teleports straight away and lets the
+  # client catch up on its own
+  PRELOAD-TELEPORT-CHUNKS: true
+  # Chunk radius loaded around the destination, from 2 to 4. This is a floor rather than a
+  # cap: while POST-TELEPORT-CHUNK-THROTTLE is on, the throttled view distance below raises
+  # it, so on stock settings the radius is 4 whatever you put here
+  PRELOAD-RADIUS: 2
+  # Chunks loaded per tick while preloading. Values below 2 are treated as 2
+  PRELOAD-CHUNKS-PER-TICK: 2
+  # Give up preloading after this many ticks. Raised on its own when the radius and the
+  # per-tick rate above need longer than this to finish
+  PRELOAD-MAX-TICKS: 40
+  # Hold a player at a shorter view and simulation distance for a moment after an RTP, so the
+  # server is not sending a full render of brand new terrain all at once
+  POST-TELEPORT-CHUNK-THROTTLE: true
+  # View distance to hold them at while the throttle is on. It only ever lowers a player's
+  # distance, never raises it, and values below 2 are treated as 2
+  POST-TELEPORT-VIEW-DISTANCE: 4
+  # Simulation distance to hold them at while the throttle is on. Same rules as above
+  POST-TELEPORT-SIMULATION-DISTANCE: 4
+  # Ticks before the throttled distances are handed back. Values below 20 are treated as 20
+  POST-TELEPORT-THROTTLE-TICKS: 80
   # Safe locations found ahead of time in the background so RTP can teleport without searching
   LOCATION-CACHE:
     # Enable or disable the background safe location cache
@@ -99,6 +122,14 @@ SETTINGS:
 | `SETTINGS.LOAD-GENERATED-CHUNKS` | `bool` | `true`, `false` | `true` | Whether a search may read terrain that already exists on disk. This is what makes a pregenerated RTP world work while `GENERATE-CHUNKS` stays off. Turning both off leaves the search nothing to read and nothing to make, so every sample comes back empty and the background cache stands down and says so in the console. |
 | `SETTINGS.FALLBACK-TO-LOADED-CHUNKS` | `bool` | `true`, `false` | `true` | Configures the technical `FALLBACK-TO-LOADED-CHUNKS` parameter for `SETTINGS.FALLBACK-TO-LOADED-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` | `int` | Any valid integer number | `'32'` | Configures the technical `LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` parameter for `SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES` in `rtp.yml`. |
+| `SETTINGS.PRELOAD-TELEPORT-CHUNKS` | `bool` | `true`, `false` | `true` | Whether the chunks around the destination are loaded before the teleport lands. On, a player arrives in terrain the server has already read. Off, they teleport straight away and the client catches up, which is faster but can drop them into a hole in the world for a moment. |
+| `SETTINGS.PRELOAD-RADIUS` | `int` | `2` to `4` | `'2'` | Chunk radius loaded around the destination. Values below 2 are treated as 2 and anything above 4 as 4. It behaves as a floor rather than a cap: while `POST-TELEPORT-CHUNK-THROTTLE` is on, the radius is raised to the throttled view distance, so with stock settings it lands on 4 no matter what is set here. Turn the throttle off, or lower `POST-TELEPORT-VIEW-DISTANCE`, before this value does anything on its own. |
+| `SETTINGS.PRELOAD-CHUNKS-PER-TICK` | `int` | `2` or higher | `'2'` | How many chunks are loaded per tick while preloading. Values below 2 are treated as 2. Higher finishes the warm-up sooner at the cost of more chunk work in a single tick. |
+| `SETTINGS.PRELOAD-MAX-TICKS` | `int` | `1` or higher | `'40'` | Preloading gives up after this many ticks so a slow world cannot hold a teleport open forever. It is raised automatically when the radius and the per-tick rate need longer than this to get through every chunk, so lowering it does not truncate a warm-up that was going to finish. |
+| `SETTINGS.POST-TELEPORT-CHUNK-THROTTLE` | `bool` | `true`, `false` | `true` | Whether a player is held at a shorter view and simulation distance for a moment after an RTP. It spreads the cost of sending brand new terrain instead of rendering all of it at once. Also raises the preload radius, as described above. |
+| `SETTINGS.POST-TELEPORT-VIEW-DISTANCE` | `int` | `2` or higher | `'4'` | View distance a player is held at while the throttle is on. It only lowers a player's distance and never raises it, so a client already below this value is left alone. Values below 2 are treated as 2. |
+| `SETTINGS.POST-TELEPORT-SIMULATION-DISTANCE` | `int` | `2` or higher | `'4'` | Simulation distance a player is held at while the throttle is on, under the same rules as the view distance above. |
+| `SETTINGS.POST-TELEPORT-THROTTLE-TICKS` | `int` | `20` or higher | `'80'` | How long the throttled distances are kept before the player's own settings are handed back. Values below 20 are treated as 20. |
 | `SETTINGS.LOCATION-CACHE` | `section` | See `SETTINGS.LOCATION-CACHE` below | See example | Keeps safe locations ready in the background so `/rtp` can teleport without running a search first. |
 
 ### 3. Practical Setup Example
