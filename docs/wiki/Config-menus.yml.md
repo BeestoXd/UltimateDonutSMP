@@ -2537,6 +2537,453 @@ RULES-MENU:
 
 ---
 
+## Section: `AFK-MENU`
+
+Opened with `/afk`. One icon per AFK area, each bound to a cuboid, and clicking one queues a teleport
+there. An extra button teleports to a random area. Areas are normally created with `/setafk` rather
+than by hand, which writes the cuboid and the destination into this section for you.
+
+### 1. Commented Setup Code Example
+
+```yaml
+AFK-MENU:
+  TITLE: '&8AFK Areas'
+  SIZE: 54
+  # Only drawn when two or more areas resolve to a destination.
+  RANDOM-BUTTON:
+    SLOT: 49
+    MATERIAL: AMETHYST_BLOCK
+    DISPLAY-NAME: '&#A303F9AFK'
+    LORE:
+    - '&fClick to teleport to a random afk area'
+  AREAS:
+    # Each key is one area. Quote the numeric ids so YAML keeps them as keys.
+    '1':
+      SLOT: 0
+      MATERIAL: ITEM_FRAME
+      DISPLAY-NAME: '&#A303F9AFK #1'
+      LORE:
+      - '&8{players}/200'
+      - '&7Click to go to this'
+      - '&7AFK zone area.'
+      # Written by /setafk. CUBOID names the region, LOCATION the exact destination.
+      CUBOID: afk1
+      LOCATION: 1
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `AFK-MENU.TITLE` | `str` | Any string text | `'&8AFK areas'` | Inventory title shown at the top of the menu. |
+| `AFK-MENU.SIZE` | `int` | `9` to `54` | `54` | Inventory size. Unlike most menus this one rounds up to the next multiple of nine rather than warning, so `20` becomes `27`, and anything above `54` is capped there. |
+| `AFK-MENU.RANDOM-BUTTON.SLOT` | `int` | `0` to `SIZE - 1` | `-1` | Slot for the random teleport button. Left unset the button never draws. |
+| `AFK-MENU.RANDOM-BUTTON.MATERIAL` | `str` | Any valid material name | `COMPASS` | Icon material for the random button. |
+| `AFK-MENU.RANDOM-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&fRandom'` | Icon name. `{areas}` becomes the number of areas currently drawn. |
+| `AFK-MENU.RANDOM-BUTTON.LORE` | `list` | List of strings | `[]` | Icon lore, `{areas}` again. |
+| `AFK-MENU.AREAS.<ID>.SLOT` | `int` | `0` to `SIZE - 1` | - | Slot the area renders in. Out-of-range slots, slots already taken by another area, and the random button's own slot are all skipped with a console warning. |
+| `AFK-MENU.AREAS.<ID>.MATERIAL` | `str` | Any valid material name | - | Icon material. |
+| `AFK-MENU.AREAS.<ID>.DISPLAY-NAME` | `str` | Any string text | - | Icon name. |
+| `AFK-MENU.AREAS.<ID>.LORE` | `list` | List of strings | `[]` | Icon lore. |
+| `AFK-MENU.AREAS.<ID>.CUBOID` | `str` | A cuboid name | `''` | The region this area belongs to. An area with no cuboid warns on startup and stays a decorative icon. |
+| `AFK-MENU.AREAS.<ID>.LOCATION` | `str` | A serialised location | unset | Exact teleport destination. Written by `/setafk`; the older lowercase `location` is still read. |
+| `AFK-MENU.AREAS.<ID>.CAPACITY` | `int` | `1` or more | `200` | What `{capacity}` reports. Not shipped in `menus.yml`, so add the key yourself if you want a number other than 200. |
+
+`DISPLAY-NAME` and `LORE` on an area understand four placeholders:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{players}` | How many players are within 16 blocks of the destination |
+| `{capacity}` | The area's `CAPACITY` |
+| `{cuboid}` | The cuboid name, or nothing when the area has none |
+| `{id}` | The area key, so `'1'` renders as `1` |
+
+The bundled lore writes `&8{players}/200` with the 200 typed in as text. Using `{players}/{capacity}`
+instead keeps the two in step if you ever change the capacity.
+
+Empty slots are filled with `GRAY_STAINED_GLASS_PANE` and there is no option to change that. An area
+whose destination will not resolve is quietly left out, so a menu that lists four areas can draw
+three. With no areas at all the menu shows a barrier reading `&cNo AFK areas`; with areas that all
+fail to resolve it shows `&cLocation not set` instead, which is the one to look for after editing
+locations by hand. The random button only appears once **two or more** areas resolve, so a
+single-area menu never shows it however the button is configured.
+
+Players holding `ultimatedonutsmp.admin.teleportareas.delete` or `ultimatedonutsmp.admin` get an
+extra `&cRight-click to delete` line and can remove an area straight from the menu. Turn the whole
+menu off with `SETTINGS.AFK-MENU` in `config.yml`.
+
+### 3. Practical Setup Example
+
+Two areas on the top row with a live capacity readout, and the random button moved to the middle of
+the bottom row:
+
+```yaml
+AFK-MENU:
+  TITLE: '&8AFK Areas'
+  SIZE: 27
+  RANDOM-BUTTON:
+    SLOT: 22
+    MATERIAL: ENDER_PEARL
+    DISPLAY-NAME: '&dRandom AFK'
+    LORE:
+    - '&7Sends you to one of &f{areas}&7 areas'
+  AREAS:
+    '1':
+      SLOT: 11
+      MATERIAL: ITEM_FRAME
+      DISPLAY-NAME: '&dAFK #{id}'
+      LORE:
+      - '&8{players}/{capacity}'
+      - '&7Region: &f{cuboid}'
+      CUBOID: afk1
+      CAPACITY: 50
+    '2':
+      SLOT: 15
+      MATERIAL: ITEM_FRAME
+      DISPLAY-NAME: '&dAFK #{id}'
+      LORE:
+      - '&8{players}/{capacity}'
+      - '&7Region: &f{cuboid}'
+      CUBOID: afk2
+      CAPACITY: 50
+```
+
+---
+
+## Section: `SPAWN-MENU`
+
+Opened with `/spawn`. The same machinery as `AFK-MENU`, pointed at spawn areas instead: one icon per
+area, a random button, and `/setspawn` to write the cuboid and destination rather than typing them.
+Everything in the AFK section applies here with the paths swapped, so this entry only restates the
+parts that differ.
+
+### 1. Commented Setup Code Example
+
+```yaml
+SPAWN-MENU:
+  TITLE: '&8Spawn Areas'
+  SIZE: 54
+  RANDOM-BUTTON:
+    SLOT: 49
+    MATERIAL: LIGHT_BLUE_GLAZED_TERRACOTTA
+    DISPLAY-NAME: '&#00A4FCSpawn'
+    LORE:
+    - '&fClick to teleport to a random spawn area'
+  AREAS:
+    '1':
+      SLOT: 0
+      MATERIAL: ITEM_FRAME
+      DISPLAY-NAME: '&#00A4FCSpawn #1'
+      LORE:
+      - '&8{players}/200'
+      - '&7Click to go to this'
+      - '&7Spawn area.'
+      CUBOID: spawn1
+      LOCATION: 1
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPAWN-MENU.TITLE` | `str` | Any string text | `'&8Spawn areas'` | Inventory title shown at the top of the menu. |
+| `SPAWN-MENU.SIZE` | `int` | `9` to `54` | `54` | Rounds up to the next multiple of nine, capped at `54`, same as the AFK menu. |
+| `SPAWN-MENU.RANDOM-BUTTON.SLOT` | `int` | `0` to `SIZE - 1` | `-1` | Slot for the random teleport button. Unset means no button. |
+| `SPAWN-MENU.RANDOM-BUTTON.MATERIAL` | `str` | Any valid material name | `COMPASS` | Icon material for the random button. |
+| `SPAWN-MENU.RANDOM-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&fRandom'` | Icon name, with `{areas}` available. |
+| `SPAWN-MENU.RANDOM-BUTTON.LORE` | `list` | List of strings | `[]` | Icon lore, with `{areas}` available. |
+| `SPAWN-MENU.AREAS.<ID>.SLOT` | `int` | `0` to `SIZE - 1` | - | Slot the area renders in. Collisions and out-of-range slots are skipped with a warning. |
+| `SPAWN-MENU.AREAS.<ID>.MATERIAL` | `str` | Any valid material name | - | Icon material. |
+| `SPAWN-MENU.AREAS.<ID>.DISPLAY-NAME` | `str` | Any string text | - | Icon name. |
+| `SPAWN-MENU.AREAS.<ID>.LORE` | `list` | List of strings | `[]` | Icon lore. |
+| `SPAWN-MENU.AREAS.<ID>.CUBOID` | `str` | A cuboid name | `''` | The region this area belongs to. |
+| `SPAWN-MENU.AREAS.<ID>.LOCATION` | `str` | A serialised location | unset | Teleport destination, written by `/setspawn`. |
+| `SPAWN-MENU.AREAS.<ID>.CAPACITY` | `int` | `1` or more | `200` | What `{capacity}` reports. Not shipped in `menus.yml`. |
+
+The `{players}`, `{capacity}`, `{cuboid}` and `{id}` placeholders behave exactly as they do for the
+AFK menu, and so do the barrier fallbacks, the two-area rule for the random button and the
+right-click delete for admins. The empty menu here reads `&cNo spawn areas`. Turn it off with
+`SETTINGS.SPAWN-MENU` in `config.yml`.
+
+One thing worth keeping straight: this menu is the list of spawn *areas*, which is separate from the
+single spawn hub that `/uds setup setspawn` records and that players respawn at. Editing this section
+changes where `/spawn` can send people, not where a death sends them.
+
+### 3. Practical Setup Example
+
+A single spawn area, which is the common case on a server that does not want players choosing:
+
+```yaml
+SPAWN-MENU:
+  TITLE: '&8Spawn'
+  SIZE: 27
+  AREAS:
+    '1':
+      SLOT: 13
+      MATERIAL: LIGHT_BLUE_GLAZED_TERRACOTTA
+      DISPLAY-NAME: '&bMain Spawn'
+      LORE:
+      - '&8{players} here now'
+      - '&7Click to teleport'
+      CUBOID: spawn1
+```
+
+With one area the random button is never drawn, so leaving `RANDOM-BUTTON` out entirely is the
+tidier way to write it.
+
+---
+
+## Section: `PROFILE-VIEWER-MENU`
+
+Opened with `/profileviewer <player>` (alias `/pv`). A read-only look at another player: a summary
+head, their stats, and buttons through to their homes and their punishment history. The location
+button teleports the viewer to them when they are online.
+
+### 1. Commented Setup Code Example
+
+```yaml
+PROFILE-VIEWER-MENU:
+  TITLE: '&8{username}''s Profile'
+  SIZE: 54
+  BUTTONS:
+    SUMMARY:
+      SLOT: 4
+      MATERIAL: PLAYER_HEAD
+      DISPLAY-NAME: '&#6BF18D{username}'
+      LORE:
+      - '&7Status: &f{status}'
+      - '&7Team: &f{team}'
+      - '&7Homes: &f{homes}'
+    HOMES:
+      SLOT: 40
+      MATERIAL: RED_BED
+      DISPLAY-NAME: '&#6BF18DHomes'
+      LORE:
+      - '&7Homes saved: &f{homes}'
+    CURRENT-LOCATION:
+      SLOT: 41
+      MATERIAL: COMPASS
+      DISPLAY-NAME: '&#6BF18DCurrent Location'
+      # The -OFFLINE pair is used instead whenever the player cannot be teleported to.
+      DISPLAY-NAME-OFFLINE: '&cCurrent Location'
+      LORE:
+      - '&7{world} ({x}, {y}, {z})'
+      - '&aClick to teleport'
+      LORE-OFFLINE:
+      - '&7This player is offline right now.'
+    PUNISHMENTS:
+      SLOT: 42
+      MATERIAL: IRON_BARS
+      DISPLAY-NAME: '&#6BF18DPunishments'
+    REFRESH:
+      SLOT: 49
+      MATERIAL: CLOCK
+      DISPLAY-NAME: '&#6BF18DRefresh'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `PROFILE-VIEWER-MENU.TITLE` | `str` | Any string text | `'&8{username}''s profile'` | Inventory title. `{username}` is the player being viewed. |
+| `PROFILE-VIEWER-MENU.SIZE` | `int` | `27`, `36`, `45`, `54` | `54` | Inventory size. Anything smaller than `27` or not a multiple of nine falls back to `54`. |
+| `PROFILE-VIEWER-MENU.BUTTONS.SUMMARY.SLOT` | `int` | `0` to `SIZE - 1` | `4` | The head at the top of the menu. |
+| `PROFILE-VIEWER-MENU.BUTTONS.SUMMARY.MATERIAL` | `str` | Any valid material name | `PLAYER_HEAD` | Icon material for the summary. |
+| `PROFILE-VIEWER-MENU.BUTTONS.SUMMARY.DISPLAY-NAME` | `str` | Any string text | `'&b{username}'` | Summary icon name. |
+| `PROFILE-VIEWER-MENU.BUTTONS.SUMMARY.LORE` | `list` | List of strings | `[]` | Summary lore, where most of the profile placeholders earn their keep. |
+| `PROFILE-VIEWER-MENU.BUTTONS.HOMES.SLOT` | `int` | `0` to `SIZE - 1` | `40` | Opens `PROFILE-VIEWER-HOMES-MENU` for this player. |
+| `PROFILE-VIEWER-MENU.BUTTONS.HOMES.MATERIAL` | `str` | Any valid material name | `RED_BED` | Icon material. |
+| `PROFILE-VIEWER-MENU.BUTTONS.HOMES.DISPLAY-NAME` | `str` | Any string text | `'&bHomes'` | Icon name. |
+| `PROFILE-VIEWER-MENU.BUTTONS.CURRENT-LOCATION.SLOT` | `int` | `0` to `SIZE - 1` | `41` | Teleports the viewer to the player. |
+| `PROFILE-VIEWER-MENU.BUTTONS.CURRENT-LOCATION.MATERIAL` | `str` | Any valid material name | `COMPASS` | Icon material, shared by both states. |
+| `PROFILE-VIEWER-MENU.BUTTONS.CURRENT-LOCATION.DISPLAY-NAME` | `str` | Any string text | `'&bCurrent location'` | Name while the player can be reached. |
+| `PROFILE-VIEWER-MENU.BUTTONS.CURRENT-LOCATION.DISPLAY-NAME-OFFLINE` | `str` | Any string text | `'&cCurrent location'` | Name while they cannot. |
+| `PROFILE-VIEWER-MENU.BUTTONS.CURRENT-LOCATION.LORE` | `list` | List of strings | Coordinates plus a click hint | Lore while the player can be reached. |
+| `PROFILE-VIEWER-MENU.BUTTONS.CURRENT-LOCATION.LORE-OFFLINE` | `list` | List of strings | `'&7This player is offline right now.'` | Lore while they cannot. An empty list restores the default rather than blanking it. |
+| `PROFILE-VIEWER-MENU.BUTTONS.PUNISHMENTS.SLOT` | `int` | `0` to `SIZE - 1` | `42` | Opens `PUNISHMENT-HISTORY-MENU` for this player. |
+| `PROFILE-VIEWER-MENU.BUTTONS.PUNISHMENTS.MATERIAL` | `str` | Any valid material name | `IRON_BARS` | Icon material. |
+| `PROFILE-VIEWER-MENU.BUTTONS.PUNISHMENTS.DISPLAY-NAME` | `str` | Any string text | `'&bPunishments'` | Icon name. |
+| `PROFILE-VIEWER-MENU.BUTTONS.REFRESH.SLOT` | `int` | `0` to `SIZE - 1` | `49` | Rebuilds the menu against fresh data. |
+| `PROFILE-VIEWER-MENU.BUTTONS.REFRESH.MATERIAL` | `str` | Any valid material name | `CLOCK` | Icon material. |
+| `PROFILE-VIEWER-MENU.BUTTONS.REFRESH.DISPLAY-NAME` | `str` | Any string text | `'&bRefresh'` | Icon name. |
+
+Every name and lore on this menu understands these:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{username}` | The name of the player being viewed |
+| `{status}` | Their online or offline label |
+| `{team}` | Their team name, blank when they have none |
+| `{homes}` | How many homes they have saved |
+| `{afk}` | Whether they are AFK, as yes or no |
+| `{world}`, `{x}`, `{y}`, `{z}` | Where they last were |
+
+Two behaviours are worth knowing before you rearrange anything. The `-OFFLINE` name and lore are
+used whenever the player cannot be teleported to, which covers a player who is online but has no
+resolvable location, not only one who has logged off. And the stat icons down the middle are not
+configured here at all: they are read from `STATS-MENU.BUTTONS`, so editing that section changes what
+`/stats` shows **and** what this menu shows. A stat icon whose slot falls outside this menu's size is
+dropped without a warning.
+
+Empty slots are filled with `GRAY_STAINED_GLASS_PANE`. If the profile cannot be loaded the menu shows
+a barrier in the middle instead of the buttons.
+
+### 3. Practical Setup Example
+
+A smaller profile with the navigation moved onto one row:
+
+```yaml
+PROFILE-VIEWER-MENU:
+  TITLE: '&8Profile: {username}'
+  SIZE: 27
+  BUTTONS:
+    SUMMARY:
+      SLOT: 4
+      MATERIAL: PLAYER_HEAD
+      DISPLAY-NAME: '&a{username}'
+      LORE:
+      - '&7Status: &f{status}'
+      - '&7AFK: &f{afk}'
+      - '&7Team: &f{team}'
+      - '&7Last seen in &f{world}'
+    HOMES:
+      SLOT: 20
+      MATERIAL: RED_BED
+      DISPLAY-NAME: '&aHomes &7({homes})'
+    CURRENT-LOCATION:
+      SLOT: 22
+      MATERIAL: COMPASS
+      DISPLAY-NAME: '&aGo to {username}'
+      DISPLAY-NAME-OFFLINE: '&7Cannot reach {username}'
+      LORE-OFFLINE:
+      - '&7They are offline or between worlds.'
+    PUNISHMENTS:
+      SLOT: 24
+      MATERIAL: IRON_BARS
+      DISPLAY-NAME: '&aPunishments'
+```
+
+Dropping `SIZE` to `27` also hides any `STATS-MENU` icon sitting on a slot above 26, which is the
+quickest way to get a compact profile without touching the stats menu itself.
+
+---
+
+## Section: `PROFILE-VIEWER-HOMES-MENU`
+
+Reached from the homes button on `PROFILE-VIEWER-MENU`. Lists the homes the viewed player has saved,
+paged when there are more than a screenful, and clicking one teleports the viewer there. Unlike the
+menus above there is no `BUTTONS` map here: each button is its own named block, because each one
+means something different rather than being one entry in a list.
+
+### 1. Commented Setup Code Example
+
+```yaml
+PROFILE-VIEWER-HOMES-MENU:
+  TITLE: '&8{username}''s Homes'
+  SIZE: 54
+  MAX-ITEMS-PER-PAGE: 45
+  HOME-BUTTON:
+    MATERIAL: LIGHT_BLUE_BED
+    DISPLAY-NAME: '&b{name}'
+    LORE:
+    - '&7World: &f{world}'
+    - '&7X: &f{x} &7Y: &f{y} &7Z: &f{z}'
+    - '&aClick to teleport'
+  # Used for a home whose world is not loaded, in place of HOME-BUTTON.
+  INVALID-HOME-BUTTON:
+    MATERIAL: BARRIER
+    DISPLAY-NAME: '&c{name}'
+    LORE:
+    - '&7This home points to an unavailable world.'
+  EMPTY-BUTTON:
+    MATERIAL: BARRIER
+    DISPLAY-NAME: '&cNo Homes'
+    LORE:
+    - '&7This player has no homes saved.'
+  BACK-BUTTON:
+    MATERIAL: RED_STAINED_GLASS_PANE
+    DISPLAY-NAME: '&cBack'
+  CLOSE-BUTTON:
+    MATERIAL: RED_STAINED_GLASS_PANE
+    DISPLAY-NAME: '&cClose'
+  REFRESH-BUTTON:
+    MATERIAL: CLOCK
+    DISPLAY-NAME: '&#6BF18DRefresh'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `PROFILE-VIEWER-HOMES-MENU.TITLE` | `str` | Any string text | `'&8{username}''s homes'` | Inventory title. `{username}` is the player being viewed. |
+| `PROFILE-VIEWER-HOMES-MENU.SIZE` | `int` | `27`, `36`, `45`, `54` | `54` | Inventory size. Anything smaller than `27` or not a multiple of nine falls back to `54`. |
+| `PROFILE-VIEWER-HOMES-MENU.MAX-ITEMS-PER-PAGE` | `int` | `1` to `45` | `45` | Homes drawn per page. Values outside the range are pulled back into it rather than rejected, so `60` behaves as `45` and `0` as `1`. |
+| `PROFILE-VIEWER-HOMES-MENU.HOME-BUTTON.MATERIAL` | `str` | Any valid material name | `LIGHT_BLUE_BED` | Icon for a home that can be teleported to. |
+| `PROFILE-VIEWER-HOMES-MENU.HOME-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&b{name}'` | Icon name for a home. |
+| `PROFILE-VIEWER-HOMES-MENU.HOME-BUTTON.LORE` | `list` | List of strings | `[]` | Icon lore for a home. |
+| `PROFILE-VIEWER-HOMES-MENU.INVALID-HOME-BUTTON.MATERIAL` | `str` | Any valid material name | `BARRIER` | Icon for a home whose world is not loaded. |
+| `PROFILE-VIEWER-HOMES-MENU.INVALID-HOME-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&c{name}'` | Icon name for an unreachable home. |
+| `PROFILE-VIEWER-HOMES-MENU.INVALID-HOME-BUTTON.LORE` | `list` | List of strings | `[]` | Icon lore for an unreachable home. |
+| `PROFILE-VIEWER-HOMES-MENU.EMPTY-BUTTON.MATERIAL` | `str` | Any valid material name | `BARRIER` | Shown when the player has no homes at all. |
+| `PROFILE-VIEWER-HOMES-MENU.EMPTY-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&cNo homes'` | Name of the empty placeholder. |
+| `PROFILE-VIEWER-HOMES-MENU.EMPTY-BUTTON.LORE` | `list` | List of strings | `[]` | Lore of the empty placeholder. |
+| `PROFILE-VIEWER-HOMES-MENU.BACK-BUTTON.MATERIAL` | `str` | Any valid material name | `RED_STAINED_GLASS_PANE` | Returns to the profile. Drawn only when the menu was opened from the profile. |
+| `PROFILE-VIEWER-HOMES-MENU.BACK-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&cBack'` | Name of the back button. |
+| `PROFILE-VIEWER-HOMES-MENU.CLOSE-BUTTON.MATERIAL` | `str` | Any valid material name | `RED_STAINED_GLASS_PANE` | Closes the menu. Takes the same position as the back button and replaces it whenever there is no profile to go back to. |
+| `PROFILE-VIEWER-HOMES-MENU.CLOSE-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&cClose'` | Name of the close button. |
+| `PROFILE-VIEWER-HOMES-MENU.REFRESH-BUTTON.MATERIAL` | `str` | Any valid material name | `CLOCK` | Rebuilds the list against fresh data. |
+| `PROFILE-VIEWER-HOMES-MENU.REFRESH-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&bRefresh'` | Name of the refresh button. |
+
+The title and the refresh button read `{username}` and `{homes}`. A home icon gets its own set:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{name}` | The home's name |
+| `{world}` | The world the home is in |
+| `{x}`, `{y}`, `{z}` | The home's coordinates |
+| `{username}` | The player who owns the home |
+
+Back and close are the same button wearing two hats: the menu draws `BACK-BUTTON` when it was
+opened from a profile and `CLOSE-BUTTON` when it was not, so both blocks want configuring even
+though only one shows at a time.
+
+`INVALID-HOME-BUTTON` is the one people miss. A home in a world the server is not currently running
+still occupies a slot; it just draws with this block instead and does nothing when clicked. That is
+why the default is a barrier rather than a bed, and it is worth leaving obviously different from
+`HOME-BUTTON` so the reason a teleport does nothing is visible.
+
+Paging buttons come from the shared `GLOBAL.PAGE-MENU` block rather than from here, so the arrows
+match every other paged menu.
+
+### 3. Practical Setup Example
+
+A shorter list with two rows of homes, so the navigation row stays clear of them:
+
+```yaml
+PROFILE-VIEWER-HOMES-MENU:
+  TITLE: '&8Homes of {username}'
+  SIZE: 36
+  MAX-ITEMS-PER-PAGE: 18
+  HOME-BUTTON:
+    MATERIAL: LIGHT_BLUE_BED
+    DISPLAY-NAME: '&b{name}'
+    LORE:
+    - '&7{world} &8({x}, {y}, {z})'
+    - '&aClick to teleport'
+  INVALID-HOME-BUTTON:
+    MATERIAL: STRUCTURE_VOID
+    DISPLAY-NAME: '&8{name}'
+    LORE:
+    - '&7World &f{world} &7is not loaded.'
+  EMPTY-BUTTON:
+    MATERIAL: LIGHT_GRAY_STAINED_GLASS_PANE
+    DISPLAY-NAME: '&7Nothing saved'
+    LORE:
+    - '&7{username} has no homes.'
+```
+
+---
+
 ## Section: `SERVERS-MENU`
 
 Opened with `/servers`. One icon per server on the network, coloured by whether that server answered
