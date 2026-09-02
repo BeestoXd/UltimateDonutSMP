@@ -71,7 +71,7 @@ public class SpawnStashListener implements Listener {
 
         event.setCancelled(true);
         event.getPlayer().sendMessage(ColorUtils.toComponent(plugin.getSpawnStashManager()
-                .publicMessage("Blocked-break", "&cThis stash is protected.")));
+                .publicMessage("BLOCKED-BREAK", "&cThis stash is protected.")));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
