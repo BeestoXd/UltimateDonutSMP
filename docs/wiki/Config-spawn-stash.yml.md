@@ -154,7 +154,7 @@ MESSAGES:
 | `MESSAGES.SPAWNER-CLAIMED-DROPPED` | `str` | Any string text | `'&aclaimed &f{amount}x {spawner}&a. ...'` | Configures the technical `SPAWNER-CLAIMED-DROPPED` parameter for `MESSAGES.SPAWNER-CLAIMED-DROPPED` in `spawn-stash.yml`. |
 | `MESSAGES.INVALID-TYPE` | `str` | Any string text | `'&cunknown stash type '&f{type}&c'. ...'` | Configures the technical `INVALID-TYPE` parameter for `MESSAGES.INVALID-TYPE` in `spawn-stash.yml`. |
 | `MESSAGES.INVALID-CONFIG` | `str` | Any string text | `'&cspawnstash config is invalid: &f{...'` | Configures the technical `INVALID-CONFIG` parameter for `MESSAGES.INVALID-CONFIG` in `spawn-stash.yml`. |
-| `MESSAGES.ALERT` | `list` | List of configured items/strings | `['&8[&dspawnstash&8] &f{player} &7triggered &d{reason}&7 on stash &f#{id}&7 (&f{type}&7)', '&7location: &f{world} {x}, {y}, {z} &8| &7created by: &f{creator}']` | Configures the technical `ALERT` parameter for `MESSAGES.ALERT` in `spawn-stash.yml`. |
+| `MESSAGES.ALERT` | `list` | List of configured items/strings | `['&8[&dspawnstash&8] &f{player} &7triggered &d{reason}&7 on stash &f#{id}&7 (&f{type}&7)', '&7location: &f{world} {x}, {y}, {z} &8\| &7created by: &f{creator}']` | Configures the technical `ALERT` parameter for `MESSAGES.ALERT` in `spawn-stash.yml`. |
 | `MESSAGES.ALERT-HOVER` | `str` | Any string text | `'&eclick to teleport to &f{player}'` | Configures the technical `ALERT-HOVER` parameter for `MESSAGES.ALERT-HOVER` in `spawn-stash.yml`. |
 
 ### 3. Practical Setup Example

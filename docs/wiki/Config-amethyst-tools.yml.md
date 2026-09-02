@@ -106,7 +106,7 @@ AMETHYST-TOOLS:
 | `AMETHYST-TOOLS.PARTICLES.BLOCK-MATERIAL` | `str` | Any string text | `'PURPLE_CONCRETE_POWDER'` | Configures the technical `BLOCK-MATERIAL` parameter for `AMETHYST-TOOLS.PARTICLES.BLOCK-MATERIAL` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.PARTICLES.COUNT` | `int` | Any valid integer number | `'12'` | Configures the technical `COUNT` parameter for `AMETHYST-TOOLS.PARTICLES.COUNT` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.PARTICLES.SPREAD` | `float` | Any decimal number | `'0.4'` | Configures the technical `SPREAD` parameter for `AMETHYST-TOOLS.PARTICLES.SPREAD` in `amethyst-tools.yml`. |
-| `AMETHYST-TOOLS.SOUNDS.USE` | `str` | Any string text | `'minecraft:block.amethyst_block.hit|...'` | Configures the technical `USE` parameter for `AMETHYST-TOOLS.SOUNDS.USE` in `amethyst-tools.yml`. |
+| `AMETHYST-TOOLS.SOUNDS.USE` | `str` | Any string text | `'minecraft:block.amethyst_block.hit\|...'` | Configures the technical `USE` parameter for `AMETHYST-TOOLS.SOUNDS.USE` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.SOUNDS.EXPIRE` | `str` | Any string text | `'minecraft:entity.lightning_bolt.imp...'` | Configures the technical `EXPIRE` parameter for `AMETHYST-TOOLS.SOUNDS.EXPIRE` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.SOUNDS.BREAK` | `str` | Any string text | `'minecraft:block.amethyst_block.brea...'` | Configures the technical `BREAK` parameter for `AMETHYST-TOOLS.SOUNDS.BREAK` in `amethyst-tools.yml`. |
 | `AMETHYST-TOOLS.SOUNDS.ACTIVATE` | `str` | Any string text | `'minecraft:block.amethyst_block.reso...'` | Configures the technical `ACTIVATE` parameter for `AMETHYST-TOOLS.SOUNDS.ACTIVATE` in `amethyst-tools.yml`. |
