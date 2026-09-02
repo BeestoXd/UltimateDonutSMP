@@ -12,6 +12,15 @@ on:
 permissions:
   contents: write
 
+# Two merges landing close together used to race each other for the nightly tag. The tag push is a
+# plain force push with no compare-and-swap, so whichever run finished last won, and the loser died
+# with "cannot lock ref". A slower older run winning would have moved v1.5-pre backwards and
+# published the older jar over the newer one. Cancelling the older run leaves the newest commit on
+# main as the only one that reaches the tag and release steps.
+concurrency:
+  group: build-nightly-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
