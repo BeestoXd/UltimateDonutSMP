@@ -47,6 +47,13 @@ SETTINGS:
   ATTEMPT-INTERVAL-TICKS: 1
   # Number of location attempts evaluated in parallel per sample interval
   SEARCH-ATTEMPTS-PER-TICK: 4
+  # Ticks the searching display is held for before the teleport starts. Lower it to teleport
+  # sooner once a spot is found, 0 teleports the moment the search succeeds
+  SEARCH-DISPLAY-MIN-TICKS: 30
+  # Ticks the found location display is held for before the teleport is queued. This one is paid
+  # on every RTP, including one served from LOCATION-CACHE below, so it is the whole wait when
+  # nothing had to be searched for. 0 queues the teleport as soon as the chunks are ready
+  FOUND-DISPLAY-TICKS: 20
   # Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS
   GENERATE-CHUNKS: false
   # Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot
@@ -83,6 +90,8 @@ SETTINGS:
 | `SETTINGS.MAX-CHUNK-SAMPLES` | `int` | Any valid integer number | `'128'` | Configures the technical `MAX-CHUNK-SAMPLES` parameter for `SETTINGS.MAX-CHUNK-SAMPLES` in `rtp.yml`. |
 | `SETTINGS.ATTEMPT-INTERVAL-TICKS` | `int` | Any valid integer number | `'1'` | Configures the technical `ATTEMPT-INTERVAL-TICKS` parameter for `SETTINGS.ATTEMPT-INTERVAL-TICKS` in `rtp.yml`. |
 | `SETTINGS.SEARCH-ATTEMPTS-PER-TICK` | `int` | Any valid integer number | `'4'` | How many candidate locations are checked side by side instead of one after another. Higher values find a spot sooner at the cost of more chunk work per search. |
+| `SETTINGS.SEARCH-DISPLAY-MIN-TICKS` | `int` | `0` or higher | `'30'` | How long the searching display is held before the teleport may start, in ticks, where 20 ticks is a second. A search that lands on its first sample would otherwise flash the action bar and teleport in the same breath, so the floor is there to keep the message readable. `0` teleports the moment a spot is found. |
+| `SETTINGS.FOUND-DISPLAY-TICKS` | `int` | `0` or higher | `'20'` | How long the found location display is held before the teleport is queued, in ticks. Unlike the setting above this one is paid on every RTP, a teleport served straight from `LOCATION-CACHE` included, so it is the whole wait a player sees when nothing had to be searched for. `0` queues the teleport as soon as the surrounding chunks are ready. |
 | `SETTINGS.GENERATE-CHUNKS` | `bool` | `true`, `false` | `false` | Configures the technical `GENERATE-CHUNKS` parameter for `SETTINGS.GENERATE-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.GENERATE-FALLBACK-CHUNKS` | `bool` | `true`, `false` | `true` | Configures the technical `GENERATE-FALLBACK-CHUNKS` parameter for `SETTINGS.GENERATE-FALLBACK-CHUNKS` in `rtp.yml`. |
 | `SETTINGS.GENERATE-FALLBACK-AFTER-SAMPLES` | `int` | Any valid integer number | `'8'` | Configures the technical `GENERATE-FALLBACK-AFTER-SAMPLES` parameter for `SETTINGS.GENERATE-FALLBACK-AFTER-SAMPLES` in `rtp.yml`. |
@@ -106,6 +115,13 @@ SETTINGS:
   ATTEMPT-INTERVAL-TICKS: 1
   # Number of location attempts evaluated in parallel per sample interval
   SEARCH-ATTEMPTS-PER-TICK: 4
+  # Ticks the searching display is held for before the teleport starts. Lower it to teleport
+  # sooner once a spot is found, 0 teleports the moment the search succeeds
+  SEARCH-DISPLAY-MIN-TICKS: 30
+  # Ticks the found location display is held for before the teleport is queued. This one is paid
+  # on every RTP, including one served from LOCATION-CACHE below, so it is the whole wait when
+  # nothing had to be searched for. 0 queues the teleport as soon as the chunks are ready
+  FOUND-DISPLAY-TICKS: 20
   # Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS
   GENERATE-CHUNKS: false
   # Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot

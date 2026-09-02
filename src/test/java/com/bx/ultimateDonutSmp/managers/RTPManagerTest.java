@@ -256,6 +256,40 @@ class RTPManagerTest {
     }
 
     @Test
+    void testSearchDisplayTicksReadConfiguredValue() throws Exception {
+        YamlConfiguration rtpConfig = new YamlConfiguration();
+        RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
+        assertEquals(30L, rtpManager.getMinSearchDisplayTicks());
+
+        rtpConfig.set("SETTINGS.SEARCH-DISPLAY-MIN-TICKS", 60);
+        assertEquals(60L, rtpManager.getMinSearchDisplayTicks());
+
+        // 0 is the point of the setting rather than an edge case: it is what a server sets to
+        // have the teleport happen the moment a spot is found.
+        rtpConfig.set("SETTINGS.SEARCH-DISPLAY-MIN-TICKS", 0);
+        assertEquals(0L, rtpManager.getMinSearchDisplayTicks());
+
+        rtpConfig.set("SETTINGS.SEARCH-DISPLAY-MIN-TICKS", -20);
+        assertEquals(0L, rtpManager.getMinSearchDisplayTicks());
+    }
+
+    @Test
+    void testFoundDisplayTicksReadConfiguredValue() throws Exception {
+        YamlConfiguration rtpConfig = new YamlConfiguration();
+        RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
+        assertEquals(20L, rtpManager.getFoundDisplayTicks());
+
+        rtpConfig.set("SETTINGS.FOUND-DISPLAY-TICKS", 45);
+        assertEquals(45L, rtpManager.getFoundDisplayTicks());
+
+        rtpConfig.set("SETTINGS.FOUND-DISPLAY-TICKS", 0);
+        assertEquals(0L, rtpManager.getFoundDisplayTicks());
+
+        rtpConfig.set("SETTINGS.FOUND-DISPLAY-TICKS", -20);
+        assertEquals(0L, rtpManager.getFoundDisplayTicks());
+    }
+
+    @Test
     void testPreCacheSizeIsClampedAndRespectsToggle() throws Exception {
         YamlConfiguration rtpConfig = new YamlConfiguration();
         RTPManager rtpManager = new RTPManager(createMockPlugin(rtpConfig));
