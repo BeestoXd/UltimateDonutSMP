@@ -4559,26 +4559,9 @@ public class DatabaseManager {
             connection.setAutoCommit(false);
             autoCommitDisabled = true;
             if (serverWipeTableExists("players")) {
-                try (PreparedStatement statement = connection.prepareStatement("""
-                        UPDATE players SET
-                            money = ?,
-                            shards = 0,
-                            kills = 0,
-                            deaths = 0,
-                            playtime_seconds = 0,
-                            blocks_placed = 0,
-                            blocks_broken = 0,
-                            mobs_killed = 0,
-                            kill_streak = 0,
-                            highest_kill_streak = 0,
-                            money_spent = 0,
-                            money_made = 0,
-                            keyall_remaining_seconds = -1,
-                            shard_booster_expiry = 0,
-                            mob_spawn_disabled_until = 0,
-                            phantom_disabled_until = 0
-                        """)) {
-                    statement.setDouble(1, Math.max(0D, startingMoney));
+                try (PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE players SET " + wipeStatAssignments())) {
+                    bindWipeStatResets(statement, startingMoney);
                     affected.put("players", statement.executeUpdate());
                 }
             }
@@ -4701,15 +4684,16 @@ public class DatabaseManager {
 
     private static final Map<String, String> PLAYER_WIPE_GROUPS = playerWipeGroups();
 
-    private static final Map<String, Object> PLAYER_WIPE_STAT_RESETS = playerWipeStatResets();
+    private static final Map<String, Object> WIPE_STAT_RESETS = wipeStatResets();
 
     /**
-     * The player columns a wipe resets, each beside the value it goes back to. The wipe, the backup
-     * and the restore all read this one map, so a column added here cannot quietly drop out of a
-     * backup and leave a restored player short. {@code money} is the exception: it is overwritten
-     * with the configured starting balance rather than the placeholder below.
+     * The player columns a wipe resets, each beside the value it goes back to. Both wipes read this
+     * one map, and so do the backup and restore behind {@code /playerunwipe}, so a column added here
+     * cannot be reset by one wipe and missed by the other, or drop out of a backup and leave a
+     * restored player short. {@code money} is the exception: it is overwritten with the configured
+     * starting balance rather than the placeholder below.
      */
-    private static Map<String, Object> playerWipeStatResets() {
+    private static Map<String, Object> wipeStatResets() {
         Map<String, Object> resets = new LinkedHashMap<>();
         resets.put("money", 0D);
         resets.put("shards", 0);
@@ -4799,19 +4783,9 @@ public class DatabaseManager {
             autoCommitDisabled = true;
 
             if (serverWipeTableExists("players")) {
-                StringJoiner assignments = new StringJoiner(", ");
-                for (String column : PLAYER_WIPE_STAT_RESETS.keySet()) {
-                    assignments.add(quoteIdentifier(column) + " = ?");
-                }
                 try (PreparedStatement statement = connection.prepareStatement(
-                        "UPDATE players SET " + assignments + " WHERE uuid = ?")) {
-                    int index = 1;
-                    for (Map.Entry<String, Object> reset : PLAYER_WIPE_STAT_RESETS.entrySet()) {
-                        Object value = "money".equals(reset.getKey())
-                                ? Math.max(0D, startingMoney)
-                                : reset.getValue();
-                        statement.setObject(index++, value);
-                    }
+                        "UPDATE players SET " + wipeStatAssignments() + " WHERE uuid = ?")) {
+                    int index = bindWipeStatResets(statement, startingMoney);
                     statement.setString(index, uuid);
                     affected.put("stats", statement.executeUpdate());
                 }
@@ -4860,7 +4834,7 @@ public class DatabaseManager {
         }
 
         String uuid = playerUuid.toString();
-        List<String> statColumns = List.copyOf(PLAYER_WIPE_STAT_RESETS.keySet());
+        List<String> statColumns = List.copyOf(WIPE_STAT_RESETS.keySet());
         List<Object> statValues = readPlayerStats(uuid, statColumns);
 
         Map<String, PlayerWipeArchive.TableRows> tables = new LinkedHashMap<>();
@@ -5067,6 +5041,30 @@ public class DatabaseManager {
             }
         }
         return inserted;
+    }
+
+    /** The {@code column = ?} list both wipes assign, in the order {@link #bindWipeStatResets} binds. */
+    private String wipeStatAssignments() {
+        StringJoiner assignments = new StringJoiner(", ");
+        for (String column : WIPE_STAT_RESETS.keySet()) {
+            assignments.add(quoteIdentifier(column) + " = ?");
+        }
+        return assignments.toString();
+    }
+
+    /**
+     * Binds every stat column back to the value a wipe resets it to, with {@code money} taking the
+     * configured starting balance. Returns the next free parameter index, which a player wipe uses
+     * for the {@code WHERE uuid = ?} a server wipe does not have.
+     */
+    private int bindWipeStatResets(PreparedStatement statement, double startingMoney) throws SQLException {
+        int index = 1;
+        for (Map.Entry<String, Object> reset : WIPE_STAT_RESETS.entrySet()) {
+            statement.setObject(index++, "money".equals(reset.getKey())
+                    ? Math.max(0D, startingMoney)
+                    : reset.getValue());
+        }
+        return index;
     }
 
     private int deletePlayerRows(String table, List<String> columns, String uuid) throws SQLException {
