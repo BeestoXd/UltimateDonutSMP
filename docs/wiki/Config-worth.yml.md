@@ -35,6 +35,11 @@ DISPLAY:
 
 ## Section: `CONTAINER`
 
+A container is bought and sold as one stack, so the plugin will not sell one whose contents it is
+not paying for. Whenever a setting here stops the contents being priced, a container holding
+something is treated as unsellable and comes back to the player instead of being cleared for the
+price of the empty box.
+
 ### 1. Commented Setup Code Example
 
 ```yaml
@@ -54,10 +59,10 @@ CONTAINER:
 
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `CONTAINER.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `CONTAINER` system. Set to `true` to enable, `false` to disable. |
-| `CONTAINER.INCLUDE-CONTAINER-BASE-PRICE` | `bool` | `true`, `false` | `true` | Configures the technical `INCLUDE-CONTAINER-BASE-PRICE` parameter for `CONTAINER.INCLUDE-CONTAINER-BASE-PRICE` in `worth.yml`. |
-| `CONTAINER.ALLOW-NESTED-CONTAINERS` | `bool` | `true`, `false` | `false` | Configures the technical `ALLOW-NESTED-CONTAINERS` parameter for `CONTAINER.ALLOW-NESTED-CONTAINERS` in `worth.yml`. |
-| `CONTAINER.MAX-CONTAINER-DEPTH` | `int` | Any valid integer number | `'1'` | Configures the technical `MAX-CONTAINER-DEPTH` parameter for `CONTAINER.MAX-CONTAINER-DEPTH` in `worth.yml`. |
+| `CONTAINER.ENABLED` | `bool` | `true`, `false` | `true` | `true` prices a container by its contents as well as the box, so selling a full shulker pays for what is inside it. `false` prices the box alone, and a container that still holds something then cannot be sold at all: `/sell` leaves it in the window and hands it back, so nothing inside is lost. An empty container always sells for its own price. |
+| `CONTAINER.INCLUDE-CONTAINER-BASE-PRICE` | `bool` | `true`, `false` | `true` | Whether the container's own price is added on top of its contents. `false` pays for the contents only. Read only while `ENABLED` is `true`. |
+| `CONTAINER.ALLOW-NESTED-CONTAINERS` | `bool` | `true`, `false` | `false` | Whether a container inside a container is opened up and priced too. While this is `false`, a nested container that still holds something makes the whole stack unsellable rather than selling for a price that ignores it. |
+| `CONTAINER.MAX-CONTAINER-DEPTH` | `int` | Any valid integer number | `'1'` | How many containers deep the pricing walks. A container sitting deeper than this keeps its contents unpriced, and is refused rather than sold for less than it holds. |
 
 ### 3. Practical Setup Example
 

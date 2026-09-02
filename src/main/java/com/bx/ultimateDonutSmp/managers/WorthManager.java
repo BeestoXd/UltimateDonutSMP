@@ -670,6 +670,9 @@ public class WorthManager {
         if (isBlockedItem(item)) {
             return WorthResult.unsellable();
         }
+        if (isUnpricedFullContainer(item, depth, allowNestedExpansion)) {
+            return WorthResult.unsellable();
+        }
 
         DirectWorthData directWorth = resolveDirectWorth(item);
         if (isContainerWorthEnabled()
@@ -770,6 +773,9 @@ public class WorthManager {
         if (isBlockedItem(item)) {
             return;
         }
+        if (isUnpricedFullContainer(item, depth, allowNestedExpansion)) {
+            return;
+        }
 
         boolean container = isSupportedContainer(item);
         DirectWorthData directWorth = resolveDirectWorth(item);
@@ -856,6 +862,45 @@ public class WorthManager {
         return item != null
                 && item.getItemMeta() instanceof BlockStateMeta blockStateMeta
                 && blockStateMeta.getBlockState() instanceof Container;
+    }
+
+    /**
+     * Whether this item is a container that still holds something the sale would not pay for.
+     *
+     * <p>A shulker is bought and sold as a single stack, so a sale that prices the box on its own
+     * takes everything inside with it. That is what used to happen with CONTAINER.ENABLED off: the
+     * box kept its own price from worth.yml, the contents were skipped, and the whole slot was
+     * cleared for the price of an empty shulker. It went the same way for a container nested deeper
+     * than MAX-CONTAINER-DEPTH, or for any container at all once ALLOW-NESTED-CONTAINERS closed the
+     * expansion off.</p>
+     *
+     * <p>Treating it as unsellable is what stops that. The sell window puts back whatever it did not
+     * take, so a full shulker comes home and an empty one still sells for its own price.</p>
+     */
+    private boolean isUnpricedFullContainer(ItemStack item, int depth, boolean allowNestedExpansion) {
+        return isSupportedContainer(item)
+                && !willPriceContainerContents(depth, allowNestedExpansion)
+                && containerHasContents(item);
+    }
+
+    /** The same test the collectors use before they walk into a container. */
+    boolean willPriceContainerContents(int depth, boolean allowNestedExpansion) {
+        return isContainerWorthEnabled()
+                && allowNestedExpansion
+                && depth < getMaxContainerDepth();
+    }
+
+    private boolean containerHasContents(ItemStack item) {
+        if (!(item.getItemMeta() instanceof BlockStateMeta blockStateMeta)
+                || !(blockStateMeta.getBlockState() instanceof Container container)) {
+            return false;
+        }
+        for (ItemStack content : container.getInventory().getContents()) {
+            if (content != null && !content.getType().isAir()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isBlockedItem(ItemStack item) {
