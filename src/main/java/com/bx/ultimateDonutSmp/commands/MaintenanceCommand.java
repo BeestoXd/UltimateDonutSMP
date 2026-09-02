@@ -23,27 +23,40 @@ public class MaintenanceCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        handle(plugin, sender, "/" + label, args);
+        return true;
+    }
+
+    /**
+     * The body of /maintenance. The /ultimatedonutsmp maintenance alias calls this with its own
+     * subcommand stripped off, so the two entry points cannot drift apart the way they did when
+     * setlobby learned to clear the stored server.
+     *
+     * @param usage what the calling entry point calls itself in a usage line
+     * @param args  the arguments from the maintenance subcommand onwards
+     */
+    static void handle(UltimateDonutSmp plugin, CommandSender sender, String usage, String[] args) {
         if (!sender.hasPermission("ultimatedonutsmp.admin.maintenance")) {
             sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to manage maintenance mode."));
-            return true;
+            return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <on|off|status|setlobby [server]>"));
-            return true;
+            sender.sendMessage(ColorUtils.toComponent("&cUsage: " + usage + " <on|off|status|setlobby [server]>"));
+            return;
         }
 
         var mm = plugin.getMaintenanceManager();
         if (mm == null) {
             sender.sendMessage(ColorUtils.toComponent("&cMaintenance manager is not available."));
-            return true;
+            return;
         }
 
         switch (args[0].toLowerCase(Locale.ROOT)) {
             case "on", "start", "enable" -> {
                 if (mm.isMaintenanceActive()) {
                     sender.sendMessage(ColorUtils.toComponent("&eMaintenance mode is already active."));
-                    return true;
+                    return;
                 }
                 mm.startMaintenance();
                 sender.sendMessage(ColorUtils.toComponent("&aMaintenance mode has been enabled. Players are being redirected."));
@@ -51,7 +64,7 @@ public class MaintenanceCommand implements CommandExecutor, TabCompleter {
             case "off", "stop", "disable" -> {
                 if (!mm.isMaintenanceActive()) {
                     sender.sendMessage(ColorUtils.toComponent("&eMaintenance mode is not active."));
-                    return true;
+                    return;
                 }
                 mm.stopMaintenance();
                 sender.sendMessage(ColorUtils.toComponent("&aMaintenance mode has been disabled. Reconnect signal sent."));
@@ -69,15 +82,14 @@ public class MaintenanceCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(ColorUtils.toComponent(
                             "&aLobby server cleared. network.yml decides it now: "
                                     + describeLobbyServer(mm.getLobbyServer()) + "&a."));
-                    return true;
+                    return;
                 }
                 String lobby = args[1];
                 mm.setLobbyServer(lobby);
                 sender.sendMessage(ColorUtils.toComponent("&aLobby server set to &b" + lobby + "&a."));
             }
-            default -> sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <on|off|status|setlobby [server]>"));
+            default -> sender.sendMessage(ColorUtils.toComponent("&cUsage: " + usage + " <on|off|status|setlobby [server]>"));
         }
-        return true;
     }
 
     /**

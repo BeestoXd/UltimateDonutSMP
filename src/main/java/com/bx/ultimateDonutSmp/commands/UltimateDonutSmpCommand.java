@@ -4,7 +4,6 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.FeatureManager;
-import com.bx.ultimateDonutSmp.managers.MaintenanceManager;
 import com.bx.ultimateDonutSmp.managers.OptimizationManager;
 import com.bx.ultimateDonutSmp.managers.SpawnManager;
 import com.bx.ultimateDonutSmp.managers.StatsWipeManager;
@@ -764,57 +763,8 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleMaintenance(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission("ultimatedonutsmp.admin.maintenance")) {
-            sender.sendMessage(ColorUtils.toComponent("&cYou do not have permission to manage maintenance mode."));
-            return;
-        }
-
-        if (args.length < 2) {
-            sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " maintenance <on|off|status|setlobby [server]>"));
-            return;
-        }
-
-        MaintenanceManager mm = plugin.getMaintenanceManager();
-        if (mm == null) {
-            sender.sendMessage(ColorUtils.toComponent("&cMaintenance manager is not available."));
-            return;
-        }
-
-        switch (args[1].toLowerCase(Locale.ROOT)) {
-            case "on", "start", "enable" -> {
-                if (mm.isMaintenanceActive()) {
-                    sender.sendMessage(ColorUtils.toComponent("&eMaintenance mode is already active."));
-                    return;
-                }
-                mm.startMaintenance();
-                sender.sendMessage(ColorUtils.toComponent("&aMaintenance mode has been enabled. Players are being redirected."));
-            }
-            case "off", "stop", "disable" -> {
-                if (!mm.isMaintenanceActive()) {
-                    sender.sendMessage(ColorUtils.toComponent("&eMaintenance mode is not active."));
-                    return;
-                }
-                mm.stopMaintenance();
-                sender.sendMessage(ColorUtils.toComponent("&aMaintenance mode has been disabled. Reconnect signal sent."));
-            }
-            case "status" -> {
-                boolean active = mm.isMaintenanceActive();
-                String lobby = mm.getLobbyServer();
-                sender.sendMessage(ColorUtils.toComponent("&d&lMaintenance status:"));
-                sender.sendMessage(ColorUtils.toComponent("  &fActive: " + (active ? "&aYes" : "&cNo")));
-                sender.sendMessage(ColorUtils.toComponent("  &fLobby server: &b" + lobby));
-            }
-            case "setlobby" -> {
-                if (args.length < 3) {
-                    sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " maintenance setlobby <server>"));
-                    return;
-                }
-                String lobby = args[2];
-                mm.setLobbyServer(lobby);
-                sender.sendMessage(ColorUtils.toComponent("&aLobby server set to &b" + lobby + "&a."));
-            }
-            default -> sender.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " maintenance <on|off|status|setlobby [server]>"));
-        }
+        MaintenanceCommand.handle(plugin, sender, "/" + label + " maintenance",
+                Arrays.copyOfRange(args, 1, args.length));
     }
 
     private record CommandEntry(String usage, String description) {
