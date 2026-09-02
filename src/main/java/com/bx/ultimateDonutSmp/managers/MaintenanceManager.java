@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -21,10 +22,15 @@ public class MaintenanceManager {
 
     private static final String REDIS_MAINTENANCE_CHANNEL = "ultimatedonutsmp:maintenance";
 
+    /** Returned by {@link #getRemainingSeconds()} when maintenance has no scheduled end. */
+    public static final long NO_DEADLINE = -1L;
+
     private final UltimateDonutSmp plugin;
     private final File stateFile;
     private boolean maintenanceActive;
     private String customLobbyServer;
+    private long maintenanceEndsAt;
+    private BukkitTask expiryTask;
 
     public MaintenanceManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -36,12 +42,14 @@ public class MaintenanceManager {
         if (!stateFile.exists()) {
             this.maintenanceActive = false;
             this.customLobbyServer = null;
+            this.maintenanceEndsAt = 0L;
             return;
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(stateFile);
         this.maintenanceActive = config.getBoolean("active", false);
         this.customLobbyServer = config.getString("lobby", null);
+        this.maintenanceEndsAt = config.getLong("until", 0L);
     }
 
     public void save() {
@@ -49,6 +57,9 @@ public class MaintenanceManager {
         config.set("active", maintenanceActive);
         if (customLobbyServer != null) {
             config.set("lobby", customLobbyServer);
+        }
+        if (maintenanceEndsAt > 0L) {
+            config.set("until", maintenanceEndsAt);
         }
 
         try {
@@ -65,6 +76,63 @@ public class MaintenanceManager {
     public void setMaintenanceActive(boolean active) {
         this.maintenanceActive = active;
         save();
+    }
+
+    /**
+     * Seconds left before maintenance lifts itself, or {@link #NO_DEADLINE} when there is no end
+     * time to count down to.
+     */
+    public long getRemainingSeconds() {
+        return remainingSeconds(maintenanceEndsAt, System.currentTimeMillis());
+    }
+
+    static long remainingSeconds(long endsAt, long now) {
+        if (endsAt <= 0L) {
+            return NO_DEADLINE;
+        }
+        long remainingMillis = endsAt - now;
+        if (remainingMillis <= 0L) {
+            return 0L;
+        }
+        // Rounded up, so a deadline 3.4 seconds out reads as 4. Rounding down would park the
+        // countdown on 00:00 for a whole second while the server is still shut.
+        return (remainingMillis + 999L) / 1000L;
+    }
+
+    /**
+     * Renders a countdown the way the multiplayer list shows it: mm:ss, widening to h:mm:ss once
+     * more than an hour is left.
+     */
+    public static String formatCountdown(long totalSeconds) {
+        long seconds = Math.max(0L, totalSeconds);
+        long hours = seconds / 3600L;
+        long minutes = (seconds % 3600L) / 60L;
+        long remaining = seconds % 60L;
+        if (hours > 0L) {
+            return String.format(Locale.ROOT, "%d:%02d:%02d", hours, minutes, remaining);
+        }
+        return String.format(Locale.ROOT, "%02d:%02d", minutes, remaining);
+    }
+
+    static boolean hasExpired(boolean active, long endsAt, long now) {
+        return active && endsAt > 0L && now >= endsAt;
+    }
+
+    /**
+     * Watches the deadline set by /maintenance on with a duration. Without it the countdown in the
+     * server list would run down to 00:00 and the server would stay shut, which is the one thing a
+     * countdown promises will not happen.
+     */
+    public void startExpiryTask() {
+        if (expiryTask != null) {
+            return;
+        }
+        expiryTask = plugin.getSpigotScheduler().runGlobalTimer(() -> {
+            if (hasExpired(maintenanceActive, maintenanceEndsAt, System.currentTimeMillis())) {
+                plugin.getLogger().info("Maintenance mode ended: the scheduled duration ran out.");
+                stopMaintenance();
+            }
+        }, 20L, 20L);
     }
 
     public String getLobbyServer() {
@@ -132,6 +200,15 @@ public class MaintenanceManager {
     }
 
     public void startMaintenance() {
+        startMaintenance(0L);
+    }
+
+    /**
+     * @param durationMillis how long maintenance should last, or 0 to stay shut until someone runs
+     *                       /maintenance off
+     */
+    public void startMaintenance(long durationMillis) {
+        this.maintenanceEndsAt = durationMillis > 0L ? System.currentTimeMillis() + durationMillis : 0L;
         setMaintenanceActive(true);
         save();
 
@@ -189,6 +266,7 @@ public class MaintenanceManager {
     }
 
     public void stopMaintenance() {
+        this.maintenanceEndsAt = 0L;
         setMaintenanceActive(false);
         save();
         broadcastOnline();

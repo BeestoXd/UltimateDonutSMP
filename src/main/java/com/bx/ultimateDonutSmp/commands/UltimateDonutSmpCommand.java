@@ -689,6 +689,9 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
             if (args.length == 2) {
                 return partialMatches(args[1], List.of("on", "off", "status", "setlobby"));
             }
+            if (args.length == 3 && MaintenanceCommand.isEnableArgument(args[1])) {
+                return partialMatches(args[2], MaintenanceCommand.DURATION_SUGGESTIONS);
+            }
             if (args.length == 3 && args[1].equalsIgnoreCase("setlobby")) {
                 List<String> servers = new ArrayList<>();
                 ConfigurationSection sec = plugin.getConfigManager().getNetwork().getConfigurationSection("NETWORK-STATUS.SERVERS");

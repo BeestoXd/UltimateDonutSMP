@@ -253,7 +253,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/leaderboard` | `/lb`, `/top`, `/leaderboards`, `/baltop` | `/leaderboard [type]` | `ultimatedonutsmp.command.leaderboard` |
 | `/leave` | - | `/leave` | `ultimatedonutsmp.command.leave` |
 | `/logs` | - | `/logs` | `ultimatedonutsmp.command.logs` |
-| `/maintenance` | - | `/maintenance <on\|off\|status\|setlobby [server]>` | `ultimatedonutsmp.command.maintenance` |
+| `/maintenance` | - | `/maintenance <on [duration]\|off\|status\|setlobby [server]>` | `ultimatedonutsmp.command.maintenance` |
 | `/meta` | `/farmingmeta` | `/meta` | `ultimatedonutsmp.command.meta` |
 | `/msg` | `/message`, `/tell`, `/whisper`, `/w` | `/msg <player> <message>` | `ultimatedonutsmp.command.msg` |
 | `/mute` | - | `/mute <player> [reason]` | `ultimatedonutsmp.command.mute` |
