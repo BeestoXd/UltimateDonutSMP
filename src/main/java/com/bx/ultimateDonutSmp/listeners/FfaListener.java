@@ -97,10 +97,6 @@ public class FfaListener implements Listener {
             event.setCancelled(true);
             return;
         }
-
-        if (event instanceof EntityDamageByEntityEvent) {
-            return;
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
