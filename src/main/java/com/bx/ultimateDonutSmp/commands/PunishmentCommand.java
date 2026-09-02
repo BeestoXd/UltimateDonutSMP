@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.PunishmentExemptPolicy;
 
@@ -55,7 +56,7 @@ public class PunishmentCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        String action = normalizeLabel(label, command);
+        String action = CommandLabelUtils.normalizeLabel(label, command);
 
         return switch (action) {
             case "ban" -> handleCreate(sender, PunishmentType.BAN, args, false, false, action);
@@ -70,15 +71,6 @@ public class PunishmentCommand implements CommandExecutor {
             case "unblacklist" -> handleRemove(sender, PunishmentType.BLACKLIST, args, action);
             default -> false;
         };
-    }
-
-    private String normalizeLabel(String label, Command command) {
-        String normalized = label == null || label.isBlank() ? command.getName() : label;
-        int namespaceSeparator = normalized.indexOf(':');
-        if (namespaceSeparator >= 0 && namespaceSeparator + 1 < normalized.length()) {
-            normalized = normalized.substring(namespaceSeparator + 1);
-        }
-        return normalized.toLowerCase(Locale.ROOT);
     }
 
     static String permissionForAction(String action) {

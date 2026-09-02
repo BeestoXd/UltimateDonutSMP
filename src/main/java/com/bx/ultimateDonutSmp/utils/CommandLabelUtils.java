@@ -30,4 +30,12 @@ public final class CommandLabelUtils {
         }
         return normalized.toLowerCase(Locale.ROOT);
     }
+
+    /**
+     * Same, for a caller with no {@link Command} to fall back on. An absent or blank label
+     * normalizes to an empty string rather than to the registered command name.
+     */
+    public static String normalizeLabel(String label) {
+        return normalizeLabel(label, null);
+    }
 }
