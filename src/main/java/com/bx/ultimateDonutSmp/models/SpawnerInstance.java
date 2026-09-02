@@ -344,20 +344,6 @@ public class SpawnerInstance {
         }
     }
 
-    public void addStoredLoot(String key, Material material, long amount, long capPerKey) {
-        if (key == null || material == null || amount <= 0L) {
-            return;
-        }
-
-        String normalizedKey = key.toUpperCase(Locale.US);
-        SpawnerLootEntry entry = storedLoot.computeIfAbsent(normalizedKey, ignored -> new SpawnerLootEntry(normalizedKey, material, 0L));
-        long targetAmount = entry.getAmount() + amount;
-        if (capPerKey > 0L) {
-            targetAmount = Math.min(capPerKey, targetAmount);
-        }
-        entry.setAmount(targetAmount);
-    }
-
     public long removeStoredLoot(String key, long amount) {
         SpawnerLootEntry entry = getStoredLoot(key);
         if (entry == null) {
