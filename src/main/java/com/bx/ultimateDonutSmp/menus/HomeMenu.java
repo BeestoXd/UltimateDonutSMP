@@ -39,7 +39,13 @@ public class HomeMenu extends BaseMenu {
     private int page = 0;
 
     public HomeMenu(UltimateDonutSmp plugin) {
+        this(plugin, 0);
+    }
+
+    /** The delete confirmation reopens the menu through this, on the page the player left. */
+    public HomeMenu(UltimateDonutSmp plugin, int page) {
         super(plugin, configuredTitle(plugin), configuredSize(plugin));
+        this.page = Math.max(0, page);
     }
 
     @Override
@@ -54,7 +60,7 @@ public class HomeMenu extends BaseMenu {
 
         int maxHomes = plugin.getHomeManager().getMaxHomes(player);
         int totalPages = plugin.getHomeManager().getMaxHomePages(player);
-        page = Math.max(0, Math.min(page, totalPages - 1));
+        page = clampPage(page, totalPages);
 
         buildPageButtons(totalPages);
         buildTeamButtons(player);
@@ -147,8 +153,8 @@ public class HomeMenu extends BaseMenu {
         if (team.hasHome()) {
             slotActions.put(TEAM_ACTION_SLOT, (p, click) -> {
                 if (click.isRightClick()) {
-                    deleteTeamHome(p, team);
-                } else if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(p)) {
+                    confirmTeamHomeDelete(p, team);
+                } else if (isBedrock(p)) {
                     plugin.getHomeBedrockManager().openTeamHomeOptions(p);
                 } else {
                     setTeamHome(p, team);
@@ -206,8 +212,8 @@ public class HomeMenu extends BaseMenu {
         ));
         slotActions.put(actionSlot, (p, click) -> {
             if (click.isRightClick()) {
-                deleteHome(p, home);
-            } else if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(p)) {
+                confirmHomeDelete(p, home);
+            } else if (isBedrock(p)) {
                 plugin.getHomeBedrockManager().openHomeOptions(p, home);
             } else {
                 new HomeActionMenu(plugin, home).open(p);
@@ -261,14 +267,30 @@ public class HomeMenu extends BaseMenu {
         ));
     }
 
-    private void deleteHome(Player player, Home home) {
-        if (!plugin.getHomeManager().deleteHome(player.getUniqueId(), home.getName())) {
-            player.sendMessage(ColorUtils.toComponent("&cHome not found."));
+    /**
+     * Right-clicking a home button destroys it, so it asks first instead of acting on a misclick.
+     * Bedrock players get the Floodgate form, which already confirms.
+     */
+    private void confirmHomeDelete(Player player, Home home) {
+        if (isBedrock(player)) {
+            plugin.getHomeBedrockManager().openDeleteConfirmation(player, home);
             return;
         }
 
-        player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.DELETED")));
-        build(player);
+        new HomeDeleteConfirmMenu(plugin, home, page).open(player);
+    }
+
+    private void confirmTeamHomeDelete(Player player, Team team) {
+        if (isBedrock(player)) {
+            plugin.getHomeBedrockManager().openDeleteTeamHomeConfirmation(player, team);
+            return;
+        }
+
+        HomeDeleteConfirmMenu.forTeamHome(plugin, page, target -> deleteTeamHome(target, team)).open(player);
+    }
+
+    private boolean isBedrock(Player player) {
+        return plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player);
     }
 
     private void setTeamHome(Player player, Team team) {
@@ -296,7 +318,6 @@ public class HomeMenu extends BaseMenu {
         team.setHome(null);
         plugin.getTeamManager().save(team);
         player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TEAM.TEAM-HOME-DELETED")));
-        build(player);
     }
 
     private boolean canEditTeamHome(Player player, Team team) {
@@ -412,6 +433,11 @@ public class HomeMenu extends BaseMenu {
 
     private static String configuredTitle(UltimateDonutSmp plugin) {
         return plugin.getConfigManager().getMenus().getString("HOME-MENU.TITLE", "&8Homes");
+    }
+
+    /** A player who loses a rank can hold a page number their homes no longer stretch to. */
+    static int clampPage(int page, int totalPages) {
+        return Math.max(0, Math.min(page, totalPages - 1));
     }
 
     private static int configuredSize(UltimateDonutSmp plugin) {

@@ -304,7 +304,7 @@ public final class HomeBedrockManager {
         send(player, form.build());
     }
 
-    private void openDeleteTeamHomeConfirmation(Player player, Team team) {
+    public void openDeleteTeamHomeConfirmation(Player player, Team team) {
         ModalForm.Builder form = ModalForm.builder()
                 .title(plain("Delete Team Home"))
                 .content(plain("Are you sure you want to delete your team home?"))
