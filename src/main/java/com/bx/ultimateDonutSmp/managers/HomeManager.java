@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HomeManager {
 
@@ -24,7 +25,7 @@ public class HomeManager {
     private final UltimateDonutSmp plugin;
     /** UUID → list of homes */
     private final Map<UUID, List<Home>> cache = new HashMap<>();
-    private final Map<UUID, PendingHomeInput> pendingInputs = new HashMap<>();
+    private final Map<UUID, PendingHomeInput> pendingInputs = new ConcurrentHashMap<>();
 
     public HomeManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;

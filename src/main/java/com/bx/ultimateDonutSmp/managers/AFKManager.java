@@ -5,18 +5,17 @@ import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AFKManager {
 
     private final UltimateDonutSmp plugin;
-    private final Map<UUID, Long> lastMovement = new HashMap<>();
-    private final Set<UUID> afkPlayers = new HashSet<>();
+    private final Map<UUID, Long> lastMovement = new ConcurrentHashMap<>();
+    private final Set<UUID> afkPlayers = ConcurrentHashMap.newKeySet();
 
     public AFKManager(UltimateDonutSmp plugin) {
         this.plugin = plugin;

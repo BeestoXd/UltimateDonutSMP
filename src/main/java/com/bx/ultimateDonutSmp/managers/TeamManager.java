@@ -8,15 +8,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TeamManager {
 
     private final UltimateDonutSmp plugin;
-    private final Map<String, Team> teams = new HashMap<>();
-    private final Map<UUID, String> playerTeamMap = new HashMap<>();
+    private final Map<String, Team> teams = new ConcurrentHashMap<>();
+    private final Map<UUID, String> playerTeamMap = new ConcurrentHashMap<>();
     private final Map<UUID, List<String>> pendingInvites = new HashMap<>();
-    private final Set<UUID> teamChatEnabled = new HashSet<>();
-    private final Map<UUID, PendingTeamSearch> pendingSearchInputs = new HashMap<>();
+    private final Set<UUID> teamChatEnabled = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, PendingTeamSearch> pendingSearchInputs = new ConcurrentHashMap<>();
     private final Map<UUID, String> activeSearchQueries = new HashMap<>();
 
     public TeamManager(UltimateDonutSmp plugin) {
