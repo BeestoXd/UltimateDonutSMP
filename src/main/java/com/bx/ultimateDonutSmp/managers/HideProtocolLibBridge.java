@@ -26,6 +26,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Transformation;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -460,6 +462,7 @@ final class HideProtocolLibBridge implements HidePacketBridge {
         }
 
         display.setText(ColorUtils.colorize(hideManager.publicName(state)));
+        liftClearOfPlayer(display);
         nametagDisplayIds.add(display.getEntityId());
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             if (viewer.getUniqueId().equals(target.getUniqueId())
@@ -471,6 +474,29 @@ final class HideProtocolLibBridge implements HidePacketBridge {
             }
         }
         startNametagRideTask();
+    }
+
+    /**
+     * Raises the text off the player it rides. A ridden entity is drawn where its vehicle seats a
+     * passenger, which on a player is around the waist, so left alone the alias lands across their
+     * legs instead of where a username belongs. The lift goes in the display's own transformation
+     * rather than its location, because the location is not what the client draws it at.
+     */
+    private void liftClearOfPlayer(TextDisplay display) {
+        display.setTransformation(liftedBy(display.getTransformation(), hideManager.nametagOffsetY()));
+    }
+
+    /**
+     * Puts {@code offsetY} into a copy of {@code current}, leaving everything else it carries alone.
+     * Visible for tests, which have no server to spawn a display on.
+     */
+    static Transformation liftedBy(Transformation current, double offsetY) {
+        return new Transformation(
+                new Vector3f(0.0F, (float) offsetY, 0.0F),
+                current.getLeftRotation(),
+                current.getScale(),
+                current.getRightRotation()
+        );
     }
 
     /**
