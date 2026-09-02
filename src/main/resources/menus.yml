@@ -650,6 +650,13 @@ SETTINGS-MENU:
       LORE:
       - '&7Show key-all event notifications'
       - '&fCurrently: {status}'
+    RTP_COORDINATES:
+      DISPLAY-NAME: '&#6BF18DRTP Coordinates'
+      MATERIAL: COMPASS
+      SLOT: 17
+      LORE:
+      - '&7Show the coordinates /rtp drops you at'
+      - '&fCurrently: {status}'
     # Row 3 - gameplay and display
     FAST_CRYSTALS:
       DISPLAY-NAME: '&#6BF18DFast Crystals'
