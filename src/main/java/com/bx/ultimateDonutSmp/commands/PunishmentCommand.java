@@ -242,7 +242,7 @@ public class PunishmentCommand implements CommandExecutor {
                     "PUNISHMENTS.NO-ACTIVE",
                     "&cNo active {type} punishment found for {player}.",
                     "{type}", type.name(),
-                    "{player}", target.name()
+                    "{player}", targetName
             ));
             return true;
         }
@@ -251,7 +251,7 @@ public class PunishmentCommand implements CommandExecutor {
                 "PUNISHMENTS.REMOVED",
                 "&aRemoved active &f{type} &apunishment(s) for &b{player}&a.",
                 "{type}", type.name(),
-                "{player}", target.name()
+                "{player}", targetName
         ));
         return true;
     }
