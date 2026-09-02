@@ -3,12 +3,6 @@
 This is the official technical setup guide for `config.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
 
-Six sections have no write-up here yet: `OPTIMIZATION`, `RTP-ZONE`, `TELEPORT-COOLDOWN`, `BOUNTY`,
-`AMETHYST-TOOLS` and `COMMANDS`. Nothing is wrong with them; they simply have no entry below, and
-the comments above each key in `config.yml` say what they do. Watch the names on two of those: this
-file's `RTP-ZONE` and `AMETHYST-TOOLS` are separate settings from `rtp.yml` and `amethyst-tools.yml`,
-which have guides of their own.
-
 A line whose visible letters are all uppercase is shown in Title Case instead, so long as it also
 carries a colour code or a placeholder. That reaches the tablist header and the `SERVER-LIST`
 MOTD among others, and [FAQ entry 16](FAQ) explains the rule and how to keep your capitals.
@@ -2104,6 +2098,105 @@ SERVER-LIST:
 
 ---
 
+## Section: `OPTIMIZATION`
+
+### 1. Commented Setup Code Example
+
+```yaml
+OPTIMIZATION:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The numerical value for Monitor Interval Ticks. Available options: Any valid integer
+  MONITOR-INTERVAL-TICKS: 100
+  # The decimal value for Tps Warn Threshold. Available options: Any decimal number
+  TPS-WARN-THRESHOLD: 18.5
+  # The decimal value for Tps Critical Threshold. Available options: Any decimal number
+  TPS-CRITICAL-THRESHOLD: 16.0
+  # The decimal value for Mspt Warn Threshold. Available options: Any decimal number
+  MSPT-WARN-THRESHOLD: 45.0
+  # The decimal value for Mspt Critical Threshold. Available options: Any decimal number
+  MSPT-CRITICAL-THRESHOLD: 55.0
+  # The numerical value for Recovery Samples. Available options: Any valid integer
+  RECOVERY-SAMPLES: 3
+  # Determines whether Log State Changes is enabled or disabled. Available options: true, false
+  LOG-STATE-CHANGES: true
+  # Configuration section for Adaptive Tasks. Each entry below decides how often one task is
+  # allowed to run while the server is struggling. None of them switch a feature on or off; the
+  # switches for that live in their own sections, either at the top level of this file or in the
+  # file named after the feature.
+  ADAPTIVE-TASKS:
+    # Configuration section for Scoreboard.
+    SCOREBOARD:
+      # Whether the scoreboard task may be slowed down while the server is under load. Setting this
+      # to false removes the slowdown and lets the task keep running at full rate; it does not turn
+      # the scoreboard off. That switch is SCOREBOARD.ENABLED in scoreboard.yml.
+      # Available options: true, false
+      ENABLED: true
+      # The numerical value for Warn Min Interval Ticks. Available options: Any valid integer
+      WARN-MIN-INTERVAL-TICKS: 4
+      # The numerical value for Critical Min Interval Ticks. Available options: Any valid integer
+      CRITICAL-MIN-INTERVAL-TICKS: 10
+    # Configuration section for Tablist.
+    TABLIST:
+      # Whether the tablist task may be slowed down while the server is under load. Setting this to
+      # false removes the slowdown and lets the task keep running at full rate; it does not turn the
+      # tablist off. That switch is the TABLIST section near the top of this file.
+      # Available options: true, false
+      ENABLED: true
+      # The numerical value for Warn Min Interval Ticks. Available options: Any valid integer
+      WARN-MIN-INTERVAL-TICKS: 80
+      # The numerical value for Critical Min Interval Ticks. Available options: Any valid integer
+      CRITICAL-MIN-INTERVAL-TICKS: 140
+    # Configuration section for Lunar Teammates.
+    LUNAR-TEAMMATES:
+      # Whether the lunar teammates task may be slowed down while the server is under load. Setting
+      # this to false removes the slowdown and lets the task keep running at full rate; it does not
+      # turn the lunar teammate overlay off.
+      # Available options: true, false
+      ENABLED: true
+      # The numerical value for Warn Min Interval Ticks. Available options: Any valid integer
+      WARN-MIN-INTERVAL-TICKS: 40
+      # The numerical value for Critical Min Interval Ticks. Available options: Any valid integer
+      CRITICAL-MIN-INTERVAL-TICKS: 100
+# Configuration section for Clear Lag.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `OPTIMIZATION.ENABLED` | `bool` | `true`, `false` | `true` | Whether the load monitor runs. With it off nothing is throttled and every task below keeps its normal rate no matter what the server is doing. |
+| `OPTIMIZATION.MONITOR-INTERVAL-TICKS` | `int` | `20` or more | `100` | How often TPS and MSPT are sampled. Anything under `20` is raised to `20`, so it checks at most once a second. |
+| `OPTIMIZATION.TPS-WARN-THRESHOLD` | `float` | Any decimal number | `18.5` | TPS below this moves the server into the warning state. |
+| `OPTIMIZATION.TPS-CRITICAL-THRESHOLD` | `float` | Any decimal number | `16.0` | TPS below this goes straight to critical. |
+| `OPTIMIZATION.MSPT-WARN-THRESHOLD` | `float` | Any decimal number | `45.0` | Milliseconds per tick above this moves the server into the warning state. TPS and MSPT are judged separately and the worse of the two decides. |
+| `OPTIMIZATION.MSPT-CRITICAL-THRESHOLD` | `float` | Any decimal number | `55.0` | Milliseconds per tick above this goes to critical. |
+| `OPTIMIZATION.RECOVERY-SAMPLES` | `int` | `1` or more | `3` | How many calm samples in a row are needed before the state drops back down. Climbing happens on the first bad sample; only the way down waits. At the default that is three quiet checks, which stops a server hovering on the threshold from flipping the throttle on and off. |
+| `OPTIMIZATION.LOG-STATE-CHANGES` | `bool` | `true`, `false` | `true` | Writes a console line on each state change, quoting the TPS and MSPT that triggered it. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.SCOREBOARD.ENABLED` | `bool` | `true`, `false` | `true` | Whether the scoreboard task may be slowed down while the server is struggling. Setting it to `false` removes the slowdown only; the scoreboard itself is switched off with `SCOREBOARD.ENABLED` in `scoreboard.yml`. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.SCOREBOARD.WARN-MIN-INTERVAL-TICKS` | `int` | Any valid integer | `4` | Smallest gap allowed between runs of that task while the server sits in the warning state. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.SCOREBOARD.CRITICAL-MIN-INTERVAL-TICKS` | `int` | Any valid integer | `10` | The same floor for the critical state. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.TABLIST.ENABLED` | `bool` | `true`, `false` | `true` | Whether the tablist task may be slowed down while the server is struggling. Setting it to `false` removes the slowdown only; the tablist itself is switched off in the `TABLIST` section of this file. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.TABLIST.WARN-MIN-INTERVAL-TICKS` | `int` | Any valid integer | `80` | Smallest gap allowed between runs of that task while the server sits in the warning state. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.TABLIST.CRITICAL-MIN-INTERVAL-TICKS` | `int` | Any valid integer | `140` | The same floor for the critical state. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.LUNAR-TEAMMATES.ENABLED` | `bool` | `true`, `false` | `true` | Whether the lunar teammates task may be slowed down while the server is struggling. Setting it to `false` removes the slowdown only; the teammate overlay itself stays on. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.LUNAR-TEAMMATES.WARN-MIN-INTERVAL-TICKS` | `int` | Any valid integer | `40` | Smallest gap allowed between runs of that task while the server sits in the warning state. |
+| `OPTIMIZATION.ADAPTIVE-TASKS.LUNAR-TEAMMATES.CRITICAL-MIN-INTERVAL-TICKS` | `int` | Any valid integer | `100` | The same floor for the critical state. |
+
+### 3. Practical Setup Example
+
+```yaml
+OPTIMIZATION:
+  ENABLED: true
+  # sample twice as often, and give ground sooner on a busy server
+  MONITOR-INTERVAL-TICKS: 50
+  TPS-WARN-THRESHOLD: 19.0
+  TPS-CRITICAL-THRESHOLD: 17.0
+  # wait longer before easing off, so the throttle stops flapping
+  RECOVERY-SAMPLES: 6
+```
+
+---
 ## Section: `CLEAR-LAG`
 
 ### 1. Commented Setup Code Example
@@ -2274,6 +2367,345 @@ COMBAT-MANAGER:
 
 ---
 
+## Section: `RTP-ZONE`
+
+### 1. Commented Setup Code Example
+
+```yaml
+RTP-ZONE:
+  # Determines whether Enabled is enabled or disabled. Available options: true, false
+  ENABLED: true
+  # The text or value for Cuboid. Available options: Any valid string text
+  CUBOID: ''
+  # The numerical value for Every. Available options: Any valid integer
+  EVERY: 30
+  TITLE: '&c&lRTP Zone'
+  # The text or value for Sub Title. Available options: Any valid string text
+  SUB-TITLE: '&fTeleporting in %countdown%'
+  # The text or value for Cancelled Message. Available options: Any valid string text
+  CANCELLED-MESSAGE: '&cRTP cancelled because you left the zone.'
+  # The text or value for Failed Message. Available options: Any valid string text
+  FAILED-MESSAGE: '&cCould not find a safe RTP zone location.'
+  # The text or value for Success Message. Available options: Any valid string text
+  SUCCESS-MESSAGE: ''
+  # Configuration section for World.
+  WORLD:
+    NAME: world
+    # The numerical value for Center X. Available options: Any valid integer
+    CENTER-X: 0
+    # The numerical value for Center Z. Available options: Any valid integer
+    CENTER-Z: 0
+    # The numerical value for Min Radius. Available options: Any valid integer
+    MIN-RADIUS: 500
+    # The numerical value for Max Radius. Available options: Any valid integer
+    MAX-RADIUS: 2000
+  # The numerical value for Title Fade Out Ticks. Available options: Any valid integer
+  TITLE-FADE-OUT-TICKS: 10
+# Configuration section for First Join Rtp. Drops brand new players at a random location
+# the first time they join instead of leaving them on the vanilla world spawn. The search
+# ignores RTP cooldowns, playtime requirements, and the RTP queue, but it does require the
+# RTP feature itself to be enabled.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `RTP-ZONE.ENABLED` | `bool` | `true`, `false` | `true` | Whether the zone runs. The RTP Zone feature toggle has to be on as well, so turning that off disables the zone regardless of this key. |
+| `RTP-ZONE.CUBOID` | `str` | The name of a cuboid | `''` | The cuboid that acts as the zone; standing inside it starts the countdown. You normally set this with `/cuboid` rather than by hand, which writes the name in for you. Blank means no zone is bound. |
+| `RTP-ZONE.EVERY` | `int` | `1` or more | `30` | Seconds a player has to stay inside the cuboid before they are teleported. Values below `1` are raised to `1`. |
+| `RTP-ZONE.TITLE` | `str` | Any string text | `'&c&lRTP Zone'` | The title shown while the countdown runs. |
+| `RTP-ZONE.SUB-TITLE` | `str` | Any string text | `'&fTeleporting in %countdown%'` | The subtitle under it. `%countdown%` becomes the seconds left. |
+| `RTP-ZONE.CANCELLED-MESSAGE` | `str` | Any string text | `'&cRTP cancelled because you left the zone.'` | Sent when someone walks out before the countdown finishes. |
+| `RTP-ZONE.FAILED-MESSAGE` | `str` | Any string text | `'&cCould not find a safe RTP zone location.'` | Sent when the search ran out of attempts without finding anywhere safe. |
+| `RTP-ZONE.SUCCESS-MESSAGE` | `str` | Any string text | `''` | Sent after a successful teleport. Blank by default, which sends nothing at all. |
+| `RTP-ZONE.WORLD.NAME` | `str` | A world name | `world` | The world the zone drops people into. It does not have to be the world the cuboid sits in. |
+| `RTP-ZONE.WORLD.CENTER-X` | `int` | Any valid integer | `0` | X coordinate the search ring is measured from. |
+| `RTP-ZONE.WORLD.CENTER-Z` | `int` | Any valid integer | `0` | Z coordinate the search ring is measured from. |
+| `RTP-ZONE.WORLD.MIN-RADIUS` | `int` | Any valid integer | `500` | Closest the destination may land to that centre. |
+| `RTP-ZONE.WORLD.MAX-RADIUS` | `int` | Any valid integer | `2000` | Furthest it may land. Set it below the minimum and the minimum wins, so the ring can never invert. |
+| `RTP-ZONE.TITLE-FADE-OUT-TICKS` | `int` | Any valid integer | `10` | How long the countdown title takes to fade once it is cleared or replaced. |
+
+### 3. Practical Setup Example
+
+```yaml
+RTP-ZONE:
+  ENABLED: true
+  CUBOID: 'spawn-rtp-pad'
+  # ten seconds of standing on the pad is enough
+  EVERY: 10
+  WORLD:
+    NAME: world
+    MIN-RADIUS: 1000
+    MAX-RADIUS: 15000
+```
+
+---
+## Section: `TELEPORT-COOLDOWN`
+
+### 1. Commented Setup Code Example
+
+```yaml
+TELEPORT-COOLDOWN:
+  # The numerical value for Home. Available options: Any valid integer
+  HOME: 5
+  # The numerical value for Team Home. Available options: Any valid integer
+  TEAM-HOME: 5
+  # The numerical value for Spawn. Available options: Any valid integer
+  SPAWN: 5
+  # The numerical value for Afk. Available options: Any valid integer
+  AFK: 5
+  # The numerical value for Tpa. Available options: Any valid integer
+  TPA: 5
+  # The numerical value for Warp. Available options: Any valid integer
+  WARP: 5
+  # The numerical value for Rtp. Available options: Any valid integer
+  RTP: 5
+# Configuration section for Bounty.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `TELEPORT-COOLDOWN.HOME` | `int` | Any valid integer | `5` | Seconds the player has to stand still before `/home` completes. Moving more than half a block cancels the teleport and sends `TELEPORT.CANCELED`. |
+| `TELEPORT-COOLDOWN.TEAM-HOME` | `int` | Any valid integer | `5` | Seconds the player has to stand still before `/teamhome` completes. Moving more than half a block cancels the teleport and sends `TELEPORT.CANCELED`. |
+| `TELEPORT-COOLDOWN.SPAWN` | `int` | Any valid integer | `5` | Seconds the player has to stand still before `/spawn` completes. Moving more than half a block cancels the teleport and sends `TELEPORT.CANCELED`. |
+| `TELEPORT-COOLDOWN.AFK` | `int` | Any valid integer | `5` | Seconds the player has to stand still before the AFK teleport completes. Moving more than half a block cancels the teleport and sends `TELEPORT.CANCELED`. |
+| `TELEPORT-COOLDOWN.TPA` | `int` | Any valid integer | `5` | Seconds the player has to stand still before an accepted `/tpa` completes. Moving more than half a block cancels the teleport and sends `TELEPORT.CANCELED`. |
+| `TELEPORT-COOLDOWN.WARP` | `int` | Any valid integer | `5` | Seconds the player has to stand still before `/warp` completes. Moving more than half a block cancels the teleport and sends `TELEPORT.CANCELED`. |
+| `TELEPORT-COOLDOWN.RTP` | `int` | Any valid integer | `5` | Seconds the player has to stand still before `/rtp` completes. Moving more than half a block cancels the teleport and sends `TELEPORT.CANCELED`. |
+
+### 3. Practical Setup Example
+
+```yaml
+TELEPORT-COOLDOWN:
+  # instant for the everyday ones
+  HOME: 0
+  TEAM-HOME: 0
+  SPAWN: 0
+  AFK: 5
+  TPA: 3
+  WARP: 3
+  # keep a warmup on rtp so it cannot be used to run from a fight
+  RTP: 10
+```
+
+---
+## Section: `BOUNTY`
+
+### 1. Commented Setup Code Example
+
+```yaml
+BOUNTY:
+  # Configuration section for Excluded Worlds.
+  EXCLUDED-WORLDS:
+  - duels
+# Configuration section for Amethyst Tools.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `BOUNTY.EXCLUDED-WORLDS` | `list` | List of world names | `['duels']` | Worlds where a bounty is not paid out. Kill someone with a bounty on their head in one of these and the killer gets nothing, while the bounty stays on the victim for somebody to claim elsewhere. `duels` is listed so arena matches cannot be used to farm bounties off a friend. |
+
+### 3. Practical Setup Example
+
+```yaml
+BOUNTY:
+  EXCLUDED-WORLDS:
+  - duels
+  - ffa
+```
+
+---
+## Section: `AMETHYST-TOOLS`
+
+### 1. Commented Setup Code Example
+
+```yaml
+AMETHYST-TOOLS:
+  # Configuration section for Excluded Worlds.
+  EXCLUDED-WORLDS:
+  - duels
+  # Configuration section for Pickaxe.
+  PICKAXE:
+    # Configuration section for Particle.
+    PARTICLE:
+      NAME: FALLING_DUST
+      MATERIAL: PURPLE_CONCRETE_POWDER
+      # The numerical value for Amount. Available options: Any valid integer
+      AMOUNT: 10
+    # Configuration section for Disabled Blocks.
+    DISABLED-BLOCKS:
+    - GRASS_BLOCK
+    - DIRT_PATH
+    - DIRT
+    - COARSE_DIRT
+    - ROOTED_DIRT
+    - CLAY
+    - FARMLAND
+    - SAND
+    - RED_SAND
+    - GRAVEL
+    - SPAWNER
+    NAME: '&#A303F9Amethyst Pickaxe'
+    LORE:
+    - '&79 Blocks Per Break'
+    - '&8Self Destruct'
+    - '&8{time}'
+    # Configuration section for Enchantments.
+    ENCHANTMENTS:
+    - MENDING:1
+    - EFFICIENCY:5
+    - UNBREAKING:3
+  # Configuration section for Axe.
+  AXE:
+    # Configuration section for Particle.
+    PARTICLE:
+      NAME: FALLING_DUST
+      MATERIAL: PURPLE_CONCRETE_POWDER
+      # The numerical value for Amount. Available options: Any valid integer
+      AMOUNT: 10
+    NAME: '&#A303F9Amethyst Axe'
+    LORE:
+    - '&7Breaks Trees Instantly'
+    - '&8Self Destruct'
+    - '&8{time}'
+    # Configuration section for Enchantments.
+    ENCHANTMENTS:
+    - MENDING:1
+    - EFFICIENCY:5
+    - UNBREAKING:3
+    - SILK_TOUCH:1
+  # Configuration section for Sellaxe.
+  SELLAXE:
+    # Configuration section for Particle.
+    PARTICLE:
+      NAME: FALLING_DUST
+      MATERIAL: PURPLE_CONCRETE_POWDER
+      # The numerical value for Amount. Available options: Any valid integer
+      AMOUNT: 10
+    NAME: '&#A303F9Amethyst Sell Axe'
+    LORE:
+    - '&7Instantly Sells All Items in A Chest'
+    - '&8Self Destruct'
+    - '&8{time}'
+    # Configuration section for Enchantments.
+    ENCHANTMENTS:
+    - MENDING:1
+    - EFFICIENCY:5
+    - UNBREAKING:3
+  # Configuration section for Shovel.
+  SHOVEL:
+    # Configuration section for Particle.
+    PARTICLE:
+      NAME: FALLING_DUST
+      MATERIAL: PURPLE_CONCRETE_POWDER
+      # The numerical value for Amount. Available options: Any valid integer
+      AMOUNT: 10
+    # Configuration section for Allowed Blocks.
+    ALLOWED-BLOCKS:
+    - GRASS_BLOCK
+    - DIRT_PATH
+    - DIRT
+    - COARSE_DIRT
+    - ROOTED_DIRT
+    - CLAY
+    - FARMLAND
+    - SAND
+    - RED_SAND
+    - GRAVEL
+    NAME: '&#A303F9Amethyst Shovel'
+    LORE:
+    - '&79 Blocks Per Break'
+    - '&8Self Destruct'
+    - '&8{time}'
+    # Configuration section for Enchantments.
+    ENCHANTMENTS:
+    - MENDING:1
+    - EFFICIENCY:5
+    - UNBREAKING:3
+  # Configuration section for Bucket.
+  BUCKET:
+    # Configuration section for Particle.
+    PARTICLE:
+      NAME: FALLING_DUST
+      MATERIAL: PURPLE_CONCRETE_POWDER
+      # The numerical value for Amount. Available options: Any valid integer
+      AMOUNT: 10
+    NAME: '&#A303F9Amethyst Bucket'
+    LORE:
+    - '&7Drains 27 Water At Once'
+    - '&8Self Destruct'
+    - '&8{time}'
+    # A list configuration for Enchantments. Available options: Multiple items
+    ENCHANTMENTS: []
+  # Configuration section for Booster.
+  BOOSTER:
+    # Configuration section for Particle.
+    PARTICLE:
+      NAME: FALLING_DUST
+      MATERIAL: PURPLE_CONCRETE_POWDER
+      # The numerical value for Amount. Available options: Any valid integer
+      AMOUNT: 10
+    NAME: '&#A303F9Shard Booster'
+    LORE:
+    - '&74x Shard Production for 24 hours'
+    - '&8Self Destruct'
+    - '&8{time}'
+    # A list configuration for Enchantments. Available options: Multiple items
+    ENCHANTMENTS: []
+# Configuration section for Commands.
+# Configuration section for Voice Chat.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `AMETHYST-TOOLS.EXCLUDED-WORLDS` | `list` | List of world names | `['duels']` | Worlds where the amethyst tools do nothing. Their special break behaviour is skipped there, so a sell axe carried into an arena is an ordinary axe. |
+| `AMETHYST-TOOLS.<TOOL>.PARTICLE.NAME` | `str` | Any particle name | `FALLING_DUST` | The particle trailed from the tool while it works. |
+| `AMETHYST-TOOLS.<TOOL>.PARTICLE.MATERIAL` | `str` | Any block material | `PURPLE_CONCRETE_POWDER` | The block the particle is tinted from. Only used by particles that take a block, such as `FALLING_DUST`; other particles ignore it. |
+| `AMETHYST-TOOLS.<TOOL>.PARTICLE.AMOUNT` | `int` | Any valid integer | `10` | How many particles are spawned per effect. Raise it for a heavier trail, drop it to nothing if players complain about the clutter. |
+| `AMETHYST-TOOLS.<TOOL>.NAME` | `str` | Any string text | `'&#A303F9Amethyst Pickaxe'` | The item name. Hex colours in `&#RRGGBB` form work here, which is where the purple comes from. |
+| `AMETHYST-TOOLS.<TOOL>.LORE` | `list` | Lines of text | `['&79 Blocks Per Break', '&8Self Destruct', '&8{time}']` | The item lore. A line containing `{time}` is rewritten with the time the tool has left and keeps counting down while it sits in the inventory, so keep that placeholder on a line of its own. |
+| `AMETHYST-TOOLS.<TOOL>.ENCHANTMENTS` | `list` | `ENCHANTMENT:LEVEL` entries | `['MENDING:1', 'EFFICIENCY:5', 'UNBREAKING:3']` | Enchantments applied when the tool is handed out. Levels beyond the vanilla maximum are allowed. An empty list, as the bucket and booster ship with, gives a clean item. |
+| `AMETHYST-TOOLS.PICKAXE.DISABLED-BLOCKS` | `list` | Block materials | `['GRASS_BLOCK', 'DIRT_PATH', ...]` | Blocks the pickaxe refuses to area-break. The list is the soft ground the shovel is meant for, plus `SPAWNER` so a stray swing cannot wipe out a spawner. |
+| `AMETHYST-TOOLS.SHOVEL.ALLOWED-BLOCKS` | `list` | Block materials | `['GRASS_BLOCK', 'DIRT_PATH', ...]` | The opposite arrangement: the shovel area-breaks only what is listed here, so it cannot be used as a second pickaxe. |
+
+`<TOOL>` above stands for any of `PICKAXE`, `AXE`, `SELLAXE`, `SHOVEL`, `BUCKET` or `BOOSTER`.
+Every one of them takes the same `PARTICLE`, `NAME`, `LORE` and `ENCHANTMENTS` keys; only the
+pickaxe adds `DISABLED-BLOCKS` and only the shovel adds `ALLOWED-BLOCKS`.
+
+This section covers how the tools look and which blocks they act on. What they cost, how long
+they last and the messages they send live in `amethyst-tools.yml`, which confusingly also has a
+root key called `AMETHYST-TOOLS`. The two are separate: the plugin reads the cosmetic and block
+settings from this file and the sounds, particles and security settings from that one, so a key
+put in the wrong file is simply never read.
+
+### 3. Practical Setup Example
+
+```yaml
+AMETHYST-TOOLS:
+  EXCLUDED-WORLDS:
+  - duels
+  - ffa
+  PICKAXE:
+    PARTICLE:
+      # quieter trail on a busy server
+      AMOUNT: 3
+    NAME: '&#A303F9Amethyst Pickaxe'
+    LORE:
+    - '&79 Blocks Per Break'
+    - '&8Expires in &f{time}'
+    ENCHANTMENTS:
+    - EFFICIENCY:5
+    - UNBREAKING:3
+```
+
+---
 ## Section: `VOICE-CHAT`
 
 Shows every player a consent menu before their microphone works. The menu opens on its own the first
@@ -2326,6 +2758,139 @@ VOICE-CHAT:
   PROMPT-ON-JOIN: true
   PROMPT-DELAY-TICKS: 60
   MUTE-UNTIL-ACCEPTED: true
+```
+
+---
+## Section: `COMMANDS`
+
+### 1. Commented Setup Code Example
+
+```yaml
+COMMANDS:
+  # Determines whether Chat is enabled or disabled. Available options: true, false
+  CHAT: true
+  # Determines whether Ignore is enabled or disabled. Available options: true, false
+  IGNORE: true
+  # Determines whether Message is enabled or disabled. Available options: true, false
+  MESSAGE: true
+  # Determines whether Bounty is enabled or disabled. Available options: true, false
+  BOUNTY: true
+  # Determines whether Cuboid is enabled or disabled. Available options: true, false
+  CUBOID: true
+  # Determines whether Afk is enabled or disabled. Available options: true, false
+  AFK: true
+  # Determines whether Shards is enabled or disabled. Available options: true, false
+  SHARDS: true
+  # Determines whether Warp is enabled or disabled. Available options: true, false
+  WARP: true
+  # Determines whether Team is enabled or disabled. Available options: true, false
+  TEAM: true
+  # Determines whether Billford is enabled or disabled. Available options: true, false
+  BILLFORD: true
+  # Determines whether Home is enabled or disabled. Available options: true, false
+  HOME: true
+  # Determines whether Leaderboards is enabled or disabled. Available options: true, false
+  LEADERBOARDS: true
+  # Determines whether Night Vision is enabled or disabled. Available options: true, false
+  NIGHT-VISION: true
+  # Determines whether Phantom is enabled or disabled. Available options: true, false
+  PHANTOM: true
+  # Determines whether Rtp is enabled or disabled. Available options: true, false
+  RTP: true
+  # Determines whether Sell is enabled or disabled. Available options: true, false
+  SELL: true
+  # Determines whether Settings is enabled or disabled. Available options: true, false
+  SETTINGS: true
+  # Determines whether Shop is enabled or disabled. Available options: true, false
+  SHOP: true
+  # Determines whether Enderchest is enabled or disabled. Available options: true, false
+  ENDERCHEST: true
+  # Determines whether Gamemode is enabled or disabled. Available options: true, false
+  GAMEMODE: true
+  # Determines whether Social is enabled or disabled. Available options: true, false
+  SOCIAL: true
+  # Determines whether Spawn is enabled or disabled. Available options: true, false
+  SPAWN: true
+  # Determines whether Stats is enabled or disabled. Available options: true, false
+  STATS: true
+  # Determines whether Tpa is enabled or disabled. Available options: true, false
+  TPA: true
+  # Determines whether Tpauto is enabled or disabled. Available options: true, false
+  TPAUTO: true
+  # Determines whether Findplayer is enabled or disabled. Available options: true, false
+  FINDPLAYER: true
+  # Determines whether Crate is enabled or disabled. Available options: true, false
+  CRATE: true
+  # Determines whether Shardpay is enabled or disabled. Available options: true, false
+  SHARDPAY: false
+  # Determines whether Ranks is enabled or disabled. Available options: true, false
+  RANKS: true
+  # Determines whether Rules is enabled or disabled. Available options: true, false
+  RULES: true
+  # Determines whether Help is enabled or disabled. Available options: true, false
+  HELP: true
+  # Determines whether Servers is enabled or disabled. Available options: true, false
+  SERVERS: true
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `COMMANDS.CHAT` | `bool` | `true`, `false` | `true` | Enables global chat commands and the chat moderation controls. |
+| `COMMANDS.IGNORE` | `bool` | `true`, `false` | `true` | Enables the ignore and unignore commands. |
+| `COMMANDS.MESSAGE` | `bool` | `true`, `false` | `true` | Enables private messages, replies and the private message toggle. |
+| `COMMANDS.BOUNTY` | `bool` | `true`, `false` | `true` | Enables the bounty command and its menus. |
+| `COMMANDS.CUBOID` | `bool` | `true`, `false` | `true` | Enables cuboid region management and the helpers that bind a region to a feature. |
+| `COMMANDS.AFK` | `bool` | `true`, `false` | `true` | Enables the afk command, its menus and the afk movement task. |
+| `COMMANDS.SHARDS` | `bool` | `true`, `false` | `true` | Enables shard balances, shard pay, passive rewards and shard cuboids. |
+| `COMMANDS.WARP` | `bool` | `true`, `false` | `true` | Enables the warp commands and the warp manager commands. |
+| `COMMANDS.TEAM` | `bool` | `true`, `false` | `true` | Enables the team command, team homes and the team menus. |
+| `COMMANDS.BILLFORD` | `bool` | `true`, `false` | `true` | Enables the Billford trade menu and its rotation task. |
+| `COMMANDS.HOME` | `bool` | `true`, `false` | `true` | Enables the home commands and the home menu. |
+| `COMMANDS.LEADERBOARDS` | `bool` | `true`, `false` | `true` | Enables the leaderboard commands and leaderboard menus. |
+| `COMMANDS.NIGHT-VISION` | `bool` | `true`, `false` | `true` | Enables the night vision player toggle. |
+| `COMMANDS.PHANTOM` | `bool` | `true`, `false` | `true` | Enables the phantom spawning toggle. |
+| `COMMANDS.RTP` | `bool` | `true`, `false` | `true` | Enables the random teleport command, its queue command and the rtp menu. |
+| `COMMANDS.SELL` | `bool` | `true`, `false` | `true` | Enables the worth browser and the worth display helpers. |
+| `COMMANDS.SETTINGS` | `bool` | `true`, `false` | `true` | Enables the player settings menu. |
+| `COMMANDS.SHOP` | `bool` | `true`, `false` | `true` | Enables the shop command and its purchase menus. |
+| `COMMANDS.ENDERCHEST` | `bool` | `true`, `false` | `true` | Enables the custom ender chest command and its listener. |
+| `COMMANDS.GAMEMODE` | `bool` | `true`, `false` | `true` | Enables the staff gamemode commands. |
+| `COMMANDS.SOCIAL` | `bool` | `true`, `false` | `true` | Enables the discord, twitter/x, store and media commands. |
+| `COMMANDS.SPAWN` | `bool` | `true`, `false` | `true` | Enables the spawn command and spawn menu. |
+| `COMMANDS.STATS` | `bool` | `true`, `false` | `true` | Enables the stats, ping and playtime commands. |
+| `COMMANDS.TPA` | `bool` | `true`, `false` | `true` | Enables the teleport request commands and the confirm menu. |
+| `COMMANDS.TPAUTO` | `bool` | `true`, `false` | `true` | Enables the tpa auto-accept commands. |
+| `COMMANDS.FINDPLAYER` | `bool` | `true`, `false` | `true` | Enables the staff find player command. |
+| `COMMANDS.CRATE` | `bool` | `true`, `false` | `true` | Enables crate commands, crate menus, key-all and the crate visual effects. |
+| `COMMANDS.SHARDPAY` | `bool` | `true`, `false` | `false` | Enables paying shards to another player. This is the one entry that ships off, so shard transfers are opt-in. |
+| `COMMANDS.RANKS` | `bool` | `true`, `false` | `true` | Enables the ranks command and ranks menu. |
+| `COMMANDS.RULES` | `bool` | `true`, `false` | `true` | Enables the rules command and rules menu. |
+| `COMMANDS.HELP` | `bool` | `true`, `false` | `true` | Enables the help command and the server info menu. |
+| `COMMANDS.SERVERS` | `bool` | `true`, `false` | `true` | Enables the network server status command and menu. |
+
+These are switches, not a list of what exists: setting one to `false` takes the matching commands
+away rather than hiding them. What a blocked command looks like to the player is set by
+`FEATURES_SETTINGS.DISABLED_COMMAND_ACTION` near the top of this file, which can show a message,
+reply as though the command were unknown, or unregister it from the server outright.
+
+One thing to know before editing here. Most of these keys have a newer counterpart at
+`FEATURES.<name>.ENABLED`, and when that path exists it wins; the `COMMANDS` entry is only read as
+a fallback. `FEATURES` is not in the shipped file, so on a fresh install these keys are the live
+switches, but on a server where the feature toggles have been used the value here can look
+ignored. `SHARDPAY` has no feature counterpart at all and is always read from this section.
+
+### 3. Practical Setup Example
+
+```yaml
+COMMANDS:
+  # a survival server that runs its economy elsewhere
+  SHOP: false
+  SELL: false
+  BILLFORD: false
+  # and lets players move shards between accounts
+  SHARDPAY: true
 ```
 
 ---

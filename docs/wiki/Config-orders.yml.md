@@ -3,10 +3,6 @@
 This is the official technical setup guide for `orders.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
 
-Three sections have no write-up here yet: `SEARCH_SIGN`, `AMOUNT_SIGN` and `PRICE_SIGN`. Each sets
-the four lines of the sign an order menu opens when it asks for a search term, an amount or a price,
-plus the `input-line` that decides which line the player types on.
-
 ---
 
 ## Section: `SETTINGS`
@@ -559,6 +555,110 @@ NETWORK:
 
 ---
 
+## Section: `SEARCH_SIGN`
+
+### 1. Commented Setup Code Example
+
+```yaml
+SEARCH_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Search"
+    - ""
+  input-line: 0
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SEARCH_SIGN.lines` | `list` | Up to four lines of text | `['', '^^^^^^^^^^^^^^', 'Search', '']` | The four lines the sign shows when the order browser asks for a search term. A shorter list is padded out with blanks and anything past the fourth line is dropped. Colour codes are translated and then stripped, so `&c` and friends change nothing on these signs. Leave all four blank and the plugin falls back to `^^^^^^^^^^^^^^` on the second line and `Enter Value` on the third. |
+| `SEARCH_SIGN.input-line` | `int` | `0` to `3` | `0` | Which line the typed value is read back from, counting from zero. Anything outside that range is clamped into it. At the default of `0` the player types on the top line and the carets underneath point up at it. Set it to `2` and the player would type on the third line instead, where `Search` currently sits. |
+
+### 3. Practical Setup Example
+
+```yaml
+SEARCH_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Item name"
+    - "or part of one"
+  input-line: 0
+```
+
+---
+## Section: `AMOUNT_SIGN`
+
+### 1. Commented Setup Code Example
+
+```yaml
+AMOUNT_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Amount"
+    - ""
+  input-line: 0
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `AMOUNT_SIGN.lines` | `list` | Up to four lines of text | `['', '^^^^^^^^^^^^^^', 'Amount', '']` | The four lines the sign shows when a new order asks how many items you want. A shorter list is padded out with blanks and anything past the fourth line is dropped. Colour codes are translated and then stripped, so `&c` and friends change nothing on these signs. Leave all four blank and the plugin falls back to `^^^^^^^^^^^^^^` on the second line and `Enter Value` on the third. |
+| `AMOUNT_SIGN.input-line` | `int` | `0` to `3` | `0` | Which line the typed value is read back from, counting from zero. Anything outside that range is clamped into it. At the default of `0` the player types on the top line and the carets underneath point up at it. Whatever the player types is read as a quantity, so the label matters more than the layout here. |
+
+### 3. Practical Setup Example
+
+```yaml
+AMOUNT_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "How many?"
+    - ""
+  input-line: 0
+```
+
+---
+## Section: `PRICE_SIGN`
+
+### 1. Commented Setup Code Example
+
+```yaml
+PRICE_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Price"
+    - ""
+  input-line: 0
+
+# Automated Order Bot System Configuration
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `PRICE_SIGN.lines` | `list` | Up to four lines of text | `['', '^^^^^^^^^^^^^^', 'Price', '']` | The four lines the sign shows when a new order asks what you will pay per item. A shorter list is padded out with blanks and anything past the fourth line is dropped. Colour codes are translated and then stripped, so `&c` and friends change nothing on these signs. Leave all four blank and the plugin falls back to `^^^^^^^^^^^^^^` on the second line and `Enter Value` on the third. |
+| `PRICE_SIGN.input-line` | `int` | `0` to `3` | `0` | Which line the typed value is read back from, counting from zero. Anything outside that range is clamped into it. At the default of `0` the player types on the top line and the carets underneath point up at it. The value is read as money, so leave the label clear enough that nobody types a total by mistake. |
+
+### 3. Practical Setup Example
+
+```yaml
+PRICE_SIGN:
+  lines:
+    - ""
+    - "^^^^^^^^^^^^^^"
+    - "Price per item"
+    - ""
+  input-line: 0
+```
+
+---
 ## Section: `BOTS`
 
 ### 1. Commented Setup Code Example
