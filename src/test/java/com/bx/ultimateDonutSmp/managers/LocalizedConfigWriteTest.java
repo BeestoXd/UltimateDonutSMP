@@ -14,10 +14,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * ConfigManager.getRtp() hands back LanguageManager.localize("CONFIG.RTP", rtp), which is a freshly
@@ -27,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  */
 class LocalizedConfigWriteTest {
 
-    private static final Path CUBOID_COMMAND =
-            Path.of("src/main/java/com/bx/ultimateDonutSmp/commands/CuboidCommand.java");
+    private static final Path CONFIG_MANAGER =
+            Path.of("src/main/java/com/bx/ultimateDonutSmp/managers/ConfigManager.java");
 
     @Test
     void aWriteThroughGetRtpNeverReachesTheConfigurationSaveRtpPersists() throws Exception {
@@ -51,13 +58,80 @@ class LocalizedConfigWriteTest {
                 "the accessor the bind uses has to be the field saveRtp() writes");
     }
 
+    /**
+     * Both known instances of this bug wrote through a different getter in a different file, so the
+     * guard covers every localized getter rather than the two that were caught: #350 for
+     * CuboidCommand and getRtp(), #376 for UltimateDonutSmpCommand and getNetwork().
+     */
     @Test
-    void cuboidCommandDoesNotBindTheRtpQueueThroughTheLocalizedGetter() throws IOException {
-        String source = Files.readString(CUBOID_COMMAND);
+    void noSourceWritesThroughALocalizedConfigurationGetter() throws IOException {
+        Set<String> getters = localizedGetterNames();
+        assertFalse(getters.isEmpty(), "the localized getters have to be discoverable from ConfigManager");
 
-        assertFalse(source.contains("getRtp().set("),
-                "CuboidCommand has to write QUEUE.CUBOID through the raw accessor saveRtp() persists,"
-                        + " otherwise the bind is silently dropped and the command still reports success");
+        Set<String> offenders = new TreeSet<>();
+        for (Path source : javaSources()) {
+            String text = Files.readString(source);
+            String file = source.getFileName().toString();
+            for (String getter : getters) {
+                if (text.contains(getter + "().set(")) {
+                    offenders.add(file + ": " + getter + "().set(");
+                }
+
+                // The #376 shape: the copy is parked in a local first, then written several lines down.
+                Matcher assigned = Pattern
+                        .compile("(?:FileConfiguration|var)\\s+(\\w+)\\s*=[^;]*\\b" + getter + "\\(\\)")
+                        .matcher(text);
+                while (assigned.find()) {
+                    String local = assigned.group(1);
+                    // Only within the method holding the assignment. These names are reused across
+                    // methods in the same file, where the write is usually the getOriginal* one.
+                    String scope = restOfEnclosingMethod(text, assigned.end());
+                    if (Pattern.compile("\\b" + local + "\\s*\\.set\\(").matcher(scope).find()) {
+                        offenders.add(file + ": " + local + " = " + getter + "() then " + local + ".set(");
+                    }
+                }
+            }
+        }
+
+        assertTrue(offenders.isEmpty(),
+                "a localized getter returns a copy that no save() persists, so a write through one is"
+                        + " dropped while the command still reports success: " + offenders);
+    }
+
+    /**
+     * Everything from {@code from} up to the brace that closes the method containing it.
+     */
+    private static String restOfEnclosingMethod(String text, int from) {
+        int depth = 0;
+        for (int index = from; index < text.length(); index++) {
+            char character = text.charAt(index);
+            if (character == '{') {
+                depth++;
+            } else if (character == '}') {
+                if (depth == 0) {
+                    return text.substring(from, index);
+                }
+                depth--;
+            }
+        }
+        return text.substring(from);
+    }
+
+    private static Set<String> localizedGetterNames() throws IOException {
+        Matcher matcher = Pattern
+                .compile("public FileConfiguration (\\w+)\\(\\)\\s*\\{\\s*return localized\\(")
+                .matcher(Files.readString(CONFIG_MANAGER));
+        Set<String> names = new TreeSet<>();
+        while (matcher.find()) {
+            names.add(matcher.group(1));
+        }
+        return names;
+    }
+
+    private static List<Path> javaSources() throws IOException {
+        try (Stream<Path> paths = Files.walk(Path.of("src/main/java"))) {
+            return paths.filter(path -> path.toString().endsWith(".java")).toList();
+        }
     }
 
     private static FileConfiguration rawRtp(UltimateDonutSmp plugin) throws Exception {
