@@ -2451,6 +2451,139 @@ SELLALL-CONFIRM-MENU:
 
 ---
 
+## Section: `SERVER-INFO-MENU`
+
+Opened with `/help`. A paged set of help screens: each page is a small menu of icons that
+explain something about the server, and the navigation row moves between them. Pages are yours to
+write, so this is the section most servers rewrite completely.
+
+### 1. Commented Setup Code Example
+
+```yaml
+SERVER-INFO-MENU:
+  TITLE: '&8Server Info'
+  SIZE: 27
+  # Fallback only. Ignored whenever PAGES produces at least one page.
+  BUTTONS:
+    SERVER:
+      MATERIAL: LANTERN
+      SLOT: 10
+      NAME: '&#00A4FCDonutSMP'
+      LORE:
+      - '&fBuild a base, fight players.'
+  NAVIGATION:
+    BACK-SLOT: 18
+    PAGE-INFO-SLOT: 22
+    NEXT-SLOT: 26
+    PAGE-INFO-MATERIAL: BOOK
+    PAGE-INFO-NAME: '&#00A4FCHelp Pages'
+  PAGES:
+    # Keys are sorted numerically, so '10' lands after '9' rather than after '1'.
+    '1':
+      TITLE: '&8Server Info'
+      SIZE: 27
+      BUTTONS:
+        SERVER:
+          MATERIAL: LANTERN
+          SLOT: 10
+          NAME: '&#00A4FCDonutSMP'
+          LORE:
+          - '&fBuild a base, fight players,'
+          - '&fand become the richest.'
+        ECONOMY:
+          MATERIAL: GOLD_INGOT
+          SLOT: 11
+          NAME: '&#00A4FCEconomy'
+          LORE:
+          - '&fSell items to earn money.'
+          # Optional. Runs as the player on click.
+          COMMAND: 'sell'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SERVER-INFO-MENU.TITLE` | `str` | Any string text | `'&8Server info'` | Title for any page that does not set its own. |
+| `SERVER-INFO-MENU.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Size for any page that does not set its own. Anything else falls back to `27`. |
+| `SERVER-INFO-MENU.NAVIGATION.BACK-SLOT` | `int` | `0` to `SIZE - 1` | `SIZE - 9` | Slot for the previous-page arrow. |
+| `SERVER-INFO-MENU.NAVIGATION.PAGE-INFO-SLOT` | `int` | `0` to `SIZE - 1` | `SIZE - 5` | Slot for the page counter. |
+| `SERVER-INFO-MENU.NAVIGATION.NEXT-SLOT` | `int` | `0` to `SIZE - 1` | `SIZE - 1` | Slot for the next-page arrow. |
+| `SERVER-INFO-MENU.NAVIGATION.PAGE-INFO-MATERIAL` | `str` | Any valid material name | `BOOK` | Icon for the page counter. |
+| `SERVER-INFO-MENU.NAVIGATION.PAGE-INFO-NAME` | `str` | Any string text | `'&bHelp pages'` | Name of the page counter. |
+| `SERVER-INFO-MENU.PAGES.<N>.TITLE` | `str` | Any string text | the menu `TITLE` | Title for that page. |
+| `SERVER-INFO-MENU.PAGES.<N>.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | the menu `SIZE` | Size for that page, so pages can differ. |
+| `SERVER-INFO-MENU.PAGES.<N>.BUTTONS.<KEY>.SLOT` | `int` | `0` to `SIZE - 1` | - | Slot for the icon. The three navigation slots are reserved and a button placed on one is dropped. |
+| `SERVER-INFO-MENU.PAGES.<N>.BUTTONS.<KEY>.MATERIAL` | `str` | Any valid material name | - | Icon material. A missing or invalid one skips the button. |
+| `SERVER-INFO-MENU.PAGES.<N>.BUTTONS.<KEY>.NAME` | `str` | Any string text | Prettified button key | Icon name. |
+| `SERVER-INFO-MENU.PAGES.<N>.BUTTONS.<KEY>.LORE` | `list` | List of strings | `[]` | The explanation itself. |
+| `SERVER-INFO-MENU.PAGES.<N>.BUTTONS.<KEY>.COMMAND` | `str` | Any command, with or without `/` | unset | Run as the player on click. Leave it out for an icon that only reads. |
+| `SERVER-INFO-MENU.PAGES.<N>.BUTTONS.<KEY>.ACTION.VALUE` | `str` | Any command, with or without `/` | unset | A second command slot, read the same way as `COMMAND`. |
+| `SERVER-INFO-MENU.BUTTONS` | `section` | Same button shape | - | Legacy single-page fallback. See below. |
+
+The top-level `BUTTONS` block is the part that catches people out. It is only read when `PAGES`
+yields no usable page at all, and `menus.yml` ships both, so on a default install the top-level block
+is never drawn and editing it changes nothing. Edit `PAGES.'1'.BUTTONS` instead. The block is worth
+keeping for a config written before pages existed, but treat it as dead weight otherwise.
+
+Page keys sort numerically rather than as text, so a tenth page keyed `'10'` lands after `'9'` where
+plain string sorting would put it after `'1'`. A page whose buttons all fail to load is skipped
+entirely rather than showing empty.
+
+The previous and next arrows take their material and their names from the shared
+`GLOBAL.PAGE-MENU` block, so only the slots and the page counter are configured here.
+
+### 3. Practical Setup Example
+
+Two pages of different sizes, with the second one linking out to a command:
+
+```yaml
+SERVER-INFO-MENU:
+  TITLE: '&8About Us'
+  SIZE: 27
+  NAVIGATION:
+    BACK-SLOT: 18
+    PAGE-INFO-SLOT: 22
+    NEXT-SLOT: 26
+    PAGE-INFO-MATERIAL: WRITABLE_BOOK
+    PAGE-INFO-NAME: '&ePage'
+  PAGES:
+    '1':
+      TITLE: '&8About Us'
+      BUTTONS:
+        WELCOME:
+          MATERIAL: LANTERN
+          SLOT: 13
+          NAME: '&bWelcome'
+          LORE:
+          - '&fSurvival with a shop and teams.'
+    '2':
+      TITLE: '&8Getting Started'
+      SIZE: 36
+      BUTTONS:
+        SHOP:
+          MATERIAL: EMERALD
+          SLOT: 11
+          NAME: '&bThe Shop'
+          LORE:
+          - '&fBuy and sell here.'
+          - '&aClick to open'
+          COMMAND: 'shop'
+        HOMES:
+          MATERIAL: RED_BED
+          SLOT: 15
+          NAME: '&bHomes'
+          LORE:
+          - '&fSet one with &a/sethome&f.'
+```
+
+Page 2 is a row deeper than page 1, which is allowed. Mind the navigation slots when you mix sizes:
+the three values above are global rather than per page, so the numbers that suit a 27-slot page put
+the arrows mid-inventory on a 36-slot one. Leaving them unset avoids that entirely, since the
+defaults are worked out from each page's own size.
+
+---
+
 ## Section: `RULES-MENU`
 
 Opened with `/rules`. Each button is one page of rules: the icon name is the heading, the lore is the
@@ -3563,6 +3696,134 @@ SERVERS-MENU:
     events:
       SLOT: 16
 ```
+
+---
+
+## Section: `SPAWNER-MENUS`
+
+The spawner GUIs, all six of them under one heading because they are one flow: the main menu for a
+placed spawner, its storage list, the filter screen, the sell confirmation, and the two panel views
+that list spawners across a world. Each sub-menu is its own block with its own title and size.
+
+### 1. Commented Setup Code Example
+
+```yaml
+SPAWNER-MENUS:
+  MAIN-MENU:
+    TITLE: '{stack} {mob}'
+    SIZE: 27
+    FILLER-MATERIAL: GRAY_STAINED_GLASS_PANE
+    STORAGE-BUTTON:
+      SLOT: 11
+      MATERIAL: CHEST
+    MOB-HEAD-BUTTON:
+      SLOT: 13
+    COLLECT-XP-BUTTON:
+      SLOT: 15
+      MATERIAL: EXPERIENCE_BOTTLE
+  STORAGE-MENU:
+    TITLE: '&8{mob} Spawners - {page}/{max_page}'
+    SIZE: 54
+    # Clamped between 9 and SIZE minus 9, so the button row always survives.
+    ITEMS-PER-PAGE: 45
+    BACK-BUTTON:
+      SLOT: 45
+    COLLECT-ALL-BUTTON:
+      SLOT: 49
+    SELL-ALL-BUTTON:
+      SLOT: 53
+  FILTER-MENU:
+    TITLE: '&8{mob} Filter Settings'
+    SIZE: 27
+  SELL-CONFIRM-MENU:
+    TITLE: '&8Confirm Sell'
+    SIZE: 27
+  # Both panel views ship with a title and a size only.
+  PANEL-MENU:
+    TITLE: '&8Spawners'
+    SIZE: 54
+  WORLD-LIST-MENU:
+    TITLE: '&8Spawners Panel'
+    SIZE: 27
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SPAWNER-MENUS.MAIN-MENU.TITLE` | `str` | Any string text | `'{stack} {mob}'` | Title of the menu a placed spawner opens. |
+| `SPAWNER-MENUS.MAIN-MENU.SIZE` | `int` | `9` to `54` | `27` | Rounds up to the next multiple of nine and caps at `54`. |
+| `SPAWNER-MENUS.MAIN-MENU.FILLER-MATERIAL` | `str` | Any valid material name | `GRAY_STAINED_GLASS_PANE` | Fills the unused slots. |
+| `SPAWNER-MENUS.MAIN-MENU.STORAGE-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | slot `11` | Opens the storage list. |
+| `SPAWNER-MENUS.MAIN-MENU.MOB-HEAD-BUTTON` | `section` | `SLOT`, `TITLE`, `LORE` | slot `13` | The spawner's own mob, shown as a head. |
+| `SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | slot `15` | Collects banked experience. |
+| `SPAWNER-MENUS.STORAGE-MENU.TITLE` | `str` | Any string text | `'&8{mob} spawners - {page}/{max_page}'` | Title of the storage list. |
+| `SPAWNER-MENUS.STORAGE-MENU.SIZE` | `int` | `9` to `54` | `54` | Rounds up to the next multiple of nine, capped at `54`. |
+| `SPAWNER-MENUS.STORAGE-MENU.ITEMS-PER-PAGE` | `int` | `9` to `SIZE - 9` | `45` | Loot slots per page. Values outside the range are pulled into it, so the bottom button row can never be swallowed. |
+| `SPAWNER-MENUS.STORAGE-MENU.ITEM-META` | `section` | `TITLE`, `LORE` | - | Template applied to each stored loot stack. |
+| `SPAWNER-MENUS.STORAGE-MENU.BACK-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | slot `45` | Back to the main menu. |
+| `SPAWNER-MENUS.STORAGE-MENU.FILTER-SETTINGS-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | - | Opens the filter menu. |
+| `SPAWNER-MENUS.STORAGE-MENU.COLLECT-ALL-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | slot `49` | Takes everything stored. |
+| `SPAWNER-MENUS.STORAGE-MENU.PREVIOUS-PAGE-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | - | Previous page of loot. |
+| `SPAWNER-MENUS.STORAGE-MENU.NEXT-PAGE-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | - | Next page of loot. |
+| `SPAWNER-MENUS.STORAGE-MENU.DROP-LOOT-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | - | Drops the stored loot on the floor. |
+| `SPAWNER-MENUS.STORAGE-MENU.SELL-ALL-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | slot `53` | Sends the stored loot to the sell confirmation. |
+| `SPAWNER-MENUS.FILTER-MENU.TITLE` | `str` | Any string text | `'&8{mob} filter settings'` | Title of the filter screen. |
+| `SPAWNER-MENUS.FILTER-MENU.SIZE` | `int` | `9` to `54` | `27` | Size of the filter screen. |
+| `SPAWNER-MENUS.FILTER-MENU.ENABLE-ALL-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | - | Turns every loot type on. |
+| `SPAWNER-MENUS.FILTER-MENU.DISABLE-ALL-BUTTON` | `section` | `SLOT`, `MATERIAL`, `TITLE`, `LORE` | - | Turns every loot type off. |
+| `SPAWNER-MENUS.SELL-CONFIRM-MENU.TITLE` | `str` | Any string text | `'&8Confirm sell'` | Title of the sell confirmation. |
+| `SPAWNER-MENUS.SELL-CONFIRM-MENU.SIZE` | `int` | `9` to `54` | `27` | Size of the sell confirmation. |
+| `SPAWNER-MENUS.PANEL-MENU.TITLE` | `str` | Any string text | `'&8Spawners'` | Title of the per-world spawner panel. |
+| `SPAWNER-MENUS.PANEL-MENU.SIZE` | `int` | `9` to `54` | `54` | Size of that panel. |
+| `SPAWNER-MENUS.WORLD-LIST-MENU.TITLE` | `str` | Any string text | `'&8Spawners panel'` | Title of the world picker. |
+| `SPAWNER-MENUS.WORLD-LIST-MENU.SIZE` | `int` | `9` to `54` | `27` | Size of the world picker. |
+
+Titles across these menus read the spawner they belong to:
+
+| Placeholder | Replaced with |
+| :--- | :--- |
+| `{mob}` | The spawner's mob |
+| `{stack}` | How many spawners are stacked there |
+| `{page}`, `{max_page}` | Position in the storage list |
+| `{price}`, `{item_count}` | Sell total and item count, on the sell confirmation |
+
+Sizes here behave like the spawn and AFK menus rather than the rest of the file: a size that is not a
+multiple of nine rounds **up** instead of falling back, so `30` becomes `36`.
+
+One thing to know before editing anything: every title and size in this section has a second home.
+`spawners.yml` still ships a `GUI` block with `MAIN_MENU`, `STORAGE`, `PANEL` and `WORLD_LIST`
+entries, and the plugin only reads those when the matching `SPAWNER-MENUS` key is absent here. Since
+`menus.yml` ships all of them, editing `spawners.yml` has no visible effect. Change them here.
+
+`PANEL-MENU` and `WORLD-LIST-MENU` ship with a title and a size only; their contents are the spawners
+and worlds themselves, laid out by the plugin, so there is nothing else to configure.
+
+### 3. Practical Setup Example
+
+A smaller storage list, which suits servers that cap spawner stacks low:
+
+```yaml
+SPAWNER-MENUS:
+  MAIN-MENU:
+    TITLE: '&8{stack}x {mob}'
+    SIZE: 27
+    FILLER-MATERIAL: BLACK_STAINED_GLASS_PANE
+  STORAGE-MENU:
+    TITLE: '&8{mob} &7({page}/{max_page})'
+    SIZE: 36
+    # 36 minus 9 leaves 27 as the ceiling here.
+    ITEMS-PER-PAGE: 27
+    BACK-BUTTON:
+      SLOT: 27
+    COLLECT-ALL-BUTTON:
+      SLOT: 31
+    SELL-ALL-BUTTON:
+      SLOT: 35
+```
+
+Dropping `SIZE` to `36` moves the button row to slots 27 through 35, so the buttons have to move with
+it. Asking for `ITEMS-PER-PAGE: 45` on a 36-slot menu would simply be clamped back to 27.
 
 ---
 
