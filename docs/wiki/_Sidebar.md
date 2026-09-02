@@ -14,7 +14,7 @@
 
 ---
 
-### ⚙️ YAML Configuration Guides (30 Files)
+### ⚙️ YAML Configuration Guides (32 Files)
 
 - **[config.yml Guide](Config-config.yml)**
 - **[messages.yml Guide](Config-messages.yml)**
@@ -35,11 +35,13 @@
 - **[auction-house.yml Guide](Config-auction-house.yml)**
 - **[billford.yml Guide](Config-billford.yml)**
 - **[death-messages.yml Guide](Config-death-messages.yml)**
+- **[enchantments.yml Guide](Config-enchantments.yml)**
 - **[ender-chest.yml Guide](Config-ender-chest.yml)**
 - **[ffa.yml Guide](Config-ffa.yml)**
 - **[freeze.yml Guide](Config-freeze.yml)**
 - **[hide.yml Guide](Config-hide.yml)**
 - **[invsee.yml Guide](Config-invsee.yml)**
+- **[offenses.yml Guide](Config-offenses.yml)**
 - **[orders.yml Guide](Config-orders.yml)**
 - **[pvp.yml Guide](Config-pvp.yml)**
 - **[rtp.yml Guide](Config-rtp.yml)**
