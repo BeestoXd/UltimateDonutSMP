@@ -3,6 +3,10 @@
 This is the official, 100% complete technical setup guide for `messages.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
 
+One formatting rule catches people out. A line whose visible letters are all uppercase is shown
+in Title Case instead, whenever that line also carries a colour code or a placeholder.
+[FAQ entry 16](FAQ) covers why, and how to write a shouting line that survives it.
+
 ---
 
 ## Section: `TEAM`

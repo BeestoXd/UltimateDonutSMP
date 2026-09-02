@@ -3,6 +3,10 @@
 This is the official, 100% complete technical setup guide for `config.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
 
+A line whose visible letters are all uppercase is shown in Title Case instead, so long as it also
+carries a colour code or a placeholder. That reaches the tablist header and the `SERVER-LIST`
+MOTD among others, and [FAQ entry 16](FAQ) explains the rule and how to keep your capitals.
+
 ---
 
 ## Section: `LANGUAGE`

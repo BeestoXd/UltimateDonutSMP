@@ -3,6 +3,10 @@
 This is the official, 100% complete technical setup guide for `scoreboard.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
 
+Rows typed entirely in capitals do not stay that way. Any line carrying a colour code or a
+placeholder gets retyped in Title Case first, which is worth knowing before you write a title in
+block capitals. [FAQ entry 16](FAQ) has the rule and the way around it.
+
 ---
 
 ## Section: `SCOREBOARD`
