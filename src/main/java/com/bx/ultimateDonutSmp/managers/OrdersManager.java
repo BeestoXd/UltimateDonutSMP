@@ -273,8 +273,8 @@ public class OrdersManager {
     private final Set<UUID> activeTransactions = new HashSet<>();
     private final Map<UUID, Long> lastClickTimes = new HashMap<>();
     private final Map<UUID, NewOrderSession> pendingCreations = new HashMap<>();
-    private final Map<UUID, PendingSearchInput> pendingSearchInputs = new HashMap<>();
-    private final Map<UUID, PendingOrderEdit> pendingEdits = new HashMap<>();
+    private final Map<UUID, PendingSearchInput> pendingSearchInputs = new ConcurrentHashMap<>();
+    private final Map<UUID, PendingOrderEdit> pendingEdits = new ConcurrentHashMap<>();
     private final Map<String, List<OrderCatalogEntry>> catalogByCategory = new LinkedHashMap<>();
     private final List<String> categoryOrder = new ArrayList<>();
     private final Map<UUID, OrderUiState> uiStates = new ConcurrentHashMap<>();
