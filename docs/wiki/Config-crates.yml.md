@@ -68,6 +68,8 @@ SETTINGS:
   HOLOGRAM:
     # The decimal value for Offset Y. Available options: Any decimal number
     OFFSET-Y: 1.6
+    # The gap between one line and the next. Available options: 0.05 to 0.5
+    LINE-SPACING: 0.27
     # Configuration section for Lines.
     LINES:
     - '{crate}'
@@ -119,7 +121,8 @@ SETTINGS:
 | `SETTINGS.CONFIRM-MENU.CANCEL-BUTTON.MATERIAL` | `str` | Any string text | `'RED_STAINED_GLASS_PANE'` | Configures the technical `MATERIAL` parameter for `SETTINGS.CONFIRM-MENU.CANCEL-BUTTON.MATERIAL` in `crates.yml`. |
 | `SETTINGS.CONFIRM-MENU.CANCEL-BUTTON.DISPLAY-NAME` | `str` | Any string text | `'&cCancel'` | Configures the technical `DISPLAY-NAME` parameter for `SETTINGS.CONFIRM-MENU.CANCEL-BUTTON.DISPLAY-NAME` in `crates.yml`. |
 | `SETTINGS.CONFIRM-MENU.CANCEL-BUTTON.LORE` | `list` | List of configured items/strings | `['&7Return to the reward list.']` | Configures the technical `LORE` parameter for `SETTINGS.CONFIRM-MENU.CANCEL-BUTTON.LORE` in `crates.yml`. |
-| `SETTINGS.HOLOGRAM.OFFSET-Y` | `float` | Any decimal number | `'1.6'` | Configures the technical `OFFSET-Y` parameter for `SETTINGS.HOLOGRAM.OFFSET-Y` in `crates.yml`. |
+| `SETTINGS.HOLOGRAM.OFFSET-Y` | `float` | Any decimal number | `'1.6'` | Height of the first hologram line above the crate block. Raise it to lift the text away from the item spinning on top of the crate. |
+| `SETTINGS.HOLOGRAM.LINE-SPACING` | `float` | `0.05` to `0.5` | `'0.27'` | Vertical gap between one hologram line and the next, in blocks. The same option and default the portal holograms use in `config.yml`. Values outside the range are pulled back into it, which keeps the text inside the area the plugin searches when it checks its own holograms are still there and when it cleans them up. |
 | `SETTINGS.HOLOGRAM.LINES` | `list` | List of configured items/strings | `['{crate}', '&7Right-click to open']` | Configures the technical `LINES` parameter for `SETTINGS.HOLOGRAM.LINES` in `crates.yml`. |
 | `SETTINGS.HOLOGRAM.KEY-LINE` | `str` | Any string text | `'&7Keys: &f{keys}'` | Configures the technical `KEY-LINE` parameter for `SETTINGS.HOLOGRAM.KEY-LINE` in `crates.yml`. |
 | `SETTINGS.PARTICLES.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `SETTINGS` system. Set to `true` to enable, `false` to disable. |

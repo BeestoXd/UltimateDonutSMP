@@ -39,6 +39,12 @@ public class CrateVisualManager {
     private static final String PERSONAL_TAG = "uds_crate_personal_hologram";
     private static final String PREVIEW_TAG = "uds_crate_preview";
     private static final long GATE_RECHECK_INTERVAL_MS = 1000L;
+    /** Matches PORTAL-SYSTEM.HOLOGRAM.LINE-SPACING in config.yml, so both holograms read alike. */
+    static final double DEFAULT_HOLOGRAM_LINE_SPACING = 0.27D;
+    static final double MIN_HOLOGRAM_LINE_SPACING = 0.05D;
+    static final double MAX_HOLOGRAM_LINE_SPACING = 0.5D;
+    /** Headroom kept above the top hologram line when looking for the text already in the world. */
+    private static final double HOLOGRAM_SEARCH_MARGIN_Y = 0.65D;
 
     private final UltimateDonutSmp plugin;
     private final Map<CrateManager.CrateBlockKey, List<UUID>> holograms = new HashMap<>();
@@ -223,9 +229,10 @@ public class CrateVisualManager {
 
         List<UUID> entityIds = new ArrayList<>();
         double baseY = block.getY() + getHologramOffsetY();
+        double lineSpacing = getHologramLineSpacing();
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
-            Location location = new Location(block.getWorld(), block.getX() + 0.5, baseY - (i * 0.27), block.getZ() + 0.5);
+            Location location = new Location(block.getWorld(), block.getX() + 0.5, baseY - (i * lineSpacing), block.getZ() + 0.5);
             TextDisplay display = block.getWorld().spawn(location, TextDisplay.class, textDisplay -> {
                 textDisplay.setText(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent(line));
                 configureHologramDisplay(textDisplay);
@@ -297,11 +304,22 @@ public class CrateVisualManager {
         if (displays.size() != requiredLines) {
             World world = Bukkit.getWorld(key.world());
             if (world != null) {
-                Location center = new Location(world, key.x() + 0.5, key.y() + getHologramOffsetY() - 0.35, key.z() + 0.5);
+                // Centre the search on the middle of the stack and make it tall enough to hold all
+                // of it. A fixed box stops reaching the bottom line once a crate carries either a
+                // wider LINE-SPACING or simply more lines, and text this misses is treated as gone
+                // and spawned again on the next pass.
+                double stackHeight = hologramStackHeight(requiredLines);
+                Location center = new Location(
+                        world,
+                        key.x() + 0.5,
+                        key.y() + getHologramOffsetY() - (stackHeight / 2),
+                        key.z() + 0.5
+                );
+                double searchHeight = (stackHeight / 2) + HOLOGRAM_SEARCH_MARGIN_Y;
                 String expectedKey = formatBlockKey(key);
 
                 List<TextDisplay> found = new ArrayList<>();
-                for (Entity entity : world.getNearbyEntities(center, 0.5, 1.0, 0.5, candidate -> candidate instanceof TextDisplay)) {
+                for (Entity entity : world.getNearbyEntities(center, 0.5, searchHeight, 0.5, candidate -> candidate instanceof TextDisplay)) {
                     if (!entity.getScoreboardTags().contains(HOLOGRAM_TAG) || entity.getScoreboardTags().contains(PERSONAL_TAG)) {
                         continue;
                     }
@@ -445,7 +463,8 @@ public class CrateVisualManager {
             if (configuredKeyLineOffset != -999.0D) {
                 baseY = key.y() + configuredKeyLineOffset;
             } else {
-                baseY = key.y() + getHologramOffsetY() - (getHologramLines(crate).size() * 0.27D);
+                baseY = key.y() + getHologramOffsetY()
+                        - (getHologramLines(crate).size() * getHologramLineSpacing());
             }
             Location location = new Location(world, key.x() + 0.5, baseY, key.z() + 0.5);
             display = world.spawn(location, TextDisplay.class, textDisplay -> {
@@ -500,7 +519,7 @@ public class CrateVisualManager {
                 }
 
                 String expected = formatBlockKey(key);
-                for (Entity entity : world.getNearbyEntities(center, 1.0, 3.0, 1.0, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
+                for (Entity entity : world.getNearbyEntities(center, 1.0, hologramSweepHeight(3.0), 1.0, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
                     String attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_hologram"), PersistentDataType.STRING);
                     if (attachedKey == null) {
                         attachedKey = entity.getPersistentDataContainer().get(plugin.getKey("crate_personal_hologram"), PersistentDataType.STRING);
@@ -634,7 +653,7 @@ public class CrateVisualManager {
         Location center = new Location(world, key.x() + 0.5, key.y() + getHologramOffsetY() - 0.35, key.z() + 0.5);
         if (!plugin.isEnabled()) {
             if (world.isChunkLoaded(center.getBlockX() >> 4, center.getBlockZ() >> 4)) {
-                for (Entity entity : world.getNearbyEntities(center, 0.4, 2.5, 0.4, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
+                for (Entity entity : world.getNearbyEntities(center, 0.4, hologramSweepHeight(2.5), 0.4, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
                     if (isAtCrateHologramColumn(entity, key) || isAtCratePreviewColumn(entity, key)) {
                         entity.remove();
                     }
@@ -643,7 +662,7 @@ public class CrateVisualManager {
             return;
         }
         plugin.getSpigotScheduler().runRegion(center, () -> {
-            for (Entity entity : world.getNearbyEntities(center, 0.4, 2.5, 0.4, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
+            for (Entity entity : world.getNearbyEntities(center, 0.4, hologramSweepHeight(2.5), 0.4, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
                 if (isAtCrateHologramColumn(entity, key) || isAtCratePreviewColumn(entity, key)) {
                     entity.remove();
                 }
@@ -801,6 +820,52 @@ public class CrateVisualManager {
 
     private double getHologramOffsetY() {
         return plugin.getConfigManager().getCrates().getDouble("SETTINGS.HOLOGRAM.OFFSET-Y", 1.6D);
+    }
+
+    /**
+     * The gap between one hologram line and the next, in blocks.
+     *
+     * <p>Clamped rather than taken at face value. A zero or negative gap stacks every line on the
+     * same spot, and a very large one spreads the text further than the sweeps that clean a crate's
+     * displays up reach, which would strand the lowest lines in the world once the crate is
+     * unbound. The range is wide enough for any stack that is still readable.</p>
+     */
+    private double getHologramLineSpacing() {
+        return clampLineSpacing(plugin.getConfigManager().getCrates()
+                .getDouble("SETTINGS.HOLOGRAM.LINE-SPACING", DEFAULT_HOLOGRAM_LINE_SPACING));
+    }
+
+    /** Pulls a configured gap back into the range the rest of the class is safe for. */
+    static double clampLineSpacing(double configured) {
+        if (Double.isNaN(configured)) {
+            return DEFAULT_HOLOGRAM_LINE_SPACING;
+        }
+        return Math.min(MAX_HOLOGRAM_LINE_SPACING, Math.max(MIN_HOLOGRAM_LINE_SPACING, configured));
+    }
+
+    /**
+     * How far the bottom line of a hologram sits below the top one. Zero for a single line.
+     */
+    private double hologramStackHeight(int lines) {
+        return Math.max(0, lines - 1) * getHologramLineSpacing();
+    }
+
+    /**
+     * Half-height for a sweep that has to catch every display a crate owns, never smaller than the
+     * reach the sweep had before the spacing was configurable.
+     *
+     * <p>These sweeps run without a crate to hand, so the line count comes from the config rather
+     * than from a resolved hologram; the two agree because every crate draws the same
+     * SETTINGS.HOLOGRAM.LINES. The personal key line hangs one full gap below the last of them,
+     * which is what the count rather than the count minus one accounts for.</p>
+     */
+    private double hologramSweepHeight(double minimum) {
+        FileConfiguration cratesConfig = plugin.getConfigManager().getCrates();
+        int lines = cratesConfig.getStringList("SETTINGS.HOLOGRAM.LINES").size();
+        if (lines <= 0) {
+            lines = 2;
+        }
+        return Math.max(minimum, (lines * getHologramLineSpacing()) + HOLOGRAM_SEARCH_MARGIN_Y);
     }
 
     private long getHologramUpdateTicks() {

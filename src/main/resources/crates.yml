@@ -46,7 +46,14 @@ SETTINGS:
       - '&7Return to the reward list.'
   
   HOLOGRAM:
+    # Height of the first line above the crate block. Raise it to lift the whole stack of text
+    # away from the item spinning on top of the crate.
     OFFSET-Y: 1.6
+    # Vertical gap between one line of the hologram and the next, in blocks. The same option the
+    # portal holograms use in config.yml, and the same default. Values outside 0.05 to 0.5 are
+    # pulled back into that range, which is wide enough for any readable stack and keeps the
+    # hologram inside the area the plugin searches when it checks its own text is still there.
+    LINE-SPACING: 0.27
     LINES:
     - '{crate}'
     - '&7Right-click to open'
