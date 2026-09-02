@@ -778,6 +778,14 @@ commands:
     - wipe
     permission: ultimatedonutsmp.command.playerwipe
     permission-message: "&cYou do not have permission to use /playerwipe."
+  playerunwipe:
+    description: Restore a wiped player from the backup their wipe left behind
+    usage: /playerunwipe <player> [confirm]
+    aliases:
+    - punwipe
+    - unwipe
+    permission: ultimatedonutsmp.command.playerunwipe
+    permission-message: "&cYou do not have permission to use /playerunwipe."
   amod:
     description: Command amod
     permission: ultimatedonutsmp.command.amod
@@ -825,6 +833,7 @@ permissions:
       ultimatedonutsmp.admin.reload: true
       ultimatedonutsmp.admin.statswipe: true
       ultimatedonutsmp.admin.playerwipe: true
+      ultimatedonutsmp.admin.playerunwipe: true
       ultimatedonutsmp.admin.optimize: true
       ultimatedonutsmp.admin.sellstats: true
       ultimatedonutsmp.admin.shards: true
@@ -968,6 +977,9 @@ permissions:
     default: op
   ultimatedonutsmp.admin.playerwipe:
     description: Preview and wipe a single player's stored data
+    default: op
+  ultimatedonutsmp.admin.playerunwipe:
+    description: Preview and restore a wiped player's stored data
     default: op
   ultimatedonutsmp.admin.optimize:
     description: View and reload runtime optimization controls
@@ -1380,6 +1392,7 @@ permissions:
       ultimatedonutsmp.command.maintenance: true
       ultimatedonutsmp.command.serverwipe: true
       ultimatedonutsmp.command.playerwipe: true
+      ultimatedonutsmp.command.playerunwipe: true
       ultimatedonutsmp.command.amod: true
   ultimatedonutsmp.command.team:
     description: Access to /team command
@@ -1819,6 +1832,9 @@ permissions:
     default: op
   ultimatedonutsmp.command.playerwipe:
     description: Access to /playerwipe command
+    default: op
+  ultimatedonutsmp.command.playerunwipe:
+    description: Access to /playerunwipe command
     default: op
   ultimatedonutsmp.command.amod:
     description: Access to /amod command

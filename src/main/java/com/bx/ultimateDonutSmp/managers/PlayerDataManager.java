@@ -73,6 +73,14 @@ public class PlayerDataManager {
         return cache.values();
     }
 
+    /**
+     * Drops one player's cached copy without saving it. A restore has just rewritten their row, so
+     * writing the in-memory totals back would undo it before they have even noticed.
+     */
+    public void discardWithoutSaving(UUID uuid) {
+        cache.remove(uuid);
+    }
+
     public void discardAllForServerWipe() {
         cache.clear();
     }

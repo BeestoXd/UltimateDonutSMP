@@ -184,8 +184,33 @@ It works on offline players as well as online ones, and it clears:
 
 Punishments, IP history, and freeze or staff-mode state survive a wipe, so a ban history stays intact
 and alt tracking still works. Spawners they placed are left standing as well, since those are blocks
-in the world rather than stored progress. There is no undo, so take a database backup first if the
-account matters.
+in the world rather than stored progress.
+
+### Undoing A Wipe (`/playerunwipe`)
+
+Every wipe writes what it removed to a file in `plugins/UltimateDonutSmp/player-wipe-backups/` before
+deleting anything, and `/playerunwipe` reads that file back. `/punwipe` and `/unwipe` are the same
+command. It is the answer to a ban that turns out to have been wrong: clear the punishment, then hand
+the account back what it had.
+
+`/playerunwipe <player>` on its own reports who ran the wipe, when, and what the backup holds.
+`confirm` puts it all back:
+
+```
+/playerunwipe Notch
+/playerunwipe Notch confirm
+```
+
+The restore is exact rather than additive, so anything the account picked up between the wipe and the
+restore is dropped in favour of what the backup holds. On a wrongly banned player that difference is
+usually nothing, since they could not log in to earn any of it.
+
+Backups are never deleted or overwritten, so a player wiped more than once keeps a file per wipe and
+the restore uses the most recent. The one thing a restore cannot bring back is a team the player led,
+because wiping a leader disbands the team outright and the team itself is not part of any single
+player's data; their membership row is dropped rather than restored, leaving them free to join
+another team. Filenames carry the player's name, their uuid and the time of the wipe, so an older
+backup can be restored by hand: delete the newer files, or move the one you want into place.
 
 ### Wiping On A Ban (`offenses.yml`)
 
@@ -211,7 +236,7 @@ It only fires on a real ban. A `MUTE`, `WARN` or `KICK` preset ignores it, and s
 `0s`, since that tier is issued as a warning rather than a ban. Staff running the command see the
 number of records removed underneath the usual punishment confirmation.
 
-The wipe itself is the same one `/playerwipe` performs, down to what survives it, and it cannot be
-undone either. Turning it on for an offense your team hands out often is a good way to delete a lot
-of accounts you meant to keep, so it suits things like duping or botting rather than a first-strike
-chat rule.
+The wipe itself is the same one `/playerwipe` performs, down to what survives it and the backup it
+leaves behind, so `/playerunwipe` undoes it the same way. Turning it on for an offense your team hands
+out often still fills the backup folder with accounts you meant to keep, so it suits things like
+duping or botting rather than a first-strike chat rule.

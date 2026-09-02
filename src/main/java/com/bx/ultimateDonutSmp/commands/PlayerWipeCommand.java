@@ -77,6 +77,9 @@ public class PlayerWipeCommand implements CommandExecutor, TabCompleter {
                 send(sender, "&8- &7" + PlayerWipeManager.label(key) + ": &f" + affected);
             }
         }
+        if (result.backupFile() != null) {
+            send(sender, "&7Backup saved as &f" + result.backupFile().getName() + "&7.");
+        }
         return true;
     }
 
@@ -96,7 +99,9 @@ public class PlayerWipeCommand implements CommandExecutor, TabCompleter {
             }
         }
         send(sender, "&7Punishments, IP history and their placed spawners are kept.");
-        send(sender, "&cThis cannot be undone. Run &f/" + label + " " + target.name() + " confirm &cto wipe them.");
+        send(sender, "&7A backup is written first, so &f/playerunwipe " + target.name()
+                + " &7can put this back.");
+        send(sender, "&cRun &f/" + label + " " + target.name() + " confirm &cto wipe them.");
     }
 
     private void send(CommandSender sender, String message) {
