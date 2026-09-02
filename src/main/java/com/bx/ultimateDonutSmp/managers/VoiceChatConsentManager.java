@@ -4,6 +4,8 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.hooks.SimpleVoiceChatHook;
 import com.bx.ultimateDonutSmp.menus.VoiceChatConsentMenu;
 import com.bx.ultimateDonutSmp.models.PlayerData;
+import com.bx.ultimateDonutSmp.models.PunishmentRecord;
+import com.bx.ultimateDonutSmp.models.PunishmentType;
 import com.bx.ultimateDonutSmp.models.VoiceChatConsent;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
@@ -25,6 +27,12 @@ public class VoiceChatConsentManager {
      * readable without touching PlayerData or the Bukkit API.
      */
     private final Map<UUID, VoiceChatConsent> consentCache = new ConcurrentHashMap<>();
+
+    /**
+     * Staff voice mutes, cached for the same reason as the consent answers. The value is the moment
+     * the mute runs out, so a mute with an expiry stops applying without waiting for a relog.
+     */
+    private final Map<UUID, Long> voiceMuteExpiry = new ConcurrentHashMap<>();
 
     private volatile boolean enforcing;
     private boolean hookRegistered;
@@ -72,10 +80,50 @@ public class VoiceChatConsentManager {
 
     /** Called from the microphone packet handler, so it must stay off the Bukkit API. */
     public boolean mayTalk(UUID uuid) {
+        // A staff mute is a punishment rather than part of the consent prompt, so it still applies
+        // when MUTE-UNTIL-ACCEPTED is off or the consent feature is disabled altogether.
+        if (isVoiceMuted(uuid)) {
+            return false;
+        }
         if (!enforcing) {
             return true;
         }
         return consentCache.getOrDefault(uuid, VoiceChatConsent.UNDECIDED) == VoiceChatConsent.ACCEPTED;
+    }
+
+    /** Whether a staff voice mute is currently in force. Safe to call off the main thread. */
+    public boolean isVoiceMuted(UUID uuid) {
+        if (uuid == null) {
+            return false;
+        }
+        Long expiresAt = voiceMuteExpiry.get(uuid);
+        if (expiresAt == null) {
+            return false;
+        }
+        if (expiresAt <= System.currentTimeMillis()) {
+            voiceMuteExpiry.remove(uuid);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Reads the player's active voice mute out of the punishment history and into the cache the
+     * microphone gate consults. Call it whenever a voice mute is issued or lifted, and on join.
+     */
+    public void refreshVoiceMute(UUID uuid, String name) {
+        if (uuid == null) {
+            return;
+        }
+        PunishmentRecord record = plugin.getPunishmentManager() == null
+                ? null
+                : plugin.getPunishmentManager().getActiveRecord(uuid, name, PunishmentType.VOICE_MUTE).orElse(null);
+        if (record == null) {
+            voiceMuteExpiry.remove(uuid);
+            return;
+        }
+        Long expiresAt = record.getExpiresAt();
+        voiceMuteExpiry.put(uuid, expiresAt == null ? Long.MAX_VALUE : expiresAt);
     }
 
     public void handleJoin(Player player) {
@@ -84,6 +132,7 @@ public class VoiceChatConsentManager {
         }
         VoiceChatConsent consent = getConsent(player);
         consentCache.put(player.getUniqueId(), consent);
+        refreshVoiceMute(player.getUniqueId(), player.getName());
 
         if (!isEnabled() || consent != VoiceChatConsent.UNDECIDED) {
             return;
@@ -104,6 +153,7 @@ public class VoiceChatConsentManager {
     public void handleQuit(UUID uuid) {
         if (uuid != null) {
             consentCache.remove(uuid);
+            voiceMuteExpiry.remove(uuid);
         }
     }
 

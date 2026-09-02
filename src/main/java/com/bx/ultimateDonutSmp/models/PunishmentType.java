@@ -5,6 +5,7 @@ import java.util.Locale;
 public enum PunishmentType {
     BAN,
     MUTE,
+    VOICE_MUTE,
     WARN,
     KICK,
     BLACKLIST;

@@ -2990,6 +2990,16 @@ MESSAGES:
       &8&m----------------------------
       &4You cannot join the server
     TARGET-EXEMPT: '&cYou cannot punish that player.'
+    USAGE-VCMUTE: '&cUsage: /vcmute <player> [reason]'
+    USAGE-VCUNMUTE: '&cUsage: /vcunmute <player> [reason]'
+    VOICE-MUTE: |
+      &c&lYou have been voice muted!
+      &8&m----------------------------
+      &7Reason: &f%reason%
+      &7Expires: &f%nicest_expiration%
+      &7Muted by: &f%issuer%
+      &8&m----------------------------
+      &7You cannot speak in voice chat
   SOCIAL:
     DISCORD:
     - ''

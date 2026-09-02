@@ -629,6 +629,8 @@ PUNISHMENTS:
   # The text or value for Usage Tempmute. Available options: Any valid string text
   USAGE-TEMPMUTE: '&cUsage: /tempmute <player> <time> [reason] &7(Time: 30s, 15m,
     2h, 5d, or 5d 15m 30s)'
+  # The text or value for Usage Vcmute. Available options: Any valid string text
+  USAGE-VCMUTE: '&cUsage: /vcmute <player> [reason]'
   # The text or value for Usage Warn. Available options: Any valid string text
   USAGE-WARN: '&cUsage: /warn <player> [reason]'
   # The text or value for Usage Kick. Available options: Any valid string text
@@ -641,6 +643,8 @@ PUNISHMENTS:
   USAGE-PARDON: '&cUsage: /pardon <player> [reason]'
   # The text or value for Usage Unmute. Available options: Any valid string text
   USAGE-UNMUTE: '&cUsage: /unmute <player> [reason]'
+  # The text or value for Usage Vcunmute. Available options: Any valid string text
+  USAGE-VCUNMUTE: '&cUsage: /vcunmute <player> [reason]'
   # The text or value for Usage Unblacklist. Available options: Any valid string text
   USAGE-UNBLACKLIST: '&cUsage: /unblacklist <player> [reason]'
   # The text or value for Not Found. Available options: Any valid string text
@@ -705,6 +709,15 @@ PUNISHMENTS:
     &7Muted by: &f%issuer%
     &8&m----------------------------
     &7You cannot speak in chat
+  # The text or value for Voice Mute. Available options: Any valid string text
+  VOICE-MUTE: |
+    &c&lYou have been voice muted!
+    &8&m----------------------------
+    &7Reason: &f%reason%
+    &7Expires: &f%nicest_expiration%
+    &7Muted by: &f%issuer%
+    &8&m----------------------------
+    &7You cannot speak in voice chat
   # The text or value for Blacklist. Available options: Any valid string text
   BLACKLIST: |
     &4&lYOU HAVE BEEN BLACKLISTED!
