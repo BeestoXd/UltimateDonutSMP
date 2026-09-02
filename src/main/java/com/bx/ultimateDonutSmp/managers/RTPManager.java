@@ -63,9 +63,9 @@ public class RTPManager {
     }
 
     private static final long SEARCH_ACTIONBAR_REFRESH_TICKS = 1L;
-    private static final long MIN_SEARCH_DISPLAY_TICKS = 30L;
+    private static final long DEFAULT_MIN_SEARCH_DISPLAY_TICKS = 30L;
     private static final int DEFAULT_SEARCH_ATTEMPTS_PER_TICK = 1;
-    private static final long FOUND_ACTIONBAR_DELAY_TICKS = 20L;
+    private static final long DEFAULT_FOUND_DISPLAY_TICKS = 20L;
     private static final int DEFAULT_MAX_CONCURRENT_RTP = 1;
     private static final int MIN_MAX_ATTEMPTS = 32;
     private static final int MIN_MAX_CHUNK_SAMPLES = 64;
@@ -82,6 +82,8 @@ public class RTPManager {
     private static final String LOAD_GENERATED_CHUNKS_SETTING = "SETTINGS.LOAD-GENERATED-CHUNKS";
     private static final String LOADED_CHUNK_FALLBACK_SETTING = "SETTINGS.FALLBACK-TO-LOADED-CHUNKS";
     private static final String LOADED_CHUNK_FALLBACK_AFTER_SETTING = "SETTINGS.LOADED-CHUNK-FALLBACK-AFTER-SAMPLES";
+    private static final String MIN_SEARCH_DISPLAY_TICKS_SETTING = "SETTINGS.SEARCH-DISPLAY-MIN-TICKS";
+    private static final String FOUND_DISPLAY_TICKS_SETTING = "SETTINGS.FOUND-DISPLAY-TICKS";
     private static final String PRELOAD_TELEPORT_CHUNKS_SETTING = "SETTINGS.PRELOAD-TELEPORT-CHUNKS";
     private static final String PRELOAD_RADIUS_SETTING = "SETTINGS.PRELOAD-RADIUS";
     private static final String PRELOAD_CHUNKS_PER_TICK_SETTING = "SETTINGS.PRELOAD-CHUNKS-PER-TICK";
@@ -350,6 +352,36 @@ public class RTPManager {
             return DEFAULT_SEARCH_ATTEMPTS_PER_TICK;
         }
         return Math.max(1, plugin.getConfigManager().getRtp().getInt("SETTINGS.SEARCH-ATTEMPTS-PER-TICK", DEFAULT_SEARCH_ATTEMPTS_PER_TICK));
+    }
+
+    /**
+     * How long the searching display is held before the teleport is allowed to start, in ticks.
+     *
+     * <p>A search that succeeds on its first sample would otherwise flash the action bar and
+     * teleport in the same breath, so this floor exists to keep the message readable rather than
+     * to pace the search itself. 0 teleports as soon as a spot is known.</p>
+     */
+    public long getMinSearchDisplayTicks() {
+        if (plugin == null || plugin.getConfigManager() == null || plugin.getConfigManager().getRtp() == null) {
+            return DEFAULT_MIN_SEARCH_DISPLAY_TICKS;
+        }
+        return Math.max(0L, plugin.getConfigManager().getRtp()
+                .getLong(MIN_SEARCH_DISPLAY_TICKS_SETTING, DEFAULT_MIN_SEARCH_DISPLAY_TICKS));
+    }
+
+    /**
+     * How long the found location display is held before the teleport is queued, in ticks.
+     *
+     * <p>This one is paid on every teleport, including one served straight from the location
+     * cache, so it is the whole wait a player sees when nothing had to be searched for at all.
+     * 0 queues the teleport as soon as the surrounding chunks are ready.</p>
+     */
+    public long getFoundDisplayTicks() {
+        if (plugin == null || plugin.getConfigManager() == null || plugin.getConfigManager().getRtp() == null) {
+            return DEFAULT_FOUND_DISPLAY_TICKS;
+        }
+        return Math.max(0L, plugin.getConfigManager().getRtp()
+                .getLong(FOUND_DISPLAY_TICKS_SETTING, DEFAULT_FOUND_DISPLAY_TICKS));
     }
 
     public void refillPreCacheAllWorlds() {
@@ -1354,7 +1386,7 @@ public class RTPManager {
         sendSearchActionBar(player, progress);
 
         if (progress.pendingFoundLocation != null) {
-            if (progress.elapsedTicks >= MIN_SEARCH_DISPLAY_TICKS) {
+            if (progress.elapsedTicks >= getMinSearchDisplayTicks()) {
                 stopSearch(playerId, false);
                 finishSearch(player, progress.worldName, progress.pendingFoundLocation);
             }
@@ -1465,7 +1497,7 @@ public class RTPManager {
         if (found != null) {
             progress.pendingFoundLocation = found;
             Player player = Bukkit.getPlayer(playerId);
-            if (player != null && player.isOnline() && progress.elapsedTicks >= MIN_SEARCH_DISPLAY_TICKS) {
+            if (player != null && player.isOnline() && progress.elapsedTicks >= getMinSearchDisplayTicks()) {
                 stopSearch(playerId, false);
                 finishSearch(player, progress.worldName, found);
             }
@@ -1567,6 +1599,7 @@ public class RTPManager {
         UUID playerId = player.getUniqueId();
         CompletableFuture<Void> preloadFuture = preloadTeleportChunks(found);
 
+        final long foundDisplayTicks = getFoundDisplayTicks();
         final long[] shownTicks = {0L};
         final boolean[] queuedTeleport = {false};
         final BukkitTask[] resultTaskRef = new BukkitTask[1];
@@ -1583,7 +1616,7 @@ public class RTPManager {
             sendFoundActionBar(player, worldName, found, shownTicks[0]);
             shownTicks[0]++;
 
-            if (shownTicks[0] >= FOUND_ACTIONBAR_DELAY_TICKS && preloadFuture.isDone()) {
+            if (shownTicks[0] >= foundDisplayTicks && preloadFuture.isDone()) {
                 queuePreparedRtpTeleport(player, found, playerId, resultTaskRef, queuedTeleport);
             }
         }, 1L, SEARCH_ACTIONBAR_REFRESH_TICKS);

@@ -17,6 +17,13 @@ SETTINGS:
   ATTEMPT-INTERVAL-TICKS: 1
   # Number of location attempts evaluated in parallel per sample interval
   SEARCH-ATTEMPTS-PER-TICK: 4
+  # Ticks the searching display is held for before the teleport starts. Lower it to teleport
+  # sooner once a spot is found, 0 teleports the moment the search succeeds
+  SEARCH-DISPLAY-MIN-TICKS: 30
+  # Ticks the found location display is held for before the teleport is queued. This one is paid
+  # on every RTP, including one served from LOCATION-CACHE below, so it is the whole wait when
+  # nothing had to be searched for. 0 queues the teleport as soon as the chunks are ready
+  FOUND-DISPLAY-TICKS: 20
   # Generate new chunks while searching. Keep false for pregenerated RTP worlds to protect TPS
   GENERATE-CHUNKS: false
   # Generate a limited number of chunks only after pregenerated/loaded RTP search cannot find a safe spot
