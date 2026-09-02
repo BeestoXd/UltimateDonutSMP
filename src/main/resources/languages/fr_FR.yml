@@ -2470,11 +2470,6 @@ MESSAGES:
     REMOVED: "&aRemoved active &f{type} &apunishment(s) for &b{player}&a."
     NO-ACTIVE: "&cNo active {type} punishment found for {player}."
     WARN-RECEIVED: "&cWarning : &f{reason}"
-    MUTE-RECEIVED: "&cYou have been muted. reason : &f{reason}"
-    MUTED-CHAT: "&cYou are muted. reason : &f{reason}&7. expires : &f{expires}"
-    BAN-KICK: "&cYou are banned from this server.\n&7Reason : &f{reason}\n&7Expires :
-      &f{expires}"
-    BLACKLIST-KICK: "&cYou are blacklisted from this server.\n&7Reason : &f{reason}"
     BAN: "&c&lYou have been banned !\n&8&m----------------------------\n&7Reason :
       &f%reason%\n&7Expires: &f%nicest_expiration%\n&7Banned by: &f%issuer%\n&8&m----------------------------\n\
       &7Appeal at : &fdiscord.eXample.space"
