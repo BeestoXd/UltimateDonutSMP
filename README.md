@@ -31,7 +31,7 @@ This README is the quick reference. The full documentation set lives in [`docs/w
 | [Home](docs/wiki/Home.md) | Documentation index and technical quick facts |
 | [Installation & Setup](docs/wiki/Installation-and-Setup.md) | Server engine setup, SQLite/MySQL/MongoDB storage, and Redis networking |
 | [Commands & Permissions](docs/wiki/Commands-and-Permissions.md) | Full command syntax, aliases, and permission nodes |
-| [Configuration Reference](docs/wiki/Configuration-Reference.md) | Every configuration file, plus a `Config-*.yml.md` page per file |
+| [Configuration Reference](docs/wiki/Configuration-Reference.md) | In-depth setup guidance for the larger config files, alongside the per-file `Config-*.yml.md` guides |
 | [Economy & Marketplaces](docs/wiki/Economy-and-Marketplaces.md) | Money, shards, shop, sell, Auction House, Orders, and Billford |
 | [Duels & FFA](docs/wiki/Duels-and-FFA.md) | Duel arenas, queues, rollbacks, and instanced FFA |
 | [Crates & Spawners](docs/wiki/Crates-and-Spawners.md) | Crate definitions, keys, and Donut-style spawners |

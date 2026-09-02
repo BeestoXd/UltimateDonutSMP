@@ -1,7 +1,8 @@
-# Exhaustive Technical Configuration Reference & Setup Manual
+# Configuration Reference & Setup Manual
 
-This document provides a **100% complete, fully commented reference guide** for every configuration file and option key in **UltimateDonutSMP**.
-Each section details the exact YAML block with all comments, option keys, data types, allowed values, functional explanations, and step-by-step setup guides.
+Longer-form setup guidance for the configuration files that take the most explaining: duels, the main `config.yml`, database and Redis wiring, Discord webhooks, crates, the marketplaces, and a few others. Each one gets its own section below, with the YAML block quoted as it ships, then the keys, data types, allowed values, and notes on what changing them actually does.
+
+This page is a selection rather than a full listing. Several config files have no section here at all, and for the bigger files it covers the settings that are easy to get wrong instead of every key. If you want a straight run through one file, the per-file guides are the place to go: [config.yml](Config-config.yml), [messages.yml](Config-messages.yml), [menus.yml](Config-menus.yml), and one for each of the others in the sidebar.
 
 ---
 
