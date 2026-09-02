@@ -17,7 +17,12 @@ SETTINGS:
   LISTING_DURATION_HOURS: 48
   # Default maximum active listings a player can post simultaneously
   MAX_ACTIVE_LISTINGS_DEFAULT: 5
-  # Maximum active listing limits granted by permission node
+  # Explicit mapping from permission node to a maximum active listing count
+  # Players can also be given ultimatedonutsmp.auctionhouse.limit.<1-100> directly, for example
+  # ultimatedonutsmp.auctionhouse.limit.25 for 25 active listings, without adding it below
+  # Each value is a total, not a bonus added on top of MAX_ACTIVE_LISTINGS_DEFAULT
+  # The highest value the player has wins, and a negative value here means unlimited
+  # Wildcards do not grant a limit, the node has to be set on the player or their group
   MAX_ACTIVE_LISTINGS_BY_PERMISSION:
     ultimatedonutsmp.auctionhouse.limit.10: 10
     ultimatedonutsmp.auctionhouse.limit.15: 15
@@ -36,8 +41,7 @@ SETTINGS:
 | `SETTINGS.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `SETTINGS` system. Set to `true` to enable, `false` to disable. |
 | `SETTINGS.LISTING_DURATION_HOURS` | `int` | Any valid integer number | `'48'` | Configures the technical `LISTING_DURATION_HOURS` parameter for `SETTINGS.LISTING_DURATION_HOURS` in `auction-house.yml`. |
 | `SETTINGS.MAX_ACTIVE_LISTINGS_DEFAULT` | `int` | Any valid integer number | `'5'` | Configures the technical `MAX_ACTIVE_LISTINGS_DEFAULT` parameter for `SETTINGS.MAX_ACTIVE_LISTINGS_DEFAULT` in `auction-house.yml`. |
-| `SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION.ultimatedonutsmp.auctionhouse.limit.10` | `int` | Any valid integer number | `'10'` | Configures the technical `10` parameter for `SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION.ultimatedonutsmp.auctionhouse.limit.10` in `auction-house.yml`. |
-| `SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION.ultimatedonutsmp.auctionhouse.limit.15` | `int` | Any valid integer number | `'15'` | Configures the technical `15` parameter for `SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION.ultimatedonutsmp.auctionhouse.limit.15` in `auction-house.yml`. |
+| `SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION` | `section` | Permission node to listing count | `{'ultimatedonutsmp.auctionhouse.limit.10': 10, 'ultimatedonutsmp.auctionhouse.limit.15': 15}` | Named nodes mapped to a maximum active listing count, for servers that prefer their own rank nodes over the numbered ones. Each value is a total rather than a bonus on top of `MAX_ACTIVE_LISTINGS_DEFAULT`, the highest value a player holds wins, and a negative value means unlimited. The two shipped entries are only examples: `ultimatedonutsmp.auctionhouse.limit.<1-100>` resolves without being listed here. See [Commands-and-Permissions](Commands-and-Permissions). |
 | `SETTINGS.CLICK_COOLDOWN_MS` | `int` | Any valid integer number | `'750'` | Configures the technical `CLICK_COOLDOWN_MS` parameter for `SETTINGS.CLICK_COOLDOWN_MS` in `auction-house.yml`. |
 | `SETTINGS.EXPIRE_CHECK_SECONDS` | `int` | Any valid integer number | `'30'` | Configures the technical `EXPIRE_CHECK_SECONDS` parameter for `SETTINGS.EXPIRE_CHECK_SECONDS` in `auction-house.yml`. |
 
@@ -51,7 +55,12 @@ SETTINGS:
   LISTING_DURATION_HOURS: 48
   # Default maximum active listings a player can post simultaneously
   MAX_ACTIVE_LISTINGS_DEFAULT: 5
-  # Maximum active listing limits granted by permission node
+  # Explicit mapping from permission node to a maximum active listing count
+  # Players can also be given ultimatedonutsmp.auctionhouse.limit.<1-100> directly, for example
+  # ultimatedonutsmp.auctionhouse.limit.25 for 25 active listings, without adding it below
+  # Each value is a total, not a bonus added on top of MAX_ACTIVE_LISTINGS_DEFAULT
+  # The highest value the player has wins, and a negative value here means unlimited
+  # Wildcards do not grant a limit, the node has to be set on the player or their group
   MAX_ACTIVE_LISTINGS_BY_PERMISSION:
     ultimatedonutsmp.auctionhouse.limit.10: 10
     ultimatedonutsmp.auctionhouse.limit.15: 15
