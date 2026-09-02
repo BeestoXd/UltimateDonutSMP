@@ -916,9 +916,8 @@ public class PlayerData {
     }
 
     /**
-     * Death lines go to the whole server, so this setting is only a mute switch. The value is
-     * stored as a {@link TwoChoice} because join and leave messages share the type, and there the
-     * second value narrows the feed to followed players.
+     * Death lines go to the whole server, so this setting is only a mute switch. The stored
+     * {@link TwoChoice} carries no more meaning than that: OFF, or anything else.
      */
     public boolean isDeathMessagesEnabled() {
         return deathMessagesChoice != TwoChoice.OFF;
@@ -940,6 +939,14 @@ public class PlayerData {
     public void setJoinLeaveMessagesChoice(TwoChoice joinLeaveMessagesChoice) {
         this.joinLeaveMessagesChoice = joinLeaveMessagesChoice;
         dirty = true;
+    }
+
+    /**
+     * Join and leave lines go to the whole server, so this setting is only a mute switch, the same
+     * way {@link #isDeathMessagesEnabled()} is.
+     */
+    public boolean isJoinLeaveMessagesEnabled() {
+        return joinLeaveMessagesChoice != TwoChoice.OFF;
     }
 
     public boolean isTeleportAlertsEnabled() {

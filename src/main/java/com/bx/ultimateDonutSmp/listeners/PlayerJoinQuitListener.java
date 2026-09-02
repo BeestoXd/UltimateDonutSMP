@@ -459,6 +459,12 @@ public class PlayerJoinQuitListener implements Listener {
         }
     }
 
+    /**
+     * A vanished joiner stays hidden from anyone without the permission to see them. Past that,
+     * everyone online reads the feed unless they muted it in /settings. Narrowing it to players who
+     * follow the joiner emptied it instead: the server's own join and leave message is cleared and
+     * resent through here, so on a server where nobody has followed anybody it reached no one.
+     */
     private boolean shouldReceiveJoinLeaveMessage(Player receiver, Player joiner) {
         if (plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isVanished(joiner.getUniqueId())) {
             if (!PermissionUtils.has(receiver, plugin.getStaffModeManager().getSeeVanishedPermission())) {
@@ -466,14 +472,7 @@ public class PlayerJoinQuitListener implements Listener {
             }
         }
         PlayerData receiverData = plugin.getPlayerDataManager().get(receiver);
-        if (receiverData == null) {
-            return true;
-        }
-        com.bx.ultimateDonutSmp.models.TwoChoice choice = receiverData.getJoinLeaveMessagesChoice();
-        if (choice == com.bx.ultimateDonutSmp.models.TwoChoice.OFF) {
-            return false;
-        }
-        return plugin.getFriendsManager() != null && plugin.getFriendsManager().isFollowing(receiver.getUniqueId(), joiner.getUniqueId());
+        return receiverData == null || receiverData.isJoinLeaveMessagesEnabled();
     }
 
     private String kickMessage(PunishmentRecord record) {
