@@ -2124,6 +2124,16 @@ CONFIG:
         KICK_FALLBACK: "&cThis server is in maintenance and no lobby is available."
         RECONNECTING_TITLE: "&a&lServer online"
         RECONNECTING_SUBTITLE: "&7Sending you back in %seconds% seconds..."
+      SERVER_LIST:
+        LINES:
+        - '&cZurzeit in Wartung'
+        - '&bZurück in: &d%time%'
+        LINES_NO_TIMER:
+        - '&cZurzeit in Wartung'
+        - '&7schau später wieder vorbei'
+        VERSION_LABEL: '&cWartung'
+        HOVER:
+        - '&cZurzeit in Wartung'
   STAFF_MODE:
     STAFF-MODE:
       VANISH-ACTIONBAR:

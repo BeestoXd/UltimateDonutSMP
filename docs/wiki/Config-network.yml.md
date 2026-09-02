@@ -260,7 +260,7 @@ NETWORK-STATUS:
 ### 1. Commented Setup Code Example
 
 ```yaml
-# Maintenance mode behaviour (/maintenance on|off|status|setlobby)
+# Maintenance mode behaviour (/maintenance on [duration]|off|status|setlobby)
 MAINTENANCE:
   # Permission node that lets a player join while maintenance mode is active
   BYPASS_PERMISSION: ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS
@@ -280,6 +280,34 @@ MAINTENANCE:
 
   # Countdown in seconds shown before players are sent back once the server returns
   RECONNECT_DELAY_SECONDS: 5
+
+  # How this server looks in the multiplayer list while maintenance mode is active
+  SERVER_LIST:
+    # Set to false to leave the server list entry alone and only gate the login
+    ENABLED: true
+
+    # The lines shown under the server name. The client draws the first two. %time% is the
+    # time left before maintenance lifts itself, written as 03:29, or 1:03:29 once more than an
+    # hour is left
+    LINES:
+    - '&cCurrently under maintenance'
+    - '&bCome back in: &d%time%'
+
+    # Used instead of LINES when maintenance was started with no duration, as in a plain
+    # /maintenance on, so the entry never shows a countdown with nothing to count down to
+    LINES_NO_TIMER:
+    - '&cCurrently under maintenance'
+    - '&7come back later'
+
+    # Text shown where the player count normally sits. The client draws it in red next to a
+    # broken connection icon, which is what makes the entry stand out in a long server list.
+    # Leave it empty to keep the real player count on show
+    VERSION_LABEL: '&cMaintenance'
+
+    # Lines shown when the player count is hovered. Leaving the list empty keeps the usual
+    # sample of online player names
+    HOVER:
+    - '&cCurrently under maintenance'
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -291,6 +319,11 @@ MAINTENANCE:
 | `MAINTENANCE.LOBBY_SERVER` | `str` | Any proxy server name, or empty | `'lobby'` | Destination used when `USE_PROXY` is `true`. `/maintenance setlobby <server>` overrides it at runtime, and `/maintenance setlobby` with no name clears that override and hands the decision back to this key. Leave it empty on a server with no lobby: the connection is then refused during login, so players never enter the world. |
 | `MAINTENANCE.LOBBY_WORLD` | `str` | Any loaded world name | `'WORLD'` | Destination used when `USE_PROXY` is `false`. When that world is not loaded the spawn location is used, and when neither resolves the connection is refused during login. |
 | `MAINTENANCE.RECONNECT_DELAY_SECONDS` | `int` | Any valid integer number | `'5'` | Countdown shown to players waiting to be sent back once the server reports itself online again over Redis. `0` sends them back straight away. |
+| `MAINTENANCE.SERVER_LIST.ENABLED` | `bool` | `true`, `false` | `true` | `true` rewrites this server's entry in the multiplayer list while maintenance is active. `false` leaves the entry alone, and maintenance only shows itself when someone tries to join. |
+| `MAINTENANCE.SERVER_LIST.LINES` | `list` | Any lines of text | `['&cCurrently under maintenance', '&bCome back in: &d%time%']` | The MOTD shown while a duration is running. The client draws the first two entries. `%time%` becomes the time left, written as `03:29` and widening to `1:03:29` past an hour. |
+| `MAINTENANCE.SERVER_LIST.LINES_NO_TIMER` | `list` | Any lines of text | `['&cCurrently under maintenance', '&7come back later']` | Used instead of `LINES` when maintenance was started without a duration, so the entry never shows a countdown that has nothing to count down to. |
+| `MAINTENANCE.SERVER_LIST.VERSION_LABEL` | `str` | Any string text, or empty | `'&cMaintenance'` | Replaces the player count on the entry. The client draws it in red beside a broken connection icon, which is what makes a closed server stand out in a long list. Empty leaves the real player count on show. |
+| `MAINTENANCE.SERVER_LIST.HOVER` | `list` | Any lines of text | `['&cCurrently under maintenance']` | Shown when the player count is hovered, in place of the usual sample of online names. An empty list keeps that sample, staff working through the maintenance included. |
 
 ### 3. Practical Setup Example
 
@@ -301,6 +334,20 @@ MAINTENANCE:
   BYPASS_PERMISSION: ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS
   USE_PROXY: true
   LOBBY_SERVER: ''
+```
+
+An hour of scheduled downtime, announced in the multiplayer list. `/maintenance on 1h` starts the
+countdown, players watch it run down on the server entry, and maintenance lifts itself when it
+reaches zero:
+
+```yaml
+MAINTENANCE:
+  SERVER_LIST:
+    ENABLED: true
+    LINES:
+    - '&cUpgrading the server'
+    - '&bBack in: &d%time%'
+    VERSION_LABEL: '&cMaintenance'
 ```
 
 ---

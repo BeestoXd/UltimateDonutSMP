@@ -264,6 +264,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         ordersManager.initializeNetworkSync();
         maintenanceManager = new MaintenanceManager(this);
         maintenanceManager.initializeRedisListener();
+        maintenanceManager.startExpiryTask();
+        new MaintenanceProtocolLibBridge(this).initialize();
         duelManager.initializeCrossServer();
         discordWebhookManager = new DiscordWebhookManager(this);
         pingManager = new PingManager(this);

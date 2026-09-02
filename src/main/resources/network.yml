@@ -132,3 +132,31 @@ MAINTENANCE:
 
   # Countdown in seconds shown before players are sent back once the server returns
   RECONNECT_DELAY_SECONDS: 5
+
+  # How this server looks in the multiplayer list while maintenance mode is active
+  SERVER_LIST:
+    # Set to false to leave the server list entry alone and only gate the login
+    ENABLED: true
+
+    # The lines shown under the server name. The client draws the first two. %time% is the
+    # time left before maintenance lifts itself, written as 03:29, or 1:03:29 once more than an
+    # hour is left
+    LINES:
+    - '&cCurrently under maintenance'
+    - '&bCome back in: &d%time%'
+
+    # Used instead of LINES when maintenance was started with no duration, as in a plain
+    # /maintenance on, so the entry never shows a countdown with nothing to count down to
+    LINES_NO_TIMER:
+    - '&cCurrently under maintenance'
+    - '&7come back later'
+
+    # Text shown where the player count normally sits. The client draws it in red next to a
+    # broken connection icon, which is what makes the entry stand out in a long server list.
+    # Leave it empty to keep the real player count on show
+    VERSION_LABEL: '&cMaintenance'
+
+    # Lines shown when the player count is hovered. Leaving the list empty keeps the usual
+    # sample of online player names
+    HOVER:
+    - '&cCurrently under maintenance'

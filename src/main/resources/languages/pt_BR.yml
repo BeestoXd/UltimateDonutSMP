@@ -1989,6 +1989,16 @@ CONFIG:
         KICK_FALLBACK: "&cThis server is in maintenance and no lobby is available."
         RECONNECTING_TITLE: "&a&lServer online"
         RECONNECTING_SUBTITLE: "&7Sending you back in %seconds% seconds..."
+      SERVER_LIST:
+        LINES:
+        - '&cAtualmente em manutenção'
+        - '&bVolte em: &d%time%'
+        LINES_NO_TIMER:
+        - '&cAtualmente em manutenção'
+        - '&7volte mais tarde'
+        VERSION_LABEL: '&cManutenção'
+        HOVER:
+        - '&cAtualmente em manutenção'
   STAFF_MODE:
     STAFF-MODE:
       VANISH-ACTIONBAR:

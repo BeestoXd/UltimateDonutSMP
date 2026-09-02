@@ -1983,6 +1983,16 @@ CONFIG:
         KICK_FALLBACK: "&cThis server is in maintenance and no lobby is available."
         RECONNECTING_TITLE: "&a&lServer online"
         RECONNECTING_SUBTITLE: "&7Sending you back in %seconds% seconds..."
+      SERVER_LIST:
+        LINES:
+        - '&c服务器维护中'
+        - '&b请在 &d%time% 后回来'
+        LINES_NO_TIMER:
+        - '&c服务器维护中'
+        - '&7请稍后再来'
+        VERSION_LABEL: '&c维护中'
+        HOVER:
+        - '&c服务器维护中'
   STAFF_MODE:
     STAFF-MODE:
       VANISH-ACTIONBAR:
