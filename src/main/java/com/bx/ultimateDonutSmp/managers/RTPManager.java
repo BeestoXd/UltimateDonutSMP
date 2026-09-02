@@ -1590,7 +1590,9 @@ public class RTPManager {
                     "&aSafe location found."
             );
         }
-        player.sendMessage(ColorUtils.toComponent(foundMessage));
+        if (!foundMessage.isBlank()) {
+            player.sendMessage(ColorUtils.toComponent(foundMessage));
+        }
         sendTeleportWarning(player, worldName);
         SoundUtils.play(player, plugin.getConfigManager().getSound("RTP.SEARCH-FOUND"));
         UUID playerId = player.getUniqueId();

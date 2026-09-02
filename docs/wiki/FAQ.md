@@ -424,3 +424,38 @@ in, or write them as escapes if your editor makes that awkward:
 '&cᴡᴇʟᴄᴏᴍᴇ'
 '&c\u1D21\u1D07\u029F\u1D04\u1D0F\u1D0D\u1D07'
 ```
+
+---
+
+## 17. Hiding The Coordinates `/rtp` Prints In Chat
+
+### Question: `/rtp` announces the exact spot it dropped me at. Can that be turned off?
+
+Each player decides for themselves in `/settings`. The **RTP Coordinates** button sits on the second
+row, and switching it off swaps the chat line for `MESSAGES.SAFE-LOCATION-FOUND-HIDDEN` in
+`rtp.yml`. The action bar shown while the search runs swaps to `SEARCH-FOUND-ACTIONBAR-HIDDEN` at the
+same time, so a server that has put `{x}`, `{y}` and `{z}` into that one does not leak the position
+there either. Both replacements ship with wording that works out of the box.
+
+To settle it server-wide instead of leaving it to each player, give the button a `DEFAULT` in
+`menus.yml`. Adding `ENABLED: false` next to it also takes the button out of `/settings`, which pins
+everyone to that value including players who had already toggled it:
+
+```yaml
+SETTINGS-MENU:
+  BUTTONS:
+    RTP_COORDINATES:
+      DEFAULT: false
+      ENABLED: false
+```
+
+Rewriting the message in `rtp.yml` is the other way round the problem, and it applies to everyone no
+matter what they picked. Drop the three placeholders and keep whatever wording you want:
+
+```yaml
+MESSAGES:
+  SAFE-LOCATION-FOUND: '&aSafe location found! Teleporting you...'
+```
+
+An empty string there sends nothing at all, leaving the teleport countdown warning as the only thing
+players see.

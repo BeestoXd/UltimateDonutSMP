@@ -194,6 +194,8 @@ public final class PlayerSettingDefaults {
                 PlayerData::isExplosionSoundsEnabled, PlayerData::setExplosionSoundsEnabled));
         bindings.put("TELEPORT_ALERTS", bool(
                 PlayerData::isTeleportAlertsEnabled, PlayerData::setTeleportAlertsEnabled));
+        bindings.put("RTP_COORDINATES", bool(
+                PlayerData::isRtpCoordinatesEnabled, PlayerData::setRtpCoordinatesEnabled));
         bindings.put("FAST_CRYSTALS", bool(PlayerData::isFastCrystalsEnabled, PlayerData::setFastCrystalsEnabled));
         bindings.put("RANDOMIZED_COORDS", bool(PlayerData::isRandomizedCoords, PlayerData::setRandomizedCoords));
         bindings.put("TPA_REQUESTS", threeChoice(

@@ -846,6 +846,11 @@ MENUS:
         LORE:
         - '&7Notify when bounties are set/claimed'
         - '&fCurrently: {status}'
+      RTP_COORDINATES:
+        DISPLAY-NAME: '&#6BF18DRTP Coordinates'
+        LORE:
+        - '&7Show the coordinates /rtp drops you at'
+        - '&fCurrently: {status}'
   LEADERBOARDS-MENU:
     TITLE: "&8Leaderboards"
     TYPE-MENU:
