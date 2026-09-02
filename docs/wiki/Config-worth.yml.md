@@ -374,7 +374,63 @@ TYPE:
     COCOA_BEANS: 15.0
     # The decimal value for Cactus. Available options: Any decimal number
     CACTUS: 20.0
-    # The
+    # The decimal value for Sweet Berries. Available options: Any decimal number
+    SWEET_BERRIES: 8.0
+    # The decimal value for Sugar Cane. Available options: Any decimal number
+    SUGAR_CANE: 20.0
+    # The decimal value for Red Mushroom. Available options: Any decimal number
+    RED_MUSHROOM: 1.0
+    # The decimal value for Brown Mushroom. Available options: Any decimal number
+    BROWN_MUSHROOM: 1.0
+    # The decimal value for Kelp. Available options: Any decimal number
+    KELP: 8.0
+    # The decimal value for Sea Pickle. Available options: Any decimal number
+    SEA_PICKLE: 2.0
+    # The decimal value for Glow Berries. Available options: Any decimal number
+    GLOW_BERRIES: 4.0
+    # The decimal value for Wheat Seeds. Available options: Any decimal number
+    WHEAT_SEEDS: 2.0
+    # The decimal value for Pumpkin Seeds. Available options: Any decimal number
+    PUMPKIN_SEEDS: 8.0
+    # The decimal value for Melon Seeds. Available options: Any decimal number
+    MELON_SEEDS: 4.0
+    # The decimal value for Beetroot Seeds. Available options: Any decimal number
+    BEETROOT_SEEDS: 2.0
+    # The decimal value for Torchflower Seeds. Available options: Any decimal number
+    TORCHFLOWER_SEEDS: 3.0
+    # The decimal value for Torchflower. Available options: Any decimal number
+    TORCHFLOWER: 4.0
+    # The decimal value for Nether Wart. Available options: Any decimal number
+    NETHER_WART: 6.0
+    # The decimal value for Spruce Sapling. Available options: Any decimal number
+    SPRUCE_SAPLING: 3.0
+    # The decimal value for Twisting Vines. Available options: Any decimal number
+    TWISTING_VINES: 5.0
+    # The decimal value for Nether Sprouts. Available options: Any decimal number
+    NETHER_SPROUTS: 5.0
+    # The decimal value for Crimson Fungus. Available options: Any decimal number
+    CRIMSON_FUNGUS: 2.0
+    # The decimal value for Bone Meal. Available options: Any decimal number
+    BONE_MEAL: 1.0
+    # The decimal value for Jungle Sapling. Available options: Any decimal number
+    JUNGLE_SAPLING: 3.0
+    # The decimal value for Birch Sapling. Available options: Any decimal number
+    BIRCH_SAPLING: 3.0
+    # The decimal value for Oak Sapling. Available options: Any decimal number
+    OAK_SAPLING: 3.0
+    # The decimal value for Cherry Sapling. Available options: Any decimal number
+    CHERRY_SAPLING: 3.0
+    # The decimal value for Dark Oak Sapling. Available options: Any decimal number
+    DARK_OAK_SAPLING: 3.0
+    # The decimal value for Acacia Sapling. Available options: Any decimal number
+    ACACIA_SAPLING: 3.0
+    # The decimal value for Warped Fungus. Available options: Any decimal number
+    WARPED_FUNGUS: 3.0
+    # The decimal value for Hanging Roots. Available options: Any decimal number
+    HANGING_ROOTS: 2.0
+    # The decimal value for Crimson Roots. Available options: Any decimal number
+    CRIMSON_ROOTS: 1.0
+    # The decimal value for Warped Roots. Available options: Any decimal number
 ```
 
 ---

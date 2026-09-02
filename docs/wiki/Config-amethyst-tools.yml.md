@@ -159,7 +159,68 @@ AMETHYST-TOOLS:
     # The text or value for Expire. Available options: Any valid string text
     EXPIRE: minecraft:entity.lightning_bolt.impact|0.5|2.0
     # The text or value for Break. Available options: Any valid string text
-    BREAK: minecraft:block.amethyst_bloc
+    BREAK: minecraft:block.amethyst_block.break|1.0|0.8
+    # The text or value for Activate. Available options: Any valid string text
+    ACTIVATE: minecraft:block.amethyst_block.resonate|1.0|1.0
+  # Configuration section for Security.
+  SECURITY:
+    # Determines whether Require Item Id is enabled or disabled. Available options: true, false
+    REQUIRE-ITEM-ID: true
+    # Determines whether Bind To Owner is enabled or disabled. Available options: true, false
+    BIND-TO-OWNER: false
+    # The numerical value for Click Cooldown Ms. Available options: Any valid integer
+    CLICK-COOLDOWN-MS: 250
+    # Determines whether Block Hopper Pickup is enabled or disabled. Available options: true, false
+    BLOCK-HOPPER-PICKUP: true
+  # Configuration section for Drill.
+  DRILL:
+    MATERIAL: NETHERITE_PICKAXE
+    NAME: '&#9B59B6&lAmethyst Drill'
+    LORE:
+    - '&#BDC3C7Breaks &d9 blocks &7per strike'
+    - '&#BDC3C7Powered by amethyst energy'
+    - ''
+    - '&#9B59B6✦ Self Destruct'
+    - '&#BDC3C7{time}'
+    # Configuration section for Enchantments.
+    ENCHANTMENTS:
+    - efficiency:5
+    - unbreaking:3
+    - fortune:3
+    # The numerical value for Radius. Available options: Any valid integer
+    RADIUS: 1
+    # Configuration section for Disabled Blocks.
+    DISABLED-BLOCKS:
+    - DIRT
+    - GRASS_BLOCK
+    - COARSE_DIRT
+    - ROOTED_DIRT
+    - PODZOL
+    - SAND
+    - RED_SAND
+    - GRAVEL
+    - SPAWNER
+    - BEDROCK
+    - OBSIDIAN
+    - CRYING_OBSIDIAN
+    - END_PORTAL_FRAME
+    - FARMLAND
+    - SOUL_SAND
+    - SOUL_SOIL
+    # The numerical value for Duration. Available options: Any valid integer
+    DURATION: 86400
+    # Configuration section for Shard Shop.
+    SHARD-SHOP:
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # The currency this tool is sold for. Available options: SHARD, MONEY
+      CURRENCY: SHARD
+      # The decimal value for Price Per Unit. Available options: Any decimal number
+      PRICE-PER-UNIT: 750.0
+      SLOT: 18
+      # The numerical value for Min Quantity. Available options: Any valid integer
+      MIN-QUANTITY: 1
+      # The numerical value for Max Quantity. Available options: Any valid integer
 ```
 
 ---
@@ -252,7 +313,34 @@ AMETHYST-MESSAGES:
   CHOP-BREAK: '{prefix}&#BDC3C7&dAmethyst Tree Chopper &7chopped &d{count} &7logs.'
   # The text or value for Sell Success. Available options: Any valid string text
   SELL-SUCCESS: '{prefix}&#BDC3C7Sold all chest contents for &a${amount}&7.'
-  # The text or value for Sell Empty. Available options: Any valid stri
+  # The text or value for Sell Empty. Available options: Any valid string text
+  SELL-EMPTY: '{prefix}&#BDC3C7That chest is empty or has no sellable items.'
+  # The text or value for Sell Failed. Available options: Any valid string text
+  SELL-FAILED: '{prefix}&#BDC3C7The sale failed. no items were removed.'
+  # The text or value for Sell No Chest. Available options: Any valid string text
+  SELL-NO-CHEST: '{prefix}&#BDC3C7You must right-click a chest.'
+  # The text or value for Bucket Drain. Available options: Any valid string text
+  BUCKET-DRAIN: '{prefix}&#BDC3C7Drained &d{count} &7water blocks.'
+  # The text or value for Bucket No Water. Available options: Any valid string text
+  BUCKET-NO-WATER: '{prefix}&#BDC3C7No water blocks found nearby.'
+  # The text or value for Booster Activated. Available options: Any valid string text
+  BOOSTER-ACTIVATED: '{prefix}&#BDC3C7&dShard Booster &7activated! &d4x &7shards for
+    &d60 minutes&7.'
+  # The text or value for Booster Already. Available options: Any valid string text
+  BOOSTER-ALREADY: '{prefix}&#BDC3C7You already have an active shard booster!'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '{prefix}&#BDC3C7You do not have permission to use this item.'
+  # The text or value for Wrong Owner. Available options: Any valid string text
+  WRONG-OWNER: '{prefix}&#BDC3C7This Amethyst Tool is bound to another player.'
+  # The text or value for Give Success. Available options: Any valid string text
+  GIVE-SUCCESS: '{prefix}&#BDC3C7Gave &d{type} &7to &d{player}&7.'
+  # The text or value for Give Usage. Available options: Any valid string text
+  GIVE-USAGE: '{prefix}&#BDC3C7Usage: &d/amethysttool give <player> <type> [duration_seconds]'
+  # The text or value for Give Invalid Type. Available options: Any valid string text
+  GIVE-INVALID-TYPE: '{prefix}&#BDC3C7Invalid tool type. Types: DRILL, CHOPPER, SELL_AXE,
+    SHOVEL, BUCKET, SHARD_BOOSTER'
+  # The text or value for Reload Success. Available options: Any valid string text
+  RELOAD-SUCCESS: '{prefix}&#BDC3C7Configuration reloaded.'
 ```
 
 ---

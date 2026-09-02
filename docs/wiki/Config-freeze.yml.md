@@ -134,7 +134,41 @@ FREEZE:
   # Permission node granting exemption from being frozen
   EXEMPT-PERMISSION: ultimatedonutsmp.staff.freeze.exempt
 
-  # Permission node to reloa
+  # Permission node to reload/administer freeze system
+  ADMIN-PERMISSION: ultimatedonutsmp.admin.freeze
+
+  # Commands allowed for frozen players (e.g., messaging staff or discord)
+  ALLOWED-COMMANDS:
+    - /discord
+    - /social
+    - /msg
+    - /r
+    - /helpop
+
+  # Display tag for active freeze status
+  STATUS_ON: '&a&lON'
+
+  # Display tag for inactive freeze status
+  STATUS_OFF: '&c&lOFF'
+
+  # Toggle feedback message sent to staff (%player% and %status% placeholders)
+  MESSAGE: '&bFreeze &a%player% &7is now %status%'
+
+  # Periodic notification screen broadcast to frozen players
+  ALERT:
+    - ''
+    - '&c&lYou''re currently frozen!'
+    - ''
+    - '&7- You cannot move or interact'
+    - '&7- Staff members are reviewing your actions'
+    - '&7- Join our Discord for support:'
+    - '&6&ohttps://discord.com'
+    - ''
+
+  # Alert broadcast to staff when a frozen player leaves the server
+  QUIT_MESSAGE: '&c[Freeze] &4%player% &cleft while frozen on &4%server%'
+
+# System and user feedback messages
 ```
 
 ---

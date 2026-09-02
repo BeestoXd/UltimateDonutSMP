@@ -140,7 +140,59 @@ STAFF-MODE:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     # The numerical value for Interval Ticks. Available options: Any valid integer
-    
+    INTERVAL-TICKS: 40
+    # The text or value for Message. Available options: Any valid string text
+    MESSAGE: '&aVANISHED &7>> &fYou are hidden from regular players'
+  # The text or value for Staff Permission. Available options: Any valid string text
+  STAFF-PERMISSION: ultimatedonutsmp.staff.mode
+  # The text or value for Admin Permission. Available options: Any valid string text
+  ADMIN-PERMISSION: ultimatedonutsmp.admin.staffmode
+  # The text or value for Vanish Permission. Available options: Any valid string text
+  VANISH-PERMISSION: ultimatedonutsmp.staff.mode.vanish
+  # The text or value for Better View Permission. Available options: Any valid string text
+  BETTER-VIEW-PERMISSION: ultimatedonutsmp.staff.mode.betterview
+  # The text or value for Staff List Permission. Available options: Any valid string text
+  STAFF-LIST-PERMISSION: ultimatedonutsmp.staff.mode.stafflist
+  # The text or value for Random Teleport Permission. Available options: Any valid string text
+  RANDOM-TELEPORT-PERMISSION: ultimatedonutsmp.staff.mode.randomtp
+  # The text or value for See Vanished Permission. Available options: Any valid string text
+  SEE-VANISHED-PERMISSION: ultimatedonutsmp.staff.mode.seevanished
+  # The text or value for Others Permission. Available options: Any valid string text
+  OTHERS-PERMISSION: ultimatedonutsmp.staff.mode.others
+  # Configuration section for Hotbar Slots.
+  HOTBAR-SLOTS:
+    # The numerical value for Vanish. Available options: Any valid integer
+    VANISH: 0
+    # The numerical value for Freeze. Available options: Any valid integer
+    FREEZE: 1
+    # The numerical value for Staff List. Available options: Any valid integer
+    STAFF_LIST: 4
+    # The numerical value for Better View. Available options: Any valid integer
+    BETTER_VIEW: 7
+    # The numerical value for Random Teleport. Available options: Any valid integer
+    RANDOM_TELEPORT: 8
+  # Configuration section for Better View.
+  BETTER-VIEW:
+    # Determines whether Enable Night Vision is enabled or disabled. Available options: true, false
+    ENABLE-NIGHT-VISION: true
+    # Determines whether Enable Flight is enabled or disabled. Available options: true, false
+    ENABLE-FLIGHT: true
+    # Determines whether Auto Fly is enabled or disabled. Available options: true, false
+    AUTO-FLY: true
+  # Configuration section for Random Teleport.
+  RANDOM-TELEPORT:
+    # Determines whether Exclude Staff is enabled or disabled. Available options: true, false
+    EXCLUDE-STAFF: true
+    # Determines whether Exclude Vanished is enabled or disabled. Available options: true, false
+    EXCLUDE-VANISHED: true
+    # Determines whether Exclude Frozen is enabled or disabled. Available options: true, false
+    EXCLUDE-FROZEN: false
+    # Determines whether Exclude Duels is enabled or disabled. Available options: true, false
+    EXCLUDE-DUELS: true
+    # Determines whether Exclude Ffa is enabled or disabled. Available options: true, false
+    EXCLUDE-FFA: true
+    # Determines whether Notify Target is enabled or disabled. Available options: true, false
+    NOTIFY-TARGET: false
 ```
 
 ---
@@ -257,7 +309,9 @@ ITEMS:
   RANDOM_TELEPORT:
     MATERIAL: PLAYER_HEAD
     NAME: '&eRandom Teleport'
-  
+    LORE:
+    - '&7Click to teleport to a random player'
+# Configuration section for Menus.
 ```
 
 ---
@@ -534,7 +588,43 @@ MENUS:
     EMPTY-LORE:
     - '&7No staff members are currently online.'
   # Configuration section for Frozen Players.
-  FROZEN-PLAY
+  FROZEN-PLAYERS:
+    TITLE: '&8Frozen Players'
+    SIZE: 54
+    # The numerical value for Refresh Slot. Available options: Any valid integer
+    REFRESH-SLOT: 49
+    # The text or value for Placeholder Material. Available options: Any valid string text
+    PLACEHOLDER-MATERIAL: LIGHT_BLUE_STAINED_GLASS_PANE
+    # Configuration section for Content Slots.
+    CONTENT-SLOTS:
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    # The text or value for Empty Material. Available options: Any valid string text
+    EMPTY-MATERIAL: BARRIER
+    # The text or value for Empty Name. Available options: Any valid string text
+    EMPTY-NAME: '&aNo frozen players'
+    # Configuration section for Empty Lore.
+    EMPTY-LORE:
+    - '&7There are no active frozen players.'
 ```
 
 ---
@@ -626,7 +716,28 @@ MESSAGES:
   # The text or value for Disabled Actionbar. Available options: Any valid string text
   DISABLED-ACTIONBAR: '&cStaff mode disabled'
   # The text or value for Vanish On. Available options: Any valid string text
-  VANISH-ON: '&a
+  VANISH-ON: '&aVanish enabled.'
+  # The text or value for Vanish Off. Available options: Any valid string text
+  VANISH-OFF: '&cVanish disabled.'
+  # The text or value for Better View On. Available options: Any valid string text
+  BETTER-VIEW-ON: '&aBetter View enabled.'
+  # The text or value for Better View Off. Available options: Any valid string text
+  BETTER-VIEW-OFF: '&cBetter View disabled.'
+  # The text or value for Random Teleport No Target. Available options: Any valid string text
+  RANDOM-TELEPORT-NO-TARGET: '&cNo eligible player found.'
+  # The text or value for Random Teleport Success. Available options: Any valid string text
+  RANDOM-TELEPORT-SUCCESS: '&eTeleported to &f{player}&e.'
+  # The text or value for Restore Failed. Available options: Any valid string text
+  RESTORE-FAILED: '&cStaff mode restore failed. Contact an admin.'
+  # The text or value for Recovered After Restart. Available options: Any valid string text
+  RECOVERED-AFTER-RESTART: '&eStaff mode was disabled because the server restarted.
+    Your inventory was restored.'
+  # The text or value for Tool Locked. Available options: Any valid string text
+  TOOL-LOCKED: '&cYour staff tools are locked while Staff Mode is active.'
+  # The text or value for Custom Item No Target. Available options: Any valid string text
+  CUSTOM-ITEM-NO-TARGET: '&cRight-click a player to use this tool.'
+  # The text or value for Reload Success. Available options: Any valid string text
+  RELOAD-SUCCESS: '&aStaff mode config reloaded.'
 ```
 
 ---

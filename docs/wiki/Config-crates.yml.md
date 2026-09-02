@@ -167,7 +167,50 @@ SETTINGS:
     SIZE: 27
     # The text or value for Filler. Available options: Any valid string text
     FILLER: GRAY_STAINED_GLASS_PANE
-    # The numerical value for Prev
+    # The numerical value for Preview Slot. Available options: Any valid integer
+    PREVIEW-SLOT: 13
+    # The numerical value for Confirm Slot. Available options: Any valid integer
+    CONFIRM-SLOT: 15
+    # Configuration section for Confirm Button.
+    CONFIRM-BUTTON:
+      MATERIAL: LIME_STAINED_GLASS_PANE
+      DISPLAY-NAME: '&aConfirm'
+      LORE:
+      - '&7Claim &f{reward}&7 from'
+      - '&b{crate}&7.'
+    # Configuration section for Cancel Button.
+    CANCEL-BUTTON:
+      SLOT: 11
+      MATERIAL: RED_STAINED_GLASS_PANE
+      DISPLAY-NAME: '&cCancel'
+      LORE:
+      - '&7Return to the reward list.'
+  # Configuration section for Hologram.
+  HOLOGRAM:
+    # The decimal value for Offset Y. Available options: Any decimal number
+    OFFSET-Y: 1.6
+    # Configuration section for Lines.
+    LINES:
+    - '{crate}'
+    - '&7Right-click to open'
+    # The text or value for Key Line. Available options: Any valid string text
+    KEY-LINE: '&7Keys: &f{keys}'
+  # Configuration section for Particles.
+  PARTICLES:
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    TYPE: ENCHANT
+    # The numerical value for Count. Available options: Any valid integer
+    COUNT: 4
+  # Configuration section for Gacha.
+  GACHA:
+    TITLE: '&8Rolling Reward'
+    # The text or value for Filler. Available options: Any valid string text
+    FILLER: BLACK_STAINED_GLASS_PANE
+    # Configuration section for Preview Slots.
+    PREVIEW-SLOTS:
+    - 10
+    - 11
 ```
 
 ---
@@ -328,7 +371,59 @@ CRATES:
     # Configuration section for Menu.
     MENU:
       # The text or value for Open Title. Available options: Any valid string text
-
+      OPEN-TITLE: '&8Choose 1 Reward'
+      # The text or value for Confirm Title. Available options: Any valid string text
+      CONFIRM-TITLE: '&8Confirm Reward'
+      SIZE: 27
+      # The text or value for Filler. Available options: Any valid string text
+      FILLER: BLACK_STAINED_GLASS_PANE
+      # The numerical value for Back Slot. Available options: Any valid integer
+      BACK-SLOT: 26
+      # Configuration section for Back Button.
+      BACK-BUTTON:
+        MATERIAL: BARRIER
+        DISPLAY-NAME: '&cBack'
+        LORE:
+        - '&7Return to the crate list.'
+    # Configuration section for Rewards.
+    REWARDS:
+      # Configuration section for Iron Helmet.
+      iron_helmet:
+        SLOT: 10
+        # Configuration section for Display.
+        DISPLAY:
+          MATERIAL: IRON_HELMET
+          DISPLAY-NAME: '&fIron Helmet'
+          LORE:
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: IRON_HELMET
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Iron Chestplate.
+      iron_chestplate:
+        SLOT: 11
+        # Configuration section for Display.
+        DISPLAY:
+          MATERIAL: IRON_CHESTPLATE
+          DISPLAY-NAME: '&fIron Chestplate'
+          LORE:
+          - '&7Choose this reward.'
+        # Configuration section for Grant.
+        GRANT:
+          TYPE: ITEM
+          MATERIAL: IRON_CHESTPLATE
+          # The numerical value for Amount. Available options: Any valid integer
+          AMOUNT: 1
+      # Configuration section for Iron Leggings.
+      iron_leggings:
+        SLOT: 12
+        # Configuration section for Display.
+        DISPLAY:
+          MATERIAL: IRON_LEGGINGS
+          DISPLAY-NAME: '&fIron Leggings'
 ```
 
 ---

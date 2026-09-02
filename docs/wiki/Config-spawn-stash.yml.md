@@ -71,7 +71,12 @@ SETTINGS:
   PROTECT_BLOCKS: false
   # Determines whether Claim Spawners On Break is enabled or disabled. Available options: true, false
   CLAIM_SPAWNERS_ON_BREAK: false
-  # Determines whether Rollback On Reload is enabled or d
+  # Determines whether Rollback On Reload is enabled or disabled. Available options: true, false
+  ROLLBACK_ON_RELOAD: true
+  # Determines whether Log To Console is enabled or disabled. Available options: true, false
+  LOG_TO_CONSOLE: true
+  # The numerical value for Max Blocks Per Stash. Available options: Any valid integer
+  MAX_BLOCKS_PER_STASH: 256
 ```
 
 ---
@@ -173,7 +178,35 @@ MESSAGES:
   REMOVED-ALL: '&aremoved &f{count}&a active stash(es).'
   # The text or value for Expired. Available options: Any valid string text
   EXPIRED: '&7spawnstash #{id} expired and was rolled back.'
-  # The text or value for Reloaded. Available op
+  # The text or value for Reloaded. Available options: Any valid string text
+  RELOADED: '&aspawnstash settings reloaded.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cspawnstash is currently disabled.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: '&conly players can use this command.'
+  # The text or value for No Permission. Available options: Any valid string text
+  NO-PERMISSION: '&cyou do not have permission.'
+  # The text or value for No Active. Available options: Any valid string text
+  NO-ACTIVE: '&cno active stash found.'
+  # The text or value for Blocked Break. Available options: Any valid string text
+  BLOCKED-BREAK: '&cthis stash is protected. use &f/spawnstash remove nearest &cto
+    rollback it.'
+  # The text or value for Spawner Claimed. Available options: Any valid string text
+  SPAWNER-CLAIMED: '&aclaimed &f{amount}x {spawner}&a from spawnstash.'
+  # The text or value for Spawner Claimed Dropped. Available options: Any valid string text
+  SPAWNER-CLAIMED-DROPPED: '&aclaimed &f{amount}x {spawner}&a. &7inventory full, item
+    dropped.'
+  # The text or value for Invalid Type. Available options: Any valid string text
+  INVALID-TYPE: '&cunknown stash type ''&f{type}&c''. use &f/spawnstash list&c.'
+  # The text or value for Invalid Config. Available options: Any valid string text
+  INVALID-CONFIG: '&cspawnstash config is invalid: &f{reason}&c.'
+  # Configuration section for Alert.
+  ALERT:
+  - '&8[&dspawnstash&8] &f{player} &7triggered &d{reason}&7 on stash &f#{id}&7 (&f{type}&7)'
+  - '&7location: &f{world} {x}, {y}, {z} &8| &7created by: &f{creator}'
+  # The text or value for Alert Hover. Available options: Any valid string text
+  ALERT-HOVER: '&eclick to teleport to &f{player}'
+# Configuration section for Types.
 ```
 
 ---
@@ -329,7 +362,54 @@ TYPES:
       SPAWNER_TYPE: SKELETON
       # The text or value for Spawner Access. Available options: Any valid string text
       SPAWNER_ACCESS: PUBLIC
-    -
+    - OFFSET:
+      - 1
+      - 0
+      - 0
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - -1
+      - 0
+      - 1
+      MATERIAL: COBBLED_DEEPSLATE
+    - OFFSET:
+      - 0
+      - 0
+      - 1
+      MATERIAL: AMETHYST_BLOCK
+    - OFFSET:
+      - 1
+      - 0
+      - 1
+      MATERIAL: COBBLED_DEEPSLATE
+    - OFFSET:
+      - -1
+      - 1
+      - 0
+      MATERIAL: DEEPSLATE_TILES
+    - OFFSET:
+      - 1
+      - 1
+      - 0
+      MATERIAL: DEEPSLATE_TILES
+    - OFFSET:
+      - -1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - 0
+      - 1
+      - 1
+      MATERIAL: BUDDING_AMETHYST
+    - OFFSET:
+      - 1
+      - 1
+      - 1
+      MATERIAL: DEEPSLATE
+    - OFFSET:
+      - 0
+      - 2
 ```
 
 ---

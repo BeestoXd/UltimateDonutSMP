@@ -161,8 +161,46 @@ SETTINGS:
   GENERATE-FALLBACK-AFTER-SAMPLES: 8
   # Maximum fallback chunks allowed to generate during one RTP search
   MAX-GENERATE-FALLBACK-SAMPLES: 32
-  # Allow loading already-generated chunks from disk if chunk generation is disabled
-  LOAD-GEN
+  # Allow loading already-generated chunks from disk if chunk generation is disabled.
+  # Turning this off with GENERATE-CHUNKS off as well leaves the search no way to reach a chunk
+  LOAD-GENERATED-CHUNKS: true
+  # If random samples cannot be prepared, try already-loaded chunks as a fallback
+  FALLBACK-TO-LOADED-CHUNKS: true
+  # Chunk samples to try before loaded chunk fallback starts
+  LOADED-CHUNK-FALLBACK-AFTER-SAMPLES: 32
+  # Load the chunks around the destination before the teleport lands, so a player does not
+  # arrive in terrain the server has not read yet. Off teleports straight away and lets the
+  # client catch up on its own
+  PRELOAD-TELEPORT-CHUNKS: true
+  # Chunk radius loaded around the destination, from 2 to 4. This is a floor rather than a
+  # cap: while POST-TELEPORT-CHUNK-THROTTLE is on, the throttled view distance below raises
+  # it, so on stock settings the radius is 4 whatever you put here
+  PRELOAD-RADIUS: 2
+  # Chunks loaded per tick while preloading. Values below 2 are treated as 2
+  PRELOAD-CHUNKS-PER-TICK: 2
+  # Give up preloading after this many ticks. Raised on its own when the radius and the
+  # per-tick rate above need longer than this to finish
+  PRELOAD-MAX-TICKS: 40
+  # Hold a player at a shorter view and simulation distance for a moment after an RTP, so the
+  # server is not sending a full render of brand new terrain all at once
+  POST-TELEPORT-CHUNK-THROTTLE: true
+  # View distance to hold them at while the throttle is on. It only ever lowers a player's
+  # distance, never raises it, and values below 2 are treated as 2
+  POST-TELEPORT-VIEW-DISTANCE: 4
+  # Simulation distance to hold them at while the throttle is on. Same rules as above
+  POST-TELEPORT-SIMULATION-DISTANCE: 4
+  # Ticks before the throttled distances are handed back. Values below 20 are treated as 20
+  POST-TELEPORT-THROTTLE-TICKS: 80
+  # Safe locations found ahead of time in the background so RTP can teleport without searching
+  LOCATION-CACHE:
+    # Enable or disable the background safe location cache
+    ENABLED: true
+    # How many ready locations are kept per RTP world. 0 disables the cache
+    SIZE: 3
+    # Seconds a cached location stays usable before it is thrown away. 0 keeps it until the next reload
+    MAX-AGE-SECONDS: 600
+
+# User feedback and status messages
 ```
 
 ---
@@ -511,7 +549,10 @@ MESSAGES:
   DESTINATION-DISABLED: '&cThis RTP destination is currently disabled.'
   PLAYTIME-REQUIRED: '&cYou need at least {required} hours of playtime to RTP to {world}. &7(Current: {current}h)'
   UNSAFE-LOCATION: '&cThe location at X:{x} Y:{y} Z:{z} was rejected: {reason}'
-  SAFE-LOCA
+  SAFE-LOCATION-FOUND-HIDDEN: '&aSafe location found! Teleporting you blindly...'
+  SEARCH-FOUND-ACTIONBAR-HIDDEN: '&aFound safe location'
+
+# List of world names where RTP execution is denied
 ```
 
 ---

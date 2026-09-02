@@ -453,7 +453,43 @@ MESSAGES:
   # The text or value for Cooldown. Available options: Any valid string text
   COOLDOWN: '&cwait &f{seconds}s &cbefore changing hide again.'
   # The text or value for Already Hidden. Available options: Any valid string text
-  ALREADY-HIDDEN: '&cyou are already using that hide i
+  ALREADY-HIDDEN: '&cyou are already using that hide identity.'
+  # The text or value for Not Hidden. Available options: Any valid string text
+  NOT-HIDDEN: '&cthat player is not hidden.'
+  # The text or value for Player Not Found. Available options: Any valid string text
+  PLAYER-NOT-FOUND: '&cplayer not found.'
+  # The text or value for Invalid Alias. Available options: Any valid string text
+  INVALID-ALIAS: '&cthat disguise alias is not configured or is invalid.'
+  # The text or value for Invalid Skin. Available options: Any valid string text
+  INVALID-SKIN: '&cunable to resolve that skin name or url.'
+  # The text or value for Skin Searching. Available options: Any valid string text
+  SKIN-SEARCHING: '&7searching skin for &f{skin}&7...'
+  # The text or value for Alias In Use. Available options: Any valid string text
+  ALIAS-IN-USE: '&cthat alias is already in use.'
+  # The text or value for Scrambled. Available options: Any valid string text
+  SCRAMBLED: '&ayour identity is now scrambled as &f{alias}&a.'
+  # The text or value for Disguised. Available options: Any valid string text
+  DISGUISED: '&ayou are now disguised as &f{alias}&a.'
+  # The text or value for Removed. Available options: Any valid string text
+  REMOVED: '&ayour hide state has been removed.'
+  # The text or value for Admin Removed. Available options: Any valid string text
+  ADMIN-REMOVED: '&asuccessfully removed hide from &f{player}&a.'
+  # The text or value for Removed By Admin. Available options: Any valid string text
+  REMOVED-BY-ADMIN: '&cyour hide state has been removed by an administrator.'
+  # The text or value for Status None. Available options: Any valid string text
+  STATUS-NONE: '&7hide status: &cinactive'
+  # The text or value for Status Active. Available options: Any valid string text
+  STATUS-ACTIVE: '&7hide status: &a{mode} &8- &f{alias}'
+  # The text or value for Check. Available options: Any valid string text
+  CHECK: |-
+    &bhide check
+    &7real name: &f{real}
+    &7alias: &f{alias}
+    &7mode: &f{mode}
+    &7skin: &f{skin}
+  # The text or value for Permission Removed. Available options: Any valid string text
+  PERMISSION-REMOVED: '&cyour hide state was removed because its permission is no
+    longer available.'
 ```
 
 ---

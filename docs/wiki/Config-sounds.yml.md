@@ -708,7 +708,24 @@ DUELS:
       # The text or value for 4. Available options: Any valid string text
       4: minecraft:block.note_block.hat|1.0|1.0
       # The text or value for 3. Available options: Any valid string text
-      3: m
+      3: minecraft:block.note_block.hat|1.0|1.0
+      # The text or value for 2. Available options: Any valid string text
+      2: minecraft:block.note_block.hat|1.0|1.0
+      # The text or value for 1. Available options: Any valid string text
+      1: minecraft:block.note_block.hat|1.0|1.0
+    # The text or value for Start Sound. Available options: Any valid string text
+    START-SOUND: minecraft:entity.firework_rocket.blast|1.0|1.0
+  # The text or value for Match Found. Available options: Any valid string text
+  MATCH-FOUND: minecraft:block.beacon.activate|1.0|1.1
+  # The text or value for Match Start. Available options: Any valid string text
+  MATCH-START: minecraft:entity.player.levelup|1.0|1.0
+  # The text or value for Victory. Available options: Any valid string text
+  VICTORY: minecraft:ui.toast.challenge_complete|1.0|1.0
+  # The text or value for Defeat. Available options: Any valid string text
+  DEFEAT: minecraft:entity.villager.no|1.0|1.0
+  # The text or value for Claim. Available options: Any valid string text
+  CLAIM: minecraft:entity.item.pickup|1.0|1.0
+# Configuration section for Key All.
 ```
 
 ---

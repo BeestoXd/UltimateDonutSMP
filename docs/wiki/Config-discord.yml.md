@@ -142,7 +142,59 @@ WEBHOOKS:
       TITLE: Player Banned - %player%
       # The text or value for Color. Available options: Any valid string text
       COLOR: '#FF0000'
-      # The text or
+      # The text or value for Description. Available options: Any valid string text
+      DESCRIPTION: |-
+        :hammer: **Punishment Type:** Ban
+
+        **Player:**
+        %player%
+
+        **Staff:**
+        %staff%
+
+        **Reason:**
+        ||%reason%||
+
+        **Duration:**
+        %duration%
+
+        **Date:**
+        %date%
+
+        **ID:** `%id%`
+      # The text or value for Thumbnail. Available options: Any valid string text
+      THUMBNAIL: '%skin_bust%'
+      # The text or value for Author Name. Available options: Any valid string text
+      AUTHOR_NAME: Ban System
+      # The text or value for Footer. Available options: Any valid string text
+      FOOTER: Punishment issued via server
+    # Configuration section for Mute.
+    MUTE:
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: true
+      TITLE: Player Muted - %player%
+      # The text or value for Color. Available options: Any valid string text
+      COLOR: '#FFFF00'
+      # The text or value for Description. Available options: Any valid string text
+      DESCRIPTION: |-
+        :mute: **Punishment Type:** Mute
+
+        **Player:**
+        %player%
+
+        **Staff:**
+        %staff%
+
+        **Reason:**
+        ||%reason%||
+
+        **Duration:**
+        %duration%
+
+        **Date:**
+        %date%
+
+        **ID:** `%id%`
 ```
 
 ---

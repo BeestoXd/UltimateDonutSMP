@@ -165,7 +165,21 @@ PORTAL-SYSTEM:
     DEFAULT-SERVER-ID: ''
     # The text or value for Portals. Available options: Any valid string text
     PORTALS: null
-    # The decimal value for Offset
+    # The decimal value for Offset Y. Available options: Any decimal number
+    OFFSET-Y: 1.2
+    # The decimal value for Set Here Offset Y. Available options: Any decimal number
+    SET-HERE-OFFSET-Y: 1.6
+    # The decimal value for Line Spacing. Available options: Any decimal number
+    LINE-SPACING: 0.27
+    # The numerical value for Update Ticks. Available options: Any valid integer
+    UPDATE-TICKS: 40
+    # Configuration section for Lines.
+    LINES:
+    - '&f{portal}'
+    - '&7Region {region}'
+    - ''
+    - '&f<total_player> Players'
+# Configuration section for Settings.
 ```
 
 ---
@@ -327,7 +341,77 @@ SETTINGS:
     AMOUNT: 1
   - MATERIAL: CHAINMAIL_BOOTS
     NAME: '&eChainmail Boots'
-    # The numerical val
+    # The numerical value for Amount. Available options: Any valid integer
+    AMOUNT: 1
+  - MATERIAL: COOKED_BEEF
+    # The numerical value for Amount. Available options: Any valid integer
+    AMOUNT: 16
+  # Homes every player gets when no HOME-PERMISSIONS entry applies to them
+  # Raise the HOME-PERMISSIONS entries below to hand out extra homes as a rank perk
+  # Available options: Any valid integer
+  HOME-DEFAULT: 2
+  # Per-rank home limits resolved from permissions
+  HOME-PERMISSIONS:
+    # Enable or disable permission based home limits
+    ENABLED: true
+    # Explicit mapping from permission node to home limit
+    # Players can also be given ultimatedonutsmp.homes.<1-100> directly, for example
+    # ultimatedonutsmp.homes.10 for ten homes, or ultimatedonutsmp.homes.page.<1-100> to
+    # hand out whole pages of five at a time
+    # The highest value the player has wins
+    # Players without any of these permissions keep HOME-DEFAULT above
+    PERMISSIONS:
+      "ultimatedonutsmp.homes.vip++": 15
+      "ultimatedonutsmp.homes.vip+": 10
+      "ultimatedonutsmp.homes.vip": 5
+  # The numerical value for Shards Per Kill. Available options: Any valid integer
+  SHARDS-PER-KILL: 1
+  # The text or value for Shards Kill Message. Available options: Any valid string text
+  SHARDS-KILL-MESSAGE: '&#A303F9+{shards} Shard'
+  # The text or value for Shards Kill Message Boosted, shown instead of Shards Kill
+  # Message while a shard booster multiplies the kill reward. Supports {multiplier}.
+  # Available options: Any valid string text
+  SHARDS-KILL-MESSAGE-BOOSTED: '&#A303F9+{shards} Shards &7(&ax{multiplier}&7)'
+  # The numerical value for Shards Kill Cooldown Seconds. Blocks repeated kill rewards
+  # against the same victim until the cooldown expires. Set to 0 to disable.
+  # Available options: Any valid integer
+  SHARDS-KILL-COOLDOWN-SECONDS: 600
+  # The text or value for Shards Kill Cooldown Message, shown when the kill reward is
+  # skipped because the same victim was killed recently. Leave empty to stay silent.
+  # Available options: Any valid string text
+  SHARDS-KILL-COOLDOWN-MESSAGE: '&cNo Shard &7(killed recently, {time} left)'
+  # The decimal value for Money Per Default. Available options: Any decimal number
+  MONEY-PER-DEFAULT: 1000.0
+  # The text or value for Sell Message. Available options: Any valid string text
+  SELL-MESSAGE: '&a+$%price%'
+  # Determines whether Spawn Menu is enabled or disabled. Available options: true, false
+  SPAWN-MENU: true
+  # Determines whether Afk Menu is enabled or disabled. Available options: true, false
+  AFK-MENU: true
+  # Determines whether players are teleported to the spawn location the first time they
+  # join the server. Ignored while First Join Rtp Enabled is true. Available options:
+  # true, false
+  TELEPORT-SPAWN-ON-FIRST-JOIN: true
+  # The numerical value for First Join Spawn Delay Ticks, how long to wait after a new
+  # player joins before sending them to spawn. Raise it when another plugin moves players
+  # around on join. Available options: Any valid integer
+  FIRST-JOIN-SPAWN-DELAY-TICKS: 20
+  # The decimal value for Worth Default Value. Available options: Any decimal number
+  WORTH-DEFAULT-VALUE: 1.0
+  # The numerical value for Mob Spawn Radius. Available options: Any valid integer
+  MOB-SPAWN-RADIUS: 50
+  # The numerical value for Phantom Spawn Radius. Available options: Any valid integer
+  PHANTOM-SPAWN-RADIUS: 40
+  # The numerical value for Disable Mob Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
+  DISABLE-MOB-SPAWN-LIMIT-SECONDS: -1
+  # The numerical value for Disable Phantom Spawn Limit Seconds. Set to -1 for no limit. Available options: Any valid integer
+  DISABLE-PHANTOM-SPAWN-LIMIT-SECONDS: 3600
+  # Determines whether the per player mob spawn toggle also stops trial spawners in trial
+  # chambers. Leave it false so the chamber still has to be fought. A trial spawner ejects
+  # its rewards once the mobs it released are gone, so blocking those spawns hands out the
+  # loot for free. Available options: true, false
+  MOB-SPAWN-TOGGLE-BLOCKS-TRIAL-SPAWNERS: false
+# Configuration section for Features.
 ```
 
 ---
@@ -697,7 +781,76 @@ CHAT:
     - '&#FC0000⚔ &fkills &#FC0000%economy_kills%'
     - '&#FCE300⌚ &fplaytime &#FCE300%economy_playtime%'
     - '&#F97603☠ &fdeaths &#F97603%economy_deaths%'
- 
+    - '&#A303F9★ &fshards &#A303F9%economy_shards%'
+    - '&7&m----------'
+    - '&7click to view stats'
+    # The text or value for Suggest Command. Available options: Any valid string text
+    SUGGEST-COMMAND: '/msg <player> '
+  # Determines whether Global Chat Muted is enabled or disabled. Available options: true, false
+  GLOBAL-CHAT-MUTED: false
+  # Determines whether Global Chat Delay Enabled is enabled or disabled. Available options: true, false
+  GLOBAL-CHAT-DELAY-ENABLED: false
+  # The numerical value for Global Chat Delay. Available options: Any valid integer
+  GLOBAL-CHAT-DELAY: 3
+  # The numerical value for Max Delay Seconds. Available options: Any valid integer
+  MAX-DELAY-SECONDS: 30
+  # The numerical value for Clear Lines. Available options: Any valid integer
+  CLEAR-LINES: 150
+  # Configuration section for Logging. Writes chat into each player's own log, so staff can
+  # read it back with /logs <player> or browse the whole server with /chatlog. None of these
+  # switches change what players see in chat.
+  LOGGING:
+    # Master switch for chat logging. With this off, neither public nor private messages are
+    # recorded, whatever the two switches below say. Available options: true, false
+    ENABLED: true
+    # Records normal public chat. Only messages that actually reach chat are stored, so muted,
+    # filtered and rate-limited messages are left out. Available options: true, false
+    PUBLIC-MESSAGES: true
+    # Records private messages sent with /msg and /reply, on both sides of the conversation.
+    # Available options: true, false
+    PRIVATE-MESSAGES: true
+  # Configuration section for Filter.
+  FILTER:
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The text or value for Block Message. Available options: Any valid string text
+    BLOCK-MESSAGE: '&7Please avoid using inappropriate words.'
+    # Configuration section for Words.
+    WORDS:
+    - fuck
+    - shit
+    - bitch
+    # Configuration section for Language.
+    LANGUAGE:
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # Configuration section for Allowed Alphabets.
+      ALLOWED-ALPHABETS:
+      - LATIN
+      - NUMBERS
+      - SYMBOLS
+      # The text or value for Block Message. Available options: Any valid string text
+      BLOCK-MESSAGE: '&cYour message contains characters that are not allowed on this
+        server.'
+    # Configuration section for Caps.
+    CAPS:
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # The numerical value for Percentage. Available options: Any valid integer
+      PERCENTAGE: 70
+      # The numerical value for Min Length. Available options: Any valid integer
+      MIN-LENGTH: 5
+      # The text or value for Block Message. Available options: Any valid string text
+      BLOCK-MESSAGE: '&cPlease avoid using too many capital letters.'
+    # Configuration section for Anti Repeat.
+    ANTI-REPEAT:
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
+      ENABLED: false
+      # The text or value for Block Message. Available options: Any valid string text
+      BLOCK-MESSAGE: '&cYou cannot repeat the same message!'
+    # Configuration section for Anti Link.
+    ANTI-LINK:
+      # Determines whether Enabled is enabled or disabled. Available options: true, false
 ```
 
 ### 4. Colours In The Chat Format
@@ -1251,7 +1404,15 @@ FAST-CRYSTALS:
     VALID-BASES:
     - OBSIDIAN
     - BEDROCK
-    # Determines whether Require Air Above is enabled or disabled. Ava
+    # Determines whether Require Air Above is enabled or disabled. Available options: true, false
+    REQUIRE-AIR-ABOVE: true
+    # Determines whether Require Air Two Above is enabled or disabled. Available options: true, false
+    REQUIRE-AIR-TWO-ABOVE: true
+  # Configuration section for Break.
+  BREAK:
+    # Determines whether Clear Cooldown After Hit is enabled or disabled. Available options: true, false
+    CLEAR-COOLDOWN-AFTER-HIT: true
+# Configuration section for Respawn Anchor.
 ```
 
 ---
@@ -1445,7 +1606,19 @@ LUNAR-CLIENT:
     WORLD-NAME: Economy
     # The text or value for Sub Server Name. Available options: Any valid string text
     SUB-SERVER-NAME: SMP
-    # The text or value for Team Current Size. Available op
+    # The text or value for Team Current Size. Available options: Any valid string text
+    TEAM-CURRENT-SIZE: '{team_size}'
+    # The text or value for Team Max Size. Available options: Any valid string text
+    TEAM-MAX-SIZE: '{team_max_size}'
+    # The numerical value for Max Field Length. Available options: Any valid integer
+    MAX-FIELD-LENGTH: 128
+  # Configuration section for Team View.
+  TEAM-VIEW:
+    # Determines whether Enabled is enabled or disabled. Available options: true, false
+    ENABLED: true
+    # The numerical value for Update. Available options: Any valid integer
+    UPDATE: 20
+# Configuration section for Shards.
 ```
 
 ---
@@ -1707,7 +1880,12 @@ KEY-ALL:
     # Determines whether Enabled is enabled or disabled. Available options: true, false
     ENABLED: true
     # Configuration section for Message.
-    
+    MESSAGE:
+    - ''
+    - '&#00A4FCKey-All reward!'
+    - '&fYou received &b{amount}x {crate}&f key.'
+    - ''
+# Configuration section for Team.
 ```
 
 ---
@@ -1854,7 +2032,18 @@ TABLIST:
   MEDIA-BADGE-PERMISSION: rank.media
   # The text or value for Name Format. Available options: Any valid string text
   NAME-FORMAT: <icon_head_skin> <media_badge>&f<nick>%team_suffix%
-  # Configuration sect
+  # Configuration section for Header.
+  HEADER:
+  - ''
+  - <#00ADFC>&lServer Name</#00FCFC>
+  - '&f%online% Players'
+  - ''
+  # Configuration section for Footer.
+  FOOTER:
+  - ''
+  - '   &#37BFF9/discord  /guide  /store   '
+  - ''
+# Configuration section for Optimization.
 ```
 
 ---

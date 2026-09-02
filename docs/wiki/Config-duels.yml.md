@@ -457,7 +457,52 @@ MAP_SOURCES:
     CLEANUP_AFTER_MATCH: true
     # Radius of arena play zone in blocks
     ARENA_RADIUS: 48
-    # Distance
+    # Distance between player spawn points in blocks
+    SPAWN_DISTANCE: 16
+    # Search radius when scanning for safe spawn points on vanilla terrain
+    SPAWN_SEARCH_RADIUS: 16
+    # World name prefix for auto-generated duel worlds
+    WORLD_PREFIX: duel_biome_
+    # Subfolder name for generated duel world files
+    WORLD_FOLDER: duel
+    # Whitelist of biome keys allowed for selection (empty [] = all biomes allowed)
+    ALLOWLIST: []
+    # Blacklist of biome keys excluded from selection
+    EXCLUDE: []
+
+    # Pre-prepared world pool settings for FLAT terrain mode
+    FLAT_POOL:
+      # Enable pre-generating flat duel worlds in advance (true / false)
+      ENABLED: true
+      # Recycle and reuse clean flat worlds for subsequent matches (true / false)
+      REUSE_WORLDS: true
+      # Number of pre-prepared flat worlds to keep ready in pool
+      SIZE: 2
+      # Interval in ticks between pool preparation checks
+      PREPARE_INTERVAL_TICKS: 20
+
+    # Pre-prepared world pool settings for VANILLA terrain mode
+    VANILLA_POOL:
+      # Enable pre-generating vanilla terrain duel worlds (true / false)
+      ENABLED: true
+      # Allow background chunk generation for vanilla terrain (true / false)
+      RUNTIME_GENERATION: true
+      # Number of pre-prepared vanilla worlds to keep ready in pool
+      SIZE: 2
+      # Chunks generated per tick to prevent server lag
+      CHUNKS_PER_TICK: 1
+      # Interval in ticks between vanilla pool preparation ticks
+      PREPARE_INTERVAL_TICKS: 1
+      # Maximum allowed time in milliseconds per sync preparation step before pausing
+      MAX_SYNC_STEP_MS: 2000
+      # Pause background chunk generation if a step exceeds MAX_SYNC_STEP_MS (true / false)
+      PAUSE_ON_SLOW_STEP: true
+      # Maximum percentage of the arena allowed to be water before it is regenerated (100 = allow any)
+      MAX_WATER_PERCENT: 40
+      # How many times a too-watery arena is regenerated before it is used anyway
+      MAX_TERRAIN_ATTEMPTS: 5
+
+# Cross-server BungeeCord / Velocity Redis sync settings
 ```
 
 ---
