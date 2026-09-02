@@ -277,6 +277,14 @@ CHAT:
 # updating the jar never changes how an existing server's chat looks - turn on the ones you
 # want. Join, leave and first-join lines still follow each player's Join/Leave Messages choice
 # under /settings, and the marketplace lines follow their Server Broadcasts switch.
+#
+# Each of the three lines below can also read differently per rank. Put the permission a rank
+# carries under BY-PERMISSION with the wording that rank should get. The first entry a player
+# matches wins, so list your highest rank first, exactly as the examples do. A player matching
+# nothing gets the plain MESSAGE above it, which is also what happens while BY-PERMISSION is
+# empty, so leaving it alone keeps the wording every server has today. Matching is on the exact
+# node: a wildcard such as ultimatedonutsmp.* does not pick these up, so an operator is
+# announced with the plain line unless you grant them one of these nodes yourself.
 SERVER-NOTIFICATIONS:
   # The line everyone sees when a player connects. While this is off the server's own join
   # message is relayed instead, exactly as it is today.
@@ -285,6 +293,12 @@ SERVER-NOTIFICATIONS:
     ENABLED: false
     # The text or value for Message. Supports {player}. Available options: Any valid string text
     MESSAGE: '&8[&a+&8] &a{player} &7joined the server.'
+    # Per-rank wording, resolved from permissions. Supports {player} like MESSAGE above.
+    # Delete the examples you do not want; they are never merged back once removed.
+    BY-PERMISSION:
+      "ultimatedonutsmp.notifications.join.vip++": '&8[&a+&8] &6{player} &7joined the server.'
+      "ultimatedonutsmp.notifications.join.vip+": '&8[&a+&8] &b{player} &7joined the server.'
+      "ultimatedonutsmp.notifications.join.vip": '&8[&a+&8] &e{player} &7joined the server.'
   # The line everyone sees when a player disconnects. While this is off the server's own quit
   # message is relayed instead, exactly as it is today.
   LEAVE:
@@ -292,6 +306,12 @@ SERVER-NOTIFICATIONS:
     ENABLED: false
     # The text or value for Message. Supports {player}. Available options: Any valid string text
     MESSAGE: '&8[&c-&8] &c{player} &7left the server.'
+    # Per-rank wording, resolved from permissions. Supports {player} like MESSAGE above.
+    # Delete the examples you do not want; they are never merged back once removed.
+    BY-PERMISSION:
+      "ultimatedonutsmp.notifications.leave.vip++": '&8[&c-&8] &6{player} &7left the server.'
+      "ultimatedonutsmp.notifications.leave.vip+": '&8[&c-&8] &b{player} &7left the server.'
+      "ultimatedonutsmp.notifications.leave.vip": '&8[&c-&8] &e{player} &7left the server.'
   # Sent in place of the join line the very first time a player ever connects. It replaces the
   # join message rather than arriving alongside it, so nobody gets announced twice.
   FIRST-JOIN:
@@ -299,6 +319,12 @@ SERVER-NOTIFICATIONS:
     ENABLED: false
     # The text or value for Message. Supports {player}. Available options: Any valid string text
     MESSAGE: '&aWelcome &e{player} &ato the server for the first time!'
+    # Per-rank wording, resolved from permissions. Supports {player} like MESSAGE above.
+    # Delete the examples you do not want; they are never merged back once removed.
+    BY-PERMISSION:
+      "ultimatedonutsmp.notifications.first-join.vip++": '&aWelcome &6{player} &ato the server for the first time!'
+      "ultimatedonutsmp.notifications.first-join.vip+": '&aWelcome &b{player} &ato the server for the first time!'
+      "ultimatedonutsmp.notifications.first-join.vip": '&aWelcome &e{player} &ato the server for the first time!'
   # Announcements for the Auction House. Bot listings are never announced.
   AUCTION-HOUSE:
     # Determines whether Auction House announcements are enabled or disabled. Turning this off

@@ -576,6 +576,58 @@ class ConfigManagerTest {
     }
 
     @Test
+    void mergeBundledDefaultsKeepsDeletedJoinRankWordingDeleted() throws Exception {
+        List<String> currentLines = lines(
+                "SERVER-NOTIFICATIONS:",
+                "  JOIN:",
+                "    ENABLED: true",
+                "    MESSAGE: '{player} joined'",
+                "    BY-PERMISSION:",
+                "      \"ultimatedonutsmp.notifications.join.owner\": '&4{player} joined'"
+        );
+        List<String> bundledLines = lines(
+                "SERVER-NOTIFICATIONS:",
+                "  JOIN:",
+                "    ENABLED: false",
+                "    MESSAGE: '{player} joined the server'",
+                "    BY-PERMISSION:",
+                "      \"ultimatedonutsmp.notifications.join.vip++\": '&6{player} joined'",
+                "      \"ultimatedonutsmp.notifications.join.vip\": '&e{player} joined'"
+        );
+
+        int changes = mergeBundledDefaults("config.yml", currentLines, bundledLines);
+
+        assertEquals(0, changes);
+        assertFalse(currentLines.stream().anyMatch(line -> line.contains("vip++")));
+        assertFalse(currentLines.stream().anyMatch(line -> line.contains("vip\"")));
+        assertTrue(currentLines.stream().anyMatch(line -> line.contains("join.owner")));
+    }
+
+    @Test
+    void mergeBundledDefaultsStillAddsPerRankWordingToConfigsThatPredateIt() throws Exception {
+        List<String> currentLines = lines(
+                "SERVER-NOTIFICATIONS:",
+                "  JOIN:",
+                "    ENABLED: true",
+                "    MESSAGE: '{player} joined'"
+        );
+        List<String> bundledLines = lines(
+                "SERVER-NOTIFICATIONS:",
+                "  JOIN:",
+                "    ENABLED: false",
+                "    MESSAGE: '{player} joined the server'",
+                "    BY-PERMISSION:",
+                "      \"ultimatedonutsmp.notifications.join.vip\": '&e{player} joined'"
+        );
+
+        int changes = mergeBundledDefaults("config.yml", currentLines, bundledLines);
+
+        assertTrue(changes > 0);
+        assertTrue(currentLines.stream().anyMatch(line -> line.contains("BY-PERMISSION")));
+        assertTrue(currentLines.contains("    MESSAGE: '{player} joined'"));
+    }
+
+    @Test
     void repairsMiscasedPlaceholdersLeftInExistingMenus() throws Exception {
         List<String> currentLines = lines(
                 "SELL-MENU:",
