@@ -472,13 +472,15 @@ public class LanguageManager {
         mergeTranslatableSection(target, "MENUS", config.getLegacyMenus(), true, MENU_EXCLUDED_PATHS, force);
         mergeFeature(target, "BILLFORD", config.getBillford(), List.of("BILLFORD", "ACCESS.NPC.DISPLAY_NAME"), force);
         mergeFeature(target, "RTP", config.getRtp(), List.of("DENIED-WORLDS", "WORLD-SETTINGS"), force);
-        mergeFeature(target, "AMETHYST_TOOLS", config.getAmethystTools(), List.of(), force);
+        mergeFeature(target, "AMETHYST_TOOLS", config.getAmethystTools(),
+                List.of("AMETHYST-TOOLS.DRILL.DISABLED-BLOCKS"), force);
         mergeFeature(target, "ENDER_CHEST", config.getEnderChest(), List.of(), force);
         mergeFeature(target, "INVSEE", config.getInvsee(), List.of(), force);
         mergeFeature(target, "FREEZE", config.getFreeze(), List.of("FREEZE.SERVER-NAME", "FREEZE.ALLOWED-COMMANDS"), force);
         mergeFeature(target, "AUCTION_HOUSE", config.getAuctionHouse(), List.of(), force);
         mergeFeature(target, "ORDERS", config.getOrders(), List.of("CATEGORY_FILTERS"), force);
-        mergeFeature(target, "DUELS", config.getDuels(), List.of("ARENA_SETTINGS", "MAP_SOURCES"), force);
+        mergeFeature(target, "DUELS", config.getDuels(),
+                List.of("ARENA_SETTINGS", "MAP_SOURCES", "CROSS_SERVER.PROXY_SERVER_NAME"), force);
         mergeFeature(target, "FFA", config.getFfa(), List.of("ARENA_SETTINGS"), force);
         mergeFeature(target, "CRATES", config.getCrates(), List.of("CRATES"), force);
         mergeFeature(target, "SPAWNERS", config.getSpawners(), List.of("TYPES"), force);
