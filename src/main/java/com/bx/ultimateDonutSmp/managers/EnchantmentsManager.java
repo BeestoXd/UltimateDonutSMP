@@ -95,52 +95,52 @@ public class EnchantmentsManager {
 
     public String getGuiTitle() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getString("GUI.TITLE", "&8Pick enchantments") : "&8pick enchantments";
+        return config != null ? config.getString("gui.title", "&8Pick enchantments") : "&8pick enchantments";
     }
 
     public int getGuiRows() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getInt("GUI.ROWS", 6) : 6;
+        return config != null ? config.getInt("gui.rows", 6) : 6;
     }
 
     public int getCancelSlot() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getInt("GUI.SLOTS.CANCEL", 46) : 46;
+        return config != null ? config.getInt("gui.slots.cancel", 46) : 46;
     }
 
     public int getPrevSlot() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getInt("GUI.SLOTS.PREV", 45) : 45;
+        return config != null ? config.getInt("gui.slots.prev", 45) : 45;
     }
 
     public int getNextSlot() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getInt("GUI.SLOTS.NEXT", 53) : 53;
+        return config != null ? config.getInt("gui.slots.next", 53) : 53;
     }
 
     public int getConfirmSlot() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getInt("GUI.SLOTS.CONFIRM", 52) : 52;
+        return config != null ? config.getInt("gui.slots.confirm", 52) : 52;
     }
 
     public int getItemSlot() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getInt("GUI.SLOTS.ITEM", 0) : 0;
+        return config != null ? config.getInt("gui.slots.item", 0) : 0;
     }
 
     public String getMessageSelect() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getString("MESSAGES.SELECT", "&fClick to select") : "&fclick to select";
+        return config != null ? config.getString("messages.select", "&fClick to select") : "&fclick to select";
     }
 
     public String getMessageSelected() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getString("MESSAGES.SELECTED", "&aSelected") : "&aselected";
+        return config != null ? config.getString("messages.selected", "&aSelected") : "&aselected";
     }
 
     public String getMessageCannot() {
         FileConfiguration config = plugin.getConfigManager().getEnchantments();
-        return config != null ? config.getString("MESSAGES.CANNOT", "&fCannot add this enchantment") : "&fcannot add this enchantment";
+        return config != null ? config.getString("messages.cannot", "&fCannot add this enchantment") : "&fcannot add this enchantment";
     }
 
     private void mapMaterials() {

@@ -5,11 +5,11 @@ The file drives the enchantment picker: which enchantments each kind of item can
 what level, and where each option sits in the menu.
 
 Two things are worth knowing before you edit it. The keys in this file are lower case, unlike
-every other config the plugin ships, and that is not cosmetic: the per item sections below are
-read exactly as written, while the `messages` and `gui` sections are looked up under upper case
-paths and so are never read at all. Each of those two sections says so again in place.
+every other config the plugin ships, and the plugin matches them exactly as written, so `gui.title`
+works and `GUI.TITLE` does not. Get the case wrong and nothing complains; the built in default is
+used instead.
 
-The other is `trident`. The plugin looks for a `trident` section alongside the fourteen below,
+The second is `trident`. The plugin looks for a `trident` section alongside the fourteen below,
 and the file does not ship one, so tridents have no options until you add it yourself.
 
 ---
@@ -36,11 +36,6 @@ messages:
 | `messages.select` | `str` | Any string text | `'&fClick to select'` | The lore line on an option the player has not picked yet. |
 | `messages.selected` | `str` | Any string text | `'&aSelected'` | The lore line on an option they have picked. |
 | `messages.cannot` | `str` | Any string text | `'&fCannot add this enchantment'` | The lore line on an option that conflicts with something already chosen. |
-
-Nothing below this heading is read by the plugin as it ships. `EnchantmentsManager` looks these
-values up under upper case paths (`GUI.TITLE`, `GUI.SLOTS.CANCEL`, `MESSAGES.SELECT`), and Bukkit
-config paths are case sensitive, so the lower case keys in the file never match and the built in
-defaults are used instead. Editing them changes nothing today.
 
 ### 3. Practical Setup Example
 
@@ -78,54 +73,6 @@ gui:
     next: 53
     # The numerical value for Confirm. Available options: Any valid integer
     confirm: 52
-  # Configuration section for Buttons.
-  buttons:
-    # Configuration section for Cancel.
-    cancel:
-      # The text or value for Material. Available options: Any valid string text
-      material: RED_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14cancel'
-      # Configuration section for Lore.
-      lore:
-      - '&fClick to return'
-    # Configuration section for Confirm.
-    confirm:
-      # The text or value for Material. Available options: Any valid string text
-      material: LIME_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14confirm'
-      # Configuration section for Lore.
-      lore:
-      - '&fClick to confirm enchants'
-    # Configuration section for Page Filler.
-    page_filler:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
-      enabled: false
-      # The text or value for Material. Available options: Any valid string text
-      material: GRAY_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&7 '
-    # Configuration section for Filler.
-    filler:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
-      enabled: true
-      # The text or value for Slots. Available options: Any valid string text
-      slots: 1,9,10
-      # The text or value for Material. Available options: Any valid string text
-      material: GRAY_STAINED_GLASS_PANE
-      # The text or value for Displayname. Available options: Any valid string text
-      displayname: '&7 '
-  # Configuration section for Sounds.
-  sounds:
-    # Configuration section for Click.
-    click:
-      # The text or value for Name. Available options: Any valid string text
-      name: BLOCK_ENCHANTMENT_TABLE_USE
-      # The decimal value for Volume. Available options: Any decimal number
-      volume: 1.0
-      # The decimal value for Pitch. Available options: Any decimal number
-      pitch: 1.0
 # Configuration section for Helmet.
 ```
 
@@ -140,13 +87,11 @@ gui:
 | `gui.slots.prev` | `int` | A slot number | `45` | The previous page button. |
 | `gui.slots.next` | `int` | A slot number | `53` | The next page button. |
 | `gui.slots.confirm` | `int` | A slot number | `52` | The confirm button. |
-| `gui.buttons.*` | `section` | Materials, names, lore | see the block above | Intended to style the cancel, confirm and filler items. No code reads this subtree under any casing; the buttons are built in `EnchantSelectMenu` from fixed materials. |
-| `gui.sounds.*` | `section` | A sound, volume and pitch | `BLOCK_ENCHANTMENT_TABLE_USE` | Intended to set the click sound. Nothing reads this subtree either. |
 
-Nothing below this heading is read by the plugin as it ships. `EnchantmentsManager` looks these
-values up under upper case paths (`GUI.TITLE`, `GUI.SLOTS.CANCEL`, `MESSAGES.SELECT`), and Bukkit
-config paths are case sensitive, so the lower case keys in the file never match and the built in
-defaults are used instead. Editing them changes nothing today.
+`gui.buttons` and `gui.sounds` used to sit in this section, describing button materials, names,
+lore, filler panes and a click sound. No code ever read them, under any casing, so they were taken
+out rather than left advertising settings that did nothing. The cancel, confirm and page arrows are
+built into the menu; changing them needs a code change rather than a config one.
 
 ### 3. Practical Setup Example
 
@@ -168,54 +113,6 @@ gui:
     next: 53
     # The numerical value for Confirm. Available options: Any valid integer
     confirm: 52
-  # Configuration section for Buttons.
-  buttons:
-    # Configuration section for Cancel.
-    cancel:
-      # The text or value for Material. Available options: Any valid string text
-      material: RED_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14cancel'
-      # Configuration section for Lore.
-      lore:
-      - '&fClick to return'
-    # Configuration section for Confirm.
-    confirm:
-      # The text or value for Material. Available options: Any valid string text
-      material: LIME_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14confirm'
-      # Configuration section for Lore.
-      lore:
-      - '&fClick to confirm enchants'
-    # Configuration section for Page Filler.
-    page_filler:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
-      enabled: false
-      # The text or value for Material. Available options: Any valid string text
-      material: GRAY_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&7 '
-    # Configuration section for Filler.
-    filler:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
-      enabled: true
-      # The text or value for Slots. Available options: Any valid string text
-      slots: 1,9,10
-      # The text or value for Material. Available options: Any valid string text
-      material: GRAY_STAINED_GLASS_PANE
-      # The text or value for Displayname. Available options: Any valid string text
-      displayname: '&7 '
-  # Configuration section for Sounds.
-  sounds:
-    # Configuration section for Click.
-    click:
-      # The text or value for Name. Available options: Any valid string text
-      name: BLOCK_ENCHANTMENT_TABLE_USE
-      # The decimal value for Volume. Available options: Any decimal number
-      volume: 1.0
-      # The decimal value for Pitch. Available options: Any decimal number
-      pitch: 1.0
 # Configuration section for Helmet.
 ```
 
