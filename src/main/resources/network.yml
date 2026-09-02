@@ -126,12 +126,34 @@ MAINTENANCE:
   LOBBY_SERVER: lobby
 
   # World players are teleported to while maintenance is active, used when USE_PROXY is false.
-  # Falls back to the spawn location when that world is not loaded, and refuses the connection
-  # at login when neither one resolves
+  # Falls back to the spawn location when that world is not loaded. Leave it empty when this
+  # server has nowhere to put players: maintenance then kicks everyone who is online and refuses
+  # the connection at login, so nobody is left standing in the world while the server is shut
   LOBBY_WORLD: WORLD
 
   # Countdown in seconds shown before players are sent back once the server returns
   RECONNECT_DELAY_SECONDS: 5
+
+  # Everything maintenance says to players. Colour codes work in all of them
+  MESSAGES:
+    # Sent to everyone still online when /maintenance on runs
+    ENTERING: '&d[Maintenance] &7server is entering maintenance. Moving you to the lobby...'
+
+    # Sent to a player who joins during maintenance without the bypass permission
+    NOT_ALLOWED: '&d[Maintenance] &cthis server is currently in maintenance. Redirecting to lobby...'
+
+    # Sent instead to a player who joins holding the bypass permission
+    BYPASS_JOIN: '&d[Maintenance] &7you joined while maintenance mode is active.'
+
+    # Disconnect screen text, used when a proxy handoff fails and on every login refused
+    # because no lobby is set
+    KICK_FALLBACK: '&cThis server is in maintenance and no lobby is available.'
+
+    # Title shown while players wait to be sent back once the server returns
+    RECONNECTING_TITLE: '&a&lServer online'
+
+    # Subtitle under it. %seconds% is the time left on RECONNECT_DELAY_SECONDS
+    RECONNECTING_SUBTITLE: '&7Sending you back in %seconds% seconds...'
 
   # How this server looks in the multiplayer list while maintenance mode is active
   SERVER_LIST:

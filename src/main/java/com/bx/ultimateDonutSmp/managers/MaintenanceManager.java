@@ -162,7 +162,24 @@ public class MaintenanceManager {
     }
 
     static boolean isLobbyServerSet(String lobbyServer) {
-        return lobbyServer != null && !lobbyServer.isBlank();
+        return isLobbyDestinationSet(lobbyServer);
+    }
+
+    /**
+     * Blank means the same thing in either lobby key: nothing is set, so maintenance has nowhere
+     * to put anyone and falls back to refusing them instead of leaving them in the world.
+     */
+    static boolean isLobbyDestinationSet(String lobby) {
+        return lobby != null && !lobby.isBlank();
+    }
+
+    /**
+     * Whether players still on the server once the handoff window closes get kicked. Proxy mode
+     * always kicks, since the connect packet can go unanswered; a local server only kicks when it
+     * has no lobby world to move them to, because otherwise they are already where they belong.
+     */
+    static boolean kicksLeftoverPlayers(boolean useProxy, boolean hasLocalDestination) {
+        return useProxy || !hasLocalDestination;
     }
 
     /**
@@ -174,7 +191,13 @@ public class MaintenanceManager {
     }
 
     public Location resolveLocalDestination() {
-        World world = Bukkit.getWorld(getLobbyWorld());
+        String lobbyWorld = getLobbyWorld();
+        // An empty LOBBY_WORLD is the local answer to an empty LOBBY_SERVER: the server has nowhere
+        // to put players, so it must not quietly drop them at spawn and let them carry on playing.
+        if (!isLobbyDestinationSet(lobbyWorld)) {
+            return null;
+        }
+        World world = Bukkit.getWorld(lobbyWorld);
         if (world != null) {
             return world.getSpawnLocation();
         }
@@ -218,6 +241,7 @@ public class MaintenanceManager {
         String lobby = getLobbyServer();
         String localServerId = config.getString("NETWORK.LOCAL_SERVER_ID", "local");
         boolean useProxy = isUseProxy();
+        Location localDestination = useProxy ? null : resolveLocalDestination();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(bypassPerm)) {
@@ -244,16 +268,14 @@ public class MaintenanceManager {
             player.sendMessage(ColorUtils.toComponent(enteringMessage));
             if (useProxy) {
                 sendToLobby(player, lobby);
-            } else {
-                Location destination = resolveLocalDestination();
-                if (destination != null) {
-                    plugin.getSpigotScheduler().teleport(player, destination);
-                }
+            } else if (localDestination != null) {
+                plugin.getSpigotScheduler().teleport(player, localDestination);
             }
         }
 
-        // Kick players who failed to transfer after 2 seconds (only in proxy mode)
-        if (useProxy) {
+        // Kick whoever is still here 2 seconds later: a proxy handoff can fail, and a local server
+        // with no lobby world set never had anywhere to move them to in the first place
+        if (kicksLeftoverPlayers(useProxy, localDestination != null)) {
             plugin.getSpigotScheduler().runGlobalLater(() -> {
                 String kickMessage = config.getString("MAINTENANCE.MESSAGES.KICK_FALLBACK", "&cThis server is in maintenance and no lobby is available.");
                 for (Player player : Bukkit.getOnlinePlayers()) {

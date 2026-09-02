@@ -274,12 +274,34 @@ MAINTENANCE:
   LOBBY_SERVER: lobby
 
   # World players are teleported to while maintenance is active, used when USE_PROXY is false.
-  # Falls back to the spawn location when that world is not loaded, and refuses the connection
-  # at login when neither one resolves
+  # Falls back to the spawn location when that world is not loaded. Leave it empty when this
+  # server has nowhere to put players: maintenance then kicks everyone who is online and refuses
+  # the connection at login, so nobody is left standing in the world while the server is shut
   LOBBY_WORLD: WORLD
 
   # Countdown in seconds shown before players are sent back once the server returns
   RECONNECT_DELAY_SECONDS: 5
+
+  # Everything maintenance says to players. Colour codes work in all of them
+  MESSAGES:
+    # Sent to everyone still online when /maintenance on runs
+    ENTERING: '&d[Maintenance] &7server is entering maintenance. Moving you to the lobby...'
+
+    # Sent to a player who joins during maintenance without the bypass permission
+    NOT_ALLOWED: '&d[Maintenance] &cthis server is currently in maintenance. Redirecting to lobby...'
+
+    # Sent instead to a player who joins holding the bypass permission
+    BYPASS_JOIN: '&d[Maintenance] &7you joined while maintenance mode is active.'
+
+    # Disconnect screen text, used when a proxy handoff fails and on every login refused
+    # because no lobby is set
+    KICK_FALLBACK: '&cThis server is in maintenance and no lobby is available.'
+
+    # Title shown while players wait to be sent back once the server returns
+    RECONNECTING_TITLE: '&a&lServer online'
+
+    # Subtitle under it. %seconds% is the time left on RECONNECT_DELAY_SECONDS
+    RECONNECTING_SUBTITLE: '&7Sending you back in %seconds% seconds...'
 
   # How this server looks in the multiplayer list while maintenance mode is active
   SERVER_LIST:
@@ -317,13 +339,19 @@ MAINTENANCE:
 | `MAINTENANCE.BYPASS_PERMISSION` | `str` | Any permission node | `'ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS'` | Players holding this node join normally while maintenance is active and are never moved or kicked by it. |
 | `MAINTENANCE.USE_PROXY` | `bool` | `true`, `false` | `true` | `true` hands players to another server over the BungeeCord/Velocity plugin channel. `false` keeps them on this server and teleports them instead. |
 | `MAINTENANCE.LOBBY_SERVER` | `str` | Any proxy server name, or empty | `'lobby'` | Destination used when `USE_PROXY` is `true`. `/maintenance setlobby <server>` overrides it at runtime, and `/maintenance setlobby` with no name clears that override and hands the decision back to this key. Leave it empty on a server with no lobby: the connection is then refused during login, so players never enter the world. |
-| `MAINTENANCE.LOBBY_WORLD` | `str` | Any loaded world name | `'WORLD'` | Destination used when `USE_PROXY` is `false`. When that world is not loaded the spawn location is used, and when neither resolves the connection is refused during login. |
+| `MAINTENANCE.LOBBY_WORLD` | `str` | Any loaded world name, or empty | `'WORLD'` | Destination used when `USE_PROXY` is `false`. When that world is not loaded the spawn location is used in its place. Leave it empty on a server with nowhere to put players: maintenance kicks everyone who is online and refuses every connection after that, which is how an empty `LOBBY_SERVER` already behaves in proxy mode. |
 | `MAINTENANCE.RECONNECT_DELAY_SECONDS` | `int` | Any valid integer number | `'5'` | Countdown shown to players waiting to be sent back once the server reports itself online again over Redis. `0` sends them back straight away. |
 | `MAINTENANCE.SERVER_LIST.ENABLED` | `bool` | `true`, `false` | `true` | `true` rewrites this server's entry in the multiplayer list while maintenance is active. `false` leaves the entry alone, and maintenance only shows itself when someone tries to join. |
 | `MAINTENANCE.SERVER_LIST.LINES` | `list` | Any lines of text | `['&cCurrently under maintenance', '&bCome back in: &d%time%']` | The MOTD shown while a duration is running. The client draws the first two entries. `%time%` becomes the time left, written as `03:29` and widening to `1:03:29` past an hour. |
 | `MAINTENANCE.SERVER_LIST.LINES_NO_TIMER` | `list` | Any lines of text | `['&cCurrently under maintenance', '&7come back later']` | Used instead of `LINES` when maintenance was started without a duration, so the entry never shows a countdown that has nothing to count down to. |
 | `MAINTENANCE.SERVER_LIST.VERSION_LABEL` | `str` | Any string text, or empty | `'&cMaintenance'` | Replaces the player count on the entry. The client draws it in red beside a broken connection icon, which is what makes a closed server stand out in a long list. Empty leaves the real player count on show. |
 | `MAINTENANCE.SERVER_LIST.HOVER` | `list` | Any lines of text | `['&cCurrently under maintenance']` | Shown when the player count is hovered, in place of the usual sample of online names. An empty list keeps that sample, staff working through the maintenance included. |
+| `MAINTENANCE.MESSAGES.ENTERING` | `str` | Any string text | `'&d[Maintenance] &7server is entering maintenance. Moving you to the lobby...'` | Sent to everyone online the moment `/maintenance on` runs, just before they are moved. |
+| `MAINTENANCE.MESSAGES.NOT_ALLOWED` | `str` | Any string text | `'&d[Maintenance] &cthis server is currently in maintenance. Redirecting to lobby...'` | Sent to a player who joins during maintenance without the bypass node, on a server that still has a lobby to move them to. |
+| `MAINTENANCE.MESSAGES.BYPASS_JOIN` | `str` | Any string text | `'&d[Maintenance] &7you joined while maintenance mode is active.'` | Sent instead to staff holding the bypass node, so nobody forgets the server is shut while they work. |
+| `MAINTENANCE.MESSAGES.KICK_FALLBACK` | `str` | Any string text | `'&cThis server is in maintenance and no lobby is available.'` | The disconnect screen text: shown when a proxy handoff fails, and on every login refused because no lobby is set. |
+| `MAINTENANCE.MESSAGES.RECONNECTING_TITLE` | `str` | Any string text | `'&a&lServer online'` | Title shown while players wait to be sent back once the server reports itself online again over Redis. |
+| `MAINTENANCE.MESSAGES.RECONNECTING_SUBTITLE` | `str` | Any string text | `'&7Sending you back in %seconds% seconds...'` | Subtitle under that title. `%seconds%` becomes the time left on `RECONNECT_DELAY_SECONDS`. |
 
 ### 3. Practical Setup Example
 
@@ -334,6 +362,18 @@ MAINTENANCE:
   BYPASS_PERMISSION: ULTIMATEDONUTSMP.ADMIN.MAINTENANCE.BYPASS
   USE_PROXY: true
   LOBBY_SERVER: ''
+```
+
+A single server with no proxy behind it and no world to park anyone in. `/maintenance on` kicks
+whoever is online and turns away every connection after that, with the disconnect text written to
+suit the server:
+
+```yaml
+MAINTENANCE:
+  USE_PROXY: false
+  LOBBY_WORLD: ''
+  MESSAGES:
+    KICK_FALLBACK: '&cWe are down for maintenance, back shortly.'
 ```
 
 An hour of scheduled downtime, announced in the multiplayer list. `/maintenance on 1h` starts the
