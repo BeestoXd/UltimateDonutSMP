@@ -5,6 +5,8 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.StaffChatPayload;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.StaffChatFormatPolicy;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -316,11 +318,55 @@ public class NetworkStaffChatManager {
     }
 
     private String applyPlaceholders(String format, StaffChatPayload payload) {
-        return safe(format)
-                .replace("%server%", payload.sourceServerName())
-                .replace("%player%", payload.senderName())
-                .replace("%message%", payload.message())
-                .replace("%status%", payload.message());
+        return StaffChatFormatPolicy.render(
+                format,
+                text -> resolveSenderPlaceholders(text, payload),
+                payload.sourceServerName(),
+                payload.senderName(),
+                payload.message()
+        );
+    }
+
+    /**
+     * Expands PlaceholderAPI placeholders written into a staff chat format against the staff
+     * member who sent the message. The sender is often not online on the server printing the line,
+     * because the payload may have arrived over Redis from somewhere else or been sent from the
+     * console, so an offline lookup backs up the online one; that covers the rank and prefix
+     * expansions these formats are usually built from.
+     */
+    private String resolveSenderPlaceholders(String format, StaffChatPayload payload) {
+        String text = safe(format);
+        if (text.indexOf('%') < 0 || !ColorUtils.hasPAPI()) {
+            return text;
+        }
+
+        UUID senderUuid = parseUuid(payload.senderUuid());
+        if (senderUuid == null) {
+            return text;
+        }
+
+        try {
+            Player online = Bukkit.getPlayer(senderUuid);
+            if (online != null) {
+                return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(online, text);
+            }
+            return me.clip.placeholderapi.PlaceholderAPI
+                    .setPlaceholders(Bukkit.getOfflinePlayer(senderUuid), text);
+        } catch (Exception ignored) {
+            return text;
+        }
+    }
+
+    private UUID parseUuid(String value) {
+        String trimmed = safe(value).trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        try {
+            return UUID.fromString(trimmed);
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
     private boolean markSeen(String messageId) {

@@ -115,7 +115,29 @@ NETWORK:
 | `NETWORK.STAFF_JOIN` | `str` | Any string text | `'&8[&a+&8] &a%player% &7joined &b%se...'` | Configures the technical `STAFF_JOIN` parameter for `NETWORK.STAFF_JOIN` in `network.yml`. |
 | `NETWORK.STAFF_LEAVE` | `str` | Any string text | `'&8[&c-&8] &a%player% &7left &b%serv...'` | Configures the technical `STAFF_LEAVE` parameter for `NETWORK.STAFF_LEAVE` in `network.yml`. |
 
-### 3. Practical Setup Example
+### 3. Placeholders In The Message Formats
+
+`NETWORK.STAFF_CHAT`, `NETWORK.STAFF_JOIN`, `NETWORK.STAFF_LEAVE` and `NETWORK.SERVER_STATUS` take
+four built-in tokens: `%server%` is the display name of the server the message came from, `%player%`
+the staff member, `%message%` what they said, and `%status%` the online or offline word on a status
+broadcast. Those same tokens work in `STAFFCHAT.FORMAT` in `messages.yml`, which is what the plugin
+falls back to when `NETWORK.STAFF_CHAT` has been removed.
+
+PlaceholderAPI placeholders work in these formats as well, and they resolve against the staff member
+who sent the message rather than the person reading it, so a rank or prefix placeholder shows the
+sender's rank on every screen the line lands on. That holds across servers: a message arriving over
+Redis was sent by somebody who is usually not online locally, so their placeholders are read from
+offline data instead. An expansion with no answer for an offline player leaves its placeholder
+unfilled.
+
+A placeholder typed into the message itself is not expanded; it prints as the text that was typed.
+
+```yaml
+NETWORK:
+  STAFF_CHAT: '&8[&dNetwork&8] &7[%server%] %luckperms_prefix%&e%player%&8: &f%message%'
+```
+
+### 4. Practical Setup Example
 
 ```yaml
 NETWORK:
