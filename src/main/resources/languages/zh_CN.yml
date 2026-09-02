@@ -1411,6 +1411,7 @@ CONFIG:
             NAME: "&fYour items"
             LORE:
             - "&7View active, sold, expired, and cancelled listings"
+            - "&eTo list an item, hold it and run /ah sell <price>"
           NEXT:
             NAME: "&fNext page"
             LORE:

@@ -144,7 +144,10 @@ public final class AuctionHouseBrowseMenu extends BaseMenu {
                 "PLAYER_ITEMS",
                 Material.CHEST,
                 "&fYour items",
-                List.of("&7View active, sold, expired, and cancelled listings")
+                List.of(
+                        "&7View active, sold, expired, and cancelled listings",
+                        "&eTo list an item, hold it and run /ah sell <price>"
+                )
         ));
         set(controlSlot("NEXT", 53), renderedPage.hasNext()
                 ? control("NEXT", Material.ARROW, "&fNext page",
