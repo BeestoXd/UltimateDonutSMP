@@ -1617,7 +1617,7 @@ CONFIG:
   AUCTION_HOUSE:
     GUI:
       BROWSE:
-        TITLE: '&8Auction house'
+        TITLE: '&8Auction House'
         SEARCH_SIGN:
           lines:
           - ''
@@ -1665,9 +1665,9 @@ CONFIG:
           FILLER:
             NAME: '&7 '
       MY_LISTINGS:
-        TITLE: '&8My auctions'
+        TITLE: '&8My Auctions'
       CLAIMS:
-        TITLE: '&8Auction claims'
+        TITLE: '&8Auction Claims'
       CATEGORIES:
         ALL:
           NAME: All
@@ -1834,10 +1834,10 @@ CONFIG:
     RESTRICTIONS:
       BLOCKED_IF_HAS_LORE_CONTAINS: []
   BILLFORD:
-    ANNOUNCE_MESSAGE: '&6&l[Billford] &etrade has rotated! &7new trade is live. &bnext
+    ANNOUNCE_MESSAGE: '&6&l[Billford] &eTrade has rotated! &7New trade is live. &bNext
       change in &f{countdown}&b.'
     GUI:
-      TITLE: '&8&lBillford &7trade'
+      TITLE: '&8&lBillford &7Trade'
       INPUT_NAME: '&f{item}'
       INPUT_LORE:
       - '&7Cost: &f{amount}x &e{item}'
@@ -1855,7 +1855,7 @@ CONFIG:
       - '&7Next rotation: &b{countdown}'
       - ''
       - '&8Trade &f{trade_id} &8of &f{trade_count}'
-      INFO_NAME: '&6Trade info'
+      INFO_NAME: '&6Trade Info'
       INFO_LIMITED_LORE:
       - '&7Trades: &f{used} &7/ &f{limit}'
       - '{status_line}'
@@ -1863,45 +1863,43 @@ CONFIG:
       - '&7Trades done: &f{used}'
       - '&aUnlimited trades this rotation.'
       CONFIRM_BUTTON:
-        NAME: '&a&lConfirm trade'
+        NAME: '&a&lConfirm Trade'
         LORE:
         - '&7Bring the required items,'
-        - '&7Then click to exchange them.'
+        - '&7then click to exchange them.'
         - ''
-        - '&a&lClick to confirm'
+        - '&a&lClick to Confirm'
       LIMIT_BUTTON:
-        NAME: '&c&lLimit reached'
+        NAME: '&c&lLimit Reached'
         LORE:
         - '&cYou already used this deal enough'
-        - '&cFor the current rotation.'
+        - '&cfor the current rotation.'
         - '&7Come back after the next refresh.'
   RTP:
     MESSAGES:
-      DISABLED: '&cRtp is currently disabled.'
-      PLAYTIME-REQUIRED: '&cYou need at least {required} hours of playtime to rtp
-        to {world}. &7(current: {current}h)'
+      DISABLED: '&cRTP is currently disabled.'
+      PLAYTIME-REQUIRED: '&cYou need at least {required} hours of playtime to RTP
+        to {world}. &7(Current: {current}h)'
       COOLDOWN: '&cYou can''t rtp for another {remaining}s.'
-      MAX-PLAYERS: '&cToo many players are using rtp right now. please try again later.'
+      MAX-PLAYERS: '&cToo many players are using RTP right now. Please try again later.'
       WORLD-NOT-EXIST: '&cThe world does not exist.'
       SEARCHING: '&aSearching for a safe location in {world}...'
       TP-WARNING: '&eDo not move for &b{countdown}&e seconds or the teleport will
         be canceled.'
-      SEARCH-ACTIONBAR: '&7Searching {world}... &b{elapsed}s'
-      SEARCH-FOUND-ACTIONBAR: '&aSafe location found in {world}! &7preparing teleport...'
-      SAFE-LOCATION-FOUND: '&aSafe location found at: x:{x} y:{y} z:{z}'
-      MAX-ATTEMPTS: '&cCould not find a safe rtp location. &7attempts: &f{attempts}/{max_attempts}
-        &8| &7samples: &f{samples}/{max_samples}'
-      DESTINATION-DISABLED: '&cThis rtp destination is currently disabled.'
-      UNSAFE-LOCATION: '&cThe location at x:{x} y:{y} z:{z} was rejected: {reason}'
-      SEARCH-FOUND-ACTIONBAR-HIDDEN: '&aSafe location found in {world}! &7preparing
-        teleport...'
-      SAFE-LOCATION-FOUND-HIDDEN: '&aSafe location found.'
+      SEARCH-ACTIONBAR: '&7Searching {world}... &b{elapsed}s &8(&f{attempts}/{max_attempts}&8)'
+      SEARCH-FOUND-ACTIONBAR: '&aSafe location found in {world}! &7Preparing teleport...'
+      SAFE-LOCATION-FOUND: '&aSafe location found at: X:{x} Y:{y} Z:{z}'
+      MAX-ATTEMPTS: '&cCould not find a safe location after %attempts% attempts.'
+      DESTINATION-DISABLED: '&cThis RTP destination is currently disabled.'
+      UNSAFE-LOCATION: '&cThe location at X:{x} Y:{y} Z:{z} was rejected: {reason}'
+      SEARCH-FOUND-ACTIONBAR-HIDDEN: '&aFound safe location'
+      SAFE-LOCATION-FOUND-HIDDEN: '&aSafe location found! Teleporting you blindly...'
       QUEUE-JOINED: '&eRTP slots are full. You are in queue at position &#4B72FF#{position}&e
         (Priority: &f{priority}&e).'
       QUEUE-POSITION: '&7Waiting for RTP slot... Your current position: &#4B72FF#{position}&7.'
       ALREADY-IN-QUEUE: '&cYou are already in the RTP waiting queue at position #{position}.'
     RTP-MENU:
-      TITLE: '&8Rtp menu'
+      TITLE: '&8RTP Menu'
       BUTTONS:
         OVERWORLD:
           DISPLAY-NAME: '&#4B72FFOverworld'
@@ -1912,7 +1910,7 @@ CONFIG:
           - '&7Range: &b{min_radius}-{max_radius}'
           - '&7Cooldown: &b{cooldown}s'
         NETHER:
-          DISPLAY-NAME: '&#FF6B3DNether'
+          DISPLAY-NAME: '&#FF4B4BNether'
           LORE:
           - '&fClick to randomly teleport'
           - ''
@@ -1921,7 +1919,7 @@ CONFIG:
           - '&7Cooldown: &b{cooldown}s'
           - '&7Required playtime: &b{required_playtime}'
         THE_END:
-          DISPLAY-NAME: '&#F3E38AThe end'
+          DISPLAY-NAME: '&#A84BFFThe End'
           LORE:
           - '&fClick to randomly teleport'
           - ''
@@ -1949,106 +1947,89 @@ CONFIG:
   AMETHYST_TOOLS:
     AMETHYST-TOOLS:
       DRILL:
-        NAME: '&#9B59B6&lAmethyst drill'
+        NAME: '&#9B59B6&lAmethyst Drill'
         LORE:
         - '&#BDC3C7Breaks &d9 blocks &7per strike'
         - '&#BDC3C7Powered by amethyst energy'
         - ''
-        - '&#9B59B6✦ Self destruct'
+        - '&#9B59B6✦ Self Destruct'
         - '&#BDC3C7{time}'
-        DISABLED-BLOCKS:
-        - Dirt
-        - Grass_block
-        - Coarse_dirt
-        - Rooted_dirt
-        - Podzol
-        - Sand
-        - Red_sand
-        - Gravel
-        - Spawner
-        - Bedrock
-        - Obsidian
-        - Crying_obsidian
-        - End_portal_frame
-        - Farmland
-        - Soul_sand
-        - Soul_soil
       CHOPPER:
-        NAME: '&#9B59B6&lAmethyst tree chopper'
+        NAME: '&#9B59B6&lAmethyst Tree Chopper'
         LORE:
         - '&#BDC3C7Chops entire trees &dinstantly'
         - '&#BDC3C7Vein-style breaking'
         - ''
-        - '&#9B59B6✦ Self destruct'
+        - '&#9B59B6✦ Self Destruct'
         - '&#BDC3C7{time}'
       SELL-AXE:
-        NAME: '&#9B59B6&lAmethyst sell axe'
+        NAME: '&#9B59B6&lAmethyst Sell Axe'
         LORE:
         - '&#BDC3C7Instantly sells all items in a chest'
         - '&#BDC3C7Right-click a chest to sell'
         - ''
-        - '&#9B59B6✦ Self destruct'
+        - '&#9B59B6✦ Self Destruct'
         - '&#BDC3C7{time}'
       SHOVEL:
-        NAME: '&#9B59B6&lAmethyst shovel'
+        NAME: '&#9B59B6&lAmethyst Shovel'
         LORE:
         - '&#BDC3C7Breaks &d9 blocks &7per strike'
         - '&#BDC3C7Only for soft terrain blocks'
         - ''
-        - '&#9B59B6✦ Self destruct'
+        - '&#9B59B6✦ Self Destruct'
         - '&#BDC3C7{time}'
       BUCKET:
-        NAME: '&#9B59B6&lAmethyst bucket'
+        NAME: '&#9B59B6&lAmethyst Bucket'
         LORE:
         - '&#BDC3C7Drains &d27 water blocks &7at once'
         - '&#BDC3C7Right-click water to drain'
         - ''
-        - '&#9B59B6✦ Self destruct'
+        - '&#9B59B6✦ Self Destruct'
         - '&#BDC3C7{time}'
       SHARD-BOOSTER:
-        NAME: '&#9B59B6&lShard booster'
+        NAME: '&#9B59B6&lShard Booster'
         LORE:
-        - '&#BDC3C7&d4X &7shard multiplier'
+        - '&#BDC3C7&d4x &7Shard Multiplier'
         - '&#BDC3C7Duration: &d60 minutes'
         - ''
         - '&#BDC3C7Drink to &dactivate'
         - ''
-        - '&#9B59B6✦ Self destruct'
+        - '&#9B59B6✦ Self Destruct'
         - '&#BDC3C7{time}'
     AMETHYST-MESSAGES:
       PREFIX: '&#9B59B6[Amethyst] &r'
       EXPIRED: '{prefix}&#BDC3C7Your &d{tool} &7has &cexpired &7and self-destructed!'
-      EXCLUDED-WORLD: '{prefix}&#BDC3C7Amethyst tools cannot be used in this world.'
-      DRILL-BREAK: '{prefix}&#BDC3C7&dAmethyst drill &7broke &d{count} &7blocks.'
-      CHOP-BREAK: '{prefix}&#BDC3C7&dAmethyst tree chopper &7chopped &d{count} &7logs.'
+      EXCLUDED-WORLD: '{prefix}&#BDC3C7Amethyst Tools cannot be used in this world.'
+      DRILL-BREAK: '{prefix}&#BDC3C7&dAmethyst Drill &7broke &d{count} &7blocks.'
+      CHOP-BREAK: '{prefix}&#BDC3C7&dAmethyst Tree Chopper &7chopped &d{count} &7logs.'
       SELL-SUCCESS: '{prefix}&#BDC3C7Sold all chest contents for &a${amount}&7.'
       SELL-EMPTY: '{prefix}&#BDC3C7That chest is empty or has no sellable items.'
       SELL-FAILED: '{prefix}&#BDC3C7The sale failed. no items were removed.'
       SELL-NO-CHEST: '{prefix}&#BDC3C7You must right-click a chest.'
       BUCKET-DRAIN: '{prefix}&#BDC3C7Drained &d{count} &7water blocks.'
       BUCKET-NO-WATER: '{prefix}&#BDC3C7No water blocks found nearby.'
-      BOOSTER-ACTIVATED: '{prefix}&#BDC3C7&dShard booster &7activated! &d4x &7shards
+      BOOSTER-ACTIVATED: '{prefix}&#BDC3C7&dShard Booster &7activated! &d4x &7shards
         for &d60 minutes&7.'
       BOOSTER-ALREADY: '{prefix}&#BDC3C7You already have an active shard booster!'
       NO-PERMISSION: '{prefix}&#BDC3C7You do not have permission to use this item.'
-      WRONG-OWNER: '{prefix}&#BDC3C7This amethyst tool is bound to another player.'
+      WRONG-OWNER: '{prefix}&#BDC3C7This Amethyst Tool is bound to another player.'
       GIVE-SUCCESS: '{prefix}&#BDC3C7Gave &d{type} &7to &d{player}&7.'
       GIVE-USAGE: '{prefix}&#BDC3C7Usage: &d/amethysttool give <player> <type> [duration_seconds]'
-      GIVE-INVALID-TYPE: '{prefix}&#BDC3C7Invalid tool type. types: drill, chopper,
-        sell_axe, shovel, bucket, shard_booster'
+      GIVE-INVALID-TYPE: '{prefix}&#BDC3C7Invalid tool type. Types: DRILL, CHOPPER,
+        SELL_AXE, SHOVEL, BUCKET, SHARD_BOOSTER'
       RELOAD-SUCCESS: '{prefix}&#BDC3C7Configuration reloaded.'
   ENDER_CHEST:
     ENDER-CHEST:
-      TITLE: '&5Ender chest'
+      TITLE: '&5Ender Chest'
       ECSEE:
         TITLE: '&8Ender chest of &f{player}'
     MESSAGES:
-      FEATURE-DISABLED: '&cThe ender chest 6 rows system is disabled.'
+      FEATURE-DISABLED: '&cThe Ender Chest 6 Rows system is disabled.'
       COMMAND-DISABLED: '&cThe /enderchest command is disabled.'
       NO-PERMISSION: '&cYou do not have permission to use this command.'
-      OPEN-FAILED: '&cFailed to open your ender chest. please try again.'
-      SAVE-FAILED: '&cFailed to save your ender chest. contact staff.'
-      RELOAD-SUCCESS: '&aEnder chest config reloaded.'
+      OPEN-FAILED: '&cFailed to open your Ender Chest. Please try again.'
+      SAVE-FAILED: '&cFailed to save your Ender Chest. Contact staff.'
+      RELOAD-SUCCESS: '&aEnder Chest config reloaded.'
       ECSEE-PLAYER-ONLY: Player only.
       ECSEE-DISABLED: '&cThe /ecsee command is disabled.'
       ECSEE-NO-PERMISSION: '&cYou do not have permission to use this command.'
@@ -2063,11 +2044,11 @@ CONFIG:
       TITLE: '&8Inventory of {player}'
     MESSAGES:
       NO-PERMISSION: '&cYou do not have permission.'
-      FEATURE-DISABLED: '&cThe invsee system is disabled.'
+      FEATURE-DISABLED: '&cThe Invsee system is disabled.'
       PLAYER-NOT-ONLINE: '&cThat player must be online.'
       PLAYER-NOT-FOUND: '&cPlayer not found.'
       SELF-VIEW-DISABLED: '&cYou cannot invsee yourself.'
-      EDIT-CONFLICT: '&eAnother staff member is already editing &f{target}&e. opened
+      EDIT-CONFLICT: '&eAnother staff member is already editing &f{target}&e. Opened
         in read-only mode.'
       TARGET-LOGGED-OUT: '&eThis inventory is now a frozen snapshot because &f{target}&e
         logged out.'
@@ -2076,19 +2057,19 @@ CONFIG:
       RELOAD-SUCCESS: '&aInvsee config reloaded.'
   FREEZE:
     FREEZE:
-      STATUS_ON: '&a&lOn'
-      STATUS_OFF: '&c&lOff'
+      STATUS_ON: '&a&lON'
+      STATUS_OFF: '&c&lOFF'
       MESSAGE: '&bFreeze &a%player% &7is now %status%'
       QUIT_MESSAGE: '&c[Freeze] &4%player% &cleft while frozen on &4%server%'
     MESSAGES:
       NO-PERMISSION: '&cYou do not have permission.'
-      FEATURE-DISABLED: '&cThe freeze system is disabled.'
+      FEATURE-DISABLED: '&cThe Freeze system is disabled.'
       PLAYER-NOT-FOUND: '&cPlayer not found.'
       TARGET-OFFLINE: '&cThat player must be online.'
       TARGET-EXEMPT: '&cYou cannot freeze that player.'
       SELF-TARGET: '&cYou cannot freeze yourself.'
       COMMAND-BLOCKED: '&cYou cannot use commands while frozen.'
-      STILL-FROZEN: '&cYou are still frozen. wait for staff instructions.'
+      STILL-FROZEN: '&cYou are still frozen. Wait for staff instructions.'
       UNFROZEN: '&aYou are no longer frozen.'
       RELOAD-SUCCESS: '&aFreeze config reloaded.'
   ORDERS:
@@ -2096,47 +2077,45 @@ CONFIG:
       MAIN:
         TITLE: '&8Orders'
       MY_ORDERS:
-        TITLE: '&8Orders -> my orders'
+        TITLE: '&8Orders -> My Orders'
       NEW_ORDER:
-        TITLE: '&8Orders -> new order'
+        TITLE: '&8Orders -> New Order'
       SELECT_ITEM:
-        TITLE: '&8Orders -> select item'
+        TITLE: '&8Orders -> Select Item'
       SEARCH_ITEM:
         TITLE: '&8Orders -> search item'
       INVENTORY_ITEM:
         TITLE: '&8Orders -> choose item'
       EDIT_ORDER:
-        TITLE: '&8Orders -> edit order'
+        TITLE: '&8Orders -> Edit Order'
       DELIVER_CONFIRM:
-        TITLE: '&8Orders -> deliver'
+        TITLE: '&8Orders -> Deliver'
       COLLECT:
-        TITLE: '&8Orders -> collect'
+        TITLE: '&8Orders -> Collect'
     SEARCH_SIGN:
       lines:
       - ''
-      - ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - ^^^^^^^^^^^^^^
       - Search
       - ''
       input-line: 0
     AMOUNT_SIGN:
       lines:
       - ''
-      - ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - ^^^^^^^^^^^^^^
       - Amount
       - ''
       input-line: 0
     PRICE_SIGN:
       lines:
       - ''
-      - ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - ^^^^^^^^^^^^^^
       - Price
       - ''
       input-line: 0
   DUELS:
     COMMAND_BLOCK:
       MESSAGE: '&cYou cannot use that command during a duel.'
-    CROSS_SERVER:
-      PROXY_SERVER_NAME: Local
     START-COUNTDOWN:
       MESSAGES:
         '5': '&a5'
@@ -2144,33 +2123,33 @@ CONFIG:
         '3': '&a3'
         '2': '&a2'
         '1': '&a1'
-      START-MESSAGE: '&aMatch started!'
+      START-MESSAGE: '&aMatch Started!'
     RESULT-TITLES:
       victory:
-        title: '&e&lVictory!'
-        subtitle: '&e<player> &fWon the match!'
+        title: '&e&lVICTORY!'
+        subtitle: '&e<player> &fwon the Match!'
       defeat:
-        title: '&c&lDefeat!'
-        subtitle: '&c<opponent> &fWon this match!'
+        title: '&c&lDEFEAT!'
+        subtitle: '&c<opponent> &fwon this Match!'
       draw:
-        title: '&e&lDraw!'
+        title: '&e&lDRAW!'
         subtitle: '&fTime''s up - no winner.'
-        message: '&e[Timer] &ftime limit reached! match ended as a &edraw &f- streaks
+        message: '&e[Timer] &fTime limit reached! Match ended as a &eDRAW &f- streaks
           unchanged.'
     GUI:
       QUEUE:
-        TITLE: '&8Casual queue'
+        TITLE: '&8Casual Queue'
       CREATE:
-        TITLE: '&8Create duel -> {player}'
+        TITLE: '&8Create Duel -> {player}'
       CLAIMS:
-        TITLE: '&8Duel claims'
+        TITLE: '&8Duel Claims'
   FFA:
     RESULT-TITLES:
       victory:
-        title: '&e&lVictory!'
+        title: '&e&lVICTORY!'
         subtitle: '&e<player> &fwon the FFA Match!'
       defeat:
-        title: '&c&lDefeat!'
+        title: '&c&lDEFEAT!'
         subtitle: '&c<opponent> &feliminated you!'
   
   CRATES:
@@ -2178,7 +2157,7 @@ CONFIG:
       LIST-MENU:
         TITLE: '&8Crates'
         EMPTY:
-          DISPLAY-NAME: '&cNo crates'
+          DISPLAY-NAME: '&cNo Crates'
           LORE:
           - '&7No crates are available right now.'
         CLOSE-BUTTON:
@@ -2200,7 +2179,7 @@ CONFIG:
         - '{crate}'
         - '&7Right-click to open'
       GACHA:
-        TITLE: '&8Rolling reward'
+        TITLE: '&8Rolling Reward'
   SPAWNERS:
     GUI:
       MAIN_MENU:
@@ -2210,47 +2189,47 @@ CONFIG:
       PANEL:
         TITLE: '&8Spawners - {world}'
       WORLD_LIST:
-        TITLE: '&8Spawners panel'
+        TITLE: '&8Spawners Panel'
   SPAWN_STASH:
     MESSAGES:
       USAGE:
-      - '&8&m----------- &dSpawnstash &8&m-----------'
-      - '&f/{label} &7- Spawn random bait stash'
-      - '&f/{label} <type> &7- Spawn a bait stash'
-      - '&f/{label} Spawn <type> &7- spawn a bait stash'
-      - '&f/{label} List &7- list active/configured stashes'
-      - '&f/{label} Remove <id|nearest|all> &7- rollback stashes'
-      - '&f/{label} Reload &7- reload SPAWN-STASH.YML'
-      SPAWNED: '&aSpawned stash #{type} successfully. &7(id: {id})'
-      REMOVED: '&aRemoved stash &f#{id}&a.'
-      REMOVED-ALL: '&aRemoved &f{count}&a active stash(es).'
-      EXPIRED: '&7Spawnstash #{id} expired and was rolled back.'
-      RELOADED: '&aSpawnstash settings reloaded.'
-      DISABLED: '&cSpawnstash is currently disabled.'
-      PLAYER-ONLY: '&cOnly players can use this command.'
-      NO-PERMISSION: '&cYou do not have permission.'
-      NO-ACTIVE: '&cNo active stash found.'
-      BLOCKED-BREAK: '&cThis stash is protected. use &f/spawnstash remove nearest
+      - '&8&m----------- &dspawnstash &8&m-----------'
+      - '&f/{label} &7- spawn random bait stash'
+      - '&f/{label} <type> &7- spawn a bait stash'
+      - '&f/{label} spawn <type> &7- spawn a bait stash'
+      - '&f/{label} list &7- list active/configured stashes'
+      - '&f/{label} remove <id|nearest|all> &7- rollback stashes'
+      - '&f/{label} reload &7- reload spawn-stash.yml'
+      SPAWNED: '&aspawned stash #{type} successfully. &7(id: {id})'
+      REMOVED: '&aremoved stash &f#{id}&a.'
+      REMOVED-ALL: '&aremoved &f{count}&a active stash(es).'
+      EXPIRED: '&7spawnstash #{id} expired and was rolled back.'
+      RELOADED: '&aspawnstash settings reloaded.'
+      DISABLED: '&cspawnstash is currently disabled.'
+      PLAYER-ONLY: '&conly players can use this command.'
+      NO-PERMISSION: '&cyou do not have permission.'
+      NO-ACTIVE: '&cno active stash found.'
+      BLOCKED-BREAK: '&cthis stash is protected. use &f/spawnstash remove nearest
         &cto rollback it.'
-      SPAWNER-CLAIMED: '&aClaimed &f{amount}x {spawner}&a from spawnstash.'
-      SPAWNER-CLAIMED-DROPPED: '&aClaimed &f{amount}x {spawner}&a. &7inventory full,
+      SPAWNER-CLAIMED: '&aclaimed &f{amount}x {spawner}&a from spawnstash.'
+      SPAWNER-CLAIMED-DROPPED: '&aclaimed &f{amount}x {spawner}&a. &7inventory full,
         item dropped.'
-      INVALID-TYPE: '&cUnknown stash type ''&f{type}&c''. use &f/spawnstash list&c.'
-      INVALID-CONFIG: '&cSpawnstash config is invalid: &f{reason}&c.'
+      INVALID-TYPE: '&cunknown stash type ''&f{type}&c''. use &f/spawnstash list&c.'
+      INVALID-CONFIG: '&cspawnstash config is invalid: &f{reason}&c.'
       ALERT:
-      - '&8[&dSpawnstash&8] &f{player} &7triggered &d{reason}&7 on stash &f#{id}&7
+      - '&8[&dspawnstash&8] &f{player} &7triggered &d{reason}&7 on stash &f#{id}&7
         (&f{type}&7)'
-      - '&7Location: &f{world} {x}, {y}, {z} &8| &7created by: &f{creator}'
-      ALERT-HOVER: '&eClick to teleport to &f{player}'
+      - '&7location: &f{world} {x}, {y}, {z} &8| &7created by: &f{creator}'
+      ALERT-HOVER: '&eclick to teleport to &f{player}'
   NETWORK:
     NETWORK:
-      SERVER_STATUS: '&6%server% &eIs now %status%&e.'
+      SERVER_STATUS: '&6%server% &eis now %status%&e.'
     MAINTENANCE:
       MESSAGES:
-        ENTERING: '&d[Maintenance] &7server is entering maintenance. moving you to
+        ENTERING: '&d[Maintenance] &7server is entering maintenance. Moving you to
           the lobby...'
         BYPASS_JOIN: '&d[Maintenance] &7you joined while maintenance mode is active.'
-        NOT_ALLOWED: '&d[Maintenance] &cthis server is currently in maintenance. redirecting
+        NOT_ALLOWED: '&d[Maintenance] &cthis server is currently in maintenance. Redirecting
           to lobby...'
         KICK_FALLBACK: '&cThis server is in maintenance and no lobby is available.'
         RECONNECTING_TITLE: '&a&lServer online'
@@ -2268,7 +2247,7 @@ CONFIG:
   STAFF_MODE:
     STAFF-MODE:
       VANISH-ACTIONBAR:
-        MESSAGE: '&aVanished &7>> &fyou are hidden from regular players'
+        MESSAGE: '&aVANISHED &7>> &fYou are hidden from regular players'
     FAKE-PLAYER:
       MESSAGES:
         NO-PERMISSION: '&cYou do not have permission.'
@@ -2296,30 +2275,30 @@ CONFIG:
           LORE:
           - '&7Click to enable vanish'
       FREEZE:
-        NAME: '&bFreeze player'
+        NAME: '&bFreeze Player'
         LORE:
         - '&7Right-click a player to freeze them'
         - '&7Left-click to see frozen players'
       STAFF_LIST:
-        NAME: '&eStaff list'
+        NAME: '&eStaff List'
         LORE:
         - '&7Click to view online staff members'
       BETTER_VIEW:
-        NAME: '&eBetter view'
+        NAME: '&eBetter View'
         LORE:
         - '&7Click to toggle better view mode'
       RANDOM_TELEPORT:
-        NAME: '&eRandom teleport'
+        NAME: '&eRandom Teleport'
         LORE:
         - '&7Click to teleport to a random player'
     MENUS:
       STAFF-LIST:
-        TITLE: '&8Online staff'
+        TITLE: '&8Online Staff'
         EMPTY-NAME: '&cNo staff online'
         EMPTY-LORE:
         - '&7No staff members are currently online.'
       FROZEN-PLAYERS:
-        TITLE: '&8Frozen players'
+        TITLE: '&8Frozen Players'
         EMPTY-NAME: '&aNo frozen players'
         EMPTY-LORE:
         - '&7There are no active frozen players.'
@@ -2335,26 +2314,26 @@ CONFIG:
       VANISH-OFF: '&cVanish disabled.'
       FAKE-LEAVE-MESSAGE: '&e{player} left the game'
       FAKE-JOIN-MESSAGE: '&e{player} joined the game'
-      BETTER-VIEW-ON: '&aBetter view enabled.'
-      BETTER-VIEW-OFF: '&cBetter view disabled.'
+      BETTER-VIEW-ON: '&aBetter View enabled.'
+      BETTER-VIEW-OFF: '&cBetter View disabled.'
       RANDOM-TELEPORT-NO-TARGET: '&cNo eligible player found.'
       RANDOM-TELEPORT-SUCCESS: '&eTeleported to &f{player}&e.'
-      RESTORE-FAILED: '&cStaff mode restore failed. contact an admin.'
+      RESTORE-FAILED: '&cStaff mode restore failed. Contact an admin.'
       RECOVERED-AFTER-RESTART: '&eStaff mode was disabled because the server restarted.
-        your inventory was restored.'
-      TOOL-LOCKED: '&cYour staff tools are locked while staff mode is active.'
+        Your inventory was restored.'
+      TOOL-LOCKED: '&cYour staff tools are locked while Staff Mode is active.'
       CUSTOM-ITEM-NO-TARGET: '&cRight-click a player to use this tool.'
       RELOAD-SUCCESS: '&aStaff mode config reloaded.'
   SERVER_WIPE:
     MESSAGES:
-      MAINTENANCE: '&cThe server is preparing a season reset. try again after the
+      MAINTENANCE: '&cthe server is preparing a season reset. try again after the
         restart.'
-      KICK: '&cA season reset is starting. the server will restart shortly.'
+      KICK: '&ca season reset is starting. the server will restart shortly.'
   WORTH:
     DISPLAY:
       FORMAT: '&7Worth: &a$${price}'
     BROWSER:
-      TITLE: '&8Item prices'
+      TITLE: '&8Item Prices'
       ITEM:
         NAME: '&b{item}'
         LORE:

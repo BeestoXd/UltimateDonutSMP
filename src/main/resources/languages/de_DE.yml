@@ -1703,11 +1703,10 @@ CONFIG:
       SEARCHING: "&aSearching in {world}..."
       TP-WARNING: "&eDo not move for &b{countdown}&e seconds or the teleport will
         be canceled."
-      SEARCH-ACTIONBAR: "&7Searching {world}... &b{elapsed}s"
+      SEARCH-ACTIONBAR: "&7Searching {world}... &b{elapsed}s &8(&f{attempts}/{max_attempts}&8)"
       SEARCH-FOUND-ACTIONBAR: "&aSafe location found in {world}! &7preparing teleport..."
       SAFE-LOCATION-FOUND: "&aSafe location found at: x:{x} y:{y} z:{z}"
-      MAX-ATTEMPTS: "&cEs konnte kein sicherer rtp-speicherort gefunden werden. &7attempts:
-        &f{attempts}/{max_attempts} &8| &7samples: &f{samples}/{max_samples}"
+      MAX-ATTEMPTS: "&cNach %attempts% Versuchen wurde kein sicherer Ort gefunden."
       DESTINATION-DISABLED: "&cThis rtp destination is currently disabled."
       UNSAFE-LOCATION: "&cThe location at x:{x} y:{y} z:{z} was rejected: {reason}"
     RTP-MENU:
@@ -1722,7 +1721,7 @@ CONFIG:
           - "&7Range: &b{min_radius}-{max_radius}"
           - "&7Cooldown: &b{cooldown}s"
         NETHER:
-          DISPLAY-NAME: "&#FF6B3DNether"
+          DISPLAY-NAME: "&#FF4B4BNether"
           LORE:
           - "&fClick to randomly teleport"
           - ''
@@ -1731,7 +1730,7 @@ CONFIG:
           - "&7Cooldown: &b{cooldown}s"
           - "&7Benötigte spielzeit: &b{required_playtime}"
         THE_END:
-          DISPLAY-NAME: "&#F3E38AThe end"
+          DISPLAY-NAME: "&#A84BFFThe End"
           LORE:
           - "&fClick to randomly teleport"
           - ''
@@ -1763,23 +1762,6 @@ CONFIG:
         - ''
         - "&#9B59B6✦ Self destruct"
         - '&#BDC3C7{time}'
-        DISABLED-BLOCKS:
-        - Schmutz
-        - Grass_block
-        - Coarse_dirt
-        - Rooted_dirt
-        - Podzol
-        - Sand
-        - Red_sand
-        - Kies
-        - Spawner
-        - Grundgestein
-        - Obsidian
-        - Crying_obsidian
-        - End_portal_frame
-        - Ackerland
-        - Seele_sand
-        - Seele_soil
       CHOPPER:
         NAME: '&#9B59B6&lAmethyst tree chopper'
         LORE:
@@ -1941,8 +1923,6 @@ CONFIG:
   DUELS:
     COMMAND_BLOCK:
       MESSAGE: "&cSie können diesen befehl nicht während eines duells verwenden."
-    CROSS_SERVER:
-      PROXY_SERVER_NAME: Lokal
     START-COUNTDOWN:
       MESSAGES:
         '5': '&a5'

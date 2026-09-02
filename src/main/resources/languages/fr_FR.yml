@@ -1567,12 +1567,11 @@ CONFIG:
       SEARCHING: "&aRecherche d'un emplacement sûr dans {world}..."
       TP-WARNING: "&eNe bougez pas pendant &b{countdown}&e secondes ou le téléport
         sera annulé."
-      SEARCH-ACTIONBAR: "&7Recherche {world}... &b{elapsed}s"
+      SEARCH-ACTIONBAR: "&7Recherche {world}... &b{elapsed}s &8(&f{attempts}/{max_attempts}&8)"
       SEARCH-FOUND-ACTIONBAR: "&aEmplacement sûr trouvé dans {world} ! &7préparation
         du téléport..."
       SAFE-LOCATION-FOUND: "&aEmplacement sûr trouvé à : x:{x} y:{y} z:{z}"
-      MAX-ATTEMPTS: "&cImpossible de trouver un emplacement rtp sécurisé. &7tentatives
-        : &f{attempts}/{max_attempts} &8| &7échantillons : &f{samples}/{max_samples}"
+      MAX-ATTEMPTS: "&cAucun emplacement sûr trouvé après %attempts% tentatives."
       DESTINATION-DISABLED: "&cRtp désactivé pour cette destination."
       UNSAFE-LOCATION: "&cEmplacement rejeté à x:{x} y:{y} z:{z} : {reason}"
     RTP-MENU:
@@ -1587,7 +1586,7 @@ CONFIG:
           - "&7Portée : &b{min_radius}-{max_radius}"
           - "&7Recharge : &b{cooldown}s"
         NETHER:
-          DISPLAY-NAME: "&#FF6B3DNether"
+          DISPLAY-NAME: "&#FF4B4BNether"
           LORE:
           - "&fCliquez pour téléporter aléatoirement"
           - ''
@@ -1596,7 +1595,7 @@ CONFIG:
           - "&7Recharge : &b{cooldown}s"
           - "&7Temps de jeu requis : &b{required_playtime}"
         THE_END:
-          DISPLAY-NAME: "&#F3E38AThe end"
+          DISPLAY-NAME: "&#A84BFFThe End"
           LORE:
           - "&fCliquez pour téléporter aléatoirement"
           - ''
@@ -1628,23 +1627,6 @@ CONFIG:
         - ''
         - "&#9B59B6✦ Self destruct"
         - '&#BDC3C7{time}'
-        DISABLED-BLOCKS:
-        - "Saleté"
-        - Grass_block
-        - Coarse_dirt
-        - Rooted_dirt
-        - Podzol
-        - Sable
-        - Rouge_sand
-        - Gravier
-        - "Générateur"
-        - Roche
-        - Obsidienne
-        - Crying_obsidian
-        - End_portal_frame
-        - Terres agricoles
-        - "Âme_sand"
-        - "Âme_soil"
       CHOPPER:
         NAME: '&#9B59B6&lAmethyst tree chopper'
         LORE:
@@ -1806,8 +1788,6 @@ CONFIG:
   DUELS:
     COMMAND_BLOCK:
       MESSAGE: '&cVous ne pouvez pas utiliser cette commande pendant un duel.'
-    CROSS_SERVER:
-      PROXY_SERVER_NAME: Locale
     START-COUNTDOWN:
       MESSAGES:
         '5': '&a5'

@@ -205,7 +205,8 @@ class LanguageManagerTest {
                 List.of("BILLFORD", "ACCESS.NPC.DISPLAY_NAME"));
         added += mergeText(target, "CONFIG.RTP", "rtp.yml", false,
                 List.of("DENIED-WORLDS", "WORLD-SETTINGS"));
-        added += mergeText(target, "CONFIG.AMETHYST_TOOLS", "amethyst-tools.yml", false, List.of());
+        added += mergeText(target, "CONFIG.AMETHYST_TOOLS", "amethyst-tools.yml", false,
+                List.of("AMETHYST-TOOLS.DRILL.DISABLED-BLOCKS"));
         added += mergeText(target, "CONFIG.ENDER_CHEST", "ender-chest.yml", false, List.of());
         added += mergeText(target, "CONFIG.INVSEE", "invsee.yml", false, List.of());
         added += mergeText(target, "CONFIG.FREEZE", "freeze.yml", false,
@@ -213,7 +214,7 @@ class LanguageManagerTest {
         added += mergeText(target, "CONFIG.AUCTION_HOUSE", "auction-house.yml", false, List.of("BOTS.BOT_NAMES"));
         added += mergeText(target, "CONFIG.ORDERS", "orders.yml", false, List.of("CATEGORY_FILTERS", "BOTS.BOT_NAMES"));
         added += mergeText(target, "CONFIG.DUELS", "duels.yml", false,
-                List.of("ARENA_SETTINGS", "MAP_SOURCES"));
+                List.of("ARENA_SETTINGS", "MAP_SOURCES", "CROSS_SERVER.PROXY_SERVER_NAME"));
         added += mergeText(target, "CONFIG.FFA", "ffa.yml", false, List.of("ARENA_SETTINGS"));
         added += mergeText(target, "CONFIG.CRATES", "crates.yml", false, List.of("CRATES"));
         added += mergeText(target, "CONFIG.SPAWNERS", "spawners.yml", false, List.of("TYPES"));
