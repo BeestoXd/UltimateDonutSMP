@@ -10,7 +10,12 @@ SETTINGS:
   LISTING_DURATION_HOURS: 48
   # Default maximum active listings a player can post simultaneously
   MAX_ACTIVE_LISTINGS_DEFAULT: 5
-  # Maximum active listing limits granted by permission node
+  # Explicit mapping from permission node to a maximum active listing count
+  # Players can also be given ultimatedonutsmp.auctionhouse.limit.<1-100> directly, for example
+  # ultimatedonutsmp.auctionhouse.limit.25 for 25 active listings, without adding it below
+  # Each value is a total, not a bonus added on top of MAX_ACTIVE_LISTINGS_DEFAULT
+  # The highest value the player has wins, and a negative value here means unlimited
+  # Wildcards do not grant a limit, the node has to be set on the player or their group
   MAX_ACTIVE_LISTINGS_BY_PERMISSION:
     ultimatedonutsmp.auctionhouse.limit.10: 10
     ultimatedonutsmp.auctionhouse.limit.15: 15

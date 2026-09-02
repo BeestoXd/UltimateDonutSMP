@@ -224,6 +224,31 @@ and give everyone `DEFAULT-ROWS`.
 
 ---
 
+## Auction Listing Limit Permissions
+
+These nodes are not registered in `plugin.yml` and are read straight off the player, so they work with
+LuckPerms or any other permission plugin. Assign them per rank.
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.auctionhouse.limit.<1-100>` | `false` | How many auctions the player may have active at once. `ultimatedonutsmp.auctionhouse.limit.15` allows fifteen listings. |
+| `donutauction.limit.<1-100>` | `false` | The same limit under the short alias prefix, for servers carrying an older node layout. |
+
+The number is a total, not a bonus added to the default. When a player holds more than one node the
+**highest** value wins, so a player with both `.limit.10` and `.limit.25` gets 25. A player with no
+limit node falls back to `SETTINGS.MAX_ACTIVE_LISTINGS_DEFAULT` in `auction-house.yml`, which ships as
+5, and `/ah limit` prints a player's active count against whatever they are entitled to.
+
+Wildcards do not grant a limit. `ultimatedonutsmp.*` leaves the player on `MAX_ACTIVE_LISTINGS_DEFAULT`,
+the same way it does for `ultimatedonutsmp.homes.<1-100>`, so a staff wildcard cannot quietly hand every
+player 100 listings.
+
+Named rank nodes can be mapped to a listing count instead of using numeric nodes. See
+`SETTINGS.MAX_ACTIVE_LISTINGS_BY_PERMISSION` in [Config-auction-house.yml](Config-auction-house.yml) — map a
+node there to a negative number to give it unlimited listings.
+
+---
+
 ## Media Rank & Badge Permissions
 
 Media permissions are registered with `default: false` and require explicit assignment via LuckPerms (or explicit permission attachment). Being an OP player does not automatically grant media badge status.
