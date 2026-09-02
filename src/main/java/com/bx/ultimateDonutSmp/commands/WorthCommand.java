@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 
@@ -28,7 +29,7 @@ public class WorthCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        boolean pricesAlias = label.equalsIgnoreCase("prices");
+        boolean pricesAlias = CommandLabelUtils.normalizeLabel(label, command).equals("prices");
 
         if (pricesAlias || args.length == 0) {
             openBrowser(sender);

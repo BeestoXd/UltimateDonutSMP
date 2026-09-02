@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
@@ -35,7 +36,8 @@ public class MessageCommand implements CommandExecutor {
             return true;
         }
 
-        if (label.equalsIgnoreCase("reply") || label.equalsIgnoreCase("r")) {
+        String sub = CommandLabelUtils.normalizeLabel(label, command);
+        if (sub.equals("reply") || sub.equals("r")) {
             return handleReply(sender, args, label);
         }
 

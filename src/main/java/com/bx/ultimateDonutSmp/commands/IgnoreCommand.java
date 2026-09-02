@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
@@ -41,7 +42,7 @@ public class IgnoreCommand implements CommandExecutor {
             return true;
         }
 
-        boolean removeOnly = label.equalsIgnoreCase("unignore");
+        boolean removeOnly = CommandLabelUtils.normalizeLabel(label, command).equals("unignore");
         if (args.length == 0) {
             send(player, removeOnly
                     ? message("UNIGNORE-USAGE", "&cUsage: /unignore <player>")

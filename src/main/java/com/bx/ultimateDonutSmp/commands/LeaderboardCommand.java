@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.managers.LeaderboardManager;
 import com.bx.ultimateDonutSmp.menus.LeaderboardMenu;
 import com.bx.ultimateDonutSmp.menus.LeaderboardTypeMenu;
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,7 +29,7 @@ public class LeaderboardCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length == 0 && label.equalsIgnoreCase("baltop")) {
+        if (args.length == 0 && CommandLabelUtils.normalizeLabel(label, cmd).equals("baltop")) {
             new LeaderboardTypeMenu(plugin, LeaderboardManager.LeaderboardType.MONEY).open(player);
             return true;
         }
