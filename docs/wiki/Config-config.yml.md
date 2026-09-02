@@ -718,6 +718,14 @@ prefix ending in `&c` gives you a red name unless the format sets a colour of it
 characters they are. Staff chat is assembled in one piece rather than around a clickable name, and
 `STAFFCHAT.FORMAT` in `messages.yml` has always taken gradients the same way.
 
+Private messages and staff chat part company with public chat on one point. Both colour the whole
+line after the typed message has been put into it, so a code somebody typed would otherwise take
+effect, and `ultimatedonutsmp.chat.color` decides whether it does. The node defaults to `op` and
+ships inside the `ultimatedonutsmp.admin` and `ultimatedonutsmp.staff.mode` bundles, so staff keep
+the colours they already had. For anyone without it the codes come out of the message before the
+line is built, which stops a player hiding a private message behind `&k` or wiping the format's own
+colours with `&r`. Grant the node to a rank to hand those colours back.
+
 ---
 
 ## Section: `SERVER-NOTIFICATIONS`

@@ -6,6 +6,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.StaffChatPayload;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.StaffChatFormatPolicy;
+import com.bx.ultimateDonutSmp.utils.TypedColorPolicy;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.command.CommandSender;
@@ -98,12 +99,16 @@ public class NetworkStaffChatManager {
             senderUuid = player.getUniqueId().toString();
         }
 
+        // Decided here rather than in broadcastStaffChat: a message coming off Redis was sent by
+        // somebody who is not on this server, so their permissions cannot be read at that end.
+        String outgoing = TypedColorPolicy.apply(sender, message);
+
         StaffChatPayload payload = StaffChatPayload.staffChat(
                 getLocalServerId(),
                 getLocalDisplayName(),
                 senderUuid,
                 sender.getName(),
-                message
+                outgoing
         );
 
         markSeen(payload.messageId());
