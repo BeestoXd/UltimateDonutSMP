@@ -24,54 +24,6 @@ gui:
     next: 53
     # The numerical value for Confirm. Available options: Any valid integer
     confirm: 52
-  # Configuration section for Buttons.
-  buttons:
-    # Configuration section for Cancel.
-    cancel:
-      # The text or value for Material. Available options: Any valid string text
-      material: RED_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14cancel'
-      # Configuration section for Lore.
-      lore:
-      - '&fClick to return'
-    # Configuration section for Confirm.
-    confirm:
-      # The text or value for Material. Available options: Any valid string text
-      material: LIME_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&#39FF14confirm'
-      # Configuration section for Lore.
-      lore:
-      - '&fClick to confirm enchants'
-    # Configuration section for Page Filler.
-    page_filler:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
-      enabled: false
-      # The text or value for Material. Available options: Any valid string text
-      material: GRAY_STAINED_GLASS_PANE
-      # The text or value for Name. Available options: Any valid string text
-      name: '&7 '
-    # Configuration section for Filler.
-    filler:
-      # Determines whether Enabled is enabled or disabled. Available options: true, false
-      enabled: true
-      # The text or value for Slots. Available options: Any valid string text
-      slots: 1,9,10
-      # The text or value for Material. Available options: Any valid string text
-      material: GRAY_STAINED_GLASS_PANE
-      # The text or value for Displayname. Available options: Any valid string text
-      displayname: '&7 '
-  # Configuration section for Sounds.
-  sounds:
-    # Configuration section for Click.
-    click:
-      # The text or value for Name. Available options: Any valid string text
-      name: BLOCK_ENCHANTMENT_TABLE_USE
-      # The decimal value for Volume. Available options: Any decimal number
-      volume: 1.0
-      # The decimal value for Pitch. Available options: Any decimal number
-      pitch: 1.0
 # Configuration section for Helmet.
 helmet:
   # Configuration section for Protection1.
