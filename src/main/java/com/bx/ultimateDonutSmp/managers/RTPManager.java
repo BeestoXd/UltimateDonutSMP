@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
+import com.bx.ultimateDonutSmp.utils.RtpChunkPreloadPolicy;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.Bukkit;
@@ -85,11 +86,7 @@ public class RTPManager {
     private static final String MIN_SEARCH_DISPLAY_TICKS_SETTING = "SETTINGS.SEARCH-DISPLAY-MIN-TICKS";
     private static final String FOUND_DISPLAY_TICKS_SETTING = "SETTINGS.FOUND-DISPLAY-TICKS";
     private static final String PRELOAD_TELEPORT_CHUNKS_SETTING = "SETTINGS.PRELOAD-TELEPORT-CHUNKS";
-    private static final String PRELOAD_RADIUS_SETTING = "SETTINGS.PRELOAD-RADIUS";
-    private static final String PRELOAD_CHUNKS_PER_TICK_SETTING = "SETTINGS.PRELOAD-CHUNKS-PER-TICK";
     private static final String PRELOAD_MAX_TICKS_SETTING = "SETTINGS.PRELOAD-MAX-TICKS";
-    private static final String POST_TELEPORT_CHUNK_THROTTLE_SETTING = "SETTINGS.POST-TELEPORT-CHUNK-THROTTLE";
-    private static final String POST_TELEPORT_VIEW_DISTANCE_SETTING = "SETTINGS.POST-TELEPORT-VIEW-DISTANCE";
     private static final String COOLDOWN_PERMISSION_PREFIX = "ultimatedonutsmp.rtp.cooldown.";
     private static final int DEFAULT_GENERATE_FALLBACK_AFTER_SAMPLES = 32;
     private static final int DEFAULT_MAX_GENERATE_FALLBACK_SAMPLES = 32;
@@ -1882,30 +1879,15 @@ public class RTPManager {
     }
 
     private List<int[]> buildPreloadChunkOrder(int centerChunkX, int centerChunkZ, int radius) {
-        List<int[]> chunks = new ArrayList<>();
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                chunks.add(new int[]{centerChunkX + dx, centerChunkZ + dz});
-            }
-        }
-        chunks.sort(Comparator.comparingInt(chunk ->
-                Math.abs(chunk[0] - centerChunkX) + Math.abs(chunk[1] - centerChunkZ)));
-        return chunks;
+        return RtpChunkPreloadPolicy.chunkOrder(centerChunkX, centerChunkZ, radius);
     }
 
     private int getPreloadRadius() {
-        int configured = plugin.getConfigManager().getRtp().getInt(PRELOAD_RADIUS_SETTING, 2);
-        int radius = Math.max(0, Math.min(4, configured));
-        if (plugin.getConfigManager().getRtp().getBoolean(POST_TELEPORT_CHUNK_THROTTLE_SETTING, true)) {
-            int throttledViewDistance = Math.max(2, plugin.getConfigManager().getRtp()
-                    .getInt(POST_TELEPORT_VIEW_DISTANCE_SETTING, 4));
-            radius = Math.max(radius, Math.min(4, throttledViewDistance));
-        }
-        return Math.max(2, radius);
+        return RtpChunkPreloadPolicy.radius(plugin.getConfigManager().getRtp());
     }
 
     private int getPreloadChunksPerTick() {
-        return Math.max(2, plugin.getConfigManager().getRtp().getInt(PRELOAD_CHUNKS_PER_TICK_SETTING, 2));
+        return RtpChunkPreloadPolicy.chunksPerTick(plugin.getConfigManager().getRtp());
     }
 
     private int getPreloadMaxTicks() {

@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
+import com.bx.ultimateDonutSmp.utils.RtpChunkPreloadPolicy;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.Location;
@@ -10,8 +11,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -447,28 +446,15 @@ public class TeleportManager {
     }
 
     private List<int[]> buildRtpChunkOrder(int centerChunkX, int centerChunkZ, int radius) {
-        List<int[]> chunks = new ArrayList<>();
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                chunks.add(new int[]{centerChunkX + dx, centerChunkZ + dz});
-            }
-        }
-        chunks.sort(Comparator.comparingInt(chunk ->
-                Math.abs(chunk[0] - centerChunkX) + Math.abs(chunk[1] - centerChunkZ)));
-        return chunks;
+        return RtpChunkPreloadPolicy.chunkOrder(centerChunkX, centerChunkZ, radius);
     }
 
     private int getRtpChunkStabilizationRadius() {
-        int configuredRadius = plugin.getConfigManager().getRtp().getInt("SETTINGS.PRELOAD-RADIUS", 2);
-        int radius = Math.max(0, Math.min(4, configuredRadius));
-        if (plugin.getConfigManager().getRtp().getBoolean("SETTINGS.POST-TELEPORT-CHUNK-THROTTLE", true)) {
-            radius = Math.max(radius, Math.min(4, getRtpThrottleDistance("SETTINGS.POST-TELEPORT-VIEW-DISTANCE", 4)));
-        }
-        return Math.max(2, radius);
+        return RtpChunkPreloadPolicy.radius(plugin.getConfigManager().getRtp());
     }
 
     private int getRtpChunkStabilizationChunksPerTick() {
-        return Math.max(2, plugin.getConfigManager().getRtp().getInt("SETTINGS.PRELOAD-CHUNKS-PER-TICK", 2));
+        return RtpChunkPreloadPolicy.chunksPerTick(plugin.getConfigManager().getRtp());
     }
 
     private void refreshLoadedChunk(World world, int chunkX, int chunkZ) {
