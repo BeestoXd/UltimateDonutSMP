@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -91,6 +93,19 @@ class VoiceMutePunishmentTest {
 
         assertTrue(dbManager.markPunishmentRemoved(id, null, "console", System.currentTimeMillis(), "vcunmute"));
         assertTrue(active(PunishmentType.VOICE_MUTE).isEmpty());
+    }
+
+    @Test
+    void deletingTheRecordFromTheGuiAlsoEndsTheMute() {
+        long id = record(PunishmentType.VOICE_MUTE, null);
+        assertNotNull(dbManager.loadPunishmentRecord(id));
+
+        assertTrue(dbManager.deletePunishmentRecord(id));
+        assertTrue(active(PunishmentType.VOICE_MUTE).isEmpty());
+
+        // The row is unreadable once it is gone, so anything that reacts to the delete has to
+        // capture the record first. PunishmentManager.deleteRecord loads it before deleting.
+        assertNull(dbManager.loadPunishmentRecord(id));
     }
 
     private long record(PunishmentType type, Long expiresAt) {
