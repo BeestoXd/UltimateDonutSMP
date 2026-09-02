@@ -44,11 +44,9 @@ NETWORK:
   # Redis pub/sub channel for player reports
   REPORT_REDIS_CHANNEL: ultimatedonutsmp:staff-alerts
 
-  # Broadcast staff chat locally if Redis connection fails (true / false)
+  # Warn the sender when their staff chat message reached this server's staff but could not be
+  # published to the other servers. Local delivery happens either way (true / false)
   SEND_LOCAL_FALLBACK_ON_REDIS_ERROR: true
-
-  # Broadcast staff alerts locally if Redis connection fails (true / false)
-  STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR: true
 
   # Warn sending player if staff alert Redis delivery fails (true / false)
   STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR: false
@@ -90,30 +88,29 @@ NETWORK:
 
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `NETWORK.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `NETWORK` system. Set to `true` to enable, `false` to disable. |
-| `NETWORK.STAFF_CHAT_ENABLED` | `bool` | `true`, `false` | `true` | Configures the technical `STAFF_CHAT_ENABLED` parameter for `NETWORK.STAFF_CHAT_ENABLED` in `network.yml`. |
-| `NETWORK.HELPOP_ENABLED` | `bool` | `true`, `false` | `true` | Configures the technical `HELPOP_ENABLED` parameter for `NETWORK.HELPOP_ENABLED` in `network.yml`. |
-| `NETWORK.REPORT_ENABLED` | `bool` | `true`, `false` | `true` | Configures the technical `REPORT_ENABLED` parameter for `NETWORK.REPORT_ENABLED` in `network.yml`. |
-| `NETWORK.STAFF_JOIN_LEAVE_ENABLED` | `bool` | `true`, `false` | `true` | Configures the technical `STAFF_JOIN_LEAVE_ENABLED` parameter for `NETWORK.STAFF_JOIN_LEAVE_ENABLED` in `network.yml`. |
-| `NETWORK.SERVER_STATUS_ENABLED` | `bool` | `true`, `false` | `true` | Configures the technical `SERVER_STATUS_ENABLED` parameter for `NETWORK.SERVER_STATUS_ENABLED` in `network.yml`. |
-| `NETWORK.LOCAL_SERVER_ID` | `str` | Any string text | `'crystal'` | Configures the technical `LOCAL_SERVER_ID` parameter for `NETWORK.LOCAL_SERVER_ID` in `network.yml`. |
-| `NETWORK.LOCAL_DISPLAY_NAME` | `str` | Any string text | `'Crystal'` | Configures the technical `LOCAL_DISPLAY_NAME` parameter for `NETWORK.LOCAL_DISPLAY_NAME` in `network.yml`. |
-| `NETWORK.REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-chat'` | Configures the technical `REDIS_CHANNEL` parameter for `NETWORK.REDIS_CHANNEL` in `network.yml`. |
-| `NETWORK.HELPOP_REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-alerts'` | Configures the technical `HELPOP_REDIS_CHANNEL` parameter for `NETWORK.HELPOP_REDIS_CHANNEL` in `network.yml`. |
-| `NETWORK.REPORT_REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-alerts'` | Configures the technical `REPORT_REDIS_CHANNEL` parameter for `NETWORK.REPORT_REDIS_CHANNEL` in `network.yml`. |
-| `NETWORK.SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | `true`, `false` | `true` | Configures the technical `SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` parameter for `NETWORK.SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` in `network.yml`. |
-| `NETWORK.STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | `true`, `false` | `true` | Configures the technical `STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR` parameter for `NETWORK.STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR` in `network.yml`. |
-| `NETWORK.STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` | `bool` | `true`, `false` | `false` | Configures the technical `STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` parameter for `NETWORK.STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` in `network.yml`. |
-| `NETWORK.LOG_TO_CONSOLE` | `bool` | `true`, `false` | `true` | Configures the technical `LOG_TO_CONSOLE` parameter for `NETWORK.LOG_TO_CONSOLE` in `network.yml`. |
-| `NETWORK.STAFF_ALERTS_LOG_TO_CONSOLE` | `bool` | `true`, `false` | `true` | Configures the technical `STAFF_ALERTS_LOG_TO_CONSOLE` parameter for `NETWORK.STAFF_ALERTS_LOG_TO_CONSOLE` in `network.yml`. |
-| `NETWORK.MAX_MESSAGE_LENGTH` | `int` | Any valid integer number | `'512'` | Configures the technical `MAX_MESSAGE_LENGTH` parameter for `NETWORK.MAX_MESSAGE_LENGTH` in `network.yml`. |
-| `NETWORK.STAFF_ALERTS_MAX_REASON_LENGTH` | `int` | Any valid integer number | `'256'` | Configures the technical `STAFF_ALERTS_MAX_REASON_LENGTH` parameter for `NETWORK.STAFF_ALERTS_MAX_REASON_LENGTH` in `network.yml`. |
-| `NETWORK.HELPOP_COOLDOWN_SECONDS` | `int` | Any valid integer number | `'30'` | Configures the technical `HELPOP_COOLDOWN_SECONDS` parameter for `NETWORK.HELPOP_COOLDOWN_SECONDS` in `network.yml`. |
-| `NETWORK.REPORT_COOLDOWN_SECONDS` | `int` | Any valid integer number | `'60'` | Configures the technical `REPORT_COOLDOWN_SECONDS` parameter for `NETWORK.REPORT_COOLDOWN_SECONDS` in `network.yml`. |
-| `NETWORK.SERVER_STATUS` | `str` | Any string text | `'&6%server% &eis now %status%&e.'` | Configures the technical `SERVER_STATUS` parameter for `NETWORK.SERVER_STATUS` in `network.yml`. |
-| `NETWORK.STAFF_CHAT` | `str` | Any string text | `'&8[&dNetwork&8] &7[%server%] &e%pla...'` | Configures the technical `STAFF_CHAT` parameter for `NETWORK.STAFF_CHAT` in `network.yml`. |
-| `NETWORK.STAFF_JOIN` | `str` | Any string text | `'&8[&a+&8] &a%player% &7joined &b%se...'` | Configures the technical `STAFF_JOIN` parameter for `NETWORK.STAFF_JOIN` in `network.yml`. |
-| `NETWORK.STAFF_LEAVE` | `str` | Any string text | `'&8[&c-&8] &a%player% &7left &b%serv...'` | Configures the technical `STAFF_LEAVE` parameter for `NETWORK.STAFF_LEAVE` in `network.yml`. |
+| `NETWORK.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for everything on this page. Turning it off does more than stop cross-server sync: `/staffchat`, `/helpop` and `/report` all start answering with their disabled message. A single server with no Redis should leave this on and switch off the individual features it does not want. |
+| `NETWORK.STAFF_CHAT_ENABLED` | `bool` | `true`, `false` | `true` | Controls `/staffchat` completely, not only its cross-server half. With this off the command replies with the `STAFFCHAT.DISABLED` message even on a standalone server. The `STAFF_CHAT` feature toggle has to be on as well. |
+| `NETWORK.HELPOP_ENABLED` | `bool` | `true`, `false` | `true` | Controls `/helpop` completely. With this off the command replies with the `HELPOP.DISABLED` message, and helpops arriving from other servers are dropped instead of being shown to staff here. |
+| `NETWORK.REPORT_ENABLED` | `bool` | `true`, `false` | `true` | Controls `/report` completely, the same way `HELPOP_ENABLED` controls helpop. Reports arriving from other servers are dropped while it is off. |
+| `NETWORK.STAFF_JOIN_LEAVE_ENABLED` | `bool` | `true`, `false` | `true` | Announces staff logging in and out to the other servers, drawn with the `STAFF_JOIN` and `STAFF_LEAVE` formats. Needs `ENABLED` and `STAFF_CHAT_ENABLED` on as well. The join notice waits a second and rechecks the player, so somebody who joins and drops straight back out produces neither notice. |
+| `NETWORK.SERVER_STATUS_ENABLED` | `bool` | `true`, `false` | `true` | Sends an online notice when this server finishes loading and an offline notice as it shuts down, drawn with the `SERVER_STATUS` format. Only the other servers see it; a server never prints its own status. |
+| `NETWORK.LOCAL_SERVER_ID` | `str` | Lower-case letters, digits, `_` and `-` | `'crystal'` | Identifies this server inside every message it sends. The value is lower-cased and anything outside letters, digits, `_` and `-` is turned into `-`, so `Crystal SMP` is stored as `crystal-smp`. Left blank it falls back to `NETWORK-STATUS.LOCAL-SERVER-ID` and then to `local`. Give each server its own or their messages cannot be told apart. |
+| `NETWORK.LOCAL_DISPLAY_NAME` | `str` | Any string text | `'Crystal'` | The name `%server%` prints in the formats below, so this is the one staff actually read. Left blank it falls back to `NETWORK-STATUS.LOCAL-DISPLAY-NAME`, and then to the server id with its separators turned into spaces and each word capitalised. |
+| `NETWORK.REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-chat'` | The Redis channel carrying staff chat, staff join and leave notices, and server status. Every server meant to share one staff chat has to name the same channel here. Two servers on different channels each work on their own and simply never see each other. |
+| `NETWORK.HELPOP_REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-alerts'` | The Redis channel carrying `/helpop` alerts. It ships pointing at the same channel as reports, which is why the two arrive together. Split them only when some servers should receive one kind of alert and not the other. |
+| `NETWORK.REPORT_REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-alerts'` | The Redis channel carrying `/report` alerts, sharing the helpop channel by default. A server listening on neither channel still delivers its own alerts to its own staff. |
+| `NETWORK.SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | `true`, `false` | `true` | The name oversells it: local delivery is not optional and never was. A staff chat message reaches the staff on this server before Redis is attempted at all. What this key decides is whether the sender is told, through the `STAFFCHAT.REDIS_UNAVAILABLE` message, that their message did not make it to the other servers. Each player is warned once per session. |
+| `NETWORK.STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` | `bool` | `true`, `false` | `false` | The alert counterpart of `SEND_LOCAL_FALLBACK_ON_REDIS_ERROR`. With it on, a player whose `/helpop` or `/report` reached local staff but could not be published to the other servers is told so, once per session. Off by default, since the alert did reach somebody. |
+| `NETWORK.LOG_TO_CONSOLE` | `bool` | `true`, `false` | `true` | Writes every staff chat line to this server's console with the colour codes stripped, which is what puts it in `logs/latest.log` for reading back later. Turn it off on a server where staff chat should leave no trace in the log. |
+| `NETWORK.STAFF_ALERTS_LOG_TO_CONSOLE` | `bool` | `true`, `false` | `true` | The same for helpop and report alerts. Delete the key rather than setting it and alerts follow whatever `LOG_TO_CONSOLE` says, instead of falling back to `true` on their own. |
+| `NETWORK.MAX_MESSAGE_LENGTH` | `int` | `1` or greater | `'512'` | Longest staff chat message accepted. Anything longer is refused with `STAFFCHAT.MESSAGE_TOO_LONG` and never sent anywhere. Values below `1` are read as `1`. |
+| `NETWORK.STAFF_ALERTS_MAX_REASON_LENGTH` | `int` | `1` or greater | `'256'` | Longest `/helpop` message or `/report` reason accepted. It doubles as the default for two finer keys that do not ship in the file, `HELPOP_MAX_MESSAGE_LENGTH` and `REPORT_MAX_REASON_LENGTH`; add one of those to give that command a limit of its own. |
+| `NETWORK.HELPOP_COOLDOWN_SECONDS` | `int` | `0` or greater | `'30'` | How long a player waits between `/helpop` submissions. `0` removes the wait entirely, and anyone holding `ultimatedonutsmp.staff.alerts.bypass-cooldown` skips it whatever the value. |
+| `NETWORK.REPORT_COOLDOWN_SECONDS` | `int` | `0` or greater | `'60'` | The same for `/report`, with the same bypass permission and the same meaning for `0`. The two cooldowns are counted separately, so using one does not delay the other. |
+| `NETWORK.SERVER_STATUS` | `str` | Any string text | `'&6%server% &eis now %status%&e.'` | Format for the online and offline notices described under `SERVER_STATUS_ENABLED`. `%server%` is the server that changed and `%status%` is the bare word `online` or `offline`. See the placeholder section below. |
+| `NETWORK.STAFF_CHAT` | `str` | Any string text | `'&8[&dNetwork&8] &7[%server%] &e%pla...'` | Format every staff chat line is drawn with, both on the server it was sent from and on the ones it reaches. Remove the key and the plugin falls back to `STAFFCHAT.FORMAT` in `messages.yml`. See the placeholder section below. |
+| `NETWORK.STAFF_JOIN` | `str` | Any string text | `'&8[&a+&8] &a%player% &7joined &b%se...'` | Format for the staff join notice. `%player%` is the staff member and `%server%` the server they joined, and the notice is shown to every other staff member rather than to them. See the placeholder section below. |
+| `NETWORK.STAFF_LEAVE` | `str` | Any string text | `'&8[&c-&8] &a%player% &7left &b%serv...'` | Format for the staff leave notice, sent as they disconnect and shown to everyone except them. See the placeholder section below. |
 
 ### 3. Placeholders In The Message Formats
 
