@@ -42,7 +42,6 @@ public class CrateVisualManager {
 
     private final UltimateDonutSmp plugin;
     private final Map<CrateManager.CrateBlockKey, List<UUID>> holograms = new HashMap<>();
-    private final Map<UUID, Map<CrateManager.CrateBlockKey, List<UUID>>> personalLineDisplays = new HashMap<>();
     private final Map<UUID, Map<CrateManager.CrateBlockKey, UUID>> personalKeyDisplays = new HashMap<>();
     private final Map<UUID, Map<CrateManager.CrateBlockKey, String>> personalKeyDisplayTexts = new HashMap<>();
 
@@ -85,7 +84,6 @@ public class CrateVisualManager {
             animationTask.cancel();
             animationTask = null;
         }
-        clearAllPersonalLineDisplays();
         clearAllPersonalDisplays();
         clearAllHolograms();
         purgeNearbyDisplaysForAllBoundCrates();
@@ -98,14 +96,12 @@ public class CrateVisualManager {
 
     public void handleQuit(UUID playerId) {
         if (playerId != null) {
-            clearPersonalLineDisplays(playerId);
             clearPersonalDisplays(playerId);
         }
     }
 
     public void handleWorldChange(Player player) {
         if (player != null) {
-            clearPersonalLineDisplays(player.getUniqueId());
             clearPersonalDisplays(player.getUniqueId());
         }
     }
@@ -414,10 +410,6 @@ public class CrateVisualManager {
         }
     }
 
-    private void upsertPersonalLineDisplays(Player player, CrateManager.CrateBlockKey key, CrateManager.CrateDefinition crate) {
-        removePersonalLineDisplays(player.getUniqueId(), key);
-    }
-
     private void upsertPersonalKeyDisplay(Player player, CrateManager.CrateBlockKey key, CrateManager.CrateDefinition crate) {
         World world = Bukkit.getWorld(key.world());
         if (world == null) {
@@ -502,10 +494,6 @@ public class CrateVisualManager {
             synchronized (holograms) {
                 removeTrackedGlobalHologram(key);
                 removeTrackedPreview(key);
-
-                for (UUID viewerId : new HashSet<>(personalLineDisplays.keySet())) {
-                    removePersonalLineDisplays(viewerId, key);
-                }
 
                 for (UUID viewerId : new HashSet<>(personalKeyDisplays.keySet())) {
                     removePersonalKeyDisplay(viewerId, key);
@@ -637,12 +625,6 @@ public class CrateVisualManager {
         }
     }
 
-    private void purgeUntrackedDisplaysForBoundCrates() {
-        for (CrateManager.CrateBlockKey key : plugin.getCrateManager().getBoundBlockIds().keySet()) {
-            purgeUntrackedDisplaysForCrate(key);
-        }
-    }
-
     private void purgeNearbyDisplaysForCrate(CrateManager.CrateBlockKey key) {
         World world = Bukkit.getWorld(key.world());
         if (world == null) {
@@ -669,43 +651,6 @@ public class CrateVisualManager {
         });
     }
 
-    private void purgeUntrackedDisplaysForCrate(CrateManager.CrateBlockKey key) {
-        World world = Bukkit.getWorld(key.world());
-        if (world == null) {
-            return;
-        }
-
-        Set<UUID> trackedIds = collectTrackedDisplayIds(key);
-        Location center = new Location(world, key.x() + 0.5, key.y() + getHologramOffsetY() - 0.35, key.z() + 0.5);
-        plugin.getSpigotScheduler().runRegion(center, () -> {
-            for (Entity entity : world.getNearbyEntities(center, 0.4, 2.5, 0.4, candidate -> candidate instanceof TextDisplay || candidate instanceof ItemDisplay)) {
-                if (isAtCrateHologramColumn(entity, key)) {
-                    if (!trackedIds.contains(entity.getUniqueId())) {
-                        entity.remove();
-                    }
-                } else if (isAtCratePreviewColumn(entity, key)) {
-                    if (!trackedIds.contains(entity.getUniqueId())) {
-                        entity.remove();
-                    }
-                }
-            }
-        });
-    }
-
-    private void clearAllPersonalLineDisplays() {
-        for (Map<CrateManager.CrateBlockKey, List<UUID>> displays : personalLineDisplays.values()) {
-            for (List<UUID> entityIds : displays.values()) {
-                for (UUID entityId : entityIds) {
-                    Entity entity = Bukkit.getEntity(entityId);
-                    if (entity != null && entity.isValid()) {
-                        entity.remove();
-                    }
-                }
-            }
-        }
-        personalLineDisplays.clear();
-    }
-
     private void clearAllPersonalDisplays() {
         for (Map<CrateManager.CrateBlockKey, UUID> displays : personalKeyDisplays.values()) {
             for (UUID entityId : displays.values()) {
@@ -717,22 +662,6 @@ public class CrateVisualManager {
         }
         personalKeyDisplays.clear();
         personalKeyDisplayTexts.clear();
-    }
-
-    private void clearPersonalLineDisplays(UUID viewerId) {
-        Map<CrateManager.CrateBlockKey, List<UUID>> displays = personalLineDisplays.remove(viewerId);
-        if (displays == null) {
-            return;
-        }
-
-        for (List<UUID> entityIds : displays.values()) {
-            for (UUID entityId : entityIds) {
-                Entity entity = Bukkit.getEntity(entityId);
-                if (entity != null && entity.isValid()) {
-                    entity.remove();
-                }
-            }
-        }
     }
 
     private void clearPersonalDisplays(UUID viewerId) {
@@ -749,27 +678,6 @@ public class CrateVisualManager {
             }
         }
         personalKeyDisplayTexts.remove(viewerId);
-    }
-
-    private void removePersonalLineDisplays(UUID viewerId, CrateManager.CrateBlockKey key) {
-        Map<CrateManager.CrateBlockKey, List<UUID>> displays = personalLineDisplays.get(viewerId);
-        if (displays == null) {
-            return;
-        }
-
-        List<UUID> entityIds = displays.remove(key);
-        if (entityIds != null) {
-            for (UUID entityId : entityIds) {
-                Entity entity = Bukkit.getEntity(entityId);
-                if (entity != null && entity.isValid()) {
-                    entity.remove();
-                }
-            }
-        }
-
-        if (displays.isEmpty()) {
-            personalLineDisplays.remove(viewerId);
-        }
     }
 
     private void removePersonalKeyDisplay(UUID viewerId, CrateManager.CrateBlockKey key) {
@@ -957,36 +865,6 @@ public class CrateVisualManager {
                 && deltaZ <= 0.2D
                 && location.getY() >= minY
                 && location.getY() <= maxY;
-    }
-
-    private Set<UUID> collectTrackedDisplayIds(CrateManager.CrateBlockKey key) {
-        synchronized (holograms) {
-            Set<UUID> ids = new HashSet<>();
-            List<UUID> globalHolo = holograms.get(key);
-            if (globalHolo != null) {
-                ids.addAll(globalHolo);
-            }
-            UUID globalPreview = previews.get(key);
-            if (globalPreview != null) {
-                ids.add(globalPreview);
-            }
-
-            for (Map<CrateManager.CrateBlockKey, List<UUID>> displays : personalLineDisplays.values()) {
-                List<UUID> list = displays.get(key);
-                if (list != null) {
-                    ids.addAll(list);
-                }
-            }
-
-            for (Map<CrateManager.CrateBlockKey, UUID> displays : personalKeyDisplays.values()) {
-                UUID id = displays.get(key);
-                if (id != null) {
-                    ids.add(id);
-                }
-            }
-
-            return ids;
-        }
     }
 
     private boolean isManagedCratePreview(Entity entity) {
