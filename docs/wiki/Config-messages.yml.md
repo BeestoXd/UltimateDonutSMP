@@ -1,7 +1,13 @@
 # Detailed Configuration & Setup Guide: `messages.yml`
 
-This is the official, 100% complete technical setup guide for `messages.yml` in **UltimateDonutSMP**.
+This is the official technical setup guide for `messages.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
+
+Twenty-five sections have no write-up here yet: `BILLFORD`, `BALANCE`, `SHARD_PAY`, `FINDPLAYER`,
+`PUNISHMENTS`, `SOCIAL`, `AUCTION_HOUSE`, `ORDERS`, `STATS-WIPE`, `STAFF`, `FLY`, `FLYSPEED`,
+`WALKSPEED`, `HEAL`, `FEED`, `GAMEMODE`, `RANDOMTP`, `RENAME`, `PING`, `PLAYTIME`, `STAFFCHAT`,
+`HELPOP`, `REPORT`, `ALTS` and `VOICE-CHAT`. Every key in them behaves like the ones covered below,
+and `messages.yml` carries a comment above each one saying what it is.
 
 One formatting rule catches people out. A line whose visible letters are all uppercase is shown
 in Title Case instead, whenever that line also carries a colour code or a placeholder.

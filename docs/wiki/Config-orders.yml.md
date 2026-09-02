@@ -1,7 +1,11 @@
 # Detailed Configuration & Setup Guide: `orders.yml`
 
-This is the official, 100% complete technical setup guide for `orders.yml` in **UltimateDonutSMP**.
+This is the official technical setup guide for `orders.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
+
+Three sections have no write-up here yet: `SEARCH_SIGN`, `AMOUNT_SIGN` and `PRICE_SIGN`. Each sets
+the four lines of the sign an order menu opens when it asks for a search term, an amount or a price,
+plus the `input-line` that decides which line the player types on.
 
 ---
 

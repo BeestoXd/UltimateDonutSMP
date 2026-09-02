@@ -1,7 +1,13 @@
 # Detailed Configuration & Setup Guide: `config.yml`
 
-This is the official, 100% complete technical setup guide for `config.yml` in **UltimateDonutSMP**.
+This is the official technical setup guide for `config.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
+
+Six sections have no write-up here yet: `OPTIMIZATION`, `RTP-ZONE`, `TELEPORT-COOLDOWN`, `BOUNTY`,
+`AMETHYST-TOOLS` and `COMMANDS`. Nothing is wrong with them; they simply have no entry below, and
+the comments above each key in `config.yml` say what they do. Watch the names on two of those: this
+file's `RTP-ZONE` and `AMETHYST-TOOLS` are separate settings from `rtp.yml` and `amethyst-tools.yml`,
+which have guides of their own.
 
 A line whose visible letters are all uppercase is shown in Title Case instead, so long as it also
 carries a colour code or a placeholder. That reaches the tablist header and the `SERVER-LIST`

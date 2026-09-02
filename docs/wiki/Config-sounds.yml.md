@@ -1,7 +1,11 @@
 # Detailed Configuration & Setup Guide: `sounds.yml`
 
-This is the official, 100% complete technical setup guide for `sounds.yml` in **UltimateDonutSMP**.
+This is the official technical setup guide for `sounds.yml` in **UltimateDonutSMP**.
 Each section details the exact commented setup code block, allowed option values, data types, default values, and in-depth functional behavior.
+
+Two sections have no write-up here yet: `CRATES` and `SPAWNERS`. Both take the same
+`sound|volume|pitch` value as every entry covered below, so the examples here apply to them
+unchanged.
 
 ---
 
