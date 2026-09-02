@@ -60,8 +60,14 @@ public class HoverStatsManager {
             applyEvents(senderComponent, hover, click);
             root.addExtra(senderComponent);
         } else {
-            append(root, ColorUtils.toBaseComponents(beforePlayer, speaker));
-            TextComponent nameComponent = ColorUtils.toBaseComponent(displayName, speaker);
+            // Everything up to and including the name is coloured in one pass, so a gradient opened
+            // before %player% still runs across the name instead of being cut in half and printed as
+            // plain text. The result is split apart again afterwards to keep the hover on the name.
+            String colorizedHead = ColorUtils.colorize(beforePlayer + displayName, speaker);
+            int nameLength = ColorUtils.visibleLength(ColorUtils.colorize(displayName, speaker));
+            String[] head = ColorUtils.splitTrailingVisible(colorizedHead, nameLength);
+            append(root, TextComponent.fromLegacyText(head[0]));
+            TextComponent nameComponent = legacyComponent(head[1]);
             if (isEnabled()) {
                 applyEvents(nameComponent, hover, click);
             }
@@ -252,6 +258,14 @@ public class HoverStatsManager {
             }
         }
         return "";
+    }
+
+    private TextComponent legacyComponent(String legacy) {
+        TextComponent component = new TextComponent();
+        for (BaseComponent part : TextComponent.fromLegacyText(legacy)) {
+            component.addExtra(part);
+        }
+        return component;
     }
 
     private void append(TextComponent root, BaseComponent[] components) {

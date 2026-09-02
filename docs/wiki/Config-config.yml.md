@@ -696,6 +696,28 @@ CHAT:
  
 ```
 
+### 4. Colours In The Chat Format
+
+`FORMAT` reads the same colour syntax as the rest of the plugin: `&a` codes, `&#RRGGBB` for a single
+hex colour, and MiniMessage tags such as `<red>`, `<bold>`, `<gradient:#FF0000:#0000FF>` or
+`<rainbow>`. A gradient may run across `%prefix%` and `%player%`, so
+
+```yaml
+CHAT:
+  FORMAT: '<gradient:#FF0000:#0000FF>%prefix%%player%</gradient>&7: &f%message%'
+```
+
+fades the rank prefix and the name together from red to blue, and the hover stats stay attached to
+the name. Drop the `</gradient>` and the fade carries on to the end of the line instead.
+
+Whatever colour is active when the format reaches `%player%` carries onto the name, so a LuckPerms
+prefix ending in `&c` gives you a red name unless the format sets a colour of its own after it.
+
+`%message%` sits outside all of this on purpose. What a player types goes out as written, tinted by
+`MESSAGE-COLORS` and nothing else, so colour codes someone types into chat stay visible as the
+characters they are. Staff chat is assembled in one piece rather than around a clickable name, and
+`STAFFCHAT.FORMAT` in `messages.yml` has always taken gradients the same way.
+
 ---
 
 ## Section: `SERVER-NOTIFICATIONS`
