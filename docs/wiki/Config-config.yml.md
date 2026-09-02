@@ -1228,7 +1228,7 @@ RESPAWN-ANCHOR:
   ENABLED: false
   # The decimal value for Damage. Available options: Any decimal number
   DAMAGE: 2.0
-# Configuration section for Ender Chest.
+# Configuration section for Boss Sounds.
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -1246,11 +1246,60 @@ RESPAWN-ANCHOR:
   ENABLED: false
   # The decimal value for Damage. Available options: Any decimal number
   DAMAGE: 2.0
-# Configuration section for Ender Chest.
+# Configuration section for Boss Sounds.
 ```
 
 ---
 
+## Section: `BOSS-SOUNDS`
+
+### 1. Commented Setup Code Example
+
+```yaml
+BOSS-SOUNDS:
+  # Determines whether Enabled is enabled or disabled. When true, the two boss sounds Minecraft
+  # plays to everyone online are kept to players within RADIUS blocks of the boss. Set it to false
+  # to leave the vanilla behaviour alone. Available options: true, false
+  ENABLED: true
+  # The numerical value for Radius. How far the sound carries, in blocks, measured from the boss to
+  # the player. 1600 is 100 chunks. Players in another world never hear it. A value of 0 or less
+  # turns the limit off. Available options: Any valid integer
+  RADIUS: 1600
+  # Determines whether Wither Spawn is enabled or disabled. Covers the roar a wither makes once it
+  # finishes charging up. Available options: true, false
+  WITHER-SPAWN: true
+  # Determines whether Ender Dragon Death is enabled or disabled. Covers the growl an ender dragon
+  # makes as it starts dying. Available options: true, false
+  ENDER-DRAGON-DEATH: true
+# Configuration section for Ender Chest.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `BOSS-SOUNDS.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `BOSS-SOUNDS` system. Set to `true` to enable, `false` to disable. With it off, Minecraft plays both sounds to every player online, wherever they are. |
+| `BOSS-SOUNDS.RADIUS` | `int` | Any valid integer | `'1600'` | How far the sound carries, in blocks, measured from the boss to the player. `1600` is 100 chunks. Height counts towards the distance, and a player in another world never hears it. `0` or less turns the limit off and leaves both sounds server-wide. |
+| `BOSS-SOUNDS.WITHER-SPAWN` | `bool` | `true`, `false` | `true` | Whether the radius applies to the roar a wither makes once it finishes charging up. |
+| `BOSS-SOUNDS.ENDER-DRAGON-DEATH` | `bool` | `true`, `false` | `true` | Whether the radius applies to the growl an ender dragon makes as it starts dying. |
+
+These are the only two sounds Minecraft plays to the whole server. A wither dying and a dragon
+spawning already fade out over distance the way any other mob sound does, so there is nothing to
+limit there. Trimming the range needs ProtocolLib, which the plugin already requires.
+
+### 3. Practical Setup Example
+
+```yaml
+BOSS-SOUNDS:
+  ENABLED: true
+  # 320 blocks, so the roar stays inside the fight it belongs to
+  RADIUS: 320
+  WITHER-SPAWN: true
+  # leave the dragon growl reaching the whole server, the way vanilla plays it
+  ENDER-DRAGON-DEATH: false
+```
+
+---
 ## Section: `ENDER-CHEST`
 
 ### 1. Commented Setup Code Example

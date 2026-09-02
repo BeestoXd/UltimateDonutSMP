@@ -48,6 +48,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PlayerDataManager playerDataManager;
     private PlayerVisibilityManager playerVisibilityManager;
     private ExplosionParticleFilter explosionParticleFilter;
+    private BossSoundRangeFilter bossSoundRangeFilter;
     private EconomyManager economyManager;
     private ChatManager chatManager;
     private IgnoreManager ignoreManager;
@@ -171,6 +172,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         playerVisibilityManager = new PlayerVisibilityManager(this);
         if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
             explosionParticleFilter = new ExplosionParticleFilter(this);
+            bossSoundRangeFilter = new BossSoundRangeFilter(this);
         } else {
             getLogger().info("ProtocolLib is not installed; packet-based explosion particle filtering is disabled.");
         }
@@ -390,6 +392,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (explosionParticleFilter != null) {
             explosionParticleFilter.shutdown();
         }
+        if (bossSoundRangeFilter != null) {
+            bossSoundRangeFilter.shutdown();
+        }
         if (playerVisibilityManager != null) {
             playerVisibilityManager.clear();
         }
@@ -552,6 +557,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new PhantomListener(this), this);
         pm.registerEvents(new MobSpawnListener(this), this);
         pm.registerEvents(new PlayerSettingEffectsListener(this), this);
+        if (bossSoundRangeFilter != null) {
+            pm.registerEvents(bossSoundRangeFilter, this);
+        }
         if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
             worthManager.setPacketDisplayActive(true);
             pm.registerEvents(new WorthPacketDisplay(this), this);
