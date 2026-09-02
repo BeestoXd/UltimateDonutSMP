@@ -482,20 +482,6 @@ HOME-MENU:
         - '&cRight-click to delete'
         NO-PERMISSION:
         - '&7You need a higher rank for this home.'
-CONFIRM-MENU:
-  TITLE: '&8Confirm Delete'
-  SIZE: 27
-  CONFIRM-BUTTON:
-    DISPLAY-NAME: '&aConfirm'
-    MATERIAL: LIME_STAINED_GLASS_PANE
-    LORE:
-    - '&fClick to delete'
-  CANCEL-BUTTON:
-    DISPLAY-NAME: '&4Cancel'
-    MATERIAL: RED_STAINED_GLASS_PANE
-    LORE:
-    - '&fClick to cancel'
-    - 
 MEDIA-MENU:
   TITLE: '&8Media Rank'
   SIZE: 27

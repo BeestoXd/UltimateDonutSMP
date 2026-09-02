@@ -672,14 +672,6 @@ MENUS:
           USED:
           - '&eLeft-click to rename this home'
           - '&cRight-click to delete'
-  CONFIRM-MENU:
-    TITLE: '&8Confirm delete'
-    CONFIRM-BUTTON:
-      DISPLAY-NAME: '&aConfirm'
-      LORE:
-      - '&fClick to delete'
-    CANCEL-BUTTON:
-      DISPLAY-NAME: '&4Cancel'
   STATS-MENU:
     TITLE: '&8{username} Stats'
     BUTTONS:
