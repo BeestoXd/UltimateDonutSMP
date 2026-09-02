@@ -316,8 +316,24 @@ public class PunishmentManager {
         );
     }
 
+    /**
+     * Deleting the row is not enough for a voice mute on its own: the microphone gate answers from
+     * a cache rather than the database, so it has to be told the record is gone. The record is read
+     * before the delete because afterwards there is nothing left to read its type from.
+     */
     public boolean deleteRecord(long punishmentId) {
-        return plugin.getDatabaseManager().deletePunishmentRecord(punishmentId);
+        PunishmentRecord existing = plugin.getDatabaseManager().loadPunishmentRecord(punishmentId);
+        if (!plugin.getDatabaseManager().deletePunishmentRecord(punishmentId)) {
+            return false;
+        }
+
+        if (existing != null && existing.getType() == PunishmentType.VOICE_MUTE) {
+            VoiceChatConsentManager voiceChat = plugin.getVoiceChatConsentManager();
+            if (voiceChat != null) {
+                voiceChat.refreshVoiceMute(existing.getTargetUuid(), existing.getTargetNameSnapshot());
+            }
+        }
+        return true;
     }
 
     public PunishmentState getState(PunishmentRecord record) {
