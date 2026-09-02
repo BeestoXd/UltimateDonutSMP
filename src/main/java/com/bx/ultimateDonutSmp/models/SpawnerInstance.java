@@ -4,6 +4,7 @@ import org.bukkit.Material;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -289,6 +290,57 @@ public class SpawnerInstance {
             setSlotLoot(slotIndex, material, add);
             remaining -= add;
             slotIndex++;
+        }
+
+        groupStoredLootByMaterial();
+    }
+
+    /**
+     * A new stack goes to the lowest free slot, so a skeleton spawner ends up alternating arrows
+     * and bones the whole way down, and the storage menu draws slots in order. Re-pack the slots
+     * after each drop so every material sits in one run, materials keep the order they first
+     * appeared in, and nothing is left with a gap in front of it. Storage that is already grouped
+     * comes back out unchanged, so this does not shuffle items under a player who has the menu open.
+     */
+    private void groupStoredLootByMaterial() {
+        Map<String, SpawnerLootEntry> unslotted = new LinkedHashMap<>();
+        List<SpawnerLootEntry> slotted = new ArrayList<>();
+        for (Map.Entry<String, SpawnerLootEntry> stored : storedLoot.entrySet()) {
+            if (parseSlotIndex(stored.getKey()) < 0) {
+                unslotted.put(stored.getKey(), stored.getValue());
+            } else {
+                slotted.add(stored.getValue());
+            }
+        }
+
+        slotted.sort(Comparator.comparingInt(entry -> parseSlotIndex(entry.getKey())));
+
+        Map<Material, List<SpawnerLootEntry>> runs = new LinkedHashMap<>();
+        for (SpawnerLootEntry entry : slotted) {
+            runs.computeIfAbsent(entry.getMaterial(), ignored -> new ArrayList<>()).add(entry);
+        }
+
+        storedLoot.clear();
+        storedLoot.putAll(unslotted);
+
+        int nextSlot = 0;
+        for (List<SpawnerLootEntry> run : runs.values()) {
+            for (SpawnerLootEntry entry : run) {
+                String key = "SLOT_" + nextSlot;
+                storedLoot.put(key, new SpawnerLootEntry(key, entry.getMaterial(), entry.getAmount()));
+                nextSlot++;
+            }
+        }
+    }
+
+    private static int parseSlotIndex(String key) {
+        if (key == null || !key.startsWith("SLOT_")) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(key.substring(5));
+        } catch (NumberFormatException ignored) {
+            return -1;
         }
     }
 

@@ -880,7 +880,8 @@ public class SpawnerManager {
             );
         }
 
-        if (player != null) {
+        boolean returnedItem = player != null && returnsSpawnerItemOnBreak(player.getGameMode());
+        if (returnedItem) {
             long remaining = breakAmount;
             List<ItemStack> itemsToGive = new ArrayList<>();
             while (remaining > 0) {
@@ -908,7 +909,8 @@ public class SpawnerManager {
                 plugin.getAntiEspManager().refreshNearby(block.getLocation());
             }
         });
-        return new ActionResult(true, "&apicked up &f" + NumberUtils.format(breakAmount) + "x "
+        String verb = returnedItem ? "&apicked up &f" : "&aremoved &f";
+        return new ActionResult(true, verb + NumberUtils.format(breakAmount) + "x "
                 + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.", (int) breakAmount, fullyDestroyed);
     }
 
@@ -1849,8 +1851,21 @@ public class SpawnerManager {
         }
     }
 
+    /**
+     * Placing a spawner in creative costs nothing, so breaking one must not hand a spawner back:
+     * paying out either way turned a creative break into a free spawner item. The two halves of
+     * that rule live here together so they cannot drift apart again.
+     */
+    static boolean consumesSpawnerItemOnPlace(GameMode gameMode) {
+        return gameMode != GameMode.CREATIVE;
+    }
+
+    static boolean returnsSpawnerItemOnBreak(GameMode gameMode) {
+        return gameMode != GameMode.CREATIVE;
+    }
+
     public void consumeHeldSpawnerItem(Player player, boolean all) {
-        if (player == null || player.getGameMode() == GameMode.CREATIVE) {
+        if (player == null || !consumesSpawnerItemOnPlace(player.getGameMode())) {
             return;
         }
 
@@ -1863,7 +1878,7 @@ public class SpawnerManager {
     }
 
     public void consumeHeldSpawnerItem(Player player, int amount) {
-        if (player == null || player.getGameMode() == GameMode.CREATIVE || amount <= 0) {
+        if (player == null || !consumesSpawnerItemOnPlace(player.getGameMode()) || amount <= 0) {
             return;
         }
 
