@@ -1,5 +1,6 @@
 package com.bx.ultimateDonutSmp.commands;
 
+import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
@@ -152,7 +153,7 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
     }
 
     private GameMode modeFromLabel(String label) {
-        return switch (normalizeLabel(label)) {
+        return switch (CommandLabelUtils.normalizeLabel(label)) {
             case "gms" -> GameMode.SURVIVAL;
             case "gmc" -> GameMode.CREATIVE;
             case "gma" -> GameMode.ADVENTURE;
@@ -196,19 +197,6 @@ public class GamemodeCommand implements CommandExecutor, TabCompleter {
 
     private String senderName(CommandSender sender) {
         return sender instanceof Player player ? player.getName() : "console";
-    }
-
-    private String normalizeLabel(String label) {
-        if (label == null) {
-            return "";
-        }
-
-        String normalized = label.toLowerCase(Locale.ROOT);
-        int namespaceSeparator = normalized.indexOf(':');
-        if (namespaceSeparator >= 0 && namespaceSeparator + 1 < normalized.length()) {
-            normalized = normalized.substring(namespaceSeparator + 1);
-        }
-        return normalized;
     }
 
     private void send(CommandSender sender, String path, String fallback, String... placeholders) {
