@@ -198,7 +198,7 @@ public class HideCommand implements CommandExecutor, TabCompleter {
                 }
                 send(sender, manager.message(
                         key,
-                        key.equals("removed")
+                        key.equals("REMOVED")
                                 ? "&aYour hide state has been removed."
                                 : "&aYour identity is now &f{alias}&a.",
                         "{alias}", manager.publicName(result.state())
@@ -275,9 +275,5 @@ public class HideCommand implements CommandExecutor, TabCompleter {
                 .distinct()
                 .sorted(String.CASE_INSENSITIVE_ORDER)
                 .toList();
-    }
-
-    private String normalizeKey(String value) {
-        return HideManager.normalize(value).replace('-', '_').replace(' ', '_');
     }
 }
