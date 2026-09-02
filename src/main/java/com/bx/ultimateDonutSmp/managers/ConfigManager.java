@@ -1031,6 +1031,7 @@ public class ConfigManager {
     public FileConfiguration getOriginalMenus() { return menus; }
     public FileConfiguration getOriginalShop() { return shop; }
     public FileConfiguration getOriginalRtp() { return rtp; }
+    public FileConfiguration getOriginalNetwork() { return network; }
     public FileConfiguration getSpawners()      { return localized("CONFIG.SPAWNERS", spawners); }
     public FileConfiguration getSpawnStash()    { return localized("CONFIG.SPAWN_STASH", spawnStash); }
     public FileConfiguration getNetwork()       { return localized("CONFIG.NETWORK", network); }

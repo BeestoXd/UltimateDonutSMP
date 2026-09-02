@@ -275,7 +275,7 @@ public class UltimateDonutSmpCommand implements CommandExecutor, TabCompleter {
         try {
             FileConfiguration config = plugin.getConfigManager().getConfig();
             FileConfiguration database = plugin.getConfigManager().getDatabase();
-            FileConfiguration network = plugin.getConfigManager().getNetwork();
+            FileConfiguration network = plugin.getConfigManager().getOriginalNetwork();
             FileConfiguration discord = plugin.getConfigManager().getDiscord();
 
             config.set("SETTINGS.SPAWN-MENU", true);
