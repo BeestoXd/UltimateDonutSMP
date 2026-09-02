@@ -691,6 +691,19 @@ TABLIST:
   - ''
   - '   &#37BFF9/discord  /guide  /store   '
   - ''
+# Configuration section for Server List.
+SERVER-LIST:
+  # Determines whether Enabled is enabled or disabled. When true, the text under this server's name
+  # in the multiplayer list is taken from MOTD below instead of the motd line in server.properties.
+  # Set it to false to leave that entry alone. Available options: true, false
+  ENABLED: false
+  # Configuration section for Motd. The lines shown under the server name, written in the same
+  # colour codes as the rest of the plugin. The client only draws the first two. %online% becomes
+  # the number of players on the server and %max_players% the slot count, the same two tokens the
+  # tablist header takes. Maintenance mode keeps its own text while it is on, set in network.yml
+  MOTD:
+  - '&d&lUltimateDonutSMP'
+  - '&7%online%&8/&7%max_players% &7online'
 # Configuration section for Optimization.
 OPTIMIZATION:
   # Determines whether Enabled is enabled or disabled. Available options: true, false

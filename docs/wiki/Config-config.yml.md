@@ -1821,6 +1821,56 @@ TABLIST:
 
 ---
 
+## Section: `SERVER-LIST`
+
+### 1. Commented Setup Code Example
+
+```yaml
+# Configuration section for Server List.
+SERVER-LIST:
+  # Determines whether Enabled is enabled or disabled. When true, the text under this server's name
+  # in the multiplayer list is taken from MOTD below instead of the motd line in server.properties.
+  # Set it to false to leave that entry alone. Available options: true, false
+  ENABLED: false
+  # Configuration section for Motd. The lines shown under the server name, written in the same
+  # colour codes as the rest of the plugin. The client only draws the first two. %online% becomes
+  # the number of players on the server and %max_players% the slot count, the same two tokens the
+  # tablist header takes. Maintenance mode keeps its own text while it is on, set in network.yml
+  MOTD:
+  - '&d&lUltimateDonutSMP'
+  - '&7%online%&8/&7%max_players% &7online'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `SERVER-LIST.ENABLED` | `bool` | `true`, `false` | `false` | Global toggle for `SERVER-LIST` system. Set to `true` to enable, `false` to disable. It ships off, so updating the jar leaves the entry reading exactly as it did before. |
+| `SERVER-LIST.MOTD` | `list` | Any lines of text | `['&d&lUltimateDonutSMP', '&7%online%&8/&7%max_players% &7online']` | The lines drawn under the server name. The client shows the first two and ignores anything after them, so a longer list costs nothing and gains nothing. `%online%` becomes the number of players on the server and `%max_players%` the slot count. Colour codes, hex codes and PlaceholderAPI server placeholders all work in these lines. An empty list leaves the `motd` line from `server.properties` where it is. |
+
+Nothing here rewrites `server.properties`, and that file still answers for the server whenever this
+block is off. What the block adds is two lines instead of one, the `&` colours used everywhere else
+in the plugin, counts that move as players come and go, and `/uds reload` picking up an edit without
+a restart.
+
+Maintenance mode dresses the same entry. While `/maintenance on` is running and
+`MAINTENANCE.SERVER_LIST.ENABLED` in `network.yml` is `true`, the maintenance text is what people
+see and this block waits its turn. Switch that maintenance block off and the server keeps this MOTD
+even while it is closed, so a maintenance window is not announced to everyone browsing the list.
+
+### 3. Practical Setup Example
+
+```yaml
+SERVER-LIST:
+  ENABLED: true
+  MOTD:
+  # the first line carries the name, the second tells people how busy it is
+  - '&d&lDonut &f&lSMP &7[1.21]'
+  - '&a%online%&7 of &a%max_players%&7 playing right now'
+```
+
+---
+
 ## Section: `CLEAR-LAG`
 
 ### 1. Commented Setup Code Example
