@@ -670,19 +670,6 @@ PUNISHMENTS:
   NO-ACTIVE: '&cNo active {type} punishment found for {player}.'
   # The text or value for Warn Received. Available options: Any valid string text
   WARN-RECEIVED: '&cWarning: &f{reason}'
-  # The text or value for Mute Received. Available options: Any valid string text
-  MUTE-RECEIVED: '&cYou have been muted. Reason: &f{reason}'
-  # The text or value for Muted Chat. Available options: Any valid string text
-  MUTED-CHAT: '&cYou are muted. Reason: &f{reason}&7. Expires: &f{expires}'
-  # The text or value for Ban Kick. Available options: Any valid string text
-  BAN-KICK: |-
-    &cYou are banned from this server.
-    &7Reason: &f{reason}
-    &7Expires: &f{expires}
-  # The text or value for Blacklist Kick. Available options: Any valid string text
-  BLACKLIST-KICK: |-
-    &cYou are blacklisted from this server.
-    &7Reason: &f{reason}
   # The text or value for Ban. Available options: Any valid string text
   BAN: |
     &c&lYou have been banned!

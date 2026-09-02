@@ -2010,19 +2010,6 @@ PUNISHMENTS:
   NO-ACTIVE: '&cNo active {type} punishment found for {player}.'
   # The text or value for Warn Received. Available options: Any valid string text
   WARN-RECEIVED: '&cWarning: &f{reason}'
-  # The text or value for Mute Received. Available options: Any valid string text
-  MUTE-RECEIVED: '&cYou have been muted. Reason: &f{reason}'
-  # The text or value for Muted Chat. Available options: Any valid string text
-  MUTED-CHAT: '&cYou are muted. Reason: &f{reason}&7. Expires: &f{expires}'
-  # The text or value for Ban Kick. Available options: Any valid string text
-  BAN-KICK: |-
-    &cYou are banned from this server.
-    &7Reason: &f{reason}
-    &7Expires: &f{expires}
-  # The text or value for Blacklist Kick. Available options: Any valid string text
-  BLACKLIST-KICK: |-
-    &cYou are blacklisted from this server.
-    &7Reason: &f{reason}
   # The text or value for Ban. Available options: Any valid string text
   BAN: |
     &c&lYou have been banned!
@@ -2103,10 +2090,6 @@ PUNISHMENTS:
 | `PUNISHMENTS.REMOVED` | `str` | Any string text | `'&aRemoved active &f{type} &apunishm...'` | Confirmation after lifting an active punishment. |
 | `PUNISHMENTS.NO-ACTIVE` | `str` | Any string text | `'&cNo active {type} punishment found...'` | Sent when there was nothing of that type to lift. |
 | `PUNISHMENTS.WARN-RECEIVED` | `str` | Any string text | `'&cWarning: &f{reason}'` | What a warned player sees. `{reason}` carries the staff note. |
-| `PUNISHMENTS.MUTE-RECEIVED` | `str` | Any string text | `'&cYou have been muted. Reason: &f{r...'` | Not read by any code. The mute notice a player actually sees comes from `PUNISHMENTS.MUTE`, so editing this key changes nothing. |
-| `PUNISHMENTS.MUTED-CHAT` | `str` | Any string text | `'&cYou are muted. Reason: &f{reason}...'` | Not read by any code. What a muted player sees each time they try to talk comes from `PUNISHMENTS.MUTE` instead, so editing this key changes nothing. |
-| `PUNISHMENTS.BAN-KICK` | `str` | Any string text | `'&cYou are banned from this server. ...'` | Not read by any code. The ban screen a player actually sees comes from `PUNISHMENTS.BAN`, so editing this key changes nothing. |
-| `PUNISHMENTS.BLACKLIST-KICK` | `str` | Any string text | `'&cYou are blacklisted from this ser...'` | Not read by any code. The blacklist screen a player actually sees comes from `PUNISHMENTS.BLACKLIST`, so editing this key changes nothing. |
 | `PUNISHMENTS.BAN` | `str` | Any string text | `'&c&lYou have been banned! &8&m-----...'` | The screen a banned player is disconnected with, and what they see on every attempt to rejoin. Takes `%reason%`, `%nicest_expiration%` and `%issuer%`, each of which also works in `{brace}` form. |
 | `PUNISHMENTS.KICK` | `str` | Any string text | `'&c&lYou have been kicked! &8&m-----...'` | Shown to a player as they are kicked, with `%reason%` and `%issuer%`. |
 | `PUNISHMENTS.MUTE` | `str` | Any string text | `'&c&lYou have been muted! &8&m------...'` | Shown when the mute lands and again every time the muted player tries to speak, so it carries the whole explanation rather than a one-liner. Takes `%reason%`, `%nicest_expiration%` and `%issuer%`. |
@@ -2183,19 +2166,6 @@ PUNISHMENTS:
   NO-ACTIVE: '&cNo active {type} punishment found for {player}.'
   # The text or value for Warn Received. Available options: Any valid string text
   WARN-RECEIVED: '&cWarning: &f{reason}'
-  # The text or value for Mute Received. Available options: Any valid string text
-  MUTE-RECEIVED: '&cYou have been muted. Reason: &f{reason}'
-  # The text or value for Muted Chat. Available options: Any valid string text
-  MUTED-CHAT: '&cYou are muted. Reason: &f{reason}&7. Expires: &f{expires}'
-  # The text or value for Ban Kick. Available options: Any valid string text
-  BAN-KICK: |-
-    &cYou are banned from this server.
-    &7Reason: &f{reason}
-    &7Expires: &f{expires}
-  # The text or value for Blacklist Kick. Available options: Any valid string text
-  BLACKLIST-KICK: |-
-    &cYou are blacklisted from this server.
-    &7Reason: &f{reason}
   # The text or value for Ban. Available options: Any valid string text
   BAN: |
     &c&lYou have been banned!
