@@ -113,6 +113,10 @@ SCRAMBLE:
   CHARACTERS: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_
   # Determines whether Obfuscated is enabled or disabled. Available options: true, false
   OBFUSCATED: true
+  # How far above the player the obfuscated name is drawn, in blocks. The client draws it where a
+  # passenger sits, around the waist, so this is what carries it up to where a username belongs.
+  # Available options: Any decimal number
+  NAMETAG-OFFSET-Y: 1.0
 # Configuration section for Aliases.
 ```
 
@@ -123,6 +127,7 @@ SCRAMBLE:
 | `SCRAMBLE.LENGTH` | `int` | Any valid integer number | `'10'` | Configures the technical `LENGTH` parameter for `SCRAMBLE.LENGTH` in `hide.yml`. |
 | `SCRAMBLE.CHARACTERS` | `str` | Any string text | `'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi...'` | Configures the technical `CHARACTERS` parameter for `SCRAMBLE.CHARACTERS` in `hide.yml`. |
 | `SCRAMBLE.OBFUSCATED` | `bool` | `true`, `false` | `true` | Configures the technical `OBFUSCATED` parameter for `SCRAMBLE.OBFUSCATED` in `hide.yml`. |
+| `SCRAMBLE.NAMETAG-OFFSET-Y` | `double` | Any decimal number | `1.0` | How far above the player the obfuscated name floats, in blocks. The name is drawn as its own piece of text riding the player, and a rider sits around waist height, so this offset is what carries it up to where a username belongs. Raise it if the name still sits too low, lower it if it floats too far overhead. Only applies while `SCRAMBLE.OBFUSCATED` is `true`. |
 
 ### 3. Practical Setup Example
 
@@ -134,6 +139,10 @@ SCRAMBLE:
   CHARACTERS: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_
   # Determines whether Obfuscated is enabled or disabled. Available options: true, false
   OBFUSCATED: true
+  # How far above the player the obfuscated name is drawn, in blocks. The client draws it where a
+  # passenger sits, around the waist, so this is what carries it up to where a username belongs.
+  # Available options: Any decimal number
+  NAMETAG-OFFSET-Y: 1.0
 # Configuration section for Aliases.
 ```
 

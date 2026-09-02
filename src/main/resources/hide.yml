@@ -14,6 +14,10 @@ SCRAMBLE:
   CHARACTERS: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_
   # Determines whether Obfuscated is enabled or disabled. Available options: true, false
   OBFUSCATED: true
+  # How far above the player the obfuscated name is drawn, in blocks. The client draws it where a
+  # passenger sits, around the waist, so this is what carries it up to where a username belongs.
+  # Available options: Any decimal number
+  NAMETAG-OFFSET-Y: 1.0
 # Configuration section for Aliases.
 ALIASES:
   # Configuration section for Mrbeast.

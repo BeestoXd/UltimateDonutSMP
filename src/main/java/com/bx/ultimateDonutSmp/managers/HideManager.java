@@ -195,6 +195,11 @@ public class HideManager {
                 && HideIdentityPolicy.usesObfuscatedText(state);
     }
 
+    /** How far above the point it rides the obfuscated alias is drawn, in blocks. */
+    public double nametagOffsetY() {
+        return config().getDouble("SCRAMBLE.NAMETAG-OFFSET-Y", 1.0D);
+    }
+
     public String plainPublicName(Player player) {
         return player == null ? "" : plainPublicName(player.getUniqueId(), player.getName());
     }
