@@ -44,11 +44,9 @@ NETWORK:
   # Redis pub/sub channel for player reports
   REPORT_REDIS_CHANNEL: ultimatedonutsmp:staff-alerts
 
-  # Broadcast staff chat locally if Redis connection fails (true / false)
+  # Warn the sender when their staff chat message reached this server's staff but could not be
+  # published to the other servers. Local delivery happens either way (true / false)
   SEND_LOCAL_FALLBACK_ON_REDIS_ERROR: true
-
-  # Broadcast staff alerts locally if Redis connection fails (true / false)
-  STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR: true
 
   # Warn sending player if staff alert Redis delivery fails (true / false)
   STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR: false
@@ -102,7 +100,6 @@ NETWORK:
 | `NETWORK.HELPOP_REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-alerts'` | The Redis channel carrying `/helpop` alerts. It ships pointing at the same channel as reports, which is why the two arrive together. Split them only when some servers should receive one kind of alert and not the other. |
 | `NETWORK.REPORT_REDIS_CHANNEL` | `str` | Any string text | `'ultimatedonutsmp:staff-alerts'` | The Redis channel carrying `/report` alerts, sharing the helpop channel by default. A server listening on neither channel still delivers its own alerts to its own staff. |
 | `NETWORK.SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | `true`, `false` | `true` | The name oversells it: local delivery is not optional and never was. A staff chat message reaches the staff on this server before Redis is attempted at all. What this key decides is whether the sender is told, through the `STAFFCHAT.REDIS_UNAVAILABLE` message, that their message did not make it to the other servers. Each player is warned once per session. |
-| `NETWORK.STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | `true`, `false` | `true` | Nothing reads this key. Helpop and report alerts always reach the staff on this server before Redis is attempted, so the behaviour it describes is permanently on and editing the value changes nothing. |
 | `NETWORK.STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` | `bool` | `true`, `false` | `false` | The alert counterpart of `SEND_LOCAL_FALLBACK_ON_REDIS_ERROR`. With it on, a player whose `/helpop` or `/report` reached local staff but could not be published to the other servers is told so, once per session. Off by default, since the alert did reach somebody. |
 | `NETWORK.LOG_TO_CONSOLE` | `bool` | `true`, `false` | `true` | Writes every staff chat line to this server's console with the colour codes stripped, which is what puts it in `logs/latest.log` for reading back later. Turn it off on a server where staff chat should leave no trace in the log. |
 | `NETWORK.STAFF_ALERTS_LOG_TO_CONSOLE` | `bool` | `true`, `false` | `true` | The same for helpop and report alerts. Delete the key rather than setting it and alerts follow whatever `LOG_TO_CONSOLE` says, instead of falling back to `true` on their own. |

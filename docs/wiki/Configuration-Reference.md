@@ -1339,11 +1339,9 @@ NETWORK:
   # Redis pub/sub channel for player reports
   REPORT_REDIS_CHANNEL: ultimatedonutsmp:staff-alerts
 
-  # Broadcast staff chat locally if Redis connection fails (true / false)
+  # Warn the sender when their staff chat message reached this server's staff but could not be
+  # published to the other servers. Local delivery happens either way (true / false)
   SEND_LOCAL_FALLBACK_ON_REDIS_ERROR: true
-
-  # Broadcast staff alerts locally if Redis connection fails (true / false)
-  STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR: true
 
   # Warn sending player if staff alert Redis delivery fails (true / false)
   STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR: false
@@ -1396,7 +1394,6 @@ NETWORK:
 | `NETWORK.HELPOP_REDIS_CHANNEL` | `str` | Any string text | `ultimatedonutsmp:staff-alerts` | Configures `HELPOP_REDIS_CHANNEL` for `NETWORK`. |
 | `NETWORK.REPORT_REDIS_CHANNEL` | `str` | Any string text | `ultimatedonutsmp:staff-alerts` | Configures `REPORT_REDIS_CHANNEL` for `NETWORK`. |
 | `NETWORK.SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | true, false | `True` | Configures `SEND_LOCAL_FALLBACK_ON_REDIS_ERROR` for `NETWORK`. |
-| `NETWORK.STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR` | `bool` | true, false | `True` | Configures `STAFF_ALERTS_LOCAL_FALLBACK_ON_REDIS_ERROR` for `NETWORK`. |
 | `NETWORK.STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` | `bool` | true, false | `False` | Configures `STAFF_ALERTS_WARN_SENDER_ON_REDIS_ERROR` for `NETWORK`. |
 | `NETWORK.LOG_TO_CONSOLE` | `bool` | true, false | `True` | Configures `LOG_TO_CONSOLE` for `NETWORK`. |
 | `NETWORK.STAFF_ALERTS_LOG_TO_CONSOLE` | `bool` | true, false | `True` | Configures `STAFF_ALERTS_LOG_TO_CONSOLE` for `NETWORK`. |
