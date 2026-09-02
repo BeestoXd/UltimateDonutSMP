@@ -721,6 +721,15 @@ public class SpawnManager {
     }
 
     public AreaDeleteResult deleteMenuArea(TeleportArea area) {
+        return deleteMenuArea(area, null);
+    }
+
+    /**
+     * Deleting an area can also blank the location /setspawn or /setafk saved, which leaves a server
+     * with no spawn at all and nothing in the log to say why. Pass the player who asked for it so the
+     * deletion is recorded.
+     */
+    public AreaDeleteResult deleteMenuArea(TeleportArea area, String actorName) {
         if (area == null) {
             return AreaDeleteResult.failure("area is not available.");
         }
@@ -745,7 +754,8 @@ public class SpawnManager {
             menus.set(areaPath, null);
         }
 
-        boolean configChanged = clearMatchingSetupLocation(config, area.type(), deletedLocation);
+        boolean clearedSetupLocation = clearMatchingSetupLocation(config, area.type(), deletedLocation);
+        boolean configChanged = clearedSetupLocation;
         configChanged = clearMatchingCuboidBind(config, area.type(), area.cuboidName()) || configChanged;
         if (area.type() == AreaType.AFK) {
             configChanged = clearMatchingSetupShardRegion(config, deletedLocation) || configChanged;
@@ -770,8 +780,30 @@ public class SpawnManager {
         if (configChanged && plugin.getShardManager() != null) {
             plugin.getShardManager().reloadSettings();
         }
+        plugin.getLogger().info(describeAreaDeletion(
+                actorName,
+                getLocationLabel(area.type()),
+                area.id(),
+                area.slot(),
+                clearedSetupLocation ? setupLocationPath(area.type()) : null
+        ));
         return AreaDeleteResult.success("Removed " + getLocationLabel(area.type()) + " area "
                 + area.id() + " from slot " + area.slot() + ".");
+    }
+
+    /**
+     * The line written to the server log when an area is deleted. Named so a server owner reading
+     * latest.log can tell who removed which area, and whether the saved spawn or AFK point went with
+     * it; {@code clearedSetupPath} is null when the deletion left that key alone.
+     */
+    static String describeAreaDeletion(String actorName, String label, String areaId, int slot, String clearedSetupPath) {
+        String actor = actorName == null || actorName.isBlank() ? "An unnamed sender" : actorName;
+        return "[SpawnManager] " + actor + " deleted " + label + " area " + areaId + " from slot " + slot
+                + (clearedSetupPath == null ? "" : ", which also cleared " + clearedSetupPath) + ".";
+    }
+
+    private String setupLocationPath(AreaType type) {
+        return type == AreaType.SPAWN ? "LOCATIONS.SPAWN-LOCATION" : "LOCATIONS.AFK-LOCATION";
     }
 
     public boolean isStoredMenuArea(TeleportArea area) {
@@ -793,7 +825,7 @@ public class SpawnManager {
             return false;
         }
 
-        String path = type == AreaType.SPAWN ? "LOCATIONS.SPAWN-LOCATION" : "LOCATIONS.AFK-LOCATION";
+        String path = setupLocationPath(type);
         Location configuredLocation = LocationUtils.parse(config.getString(path, ""));
         if (!sameStoredLocation(configuredLocation, deletedLocation)) {
             return false;

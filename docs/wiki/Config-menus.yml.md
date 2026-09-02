@@ -2742,8 +2742,11 @@ locations by hand. The random button only appears once **two or more** areas res
 single-area menu never shows it however the button is configured.
 
 Players holding `ultimatedonutsmp.admin.teleportareas.delete` or `ultimatedonutsmp.admin` get an
-extra `&cRight-click to delete` line and can remove an area straight from the menu. Turn the whole
-menu off with `SETTINGS.AFK-MENU` in `config.yml`.
+extra `&cRight-click to delete` line on each area. That click opens a confirmation screen instead of
+removing the area on the spot, because deleting one also blanks the point `/setafk` saved in
+`LOCATIONS.AFK-LOCATION`; on the spawn menu the same click would take the server spawn with it.
+Whoever confirms is named in the server log, along with the config key that was cleared. Turn the
+whole menu off with `SETTINGS.AFK-MENU` in `config.yml`.
 
 ### 3. Practical Setup Example
 

@@ -127,23 +127,11 @@ public abstract class TeleportAreaMenu extends BaseMenu {
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
         if (canDeleteArea(player, area) && clickType.isRightClick()) {
-            deleteArea(player, area);
+            new TeleportAreaDeleteConfirmMenu(plugin, area).open(player);
             return;
         }
 
         queueTeleport(player, area);
-    }
-
-    private void deleteArea(Player player, SpawnManager.TeleportArea area) {
-        SpawnManager.AreaDeleteResult result = plugin.getSpawnManager().deleteMenuArea(area);
-        if (!result.success()) {
-            player.sendMessage(ColorUtils.toComponent("&cCould not delete this " + getLocationLabel()
-                    + " Area: &f" + result.message()));
-            return;
-        }
-
-        player.sendMessage(ColorUtils.toComponent("&a" + result.message()));
-        build(player);
     }
 
     private void buildRandomButton(int areaCount) {
