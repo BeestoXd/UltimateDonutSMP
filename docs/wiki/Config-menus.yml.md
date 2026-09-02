@@ -1341,7 +1341,46 @@ LEADERBOARDS-MENU:
       - '&fClick to view SHARDS leaderboard'
     KILLS:
       TYPE: kills
-      DISPLAY-NAME: '&#6BF18DKills Leade
+      DISPLAY-NAME: '&#6BF18DKills Leaderboard'
+      MATERIAL: DIAMOND_SWORD
+      SLOT: 12
+      LORE:
+      - '&fClick to view KILLS leaderboard'
+    DEATHS:
+      TYPE: deaths
+      DISPLAY-NAME: '&#6BF18DDeaths Leaderboard'
+      MATERIAL: SKELETON_SKULL
+      SLOT: 13
+      LORE:
+      - '&fClick to view DEATHS leaderboard'
+    PLAYTIME:
+      TYPE: playtime
+      DISPLAY-NAME: '&#6BF18DPlaytime Leaderboard'
+      MATERIAL: CLOCK
+      SLOT: 14
+      LORE:
+      - '&fClick to view PLAYTIME leaderboard'
+    BLOCKS_PLACED:
+      TYPE: blocksPlaced
+      DISPLAY-NAME: '&#6BF18DBlocks Placed Leaderboard'
+      MATERIAL: STONE
+      SLOT: 15
+      LORE:
+      - '&fClick to view BLOCKS PLACED leaderboard'
+    BLOCKS_BROKEN:
+      TYPE: blocksBroken
+      DISPLAY-NAME: '&#6BF18DBlocks Broken Leaderboard'
+      MATERIAL: COBBLESTONE
+      SLOT: 16
+      LORE:
+      - '&fClick to view BLOCKS BROKEN leaderboard'
+    MOBS_KILLED:
+      TYPE: mobsKilled
+      DISPLAY-NAME: '&#6BF18DMobs Killed Leaderboard'
+      MATERIAL: ZOMBIE_HEAD
+      SLOT: 19
+      LORE:
+      - '&fClick to view MOBS KILLED leaderboard'
 ```
 
 ---
@@ -1720,7 +1759,52 @@ SELL-MENU:
     MATERIAL: OAK_LEAVES
     TITLE: '&#6BF18DNatural Items'
     LORE:
-    - '&7Sell natural materials and trees to
+    - '&7Sell natural materials and trees to'
+    - '&7upgrade your sell multiplier!'
+    - ''
+    - '&7Progress to &f{next_multiplier}'
+    - '{porcentage_level} &#6BF18D{porcentage}%'
+  ARMOR-AND-TOOLS-BUTTON:
+    MATERIAL: NETHERITE_HELMET
+    TITLE: '&#6BF18DArmor And Tools'
+    LORE:
+    - '&7Sell armor and tools to'
+    - '&7upgrade your sell multiplier!'
+    - ''
+    - '&7Progress to &f{next_multiplier}'
+    - '{porcentage_level} &#6BF18D{porcentage}%'
+  FISH-BUTTON:
+    MATERIAL: TROPICAL_FISH
+    TITLE: '&#6BF18DFish'
+    LORE:
+    - '&7Sell fish and other fishing loot to'
+    - '&7upgrade your sell multiplier!'
+    - ''
+    - '&7Progress to &f{next_multiplier}'
+    - '{porcentage_level} &#6BF18D{porcentage}%'
+  BOOK-BUTTON:
+    MATERIAL: BOOK
+    TITLE: '&#6BF18DEnchanted Book'
+    LORE:
+    - '&7Sell books and enchanted books to'
+    - '&7upgrade your sell multiplier!'
+    - ''
+    - '&7Progress to &f{next_multiplier}'
+    - '{porcentage_level} &#6BF18D{porcentage}%'
+  POTIONS-BUTTON:
+    MATERIAL: BREWING_STAND
+    TITLE: '&#6BF18DPotions'
+    LORE:
+    - '&7Sell potions and brewing materials to'
+    - '&7upgrade your sell multiplier!'
+    - ''
+    - '&7Progress to &f{next_multiplier}'
+    - '{porcentage_level} &#6BF18D{porcentage}%'
+  BLOCKS-BUTTON:
+    MATERIAL: BRICK
+    TITLE: '&#6BF18DBlocks'
+    LORE:
+    - '&7Sell blocks and placeable items to'
 ```
 
 ---

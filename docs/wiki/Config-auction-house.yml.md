@@ -297,6 +297,7 @@ SORTING:
     - PRICE_HIGHEST
     - EXPIRING_SOON
     - OLDEST
+```
 
 ---
 
@@ -382,8 +383,6 @@ BOTS:
       MAX_AMOUNT: 1
       MIN_PRICE: 5000
       MAX_PRICE: 10000
-```
-
 ```
 
 ---

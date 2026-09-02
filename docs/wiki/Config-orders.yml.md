@@ -556,6 +556,7 @@ NETWORK:
 NETWORK:
   ENABLED: true
   REDIS_CHANNEL: ultimate-donut-smp:orders
+```
 
 ---
 
@@ -638,8 +639,6 @@ BOTS:
       MAX_AMOUNT: 64
       MIN_PRICE_EACH: 600
       MAX_PRICE_EACH: 1200
-```
-
 ```
 
 ---
