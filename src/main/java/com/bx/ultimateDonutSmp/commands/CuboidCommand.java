@@ -255,7 +255,7 @@ public class CuboidCommand implements CommandExecutor {
             case "rtp-zone" -> config.set("RTP-ZONE.CUBOID", enabled ? cuboidName : "");
             // The matchmaking cuboid is a queue setting rather than a world setting, so it lives
             // in rtp.yml next to the rest of QUEUE and is saved from there.
-            case "rtp-queue" -> plugin.getConfigManager().getRtp().set("QUEUE.CUBOID", enabled ? cuboidName : "");
+            case "rtp-queue" -> plugin.getConfigManager().getOriginalRtp().set("QUEUE.CUBOID", enabled ? cuboidName : "");
             default -> {
                 player.sendMessage(ColorUtils.toComponent("&cUnknown role."));
                 return;
