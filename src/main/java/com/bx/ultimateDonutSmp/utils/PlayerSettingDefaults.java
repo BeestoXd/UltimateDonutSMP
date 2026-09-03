@@ -197,6 +197,17 @@ public final class PlayerSettingDefaults {
         bindings.put("RTP_COORDINATES", bool(
                 PlayerData::isRtpCoordinatesEnabled, PlayerData::setRtpCoordinatesEnabled));
         bindings.put("FAST_CRYSTALS", bool(PlayerData::isFastCrystalsEnabled, PlayerData::setFastCrystalsEnabled));
+        bindings.put("TOTEM_PARTICLES", bool(
+                PlayerData::isTotemParticlesEnabled, PlayerData::setTotemParticlesEnabled));
+        bindings.put("HIDE_ALL_PLAYERS", bool(
+                PlayerData::isHideAllPlayersEnabled, PlayerData::setHideAllPlayersEnabled));
+        bindings.put("QUIET_SPAWN", bool(
+                PlayerData::isQuietSpawnEnabled, PlayerData::setQuietSpawnEnabled));
+        bindings.put("DUEL_MUSIC", bool(PlayerData::isDuelMusicEnabled, PlayerData::setDuelMusicEnabled));
+        bindings.put("TEAM_INVITES", bool(
+                PlayerData::isTeamInvitesEnabled, PlayerData::setTeamInvitesEnabled));
+        bindings.put("CLEAR_ENTITIES_MESSAGES", bool(
+                PlayerData::isClearEntitiesMessagesEnabled, PlayerData::setClearEntitiesMessagesEnabled));
         bindings.put("RANDOMIZED_COORDS", bool(PlayerData::isRandomizedCoords, PlayerData::setRandomizedCoords));
         bindings.put("TPA_REQUESTS", threeChoice(
                 PlayerData::getTpaRequestsChoice, PlayerData::setTpaRequestsChoice));

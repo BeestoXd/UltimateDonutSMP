@@ -33,6 +33,8 @@ public final class PlayerSettingsMenu extends BaseMenu {
             "PAY_CONFIRM_MENUS", "AUTO_CONFIRM_TPAS", "HOTBAR_MESSAGES", "NOTIFICATION_SOUNDS",
             "FOLLOW_ALERT_SETTINGS", "DISPLAY_DONUT_PLUS", "CHAINMAIL_ON_RESPAWN", "EXPLOSION_PARTICLES",
             "EXPLOSION_SOUNDS", "TELEPORT_ALERTS", "RTP_COORDINATES", "FAST_CRYSTALS", "RANDOMIZED_COORDS",
+            "TOTEM_PARTICLES", "HIDE_ALL_PLAYERS", "QUIET_SPAWN", "DUEL_MUSIC", "TEAM_INVITES",
+            "CLEAR_ENTITIES_MESSAGES",
             "TPA_REQUESTS", "TPA_HERE_REQUESTS", "PAYMENTS", "WORTH_DISPLAY", "MONEY_NAMETAGS",
             "JOIN_LEAVE_MESSAGES", "PAY_ALERTS", "ADVANCEMENT_MESSAGES", "AUCTION_NOTIFICATIONS",
             "AMETHYST_BREAK_MESSAGES", "DUEL_REQUESTS", "DEATH_MESSAGES", "KEY_ALL_NOTIFICATIONS",
@@ -248,8 +250,6 @@ public final class PlayerSettingsMenu extends BaseMenu {
                     !data.isKeyAllNotificationsEnabled(), data::setKeyAllNotificationsEnabled);
             case "TPA_CONFIRM_MENUS" -> toggle(player, "TPA Confirmation Menus",
                     !data.isTpaConfirmMenuEnabled(), data::setTpaConfirmMenuEnabled);
-            case "LUNAR_TEAMMATES" -> toggle(player, "Lunar Teammates",
-                    !data.isLunarTeammatesEnabled(), data::setLunarTeammatesEnabled);
             case "TPA_HERE_REQUESTS" -> {
                 data.setTpaHereRequestsChoice(nextThreeChoice(data.getTpaHereRequestsChoice()));
                 sendChoiceMessage(player, "TPA Here Requests", formatThreeChoice(data.getTpaHereRequestsChoice()));
@@ -430,7 +430,6 @@ public final class PlayerSettingsMenu extends BaseMenu {
             case "AMETHYST_BREAK_MESSAGES" -> state(data.isAmethystBreakMessagesEnabled());
             case "KEY_ALL_NOTIFICATIONS" -> state(data.isKeyAllNotificationsEnabled());
             case "TPA_CONFIRM_MENUS" -> state(data.isTpaConfirmMenuEnabled());
-            case "LUNAR_TEAMMATES" -> state(data.isLunarTeammatesEnabled());
             case "TPA_HERE_REQUESTS" -> new ButtonState(formatThreeChoice(data.getTpaHereRequestsChoice()), true);
             case "DISABLE_PHANTOM_SPAWN" -> {
                 boolean disabled = !data.isPhantomEnabled();

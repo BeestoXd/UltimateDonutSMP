@@ -57,7 +57,13 @@ class PlayerSettingsConfigurationTest {
             "SHOW_KILLS",
             "SHOW_DEATHS",
             "SHOW_PLAYTIME",
-            "COMBAT_TIMER"
+            "COMBAT_TIMER",
+            "TEAM_INVITES",
+            "DUEL_MUSIC",
+            "CLEAR_ENTITIES_MESSAGES",
+            "HIDE_ALL_PLAYERS",
+            "TOTEM_PARTICLES",
+            "QUIET_SPAWN"
     );
 
     @Test
@@ -117,18 +123,24 @@ class PlayerSettingsConfigurationTest {
                 Map.entry("DUEL_REQUESTS", 31),
                 Map.entry("PAY_CONFIRM_MENUS", 32),
                 Map.entry("AUTO_CONFIRM_TPAS", 33),
+                Map.entry("TEAM_INVITES", 34),
+                Map.entry("DUEL_MUSIC", 35),
                 Map.entry("SCOREBOARD_VISIBILITY", 36),
                 Map.entry("SHOW_MONEY", 37),
                 Map.entry("SHOW_SHARDS", 38),
                 Map.entry("SHOW_KILLS", 39),
                 Map.entry("SHOW_DEATHS", 40),
                 Map.entry("SHOW_PLAYTIME", 41),
+                Map.entry("CLEAR_ENTITIES_MESSAGES", 42),
                 Map.entry("QUICK_AUCTION_PURCHASE", 45),
                 Map.entry("QUICK_AUCTION_SELL", 46),
                 Map.entry("DISABLE_MOB_SPAWN", 47),
                 Map.entry("DISABLE_PHANTOM_SPAWN", 48),
                 Map.entry("NIGHT_VISION", 49),
-                Map.entry("DESTROY_PEARL_ON_DEATH", 50)
+                Map.entry("DESTROY_PEARL_ON_DEATH", 50),
+                Map.entry("HIDE_ALL_PLAYERS", 51),
+                Map.entry("TOTEM_PARTICLES", 52),
+                Map.entry("QUIET_SPAWN", 53)
         );
         groupedSlots.forEach((key, slot) ->
                 assertEquals(slot, buttons.getInt(key + ".SLOT"), key));
