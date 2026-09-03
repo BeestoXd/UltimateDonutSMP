@@ -270,7 +270,6 @@ public final class PlayerSettingsMenu extends BaseMenu {
             }
             case "PAY_CONFIRM_MENUS" -> toggle(player, "Pay Confirmation Menus",
                     !data.isPayConfirmMenuEnabled(), data::setPayConfirmMenuEnabled);
-            case "TEAM_CHAT" -> toggleTeamChat(player);
             case "DESTROY_PEARL_ON_DEATH" -> toggle(player, "Destroy Pearl on Death",
                     !data.isDestroyPearlOnDeath(), data::setDestroyPearlOnDeath);
             case "RANDOMIZED_COORDS" -> {
@@ -442,7 +441,6 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 yield state(disabled);
             }
             case "PAY_CONFIRM_MENUS" -> state(data.isPayConfirmMenuEnabled());
-            case "TEAM_CHAT" -> state(plugin.getTeamManager().isTeamChatEnabled(player.getUniqueId()));
             case "DESTROY_PEARL_ON_DEATH" -> state(data.isDestroyPearlOnDeath());
             case "RANDOMIZED_COORDS" -> state(data.isRandomizedCoords());
             case "DEATH_MESSAGES" -> state(data.isDeathMessagesEnabled());
@@ -560,26 +558,6 @@ public final class PlayerSettingsMenu extends BaseMenu {
                     }
                     rebuildIfOpen(player);
                 }));
-    }
-
-    private void toggleTeamChat(Player player) {
-        var team = plugin.getTeamManager().getTeam(player);
-        if (team == null) {
-            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TEAM.NO-TEAM")));
-            return;
-        }
-        if (!plugin.getTeamManager().canUseTeamChat(team, player.getUniqueId())) {
-            player.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessage("TEAM.NO-TEAM-CHAT-PERMISSION")
-            ));
-            return;
-        }
-        plugin.getTeamManager().toggleTeamChat(player.getUniqueId());
-        sendToggleMessage(
-                player,
-                "Team chat sending mode",
-                plugin.getTeamManager().isTeamChatEnabled(player.getUniqueId())
-        );
     }
 
     private void toggle(Player player, String label, boolean enabled, BooleanSetter setter) {
