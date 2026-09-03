@@ -58,13 +58,19 @@ public class HomeMenu extends BaseMenu {
         List<Home> homes = new ArrayList<>(plugin.getHomeManager().getHomes(player.getUniqueId()));
         homes.sort(Comparator.comparingLong(Home::getCreatedAt));
 
+        Map<Integer, Home> slotToHome = resolveHomeSlots(homes);
+
         int maxHomes = plugin.getHomeManager().getMaxHomes(player);
-        int totalPages = plugin.getHomeManager().getMaxHomePages(player);
+        int highestSlot = maxHomes - 1;
+        for (int slot : slotToHome.keySet()) {
+            highestSlot = Math.max(highestSlot, slot);
+        }
+        int totalPages = Math.max(1, (int) Math.ceil((highestSlot + 1) / (double) HOMES_PER_PAGE));
         page = clampPage(page, totalPages);
 
         buildPageButtons(totalPages);
         buildTeamButtons(player);
-        buildHomeButtons(player, homes, maxHomes);
+        buildHomeButtons(player, slotToHome, maxHomes);
     }
 
     @Override
@@ -166,7 +172,7 @@ public class HomeMenu extends BaseMenu {
         slotActions.put(TEAM_ACTION_SLOT, (p, click) -> setTeamHome(p, team));
     }
 
-    private void buildHomeButtons(Player player, List<Home> homes, int maxHomes) {
+    private void buildHomeButtons(Player player, Map<Integer, Home> slotToHome, int maxHomes) {
         int startIndex = page * HOMES_PER_PAGE;
 
         for (int i = 0; i < HOMES_PER_PAGE; i++) {
@@ -175,8 +181,9 @@ public class HomeMenu extends BaseMenu {
             int actionSlot = HOME_ACTION_SLOTS[i];
             String key = "HOME-" + (i + 1);
 
-            if (globalIndex < homes.size()) {
-                setUsedHomeButtons(player, homes.get(globalIndex), key, globalIndex, teleportSlot, actionSlot);
+            Home home = slotToHome.get(globalIndex);
+            if (home != null) {
+                setUsedHomeButtons(player, home, key, globalIndex, teleportSlot, actionSlot);
                 continue;
             }
 
@@ -222,7 +229,7 @@ public class HomeMenu extends BaseMenu {
     }
 
     private void setAvailableHomeButtons(Player player, String key, int globalIndex, int teleportSlot, int actionSlot) {
-        String suggestedName = defaultHomeName(globalIndex);
+        String suggestedName = defaultAvailableHomeName(player, globalIndex);
         Map<String, String> placeholders = emptyHomePlaceholders(globalIndex);
 
         set(teleportSlot, ItemUtils.createItem(
@@ -241,7 +248,7 @@ public class HomeMenu extends BaseMenu {
         slotActions.put(teleportSlot, (p, click) -> {
             if (plugin.getHomeManager().setHome(p, suggestedName)) {
                 p.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.SET")));
-                new HomeMenu(plugin).open(p);
+                new HomeMenu(plugin, page).open(p);
             } else {
                 p.sendMessage(ColorUtils.toComponent("&cYou cannot create another home right now."));
             }
@@ -349,6 +356,78 @@ public class HomeMenu extends BaseMenu {
 
     private String defaultHomeName(int index) {
         return index == 0 ? "home" : "home" + (index + 1);
+    }
+
+    private String defaultAvailableHomeName(Player player, int index) {
+        String base = defaultHomeName(index);
+        if (plugin.getHomeManager().getHome(player.getUniqueId(), base) == null) {
+            return base;
+        }
+        int counter = 1;
+        while (true) {
+            String candidate = counter == 1 ? "home" : "home" + counter;
+            if (plugin.getHomeManager().getHome(player.getUniqueId(), candidate) == null) {
+                return candidate;
+            }
+            counter++;
+        }
+    }
+
+    static int parseHomeSlot(String name) {
+        if (name == null || name.isBlank()) {
+            return -1;
+        }
+        String trimmed = name.trim();
+        if (trimmed.equalsIgnoreCase("home")) {
+            return 0;
+        }
+        if (trimmed.regionMatches(true, 0, "home", 0, 4)) {
+            String suffix = trimmed.substring(4);
+            try {
+                int number = Integer.parseInt(suffix);
+                if (number >= 1) {
+                    return number - 1;
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        try {
+            int number = Integer.parseInt(trimmed);
+            if (number >= 1) {
+                return number - 1;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return -1;
+    }
+
+    static Map<Integer, Home> resolveHomeSlots(List<Home> homes) {
+        Map<Integer, Home> slotMap = new HashMap<>();
+        if (homes == null || homes.isEmpty()) {
+            return slotMap;
+        }
+
+        List<Home> unassigned = new ArrayList<>();
+        for (Home home : homes) {
+            if (home == null) continue;
+            int slot = parseHomeSlot(home.getName());
+            if (slot >= 0 && !slotMap.containsKey(slot)) {
+                slotMap.put(slot, home);
+            } else {
+                unassigned.add(home);
+            }
+        }
+
+        int nextSlot = 0;
+        for (Home home : unassigned) {
+            while (slotMap.containsKey(nextSlot)) {
+                nextSlot++;
+            }
+            slotMap.put(nextSlot, home);
+            nextSlot++;
+        }
+
+        return slotMap;
     }
 
     private String friendlyWorldName(Location location) {
