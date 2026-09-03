@@ -30,6 +30,7 @@ UltimateDonutSMP includes custom mob spawners engineered for high-performance mo
 - **Spawner Stacking**: Place matching spawners onto an existing spawner to stack them (e.g., `x64 Pig Spawner`).
 - **Upgrade System**: Upgrade spawner rate, spawn count, and mob drop multipliers via GUI.
 - **Grouped Loot Storage**: Drops collect with each item type kept together in one run, so a skeleton spawner shows all of its arrows and then all of its bones instead of alternating the two down every page. Storage that filled up before this landed is tidied the next time the spawner produces anything.
+- **Live Menu Refresh**: The spawner main menu and storage views refresh automatically in the background while open, updating stored item counts, fill percentage, and stored XP live without needing to close and reopen the menu.
 - **Break Safeguards**: Requires Silk Touch or admin bypass permissions to break stacked spawners without losing count. Creative mode is exempt from that requirement, and a spawner broken in Creative is removed instead of being handed back, matching the way placing one in Creative costs nothing.
 
 ### Player Spawner Commands (`/spawner`):
