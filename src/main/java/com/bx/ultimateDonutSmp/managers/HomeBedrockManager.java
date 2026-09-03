@@ -231,8 +231,7 @@ public final class HomeBedrockManager {
     }
 
     public void openCreateForm(Player player) {
-        int homeCount = plugin.getHomeManager().getHomeCount(player.getUniqueId());
-        String defaultName = homeCount == 0 ? "home" : "home" + (homeCount + 1);
+        String defaultName = nextAvailableHomeName(player);
 
         CustomForm.Builder form = CustomForm.builder()
                 .title(plain("Set New Home"))
@@ -341,6 +340,17 @@ public final class HomeBedrockManager {
 
     private boolean enabled() {
         return plugin.getServer().getPluginManager().isPluginEnabled("floodgate");
+    }
+
+    private String nextAvailableHomeName(Player player) {
+        int counter = 1;
+        while (true) {
+            String candidate = counter == 1 ? "home" : "home" + counter;
+            if (plugin.getHomeManager().getHome(player.getUniqueId(), candidate) == null) {
+                return candidate;
+            }
+            counter++;
+        }
     }
 
     private String plain(String value) {
