@@ -716,6 +716,36 @@ MENUS:
         LORE:
         - '&7Show the coordinates /rtp drops you at'
         - '&fCurrently: {status}'
+      TEAM_INVITES:
+        DISPLAY-NAME: '&#6BF18DTeam Invites'
+        LORE:
+        - '&7Receive team invitations'
+        - '&fCurrently: {status}'
+      DUEL_MUSIC:
+        DISPLAY-NAME: '&#6BF18DDuel Music'
+        LORE:
+        - '&7Play music and sounds during duels'
+        - '&fCurrently: {status}'
+      CLEAR_ENTITIES_MESSAGES:
+        DISPLAY-NAME: '&#6BF18DClear Entities Messages'
+        LORE:
+        - '&7Show the entity clear countdown'
+        - '&fCurrently: {status}'
+      HIDE_ALL_PLAYERS:
+        DISPLAY-NAME: '&#6BF18DHide All Players'
+        LORE:
+        - '&7Hide every other player from view'
+        - '&fCurrently: {status}'
+      TOTEM_PARTICLES:
+        DISPLAY-NAME: '&#6BF18DTotem Particles'
+        LORE:
+        - '&7Show totem particles on use'
+        - '&fCurrently: {status}'
+      QUIET_SPAWN:
+        DISPLAY-NAME: '&#6BF18DQuiet Spawn Teleportation'
+        LORE:
+        - '&7Silence the spawn teleport effects'
+        - '&fCurrently: {status}'
   LEADERBOARDS-MENU:
     TITLE: "&8Leaderboards"
     TYPE-MENU:
