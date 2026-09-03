@@ -29,6 +29,30 @@ public class SpawnerMainMenu extends BaseMenu {
     }
 
     @Override
+    public void open(Player player) {
+        super.open(player);
+        plugin.getSpawnerManager().registerOpenMainMenu(player, this);
+    }
+
+    @Override
+    public void onClose(Player player) {
+        plugin.getSpawnerManager().unregisterOpenMainMenu(player, this);
+    }
+
+    public void refresh(Player player) {
+        if (player == null || inventory == null) {
+            return;
+        }
+        SpawnerInstance instance = plugin.getSpawnerManager().getSpawner(spawnerId);
+        if (instance == null) {
+            player.closeInventory();
+            return;
+        }
+        renderDynamicButtons(instance);
+        player.updateInventory();
+    }
+
+    @Override
     public void build(Player player) {
         SpawnerInstance instance = plugin.getSpawnerManager().getSpawner(spawnerId);
         if (instance == null) {
@@ -48,6 +72,12 @@ public class SpawnerMainMenu extends BaseMenu {
         Material fillerMat = Material.matchMaterial(fillerMatName);
         if (fillerMat == null) fillerMat = Material.GRAY_STAINED_GLASS_PANE;
         fill(fillerMat);
+
+        renderDynamicButtons(instance);
+    }
+
+    private void renderDynamicButtons(SpawnerInstance instance) {
+        FileConfiguration config = plugin.getConfigManager().getMenus();
 
         // 1. Spawner Storage Button
         int storageSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.STORAGE-BUTTON.SLOT", 11);
@@ -103,9 +133,10 @@ public class SpawnerMainMenu extends BaseMenu {
 
         // 2. Mob Head Button (Spawner Count & Quick Sell)
         int headSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.MOB-HEAD-BUTTON.SLOT", 13);
-        long totalCapacity = plugin.getSpawnerManager().getStorageCapPerLootKey();
+        long totalCapacity = plugin.getSpawnerManager().getTotalStorageCapacity(instance);
         long currentTotal = instance.getTotalStoredItems();
-        double fillPercentage = totalCapacity > 0 ? Math.min(100.0, (currentTotal / (double) totalCapacity) * 100.0) : 0.0;
+        double fillPercentage = calculateFillPercentage(currentTotal, totalCapacity);
+        String formattedPercentage = formatFillPercentage(fillPercentage);
         String mobLabel = instance.getMobTypeKey().replace('_', ' ').toUpperCase();
 
         SpawnerTypeDefinition def = plugin.getSpawnerManager().getTypeDefinition(instance.getMobTypeKey());
@@ -119,11 +150,11 @@ public class SpawnerMainMenu extends BaseMenu {
         List<String> headLore = new ArrayList<>();
         if (rawHeadLore.isEmpty()) {
             headLore.add("&e• &fClick to sell items and collect xp");
-            headLore.add("&7Storage: &e" + String.format(java.util.Locale.US, "%.1f", fillPercentage) + "% Filled.");
+            headLore.add("&7Storage: &e" + formattedPercentage + "% Filled.");
         } else {
             for (String line : rawHeadLore) {
                 headLore.add(line
-                        .replace("{percentage}", String.format(java.util.Locale.US, "%.1f", fillPercentage))
+                        .replace("{percentage}", formattedPercentage)
                         .replace("{stack}", NumberUtils.format(instance.getStackAmount()))
                         .replace("{mob}", mobLabel));
             }
@@ -141,8 +172,8 @@ public class SpawnerMainMenu extends BaseMenu {
         boolean xpButtonEnabled = plugin.getSpawnerManager().isXpEnabled()
                 && config.getBoolean("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.ENABLED", true);
 
+        int xpSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.SLOT", 15);
         if (xpButtonEnabled) {
-            int xpSlot = config.getInt("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.SLOT", 15);
             String xpMatName = config.getString("SPAWNER-MENUS.MAIN-MENU.COLLECT-XP-BUTTON.MATERIAL", "EXPERIENCE_BOTTLE");
             Material xpMat = Material.matchMaterial(xpMatName);
             if (xpMat == null) xpMat = Material.EXPERIENCE_BOTTLE;
@@ -162,7 +193,23 @@ public class SpawnerMainMenu extends BaseMenu {
             }
 
             set(xpSlot, ItemUtils.createItem(xpMat, xpTitle, xpLore));
+        } else {
+            String fillerMatName = config.getString("SPAWNER-MENUS.MAIN-MENU.FILLER-MATERIAL", "GRAY_STAINED_GLASS_PANE");
+            Material fillerMat = Material.matchMaterial(fillerMatName);
+            if (fillerMat == null) fillerMat = Material.GRAY_STAINED_GLASS_PANE;
+            set(xpSlot, ItemUtils.createItem(fillerMat, " "));
         }
+    }
+
+    static double calculateFillPercentage(long currentTotal, long totalCapacity) {
+        if (totalCapacity <= 0L || currentTotal <= 0L) {
+            return 0.0;
+        }
+        return Math.min(100.0, (currentTotal / (double) totalCapacity) * 100.0);
+    }
+
+    static String formatFillPercentage(double fillPercentage) {
+        return String.format(java.util.Locale.US, "%.1f", fillPercentage);
     }
 
     @Override

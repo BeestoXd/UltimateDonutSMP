@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.menus.SpawnerMainMenu;
 import com.bx.ultimateDonutSmp.menus.SpawnerPanelMenu;
 import com.bx.ultimateDonutSmp.menus.SpawnerStorageMenu;
 import com.bx.ultimateDonutSmp.menus.SpawnerWorldListMenu;
@@ -91,6 +92,7 @@ public class SpawnerManager {
     private final Set<Long> temporarySpawnerIds = new HashSet<>();
     private final Map<Long, List<SpawnerLootEntry>> pendingLootMap = new java.util.concurrent.ConcurrentHashMap<>();
     private final Map<UUID, SpawnerStorageMenu> openStorageMenus = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<UUID, SpawnerMainMenu> openMainMenus = new java.util.concurrent.ConcurrentHashMap<>();
     private boolean serverWipeMode;
     private boolean enabled;
     private boolean xpEnabled;
@@ -1292,6 +1294,64 @@ public class SpawnerManager {
                 }
             });
         }
+    }
+
+    public void registerOpenMainMenu(Player player, SpawnerMainMenu menu) {
+        if (player == null || menu == null) {
+            return;
+        }
+        openMainMenus.put(player.getUniqueId(), menu);
+    }
+
+    public void unregisterOpenMainMenu(Player player, SpawnerMainMenu menu) {
+        if (player == null || menu == null) {
+            return;
+        }
+        openMainMenus.remove(player.getUniqueId(), menu);
+    }
+
+    public void refreshOpenMainMenus() {
+        if (openMainMenus.isEmpty()) {
+            return;
+        }
+
+        for (Map.Entry<UUID, SpawnerMainMenu> entry : openMainMenus.entrySet()) {
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if (player == null || !player.isOnline()) {
+                openMainMenus.remove(entry.getKey(), entry.getValue());
+                continue;
+            }
+
+            SpawnerMainMenu menu = entry.getValue();
+            plugin.getSpigotScheduler().runEntity(player, () -> {
+                if (player.isOnline()) {
+                    menu.refresh(player);
+                }
+            });
+        }
+    }
+
+    public long getTotalStorageCapacity(SpawnerInstance instance) {
+        if (instance == null) {
+            return storageCapPerLootKey;
+        }
+        SpawnerTypeDefinition def = getTypeDefinition(instance.getMobTypeKey());
+        return calculateTotalStorageCapacity(def, instance.getDisabledLootKeys(), storageCapPerLootKey);
+    }
+
+    public static long calculateTotalStorageCapacity(SpawnerTypeDefinition def, Set<String> disabledKeys, long storageCapPerLootKey) {
+        long baseCap = Math.max(1L, storageCapPerLootKey);
+        if (def == null || def.drops().isEmpty()) {
+            return baseCap;
+        }
+        long enabledCount = def.drops().stream()
+                .filter(drop -> disabledKeys == null || (!disabledKeys.contains(drop.key().toUpperCase(Locale.US))
+                        && !disabledKeys.contains(drop.material().name())))
+                .count();
+        if (enabledCount <= 0L) {
+            enabledCount = def.drops().size();
+        }
+        return enabledCount * baseCap;
     }
 
     private void processSpawnerGeneration(SpawnerInstance instance, long now, long intervalMillis) {
