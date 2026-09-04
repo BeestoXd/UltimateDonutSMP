@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -148,5 +149,44 @@ public class AFKManager {
             return false;
         }
         return plugin.getCuboidManager().isInAnyCuboid(player, cuboidNames.toArray(String[]::new));
+    }
+
+    public Set<UUID> getAfkPlayers() {
+        return Set.copyOf(afkPlayers);
+    }
+
+    public int getAfkPlayerCount() {
+        if (Bukkit.getServer() == null) {
+            return afkPlayers.size();
+        }
+
+        int count = 0;
+        Set<String> afkCuboids = plugin.getSpawnManager() != null
+                ? plugin.getSpawnManager().getAreaCuboidNames(SpawnManager.AreaType.AFK)
+                : Set.of();
+        String[] afkCuboidArray = afkCuboids.isEmpty() ? new String[0] : afkCuboids.toArray(String[]::new);
+        Location afkLocation = plugin.getSpawnManager() != null
+                ? plugin.getSpawnManager().getAfkLocation()
+                : null;
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (isAfk(player.getUniqueId())) {
+                count++;
+                continue;
+            }
+            if (afkCuboidArray.length > 0 && plugin.getCuboidManager() != null
+                    && plugin.getCuboidManager().isInAnyCuboid(player, afkCuboidArray)) {
+                count++;
+                continue;
+            }
+            if (afkCuboidArray.length == 0 && afkLocation != null && afkLocation.getWorld() != null) {
+                Location loc = player.getLocation();
+                if (loc.getWorld() != null && loc.getWorld().equals(afkLocation.getWorld())
+                        && loc.distanceSquared(afkLocation) <= 225.0D) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 }
