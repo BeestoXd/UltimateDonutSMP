@@ -139,8 +139,40 @@ The Portal system allows administrators to turn any Cuboid region into a seamles
 ```
 
 ### Portal Administration:
-- List all active portals: `/portal list`
-- Change portal cuboid: `/portal setcuboid <portal_id> <cuboid_name>`
-- Change portal destination: `/portal setdestination <portal_id> <type> <value>`
-- Delete portal: `/portal delete <portal_id>`
-- Reload portal engine: `/portal reload`
+- List all active portals: `/portalmanager list` (or `/portal list`)
+- View portal details: `/portalmanager info <id>`
+- Change portal cuboid: `/portalmanager setcuboid <id> <cuboid_name>`
+- Change portal destination: `/portalmanager setdestination <id> <type> <value>`
+- Change portal display name: `/portalmanager setdisplay <id> <name>`
+- Toggle portal: `/portalmanager toggle <id>`
+- Set hologram location: `/portalmanager sethologramhere <id>`
+- Delete portal: `/portalmanager delete <id>`
+
+---
+
+## Portal Holograms
+
+Each portal can display a floating text hologram above its cuboid or at a custom position set with `/portalmanager sethologramhere <id>`.
+
+Default lines are configured under `PORTAL-SYSTEM.HOLOGRAM.LINES` in `config.yml`, and can be overridden per portal with `PORTAL-SYSTEM.HOLOGRAM.PORTALS.<portal_id>.LINES`:
+
+```yaml
+PORTAL-SYSTEM:
+  HOLOGRAM:
+    LINES:
+    - '&f{portal}'
+    - '&7Region {region}'
+    - ''
+    - '&f<players> Players'
+```
+
+### Available Hologram Placeholders:
+- `{portal}` / `{display}`: Formatted portal display name.
+- `{region}`: Configured portal region (default: `NA East`).
+- `{players}` / `<players>` / `{destination_players}`: Player count for this portal's destination (e.g. overworld, nether, end, or AFK players).
+- `{world_players}` / `<world_players>`: Players in the destination world.
+- `{afk_players}` / `<afk_players>`: Players currently in the AFK pool or marked AFK.
+- `{total_player}` / `<total_player>` / `{online}`: Total online players on the server.
+- `{max_players}` / `<max_players>`: Server player capacity.
+- `{world}` / `{world_name}`: Destination world label / raw world name.
+- `{server}` / `{server_id}` / `{server_status}`: Remote network server display name, ID, and online status.

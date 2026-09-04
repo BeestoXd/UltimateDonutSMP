@@ -48,7 +48,7 @@ PORTAL-SYSTEM:
     - '&f{portal}'
     - '&7Region {region}'
     - ''
-    - '&f<total_player> Players'
+    - '&f<players> Players'
 # Configuration section for Settings.
 SETTINGS:
   # Determines whether Respawn On Bed is enabled or disabled. Available options: true, false

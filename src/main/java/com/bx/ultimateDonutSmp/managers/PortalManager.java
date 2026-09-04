@@ -765,7 +765,7 @@ public class PortalManager {
                     "&f{portal}",
                     "&7Region {region}",
                     "",
-                    "&f<total_player> players"
+                    "&f<players> Players"
             );
         }
 
@@ -776,19 +776,24 @@ public class PortalManager {
         return resolved;
     }
 
-    private String resolveHologramLine(String line, PortalDefinition portal) {
+    String resolveHologramLine(String line, PortalDefinition portal) {
         String worldName = resolveDestinationWorld(portal);
         String worldLabel = worldName == null ? "" : plugin.getRtpManager().describeWorld(worldName);
+        int destPlayersCount = getDestinationPlayerCount(portal);
+        String destinationPlayers = String.valueOf(destPlayersCount);
         String worldPlayers = worldName == null
                 ? "0"
                 : String.valueOf(plugin.getRtpManager().getPlayersInWorld(worldName));
+        String afkPlayers = plugin.getAFKManager() != null
+                ? String.valueOf(plugin.getAFKManager().getAfkPlayerCount())
+                : "0";
         String serverId = getHologramServerId(portal);
         ServerStatusSnapshot serverSnapshot = getHologramServerSnapshot(serverId);
         boolean localServer = shouldUseLocalHologramPlayers(serverId);
         String totalPlayers = String.valueOf(localServer
-                ? Bukkit.getOnlinePlayers().size()
+                ? (Bukkit.getServer() == null ? 0 : Bukkit.getOnlinePlayers().size())
                 : serverSnapshot == null ? 0 : serverSnapshot.playerCount());
-        String maxPlayers = String.valueOf(Bukkit.getMaxPlayers());
+        String maxPlayers = String.valueOf(Bukkit.getServer() == null ? 0 : Bukkit.getMaxPlayers());
         String region = getHologramRegion(portal);
         String serverDisplay = localServer
                 ? getLocalServerDisplayName()
@@ -809,8 +814,12 @@ public class PortalManager {
                 .replace("{server}", serverDisplay)
                 .replace("{server_id}", serverId)
                 .replace("{server_status}", serverStatus)
-                .replace("{players}", worldPlayers)
-                .replace("<players>", worldPlayers)
+                .replace("{players}", destinationPlayers)
+                .replace("<players>", destinationPlayers)
+                .replace("{destination_players}", destinationPlayers)
+                .replace("<destination_players>", destinationPlayers)
+                .replace("{afk_players}", afkPlayers)
+                .replace("<afk_players>", afkPlayers)
                 .replace("{world_players}", worldPlayers)
                 .replace("<world_players>", worldPlayers)
                 .replace("{total_player}", totalPlayers)
@@ -821,6 +830,44 @@ public class PortalManager {
                 .replace("<online>", totalPlayers)
                 .replace("{max_players}", maxPlayers)
                 .replace("<max_players>", maxPlayers);
+    }
+
+    public int getDestinationPlayerCount(PortalDefinition portal) {
+        if (portal == null) {
+            return 0;
+        }
+
+        String serverId = getHologramServerId(portal);
+        if (!shouldUseLocalHologramPlayers(serverId)) {
+            ServerStatusSnapshot serverSnapshot = getHologramServerSnapshot(serverId);
+            return serverSnapshot == null ? 0 : serverSnapshot.playerCount();
+        }
+
+        if (DESTINATION_TYPE_AFK.equalsIgnoreCase(portal.destinationType())) {
+            return getAfkDestinationPlayerCount(portal);
+        }
+
+        String worldName = resolveDestinationWorld(portal);
+        if (worldName != null && plugin.getRtpManager() != null) {
+            return plugin.getRtpManager().getPlayersInWorld(worldName);
+        }
+
+        return 0;
+    }
+
+    public int getAfkDestinationPlayerCount(PortalDefinition portal) {
+        String value = portal != null ? portal.destinationValue() : null;
+        if (value != null && !value.isBlank() && plugin.getSpawnManager() != null) {
+            for (SpawnManager.TeleportArea area : plugin.getSpawnManager().getValidAreas(SpawnManager.AreaType.AFK)) {
+                if (area.id().equalsIgnoreCase(value)) {
+                    return plugin.getSpawnManager().countPlayersInArea(area);
+                }
+            }
+        }
+        if (plugin.getAFKManager() != null) {
+            return plugin.getAFKManager().getAfkPlayerCount();
+        }
+        return 0;
     }
 
     private String getHologramRegion(PortalDefinition portal) {

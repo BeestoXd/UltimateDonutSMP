@@ -121,7 +121,7 @@ PORTAL-SYSTEM:
     - '&f{portal}'
     - '&7Region {region}'
     - ''
-    - '&f<total_player> Players'
+    - '&f<players> Players'
 # Configuration section for Settings.
 ```
 
@@ -178,7 +178,7 @@ PORTAL-SYSTEM:
     - '&f{portal}'
     - '&7Region {region}'
     - ''
-    - '&f<total_player> Players'
+    - '&f<players> Players'
 # Configuration section for Settings.
 ```
 
