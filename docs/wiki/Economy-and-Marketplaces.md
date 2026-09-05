@@ -32,7 +32,7 @@ Opens the configured multi-category item shop where players can buy blocks, item
 Items placed this way are stored whole, so enchantments, potion data, firework flight duration, custom names and any other item data survive into what the buyer receives. Set the price by renaming the item to `[PRICE] 250` before you place it; without that rename the item's `worth.yml` value is used, and an item with no worth entry is refused rather than listed for nothing. The slots the menu keeps for its own back and paging buttons are blocked off in the editor.
 
 ### 2. Sell Container & Commands (`/sell`)
-- `/sell` (Aliases: `/sellmulti`, `/sellmultiplier`, `/sellprogress`): Opens a GUI chest container and Sell Multiplier progress menu. Players drop items inside and close the GUI to instantly sell all items for Vault money.
+- `/sell` (Aliases: `/sellmulti`, `/sellmultiplier`, `/sellprogress`): Opens a GUI chest container and Sell Multiplier progress menu. `menus.yml` ships `SELL-MENU.MODE` as `confirm`, so players drop items in and click Confirm Sell to get paid; closing the menu hands the items back. Switch MODE to `close` to sell the grid when the menu shuts, or `instant` to pay as items land.
 - **Sell Category Item Preview**: Clicking the category header icon inside `/sellmulti` (or right-clicking category buttons in `/sell`) opens an item catalog GUI in `WorthMenu` showing only the items that fit in that category.
 - **Barrier Back Navigation**: Navigation across sell and progress menus uses a `BARRIER` icon for returning to previous menus.
 - `/sellhand [amount]`: Sells the item currently held in main hand.
