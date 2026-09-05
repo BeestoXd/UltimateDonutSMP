@@ -277,3 +277,12 @@ FAKE-PLAYER:
   # When true, /fakeplayer does not copy the staff member's username, so prefix, suffix, and money text stay off the head.
   # Available options: true, false
   HIDE-NAMETAG: true
+  # When true, the bait crouches like DonutSMP. Crouching also hides leftover nametags on most clients.
+  # Available options: true, false
+  SNEAK: true
+  # When true, /fakeplayer appears at the block or point you are looking at instead of at your feet.
+  # Available options: true, false
+  SPAWN-AT-LOOK-TARGET: true
+  # How far, in blocks, to search for the block you are looking at.
+  # Available options: Any decimal number 1.0 or greater
+  LOOK-RANGE: 32.0

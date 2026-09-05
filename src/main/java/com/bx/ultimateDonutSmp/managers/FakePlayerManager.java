@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.managers;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.FakePlayerSkinPolicy;
+import com.bx.ultimateDonutSmp.utils.FakePlayerSpawnTarget;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -68,6 +69,9 @@ public class FakePlayerManager {
     private boolean logToConsole;
     private boolean hideFromTablist;
     private boolean hideNametag;
+    private boolean sneak;
+    private boolean spawnAtLookTarget;
+    private double lookRange;
     private SkinSourceMode skinSourceMode;
     private boolean useDefaultSkin;
     private boolean lockAirPosition;
@@ -153,8 +157,8 @@ public class FakePlayerManager {
             return SpawnResult.fail(message("DISABLED", "&cFakePlayer is currently disabled."));
         }
 
-        Location location = creator.getLocation().clone();
-        if (location.getWorld() == null) {
+        Location location = resolveSpawnLocation(creator);
+        if (location == null || location.getWorld() == null) {
             return SpawnResult.fail(message("INVALID-LOCATION", "&cUnable to spawn a FakePlayer at your current location."));
         }
 
@@ -186,6 +190,7 @@ public class FakePlayerManager {
                 profileName,
                 displayName,
                 location,
+                sneak,
                 now,
                 now + Math.max(1L, ttlSeconds) * 1000L
         );
@@ -344,6 +349,9 @@ public class FakePlayerManager {
         alertCooldownMillis = Math.max(1L, configLong("ALERT-COOLDOWN-SECONDS", 30L)) * 1000L;
         hideFromTablist = configBoolean("HIDE-FROM-TABLIST", true);
         hideNametag = configBoolean("HIDE-NAMETAG", true);
+        sneak = configBoolean("SNEAK", true);
+        spawnAtLookTarget = configBoolean("SPAWN-AT-LOOK-TARGET", true);
+        lookRange = Math.max(1.0D, configDouble("LOOK-RANGE", 32.0D));
         tablistRemoveDelayTicks = Math.max(0L, configLong("TABLIST-REMOVE-DELAY-TICKS", hideFromTablist ? 5L : 200L));
         if (hideFromTablist) {
             tablistRemoveDelayTicks = Math.min(tablistRemoveDelayTicks, 5L);
@@ -453,7 +461,7 @@ public class FakePlayerManager {
 
         Location next = current.clone();
         moveVertical(next, velocity);
-        moveHorizontal(next, velocity);
+        moveHorizontal(next, velocity, fakePlayer.sneaking());
 
         boolean nextOnGround = hasGroundSupport(next);
         if (nextOnGround && velocity.getY() < 0D) {
@@ -513,11 +521,11 @@ public class FakePlayerManager {
         return ground;
     }
 
-    private void moveHorizontal(Location location, Vector velocity) {
+    private void moveHorizontal(Location location, Vector velocity, boolean sneaking) {
         double xVelocity = velocity.getX();
         if (Math.abs(xVelocity) >= 0.00001D) {
             Location movedX = location.clone().add(xVelocity, 0D, 0D);
-            if (intersectsSolid(movedX)) {
+            if (intersectsSolid(movedX, sneaking)) {
                 velocity.setX(0D);
             } else {
                 location.setX(movedX.getX());
@@ -527,7 +535,7 @@ public class FakePlayerManager {
         double zVelocity = velocity.getZ();
         if (Math.abs(zVelocity) >= 0.00001D) {
             Location movedZ = location.clone().add(0D, 0D, zVelocity);
-            if (intersectsSolid(movedZ)) {
+            if (intersectsSolid(movedZ, sneaking)) {
                 velocity.setZ(0D);
             } else {
                 location.setZ(movedZ.getZ());
@@ -552,14 +560,16 @@ public class FakePlayerManager {
                 || hasSolidBlockAt(world, location.getX(), y, location.getZ());
     }
 
-    private boolean intersectsSolid(Location location) {
+    private boolean intersectsSolid(Location location, boolean sneaking) {
         World world = location.getWorld();
         if (world == null) {
             return false;
         }
 
+        double mid = sneaking ? 0.75D : 0.9D;
+        double top = sneaking ? 1.4D : 1.75D;
         double[] xs = {location.getX() - 0.3D, location.getX(), location.getX() + 0.3D};
-        double[] ys = {location.getY() + 0.1D, location.getY() + 0.9D, location.getY() + 1.75D};
+        double[] ys = {location.getY() + 0.1D, location.getY() + mid, location.getY() + top};
         double[] zs = {location.getZ() - 0.3D, location.getZ(), location.getZ() + 0.3D};
         for (double x : xs) {
             for (double y : ys) {
@@ -885,7 +895,8 @@ public class FakePlayerManager {
                 continue;
             }
 
-            BoundingBox hitbox = BoundingBox.of(location.clone().add(0D, 0.9D, 0D), 0.45D, 0.9D, 0.45D);
+            double halfHeight = fakePlayer.hitboxHalfHeight();
+            BoundingBox hitbox = BoundingBox.of(location.clone().add(0D, halfHeight, 0D), 0.45D, halfHeight, 0.45D);
             RayTraceResult hit = hitbox.rayTrace(eye.toVector(), direction, reach);
             if (hit == null) {
                 continue;
@@ -1032,6 +1043,38 @@ public class FakePlayerManager {
                 + " (fakeUuid=" + fakeUuid
                 + ", textureProfileUuid=" + (textureProfileUuid == null ? "none" : textureProfileUuid)
                 + ", uuidSource=" + uuidSource + ").");
+    }
+
+    private Location resolveSpawnLocation(Player creator) {
+        Location standing = creator.getLocation().clone();
+        if (!spawnAtLookTarget) {
+            return standing;
+        }
+
+        Location eye = creator.getEyeLocation();
+        Vector direction = eye.getDirection();
+        World world = standing.getWorld();
+        RayTraceResult hit = world == null ? null : world.rayTraceBlocks(
+                eye,
+                direction,
+                lookRange,
+                FluidCollisionMode.NEVER,
+                true
+        );
+        Vector hitPosition = hit == null ? null : hit.getHitPosition();
+        Vector hitNormal = hit == null || hit.getHitBlockFace() == null
+                ? null
+                : hit.getHitBlockFace().getDirection();
+        double missDistance = Math.min(lookRange, FakePlayerSpawnTarget.DEFAULT_MISS_DISTANCE);
+        return FakePlayerSpawnTarget.resolve(
+                standing,
+                eye,
+                direction,
+                hitPosition,
+                hitNormal,
+                true,
+                missDistance
+        );
     }
 
     static String hiddenProfileName(UUID fakeUuid) {

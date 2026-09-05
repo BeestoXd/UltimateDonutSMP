@@ -29,6 +29,7 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -55,6 +56,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
     private boolean velocityWarned;
     private boolean noGravityWarned;
     private boolean spawnWarned;
+    private boolean sneakWarned;
 
     FakePlayerProtocolLibBridge(UltimateDonutSmp plugin, FakePlayerManager fakePlayerManager) {
         this.plugin = plugin;
@@ -991,6 +993,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
             return;
         }
         sendNoGravityMetadata(viewer, fakePlayer);
+        sendSneakMetadata(viewer, fakePlayer);
         sendMetadata(viewer, fakePlayer);
         scheduleMetadataRefresh(viewer, fakePlayer);
         sendOptionalSpawnPackets(viewer, fakePlayer);
@@ -1067,6 +1070,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
 
             try {
                 sendNoGravityMetadata(viewer, fakePlayer);
+                sendSneakMetadata(viewer, fakePlayer);
                 sendMetadata(viewer, fakePlayer);
                 if (damage) {
                     send(viewer, createEntityStatus(fakePlayer.entityId(), (byte) 2));
@@ -1605,6 +1609,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
         sendNametagHideTeam(viewer, fakePlayer);
         send(viewer, createSpawnEntity(fakePlayer));
         sendNoGravityMetadata(viewer, fakePlayer);
+        sendSneakMetadata(viewer, fakePlayer);
         sendMetadata(viewer, fakePlayer);
         sendOptionalSpawnPackets(viewer, fakePlayer);
     }
@@ -1905,6 +1910,72 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
         return (byte) Math.floorMod((int) (degrees * 256.0F / 360.0F), 256);
     }
 
+    private void sendSneakMetadata(Player viewer, FakePlayerSession fakePlayer) {
+        if (fakePlayer == null || !fakePlayer.sneaking()) {
+            return;
+        }
+        try {
+            send(viewer, createSneakMetadata(fakePlayer));
+        } catch (RuntimeException | LinkageError error) {
+            if (!sneakWarned) {
+                sneakWarned = true;
+                plugin.getLogger().log(Level.WARNING,
+                        "Unable to send fakeplayer sneak metadata on this ProtocolLib/server build.", error);
+            }
+        }
+    }
+
+    private PacketContainer createSneakMetadata(FakePlayerSession fakePlayer) {
+        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+        packet.getModifier().writeDefaults();
+        packet.getIntegers().write(0, fakePlayer.entityId());
+
+        List<WrappedDataValue> values = new ArrayList<>();
+        WrappedDataWatcher.Serializer byteSerializer = WrappedDataWatcher.Registry.get(Byte.class);
+        values.add(new WrappedDataValue(0, byteSerializer, (byte) 0x02));
+        WrappedDataValue poseValue = poseCrouchingDataValue();
+        if (poseValue != null) {
+            values.add(poseValue);
+        }
+
+        if (packet.getDataValueCollectionModifier().size() > 0) {
+            packet.getDataValueCollectionModifier().write(0, values);
+            return packet;
+        }
+
+        WrappedDataWatcher watcher = new WrappedDataWatcher();
+        watcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, byteSerializer), (byte) 0x02);
+        if (poseValue != null) {
+            watcher.setObject(
+                    new WrappedDataWatcher.WrappedDataWatcherObject(poseValue.getIndex(), poseValue.getSerializer()),
+                    poseValue.getValue()
+            );
+        }
+        if (packet.getWatchableCollectionModifier().size() > 0) {
+            packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+            return packet;
+        }
+
+        throw new IllegalStateException("ENTITY_METADATA packet has no supported metadata collection fields.");
+    }
+
+    private WrappedDataValue poseCrouchingDataValue() {
+        try {
+            Class<?> poseClass = EnumWrappers.getEntityPoseClass();
+            if (poseClass == null) {
+                return null;
+            }
+            WrappedDataWatcher.Serializer serializer = WrappedDataWatcher.Registry.get(poseClass);
+            Object nmsPose = EnumWrappers.getEntityPoseConverter().getGeneric(EnumWrappers.EntityPose.CROUCHING);
+            if (serializer == null || nmsPose == null) {
+                return null;
+            }
+            return new WrappedDataValue(6, serializer, nmsPose);
+        } catch (RuntimeException | LinkageError ignored) {
+            return null;
+        }
+    }
+
     private void sendMetadata(Player viewer, FakePlayerSession fakePlayer) {
         if (!plugin.getConfigManager().getStaffMode().getBoolean("FAKE-PLAYER.SEND-SKIN-LAYERS-METADATA", true)) {
             return;
@@ -1936,7 +2007,9 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
     }
 
     private void scheduleMetadataRefresh(Player viewer, FakePlayerSession fakePlayer) {
-        if (!plugin.getConfigManager().getStaffMode().getBoolean("FAKE-PLAYER.SEND-SKIN-LAYERS-METADATA", true)) {
+        boolean skinLayers = plugin.getConfigManager().getStaffMode()
+                .getBoolean("FAKE-PLAYER.SEND-SKIN-LAYERS-METADATA", true);
+        if (!skinLayers && (fakePlayer == null || !fakePlayer.sneaking())) {
             return;
         }
 
@@ -1947,7 +2020,10 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
                     && viewer.isOnline()
                     && fakePlayer.viewers().contains(viewer.getUniqueId())
                     && System.currentTimeMillis() < fakePlayer.expiresAtMillis()) {
-                sendMetadata(viewer, fakePlayer);
+                sendSneakMetadata(viewer, fakePlayer);
+                if (skinLayers) {
+                    sendMetadata(viewer, fakePlayer);
+                }
             }
         }, delayTicks);
     }
