@@ -753,6 +753,9 @@ FAKE-PLAYER:
   # When true, /fakeplayer uses Minecraft's default Steve/Alex skin instead of the staff member's.
   # Available options: true, false
   USE-DEFAULT-SKIN: false
+  # When true, /fakeplayer does not copy the staff member's username, so prefix, suffix, and money text stay off the head.
+  # Available options: true, false
+  HIDE-NAMETAG: true
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -760,12 +763,14 @@ FAKE-PLAYER:
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
 | `FAKE-PLAYER.USE-DEFAULT-SKIN` | `bool` | `true`, `false` | `false` | When `true`, every `/fakeplayer` bait uses Minecraft's default Steve or Alex skin. When `false`, the bait copies the staff member who ran the command. |
+| `FAKE-PLAYER.HIDE-NAMETAG` | `bool` | `true`, `false` | `true` | When `true`, `/fakeplayer` does not copy the staff member's username, so LuckPerms prefix/suffix and below-name money stay off the bait. Set `false` if you want the old labeled look. |
 
 ### 3. Practical Setup Example
 
 ```yaml
 FAKE-PLAYER:
   USE-DEFAULT-SKIN: true
+  HIDE-NAMETAG: true
 ```
 
 ---

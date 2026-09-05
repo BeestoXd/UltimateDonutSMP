@@ -12,11 +12,13 @@ import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.comphenix.protocol.wrappers.WrappedTeamParameters;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -27,10 +29,12 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -956,6 +960,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
     @Override
     public void spawn(Player viewer, FakePlayerSession fakePlayer) {
         send(viewer, createPlayerInfoAdd(fakePlayer));
+        sendNametagHideTeam(viewer, fakePlayer);
         long delayTicks = Math.max(0L, plugin.getConfigManager().getStaffMode()
                 .getLong("FAKE-PLAYER.SPAWN-DELAY-TICKS", 20L));
         if (delayTicks <= 0L) {
@@ -974,6 +979,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
     }
 
     private void sendSpawnPackets(Player viewer, FakePlayerSession fakePlayer) {
+        sendNametagHideTeam(viewer, fakePlayer);
         try {
             send(viewer, createSpawnEntity(fakePlayer));
         } catch (RuntimeException error) {
@@ -1001,6 +1007,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
     @Override
     public void destroy(Player viewer, FakePlayerSession fakePlayer) {
         send(viewer, createEntityDestroy(fakePlayer));
+        sendNametagHideTeamRemove(viewer, fakePlayer);
         send(viewer, createPlayerInfoRemove(fakePlayer));
     }
 
@@ -1134,6 +1141,66 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
         );
         writePlayerInfoData(packet, List.of(infoData));
         return packet;
+    }
+
+    private void sendNametagHideTeam(Player viewer, FakePlayerSession fakePlayer) {
+        if (!isHideNametagEnabled() || viewer == null || fakePlayer == null) {
+            return;
+        }
+        try {
+            send(viewer, createNametagHideTeam(fakePlayer));
+        } catch (RuntimeException | LinkageError error) {
+            plugin.getLogger().log(Level.FINE, "Unable to hide fakeplayer nametag.", error);
+        }
+    }
+
+    private void sendNametagHideTeamRemove(Player viewer, FakePlayerSession fakePlayer) {
+        if (!isHideNametagEnabled() || viewer == null || fakePlayer == null) {
+            return;
+        }
+        try {
+            PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_TEAM);
+            packet.getStrings().writeSafely(0, nametagTeamName(fakePlayer.fakeUuid()));
+            packet.getIntegers().writeSafely(0, 1);
+            send(viewer, packet);
+        } catch (RuntimeException | LinkageError error) {
+            plugin.getLogger().log(Level.FINE, "Unable to remove fakeplayer nametag team.", error);
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private PacketContainer createNametagHideTeam(FakePlayerSession fakePlayer) {
+        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_TEAM);
+        String teamName = nametagTeamName(fakePlayer.fakeUuid());
+        packet.getStrings().writeSafely(0, teamName);
+        packet.getIntegers().writeSafely(0, 0);
+
+        WrappedTeamParameters parameters = WrappedTeamParameters.newBuilder()
+                .displayName(WrappedChatComponent.fromText(teamName))
+                .prefix(WrappedChatComponent.fromText(""))
+                .suffix(WrappedChatComponent.fromText(""))
+                .nametagVisibility("never")
+                .collisionRule("always")
+                .color(EnumWrappers.ChatFormatting.WHITE)
+                .options(0)
+                .build();
+        packet.getOptionalTeamParameters().writeSafely(0, Optional.of(parameters));
+
+        StructureModifier<Collection> entries = packet.getSpecificModifier(Collection.class);
+        entries.writeSafely(0, List.of(fakePlayer.profileName()));
+        return packet;
+    }
+
+    private String nametagTeamName(UUID fakeUuid) {
+        String compact = fakeUuid == null ? "00000000000" : fakeUuid.toString().replace("-", "");
+        if (compact.length() < 11) {
+            compact = (compact + "00000000000").substring(0, 11);
+        }
+        return ("udfp_" + compact).substring(0, 16);
+    }
+
+    private boolean isHideNametagEnabled() {
+        return plugin.getConfigManager().getStaffMode().getBoolean("FAKE-PLAYER.HIDE-NAMETAG", true);
     }
 
     private WrappedGameProfile unwrapProfile(Object profile) {
@@ -1535,6 +1602,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
 
         send(viewer, createEntityDestroy(fakePlayer));
         send(viewer, createPlayerInfoAdd(fakePlayer));
+        sendNametagHideTeam(viewer, fakePlayer);
         send(viewer, createSpawnEntity(fakePlayer));
         sendNoGravityMetadata(viewer, fakePlayer);
         sendMetadata(viewer, fakePlayer);

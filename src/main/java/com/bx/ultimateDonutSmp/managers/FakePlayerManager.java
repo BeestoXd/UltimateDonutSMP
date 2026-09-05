@@ -67,6 +67,7 @@ public class FakePlayerManager {
     private long tablistRemoveDelayTicks;
     private boolean logToConsole;
     private boolean hideFromTablist;
+    private boolean hideNametag;
     private SkinSourceMode skinSourceMode;
     private boolean useDefaultSkin;
     private boolean lockAirPosition;
@@ -160,7 +161,7 @@ public class FakePlayerManager {
         UUID textureProfileUuid = extractTextureProfileUuid(skinTexture);
         UUID fakeUuid = resolveFakeUuid(textureProfileUuid);
         String displayName = resolveDisplayName(creator);
-        String profileName = resolveProfileName(creator, displayName);
+        String profileName = resolveProfileName(creator, displayName, fakeUuid);
         Object profile = skinTexture != null && skinTexture.isValid()
                 ? packetBridge.createProfile(creator, fakeUuid, profileName, skinTexture)
                 : packetBridge.createProfile(requireSkinTexture ? creator : null, fakeUuid, profileName);
@@ -342,6 +343,7 @@ public class FakePlayerManager {
         checkIntervalTicks = Math.max(1L, configLong("CHECK-INTERVAL-TICKS", 5L));
         alertCooldownMillis = Math.max(1L, configLong("ALERT-COOLDOWN-SECONDS", 30L)) * 1000L;
         hideFromTablist = configBoolean("HIDE-FROM-TABLIST", true);
+        hideNametag = configBoolean("HIDE-NAMETAG", true);
         tablistRemoveDelayTicks = Math.max(0L, configLong("TABLIST-REMOVE-DELAY-TICKS", hideFromTablist ? 5L : 200L));
         if (hideFromTablist) {
             tablistRemoveDelayTicks = Math.min(tablistRemoveDelayTicks, 5L);
@@ -940,7 +942,10 @@ public class FakePlayerManager {
         return displayName.isBlank() ? player.getName() : displayName;
     }
 
-    private String resolveProfileName(Player player, String displayName) {
+    private String resolveProfileName(Player player, String displayName, UUID fakeUuid) {
+        if (hideNametag) {
+            return hiddenProfileName(fakeUuid);
+        }
         String name = sanitizeProfileName(displayName);
         if (name.isBlank()) {
             name = sanitizeProfileName(player.getName());
@@ -1027,6 +1032,15 @@ public class FakePlayerManager {
                 + " (fakeUuid=" + fakeUuid
                 + ", textureProfileUuid=" + (textureProfileUuid == null ? "none" : textureProfileUuid)
                 + ", uuidSource=" + uuidSource + ").");
+    }
+
+    static String hiddenProfileName(UUID fakeUuid) {
+        String compact = fakeUuid == null ? UUID.randomUUID().toString() : fakeUuid.toString();
+        compact = compact.replace("-", "");
+        if (compact.length() < 14) {
+            compact = (compact + "00000000000000").substring(0, 14);
+        }
+        return ("fp" + compact).substring(0, 16);
     }
 
     private String sanitizeProfileName(String input) {
