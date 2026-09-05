@@ -304,15 +304,14 @@ public class PurchaseShopMenu extends BaseMenu {
         if (currencyType == CurrencyManager.CurrencyType.SHARDS) {
             resolved = resolved
                     .replace("{amount} shards", "{price_formatted}")
-                    .replace("{amount} shards", "{price_formatted}")
                     .replace("%amount% shards", "{price_formatted}")
                     .replace("${amount} shards", "{price_formatted}");
         }
+        resolved = replacePricePlaceholders(resolved, amount, formattedPrice);
         return resolved
                 .replace("{amount}", amount)
                 .replace("${amount}", formattedPrice)
                 .replace("%amount%", amount)
-                .replace("{price_formatted}", formattedPrice)
                 .replace("{currency}", formattedPrice)
                 .replace("{currency_name}", plugin.getCurrencyManager().name(currencyType, totalPrice))
                 .replace("{currency_name_singular}", plugin.getCurrencyManager().singular(currencyType))
@@ -342,11 +341,7 @@ public class PurchaseShopMenu extends BaseMenu {
                     .replace("{price} shards", "{price_formatted}")
                     .replace("%price% shards", "{price_formatted}");
         }
-        return resolved
-                .replace("${price}", formattedPrice)
-                .replace("%price%", amount)
-                .replace("{price}", amount)
-                .replace("{price_formatted}", formattedPrice)
+        return replacePricePlaceholders(resolved, amount, formattedPrice)
                 .replace("{currency}", formattedPrice)
                 .replace("{currency_name}", plugin.getCurrencyManager().name(currencyType, totalPrice))
                 .replace("{currency_name_singular}", plugin.getCurrencyManager().singular(currencyType))
@@ -356,6 +351,19 @@ public class PurchaseShopMenu extends BaseMenu {
                 .replace("{Quantity}", String.valueOf(quantity))
                 .replace("{item-name}", resolveItemName())
                 .replace("{item_name}", resolveItemName());
+    }
+
+    static String replacePricePlaceholders(String text, String compactPrice, String formattedPrice) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        return text
+                .replace("${price_formatted}", formattedPrice)
+                .replace("{price_formatted}", formattedPrice)
+                .replace("%price_formatted%", formattedPrice)
+                .replace("${price}", formattedPrice)
+                .replace("%price%", compactPrice)
+                .replace("{price}", compactPrice);
     }
 
     private CurrencyManager.CurrencyType currencyType() {
