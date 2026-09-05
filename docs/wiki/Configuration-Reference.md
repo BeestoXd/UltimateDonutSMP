@@ -578,7 +578,7 @@ SETTINGS:
 | `SETTINGS.SHARDS-KILL-COOLDOWN-SECONDS` | `int` | Any valid integer | `600` | Time a killer must wait before the same victim rewards shards again. Set to `0` to reward every kill. |
 | `SETTINGS.SHARDS-KILL-COOLDOWN-MESSAGE` | `str` | Any string text | `&cNo Shard &7(killed recently, {time} left)` | Action bar shown when a kill reward is skipped by the cooldown. Supports `{time}` and `{seconds}`. Leave empty to stay silent. |
 | `SETTINGS.MONEY-PER-DEFAULT` | `float` | Configured values | `1000.0` | Configures `MONEY-PER-DEFAULT` for `SETTINGS`. |
-| `SETTINGS.SELL-MESSAGE` | `str` | Any string text | `&a+$%price%` | Configures `SELL-MESSAGE` for `SETTINGS`. |
+| `SETTINGS.SELL-MESSAGE` | `str` | Any string text | `&a+$%price%` | Action bar shown when a player sells items. `%price%` / `{price}` is the compact amount; `%price_formatted%` / `{price_formatted}` is the full money format. |
 | `SETTINGS.SPAWN-MENU` | `bool` | true, false | `True` | Configures `SPAWN-MENU` for `SETTINGS`. |
 | `SETTINGS.AFK-MENU` | `bool` | true, false | `True` | Configures `AFK-MENU` for `SETTINGS`. |
 | `SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN` | `bool` | true, false | `True` | Teleports a player to spawn on their first join. Needs `/setspawn` to have been run. Ignored while `FIRST-JOIN-RTP.ENABLED` is `true`. |

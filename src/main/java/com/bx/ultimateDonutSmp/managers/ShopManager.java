@@ -1838,13 +1838,23 @@ public class ShopManager {
     }
 
     private void sendSellFeedback(Player player, double totalPayout) {
-        String sellMsg = plugin.getConfigManager().getConfig()
-                .getString("SETTINGS.SELL-MESSAGE", "&a+{price_formatted}")
-                .replace("%price%", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
-                .replace("%price_formatted%", plugin.getCurrencyManager().formatMoney(totalPayout))
-                .replace("{price}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout))
-                .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(totalPayout));
+        String sellMsg = applySellPricePlaceholders(
+                plugin.getConfigManager().getConfig().getString("SETTINGS.SELL-MESSAGE", "&a+{price_formatted}"),
+                plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, totalPayout),
+                plugin.getCurrencyManager().formatMoney(totalPayout)
+        );
         PlayerSettingUtils.sendActionBar(plugin, player, sellMsg);
+    }
+
+    public static String applySellPricePlaceholders(String text, String compactPrice, String formattedPrice) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        return text
+                .replace("{price_formatted}", formattedPrice)
+                .replace("%price_formatted%", formattedPrice)
+                .replace("{price}", compactPrice)
+                .replace("%price%", compactPrice);
     }
 
     private List<Long> getSellProgressLevels() {

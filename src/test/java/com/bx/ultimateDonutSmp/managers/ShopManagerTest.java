@@ -124,6 +124,26 @@ class ShopManagerTest {
     }
 
     @Test
+    void sellActionbarReplacesFormattedPriceBeforeCompactPrice() {
+        assertEquals(
+                "$1,200.00",
+                ShopManager.applySellPricePlaceholders("{price_formatted}", "1.2k", "$1,200.00")
+        );
+        assertEquals(
+                "&a+$1.2k",
+                ShopManager.applySellPricePlaceholders("&a+$%price%", "1.2k", "$1,200.00")
+        );
+        assertEquals(
+                "&a+$1,200.00 (1.2k)",
+                ShopManager.applySellPricePlaceholders("&a+{price_formatted} ({price})", "1.2k", "$1,200.00")
+        );
+        assertEquals(
+                "&a+$1,200.00",
+                ShopManager.applySellPricePlaceholders("&a+%price_formatted%", "1.2k", "$1,200.00")
+        );
+    }
+
+    @Test
     void readsCurrencyNames() {
         assertEquals(ShopManager.Currency.SHARD, ShopManager.parseCurrency("SHARD"));
         assertEquals(ShopManager.Currency.SHARD, ShopManager.parseCurrency("shards"));
