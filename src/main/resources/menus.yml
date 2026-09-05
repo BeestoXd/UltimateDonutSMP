@@ -1139,8 +1139,9 @@ SELL-MENU:
   CONFIRM-BUTTON:
     MATERIAL: "LIME_STAINED_GLASS_PANE"
     TITLE: "&a&lConfirm Sell"
+    # {price} is the compact total, {price_formatted} is the full money format.
     LORE:
-    - "&7Click to sell all items in the menu."
+    - "&a{price_formatted}"
   CROPS-BUTTON:
     MATERIAL: WHEAT
     TITLE: '&#6BF18DCrops'

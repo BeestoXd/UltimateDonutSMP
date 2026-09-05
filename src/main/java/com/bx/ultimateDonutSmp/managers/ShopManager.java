@@ -1622,6 +1622,11 @@ public class ShopManager {
         );
     }
 
+    public double previewInventoryContents(Player player, Inventory inventory, int startInclusive, int endExclusive) {
+        PendingSale sale = collectInventorySale(player, inventory, startInclusive, endExclusive);
+        return sale == null ? 0D : sale.totalPayout;
+    }
+
     public SellResult sellInventoryContents(
             Player player,
             Inventory inventory,
@@ -1630,8 +1635,26 @@ public class ShopManager {
             EconomyReason reason,
             boolean sendFeedback
     ) {
-        if (player == null || inventory == null) {
+        PendingSale sale = collectInventorySale(player, inventory, startInclusive, endExclusive);
+        if (sale == null) {
             return emptySale();
+        }
+
+        return executeSale(player, sale, reason, sendFeedback, () -> {
+            for (int slot : sale.soldSlots) {
+                inventory.setItem(slot, null);
+            }
+        });
+    }
+
+    private PendingSale collectInventorySale(
+            Player player,
+            Inventory inventory,
+            int startInclusive,
+            int endExclusive
+    ) {
+        if (player == null || inventory == null) {
+            return null;
         }
 
         PendingSale sale = createPendingSale(player);
@@ -1653,11 +1676,7 @@ public class ShopManager {
             sale.soldSlots.add(slot);
         }
 
-        return executeSale(player, sale, reason, sendFeedback, () -> {
-            for (int slot : sale.soldSlots) {
-                inventory.setItem(slot, null);
-            }
-        });
+        return sale;
     }
 
     private PendingSale createPendingSale(Player player) {

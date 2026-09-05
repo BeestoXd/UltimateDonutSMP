@@ -1605,6 +1605,11 @@ SELL-MENU:
   MULTIPLIER-TITLE: '&8Sell Multipliers'
   AUTO-SELL: true
   MODE: 'confirm'
+  CONFIRM-BUTTON:
+    MATERIAL: LIME_STAINED_GLASS_PANE
+    TITLE: '&a&lConfirm Sell'
+    LORE:
+    - '&a{price_formatted}'
   CROPS-BUTTON:
     MATERIAL: WHEAT
     TITLE: '&#6BF18DCrops'
@@ -1692,6 +1697,9 @@ SELL-MENU:
 | `SELL-MENU.MULTIPLIER-TITLE` | `str` | Any string text | `'&8Sell Multipliers'` | Configures the technical `MULTIPLIER-TITLE` parameter for `SELL-MENU.MULTIPLIER-TITLE` in `menus.yml`. |
 | `SELL-MENU.MODE` | `str` | `confirm`, `close`, `instant` | `'confirm'` | Decides when the menu takes payment. `confirm` shows the Confirm Sell button and gives items back if the player closes without clicking it. `close` sells the whole grid the moment the menu is shut. `instant` pays out item by item as things land, and still settles whatever is left on close. An unrecognised value falls back to `instant`. |
 | `SELL-MENU.AUTO-SELL` | `bool` | `true`, `false` | `true` | Only applies to `MODE: instant`. Leave it `true` for the item-by-item payout as things land in the grid; set it `false` and instant mode holds everything until the player shuts the menu, the same as `MODE: close`. Both `confirm` and `close` ignore it. |
+| `SELL-MENU.CONFIRM-BUTTON.MATERIAL` | `str` | Any string text | `'LIME_STAINED_GLASS_PANE'` | Item used for the Confirm Sell button in `MODE: confirm`. |
+| `SELL-MENU.CONFIRM-BUTTON.TITLE` | `str` | Any string text | `'&a&lConfirm Sell'` | Name of the Confirm Sell button. `{price}` is the compact total of what is in the grid, `{price_formatted}` is the full money format. |
+| `SELL-MENU.CONFIRM-BUTTON.LORE` | `list` | List of configured items/strings | `['&a{price_formatted}']` | Lore under the Confirm Sell button. It is rewritten as items are added or taken out, using the same `{price}` and `{price_formatted}` placeholders as the title. The total includes sell multipliers. |
 | `SELL-MENU.CROPS-BUTTON.MATERIAL` | `str` | Any string text | `'WHEAT'` | Configures the technical `MATERIAL` parameter for `SELL-MENU.CROPS-BUTTON.MATERIAL` in `menus.yml`. |
 | `SELL-MENU.CROPS-BUTTON.TITLE` | `str` | Any string text | `'&#6BF18DCrops'` | Configures the technical `TITLE` parameter for `SELL-MENU.CROPS-BUTTON.TITLE` in `menus.yml`. |
 | `SELL-MENU.CROPS-BUTTON.LORE` | `list` | List of configured items/strings | `[&7Sell crops and farming materials to, &7upgrade your sell multiplier!, ...]` | Configures the technical `LORE` parameter for `SELL-MENU.CROPS-BUTTON.LORE` in `menus.yml`. |
@@ -1728,6 +1736,11 @@ SELL-MENU:
   MULTIPLIER-TITLE: '&8Sell Multipliers'
   AUTO-SELL: true
   MODE: 'confirm'
+  CONFIRM-BUTTON:
+    MATERIAL: LIME_STAINED_GLASS_PANE
+    TITLE: '&a&lConfirm Sell'
+    LORE:
+    - '&a{price_formatted}'
   CROPS-BUTTON:
     MATERIAL: WHEAT
     TITLE: '&#6BF18DCrops'
