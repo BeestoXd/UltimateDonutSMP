@@ -358,13 +358,11 @@ public class ShopMenu extends BaseMenu {
                 : item.pricePerUnit();
         String formattedPrice = plugin.getCurrencyManager().format(currencyType, price);
         String rawPrice = plugin.getCurrencyManager().formatAmount(currencyType, price);
-        String result = plugin.getCurrencyManager().applyStaticPlaceholders(line)
-                .replace("{price_formatted}", formattedPrice)
-                .replace("%price_formatted%", formattedPrice)
-                .replace("${price_formatted}", formattedPrice)
-                .replace("${price}", formattedPrice)
-                .replace("{price}", rawPrice)
-                .replace("%price%", rawPrice);
+        String result = replacePricePlaceholders(
+                plugin.getCurrencyManager().applyStaticPlaceholders(line),
+                rawPrice,
+                formattedPrice
+        );
 
         String normalizedLine = ColorUtils.normalizeLabel(line);
         if ((normalizedLine.contains("buy price:") || normalizedLine.contains("harga beli:")) && !line.contains("{price")) {
@@ -374,6 +372,19 @@ public class ShopMenu extends BaseMenu {
             }
         }
         return result;
+    }
+
+    static String replacePricePlaceholders(String line, String rawPrice, String formattedPrice) {
+        if (line == null || line.isEmpty()) {
+            return "";
+        }
+        return line
+                .replace("${price_formatted}", formattedPrice)
+                .replace("{price_formatted}", formattedPrice)
+                .replace("%price_formatted%", formattedPrice)
+                .replace("${price}", formattedPrice)
+                .replace("{price}", rawPrice)
+                .replace("%price%", rawPrice);
     }
 
     private void buildBackButton() {
