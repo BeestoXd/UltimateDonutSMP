@@ -50,6 +50,7 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
     private boolean teleportWarned;
     private boolean velocityWarned;
     private boolean noGravityWarned;
+    private boolean spawnWarned;
 
     FakePlayerProtocolLibBridge(UltimateDonutSmp plugin, FakePlayerManager fakePlayerManager) {
         this.plugin = plugin;
@@ -973,7 +974,16 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
     }
 
     private void sendSpawnPackets(Player viewer, FakePlayerSession fakePlayer) {
-        send(viewer, createSpawnEntity(fakePlayer));
+        try {
+            send(viewer, createSpawnEntity(fakePlayer));
+        } catch (RuntimeException error) {
+            if (!spawnWarned) {
+                spawnWarned = true;
+                plugin.getLogger().log(Level.WARNING,
+                        "Unable to spawn fakeplayer on this ProtocolLib/server build.", error);
+            }
+            return;
+        }
         sendNoGravityMetadata(viewer, fakePlayer);
         sendMetadata(viewer, fakePlayer);
         scheduleMetadataRefresh(viewer, fakePlayer);
@@ -1153,12 +1163,14 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
         PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
         packet.getModifier().writeDefaults();
         packet.getIntegers().write(0, fakePlayer.entityId());
-        if (packet.getIntegers().size() > 1) {
-            packet.getIntegers().write(1, 0);
-        }
         packet.getUUIDs().write(0, fakePlayer.fakeUuid());
-        if (packet.getEntityTypeModifier().size() > 0) {
-            packet.getEntityTypeModifier().write(0, EntityType.PLAYER);
+        boolean wroteBukkitType = writeBukkitPlayerEntityType(packet);
+        boolean wroteNativeType = writeNativePlayerEntityType(packet);
+        if (!wroteBukkitType && !wroteNativeType) {
+            throw new IllegalStateException("SPAWN_ENTITY packet has no supported player entity type field.");
+        }
+        if (wroteBukkitType && packet.getIntegers().size() > 1) {
+            packet.getIntegers().write(1, 0);
         }
         packet.getDoubles().write(0, location.getX());
         packet.getDoubles().write(1, location.getY());
@@ -1167,6 +1179,146 @@ final class FakePlayerProtocolLibBridge implements FakePlayerPacketBridge {
         writeByte(packet, 1, angle(location.getYaw()));
         writeByte(packet, 2, angle(location.getYaw()));
         return packet;
+    }
+
+    private boolean writeBukkitPlayerEntityType(PacketContainer packet) {
+        boolean written = false;
+        if (packet.getEntityTypeModifier().size() > 0) {
+            packet.getEntityTypeModifier().write(0, EntityType.PLAYER);
+            written = true;
+        }
+        return writeRawAssignable(packet, EntityType.class, EntityType.PLAYER) || written;
+    }
+
+    private boolean writeNativePlayerEntityType(PacketContainer packet) {
+        Object craftType = resolveCraftPlayerEntityType();
+        boolean written = writeCompatiblePacketField(packet, craftType);
+
+        Object nmsType = unwrapHolderValue(craftType);
+        if (nmsType == null) {
+            nmsType = readNmsPlayerTypeField();
+        }
+        if (nmsType != null && nmsType != craftType) {
+            written = writeCompatiblePacketField(packet, nmsType) || written;
+        }
+
+        Object holder = wrapHolderDirect(nmsType);
+        if (holder != null && holder != craftType && holder != nmsType) {
+            written = writeCompatiblePacketField(packet, holder) || written;
+        }
+        return written;
+    }
+
+    private Object resolveCraftPlayerEntityType() {
+        Class<?> craft = findFirstClass(
+                "org.bukkit.craftbukkit.entity.CraftEntityType",
+                "org.bukkit.craftbukkit.util.CraftMagicNumbers"
+        );
+        if (craft == null) {
+            return null;
+        }
+
+        for (String methodName : List.of(
+                "bukkitToMinecraft",
+                "bukkitToMinecraftHolder",
+                "getEntityType",
+                "getNMSEntityType"
+        )) {
+            try {
+                for (Method method : findMethods(craft, methodName, 1)) {
+                    if (!method.getParameterTypes()[0].isAssignableFrom(EntityType.class)) {
+                        continue;
+                    }
+                    method.setAccessible(true);
+                    Object result = method.invoke(null, EntityType.PLAYER);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
+            }
+        }
+        return null;
+    }
+
+    private Object readNmsPlayerTypeField() {
+        Class<?> nms = findFirstClass(
+                "net.minecraft.world.entity.EntityType",
+                "net.minecraft.world.entity.EntityTypes"
+        );
+        if (nms == null) {
+            return null;
+        }
+
+        for (Field field : nms.getFields()) {
+            if (!"PLAYER".equals(field.getName()) && !"player".equals(field.getName())) {
+                continue;
+            }
+            try {
+                Object value = field.get(null);
+                if (value != null) {
+                    return value;
+                }
+            } catch (IllegalAccessException ignored) {
+            }
+        }
+        return null;
+    }
+
+    private Object unwrapHolderValue(Object maybeHolder) {
+        if (maybeHolder == null) {
+            return null;
+        }
+
+        for (String methodName : List.of("value", "valueOrThrow", "unwrap")) {
+            try {
+                Method method = maybeHolder.getClass().getMethod(methodName);
+                if (method.getParameterCount() != 0) {
+                    continue;
+                }
+                Object value = method.invoke(maybeHolder);
+                if (value != null && value != maybeHolder) {
+                    return value;
+                }
+            } catch (ReflectiveOperationException ignored) {
+            }
+        }
+        return maybeHolder;
+    }
+
+    private Object wrapHolderDirect(Object nmsType) {
+        if (nmsType == null) {
+            return null;
+        }
+
+        Class<?> holder = findFirstClass("net.minecraft.core.Holder");
+        if (holder == null) {
+            return null;
+        }
+
+        try {
+            Method direct = holder.getMethod("direct", Object.class);
+            return direct.invoke(null, nmsType);
+        } catch (ReflectiveOperationException ignored) {
+            return null;
+        }
+    }
+
+    private boolean writeCompatiblePacketField(PacketContainer packet, Object value) {
+        if (value == null) {
+            return false;
+        }
+
+        StructureModifier<Object> modifier = packet.getModifier();
+        boolean written = false;
+        for (int index = 0; index < modifier.size(); index++) {
+            Field field = modifier.getField(index);
+            if (field != null && field.getType().isInstance(value)) {
+                modifier.write(index, value);
+                written = true;
+            }
+        }
+        return written;
     }
 
     private PacketContainer createNamedEntitySpawn(FakePlayerSession fakePlayer) {
