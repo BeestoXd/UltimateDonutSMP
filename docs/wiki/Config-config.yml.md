@@ -302,7 +302,7 @@ SETTINGS:
 | `SETTINGS.SHARDS-KILL-COOLDOWN-SECONDS` | `int` | Any valid integer number | `'600'` | Time a killer must wait before the same victim rewards shards again. Set to `0` to reward every kill. |
 | `SETTINGS.SHARDS-KILL-COOLDOWN-MESSAGE` | `str` | Any string text | `'&cNo Shard &7(killed recently, {time} left)'` | Action bar shown when a kill reward is skipped by the cooldown. Supports `{time}` and `{seconds}`. Leave empty to stay silent. |
 | `SETTINGS.MONEY-PER-DEFAULT` | `float` | Any decimal number | `'1000.0'` | Configures the technical `MONEY-PER-DEFAULT` parameter for `SETTINGS.MONEY-PER-DEFAULT` in `config.yml`. |
-| `SETTINGS.SELL-MESSAGE` | `str` | Any string text | `'&a+$%price%'` | Configures the technical `SELL-MESSAGE` parameter for `SETTINGS.SELL-MESSAGE` in `config.yml`. |
+| `SETTINGS.SELL-MESSAGE` | `str` | Any string text | `'&a+$%price%'` | Action bar shown when a player sells items. `%price%` / `{price}` is the compact amount; `%price_formatted%` / `{price_formatted}` is the full money format. |
 | `SETTINGS.SPAWN-MENU` | `bool` | `true`, `false` | `true` | Configures the technical `SPAWN-MENU` parameter for `SETTINGS.SPAWN-MENU` in `config.yml`. |
 | `SETTINGS.AFK-MENU` | `bool` | `true`, `false` | `true` | Configures the technical `AFK-MENU` parameter for `SETTINGS.AFK-MENU` in `config.yml`. |
 | `SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN` | `bool` | `true`, `false` | `true` | Teleports a player to the spawn location the first time they join. Does nothing until `/setspawn` has been run. Ignored while `FIRST-JOIN-RTP.ENABLED` is `true`. |

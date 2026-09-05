@@ -267,14 +267,7 @@ public class SellMenu extends BaseMenu {
     }
 
     static String applyPricePlaceholders(String text, String compactPrice, String formattedPrice) {
-        if (text == null || text.isEmpty()) {
-            return "";
-        }
-        return text
-                .replace("{price_formatted}", formattedPrice)
-                .replace("%price_formatted%", formattedPrice)
-                .replace("{price}", compactPrice)
-                .replace("%price%", compactPrice);
+        return ShopManager.applySellPricePlaceholders(text, compactPrice, formattedPrice);
     }
 
     static List<String> applyPricePlaceholders(List<String> lines, String compactPrice, String formattedPrice) {
