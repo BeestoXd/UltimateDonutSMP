@@ -270,3 +270,7 @@ MESSAGES:
   CUSTOM-ITEM-NO-TARGET: '&cRight-click a player to use this tool.'
   # The text or value for Reload Success. Available options: Any valid string text
   RELOAD-SUCCESS: '&aStaff mode config reloaded.'
+FAKE-PLAYER:
+  # When true, /fakeplayer uses Minecraft's default Steve/Alex skin instead of the staff member's.
+  # Available options: true, false
+  USE-DEFAULT-SKIN: false

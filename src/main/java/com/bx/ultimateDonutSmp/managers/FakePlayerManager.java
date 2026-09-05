@@ -2,6 +2,7 @@ package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.FakePlayerSkinPolicy;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -67,6 +68,7 @@ public class FakePlayerManager {
     private boolean logToConsole;
     private boolean hideFromTablist;
     private SkinSourceMode skinSourceMode;
+    private boolean useDefaultSkin;
     private boolean lockAirPosition;
     private boolean simulatePhysics;
     private boolean hitResponseEnabled;
@@ -120,12 +122,16 @@ public class FakePlayerManager {
         return val;
     }
 
-    public SpawnResult spawn(Player creator) {
-        return spawnWithTexture(creator, null);
+    public boolean usesDefaultSkin() {
+        return useDefaultSkin;
     }
 
-    private SpawnResult spawnWithTexture(Player creator, TablistManager.SkinTexture skinTexture) {
-        return spawnWithTexture(creator, skinTexture, configBoolean("REQUIRE-SKIN-TEXTURE", true));
+    public SpawnResult spawn(Player creator) {
+        return spawnWithTexture(
+                creator,
+                null,
+                FakePlayerSkinPolicy.requireCreatorSkinTexture(
+                        useDefaultSkin, configBoolean("REQUIRE-SKIN-TEXTURE", true)));
     }
 
     private SpawnResult spawnWithTexture(
@@ -200,12 +206,18 @@ public class FakePlayerManager {
             return;
         }
 
-        boolean requireSkinTexture = configBoolean("REQUIRE-SKIN-TEXTURE", true);
-
         if (creator == null || !isAvailable() || !isEnabled()) {
             callback.accept(spawn(creator));
             return;
         }
+
+        if (!FakePlayerSkinPolicy.shouldCopyCreatorSkin(useDefaultSkin)) {
+            callback.accept(spawnWithTexture(creator, null, false));
+            return;
+        }
+
+        boolean requireSkinTexture = FakePlayerSkinPolicy.requireCreatorSkinTexture(
+                useDefaultSkin, configBoolean("REQUIRE-SKIN-TEXTURE", true));
 
         UUID creatorId = creator.getUniqueId();
         String creatorName = creator.getName();
@@ -336,6 +348,7 @@ public class FakePlayerManager {
         }
         logToConsole = configBoolean("LOG-TO-CONSOLE", true);
         skinSourceMode = SkinSourceMode.fromConfig(configString("SKIN-SOURCE-MODE", "AUTO"));
+        useDefaultSkin = configBoolean("USE-DEFAULT-SKIN", false);
         simulatePhysics = configBoolean("SIMULATE-PHYSICS", true);
         lockAirPosition = configBoolean("LOCK-AIR-POSITION", false) && !simulatePhysics;
         hitResponseEnabled = configBoolean("HIT-RESPONSE.ENABLED", true);
