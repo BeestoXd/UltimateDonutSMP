@@ -274,3 +274,6 @@ FAKE-PLAYER:
   # When true, /fakeplayer uses Minecraft's default Steve/Alex skin instead of the staff member's.
   # Available options: true, false
   USE-DEFAULT-SKIN: false
+  # When true, /fakeplayer does not copy the staff member's username, so prefix, suffix, and money text stay off the head.
+  # Available options: true, false
+  HIDE-NAMETAG: true

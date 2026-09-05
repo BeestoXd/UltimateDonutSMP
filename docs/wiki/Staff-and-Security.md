@@ -140,7 +140,7 @@ Spawns fake hidden chests populated with high-tier loot under spawn or wild area
 - Commands: `/spawnstash setup`, `/spawnstash list`, `/spawnstash give`.
 
 ### 2. Fake Player Bait (`/fakeplayer`)
-Spawns a short-lived player bait at your feet. It copies your skin unless `FAKE-PLAYER.USE-DEFAULT-SKIN` is `true` in `staff-mode.yml`, in which case every bait uses Minecraft's default Steve or Alex skin.
+Spawns a short-lived player bait at your feet. It copies your skin unless `FAKE-PLAYER.USE-DEFAULT-SKIN` is `true` in `staff-mode.yml`, in which case every bait uses Minecraft's default Steve or Alex skin. `HIDE-NAMETAG: true` (the bundled default) keeps prefix, name, and money text off the bait's head.
 
 ### 3. Spawner Anti-ESP
 Hides spawner block packet data from players beyond visual raycast distance to prevent X-Ray / ESP client hacks from discovering spawner coordinates.
