@@ -756,6 +756,15 @@ FAKE-PLAYER:
   # When true, /fakeplayer does not copy the staff member's username, so prefix, suffix, and money text stay off the head.
   # Available options: true, false
   HIDE-NAMETAG: true
+  # When true, the bait crouches like DonutSMP. Crouching also hides leftover nametags on most clients.
+  # Available options: true, false
+  SNEAK: true
+  # When true, /fakeplayer appears at the block or point you are looking at instead of at your feet.
+  # Available options: true, false
+  SPAWN-AT-LOOK-TARGET: true
+  # How far, in blocks, to search for the block you are looking at.
+  # Available options: Any decimal number 1.0 or greater
+  LOOK-RANGE: 32.0
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -764,6 +773,9 @@ FAKE-PLAYER:
 | :--- | :--- | :--- | :--- | :--- |
 | `FAKE-PLAYER.USE-DEFAULT-SKIN` | `bool` | `true`, `false` | `false` | When `true`, every `/fakeplayer` bait uses Minecraft's default Steve or Alex skin. When `false`, the bait copies the staff member who ran the command. |
 | `FAKE-PLAYER.HIDE-NAMETAG` | `bool` | `true`, `false` | `true` | When `true`, `/fakeplayer` does not copy the staff member's username, so LuckPerms prefix/suffix and below-name money stay off the bait. Set `false` if you want the old labeled look. |
+| `FAKE-PLAYER.SNEAK` | `bool` | `true`, `false` | `true` | When `true`, the bait crouches. That matches DonutSMP and hides leftover nametags on most clients. |
+| `FAKE-PLAYER.SPAWN-AT-LOOK-TARGET` | `bool` | `true`, `false` | `true` | When `true`, `/fakeplayer` appears at the block or point you are looking at. When `false`, it still appears at your feet. |
+| `FAKE-PLAYER.LOOK-RANGE` | `decimal` | `1.0` or greater | `32.0` | How far, in blocks, to search for the block you are looking at. Looking at empty air places the bait a short way along your view instead of at your feet. |
 
 ### 3. Practical Setup Example
 
@@ -771,6 +783,9 @@ FAKE-PLAYER:
 FAKE-PLAYER:
   USE-DEFAULT-SKIN: true
   HIDE-NAMETAG: true
+  SNEAK: true
+  SPAWN-AT-LOOK-TARGET: true
+  LOOK-RANGE: 32.0
 ```
 
 ---

@@ -20,6 +20,7 @@ final class FakePlayerSession {
     private final String profileName;
     private final String displayName;
     private final Location location;
+    private final boolean sneaking;
     private Location visualLocation;
     private Vector visualVelocity = new Vector(0D, 0D, 0D);
     private boolean visualOnGround;
@@ -43,6 +44,7 @@ final class FakePlayerSession {
             String profileName,
             String displayName,
             Location location,
+            boolean sneaking,
             long createdAtMillis,
             long expiresAtMillis
     ) {
@@ -55,6 +57,7 @@ final class FakePlayerSession {
         this.profileName = profileName;
         this.displayName = displayName;
         this.location = location.clone();
+        this.sneaking = sneaking;
         this.visualLocation = location.clone();
         this.createdAtMillis = createdAtMillis;
         this.expiresAtMillis = expiresAtMillis;
@@ -96,9 +99,21 @@ final class FakePlayerSession {
         return location.clone();
     }
 
+    boolean sneaking() {
+        return sneaking;
+    }
+
+    double eyeHeight() {
+        return sneaking ? 1.27D : 1.62D;
+    }
+
+    double hitboxHalfHeight() {
+        return sneaking ? 0.75D : 0.9D;
+    }
+
     Location eyeLocation() {
         Location eye = location.clone();
-        eye.add(0D, 1.62D, 0D);
+        eye.add(0D, eyeHeight(), 0D);
         return eye;
     }
 
@@ -108,7 +123,7 @@ final class FakePlayerSession {
 
     Location visualEyeLocation() {
         Location eye = visualLocation.clone();
-        eye.add(0D, 1.62D, 0D);
+        eye.add(0D, eyeHeight(), 0D);
         return eye;
     }
 
