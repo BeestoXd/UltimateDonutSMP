@@ -959,7 +959,7 @@ MENUS:
     CONFIRM-BUTTON:
       TITLE: "&a&lConfirm sell"
       LORE:
-      - "&7Click to sell all items in the menu."
+      - "&a{price_formatted}"
     CROPS-BUTTON:
       TITLE: "&#6BF18DCrops"
       LORE:

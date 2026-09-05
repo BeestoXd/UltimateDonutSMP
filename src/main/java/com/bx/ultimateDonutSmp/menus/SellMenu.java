@@ -63,13 +63,21 @@ public class SellMenu extends BaseMenu {
 
     private void buildConfirmSellGUI(Player player) {
         FileConfiguration menus = plugin.getConfigManager().getMenus();
-        
+        double total = plugin.getShopManager().previewInventoryContents(player, inventory, 0, getSellableSlotEnd());
+        String compactPrice = plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, total);
+        String formattedPrice = plugin.getCurrencyManager().formatMoney(total);
+
         Material material = ItemUtils.parseMaterial(menus.getString("SELL-MENU.CONFIRM-BUTTON.MATERIAL", "LIME_STAINED_GLASS_PANE"));
-        String title = menus.getString("SELL-MENU.CONFIRM-BUTTON.TITLE", "&a&lConfirm sell");
-        List<String> lore = menus.getStringList("SELL-MENU.CONFIRM-BUTTON.LORE");
-        if (lore.isEmpty()) {
-            lore = List.of("&7Click to sell all items in the menu.");
-        }
+        String title = applyPricePlaceholders(
+                menus.getString("SELL-MENU.CONFIRM-BUTTON.TITLE", "&a&lConfirm sell"),
+                compactPrice,
+                formattedPrice
+        );
+        List<String> lore = applyPricePlaceholders(
+                resolveConfirmLore(menus.getStringList("SELL-MENU.CONFIRM-BUTTON.LORE")),
+                compactPrice,
+                formattedPrice
+        );
         set(53, ItemUtils.createItem(material, title, lore));
     }
 
@@ -83,6 +91,7 @@ public class SellMenu extends BaseMenu {
                         plugin.getConfigManager().getMessage("WORTH.NO-SELLABLE", "&cThis item is not sellable.")
                 ));
             }
+            buildConfirmSellGUI(player);
             return;
         }
 
@@ -113,7 +122,7 @@ public class SellMenu extends BaseMenu {
         if (rawSlot >= 0 && rawSlot < inventory.getSize()) {
             if (isSellableSlot(rawSlot)) {
                 event.setCancelled(false);
-                if (autoSell) {
+                if (autoSell || confirmMode) {
                     scheduleProcessing(player);
                 }
                 return;
@@ -129,7 +138,7 @@ public class SellMenu extends BaseMenu {
         }
 
         event.setCancelled(false);
-        if (autoSell) {
+        if (autoSell || confirmMode) {
             scheduleProcessing(player);
         }
     }
@@ -143,7 +152,7 @@ public class SellMenu extends BaseMenu {
         }
 
         event.setCancelled(false);
-        if (isAutoSellEnabled() && event.getWhoClicked() instanceof Player player) {
+        if ((isAutoSellEnabled() || confirmMode) && event.getWhoClicked() instanceof Player player) {
             scheduleProcessing(player);
         }
     }
@@ -182,8 +191,12 @@ public class SellMenu extends BaseMenu {
                 return;
             }
 
-            plugin.getShopManager().sellInventoryContents(player, inventory, 0, getSellableSlotEnd());
-            refreshMultiplierButtons(player);
+            if (isAutoSellEnabled()) {
+                plugin.getShopManager().sellInventoryContents(player, inventory, 0, getSellableSlotEnd());
+                refreshMultiplierButtons(player);
+            } else if (confirmMode) {
+                buildConfirmSellGUI(player);
+            }
             player.updateInventory();
         }, PROCESS_DELAY_TICKS);
     }
@@ -240,6 +253,34 @@ public class SellMenu extends BaseMenu {
                 mode,
                 plugin.getConfigManager().getMenus().getBoolean("SELL-MENU.AUTO-SELL", true)
         );
+    }
+
+    static List<String> resolveConfirmLore(List<String> configured) {
+        if (configured == null || configured.isEmpty() || isLegacyConfirmLore(configured)) {
+            return List.of("&a{price_formatted}");
+        }
+        return configured;
+    }
+
+    static boolean isLegacyConfirmLore(List<String> lore) {
+        return lore.size() == 1 && "&7Click to sell all items in the menu.".equals(lore.get(0));
+    }
+
+    static String applyPricePlaceholders(String text, String compactPrice, String formattedPrice) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        return text
+                .replace("{price_formatted}", formattedPrice)
+                .replace("%price_formatted%", formattedPrice)
+                .replace("{price}", compactPrice)
+                .replace("%price%", compactPrice);
+    }
+
+    static List<String> applyPricePlaceholders(List<String> lines, String compactPrice, String formattedPrice) {
+        return lines.stream()
+                .map(line -> applyPricePlaceholders(line, compactPrice, formattedPrice))
+                .toList();
     }
 
     static boolean isConfirmMode(String mode) {
