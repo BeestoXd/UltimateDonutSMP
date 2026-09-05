@@ -742,3 +742,31 @@ MESSAGES:
 
 ---
 
+## Section: `FAKE-PLAYER`
+
+`/fakeplayer` copies the staff member's skin unless this is turned on. Minecraft then picks Steve or Alex from the bait's UUID, the same way it does for any player with no custom skin.
+
+### 1. Commented Setup Code Example
+
+```yaml
+FAKE-PLAYER:
+  # When true, /fakeplayer uses Minecraft's default Steve/Alex skin instead of the staff member's.
+  # Available options: true, false
+  USE-DEFAULT-SKIN: false
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `FAKE-PLAYER.USE-DEFAULT-SKIN` | `bool` | `true`, `false` | `false` | When `true`, every `/fakeplayer` bait uses Minecraft's default Steve or Alex skin. When `false`, the bait copies the staff member who ran the command. |
+
+### 3. Practical Setup Example
+
+```yaml
+FAKE-PLAYER:
+  USE-DEFAULT-SKIN: true
+```
+
+---
+

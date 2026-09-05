@@ -44,10 +44,12 @@ public class FakePlayerCommand implements CommandExecutor {
             return true;
         }
 
-        send(sender, manager.publicMessage(
-                "SKIN-LOOKUP",
-                "&7checking skin data..."
-        ));
+        if (!manager.usesDefaultSkin()) {
+            send(sender, manager.publicMessage(
+                    "SKIN-LOOKUP",
+                    "&7checking skin data..."
+            ));
+        }
         manager.spawnAsync(player, result -> send(sender, result.message()));
         return true;
     }

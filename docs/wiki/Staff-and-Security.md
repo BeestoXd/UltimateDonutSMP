@@ -139,8 +139,8 @@ Spawns fake hidden chests populated with high-tier loot under spawn or wild area
 - Alerts staff whenever an x-raying player digs directly to the bait chest.
 - Commands: `/spawnstash setup`, `/spawnstash list`, `/spawnstash give`.
 
-### 2. Fake Player Bait
-Generates invisible fake player entities around players suspected of using KillAura or Auto-Clickers.
+### 2. Fake Player Bait (`/fakeplayer`)
+Spawns a short-lived player bait at your feet. It copies your skin unless `FAKE-PLAYER.USE-DEFAULT-SKIN` is `true` in `staff-mode.yml`, in which case every bait uses Minecraft's default Steve or Alex skin.
 
 ### 3. Spawner Anti-ESP
 Hides spawner block packet data from players beyond visual raycast distance to prevent X-Ray / ESP client hacks from discovering spawner coordinates.
