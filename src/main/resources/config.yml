@@ -129,6 +129,11 @@ SETTINGS:
   # player joins before sending them to spawn. Raise it when another plugin moves players
   # around on join. Available options: Any valid integer
   FIRST-JOIN-SPAWN-DELAY-TICKS: 20
+  # Writes a [JOIN] or [QUIT] line into the server log when a player connects or
+  # disconnects. Independent of the in-game join and leave messages, so staff can
+  # still see traffic in latest.log after those chat lines are turned off.
+  # Available options: true, false
+  LOG-JOIN-QUIT: true
   # The decimal value for Worth Default Value. Available options: Any decimal number
   WORTH-DEFAULT-VALUE: 1.0
   # The numerical value for Mob Spawn Radius. Available options: Any valid integer
