@@ -189,10 +189,10 @@ public class BountyMenu extends BaseMenu {
         String playerName = plugin.getBountyManager().getDisplayName(bounty.getTargetUuid());
         String displayName = menus.getString("BOUNTIES-MENU.BOUNTY-BUTTON.NAME", "&#6BF18D{player}")
                 .replace("{player}", playerName);
+        String compactPrice = NumberUtils.format(bounty.getAmount());
+        String formattedPrice = plugin.getCurrencyManager().formatMoney(bounty.getAmount());
         List<String> lore = menus.getStringList("BOUNTIES-MENU.BOUNTY-BUTTON.LORE").stream()
-                .map(line -> line.replace("{player}", playerName)
-                        .replace("{price}", NumberUtils.format(bounty.getAmount()))
-                        .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(bounty.getAmount())))
+                .map(line -> replaceBountyPlaceholders(line, playerName, compactPrice, formattedPrice))
                 .toList();
 
         Material material = ItemUtils.parseMaterial(
@@ -211,6 +211,16 @@ public class BountyMenu extends BaseMenu {
         meta.setOwningPlayer(resolveOfflinePlayer(bounty.getTargetUuid()));
         item.setItemMeta(meta);
         return item;
+    }
+
+    static String replaceBountyPlaceholders(String line, String playerName, String compactPrice, String formattedPrice) {
+        if (line == null || line.isEmpty()) {
+            return "";
+        }
+        return line
+                .replace("{player}", playerName)
+                .replace("{price_formatted}", formattedPrice)
+                .replace("{price}", compactPrice);
     }
 
     private void buildRefreshButton(FileConfiguration menus) {

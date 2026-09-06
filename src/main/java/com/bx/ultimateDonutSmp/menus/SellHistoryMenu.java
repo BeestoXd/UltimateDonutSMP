@@ -160,14 +160,24 @@ public class SellHistoryMenu extends BaseMenu {
     ) {
         Material material = ItemUtils.parseMaterial(entry.itemName());
         String displayName = "&f" + toDisplayName(entry.itemName());
+        String compactPrice = plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, entry.price());
+        String formattedPrice = plugin.getCurrencyManager().formatMoney(entry.price());
+        String amount = NumberUtils.format(entry.amount());
         List<String> lore = menus.getStringList("SELL-HISTORY-MENU.BUTTONS.MATERIAL-ITEM.LORE").stream()
-                .map(line -> line
-                        .replace("{price}", plugin.getCurrencyManager().formatCompactAmount(CurrencyManager.CurrencyType.MONEY, entry.price()))
-                        .replace("{price_formatted}", plugin.getCurrencyManager().formatMoney(entry.price()))
-                        .replace("{amount}", NumberUtils.format(entry.amount())))
+                .map(line -> replaceHistoryPlaceholders(line, compactPrice, formattedPrice, amount))
                 .toList();
 
         return ItemUtils.createItem(material, displayName, lore);
+    }
+
+    static String replaceHistoryPlaceholders(String line, String compactPrice, String formattedPrice, String amount) {
+        if (line == null || line.isEmpty()) {
+            return "";
+        }
+        return line
+                .replace("{price_formatted}", formattedPrice)
+                .replace("{price}", compactPrice)
+                .replace("{amount}", amount);
     }
 
     private String toDisplayName(String value) {
