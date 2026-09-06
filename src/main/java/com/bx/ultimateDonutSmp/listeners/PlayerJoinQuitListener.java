@@ -26,6 +26,7 @@ public class PlayerJoinQuitListener implements Listener {
 
     static final long DEFAULT_FIRST_JOIN_SPAWN_DELAY_TICKS = 20L;
     static final long MAX_FIRST_JOIN_SPAWN_DELAY_TICKS = 1200L;
+    static final String JOIN_QUIT_LOG_PATH = "SETTINGS.LOG-JOIN-QUIT";
     private static final long FIRST_JOIN_SPAWN_RETRY_DELAY_TICKS = 20L;
 
     private final UltimateDonutSmp plugin;
@@ -86,6 +87,7 @@ public class PlayerJoinQuitListener implements Listener {
         Player player = event.getPlayer();
         String joinMsg = event.getJoinMessage();
         event.setJoinMessage(null);
+        logJoinQuit("JOIN", player);
 
         // 1. Maintenance checkmode
         if (plugin.getMaintenanceManager() != null && plugin.getMaintenanceManager().isMaintenanceActive()) {
@@ -334,6 +336,28 @@ public class PlayerJoinQuitListener implements Listener {
         return Math.max(1L, Math.min(MAX_FIRST_JOIN_SPAWN_DELAY_TICKS, configured));
     }
 
+    /**
+     * A greppable join or quit line for latest.log. Chat join and leave messages never
+     * reach the console because they are resent per player, so this is the staff-facing
+     * record of who connected. Uses the real name, not a vanished disguise.
+     */
+    static String joinQuitLogLine(String kind, String playerName) {
+        if (kind == null || kind.isBlank() || playerName == null || playerName.isBlank()) {
+            return null;
+        }
+        return "[" + kind + "] " + playerName;
+    }
+
+    private void logJoinQuit(String kind, Player player) {
+        if (!plugin.getConfigManager().getConfig().getBoolean(JOIN_QUIT_LOG_PATH, true)) {
+            return;
+        }
+        String line = joinQuitLogLine(kind, player.getName());
+        if (line != null) {
+            plugin.getLogger().info(line);
+        }
+    }
+
     static boolean deniesMaintenanceLogin(boolean maintenanceActive, boolean hasBypass, boolean hasLobbyDestination) {
         return maintenanceActive && !hasBypass && !hasLobbyDestination;
     }
@@ -366,6 +390,7 @@ public class PlayerJoinQuitListener implements Listener {
         Player player = event.getPlayer();
         String quitMsg = event.getQuitMessage();
         event.setQuitMessage(null);
+        logJoinQuit("QUIT", player);
 
         TitleUtils.cancelPendingReset(player.getUniqueId());
         plugin.getNetworkStaffChatManager().handleStaffLeave(player);

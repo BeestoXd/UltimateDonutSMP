@@ -545,6 +545,11 @@ SETTINGS:
   # player joins before sending them to spawn. Raise it when another plugin moves players
   # around on join. Available options: Any valid integer
   FIRST-JOIN-SPAWN-DELAY-TICKS: 20
+  # Writes a [JOIN] or [QUIT] line into the server log when a player connects or
+  # disconnects. Independent of the in-game join and leave messages, so staff can
+  # still see traffic in latest.log after those chat lines are turned off.
+  # Available options: true, false
+  LOG-JOIN-QUIT: true
   # The decimal value for Worth Default Value. Available options: Any decimal number
   WORTH-DEFAULT-VALUE: 1.0
   # The numerical value for Mob Spawn Radius. Available options: Any valid integer
@@ -583,6 +588,7 @@ SETTINGS:
 | `SETTINGS.AFK-MENU` | `bool` | true, false | `True` | Configures `AFK-MENU` for `SETTINGS`. |
 | `SETTINGS.TELEPORT-SPAWN-ON-FIRST-JOIN` | `bool` | true, false | `True` | Teleports a player to spawn on their first join. Needs `/setspawn` to have been run. Ignored while `FIRST-JOIN-RTP.ENABLED` is `true`. |
 | `SETTINGS.FIRST-JOIN-SPAWN-DELAY-TICKS` | `int` | Any valid integer | `20` | How long the plugin waits after the join before running that teleport. Values below `1` become `1`, anything above `1200` is capped there. |
+| `SETTINGS.LOG-JOIN-QUIT` | `bool` | true, false | `True` | Writes a `[JOIN] PlayerName` or `[QUIT] PlayerName` line into the server log on connect and disconnect. Uses the real name even if the player is vanished. Independent of the in-game join and leave messages, so turning those chat lines off still leaves the log record. |
 | `SETTINGS.WORTH-DEFAULT-VALUE` | `float` | Configured values | `1.0` | Configures `WORTH-DEFAULT-VALUE` for `SETTINGS`. |
 | `SETTINGS.MOB-SPAWN-RADIUS` | `int` | Any valid integer | `50` | Configures `MOB-SPAWN-RADIUS` for `SETTINGS`. |
 | `SETTINGS.PHANTOM-SPAWN-RADIUS` | `int` | Any valid integer | `40` | Configures `PHANTOM-SPAWN-RADIUS` for `SETTINGS`. |
