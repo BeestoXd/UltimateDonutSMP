@@ -179,13 +179,13 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>5.10.0</version>
+            <version>5.11.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>8.0.0</version>
+            <version>8.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
