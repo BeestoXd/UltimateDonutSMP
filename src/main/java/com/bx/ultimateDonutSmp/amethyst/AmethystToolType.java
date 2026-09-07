@@ -1,5 +1,7 @@
 package com.bx.ultimateDonutSmp.amethyst;
 
+import java.util.Locale;
+
 public enum AmethystToolType {
     DRILL("Amethyst Drill"),
     CHOPPER("Amethyst Tree Chopper"),
@@ -22,7 +24,7 @@ public enum AmethystToolType {
     public static AmethystToolType fromString(String name) {
         if (name == null) return null;
         try {
-            return valueOf(name.toUpperCase().replace(" ", "_").replace("-", "_"));
+            return valueOf(name.toUpperCase(Locale.ROOT).replace(" ", "_").replace("-", "_"));
         } catch (IllegalArgumentException e) {
             return null;
         }
