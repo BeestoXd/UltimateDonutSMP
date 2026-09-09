@@ -39,7 +39,7 @@ public final class AttributeUtils {
             if (value instanceof Attribute attribute) {
                 return attribute;
             }
-        } catch (ReflectiveOperationException | RuntimeException ignored) {
+        } catch (Throwable ignored) {
         }
 
         try {
@@ -47,7 +47,7 @@ public final class AttributeUtils {
             if (value instanceof Attribute attribute) {
                 return attribute;
             }
-        } catch (ReflectiveOperationException | RuntimeException ignored) {
+        } catch (Throwable ignored) {
         }
 
         return null;

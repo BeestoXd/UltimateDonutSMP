@@ -1784,17 +1784,18 @@ public class DuelManager {
             return;
         }
 
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null || location == null) {
+        Player initialPlayer = Bukkit.getPlayer(uuid);
+        if (initialPlayer == null || location == null) {
             // No destination or nobody to send there: the transition still has to be lifted,
             // otherwise the player keeps the duel damage immunity for the rest of the session.
             if (clearTransition) {
-                if (player == null) {
+                if (initialPlayer == null) {
                     clearTransitionTracking(uuid);
                 } else {
-                    plugin.getSpigotScheduler().runEntityLater(player, () -> {
-                        if (player.isOnline()) {
-                            restoreTransitionState(player);
+                    plugin.getSpigotScheduler().runGlobalLater(() -> {
+                        Player livePlayer = Bukkit.getPlayer(uuid);
+                        if (livePlayer != null && livePlayer.isOnline()) {
+                            restoreTransitionState(livePlayer);
                         } else {
                             clearTransitionTracking(uuid);
                         }
@@ -1804,8 +1805,9 @@ public class DuelManager {
             return;
         }
 
-        plugin.getSpigotScheduler().runEntityLater(player, () -> {
-            if (!player.isOnline()) {
+        plugin.getSpigotScheduler().runGlobalLater(() -> {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline()) {
                 if (clearTransition) {
                     clearTransitionTracking(uuid);
                 }
@@ -1818,20 +1820,28 @@ public class DuelManager {
                     plugin.getLogger().warning("Duel return teleport failed for " + player.getName()
                             + ": " + error.getMessage());
                 }
-                plugin.getSpigotScheduler().runEntity(player, () -> {
-                    if (!player.isOnline()) {
+                Runnable finishTask = () -> {
+                    Player livePlayer = Bukkit.getPlayer(uuid);
+                    if (livePlayer == null || !livePlayer.isOnline()) {
                         if (clearTransition) {
                             clearTransitionTracking(uuid);
                         }
                         return;
                     }
                     if (Boolean.TRUE.equals(success)) {
-                        healPlayer(player);
+                        healPlayer(livePlayer);
                     }
                     if (clearTransition) {
-                        restoreTransitionState(player);
+                        restoreTransitionState(livePlayer);
                     }
-                });
+                };
+
+                Player livePlayer = Bukkit.getPlayer(uuid);
+                if (livePlayer != null && livePlayer.isOnline()) {
+                    plugin.getSpigotScheduler().runEntity(livePlayer, finishTask);
+                } else {
+                    plugin.getSpigotScheduler().runGlobal(finishTask);
+                }
             });
         }, delayTicks);
     }
@@ -2179,6 +2189,9 @@ public class DuelManager {
         restoreTransitionState(player);
         player.setGameMode(GameMode.SURVIVAL);
         healPlayer(player);
+        if (!isProtectedByOtherFeature(player.getUniqueId())) {
+            player.setInvulnerable(false);
+        }
         applyArenaRules(player, arena);
         if (teleportLocation != null) {
             executeInternalTeleportAsync(player, teleportLocation);
@@ -3713,7 +3726,7 @@ public class DuelManager {
                 player.getGameMode(),
                 player.getAllowFlight(),
                 player.isFlying(),
-                player.isInvulnerable(),
+                isProtectedByOtherFeature(player.getUniqueId()),
                 player.isCollidable()
         ));
         applyTemporaryVanish(player);
@@ -3734,23 +3747,28 @@ public class DuelManager {
         }
 
         UUID uuid = player.getUniqueId();
+        Player livePlayer = Bukkit.getPlayer(uuid);
+        if (livePlayer != null && livePlayer.isOnline()) {
+            player = livePlayer;
+        }
+
         TransitionPlayerState state = transitionStates.remove(uuid);
         transitionDeadlines.remove(uuid);
         // Without a stored snapshot we fall back to plain survival defaults, so players kept
         // invulnerable by another feature are left alone instead of losing their god/staff mode.
-        boolean keepExternalProtection = state == null && isProtectedByOtherFeature(uuid);
+        boolean keepExternalProtection = isProtectedByOtherFeature(uuid);
         if (state == null) {
             state = new TransitionPlayerState(GameMode.SURVIVAL, false, false, false, true);
         }
-        if (!keepExternalProtection) {
-            if (player.getGameMode() != state.gameMode()) {
-                player.setGameMode(state.gameMode());
-            }
-            player.setAllowFlight(state.allowFlight());
-            player.setFlying(state.allowFlight() && state.flying());
-            player.setInvulnerable(state.invulnerable());
-            player.setCollidable(state.collidable());
+        if (player.getGameMode() != state.gameMode()) {
+            player.setGameMode(state.gameMode());
         }
+        player.setAllowFlight(state.allowFlight());
+        player.setFlying(state.allowFlight() && state.flying());
+        if (!keepExternalProtection) {
+            player.setInvulnerable(false);
+        }
+        player.setCollidable(state.collidable());
         player.resetPlayerTime();
         player.resetPlayerWeather();
         transitionTitles.remove(uuid);
@@ -3760,12 +3778,23 @@ public class DuelManager {
     }
 
     private boolean isProtectedByOtherFeature(UUID uuid) {
-        if (uuid == null) {
+        if (uuid == null || plugin == null) {
             return false;
         }
 
-        return (plugin.getGodModeManager() != null && plugin.getGodModeManager().isInGodMode(uuid))
-                || (plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isInStaffMode(uuid));
+        try {
+            if (plugin.getGodModeManager() != null && plugin.getGodModeManager().isInGodMode(uuid)) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            if (plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isInStaffMode(uuid)) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     private void armTransitionDeadline(UUID uuid) {
@@ -3790,6 +3819,11 @@ public class DuelManager {
         transitionStates.remove(uuid);
         transitionDeadlines.remove(uuid);
         transitionTitles.remove(uuid);
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null && player.isOnline() && !isProtectedByOtherFeature(uuid)) {
+            player.setInvulnerable(false);
+        }
     }
 
     /**

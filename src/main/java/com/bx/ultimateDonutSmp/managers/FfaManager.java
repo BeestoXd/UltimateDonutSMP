@@ -2326,17 +2326,25 @@ public class FfaManager {
                         plugin.getLogger().warning("FFA return teleport failed for " + player.getName()
                                 + ": " + error.getMessage());
                     }
-                    plugin.getSpigotScheduler().runEntity(player, () -> {
-                        if (!player.isOnline()) {
+                    Runnable finishTask = () -> {
+                        Player livePlayer = Bukkit.getPlayer(uuid);
+                        if (livePlayer == null || !livePlayer.isOnline()) {
                             clearTransitionTracking(uuid);
                             return;
                         }
                         if (Boolean.TRUE.equals(success)) {
-                            player.setNoDamageTicks(60);
+                            livePlayer.setNoDamageTicks(60);
                         }
-                        restoreTransitionState(player);
+                        restoreTransitionState(livePlayer);
                         updateCombatLock(uuid);
-                    });
+                    };
+
+                    Player livePlayer = Bukkit.getPlayer(uuid);
+                    if (livePlayer != null && livePlayer.isOnline()) {
+                        plugin.getSpigotScheduler().runEntity(livePlayer, finishTask);
+                    } else {
+                        plugin.getSpigotScheduler().runGlobal(finishTask);
+                    }
                 });
             });
         }, delayTicks);
@@ -2627,7 +2635,7 @@ public class FfaManager {
                 player.getGameMode(),
                 player.getAllowFlight(),
                 player.isFlying(),
-                player.isInvulnerable(),
+                isProtectedByOtherFeature(uuid),
                 player.isCollidable()
         ));
         applyTemporaryVanish(player);
@@ -2647,13 +2655,22 @@ public class FfaManager {
         }
 
         UUID uuid = player.getUniqueId();
+        Player livePlayer = Bukkit.getPlayer(uuid);
+        if (livePlayer != null && livePlayer.isOnline()) {
+            player = livePlayer;
+        }
+
         TransitionPlayerState state = transitionStates.remove(uuid);
         transitionDeadlines.remove(uuid);
+        boolean keepExternalProtection = isProtectedByOtherFeature(uuid);
         if (state == null) {
             transitionTitles.remove(uuid);
             transitioningPlayers.remove(uuid);
             TitleUtils.clearTitle(player);
             clearTemporaryVanish(player);
+            if (!keepExternalProtection) {
+                player.setInvulnerable(false);
+            }
             return;
         }
 
@@ -2662,12 +2679,34 @@ public class FfaManager {
         }
         player.setAllowFlight(state.allowFlight());
         player.setFlying(state.allowFlight() && state.flying());
-        player.setInvulnerable(state.invulnerable());
+        if (!keepExternalProtection) {
+            player.setInvulnerable(false);
+        }
         player.setCollidable(state.collidable());
         transitionTitles.remove(uuid);
         transitioningPlayers.remove(uuid);
         TitleUtils.clearTitle(player);
         clearTemporaryVanish(player);
+    }
+
+    private boolean isProtectedByOtherFeature(UUID uuid) {
+        if (uuid == null || plugin == null) {
+            return false;
+        }
+
+        try {
+            if (plugin.getGodModeManager() != null && plugin.getGodModeManager().isInGodMode(uuid)) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            if (plugin.getStaffModeManager() != null && plugin.getStaffModeManager().isInStaffMode(uuid)) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     private void armTransitionDeadline(UUID uuid) {
@@ -2692,6 +2731,11 @@ public class FfaManager {
         transitionStates.remove(uuid);
         transitionDeadlines.remove(uuid);
         transitionTitles.remove(uuid);
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null && player.isOnline() && !isProtectedByOtherFeature(uuid)) {
+            player.setInvulnerable(false);
+        }
     }
 
     /**
