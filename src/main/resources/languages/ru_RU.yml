@@ -237,6 +237,7 @@ MENUS:
       MONEY_CLAIM_NAME: "Получение {money_color}{money_name}"
       MONEY_CLAIM_LORE:
       - "&7Amount: {amount}"
+      - "&7Покупатель: &f{buyer}"
       - "&7Исходный список: &f#{id}"
       - ''
       - "&eНажмите, чтобы подать заявку"
@@ -1502,7 +1503,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&aПродано &f{buyer}&a."
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:

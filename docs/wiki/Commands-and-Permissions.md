@@ -38,7 +38,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/sellprogress` | `/sellprogress [category]` | None | Open sell multiplier progress menu | `ultimatedonutsmp.command.sellprogress` |
 | `/worth` | `/worth [hand]` | `/prices` | Check worth of held item or open price catalog | `ultimatedonutsmp.command.worth` |
 | `/meta` | `/meta` | `/farmingmeta` | Show the item that is currently the farming meta | `ultimatedonutsmp.command.meta` |
-| `/auctionhouse`| `/auctionhouse [sell\|my\|claims]`| `/ah` | Open Auction House marketplace | `ultimatedonutsmp.command.auctionhouse` |
+| `/auctionhouse`| `/auctionhouse [sell\|my\|claims\|history]`| `/ah` | Open Auction House marketplace | `ultimatedonutsmp.command.auctionhouse` |
 | `/orders` | `/orders [my\|collect]` | None | Open buy/sell Orders board | `ultimatedonutsmp.command.orders` |
 | `/enderchest` | `/enderchest` | `/ec` | Open custom Ender Chest | `ultimatedonutsmp.command.enderchest` |
 | `/crates` | `/crates` | None | Open crates overview menu | `ultimatedonutsmp.command.crates` |

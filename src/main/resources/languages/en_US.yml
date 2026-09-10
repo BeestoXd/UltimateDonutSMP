@@ -374,6 +374,7 @@ MENUS:
       MONEY_CLAIM_NAME: '{money_color}{money_name} Claim'
       MONEY_CLAIM_LORE:
       - '&7Amount: {amount}'
+      - '&7Buyer: &f{buyer}'
       - '&7Source listing: &f#{id}'
       - ''
       - '&eClick to claim'
@@ -1821,7 +1822,7 @@ CONFIG:
           - '&7Time remaining: &f{time}'
           - '&eClick to cancel this listing.'
           SOLD_LORE:
-          - '&aSold to another player.'
+          - '&aSold to &f{buyer}&a.'
           CANCELLED_LORE:
           - '&cCancelled.'
           EXPIRED_LORE:
