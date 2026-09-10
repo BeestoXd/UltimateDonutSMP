@@ -238,6 +238,7 @@ MENUS:
       MONEY_CLAIM_NAME: "{money_color}{money_name} Reclamación"
       MONEY_CLAIM_LORE:
       - "&7Cantidad: {amount}"
+      - "&7Comprador: &f{buyer}"
       - "&7Listado de fuentes: &f#{id}"
       - ''
       - "&eHaga clic para reclamar"
@@ -1503,7 +1504,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&aVendido a &f{buyer}&a."
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:

@@ -236,6 +236,7 @@ MENUS:
       MONEY_CLAIM_NAME: "领取 {money_color}{money_name}"
       MONEY_CLAIM_LORE:
       - "&7金额：{amount}"
+      - "&7买家：&f{buyer}"
       - "&7来源清单：&f#{id}"
       - ''
       - "&e点击领取"
@@ -1501,7 +1502,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&a已出售给 &f{buyer}&a。"
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:

@@ -374,6 +374,7 @@ MENUS:
       MONEY_CLAIM_NAME: "Klaim {money_color}{money_name}"
       MONEY_CLAIM_LORE:
       - "&7Jumlah: {amount}"
+      - "&7Pembeli: &f{buyer}"
       - "&7Daftar sumber: &f#{id}"
       - ''
       - "&eKlik untuk mengklaim"
@@ -1639,7 +1640,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&aTerjual ke &f{buyer}&a."
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:

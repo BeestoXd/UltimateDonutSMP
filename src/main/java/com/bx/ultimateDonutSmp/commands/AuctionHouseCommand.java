@@ -62,7 +62,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
                     handleSell(player, args);
                 }
             }
-            case "my" -> {
+            case "my", "history" -> {
                 if (requirePermission(player, "my")) {
                     openPlayerItems(player);
                 }
@@ -379,6 +379,7 @@ public final class AuctionHouseCommand implements CommandExecutor, TabCompleter 
         }
         if (canUse(player, "my")) {
             values.add("my");
+            values.add("history");
         }
         if (canUse(player, "limit")) {
             values.add("limit");

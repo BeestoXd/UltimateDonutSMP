@@ -65,6 +65,7 @@ Player-driven marketplace where players can list items for sale to other players
 - `/ah`: Open Auction House browser menu.
 - `/ah sell <price>`: List held item on the Auction House.
 - `/ah my`: View active personal listings.
+- `/ah history`: View personal listings and sales history.
 - `/ah claims`: Collect money earned from sold items or expired listings.
 - `/ah cancel`: Cancel active listing.
 
