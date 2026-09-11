@@ -542,9 +542,6 @@ public class SpawnerManager {
 
         plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
             syncSpawnerBlockStateImmediate(instance);
-            if (plugin.getAntiEspManager() != null) {
-                plugin.getAntiEspManager().refreshNearby(block.getLocation());
-            }
         });
 
         return new ActionResult(
@@ -593,9 +590,6 @@ public class SpawnerManager {
             temporarySpawnerIds.add(instance.getId());
         }
         syncSpawnerBlockStateImmediate(instance);
-        if (plugin.getAntiEspManager() != null) {
-            plugin.getAntiEspManager().refreshNearby(block.getLocation());
-        }
         return ok("&atemporary spawner registered.");
     }
 
@@ -617,9 +611,6 @@ public class SpawnerManager {
         unregisterSpawner(instance);
         synchronized (lock) {
             temporarySpawnerIds.remove(instance.getId());
-        }
-        if (block != null && plugin.getAntiEspManager() != null) {
-            plugin.getAntiEspManager().refreshNearby(block.getLocation());
         }
         return true;
     }
@@ -676,9 +667,6 @@ public class SpawnerManager {
         saveSpawnerAsync(existing);
         plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
             syncSpawnerBlockStateImmediate(existing);
-            if (plugin.getAntiEspManager() != null) {
-                plugin.getAntiEspManager().refreshNearby(block.getLocation());
-            }
         });
 
         return new ActionResult(true, "&aspawner stack updated to &f" + NumberUtils.format(existing.getStackAmount()) + "&a.", quantity);
@@ -829,11 +817,6 @@ public class SpawnerManager {
         if (isTemporarySpawner(instance)) {
             unregisterSpawner(instance);
             temporarySpawnerIds.remove(instance.getId());
-            plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
-                if (plugin.getAntiEspManager() != null) {
-                    plugin.getAntiEspManager().refreshNearby(block.getLocation());
-                }
-            });
             return new ActionResult(true, "&atemporary spawner removed.", 0, true);
         }
         if (instance == null) {
@@ -863,9 +846,6 @@ public class SpawnerManager {
             saveSpawnerAsync(instance);
             plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
                 syncSpawnerBlockStateImmediate(instance);
-                if (plugin.getAntiEspManager() != null) {
-                    plugin.getAntiEspManager().refreshNearby(block.getLocation());
-                }
             });
             fullyDestroyed = false;
         }
@@ -906,11 +886,6 @@ public class SpawnerManager {
             }
         }
 
-        plugin.getSpigotScheduler().runRegion(block.getLocation(), () -> {
-            if (plugin.getAntiEspManager() != null) {
-                plugin.getAntiEspManager().refreshNearby(block.getLocation());
-            }
-        });
         String verb = returnedItem ? "&apicked up &f" : "&aremoved &f";
         return new ActionResult(true, verb + NumberUtils.format(breakAmount) + "x "
                 + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.", (int) breakAmount, fullyDestroyed);
@@ -1209,13 +1184,6 @@ public class SpawnerManager {
             }
         }
 
-        if (world != null && actor != null && actor.getLocation().getWorld() == world) {
-            plugin.getSpigotScheduler().runRegion(getSpawnerCenter(instance), () -> {
-                if (plugin.getAntiEspManager() != null) {
-                    plugin.getAntiEspManager().refreshNearby(getSpawnerCenter(instance));
-                }
-            });
-        }
         return ok("&aspawner removed.");
     }
 
@@ -1550,45 +1518,6 @@ public class SpawnerManager {
         return world == null
                 ? new Location(Bukkit.getWorlds().isEmpty() ? null : Bukkit.getWorlds().getFirst(), 0, 0, 0)
                 : new Location(world, instance.getX() + 0.5D, instance.getY() + 0.5D, instance.getZ() + 0.5D);
-    }
-
-    public void sendSpawnerVisual(Player player, SpawnerInstance instance) {
-        if (player == null || !player.isOnline() || instance == null) {
-            return;
-        }
-
-        World world = player.getWorld();
-        if (world == null || !world.getName().equalsIgnoreCase(instance.getWorld())) {
-            return;
-        }
-
-        Block block = world.getBlockAt(instance.getX(), instance.getY(), instance.getZ());
-        if (block.getType() != Material.SPAWNER) {
-            return;
-        }
-
-        if (!(block.getState() instanceof CreatureSpawner spawnerState)) {
-            player.sendBlockChange(block.getLocation(), block.getBlockData());
-            return;
-        }
-
-        SpawnerTypeDefinition definition = getTypeDefinition(instance.getMobTypeKey());
-        if (definition == null) {
-            player.sendBlockChange(block.getLocation(), block.getBlockData());
-            return;
-        }
-
-        if (spawnerState.getSpawnedType() != definition.entityType()) {
-            spawnerState.setSpawnedType(definition.entityType());
-            spawnerState.update(true, false);
-        }
-
-        player.sendBlockChange(block.getLocation(), block.getBlockData());
-        try {
-            player.sendBlockUpdate(block.getLocation(), spawnerState);
-        } catch (IllegalArgumentException ignored) {
-            // The block can change between lookup and packet send; the block change above is still valid.
-        }
     }
 
     public boolean canOpen(Player player, SpawnerInstance instance) {

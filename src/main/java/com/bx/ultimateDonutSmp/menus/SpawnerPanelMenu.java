@@ -122,7 +122,6 @@ public class SpawnerPanelMenu extends BaseMenu {
                     }
                     player.sendMessage(ColorUtils.toComponent("&aTeleported to spawner at &f"
                             + instance.getX() + ", " + instance.getY() + ", " + instance.getZ() + "&a in &f" + worldLabel + "&a."));
-                    plugin.getAntiEspManager().updatePlayer(player);
                 }));
     }
 }

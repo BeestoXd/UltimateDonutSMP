@@ -37,7 +37,6 @@ SETTINGS:
   CANCEL_MOB_SPAWN: true
   # Determines whether XP generation and XP collection is enabled for spawners. Available options: true, false
   XP_ENABLED: true
-# Configuration section for Anti Esp.
 ```
 
 ### 2. Key Options & Technical Breakdown
@@ -88,79 +87,6 @@ SETTINGS:
   CANCEL_MOB_SPAWN: true
   # Determines whether XP generation and XP collection is enabled for spawners. Available options: true, false
   XP_ENABLED: true
-# Configuration section for Anti Esp.
-```
-
----
-
-## Section: `ANTI_ESP`
-
-### 1. Commented Setup Code Example
-
-```yaml
-ANTI_ESP:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
-  ENABLED: true
-  # The numerical value for Reveal Radius. Available options: Any valid integer
-  REVEAL_RADIUS: 7
-  # The numerical value for Owner See Radius. Available options: Any valid integer
-  OWNER_SEE_RADIUS: 9
-  # The numerical value for Tracking Radius. Available options: Any valid integer
-  TRACKING_RADIUS: 128
-  # Determines whether Require Line Of Sight is enabled or disabled. Available options: true, false
-  REQUIRE_LINE_OF_SIGHT: true
-  # The text or value for Staff Bypass Permission. Available options: Any valid string text
-  STAFF_BYPASS_PERMISSION: ultimatedonutsmp.admin.spawner.seeall
-  # Configuration section for Camouflage.
-  CAMOUFLAGE:
-    # The text or value for Overworld. Available options: Any valid string text
-    OVERWORLD: DEEPSLATE
-    # The text or value for Nether. Available options: Any valid string text
-    NETHER: NETHERRACK
-    # The text or value for The End. Available options: Any valid string text
-    THE_END: END_STONE
-# Configuration section for Gui.
-```
-
-### 2. Key Options & Technical Breakdown
-
-| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
-| :--- | :--- | :--- | :--- | :--- |
-| `ANTI_ESP.ENABLED` | `bool` | `true`, `false` | `true` | Global toggle for `ANTI_ESP` system. Set to `true` to enable, `false` to disable. |
-| `ANTI_ESP.REVEAL_RADIUS` | `int` | Any valid integer number | `'7'` | Configures the technical `REVEAL_RADIUS` parameter for `ANTI_ESP.REVEAL_RADIUS` in `spawners.yml`. |
-| `ANTI_ESP.OWNER_SEE_RADIUS` | `int` | Any valid integer number | `'9'` | Configures the technical `OWNER_SEE_RADIUS` parameter for `ANTI_ESP.OWNER_SEE_RADIUS` in `spawners.yml`. |
-| `ANTI_ESP.TRACKING_RADIUS` | `int` | Any valid integer number | `'128'` | Configures the technical `TRACKING_RADIUS` parameter for `ANTI_ESP.TRACKING_RADIUS` in `spawners.yml`. |
-| `ANTI_ESP.REQUIRE_LINE_OF_SIGHT` | `bool` | `true`, `false` | `true` | Configures the technical `REQUIRE_LINE_OF_SIGHT` parameter for `ANTI_ESP.REQUIRE_LINE_OF_SIGHT` in `spawners.yml`. |
-| `ANTI_ESP.STAFF_BYPASS_PERMISSION` | `str` | Any string text | `'ultimatedonutsmp.admin.spawner.seea...'` | Configures the technical `STAFF_BYPASS_PERMISSION` parameter for `ANTI_ESP.STAFF_BYPASS_PERMISSION` in `spawners.yml`. |
-| `ANTI_ESP.CAMOUFLAGE.OVERWORLD` | `str` | Any string text | `'DEEPSLATE'` | Configures the technical `OVERWORLD` parameter for `ANTI_ESP.CAMOUFLAGE.OVERWORLD` in `spawners.yml`. |
-| `ANTI_ESP.CAMOUFLAGE.NETHER` | `str` | Any string text | `'NETHERRACK'` | Configures the technical `NETHER` parameter for `ANTI_ESP.CAMOUFLAGE.NETHER` in `spawners.yml`. |
-| `ANTI_ESP.CAMOUFLAGE.THE_END` | `str` | Any string text | `'END_STONE'` | Configures the technical `THE_END` parameter for `ANTI_ESP.CAMOUFLAGE.THE_END` in `spawners.yml`. |
-
-### 3. Practical Setup Example
-
-```yaml
-ANTI_ESP:
-  # Determines whether Enabled is enabled or disabled. Available options: true, false
-  ENABLED: true
-  # The numerical value for Reveal Radius. Available options: Any valid integer
-  REVEAL_RADIUS: 7
-  # The numerical value for Owner See Radius. Available options: Any valid integer
-  OWNER_SEE_RADIUS: 9
-  # The numerical value for Tracking Radius. Available options: Any valid integer
-  TRACKING_RADIUS: 128
-  # Determines whether Require Line Of Sight is enabled or disabled. Available options: true, false
-  REQUIRE_LINE_OF_SIGHT: true
-  # The text or value for Staff Bypass Permission. Available options: Any valid string text
-  STAFF_BYPASS_PERMISSION: ultimatedonutsmp.admin.spawner.seeall
-  # Configuration section for Camouflage.
-  CAMOUFLAGE:
-    # The text or value for Overworld. Available options: Any valid string text
-    OVERWORLD: DEEPSLATE
-    # The text or value for Nether. Available options: Any valid string text
-    NETHER: NETHERRACK
-    # The text or value for The End. Available options: Any valid string text
-    THE_END: END_STONE
-# Configuration section for Gui.
 ```
 
 ---

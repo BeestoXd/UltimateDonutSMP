@@ -100,8 +100,6 @@ public class SpawnerCommand implements CommandExecutor {
 
         plugin.getConfigManager().reloadSpawners();
         plugin.getSpawnerManager().reload();
-        plugin.getAntiEspManager().reload();
-        plugin.getAntiEspManager().refreshAllPlayers();
         sender.sendMessage(ColorUtils.toComponent("&aSpawner settings reloaded."));
         return true;
     }

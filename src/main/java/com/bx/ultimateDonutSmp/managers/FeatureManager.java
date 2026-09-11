@@ -412,9 +412,6 @@ public class FeatureManager {
                 if (plugin.getSpawnerManager() != null) {
                     plugin.getSpawnerManager().reload();
                 }
-                if (plugin.getAntiEspManager() != null) {
-                    plugin.getAntiEspManager().refreshAllPlayers();
-                }
             }
             case AUCTION_HOUSE -> {
                 if (plugin.getAuctionHouseManager() != null) {

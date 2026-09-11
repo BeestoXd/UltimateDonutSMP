@@ -1,6 +1,6 @@
 # Staff & Security Utilities Guide
 
-UltimateDonutSMP provides a comprehensive suite of staff moderation tools, anti-cheat detection lures, anti-ESP alerts, crash protection, chat filtering, Discord webhooks, and guarded server wipes.
+UltimateDonutSMP provides a comprehensive suite of staff moderation tools, anti-cheat detection lures, crash protection, chat filtering, Discord webhooks, and guarded server wipes.
 
 ---
 
@@ -141,9 +141,6 @@ Spawns fake hidden chests populated with high-tier loot under spawn or wild area
 
 ### 2. Fake Player Bait (`/fakeplayer`)
 Spawns a short-lived player bait at the block you are looking at (or at your feet if `SPAWN-AT-LOOK-TARGET` is `false`). It copies your skin unless `FAKE-PLAYER.USE-DEFAULT-SKIN` is `true` in `staff-mode.yml`, in which case every bait uses Minecraft's default Steve or Alex skin. `HIDE-NAMETAG: true` (the bundled default) keeps prefix, name, and money text off the bait's head. `SNEAK: true` crouches the dummy the way DonutSMP does, which also hides leftover nametags.
-
-### 3. Spawner Anti-ESP
-Hides spawner block packet data from players beyond visual raycast distance to prevent X-Ray / ESP client hacks from discovering spawner coordinates.
 
 ---
 
