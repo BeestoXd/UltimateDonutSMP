@@ -111,7 +111,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PlayerUnwipeManager playerUnwipeManager;
     private ServerWipeManager serverWipeManager;
     private SpawnerManager spawnerManager;
-    private AntiEspManager antiEspManager;
     private SpawnStashManager spawnStashManager;
     private FakePlayerManager fakePlayerManager;
     private HideManager hideManager;
@@ -255,7 +254,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         playerWipeManager = new PlayerWipeManager(this);
         playerUnwipeManager = new PlayerUnwipeManager(this);
         spawnerManager = new SpawnerManager(this);
-        antiEspManager = new AntiEspManager(this);
         spawnStashManager = new SpawnStashManager(this);
         fakePlayerManager = new FakePlayerManager(this);
         redisManager = new RedisManager(this);
@@ -377,9 +375,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (invseeManager != null) {
             invseeManager.shutdown();
-        }
-        if (antiEspManager != null) {
-            antiEspManager.shutdown();
         }
         if (spawnStashManager != null) {
             spawnStashManager.shutdown();
@@ -573,7 +568,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new AmethystToolsListener(this), this);
         pm.registerEvents(new SpawnerBlockListener(this), this);
         pm.registerEvents(new SpawnerInteractListener(this), this);
-        pm.registerEvents(new SpawnerVisibilityListener(this), this);
         pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
         pm.registerEvents(new AnvilModerationListener(this), this);
@@ -1130,8 +1124,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         configManager.reloadDatabase();
         configManager.reloadDiscord();
         spawnerManager.reload();
-        antiEspManager.reload();
-        antiEspManager.refreshAllPlayers();
         spawnStashManager.reload();
         fakePlayerManager.reload();
         hideManager.reload();
@@ -1505,10 +1497,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public SpawnerManager getSpawnerManager() {
         return spawnerManager;
-    }
-
-    public AntiEspManager getAntiEspManager() {
-        return antiEspManager;
     }
 
     public NetworkStatusManager getNetworkStatusManager() {

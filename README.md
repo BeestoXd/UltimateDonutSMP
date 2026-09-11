@@ -53,7 +53,7 @@ This README is the quick reference. The full documentation set lives in [`docs/w
 | PvP | Duels, private invites, map queues, FFA instances, arena rollback, fast crystals, and combat handling |
 | Custom content | Crates, virtual keys, Donut-style spawners, amethyst tools, enchantment GUI, filters, and configurable menus |
 | Staff and moderation | Staff mode, freeze, vanish, hide/disguise, invsee, ecsee, punishments, alts, reports, helpop, and anvil moderation |
-| Detection tools | Spawn-stash bait, fake-player bait, spawner anti-ESP, alerts, bypass permissions, and crash protection |
+| Detection tools | Spawn-stash bait, fake-player bait, alerts, bypass permissions, and crash protection |
 | Network | Redis staff chat and alerts, server-status menus, maintenance routing, Discord webhooks, and Lunar/Apollo support |
 | Operations | Automatic configuration sync and backups, feature toggles, setup tools, optimization controls, stats wipe, and guarded server wipe |
 | Localization | English, Spanish, Indonesian, Portuguese, German, French, Russian, and Simplified Chinese language packs |
@@ -169,7 +169,7 @@ For production networks, MySQL plus Redis is recommended. For a single-server se
 | `duels.yml` | Duel maps, world borders, queues, countdowns, cross-server options, arena settings, rules, and GUI |
 | `ffa.yml` | FFA queue, arena rules, rollback, player-state handling, and arena definitions |
 | `crates.yml` | Crate definitions, keys, rewards, animations, holograms, particles, and settings |
-| `spawners.yml` | Donut-style spawner types, drops, storage, anti-ESP, visibility, and GUI |
+| `spawners.yml` | Donut-style spawner types, drops, storage, and GUI |
 | `spawn-stash.yml` | Temporary bait-stash types, detection rules, alerts, cleanup, and messages |
 | `network.yml` | Redis network identity, staff chat, reports, helpop, server status, and maintenance routing |
 | `staff-mode.yml` | Staff-mode permissions, hotbar items, vanish, better view, staff list, fake players, and menus |
@@ -392,7 +392,6 @@ Running `/baltop` with no arguments opens the money leaderboard directly instead
 | `ultimatedonutsmp.admin.shards` | `op` | Inspect Shards Everywhere status |
 | `ultimatedonutsmp.admin.shop` | `op` | Reload shop settings |
 | `ultimatedonutsmp.admin.spawner` | `op` | Give and manage Donut-style spawners |
-| `ultimatedonutsmp.admin.spawner.seeall` | `op` | Bypass spawner anti-ESP concealment |
 | `ultimatedonutsmp.admin.spawnstash` | `op` | Manage bait spawn stashes |
 | `ultimatedonutsmp.admin.staffmode` | `op` | Reload Staff Mode settings |
 | `ultimatedonutsmp.admin.statswipe` | `op` | Execute player stats wipe |

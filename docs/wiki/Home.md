@@ -46,7 +46,7 @@ Explore the complete feature guide and documentation pages:
   Virtual & physical crates (`/crate`), key distribution (`/keyall`), Donut-style stacked spawners (`/spawner`), Amethyst Tools, and Enchantment GUI.
 
 - **[Staff & Security Utilities](Staff-and-Security)**  
-  Staff Mode (`/staffmode`), Vanish (`/vanish`), Freeze, Inventory Inspect (`/invsee`), Spawn-Stash Bait, Fake Player Bait, Anti-ESP alerts, and guarded Server Wipes (`/serverwipe`).
+  Staff Mode (`/staffmode`), Vanish (`/vanish`), Freeze, Inventory Inspect (`/invsee`), Spawn-Stash Bait, Fake Player Bait, and guarded Server Wipes (`/serverwipe`).
 
 - **[Placeholders & Integrations](Placeholders-and-Integrations)**  
   Full catalog of `%economy_*%` PlaceholderAPI placeholders, LuckPerms integration, Apollo (Lunar Client) support, and Bedrock/Floodgate compatibility.
