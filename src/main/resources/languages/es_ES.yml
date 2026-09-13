@@ -2280,6 +2280,8 @@ MESSAGES:
     ALL_TARGET: "&dYou were teleported to &7%sender%"
     POSITION: "&7Teleported to: &d%x%,%y%,%z% &7(%world%)"
     TOP: "&dTeleported &7to the highest position"
+    TO_OFFLINE_PLAYER: "&dTeleported &7to last known location of %player%"
+    OFFLINE_NO_LOCATION: "&cNo saved location found for %player%."
   SHARD-BOOSTER:
     ACTIVATED: "&aYou have activated your &5shard booster &afor 24h."
     ALREADY-ACTIVATED: "&cYou already have an active shard booster."

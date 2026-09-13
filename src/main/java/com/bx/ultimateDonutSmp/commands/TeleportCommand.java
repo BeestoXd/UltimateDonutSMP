@@ -13,10 +13,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
+import java.util.UUID;
 
 public class TeleportCommand implements CommandExecutor {
 
-    private static final String PERMISSION = "ultimatedonutsmp.staff.teleport";
+    public static final String PERMISSION = "ultimatedonutsmp.staff.teleport";
+    public static final String OFFLINE_PERMISSION = "ultimatedonutsmp.staff.teleport.offline";
+
+    public static boolean canTeleportOffline(org.bukkit.permissions.Permissible permissible) {
+        return PermissionUtils.hasAny(permissible, OFFLINE_PERMISSION, PERMISSION);
+    }
 
     private final UltimateDonutSmp plugin;
 
@@ -31,12 +37,21 @@ public class TeleportCommand implements CommandExecutor {
             return true;
         }
 
+        String normalizedLabel = label.toLowerCase(Locale.ROOT);
+        boolean isOfflineAlias = "tpo".equals(normalizedLabel) || "tpoffline".equals(normalizedLabel);
+        if (isOfflineAlias) {
+            if (!PermissionUtils.hasAny(player, OFFLINE_PERMISSION, PERMISSION)) {
+                player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
+                return true;
+            }
+            return handleTeleportOfflineAlias(player, label, args);
+        }
+
         if (!PermissionUtils.has(player, PERMISSION)) {
             player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
             return true;
         }
 
-        String normalizedLabel = label.toLowerCase(Locale.ROOT);
         if ("tphere".equals(normalizedLabel)) {
             return handleTeleportHereAlias(player, args);
         }
@@ -58,12 +73,17 @@ public class TeleportCommand implements CommandExecutor {
                 teleportTop(player);
                 return true;
             }
-            teleportToPlayer(player, args[0]);
+            teleportToPlayer(player, label, args[0]);
             return true;
         }
 
         if (args.length == 2 && args[0].equalsIgnoreCase("here")) {
             teleportHere(player, args[1]);
+            return true;
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("offline")) {
+            teleportToOfflinePlayer(player, args[1]);
             return true;
         }
 
@@ -73,6 +93,15 @@ public class TeleportCommand implements CommandExecutor {
         }
 
         sendUsage(player, label);
+        return true;
+    }
+
+    private boolean handleTeleportOfflineAlias(Player player, String label, String[] args) {
+        if (args.length != 1) {
+            player.sendMessage(ColorUtils.toComponent("&cUsage: /" + label + " <player>"));
+            return true;
+        }
+        teleportToOfflinePlayer(player, args[0]);
         return true;
     }
 
@@ -94,10 +123,12 @@ public class TeleportCommand implements CommandExecutor {
         return true;
     }
 
-    private void teleportToPlayer(Player player, String input) {
+    private void teleportToPlayer(Player player, String label, String input) {
         Player target = findOnlinePlayer(input);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cPlayer not online."));
+            player.sendMessage(ColorUtils.toComponent(
+                    "&cPlayer not online. Use &f/" + label + " offline " + input + "&c to teleport to their last known location."
+            ));
             return;
         }
 
@@ -108,6 +139,78 @@ public class TeleportCommand implements CommandExecutor {
                         player.sendMessage(ColorUtils.toComponent(
                                 message("TELEPORT.TO_PLAYER", "&dTeleported &7to %player%")
                                         .replace("%player%", targetName),
+                                player
+                        ));
+                    }
+                }));
+    }
+
+    public void teleportToOfflinePlayer(Player player, String input) {
+        if (!PermissionUtils.hasAny(player, OFFLINE_PERMISSION, PERMISSION)) {
+            player.sendMessage(ColorUtils.toComponent("&cYou do not have permission."));
+            return;
+        }
+
+        if (input == null || input.isBlank()) {
+            player.sendMessage(ColorUtils.toComponent("&cPlease specify a player name."));
+            return;
+        }
+
+        Player online = findOnlinePlayer(input);
+        if (online != null) {
+            String targetName = online.getName();
+            plugin.getSpigotScheduler().teleport(player, online.getLocation()).thenAccept(success ->
+                    plugin.getSpigotScheduler().runEntity(player, () -> {
+                        if (Boolean.TRUE.equals(success) && player.isOnline()) {
+                            player.sendMessage(ColorUtils.toComponent(
+                                    message("TELEPORT.TO_PLAYER", "&dTeleported &7to %player%")
+                                            .replace("%player%", targetName),
+                                    player
+                            ));
+                        }
+                    }));
+            return;
+        }
+
+        UUID targetUuid = plugin.getOfflineLocationManager() != null
+                ? plugin.getOfflineLocationManager().findUuid(input)
+                : null;
+        java.util.Optional<Location> locOpt = (plugin.getOfflineLocationManager() != null && targetUuid != null)
+                ? plugin.getOfflineLocationManager().getLastKnownLocation(targetUuid)
+                : java.util.Optional.empty();
+
+        if (locOpt.isEmpty()) {
+            player.sendMessage(ColorUtils.toComponent(
+                    message("TELEPORT.OFFLINE_NO_LOCATION", "&cNo saved location found for %player%.")
+                            .replace("%player%", input),
+                    player
+            ));
+            return;
+        }
+
+        Location destination = locOpt.get();
+        if (destination.getWorld() == null) {
+            player.sendMessage(ColorUtils.toComponent(
+                    "&cThe world where " + input + " logged out is not loaded."
+            ));
+            return;
+        }
+
+        String targetName = input;
+        if (targetUuid != null && plugin.getDatabaseManager() != null) {
+            String known = plugin.getDatabaseManager().getLastKnownUsername(targetUuid);
+            if (known != null && !known.isBlank()) {
+                targetName = known;
+            }
+        }
+
+        final String finalTargetName = targetName;
+        plugin.getSpigotScheduler().teleport(player, destination).thenAccept(success ->
+                plugin.getSpigotScheduler().runEntity(player, () -> {
+                    if (Boolean.TRUE.equals(success) && player.isOnline()) {
+                        player.sendMessage(ColorUtils.toComponent(
+                                message("TELEPORT.TO_OFFLINE_PLAYER", "&dTeleported &7to last known location of %player%")
+                                        .replace("%player%", finalTargetName),
                                 player
                         ));
                     }
@@ -238,7 +341,7 @@ public class TeleportCommand implements CommandExecutor {
 
     private void sendUsage(Player player, String label) {
         player.sendMessage(ColorUtils.toComponent(
-                "&cUsage: /" + label + " <player|here <player>|all|top|x y z [world]>"
+                "&cUsage: /" + label + " <player|here <player>|all|top|offline <player>|x y z [world]>"
         ));
     }
 

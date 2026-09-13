@@ -414,6 +414,11 @@ public class PlayerJoinQuitListener implements Listener {
         // Cancel any pending teleport
         plugin.getTeleportManager().cancel(player.getUniqueId());
 
+        // Record disconnect location for offline teleportation
+        if (plugin.getOfflineLocationManager() != null) {
+            plugin.getOfflineLocationManager().recordDisconnect(player);
+        }
+
         // Remove pending TPA requests
         plugin.getTPAManager().removeRequest(player.getUniqueId());
         plugin.getTPAManager().clearQueuedRequestsForTarget(player.getUniqueId());

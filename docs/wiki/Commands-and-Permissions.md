@@ -59,6 +59,8 @@ This page contains the complete reference guide for all commands, aliases, synta
 
 | Command | Usage Syntax | Description | Permission Node |
 | :--- | :--- | :--- | :--- |
+| `/teleport` | `/teleport <player\|here <player>\|all\|top\|offline <player>\|x y z [world]>` (Aliases `/tp`, `/tphere`, `/tpall`) | Staff teleport suite, including teleporting to an offline player's last known location | `ultimatedonutsmp.staff.teleport` |
+| `/tpo` | `/tpo <player>` (Alias `/tpoffline`) | Teleport directly to an offline player's last known location | `ultimatedonutsmp.staff.teleport.offline` |
 | `/staffmode` | `/staffmode` (Alias `/staff`) | Toggle Staff Mode GUI & toolset | `ultimatedonutsmp.admin.staffmode` |
 | `/vanish` | `/vanish` | Toggle complete invisibility to players | `ultimatedonutsmp.admin.vanish` |
 | `/freeze` | `/freeze <player>` | Freeze or unfreeze a target player | `ultimatedonutsmp.admin.freeze` |
