@@ -893,6 +893,10 @@ TPA:
   CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Not Accepting Requests. Available options: Any valid string text
   NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '&cThe teleport request from &a{player} &chas expired.'
+  # The text or value for Your Request Expired. Available options: Any valid string text
+  YOUR-REQUEST-EXPIRED: '&cYour teleport request to &a{player} &chas expired.'
 # Configuration section for Home.
 ```
 
@@ -915,6 +919,8 @@ TPA:
 | `TPA.YOUR-REQUEST-HERE-ACCEPTED` | `str` | Any string text | `'&a{player} has accepted your tpaher...'` | Configures the technical `YOUR-REQUEST-HERE-ACCEPTED` parameter for `TPA.YOUR-REQUEST-HERE-ACCEPTED` in `messages.yml`. |
 | `TPA.CANNOT-INVITE-YOURSELF` | `str` | Any string text | `'&cYou cannot invite yourself!'` | Configures the technical `CANNOT-INVITE-YOURSELF` parameter for `TPA.CANNOT-INVITE-YOURSELF` in `messages.yml`. |
 | `TPA.NOT-ACCEPTING-REQUESTS` | `str` | Any string text | `'&cThis player is not accepting requ...'` | Configures the technical `NOT-ACCEPTING-REQUESTS` parameter for `TPA.NOT-ACCEPTING-REQUESTS` in `messages.yml`. |
+| `TPA.EXPIRED` | `str` | Any string text | `'&cThe teleport request from &a{play...'` | Configures the technical `EXPIRED` parameter for `TPA.EXPIRED` in `messages.yml`. |
+| `TPA.YOUR-REQUEST-EXPIRED` | `str` | Any string text | `'&cYour teleport request to &a{playe...'` | Configures the technical `YOUR-REQUEST-EXPIRED` parameter for `TPA.YOUR-REQUEST-EXPIRED` in `messages.yml`. |
 
 ### 3. Practical Setup Example
 
@@ -952,6 +958,10 @@ TPA:
   CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Not Accepting Requests. Available options: Any valid string text
   NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '&cThe teleport request from &a{player} &chas expired.'
+  # The text or value for Your Request Expired. Available options: Any valid string text
+  YOUR-REQUEST-EXPIRED: '&cYour teleport request to &a{player} &chas expired.'
 # Configuration section for Home.
 ```
 

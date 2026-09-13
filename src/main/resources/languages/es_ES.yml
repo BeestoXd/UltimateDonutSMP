@@ -2301,6 +2301,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request."
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself!"
     NOT-ACCEPTING-REQUESTS: "&cThis player is not accepting requests."
+    EXPIRED: "&cLa solicitud de teletransporte de &a{player} &cha caducado."
+    YOUR-REQUEST-EXPIRED: "&cTu solicitud de teletransporte a &a{player} &cha caducado."
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7. type &ccancel &7to
       abort."

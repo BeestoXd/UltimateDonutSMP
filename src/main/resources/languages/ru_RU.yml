@@ -2298,6 +2298,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request."
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself!"
     NOT-ACCEPTING-REQUESTS: "&cThis player is not accepting requests."
+    EXPIRED: "&cЗапрос на телепортацию от &a{player} &cистёк."
+    YOUR-REQUEST-EXPIRED: "&cВаш запрос на телепортацию к &a{player} &cистёк."
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7. type &ccancel &7to
       abort."
