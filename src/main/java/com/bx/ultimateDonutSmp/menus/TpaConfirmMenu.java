@@ -29,6 +29,10 @@ public class TpaConfirmMenu extends BaseMenu {
         this.tpaHere = tpaHere;
     }
 
+    public String getRequesterName() {
+        return requesterName;
+    }
+
     @Override
     public void build(Player player) {
         clear();

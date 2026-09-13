@@ -2295,6 +2295,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request。"
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself！"
     NOT-ACCEPTING-REQUESTS: "&cThis player is not accepting requests。"
+    EXPIRED: "&c来自 &a{player} &c的传送请求已过期。"
+    YOUR-REQUEST-EXPIRED: "&c发送给 &a{player} &c的传送请求已过期。"
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7。 type &ccancel &7to
       abort。"

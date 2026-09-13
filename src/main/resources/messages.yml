@@ -287,6 +287,10 @@ TPA:
   CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Not Accepting Requests. Available options: Any valid string text
   NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '&cThe teleport request from &a{player} &chas expired.'
+  # The text or value for Your Request Expired. Available options: Any valid string text
+  YOUR-REQUEST-EXPIRED: '&cYour teleport request to &a{player} &chas expired.'
 # Configuration section for Home.
 HOME:
   # The text or value for Name Prompt. Available options: Any valid string text

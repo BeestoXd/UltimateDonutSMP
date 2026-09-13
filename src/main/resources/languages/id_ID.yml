@@ -2437,6 +2437,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request."
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself!"
     NOT-ACCEPTING-REQUESTS: "&cThis player dan is not accepting."
+    EXPIRED: "&cPermintaan teleportasi dari &a{player} &ctelah kedaluwarsa."
+    YOUR-REQUEST-EXPIRED: "&cPermintaan teleportasi kamu ke &a{player} &ctelah kedaluwarsa."
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7. type &ccancel &7to
       abort."
