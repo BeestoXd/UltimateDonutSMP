@@ -91,6 +91,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private TablistManager tablistManager;
     private TeleportManager teleportManager;
+    private OfflineLocationManager offlineLocationManager;
     private RTPManager rtpManager;
     private RTPZoneManager rtpZoneManager;
     private RTPQueueManager rtpQueueManager;
@@ -282,6 +283,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         voiceChatConsentManager = new VoiceChatConsentManager(this);
         voiceChatConsentManager.registerVoicechatHook();
         teleportManager = new TeleportManager(this);
+        offlineLocationManager = new OfflineLocationManager(this);
+        offlineLocationManager.load();
         rtpManager = new RTPManager(this);
         rtpZoneManager = new RTPZoneManager(this);
         rtpQueueManager = new RTPQueueManager(this);
@@ -464,6 +467,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (shopManager != null) {
             shopManager.shutdown();
+        }
+        if (offlineLocationManager != null) {
+            offlineLocationManager.save();
         }
 
         // Save all online players and close DB
@@ -725,7 +731,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("report", new ReportCommand(this), FeatureManager.Feature.STAFF_ALERTS);
         setExecutor("rename", new RenameCommand(this));
         setExecutor("randomteleport", new RandomTeleportCommand(this));
-        setExecutor("teleport", new TeleportCommand(this));
+        TeleportCommand teleportCommand = new TeleportCommand(this);
+        setExecutor("teleport", teleportCommand);
+        registerTpoCommand(new TpoCommand(this, teleportCommand));
         setExecutor("alts", new AltsCommand(this));
         setExecutor("vanish", new VanishCommand(this), FeatureManager.Feature.STAFF_MODE);
         setExecutor("invsee", new InvseeCommand(this));
@@ -881,6 +889,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         if (!executor.registerDynamically()) {
             getLogger().warning("Command missing from plugin.yml and dynamic registration failed: god");
+        }
+    }
+
+    private void registerTpoCommand(TpoCommand executor) {
+        PluginCommand command = getCommand("tpo");
+        if (command != null) {
+            command.setExecutor(executor);
+            return;
+        }
+
+        if (!executor.registerDynamically()) {
+            getLogger().warning("Command missing from plugin.yml and dynamic registration failed: tpo");
         }
     }
 
@@ -1413,6 +1433,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
     public TeleportManager getTeleportManager() {
         return teleportManager;
+    }
+
+    public OfflineLocationManager getOfflineLocationManager() {
+        return offlineLocationManager;
     }
 
     public RTPManager getRtpManager() {

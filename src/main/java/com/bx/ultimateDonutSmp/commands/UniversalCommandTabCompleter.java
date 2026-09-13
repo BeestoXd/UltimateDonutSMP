@@ -49,7 +49,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
             "wand", "create", "save", "delete", "list", "bind", "system", "reload"
     );
     private static final List<String> CUBOID_ROLES = List.of("spawn", "shard", "rtp-zone");
-    private static final List<String> TELEPORT_ROOTS = List.of("here", "all", "top");
+    private static final List<String> TELEPORT_ROOTS = List.of("here", "all", "top", "offline");
 
     private final UltimateDonutSmp plugin;
 
@@ -102,7 +102,7 @@ public class UniversalCommandTabCompleter implements TabCompleter {
                     "stafflist", "vanish", "tpauto", "tpahereauto", "nightvision", "phantom", "settings",
                     "discord", "twitter", "store", "social", "rules", "ranks", "help", "servers", "billford",
                     "clearlag", "crates", "keys" -> List.of();
-            case "teleport" -> completeTeleport(sender, label, args);
+            case "teleport", "tpo", "tpoffline" -> completeTeleport(sender, label, args);
             case "invsee" -> completePlayerOrReload(sender, args, "ultimatedonutsmp.admin.invsee", false);
             case "ban", "tempban", "mute", "tempmute", "warn", "kick", "blacklist", "unban", "unmute",
                     "unblacklist" -> completePunishment(sender, commandName, args);
@@ -409,6 +409,9 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         if (label.equals("tpall")) {
             return List.of();
         }
+        if (label.equals("tpo") || label.equals("tpoffline")) {
+            return args.length == 1 ? partial(args[0], offlineOrKnownPlayerNames(sender, false)) : List.of();
+        }
         if (args.length == 1) {
             List<String> options = new ArrayList<>(onlinePlayerNames(sender, true));
             options.addAll(TELEPORT_ROOTS);
@@ -417,10 +420,27 @@ public class UniversalCommandTabCompleter implements TabCompleter {
         if (args.length == 2 && normalize(args[0]).equals("here")) {
             return partial(args[1], onlinePlayerNames(sender, false));
         }
-        if (args.length == 4 && !normalize(args[0]).equals("here")) {
+        if (args.length == 2 && normalize(args[0]).equals("offline")) {
+            return partial(args[1], offlineOrKnownPlayerNames(sender, false));
+        }
+        if (args.length == 4 && !normalize(args[0]).equals("here") && !normalize(args[0]).equals("offline")) {
             return partial(args[3], worldNames());
         }
         return List.of();
+    }
+
+    private List<String> offlineOrKnownPlayerNames(CommandSender sender, boolean includeSelf) {
+        Set<String> names = new LinkedHashSet<>(knownPlayerNames(sender, includeSelf));
+        if (plugin.getOfflineLocationManager() != null) {
+            names.addAll(plugin.getOfflineLocationManager().getKnownPlayerNames());
+        }
+        if (plugin.getDatabaseManager() != null) {
+            names.addAll(plugin.getDatabaseManager().loadKnownPlayerNames());
+        }
+        if (!includeSelf && sender instanceof Player player) {
+            names.remove(player.getName());
+        }
+        return new ArrayList<>(names);
     }
 
     private List<String> completePunishment(CommandSender sender, String commandName, String[] args) {

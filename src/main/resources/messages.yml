@@ -245,6 +245,10 @@ TELEPORT:
   POSITION: '&7Teleported to: &d%x%,%y%,%z% &7(%world%)'
   # The text or value for Top. Available options: Any valid string text
   TOP: '&dTeleported &7to the highest position'
+  # The text or value for To Offline Player. Available options: Any valid string text
+  TO_OFFLINE_PLAYER: '&dTeleported &7to last known location of %player%'
+  # The text or value for Offline No Location. Available options: Any valid string text
+  OFFLINE_NO_LOCATION: '&cNo saved location found for %player%.'
 # Configuration section for Shard Booster.
 SHARD-BOOSTER:
   # The text or value for Activated. Available options: Any valid string text
