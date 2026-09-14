@@ -14,11 +14,6 @@ import java.util.List;
 
 public class DuelQueueMenu extends BaseMenu {
 
-    private static final int QUEUE_SLOT = 20;
-    private static final int STATS_SLOT = 22;
-    private static final int SELECT_SLOT = 24;
-    private static final int CLAIMS_SLOT = 31;
-
     private final DuelMapSelection selectedSelection;
 
     public DuelQueueMenu(UltimateDonutSmp plugin) {
@@ -28,6 +23,61 @@ public class DuelQueueMenu extends BaseMenu {
     public DuelQueueMenu(UltimateDonutSmp plugin, DuelMapSelection selectedSelection) {
         super(plugin, plugin.getDuelManager().getQueueTitle(), plugin.getDuelManager().getQueueSize());
         this.selectedSelection = selectedSelection;
+    }
+
+    public static int resolveQueueSlot(int size) {
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 20;
+        } else if (rows == 3) {
+            return 11;
+        } else if (rows == 2) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    public static int resolveStatsSlot(int size) {
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 22;
+        } else if (rows == 3) {
+            return 13;
+        } else if (rows == 2) {
+            return 4;
+        } else {
+            return 3;
+        }
+    }
+
+    public static int resolveSelectSlot(int size) {
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 24;
+        } else if (rows == 3) {
+            return 15;
+        } else if (rows == 2) {
+            return 6;
+        } else {
+            return 5;
+        }
+    }
+
+    public static int resolveClaimsSlot(int size, boolean showSelector) {
+        if (!showSelector) {
+            return resolveSelectSlot(size);
+        }
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 31;
+        } else if (rows == 3) {
+            return 22;
+        } else if (rows == 2) {
+            return 13;
+        } else {
+            return 7;
+        }
     }
 
     @Override
@@ -40,10 +90,14 @@ public class DuelQueueMenu extends BaseMenu {
         DuelStats stats = plugin.getDuelManager().getStats(player.getUniqueId());
         boolean queued = plugin.getDuelManager().isInQueue(player.getUniqueId());
         boolean showSelector = shouldShowSelector(options);
-        int claimsSlot = showSelector ? CLAIMS_SLOT : SELECT_SLOT;
+
+        int queueSlot = resolveQueueSlot(inventory.getSize());
+        int statsSlot = resolveStatsSlot(inventory.getSize());
+        int selectSlot = resolveSelectSlot(inventory.getSize());
+        int claimsSlot = resolveClaimsSlot(inventory.getSize(), showSelector);
 
         if (queued) {
-            set(QUEUE_SLOT, ItemUtils.createItem(
+            set(queueSlot, ItemUtils.createItem(
                     Material.PAPER,
                     "&cleave queue",
                     List.of(
@@ -52,13 +106,13 @@ public class DuelQueueMenu extends BaseMenu {
                     )
             ));
         } else if (selectedOption == null) {
-            set(QUEUE_SLOT, ItemUtils.createItem(
+            set(queueSlot, ItemUtils.createItem(
                     Material.BARRIER,
                     "&cno queue maps available",
                     List.of("&7configure queue arenas or enable random biomes.")
             ));
         } else {
-            set(QUEUE_SLOT, ItemUtils.createItem(
+            set(queueSlot, ItemUtils.createItem(
                     Material.PAPER,
                     "&ajoin casual queue",
                     queueLore(selectedOption, showSelector)
@@ -66,7 +120,7 @@ public class DuelQueueMenu extends BaseMenu {
         }
 
         if (showSelector) {
-            set(SELECT_SLOT, ItemUtils.createItem(
+            set(selectSlot, ItemUtils.createItem(
                     Material.COMPASS,
                     "&bselect map",
                     List.of(
@@ -78,7 +132,7 @@ public class DuelQueueMenu extends BaseMenu {
             ));
         }
 
-        set(STATS_SLOT, ItemUtils.createItem(
+        set(statsSlot, ItemUtils.createItem(
                 Material.NETHERITE_SWORD,
                 "&eyour duel stats",
                 List.of(
@@ -104,9 +158,12 @@ public class DuelQueueMenu extends BaseMenu {
         DuelManager.DuelMapOption selectedOption = resolveSelectedOption(options);
         boolean queued = plugin.getDuelManager().isInQueue(player.getUniqueId());
         boolean showSelector = shouldShowSelector(options);
-        int claimsSlot = showSelector ? CLAIMS_SLOT : SELECT_SLOT;
 
-        if (slot == QUEUE_SLOT) {
+        int queueSlot = resolveQueueSlot(inventory.getSize());
+        int selectSlot = resolveSelectSlot(inventory.getSize());
+        int claimsSlot = resolveClaimsSlot(inventory.getSize(), showSelector);
+
+        if (slot == queueSlot) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
             if (queued) {
                 plugin.getDuelManager().leaveState(player);
@@ -127,7 +184,7 @@ public class DuelQueueMenu extends BaseMenu {
             return;
         }
 
-        if (showSelector && slot == SELECT_SLOT) {
+        if (showSelector && slot == selectSlot) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
             new DuelQueueMapSelectMenu(plugin, selectedOption == null ? selectedSelection : selectedOption.selection()).open(player);
             return;
