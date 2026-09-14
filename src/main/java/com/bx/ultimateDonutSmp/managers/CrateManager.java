@@ -660,28 +660,36 @@ public class CrateManager {
 
     public ClaimResult claimSelectedReward(Player player) {
         if (player == null) {
-            return new ClaimResult(false, FailureReason.NO_PLAYER_DATA, "&cplayer is not available.", null, null, 0);
+            return new ClaimResult(false, FailureReason.NO_PLAYER_DATA,
+                    plugin.getConfigManager().getMessageOrDefault("CRATES.NO-PLAYER-DATA", "&cyour player data could not be loaded. try again in a moment."),
+                    null, null, 0);
         }
 
         CrateOpenSession session = activeSessions.get(player.getUniqueId());
         if (session == null) {
-            return new ClaimResult(false, FailureReason.NO_SESSION, "&cno active crate session was found.", null, null, 0);
+            return new ClaimResult(false, FailureReason.NO_SESSION,
+                    plugin.getConfigManager().getMessageOrDefault("CRATES.NO-SESSION", "&cno active crate session was found."),
+                    null, null, 0);
         }
 
         CrateDefinition crate = session.crate();
         CrateReward reward = session.selectedReward();
         if (crate == null) {
             clearSession(player.getUniqueId());
-            return new ClaimResult(false, FailureReason.INVALID_CRATE, "&cthis crate session is no longer valid.", null, null, 0);
+            return new ClaimResult(false, FailureReason.INVALID_CRATE,
+                    plugin.getConfigManager().getMessageOrDefault("CRATES.INVALID-CRATE", "&cthis crate session is no longer valid."),
+                    null, null, 0);
         }
         if (reward == null) {
-            return new ClaimResult(false, FailureReason.NO_REWARD_SELECTED, "&cselect a reward first.", crate, null,
-                    getKeyBalance(player, crate.id()));
+            return new ClaimResult(false, FailureReason.NO_REWARD_SELECTED,
+                    applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.NO-REWARD-SELECTED", "&cselect a reward first."), player, crate, null),
+                    crate, null, getKeyBalance(player, crate.id()));
         }
         if (getKeyBalance(player, crate.id()) <= 0) {
             clearSession(player.getUniqueId());
             return new ClaimResult(false, FailureReason.NO_KEYS,
-                    "&cyou no longer have a key for " + getReadableCrateName(crate) + ".", crate, reward, 0);
+                    applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.NO-KEYS", "&cyou no longer have a key for {crate}."), player, crate, reward),
+                    crate, reward, 0);
         }
 
         ItemStack preparedItem = null;
@@ -690,32 +698,35 @@ public class CrateManager {
             ItemStack rewardItem = preparedItem;
             if (rewardItem == null || rewardItem.getType().isAir()) {
                 return new ClaimResult(false, FailureReason.INVALID_REWARD,
-                        "&cthat reward is no longer valid.", crate, reward, getKeyBalance(player, crate.id()));
+                        applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.INVALID-REWARD", "&cthat reward is no longer valid."), player, crate, reward),
+                        crate, reward, getKeyBalance(player, crate.id()));
             }
             if (!plugin.getCrashProtectionManager()
                     .validateOrNotify(player, rewardItem, CrashProtectionManager.Context.CRATES)
                     .allowed()) {
                 return new ClaimResult(false, FailureReason.INVALID_REWARD,
-                        "&cthat reward is no longer valid.", crate, reward, getKeyBalance(player, crate.id()));
+                        applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.INVALID-REWARD", "&cthat reward is no longer valid."), player, crate, reward),
+                        crate, reward, getKeyBalance(player, crate.id()));
             }
             if (reward.grant().requiresInventorySpace() && !canFitItem(player, rewardItem)) {
                 return new ClaimResult(false, FailureReason.INVENTORY_FULL,
-                        "&cyour inventory is full. clear space before claiming this reward.", crate, reward,
-                        getKeyBalance(player, crate.id()));
+                        applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.INVENTORY-FULL", "&cyour inventory is full. clear space before claiming this reward."), player, crate, reward),
+                        crate, reward, getKeyBalance(player, crate.id()));
             }
         }
 
         if ((reward.grant().type() == GrantType.MONEY || reward.grant().type() == GrantType.SHARDS)
                 && plugin.getPlayerDataManager().get(player) == null) {
             return new ClaimResult(false, FailureReason.NO_PLAYER_DATA,
-                    "&cyour player data could not be loaded. try again in a moment.", crate, reward,
-                    getKeyBalance(player, crate.id()));
+                    applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.NO-PLAYER-DATA", "&cyour player data could not be loaded. try again in a moment."), player, crate, reward),
+                    crate, reward, getKeyBalance(player, crate.id()));
         }
 
         if (!takeKeys(player.getUniqueId(), crate.id(), 1)) {
             clearSession(player.getUniqueId());
             return new ClaimResult(false, FailureReason.NO_KEYS,
-                    "&cyou no longer have a key for " + getReadableCrateName(crate) + ".", crate, reward, 0);
+                    applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.NO-KEYS", "&cyou no longer have a key for {crate}."), player, crate, reward),
+                    crate, reward, 0);
         }
 
         boolean granted = false;
@@ -729,8 +740,8 @@ public class CrateManager {
         if (!granted) {
             addKeys(player.getUniqueId(), crate.id(), 1);
             return new ClaimResult(false, FailureReason.REWARD_GRANT_FAILED,
-                    "&cfailed to grant that reward. your key has been returned.", crate, reward,
-                    getKeyBalance(player, crate.id()));
+                    applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.REWARD-GRANT-FAILED", "&cfailed to grant that reward. your key has been returned."), player, crate, reward),
+                    crate, reward, getKeyBalance(player, crate.id()));
         }
 
         String crateName = ColorUtils.strip(getReadableCrateName(crate));
@@ -755,9 +766,18 @@ public class CrateManager {
                     .forEach(viewer -> viewer.sendMessage(broadcast));
         }
 
+        String claimMessage = applyPlaceholders(
+                plugin.getConfigManager().getMessageOrDefault(
+                        "CRATES.CLAIM-SUCCESS",
+                        "&7you claimed &f{reward}&7 from &b{crate}&7."
+                ),
+                player,
+                crate,
+                reward
+        );
+
         return new ClaimResult(true, null,
-                "&7you claimed &f" + getReadableRewardName(reward)
-                        + "&7 from &b" + getReadableCrateName(crate) + "&7.",
+                claimMessage,
                 crate,
                 reward,
                 getKeyBalance(player, crate.id()));
@@ -765,10 +785,14 @@ public class CrateManager {
 
     public ClaimResult claimReward(Player player, CrateReward reward) {
         if (reward == null) {
-            return new ClaimResult(false, FailureReason.INVALID_REWARD, "&cthat reward is no longer valid.", null, null, 0);
+            return new ClaimResult(false, FailureReason.INVALID_REWARD,
+                    plugin.getConfigManager().getMessageOrDefault("CRATES.INVALID-REWARD", "&cthat reward is no longer valid."),
+                    null, null, 0);
         }
         if (!selectReward(player, reward.id())) {
-            return new ClaimResult(false, FailureReason.INVALID_REWARD, "&cthat reward is no longer valid.", null, reward, 0);
+            return new ClaimResult(false, FailureReason.INVALID_REWARD,
+                    applyPlaceholders(plugin.getConfigManager().getMessageOrDefault("CRATES.INVALID-REWARD", "&cthat reward is no longer valid."), player, null, reward),
+                    null, reward, 0);
         }
         return claimSelectedReward(player);
     }
@@ -1137,9 +1161,11 @@ public class CrateManager {
     }
 
     private String buildClaimBroadcast(Player player, CrateDefinition crate, CrateReward reward) {
-        return "&8[&bcrates&8] &f" + player.getName()
-                + " &7claimed &f" + getReadableRewardName(reward)
-                + " &7from &b" + getReadableCrateName(crate) + "&7.";
+        String template = plugin.getConfigManager().getMessageOrDefault(
+                "CRATES.CLAIM-BROADCAST",
+                "&8[&bcrates&8] &f{player} &7claimed &f{reward} &7from &b{crate}&7."
+        );
+        return applyPlaceholders(template, player, crate, reward);
     }
 
     private boolean shouldBroadcastClaim(CrateDefinition crate, CrateReward reward) {

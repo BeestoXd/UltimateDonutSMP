@@ -1097,6 +1097,28 @@ ALTS:
   KNOWN_IPS: '&7Known IPs: &f%ips%'
   # The text or value for Entry. Available options: Any valid string text
   ENTRY: '&8- &e%player% &7[%status%&7] &fshared: %ips%'
+# Configuration section for Crates.
+CRATES:
+  # The text or value for Reward Claim Hint. Available options: Any valid string text
+  REWARD-CLAIM-HINT: '&aClick to claim this reward!'
+  # The text or value for Reward No Key. Available options: Any valid string text
+  REWARD-NO-KEY: '&cYou don''t have a {crate} key!'
+  # The text or value for Claim Success. Available options: Any valid string text
+  CLAIM-SUCCESS: '&7you claimed &f{reward}&7 from &b{crate}&7.'
+  # The text or value for Claim Broadcast. Available options: Any valid string text
+  CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7claimed &f{reward} &7from &b{crate}&7.'
+  # The text or value for No Keys. Available options: Any valid string text
+  NO-KEYS: '&cyou no longer have a key for {crate}.'
+  # The text or value for Inventory Full. Available options: Any valid string text
+  INVENTORY-FULL: '&cyour inventory is full. clear space before claiming this reward.'
+  # The text or value for No Player Data. Available options: Any valid string text
+  NO-PLAYER-DATA: '&cyour player data could not be loaded. try again in a moment.'
+  # The text or value for Reward Grant Failed. Available options: Any valid string text
+  REWARD-GRANT-FAILED: '&cfailed to grant that reward. your key has been returned.'
+  # The text or value for Invalid Reward. Available options: Any valid string text
+  INVALID-REWARD: '&cthat reward is no longer valid.'
+  # The text or value for Reward Select Failed. Available options: Any valid string text
+  REWARD-SELECT-FAILED: '&cThat reward could not be selected.'
 VOICE-CHAT:
   ACCEPTED: '&aVoice chat is now enabled for you.'
   DECLINED: '&cVoice chat will stay disabled.'

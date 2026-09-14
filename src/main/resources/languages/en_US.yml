@@ -3153,6 +3153,14 @@ MESSAGES:
   CRATES:
     REWARD-CLAIM-HINT: '&aClick to claim this reward!'
     REWARD-NO-KEY: '&cYou don''t have a {crate} key!'
+    CLAIM-SUCCESS: '&7you claimed &f{reward}&7 from &b{crate}&7.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7claimed &f{reward} &7from &b{crate}&7.'
+    NO-KEYS: '&cyou no longer have a key for {crate}.'
+    INVENTORY-FULL: '&cyour inventory is full. clear space before claiming this reward.'
+    NO-PLAYER-DATA: '&cyour player data could not be loaded. try again in a moment.'
+    REWARD-GRANT-FAILED: '&cfailed to grant that reward. your key has been returned.'
+    INVALID-REWARD: '&cthat reward is no longer valid.'
+    REWARD-SELECT-FAILED: '&cThat reward could not be selected.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: '&cUsage: /friends [list|follow|remove|search|following|followers|friends]'

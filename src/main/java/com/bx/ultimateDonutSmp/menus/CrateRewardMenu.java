@@ -89,14 +89,24 @@ public class CrateRewardMenu extends BaseMenu {
 
         SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
         if (!plugin.getCrateManager().selectReward(player, rewardId)) {
-            player.sendMessage(ColorUtils.toComponent("&cThat reward could not be selected."));
+            player.sendMessage(ColorUtils.toComponent(
+                    plugin.getConfigManager().getMessageOrDefault(
+                            "CRATES.REWARD-SELECT-FAILED",
+                            "&cThat reward could not be selected."
+                    )
+            ));
             build(player);
             return;
         }
 
         CrateManager.CrateOpenSession session = plugin.getCrateManager().getSession(player.getUniqueId());
         if (session == null || session.selectedReward() == null) {
-            player.sendMessage(ColorUtils.toComponent("&cThat reward could not be selected."));
+            player.sendMessage(ColorUtils.toComponent(
+                    plugin.getConfigManager().getMessageOrDefault(
+                            "CRATES.REWARD-SELECT-FAILED",
+                            "&cThat reward could not be selected."
+                    )
+            ));
             return;
         }
 
