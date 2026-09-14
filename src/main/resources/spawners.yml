@@ -47,6 +47,174 @@ GUI:
   WORLD_LIST:
     TITLE: '&8Spawners Panel'
     SIZE: 27
+# Configuration section for Messages.
+MESSAGES:
+  # The text or value for Placed. Available options: Any valid string text
+  PLACED: '&aplaced &f{amount}x {type}&a.'
+  # The text or value for Stacked. Available options: Any valid string text
+  STACKED: '&aspawner stack updated to &f{amount}&a.'
+  # The text or value for Picked Up. Available options: Any valid string text
+  PICKED-UP: '&apicked up &f{amount}x {type}&a.'
+  # The text or value for Removed. Available options: Any valid string text
+  REMOVED: '&aremoved &f{amount}x {type}&a.'
+  # The text or value for Removed Admin. Available options: Any valid string text
+  REMOVED-ADMIN: '&aspawner removed.'
+  # The text or value for Gave Spawner. Available options: Any valid string text
+  GAVE-SPAWNER: '&aGave &f{amount}x {type}&a to &f{player}&a.'
+  # The text or value for Received Spawner. Available options: Any valid string text
+  RECEIVED-SPAWNER: '&aYou received &f{amount}x {type}&a.'
+  # The text or value for Collected. Available options: Any valid string text
+  COLLECTED: '&acollected &f{amount}x {item}&a.'
+  # The text or value for Collected All. Available options: Any valid string text
+  COLLECTED-ALL: '&acollected &f{amount}&a items from this spawner.'
+  # The text or value for Dropped Page. Available options: Any valid string text
+  DROPPED-PAGE: '&adropped &f{amount}&a stored items from this page on the ground.'
+  # The text or value for Sold. Available options: Any valid string text
+  SOLD: '&asold &f{amount}&a items for {price}&a.'
+  # The text or value for Collected Xp. Available options: Any valid string text
+  COLLECTED-XP: '&acollected &f{amount} &aXP points!'
+  # The text or value for Reloaded. Available options: Any valid string text
+  RELOADED: '&aSpawner settings reloaded.'
+  # The text or value for Split Success. Available options: Any valid string text
+  SPLIT-SUCCESS: '&aSplit &f{amount}x &aspawners. &7Remaining in hand: &f{remaining}&7.'
+  # The text or value for Filter Enabled All. Available options: Any valid string text
+  FILTER-ENABLED-ALL: '&aEnabled storing for all drops on this spawner.'
+  # The text or value for Filter Disabled All. Available options: Any valid string text
+  FILTER-DISABLED-ALL: '&cDisabled storing for all drops on this spawner.'
+  # The text or value for Filter Toggled. Available options: Any valid string text
+  FILTER-TOGGLED: '&aToggled filter for &f{item} &ato {status}&a.'
+  # The text or value for Filter Status Enabled. Available options: Any valid string text
+  FILTER-STATUS-ENABLED: '&aEnabled &7(Storing)'
+  # The text or value for Filter Status Disabled. Available options: Any valid string text
+  FILTER-STATUS-DISABLED: '&cDisabled &7(Not Storing)'
+  # The text or value for Teleported. Available options: Any valid string text
+  TELEPORTED: '&aTeleported to spawner at &f{x}, {y}, {z}&a in &f{world}&a.'
+  # The text or value for Disabled. Available options: Any valid string text
+  DISABLED: '&cspawner system is currently disabled.'
+  # The text or value for Not Spawner Item. Available options: Any valid string text
+  NOT-SPAWNER-ITEM: '&cthat is not a managed spawner item.'
+  # The text or value for Invalid Amount. Available options: Any valid string text
+  INVALID-AMOUNT: '&cthis spawner item has an invalid amount.'
+  # The text or value for Max Stack Exceeded. Available options: Any valid string text
+  MAX-STACK-EXCEEDED: '&cthat would exceed the max stack per block (&f{max}&c).'
+  # The text or value for Already At Max Stack. Available options: Any valid string text
+  ALREADY-AT-MAX-STACK: '&cthat spawner is already at the max stack per block (&f{max}&c).'
+  # The text or value for Already Spawner. Available options: Any valid string text
+  ALREADY-SPAWNER: '&cthat block is already a managed spawner.'
+  # The text or value for Not Owner. Available options: Any valid string text
+  NOT-OWNER: '&cyou do not own that spawner.'
+  # The text or value for No Access. Available options: Any valid string text
+  NO-ACCESS: '&cyou do not have access to that spawner.'
+  # The text or value for No Break Permission. Available options: Any valid string text
+  NO-BREAK-PERMISSION: '&cyou do not have permission to break that spawner.'
+  # The text or value for Silk Touch Required. Available options: Any valid string text
+  SILK-TOUCH-REQUIRED: '&cYou need Silk Touch to break this spawner!'
+  # The text or value for Type Mismatch. Available options: Any valid string text
+  TYPE-MISMATCH: '&cyou can only stack the same spawner type onto this block.'
+  # The text or value for Hold To Stack. Available options: Any valid string text
+  HOLD-TO-STACK: '&chold a managed spawner item to stack.'
+  # The text or value for Not Managed Spawner. Available options: Any valid string text
+  NOT-MANAGED-SPAWNER: '&cthat is not a managed spawner.'
+  # The text or value for Not Found. Available options: Any valid string text
+  NOT-FOUND: '&cspawner not found.'
+  # The text or value for Unknown Type. Available options: Any valid string text
+  UNKNOWN-TYPE: '&cunknown spawner type ''&f{type}&c''.'
+  # The text or value for Save Failed. Available options: Any valid string text
+  SAVE-FAILED: '&cfailed to save that spawner. please try again.'
+  # The text or value for Inventory Full. Available options: Any valid string text
+  INVENTORY-FULL: '&cyour inventory is full.'
+  # The text or value for Loot Empty. Available options: Any valid string text
+  LOOT-EMPTY: '&cthat loot entry is empty.'
+  # The text or value for No Space. Available options: Any valid string text
+  NO-SPACE: '&cthere was no space to collect your spawner loot.'
+  # The text or value for No Loot On Page. Available options: Any valid string text
+  NO-LOOT-ON-PAGE: '&cthere is no loot stored on this page.'
+  # The text or value for No Sellable Items. Available options: Any valid string text
+  NO-SELLABLE-ITEMS: '&cthere are no sellable items stored in that spawner.'
+  # The text or value for Sell Failed. Available options: Any valid string text
+  SELL-FAILED: '&cfailed to pay out the spawner loot sale.'
+  # The text or value for Xp Disabled. Available options: Any valid string text
+  XP-DISABLED: '&cXP collection is disabled on this server.'
+  # The text or value for No Xp Stored. Available options: Any valid string text
+  NO-XP-STORED: '&cthere is no XP stored in that spawner.'
+  # The text or value for World Not Loaded. Available options: Any valid string text
+  WORLD-NOT-LOADED: '&cThat spawner''s world is not currently loaded.'
+  # The text or value for Temp Registered. Available options: Any valid string text
+  TEMP-REGISTERED: '&atemporary spawner registered.'
+  # The text or value for Temp Removed. Available options: Any valid string text
+  TEMP-REMOVED: '&atemporary spawner removed.'
+  # The text or value for Temp Cannot Stack. Available options: Any valid string text
+  TEMP-CANNOT-STACK: '&ctemporary spawners cannot be stacked.'
+  # The text or value for Temp Needs Player Block. Available options: Any valid string text
+  TEMP-NEEDS-PLAYER-BLOCK: '&ctemporary spawner needs a player and block.'
+  # The text or value for No Panel Permission. Available options: Any valid string text
+  NO-PANEL-PERMISSION: '&cYou do not have permission to open the spawner admin panel.'
+  # The text or value for No Give Permission. Available options: Any valid string text
+  NO-GIVE-PERMISSION: '&cYou do not have permission to give spawners.'
+  # The text or value for No Reload Permission. Available options: Any valid string text
+  NO-RELOAD-PERMISSION: '&cYou do not have permission to reload spawners.'
+  # The text or value for No Remove Permission. Available options: Any valid string text
+  NO-REMOVE-PERMISSION: '&cYou do not have permission to remove spawners.'
+  # The text or value for Player Only. Available options: Any valid string text
+  PLAYER-ONLY: 'Player only.'
+  # The text or value for Target Not Online. Available options: Any valid string text
+  TARGET-NOT-ONLINE: '&ctarget player must be online.'
+  # The text or value for Player Not Online. Available options: Any valid string text
+  PLAYER-NOT-ONLINE: '&cPlayer ''&f{player}&c'' must be online.'
+  # The text or value for Amount Positive. Available options: Any valid string text
+  AMOUNT-POSITIVE: '&cspawner amount must be positive.'
+  # The text or value for Amount Invalid. Available options: Any valid string text
+  AMOUNT-INVALID: '&cAmount must be a valid positive number.'
+  # The text or value for Amount Greater Than Zero. Available options: Any valid string text
+  AMOUNT-GREATER-THAN-ZERO: '&cAmount must be greater than zero.'
+  # The text or value for Create Item Failed. Available options: Any valid string text
+  CREATE-ITEM-FAILED: '&cfailed to create the spawner item.'
+  # The text or value for Give Usage. Available options: Any valid string text
+  GIVE-USAGE: 'Use /{label} give <player> <type> [amount]'
+  # The text or value for Give Usage Command. Available options: Any valid string text
+  GIVE-USAGE-COMMAND: '&cUsage: /spawner give <player> <type> [amount]'
+  # The text or value for Look At Spawner Inspect. Available options: Any valid string text
+  LOOK-AT-SPAWNER-INSPECT: '&cLook at a managed spawner to inspect it.'
+  # The text or value for Look At Spawner Remove. Available options: Any valid string text
+  LOOK-AT-SPAWNER-REMOVE: '&cLook at a managed spawner to remove it.'
+  # The text or value for Hold Spawner To Split. Available options: Any valid string text
+  HOLD-SPAWNER-TO-SPLIT: '&cYou must be holding a managed spawner item.'
+  # The text or value for Cannot Split One. Available options: Any valid string text
+  CANNOT-SPLIT-ONE: '&cThis spawner item cannot be split (amount is 1).'
+  # The text or value for Split Usage. Available options: Any valid string text
+  SPLIT-USAGE: '&cUsage: /spawner split <amount>'
+  # The text or value for Invalid Split Amount. Available options: Any valid string text
+  INVALID-SPLIT-AMOUNT: '&cInvalid split amount.'
+  # The text or value for Split Greater Than Zero. Available options: Any valid string text
+  SPLIT-GREATER-THAN-ZERO: '&cSplit amount must be greater than zero.'
+  # The text or value for Split Less Than Current. Available options: Any valid string text
+  SPLIT-LESS-THAN-CURRENT: '&cSplit amount must be less than the current stack size (&f{max}&c).'
+  # The text or value for Split Failed. Available options: Any valid string text
+  SPLIT-FAILED: '&cFailed to create split spawner item.'
+  # Configuration section for Usage.
+  USAGE:
+  - '&8&m----------- &dSpawner &8&m-----------'
+  - '&f/{label} &7- Open the spawner panel'
+  - '&f/{label} info &7- Inspect the looked-at spawner'
+  - '&f/{label} panel &7- Open the spawner admin panel'
+  - '&f/{label} give <player> <type> [amount] &7- Give a spawner item'
+  - '&f/{label} split <amount> &7- Split the held spawner item'
+  - '&f/{label} reload &7- Reload spawner settings'
+  - '&f/{label} remove &7- Remove the looked-at spawner'
+  # The text or value for Info Header. Available options: Any valid string text
+  INFO-HEADER: '&8&m----------- &bSpawner Info &8&m-----------'
+  # The text or value for Info Type. Available options: Any valid string text
+  INFO-TYPE: '&7Type: &f{type}'
+  # The text or value for Info Rest Hidden. Available options: Any valid string text
+  INFO-REST-HIDDEN: '&7The rest is hidden on spawners you cannot access.'
+  # The text or value for Info Owner. Available options: Any valid string text
+  INFO-OWNER: '&7Owner: &f{owner}'
+  # The text or value for Info Stack. Available options: Any valid string text
+  INFO-STACK: '&7Stack: &f{amount}'
+  # The text or value for Info Stored Loot. Available options: Any valid string text
+  INFO-STORED-LOOT: '&7Stored Loot: &f{amount}'
+  # The text or value for Info Location. Available options: Any valid string text
+  INFO-LOCATION: '&7Location: &f{world} {x}, {y}, {z}'
 # Configuration section for Types.
 TYPES:
   # Configuration section for Pig.

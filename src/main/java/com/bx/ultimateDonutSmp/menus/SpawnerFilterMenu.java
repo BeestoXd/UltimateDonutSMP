@@ -161,7 +161,9 @@ public class SpawnerFilterMenu extends BaseMenu {
                 }
                 instance.setUpdatedAt(System.currentTimeMillis());
                 plugin.getSpawnerManager().saveSpawnerAndLoot(instance);
-                player.sendMessage(ColorUtils.toComponent("&aEnabled storing for all drops on this spawner."));
+                player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                        "FILTER-ENABLED-ALL",
+                        "&aEnabled storing for all drops on this spawner.")));
             }
             plugin.getSpawnerManager().playFilterToggleSound(player);
             new SpawnerFilterMenu(plugin, spawnerId, returnPage).open(player);
@@ -176,7 +178,9 @@ public class SpawnerFilterMenu extends BaseMenu {
                 }
                 instance.setUpdatedAt(System.currentTimeMillis());
                 plugin.getSpawnerManager().saveSpawnerAndLoot(instance);
-                player.sendMessage(ColorUtils.toComponent("&cDisabled storing for all drops on this spawner."));
+                player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                        "FILTER-DISABLED-ALL",
+                        "&cDisabled storing for all drops on this spawner.")));
             }
             plugin.getSpawnerManager().playFilterToggleSound(player);
             new SpawnerFilterMenu(plugin, spawnerId, returnPage).open(player);
@@ -193,10 +197,14 @@ public class SpawnerFilterMenu extends BaseMenu {
             instance.setUpdatedAt(System.currentTimeMillis());
             plugin.getSpawnerManager().saveSpawnerAndLoot(instance);
 
-            String statusMsg = newState ? "&cDisabled &7(Not Storing)" : "&aEnabled &7(Storing)";
-            player.sendMessage(ColorUtils.toComponent("&aToggled filter for &f"
-                    + plugin.getWorthManager().prettifyMaterial(drop.material())
-                    + " &ato " + statusMsg + "&a."));
+            String statusMsg = newState
+                    ? plugin.getSpawnerManager().getMessage("FILTER-STATUS-DISABLED", "&cDisabled &7(Not Storing)")
+                    : plugin.getSpawnerManager().getMessage("FILTER-STATUS-ENABLED", "&aEnabled &7(Storing)");
+            player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                    "FILTER-TOGGLED",
+                    "&aToggled filter for &f{item} &ato {status}&a.",
+                    "{item}", plugin.getWorthManager().prettifyMaterial(drop.material()),
+                    "{status}", statusMsg)));
 
             plugin.getSpawnerManager().playFilterToggleSound(player);
             new SpawnerFilterMenu(plugin, spawnerId, returnPage).open(player);

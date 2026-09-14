@@ -420,10 +420,14 @@ public class SpawnerStorageMenu extends BaseMenu {
                     instance.setUpdatedAt(System.currentTimeMillis());
                     plugin.getSpawnerManager().saveSpawnerAndLoot(instance);
 
-                    String statusMsg = !currentState ? "&cDisabled &7(Not Storing)" : "&aEnabled &7(Storing)";
-                    player.sendMessage(ColorUtils.toComponent("&aToggled filter for &f"
-                            + plugin.getWorthManager().prettifyMaterial(slotItem.getType())
-                            + " &ato " + statusMsg + "&a."));
+                    String statusMsg = !currentState
+                            ? plugin.getSpawnerManager().getMessage("FILTER-STATUS-DISABLED", "&cDisabled &7(Not Storing)")
+                            : plugin.getSpawnerManager().getMessage("FILTER-STATUS-ENABLED", "&aEnabled &7(Storing)");
+                    player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                            "FILTER-TOGGLED",
+                            "&aToggled filter for &f{item} &ato {status}&a.",
+                            "{item}", plugin.getWorthManager().prettifyMaterial(slotItem.getType()),
+                            "{status}", statusMsg)));
 
                     plugin.getSpawnerManager().playFilterToggleSound(player);
                     topInventory.setItem(rawSlot, applyStorageMeta(plugin, instance, slotItem.getType(), slotItem.getAmount()));
