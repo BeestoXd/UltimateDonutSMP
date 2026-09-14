@@ -2857,6 +2857,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&aKlik untuk mengklaim hadiah ini!'
+    REWARD-NO-KEY: '&cKamu tidak memiliki kunci {crate}!'
+    CLAIM-SUCCESS: '&7kamu mengklaim &f{reward}&7 dari &b{crate}&7.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7mengklaim &f{reward} &7dari &b{crate}&7.'
+    NO-KEYS: '&ckamu tidak lagi memiliki kunci untuk {crate}.'
+    INVENTORY-FULL: '&cinventaris kamu penuh. kosongkan ruang sebelum mengklaim hadiah ini.'
+    NO-PLAYER-DATA: '&cdata pemain kamu tidak dapat dimuat. coba lagi sebentar lagi.'
+    REWARD-GRANT-FAILED: '&cgagal memberikan hadiah itu. kuncimu telah dikembalikan.'
+    INVALID-REWARD: '&chadiah itu sudah tidak valid.'
+    REWARD-SELECT-FAILED: '&cHadiah itu tidak dapat dipilih.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"

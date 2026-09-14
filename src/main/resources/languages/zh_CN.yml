@@ -2711,6 +2711,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&a点击领取此奖励！'
+    REWARD-NO-KEY: '&c你没有 {crate} 钥匙！'
+    CLAIM-SUCCESS: '&7你领取了 &f{reward}&7 从 &b{crate}&7。'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7领取了 &f{reward} &7从 &b{crate}&7。'
+    NO-KEYS: '&c你不再拥有 {crate} 的钥匙。'
+    INVENTORY-FULL: '&c你的背包已满。领取此奖励前请先清理空间。'
+    NO-PLAYER-DATA: '&c无法加载你的玩家数据。请稍后再试。'
+    REWARD-GRANT-FAILED: '&c发放该奖励失败。你的钥匙已返还。'
+    INVALID-REWARD: '&c该奖励不再有效。'
+    REWARD-SELECT-FAILED: '&c无法选择该奖励。'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"

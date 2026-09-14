@@ -2856,6 +2856,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&aKlicke, um diese Belohnung abzuholen!'
+    REWARD-NO-KEY: '&cDu hast keinen {crate}-Schlüssel!'
+    CLAIM-SUCCESS: '&7du hast &f{reward}&7 von &b{crate}&7 abgeholt.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7hat &f{reward} &7von &b{crate}&7 abgeholt.'
+    NO-KEYS: '&cdu hast keinen Schlüssel mehr für {crate}.'
+    INVENTORY-FULL: '&cdein Inventar ist voll. schaffe Platz, bevor du diese Belohnung abholst.'
+    NO-PLAYER-DATA: '&cdeine Spielerdaten konnten nicht geladen werden. versuche es gleich noch einmal.'
+    REWARD-GRANT-FAILED: '&cdiese Belohnung konnte nicht vergeben werden. dein Schlüssel wurde zurückerstattet.'
+    INVALID-REWARD: '&cdiese Belohnung ist nicht mehr gültig.'
+    REWARD-SELECT-FAILED: '&cDiese Belohnung konnte nicht ausgewählt werden.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"

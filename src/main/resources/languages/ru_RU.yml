@@ -2722,6 +2722,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&aНажмите, чтобы забрать эту награду!'
+    REWARD-NO-KEY: '&cУ вас нет ключа от {crate}!'
+    CLAIM-SUCCESS: '&7вы забрали &f{reward}&7 из &b{crate}&7.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7забрал &f{reward} &7из &b{crate}&7.'
+    NO-KEYS: '&cу вас больше нет ключа от {crate}.'
+    INVENTORY-FULL: '&cваш инвентарь полон. освободите место перед получением этой награды.'
+    NO-PLAYER-DATA: '&cне удалось загрузить данные игрока. повторите попытку через мгновение.'
+    REWARD-GRANT-FAILED: '&cне удалось выдать награду. ваш ключ был возвращён.'
+    INVALID-REWARD: '&cэта награда больше недействительна.'
+    REWARD-SELECT-FAILED: '&cЭту награду нельзя выбрать.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"
