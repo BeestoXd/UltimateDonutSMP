@@ -47,7 +47,8 @@ public class SpawnerInteractListener implements Listener {
         if (plugin.getSpawnStashManager() != null && plugin.getSpawnStashManager().isActiveBlock(block)) {
             plugin.getSpawnStashManager().triggerBlockAlert(player, block, "open");
             if (!plugin.getSpawnerManager().canOpen(player, instance)) {
-                player.sendMessage(ColorUtils.toComponent("&cYou do not have access to that spawner."));
+                player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                        "NO-ACCESS", "&cyou do not have access to that spawner.")));
                 return;
             }
 
@@ -67,7 +68,8 @@ public class SpawnerInteractListener implements Listener {
         }
 
         if (!plugin.getSpawnerManager().canOpen(player, instance)) {
-            player.sendMessage(ColorUtils.toComponent("&cYou do not have access to that spawner."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                    "NO-ACCESS", "&cyou do not have access to that spawner.")));
             return;
         }
 

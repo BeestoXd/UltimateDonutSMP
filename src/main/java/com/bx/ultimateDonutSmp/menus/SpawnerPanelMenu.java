@@ -110,7 +110,9 @@ public class SpawnerPanelMenu extends BaseMenu {
         SpawnerInstance instance = spawners.get(entryIndex);
         Location destination = plugin.getSpawnerManager().getSpawnerCenter(instance).add(0, 1, 0);
         if (destination.getWorld() == null) {
-            player.sendMessage(ColorUtils.toComponent("&cThat spawner's world is not currently loaded."));
+            player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                    "WORLD-NOT-LOADED",
+                    "&cThat spawner's world is not currently loaded.")));
             return;
         }
 
@@ -120,8 +122,13 @@ public class SpawnerPanelMenu extends BaseMenu {
                     if (!Boolean.TRUE.equals(success) || !player.isOnline()) {
                         return;
                     }
-                    player.sendMessage(ColorUtils.toComponent("&aTeleported to spawner at &f"
-                            + instance.getX() + ", " + instance.getY() + ", " + instance.getZ() + "&a in &f" + worldLabel + "&a."));
+                    player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getMessage(
+                            "TELEPORTED",
+                            "&aTeleported to spawner at &f{x}, {y}, {z}&a in &f{world}&a.",
+                            "x", instance.getX(),
+                            "y", instance.getY(),
+                            "z", instance.getZ(),
+                            "world", worldLabel)));
                 }));
     }
 }

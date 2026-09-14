@@ -444,20 +444,68 @@ public class SpawnerManager {
         return ColorUtils.strip(getTypeDisplayName(typeKey));
     }
 
+    public String getSilkTouchRequiredMessage() {
+        return getMessage("SILK-TOUCH-REQUIRED", SILK_TOUCH_REQUIRED_MESSAGE);
+    }
+
+    public String getMessage(String path, String fallback, Object... placeholders) {
+        if (plugin == null || plugin.getConfigManager() == null) {
+            return formatMessage(fallback, placeholders);
+        }
+        FileConfiguration config = plugin.getConfigManager().getSpawners();
+        String text = config != null ? config.getString("MESSAGES." + path, fallback) : fallback;
+        if (text == null) {
+            text = fallback != null ? fallback : "";
+        }
+        return formatMessage(text, placeholders);
+    }
+
+    public List<String> getMessageList(String path, List<String> fallback, Object... placeholders) {
+        if (plugin == null || plugin.getConfigManager() == null) {
+            return formatMessageList(fallback, placeholders);
+        }
+        FileConfiguration config = plugin.getConfigManager().getSpawners();
+        List<String> list = config != null ? config.getStringList("MESSAGES." + path) : null;
+        if (list == null || list.isEmpty()) {
+            list = fallback != null ? fallback : List.of();
+        }
+        return formatMessageList(list, placeholders);
+    }
+
+    private static String formatMessage(String text, Object... placeholders) {
+        String output = text == null ? "" : text;
+        for (int index = 0; index + 1 < placeholders.length; index += 2) {
+            String key = String.valueOf(placeholders[index]);
+            String val = placeholders[index + 1] != null ? String.valueOf(placeholders[index + 1]) : "";
+            output = output.replace(key, val);
+            if (!key.startsWith("{") || !key.endsWith("}")) {
+                output = output.replace("{" + key + "}", val);
+            }
+        }
+        return output;
+    }
+
+    private static List<String> formatMessageList(List<String> list, Object... placeholders) {
+        if (list == null) {
+            return List.of();
+        }
+        return list.stream().map(line -> formatMessage(line, placeholders)).toList();
+    }
+
     public ActionResult giveSpawner(Player target, String typeKey, long amount) {
         if (!enabled) {
-            return fail("&cspawner system is currently disabled.");
+            return fail(getMessage("DISABLED", "&cspawner system is currently disabled."));
         }
         if (target == null) {
-            return fail("&ctarget player must be online.");
+            return fail(getMessage("TARGET-NOT-ONLINE", "&ctarget player must be online."));
         }
         if (amount <= 0L) {
-            return fail("&cspawner amount must be positive.");
+            return fail(getMessage("AMOUNT-POSITIVE", "&cspawner amount must be positive."));
         }
 
         SpawnerTypeDefinition definition = getTypeDefinition(typeKey);
         if (definition == null) {
-            return fail("&cunknown spawner type '&f" + typeKey + "&c'.");
+            return fail(getMessage("UNKNOWN-TYPE", "&cunknown spawner type '&f{type}&c'.", "{type}", typeKey));
         }
 
         long remaining = amount;
@@ -465,21 +513,24 @@ public class SpawnerManager {
             int stackSize = (int) Math.min(64, remaining);
             ItemStack item = createSpawnerItem(definition.key(), stackSize);
             if (item == null) {
-                return fail("&cfailed to create the spawner item.");
+                return fail(getMessage("CREATE-ITEM-FAILED", "&cfailed to create the spawner item."));
             }
             Map<Integer, ItemStack> leftovers = target.getInventory().addItem(item);
             leftovers.values().forEach(leftover -> target.getWorld().dropItemNaturally(target.getLocation(), leftover));
             remaining -= stackSize;
         }
-        return ok("&aGave &f" + NumberUtils.format(amount) + "x " + ColorUtils.strip(definition.displayName()) + "&a to &f" + target.getName() + "&a.");
+        return ok(getMessage("GAVE-SPAWNER", "&aGave &f{amount}x {type}&a to &f{player}&a.",
+                "{amount}", NumberUtils.format(amount),
+                "{type}", ColorUtils.strip(definition.displayName()),
+                "{player}", target.getName()));
     }
 
     public ActionResult placeSpawner(Player player, Block block, ItemStack item) {
         if (!enabled) {
-            return fail("&cspawner system is currently disabled.");
+            return fail(getMessage("DISABLED", "&cspawner system is currently disabled."));
         }
         if (player == null || block == null || !isSpawnerItem(item)) {
-            return fail("&cthat is not a managed spawner item.");
+            return fail(getMessage("NOT-SPAWNER-ITEM", "&cthat is not a managed spawner item."));
         }
 
         String typeKey = getSpawnerItemType(item);
@@ -490,19 +541,20 @@ public class SpawnerManager {
         long amount = baseAmount * quantity;
 
         if (amount <= 0L) {
-            return fail("&cthis spawner item has an invalid amount.");
+            return fail(getMessage("INVALID-AMOUNT", "&cthis spawner item has an invalid amount."));
         }
         if (amount > maxStackPerBlock) {
-            return fail("&cthat spawner item exceeds the max stack per block (&f" + NumberUtils.format(maxStackPerBlock) + "&c).");
+            return fail(getMessage("MAX-STACK-EXCEEDED", "&cthat would exceed the max stack per block (&f{max}&c).",
+                    "{max}", NumberUtils.format(maxStackPerBlock)));
         }
 
         if (getSpawner(block) != null) {
-            return fail("&cthat block is already a managed spawner.");
+            return fail(getMessage("ALREADY-SPAWNER", "&cthat block is already a managed spawner."));
         }
 
         SpawnerTypeDefinition definition = getTypeDefinition(typeKey);
         if (definition == null) {
-            return fail("&cunknown spawner type '&f" + typeKey + "&c'.");
+            return fail(getMessage("UNKNOWN-TYPE", "&cunknown spawner type '&f{type}&c'.", "{type}", typeKey));
         }
 
         long now = System.currentTimeMillis();
@@ -524,7 +576,7 @@ public class SpawnerManager {
 
         long id = plugin.getDatabaseManager().createSpawner(instance);
         if (id <= 0L) {
-            return fail("&cfailed to save that spawner. please try again.");
+            return fail(getMessage("SAVE-FAILED", "&cfailed to save that spawner. please try again."));
         }
 
         instance.setId(id);
@@ -546,26 +598,27 @@ public class SpawnerManager {
 
         return new ActionResult(
                 true,
-                "&aplaced &f" + NumberUtils.format(instance.getStackAmount()) + "x "
-                        + ColorUtils.strip(definition.displayName()) + "&a.",
+                getMessage("PLACED", "&aplaced &f{amount}x {type}&a.",
+                        "{amount}", NumberUtils.format(instance.getStackAmount()),
+                        "{type}", ColorUtils.strip(definition.displayName())),
                 quantity
         );
     }
 
     public ActionResult createTemporarySpawner(Player owner, Block block, String typeKey, long amount, SpawnerInstance.AccessMode accessMode) {
         if (!enabled) {
-            return fail("&cspawner system is currently disabled.");
+            return fail(getMessage("DISABLED", "&cspawner system is currently disabled."));
         }
         if (owner == null || block == null) {
-            return fail("&ctemporary spawner needs a player and block.");
+            return fail(getMessage("TEMP-NEEDS-PLAYER-BLOCK", "&ctemporary spawner needs a player and block."));
         }
         if (getSpawner(block) != null) {
-            return fail("&cthat block is already a managed spawner.");
+            return fail(getMessage("ALREADY-SPAWNER", "&cthat block is already a managed spawner."));
         }
 
         SpawnerTypeDefinition definition = getTypeDefinition(typeKey);
         if (definition == null) {
-            return fail("&cunknown spawner type '&f" + typeKey + "&c'.");
+            return fail(getMessage("UNKNOWN-TYPE", "&cunknown spawner type '&f{type}&c'.", "{type}", typeKey));
         }
 
         long now = System.currentTimeMillis();
@@ -590,7 +643,7 @@ public class SpawnerManager {
             temporarySpawnerIds.add(instance.getId());
         }
         syncSpawnerBlockStateImmediate(instance);
-        return ok("&atemporary spawner registered.");
+        return ok(getMessage("TEMP-REGISTERED", "&atemporary spawner registered."));
     }
 
     public boolean isTemporarySpawner(SpawnerInstance instance) {
@@ -617,35 +670,36 @@ public class SpawnerManager {
 
     public ActionResult stackSpawner(Player player, Block block, ItemStack item) {
         if (!enabled) {
-            return fail("&cspawner system is currently disabled.");
+            return fail(getMessage("DISABLED", "&cspawner system is currently disabled."));
         }
         SpawnerInstance existing = getSpawner(block);
         if (existing == null) {
-            return fail("&cthat is not a managed spawner.");
+            return fail(getMessage("NOT-MANAGED-SPAWNER", "&cthat is not a managed spawner."));
         }
         if (isTemporarySpawner(existing)) {
-            return fail("&ctemporary spawners cannot be stacked.");
+            return fail(getMessage("TEMP-CANNOT-STACK", "&ctemporary spawners cannot be stacked."));
         }
         if (!isSpawnerItem(item)) {
-            return fail("&chold a managed spawner item to stack.");
+            return fail(getMessage("HOLD-TO-STACK", "&chold a managed spawner item to stack."));
         }
         if (!canModify(player, existing)) {
-            return fail("&cyou do not own that spawner.");
+            return fail(getMessage("NOT-OWNER", "&cyou do not own that spawner."));
         }
 
         String typeKey = Objects.requireNonNullElse(getSpawnerItemType(item), "");
         if (!existing.getMobTypeKey().equalsIgnoreCase(typeKey)) {
-            return fail("&cyou can only stack the same spawner type onto this block.");
+            return fail(getMessage("TYPE-MISMATCH", "&cyou can only stack the same spawner type onto this block."));
         }
 
         long baseAmount = getSpawnerItemBaseAmount(item);
         if (baseAmount <= 0L) {
-            return fail("&cthat spawner item has an invalid amount.");
+            return fail(getMessage("INVALID-AMOUNT", "&cthis spawner item has an invalid amount."));
         }
 
         long remainingCapacity = maxStackPerBlock - existing.getStackAmount();
         if (remainingCapacity <= 0L) {
-            return fail("&cthat spawner is already at the max stack per block (&f" + NumberUtils.format(maxStackPerBlock) + "&c).");
+            return fail(getMessage("ALREADY-AT-MAX-STACK", "&cthat spawner is already at the max stack per block (&f{max}&c).",
+                    "{max}", NumberUtils.format(maxStackPerBlock)));
         }
 
         boolean stackAll = player.isSneaking();
@@ -654,12 +708,13 @@ public class SpawnerManager {
         long addAmount = baseAmount * quantity;
 
         if (addAmount <= 0L) {
-            return fail("&cthat spawner item has an invalid amount.");
+            return fail(getMessage("INVALID-AMOUNT", "&cthis spawner item has an invalid amount."));
         }
 
         long targetAmount = existing.getStackAmount() + addAmount;
         if (targetAmount > maxStackPerBlock) {
-            return fail("&cthat would exceed the max stack per block (&f" + NumberUtils.format(maxStackPerBlock) + "&c).");
+            return fail(getMessage("MAX-STACK-EXCEEDED", "&cthat would exceed the max stack per block (&f{max}&c).",
+                    "{max}", NumberUtils.format(maxStackPerBlock)));
         }
 
         existing.setStackAmount(targetAmount);
@@ -669,7 +724,8 @@ public class SpawnerManager {
             syncSpawnerBlockStateImmediate(existing);
         });
 
-        return new ActionResult(true, "&aspawner stack updated to &f" + NumberUtils.format(existing.getStackAmount()) + "&a.", quantity);
+        return new ActionResult(true, getMessage("STACKED", "&aspawner stack updated to &f{amount}&a.",
+                "{amount}", NumberUtils.format(existing.getStackAmount())), quantity);
     }
 
     public SpawnerInstance getSpawner(Block block) {
@@ -817,17 +873,17 @@ public class SpawnerManager {
         if (isTemporarySpawner(instance)) {
             unregisterSpawner(instance);
             temporarySpawnerIds.remove(instance.getId());
-            return new ActionResult(true, "&atemporary spawner removed.", 0, true);
+            return new ActionResult(true, getMessage("TEMP-REMOVED", "&atemporary spawner removed."), 0, true);
         }
         if (instance == null) {
-            return fail("&cthat is not a managed spawner.");
+            return fail(getMessage("NOT-MANAGED-SPAWNER", "&cthat is not a managed spawner."));
         }
         if (!canBreak(player, instance)) {
-            return fail("&cyou do not have permission to break that spawner.");
+            return fail(getMessage("NO-BREAK-PERMISSION", "&cyou do not have permission to break that spawner."));
         }
 
         if (requireSilkTouch && !hasSilkTouchAccess(player)) {
-            return fail(SILK_TOUCH_REQUIRED_MESSAGE);
+            return fail(getSilkTouchRequiredMessage());
         }
 
         long totalStack = instance.getStackAmount();
@@ -850,7 +906,7 @@ public class SpawnerManager {
             fullyDestroyed = false;
         }
 
-        String spawnerName = ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey()));
+        String spawnerName = getPlainTypeDisplayName(instance.getMobTypeKey());
         if (player != null) {
             plugin.getPlayerLogsManager().log(
                     player.getUniqueId(),
@@ -886,44 +942,50 @@ public class SpawnerManager {
             }
         }
 
-        String verb = returnedItem ? "&apicked up &f" : "&aremoved &f";
-        return new ActionResult(true, verb + NumberUtils.format(breakAmount) + "x "
-                + ColorUtils.strip(getTypeDisplayName(instance.getMobTypeKey())) + "&a.", (int) breakAmount, fullyDestroyed);
+        String msg = returnedItem
+                ? getMessage("PICKED-UP", "&apicked up &f{amount}x {type}&a.",
+                        "{amount}", NumberUtils.format(breakAmount),
+                        "{type}", spawnerName)
+                : getMessage("REMOVED", "&aremoved &f{amount}x {type}&a.",
+                        "{amount}", NumberUtils.format(breakAmount),
+                        "{type}", spawnerName);
+        return new ActionResult(true, msg, (int) breakAmount, fullyDestroyed);
     }
 
     public ActionResult collectLootEntry(Player player, SpawnerInstance instance, String lootKey, boolean collectAll) {
         if (player == null || instance == null) {
-            return fail("&cspawner not found.");
+            return fail(getMessage("NOT-FOUND", "&cspawner not found."));
         }
         if (!canOpen(player, instance)) {
-            return fail("&cyou do not have access to that spawner.");
+            return fail(getMessage("NO-ACCESS", "&cyou do not have access to that spawner."));
         }
 
         SpawnerLootEntry entry = instance.getStoredLoot(lootKey);
         if (entry == null || entry.getAmount() <= 0L) {
-            return fail("&cthat loot entry is empty.");
+            return fail(getMessage("LOOT-EMPTY", "&cthat loot entry is empty."));
         }
 
         long requested = collectAll ? entry.getAmount() : Math.min(entry.getAmount(), entry.getMaterial().getMaxStackSize());
         long moved = moveMaterialToInventory(player.getInventory(), entry.getMaterial(), requested);
         if (moved <= 0L) {
-            return fail("&cyour inventory is full.");
+            return fail(getMessage("INVENTORY-FULL", "&cyour inventory is full."));
         }
 
         instance.removeStoredLoot(entry.getKey(), moved);
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
         playCollectLootSound(player);
-        return ok("&acollected &f" + NumberUtils.format(moved) + "x "
-                + plugin.getWorthManager().prettifyMaterial(entry.getMaterial()) + "&a.");
+        return ok(getMessage("COLLECTED", "&acollected &f{amount}x {item}&a.",
+                "{amount}", NumberUtils.format(moved),
+                "{item}", plugin.getWorthManager().prettifyMaterial(entry.getMaterial())));
     }
 
     public ActionResult collectAllLoot(Player player, SpawnerInstance instance) {
         if (player == null || instance == null) {
-            return fail("&cspawner not found.");
+            return fail(getMessage("NOT-FOUND", "&cspawner not found."));
         }
         if (!canOpen(player, instance)) {
-            return fail("&cyou do not have access to that spawner.");
+            return fail(getMessage("NO-ACCESS", "&cyou do not have access to that spawner."));
         }
 
         long totalMoved = 0L;
@@ -938,21 +1000,22 @@ public class SpawnerManager {
         }
 
         if (totalMoved <= 0L) {
-            return fail("&cthere was no space to collect your spawner loot.");
+            return fail(getMessage("NO-SPACE", "&cthere was no space to collect your spawner loot."));
         }
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
         playCollectLootSound(player);
-        return ok("&acollected &f" + NumberUtils.format(totalMoved) + "&a items from this spawner.");
+        return ok(getMessage("COLLECTED-ALL", "&acollected &f{amount}&a items from this spawner.",
+                "{amount}", NumberUtils.format(totalMoved)));
     }
 
     public ActionResult dropPageLoot(Player player, SpawnerInstance instance, int page) {
         if (player == null || instance == null) {
-            return fail("&cspawner not found.");
+            return fail(getMessage("NOT-FOUND", "&cspawner not found."));
         }
         if (!canOpen(player, instance)) {
-            return fail("&cyou do not have access to that spawner.");
+            return fail(getMessage("NO-ACCESS", "&cyou do not have access to that spawner."));
         }
 
         Location dropLocation = getSpawnerCenter(instance).add(0, 0.5D, 0);
@@ -966,13 +1029,14 @@ public class SpawnerManager {
         }
 
         if (dropped <= 0L) {
-            return fail("&cthere is no loot stored on this page.");
+            return fail(getMessage("NO-LOOT-ON-PAGE", "&cthere is no loot stored on this page."));
         }
 
         instance.setUpdatedAt(System.currentTimeMillis());
         saveLoot(instance);
         playDropLootSound(player);
-        return ok("&adropped &f" + NumberUtils.format(dropped) + "&a stored items from this page on the ground.");
+        return ok(getMessage("DROPPED-PAGE", "&adropped &f{amount}&a stored items from this page on the ground.",
+                "{amount}", NumberUtils.format(dropped)));
     }
 
     public record SpawnerSellPreview(double totalPayout, long totalSellableItems, double maxMultiplier) {}
@@ -1027,10 +1091,10 @@ public class SpawnerManager {
 
     public SellLootResult sellAllLoot(Player player, SpawnerInstance instance) {
         if (player == null || instance == null) {
-            return failSell("&cspawner not found.");
+            return failSell(getMessage("NOT-FOUND", "&cspawner not found."));
         }
         if (!canOpen(player, instance)) {
-            return failSell("&cyou do not have access to that spawner.");
+            return failSell(getMessage("NO-ACCESS", "&cyou do not have access to that spawner."));
         }
 
         Map<SellCategory, Double> progress = new EnumMap<>(SellCategory.class);
@@ -1068,7 +1132,7 @@ public class SpawnerManager {
         }
 
         if (totalPayout <= 0D || soldItems <= 0L) {
-            return failSell("&cthere are no sellable items stored in that spawner.");
+            return failSell(getMessage("NO-SELLABLE-ITEMS", "&cthere are no sellable items stored in that spawner."));
         }
 
         Map<SellCategory, Double> earnedCopy = new EnumMap<>(earnedByCategory);
@@ -1081,7 +1145,7 @@ public class SpawnerManager {
 
         var depositResult = plugin.getEconomyManager().deposit(player, totalPayout, EconomyReason.SELL_PAYOUT);
         if (!depositResult.success()) {
-            return failSell("&cfailed to pay out the spawner loot sale.");
+            return failSell(getMessage("SELL-FAILED", "&cfailed to pay out the spawner loot sale."));
         }
 
         PlayerData data = plugin.getPlayerDataManager().get(player);
@@ -1094,8 +1158,9 @@ public class SpawnerManager {
         playSellSuccessSound(player);
         return new SellLootResult(
                 true,
-                "&asold &f" + NumberUtils.format(soldItems) + "&a items for "
-                        + plugin.getCurrencyManager().formatMoneyCompact(totalPayout) + "&a.",
+                getMessage("SOLD", "&asold &f{amount}&a items for {price}&a.",
+                        "{amount}", NumberUtils.format(soldItems),
+                        "{price}", plugin.getCurrencyManager().formatMoneyCompact(totalPayout)),
                 totalPayout,
                 soldItems
         );
@@ -1103,18 +1168,18 @@ public class SpawnerManager {
 
     public ActionResult collectXp(Player player, SpawnerInstance instance) {
         if (!xpEnabled) {
-            return fail("&cXP collection is disabled on this server.");
+            return fail(getMessage("XP-DISABLED", "&cXP collection is disabled on this server."));
         }
         if (player == null || instance == null) {
-            return fail("&cspawner not found.");
+            return fail(getMessage("NOT-FOUND", "&cspawner not found."));
         }
         if (!canOpen(player, instance)) {
-            return fail("&cyou do not have access to that spawner.");
+            return fail(getMessage("NO-ACCESS", "&cyou do not have access to that spawner."));
         }
 
         double xp = instance.getStoredXp();
         if (xp <= 0.0) {
-            return fail("&cthere is no XP stored in that spawner.");
+            return fail(getMessage("NO-XP-STORED", "&cthere is no XP stored in that spawner."));
         }
 
         instance.setStoredXp(0.0);
@@ -1127,22 +1192,23 @@ public class SpawnerManager {
         player.giveExp(xpPoints);
 
         playCollectXpSound(player);
-        return ok("&acollected &f" + String.format("%.1f", xp) + " &aXP points!");
+        return ok(getMessage("COLLECTED-XP", "&acollected &f{amount} &aXP points!",
+                "{amount}", String.format(Locale.US, "%.1f", xp)));
     }
 
     public ActionResult sellAndCollectXp(Player player, SpawnerInstance instance) {
         if (player == null || instance == null) {
-            return fail("&cspawner not found.");
+            return fail(getMessage("NOT-FOUND", "&cspawner not found."));
         }
         if (!canOpen(player, instance)) {
-            return fail("&cyou do not have access to that spawner.");
+            return fail(getMessage("NO-ACCESS", "&cyou do not have access to that spawner."));
         }
 
         SellLootResult sellResult = sellAllLoot(player, instance);
         ActionResult xpResult = xpEnabled ? collectXp(player, instance) : fail("");
 
         if (!sellResult.success() && (!xpEnabled || !xpResult.success())) {
-            return fail("&cthere are no sellable items stored in that spawner.");
+            return fail(getMessage("NO-SELLABLE-ITEMS", "&cthere are no sellable items stored in that spawner."));
         }
 
         String msg = "";
@@ -1161,12 +1227,12 @@ public class SpawnerManager {
 
     public ActionResult removeSpawner(SpawnerInstance instance, boolean dropItem, Player actor) {
         if (instance == null) {
-            return fail("&cspawner not found.");
+            return fail(getMessage("NOT-FOUND", "&cspawner not found."));
         }
         if (isTemporarySpawner(instance)) {
             temporarySpawnerIds.remove(instance.getId());
             unregisterSpawner(instance);
-            return ok("&atemporary spawner removed.");
+            return ok(getMessage("TEMP-REMOVED", "&atemporary spawner removed."));
         }
 
         unregisterSpawner(instance);
@@ -1184,7 +1250,7 @@ public class SpawnerManager {
             }
         }
 
-        return ok("&aspawner removed.");
+        return ok(getMessage("REMOVED-ADMIN", "&aspawner removed."));
     }
 
     public void processGeneration() {
