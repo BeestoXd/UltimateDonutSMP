@@ -984,10 +984,9 @@ public class ConfigManager {
         // layout the plugin has shipped has to be recognised here and regenerated. Each fingerprint
         // is a set of slots that only that layout ever used together.
 
-        // The scattered layout: join/leave, pay alerts and money nametags parked at 31 to 33.
+        // The scattered layout: join/leave and pay alerts parked at 31 and 32.
         if (buttons.getInt("JOIN_LEAVE_MESSAGES.SLOT", -1) == 31
-                && buttons.getInt("PAY_ALERTS.SLOT", -1) == 32
-                && buttons.getInt("MONEY_NAMETAGS.SLOT", -1) == 33) {
+                && buttons.getInt("PAY_ALERTS.SLOT", -1) == 32) {
             return true;
         }
 
@@ -997,8 +996,8 @@ public class ConfigManager {
             return true;
         }
 
-        // The layout before the combat timer took slot 22 off Lunar teammates.
-        return buttons.getInt("LUNAR_TEAMMATES.SLOT", -1) == 22;
+        // Any layout that still has Lunar teammates or the old TP_AUTO key.
+        return buttons.contains("LUNAR_TEAMMATES") || buttons.contains("TP_AUTO");
     }
 
     private void backupInvalidFile(File file) {
