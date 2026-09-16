@@ -85,6 +85,65 @@ class WorthPacketDisplayTest {
         );
     }
 
+    @Test
+    void interactiveScreensHoldingClientStateAreTreatedAsMenus() throws Exception {
+        Object previousServer = installServerThatCreatesInventories();
+        try {
+            org.bukkit.inventory.Inventory enchantingInv = inventoryProxy(org.bukkit.event.inventory.InventoryType.ENCHANTING, 2);
+            assertTrue(
+                    WorthPacketDisplay.isMenuInventory(false, enchantingInv),
+                    "an enchanting table holds client state and must be treated as a menu so slot 0/1 are skipped"
+            );
+            assertTrue(
+                    WorthPacketDisplay.shouldSkipSlot(true, 1, 0, 2),
+                    "slot 0 of an enchanting table is the item to enchant, which must not get worth lore"
+            );
+            assertTrue(
+                    WorthPacketDisplay.shouldSkipSlot(true, 1, 1, 2),
+                    "slot 1 of an enchanting table is lapis lazuli, which must not get worth lore"
+            );
+            assertFalse(
+                    WorthPacketDisplay.shouldSkipSlot(true, 1, 2, 2),
+                    "player inventory rows below the enchanting table still show worth display"
+            );
+        } finally {
+            restoreServer(previousServer);
+        }
+    }
+
+    @Test
+    void anInventoryWithNoHolderAndNotClientStateIsTreatedAsStorage() throws Exception {
+        Object previousServer = installServerThatCreatesInventories();
+        try {
+            org.bukkit.inventory.Inventory chestInv = inventoryProxy(org.bukkit.event.inventory.InventoryType.CHEST, 54);
+            assertFalse(
+                    WorthPacketDisplay.isMenuInventory(false, chestInv),
+                    "a chest without a holder is storage and should keep worth display on its slots"
+            );
+        } finally {
+            restoreServer(previousServer);
+        }
+    }
+
+    private static org.bukkit.inventory.Inventory inventoryProxy(org.bukkit.event.inventory.InventoryType type, int size) {
+        return (org.bukkit.inventory.Inventory) Proxy.newProxyInstance(
+                org.bukkit.inventory.Inventory.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.inventory.Inventory.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("getType")) {
+                        return type;
+                    }
+                    if (method.getName().equals("getSize")) {
+                        return size;
+                    }
+                    if (method.getName().equals("getHolder")) {
+                        return null;
+                    }
+                    return defaultValue(method);
+                }
+        );
+    }
+
     private static InventoryHolder holderProxy(Class<? extends InventoryHolder> type) {
         return (InventoryHolder) Proxy.newProxyInstance(
                 type.getClassLoader(),
@@ -111,10 +170,23 @@ class WorthPacketDisplayTest {
         serverField.setAccessible(true);
         Object previous = serverField.get(null);
 
+        final Object[] registryMockHolder = new Object[1];
+
         org.bukkit.Server mockServer = (org.bukkit.Server) Proxy.newProxyInstance(
                 org.bukkit.Server.class.getClassLoader(),
                 new Class<?>[]{org.bukkit.Server.class},
                 (proxy, method, args) -> {
+                    if (method.getName().equals("getRegistry")) {
+                        if (registryMockHolder[0] == null) {
+                            Class<?> registryClass = Class.forName("org.bukkit.Registry");
+                            registryMockHolder[0] = Proxy.newProxyInstance(
+                                    registryClass.getClassLoader(),
+                                    new Class<?>[]{registryClass},
+                                    (rProxy, rMethod, rArgs) -> defaultValue(rMethod)
+                            );
+                        }
+                        return registryMockHolder[0];
+                    }
                     if (method.getName().equals("createInventory")) {
                         return Proxy.newProxyInstance(
                                 org.bukkit.inventory.Inventory.class.getClassLoader(),

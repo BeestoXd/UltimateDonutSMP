@@ -1,6 +1,7 @@
 package com.bx.ultimateDonutSmp.listeners;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.managers.WorthManager;
 import com.bx.ultimateDonutSmp.menus.BaseMenu;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -77,11 +78,27 @@ public class WorthPacketDisplay implements Listener {
         }
     }
 
-    private boolean isMenuInventory(Player player, org.bukkit.inventory.Inventory topInv) {
-        if (player != null && inPluginMenu.contains(player.getUniqueId())) {
+    // an interactive workbench or enchanting table holds functional crafting slots rather than storage.
+    // pricing an item being enchanted in slot 0 sends worth lore to bedrock clients, which wipes the
+    // enchantment offers on geyser. treating screens that hold client state as menus skips their top
+    // rows while keeping worth lines on the player inventory below
+    static boolean isMenuInventory(boolean isInPluginMenu, org.bukkit.inventory.Inventory topInv) {
+        if (isInPluginMenu) {
             return true;
         }
-        return topInv != null && isMenuHolder(topInv.getHolder());
+        if (topInv == null) {
+            return false;
+        }
+        try {
+            if (WorthManager.holdsClientState(topInv.getType())) {
+                return true;
+            }
+        } catch (Exception ignored) {}
+        return isMenuHolder(topInv.getHolder());
+    }
+
+    private boolean isMenuInventory(Player player, org.bukkit.inventory.Inventory topInv) {
+        return isMenuInventory(player != null && inPluginMenu.contains(player.getUniqueId()), topInv);
     }
 
     // a chest belongs to the player, so its contents are worth something and get the line. anything
