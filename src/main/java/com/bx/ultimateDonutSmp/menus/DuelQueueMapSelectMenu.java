@@ -16,7 +16,7 @@ public class DuelQueueMapSelectMenu extends BaseMenu {
     private final DuelMapSelection selectedSelection;
 
     public DuelQueueMapSelectMenu(UltimateDonutSmp plugin, DuelMapSelection selectedSelection) {
-        super(plugin, "&8Select duel map", plugin.getDuelManager().getQueueSize());
+        super(plugin, plugin.getDuelManager().getQueueMapSelectTitle(), plugin.getDuelManager().getQueueSize());
         this.selectedSelection = selectedSelection;
     }
 
@@ -27,30 +27,48 @@ public class DuelQueueMapSelectMenu extends BaseMenu {
 
         List<DuelManager.DuelMapOption> options = plugin.getDuelManager().getSelectableMapOptions(true);
         int[] slots = contentSlots();
+        String selectedPrefix = plugin.getDuelManager().getGuiText("QUEUE_MAP_SELECT.ITEMS.SELECTED_PREFIX", "&a");
+        String unselectedPrefix = plugin.getDuelManager().getGuiText("QUEUE_MAP_SELECT.ITEMS.UNSELECTED_PREFIX", "&e");
+        String currentlySelectedLore = plugin.getDuelManager().getGuiText("QUEUE_MAP_SELECT.ITEMS.CURRENTLY_SELECTED_LORE", "&aCurrently selected.");
+        String clickToSelectLore = plugin.getDuelManager().getGuiText("QUEUE_MAP_SELECT.ITEMS.CLICK_TO_SELECT_LORE", "&eClick to select.");
+
         for (int i = 0; i < Math.min(options.size(), slots.length); i++) {
             DuelManager.DuelMapOption option = options.get(i);
             boolean selected = option.selection().equals(selectedSelection);
             List<String> lore = new ArrayList<>();
             lore.add("&7" + option.description());
             if (selected) {
-                lore.add("&aCurrently selected.");
+                lore.add(currentlySelectedLore);
             } else {
-                lore.add("&eClick to select.");
+                lore.add(clickToSelectLore);
             }
             set(slots[i], ItemUtils.createItem(
                     materialFor(option.selection()),
-                    (selected ? "&a" : "&e") + option.displayName(),
+                    (selected ? selectedPrefix : unselectedPrefix) + option.displayName(),
                     lore
             ));
         }
 
         if (options.isEmpty()) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cNo queue maps available", List.of("&7Configure queue arenas or enable random biomes.")));
+            set(13, ItemUtils.createItem(
+                    Material.BARRIER,
+                    plugin.getDuelManager().getGuiText("QUEUE_MAP_SELECT.ITEMS.NO_MAPS.NAME", "&cNo queue maps available"),
+                    plugin.getDuelManager().getGuiTextList("QUEUE_MAP_SELECT.ITEMS.NO_MAPS.LORE",
+                            List.of("&7Configure queue arenas or enable random biomes."))
+            ));
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow + 4, ItemUtils.createItem(Material.ARROW, "&eBack", List.of("&7Return to queue menu.")));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cClose"));
+        set(lastRow + 4, ItemUtils.createItem(
+                Material.ARROW,
+                plugin.getDuelManager().getGuiText("QUEUE_MAP_SELECT.ITEMS.BACK.NAME", "&eBack"),
+                plugin.getDuelManager().getGuiTextList("QUEUE_MAP_SELECT.ITEMS.BACK.LORE",
+                        List.of("&7Return to queue menu."))
+        ));
+        set(lastRow + 8, ItemUtils.createItem(
+                Material.BARRIER,
+                plugin.getDuelManager().getGuiText("QUEUE_MAP_SELECT.ITEMS.CLOSE.NAME", "&cClose")
+        ));
     }
 
     @Override

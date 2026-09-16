@@ -16,7 +16,7 @@ public class DuelClaimPreviewMenu extends BaseMenu {
     private final long matchId;
 
     public DuelClaimPreviewMenu(UltimateDonutSmp plugin, int returnPage, long matchId) {
-        super(plugin, "&8duel loot preview", 54);
+        super(plugin, plugin.getDuelManager().getClaimPreviewTitle(), plugin.getDuelManager().getClaimPreviewSize());
         this.returnPage = Math.max(1, returnPage);
         this.matchId = matchId;
     }
@@ -33,11 +33,14 @@ public class DuelClaimPreviewMenu extends BaseMenu {
         if (claim == null || claim.items() == null || claim.items().isEmpty()) {
             set(22, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cclaim not found",
-                    List.of("&7this duel loot package no longer exists.")
+                    plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.CLAIM_NOT_FOUND.NAME", "&cclaim not found"),
+                    plugin.getDuelManager().getGuiTextList("CLAIM_PREVIEW.ITEMS.CLAIM_NOT_FOUND.LORE",
+                            List.of("&7this duel loot package no longer exists."))
             ));
-            set(45, ItemUtils.createItem(Material.ARROW, "&aback"));
-            set(53, ItemUtils.createItem(Material.BARRIER, "&cback"));
+            set(45, ItemUtils.createItem(Material.ARROW,
+                    plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.BACK_ARROW.NAME", "&aback")));
+            set(53, ItemUtils.createItem(Material.BARRIER,
+                    plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.BACK_BARRIER.NAME", "&cback")));
             return;
         }
 
@@ -57,33 +60,41 @@ public class DuelClaimPreviewMenu extends BaseMenu {
                 ? "unknown"
                 : claim.defeatedName();
 
-        set(45, ItemUtils.createItem(Material.ARROW, "&aback"));
+        set(45, ItemUtils.createItem(Material.ARROW,
+                plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.BACK_ARROW.NAME", "&aback")));
         set(47, ItemUtils.createItem(
                 Material.CHEST,
-                "&eloot summary",
-                List.of(
-                        "&7defeated player: &f" + defeatedName,
-                        "&7match: &f#" + claim.matchId(),
-                        "&7stored items: &f" + claim.itemCount()
-                )
+                plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.SUMMARY.NAME", "&eloot summary"),
+                plugin.getDuelManager().getGuiTextList("CLAIM_PREVIEW.ITEMS.SUMMARY.LORE",
+                        List.of(
+                                "&7defeated player: &f{player}",
+                                "&7match: &f#{match_id}",
+                                "&7stored items: &f{count}"
+                        ),
+                        "{player}", defeatedName,
+                        "{match_id}", claim.matchId(),
+                        "{count}", claim.itemCount())
         ));
         set(49, ItemUtils.createItem(
                 Material.LIME_STAINED_GLASS_PANE,
-                "&aclaim all",
-                List.of(
-                        "&7move all fitting items into your inventory.",
-                        "&7if some do not fit, they stay in claims."
-                )
+                plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.CLAIM_ALL.NAME", "&aclaim all"),
+                plugin.getDuelManager().getGuiTextList("CLAIM_PREVIEW.ITEMS.CLAIM_ALL.LORE",
+                        List.of(
+                                "&7move all fitting items into your inventory.",
+                                "&7if some do not fit, they stay in claims."
+                        ))
         ));
         set(51, ItemUtils.createItem(
                 Material.RED_STAINED_GLASS_PANE,
-                "&cdelete claim",
-                List.of(
-                        "&7delete this entire loot package.",
-                        "&7this action cannot be undone."
-                )
+                plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.DELETE_CLAIM.NAME", "&cdelete claim"),
+                plugin.getDuelManager().getGuiTextList("CLAIM_PREVIEW.ITEMS.DELETE_CLAIM.LORE",
+                        List.of(
+                                "&7delete this entire loot package.",
+                                "&7this action cannot be undone."
+                        ))
         ));
-        set(53, ItemUtils.createItem(Material.BARRIER, "&cback"));
+        set(53, ItemUtils.createItem(Material.BARRIER,
+                plugin.getDuelManager().getGuiText("CLAIM_PREVIEW.ITEMS.BACK_BARRIER.NAME", "&cback")));
     }
 
     @Override
