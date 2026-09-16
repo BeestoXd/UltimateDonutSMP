@@ -515,6 +515,14 @@ MENUS:
         - '&7{value}'
   SETTINGS-MENU:
     TITLE: '&8Settings'
+    FEEDBACK:
+      TOGGLE-MESSAGE: '&7{setting} est maintenant {state}&7.'
+      CHOICE-MESSAGE: '&7{setting} est maintenant défini sur {choice}&7.'
+      STATE-ENABLED: '&aActivé'
+      STATE-DISABLED: '&cDésactivé'
+      CHOICE-OFF-TEXT: '&cDésactivé'
+      CHOICE-ANYONE-TEXT: '&aTout le monde'
+      CHOICE-FRIENDS-FOLLOWED-TEXT: '&dAmis/Suivis'
     BUTTONS:
       PUBLIC_CHAT:
         DISPLAY-NAME: '&#6BF18DPublic chat'
