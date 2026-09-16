@@ -13,6 +13,8 @@ import com.comphenix.protocol.wrappers.WrappedParticle;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
+import java.util.Locale;
+
 public final class ExplosionParticleFilter {
 
     private final UltimateDonutSmp plugin;
@@ -52,40 +54,48 @@ public final class ExplosionParticleFilter {
             ) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
-                    Player viewer = event.getPlayer();
-                    PlayerData data = ExplosionParticleFilter.this.plugin
-                            .getPlayerDataManager().get(viewer);
-                    if (data == null) {
-                        return;
-                    }
-                    PacketType type = event.getPacketType();
-                    if (type == PacketType.Play.Server.WORLD_PARTICLES) {
-                        if (!data.isExplosionParticlesEnabled()) {
-                            WrappedParticle<?> wrapped = event.getPacket().getNewParticles().readSafely(0);
-                            Particle particle = wrapped == null ? null : wrapped.getParticle();
-                            if (particle == Particle.EXPLOSION || particle == Particle.EXPLOSION_EMITTER) {
-                                event.setCancelled(true);
-                            }
+                    try {
+                        Player viewer = event.getPlayer();
+                        PlayerData data = ExplosionParticleFilter.this.plugin
+                                .getPlayerDataManager().get(viewer);
+                        if (data == null) {
+                            return;
                         }
-                    } else if (type == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
-                        if (!data.isExplosionSoundsEnabled()) {
-                            String soundName = "";
-                            Object soundObj = event.getPacket().getSoundEffects().readSafely(0);
-                            if (soundObj instanceof org.bukkit.Sound sound) {
-                                soundName = sound.name();
-                            } else if (soundObj != null) {
-                                soundName = soundObj.toString();
+                        PacketType type = event.getPacketType();
+                        if (type == PacketType.Play.Server.WORLD_PARTICLES) {
+                            if (!data.isExplosionParticlesEnabled()) {
+                                WrappedParticle<?> wrapped = event.getPacket().getNewParticles().readSafely(0);
+                                Particle particle = wrapped == null ? null : wrapped.getParticle();
+                                if (particle == Particle.EXPLOSION || particle == Particle.EXPLOSION_EMITTER) {
+                                    event.setCancelled(true);
+                                }
                             }
-                            if (soundName.isEmpty() || "null".equalsIgnoreCase(soundName)) {
-                                soundName = event.getPacket().getStrings().readSafely(0);
-                            }
-                            if (soundName != null) {
-                                String soundUpper = soundName.toUpperCase();
-                                if (soundUpper.contains("EXPLODE") || soundUpper.contains("EXPLOSION")) {
+                        } else if (type == PacketType.Play.Server.NAMED_SOUND_EFFECT) {
+                            if (!data.isExplosionSoundsEnabled()) {
+                                String soundName = "";
+                                try {
+                                    Object soundObj = event.getPacket().getSoundEffects().readSafely(0);
+                                    soundName = extractSoundName(soundObj);
+                                } catch (Throwable ignored) {
+                                }
+                                if (soundName.isEmpty() || "null".equalsIgnoreCase(soundName)) {
+                                    try {
+                                        soundName = extractSoundName(event.getPacket().getModifier().readSafely(0));
+                                    } catch (Throwable ignored) {
+                                    }
+                                }
+                                if (soundName.isEmpty() || "null".equalsIgnoreCase(soundName)) {
+                                    try {
+                                        soundName = event.getPacket().getStrings().readSafely(0);
+                                    } catch (Throwable ignored) {
+                                    }
+                                }
+                                if (isExplosionSound(soundName)) {
                                     event.setCancelled(true);
                                 }
                             }
                         }
+                    } catch (Throwable ignored) {
                     }
                 }
             };
@@ -95,5 +105,44 @@ public final class ExplosionParticleFilter {
             plugin.getLogger().warning("Explosion particle/sound setting is unavailable: " + error.getMessage());
             shutdown();
         }
+    }
+
+    public static boolean isExplosionSound(String soundName) {
+        if (soundName == null || soundName.isBlank()) {
+            return false;
+        }
+        String upper = soundName.toUpperCase(Locale.ROOT);
+        return upper.contains("EXPLODE") || upper.contains("EXPLOSION");
+    }
+
+    public static String extractSoundName(Object soundObj) {
+        if (soundObj == null) {
+            return "";
+        }
+        if (soundObj instanceof org.bukkit.Sound sound) {
+            try {
+                String name = sound.name();
+                if (name != null && !name.isBlank()) {
+                    return name;
+                }
+            } catch (Throwable ignored) {
+                // Paper throws IllegalStateException on unregistered / direct sound holders
+            }
+            try {
+                org.bukkit.NamespacedKey key = sound.getKey();
+                if (key != null) {
+                    return key.toString();
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        try {
+            String str = soundObj.toString();
+            if (str != null && !str.isBlank() && !"null".equalsIgnoreCase(str)) {
+                return str;
+            }
+        } catch (Throwable ignored) {
+        }
+        return "";
     }
 }
