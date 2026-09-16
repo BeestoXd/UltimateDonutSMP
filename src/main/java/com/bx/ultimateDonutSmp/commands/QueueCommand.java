@@ -23,7 +23,7 @@ public class QueueCommand implements CommandExecutor {
         }
 
         if (!plugin.getDuelManager().isEnabled()) {
-            player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent("&cduels are currently disabled."));
+            plugin.getDuelManager().sendMessage(player, "DISABLED", "&cduels are currently disabled.");
             return true;
         }
 

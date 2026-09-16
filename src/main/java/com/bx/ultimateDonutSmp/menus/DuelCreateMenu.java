@@ -36,8 +36,16 @@ public class DuelCreateMenu extends BaseMenu {
 
         Player target = Bukkit.getPlayer(targetUuid);
         if (target == null) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&ctarget offline", List.of("&7this player is no longer online.")));
-            set(inventory.getSize() - 1, ItemUtils.createItem(Material.BARRIER, "&cclose"));
+            set(13, ItemUtils.createItem(
+                    Material.BARRIER,
+                    plugin.getDuelManager().getGuiText("CREATE.ITEMS.TARGET_OFFLINE.NAME", "&ctarget offline"),
+                    plugin.getDuelManager().getGuiTextList("CREATE.ITEMS.TARGET_OFFLINE.LORE",
+                            List.of("&7this player is no longer online."))
+            ));
+            set(inventory.getSize() - 1, ItemUtils.createItem(
+                    Material.BARRIER,
+                    plugin.getDuelManager().getGuiText("CREATE.ITEMS.CLOSE.NAME", "&cclose")
+            ));
             return;
         }
 
@@ -47,30 +55,53 @@ public class DuelCreateMenu extends BaseMenu {
             DuelManager.DuelMapOption option = options.get(i);
             set(slots[i], ItemUtils.createItem(
                     materialFor(option.selection()),
-                    "&a" + option.displayName(),
-                    List.of(
-                            "&7privacy: &f" + privacyMode.displayName(),
-                            "&7target: &f" + target.getName(),
-                            "&7" + option.description(),
-                            "&eclick to send challenge."
-                    )
+                    plugin.getDuelManager().getGuiText("CREATE.ITEMS.MAP_OPTION.NAME",
+                            "&a{map}", "{map}", option.displayName()),
+                    plugin.getDuelManager().getGuiTextList("CREATE.ITEMS.MAP_OPTION.LORE",
+                            List.of(
+                                    "&7privacy: &f{privacy}",
+                                    "&7target: &f{target}",
+                                    "&7{description}",
+                                    "&eclick to send challenge."
+                            ),
+                            "{privacy}", privacyMode.displayName(),
+                            "{target}", target.getName(),
+                            "{description}", option.description())
             ));
         }
 
         if (options.isEmpty()) {
-            set(13, ItemUtils.createItem(Material.BARRIER, "&cno duel maps available", List.of("&7configure arenas or enable random biomes.")));
+            set(13, ItemUtils.createItem(
+                    Material.BARRIER,
+                    plugin.getDuelManager().getGuiText("CREATE.ITEMS.NO_MAPS.NAME", "&cno duel maps available"),
+                    plugin.getDuelManager().getGuiTextList("CREATE.ITEMS.NO_MAPS.LORE",
+                            List.of("&7configure arenas or enable random biomes."))
+            ));
         }
 
         int lastRow = inventory.getSize() - 9;
-        set(lastRow + 3, ItemUtils.createPlayerHead(target, "&etarget: &f" + target.getName(), List.of("&7choose a map to send a duel request.")));
+        set(lastRow + 3, ItemUtils.createPlayerHead(
+                target,
+                plugin.getDuelManager().getGuiText("CREATE.ITEMS.TARGET_HEAD.NAME",
+                        "&etarget: &f{target}", "{target}", target.getName()),
+                plugin.getDuelManager().getGuiTextList("CREATE.ITEMS.TARGET_HEAD.LORE",
+                        List.of("&7choose a map to send a duel request."))
+        ));
+        String privacyLore = privacyMode == DuelPrivacyMode.FRIENDS_ONLY
+                ? plugin.getDuelManager().getGuiText("CREATE.ITEMS.PRIVACY_BUTTON.LORE_FRIENDS",
+                        "&7only same-team members can accept this duel.")
+                : plugin.getDuelManager().getGuiText("CREATE.ITEMS.PRIVACY_BUTTON.LORE_INVITE",
+                        "&7direct invite duel.");
         set(lastRow + 5, ItemUtils.createItem(
                 privacyMode == DuelPrivacyMode.FRIENDS_ONLY ? Material.OAK_SIGN : Material.PAPER,
-                "&bprivacy: &f" + privacyMode.displayName(),
-                List.of(privacyMode == DuelPrivacyMode.FRIENDS_ONLY
-                        ? "&7only same-team members can accept this duel."
-                        : "&7direct invite duel.")
+                plugin.getDuelManager().getGuiText("CREATE.ITEMS.PRIVACY_BUTTON.NAME",
+                        "&bprivacy: &f{privacy}", "{privacy}", privacyMode.displayName()),
+                List.of(privacyLore)
         ));
-        set(lastRow + 8, ItemUtils.createItem(Material.BARRIER, "&cclose"));
+        set(lastRow + 8, ItemUtils.createItem(
+                Material.BARRIER,
+                plugin.getDuelManager().getGuiText("CREATE.ITEMS.CLOSE.NAME", "&cclose")
+        ));
     }
 
     @Override
