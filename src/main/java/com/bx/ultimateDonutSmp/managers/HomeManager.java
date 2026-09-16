@@ -8,6 +8,7 @@ import com.bx.ultimateDonutSmp.menus.HomeMenu;
 import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -68,6 +69,30 @@ public class HomeManager {
         return plugin != null && plugin.getConfigManager() != null
                 ? plugin.getConfigManager().getConfig()
                 : null;
+    }
+
+    public boolean isWorldExcluded(String worldName) {
+        if (worldName == null || worldName.isBlank()) {
+            return false;
+        }
+        FileConfiguration config = getConfig();
+        if (config == null) {
+            return false;
+        }
+        List<String> excluded = config.getStringList("SETTINGS.HOME-EXCLUDED-WORLDS");
+        if (excluded.isEmpty()) {
+            excluded = config.getStringList("HOME.EXCLUDED-WORLDS");
+        }
+        for (String w : excluded) {
+            if (w != null && w.trim().equalsIgnoreCase(worldName.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isWorldExcluded(World world) {
+        return world != null && isWorldExcluded(world.getName());
     }
 
     public boolean isHomePermissionsEnabled() {
@@ -186,6 +211,16 @@ public class HomeManager {
     }
 
     public void promptCreateHome(Player player, Location location, String suggestedName) {
+        String worldName = location != null && location.getWorld() != null ? location.getWorld().getName() : null;
+        if (worldName == null && location instanceof LazyLocation lazy) {
+            worldName = lazy.getWorldName();
+        }
+        if (worldName != null && isWorldExcluded(worldName)
+                && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+            player.sendMessage(ColorUtils.toComponent(
+                    plugin.getConfigManager().getMessage("HOME.EXCLUDED-WORLD")));
+            return;
+        }
         pendingInputs.put(player.getUniqueId(), PendingHomeInput.create(location, suggestedName));
         player.closeInventory();
         player.sendMessage(ColorUtils.toComponent(
@@ -221,6 +256,19 @@ public class HomeManager {
         }
 
         if (pending.type == PendingHomeInput.Type.CREATE) {
+            String pendingWorld = pending.location != null && pending.location.getWorld() != null
+                    ? pending.location.getWorld().getName()
+                    : null;
+            if (pendingWorld == null && pending.location instanceof LazyLocation lazy) {
+                pendingWorld = lazy.getWorldName();
+            }
+            if (pendingWorld != null && isWorldExcluded(pendingWorld)
+                    && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+                pendingInputs.remove(player.getUniqueId());
+                player.sendMessage(ColorUtils.toComponent(
+                        plugin.getConfigManager().getMessage("HOME.EXCLUDED-WORLD")));
+                return;
+            }
             if (getHome(player.getUniqueId(), input) != null) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.ALREADY-EXISTS")));
                 resendPrompt(player, pending);

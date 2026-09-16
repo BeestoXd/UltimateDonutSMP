@@ -2314,6 +2314,7 @@ MESSAGES:
     NO-TEAM-HOME: "&7Your team does not have a home."
     TEAM-HOME-DELETED: "&7Team home deleted."
     TEAM-HOME-SET: "&7Team home set"
+    EXCLUDED-WORLD: "&cYou cannot set a team home in this world."
     TEAM-NOT-EXIST: "&cUser/team does not exist."
     INVITED-TO-JOIN: "&7You have been invited to join the &a{team}&7 team!"
     CLICK-TO-JOIN: "&b[Click to join]"
@@ -2452,6 +2453,7 @@ MESSAGES:
     INVALID-NAME: "&cInvalid home name. do not use spaces."
     ALREADY-EXISTS: "&cA home with that name already exists."
     CANCELLED: "&7Home input cancelled."
+    EXCLUDED-WORLD: "&cYou cannot set a home in this world."
   WARP:
     PLAYER-ONLY: "&cOnly players can use this warp command."
     USAGE: "&cUsage: /warp [name]"

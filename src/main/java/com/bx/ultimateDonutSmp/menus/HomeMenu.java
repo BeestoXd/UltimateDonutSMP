@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -246,6 +247,22 @@ public class HomeMenu extends BaseMenu {
         ));
 
         slotActions.put(teleportSlot, (p, click) -> {
+            if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(p.getUniqueId())
+                    || plugin.getDuelManager().isTransitioning(p.getUniqueId())
+                    || plugin.getDuelManager().isLocationInDuelArena(p.getLocation()))) {
+                p.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside a duel arena or duel world."));
+                return;
+            }
+            if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(p.getUniqueId())
+                    || plugin.getFfaManager().isInFfaLocation(p.getLocation()))) {
+                p.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside an FFA arena."));
+                return;
+            }
+            if (plugin.getHomeManager() != null && plugin.getHomeManager().isWorldExcluded(p.getWorld())
+                    && !PermissionUtils.has(p, "ultimatedonutsmp.homes.bypass")) {
+                p.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.EXCLUDED-WORLD")));
+                return;
+            }
             if (plugin.getHomeManager().setHome(p, suggestedName)) {
                 p.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.SET")));
                 new HomeMenu(plugin, page).open(p);
@@ -253,8 +270,25 @@ public class HomeMenu extends BaseMenu {
                 p.sendMessage(ColorUtils.toComponent("&cYou cannot create another home right now."));
             }
         });
-        slotActions.put(actionSlot, (p, click) ->
-                plugin.getHomeManager().promptCreateHome(p, p.getLocation(), suggestedName));
+        slotActions.put(actionSlot, (p, click) -> {
+            if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(p.getUniqueId())
+                    || plugin.getDuelManager().isTransitioning(p.getUniqueId())
+                    || plugin.getDuelManager().isLocationInDuelArena(p.getLocation()))) {
+                p.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside a duel arena or duel world."));
+                return;
+            }
+            if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(p.getUniqueId())
+                    || plugin.getFfaManager().isInFfaLocation(p.getLocation()))) {
+                p.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside an FFA arena."));
+                return;
+            }
+            if (plugin.getHomeManager() != null && plugin.getHomeManager().isWorldExcluded(p.getWorld())
+                    && !PermissionUtils.has(p, "ultimatedonutsmp.homes.bypass")) {
+                p.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.EXCLUDED-WORLD")));
+                return;
+            }
+            plugin.getHomeManager().promptCreateHome(p, p.getLocation(), suggestedName);
+        });
     }
 
     private void setLockedHomeButtons(String key, int globalIndex, int teleportSlot, int actionSlot) {
@@ -303,6 +337,23 @@ public class HomeMenu extends BaseMenu {
     private void setTeamHome(Player player, Team team) {
         if (!canEditTeamHome(player, team)) {
             player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TEAM.NO-EDIT-HOME-PERMISSION")));
+            return;
+        }
+        if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(player.getUniqueId())
+                || plugin.getDuelManager().isTransitioning(player.getUniqueId())
+                || plugin.getDuelManager().isLocationInDuelArena(player.getLocation()))) {
+            player.sendMessage(ColorUtils.toComponent("&cYou cannot set a team home inside a duel arena or duel world."));
+            return;
+        }
+        if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(player.getUniqueId())
+                || plugin.getFfaManager().isInFfaLocation(player.getLocation()))) {
+            player.sendMessage(ColorUtils.toComponent("&cYou cannot set a team home inside an FFA arena."));
+            return;
+        }
+        if (plugin.getTeamManager().isWorldExcluded(player.getWorld())
+                && !PermissionUtils.has(player, "ultimatedonutsmp.teams.bypass")
+                && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TEAM.EXCLUDED-WORLD")));
             return;
         }
 

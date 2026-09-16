@@ -58,6 +58,8 @@ TEAM:
   TEAM-HOME-DELETED: '&7Team home deleted.'
   # The text or value for Team Home Set. Available options: Any valid string text
   TEAM-HOME-SET: '&7Team home set'
+  # The text or value for Excluded World. Available options: Any valid string text
+  EXCLUDED-WORLD: '&cYou cannot set a team home in this world.'
   # The text or value for Team Not Exist. Available options: Any valid string text
   TEAM-NOT-EXIST: '&cUser/team does not exist.'
   # The text or value for Invited To Join. Available options: Any valid string text
@@ -313,6 +315,8 @@ HOME:
   ALREADY-EXISTS: '&cA home with that name already exists.'
   # The text or value for Cancelled. Available options: Any valid string text
   CANCELLED: '&7Home input cancelled.'
+  # The text or value for Excluded World. Available options: Any valid string text
+  EXCLUDED-WORLD: '&cYou cannot set a home in this world.'
 # Configuration section for Warp.
 WARP:
   # The text or value for Player Only. Available options: Any valid string text

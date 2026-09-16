@@ -97,6 +97,9 @@ SETTINGS:
       "ultimatedonutsmp.homes.vip++": 15
       "ultimatedonutsmp.homes.vip+": 10
       "ultimatedonutsmp.homes.vip": 5
+  # Configuration section for Excluded Worlds where homes cannot be set.
+  # Available options: List of world names
+  HOME-EXCLUDED-WORLDS: []
   # The numerical value for Shards Per Kill. Available options: Any valid integer
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
@@ -687,6 +690,9 @@ TEAM:
   NAME-MAX-LENGTH: 5
   # The numerical value for Limit Members. Available options: Any valid integer
   LIMIT-MEMBERS: 10
+  # Configuration section for Excluded Worlds where team homes cannot be set.
+  # Available options: List of world names
+  EXCLUDED-WORLDS: []
 # Configuration section for Leaderboard.
 LEADERBOARD:
   # The numerical value for Update. Available options: Any valid integer
