@@ -2662,6 +2662,7 @@ MESSAGES:
     OR-TYPE-COMMAND: '&7Or type &f{command}&7 to join.'
     JOINED-BROADCAST: '&a{player} &eHas joined the team.'
     CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
+    EXCLUDED-WORLD: '&cYou cannot set a team home in this world.'
   CHAT-MANAGER:
     HELP:
     - ''
@@ -2793,6 +2794,7 @@ MESSAGES:
     INVALID-NAME: '&cInvalid home name. do not use spaces.'
     ALREADY-EXISTS: '&cA home with that name already exists.'
     CANCELLED: '&7Home input cancelled.'
+    EXCLUDED-WORLD: '&cYou cannot set a home in this world.'
   WARP:
     PLAYER-ONLY: '&cOnly players can use this warp command.'
     USAGE: '&cUsage: /warp [name]'

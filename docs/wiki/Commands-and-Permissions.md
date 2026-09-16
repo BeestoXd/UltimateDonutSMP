@@ -202,6 +202,17 @@ give everyone `HOME-DEFAULT`.
 
 ---
 
+## Home & Team Blacklist Bypass Permissions
+
+These nodes allow players (such as staff or administrators) to set personal homes or team homes in worlds excluded by `SETTINGS.HOME-EXCLUDED-WORLDS` or `TEAM.EXCLUDED-WORLDS` in `config.yml`.
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.homes.bypass` | `op` | Bypass personal home world exclusions (`/sethome`, `/homes` menu, Bedrock form) and arena restrictions. |
+| `ultimatedonutsmp.teams.bypass` | `op` | Bypass team home world exclusions (`/team sethome`, `/team` menu, Bedrock form) and arena restrictions. |
+
+---
+
 ## Ender Chest Size Permissions
 
 These nodes are not registered in `plugin.yml` and are read straight off the player, so they work with

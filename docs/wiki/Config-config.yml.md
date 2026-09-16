@@ -236,6 +236,9 @@ SETTINGS:
       "ultimatedonutsmp.homes.vip++": 15
       "ultimatedonutsmp.homes.vip+": 10
       "ultimatedonutsmp.homes.vip": 5
+  # Configuration section for Excluded Worlds where homes cannot be set.
+  # Available options: List of world names
+  HOME-EXCLUDED-WORLDS: []
   # The numerical value for Shards Per Kill. Available options: Any valid integer
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
@@ -301,6 +304,7 @@ SETTINGS:
 | `SETTINGS.HOME-DEFAULT` | `int` | Any valid integer number | `'2'` | Default maximum `/sethome` limit for non-donor players. |
 | `SETTINGS.HOME-PERMISSIONS.ENABLED` | `bool` | `true`, `false` | `true` | Master switch for permission based home limits. Set to `false` to ignore every home permission and give everyone `HOME-DEFAULT`. |
 | `SETTINGS.HOME-PERMISSIONS.PERMISSIONS` | `section` | Permission node to home count | `{'ultimatedonutsmp.homes.vip++': 15, 'ultimatedonutsmp.homes.vip+': 10, 'ultimatedonutsmp.homes.vip': 5}` | Named rank nodes mapped to a home limit, for servers that prefer `ultimatedonutsmp.homes.vip` over the numbered nodes. The highest value a player holds wins. See [Commands-and-Permissions](Commands-and-Permissions). |
+| `SETTINGS.HOME-EXCLUDED-WORLDS` | `list` | List of world names | `[]` | List of world names where players cannot set personal homes (`/sethome`, menus, Bedrock form). Players with `ultimatedonutsmp.homes.bypass` bypass this restriction. |
 | `SETTINGS.SHARDS-PER-KILL` | `int` | Any valid integer number | `'1'` | Configures the technical `SHARDS-PER-KILL` parameter for `SETTINGS.SHARDS-PER-KILL` in `config.yml`. |
 | `SETTINGS.SHARDS-KILL-MESSAGE` | `str` | Any string text | `'&#A303F9+{shards} Shard'` | Configures the technical `SHARDS-KILL-MESSAGE` parameter for `SETTINGS.SHARDS-KILL-MESSAGE` in `config.yml`. |
 | `SETTINGS.SHARDS-KILL-MESSAGE-BOOSTED` | `str` | Any string text | `'&#A303F9+{shards} Shards &7(&ax{multiplier}&7)'` | Action bar shown instead of `SHARDS-KILL-MESSAGE` while a shard booster multiplies the kill reward. Supports `{multiplier}`. |
@@ -370,6 +374,9 @@ SETTINGS:
       "ultimatedonutsmp.homes.vip++": 15
       "ultimatedonutsmp.homes.vip+": 10
       "ultimatedonutsmp.homes.vip": 5
+  # Configuration section for Excluded Worlds where homes cannot be set.
+  # Available options: List of world names
+  HOME-EXCLUDED-WORLDS: []
   # The numerical value for Shards Per Kill. Available options: Any valid integer
   SHARDS-PER-KILL: 1
   # The text or value for Shards Kill Message. Available options: Any valid string text
@@ -1913,6 +1920,9 @@ TEAM:
   NAME-MAX-LENGTH: 5
   # The numerical value for Limit Members. Available options: Any valid integer
   LIMIT-MEMBERS: 10
+  # Configuration section for Excluded Worlds where team homes cannot be set.
+  # Available options: List of world names
+  EXCLUDED-WORLDS: []
 # Configuration section for Leaderboard.
 ```
 
@@ -1923,6 +1933,7 @@ TEAM:
 | `TEAM.NAME-MIN-LENGTH` | `int` | Any valid integer number | `'3'` | Configures the technical `NAME-MIN-LENGTH` parameter for `TEAM.NAME-MIN-LENGTH` in `config.yml`. |
 | `TEAM.NAME-MAX-LENGTH` | `int` | Any valid integer number | `'5'` | Configures the technical `NAME-MAX-LENGTH` parameter for `TEAM.NAME-MAX-LENGTH` in `config.yml`. |
 | `TEAM.LIMIT-MEMBERS` | `int` | Any valid integer number | `'10'` | Configures the technical `LIMIT-MEMBERS` parameter for `TEAM.LIMIT-MEMBERS` in `config.yml`. |
+| `TEAM.EXCLUDED-WORLDS` | `list` | List of world names | `[]` | List of world names where players cannot set team homes (`/team sethome`, menus, Bedrock form). If left empty, falls back to `SETTINGS.HOME-EXCLUDED-WORLDS`. Players with `ultimatedonutsmp.teams.bypass` bypass this restriction. |
 
 ### 3. Practical Setup Example
 
@@ -1934,6 +1945,9 @@ TEAM:
   NAME-MAX-LENGTH: 5
   # The numerical value for Limit Members. Available options: Any valid integer
   LIMIT-MEMBERS: 10
+  # Configuration section for Excluded Worlds where team homes cannot be set.
+  # Available options: List of world names
+  EXCLUDED-WORLDS: []
 # Configuration section for Leaderboard.
 ```
 

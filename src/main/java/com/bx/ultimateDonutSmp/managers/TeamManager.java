@@ -5,6 +5,8 @@ import com.bx.ultimateDonutSmp.menus.TeamMenu;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -81,6 +83,35 @@ public class TeamManager {
         String firstTeam = playerTeamMap.get(first);
         String secondTeam = playerTeamMap.get(second);
         return firstTeam != null && firstTeam.equals(secondTeam);
+    }
+
+    public boolean isWorldExcluded(String worldName) {
+        if (worldName == null || worldName.isBlank()) {
+            return false;
+        }
+        FileConfiguration config = plugin != null && plugin.getConfigManager() != null
+                ? plugin.getConfigManager().getConfig()
+                : null;
+        if (config == null) {
+            return false;
+        }
+        List<String> excluded = config.getStringList("TEAM.EXCLUDED-WORLDS");
+        if (excluded.isEmpty()) {
+            excluded = config.getStringList("TEAM.HOME-EXCLUDED-WORLDS");
+        }
+        if (excluded.isEmpty() && plugin.getHomeManager() != null) {
+            return plugin.getHomeManager().isWorldExcluded(worldName);
+        }
+        for (String w : excluded) {
+            if (w != null && w.trim().equalsIgnoreCase(worldName.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isWorldExcluded(World world) {
+        return world != null && isWorldExcluded(world.getName());
     }
 
     public boolean isValidName(String name) {
