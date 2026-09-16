@@ -9,6 +9,7 @@ import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingDefaults;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -41,6 +42,61 @@ public final class PlayerSettingsMenu extends BaseMenu {
             "QUICK_AUCTION_SELL", "ORDER_NOTIFICATIONS", "DISABLE_MOB_SPAWN", "DISABLE_PHANTOM_SPAWN",
             "NIGHT_VISION", "BOUNTY_ALERTS", "SCOREBOARD_VISIBILITY", "SHOW_MONEY", "SHOW_SHARDS",
             "SHOW_KILLS", "SHOW_DEATHS", "SHOW_PLAYTIME", "COMBAT_TIMER"
+    );
+
+    private static final Map<String, String> BUNDLED_DEFAULT_DISPLAY_NAMES = Map.ofEntries(
+            Map.entry("PUBLIC_CHAT", "Public Chat"),
+            Map.entry("PRIVATE_MESSAGES", "Private Messages"),
+            Map.entry("SERVER_BROADCASTS", "Server Broadcasts"),
+            Map.entry("HOTBAR_MESSAGES", "Hotbar Messages"),
+            Map.entry("DEATH_MESSAGES", "Death Messages"),
+            Map.entry("ADVANCEMENT_MESSAGES", "Advancement Messages"),
+            Map.entry("JOIN_LEAVE_MESSAGES", "Join/Leave Messages"),
+            Map.entry("TEAM_CHAT_VISIBILITY", "Team Chat Visibility"),
+            Map.entry("AMETHYST_BREAK_MESSAGES", "Amethyst Break Messages"),
+            Map.entry("PAY_ALERTS", "Pay Alerts"),
+            Map.entry("TELEPORT_ALERTS", "Teleport Alerts"),
+            Map.entry("BOUNTY_ALERTS", "Bounty Alerts"),
+            Map.entry("AUCTION_NOTIFICATIONS", "Auction Alerts"),
+            Map.entry("ORDER_NOTIFICATIONS", "Order Alerts"),
+            Map.entry("NOTIFICATION_SOUNDS", "Notification Sounds"),
+            Map.entry("FOLLOW_ALERT_SETTINGS", "Follow Alerts"),
+            Map.entry("KEY_ALL_NOTIFICATIONS", "Key All Notifications"),
+            Map.entry("RTP_COORDINATES", "RTP Coordinates"),
+            Map.entry("FAST_CRYSTALS", "Fast Crystals"),
+            Map.entry("CHAINMAIL_ON_RESPAWN", "Automatic Respawn Kit"),
+            Map.entry("EXPLOSION_PARTICLES", "Explosion Particles"),
+            Map.entry("EXPLOSION_SOUNDS", "Explosion Sounds"),
+            Map.entry("COMBAT_TIMER", "Combat Timer"),
+            Map.entry("DISPLAY_DONUT_PLUS", "Display Donut+"),
+            Map.entry("MONEY_NAMETAGS", "Money Nametags"),
+            Map.entry("WORTH_DISPLAY", "Worth Display"),
+            Map.entry("TPA_CONFIRM_MENUS", "TPA Confirmation Menus"),
+            Map.entry("TPA_REQUESTS", "TPA Requests"),
+            Map.entry("TPA_HERE_REQUESTS", "TPA Here Requests"),
+            Map.entry("PAYMENTS", "Payments"),
+            Map.entry("RANDOMIZED_COORDS", "Randomized Coordinates"),
+            Map.entry("DUEL_REQUESTS", "Duel Requests"),
+            Map.entry("PAY_CONFIRM_MENUS", "Pay Confirmation Menus"),
+            Map.entry("AUTO_CONFIRM_TPAS", "Auto-Confirm TPAs"),
+            Map.entry("TEAM_INVITES", "Team Invites"),
+            Map.entry("DUEL_MUSIC", "Duel Music"),
+            Map.entry("SCOREBOARD_VISIBILITY", "Scoreboard Visibility"),
+            Map.entry("SHOW_MONEY", "Show Money"),
+            Map.entry("SHOW_SHARDS", "Show Shards"),
+            Map.entry("SHOW_KILLS", "Show Kills"),
+            Map.entry("SHOW_DEATHS", "Show Deaths"),
+            Map.entry("SHOW_PLAYTIME", "Show Playtime"),
+            Map.entry("CLEAR_ENTITIES_MESSAGES", "Clear Entities Messages"),
+            Map.entry("QUICK_AUCTION_PURCHASE", "Quick Buy"),
+            Map.entry("QUICK_AUCTION_SELL", "Quick Sell"),
+            Map.entry("DISABLE_MOB_SPAWN", "Disable Mob Spawning"),
+            Map.entry("DISABLE_PHANTOM_SPAWN", "Disable Phantom Spawning"),
+            Map.entry("NIGHT_VISION", "Night Vision"),
+            Map.entry("DESTROY_PEARL_ON_DEATH", "Destroy Ender Pearl On Death"),
+            Map.entry("HIDE_ALL_PLAYERS", "Hide All Players"),
+            Map.entry("TOTEM_PARTICLES", "Totem Particles"),
+            Map.entry("QUIET_SPAWN", "Quiet Spawn Teleportation")
     );
 
     private final Map<Integer, String> clickableButtons = new HashMap<>();
@@ -130,34 +186,34 @@ public final class PlayerSettingsMenu extends BaseMenu {
         }
 
         switch (key) {
-            case "PUBLIC_CHAT" -> toggle(player, "Public Chat",
+            case "PUBLIC_CHAT" -> toggle(player, section, key, "Public Chat",
                     !data.isPublicChatEnabled(), data::setPublicChatEnabled);
             case "PRIVATE_MESSAGES" -> {
                 data.setPrivateMessagesChoice(nextThreeChoice(data.getPrivateMessagesChoice()));
-                sendChoiceMessage(player, "Private Messages", formatThreeChoice(data.getPrivateMessagesChoice()));
+                sendChoiceMessage(player, section, key, "Private Messages", data.getPrivateMessagesChoice());
             }
-            case "SERVER_BROADCASTS" -> toggle(player, "Server Broadcasts",
+            case "SERVER_BROADCASTS" -> toggle(player, section, key, "Server Broadcasts",
                     !data.isServerBroadcastsEnabled(), data::setServerBroadcastsEnabled);
-            case "HOTBAR_MESSAGES" -> toggle(player, "Hotbar Notifications",
+            case "HOTBAR_MESSAGES" -> toggle(player, section, key, "Hotbar Notifications",
                     !data.isHotbarMessagesEnabled(), data::setHotbarMessagesEnabled);
-            case "PAY_ALERTS" -> toggle(player, "Pay Alerts",
+            case "PAY_ALERTS" -> toggle(player, section, key, "Pay Alerts",
                     !data.isPayAlertsEnabled(), data::setPayAlertsEnabled);
-            case "BOUNTY_ALERTS" -> toggle(player, "Bounty Alerts",
+            case "BOUNTY_ALERTS" -> toggle(player, section, key, "Bounty Alerts",
                     !data.isBountyAlertsEnabled(), data::setBountyAlertsEnabled);
-            case "AUCTION_NOTIFICATIONS" -> toggle(player, "Auction Notifications",
+            case "AUCTION_NOTIFICATIONS" -> toggle(player, section, key, "Auction Notifications",
                     !data.isAuctionNotificationsEnabled(), data::setAuctionNotificationsEnabled);
             case "FAST_CRYSTALS" -> {
                 data.setFastCrystalsEnabled(!data.isFastCrystalsEnabled());
                 plugin.getFastCrystalManager().applyCrystalCooldown(player);
-                sendToggleMessage(player, "Fast Crystals", data.isFastCrystalsEnabled());
+                sendToggleMessage(player, section, key, "Fast Crystals", data.isFastCrystalsEnabled());
             }
-            case "TOTEM_PARTICLES" -> toggle(player, "Totem Particles",
+            case "TOTEM_PARTICLES" -> toggle(player, section, key, "Totem Particles",
                     !data.isTotemParticlesEnabled(), data::setTotemParticlesEnabled);
-            case "EXPLOSION_PARTICLES" -> toggle(player, "Explosion Particles",
+            case "EXPLOSION_PARTICLES" -> toggle(player, section, key, "Explosion Particles",
                     !data.isExplosionParticlesEnabled(), data::setExplosionParticlesEnabled);
-            case "QUICK_AUCTION_PURCHASE" -> toggleQuickBuy(player);
-            case "QUICK_AUCTION_SELL" -> toggleQuickSell(player);
-            case "CHAINMAIL_ON_RESPAWN" -> toggle(player, "Automatic Respawn Kit",
+            case "QUICK_AUCTION_PURCHASE" -> toggleQuickBuy(player, section, key);
+            case "QUICK_AUCTION_SELL" -> toggleQuickSell(player, section, key);
+            case "CHAINMAIL_ON_RESPAWN" -> toggle(player, section, key, "Automatic Respawn Kit",
                     !data.isChainmailOnRespawnEnabled(), data::setChainmailOnRespawnEnabled);
             case "DISABLE_MOB_SPAWN" -> {
                 data.setMobSpawnEnabled(!data.isMobSpawnEnabled());
@@ -171,29 +227,29 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 } else {
                     data.setMobSpawnDisabledUntil(0L);
                 }
-                sendToggleMessage(player, "Nearby Mob Spawn Prevention", !data.isMobSpawnEnabled());
+                sendToggleMessage(player, section, key, "Nearby Mob Spawn Prevention", !data.isMobSpawnEnabled());
             }
             case "HIDE_ALL_PLAYERS" -> {
                 data.setHideAllPlayersEnabled(!data.isHideAllPlayersEnabled());
                 plugin.getPlayerVisibilityManager().applyViewerPreference(player);
-                sendToggleMessage(player, "Hide All Players", data.isHideAllPlayersEnabled());
+                sendToggleMessage(player, section, key, "Hide All Players", data.isHideAllPlayersEnabled());
             }
             case "SCOREBOARD_VISIBILITY" -> {
                 data.setScoreboardVisible(!data.isScoreboardVisible());
                 plugin.getScoreboardManager().applyVisibility(player);
-                sendToggleMessage(player, "Scoreboard Visibility", data.isScoreboardVisible());
+                sendToggleMessage(player, section, key, "Scoreboard Visibility", data.isScoreboardVisible());
             }
-            case "SHOW_MONEY" -> toggleSidebarLine(player, "Show Money",
+            case "SHOW_MONEY" -> toggleSidebarLine(player, section, key, "Show Money",
                     !data.isShowMoneyLine(), data::setShowMoneyLine);
-            case "SHOW_SHARDS" -> toggleSidebarLine(player, "Show Shards",
+            case "SHOW_SHARDS" -> toggleSidebarLine(player, section, key, "Show Shards",
                     !data.isShowShardsLine(), data::setShowShardsLine);
-            case "SHOW_KILLS" -> toggleSidebarLine(player, "Show Kills",
+            case "SHOW_KILLS" -> toggleSidebarLine(player, section, key, "Show Kills",
                     !data.isShowKillsLine(), data::setShowKillsLine);
-            case "SHOW_DEATHS" -> toggleSidebarLine(player, "Show Deaths",
+            case "SHOW_DEATHS" -> toggleSidebarLine(player, section, key, "Show Deaths",
                     !data.isShowDeathsLine(), data::setShowDeathsLine);
-            case "SHOW_PLAYTIME" -> toggleSidebarLine(player, "Show Playtime",
+            case "SHOW_PLAYTIME" -> toggleSidebarLine(player, section, key, "Show Playtime",
                     !data.isShowPlaytimeLine(), data::setShowPlaytimeLine);
-            case "COMBAT_TIMER" -> toggle(player, "Combat Timer",
+            case "COMBAT_TIMER" -> toggle(player, section, key, "Combat Timer",
                     !data.isCombatTimerEnabled(), data::setCombatTimerEnabled);
             case "AUTO_CONFIRM_TPAS" -> {
                 boolean enabled = !(data.isTpauto() && data.isAutoTpaHereEnabled());
@@ -202,27 +258,27 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 if (enabled) {
                     plugin.getTPAManager().processQueuedAutoRequests(player.getUniqueId());
                 }
-                sendToggleMessage(player, "Auto-Confirm TPAs", enabled);
+                sendToggleMessage(player, section, key, "Auto-Confirm TPAs", enabled);
             }
-            case "NOTIFICATION_SOUNDS" -> toggle(player, "Notification Sounds",
+            case "NOTIFICATION_SOUNDS" -> toggle(player, section, key, "Notification Sounds",
                     !data.isNotificationSoundsEnabled(), data::setNotificationSoundsEnabled);
-            case "RTP_COORDINATES" -> toggle(player, "RTP Coordinates",
+            case "RTP_COORDINATES" -> toggle(player, section, key, "RTP Coordinates",
                     !data.isRtpCoordinatesEnabled(), data::setRtpCoordinatesEnabled);
-            case "ORDER_NOTIFICATIONS" -> toggle(player, "Order Notifications",
+            case "ORDER_NOTIFICATIONS" -> toggle(player, section, key, "Order Notifications",
                     !data.isOrderNotificationsEnabled(), data::setOrderNotificationsEnabled);
-            case "DUEL_REQUESTS" -> toggle(player, "Duel Requests",
+            case "DUEL_REQUESTS" -> toggle(player, section, key, "Duel Requests",
                     !data.isDuelRequestsEnabled(), data::setDuelRequestsEnabled);
             case "TPA_REQUESTS" -> {
                 data.setTpaRequestsChoice(nextThreeChoice(data.getTpaRequestsChoice()));
-                sendChoiceMessage(player, "TPA Requests", formatThreeChoice(data.getTpaRequestsChoice()));
+                sendChoiceMessage(player, section, key, "TPA Requests", data.getTpaRequestsChoice());
             }
-            case "TEAM_INVITES" -> toggle(player, "Team Invites",
+            case "TEAM_INVITES" -> toggle(player, section, key, "Team Invites",
                     !data.isTeamInvitesEnabled(), data::setTeamInvitesEnabled);
             case "PAYMENTS" -> {
                 data.setPaymentsChoice(nextThreeChoice(data.getPaymentsChoice()));
-                sendChoiceMessage(player, "Payments", formatThreeChoice(data.getPaymentsChoice()));
+                sendChoiceMessage(player, section, key, "Payments", data.getPaymentsChoice());
             }
-            case "TEAM_CHAT_VISIBILITY" -> toggle(player, "Team Chat Visibility",
+            case "TEAM_CHAT_VISIBILITY" -> toggle(player, section, key, "Team Chat Visibility",
                     !data.isTeamChatVisible(), data::setTeamChatVisible);
             case "WORTH_DISPLAY" -> {
                 data.setWorthDisplayEnabled(!data.isWorthDisplayEnabled());
@@ -231,28 +287,28 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 } else {
                     plugin.getWorthManager().clearWorthDisplay(player);
                 }
-                sendToggleMessage(player, "Worth Display", data.isWorthDisplayEnabled());
+                sendToggleMessage(player, section, key, "Worth Display", data.isWorthDisplayEnabled());
             }
             case "MONEY_NAMETAGS" -> {
                 data.setMoneyNametagsEnabled(!data.isMoneyNametagsEnabled());
                 plugin.getMoneyNametagManager().refreshViewer(player);
-                sendToggleMessage(player, "Money Nametags", data.isMoneyNametagsEnabled());
+                sendToggleMessage(player, section, key, "Money Nametags", data.isMoneyNametagsEnabled());
             }
-            case "DUEL_MUSIC" -> toggle(player, "Duel Music",
+            case "DUEL_MUSIC" -> toggle(player, section, key, "Duel Music",
                     !data.isDuelMusicEnabled(), data::setDuelMusicEnabled);
-            case "QUIET_SPAWN" -> toggle(player, "Quiet Spawn Teleportation",
+            case "QUIET_SPAWN" -> toggle(player, section, key, "Quiet Spawn Teleportation",
                     !data.isQuietSpawnEnabled(), data::setQuietSpawnEnabled);
-            case "CLEAR_ENTITIES_MESSAGES" -> toggle(player, "Clear Entities Messages",
+            case "CLEAR_ENTITIES_MESSAGES" -> toggle(player, section, key, "Clear Entities Messages",
                     !data.isClearEntitiesMessagesEnabled(), data::setClearEntitiesMessagesEnabled);
-            case "AMETHYST_BREAK_MESSAGES" -> toggle(player, "Amethyst Break Messages",
+            case "AMETHYST_BREAK_MESSAGES" -> toggle(player, section, key, "Amethyst Break Messages",
                     !data.isAmethystBreakMessagesEnabled(), data::setAmethystBreakMessagesEnabled);
-            case "KEY_ALL_NOTIFICATIONS" -> toggle(player, "Key-All Notifications",
+            case "KEY_ALL_NOTIFICATIONS" -> toggle(player, section, key, "Key-All Notifications",
                     !data.isKeyAllNotificationsEnabled(), data::setKeyAllNotificationsEnabled);
-            case "TPA_CONFIRM_MENUS" -> toggle(player, "TPA Confirmation Menus",
+            case "TPA_CONFIRM_MENUS" -> toggle(player, section, key, "TPA Confirmation Menus",
                     !data.isTpaConfirmMenuEnabled(), data::setTpaConfirmMenuEnabled);
             case "TPA_HERE_REQUESTS" -> {
                 data.setTpaHereRequestsChoice(nextThreeChoice(data.getTpaHereRequestsChoice()));
-                sendChoiceMessage(player, "TPA Here Requests", formatThreeChoice(data.getTpaHereRequestsChoice()));
+                sendChoiceMessage(player, section, key, "TPA Here Requests", data.getTpaHereRequestsChoice());
             }
             case "DISABLE_PHANTOM_SPAWN" -> {
                 data.setPhantomEnabled(!data.isPhantomEnabled());
@@ -266,11 +322,11 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 } else {
                     data.setPhantomDisabledUntil(0L);
                 }
-                sendToggleMessage(player, "Phantom Spawn Prevention", !data.isPhantomEnabled());
+                sendToggleMessage(player, section, key, "Phantom Spawn Prevention", !data.isPhantomEnabled());
             }
-            case "PAY_CONFIRM_MENUS" -> toggle(player, "Pay Confirmation Menus",
+            case "PAY_CONFIRM_MENUS" -> toggle(player, section, key, "Pay Confirmation Menus",
                     !data.isPayConfirmMenuEnabled(), data::setPayConfirmMenuEnabled);
-            case "DESTROY_PEARL_ON_DEATH" -> toggle(player, "Destroy Pearl on Death",
+            case "DESTROY_PEARL_ON_DEATH" -> toggle(player, section, key, "Destroy Pearl on Death",
                     !data.isDestroyPearlOnDeath(), data::setDestroyPearlOnDeath);
             case "RANDOMIZED_COORDS" -> {
                 boolean nextVal = !data.isRandomizedCoords();
@@ -280,25 +336,25 @@ public final class PlayerSettingsMenu extends BaseMenu {
             }
             case "DEATH_MESSAGES" -> {
                 data.setDeathMessagesChoice(nextTwoChoice(data.getDeathMessagesChoice()));
-                sendToggleMessage(player, "Death Messages", data.isDeathMessagesEnabled());
+                sendToggleMessage(player, section, key, "Death Messages", data.isDeathMessagesEnabled());
             }
-            case "ADVANCEMENT_MESSAGES" -> toggle(player, "Advancement Messages",
+            case "ADVANCEMENT_MESSAGES" -> toggle(player, section, key, "Advancement Messages",
                     !data.isAdvancementMessagesEnabled(), data::setAdvancementMessagesEnabled);
             case "JOIN_LEAVE_MESSAGES" -> {
                 data.setJoinLeaveMessagesChoice(nextTwoChoice(data.getJoinLeaveMessagesChoice()));
-                sendToggleMessage(player, "Join/Leave Messages", data.isJoinLeaveMessagesEnabled());
+                sendToggleMessage(player, section, key, "Join/Leave Messages", data.isJoinLeaveMessagesEnabled());
             }
-            case "TELEPORT_ALERTS" -> toggle(player, "Teleport Alerts",
+            case "TELEPORT_ALERTS" -> toggle(player, section, key, "Teleport Alerts",
                     !data.isTeleportAlertsEnabled(), data::setTeleportAlertsEnabled);
-            case "FOLLOW_ALERT_SETTINGS" -> toggle(player, "Follow Alerts",
+            case "FOLLOW_ALERT_SETTINGS" -> toggle(player, section, key, "Follow Alerts",
                     !data.isFollowAlertsEnabled(), data::setFollowAlertsEnabled);
-            case "EXPLOSION_SOUNDS" -> toggle(player, "Explosion Sounds",
+            case "EXPLOSION_SOUNDS" -> toggle(player, section, key, "Explosion Sounds",
                     !data.isExplosionSoundsEnabled(), data::setExplosionSoundsEnabled);
-            case "DISPLAY_DONUT_PLUS" -> toggle(player, "Display Donut+",
+            case "DISPLAY_DONUT_PLUS" -> toggle(player, section, key, "Display Donut+",
                     !data.isDisplayDonutPlusEnabled(), data::setDisplayDonutPlusEnabled);
             case "NIGHT_VISION" -> {
                 boolean enabled = com.bx.ultimateDonutSmp.utils.NightVisionUtils.toggle(plugin, player);
-                sendToggleMessage(player, "Night Vision", enabled);
+                sendToggleMessage(player, section, key, "Night Vision", enabled);
             }
             default -> {
                 return;
@@ -510,7 +566,7 @@ public final class PlayerSettingsMenu extends BaseMenu {
                 }));
     }
 
-    private void toggleQuickBuy(Player player) {
+    private void toggleQuickBuy(Player player, ConfigurationSection section, String key) {
         if (quickBuyEnabled == null || plugin.getAuctionHouseManager() == null) {
             return;
         }
@@ -529,13 +585,19 @@ public final class PlayerSettingsMenu extends BaseMenu {
                                 "&cUnable to save quick auction purchase setting."
                         ));
                     } else {
-                        sendToggleMessage(player, "Quick auction purchases", enabled);
+                        sendToggleMessage(player, section, key, "Quick auction purchases", enabled);
                     }
                     rebuildIfOpen(player);
                 }));
     }
 
-    private void toggleQuickSell(Player player) {
+    private void toggleQuickBuy(Player player) {
+        ConfigurationSection section = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".BUTTONS.QUICK_AUCTION_PURCHASE");
+        toggleQuickBuy(player, section, "QUICK_AUCTION_PURCHASE");
+    }
+
+    private void toggleQuickSell(Player player, ConfigurationSection section, String key) {
         if (quickSellEnabled == null || plugin.getAuctionHouseManager() == null) {
             return;
         }
@@ -554,34 +616,204 @@ public final class PlayerSettingsMenu extends BaseMenu {
                                 "&cUnable to save quick auction sell setting."
                         ));
                     } else {
-                        sendToggleMessage(player, "Quick auction sells", enabled);
+                        sendToggleMessage(player, section, key, "Quick auction sells", enabled);
                     }
                     rebuildIfOpen(player);
                 }));
     }
 
-    private void toggle(Player player, String label, boolean enabled, BooleanSetter setter) {
+    private void toggleQuickSell(Player player) {
+        ConfigurationSection section = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".BUTTONS.QUICK_AUCTION_SELL");
+        toggleQuickSell(player, section, "QUICK_AUCTION_SELL");
+    }
+
+    private void toggle(Player player, ConfigurationSection section, String key, String label, boolean enabled, BooleanSetter setter) {
         setter.set(enabled);
-        sendToggleMessage(player, label, enabled);
+        sendToggleMessage(player, section, key, label, enabled);
+    }
+
+    private void toggle(Player player, String label, boolean enabled, BooleanSetter setter) {
+        toggle(player, null, null, label, enabled, setter);
     }
 
     /** Toggles one sidebar line and redraws the scoreboard so the change shows without a relog. */
-    private void toggleSidebarLine(Player player, String label, boolean enabled, BooleanSetter setter) {
+    private void toggleSidebarLine(Player player, ConfigurationSection section, String key, String label, boolean enabled, BooleanSetter setter) {
         setter.set(enabled);
         plugin.getScoreboardManager().applyVisibility(player);
-        sendToggleMessage(player, label, enabled);
+        sendToggleMessage(player, section, key, label, enabled);
+    }
+
+    private void toggleSidebarLine(Player player, String label, boolean enabled, BooleanSetter setter) {
+        toggleSidebarLine(player, null, null, label, enabled, setter);
+    }
+
+    static String formatToggleFeedback(
+            ConfigurationSection feedbackSection,
+            ConfigurationSection section,
+            String key,
+            String label,
+            boolean enabled
+    ) {
+        String template;
+        if (section != null && section.contains("FEEDBACK-MESSAGE")) {
+            template = section.getString("FEEDBACK-MESSAGE");
+        } else if (feedbackSection != null && feedbackSection.contains("TOGGLE-MESSAGE")) {
+            template = feedbackSection.getString("TOGGLE-MESSAGE");
+        } else {
+            template = "&7{setting} is now {state}&7.";
+        }
+
+        if (template == null || template.isBlank() || template.equalsIgnoreCase("none")) {
+            return null;
+        }
+
+        String stateText = enabled
+                ? (feedbackSection != null ? feedbackSection.getString("STATE-ENABLED", "&aEnabled") : "&aEnabled")
+                : (feedbackSection != null ? feedbackSection.getString("STATE-DISABLED", "&cDisabled") : "&cDisabled");
+
+        String settingName = resolveSettingName(feedbackSection, section, key, label);
+        String settingDisplay = resolveSettingDisplayName(section, label);
+
+        return template
+                .replace("{setting}", settingName)
+                .replace("{setting_display}", settingDisplay)
+                .replace("{state}", stateText)
+                .replace("{status}", stateText);
+    }
+
+    private void sendToggleMessage(Player player, ConfigurationSection section, String key, String label, boolean enabled) {
+        ConfigurationSection feedbackSection = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".FEEDBACK");
+        String message = formatToggleFeedback(feedbackSection, section, key, label, enabled);
+        if (message != null) {
+            player.sendMessage(ColorUtils.toComponent(message, player));
+        }
     }
 
     private void sendToggleMessage(Player player, String label, boolean enabled) {
-        player.sendMessage(ColorUtils.toComponent(
-                "&7" + label + " is now " + (enabled ? "&aEnabled" : "&cDisabled") + "&7."
-        ));
+        sendToggleMessage(player, null, null, label, enabled);
+    }
+
+    static String formatChoiceFeedback(
+            ConfigurationSection feedbackSection,
+            ConfigurationSection section,
+            String key,
+            String label,
+            String choiceText
+    ) {
+        String template;
+        if (section != null && section.contains("FEEDBACK-MESSAGE")) {
+            template = section.getString("FEEDBACK-MESSAGE");
+        } else if (feedbackSection != null && feedbackSection.contains("CHOICE-MESSAGE")) {
+            template = feedbackSection.getString("CHOICE-MESSAGE");
+        } else {
+            template = "&7{setting} is now set to {choice}&7.";
+        }
+
+        if (template == null || template.isBlank() || template.equalsIgnoreCase("none")) {
+            return null;
+        }
+
+        String settingName = resolveSettingName(feedbackSection, section, key, label);
+        String settingDisplay = resolveSettingDisplayName(section, label);
+
+        return template
+                .replace("{setting}", settingName)
+                .replace("{setting_display}", settingDisplay)
+                .replace("{choice}", choiceText)
+                .replace("{state}", choiceText)
+                .replace("{status}", choiceText);
+    }
+
+    private void sendChoiceMessage(Player player, ConfigurationSection section, String key, String label, ThreeChoice choice) {
+        ConfigurationSection feedbackSection = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".FEEDBACK");
+        String choiceText = formatFeedbackChoice(feedbackSection, choice);
+        sendChoiceMessage(player, feedbackSection, section, key, label, choiceText);
     }
 
     private void sendChoiceMessage(Player player, String label, String choiceText) {
-        player.sendMessage(ColorUtils.toComponent(
-                "&7" + label + " is now set to " + choiceText + "&7."
-        ));
+        ConfigurationSection feedbackSection = plugin.getConfigManager().getMenus()
+                .getConfigurationSection(MENU_PATH + ".FEEDBACK");
+        sendChoiceMessage(player, feedbackSection, null, null, label, choiceText);
+    }
+
+    private void sendChoiceMessage(
+            Player player,
+            ConfigurationSection feedbackSection,
+            ConfigurationSection section,
+            String key,
+            String label,
+            String choiceText
+    ) {
+        String message = formatChoiceFeedback(feedbackSection, section, key, label, choiceText);
+        if (message != null) {
+            player.sendMessage(ColorUtils.toComponent(message, player));
+        }
+    }
+
+    static String formatFeedbackChoice(ConfigurationSection feedbackSection, ThreeChoice choice) {
+        if (choice == null) {
+            return "";
+        }
+        return switch (choice) {
+            case OFF -> feedbackSection != null
+                    ? feedbackSection.getString("CHOICE-OFF-TEXT", "&cOff")
+                    : "&cOff";
+            case ANYONE -> feedbackSection != null
+                    ? feedbackSection.getString("CHOICE-ANYONE-TEXT", "&aAnyone")
+                    : "&aAnyone";
+            case FRIENDS_FOLLOWED -> feedbackSection != null
+                    ? feedbackSection.getString("CHOICE-FRIENDS-FOLLOWED-TEXT", "&dFriends/Followed")
+                    : "&dFriends/Followed";
+        };
+    }
+
+    static String resolveSettingName(
+            ConfigurationSection feedbackSection,
+            ConfigurationSection section,
+            String key,
+            String defaultLabel
+    ) {
+        if (section != null) {
+            if (section.contains("FEEDBACK-NAME")) {
+                return section.getString("FEEDBACK-NAME");
+            }
+            if (section.contains("FEEDBACK-LABEL")) {
+                return section.getString("FEEDBACK-LABEL");
+            }
+            if (section.contains("DISPLAY-NAME")) {
+                boolean useDisplayName = feedbackSection != null && feedbackSection.getBoolean("USE-DISPLAY-NAME", false);
+                String rawDisplay = section.getString("DISPLAY-NAME", "");
+                if (useDisplayName || isDisplayNameCustomized(key, rawDisplay)) {
+                    String stripped = ChatColor.stripColor(ColorUtils.colorize(rawDisplay)).trim();
+                    if (!stripped.isEmpty()) {
+                        return stripped;
+                    }
+                }
+            }
+        }
+        return defaultLabel;
+    }
+
+    static String resolveSettingDisplayName(ConfigurationSection section, String defaultLabel) {
+        if (section != null && section.contains("DISPLAY-NAME")) {
+            return section.getString("DISPLAY-NAME");
+        }
+        return defaultLabel;
+    }
+
+    static boolean isDisplayNameCustomized(String key, String rawDisplayName) {
+        if (key == null || rawDisplayName == null) {
+            return false;
+        }
+        String bundledDefault = BUNDLED_DEFAULT_DISPLAY_NAMES.get(key);
+        if (bundledDefault == null) {
+            return false;
+        }
+        String stripped = ChatColor.stripColor(ColorUtils.colorize(rawDisplayName)).trim();
+        return !bundledDefault.equalsIgnoreCase(stripped);
     }
 
     private ButtonState state(boolean enabled) {

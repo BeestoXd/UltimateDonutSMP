@@ -918,6 +918,14 @@ MENUS:
         LORE:
         - '&7Silence the spawn teleport effects'
         - '&fCurrently: {status}'
+    FEEDBACK:
+      TOGGLE-MESSAGE: '&7{setting} is now {state}&7.'
+      CHOICE-MESSAGE: '&7{setting} is now set to {choice}&7.'
+      STATE-ENABLED: '&aEnabled'
+      STATE-DISABLED: '&cDisabled'
+      CHOICE-OFF-TEXT: '&cOff'
+      CHOICE-ANYONE-TEXT: '&aAnyone'
+      CHOICE-FRIENDS-FOLLOWED-TEXT: '&dFriends/Followed'
   LEADERBOARDS-MENU:
     TITLE: '&8Leaderboards'
     TYPE-MENU:

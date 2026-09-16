@@ -933,6 +933,14 @@ STATS-MENU:
 SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
+  FEEDBACK:
+    TOGGLE-MESSAGE: '&7{setting} is now {state}&7.'
+    CHOICE-MESSAGE: '&7{setting} is now set to {choice}&7.'
+    STATE-ENABLED: '&aEnabled'
+    STATE-DISABLED: '&cDisabled'
+    CHOICE-OFF-TEXT: '&cOff'
+    CHOICE-ANYONE-TEXT: '&aAnyone'
+    CHOICE-FRIENDS-FOLLOWED-TEXT: '&dFriends/Followed'
   BUTTONS:
     # Buttons are grouped a row at a time: chat and messages on the first row,
     # alerts on the second, gameplay and display on the third, who may reach you on
@@ -1169,6 +1177,50 @@ Notes:
 - A `menus.yml` written before the current grouping is backed up under `config-backups/` and
   regenerated on the next start, because merging bundled defaults never rewrites a `SLOT` that
   is already in the file.
+
+### 5. Custom Feedback Messages & Fonts (`FEEDBACK`)
+
+When players toggle a setting or cycle choices in `/settings`, the plugin sends chat feedback. The feedback templates, state texts, choice labels, and font styling can be configured globally under `SETTINGS-MENU.FEEDBACK` or customized per button.
+
+#### Global Settings (`SETTINGS-MENU.FEEDBACK`)
+
+```yaml
+SETTINGS-MENU:
+  FEEDBACK:
+    TOGGLE-MESSAGE: '&7{setting} is now {state}&7.'
+    CHOICE-MESSAGE: '&7{setting} is now set to {choice}&7.'
+    STATE-ENABLED: '&aEnabled'
+    STATE-DISABLED: '&cDisabled'
+    CHOICE-OFF-TEXT: '&cOff'
+    CHOICE-ANYONE-TEXT: '&aAnyone'
+    CHOICE-FRIENDS-FOLLOWED-TEXT: '&dFriends/Followed'
+```
+
+#### Placeholders
+
+| Placeholder | Description | Example |
+| :--- | :--- | :--- |
+| `{setting}` | Setting name (from `FEEDBACK-NAME`, customized stripped `DISPLAY-NAME`, or default label) | `Notification Sounds` or `ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴ ꜱᴏᴜɴᴅꜱ` |
+| `{setting_display}` | Raw `DISPLAY-NAME` of the button preserving color codes | `&#6BF18DNotification Sounds` |
+| `{state}` | Current state or choice (`STATE-ENABLED`, `STATE-DISABLED`, or selected choice) | `&aEnabled` or `&aᴇɴᴀʙʟᴇᴅ` |
+| `{status}` | Alias for `{state}` | `&aEnabled` |
+| `{choice}` | Current choice text for three-choice settings | `&aAnyone` |
+
+#### Per-Button Overrides
+
+Individual buttons under `SETTINGS-MENU.BUTTONS` can define custom feedback names and messages:
+
+```yaml
+SETTINGS-MENU:
+  BUTTONS:
+    NOTIFICATION_SOUNDS:
+      FEEDBACK-NAME: 'ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴ ꜱᴏᴜɴᴅꜱ'
+      FEEDBACK-MESSAGE: '&7{setting} is now {state}&7.'
+```
+
+- `FEEDBACK-NAME`: Custom label used for `{setting}` in chat feedback (useful for small caps or special font styling).
+- `FEEDBACK-MESSAGE`: Overrides the global `TOGGLE-MESSAGE` or `CHOICE-MESSAGE` for this specific button. Setting it to `none` or `""` silences feedback for this button.
+- **Customized `DISPLAY-NAME`**: If a button's `DISPLAY-NAME` is customized (e.g. `&aɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴ ꜱᴏᴜɴᴅꜱ`), the stripped display name is automatically used for `{setting}` without needing `FEEDBACK-NAME`.
 
 ---
 

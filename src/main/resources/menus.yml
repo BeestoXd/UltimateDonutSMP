@@ -500,6 +500,23 @@ STATS-MENU:
 SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
+  # Feedback messages sent in chat when players change settings in /settings:
+  # Placeholders available:
+  #   {setting}         Setting label or button FEEDBACK-NAME / clean DISPLAY-NAME
+  #   {setting_display} Setting button DISPLAY-NAME preserving colors
+  #   {state}           Enabled/Disabled state or the selected choice text
+  #   {choice}          Selected choice text (for three-choice settings)
+  # Individual buttons under BUTTONS can also override:
+  #   FEEDBACK-NAME: <custom setting label in chat>
+  #   FEEDBACK-MESSAGE: <custom message template for this button>
+  FEEDBACK:
+    TOGGLE-MESSAGE: '&7{setting} is now {state}&7.'
+    CHOICE-MESSAGE: '&7{setting} is now set to {choice}&7.'
+    STATE-ENABLED: '&aEnabled'
+    STATE-DISABLED: '&cDisabled'
+    CHOICE-OFF-TEXT: '&cOff'
+    CHOICE-ANYONE-TEXT: '&aAnyone'
+    CHOICE-FRIENDS-FOLLOWED-TEXT: '&dFriends/Followed'
   BUTTONS:
     # Buttons are grouped a row at a time: chat and messages on the first row,
     # alerts on the second, gameplay and display on the third, who may reach you on
