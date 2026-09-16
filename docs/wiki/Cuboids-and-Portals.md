@@ -81,8 +81,10 @@ Cuboids can be bound to different server systems to enforce special features or 
 ### Feature Binds Explained:
 
 1. **`spawn` Bind**:
-   - Protects the cuboid area against block breaking, building, and unauthorized PvP.
-   - Restricts player flight (`/fly`) or allows flight depending on settings.
+   - Registers the cuboid as a spawn destination for `/spawn` and the spawn menu.
+   - Marks the region as an allowed flight zone for `/fly` when `FLY-SYSTEM.AUTO-DISABLE-OUTSIDE` is enabled.
+   - Applies item drop restrictions when spawn item drop protection is configured.
+   - Links the region to the setup shard reward system and automatic AFK checks.
    *Command*: `/cuboid bind spawn_zone spawn true`
 
 2. **`shard` Bind**:
