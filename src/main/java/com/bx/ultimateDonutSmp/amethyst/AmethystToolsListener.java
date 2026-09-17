@@ -30,12 +30,16 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.block.data.Waterlogged;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.RayTraceResult;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -335,14 +339,13 @@ public class AmethystToolsListener implements Listener {
                 handleSellAxe(event, player);
             }
             case BUCKET -> {
-                if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                    return;
-                }
-                if (!canUseTool(player, item, type, true, true, EquipmentSlot.HAND)) {
-                    event.setCancelled(true);
+                if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) {
                     return;
                 }
                 event.setCancelled(true);
+                if (!canUseTool(player, item, type, true, true, EquipmentSlot.HAND)) {
+                    return;
+                }
                 handleBucket(event, player);
             }
             default -> {
@@ -398,9 +401,23 @@ public class AmethystToolsListener implements Listener {
     }
 
     private void handleBucket(PlayerInteractEvent event, Player player) {
+        Block target = null;
+        try {
+            RayTraceResult hit = player.rayTraceBlocks(5.0, FluidCollisionMode.ALWAYS);
+            if (hit != null && hit.getHitBlock() != null) {
+                target = hit.getHitBlock();
+            }
+        } catch (Exception ignored) {
+        }
+        if (target == null) {
+            target = event.getClickedBlock();
+        }
+        drainWaterAt(player, target);
+    }
+
+    private void drainWaterAt(Player player, Block target) {
         manager.suppressVisualSync(player.getUniqueId(), 10000L);
-        Block clicked = event.getClickedBlock();
-        if (clicked == null || clicked.getType() != Material.WATER) {
+        if (target == null) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("BUCKET-NO-WATER")));
             return;
         }
@@ -409,7 +426,7 @@ public class AmethystToolsListener implements Listener {
         int radius = cfg != null ? cfg.getInt("DRAIN-RADIUS", 1) : 1;
         int maxDrain = cfg != null ? cfg.getInt("MAX-DRAIN", 27) : 27;
 
-        List<Block> waterBlocks = bfsWater(clicked, radius, maxDrain);
+        List<Block> waterBlocks = bfsWater(target, radius, maxDrain);
         if (waterBlocks.isEmpty()) {
             player.sendMessage(ColorUtils.toComponent(manager.getMessage("BUCKET-NO-WATER")));
             return;
@@ -417,8 +434,14 @@ public class AmethystToolsListener implements Listener {
 
         int particleCount = 0;
         for (Block water : waterBlocks) {
-            water.setType(Material.AIR);
-            player.sendBlockChange(water.getLocation(), Material.AIR.createBlockData());
+            if (water.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged()) {
+                wl.setWaterlogged(false);
+                water.setBlockData(wl);
+                player.sendBlockChange(water.getLocation(), wl);
+            } else {
+                water.setType(Material.AIR);
+                player.sendBlockChange(water.getLocation(), Material.AIR.createBlockData());
+            }
             if (particleCount < 5) {
                 manager.spawnAmethystParticles(water.getLocation());
                 particleCount++;
@@ -428,6 +451,46 @@ public class AmethystToolsListener implements Listener {
         SoundUtils.play(player, manager.getSound("USE"));
         player.sendMessage(ColorUtils.toComponent(
                 manager.getMessage("BUCKET-DRAIN", "{count}", String.valueOf(waterBlocks.size()))));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBucketFill(PlayerBucketFillEvent event) {
+        Player player = event.getPlayer();
+        EquipmentSlot hand = event.getHand();
+        ItemStack item = player.getInventory().getItem(hand);
+        if (!manager.isAmethystTool(item)) {
+            return;
+        }
+
+        AmethystToolType type = manager.getToolType(item);
+        if (type != AmethystToolType.BUCKET) {
+            return;
+        }
+
+        event.setCancelled(true);
+        player.updateInventory();
+
+        boolean manageInventory = shouldManageInventory(player.getGameMode());
+        if (item.getAmount() > 1) {
+            if (manageInventory) {
+                manager.sanitizeHeldItem(player, false);
+            }
+            return;
+        }
+
+        if (manageInventory) {
+            manager.ensureIdentity(item, player.getUniqueId(), false);
+        }
+
+        if (!canUseTool(player, item, type, true, true, hand)) {
+            return;
+        }
+
+        Block target = event.getBlock();
+        if (target == null) {
+            target = event.getBlockClicked();
+        }
+        drainWaterAt(player, target);
     }
 
     private void handleShardBooster(Player player, EquipmentSlot hand) {
@@ -796,7 +859,7 @@ public class AmethystToolsListener implements Listener {
         return result;
     }
 
-    private List<Block> bfsWater(Block start, int radius, int max) {
+    List<Block> bfsWater(Block start, int radius, int max) {
         List<Block> result = new ArrayList<>();
         Set<org.bukkit.Location> visited = new java.util.HashSet<>();
         Queue<Block> queue = new LinkedList<>();
@@ -808,7 +871,7 @@ public class AmethystToolsListener implements Listener {
             for (int dy = -radius; dy <= radius; dy++) {
                 for (int dz = -radius; dz <= radius; dz++) {
                     Block block = start.getWorld().getBlockAt(sx + dx, sy + dy, sz + dz);
-                    if (block.getType() == Material.WATER && visited.add(block.getLocation())) {
+                    if (isWater(block) && visited.add(block.getLocation())) {
                         queue.add(block);
                     }
                 }
@@ -823,7 +886,7 @@ public class AmethystToolsListener implements Listener {
 
         while (!queue.isEmpty() && result.size() < max) {
             Block current = queue.poll();
-            if (current.getType() != Material.WATER) {
+            if (!isWater(current)) {
                 continue;
             }
             result.add(current);
@@ -833,12 +896,22 @@ public class AmethystToolsListener implements Listener {
                 if (result.size() + queue.size() >= max) {
                     break;
                 }
-                if (neighbor.getType() == Material.WATER && visited.add(neighbor.getLocation())) {
+                if (isWater(neighbor) && visited.add(neighbor.getLocation())) {
                     queue.add(neighbor);
                 }
             }
         }
 
         return result;
+    }
+
+    static boolean isWater(Block block) {
+        if (block == null) {
+            return false;
+        }
+        if (block.getType() == Material.WATER) {
+            return true;
+        }
+        return block.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged();
     }
 }

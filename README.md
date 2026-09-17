@@ -254,6 +254,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/leave` | - | `/leave` | `ultimatedonutsmp.command.leave` |
 | `/logs` | - | `/logs` | `ultimatedonutsmp.command.logs` |
 | `/maintenance` | - | `/maintenance <on [duration]\|off\|status\|setlobby [server]>` | `ultimatedonutsmp.command.maintenance` |
+| `/media` | - | `/media` | `ultimatedonutsmp.command.media` |
 | `/meta` | `/farmingmeta` | `/meta` | `ultimatedonutsmp.command.meta` |
 | `/msg` | `/message`, `/tell`, `/whisper`, `/w` | `/msg <player> <message>` | `ultimatedonutsmp.command.msg` |
 | `/mute` | - | `/mute <player> [reason]` | `ultimatedonutsmp.command.mute` |
@@ -300,7 +301,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/shards` | - | `/shards [player]` or `/shards everywhere <status\|debug> [player]` | `ultimatedonutsmp.command.shards` |
 | `/shardshop` | - | `/shardshop` | `ultimatedonutsmp.command.shardshop` |
 | `/shop` | - | `/shop [reload]` | `ultimatedonutsmp.command.shop` |
-| `/social` | `/media` | `/social` | `ultimatedonutsmp.command.social` |
+| `/social` | - | `/social` | `ultimatedonutsmp.command.social` |
 | `/spawn` | - | `/spawn` | `ultimatedonutsmp.command.spawn` |
 | `/spawner` | `/spawners` | `/spawner [give\|info\|panel\|reload\|remove\|split]` | `ultimatedonutsmp.command.spawner` |
 | `/spawnstash` | `/stash` | `/spawnstash [type\|spawn\|list\|remove\|reload]` | `ultimatedonutsmp.command.spawnstash` |

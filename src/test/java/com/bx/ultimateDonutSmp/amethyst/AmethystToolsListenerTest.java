@@ -38,4 +38,70 @@ class AmethystToolsListenerTest {
     void anAbsentHandFallsBackToTheHeldSlot() {
         assertEquals(5, AmethystToolsListener.consumedSlot(null, 5));
     }
+
+    @Test
+    void isWaterReturnsFalseForNull() {
+        assertFalse(AmethystToolsListener.isWater(null));
+    }
+
+    @Test
+    void isWaterIdentifiesWaterMaterial() {
+        org.bukkit.block.Block block = (org.bukkit.block.Block) java.lang.reflect.Proxy.newProxyInstance(
+                org.bukkit.block.Block.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.block.Block.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("getType")) {
+                        return org.bukkit.Material.WATER;
+                    }
+                    return null;
+                }
+        );
+        assertTrue(AmethystToolsListener.isWater(block));
+    }
+
+    @Test
+    void isWaterIdentifiesNonWaterMaterial() {
+        org.bukkit.block.Block block = (org.bukkit.block.Block) java.lang.reflect.Proxy.newProxyInstance(
+                org.bukkit.block.Block.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.block.Block.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("getType")) {
+                        return org.bukkit.Material.STONE;
+                    }
+                    if (method.getName().equals("getBlockData")) {
+                        return null;
+                    }
+                    return null;
+                }
+        );
+        assertFalse(AmethystToolsListener.isWater(block));
+    }
+
+    @Test
+    void isWaterIdentifiesWaterloggedBlock() {
+        org.bukkit.block.data.Waterlogged waterlogged = (org.bukkit.block.data.Waterlogged) java.lang.reflect.Proxy.newProxyInstance(
+                org.bukkit.block.data.Waterlogged.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.block.data.Waterlogged.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("isWaterlogged")) {
+                        return true;
+                    }
+                    return null;
+                }
+        );
+        org.bukkit.block.Block block = (org.bukkit.block.Block) java.lang.reflect.Proxy.newProxyInstance(
+                org.bukkit.block.Block.class.getClassLoader(),
+                new Class<?>[]{org.bukkit.block.Block.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("getType")) {
+                        return org.bukkit.Material.OAK_STAIRS;
+                    }
+                    if (method.getName().equals("getBlockData")) {
+                        return waterlogged;
+                    }
+                    return null;
+                }
+        );
+        assertTrue(AmethystToolsListener.isWater(block));
+    }
 }

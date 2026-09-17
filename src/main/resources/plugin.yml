@@ -623,10 +623,13 @@ commands:
   social:
     description: Get social links
     usage: /social
-    aliases:
-    - media
     permission: ultimatedonutsmp.command.social
     permission-message: "&cYou do not have permission to use /social."
+  media:
+    description: View media rank requirements
+    usage: /media
+    permission: ultimatedonutsmp.command.media
+    permission-message: "&cYou do not have permission to use /media."
   ranks:
     description: View rank perks
     usage: /ranks
@@ -1381,6 +1384,7 @@ permissions:
       ultimatedonutsmp.command.twitter: true
       ultimatedonutsmp.command.store: true
       ultimatedonutsmp.command.social: true
+      ultimatedonutsmp.command.media: true
       ultimatedonutsmp.command.ranks: true
       ultimatedonutsmp.command.rules: true
       ultimatedonutsmp.command.help: true
@@ -1755,6 +1759,9 @@ permissions:
     default: true
   ultimatedonutsmp.command.social:
     description: Access to /social command
+    default: true
+  ultimatedonutsmp.command.media:
+    description: Access to /media command
     default: true
   ultimatedonutsmp.command.ranks:
     description: Access to /ranks command
