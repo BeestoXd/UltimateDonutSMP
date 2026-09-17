@@ -253,7 +253,7 @@ public class FeatureManager {
             case "phantom" -> new Feature[]{Feature.PHANTOM};
             case "findplayer" -> new Feature[]{Feature.FIND_PLAYER};
             case "settings" -> new Feature[]{Feature.SETTINGS};
-            case "discord", "twitter", "store", "social" -> new Feature[]{Feature.SOCIAL};
+            case "discord", "twitter", "store", "social", "media" -> new Feature[]{Feature.SOCIAL};
             case "rules" -> new Feature[]{Feature.RULES};
             case "ranks", "rank" -> new Feature[]{Feature.RANKS};
             case "help" -> new Feature[]{Feature.HELP};

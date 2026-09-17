@@ -784,6 +784,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("twitter", socialCmd, FeatureManager.Feature.SOCIAL);
         setExecutor("store", socialCmd, FeatureManager.Feature.SOCIAL);
         setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
+        setExecutor("media", socialCmd, FeatureManager.Feature.SOCIAL);
 
         setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
         setExecutor("ranks", new RanksCommand(this), FeatureManager.Feature.RANKS);
