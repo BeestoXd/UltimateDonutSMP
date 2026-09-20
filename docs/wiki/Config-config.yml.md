@@ -608,7 +608,7 @@ FEATURES_SETTINGS:
   # Options:
   # - "MESSAGE": Shows "The <feature> feature is currently disabled."
   # - "UNKNOWN": Shows default unknown command message.
-  # - "UNREGISTER": Dynamically unregister command from Bukkit command map.
+  # - "UNREGISTER": Drop the command and its aliases so another plugin can handle them.
   DISABLED_COMMAND_ACTION: "MESSAGE"
 # Configuration section for Chat.
 ```
@@ -617,7 +617,7 @@ FEATURES_SETTINGS:
 
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `FEATURES_SETTINGS.DISABLED_COMMAND_ACTION` | `str` | `"MESSAGE"`, `"UNKNOWN"`, `"UNREGISTER"` | `'MESSAGE'` | Action when executing a disabled feature's command:<br>- `"MESSAGE"`: Shows disabled notice.<br>- `"UNKNOWN"`: Shows unknown command message.<br>- `"UNREGISTER"`: Dynamically unregisters command from Bukkit. |
+| `FEATURES_SETTINGS.DISABLED_COMMAND_ACTION` | `str` | `"MESSAGE"`, `"UNKNOWN"`, `"UNREGISTER"` | `'MESSAGE'` | Action when executing a disabled feature's command:<br>- `"MESSAGE"`: Shows disabled notice.<br>- `"UNKNOWN"`: Shows unknown command message.<br>- `"UNREGISTER"`: Drops the command and its aliases so another plugin can handle them. |
 
 ### 3. Practical Setup Example
 
@@ -627,7 +627,7 @@ FEATURES_SETTINGS:
   # Options:
   # - "MESSAGE": Shows "The <feature> feature is currently disabled."
   # - "UNKNOWN": Shows default unknown command message.
-  # - "UNREGISTER": Dynamically unregister command from Bukkit command map.
+  # - "UNREGISTER": Drop the command and its aliases so another plugin can handle them.
   DISABLED_COMMAND_ACTION: "MESSAGE"
 # Configuration section for Chat.
 ```
@@ -2898,7 +2898,7 @@ COMMANDS:
 These are switches, not a list of what exists: setting one to `false` takes the matching commands
 away rather than hiding them. What a blocked command looks like to the player is set by
 `FEATURES_SETTINGS.DISABLED_COMMAND_ACTION` near the top of this file, which can show a message,
-reply as though the command were unknown, or unregister it from the server outright.
+reply as though the command were unknown, or drop it from the server so another plugin can handle the same command.
 
 One thing to know before editing here. Most of these keys have a newer counterpart at
 `FEATURES.<name>.ENABLED`, and when that path exists it wins; the `COMMANDS` entry is only read as
