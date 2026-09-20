@@ -116,7 +116,13 @@ TEAM-MENUS:
       SLOT: 45
       LORE:
       - '&fSearch for team members'
-      - '&cIn development.'
+    SEARCH_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - Search
+      - ''
+      input-line: 0
     SORT-BUTTON:
       TITLE: '&aSort'
       MATERIAL: HOPPER
@@ -220,7 +226,9 @@ TEAM-MENUS:
 | `TEAM-MENUS.TEAM.SEARCH-BUTTON.TITLE` | `str` | Any string text | `'&#6BF18DSearch'` | Configures the technical `TITLE` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.TITLE` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SEARCH-BUTTON.MATERIAL` | `str` | Any string text | `'OAK_SIGN'` | Configures the technical `MATERIAL` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.MATERIAL` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SEARCH-BUTTON.SLOT` | `int` | Any valid integer number | `'45'` | Configures the technical `SLOT` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.SLOT` in `menus.yml`. |
-| `TEAM-MENUS.TEAM.SEARCH-BUTTON.LORE` | `list` | List of configured items/strings | `['&fSearch for team members', '&cIn development.']` | Configures the technical `LORE` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.LORE` in `menus.yml`. |
+| `TEAM-MENUS.TEAM.SEARCH-BUTTON.LORE` | `list` | List of configured items/strings | `['&fSearch for team members']` | Extra lore on the search sign. The plugin appends the current filter and the left-click / right-click hints on top of this. |
+| `TEAM-MENUS.TEAM.SEARCH_SIGN.lines` | `list` | Up to four lines of text | `['', '↑↑↑↑↑↑↑↑↑↑↑↑↑', 'Search', '']` | The four lines the sign shows when someone left-clicks search. A shorter list is padded with blanks and anything past the fourth line is dropped. Colour codes are translated and then stripped, so `&c` and friends change nothing on these signs. Leave all four blank and the plugin falls back to `^^^^^^^^^^^^^^` on the second line and `Enter Value` on the third. |
+| `TEAM-MENUS.TEAM.SEARCH_SIGN.input-line` | `int` | `0` to `3` | `0` | Which line the typed name is read back from, counting from zero. Anything outside that range is clamped into it. At the default of `0` the player types on the top line and the arrows underneath point up at it. |
 | `TEAM-MENUS.TEAM.SORT-BUTTON.TITLE` | `str` | Any string text | `'&aSort'` | Configures the technical `TITLE` parameter for `TEAM-MENUS.TEAM.SORT-BUTTON.TITLE` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SORT-BUTTON.MATERIAL` | `str` | Any string text | `'HOPPER'` | Configures the technical `MATERIAL` parameter for `TEAM-MENUS.TEAM.SORT-BUTTON.MATERIAL` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SORT-BUTTON.SLOT` | `int` | Any valid integer number | `'46'` | Configures the technical `SLOT` parameter for `TEAM-MENUS.TEAM.SORT-BUTTON.SLOT` in `menus.yml`. |
@@ -277,7 +285,13 @@ TEAM-MENUS:
       SLOT: 45
       LORE:
       - '&fSearch for team members'
-      - '&cIn development.'
+    SEARCH_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - Search
+      - ''
+      input-line: 0
     SORT-BUTTON:
       TITLE: '&aSort'
       MATERIAL: HOPPER

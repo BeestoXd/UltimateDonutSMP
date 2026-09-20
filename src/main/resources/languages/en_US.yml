@@ -397,7 +397,13 @@ MENUS:
         TITLE: '&#6BF18DSearch'
         LORE:
         - '&fSearch for team members'
-        - '&cIn development.'
+      SEARCH_SIGN:
+        lines:
+        - ''
+        - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+        - Search
+        - ''
+        input-line: 0
       SORT-BUTTON:
         TITLE: '&aSort'
       REFRESH-BUTTON:

@@ -28,7 +28,13 @@ TEAM-MENUS:
       SLOT: 45
       LORE:
       - '&fSearch for team members'
-      - '&cIn development.'
+    SEARCH_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - Search
+      - ''
+      input-line: 0
     SORT-BUTTON:
       TITLE: '&aSort'
       MATERIAL: HOPPER

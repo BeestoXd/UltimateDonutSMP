@@ -1,7 +1,6 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
-import com.bx.ultimateDonutSmp.menus.TeamMenu;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import org.bukkit.Bukkit;
@@ -19,7 +18,6 @@ public class TeamManager {
     private final Map<UUID, String> playerTeamMap = new ConcurrentHashMap<>();
     private final Map<UUID, List<String>> pendingInvites = new HashMap<>();
     private final Set<UUID> teamChatEnabled = ConcurrentHashMap.newKeySet();
-    private final Map<UUID, PendingTeamSearch> pendingSearchInputs = new ConcurrentHashMap<>();
     private final Map<UUID, String> activeSearchQueries = new HashMap<>();
 
     public TeamManager(UltimateDonutSmp plugin) {
@@ -327,60 +325,17 @@ public class TeamManager {
         }
     }
 
-    public void promptTeamSearch(Player player, int currentPage, TeamMenu.SortMode sortMode) {
-        if (player == null) return;
-
-        pendingSearchInputs.put(player.getUniqueId(), new PendingTeamSearch(currentPage, sortMode));
-        player.closeInventory();
-
-        String currentQuery = getActiveSearchQuery(player.getUniqueId());
-        if (currentQuery == null || currentQuery.isBlank()) {
-            player.sendMessage(ColorUtils.toComponent(
-                    "&7Type a team member name in chat to search. Type &ccancel &7to abort."));
+    public void setSearchQuery(UUID uuid, String query) {
+        if (uuid == null) return;
+        if (query == null || query.isBlank()) {
+            activeSearchQueries.remove(uuid);
             return;
         }
-
-        player.sendMessage(ColorUtils.toComponent(
-                "&7Type a team member name in chat to search. Type &ccancel &7to abort or &cclear &7to reset the filter."));
-        player.sendMessage(ColorUtils.toComponent("&7Current filter: &f" + currentQuery));
-    }
-
-    public boolean hasPendingSearchInput(UUID uuid) {
-        return pendingSearchInputs.containsKey(uuid);
-    }
-
-    public void handlePendingSearchInput(Player player, String rawInput) {
-        if (player == null) return;
-
-        PendingTeamSearch pending = pendingSearchInputs.get(player.getUniqueId());
-        if (pending == null) return;
-
-        String input = rawInput == null ? "" : rawInput.trim();
-        if (input.equalsIgnoreCase("cancel")) {
-            pendingSearchInputs.remove(player.getUniqueId());
-            player.sendMessage(ColorUtils.toComponent("&7Team member search cancelled."));
-            new TeamMenu(plugin).withState(pending.page(), pending.sortMode(), getActiveSearchQuery(player.getUniqueId())).open(player);
-            return;
+        String normalized = query.trim();
+        if (normalized.length() > 64) {
+            normalized = normalized.substring(0, 64);
         }
-
-        if (input.equalsIgnoreCase("clear")) {
-            pendingSearchInputs.remove(player.getUniqueId());
-            activeSearchQueries.remove(player.getUniqueId());
-            player.sendMessage(ColorUtils.toComponent("&7Team member search cleared."));
-            new TeamMenu(plugin).withState(0, pending.sortMode(), null).open(player);
-            return;
-        }
-
-        if (input.isBlank()) {
-            player.sendMessage(ColorUtils.toComponent("&cSearch query cannot be empty."));
-            player.sendMessage(ColorUtils.toComponent("&7Type a team member name or &ccancel&7."));
-            return;
-        }
-
-        pendingSearchInputs.remove(player.getUniqueId());
-        activeSearchQueries.put(player.getUniqueId(), input);
-        player.sendMessage(ColorUtils.toComponent("&7Searching team members for &f" + input + "&7."));
-        new TeamMenu(plugin).withState(0, pending.sortMode(), input).open(player);
+        activeSearchQueries.put(uuid, normalized);
     }
 
     public String getActiveSearchQuery(UUID uuid) {
@@ -390,7 +345,6 @@ public class TeamManager {
 
     public void clearSearchState(UUID uuid) {
         if (uuid == null) return;
-        pendingSearchInputs.remove(uuid);
         activeSearchQueries.remove(uuid);
     }
 
@@ -399,7 +353,6 @@ public class TeamManager {
         playerTeamMap.clear();
         pendingInvites.clear();
         teamChatEnabled.clear();
-        pendingSearchInputs.clear();
         activeSearchQueries.clear();
     }
 
@@ -446,8 +399,5 @@ public class TeamManager {
     @FunctionalInterface
     private interface PermissionAccessor {
         boolean hasPermission(Team.TeamMember member);
-    }
-
-    private record PendingTeamSearch(int page, TeamMenu.SortMode sortMode) {
     }
 }
