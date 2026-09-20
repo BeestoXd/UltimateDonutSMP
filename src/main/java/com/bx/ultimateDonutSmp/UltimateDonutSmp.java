@@ -14,6 +14,7 @@ import com.bx.ultimateDonutSmp.listeners.*;
 import com.bx.ultimateDonutSmp.managers.*;
 import com.bx.ultimateDonutSmp.tasks.*;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.CommandMapFeatureSync;
 import com.bx.ultimateDonutSmp.utils.SpigotScheduler;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandExecutor;
@@ -1570,6 +1571,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
                 syncCommandState(commandName, features);
             }
         }
+        syncVanillaDispatcher();
         for (org.bukkit.entity.Player player : getServer().getOnlinePlayers()) {
             try {
                 player.updateCommands();
@@ -1596,31 +1598,27 @@ public final class UltimateDonutSmp extends JavaPlugin {
             Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
 
             String fallbackPrefix = getDescription().getName().toLowerCase(Locale.ROOT);
-            String namespacedKey = fallbackPrefix + ":" + commandName;
-
-            if (enabled || !unregisterMode) {
+            boolean claim = enabled || !unregisterMode;
+            if (claim) {
                 command.register(commandMap);
-                knownCommands.put(commandName, command);
-                knownCommands.put(namespacedKey, command);
-                if (command.getAliases() != null) {
-                    for (String alias : command.getAliases()) {
-                        knownCommands.put(alias, command);
-                        knownCommands.put(fallbackPrefix + ":" + alias, command);
-                    }
-                }
             } else {
                 command.unregister(commandMap);
-                knownCommands.remove(commandName);
-                knownCommands.remove(namespacedKey);
-                if (command.getAliases() != null) {
-                    for (String alias : command.getAliases()) {
-                        knownCommands.remove(alias);
-                        knownCommands.remove(fallbackPrefix + ":" + alias);
-                    }
-                }
             }
+            CommandMapFeatureSync.apply(command, knownCommands, fallbackPrefix, claim);
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Failed to sync command state for: " + commandName, e);
+        }
+    }
+
+    private void syncVanillaDispatcher() {
+        try {
+            Method method = getServer().getClass().getMethod("syncCommands");
+            method.invoke(getServer());
+        } catch (NoSuchMethodException ignored) {
+            // Spigot has no brigadier rebuild. Paper and Folia do, and that is what
+            // actually updates /ec after the Bukkit map changes.
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Failed to rebuild the command dispatcher after a feature command sync", e);
         }
     }
 }
