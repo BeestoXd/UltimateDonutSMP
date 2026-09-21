@@ -1042,7 +1042,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private boolean checkMinecraftVersionSupport() {
         boolean isFolia = isClassAvailable("io.papermc.paper.threadedregions.RegionizedServer");
         String minVersion = isFolia ? "1.21.11" : "1.21.10";
-        String maxVersion = "26.2";
+        String maxVersion = isFolia ? "26.2" : "26.3";
         String platformName = isFolia ? "Folia" : "Spigot/Paper";
 
         String bukkitVersion = getServer().getBukkitVersion();

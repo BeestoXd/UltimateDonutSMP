@@ -86,7 +86,7 @@ Gameplay clips:
 | --- | --- |
 | Plugin version | `1.5` |
 | Java | Bytecode targets Java 21. Use the Java version required by the selected Minecraft server; Minecraft 26.1+ requires Java 25. |
-| Paper / Purpur / Pufferfish / Spigot | Minecraft `1.21.10` through `26.2` |
+| Paper / Purpur / Pufferfish / Spigot | Minecraft `1.21.10` through `26.3` |
 | Folia | Minecraft `1.21.11` through `26.2` |
 | Hard dependencies | PlaceholderAPI and ProtocolLib (declared under `depend` in `plugin.yml`; the plugin will not load without them) |
 | Default storage | SQLite, bundled through the shaded JDBC driver |

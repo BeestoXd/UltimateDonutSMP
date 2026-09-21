@@ -8,9 +8,9 @@ This guide provides step-by-step instructions for installing and configuring **U
 
 | Requirement | Minimum / Supported | Notes |
 | :--- | :--- | :--- |
-| **Java Version** | Java 21+ | Minecraft 26.1 / 26.2 requires Java 25 |
+| **Java Version** | Java 21+ | Minecraft 26.1+ requires Java 25 |
 | **Server Engine** | Paper, Purpur, Pufferfish, Spigot, **Folia 26.2+** | Purpur and other Paper forks run the Paper/Spigot path; native multi-threaded region scheduling on Folia |
-| **Minecraft Versions** | `1.21.10` – `26.2` | Folia: `1.21.11` – `26.2` |
+| **Minecraft Versions** | `1.21.10` – `26.3` | Folia: `1.21.11` – `26.2` |
 | **Build Tools** | Maven (`mvn`), Windows PowerShell | Tested on Windows / Linux environments |
 
 ---
