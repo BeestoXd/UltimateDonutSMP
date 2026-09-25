@@ -10,6 +10,7 @@ import com.bx.ultimateDonutSmp.utils.ItemUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
 
@@ -57,7 +58,8 @@ public class OrdersCollectMenu extends BaseMenu {
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
         set(lastRow + 2, ItemUtils.createItem(Material.WRITABLE_BOOK, "&bMy orders", List.of("&7View your orders")));
         set(lastRow + 3, ItemUtils.createItem(Material.CLOCK, "&eRefresh", List.of("&7Reload your collect queue")));
-        set(lastRow + 4, OrdersMenuSupport.button(
+        int collectPageSlot = OrdersMenuSupport.slot(plugin, "GUI.COLLECT.BUTTONS.COLLECT_PAGE.SLOT", lastRow + 4);
+        set(collectPageSlot, OrdersMenuSupport.button(
                 plugin, "GUI.COLLECT.BUTTONS.COLLECT_PAGE", "ORDERS.GUI.COLLECT.COLLECT_PAGE",
                 Material.HOPPER, "&aCollect page", List.of("&fCollect every claim shown on this page")
         ));
@@ -69,7 +71,8 @@ public class OrdersCollectMenu extends BaseMenu {
         set(lastRow + 7, hasNextPage(claims.size(), itemsPerPage)
                 ? ItemUtils.createItem(Material.ARROW, "&aNext page", List.of("&7Go to page &f" + (page + 1)))
                 : ItemUtils.createPlaceholder(Material.BLACK_STAINED_GLASS_PANE));
-        set(lastRow + 8, OrdersMenuSupport.button(
+        int dropPageSlot = OrdersMenuSupport.slot(plugin, "GUI.COLLECT.BUTTONS.DROP_PAGE.SLOT", lastRow + 8);
+        set(dropPageSlot, OrdersMenuSupport.button(
                 plugin, "GUI.COLLECT.BUTTONS.DROP_PAGE", "ORDERS.GUI.COLLECT.DROP_PAGE",
                 Material.DROPPER, "&eDrop page", List.of("&fDrop item claims safely at your feet")
         ));
@@ -85,9 +88,16 @@ public class OrdersCollectMenu extends BaseMenu {
 
     @Override
     public void handleClick(int slot, Player player) {
+        handleClick(slot, player, ClickType.LEFT);
+    }
+
+    @Override
+    public void handleClick(int slot, Player player, ClickType clickType) {
         int lastRow = inventory.getSize() - 9;
         List<OrderCollectionClaim> claims = getClaims(player);
         int itemsPerPage = plugin.getOrdersManager().getCollectItemsPerPage();
+        int collectPageSlot = OrdersMenuSupport.slot(plugin, "GUI.COLLECT.BUTTONS.COLLECT_PAGE.SLOT", lastRow + 4);
+        int dropPageSlot = OrdersMenuSupport.slot(plugin, "GUI.COLLECT.BUTTONS.DROP_PAGE.SLOT", lastRow + 8);
 
         if (slot == lastRow) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
@@ -111,7 +121,7 @@ public class OrdersCollectMenu extends BaseMenu {
             new OrdersCollectMenu(plugin, page, orderId).open(player);
             return;
         }
-        if (slot == lastRow + 4) {
+        if (slot == collectPageSlot) {
             collectPage(player, false, claims, itemsPerPage);
             return;
         }
@@ -122,7 +132,7 @@ public class OrdersCollectMenu extends BaseMenu {
             }
             return;
         }
-        if (slot == lastRow + 8) {
+        if (slot == dropPageSlot) {
             collectPage(player, true, claims, itemsPerPage);
             return;
         }
@@ -150,6 +160,33 @@ public class OrdersCollectMenu extends BaseMenu {
             manager.updateClickCooldown(player.getUniqueId());
 
             OrderCollectionClaim claim = claims.get(claimIndex);
+            if (clickType != null && clickType.isRightClick()) {
+                OrderBatchClaimResult batchResult = manager.claimBatch(player, List.of(claim.id()), true);
+                if (batchResult.failedClaims() > 0 || (batchResult.itemClaims() == 0 && batchResult.refundClaims() == 0)) {
+                    player.sendMessage(ColorUtils.toComponent("&cOrders could not drop that claim right now."));
+                    SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.FAIL"));
+                    return;
+                }
+                if (claim.refundClaim()) {
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                            "ORDERS.CLAIMED_REFUND",
+                            "&aClaimed escrow refund of {amount_formatted}&a.",
+                            "{amount}", NumberUtils.format(claim.moneyAmount()),
+                            "{amount_formatted}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount())
+                    )));
+                } else {
+                    player.sendMessage(ColorUtils.toComponent(OrdersMenuSupport.text(
+                            plugin,
+                            "ORDERS.CLAIMED_ITEM_DROPPED",
+                            "&aDropped delivered item at your feet: &f{item}&a.",
+                            "{item}", manager.describeItem(claim.item())
+                    )));
+                }
+                SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.SUCCESS"));
+                new OrdersCollectMenu(plugin, page, orderId).open(player);
+                return;
+            }
+
             OrdersManager.ClaimResult result = manager.claim(player, claim.id());
             if (!result.success()) {
                 player.sendMessage(ColorUtils.toComponent(resolveFailureMessage(result)));

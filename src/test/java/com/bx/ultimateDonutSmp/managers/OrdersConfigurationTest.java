@@ -22,6 +22,9 @@ class OrdersConfigurationTest {
         assertEquals(45, orders.getInt("GUI.MAIN.ITEMS_PER_PAGE"));
         assertEquals(27, orders.getInt("GUI.MY_ORDERS.SIZE"));
         assertEquals(26, orders.getInt("GUI.MY_ORDERS.BUTTONS.NEW.SLOT"));
+        assertEquals(24, orders.getInt("GUI.EDIT_ORDER.BUTTONS.DROP.SLOT"));
+        assertEquals(49, orders.getInt("GUI.COLLECT.BUTTONS.COLLECT_PAGE.SLOT"));
+        assertEquals(53, orders.getInt("GUI.COLLECT.BUTTONS.DROP_PAGE.SLOT"));
         assertEquals(35, orders.getInt("GUI.DELIVERY_DEPOSIT.BUTTONS.CONFIRM.SLOT"));
         assertTrue(orders.getBoolean("BEDROCK.ENABLED"));
         assertTrue(orders.getBoolean("NETWORK.ENABLED"));
@@ -29,6 +32,13 @@ class OrdersConfigurationTest {
         assertTrue(orders.isConfigurationSection("SEARCH_SIGN"));
         assertTrue(orders.isConfigurationSection("AMOUNT_SIGN"));
         assertTrue(orders.isConfigurationSection("PRICE_SIGN"));
+    }
+
+    @Test
+    void privateMessageReceiverSoundConfigured() throws Exception {
+        YamlConfiguration sounds = new YamlConfiguration();
+        sounds.load(Path.of("src/main/resources/sounds.yml").toFile());
+        assertEquals("minecraft:entity.experience_orb.pickup|0.85|1.35", sounds.getString("MESSAGES.RECEIVER"));
     }
 
     @Test

@@ -352,6 +352,9 @@ GUI:
   EDIT_ORDER:
     TITLE: '&8Orders -> Edit Order'
     SIZE: 27
+    BUTTONS:
+      DROP:
+        SLOT: 24
   DELIVER_CONFIRM:
     TITLE: '&8Orders -> Deliver'
     SIZE: 27
@@ -359,6 +362,11 @@ GUI:
     TITLE: '&8Orders -> Collect'
     SIZE: 54
     ITEMS_PER_PAGE: 45
+    BUTTONS:
+      COLLECT_PAGE:
+        SLOT: 49
+      DROP_PAGE:
+        SLOT: 53
   DELIVERY_DEPOSIT:
     BUTTONS:
       CONFIRM:
@@ -385,11 +393,14 @@ GUI:
 | `GUI.SELECT_ITEM.ITEMS_PER_PAGE` | `int` | Any valid integer number | `'45'` | Configures the technical `ITEMS_PER_PAGE` parameter for `GUI.SELECT_ITEM.ITEMS_PER_PAGE` in `orders.yml`. |
 | `GUI.EDIT_ORDER.TITLE` | `str` | Any string text | `'&8Orders -> Edit Order'` | Configures the technical `TITLE` parameter for `GUI.EDIT_ORDER.TITLE` in `orders.yml`. |
 | `GUI.EDIT_ORDER.SIZE` | `int` | Any valid integer number | `'27'` | Configures the technical `SIZE` parameter for `GUI.EDIT_ORDER.SIZE` in `orders.yml`. |
+| `GUI.EDIT_ORDER.BUTTONS.DROP.SLOT` | `int` | Any valid integer number | `'24'` | Configures the slot index for the 1-click drop button in the order edit menu. |
 | `GUI.DELIVER_CONFIRM.TITLE` | `str` | Any string text | `'&8Orders -> Deliver'` | Configures the technical `TITLE` parameter for `GUI.DELIVER_CONFIRM.TITLE` in `orders.yml`. |
 | `GUI.DELIVER_CONFIRM.SIZE` | `int` | Any valid integer number | `'27'` | Configures the technical `SIZE` parameter for `GUI.DELIVER_CONFIRM.SIZE` in `orders.yml`. |
 | `GUI.COLLECT.TITLE` | `str` | Any string text | `'&8Orders -> Collect'` | Configures the technical `TITLE` parameter for `GUI.COLLECT.TITLE` in `orders.yml`. |
 | `GUI.COLLECT.SIZE` | `int` | Any valid integer number | `'54'` | Configures the technical `SIZE` parameter for `GUI.COLLECT.SIZE` in `orders.yml`. |
 | `GUI.COLLECT.ITEMS_PER_PAGE` | `int` | Any valid integer number | `'45'` | Configures the technical `ITEMS_PER_PAGE` parameter for `GUI.COLLECT.ITEMS_PER_PAGE` in `orders.yml`. |
+| `GUI.COLLECT.BUTTONS.COLLECT_PAGE.SLOT` | `int` | Any valid integer number | `'49'` | Configures the slot index for collecting an entire page of claims. |
+| `GUI.COLLECT.BUTTONS.DROP_PAGE.SLOT` | `int` | Any valid integer number | `'53'` | Configures the slot index for dropping an entire page of claims safely at feet. |
 | `GUI.DELIVERY_DEPOSIT.BUTTONS.CONFIRM.SLOT` | `int` | Any valid integer number | `'35'` | Configures the technical `SLOT` parameter for `GUI.DELIVERY_DEPOSIT.BUTTONS.CONFIRM.SLOT` in `orders.yml`. |
 
 ### 3. Practical Setup Example
@@ -417,6 +428,9 @@ GUI:
   EDIT_ORDER:
     TITLE: '&8Orders -> Edit Order'
     SIZE: 27
+    BUTTONS:
+      DROP:
+        SLOT: 24
   DELIVER_CONFIRM:
     TITLE: '&8Orders -> Deliver'
     SIZE: 27
@@ -424,6 +438,11 @@ GUI:
     TITLE: '&8Orders -> Collect'
     SIZE: 54
     ITEMS_PER_PAGE: 45
+    BUTTONS:
+      COLLECT_PAGE:
+        SLOT: 49
+      DROP_PAGE:
+        SLOT: 53
   DELIVERY_DEPOSIT:
     BUTTONS:
       CONFIRM:
