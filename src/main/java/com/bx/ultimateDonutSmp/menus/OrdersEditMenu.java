@@ -114,6 +114,11 @@ public class OrdersEditMenu extends BaseMenu {
                 set(22, ItemUtils.createItem(Material.GRAY_DYE, "&cEdit locked", lockedLore));
             }
             set(21, ItemUtils.createItem(Material.ENDER_CHEST, "&dCollect", List.of("&7Open your collect queue")));
+            int dropSlot = OrdersMenuSupport.slot(plugin, "GUI.EDIT_ORDER.BUTTONS.DROP.SLOT", 24);
+            set(dropSlot, OrdersMenuSupport.button(
+                    plugin, "GUI.EDIT_ORDER.BUTTONS.DROP", "ORDERS.GUI.EDIT_ORDER.DROP",
+                    Material.DROPPER, "&eDrop items", List.of("&fDrop delivered items safely at your feet")
+            ));
             if (order.active()) {
                 set(23, ItemUtils.createItem(
                         Material.REDSTONE,
@@ -192,6 +197,48 @@ public class OrdersEditMenu extends BaseMenu {
         if (owner && slot == 22) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("MENUS.BUTTON-CLICK"));
             plugin.getOrdersManager().promptEditOrderPriceInput(player, order.id(), backToMyOrders, originPage, sortMode, categoryFilter);
+            return;
+        }
+
+        int dropSlot = OrdersMenuSupport.slot(plugin, "GUI.EDIT_ORDER.BUTTONS.DROP.SLOT", 24);
+        if (owner && slot == dropSlot) {
+            OrdersManager manager = plugin.getOrdersManager();
+            if (!manager.beginAction(player.getUniqueId())) {
+                player.sendMessage(ColorUtils.toComponent("&cOrders is still processing your previous action."));
+                return;
+            }
+            try {
+                if (manager.isOnClickCooldown(player.getUniqueId())) {
+                    player.sendMessage(ColorUtils.toComponent("&cSlow down for a moment."));
+                    return;
+                }
+                manager.updateClickCooldown(player.getUniqueId());
+
+                com.bx.ultimateDonutSmp.models.OrderBatchClaimResult result = manager.claimBatch(player, order.id(), true);
+                if (result.itemClaims() == 0 && result.refundClaims() == 0 && result.failedClaims() == 0) {
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessageOrDefault(
+                            "ORDERS.NO_DELIVERIES_TO_DROP",
+                            "&cThere are no delivered items or refunds to drop for this order."
+                    )));
+                    SoundUtils.play(player, plugin.getConfigManager().getSound("ORDERS.FAIL"));
+                    return;
+                }
+                player.sendMessage(ColorUtils.toComponent(OrdersMenuSupport.text(
+                        plugin,
+                        "ORDERS.BATCH_COLLECTED",
+                        "&aCollected {claims} claims ({items} items, {refund} refund). &c{failed} failed.",
+                        "{claims}", String.valueOf(result.itemClaims() + result.refundClaims()),
+                        "{items}", String.valueOf(result.itemAmount()),
+                        "{refund}", plugin.getCurrencyManager().formatMoney(result.refundAmount()),
+                        "{failed}", String.valueOf(result.failedClaims())
+                )));
+                SoundUtils.play(player, plugin.getConfigManager().getSound(
+                        result.failedClaims() == 0 ? "ORDERS.SUCCESS" : "ORDERS.FAIL"
+                ));
+                new OrdersEditMenu(plugin, orderId, backToMyOrders, originPage, sortMode, categoryFilter).open(player);
+            } finally {
+                manager.endAction(player.getUniqueId());
+            }
             return;
         }
 

@@ -120,7 +120,8 @@ final class OrdersMenuSupport {
                         "&7Order: &f#{order_id}",
                         "&7Created: &f{age} ago",
                         "",
-                        "&eClick to collect"
+                        "&eLeft-click to collect",
+                        "&6Right-click to drop"
                 ),
                 "{order_id}", String.valueOf(claim.orderId()),
                 "{age}", NumberUtils.formatTimeLong(Math.max(0L,
