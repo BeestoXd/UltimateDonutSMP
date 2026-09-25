@@ -200,16 +200,26 @@ public class EnderChestManager {
                     ColorUtils.toComponent(getTitle(), player)
             );
             holder.bind(inventory);
-            ItemStack[] rawContents = plugin.getDatabaseManager().loadEnderChestContents(uuid, inventory.getSize());
-            if (rawContents == null) {
-                throw new java.sql.SQLException("Database load error when reading Ender Chest contents");
+
+            EnderChestInspectionSession activeInspection = getActiveInspectionSession(uuid);
+            if (activeInspection != null) {
+                inventory.setContents(copyInspectionContents(
+                        activeInspection.getInventory().getContents(),
+                        inventory.getSize()
+                ));
+            } else {
+                ItemStack[] rawContents = plugin.getDatabaseManager().loadEnderChestContents(uuid, inventory.getSize());
+                if (rawContents == null) {
+                    throw new java.sql.SQLException("Database load error when reading Ender Chest contents");
+                }
+                inventory.setContents(sanitizeLoadedContents(uuid, rawContents));
             }
-            inventory.setContents(sanitizeLoadedContents(uuid, rawContents));
 
             EnderChestSession session = new EnderChestSession(uuid, inventory, rows);
             activeSessions.put(uuid, session);
             player.openInventory(inventory);
             registerVisualOpenIfViewing(player, inventory, sourceLocation);
+            syncInspectionsForTarget(uuid);
         } catch (Exception exception) {
             plugin.getLogger().log(
                     Level.SEVERE,
@@ -235,9 +245,12 @@ public class EnderChestManager {
 
         try {
             EnderChestSession activeTargetSession = activeSessions.get(targetUuid);
-            int dbRows = activeTargetSession == null
-                    ? plugin.getDatabaseManager().loadEnderChestRows(targetUuid, -1)
-                    : activeTargetSession.getRows();
+            EnderChestInspectionSession existingInspection = activeTargetSession == null ? getActiveInspectionSession(targetUuid) : null;
+            int dbRows = activeTargetSession != null
+                    ? activeTargetSession.getRows()
+                    : existingInspection != null
+                    ? existingInspection.getInventory().getSize() / 9
+                    : plugin.getDatabaseManager().loadEnderChestRows(targetUuid, -1);
             if (dbRows == -1) {
                 throw new java.sql.SQLException("Database load error when reading Ender Chest rows for inspection");
             }
@@ -254,17 +267,18 @@ public class EnderChestManager {
             );
             holder.bind(inventory);
 
-            ItemStack[] rawContents = null;
-            if (activeTargetSession == null) {
-                rawContents = plugin.getDatabaseManager().loadEnderChestContents(targetUuid, inventory.getSize());
+            ItemStack[] sourceContents;
+            if (activeTargetSession != null) {
+                sourceContents = activeTargetSession.getInventory().getContents();
+            } else if (existingInspection != null) {
+                sourceContents = existingInspection.getInventory().getContents();
+            } else {
+                ItemStack[] rawContents = plugin.getDatabaseManager().loadEnderChestContents(targetUuid, inventory.getSize());
                 if (rawContents == null) {
                     throw new java.sql.SQLException("Database load error when reading Ender Chest contents for inspection");
                 }
+                sourceContents = sanitizeLoadedContents(targetUuid, rawContents);
             }
-
-            ItemStack[] sourceContents = activeTargetSession == null
-                    ? sanitizeLoadedContents(targetUuid, rawContents)
-                    : activeTargetSession.getInventory().getContents();
             inventory.setContents(copyInspectionContents(sourceContents, inventory.getSize()));
 
             EnderChestInspectionSession inspectionSession = new EnderChestInspectionSession(
@@ -469,7 +483,13 @@ public class EnderChestManager {
         if (targetSession != null) {
             targetSession.getInventory().setContents(copyInspectionContents(currentContents, targetSession.getInventory().getSize()));
             targetSession.markDirty();
+        } else {
+            ItemStack[] sanitizedContents = sanitizeContents(currentContents);
+            int rows = clampRows(inspectionInventory.getSize() / 9);
+            plugin.getDatabaseManager().saveEnderChest(targetUuid, rows, sanitizedContents);
         }
+
+        syncOtherInspectionsForTarget(holder.getViewerUuid(), targetUuid, currentContents);
     }
 
     private void saveInspectionSession(EnderChestInspectionSession session) {
@@ -491,7 +511,13 @@ public class EnderChestManager {
 
     public void handleInspectionViewerQuit(Player viewer) {
         if (viewer != null) {
-            removeInspectionSession(inspectionSessionsByViewer.get(viewer.getUniqueId()));
+            EnderChestInspectionSession session = inspectionSessionsByViewer.get(viewer.getUniqueId());
+            if (session != null) {
+                if (isEcseeEditable(viewer)) {
+                    saveInspectionSession(session);
+                }
+                removeInspectionSession(session);
+            }
         }
     }
 
@@ -700,6 +726,51 @@ public class EnderChestManager {
             copy[slot] = sanitized == null ? null : sanitized.clone();
         }
         return copy;
+    }
+
+    public EnderChestInspectionSession getActiveInspectionSession(UUID targetUuid) {
+        if (targetUuid == null) {
+            return null;
+        }
+        Set<UUID> viewerUuids = inspectionViewersByTarget.get(targetUuid);
+        if (viewerUuids == null || viewerUuids.isEmpty()) {
+            return null;
+        }
+        for (UUID viewerUuid : List.copyOf(viewerUuids)) {
+            Player viewer = Bukkit.getPlayer(viewerUuid);
+            if (viewer == null || !viewer.isOnline()) {
+                removeInspectionSession(inspectionSessionsByViewer.get(viewerUuid));
+                continue;
+            }
+            EnderChestInspectionSession session = inspectionSessionsByViewer.get(viewerUuid);
+            if (session != null && session.getInventory() != null) {
+                return session;
+            }
+        }
+        return null;
+    }
+
+    private void syncOtherInspectionsForTarget(UUID excludeViewerUuid, UUID targetUuid, ItemStack[] contents) {
+        Set<UUID> viewerUuids = inspectionViewersByTarget.get(targetUuid);
+        if (viewerUuids == null || viewerUuids.isEmpty()) {
+            return;
+        }
+
+        ItemStack[] snapshot = copyInspectionContents(contents, contents.length);
+        for (UUID viewerUuid : List.copyOf(viewerUuids)) {
+            if (viewerUuid.equals(excludeViewerUuid)) {
+                continue;
+            }
+            Player viewer = Bukkit.getPlayer(viewerUuid);
+            if (viewer == null || !viewer.isOnline()) {
+                removeInspectionSession(inspectionSessionsByViewer.get(viewerUuid));
+                continue;
+            }
+            plugin.getSpigotScheduler().runEntity(
+                    viewer,
+                    () -> applyInspectionSnapshot(viewerUuid, snapshot)
+            );
+        }
     }
 
     private void removeInspectionSession(EnderChestInspectionSession session) {
