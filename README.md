@@ -84,7 +84,7 @@ Gameplay clips:
 
 | Requirement | Notes |
 | --- | --- |
-| Plugin version | `1.5` |
+| Plugin version | `1.5.1` |
 | Java | Bytecode targets Java 21. Use the Java version required by the selected Minecraft server; Minecraft 26.1+ requires Java 25. |
 | Paper / Purpur / Pufferfish / Spigot | Minecraft `1.21.10` through `26.3` |
 | Folia | Minecraft `1.21.11` through `26.2` |
@@ -128,7 +128,7 @@ The build compiles the codebase against the target API and packages a single uni
 
 Generated artifact is saved to the `target/` directory:
 
-- `UltimateDonutSmp-1.5.jar` (shaded JAR)
+- `UltimateDonutSmp-1.5.1.jar` (shaded JAR)
 
 ## Installation
 
