@@ -82,7 +82,7 @@ public class PlayerJoinQuitListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String joinMsg = event.getJoinMessage();
@@ -269,19 +269,25 @@ public class PlayerJoinQuitListener implements Listener {
             }
         }
 
-        if (joinMsg != null && !joinMsg.isEmpty()) {
-            String announcement = plugin.getServerNotificationManager() == null
-                    ? null
-                    : plugin.getServerNotificationManager().joinAnnouncement(player, firstJoin);
-            broadcastJoinLeave(player, announcement == null ? joinMsg : announcement);
+        String announcement = plugin.getServerNotificationManager() == null
+                ? null
+                : plugin.getServerNotificationManager().joinAnnouncement(player, firstJoin);
+        String toBroadcast = resolveMessageToBroadcast(announcement, joinMsg);
+        if (toBroadcast != null) {
+            broadcastJoinLeave(player, toBroadcast);
         }
+    }
+
+    static String resolveMessageToBroadcast(String announcement, String serverMessage) {
+        String message = announcement != null ? announcement : serverMessage;
+        return (message == null || message.isEmpty()) ? null : message;
     }
 
     /**
      * Sends a join or leave line to everyone allowed to see it. A configured announcement takes
      * the place of the server's own message and travels the same route, so a player who turned
-     * join and leave messages off in /settings stays quiet either way. Nothing is sent when the
-     * server had no message to begin with, which is how other plugins suppress a join.
+     * join and leave messages off in /settings stays quiet either way. When announcements are
+     * switched off, the server's own message is relayed only when present.
      */
     private void broadcastJoinLeave(Player subject, String message) {
         if (message == null || message.isEmpty()) {
@@ -481,11 +487,12 @@ public class PlayerJoinQuitListener implements Listener {
         plugin.getTeamManager().setTeamChat(player.getUniqueId(), false);
         plugin.getTeamManager().clearSearchState(player.getUniqueId());
 
-        if (quitMsg != null && !quitMsg.isEmpty()) {
-            String announcement = plugin.getServerNotificationManager() == null
-                    ? null
-                    : plugin.getServerNotificationManager().leaveAnnouncement(player);
-            broadcastJoinLeave(player, announcement == null ? quitMsg : announcement);
+        String announcement = plugin.getServerNotificationManager() == null
+                ? null
+                : plugin.getServerNotificationManager().leaveAnnouncement(player);
+        String toBroadcast = resolveMessageToBroadcast(announcement, quitMsg);
+        if (toBroadcast != null) {
+            broadcastJoinLeave(player, toBroadcast);
         }
     }
 
