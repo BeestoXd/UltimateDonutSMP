@@ -413,6 +413,21 @@ public final class AuctionHouseManager {
         return claimsById.get(claimId);
     }
 
+    public String resolveBuyerName(UUID buyerUuid) {
+        if (buyerUuid == null) {
+            return getText("NONE", "None");
+        }
+        Player online = plugin.getServer() != null ? plugin.getServer().getPlayer(buyerUuid) : null;
+        String fallback = online != null ? online.getName() : null;
+        if (fallback == null && plugin.getDatabaseManager() != null) {
+            fallback = plugin.getDatabaseManager().getLastKnownUsername(buyerUuid);
+        }
+        if (fallback == null || fallback.isBlank()) {
+            fallback = getText("NONE", "None");
+        }
+        return plugin.getHideManager() != null ? plugin.getHideManager().publicName(buyerUuid, fallback) : fallback;
+    }
+
     public int countActiveListings(UUID sellerId) {
         return (int) getActiveListingsForSeller(sellerId, AuctionSort.NEWEST).size();
     }

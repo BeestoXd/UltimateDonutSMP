@@ -6,7 +6,7 @@
 
     <groupId>com.bx</groupId>
     <artifactId>ultimatedonutsmp</artifactId>
-    <version>1.5</version>
+    <version>1.5.1</version>
     <packaging>jar</packaging>
 
     <name>ultimatedonutsmp</name>
@@ -28,7 +28,7 @@
         <folia.supported>true</folia.supported>
         <minecraft.api.version>1.21.10</minecraft.api.version>
         <server.variant>paper-spigot</server.variant>
-        <server.supported.range>1.21.10-26.2</server.supported.range>
+        <server.supported.range>1.21.10-26.3</server.supported.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>net.skinsrestorer</groupId>
             <artifactId>skinsrestorer-api</artifactId>
-            <version>15.12.5</version>
+            <version>15.12.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -179,7 +179,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>5.11.0</version>
+            <version>5.12.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -236,6 +236,7 @@ MENUS:
       MONEY_CLAIM_NAME: "领取 {money_color}{money_name}"
       MONEY_CLAIM_LORE:
       - "&7金额：{amount}"
+      - "&7买家：&f{buyer}"
       - "&7来源清单：&f#{id}"
       - ''
       - "&e点击领取"
@@ -258,7 +259,13 @@ MENUS:
         TITLE: "&#6BF18DSearch"
         LORE:
         - "&fSearch for team members"
-        - "&cIndevelopment。"
+      SEARCH_SIGN:
+        lines:
+        - ''
+        - "↑↑↑↑↑↑↑↑↑↑↑↑↑"
+        - "搜索"
+        - ''
+        input-line: 0
       SORT-BUTTON:
         TITLE: "&aSort"
       REFRESH-BUTTON:
@@ -513,6 +520,14 @@ MENUS:
         - '&7{value}'
   SETTINGS-MENU:
     TITLE: '&8Settings'
+    FEEDBACK:
+      TOGGLE-MESSAGE: '&7{setting} 现在已{state}&7.'
+      CHOICE-MESSAGE: '&7{setting} 现在设置为 {choice}&7.'
+      STATE-ENABLED: '&a已启用'
+      STATE-DISABLED: '&c已禁用'
+      CHOICE-OFF-TEXT: '&c关闭'
+      CHOICE-ANYONE-TEXT: '&a所有人'
+      CHOICE-FRIENDS-FOLLOWED-TEXT: '&d好友/关注'
     BUTTONS:
       PUBLIC_CHAT:
         DISPLAY-NAME: '&#6BF18DPublic chat'
@@ -1501,7 +1516,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&a已出售给 &f{buyer}&a。"
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:
@@ -2171,6 +2186,7 @@ MESSAGES:
     NO-TEAM-HOME: "&7Your team does not have a home."
     TEAM-HOME-DELETED: "&7Team home deleted."
     TEAM-HOME-SET: "&7Team home set"
+    EXCLUDED-WORLD: "&cYou cannot set a team home in this world."
     TEAM-NOT-EXIST: "&cUser/teamdoesnoteXist。"
     INVITED-TO-JOIN: "&7You have been invited to join the &a{team}&7 team！"
     CLICK-TO-JOIN: "&b[Click to join]"
@@ -2272,6 +2288,8 @@ MESSAGES:
     ALL_TARGET: "&dYou were teleported to &7%sender%"
     POSITION: "&7Teleportedto: &d%x%,%y%,%z% &7(%world%)"
     TOP: "&dTeleported &7to the highest position"
+    TO_OFFLINE_PLAYER: "&dTeleported &7to last known location of %player%"
+    OFFLINE_NO_LOCATION: "&cNo saved location found for %player%."
   SHARD-BOOSTER:
     ACTIVATED: "&aYou have activated your &5shard booster &afor 24h。"
     ALREADY-ACTIVATED: "&cYou already have an active shard booster。"
@@ -2294,6 +2312,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request。"
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself！"
     NOT-ACCEPTING-REQUESTS: "&cThis player is not accepting requests。"
+    EXPIRED: "&c来自 &a{player} &c的传送请求已过期。"
+    YOUR-REQUEST-EXPIRED: "&c发送给 &a{player} &c的传送请求已过期。"
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7。 type &ccancel &7to
       abort。"
@@ -2305,6 +2325,7 @@ MESSAGES:
     INVALID-NAME: "&cInvalid home name。 do not use spaces。"
     ALREADY-EXISTS: "&cA home with that name already exists。"
     CANCELLED: "&7Home input cancelled."
+    EXCLUDED-WORLD: "&cYou cannot set a home in this world."
   WARP:
     PLAYER-ONLY: "&cOnly players can use this warp command。"
     USAGE: "&cUsage: /warp [名称]"
@@ -2706,6 +2727,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&a点击领取此奖励！'
+    REWARD-NO-KEY: '&c你没有 {crate} 钥匙！'
+    CLAIM-SUCCESS: '&7你领取了 &f{reward}&7 从 &b{crate}&7。'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7领取了 &f{reward} &7从 &b{crate}&7。'
+    NO-KEYS: '&c你不再拥有 {crate} 的钥匙。'
+    INVENTORY-FULL: '&c你的背包已满。领取此奖励前请先清理空间。'
+    NO-PLAYER-DATA: '&c无法加载你的玩家数据。请稍后再试。'
+    REWARD-GRANT-FAILED: '&c发放该奖励失败。你的钥匙已返还。'
+    INVALID-REWARD: '&c该奖励不再有效。'
+    REWARD-SELECT-FAILED: '&c无法选择该奖励。'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"

@@ -215,10 +215,12 @@ public final class PlayerAuctionGui extends BaseMenu {
                     )
             ).stream().map(ColorUtils::colorize).toList());
         } else if (listing.sold()) {
+            String buyer = plugin.getAuctionHouseManager().resolveBuyerName(listing.buyerUuid());
             lore.addAll(AuctionHouseMenuSupport.configList(
                     plugin,
                     "GUI.PLAYER_ITEMS.LISTING.SOLD_LORE",
-                    List.of("&aSold to another player.")
+                    List.of("&aSold to &f{buyer}&a."),
+                    "{buyer}", buyer
             ).stream().map(ColorUtils::colorize).toList());
         } else if (listing.cancelled()) {
             lore.addAll(AuctionHouseMenuSupport.configList(

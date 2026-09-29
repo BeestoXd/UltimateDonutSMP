@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +96,37 @@ class AuctionBrowseEngineTest {
         assertEquals(50, legacy.getInt("GUI.PLAYER_ITEMS.CONTROLS.PAGE.SLOT"));
 
         assertFalse(AuctionHouseManager.migrateMyAuctionControlSlots(legacy));
+    }
+
+    @Test
+    void verifiesSoldLoreAndClaimLoreIncludeBuyerPlaceholder() throws Exception {
+        YamlConfiguration english = new YamlConfiguration();
+        english.load(Path.of("src/main/resources/languages/en_US.yml").toFile());
+
+        List<String> soldLore = english.getStringList("CONFIG.AUCTION_HOUSE.GUI.PLAYER_ITEMS.LISTING.SOLD_LORE");
+        assertTrue(soldLore.stream().anyMatch(line -> line.contains("{buyer}")));
+
+        List<String> moneyClaimLore = english.getStringList("MENUS.AUCTION_HOUSE.ENTRY.MONEY_CLAIM_LORE");
+        assertTrue(moneyClaimLore.stream().anyMatch(line -> line.contains("{buyer}")));
+    }
+
+    @Test
+    void soldListingAndClaimLoreFormatsBuyerPlaceholder() {
+        String soldTemplate = "&aSold to &f{buyer}&a.";
+        String replacedSold = soldTemplate.replace("{buyer}", "TargetPlayer");
+        assertEquals("&aSold to &fTargetPlayer&a.", replacedSold);
+
+        List<String> claimTemplate = List.of(
+                "&7Amount: {amount}",
+                "&7Buyer: &f{buyer}",
+                "&7Source listing: &f#{id}",
+                "",
+                "&eClick to claim"
+        );
+        List<String> formattedClaim = claimTemplate.stream()
+                .map(line -> line.replace("{amount}", "$100").replace("{buyer}", "TargetPlayer").replace("{id}", "42"))
+                .toList();
+        assertTrue(formattedClaim.contains("&7Buyer: &fTargetPlayer"));
     }
 
     private static AuctionListing listing(

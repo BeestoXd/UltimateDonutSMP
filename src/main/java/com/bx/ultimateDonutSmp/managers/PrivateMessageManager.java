@@ -5,6 +5,8 @@ import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
+import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import com.bx.ultimateDonutSmp.utils.TypedColorPolicy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -112,6 +114,13 @@ public class PrivateMessageManager {
 
         send(sender, applyPlaceholders(sentFormat, targetName, message));
         target.sendMessage(ColorUtils.toComponent(applyPlaceholders(receivedFormat, senderName, message), target));
+        String soundConfig = plugin.getConfigManager().getSound("MESSAGES.RECEIVER");
+        if (soundConfig == null || soundConfig.isBlank()) {
+            soundConfig = plugin.getConfigManager().getSound("MESSAGES.RECEIVER_FORMAT");
+        }
+        if (soundConfig != null && !soundConfig.isBlank()) {
+            SoundUtils.play(plugin, target, soundConfig, PlayerSettingUtils.SoundChannel.NOTIFICATION);
+        }
 
         boolean logPrivateMessages = plugin.getChatManager().isPrivateChatLoggingEnabled();
 

@@ -110,7 +110,7 @@ public class SpawnerBlockListener implements Listener {
                     && plugin.getSpawnerManager().isRequireSilkTouch()
                     && !plugin.getSpawnerManager().hasSilkTouchAccess(player)) {
                 event.setCancelled(true);
-                player.sendMessage(ColorUtils.toComponent(SpawnerManager.SILK_TOUCH_REQUIRED_MESSAGE));
+                player.sendMessage(ColorUtils.toComponent(plugin.getSpawnerManager().getSilkTouchRequiredMessage()));
             }
             return;
         }

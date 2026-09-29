@@ -3,6 +3,7 @@ package com.bx.ultimateDonutSmp.menus;
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ItemUtils;
+import com.bx.ultimateDonutSmp.utils.SignInputUtil;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -115,10 +116,18 @@ public class TeamMenu extends BaseMenu {
                 searchQuery = null;
                 page = 0;
                 build(player);
-                player.sendMessage(com.bx.ultimateDonutSmp.utils.ColorUtils.toComponent("&7Team member search cleared."));
                 return;
             }
-            plugin.getTeamManager().promptTeamSearch(player, page, sortMode);
+            var signConfig = menus().getConfigurationSection(MENU_PATH + ".SEARCH_SIGN");
+            String currentQuery = searchQuery;
+            int currentPage = page;
+            SortMode currentSort = sortMode;
+            SignInputUtil.openFromConfig(plugin, player, signConfig, text -> {
+                String search = resolveSignSearch(text, currentQuery);
+                plugin.getTeamManager().setSearchQuery(player.getUniqueId(), search);
+                int nextPage = Objects.equals(search, currentQuery) ? currentPage : 0;
+                new TeamMenu(plugin).withState(nextPage, currentSort, search).open(player);
+            });
             return;
         }
         if (slot == sortSlot) {
@@ -211,16 +220,10 @@ public class TeamMenu extends BaseMenu {
     private void renderSearchButton() {
         String path = MENU_PATH + ".SEARCH-BUTTON";
         List<String> lore = new ArrayList<>(menus().getStringList(path + ".LORE"));
-        if (searchQuery == null || searchQuery.isBlank()) {
-            lore.removeIf(line -> line.toLowerCase().contains("in development"));
-            lore.add("&7Current: &fnone");
-            lore.add("&7Left-click to type a search.");
-        } else {
-            lore.removeIf(line -> line.toLowerCase().contains("in development"));
-            lore.add("&7Current: &f" + searchQuery);
-            lore.add("&7Left-click to change search.");
-            lore.add("&7Right-click to clear search.");
-        }
+        lore.removeIf(line -> line.toLowerCase(Locale.ROOT).contains("in development"));
+        lore.add("&7Current: &f" + (searchQuery == null || searchQuery.isBlank() ? "none" : searchQuery));
+        lore.add("&7Left-click to search.");
+        lore.add("&7Right-click to clear.");
         set(
                 menus().getInt(path + ".SLOT", 45),
                 ItemUtils.createItem(
@@ -352,17 +355,26 @@ public class TeamMenu extends BaseMenu {
     }
 
     private boolean matchesSearch(UUID memberUuid) {
-        if (searchQuery == null || searchQuery.isBlank()) {
-            return true;
-        }
-
-        String needle = searchQuery.toLowerCase(Locale.ROOT);
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(memberUuid);
         String name = offlinePlayer.getName();
         if (name == null) {
             name = plugin.getDatabaseManager().getLastKnownUsername(memberUuid);
         }
-        return name != null && name.toLowerCase(Locale.ROOT).contains(needle);
+        return nameMatchesQuery(name, searchQuery);
+    }
+
+    static String resolveSignSearch(String typed, String current) {
+        if (typed == null || typed.isBlank() || typed.equalsIgnoreCase("cancel")) {
+            return current == null || current.isBlank() ? null : current.trim();
+        }
+        return typed.trim();
+    }
+
+    static boolean nameMatchesQuery(String name, String query) {
+        if (query == null || query.isBlank()) {
+            return true;
+        }
+        return name != null && name.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT));
     }
 
     private FileConfiguration menus() {

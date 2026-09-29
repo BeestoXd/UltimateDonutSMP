@@ -4,6 +4,7 @@ import com.bx.ultimateDonutSmp.UltimateDonutSmp;
 import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.form.CustomForm;
 import org.geysermc.cumulus.form.Form;
@@ -231,6 +232,25 @@ public final class HomeBedrockManager {
     }
 
     public void openCreateForm(Player player) {
+        if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(player.getUniqueId())
+                || plugin.getDuelManager().isTransitioning(player.getUniqueId())
+                || plugin.getDuelManager().isLocationInDuelArena(player.getLocation()))) {
+            player.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside a duel arena or duel world."));
+            openMain(player);
+            return;
+        }
+        if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(player.getUniqueId())
+                || plugin.getFfaManager().isInFfaLocation(player.getLocation()))) {
+            player.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside an FFA arena."));
+            openMain(player);
+            return;
+        }
+        if (plugin.getHomeManager() != null && plugin.getHomeManager().isWorldExcluded(player.getWorld())
+                && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+            player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.EXCLUDED-WORLD")));
+            openMain(player);
+            return;
+        }
         String defaultName = nextAvailableHomeName(player);
 
         CustomForm.Builder form = CustomForm.builder()
@@ -238,6 +258,25 @@ public final class HomeBedrockManager {
                 .input("Home Name", defaultName, defaultName);
 
         form.validResultHandler(response -> schedule(player, () -> {
+            if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(player.getUniqueId())
+                    || plugin.getDuelManager().isTransitioning(player.getUniqueId())
+                    || plugin.getDuelManager().isLocationInDuelArena(player.getLocation()))) {
+                player.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside a duel arena or duel world."));
+                openMain(player);
+                return;
+            }
+            if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(player.getUniqueId())
+                    || plugin.getFfaManager().isInFfaLocation(player.getLocation()))) {
+                player.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside an FFA arena."));
+                openMain(player);
+                return;
+            }
+            if (plugin.getHomeManager() != null && plugin.getHomeManager().isWorldExcluded(player.getWorld())
+                    && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+                player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.EXCLUDED-WORLD")));
+                openMain(player);
+                return;
+            }
             String name = response.asInput(0);
             if (name == null || name.isBlank() || name.contains(" ")) {
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("HOME.INVALID-NAME")));
@@ -289,6 +328,26 @@ public final class HomeBedrockManager {
             if (clicked.contains("Teleport")) {
                 plugin.getTeleportManager().queue(player, team.getHome(), "TEAM-HOME", null);
             } else if (clicked.contains("Set Team Home")) {
+                if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(player.getUniqueId())
+                        || plugin.getDuelManager().isTransitioning(player.getUniqueId())
+                        || plugin.getDuelManager().isLocationInDuelArena(player.getLocation()))) {
+                    player.sendMessage(ColorUtils.toComponent("&cYou cannot set a team home inside a duel arena or duel world."));
+                    openMain(player);
+                    return;
+                }
+                if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(player.getUniqueId())
+                        || plugin.getFfaManager().isInFfaLocation(player.getLocation()))) {
+                    player.sendMessage(ColorUtils.toComponent("&cYou cannot set a team home inside an FFA arena."));
+                    openMain(player);
+                    return;
+                }
+                if (plugin.getTeamManager().isWorldExcluded(player.getWorld())
+                        && !PermissionUtils.has(player, "ultimatedonutsmp.teams.bypass")
+                        && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+                    player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TEAM.EXCLUDED-WORLD")));
+                    openMain(player);
+                    return;
+                }
                 team.setHome(player.getLocation());
                 plugin.getTeamManager().save(team);
                 player.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage("TEAM.TEAM-HOME-SET")));

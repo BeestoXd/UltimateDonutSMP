@@ -1,6 +1,8 @@
 package com.bx.ultimateDonutSmp.utils;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -13,6 +15,41 @@ import java.util.Locale;
 public class SoundUtils {
 
     /**
+     * Parses a sound key (e.g. "minecraft:ui.button.click" or "UI_BUTTON_CLICK") to a Bukkit Sound enum
+     * if one matches, avoiding unregistered direct holder wrapping on modern server platforms.
+     */
+    public static Sound parseSound(String key) {
+        if (key == null || key.isBlank()) return null;
+        String trimmed = key.trim();
+        if (trimmed.indexOf(':') >= 0) {
+            try {
+                NamespacedKey nsk = NamespacedKey.fromString(trimmed);
+                if (nsk != null) {
+                    Sound s = Registry.SOUNDS.get(nsk);
+                    if (s != null) return s;
+                }
+            } catch (Throwable ignored) {}
+
+            String path = trimmed.substring(trimmed.indexOf(':') + 1).replace('.', '_').toUpperCase(Locale.US);
+            try {
+                return Sound.valueOf(path);
+            } catch (Throwable ignored) {}
+        } else {
+            try {
+                NamespacedKey nsk = NamespacedKey.minecraft(trimmed.replace('_', '.').toLowerCase(Locale.US));
+                Sound s = Registry.SOUNDS.get(nsk);
+                if (s != null) return s;
+            } catch (Throwable ignored) {}
+
+            String formatted = trimmed.replace('.', '_').toUpperCase(Locale.US);
+            try {
+                return Sound.valueOf(formatted);
+            } catch (Throwable ignored) {}
+        }
+        return null;
+    }
+
+    /**
      * Play a sound from config format: "namespace:sound.key|volume|pitch"
      * e.g. "minecraft:ui.button.click|1.0|1.0"
      */
@@ -23,6 +60,12 @@ public class SoundUtils {
         float volume = parseFloat(parts.length > 1 ? parts[1] : "1.0", 1.0f);
         float pitch  = parseFloat(parts.length > 2 ? parts[2] : "1.0", 1.0f);
         try {
+            Sound sound = parseSound(key);
+            if (sound != null) {
+                player.playSound(player.getLocation(), sound, volume, pitch);
+                return;
+            }
+
             if (key.indexOf(':') >= 0) {
                 player.playSound(player.getLocation(), key, volume, pitch);
                 return;
@@ -54,6 +97,12 @@ public class SoundUtils {
         float volume = parseFloat(parts.length > 1 ? parts[1] : "1.0", 1.0f);
         float pitch  = parseFloat(parts.length > 2 ? parts[2] : "1.0", 1.0f);
         try {
+            Sound sound = parseSound(key);
+            if (sound != null) {
+                world.playSound(location, sound, SoundCategory.BLOCKS, volume, pitch);
+                return;
+            }
+
             if (key.indexOf(':') >= 0) {
                 world.playSound(location, key, SoundCategory.BLOCKS, volume, pitch);
                 return;

@@ -405,7 +405,7 @@ public class WorthManager {
     // resync drops it. Java quietly redraws, Geyser does not, so a Bedrock player watches the
     // enchantment offers vanish the moment the item lands in the slot. Kept as a switch rather than
     // a constant set so nothing here touches the InventoryType registry before the server is up.
-    static boolean holdsClientState(InventoryType type) {
+    public static boolean holdsClientState(InventoryType type) {
         if (type == null) {
             return false;
         }

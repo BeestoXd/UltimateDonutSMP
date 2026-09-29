@@ -58,6 +58,10 @@ final class AuctionHouseMenuSupport {
     ) {
         LanguageManager language = plugin.getLanguageManager();
         if (claim.moneyClaim()) {
+            AuctionListing sourceListing = manager.getListing(claim.sourceListingId());
+            String buyer = sourceListing != null
+                    ? manager.resolveBuyerName(sourceListing.buyerUuid())
+                    : manager.getText("NONE", "None");
             return ItemUtils.createItem(
                     Material.SUNFLOWER,
                     language.menu(
@@ -68,8 +72,9 @@ final class AuctionHouseMenuSupport {
                     ),
                     language.menuList(
                             "AUCTION_HOUSE.ENTRY.MONEY_CLAIM_LORE",
-                            List.of("&7Amount: {amount}", "&7Source listing: &f#{id}", "", "&eClick to claim"),
+                            List.of("&7Amount: {amount}", "&7Buyer: &f{buyer}", "&7Source listing: &f#{id}", "", "&eClick to claim"),
                             "{amount}", plugin.getCurrencyManager().formatMoney(claim.moneyAmount()),
+                            "{buyer}", buyer,
                             "{id}", String.valueOf(claim.sourceListingId())
                     )
             );

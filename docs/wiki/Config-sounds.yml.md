@@ -193,6 +193,34 @@ SHARDS:
   REWARD-BOOSTED: minecraft:entity.player.levelup|0.85|1.45
   # The text or value for Cancelled. Available options: Any valid string text
   CANCELLED: minecraft:entity.villager.no|0.8|1.1
+# Configuration section for Messages.
+```
+
+---
+
+## Section: `MESSAGES`
+
+### 1. Commented Setup Code Example
+
+```yaml
+MESSAGES:
+  # The text or value for Receiver. Available options: Any valid string text
+  RECEIVER: minecraft:entity.experience_orb.pickup|0.85|1.35
+# Configuration section for Commands.
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `MESSAGES.RECEIVER` | `str` | sound\|volume\|pitch | `'minecraft:entity.experience_orb.pickup\|0.85\|1.35'` | Plays to the recipient when receiving a private message (/msg, /tell, /w, /r). |
+
+### 3. Practical Setup Example
+
+```yaml
+MESSAGES:
+  # The text or value for Receiver. Available options: Any valid string text
+  RECEIVER: minecraft:entity.experience_orb.pickup|0.85|1.35
 # Configuration section for Commands.
 ```
 

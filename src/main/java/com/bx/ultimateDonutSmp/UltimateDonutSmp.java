@@ -14,6 +14,7 @@ import com.bx.ultimateDonutSmp.listeners.*;
 import com.bx.ultimateDonutSmp.managers.*;
 import com.bx.ultimateDonutSmp.tasks.*;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.CommandMapFeatureSync;
 import com.bx.ultimateDonutSmp.utils.SpigotScheduler;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandExecutor;
@@ -91,6 +92,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private TablistManager tablistManager;
     private TeleportManager teleportManager;
+    private OfflineLocationManager offlineLocationManager;
     private RTPManager rtpManager;
     private RTPZoneManager rtpZoneManager;
     private RTPQueueManager rtpQueueManager;
@@ -111,7 +113,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private PlayerUnwipeManager playerUnwipeManager;
     private ServerWipeManager serverWipeManager;
     private SpawnerManager spawnerManager;
-    private AntiEspManager antiEspManager;
     private SpawnStashManager spawnStashManager;
     private FakePlayerManager fakePlayerManager;
     private HideManager hideManager;
@@ -255,7 +256,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         playerWipeManager = new PlayerWipeManager(this);
         playerUnwipeManager = new PlayerUnwipeManager(this);
         spawnerManager = new SpawnerManager(this);
-        antiEspManager = new AntiEspManager(this);
         spawnStashManager = new SpawnStashManager(this);
         fakePlayerManager = new FakePlayerManager(this);
         redisManager = new RedisManager(this);
@@ -282,6 +282,8 @@ public final class UltimateDonutSmp extends JavaPlugin {
         voiceChatConsentManager = new VoiceChatConsentManager(this);
         voiceChatConsentManager.registerVoicechatHook();
         teleportManager = new TeleportManager(this);
+        offlineLocationManager = new OfflineLocationManager(this);
+        offlineLocationManager.load();
         rtpManager = new RTPManager(this);
         rtpZoneManager = new RTPZoneManager(this);
         rtpQueueManager = new RTPQueueManager(this);
@@ -378,9 +380,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         if (invseeManager != null) {
             invseeManager.shutdown();
         }
-        if (antiEspManager != null) {
-            antiEspManager.shutdown();
-        }
         if (spawnStashManager != null) {
             spawnStashManager.shutdown();
         }
@@ -464,6 +463,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         }
         if (shopManager != null) {
             shopManager.shutdown();
+        }
+        if (offlineLocationManager != null) {
+            offlineLocationManager.save();
         }
 
         // Save all online players and close DB
@@ -573,7 +575,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         pm.registerEvents(new AmethystToolsListener(this), this);
         pm.registerEvents(new SpawnerBlockListener(this), this);
         pm.registerEvents(new SpawnerInteractListener(this), this);
-        pm.registerEvents(new SpawnerVisibilityListener(this), this);
         pm.registerEvents(new SpawnStashListener(this), this);
         pm.registerEvents(new PunishmentCommandAliasListener(this), this);
         pm.registerEvents(new AnvilModerationListener(this), this);
@@ -725,7 +726,9 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("report", new ReportCommand(this), FeatureManager.Feature.STAFF_ALERTS);
         setExecutor("rename", new RenameCommand(this));
         setExecutor("randomteleport", new RandomTeleportCommand(this));
-        setExecutor("teleport", new TeleportCommand(this));
+        TeleportCommand teleportCommand = new TeleportCommand(this);
+        setExecutor("teleport", teleportCommand);
+        registerTpoCommand(new TpoCommand(this, teleportCommand));
         setExecutor("alts", new AltsCommand(this));
         setExecutor("vanish", new VanishCommand(this), FeatureManager.Feature.STAFF_MODE);
         setExecutor("invsee", new InvseeCommand(this));
@@ -782,6 +785,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
         setExecutor("twitter", socialCmd, FeatureManager.Feature.SOCIAL);
         setExecutor("store", socialCmd, FeatureManager.Feature.SOCIAL);
         setExecutor("social", socialCmd, FeatureManager.Feature.SOCIAL);
+        setExecutor("media", socialCmd, FeatureManager.Feature.SOCIAL);
 
         setExecutor("rules", new RulesCommand(this), FeatureManager.Feature.RULES);
         setExecutor("ranks", new RanksCommand(this), FeatureManager.Feature.RANKS);
@@ -881,6 +885,18 @@ public final class UltimateDonutSmp extends JavaPlugin {
 
         if (!executor.registerDynamically()) {
             getLogger().warning("Command missing from plugin.yml and dynamic registration failed: god");
+        }
+    }
+
+    private void registerTpoCommand(TpoCommand executor) {
+        PluginCommand command = getCommand("tpo");
+        if (command != null) {
+            command.setExecutor(executor);
+            return;
+        }
+
+        if (!executor.registerDynamically()) {
+            getLogger().warning("Command missing from plugin.yml and dynamic registration failed: tpo");
         }
     }
 
@@ -1026,7 +1042,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
     private boolean checkMinecraftVersionSupport() {
         boolean isFolia = isClassAvailable("io.papermc.paper.threadedregions.RegionizedServer");
         String minVersion = isFolia ? "1.21.11" : "1.21.10";
-        String maxVersion = "26.2";
+        String maxVersion = isFolia ? "26.2" : "26.3";
         String platformName = isFolia ? "Folia" : "Spigot/Paper";
 
         String bukkitVersion = getServer().getBukkitVersion();
@@ -1130,8 +1146,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         configManager.reloadDatabase();
         configManager.reloadDiscord();
         spawnerManager.reload();
-        antiEspManager.reload();
-        antiEspManager.refreshAllPlayers();
         spawnStashManager.reload();
         fakePlayerManager.reload();
         hideManager.reload();
@@ -1415,6 +1429,10 @@ public final class UltimateDonutSmp extends JavaPlugin {
         return teleportManager;
     }
 
+    public OfflineLocationManager getOfflineLocationManager() {
+        return offlineLocationManager;
+    }
+
     public RTPManager getRtpManager() {
         return rtpManager;
     }
@@ -1507,10 +1525,6 @@ public final class UltimateDonutSmp extends JavaPlugin {
         return spawnerManager;
     }
 
-    public AntiEspManager getAntiEspManager() {
-        return antiEspManager;
-    }
-
     public NetworkStatusManager getNetworkStatusManager() {
         return networkStatusManager;
     }
@@ -1557,6 +1571,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
                 syncCommandState(commandName, features);
             }
         }
+        syncVanillaDispatcher();
         for (org.bukkit.entity.Player player : getServer().getOnlinePlayers()) {
             try {
                 player.updateCommands();
@@ -1583,31 +1598,27 @@ public final class UltimateDonutSmp extends JavaPlugin {
             Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
 
             String fallbackPrefix = getDescription().getName().toLowerCase(Locale.ROOT);
-            String namespacedKey = fallbackPrefix + ":" + commandName;
-
-            if (enabled || !unregisterMode) {
+            boolean claim = enabled || !unregisterMode;
+            if (claim) {
                 command.register(commandMap);
-                knownCommands.put(commandName, command);
-                knownCommands.put(namespacedKey, command);
-                if (command.getAliases() != null) {
-                    for (String alias : command.getAliases()) {
-                        knownCommands.put(alias, command);
-                        knownCommands.put(fallbackPrefix + ":" + alias, command);
-                    }
-                }
             } else {
                 command.unregister(commandMap);
-                knownCommands.remove(commandName);
-                knownCommands.remove(namespacedKey);
-                if (command.getAliases() != null) {
-                    for (String alias : command.getAliases()) {
-                        knownCommands.remove(alias);
-                        knownCommands.remove(fallbackPrefix + ":" + alias);
-                    }
-                }
             }
+            CommandMapFeatureSync.apply(command, knownCommands, fallbackPrefix, claim);
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Failed to sync command state for: " + commandName, e);
+        }
+    }
+
+    private void syncVanillaDispatcher() {
+        try {
+            Method method = getServer().getClass().getMethod("syncCommands");
+            method.invoke(getServer());
+        } catch (NoSuchMethodException ignored) {
+            // Spigot has no brigadier rebuild. Paper and Folia do, and that is what
+            // actually updates /ec after the Bukkit map changes.
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Failed to rebuild the command dispatcher after a feature command sync", e);
         }
     }
 }

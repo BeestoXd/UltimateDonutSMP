@@ -781,6 +781,44 @@ class ConfigManagerTest {
     }
 
     @Test
+    void theLayoutThatStillHadLunarTeammatesAtSlotFourIsRegeneratedToo() throws Exception {
+        YamlConfiguration v14 = yaml(lines(
+                "SETTINGS-MENU:",
+                "  BUTTONS:",
+                "    LUNAR_TEAMMATES:",
+                "      SLOT: 4"
+        ));
+
+        assertTrue(hasLegacyButtons(v14));
+    }
+
+    @Test
+    void theScatteredSettingsMenuWithoutMoneyNametagsIsRegenerated() throws Exception {
+        YamlConfiguration scattered = yaml(lines(
+                "SETTINGS-MENU:",
+                "  BUTTONS:",
+                "    JOIN_LEAVE_MESSAGES:",
+                "      SLOT: 31",
+                "    PAY_ALERTS:",
+                "      SLOT: 32"
+        ));
+
+        assertTrue(hasLegacyButtons(scattered));
+    }
+
+    @Test
+    void theLayoutWithLegacyTpAutoIsRegenerated() throws Exception {
+        YamlConfiguration tpAuto = yaml(lines(
+                "SETTINGS-MENU:",
+                "  BUTTONS:",
+                "    TP_AUTO:",
+                "      SLOT: 12"
+        ));
+
+        assertTrue(hasLegacyButtons(tpAuto));
+    }
+
+    @Test
     void aMenuWithoutSettingsButtonsIsLeftAlone() throws Exception {
         assertFalse(hasLegacyButtons(yaml(lines("OTHER-MENU:", "  SIZE: 27"))));
     }

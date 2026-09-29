@@ -85,6 +85,8 @@ TEAM:
   OR-TYPE-COMMAND: '&7or type &f{command}&7 to join.'
   # The text or value for Joined Broadcast. Available options: Any valid string text
   JOINED-BROADCAST: '&a{player} &ehas joined the team.'
+  # The text or value for Excluded World. Available options: Any valid string text
+  EXCLUDED-WORLD: '&cYou cannot set a team home in this world.'
 # Configuration section for Chat Manager.
 ```
 
@@ -123,7 +125,7 @@ TEAM:
 | `TEAM.TEAM-HOME-SET` | `str` | Any string text | `'&7Team home set'` | Configures the technical `TEAM-HOME-SET` parameter for `TEAM.TEAM-HOME-SET` in `messages.yml`. |
 | `TEAM.TEAM-NOT-EXIST` | `str` | Any string text | `'&cUser/team does not exist.'` | Configures the technical `TEAM-NOT-EXIST` parameter for `TEAM.TEAM-NOT-EXIST` in `messages.yml`. |
 | `TEAM.INVITED-TO-JOIN` | `str` | Any string text | `'&7You have been invited to join the...'` | Configures the technical `INVITED-TO-JOIN` parameter for `TEAM.INVITED-TO-JOIN` in `messages.yml`. |
-| *(4 additional sub-keys configured in section)* | | | | |
+| *(5 additional sub-keys configured in section)* | | | | |
 
 ### 3. Practical Setup Example
 
@@ -199,6 +201,8 @@ TEAM:
   OR-TYPE-COMMAND: '&7or type &f{command}&7 to join.'
   # The text or value for Joined Broadcast. Available options: Any valid string text
   JOINED-BROADCAST: '&a{player} &ehas joined the team.'
+  # The text or value for Excluded World. Available options: Any valid string text
+  EXCLUDED-WORLD: '&cYou cannot set a team home in this world.'
 # Configuration section for Chat Manager.
 ```
 
@@ -893,6 +897,10 @@ TPA:
   CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Not Accepting Requests. Available options: Any valid string text
   NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '&cThe teleport request from &a{player} &chas expired.'
+  # The text or value for Your Request Expired. Available options: Any valid string text
+  YOUR-REQUEST-EXPIRED: '&cYour teleport request to &a{player} &chas expired.'
 # Configuration section for Home.
 ```
 
@@ -915,6 +923,8 @@ TPA:
 | `TPA.YOUR-REQUEST-HERE-ACCEPTED` | `str` | Any string text | `'&a{player} has accepted your tpaher...'` | Configures the technical `YOUR-REQUEST-HERE-ACCEPTED` parameter for `TPA.YOUR-REQUEST-HERE-ACCEPTED` in `messages.yml`. |
 | `TPA.CANNOT-INVITE-YOURSELF` | `str` | Any string text | `'&cYou cannot invite yourself!'` | Configures the technical `CANNOT-INVITE-YOURSELF` parameter for `TPA.CANNOT-INVITE-YOURSELF` in `messages.yml`. |
 | `TPA.NOT-ACCEPTING-REQUESTS` | `str` | Any string text | `'&cThis player is not accepting requ...'` | Configures the technical `NOT-ACCEPTING-REQUESTS` parameter for `TPA.NOT-ACCEPTING-REQUESTS` in `messages.yml`. |
+| `TPA.EXPIRED` | `str` | Any string text | `'&cThe teleport request from &a{play...'` | Configures the technical `EXPIRED` parameter for `TPA.EXPIRED` in `messages.yml`. |
+| `TPA.YOUR-REQUEST-EXPIRED` | `str` | Any string text | `'&cYour teleport request to &a{playe...'` | Configures the technical `YOUR-REQUEST-EXPIRED` parameter for `TPA.YOUR-REQUEST-EXPIRED` in `messages.yml`. |
 
 ### 3. Practical Setup Example
 
@@ -952,6 +962,10 @@ TPA:
   CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
   # The text or value for Not Accepting Requests. Available options: Any valid string text
   NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
+  # The text or value for Expired. Available options: Any valid string text
+  EXPIRED: '&cThe teleport request from &a{player} &chas expired.'
+  # The text or value for Your Request Expired. Available options: Any valid string text
+  YOUR-REQUEST-EXPIRED: '&cYour teleport request to &a{player} &chas expired.'
 # Configuration section for Home.
 ```
 
@@ -979,6 +993,8 @@ HOME:
   ALREADY-EXISTS: '&cA home with that name already exists.'
   # The text or value for Cancelled. Available options: Any valid string text
   CANCELLED: '&7Home input cancelled.'
+  # The text or value for Excluded World. Available options: Any valid string text
+  EXCLUDED-WORLD: '&cYou cannot set a home in this world.'
 # Configuration section for Warp.
 ```
 
@@ -994,6 +1010,7 @@ HOME:
 | `HOME.INVALID-NAME` | `str` | Any string text | `'&cInvalid home name. Do not use spa...'` | Configures the technical `INVALID-NAME` parameter for `HOME.INVALID-NAME` in `messages.yml`. |
 | `HOME.ALREADY-EXISTS` | `str` | Any string text | `'&cA home with that name already exi...'` | Configures the technical `ALREADY-EXISTS` parameter for `HOME.ALREADY-EXISTS` in `messages.yml`. |
 | `HOME.CANCELLED` | `str` | Any string text | `'&7Home input cancelled.'` | Configures the technical `CANCELLED` parameter for `HOME.CANCELLED` in `messages.yml`. |
+| `HOME.EXCLUDED-WORLD` | `str` | Any string text | `'&cYou cannot set a home in this wor...'` | Configures the technical `EXCLUDED-WORLD` parameter for `HOME.EXCLUDED-WORLD` in `messages.yml`. |
 
 ### 3. Practical Setup Example
 
@@ -1015,6 +1032,8 @@ HOME:
   ALREADY-EXISTS: '&cA home with that name already exists.'
   # The text or value for Cancelled. Available options: Any valid string text
   CANCELLED: '&7Home input cancelled.'
+  # The text or value for Excluded World. Available options: Any valid string text
+  EXCLUDED-WORLD: '&cYou cannot set a home in this world.'
 # Configuration section for Warp.
 ```
 

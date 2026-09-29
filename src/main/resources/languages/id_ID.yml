@@ -374,6 +374,7 @@ MENUS:
       MONEY_CLAIM_NAME: "Klaim {money_color}{money_name}"
       MONEY_CLAIM_LORE:
       - "&7Jumlah: {amount}"
+      - "&7Pembeli: &f{buyer}"
       - "&7Daftar sumber: &f#{id}"
       - ''
       - "&eKlik untuk mengklaim"
@@ -396,7 +397,13 @@ MENUS:
         TITLE: "&#6BF18DSearch"
         LORE:
         - "&fSearch for team members"
-        - "&cIn development."
+      SEARCH_SIGN:
+        lines:
+        - ''
+        - "↑↑↑↑↑↑↑↑↑↑↑↑↑"
+        - "Cari"
+        - ''
+        input-line: 0
       SORT-BUTTON:
         TITLE: "&aSort"
       REFRESH-BUTTON:
@@ -651,6 +658,14 @@ MENUS:
         - '&7{value}'
   SETTINGS-MENU:
     TITLE: '&8Settings'
+    FEEDBACK:
+      TOGGLE-MESSAGE: '&7{setting} sekarang {state}&7.'
+      CHOICE-MESSAGE: '&7{setting} sekarang diatur ke {choice}&7.'
+      STATE-ENABLED: '&aAktif'
+      STATE-DISABLED: '&cNonaktif'
+      CHOICE-OFF-TEXT: '&cNonaktif'
+      CHOICE-ANYONE-TEXT: '&aSiapa saja'
+      CHOICE-FRIENDS-FOLLOWED-TEXT: '&dTeman/Diikuti'
     BUTTONS:
       PUBLIC_CHAT:
         DISPLAY-NAME: '&#6BF18DPublic chat'
@@ -1639,7 +1654,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&aTerjual ke &f{buyer}&a."
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:
@@ -2313,6 +2328,7 @@ MESSAGES:
     NO-TEAM-HOME: "&7Your team does not have a home."
     TEAM-HOME-DELETED: "&7Team home deleted."
     TEAM-HOME-SET: "&7Team home set"
+    EXCLUDED-WORLD: "&cYou cannot set a team home in this world."
     TEAM-NOT-EXIST: "&cUser/team does not exist."
     INVITED-TO-JOIN: "&7You have been invited to join the &a{team}&7 team!"
     CLICK-TO-JOIN: "&b[Click to join]"
@@ -2414,6 +2430,8 @@ MESSAGES:
     ALL_TARGET: "&dYou were teleported to &7%sender%"
     POSITION: "&7Teleported to: &d%x%,%y%,%z% &7(%world%)"
     TOP: "&dTeleported &7to the highest position"
+    TO_OFFLINE_PLAYER: "&dTeleported &7to last known location of %player%"
+    OFFLINE_NO_LOCATION: "&cNo saved location found for %player%."
   SHARD-BOOSTER:
     ACTIVATED: "&aYou have activated your &5shard booster &afor 24h."
     ALREADY-ACTIVATED: "&cYou active shard booster."
@@ -2436,6 +2454,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request."
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself!"
     NOT-ACCEPTING-REQUESTS: "&cThis player dan is not accepting."
+    EXPIRED: "&cPermintaan teleportasi dari &a{player} &ctelah kedaluwarsa."
+    YOUR-REQUEST-EXPIRED: "&cPermintaan teleportasi kamu ke &a{player} &ctelah kedaluwarsa."
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7. type &ccancel &7to
       abort."
@@ -2447,6 +2467,7 @@ MESSAGES:
     INVALID-NAME: "&cInvalid dan name. do not use spaces."
     ALREADY-EXISTS: "&cA dan name already exists."
     CANCELLED: "&7Home input cancelled."
+    EXCLUDED-WORLD: "&cYou cannot set a home in this world."
   WARP:
     PLAYER-ONLY: "&cOnly players can use this warp command."
     USAGE: "&cUsage: /warp [nama]"
@@ -2852,6 +2873,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&aKlik untuk mengklaim hadiah ini!'
+    REWARD-NO-KEY: '&cKamu tidak memiliki kunci {crate}!'
+    CLAIM-SUCCESS: '&7kamu mengklaim &f{reward}&7 dari &b{crate}&7.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7mengklaim &f{reward} &7dari &b{crate}&7.'
+    NO-KEYS: '&ckamu tidak lagi memiliki kunci untuk {crate}.'
+    INVENTORY-FULL: '&cinventaris kamu penuh. kosongkan ruang sebelum mengklaim hadiah ini.'
+    NO-PLAYER-DATA: '&cdata pemain kamu tidak dapat dimuat. coba lagi sebentar lagi.'
+    REWARD-GRANT-FAILED: '&cgagal memberikan hadiah itu. kuncimu telah dikembalikan.'
+    INVALID-REWARD: '&chadiah itu sudah tidak valid.'
+    REWARD-SELECT-FAILED: '&cHadiah itu tidak dapat dipilih.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"

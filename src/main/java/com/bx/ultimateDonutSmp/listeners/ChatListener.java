@@ -38,13 +38,6 @@ public class ChatListener implements Listener {
             return;
         }
 
-        if (plugin.getTeamManager().hasPendingSearchInput(player.getUniqueId())) {
-            event.setCancelled(true);
-            plugin.getSpigotScheduler().runEntity(player, () ->
-                    plugin.getTeamManager().handlePendingSearchInput(player, rawMessage));
-            return;
-        }
-
         if (plugin.getOrdersManager() != null && plugin.getOrdersManager().hasPendingInput(player.getUniqueId())) {
             event.setCancelled(true);
             plugin.getSpigotScheduler().runEntity(player, () ->

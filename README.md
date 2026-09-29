@@ -53,7 +53,7 @@ This README is the quick reference. The full documentation set lives in [`docs/w
 | PvP | Duels, private invites, map queues, FFA instances, arena rollback, fast crystals, and combat handling |
 | Custom content | Crates, virtual keys, Donut-style spawners, amethyst tools, enchantment GUI, filters, and configurable menus |
 | Staff and moderation | Staff mode, freeze, vanish, hide/disguise, invsee, ecsee, punishments, alts, reports, helpop, and anvil moderation |
-| Detection tools | Spawn-stash bait, fake-player bait, spawner anti-ESP, alerts, bypass permissions, and crash protection |
+| Detection tools | Spawn-stash bait, fake-player bait, alerts, bypass permissions, and crash protection |
 | Network | Redis staff chat and alerts, server-status menus, maintenance routing, Discord webhooks, and Lunar/Apollo support |
 | Operations | Automatic configuration sync and backups, feature toggles, setup tools, optimization controls, stats wipe, and guarded server wipe |
 | Localization | English, Spanish, Indonesian, Portuguese, German, French, Russian, and Simplified Chinese language packs |
@@ -84,9 +84,9 @@ Gameplay clips:
 
 | Requirement | Notes |
 | --- | --- |
-| Plugin version | `1.5` |
+| Plugin version | `1.5.1` |
 | Java | Bytecode targets Java 21. Use the Java version required by the selected Minecraft server; Minecraft 26.1+ requires Java 25. |
-| Paper / Purpur / Pufferfish / Spigot | Minecraft `1.21.10` through `26.2` |
+| Paper / Purpur / Pufferfish / Spigot | Minecraft `1.21.10` through `26.3` |
 | Folia | Minecraft `1.21.11` through `26.2` |
 | Hard dependencies | PlaceholderAPI and ProtocolLib (declared under `depend` in `plugin.yml`; the plugin will not load without them) |
 | Default storage | SQLite, bundled through the shaded JDBC driver |
@@ -128,7 +128,7 @@ The build compiles the codebase against the target API and packages a single uni
 
 Generated artifact is saved to the `target/` directory:
 
-- `UltimateDonutSmp-1.5.jar` (shaded JAR)
+- `UltimateDonutSmp-1.5.1.jar` (shaded JAR)
 
 ## Installation
 
@@ -169,7 +169,7 @@ For production networks, MySQL plus Redis is recommended. For a single-server se
 | `duels.yml` | Duel maps, world borders, queues, countdowns, cross-server options, arena settings, rules, and GUI |
 | `ffa.yml` | FFA queue, arena rules, rollback, player-state handling, and arena definitions |
 | `crates.yml` | Crate definitions, keys, rewards, animations, holograms, particles, and settings |
-| `spawners.yml` | Donut-style spawner types, drops, storage, anti-ESP, visibility, and GUI |
+| `spawners.yml` | Donut-style spawner types, drops, storage, and GUI |
 | `spawn-stash.yml` | Temporary bait-stash types, detection rules, alerts, cleanup, and messages |
 | `network.yml` | Redis network identity, staff chat, reports, helpop, server status, and maintenance routing |
 | `staff-mode.yml` | Staff-mode permissions, hotbar items, vanish, better view, staff list, fake players, and menus |
@@ -254,6 +254,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/leave` | - | `/leave` | `ultimatedonutsmp.command.leave` |
 | `/logs` | - | `/logs` | `ultimatedonutsmp.command.logs` |
 | `/maintenance` | - | `/maintenance <on [duration]\|off\|status\|setlobby [server]>` | `ultimatedonutsmp.command.maintenance` |
+| `/media` | - | `/media` | `ultimatedonutsmp.command.media` |
 | `/meta` | `/farmingmeta` | `/meta` | `ultimatedonutsmp.command.meta` |
 | `/msg` | `/message`, `/tell`, `/whisper`, `/w` | `/msg <player> <message>` | `ultimatedonutsmp.command.msg` |
 | `/mute` | - | `/mute <player> [reason]` | `ultimatedonutsmp.command.mute` |
@@ -300,7 +301,7 @@ Commands can be disabled through their related feature toggle. Arguments in `<an
 | `/shards` | - | `/shards [player]` or `/shards everywhere <status\|debug> [player]` | `ultimatedonutsmp.command.shards` |
 | `/shardshop` | - | `/shardshop` | `ultimatedonutsmp.command.shardshop` |
 | `/shop` | - | `/shop [reload]` | `ultimatedonutsmp.command.shop` |
-| `/social` | `/media` | `/social` | `ultimatedonutsmp.command.social` |
+| `/social` | - | `/social` | `ultimatedonutsmp.command.social` |
 | `/spawn` | - | `/spawn` | `ultimatedonutsmp.command.spawn` |
 | `/spawner` | `/spawners` | `/spawner [give\|info\|panel\|reload\|remove\|split]` | `ultimatedonutsmp.command.spawner` |
 | `/spawnstash` | `/stash` | `/spawnstash [type\|spawn\|list\|remove\|reload]` | `ultimatedonutsmp.command.spawnstash` |
@@ -392,7 +393,6 @@ Running `/baltop` with no arguments opens the money leaderboard directly instead
 | `ultimatedonutsmp.admin.shards` | `op` | Inspect Shards Everywhere status |
 | `ultimatedonutsmp.admin.shop` | `op` | Reload shop settings |
 | `ultimatedonutsmp.admin.spawner` | `op` | Give and manage Donut-style spawners |
-| `ultimatedonutsmp.admin.spawner.seeall` | `op` | Bypass spawner anti-ESP concealment |
 | `ultimatedonutsmp.admin.spawnstash` | `op` | Manage bait spawn stashes |
 | `ultimatedonutsmp.admin.staffmode` | `op` | Reload Staff Mode settings |
 | `ultimatedonutsmp.admin.statswipe` | `op` | Execute player stats wipe |

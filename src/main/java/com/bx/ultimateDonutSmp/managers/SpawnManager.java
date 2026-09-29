@@ -1233,11 +1233,19 @@ public class SpawnManager {
             return materializeArea(template, cuboidName);
         }
 
-        if (template.locationOverride() != null || template.locationOverrideRaw() != null) {
+        if (template.locationOverride() != null || isConfiguredLocation(template.locationOverrideRaw())) {
             return template;
         }
 
         return null;
+    }
+
+    static boolean isConfiguredLocation(String raw) {
+        if (raw == null) {
+            return false;
+        }
+        String trimmed = raw.trim();
+        return !trimmed.isBlank() && !trimmed.matches("\\d+");
     }
 
     private List<TeleportArea> filterAreasByDestination(List<TeleportArea> areas, boolean requireDestination) {

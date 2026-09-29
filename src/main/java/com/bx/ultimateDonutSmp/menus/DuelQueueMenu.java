@@ -14,11 +14,6 @@ import java.util.List;
 
 public class DuelQueueMenu extends BaseMenu {
 
-    private static final int QUEUE_SLOT = 20;
-    private static final int STATS_SLOT = 22;
-    private static final int SELECT_SLOT = 24;
-    private static final int CLAIMS_SLOT = 31;
-
     private final DuelMapSelection selectedSelection;
 
     public DuelQueueMenu(UltimateDonutSmp plugin) {
@@ -28,6 +23,61 @@ public class DuelQueueMenu extends BaseMenu {
     public DuelQueueMenu(UltimateDonutSmp plugin, DuelMapSelection selectedSelection) {
         super(plugin, plugin.getDuelManager().getQueueTitle(), plugin.getDuelManager().getQueueSize());
         this.selectedSelection = selectedSelection;
+    }
+
+    public static int resolveQueueSlot(int size) {
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 20;
+        } else if (rows == 3) {
+            return 11;
+        } else if (rows == 2) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    public static int resolveStatsSlot(int size) {
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 22;
+        } else if (rows == 3) {
+            return 13;
+        } else if (rows == 2) {
+            return 4;
+        } else {
+            return 3;
+        }
+    }
+
+    public static int resolveSelectSlot(int size) {
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 24;
+        } else if (rows == 3) {
+            return 15;
+        } else if (rows == 2) {
+            return 6;
+        } else {
+            return 5;
+        }
+    }
+
+    public static int resolveClaimsSlot(int size, boolean showSelector) {
+        if (!showSelector) {
+            return resolveSelectSlot(size);
+        }
+        int rows = Math.max(1, size / 9);
+        if (rows >= 4) {
+            return 31;
+        } else if (rows == 3) {
+            return 22;
+        } else if (rows == 2) {
+            return 13;
+        } else {
+            return 7;
+        }
     }
 
     @Override
@@ -40,62 +90,83 @@ public class DuelQueueMenu extends BaseMenu {
         DuelStats stats = plugin.getDuelManager().getStats(player.getUniqueId());
         boolean queued = plugin.getDuelManager().isInQueue(player.getUniqueId());
         boolean showSelector = shouldShowSelector(options);
-        int claimsSlot = showSelector ? CLAIMS_SLOT : SELECT_SLOT;
+
+        int queueSlot = resolveQueueSlot(inventory.getSize());
+        int statsSlot = resolveStatsSlot(inventory.getSize());
+        int selectSlot = resolveSelectSlot(inventory.getSize());
+        int claimsSlot = resolveClaimsSlot(inventory.getSize(), showSelector);
 
         if (queued) {
-            set(QUEUE_SLOT, ItemUtils.createItem(
+            set(queueSlot, ItemUtils.createItem(
                     Material.PAPER,
-                    "&cleave queue",
-                    List.of(
-                            "&7players queued: &f" + plugin.getDuelManager().getQueueSizeCount(),
-                            "&7click to leave the duel queue."
-                    )
+                    plugin.getDuelManager().getGuiText("QUEUE.ITEMS.LEAVE_QUEUE.NAME", "&cleave queue"),
+                    plugin.getDuelManager().getGuiTextList("QUEUE.ITEMS.LEAVE_QUEUE.LORE",
+                            List.of(
+                                    "&7players queued: &f{queued}",
+                                    "&7click to leave the duel queue."
+                            ),
+                            "{queued}", plugin.getDuelManager().getQueueSizeCount())
             ));
         } else if (selectedOption == null) {
-            set(QUEUE_SLOT, ItemUtils.createItem(
+            set(queueSlot, ItemUtils.createItem(
                     Material.BARRIER,
-                    "&cno queue maps available",
-                    List.of("&7configure queue arenas or enable random biomes.")
+                    plugin.getDuelManager().getGuiText("QUEUE.ITEMS.NO_MAPS.NAME", "&cno queue maps available"),
+                    plugin.getDuelManager().getGuiTextList("QUEUE.ITEMS.NO_MAPS.LORE",
+                            List.of("&7configure queue arenas or enable random biomes."))
             ));
         } else {
-            set(QUEUE_SLOT, ItemUtils.createItem(
+            set(queueSlot, ItemUtils.createItem(
                     Material.PAPER,
-                    "&ajoin casual queue",
+                    plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.NAME", "&ajoin casual queue"),
                     queueLore(selectedOption, showSelector)
             ));
         }
 
         if (showSelector) {
-            set(SELECT_SLOT, ItemUtils.createItem(
+            List<String> selectLore = new ArrayList<>();
+            if (selectedOption == null) {
+                selectLore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.SELECT_MAP.LORE_NONE", "&7no map is selected."));
+            } else {
+                selectLore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.SELECT_MAP.LORE_SELECTED",
+                        "&7selected: &f{selected}", "{selected}", selectedOption.displayName()));
+            }
+            selectLore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.SELECT_MAP.LORE_CLICK", "&eclick to choose arena or biome."));
+
+            set(selectSlot, ItemUtils.createItem(
                     Material.COMPASS,
-                    "&bselect map",
-                    List.of(
-                            selectedOption == null
-                                    ? "&7no map is selected."
-                                    : "&7selected: &f" + selectedOption.displayName(),
-                            "&eclick to choose arena or biome."
-                    )
+                    plugin.getDuelManager().getGuiText("QUEUE.ITEMS.SELECT_MAP.NAME", "&bselect map"),
+                    selectLore
             ));
         }
 
-        set(STATS_SLOT, ItemUtils.createItem(
+        set(statsSlot, ItemUtils.createItem(
                 Material.NETHERITE_SWORD,
-                "&eyour duel stats",
-                List.of(
-                        "&7wins: &f" + stats.getWins(),
-                        "&7losses: &f" + stats.getLosses(),
-                        "&7draws: &f" + stats.getDraws(),
-                        "&7streak: &f" + stats.getCurrentStreak(),
-                        "&7best streak: &f" + stats.getBestStreak()
-                )
+                plugin.getDuelManager().getGuiText("QUEUE.ITEMS.STATS.NAME", "&eyour duel stats"),
+                plugin.getDuelManager().getGuiTextList("QUEUE.ITEMS.STATS.LORE",
+                        List.of(
+                                "&7wins: &f{wins}",
+                                "&7losses: &f{losses}",
+                                "&7draws: &f{draws}",
+                                "&7streak: &f{streak}",
+                                "&7best streak: &f{best_streak}"
+                        ),
+                        "{wins}", stats.getWins(),
+                        "{losses}", stats.getLosses(),
+                        "{draws}", stats.getDraws(),
+                        "{streak}", stats.getCurrentStreak(),
+                        "{best_streak}", stats.getBestStreak())
         ));
 
         set(claimsSlot, ItemUtils.createItem(
                 Material.ENDER_CHEST,
-                "&dclaims",
-                List.of("&7open duel loot claim packages.")
+                plugin.getDuelManager().getGuiText("QUEUE.ITEMS.CLAIMS.NAME", "&dclaims"),
+                plugin.getDuelManager().getGuiTextList("QUEUE.ITEMS.CLAIMS.LORE",
+                        List.of("&7open duel loot claim packages."))
         ));
-        set(inventory.getSize() - 1, ItemUtils.createItem(Material.BARRIER, "&cclose"));
+        set(inventory.getSize() - 1, ItemUtils.createItem(
+                Material.BARRIER,
+                plugin.getDuelManager().getGuiText("QUEUE.ITEMS.CLOSE.NAME", "&cclose")
+        ));
     }
 
     @Override
@@ -104,9 +175,12 @@ public class DuelQueueMenu extends BaseMenu {
         DuelManager.DuelMapOption selectedOption = resolveSelectedOption(options);
         boolean queued = plugin.getDuelManager().isInQueue(player.getUniqueId());
         boolean showSelector = shouldShowSelector(options);
-        int claimsSlot = showSelector ? CLAIMS_SLOT : SELECT_SLOT;
 
-        if (slot == QUEUE_SLOT) {
+        int queueSlot = resolveQueueSlot(inventory.getSize());
+        int selectSlot = resolveSelectSlot(inventory.getSize());
+        int claimsSlot = resolveClaimsSlot(inventory.getSize(), showSelector);
+
+        if (slot == queueSlot) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
             if (queued) {
                 plugin.getDuelManager().leaveState(player);
@@ -127,7 +201,7 @@ public class DuelQueueMenu extends BaseMenu {
             return;
         }
 
-        if (showSelector && slot == SELECT_SLOT) {
+        if (showSelector && slot == selectSlot) {
             SoundUtils.play(player, plugin.getConfigManager().getSound("DUELS.CLICK"));
             new DuelQueueMapSelectMenu(plugin, selectedOption == null ? selectedSelection : selectedOption.selection()).open(player);
             return;
@@ -177,28 +251,39 @@ public class DuelQueueMenu extends BaseMenu {
 
     private List<String> queueLore(DuelManager.DuelMapOption selectedOption, boolean showSelector) {
         List<String> lore = new ArrayList<>();
-        lore.add("&7players queued: &f" + plugin.getDuelManager().getQueueSizeCount());
+        lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_QUEUED",
+                "&7players queued: &f{queued}", "{queued}", plugin.getDuelManager().getQueueSizeCount()));
         if (showSelector) {
-            lore.add("&7selected: &f" + selectedOption.displayName());
+            lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_SELECTED",
+                    "&7selected: &f{selected}", "{selected}", selectedOption.displayName()));
             if (selectedOption.selection().usesGeneratedWorld()
                     && plugin.getDuelManager().isVanillaBiomeTerrainMode()
                     && !plugin.getDuelManager().isVanillaRuntimeGenerationEnabled()) {
-                lore.add("&7mode: &fvanilla generation disabled");
-                lore.add("&7enable vanilla_pool.runtime_generation.");
+                lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_VANILLA_DISABLED",
+                        "&7mode: &fvanilla generation disabled"));
+                lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_ENABLE_VANILLA",
+                        "&7enable vanilla_pool.runtime_generation."));
             } else {
                 lore.add("&7" + selectedOption.description());
             }
         } else if (selectedOption.selection().usesGeneratedWorld()) {
-            lore.add("&7mode: &fflat biome arena");
-            lore.add("&7uses lightweight generated flat terrain.");
+            lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_FLAT_MODE",
+                    "&7mode: &fflat biome arena"));
+            lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_FLAT_DESC",
+                    "&7uses lightweight generated flat terrain."));
         } else if (selectedOption.selection().type() == DuelMapSelection.Type.STATIC_ARENA) {
-            lore.add("&7map: &f" + selectedOption.displayName());
-            lore.add("&7uses a configured custom duel map.");
+            lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_STATIC_MAP",
+                    "&7map: &f{selected}", "{selected}", selectedOption.displayName()));
+            lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_STATIC_DESC",
+                    "&7uses a configured custom duel map."));
         } else {
-            lore.add("&7mode: &fdefault queue arena");
-            lore.add("&7uses an available configured duel arena.");
+            lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_DEFAULT_MODE",
+                    "&7mode: &fdefault queue arena"));
+            lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_DEFAULT_DESC",
+                    "&7uses an available configured duel arena."));
         }
-        lore.add("&eclick to join queue.");
+        lore.add(plugin.getDuelManager().getGuiText("QUEUE.ITEMS.JOIN_QUEUE.LORE_CLICK",
+                "&eclick to join queue."));
         return lore;
     }
 }

@@ -374,6 +374,7 @@ MENUS:
       MONEY_CLAIM_NAME: '{money_color}{money_name} Claim'
       MONEY_CLAIM_LORE:
       - '&7Amount: {amount}'
+      - '&7Buyer: &f{buyer}'
       - '&7Source listing: &f#{id}'
       - ''
       - '&eClick to claim'
@@ -396,7 +397,13 @@ MENUS:
         TITLE: '&#6BF18DSearch'
         LORE:
         - '&fSearch for team members'
-        - '&cIn development.'
+      SEARCH_SIGN:
+        lines:
+        - ''
+        - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+        - Search
+        - ''
+        input-line: 0
       SORT-BUTTON:
         TITLE: '&aSort'
       REFRESH-BUTTON:
@@ -917,6 +924,14 @@ MENUS:
         LORE:
         - '&7Silence the spawn teleport effects'
         - '&fCurrently: {status}'
+    FEEDBACK:
+      TOGGLE-MESSAGE: '&7{setting} is now {state}&7.'
+      CHOICE-MESSAGE: '&7{setting} is now set to {choice}&7.'
+      STATE-ENABLED: '&aEnabled'
+      STATE-DISABLED: '&cDisabled'
+      CHOICE-OFF-TEXT: '&cOff'
+      CHOICE-ANYONE-TEXT: '&aAnyone'
+      CHOICE-FRIENDS-FOLLOWED-TEXT: '&dFriends/Followed'
   LEADERBOARDS-MENU:
     TITLE: '&8Leaderboards'
     TYPE-MENU:
@@ -1821,7 +1836,7 @@ CONFIG:
           - '&7Time remaining: &f{time}'
           - '&eClick to cancel this listing.'
           SOLD_LORE:
-          - '&aSold to another player.'
+          - '&aSold to &f{buyer}&a.'
           CANCELLED_LORE:
           - '&cCancelled.'
           EXPIRED_LORE:
@@ -2174,10 +2189,218 @@ CONFIG:
     GUI:
       QUEUE:
         TITLE: '&8Casual Queue'
+        ITEMS:
+          LEAVE_QUEUE:
+            NAME: '&cleave queue'
+            LORE:
+            - '&7players queued: &f{queued}'
+            - '&7click to leave the duel queue.'
+          NO_MAPS:
+            NAME: '&cno queue maps available'
+            LORE:
+            - '&7configure queue arenas or enable random biomes.'
+          JOIN_QUEUE:
+            NAME: '&ajoin casual queue'
+            LORE_QUEUED: '&7players queued: &f{queued}'
+            LORE_SELECTED: '&7selected: &f{selected}'
+            LORE_VANILLA_DISABLED: '&7mode: &fvanilla generation disabled'
+            LORE_ENABLE_VANILLA: '&7enable vanilla_pool.runtime_generation.'
+            LORE_FLAT_DESC: '&7uses lightweight generated flat terrain.'
+            LORE_STATIC_MAP: '&7map: &f{selected}'
+            LORE_STATIC_DESC: '&7uses a configured custom duel map.'
+            LORE_DEFAULT_DESC: '&7uses an available configured duel arena.'
+            LORE_CLICK: '&eclick to join queue.'
+          SELECT_MAP:
+            NAME: '&bselect map'
+            LORE_NONE: '&7no map is selected.'
+            LORE_SELECTED: '&7selected: &f{selected}'
+            LORE_CLICK: '&eclick to choose arena or biome.'
+          STATS:
+            NAME: '&eyour duel stats'
+            LORE:
+            - '&7wins: &f{wins}'
+            - '&7losses: &f{losses}'
+            - '&7draws: &f{draws}'
+            - '&7streak: &f{streak}'
+            - '&7best streak: &f{best_streak}'
+          CLAIMS:
+            NAME: '&dclaims'
+            LORE:
+            - '&7open duel loot claim packages.'
+          CLOSE:
+            NAME: '&cclose'
       CREATE:
         TITLE: '&8Create Duel -> {player}'
+        ITEMS:
+          TARGET_OFFLINE:
+            NAME: '&ctarget offline'
+            LORE:
+            - '&7this player is no longer online.'
+          NO_MAPS:
+            NAME: '&cno duel maps available'
+            LORE:
+            - '&7configure arenas or enable random biomes.'
+          MAP_OPTION:
+            NAME: '&a{map}'
+            LORE:
+            - '&7privacy: &f{privacy}'
+            - '&7target: &f{target}'
+            - '&7{description}'
+            - '&eclick to send challenge.'
+          TARGET_HEAD:
+            NAME: '&etarget: &f{target}'
+            LORE:
+            - '&7choose a map to send a duel request.'
+          PRIVACY_BUTTON:
+            NAME: '&bprivacy: &f{privacy}'
+            LORE_FRIENDS: '&7only same-team members can accept this duel.'
+            LORE_INVITE: '&7direct invite duel.'
+          CLOSE:
+            NAME: '&cclose'
       CLAIMS:
         TITLE: '&8Duel Claims'
+        ITEMS:
+          PREVIOUS_PAGE:
+            NAME: '&aprevious page'
+          REFRESH:
+            NAME: '&erefresh'
+          NEXT_PAGE:
+            NAME: '&anext page'
+          BACK:
+            NAME: '&cback'
+          NO_CLAIMS:
+            NAME: '&cno pending claims'
+            LORE:
+            - '&7loot from duel wins will show up here.'
+          CLAIM_ENTRY:
+            NAME: '&eloot from &f{player}'
+            LORE:
+            - '&7match: &f#{match_id}'
+            - '&7stored items: &f{count}'
+            - '&7click to preview this loot package.'
+            - '&8delete is available inside the preview.'
+      QUEUE_MAP_SELECT:
+        TITLE: '&8Select duel map'
+        ITEMS:
+          CURRENTLY_SELECTED_LORE: '&aCurrently selected.'
+          CLICK_TO_SELECT_LORE: '&eClick to select.'
+          NO_MAPS:
+            NAME: '&cNo queue maps available'
+            LORE:
+            - '&7Configure queue arenas or enable random biomes.'
+          BACK:
+            NAME: '&eBack'
+            LORE:
+            - '&7Return to queue menu.'
+          CLOSE:
+            NAME: '&cClose'
+      CLAIM_PREVIEW:
+        TITLE: '&8duel loot preview'
+        ITEMS:
+          CLAIM_NOT_FOUND:
+            NAME: '&cclaim not found'
+            LORE:
+            - '&7this duel loot package no longer exists.'
+          BACK_ARROW:
+            NAME: '&aback'
+          BACK_BARRIER:
+            NAME: '&cback'
+          SUMMARY:
+            NAME: '&eloot summary'
+            LORE:
+            - '&7defeated player: &f{player}'
+            - '&7match: &f#{match_id}'
+            - '&7stored items: &f{count}'
+          CLAIM_ALL:
+            NAME: '&aclaim all'
+            LORE:
+            - '&7move all fitting items into your inventory.'
+            - '&7if some do not fit, they stay in claims.'
+          DELETE_CLAIM:
+            NAME: '&cdelete claim'
+            LORE:
+            - '&7delete this entire loot package.'
+            - '&7this action cannot be undone.'
+    MESSAGES:
+      PREFIX: ''
+      DISABLED: '&cduels are currently disabled.'
+      NO_PERMISSION_RELOAD: '&cyou do not have permission to reload duels.'
+      RELOAD_SUCCESS: '&aduels config reloaded.'
+      PLAYER_NOT_ONLINE: '&cthat player is not online.'
+      USAGE_INVITE: '&cusage: /create invite <player> [map]'
+      USAGE_FRIENDS: '&cusage: /create friends <player> [map]'
+      QUEUE_JOINED: '&ajoined the casual duel queue.'
+      QUEUE_LEFT: '&eyou left the casual duel queue.'
+      QUEUE_ALREADY_IN: '&cyou are already in the queue.'
+      QUEUE_ALREADY_IN_CASUAL: '&eyou are already in the casual duel queue.'
+      PREPARING_CANCELLED: '&eyour preparing duel has been cancelled.'
+      PENDING_CLEARED: '&eyour pending duel request was cleared.'
+      OUTGOING_CANCELLED: '&eyour outgoing duel request was cancelled.'
+      NOT_IN_DUEL_OR_QUEUE: '&cyou are not in a duel or queue.'
+      DRAW_ONLY_ACTIVE: '&cyou can only request a draw during an active duel.'
+      DRAW_OPPONENT_OFFLINE: '&cyour opponent is no longer online.'
+      DRAW_SENT: '&edraw request sent to &f{player}&e.'
+      DRAW_RECEIVED: '&e{player} &fhas requested a draw. use &f/draw &fto accept.'
+      DRAW_ALREADY_REQUESTED: '&eyou already requested a draw.'
+      DRAW_EXPIRED: '&cyour draw request expired.'
+      DEFEATED_PLAYER: '&ayou defeated &f{player}&a.'
+      LOST_DUEL: '&cyou lost the duel against &f{player}&c.'
+      MOVED_OUT_OF_ARENA: '&eyou were moved out of duel arena &f{arena}&e after reconnecting.'
+      DUEL_STARTED: '&aduel started against &f{player}&a.'
+      LOOT_SENT_TO_CLAIMS: '&eloot from &f{player} &ehas been sent to your duel claims.'
+      PREPARING_BIOME: '&epreparing duel biome arena...'
+      CANCELLED_PLAYER_LEFT: '&cduel cancelled because one player left preparation.'
+      CANCELLED_PLAYER_UNAVAILABLE: '&cduel cancelled because one player is no longer
+        available.'
+      NO_BIOME_ARENA: '&cno duel biome arena is available right now.'
+      UNSAFE_ITEMS: '&cthe duel could not start because your opponent has unsafe item
+        data.'
+      COULD_NOT_START: '&ccould not start the duel right now.'
+      DUEL_FOUND: '&aduel found against &f{player}&a on arena &f{arena}&a.'
+      ALREADY_IN_DUEL: '&cyou are already in a duel.'
+      ARENA_PREPARING: '&cyour duel arena is preparing.'
+      ALREADY_HAVE_REQUEST: '&cyou already have a pending duel request.'
+      CANNOT_USE_FFA: '&cyou cannot use duels while inside the ffa system.'
+      FRIENDS_SAME_TEAM: '&cfriends-only duels require both players to be in the same
+        team.'
+      FRIENDS_ONLY_TEAM: '&cfriends-only duels can only target members of your team.'
+      CROSS_SERVER_PREPARING: '&across-server duel found. preparing match...'
+      CROSS_SERVER_TRANSFERRING: '&across-server duel found. transferring to match
+        server...'
+      CROSS_SERVER_NO_ARENA: '&ccross-server duel could not start because no arena
+        is available.'
+      REQUEST_EXPIRED_TO: '&cyour duel request to &f{player} &cexpired.'
+      REQUEST_EXPIRED_FROM: '&cyour duel request from &f{player} &cexpired.'
+      REQUEST_CLEARED: '&cyour duel request was cleared.'
+      REQUEST_CANCELLED: '&cthat duel request was cancelled.'
+      REQUEST_SENT: '&asent a duel request to &f{player}&a.'
+      CHALLENGE_RECEIVED: '&e{player} &fhas challenged you to a duel.'
+      CHALLENGE_INSTRUCTION: '&7use &f/duel accept {player} &7or &f/duel deny {player}&7.'
+      NO_PENDING_REQUEST: '&cyou have no pending duel request.'
+      REQUEST_EXPIRED: '&cthat duel request has expired.'
+      REQUEST_PENDING_FROM: '&cyour pending duel request is from &f{player}&c.'
+      CHALLENGER_OFFLINE: '&cthat challenger is no longer online.'
+      REQUEST_DENIED_SENDER: '&edenied duel request from &f{player}&e.'
+      REQUEST_DENIED_TARGET: '&c{player} denied your duel request.'
+      CANNOT_DUEL_SELF: '&cyou cannot duel yourself.'
+      TARGET_NOT_ACCEPTING: '&cthat player is not accepting duel requests.'
+      NO_ARENA_AVAILABLE: '&cno duel arena is available right now.'
+      NO_MAP_AVAILABLE: '&cthat duel map is not available.'
+      ARENA_NOT_AVAILABLE: '&cthat arena is not available.'
+      NO_READY_ARENAS: '&cthere are no duel arenas ready yet.'
+      REQUEST_COULD_NOT_START: '&cyour duel request could not start because no arena
+        is available.'
+      CLAIM_NO_LONGER_EXISTS: '&cthat duel claim no longer exists.'
+      CLAIM_MAKE_ROOM: '&cmake room in your inventory before claiming that loot.'
+      CLAIM_PARTIAL: '&eclaimed some duel loot from &f{player}&e. &7some items are
+        still waiting in claims.'
+      CLAIM_SUCCESS: '&aclaimed duel loot from &f{player}&a.'
+      CLAIM_DELETE_FAILED: '&ccould not delete that duel claim right now.'
+      CLAIM_DELETED: '&cdeleted duel loot claim from &f{player}&c.'
+      QUEUE_ARENAS_NOT_READY: '&cqueue arenas exist but are not ready yet. &7use &f/arena
+        setpos1 <id> &7and &f/arena setpos2 <id> &7for: &f{arenas}&7.'
+      QUEUE_NO_READY_ARENAS: '&cno ready queue arenas are configured yet. &7enable
+        queue with &f/arena queue <id> true&7, then set &fpos1 &7and &fpos2&7.'
   FFA:
     RESULT-TITLES:
       victory:
@@ -2225,6 +2448,86 @@ CONFIG:
         TITLE: '&8Spawners - {world}'
       WORLD_LIST:
         TITLE: '&8Spawners Panel'
+    MESSAGES:
+      PLACED: '&aplaced &f{amount}x {type}&a.'
+      STACKED: '&aspawner stack updated to &f{amount}&a.'
+      PICKED-UP: '&apicked up &f{amount}x {type}&a.'
+      REMOVED: '&aremoved &f{amount}x {type}&a.'
+      REMOVED-ADMIN: '&aspawner removed.'
+      GAVE-SPAWNER: '&aGave &f{amount}x {type}&a to &f{player}&a.'
+      RECEIVED-SPAWNER: '&aYou received &f{amount}x {type}&a.'
+      COLLECTED: '&acollected &f{amount}x {item}&a.'
+      COLLECTED-ALL: '&acollected &f{amount}&a items from this spawner.'
+      DROPPED-PAGE: '&adropped &f{amount}&a stored items from this page on the ground.'
+      SOLD: '&asold &f{amount}&a items for {price}&a.'
+      COLLECTED-XP: '&acollected &f{amount} &aXP points!'
+      RELOADED: '&aSpawner settings reloaded.'
+      SPLIT-SUCCESS: '&aSplit &f{amount}x &aspawners. &7Remaining in hand: &f{remaining}&7.'
+      FILTER-ENABLED-ALL: '&aEnabled storing for all drops on this spawner.'
+      FILTER-DISABLED-ALL: '&cDisabled storing for all drops on this spawner.'
+      FILTER-TOGGLED: '&aToggled filter for &f{item} &ato {status}&a.'
+      FILTER-STATUS-ENABLED: '&aEnabled &7(Storing)'
+      FILTER-STATUS-DISABLED: '&cDisabled &7(Not Storing)'
+      TELEPORTED: '&aTeleported to spawner at &f{x}, {y}, {z}&a in &f{world}&a.'
+      DISABLED: '&cspawner system is currently disabled.'
+      NOT-SPAWNER-ITEM: '&cthat is not a managed spawner item.'
+      INVALID-AMOUNT: '&cthis spawner item has an invalid amount.'
+      MAX-STACK-EXCEEDED: '&cthat would exceed the max stack per block (&f{max}&c).'
+      ALREADY-AT-MAX-STACK: '&cthat spawner is already at the max stack per block
+        (&f{max}&c).'
+      ALREADY-SPAWNER: '&cthat block is already a managed spawner.'
+      NOT-OWNER: '&cyou do not own that spawner.'
+      NO-ACCESS: '&cyou do not have access to that spawner.'
+      SILK-TOUCH-REQUIRED: '&cYou need Silk Touch to break this spawner!'
+      HOLD-TO-STACK: '&chold a managed spawner item to stack.'
+      NOT-MANAGED-SPAWNER: '&cthat is not a managed spawner.'
+      NOT-FOUND: '&cspawner not found.'
+      SAVE-FAILED: '&cfailed to save that spawner. please try again.'
+      INVENTORY-FULL: '&cyour inventory is full.'
+      LOOT-EMPTY: '&cthat loot entry is empty.'
+      NO-SPACE: '&cthere was no space to collect your spawner loot.'
+      NO-LOOT-ON-PAGE: '&cthere is no loot stored on this page.'
+      NO-SELLABLE-ITEMS: '&cthere are no sellable items stored in that spawner.'
+      SELL-FAILED: '&cfailed to pay out the spawner loot sale.'
+      XP-DISABLED: '&cXP collection is disabled on this server.'
+      NO-XP-STORED: '&cthere is no XP stored in that spawner.'
+      TEMP-REGISTERED: '&atemporary spawner registered.'
+      TEMP-REMOVED: '&atemporary spawner removed.'
+      TEMP-CANNOT-STACK: '&ctemporary spawners cannot be stacked.'
+      TEMP-NEEDS-PLAYER-BLOCK: '&ctemporary spawner needs a player and block.'
+      PLAYER-ONLY: Player only.
+      TARGET-NOT-ONLINE: '&ctarget player must be online.'
+      PLAYER-NOT-ONLINE: '&cPlayer ''&f{player}&c'' must be online.'
+      AMOUNT-POSITIVE: '&cspawner amount must be positive.'
+      AMOUNT-INVALID: '&cAmount must be a valid positive number.'
+      AMOUNT-GREATER-THAN-ZERO: '&cAmount must be greater than zero.'
+      CREATE-ITEM-FAILED: '&cfailed to create the spawner item.'
+      GIVE-USAGE: Use /{label} give <player> <type> [amount]
+      LOOK-AT-SPAWNER-INSPECT: '&cLook at a managed spawner to inspect it.'
+      LOOK-AT-SPAWNER-REMOVE: '&cLook at a managed spawner to remove it.'
+      HOLD-SPAWNER-TO-SPLIT: '&cYou must be holding a managed spawner item.'
+      CANNOT-SPLIT-ONE: '&cThis spawner item cannot be split (amount is 1).'
+      SPLIT-USAGE: '&cUsage: /spawner split <amount>'
+      INVALID-SPLIT-AMOUNT: '&cInvalid split amount.'
+      SPLIT-GREATER-THAN-ZERO: '&cSplit amount must be greater than zero.'
+      SPLIT-LESS-THAN-CURRENT: '&cSplit amount must be less than the current stack
+        size (&f{max}&c).'
+      SPLIT-FAILED: '&cFailed to create split spawner item.'
+      USAGE:
+      - '&8&m----------- &dSpawner &8&m-----------'
+      - '&f/{label} &7- Open the spawner panel'
+      - '&f/{label} info &7- Inspect the looked-at spawner'
+      - '&f/{label} panel &7- Open the spawner admin panel'
+      - '&f/{label} give <player> <type> [amount] &7- Give a spawner item'
+      - '&f/{label} split <amount> &7- Split the held spawner item'
+      - '&f/{label} reload &7- Reload spawner settings'
+      - '&f/{label} remove &7- Remove the looked-at spawner'
+      INFO-HEADER: '&8&m----------- &bSpawner Info &8&m-----------'
+      INFO-REST-HIDDEN: '&7The rest is hidden on spawners you cannot access.'
+      INFO-OWNER: '&7Owner: &f{owner}'
+      INFO-STACK: '&7Stack: &f{amount}'
+      INFO-STORED-LOOT: '&7Stored Loot: &f{amount}'
+      INFO-LOCATION: '&7Location: &f{world} {x}, {y}, {z}'
   SPAWN_STASH:
     MESSAGES:
       USAGE:
@@ -2581,6 +2884,7 @@ MESSAGES:
     OR-TYPE-COMMAND: '&7Or type &f{command}&7 to join.'
     JOINED-BROADCAST: '&a{player} &eHas joined the team.'
     CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
+    EXCLUDED-WORLD: '&cYou cannot set a team home in this world.'
   CHAT-MANAGER:
     HELP:
     - ''
@@ -2675,6 +2979,8 @@ MESSAGES:
     ALL_TARGET: '&dYou were teleported to &7%sender%'
     POSITION: '&7Teleported to: &d%x%,%y%,%z% &7(%world%)'
     TOP: '&dTeleported &7to the highest position'
+    TO_OFFLINE_PLAYER: '&dTeleported &7to last known location of %player%'
+    OFFLINE_NO_LOCATION: '&cNo saved location found for %player%.'
   SHARD-BOOSTER:
     ACTIVATED: '&aYou have activated your &5shard booster &afor 24h.'
     ALREADY-ACTIVATED: '&cYou already have an active shard booster.'
@@ -2697,6 +3003,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: '&a{player} Has accepted your tpahere request.'
     CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
     NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
+    EXPIRED: '&cThe teleport request from &a{player} &chas expired.'
+    YOUR-REQUEST-EXPIRED: '&cYour teleport request to &a{player} &chas expired.'
   HOME:
     NAME-PROMPT: '&7Type the home name in chat for &b{name}&7. type &ccancel &7to
       abort.'
@@ -2708,6 +3016,7 @@ MESSAGES:
     INVALID-NAME: '&cInvalid home name. do not use spaces.'
     ALREADY-EXISTS: '&cA home with that name already exists.'
     CANCELLED: '&7Home input cancelled.'
+    EXCLUDED-WORLD: '&cYou cannot set a home in this world.'
   WARP:
     PLAYER-ONLY: '&cOnly players can use this warp command.'
     USAGE: '&cUsage: /warp [name]'
@@ -3148,6 +3457,14 @@ MESSAGES:
   CRATES:
     REWARD-CLAIM-HINT: '&aClick to claim this reward!'
     REWARD-NO-KEY: '&cYou don''t have a {crate} key!'
+    CLAIM-SUCCESS: '&7you claimed &f{reward}&7 from &b{crate}&7.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7claimed &f{reward} &7from &b{crate}&7.'
+    NO-KEYS: '&cyou no longer have a key for {crate}.'
+    INVENTORY-FULL: '&cyour inventory is full. clear space before claiming this reward.'
+    NO-PLAYER-DATA: '&cyour player data could not be loaded. try again in a moment.'
+    REWARD-GRANT-FAILED: '&cfailed to grant that reward. your key has been returned.'
+    INVALID-REWARD: '&cthat reward is no longer valid.'
+    REWARD-SELECT-FAILED: '&cThat reward could not be selected.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: '&cUsage: /friends [list|follow|remove|search|following|followers|friends]'

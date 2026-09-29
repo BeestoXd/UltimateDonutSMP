@@ -607,7 +607,7 @@ FEATURES_SETTINGS:
   # Options:
   # - "MESSAGE": Shows "The <feature> feature is currently disabled."
   # - "UNKNOWN": Shows default unknown command message.
-  # - "UNREGISTER": Dynamically unregister command from Bukkit command map.
+  # - "UNREGISTER": Drop the command and its aliases so another plugin can handle them.
   DISABLED_COMMAND_ACTION: "MESSAGE"
 # Configuration section for Chat.
 ```
@@ -615,7 +615,7 @@ FEATURES_SETTINGS:
 ### Key Options & Setup Breakdown
 | Key / Option Path | Data Type | Allowed Values / Options | Default | Functional Behavior & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `FEATURES_SETTINGS.DISABLED_COMMAND_ACTION` | `str` | `"MESSAGE"`, `"UNKNOWN"`, `"UNREGISTER"` | `MESSAGE` | Action when executing a disabled feature's command:<br>- `"MESSAGE"`: Shows disabled notice.<br>- `"UNKNOWN"`: Shows unknown command message.<br>- `"UNREGISTER"`: Dynamically unregisters command from Bukkit. |
+| `FEATURES_SETTINGS.DISABLED_COMMAND_ACTION` | `str` | `"MESSAGE"`, `"UNKNOWN"`, `"UNREGISTER"` | `MESSAGE` | Action when executing a disabled feature's command:<br>- `"MESSAGE"`: Shows disabled notice.<br>- `"UNKNOWN"`: Shows unknown command message.<br>- `"UNREGISTER"`: Drops the command and its aliases so another plugin can handle them. |
 
 ---
 

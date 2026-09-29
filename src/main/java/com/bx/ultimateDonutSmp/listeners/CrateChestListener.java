@@ -15,6 +15,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -195,6 +196,13 @@ public class CrateChestListener implements Listener {
             if (plugin.getCrateManager().getBoundCrateId(block) != null) {
                 iterator.remove();
             }
+        }
+    }
+
+    @EventHandler
+    public void onChangeWorld(PlayerChangedWorldEvent event) {
+        if (plugin.getCrateVisualManager() != null) {
+            plugin.getCrateVisualManager().handleWorldChange(event.getPlayer());
         }
     }
 

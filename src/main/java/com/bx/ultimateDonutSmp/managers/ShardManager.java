@@ -83,24 +83,24 @@ public class ShardManager {
             if (player == null || player.getWorld() == null) {
                 return false;
             }
+            if (isInAfkZone(player, cuboidManager, spawnManager)) {
+                return true;
+            }
             if (world != null && !world.isBlank() && !player.getWorld().getName().equalsIgnoreCase(world)) {
                 return false;
             }
-            CuboidManager.Cuboid cuboid = cuboidManager.getCuboid(cuboidName);
+            CuboidManager.Cuboid cuboid = cuboidManager != null ? cuboidManager.getCuboid(cuboidName) : null;
             if (cuboid != null && cuboid.contains(player.getLocation())) {
                 return true;
             }
-            if (isInsideRewardRadius(player.getLocation())) {
-                return true;
-            }
-            return isInAfkZone(player, cuboidManager, spawnManager);
+            return isInsideRewardRadius(player.getLocation());
         }
 
         public boolean isInAfkZone(Player player, CuboidManager cuboidManager, SpawnManager spawnManager) {
             if (player == null || player.getWorld() == null) {
                 return false;
             }
-            CuboidManager.Cuboid afkCuboid = cuboidManager.getCuboid(afkCuboidName);
+            CuboidManager.Cuboid afkCuboid = cuboidManager != null ? cuboidManager.getCuboid(afkCuboidName) : null;
             if (afkCuboid != null && afkCuboid.contains(player.getLocation())) {
                 return true;
             }

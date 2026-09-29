@@ -611,42 +611,253 @@ GUI:
   QUEUE:
     TITLE: '&8Casual Queue'
     SIZE: 27
+    ITEMS:
+      LEAVE_QUEUE:
+        NAME: '&cleave queue'
+        LORE:
+          - '&7players queued: &f{queued}'
+          - '&7click to leave the duel queue.'
+      NO_MAPS:
+        NAME: '&cno queue maps available'
+        LORE:
+          - '&7configure queue arenas or enable random biomes.'
+      JOIN_QUEUE:
+        NAME: '&ajoin casual queue'
+        LORE_QUEUED: '&7players queued: &f{queued}'
+        LORE_SELECTED: '&7selected: &f{selected}'
+        LORE_VANILLA_DISABLED: '&7mode: &fvanilla generation disabled'
+        LORE_ENABLE_VANILLA: '&7enable vanilla_pool.runtime_generation.'
+        LORE_FLAT_MODE: '&7mode: &fflat biome arena'
+        LORE_FLAT_DESC: '&7uses lightweight generated flat terrain.'
+        LORE_STATIC_MAP: '&7map: &f{selected}'
+        LORE_STATIC_DESC: '&7uses a configured custom duel map.'
+        LORE_DEFAULT_MODE: '&7mode: &fdefault queue arena'
+        LORE_DEFAULT_DESC: '&7uses an available configured duel arena.'
+        LORE_CLICK: '&eclick to join queue.'
+      SELECT_MAP:
+        NAME: '&bselect map'
+        LORE_NONE: '&7no map is selected.'
+        LORE_SELECTED: '&7selected: &f{selected}'
+        LORE_CLICK: '&eclick to choose arena or biome.'
+      STATS:
+        NAME: '&eyour duel stats'
+        LORE:
+          - '&7wins: &f{wins}'
+          - '&7losses: &f{losses}'
+          - '&7draws: &f{draws}'
+          - '&7streak: &f{streak}'
+          - '&7best streak: &f{best_streak}'
+      CLAIMS:
+        NAME: '&dclaims'
+        LORE:
+          - '&7open duel loot claim packages.'
+      CLOSE:
+        NAME: '&cclose'
+  QUEUE_MAP_SELECT:
+    TITLE: '&8Select duel map'
+    ITEMS:
+      SELECTED_PREFIX: '&a'
+      UNSELECTED_PREFIX: '&e'
+      CURRENTLY_SELECTED_LORE: '&aCurrently selected.'
+      CLICK_TO_SELECT_LORE: '&eClick to select.'
+      NO_MAPS:
+        NAME: '&cNo queue maps available'
+        LORE:
+          - '&7Configure queue arenas or enable random biomes.'
+      BACK:
+        NAME: '&eBack'
+        LORE:
+          - '&7Return to queue menu.'
+      CLOSE:
+        NAME: '&cClose'
   CREATE:
     TITLE: '&8Create Duel -> {player}'
     SIZE: 27
+    ITEMS:
+      TARGET_OFFLINE:
+        NAME: '&ctarget offline'
+        LORE:
+          - '&7this player is no longer online.'
+      NO_MAPS:
+        NAME: '&cno duel maps available'
+        LORE:
+          - '&7configure arenas or enable random biomes.'
+      MAP_OPTION:
+        NAME: '&a{map}'
+        LORE:
+          - '&7privacy: &f{privacy}'
+          - '&7target: &f{target}'
+          - '&7{description}'
+          - '&eclick to send challenge.'
+      TARGET_HEAD:
+        NAME: '&etarget: &f{target}'
+        LORE:
+          - '&7choose a map to send a duel request.'
+      PRIVACY_BUTTON:
+        NAME: '&bprivacy: &f{privacy}'
+        LORE_FRIENDS: '&7only same-team members can accept this duel.'
+        LORE_INVITE: '&7direct invite duel.'
+      CLOSE:
+        NAME: '&cclose'
   CLAIMS:
     TITLE: '&8Duel Claims'
     SIZE: 54
     ITEMS_PER_PAGE: 45
+    ITEMS:
+      PREVIOUS_PAGE:
+        NAME: '&aprevious page'
+      REFRESH:
+        NAME: '&erefresh'
+      NEXT_PAGE:
+        NAME: '&anext page'
+      BACK:
+        NAME: '&cback'
+      NO_CLAIMS:
+        NAME: '&cno pending claims'
+        LORE:
+          - '&7loot from duel wins will show up here.'
+      CLAIM_ENTRY:
+        NAME: '&eloot from &f{player}'
+        LORE:
+          - '&7match: &f#{match_id}'
+          - '&7stored items: &f{count}'
+          - '&7click to preview this loot package.'
+          - '&8delete is available inside the preview.'
+  CLAIM_PREVIEW:
+    TITLE: '&8duel loot preview'
+    SIZE: 54
+    ITEMS:
+      CLAIM_NOT_FOUND:
+        NAME: '&cclaim not found'
+        LORE:
+          - '&7this duel loot package no longer exists.'
+      BACK_ARROW:
+        NAME: '&aback'
+      BACK_BARRIER:
+        NAME: '&cback'
+      SUMMARY:
+        NAME: '&eloot summary'
+        LORE:
+          - '&7defeated player: &f{player}'
+          - '&7match: &f#{match_id}'
+          - '&7stored items: &f{count}'
+      CLAIM_ALL:
+        NAME: '&aclaim all'
+        LORE:
+          - '&7move all fitting items into your inventory.'
+          - '&7if some do not fit, they stay in claims.'
+      DELETE_CLAIM:
+        NAME: '&cdelete claim'
+        LORE:
+          - '&7delete this entire loot package.'
+          - '&7this action cannot be undone.'
 ```
 
 ### 2. Key Options & Technical Breakdown
 
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `GUI.QUEUE.TITLE` | `str` | Any string text | `'&8Casual Queue'` | Configures the technical `TITLE` parameter for `GUI.QUEUE.TITLE` in `duels.yml`. |
-| `GUI.QUEUE.SIZE` | `int` | Any valid integer number | `'27'` | Configures the technical `SIZE` parameter for `GUI.QUEUE.SIZE` in `duels.yml`. |
-| `GUI.CREATE.TITLE` | `str` | Any string text | `'&8Create Duel -> {player}'` | Configures the technical `TITLE` parameter for `GUI.CREATE.TITLE` in `duels.yml`. |
-| `GUI.CREATE.SIZE` | `int` | Any valid integer number | `'27'` | Configures the technical `SIZE` parameter for `GUI.CREATE.SIZE` in `duels.yml`. |
-| `GUI.CLAIMS.TITLE` | `str` | Any string text | `'&8Duel Claims'` | Configures the technical `TITLE` parameter for `GUI.CLAIMS.TITLE` in `duels.yml`. |
-| `GUI.CLAIMS.SIZE` | `int` | Any valid integer number | `'54'` | Configures the technical `SIZE` parameter for `GUI.CLAIMS.SIZE` in `duels.yml`. |
-| `GUI.CLAIMS.ITEMS_PER_PAGE` | `int` | Any valid integer number | `'45'` | Configures the technical `ITEMS_PER_PAGE` parameter for `GUI.CLAIMS.ITEMS_PER_PAGE` in `duels.yml`. |
-
-### 3. Practical Setup Example
-
-```yaml
-GUI:
-  QUEUE:
-    TITLE: '&8Casual Queue'
-    SIZE: 27
-  CREATE:
-    TITLE: '&8Create Duel -> {player}'
-    SIZE: 27
-  CLAIMS:
-    TITLE: '&8Duel Claims'
-    SIZE: 54
-    ITEMS_PER_PAGE: 45
-```
+| `GUI.QUEUE.TITLE` | `str` | Any string text | `'&8Casual Queue'` | Title of the casual duel queue menu. |
+| `GUI.QUEUE.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Inventory size for the queue menu. |
+| `GUI.QUEUE.ITEMS` | `section` | Configuration keys | - | Item titles and lore for queue actions, stats, and map selection. |
+| `GUI.QUEUE_MAP_SELECT.TITLE` | `str` | Any string text | `'&8Select duel map'` | Title of the queue map selector menu. |
+| `GUI.QUEUE_MAP_SELECT.ITEMS` | `section` | Configuration keys | - | Item titles and lores for selecting duel maps and queue back buttons. |
+| `GUI.CREATE.TITLE` | `str` | Any string text | `'&8Create Duel -> {player}'` | Title of the direct challenge duel menu. |
+| `GUI.CREATE.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `27` | Inventory size for the create duel menu. |
+| `GUI.CREATE.ITEMS` | `section` | Configuration keys | - | Item titles and lores for challenge maps, targets, and privacy mode toggles. |
+| `GUI.CLAIMS.TITLE` | `str` | Any string text | `'&8Duel Claims'` | Title of the duel claim packages inventory. |
+| `GUI.CLAIMS.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `54` | Inventory size for the claims menu. |
+| `GUI.CLAIMS.ITEMS_PER_PAGE` | `int` | Any integer `1-45` | `45` | Number of loot packages shown per page. |
+| `GUI.CLAIMS.ITEMS` | `section` | Configuration keys | - | Item titles and lores for pagination, refresh, and claim entries. |
+| `GUI.CLAIM_PREVIEW.TITLE` | `str` | Any string text | `'&8duel loot preview'` | Title of the single claim package preview menu. |
+| `GUI.CLAIM_PREVIEW.SIZE` | `int` | `9`, `18`, `27`, `36`, `45`, `54` | `54` | Inventory size for the claim preview menu. |
+| `GUI.CLAIM_PREVIEW.ITEMS` | `section` | Configuration keys | - | Item titles and lores for claiming all items or deleting the package. |
 
 ---
+
+## Section: `MESSAGES`
+
+### 1. Commented Setup Code Example
+
+```yaml
+MESSAGES:
+  PREFIX: ''
+  DISABLED: '&cduels are currently disabled.'
+  NO_PERMISSION_RELOAD: '&cyou do not have permission to reload duels.'
+  RELOAD_SUCCESS: '&aduels config reloaded.'
+  PLAYER_NOT_ONLINE: '&cthat player is not online.'
+  USAGE_INVITE: '&cusage: /create invite <player> [map]'
+  USAGE_FRIENDS: '&cusage: /create friends <player> [map]'
+  QUEUE_JOINED: '&ajoined the casual duel queue.'
+  QUEUE_LEFT: '&eyou left the casual duel queue.'
+  QUEUE_ALREADY_IN: '&cyou are already in the queue.'
+  QUEUE_ALREADY_IN_CASUAL: '&eyou are already in the casual duel queue.'
+  PREPARING_CANCELLED: '&eyour preparing duel has been cancelled.'
+  PENDING_CLEARED: '&eyour pending duel request was cleared.'
+  OUTGOING_CANCELLED: '&eyour outgoing duel request was cancelled.'
+  NOT_IN_DUEL_OR_QUEUE: '&cyou are not in a duel or queue.'
+  DRAW_ONLY_ACTIVE: '&cyou can only request a draw during an active duel.'
+  DRAW_OPPONENT_OFFLINE: '&cyour opponent is no longer online.'
+  DRAW_SENT: '&edraw request sent to &f{player}&e.'
+  DRAW_RECEIVED: '&e{player} &fhas requested a draw. use &f/draw &fto accept.'
+  DRAW_ALREADY_REQUESTED: '&eyou already requested a draw.'
+  DRAW_EXPIRED: '&cyour draw request expired.'
+  DEFEATED_PLAYER: '&ayou defeated &f{player}&a.'
+  LOST_DUEL: '&cyou lost the duel against &f{player}&c.'
+  MOVED_OUT_OF_ARENA: '&eyou were moved out of duel arena &f{arena}&e after reconnecting.'
+  DUEL_STARTED: '&aduel started against &f{player}&a.'
+  LOOT_SENT_TO_CLAIMS: '&eloot from &f{player} &ehas been sent to your duel claims.'
+  PREPARING_BIOME: '&epreparing duel biome arena...'
+  CANCELLED_PLAYER_LEFT: '&cduel cancelled because one player left preparation.'
+  CANCELLED_PLAYER_UNAVAILABLE: '&cduel cancelled because one player is no longer available.'
+  NO_BIOME_ARENA: '&cno duel biome arena is available right now.'
+  UNSAFE_ITEMS: '&cthe duel could not start because your opponent has unsafe item data.'
+  COULD_NOT_START: '&ccould not start the duel right now.'
+  DUEL_FOUND: '&aduel found against &f{player}&a on arena &f{arena}&a.'
+  ALREADY_IN_DUEL: '&cyou are already in a duel.'
+  ARENA_PREPARING: '&cyour duel arena is preparing.'
+  ALREADY_HAVE_REQUEST: '&cyou already have a pending duel request.'
+  CANNOT_USE_FFA: '&cyou cannot use duels while inside the ffa system.'
+  FRIENDS_SAME_TEAM: '&cfriends-only duels require both players to be in the same team.'
+  FRIENDS_ONLY_TEAM: '&cfriends-only duels can only target members of your team.'
+  CROSS_SERVER_PREPARING: '&across-server duel found. preparing match...'
+  CROSS_SERVER_TRANSFERRING: '&across-server duel found. transferring to match server...'
+  CROSS_SERVER_NO_ARENA: '&ccross-server duel could not start because no arena is available.'
+  REQUEST_EXPIRED_TO: '&cyour duel request to &f{player} &cexpired.'
+  REQUEST_EXPIRED_FROM: '&cyour duel request from &f{player} &cexpired.'
+  REQUEST_CLEARED: '&cyour duel request was cleared.'
+  REQUEST_CANCELLED: '&cthat duel request was cancelled.'
+  REQUEST_SENT: '&asent a duel request to &f{player}&a.'
+  CHALLENGE_RECEIVED: '&e{player} &fhas challenged you to a duel.'
+  CHALLENGE_INSTRUCTION: '&7use &f/duel accept {player} &7or &f/duel deny {player}&7.'
+  NO_PENDING_REQUEST: '&cyou have no pending duel request.'
+  REQUEST_EXPIRED: '&cthat duel request has expired.'
+  REQUEST_PENDING_FROM: '&cyour pending duel request is from &f{player}&c.'
+  CHALLENGER_OFFLINE: '&cthat challenger is no longer online.'
+  REQUEST_DENIED_SENDER: '&edenied duel request from &f{player}&e.'
+  REQUEST_DENIED_TARGET: '&c{player} denied your duel request.'
+  CANNOT_DUEL_SELF: '&cyou cannot duel yourself.'
+  TARGET_NOT_ACCEPTING: '&cthat player is not accepting duel requests.'
+  NO_ARENA_AVAILABLE: '&cno duel arena is available right now.'
+  NO_MAP_AVAILABLE: '&cthat duel map is not available.'
+  ARENA_NOT_AVAILABLE: '&cthat arena is not available.'
+  NO_READY_ARENAS: '&cthere are no duel arenas ready yet.'
+  REQUEST_COULD_NOT_START: '&cyour duel request could not start because no arena is available.'
+  CLAIM_NO_LONGER_EXISTS: '&cthat duel claim no longer exists.'
+  CLAIM_MAKE_ROOM: '&cmake room in your inventory before claiming that loot.'
+  CLAIM_PARTIAL: '&eclaimed some duel loot from &f{player}&e. &7some items are still waiting in claims.'
+  CLAIM_SUCCESS: '&aclaimed duel loot from &f{player}&a.'
+  CLAIM_DELETE_FAILED: '&ccould not delete that duel claim right now.'
+  CLAIM_DELETED: '&cdeleted duel loot claim from &f{player}&c.'
+  QUEUE_ARENAS_NOT_READY: '&cqueue arenas exist but are not ready yet. &7use &f/arena setpos1 <id> &7and &f/arena setpos2 <id> &7for: &f{arenas}&7.'
+  QUEUE_NO_READY_ARENAS: '&cno ready queue arenas are configured yet. &7enable queue with &f/arena queue <id> true&7, then set &fpos1 &7and &fpos2&7.'
+```
+
+### 2. Key Options & Technical Breakdown
+
+| Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
+| :--- | :--- | :--- | :--- | :--- |
+| `MESSAGES.PREFIX` | `str` | Any string | `''` | Optional prefix prepended to all duel chat messages. |
+| `MESSAGES.*` | `str` | Any string with color codes and placeholders | Various | Chat feedback strings for queues, requests, matches, claims, and arena validation. |
+
 

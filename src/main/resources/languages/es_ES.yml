@@ -238,6 +238,7 @@ MENUS:
       MONEY_CLAIM_NAME: "{money_color}{money_name} Reclamación"
       MONEY_CLAIM_LORE:
       - "&7Cantidad: {amount}"
+      - "&7Comprador: &f{buyer}"
       - "&7Listado de fuentes: &f#{id}"
       - ''
       - "&eHaga clic para reclamar"
@@ -260,7 +261,13 @@ MENUS:
         TITLE: "&#6BF18DSearch"
         LORE:
         - "&fSearch for team members"
-        - "&cIn development."
+      SEARCH_SIGN:
+        lines:
+        - ''
+        - "↑↑↑↑↑↑↑↑↑↑↑↑↑"
+        - "Buscar"
+        - ''
+        input-line: 0
       SORT-BUTTON:
         TITLE: "&aSort"
       REFRESH-BUTTON:
@@ -515,6 +522,14 @@ MENUS:
         - '&7{value}'
   SETTINGS-MENU:
     TITLE: '&8Settings'
+    FEEDBACK:
+      TOGGLE-MESSAGE: '&7{setting} ahora está {state}&7.'
+      CHOICE-MESSAGE: '&7{setting} ahora está configurado en {choice}&7.'
+      STATE-ENABLED: '&aActivado'
+      STATE-DISABLED: '&cDesactivado'
+      CHOICE-OFF-TEXT: '&cDesactivado'
+      CHOICE-ANYONE-TEXT: '&aCualquiera'
+      CHOICE-FRIENDS-FOLLOWED-TEXT: '&dAmigos/Seguidos'
     BUTTONS:
       PUBLIC_CHAT:
         DISPLAY-NAME: '&#6BF18DPublic chat'
@@ -1503,7 +1518,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&aVendido a &f{buyer}&a."
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:
@@ -2178,6 +2193,7 @@ MESSAGES:
     NO-TEAM-HOME: "&7Your team does not have a home."
     TEAM-HOME-DELETED: "&7Team home deleted."
     TEAM-HOME-SET: "&7Team home set"
+    EXCLUDED-WORLD: "&cYou cannot set a team home in this world."
     TEAM-NOT-EXIST: "&cUser/team does not exist."
     INVITED-TO-JOIN: "&7You have been invited to join the &a{team}&7 team!"
     CLICK-TO-JOIN: "&b[Click to join]"
@@ -2279,6 +2295,8 @@ MESSAGES:
     ALL_TARGET: "&dYou were teleported to &7%sender%"
     POSITION: "&7Teleported to: &d%x%,%y%,%z% &7(%world%)"
     TOP: "&dTeleported &7to the highest position"
+    TO_OFFLINE_PLAYER: "&dTeleported &7to last known location of %player%"
+    OFFLINE_NO_LOCATION: "&cNo saved location found for %player%."
   SHARD-BOOSTER:
     ACTIVATED: "&aYou have activated your &5shard booster &afor 24h."
     ALREADY-ACTIVATED: "&cYou already have an active shard booster."
@@ -2301,6 +2319,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request."
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself!"
     NOT-ACCEPTING-REQUESTS: "&cThis player is not accepting requests."
+    EXPIRED: "&cLa solicitud de teletransporte de &a{player} &cha caducado."
+    YOUR-REQUEST-EXPIRED: "&cTu solicitud de teletransporte a &a{player} &cha caducado."
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7. type &ccancel &7to
       abort."
@@ -2312,6 +2332,7 @@ MESSAGES:
     INVALID-NAME: "&cInvalid home name. do not use spaces."
     ALREADY-EXISTS: "&cA home with that name already exists."
     CANCELLED: "&7Home input cancelled."
+    EXCLUDED-WORLD: "&cYou cannot set a home in this world."
   WARP:
     PLAYER-ONLY: "&cOnly players can use this warp command."
     USAGE: "&cUsage: /warp [nombre]"
@@ -2719,6 +2740,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&a¡Haz clic para reclamar esta recompensa!'
+    REWARD-NO-KEY: '&c¡No tienes una llave para {crate}!'
+    CLAIM-SUCCESS: '&7reclamaste &f{reward}&7 de &b{crate}&7.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7reclamó &f{reward} &7de &b{crate}&7.'
+    NO-KEYS: '&cya no tienes una llave para {crate}.'
+    INVENTORY-FULL: '&ctu inventario está lleno. libera espacio antes de reclamar esta recompensa.'
+    NO-PLAYER-DATA: '&cno se pudieron cargar tus datos de jugador. inténtalo de nuevo en un momento.'
+    REWARD-GRANT-FAILED: '&cno se pudo otorgar esa recompensa. se ha devuelto tu llave.'
+    INVALID-REWARD: '&cesa recompensa ya no es válida.'
+    REWARD-SELECT-FAILED: '&cNo se pudo seleccionar esa recompensa.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"

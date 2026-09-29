@@ -284,6 +284,73 @@ public class DuelManager {
         return Math.max(1, Math.min(45, config().getInt("GUI.CLAIMS.ITEMS_PER_PAGE", 45)));
     }
 
+    public String getQueueMapSelectTitle() {
+        return config().getString("GUI.QUEUE_MAP_SELECT.TITLE", "&8Select duel map");
+    }
+
+    public String getClaimPreviewTitle() {
+        return config().getString("GUI.CLAIM_PREVIEW.TITLE", "&8duel loot preview");
+    }
+
+    public int getClaimPreviewSize() {
+        return normalizeSize(config().getInt("GUI.CLAIM_PREVIEW.SIZE", 54));
+    }
+
+    public String getGuiText(String path, String def, Object... replacements) {
+        String val = config().getString(path, def);
+        if (val == null) {
+            val = def;
+        }
+        for (int i = 0; i < replacements.length - 1; i += 2) {
+            val = val.replace(String.valueOf(replacements[i]), String.valueOf(replacements[i + 1]));
+        }
+        return val;
+    }
+
+    public List<String> getGuiTextList(String path, List<String> def, Object... replacements) {
+        List<String> list = config().getStringList(path);
+        if (list == null || list.isEmpty()) {
+            list = def;
+        }
+        if (list == null || list.isEmpty() || replacements.length == 0) {
+            return list == null ? List.of() : new ArrayList<>(list);
+        }
+        List<String> result = new ArrayList<>(list.size());
+        for (String line : list) {
+            for (int i = 0; i < replacements.length - 1; i += 2) {
+                line = line.replace(String.valueOf(replacements[i]), String.valueOf(replacements[i + 1]));
+            }
+            result.add(line);
+        }
+        return result;
+    }
+
+    public String getMessage(String key, String def, Object... replacements) {
+        String prefix = config().getString("MESSAGES.PREFIX", "");
+        String val = config().getString("MESSAGES." + key, def);
+        if (val == null) {
+            val = def;
+        }
+        if (val.isEmpty()) {
+            return "";
+        }
+        for (int i = 0; i < replacements.length - 1; i += 2) {
+            val = val.replace(String.valueOf(replacements[i]), String.valueOf(replacements[i + 1]));
+        }
+        return prefix.isEmpty() ? val : prefix + val;
+    }
+
+    public void sendMessage(CommandSender sender, String key, String def, Object... replacements) {
+        String msg = getMessage(key, def, replacements);
+        if (!msg.isEmpty()) {
+            send(sender, msg);
+        }
+    }
+
+    public FileConfiguration getConfig() {
+        return config();
+    }
+
     public int getCountdownSeconds() {
         int configured = Math.max(0, config().getInt("SETTINGS.COUNTDOWN_SECONDS", 5));
         ConfigurationSection section = config().getConfigurationSection("START-COUNTDOWN");
@@ -498,13 +565,13 @@ public class DuelManager {
         try {
             DuelClaim claim = getClaim(player.getUniqueId(), matchId);
             if (claim == null || claim.items() == null || claim.items().isEmpty()) {
-                send(player, "&cthat duel claim no longer exists.");
+                sendMessage(player, "CLAIM_NO_LONGER_EXISTS", "&cthat duel claim no longer exists.");
                 return false;
             }
 
             List<ClaimItemRow> claimRows = loadClaimItemRows(player.getUniqueId(), matchId);
             if (claimRows.isEmpty()) {
-                send(player, "&cthat duel claim no longer exists.");
+                sendMessage(player, "CLAIM_NO_LONGER_EXISTS", "&cthat duel claim no longer exists.");
                 return false;
             }
 
@@ -538,9 +605,9 @@ public class DuelManager {
 
             if (claimedRowIds.isEmpty()) {
                 if (remainingCount > 0) {
-                    send(player, "&cmake room in your inventory before claiming that loot.");
+                    sendMessage(player, "CLAIM_MAKE_ROOM", "&cmake room in your inventory before claiming that loot.");
                 } else {
-                    send(player, "&cthat duel claim no longer exists.");
+                    sendMessage(player, "CLAIM_NO_LONGER_EXISTS", "&cthat duel claim no longer exists.");
                 }
                 return false;
             }
@@ -550,10 +617,10 @@ public class DuelManager {
                     ? "unknown"
                     : claim.defeatedName();
             if (remainingCount > 0) {
-                send(player, "&eclaimed some duel loot from &f" + defeatedName + "&e. "
-                        + "&7some items are still waiting in claims.");
+                sendMessage(player, "CLAIM_PARTIAL", "&eclaimed some duel loot from &f{player}&e. "
+                        + "&7some items are still waiting in claims.", "{player}", defeatedName);
             } else {
-                send(player, "&aclaimed duel loot from &f" + defeatedName + "&a.");
+                sendMessage(player, "CLAIM_SUCCESS", "&aclaimed duel loot from &f{player}&a.", "{player}", defeatedName);
             }
             return true;
         } finally {
@@ -568,7 +635,7 @@ public class DuelManager {
 
         DuelClaim claim = getClaim(player.getUniqueId(), matchId);
         if (claim == null) {
-            send(player, "&cthat duel claim no longer exists.");
+            sendMessage(player, "CLAIM_NO_LONGER_EXISTS", "&cthat duel claim no longer exists.");
             return false;
         }
 
@@ -580,19 +647,19 @@ public class DuelManager {
             deletedRows = deletePackage.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to delete duel claim package " + matchId, e);
-            send(player, "&ccould not delete that duel claim right now.");
+            sendMessage(player, "CLAIM_DELETE_FAILED", "&ccould not delete that duel claim right now.");
             return false;
         }
 
         if (deletedRows <= 0) {
-            send(player, "&cthat duel claim no longer exists.");
+            sendMessage(player, "CLAIM_NO_LONGER_EXISTS", "&cthat duel claim no longer exists.");
             return false;
         }
 
         String defeatedName = claim.defeatedName() == null || claim.defeatedName().isBlank()
                 ? "unknown"
                 : claim.defeatedName();
-        send(player, "&cdeleted duel loot claim from &f" + defeatedName + "&c.");
+        sendMessage(player, "CLAIM_DELETED", "&cdeleted duel loot claim from &f{player}&c.", "{player}", defeatedName);
         return true;
     }
 
@@ -874,21 +941,21 @@ public class DuelManager {
 
     public boolean sendChallenge(Player challenger, Player target, DuelMapSelection mapSelection, DuelPrivacyMode privacyMode) {
         if (!isEnabled()) {
-            send(challenger, "&cduels are currently disabled.");
+            sendMessage(challenger, "DISABLED", "&cduels are currently disabled.");
             return false;
         }
         if (challenger == null || target == null) {
             return false;
         }
         if (challenger.getUniqueId().equals(target.getUniqueId())) {
-            send(challenger, "&cyou cannot duel yourself.");
+            sendMessage(challenger, "CANNOT_DUEL_SELF", "&cyou cannot duel yourself.");
             return false;
         }
         if (!canEnterDuel(challenger, true) || !canEnterDuel(target, false)) {
             return false;
         }
         if (!isAcceptingDuelRequests(target)) {
-            send(challenger, "&cthat player is not accepting duel requests.");
+            sendMessage(challenger, "TARGET_NOT_ACCEPTING", "&cthat player is not accepting duel requests.");
             return false;
         }
 
@@ -899,7 +966,7 @@ public class DuelManager {
 
         DuelMapSelection resolvedSelection = mapSelection == null ? DuelMapSelection.randomStatic() : mapSelection;
         if (!isSelectionAvailable(resolvedSelection, false)) {
-            send(challenger, "&cthat duel map is not available.");
+            sendMessage(challenger, "NO_MAP_AVAILABLE", "&cthat duel map is not available.");
             return false;
         }
 
@@ -908,11 +975,11 @@ public class DuelManager {
         if (preferredArenaId != null) {
             DuelArena arena = getArena(preferredArenaId);
             if (arena == null || !arena.isEnabled() || !arena.isReady()) {
-                send(challenger, "&cthat arena is not available.");
+                sendMessage(challenger, "ARENA_NOT_AVAILABLE", "&cthat arena is not available.");
                 return false;
             }
         } else if (resolvedSelection.type() == DuelMapSelection.Type.RANDOM_STATIC && getReadyEnabledArenas().isEmpty()) {
-            send(challenger, "&cthere are no duel arenas ready yet.");
+            sendMessage(challenger, "NO_READY_ARENAS", "&cthere are no duel arenas ready yet.");
             return false;
         }
 
@@ -935,9 +1002,9 @@ public class DuelManager {
         );
         requestsByTarget.put(target.getUniqueId(), request);
 
-        send(challenger, "&asent a duel request to &f" + publicName(target) + "&a.");
-        send(target, "&e" + publicName(challenger) + " &fhas challenged you to a duel.");
-        send(target, "&7use &f/duel accept " + publicName(challenger) + " &7or &f/duel deny " + publicName(challenger) + "&7.");
+        sendMessage(challenger, "REQUEST_SENT", "&asent a duel request to &f{player}&a.", "{player}", publicName(target));
+        sendMessage(target, "CHALLENGE_RECEIVED", "&e{player} &fhas challenged you to a duel.", "{player}", publicName(challenger));
+        sendMessage(target, "CHALLENGE_INSTRUCTION", "&7use &f/duel accept {player} &7or &f/duel deny {player}&7.", "{player}", publicName(challenger));
         play(challenger, "DUELS.REQUEST-SENT");
         play(target, "DUELS.REQUEST-RECEIVED");
         return true;
@@ -946,23 +1013,23 @@ public class DuelManager {
     public boolean acceptChallenge(Player target, String challengerName) {
         DuelRequest request = requestsByTarget.get(target.getUniqueId());
         if (request == null) {
-            send(target, "&cyou have no pending duel request.");
+            sendMessage(target, "NO_PENDING_REQUEST", "&cyou have no pending duel request.");
             return false;
         }
         if (request.isExpired(System.currentTimeMillis())) {
             requestsByTarget.remove(target.getUniqueId());
-            send(target, "&cthat duel request has expired.");
+            sendMessage(target, "REQUEST_EXPIRED", "&cthat duel request has expired.");
             return false;
         }
         if (!matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
-            send(target, "&cyour pending duel request is from &f" + request.challengerName() + "&c.");
+            sendMessage(target, "REQUEST_PENDING_FROM", "&cyour pending duel request is from &f{player}&c.", "{player}", request.challengerName());
             return false;
         }
 
         Player challenger = Bukkit.getPlayer(request.challengerUuid());
         if (challenger == null || !challenger.isOnline()) {
             requestsByTarget.remove(target.getUniqueId());
-            send(target, "&cthat challenger is no longer online.");
+            sendMessage(target, "CHALLENGER_OFFLINE", "&cthat challenger is no longer online.");
             return false;
         }
 
@@ -977,8 +1044,8 @@ public class DuelManager {
 
         ResolvedArena resolvedArena = resolveArena(request.mapSelection(), false);
         if (resolvedArena == null) {
-            send(target, "&cno duel arena is available right now.");
-            send(challenger, "&cyour duel request could not start because no arena is available.");
+            sendMessage(target, "NO_ARENA_AVAILABLE", "&cno duel arena is available right now.");
+            sendMessage(challenger, "REQUEST_COULD_NOT_START", "&cyour duel request could not start because no arena is available.");
             return false;
         }
 
@@ -989,20 +1056,20 @@ public class DuelManager {
     public boolean denyChallenge(Player target, String challengerName) {
         DuelRequest request = requestsByTarget.get(target.getUniqueId());
         if (request == null) {
-            send(target, "&cyou have no pending duel request.");
+            sendMessage(target, "NO_PENDING_REQUEST", "&cyou have no pending duel request.");
             return false;
         }
         if (!matchesIdentity(target, request.challengerUuid(), request.challengerName(), challengerName)) {
-            send(target, "&cyour pending duel request is from &f" + request.challengerName() + "&c.");
+            sendMessage(target, "REQUEST_PENDING_FROM", "&cyour pending duel request is from &f{player}&c.", "{player}", request.challengerName());
             return false;
         }
 
         requestsByTarget.remove(target.getUniqueId());
         Player challenger = Bukkit.getPlayer(request.challengerUuid());
         if (challenger != null) {
-            send(challenger, "&c" + publicName(target) + " denied your duel request.");
+            sendMessage(challenger, "REQUEST_DENIED_TARGET", "&c{player} denied your duel request.", "{player}", publicName(target));
         }
-        send(target, "&edenied duel request from &f" + request.challengerName() + "&e.");
+        sendMessage(target, "REQUEST_DENIED_SENDER", "&edenied duel request from &f{player}&e.", "{player}", request.challengerName());
         return true;
     }
 
@@ -1012,7 +1079,7 @@ public class DuelManager {
 
     public boolean joinQueue(Player player, DuelMapSelection mapSelection) {
         if (!isEnabled()) {
-            send(player, "&cduels are currently disabled.");
+            sendMessage(player, "DISABLED", "&cduels are currently disabled.");
             return false;
         }
         DuelMapSelection resolvedSelection = mapSelection == null ? DuelMapSelection.randomStatic() : mapSelection;
@@ -1024,7 +1091,7 @@ public class DuelManager {
             return false;
         }
         if (queue.contains(player.getUniqueId())) {
-            send(player, "&eyou are already in the casual duel queue.");
+            sendMessage(player, "QUEUE_ALREADY_IN_CASUAL", "&eyou are already in the casual duel queue.");
             return false;
         }
 
@@ -1036,7 +1103,7 @@ public class DuelManager {
         queue.add(player.getUniqueId());
         queueSelections.put(player.getUniqueId(), resolvedSelection);
         publishCrossServerQueueJoin(player, resolvedSelection);
-        send(player, "&ajoined the casual duel queue.");
+        sendMessage(player, "QUEUE_JOINED", "&ajoined the casual duel queue.");
         play(player, "DUELS.QUEUE-JOIN");
         attemptQueueMatchmaking();
         return true;
@@ -1050,24 +1117,24 @@ public class DuelManager {
         UUID uuid = player.getUniqueId();
         if (preparingDuelPlayers.contains(uuid)) {
             preparingDuelPlayers.remove(uuid);
-            send(player, "&eyour preparing duel has been cancelled.");
+            sendMessage(player, "PREPARING_CANCELLED", "&eyour preparing duel has been cancelled.");
             return true;
         }
         if (queue.remove(uuid)) {
             queueSelections.remove(uuid);
             removeCrossServerQueueEntry(uuid);
-            send(player, "&eyou left the casual duel queue.");
+            sendMessage(player, "QUEUE_LEFT", "&eyou left the casual duel queue.");
             return true;
         }
 
         DuelRequest incoming = requestsByTarget.remove(uuid);
         if (incoming != null) {
-            send(player, "&eyour pending duel request was cleared.");
+            sendMessage(player, "PENDING_CLEARED", "&eyour pending duel request was cleared.");
             return true;
         }
 
         if (removeOutgoingRequest(uuid)) {
-            send(player, "&eyour outgoing duel request was cancelled.");
+            sendMessage(player, "OUTGOING_CANCELLED", "&eyour outgoing duel request was cancelled.");
             return true;
         }
 
@@ -1078,14 +1145,14 @@ public class DuelManager {
             return true;
         }
 
-        send(player, "&cyou are not in a duel or queue.");
+        sendMessage(player, "NOT_IN_DUEL_OR_QUEUE", "&cyou are not in a duel or queue.");
         return false;
     }
 
     public boolean requestDraw(Player player) {
         DuelMatch match = getActiveMatch(player.getUniqueId());
         if (match == null || match.getStatus() != DuelMatch.MatchStatus.ACTIVE) {
-            send(player, "&cyou can only request a draw during an active duel.");
+            sendMessage(player, "DRAW_ONLY_ACTIVE", "&cyou can only request a draw during an active duel.");
             return false;
         }
 
@@ -1093,20 +1160,20 @@ public class DuelManager {
         UUID opponentUuid = match.getOpponent(requester);
         Player opponent = Bukkit.getPlayer(opponentUuid);
         if (opponent == null || !opponent.isOnline()) {
-            send(player, "&cyour opponent is no longer online.");
+            sendMessage(player, "DRAW_OPPONENT_OFFLINE", "&cyour opponent is no longer online.");
             return false;
         }
 
         if (match.getDrawRequester() == null) {
             match.setDrawRequester(requester);
             match.setDrawRequestExpiresAt(System.currentTimeMillis() + (getDrawTimeoutSeconds() * 1000L));
-            send(player, "&edraw request sent to &f" + publicName(opponent) + "&e.");
-            send(opponent, "&e" + publicName(player) + " &fhas requested a draw. use &f/draw &fto accept.");
+            sendMessage(player, "DRAW_SENT", "&edraw request sent to &f{player}&e.", "{player}", publicName(opponent));
+            sendMessage(opponent, "DRAW_RECEIVED", "&e{player} &fhas requested a draw. use &f/draw &fto accept.", "{player}", publicName(player));
             return true;
         }
 
         if (requester.equals(match.getDrawRequester())) {
-            send(player, "&eyou already requested a draw.");
+            sendMessage(player, "DRAW_ALREADY_REQUESTED", "&eyou already requested a draw.");
             return false;
         }
 
@@ -1152,7 +1219,7 @@ public class DuelManager {
                 match.setDrawRequestExpiresAt(0L);
                 Player requesterPlayer = Bukkit.getPlayer(requester);
                 if (requesterPlayer != null) {
-                    send(requesterPlayer, "&cyour draw request expired.");
+                    sendMessage(requesterPlayer, "DRAW_EXPIRED", "&cyour draw request expired.");
                 }
             }
 
@@ -1291,9 +1358,9 @@ public class DuelManager {
         finishMatch(match, winnerUuid, victimUuid, "DEATH", false, loot, true);
 
         if (winner != null) {
-            send(winner, "&ayou defeated &f" + publicName(victim) + "&a.");
+            sendMessage(winner, "DEFEATED_PLAYER", "&ayou defeated &f{player}&a.", "{player}", publicName(victim));
         }
-        send(victim, "&cyou lost the duel against &f" + match.getOpponentName(victimUuid) + "&c.");
+        sendMessage(victim, "LOST_DUEL", "&cyou lost the duel against &f{player}&c.", "{player}", match.getOpponentName(victimUuid));
         return true;
     }
 
@@ -1315,8 +1382,8 @@ public class DuelManager {
         finishMatch(match, attacker.getUniqueId(), victim.getUniqueId(), "PVP_KILL", false, loot, true);
         PlayerRespawnListener.scheduleChainmailKit(plugin, victim, getReturnDelayTicks() + 2L);
 
-        send(attacker, "&ayou defeated &f" + publicName(victim) + "&a.");
-        send(victim, "&cyou lost the duel against &f" + publicName(attacker) + "&c.");
+        sendMessage(attacker, "DEFEATED_PLAYER", "&ayou defeated &f{player}&a.", "{player}", publicName(victim));
+        sendMessage(victim, "LOST_DUEL", "&cyou lost the duel against &f{player}&c.", "{player}", publicName(attacker));
         return true;
     }
 
@@ -1435,7 +1502,7 @@ public class DuelManager {
                         player.setNoDamageTicks(60);
                         player.setFallDistance(0F);
                         player.setFireTicks(0);
-                        send(player, "&eyou were moved out of duel arena &f" + arenaName + "&e after reconnecting.");
+                        sendMessage(player, "MOVED_OUT_OF_ARENA", "&eyou were moved out of duel arena &f{arena}&e after reconnecting.", "{arena}", arenaName);
                     }));
         });
     }
@@ -1500,8 +1567,8 @@ public class DuelManager {
         match.setEndsAt(now + (getMatchDurationSeconds() * 1000L));
         sendCountdownStart(first);
         sendCountdownStart(second);
-        send(first, "&aduel started against &f" + publicName(second) + "&a.");
-        send(second, "&aduel started against &f" + publicName(first) + "&a.");
+        sendMessage(first, "DUEL_STARTED", "&aduel started against &f{player}&a.", "{player}", publicName(second));
+        sendMessage(second, "DUEL_STARTED", "&aduel started against &f{player}&a.", "{player}", publicName(first));
         playCountdownStartSound(first);
         playCountdownStartSound(second);
     }
@@ -1960,7 +2027,7 @@ public class DuelManager {
 
         if (winner != null) {
             String name = defeatedName == null || defeatedName.isBlank() ? "your opponent" : defeatedName;
-            send(winner, "&eloot from &f" + name + " &ehas been sent to your duel claims.");
+            sendMessage(winner, "LOOT_SENT_TO_CLAIMS", "&eloot from &f{player} &ehas been sent to your duel claims.", "{player}", name);
         }
     }
 
@@ -2051,8 +2118,8 @@ public class DuelManager {
 
         preparingDuelPlayers.add(firstUuid);
         preparingDuelPlayers.add(secondUuid);
-        send(Bukkit.getPlayer(firstUuid), "&epreparing duel biome arena...");
-        send(Bukkit.getPlayer(secondUuid), "&epreparing duel biome arena...");
+        sendMessage(Bukkit.getPlayer(firstUuid), "PREPARING_BIOME", "&epreparing duel biome arena...");
+        sendMessage(Bukkit.getPlayer(secondUuid), "PREPARING_BIOME", "&epreparing duel biome arena...");
 
         scheduleGeneratedQueuePreparation(firstUuid, secondUuid, selection, 1L);
     }
@@ -2064,16 +2131,16 @@ public class DuelManager {
             if (!preparingDuelPlayers.contains(firstUuid) || !preparingDuelPlayers.contains(secondUuid)) {
                 preparingDuelPlayers.remove(firstUuid);
                 preparingDuelPlayers.remove(secondUuid);
-                send(first, "&cduel cancelled because one player left preparation.");
-                send(second, "&cduel cancelled because one player left preparation.");
+                sendMessage(first, "CANCELLED_PLAYER_LEFT", "&cduel cancelled because one player left preparation.");
+                sendMessage(second, "CANCELLED_PLAYER_LEFT", "&cduel cancelled because one player left preparation.");
                 return;
             }
 
             if (!canStartPreparedDuel(first) || !canStartPreparedDuel(second)) {
                 preparingDuelPlayers.remove(firstUuid);
                 preparingDuelPlayers.remove(secondUuid);
-                send(first, "&cduel cancelled because one player is no longer available.");
-                send(second, "&cduel cancelled because one player is no longer available.");
+                sendMessage(first, "CANCELLED_PLAYER_UNAVAILABLE", "&cduel cancelled because one player is no longer available.");
+                sendMessage(second, "CANCELLED_PLAYER_UNAVAILABLE", "&cduel cancelled because one player is no longer available.");
                 return;
             }
 
@@ -2086,8 +2153,8 @@ public class DuelManager {
 
                 preparingDuelPlayers.remove(firstUuid);
                 preparingDuelPlayers.remove(secondUuid);
-                send(first, "&cno duel biome arena is available right now.");
-                send(second, "&cno duel biome arena is available right now.");
+                sendMessage(first, "NO_BIOME_ARENA", "&cno duel biome arena is available right now.");
+                sendMessage(second, "NO_BIOME_ARENA", "&cno duel biome arena is available right now.");
                 return;
             }
 
@@ -2118,10 +2185,10 @@ public class DuelManager {
         boolean secondInventorySafe = validatePlayerInventoryForDuel(second);
         if (!firstInventorySafe || !secondInventorySafe) {
             if (firstInventorySafe) {
-                send(first, "&cthe duel could not start because your opponent has unsafe item data.");
+                sendMessage(first, "UNSAFE_ITEMS", "&cthe duel could not start because your opponent has unsafe item data.");
             }
             if (secondInventorySafe) {
-                send(second, "&cthe duel could not start because your opponent has unsafe item data.");
+                sendMessage(second, "UNSAFE_ITEMS", "&cthe duel could not start because your opponent has unsafe item data.");
             }
             if (resolvedArena.generatedWorldName() != null && !resolvedArena.generatedWorldName().isBlank()) {
                 worldManager.cleanupGeneratedWorld(resolvedArena.generatedWorldName());
@@ -2136,8 +2203,8 @@ public class DuelManager {
             if (resolvedArena.generatedWorldName() != null && !resolvedArena.generatedWorldName().isBlank()) {
                 worldManager.cleanupGeneratedWorld(resolvedArena.generatedWorldName());
             }
-            send(first, "&ccould not start the duel right now.");
-            send(second, "&ccould not start the duel right now.");
+            sendMessage(first, "COULD_NOT_START", "&ccould not start the duel right now.");
+            sendMessage(second, "COULD_NOT_START", "&ccould not start the duel right now.");
             return;
         }
 
@@ -2178,8 +2245,8 @@ public class DuelManager {
         preparePlayerForMatch(first, arena.getSpawn1(), arena);
         preparePlayerForMatch(second, arena.getSpawn2(), arena);
 
-        send(first, "&aduel found against &f" + publicName(second) + "&a on arena &f" + arena.getDisplayName() + "&a.");
-        send(second, "&aduel found against &f" + publicName(first) + "&a on arena &f" + arena.getDisplayName() + "&a.");
+        sendMessage(first, "DUEL_FOUND", "&aduel found against &f{player}&a on arena &f{arena}&a.", "{player}", publicName(second), "{arena}", arena.getDisplayName());
+        sendMessage(second, "DUEL_FOUND", "&aduel found against &f{player}&a on arena &f{arena}&a.", "{player}", publicName(first), "{arena}", arena.getDisplayName());
         play(first, "DUELS.MATCH-FOUND");
         play(second, "DUELS.MATCH-FOUND");
     }
@@ -2268,31 +2335,31 @@ public class DuelManager {
         UUID uuid = player.getUniqueId();
         if (isInDuel(uuid)) {
             if (selfFeedback) {
-                send(player, "&cyou are already in a duel.");
+                sendMessage(player, "ALREADY_IN_DUEL", "&cyou are already in a duel.");
             }
             return false;
         }
         if (preparingDuelPlayers.contains(uuid)) {
             if (selfFeedback) {
-                send(player, "&cyour duel arena is preparing.");
+                sendMessage(player, "ARENA_PREPARING", "&cyour duel arena is preparing.");
             }
             return false;
         }
         if (isInQueue(uuid)) {
             if (selfFeedback) {
-                send(player, "&cyou are already in the queue.");
+                sendMessage(player, "QUEUE_ALREADY_IN", "&cyou are already in the queue.");
             }
             return false;
         }
         if (requestsByTarget.containsKey(uuid)) {
             if (selfFeedback) {
-                send(player, "&cyou already have a pending duel request.");
+                sendMessage(player, "ALREADY_HAVE_REQUEST", "&cyou already have a pending duel request.");
             }
             return false;
         }
         if (plugin.getFfaManager() != null && plugin.getFfaManager().isBusy(uuid)) {
             if (selfFeedback) {
-                send(player, "&cyou cannot use duels while inside the ffa system.");
+                sendMessage(player, "CANNOT_USE_FFA", "&cyou cannot use duels while inside the ffa system.");
             }
             return false;
         }
@@ -2305,13 +2372,13 @@ public class DuelManager {
         }
         if (challenger == null || target == null || plugin.getTeamManager() == null) {
             if (selfFeedback && challenger != null) {
-                send(challenger, "&cfriends-only duels require both players to be in the same team.");
+                sendMessage(challenger, "FRIENDS_SAME_TEAM", "&cfriends-only duels require both players to be in the same team.");
             }
             return false;
         }
         boolean teammates = plugin.getTeamManager().areTeammates(challenger.getUniqueId(), target.getUniqueId());
         if (!teammates && selfFeedback) {
-            send(challenger, "&cfriends-only duels can only target members of your team.");
+            sendMessage(challenger, "FRIENDS_ONLY_TEAM", "&cfriends-only duels can only target members of your team.");
         }
         return teammates;
     }
@@ -2583,7 +2650,7 @@ public class DuelManager {
         if (entry.serverId().equals(getLocalServerId())) {
             Player player = Bukkit.getPlayer(entry.uuid());
             if (player != null) {
-                send(player, "&across-server duel found. preparing match...");
+                sendMessage(player, "CROSS_SERVER_PREPARING", "&across-server duel found. preparing match...");
             }
             return;
         }
@@ -2639,7 +2706,7 @@ public class DuelManager {
 
         removeLocalQueueEntry(playerUuid);
         removeCrossServerQueueEntry(playerUuid);
-        send(player, "&across-server duel found. transferring to match server...");
+        sendMessage(player, "CROSS_SERVER_TRANSFERRING", "&across-server duel found. transferring to match server...");
         transferPlayerToProxyServer(player, payload.getOrDefault("hostProxyServerName", getCrossProxyServerName()));
     }
 
@@ -2673,8 +2740,8 @@ public class DuelManager {
                     continue;
                 }
                 completed.add(match.matchId());
-                send(first, "&ccross-server duel could not start because no arena is available.");
-                send(second, "&ccross-server duel could not start because no arena is available.");
+                sendMessage(first, "CROSS_SERVER_NO_ARENA", "&ccross-server duel could not start because no arena is available.");
+                sendMessage(second, "CROSS_SERVER_NO_ARENA", "&ccross-server duel could not start because no arena is available.");
                 continue;
             }
 
@@ -2841,10 +2908,10 @@ public class DuelManager {
             Player challenger = Bukkit.getPlayer(request.challengerUuid());
             Player target = Bukkit.getPlayer(targetUuid);
             if (challenger != null) {
-                send(challenger, "&cyour duel request to &f" + request.targetName() + " &cexpired.");
+                sendMessage(challenger, "REQUEST_EXPIRED_TO", "&cyour duel request to &f{player} &cexpired.", "{player}", request.targetName());
             }
             if (target != null) {
-                send(target, "&cyour duel request from &f" + request.challengerName() + " &cexpired.");
+                sendMessage(target, "REQUEST_EXPIRED_FROM", "&cyour duel request from &f{player} &cexpired.", "{player}", request.challengerName());
             }
         }
     }
@@ -2891,7 +2958,7 @@ public class DuelManager {
         if (notifyPlayers && removedIncoming != null) {
             Player challenger = Bukkit.getPlayer(removedIncoming.challengerUuid());
             if (challenger != null) {
-                send(challenger, "&cyour duel request was cleared.");
+                sendMessage(challenger, "REQUEST_CLEARED", "&cyour duel request was cleared.");
             }
         }
 
@@ -2910,7 +2977,7 @@ public class DuelManager {
             if (notifyPlayers) {
                 Player target = Bukkit.getPlayer(outgoingTarget);
                 if (target != null && outgoing != null) {
-                    send(target, "&cthat duel request was cancelled.");
+                    sendMessage(target, "REQUEST_CANCELLED", "&cthat duel request was cancelled.");
                 }
             }
         }
@@ -4420,13 +4487,13 @@ public class DuelManager {
         }
 
         if (!queueEnabledNotReady.isEmpty()) {
-            return "&cqueue arenas exist but are not ready yet. "
+            return getMessage("QUEUE_ARENAS_NOT_READY", "&cqueue arenas exist but are not ready yet. "
                     + "&7use &f/arena setpos1 <id> &7and &f/arena setpos2 <id> "
-                    + "&7for: &f" + String.join("&7, &f", queueEnabledNotReady) + "&7.";
+                    + "&7for: &f{arenas}&7.", "{arenas}", String.join("&7, &f", queueEnabledNotReady));
         }
 
-        return "&cno ready queue arenas are configured yet. "
-                + "&7enable queue with &f/arena queue <id> true&7, then set &fpos1 &7and &fpos2&7.";
+        return getMessage("QUEUE_NO_READY_ARENAS", "&cno ready queue arenas are configured yet. "
+                + "&7enable queue with &f/arena queue <id> true&7, then set &fpos1 &7and &fpos2&7.");
     }
 
     private void synchronizeArenaSettingsConfig() {

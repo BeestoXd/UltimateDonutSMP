@@ -27,7 +27,7 @@ public class CreateCommand implements CommandExecutor {
         }
 
         if (!plugin.getDuelManager().isEnabled()) {
-            player.sendMessage(ColorUtils.toComponent("&cduels are currently disabled."));
+            plugin.getDuelManager().sendMessage(player, "DISABLED", "&cduels are currently disabled.");
             return true;
         }
 
@@ -54,7 +54,7 @@ public class CreateCommand implements CommandExecutor {
 
         Player target = Bukkit.getPlayerExact(args[targetIndex]);
         if (target == null) {
-            player.sendMessage(ColorUtils.toComponent("&cthat player is not online."));
+            plugin.getDuelManager().sendMessage(player, "PLAYER_NOT_ONLINE", "&cthat player is not online.");
             return true;
         }
 
@@ -69,7 +69,7 @@ public class CreateCommand implements CommandExecutor {
     }
 
     private void sendUsage(Player player) {
-        player.sendMessage(ColorUtils.toComponent("&cusage: /create invite <player> [map]"));
-        player.sendMessage(ColorUtils.toComponent("&cusage: /create friends <player> [map]"));
+        plugin.getDuelManager().sendMessage(player, "USAGE_INVITE", "&cusage: /create invite <player> [map]");
+        plugin.getDuelManager().sendMessage(player, "USAGE_FRIENDS", "&cusage: /create friends <player> [map]");
     }
 }

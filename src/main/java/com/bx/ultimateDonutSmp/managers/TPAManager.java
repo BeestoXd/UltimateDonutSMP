@@ -1,11 +1,13 @@
 package com.bx.ultimateDonutSmp.managers;
 
 import com.bx.ultimateDonutSmp.UltimateDonutSmp;
+import com.bx.ultimateDonutSmp.menus.TpaConfirmMenu;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.SoundUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayDeque;
@@ -25,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class TPAManager {
 
-    private static final long REQUEST_EXPIRY_TICKS = 15 * 60 * 20L;
+    private static final long REQUEST_EXPIRY_TICKS = 60 * 20L;
     private static final long REQUEST_EXPIRY_MILLIS = REQUEST_EXPIRY_TICKS * 50L;
 
     public record TpaRequest(UUID requester, UUID target, boolean tpaHere, boolean resumeWhenRequestsEnabled) {}
@@ -659,11 +661,30 @@ public class TPAManager {
         return data.isTpauto() && data.isTpaRequestsEnabled();
     }
 
+    public long getRequestExpiryTicks() {
+        return REQUEST_EXPIRY_TICKS;
+    }
+
+    public long getRequestExpiryMillis() {
+        return REQUEST_EXPIRY_MILLIS;
+    }
+
+    public boolean expirePendingRequest(UUID targetUuid) {
+        TpaRequest request = pendingRequests.get(targetUuid);
+        if (request != null && pendingRequests.remove(targetUuid, request)) {
+            notifyExpired(request);
+            return true;
+        }
+        return false;
+    }
+
     private void scheduleExpiry(TpaRequest request) {
         Player target = Bukkit.getPlayer(request.target());
-        Runnable expire = () -> pendingRequests.computeIfPresent(request.target(), (uuid, current) ->
-                current.equals(request) ? null : current
-        );
+        Runnable expire = () -> {
+            if (pendingRequests.remove(request.target(), request)) {
+                notifyExpired(request);
+            }
+        };
         if (target != null && target.isOnline()) {
             plugin.getSpigotScheduler().runEntityLater(target, expire, REQUEST_EXPIRY_TICKS);
         } else {
@@ -673,7 +694,11 @@ public class TPAManager {
 
     private void scheduleManualExpiry(QueuedTpaRequest request) {
         Player target = Bukkit.getPlayer(request.target());
-        Runnable expire = () -> removeQueuedRequest(request);
+        Runnable expire = () -> {
+            if (removeQueuedRequest(request)) {
+                notifyExpired(request.toRequest());
+            }
+        };
         if (target != null && target.isOnline()) {
             plugin.getSpigotScheduler().runEntityLater(target, expire, REQUEST_EXPIRY_TICKS);
         } else {
@@ -681,16 +706,17 @@ public class TPAManager {
         }
     }
 
-    private void removeQueuedRequest(QueuedTpaRequest request) {
+    private boolean removeQueuedRequest(QueuedTpaRequest request) {
         Deque<QueuedTpaRequest> queue = manualQueueMap(request.tpaHere()).get(request.target());
         if (queue == null) {
-            return;
+            return false;
         }
 
-        queue.remove(request);
+        boolean removed = queue.remove(request);
         if (queue.isEmpty()) {
             manualQueueMap(request.tpaHere()).remove(request.target());
         }
+        return removed;
     }
 
     private void cleanupExpiredManualQueue(UUID targetUuid, boolean tpaHere) {
@@ -699,10 +725,81 @@ public class TPAManager {
             return;
         }
 
-        queue.removeIf(this::isExpired);
+        List<QueuedTpaRequest> expired = new ArrayList<>();
+        for (QueuedTpaRequest req : queue) {
+            if (isExpired(req)) {
+                expired.add(req);
+            }
+        }
+        for (QueuedTpaRequest req : expired) {
+            if (queue.remove(req)) {
+                notifyExpired(req.toRequest());
+            }
+        }
         if (queue.isEmpty()) {
             manualQueueMap(tpaHere).remove(targetUuid);
         }
+    }
+
+    private void notifyExpired(TpaRequest request) {
+        if (Bukkit.getServer() == null) {
+            return;
+        }
+
+        Player target = Bukkit.getPlayer(request.target());
+        Player requester = Bukkit.getPlayer(request.requester());
+
+        String requesterName = requester != null ? publicName(requester) : resolveOfflineName(request.requester());
+        String targetName = target != null ? publicName(target) : resolveOfflineName(request.target());
+
+        if (target != null && target.isOnline()) {
+            plugin.getSpigotScheduler().runEntity(target, () -> {
+                if (!target.isOnline()) {
+                    return;
+                }
+                target.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
+                        "TPA.EXPIRED",
+                        "{player}", requesterName
+                )));
+                closeConfirmMenuIfOpen(target, request.requester());
+            });
+        }
+
+        if (requester != null && requester.isOnline()) {
+            plugin.getSpigotScheduler().runEntity(requester, () -> {
+                if (!requester.isOnline()) {
+                    return;
+                }
+                requester.sendMessage(ColorUtils.toComponent(plugin.getConfigManager().getMessage(
+                        "TPA.YOUR-REQUEST-EXPIRED",
+                        "{player}", targetName
+                )));
+            });
+        }
+    }
+
+    private void closeConfirmMenuIfOpen(Player target, UUID requesterUuid) {
+        if (target.getOpenInventory() != null
+                && target.getOpenInventory().getTopInventory() != null
+                && target.getOpenInventory().getTopInventory().getHolder() instanceof TpaConfirmMenu menu) {
+            Player requester = Bukkit.getPlayer(requesterUuid);
+            String plainName = requester != null ? plainPublicName(requester) : resolveOfflineName(requesterUuid);
+            if (menu.getRequesterName() != null && menu.getRequesterName().equalsIgnoreCase(plainName)) {
+                target.closeInventory();
+            }
+        }
+    }
+
+    private String resolveOfflineName(UUID uuid) {
+        if (uuid == null || Bukkit.getServer() == null) {
+            return "Unknown";
+        }
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+        if (offlinePlayer == null) {
+            return "Unknown";
+        }
+        String name = offlinePlayer.getName();
+        return name != null && !name.isBlank() ? name : "Unknown";
     }
 
     private boolean isExpired(QueuedTpaRequest request) {

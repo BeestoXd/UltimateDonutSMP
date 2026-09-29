@@ -12,7 +12,7 @@ UltimateDonutSMP replaces dozens of separate plugins by integrating economy, mar
 | :--- | :--- |
 | **Plugin Version** | `1.4.1` |
 | **Supported Server Engines** | Paper, Purpur, Pufferfish, Spigot, Folia |
-| **Supported Minecraft Versions** | Paper/Purpur/Pufferfish/Spigot: `1.21.10` – `26.2`<br>Folia: `1.21.11` – `26.2` |
+| **Supported Minecraft Versions** | Paper/Purpur/Pufferfish/Spigot: `1.21.10` – `26.3`<br>Folia: `1.21.11` – `26.2` |
 | **Java Requirement** | Java 21+ (Java 25 for MC 26.1+) |
 | **Storage Engines** | SQLite (Default), MySQL, MongoDB |
 | **Network Sync Layer** | Redis (Cross-server staff chat, alerts, maintenance) |
@@ -46,7 +46,7 @@ Explore the complete feature guide and documentation pages:
   Virtual & physical crates (`/crate`), key distribution (`/keyall`), Donut-style stacked spawners (`/spawner`), Amethyst Tools, and Enchantment GUI.
 
 - **[Staff & Security Utilities](Staff-and-Security)**  
-  Staff Mode (`/staffmode`), Vanish (`/vanish`), Freeze, Inventory Inspect (`/invsee`), Spawn-Stash Bait, Fake Player Bait, Anti-ESP alerts, and guarded Server Wipes (`/serverwipe`).
+  Staff Mode (`/staffmode`), Vanish (`/vanish`), Freeze, Inventory Inspect (`/invsee`), Spawn-Stash Bait, Fake Player Bait, and guarded Server Wipes (`/serverwipe`).
 
 - **[Placeholders & Integrations](Placeholders-and-Integrations)**  
   Full catalog of `%economy_*%` PlaceholderAPI placeholders, LuckPerms integration, Apollo (Lunar Client) support, and Bedrock/Floodgate compatibility.

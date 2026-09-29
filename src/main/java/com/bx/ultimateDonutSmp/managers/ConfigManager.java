@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -736,7 +737,7 @@ public class ConfigManager {
         return configuration;
     }
 
-    private boolean isUserManagedBundledPath(String resourceName, String path) {
+    static boolean isUserManagedBundledPath(String resourceName, String path) {
         // Crate definitions are live server content. The bundled CRATES tree is only
         // an initial example and must not be merged back after admins edit/delete it.
         if ("crates.yml".equals(resourceName)
@@ -823,16 +824,18 @@ public class ConfigManager {
             return true;
         }
 
-        // Ranks menu buttons, rules pages and servers menu entries are each keyed by something
-        // the server owns rather than the plugin: a rank it sells, a rules page it wrote, a
-        // network id whose network.yml counterpart is already excluded below. A renamed or
-        // deleted entry must not come back on its old slot and collide with whatever replaced
+        // Ranks menu buttons, rules pages, servers menu entries, and spawn/afk teleport areas
+        // are each keyed by something the server owns rather than the plugin: a rank it sells,
+        // a rules page it wrote, a network id, or an area configured in-game. A renamed, modified
+        // or deleted entry must not come back on its old slot and collide with whatever replaced
         // it. The sections themselves stay mergeable so configs that predate any of these menus
         // still receive them once.
         if ("menus.yml".equals(resourceName)
                 && (path.startsWith("RANKS-MENU.BUTTONS.")
                 || path.startsWith("RULES-MENU.BUTTONS.")
-                || path.startsWith("SERVERS-MENU.SERVERS."))) {
+                || path.startsWith("SERVERS-MENU.SERVERS.")
+                || path.startsWith("SPAWN-MENU.AREAS.")
+                || path.startsWith("AFK-MENU.AREAS."))) {
             return true;
         }
 
@@ -941,13 +944,14 @@ public class ConfigManager {
             }
             invalidConfigurations.remove(name);
             if ("menus.yml".equals(name) && (configuration.contains("SETTINGS-MENU-LEGACY") || hasLegacyButtons(configuration))) {
-                plugin.getLogger().warning("Detected legacy menus.yml format. Resetting to default for new slot layout...");
-                backupInvalidFile(file);
-                file.delete();
-                copyBundledResource(name, file, true);
-                try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
-                    configuration.load(reader);
+                if (plugin != null) {
+                    plugin.getLogger().warning("Detected legacy menus.yml format. Regenerating settings menu layout...");
                 }
+                backupInvalidFile(file);
+                regenerateSettingsMenu(file, configuration);
+            }
+            if ("menus.yml".equals(name)) {
+                restoreAccidentallyResetAreasIfPresent(file, configuration);
             }
             return configuration;
         } catch (IOException | InvalidConfigurationException e) {
@@ -984,10 +988,9 @@ public class ConfigManager {
         // layout the plugin has shipped has to be recognised here and regenerated. Each fingerprint
         // is a set of slots that only that layout ever used together.
 
-        // The scattered layout: join/leave, pay alerts and money nametags parked at 31 to 33.
+        // The scattered layout: join/leave and pay alerts parked at 31 and 32.
         if (buttons.getInt("JOIN_LEAVE_MESSAGES.SLOT", -1) == 31
-                && buttons.getInt("PAY_ALERTS.SLOT", -1) == 32
-                && buttons.getInt("MONEY_NAMETAGS.SLOT", -1) == 33) {
+                && buttons.getInt("PAY_ALERTS.SLOT", -1) == 32) {
             return true;
         }
 
@@ -997,12 +1000,12 @@ public class ConfigManager {
             return true;
         }
 
-        // The layout before the combat timer took slot 22 off Lunar teammates.
-        return buttons.getInt("LUNAR_TEAMMATES.SLOT", -1) == 22;
+        // Any layout that still has Lunar teammates or the old TP_AUTO key.
+        return buttons.contains("LUNAR_TEAMMATES") || buttons.contains("TP_AUTO");
     }
 
     private void backupInvalidFile(File file) {
-        if (!file.exists()) {
+        if (!file.exists() || plugin == null) {
             return;
         }
         File backupDirectory = new File(
@@ -1010,6 +1013,139 @@ public class ConfigManager {
                 LocalDateTime.now().format(BACKUP_TIMESTAMP_FORMAT)
         );
         backupExistingFile(file, backupDirectory);
+    }
+
+    private boolean regenerateSettingsMenu(File file, YamlConfiguration configuration) {
+        try {
+            TextFileContent currentText = readTextFile(file);
+            Map<String, YamlPathLine> index = indexYamlPathLines(currentText.lines());
+            YamlPathLine settingsNode = index.get("SETTINGS-MENU");
+            List<String> bundledLines = readBundledResourceLines("menus.yml");
+            Map<String, YamlPathLine> bundledIndex = indexYamlPathLines(bundledLines);
+            YamlPathLine bundledSettingsNode = bundledIndex.get("SETTINGS-MENU");
+
+            if (settingsNode != null && bundledSettingsNode != null) {
+                int start = attachedCommentStart(currentText.lines(), settingsNode.lineIndex);
+                int end = findYamlNodeEnd(currentText.lines(), settingsNode);
+                List<String> newBlock = extractYamlNodeBlock(bundledLines, bundledSettingsNode, true);
+                for (int i = end - 1; i >= start; i--) {
+                    currentText.lines().remove(i);
+                }
+                insertYamlBlock(currentText.lines(), start, newBlock);
+
+                Map<String, YamlPathLine> updatedIndex = indexYamlPathLines(currentText.lines());
+                YamlPathLine legacyNode = updatedIndex.get("SETTINGS-MENU-LEGACY");
+                if (legacyNode != null) {
+                    int legStart = attachedCommentStart(currentText.lines(), legacyNode.lineIndex);
+                    int legEnd = findYamlNodeEnd(currentText.lines(), legacyNode);
+                    for (int i = legEnd - 1; i >= legStart; i--) {
+                        currentText.lines().remove(i);
+                    }
+                }
+
+                validateYamlLines(currentText.lines());
+                writeTextFileAtomically(file, currentText);
+                try (Reader reader = new InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8)) {
+                    configuration.load(reader);
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to regenerate SETTINGS-MENU with line preservation, falling back to section copy: " + e.getMessage());
+            }
+        }
+
+        try {
+            YamlConfiguration bundled = loadBundledYaml("menus.yml");
+            configuration.set("SETTINGS-MENU", bundled.get("SETTINGS-MENU"));
+            configuration.set("SETTINGS-MENU-LEGACY", null);
+            configuration.save(file);
+            return true;
+        } catch (Exception e) {
+            if (plugin != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed to save updated menus.yml: " + e.getMessage());
+            }
+            return false;
+        }
+    }
+
+    private void restoreAccidentallyResetAreasIfPresent(File file, YamlConfiguration configuration) {
+        if (plugin == null || (!hasOnlyPlaceholderAreas(configuration, "SPAWN-MENU") && !hasOnlyPlaceholderAreas(configuration, "AFK-MENU"))) {
+            return;
+        }
+
+        File backupDir = new File(plugin.getDataFolder(), "config-backups");
+        if (!backupDir.isDirectory()) {
+            return;
+        }
+
+        File[] subdirs = backupDir.listFiles(File::isDirectory);
+        if (subdirs == null || subdirs.length == 0) {
+            return;
+        }
+
+        Arrays.sort(subdirs, Comparator.comparing(File::getName).reversed());
+
+        for (File dir : subdirs) {
+            File backupMenus = new File(dir, "menus.yml");
+            if (!backupMenus.isFile()) {
+                continue;
+            }
+
+            try {
+                YamlConfiguration backupConfig = new YamlConfiguration();
+                backupConfig.load(backupMenus);
+                boolean restoredAny = false;
+
+                if (hasOnlyPlaceholderAreas(configuration, "SPAWN-MENU") && hasCustomAreas(backupConfig, "SPAWN-MENU")) {
+                    configuration.set("SPAWN-MENU.AREAS", backupConfig.get("SPAWN-MENU.AREAS"));
+                    restoredAny = true;
+                    if (plugin != null) {
+                        plugin.getLogger().info("Restored configured SPAWN-MENU areas from backup: " + backupMenus.getPath());
+                    }
+                }
+
+                if (hasOnlyPlaceholderAreas(configuration, "AFK-MENU") && hasCustomAreas(backupConfig, "AFK-MENU")) {
+                    configuration.set("AFK-MENU.AREAS", backupConfig.get("AFK-MENU.AREAS"));
+                    restoredAny = true;
+                    if (plugin != null) {
+                        plugin.getLogger().info("Restored configured AFK-MENU areas from backup: " + backupMenus.getPath());
+                    }
+                }
+
+                if (restoredAny) {
+                    configuration.save(file);
+                    break;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    static boolean hasOnlyPlaceholderAreas(YamlConfiguration config, String menuPath) {
+        ConfigurationSection areas = config.getConfigurationSection(menuPath + ".AREAS");
+        if (areas == null || areas.getKeys(false).isEmpty()) {
+            return true;
+        }
+        for (String key : areas.getKeys(false)) {
+            ConfigurationSection area = areas.getConfigurationSection(key);
+            if (area == null) {
+                continue;
+            }
+            String loc = area.getString("LOCATION");
+            if (loc == null) {
+                loc = area.getString("location");
+            }
+            if (loc != null && !loc.trim().matches("\\d+") && !loc.trim().isBlank()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean hasCustomAreas(YamlConfiguration config, String menuPath) {
+        return !hasOnlyPlaceholderAreas(config, menuPath);
     }
 
     // ── Getters ────────────────────────────────────────────────────────────────

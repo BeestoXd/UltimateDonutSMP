@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.menus.HomeMenu;
 import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.utils.CommandLabelUtils;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,12 @@ public class HomeCommand implements CommandExecutor {
             if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(player.getUniqueId())
                     || plugin.getFfaManager().isInFfaLocation(player.getLocation()))) {
                 player.sendMessage(ColorUtils.toComponent("&cYou cannot set a home inside an FFA arena."));
+                return true;
+            }
+            if (plugin.getHomeManager() != null && plugin.getHomeManager().isWorldExcluded(player.getWorld())
+                    && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+                player.sendMessage(ColorUtils.toComponent(
+                        plugin.getConfigManager().getMessage("HOME.EXCLUDED-WORLD")));
                 return true;
             }
             String name = args.length > 0 ? args[0] : "home";

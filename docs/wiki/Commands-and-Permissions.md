@@ -38,7 +38,7 @@ This page contains the complete reference guide for all commands, aliases, synta
 | `/sellprogress` | `/sellprogress [category]` | None | Open sell multiplier progress menu | `ultimatedonutsmp.command.sellprogress` |
 | `/worth` | `/worth [hand]` | `/prices` | Check worth of held item or open price catalog | `ultimatedonutsmp.command.worth` |
 | `/meta` | `/meta` | `/farmingmeta` | Show the item that is currently the farming meta | `ultimatedonutsmp.command.meta` |
-| `/auctionhouse`| `/auctionhouse [sell\|my\|claims]`| `/ah` | Open Auction House marketplace | `ultimatedonutsmp.command.auctionhouse` |
+| `/auctionhouse`| `/auctionhouse [sell\|my\|claims\|history]`| `/ah` | Open Auction House marketplace | `ultimatedonutsmp.command.auctionhouse` |
 | `/orders` | `/orders [my\|collect]` | None | Open buy/sell Orders board | `ultimatedonutsmp.command.orders` |
 | `/enderchest` | `/enderchest` | `/ec` | Open custom Ender Chest | `ultimatedonutsmp.command.enderchest` |
 | `/crates` | `/crates` | None | Open crates overview menu | `ultimatedonutsmp.command.crates` |
@@ -59,6 +59,8 @@ This page contains the complete reference guide for all commands, aliases, synta
 
 | Command | Usage Syntax | Description | Permission Node |
 | :--- | :--- | :--- | :--- |
+| `/teleport` | `/teleport <player\|here <player>\|all\|top\|offline <player>\|x y z [world]>` (Aliases `/tp`, `/tphere`, `/tpall`) | Staff teleport suite, including teleporting to an offline player's last known location | `ultimatedonutsmp.staff.teleport` |
+| `/tpo` | `/tpo <player>` (Alias `/tpoffline`) | Teleport directly to an offline player's last known location | `ultimatedonutsmp.staff.teleport.offline` |
 | `/staffmode` | `/staffmode` (Alias `/staff`) | Toggle Staff Mode GUI & toolset | `ultimatedonutsmp.admin.staffmode` |
 | `/vanish` | `/vanish` | Toggle complete invisibility to players | `ultimatedonutsmp.admin.vanish` |
 | `/freeze` | `/freeze <player>` | Freeze or unfreeze a target player | `ultimatedonutsmp.admin.freeze` |
@@ -197,6 +199,17 @@ defaults map `ultimatedonutsmp.homes.vip`, `.vip+` and `.vip++` to 5, 10 and 15 
 
 Set `SETTINGS.HOME-PERMISSIONS.ENABLED: false` in `config.yml` to ignore every home permission and
 give everyone `HOME-DEFAULT`.
+
+---
+
+## Home & Team Blacklist Bypass Permissions
+
+These nodes allow players (such as staff or administrators) to set personal homes or team homes in worlds excluded by `SETTINGS.HOME-EXCLUDED-WORLDS` or `TEAM.EXCLUDED-WORLDS` in `config.yml`.
+
+| Permission Node | Default | Description |
+| :--- | :--- | :--- |
+| `ultimatedonutsmp.homes.bypass` | `op` | Bypass personal home world exclusions (`/sethome`, `/homes` menu, Bedrock form) and arena restrictions. |
+| `ultimatedonutsmp.teams.bypass` | `op` | Bypass team home world exclusions (`/team sethome`, `/team` menu, Bedrock form) and arena restrictions. |
 
 ---
 

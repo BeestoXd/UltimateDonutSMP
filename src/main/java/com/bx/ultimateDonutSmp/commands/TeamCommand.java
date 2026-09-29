@@ -7,6 +7,7 @@ import com.bx.ultimateDonutSmp.menus.TeamMenu;
 import com.bx.ultimateDonutSmp.models.PlayerData;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
+import com.bx.ultimateDonutSmp.utils.PermissionUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -268,6 +269,23 @@ public class TeamCommand implements CommandExecutor {
         }
         if (!plugin.getTeamManager().canEditHome(team, player.getUniqueId())) {
             send(player, plugin.getConfigManager().getMessage("TEAM.NO-EDIT-HOME-PERMISSION"));
+            return;
+        }
+        if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(player.getUniqueId())
+                || plugin.getDuelManager().isTransitioning(player.getUniqueId())
+                || plugin.getDuelManager().isLocationInDuelArena(player.getLocation()))) {
+            send(player, "&cYou cannot set a team home inside a duel arena or duel world.");
+            return;
+        }
+        if (plugin.getFfaManager() != null && (plugin.getFfaManager().isInSession(player.getUniqueId())
+                || plugin.getFfaManager().isInFfaLocation(player.getLocation()))) {
+            send(player, "&cYou cannot set a team home inside an FFA arena.");
+            return;
+        }
+        if (plugin.getTeamManager().isWorldExcluded(player.getWorld())
+                && !PermissionUtils.has(player, "ultimatedonutsmp.teams.bypass")
+                && !PermissionUtils.has(player, "ultimatedonutsmp.homes.bypass")) {
+            send(player, plugin.getConfigManager().getMessage("TEAM.EXCLUDED-WORLD"));
             return;
         }
 

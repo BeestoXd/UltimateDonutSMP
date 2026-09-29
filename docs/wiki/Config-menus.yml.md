@@ -116,7 +116,13 @@ TEAM-MENUS:
       SLOT: 45
       LORE:
       - '&fSearch for team members'
-      - '&cIn development.'
+    SEARCH_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - Search
+      - ''
+      input-line: 0
     SORT-BUTTON:
       TITLE: '&aSort'
       MATERIAL: HOPPER
@@ -220,7 +226,9 @@ TEAM-MENUS:
 | `TEAM-MENUS.TEAM.SEARCH-BUTTON.TITLE` | `str` | Any string text | `'&#6BF18DSearch'` | Configures the technical `TITLE` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.TITLE` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SEARCH-BUTTON.MATERIAL` | `str` | Any string text | `'OAK_SIGN'` | Configures the technical `MATERIAL` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.MATERIAL` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SEARCH-BUTTON.SLOT` | `int` | Any valid integer number | `'45'` | Configures the technical `SLOT` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.SLOT` in `menus.yml`. |
-| `TEAM-MENUS.TEAM.SEARCH-BUTTON.LORE` | `list` | List of configured items/strings | `['&fSearch for team members', '&cIn development.']` | Configures the technical `LORE` parameter for `TEAM-MENUS.TEAM.SEARCH-BUTTON.LORE` in `menus.yml`. |
+| `TEAM-MENUS.TEAM.SEARCH-BUTTON.LORE` | `list` | List of configured items/strings | `['&fSearch for team members']` | Extra lore on the search sign. The plugin appends the current filter and the left-click / right-click hints on top of this. |
+| `TEAM-MENUS.TEAM.SEARCH_SIGN.lines` | `list` | Up to four lines of text | `['', '↑↑↑↑↑↑↑↑↑↑↑↑↑', 'Search', '']` | The four lines the sign shows when someone left-clicks search. A shorter list is padded with blanks and anything past the fourth line is dropped. Colour codes are translated and then stripped, so `&c` and friends change nothing on these signs. Leave all four blank and the plugin falls back to `^^^^^^^^^^^^^^` on the second line and `Enter Value` on the third. |
+| `TEAM-MENUS.TEAM.SEARCH_SIGN.input-line` | `int` | `0` to `3` | `0` | Which line the typed name is read back from, counting from zero. Anything outside that range is clamped into it. At the default of `0` the player types on the top line and the arrows underneath point up at it. |
 | `TEAM-MENUS.TEAM.SORT-BUTTON.TITLE` | `str` | Any string text | `'&aSort'` | Configures the technical `TITLE` parameter for `TEAM-MENUS.TEAM.SORT-BUTTON.TITLE` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SORT-BUTTON.MATERIAL` | `str` | Any string text | `'HOPPER'` | Configures the technical `MATERIAL` parameter for `TEAM-MENUS.TEAM.SORT-BUTTON.MATERIAL` in `menus.yml`. |
 | `TEAM-MENUS.TEAM.SORT-BUTTON.SLOT` | `int` | Any valid integer number | `'46'` | Configures the technical `SLOT` parameter for `TEAM-MENUS.TEAM.SORT-BUTTON.SLOT` in `menus.yml`. |
@@ -277,7 +285,13 @@ TEAM-MENUS:
       SLOT: 45
       LORE:
       - '&fSearch for team members'
-      - '&cIn development.'
+    SEARCH_SIGN:
+      lines:
+      - ''
+      - ↑↑↑↑↑↑↑↑↑↑↑↑↑
+      - Search
+      - ''
+      input-line: 0
     SORT-BUTTON:
       TITLE: '&aSort'
       MATERIAL: HOPPER
@@ -933,6 +947,14 @@ STATS-MENU:
 SETTINGS-MENU:
   TITLE: '&8Settings'
   SIZE: 54
+  FEEDBACK:
+    TOGGLE-MESSAGE: '&7{setting} is now {state}&7.'
+    CHOICE-MESSAGE: '&7{setting} is now set to {choice}&7.'
+    STATE-ENABLED: '&aEnabled'
+    STATE-DISABLED: '&cDisabled'
+    CHOICE-OFF-TEXT: '&cOff'
+    CHOICE-ANYONE-TEXT: '&aAnyone'
+    CHOICE-FRIENDS-FOLLOWED-TEXT: '&dFriends/Followed'
   BUTTONS:
     # Buttons are grouped a row at a time: chat and messages on the first row,
     # alerts on the second, gameplay and display on the third, who may reach you on
@@ -1169,6 +1191,50 @@ Notes:
 - A `menus.yml` written before the current grouping is backed up under `config-backups/` and
   regenerated on the next start, because merging bundled defaults never rewrites a `SLOT` that
   is already in the file.
+
+### 5. Custom Feedback Messages & Fonts (`FEEDBACK`)
+
+When players toggle a setting or cycle choices in `/settings`, the plugin sends chat feedback. The feedback templates, state texts, choice labels, and font styling can be configured globally under `SETTINGS-MENU.FEEDBACK` or customized per button.
+
+#### Global Settings (`SETTINGS-MENU.FEEDBACK`)
+
+```yaml
+SETTINGS-MENU:
+  FEEDBACK:
+    TOGGLE-MESSAGE: '&7{setting} is now {state}&7.'
+    CHOICE-MESSAGE: '&7{setting} is now set to {choice}&7.'
+    STATE-ENABLED: '&aEnabled'
+    STATE-DISABLED: '&cDisabled'
+    CHOICE-OFF-TEXT: '&cOff'
+    CHOICE-ANYONE-TEXT: '&aAnyone'
+    CHOICE-FRIENDS-FOLLOWED-TEXT: '&dFriends/Followed'
+```
+
+#### Placeholders
+
+| Placeholder | Description | Example |
+| :--- | :--- | :--- |
+| `{setting}` | Setting name (from `FEEDBACK-NAME`, customized stripped `DISPLAY-NAME`, or default label) | `Notification Sounds` or `ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴ ꜱᴏᴜɴᴅꜱ` |
+| `{setting_display}` | Raw `DISPLAY-NAME` of the button preserving color codes | `&#6BF18DNotification Sounds` |
+| `{state}` | Current state or choice (`STATE-ENABLED`, `STATE-DISABLED`, or selected choice) | `&aEnabled` or `&aᴇɴᴀʙʟᴇᴅ` |
+| `{status}` | Alias for `{state}` | `&aEnabled` |
+| `{choice}` | Current choice text for three-choice settings | `&aAnyone` |
+
+#### Per-Button Overrides
+
+Individual buttons under `SETTINGS-MENU.BUTTONS` can define custom feedback names and messages:
+
+```yaml
+SETTINGS-MENU:
+  BUTTONS:
+    NOTIFICATION_SOUNDS:
+      FEEDBACK-NAME: 'ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴ ꜱᴏᴜɴᴅꜱ'
+      FEEDBACK-MESSAGE: '&7{setting} is now {state}&7.'
+```
+
+- `FEEDBACK-NAME`: Custom label used for `{setting}` in chat feedback (useful for small caps or special font styling).
+- `FEEDBACK-MESSAGE`: Overrides the global `TOGGLE-MESSAGE` or `CHOICE-MESSAGE` for this specific button. Setting it to `none` or `""` silences feedback for this button.
+- **Customized `DISPLAY-NAME`**: If a button's `DISPLAY-NAME` is customized (e.g. `&aɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴ ꜱᴏᴜɴᴅꜱ`), the stripped display name is automatically used for `{setting}` without needing `FEEDBACK-NAME`.
 
 ---
 

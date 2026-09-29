@@ -237,6 +237,7 @@ MENUS:
       MONEY_CLAIM_NAME: "Получение {money_color}{money_name}"
       MONEY_CLAIM_LORE:
       - "&7Amount: {amount}"
+      - "&7Покупатель: &f{buyer}"
       - "&7Исходный список: &f#{id}"
       - ''
       - "&eНажмите, чтобы подать заявку"
@@ -259,7 +260,13 @@ MENUS:
         TITLE: "&#6BF18DSearch"
         LORE:
         - "&fSearch for team members"
-        - "&cIn development."
+      SEARCH_SIGN:
+        lines:
+        - ''
+        - "↑↑↑↑↑↑↑↑↑↑↑↑↑"
+        - "Поиск"
+        - ''
+        input-line: 0
       SORT-BUTTON:
         TITLE: "&aSort"
       REFRESH-BUTTON:
@@ -514,6 +521,14 @@ MENUS:
         - '&7{value}'
   SETTINGS-MENU:
     TITLE: '&8Settings'
+    FEEDBACK:
+      TOGGLE-MESSAGE: '&7{setting} теперь {state}&7.'
+      CHOICE-MESSAGE: '&7{setting} теперь установлено на {choice}&7.'
+      STATE-ENABLED: '&aВключено'
+      STATE-DISABLED: '&cВыключено'
+      CHOICE-OFF-TEXT: '&cВыкл'
+      CHOICE-ANYONE-TEXT: '&aВсе'
+      CHOICE-FRIENDS-FOLLOWED-TEXT: '&dДрузья/Отслеживаемые'
     BUTTONS:
       PUBLIC_CHAT:
         DISPLAY-NAME: '&#6BF18DPublic chat'
@@ -1502,7 +1517,7 @@ CONFIG:
           - "&7Time remaining: &f{time}"
           - "&eClick to cancel this listing."
           SOLD_LORE:
-          - "&aSold to another player."
+          - "&aПродано &f{buyer}&a."
           CANCELLED_LORE:
           - "&cCancelled."
           EXPIRED_LORE:
@@ -2175,6 +2190,7 @@ MESSAGES:
     NO-TEAM-HOME: "&7Your team does not have a home."
     TEAM-HOME-DELETED: "&7Team home deleted."
     TEAM-HOME-SET: "&7Team home set"
+    EXCLUDED-WORLD: "&cYou cannot set a team home in this world."
     TEAM-NOT-EXIST: "&cUser/team does not exist."
     INVITED-TO-JOIN: "&7You have been invited to join the &a{team}&7 team!"
     CLICK-TO-JOIN: "&b[Click to join]"
@@ -2276,6 +2292,8 @@ MESSAGES:
     ALL_TARGET: "&dYou were teleported to &7%sender%"
     POSITION: "&7Teleported to: &d%x%,%y%,%z% &7(%world%)"
     TOP: "&dTeleported &7to the highest position"
+    TO_OFFLINE_PLAYER: "&dTeleported &7to last known location of %player%"
+    OFFLINE_NO_LOCATION: "&cNo saved location found for %player%."
   SHARD-BOOSTER:
     ACTIVATED: "&aYou have activated your &5shard booster &afor 24 дюйма."
     ALREADY-ACTIVATED: "&cYou already have an active shard booster."
@@ -2298,6 +2316,8 @@ MESSAGES:
     YOUR-REQUEST-HERE-ACCEPTED: "&a{player} Has accepted your tpahere request."
     CANNOT-INVITE-YOURSELF: "&cYou cannot invite yourself!"
     NOT-ACCEPTING-REQUESTS: "&cThis player is not accepting requests."
+    EXPIRED: "&cЗапрос на телепортацию от &a{player} &cистёк."
+    YOUR-REQUEST-EXPIRED: "&cВаш запрос на телепортацию к &a{player} &cистёк."
   HOME:
     NAME-PROMPT: "&7Type the home name in chat for &b{name}&7. type &ccancel &7to
       abort."
@@ -2309,6 +2329,7 @@ MESSAGES:
     INVALID-NAME: "&cInvalid home name. do not use spaces."
     ALREADY-EXISTS: "&cA home with that name already exists."
     CANCELLED: "&7Home input cancelled."
+    EXCLUDED-WORLD: "&cYou cannot set a home in this world."
   WARP:
     PLAYER-ONLY: "&cOnly players can use this warp command."
     USAGE: "&cUsage: /warp [имя]"
@@ -2717,6 +2738,17 @@ MESSAGES:
     HEADER: "&8[&6Alts&8] &e%player%"
     KNOWN_IPS: "&7Known ips: &f%ips%"
     ENTRY: "&8- &e%player% &7[%status%&7] &fShared: %ips%"
+  CRATES:
+    REWARD-CLAIM-HINT: '&aНажмите, чтобы забрать эту награду!'
+    REWARD-NO-KEY: '&cУ вас нет ключа от {crate}!'
+    CLAIM-SUCCESS: '&7вы забрали &f{reward}&7 из &b{crate}&7.'
+    CLAIM-BROADCAST: '&8[&bcrates&8] &f{player} &7забрал &f{reward} &7из &b{crate}&7.'
+    NO-KEYS: '&cу вас больше нет ключа от {crate}.'
+    INVENTORY-FULL: '&cваш инвентарь полон. освободите место перед получением этой награды.'
+    NO-PLAYER-DATA: '&cне удалось загрузить данные игрока. повторите попытку через мгновение.'
+    REWARD-GRANT-FAILED: '&cне удалось выдать награду. ваш ключ был возвращён.'
+    INVALID-REWARD: '&cэта награда больше недействительна.'
+    REWARD-SELECT-FAILED: '&cЭту награду нельзя выбрать.'
   FRIENDS:
     NO_PERMISSION: '&cYou do not have permission.'
     USAGE: "&cUsage: /friends [list|follow|remove|search|following|followers|friends]"

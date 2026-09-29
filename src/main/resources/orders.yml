@@ -125,6 +125,9 @@ GUI:
   EDIT_ORDER:
     TITLE: '&8Orders -> Edit Order'
     SIZE: 27
+    BUTTONS:
+      DROP:
+        SLOT: 24
   DELIVER_CONFIRM:
     TITLE: '&8Orders -> Deliver'
     SIZE: 27
@@ -132,6 +135,11 @@ GUI:
     TITLE: '&8Orders -> Collect'
     SIZE: 54
     ITEMS_PER_PAGE: 45
+    BUTTONS:
+      COLLECT_PAGE:
+        SLOT: 49
+      DROP_PAGE:
+        SLOT: 53
   DELIVERY_DEPOSIT:
     BUTTONS:
       CONFIRM:

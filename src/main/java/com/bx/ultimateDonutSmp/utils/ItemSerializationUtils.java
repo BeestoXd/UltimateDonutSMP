@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -92,7 +93,26 @@ public final class ItemSerializationUtils {
             if (unsafe != null) {
                 Method m = unsafe.getClass().getMethod("getDataVersion");
                 Object val = m.invoke(unsafe);
-                if (val instanceof Integer ver) {
+                if (val instanceof Integer ver && ver > 0) {
+                    return ver;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            Class<?> cmn = Class.forName("org.bukkit.craftbukkit.util.CraftMagicNumbers");
+            try {
+                Method m = cmn.getMethod("getDataVersion");
+                Object val = m.invoke(null);
+                if (val instanceof Integer ver && ver > 0) {
+                    return ver;
+                }
+            } catch (NoSuchMethodException ignored) {
+                Field f = cmn.getField("INSTANCE");
+                Object inst = f.get(null);
+                Method m = inst.getClass().getMethod("getDataVersion");
+                Object val = m.invoke(inst);
+                if (val instanceof Integer ver && ver > 0) {
                     return ver;
                 }
             }
@@ -143,19 +163,141 @@ public final class ItemSerializationUtils {
         return null;
     }
 
+    public static byte[] clampNbtDataVersion(byte[] bytes, int maxVersion) {
+        if (bytes == null || bytes.length < 18 || maxVersion < 0) {
+            return bytes;
+        }
+        boolean isGzip = (bytes[0] & 0xFF) == 0x1F && (bytes[1] & 0xFF) == 0x8B;
+        byte[] uncompressed;
+        if (isGzip) {
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                 java.util.zip.GZIPInputStream gzis = new java.util.zip.GZIPInputStream(bais);
+                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                gzis.transferTo(baos);
+                uncompressed = baos.toByteArray();
+            } catch (IOException e) {
+                return bytes;
+            }
+        } else {
+            uncompressed = bytes;
+        }
+
+        byte[] pattern = new byte[] {
+            0x03, 0x00, 0x0B,
+            'D', 'a', 't', 'a', 'V', 'e', 'r', 's', 'i', 'o', 'n'
+        };
+        int idx = indexOfPattern(uncompressed, pattern);
+        if (idx == -1 || idx + 18 > uncompressed.length) {
+            return bytes;
+        }
+
+        int valOffset = idx + 14;
+        int currentVersion = ((uncompressed[valOffset] & 0xFF) << 24)
+                | ((uncompressed[valOffset + 1] & 0xFF) << 16)
+                | ((uncompressed[valOffset + 2] & 0xFF) << 8)
+                | (uncompressed[valOffset + 3] & 0xFF);
+
+        if (currentVersion <= maxVersion) {
+            return bytes;
+        }
+
+        byte[] modified = isGzip ? uncompressed : uncompressed.clone();
+        modified[valOffset] = (byte) (maxVersion >>> 24);
+        modified[valOffset + 1] = (byte) (maxVersion >>> 16);
+        modified[valOffset + 2] = (byte) (maxVersion >>> 8);
+        modified[valOffset + 3] = (byte) maxVersion;
+
+        if (isGzip) {
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 java.util.zip.GZIPOutputStream gzos = new java.util.zip.GZIPOutputStream(baos)) {
+                gzos.write(modified);
+                gzos.finish();
+                return baos.toByteArray();
+            } catch (IOException e) {
+                return bytes;
+            }
+        }
+        return modified;
+    }
+
+    private static int indexOfPattern(byte[] array, byte[] target) {
+        if (target.length == 0 || array.length < target.length) {
+            return -1;
+        }
+        for (int i = 0; i <= array.length - target.length; i++) {
+            boolean match = true;
+            for (int j = 0; j < target.length; j++) {
+                if (array[i + j] != target[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private static ItemStack deserializeBytes(byte[] bytes) throws IOException {
         // 1. Try Paper ItemStack.deserializeBytes
         try {
             Method method = ItemStack.class.getMethod("deserializeBytes", byte[].class);
-            Object value = method.invoke(null, bytes);
-            if (value instanceof ItemStack item) {
-                return item;
+            try {
+                Object value = method.invoke(null, bytes);
+                if (value instanceof ItemStack item) {
+                    return item;
+                }
+            } catch (InvocationTargetException exception) {
+                Throwable cause = exception.getCause();
+                int currentDataVer = getDataVersion();
+                if (cause instanceof IllegalArgumentException) {
+                    int targetVer = currentDataVer > 0 ? currentDataVer : 0;
+                    byte[] clamped = clampNbtDataVersion(bytes, targetVer);
+                    if (clamped != bytes) {
+                        try {
+                            Object value = method.invoke(null, clamped);
+                            if (value instanceof ItemStack item) {
+                                return item;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+                ItemStack fallback = tryFallbacks(bytes);
+                if (fallback != null) {
+                    return fallback;
+                }
+                throw new IOException("Failed to deserialize item using byte serialization", exception);
+            } catch (IllegalAccessException exception) {
+                ItemStack fallback = tryFallbacks(bytes);
+                if (fallback != null) {
+                    return fallback;
+                }
+                throw new IOException("Failed to deserialize item using byte serialization", exception);
             }
         } catch (NoSuchMethodException ignored) {
-        } catch (IllegalAccessException | InvocationTargetException exception) {
-            throw new IOException("Failed to deserialize item using byte serialization", exception);
         }
 
+        ItemStack fallback = tryFallbacks(bytes);
+        if (fallback != null) {
+            return fallback;
+        }
+        int currentDataVer = getDataVersion();
+        if (currentDataVer > 0) {
+            byte[] clamped = clampNbtDataVersion(bytes, currentDataVer);
+            if (clamped != bytes) {
+                fallback = tryFallbacks(clamped);
+                if (fallback != null) {
+                    return fallback;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static ItemStack tryFallbacks(byte[] bytes) {
         // 2. Scan all UnsafeValues and ItemFactory methods taking byte[] / (byte[], int)
         ItemStack unsafeItem = tryUnsafeOrFactoryDeserialize(bytes);
         if (unsafeItem != null) {
@@ -175,12 +317,7 @@ public final class ItemSerializationUtils {
         }
 
         // 5. Try Yaml deserialization fallback
-        ItemStack yamlItem = deserializeYamlItem(bytes);
-        if (yamlItem != null) {
-            return yamlItem;
-        }
-
-        return null;
+        return deserializeYamlItem(bytes);
     }
 
     private static ItemStack tryUnsafeOrFactoryDeserialize(byte[] bytes) {
