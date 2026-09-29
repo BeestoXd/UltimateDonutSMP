@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -83,6 +84,66 @@ class WorthPacketDisplayTest {
                 WorthPacketDisplay.shouldSkipSlot(true, 1, -1, 54),
                 "-1 is the packet's marker for no particular slot"
         );
+    }
+
+    @Test
+    void aPacketMenuDrawnOverTheCraftingGridLeavesTheButtonsUnpriced() {
+        int topSize = WorthPacketDisplay.packetMenuTopSize(false, 5, 119, true, 0, 90, -1);
+
+        assertEquals(54, topSize, "90 slots is a 6 row menu plus the 36 slots of player storage");
+        assertTrue(WorthPacketDisplay.shouldSkipSlot(true, 119, 0, topSize));
+        assertTrue(WorthPacketDisplay.shouldSkipSlot(true, 119, 53, topSize));
+        assertFalse(
+                WorthPacketDisplay.shouldSkipSlot(true, 119, 54, topSize),
+                "the player's own rows under the menu still show what those items are worth"
+        );
+    }
+
+    @Test
+    void aHopperSizedPacketMenuIsNotConfusedWithTheCraftingGrid() {
+        assertEquals(
+                5,
+                WorthPacketDisplay.packetMenuTopSize(false, 5, 119, true, -1, 41, -1),
+                "both are 5 slots tall, but the player is still on their crafting grid so this window is a menu"
+        );
+    }
+
+    @Test
+    void aLaterSlotPacketUsesTheHeightLearnedFromTheFullWindow() {
+        assertEquals(54, WorthPacketDisplay.packetMenuTopSize(false, 5, 119, true, 0, -1, 54));
+    }
+
+    @Test
+    void aChestTheServerOpenedKeepsItsPrices() {
+        assertEquals(
+                -1,
+                WorthPacketDisplay.packetMenuTopSize(false, 27, 1, false, 1, 63, -1),
+                "the packet window is the container the player is actually looking at"
+        );
+    }
+
+    @Test
+    void aRealContainerIsNotAMenuJustBecauseTheViewHasNotCaughtUp() {
+        assertEquals(
+                -1,
+                WorthPacketDisplay.packetMenuTopSize(false, 5, 3, true, 3, 63, -1),
+                "matching container ids mean the server opened this window, even if the view still says crafting"
+        );
+    }
+
+    @Test
+    void aPluginMenuBukkitAlreadyOpenedStillSkipsOnlyItsOwnRows() {
+        assertEquals(54, WorthPacketDisplay.packetMenuTopSize(true, 54, 2, false, 2, 90, -1));
+    }
+
+    @Test
+    void thePlayersOwnInventoryWindowIsNeverTreatedAsAMenu() {
+        assertEquals(-1, WorthPacketDisplay.packetMenuTopSize(false, 5, 0, true, 0, 46, -1));
+    }
+
+    @Test
+    void aPacketMenuOfTheSameHeightAsAnOpenChestIsStillAMenuWhenTheWindowIdsDiffer() {
+        assertEquals(27, WorthPacketDisplay.packetMenuTopSize(false, 27, 119, false, 4, 63, -1));
     }
 
     @Test

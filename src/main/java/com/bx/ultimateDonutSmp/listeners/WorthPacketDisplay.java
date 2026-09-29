@@ -24,6 +24,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,16 @@ public class WorthPacketDisplay implements Listener {
     private final Set<UUID> pendingRefresh = ConcurrentHashMap.newKeySet();
     private final Map<UUID, org.bukkit.Material> suppressedMaterials = new ConcurrentHashMap<>();
     private final Set<UUID> openInventories = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, ForeignMenu> foreignMenus = new ConcurrentHashMap<>();
+
+    // window contents are the menu rows, then the 36 slots of the player's storage. armor stays on window 0
+    static final int PLAYER_STORAGE_SLOTS = 36;
+
+    // 0 until the first lookup, 1 when the fields are usable, 2 when this server build has neither
+    private static volatile int containerIdState;
+    private static Method playerGetHandle;
+    private static Field containerMenuField;
+    private static Field containerIdField;
 
     public WorthPacketDisplay(UltimateDonutSmp plugin) {
         this.plugin = plugin;
@@ -124,6 +136,41 @@ public class WorthPacketDisplay implements Listener {
         return topSize == 0 || slot == -1 || slot < topSize;
     }
 
+    // -1 means the packet is not a menu, so every slot keeps its price. 0 means it is a menu whose
+    // height we could not measure, so none of it is priced. anything higher is the menu's own row
+    // count: those slots are buttons, and the storage after them still belongs to the player.
+    //
+    // a plugin that draws the screen itself (TrMenu's packet windows) never opens a Bukkit inventory,
+    // so the player is still on their crafting grid while the buttons are on screen. a chest the
+    // server opened has already taken that grid over, and its window id is the container they are
+    // actually in. pricing those buttons is how a menu icon ends up reading "Worth: $3"
+    static int packetMenuTopSize(boolean bukkitMenu,
+                                 int bukkitTopSize,
+                                 int windowId,
+                                 boolean viewingOwnCrafting,
+                                 int openContainerId,
+                                 int itemCount,
+                                 int rememberedTopSize) {
+        if (windowId <= 0) {
+            return -1;
+        }
+        boolean sameContainer = openContainerId >= 0 && windowId == openContainerId;
+        boolean foreign = false;
+        if (!sameContainer) {
+            foreign = viewingOwnCrafting || (openContainerId >= 0 && windowId != openContainerId);
+            if (!foreign && itemCount > PLAYER_STORAGE_SLOTS) {
+                foreign = itemCount - PLAYER_STORAGE_SLOTS != bukkitTopSize;
+            }
+        }
+        if (!foreign) {
+            return bukkitMenu ? bukkitTopSize : -1;
+        }
+        if (itemCount > PLAYER_STORAGE_SLOTS) {
+            return itemCount - PLAYER_STORAGE_SLOTS;
+        }
+        return rememberedTopSize > 0 ? rememberedTopSize : 0;
+    }
+
     private void registerPacketListener() {
         final UltimateDonutSmp uds = plugin; // packetadapter has its own plugin field
         protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL,
@@ -147,6 +194,9 @@ public class WorthPacketDisplay implements Listener {
                 int windowId = readWindowId(packet);
                 int topSize = 0;
                 boolean isMenu = false;
+                int bukkitTopSize = 0;
+                boolean bukkitMenu = false;
+                boolean viewingOwnCrafting = false;
 
                 if (windowId > 0) {
                     try {
@@ -154,13 +204,46 @@ public class WorthPacketDisplay implements Listener {
                         if (openView != null) {
                             org.bukkit.inventory.Inventory topInv = openView.getTopInventory();
                             if (topInv != null) {
-                                topSize = topInv.getSize();
-                                isMenu = isMenuInventory(player, topInv);
+                                bukkitTopSize = topInv.getSize();
+                                viewingOwnCrafting = topInv.getType() == org.bukkit.event.inventory.InventoryType.CRAFTING;
+                                bukkitMenu = isMenuInventory(player, topInv);
                             }
                         }
                     } catch (Exception ignored) {}
-                    if (!isMenu && inPluginMenu.contains(player.getUniqueId())) {
-                        isMenu = true;
+                    if (!bukkitMenu && inPluginMenu.contains(player.getUniqueId())) {
+                        bukkitMenu = true;
+                    }
+                }
+
+                boolean windowItems = event.getPacketType() == PacketType.Play.Server.WINDOW_ITEMS;
+                List<ItemStack> windowItemsList = null;
+                int itemCount = -1;
+                if (windowItems) {
+                    windowItemsList = packet.getItemListModifier().read(0);
+                    itemCount = windowItemsList == null ? 0 : windowItemsList.size();
+                    if (itemCount == 0) {
+                        return;
+                    }
+                }
+
+                if (windowId > 0) {
+                    ForeignMenu remembered = foreignMenus.get(player.getUniqueId());
+                    int rememberedTopSize = remembered != null && remembered.windowId == windowId
+                            ? remembered.topSize
+                            : -1;
+                    int menuTop = packetMenuTopSize(
+                            bukkitMenu,
+                            bukkitTopSize,
+                            windowId,
+                            viewingOwnCrafting,
+                            readOpenContainerId(player),
+                            itemCount,
+                            rememberedTopSize
+                    );
+                    isMenu = menuTop >= 0;
+                    topSize = isMenu ? menuTop : 0;
+                    if (isMenu && itemCount > PLAYER_STORAGE_SLOTS) {
+                        foreignMenus.put(player.getUniqueId(), new ForeignMenu(windowId, topSize));
                     }
                 }
 
@@ -180,7 +263,7 @@ public class WorthPacketDisplay implements Listener {
                     return;
                 }
 
-                List<ItemStack> items = packet.getItemListModifier().read(0);
+                List<ItemStack> items = windowItemsList;
                 if (items == null || items.isEmpty()) {
                     return;
                 }
@@ -244,6 +327,7 @@ public class WorthPacketDisplay implements Listener {
         inPluginMenu.remove(uuid);
         suppressedMaterials.remove(uuid);
         openInventories.remove(uuid);
+        foreignMenus.remove(uuid);
     }
 
     @EventHandler
@@ -252,6 +336,7 @@ public class WorthPacketDisplay implements Listener {
         suppressedMaterials.remove(uuid);
         inPluginMenu.remove(uuid);
         openInventories.remove(uuid);
+        foreignMenus.remove(uuid);
         plugin.getWorthManager().clearWorthDisplay(event.getPlayer());
     }
 
@@ -262,6 +347,7 @@ public class WorthPacketDisplay implements Listener {
         inPluginMenu.remove(uuid);
         openInventories.remove(uuid);
         pendingRefresh.remove(uuid);
+        foreignMenus.remove(uuid);
     }
 
     // strip any leftover worth nbt so the real item stays clean
@@ -346,5 +432,84 @@ public class WorthPacketDisplay implements Listener {
                 player.updateInventory();
             }
         }, 1L);
+    }
+
+    // the container id of whatever Bukkit currently has open. -1 when this server build does not
+    // expose it; the crafting-view check still catches a packet menu in that case
+    private static int readOpenContainerId(Player player) {
+        if (player == null || containerIdState == 2) {
+            return -1;
+        }
+        try {
+            ensureContainerIdAccess(player);
+            if (containerIdState != 1 || playerGetHandle == null || containerMenuField == null || containerIdField == null) {
+                return -1;
+            }
+            Object handle = playerGetHandle.invoke(player);
+            if (handle == null) {
+                return -1;
+            }
+            Object menu = containerMenuField.get(handle);
+            if (menu == null) {
+                return -1;
+            }
+            return containerIdField.getInt(menu);
+        } catch (Throwable ignored) {
+            return -1;
+        }
+    }
+
+    private static void ensureContainerIdAccess(Player player) {
+        if (containerIdState != 0) {
+            return;
+        }
+        synchronized (WorthPacketDisplay.class) {
+            if (containerIdState != 0) {
+                return;
+            }
+            try {
+                Method handleMethod = player.getClass().getMethod("getHandle");
+                Object handle = handleMethod.invoke(player);
+                if (handle == null) {
+                    return;
+                }
+                Field menuField = findInstanceField(handle.getClass(), "containerMenu");
+                Object menu = menuField.get(handle);
+                if (menu == null) {
+                    return;
+                }
+                Field idField = findInstanceField(menu.getClass(), "containerId");
+                playerGetHandle = handleMethod;
+                containerMenuField = menuField;
+                containerIdField = idField;
+                containerIdState = 1;
+            } catch (Throwable ignored) {
+                containerIdState = 2;
+            }
+        }
+    }
+
+    private static Field findInstanceField(Class<?> type, String name) throws NoSuchFieldException {
+        Class<?> current = type;
+        while (current != null && current != Object.class) {
+            try {
+                Field field = current.getDeclaredField(name);
+                field.setAccessible(true);
+                return field;
+            } catch (NoSuchFieldException ignored) {
+                current = current.getSuperclass();
+            }
+        }
+        throw new NoSuchFieldException(name);
+    }
+
+    private static final class ForeignMenu {
+        private final int windowId;
+        private final int topSize;
+
+        private ForeignMenu(int windowId, int topSize) {
+            this.windowId = windowId;
+            this.topSize = topSize;
+        }
     }
 }
