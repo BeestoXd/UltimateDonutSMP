@@ -73,6 +73,32 @@ class OrdersConfigurationTest {
         }
     }
 
+    @Test
+    void filterConfigIncludesGildedBlackstoneAndAllWoolColors() throws Exception {
+        YamlConfiguration filter = new YamlConfiguration();
+        filter.load(Path.of("src/main/resources/filter.yml").toFile());
+
+        List<String> blocks = filter.getStringList("Blocks");
+        assertTrue(blocks.contains("GILDED_BLACKSTONE"), "filter.yml Blocks must contain GILDED_BLACKSTONE");
+
+        List<String> expectedWools = List.of(
+                "WHITE_WOOL", "ORANGE_WOOL", "MAGENTA_WOOL", "LIGHT_BLUE_WOOL",
+                "YELLOW_WOOL", "LIME_WOOL", "PINK_WOOL", "GRAY_WOOL",
+                "LIGHT_GRAY_WOOL", "CYAN_WOOL", "PURPLE_WOOL", "BLUE_WOOL",
+                "BROWN_WOOL", "GREEN_WOOL", "RED_WOOL", "BLACK_WOOL"
+        );
+        for (String wool : expectedWools) {
+            assertTrue(blocks.contains(wool), "filter.yml Blocks must contain " + wool);
+            org.bukkit.Material mat = org.bukkit.Material.matchMaterial(wool);
+            org.junit.jupiter.api.Assertions.assertNotNull(mat, wool + " must be a valid Bukkit material");
+            org.junit.jupiter.api.Assertions.assertFalse(mat.isLegacy(), wool + " must not be legacy");
+        }
+
+        org.bukkit.Material gilded = org.bukkit.Material.matchMaterial("GILDED_BLACKSTONE");
+        org.junit.jupiter.api.Assertions.assertNotNull(gilded, "GILDED_BLACKSTONE must be a valid Bukkit material");
+        org.junit.jupiter.api.Assertions.assertFalse(gilded.isLegacy(), "GILDED_BLACKSTONE must not be legacy");
+    }
+
     private static YamlConfiguration load(String locale) throws Exception {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.load(Path.of("src/main/resources/languages", locale + ".yml").toFile());

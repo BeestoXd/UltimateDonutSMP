@@ -58,7 +58,7 @@ public class AmethystToolsListener implements Listener {
 
     public AmethystToolsListener(UltimateDonutSmp plugin) {
         this.plugin = plugin;
-        this.manager = plugin.getAmethystToolsManager();
+        this.manager = plugin != null ? plugin.getAmethystToolsManager() : null;
     }
 
     /**
@@ -289,8 +289,12 @@ public class AmethystToolsListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
+            return;
+        }
+
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
         }
@@ -347,6 +351,11 @@ public class AmethystToolsListener implements Listener {
                     return;
                 }
                 handleBucket(event, player);
+                plugin.getSpigotScheduler().runEntity(player, () -> {
+                    if (player.isOnline()) {
+                        player.updateInventory();
+                    }
+                });
             }
             default -> {
             }
@@ -404,10 +413,13 @@ public class AmethystToolsListener implements Listener {
         Block target = null;
         try {
             RayTraceResult hit = player.rayTraceBlocks(5.0, FluidCollisionMode.ALWAYS);
-            if (hit != null && hit.getHitBlock() != null) {
+            if (hit != null && hit.getHitBlock() != null && isWater(hit.getHitBlock())) {
                 target = hit.getHitBlock();
             }
         } catch (Exception ignored) {
+        }
+        if (target == null && isWater(event.getClickedBlock())) {
+            target = event.getClickedBlock();
         }
         if (target == null) {
             target = event.getClickedBlock();
@@ -456,7 +468,7 @@ public class AmethystToolsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBucketFill(PlayerBucketFillEvent event) {
         Player player = event.getPlayer();
-        EquipmentSlot hand = event.getHand();
+        EquipmentSlot hand = event.getHand() != null ? event.getHand() : EquipmentSlot.HAND;
         ItemStack item = player.getInventory().getItem(hand);
         if (!manager.isAmethystTool(item)) {
             return;
@@ -468,7 +480,13 @@ public class AmethystToolsListener implements Listener {
         }
 
         event.setCancelled(true);
+        event.setItemStack(item.clone());
         player.updateInventory();
+        plugin.getSpigotScheduler().runEntity(player, () -> {
+            if (player.isOnline()) {
+                player.updateInventory();
+            }
+        });
 
         boolean manageInventory = shouldManageInventory(player.getGameMode());
         if (item.getAmount() > 1) {
@@ -486,9 +504,9 @@ public class AmethystToolsListener implements Listener {
             return;
         }
 
-        Block target = event.getBlock();
-        if (target == null) {
-            target = event.getBlockClicked();
+        Block target = event.getBlockClicked();
+        if (target == null || !isWater(target)) {
+            target = event.getBlock();
         }
         drainWaterAt(player, target);
     }
@@ -861,6 +879,9 @@ public class AmethystToolsListener implements Listener {
 
     List<Block> bfsWater(Block start, int radius, int max) {
         List<Block> result = new ArrayList<>();
+        if (start == null) {
+            return result;
+        }
         Set<org.bukkit.Location> visited = new java.util.HashSet<>();
         Queue<Block> queue = new LinkedList<>();
 
