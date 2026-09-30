@@ -2728,10 +2728,46 @@ public class OrdersManager {
             }
         }
 
+        for (Material material : Material.values()) {
+            if (!isOrderable(material) || !globallySeen.add(material)) {
+                continue;
+            }
+            String category = resolveDefaultCategory(material);
+            List<OrderCatalogEntry> entries = catalogByCategory.computeIfAbsent(category, k -> new ArrayList<>());
+            if (!categoryOrder.contains(category)) {
+                categoryOrder.add(category);
+            }
+            entries.addAll(buildCatalogEntries(category, material));
+        }
+
         if (catalogByCategory.isEmpty()) {
             catalogByCategory.put("BLOCKS", List.of(new OrderCatalogEntry("BLOCKS", Material.STONE)));
             categoryOrder.add("BLOCKS");
         }
+    }
+
+    private String resolveDefaultCategory(Material material) {
+        if (material.isBlock()) {
+            return "BLOCKS";
+        }
+        if (material.isEdible()) {
+            return "FOOD";
+        }
+        if (material.name().endsWith("_SWORD") || isArmorMaterial(material)
+                || material == Material.BOW || material == Material.CROSSBOW
+                || material == Material.SHIELD || material == Material.ARROW) {
+            return "COMBAT";
+        }
+        if (material.name().endsWith("_PICKAXE") || material.name().endsWith("_AXE")
+                || material.name().endsWith("_SHOVEL") || material.name().endsWith("_HOE")
+                || material == Material.FISHING_ROD || material == Material.SHEARS
+                || material == Material.FLINT_AND_STEEL) {
+            return "TOOLS";
+        }
+        if (categoryOrder.contains("INGREDIENTS")) {
+            return "INGREDIENTS";
+        }
+        return "ITEMS";
     }
 
     private List<OrderCatalogEntry> parseCategoryEntries(
