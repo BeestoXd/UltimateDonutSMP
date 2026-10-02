@@ -510,6 +510,27 @@ public class ColorUtils {
         return s;
     }
 
+    public static boolean containsColorCodes(String text) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+        return LEGACY_COLOR_PATTERN.matcher(text).find()
+                || HEX_COLOR_PATTERN.matcher(text).find()
+                || TAGGED_HEX_PATTERN.matcher(text).find()
+                || TAGGED_GRADIENT_PATTERN.matcher(text).find()
+                || text.indexOf('\u00A7') >= 0;
+    }
+
+    public static String stripColorCodes(String text) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        String s = HEX_COLOR_PATTERN.matcher(text).replaceAll("");
+        s = LEGACY_COLOR_PATTERN.matcher(s).replaceAll("");
+        s = s.replaceAll("\u00A7[0-9a-fk-orA-FK-OR]", "");
+        return s;
+    }
+
     public static boolean isAllCaps(String text) {
         boolean hasUppercase = false;
         for (int i = 0; i < text.length(); i++) {

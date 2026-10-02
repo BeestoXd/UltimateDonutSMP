@@ -564,7 +564,9 @@ public class TablistManager {
                 : plugin.getHideManager().publicName(player);
 
         if (showTeam && teamName != null && !teamName.isBlank()) {
-            teamSuffix = " &7[&b" + teamName.toUpperCase() + "&7]";
+            boolean hasCustomColor = ColorUtils.containsColorCodes(teamName);
+            String formattedTeam = hasCustomColor ? teamName : "&b" + teamName.toUpperCase(Locale.ROOT);
+            teamSuffix = " &7[" + formattedTeam + "&7]";
         }
 
         String configuredFormat = config().getString(

@@ -25,6 +25,10 @@ public class Team {
 
     public String getName() { return name; }
 
+    public String getCleanName() {
+        return com.bx.ultimateDonutSmp.managers.TeamManager.cleanName(name);
+    }
+
     public UUID getLeaderUuid() { return leaderUuid; }
     public void setLeaderUuid(UUID leaderUuid) { this.leaderUuid = leaderUuid; }
 

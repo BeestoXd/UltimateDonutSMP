@@ -24,12 +24,17 @@ public class TeamManager {
         this.plugin = plugin;
     }
 
+    public static String cleanName(String name) {
+        if (name == null) return "";
+        return ColorUtils.stripColorCodes(name).trim();
+    }
+
     public void loadAll() {
         resetRuntimeState();
 
         List<Team> loaded = plugin.getDatabaseManager().loadAllTeams();
         for (Team team : loaded) {
-            String internalName = team.getName().toLowerCase();
+            String internalName = cleanName(team.getName()).toLowerCase(Locale.ROOT);
             teams.put(internalName, team);
             for (UUID uuid : team.getMemberUuids()) {
                 playerTeamMap.put(uuid, internalName);
@@ -38,8 +43,18 @@ public class TeamManager {
     }
 
     public Team getTeam(String name) {
-        if (name == null) return null;
-        return teams.get(name.toLowerCase());
+        if (name == null || name.isBlank()) return null;
+        Team team = teams.get(name.toLowerCase(Locale.ROOT));
+        if (team != null) return team;
+        String clean = cleanName(name).toLowerCase(Locale.ROOT);
+        team = teams.get(clean);
+        if (team != null) return team;
+        for (Team candidate : teams.values()) {
+            if (cleanName(candidate.getName()).equalsIgnoreCase(clean)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     public Team getTeam(Player player) {
@@ -67,7 +82,16 @@ public class TeamManager {
     }
 
     public boolean teamExists(String name) {
-        return name != null && teams.containsKey(name.toLowerCase());
+        if (name == null || name.isBlank()) return false;
+        if (teams.containsKey(name.toLowerCase(Locale.ROOT))) return true;
+        String clean = cleanName(name).toLowerCase(Locale.ROOT);
+        if (teams.containsKey(clean)) return true;
+        for (Team team : teams.values()) {
+            if (cleanName(team.getName()).equalsIgnoreCase(clean)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Collection<Team> getAllTeams() {
@@ -113,12 +137,21 @@ public class TeamManager {
     }
 
     public boolean isValidName(String name) {
-        int min = plugin.getConfigManager().getConfig().getInt("TEAM.NAME-MIN-LENGTH", 3);
-        int max = plugin.getConfigManager().getConfig().getInt("TEAM.NAME-MAX-LENGTH", 5);
-        return name != null
-                && name.length() >= min
-                && name.length() <= max
-                && name.matches("[a-zA-Z0-9_]+");
+        if (name == null || name.isBlank()) {
+            return false;
+        }
+        int min = plugin != null && plugin.getConfigManager() != null && plugin.getConfigManager().getConfig() != null
+                ? plugin.getConfigManager().getConfig().getInt("TEAM.NAME-MIN-LENGTH", 3)
+                : 3;
+        int max = plugin != null && plugin.getConfigManager() != null && plugin.getConfigManager().getConfig() != null
+                ? plugin.getConfigManager().getConfig().getInt("TEAM.NAME-MAX-LENGTH", 5)
+                : 5;
+        String stripped = cleanName(name);
+        if (stripped.length() < min || stripped.length() > max || !stripped.matches("[a-zA-Z0-9_]+")) {
+            return false;
+        }
+        String check = ColorUtils.stripColorCodes(name);
+        return check.equals(stripped);
     }
 
     public boolean createTeam(Player leader, String name) {
@@ -128,7 +161,7 @@ public class TeamManager {
 
         Team team = new Team(name, leader.getUniqueId());
         team.addMember(leader.getUniqueId());
-        String internalName = name.toLowerCase();
+        String internalName = cleanName(name).toLowerCase(Locale.ROOT);
         teams.put(internalName, team);
         playerTeamMap.put(leader.getUniqueId(), internalName);
         save(team);
@@ -146,15 +179,20 @@ public class TeamManager {
             setTeamChat(uuid, false);
             clearSearchState(uuid);
 
-            Player member = Bukkit.getPlayer(uuid);
-            if (member != null) {
-                member.sendMessage(ColorUtils.toComponent(
-                        plugin.getConfigManager().getMessage("TEAM.TEAM-DISBANDED")));
+            if (Bukkit.getServer() != null) {
+                Player member = Bukkit.getPlayer(uuid);
+                if (member != null && plugin != null && plugin.getConfigManager() != null) {
+                    member.sendMessage(ColorUtils.toComponent(
+                            plugin.getConfigManager().getMessage("TEAM.TEAM-DISBANDED")));
+                }
             }
         }
 
-        teams.remove(team.getName().toLowerCase());
-        plugin.getDatabaseManager().deleteTeam(team.getName());
+        teams.remove(cleanName(team.getName()).toLowerCase(Locale.ROOT));
+        teams.remove(team.getName().toLowerCase(Locale.ROOT));
+        if (plugin != null && plugin.getDatabaseManager() != null) {
+            plugin.getDatabaseManager().deleteTeam(team.getName());
+        }
         refreshTablist(affectedMembers);
         refreshRichPresence(affectedMembers);
     }
@@ -163,27 +201,31 @@ public class TeamManager {
         Team team = getTeam(inviter);
         if (team == null || target == null) return;
 
-        String internalName = team.getName().toLowerCase();
+        String internalName = cleanName(team.getName()).toLowerCase(Locale.ROOT);
         List<String> invites = pendingInvites.computeIfAbsent(target.getUniqueId(), ignored -> new ArrayList<>());
         if (!invites.contains(internalName)) {
             invites.add(internalName);
         }
 
-        plugin.getSpigotScheduler().runEntityLater(target, () -> {
-            List<String> pending = pendingInvites.get(target.getUniqueId());
-            if (pending == null) return;
+        if (plugin != null && plugin.getSpigotScheduler() != null) {
+            plugin.getSpigotScheduler().runEntityLater(target, () -> {
+                List<String> pending = pendingInvites.get(target.getUniqueId());
+                if (pending == null) return;
 
-            pending.remove(internalName);
-            if (pending.isEmpty()) {
-                pendingInvites.remove(target.getUniqueId());
-            }
-        }, 60 * 20L);
+                pending.remove(internalName);
+                if (pending.isEmpty()) {
+                    pendingInvites.remove(target.getUniqueId());
+                }
+            }, 60 * 20L);
+        }
     }
 
     public boolean hasInviteFrom(Player target, String teamName) {
         if (target == null || teamName == null) return false;
         List<String> invites = pendingInvites.get(target.getUniqueId());
-        return invites != null && invites.contains(teamName.toLowerCase());
+        if (invites == null) return false;
+        String clean = cleanName(teamName).toLowerCase(Locale.ROOT);
+        return invites.contains(clean) || invites.contains(teamName.toLowerCase(Locale.ROOT));
     }
 
     public List<String> getPendingInvites(UUID uuid) {
@@ -197,7 +239,8 @@ public class TeamManager {
         List<String> invites = pendingInvites.get(uuid);
         if (invites == null) return;
 
-        invites.remove(teamName.toLowerCase());
+        invites.remove(teamName.toLowerCase(Locale.ROOT));
+        invites.remove(cleanName(teamName).toLowerCase(Locale.ROOT));
         if (invites.isEmpty()) {
             pendingInvites.remove(uuid);
         }
@@ -209,14 +252,18 @@ public class TeamManager {
             return false;
         }
 
-        int maxMembers = plugin.getConfigManager().getConfig().getInt("TEAM.LIMIT-MEMBERS", 10);
+        int maxMembers = plugin != null && plugin.getConfigManager() != null && plugin.getConfigManager().getConfig() != null
+                ? plugin.getConfigManager().getConfig().getInt("TEAM.LIMIT-MEMBERS", 10)
+                : 10;
         if (team.getMemberCount() >= maxMembers) {
             return false;
         }
 
         team.addMember(player.getUniqueId());
-        playerTeamMap.put(player.getUniqueId(), team.getName().toLowerCase());
+        String internalName = cleanName(team.getName()).toLowerCase(Locale.ROOT);
+        playerTeamMap.put(player.getUniqueId(), internalName);
         removeInvite(player.getUniqueId(), team.getName());
+        removeInvite(player.getUniqueId(), internalName);
         save(team);
         refreshTablist(player.getUniqueId());
         refreshRichPresence(team.getMemberUuids());
@@ -252,10 +299,12 @@ public class TeamManager {
         setTeamChat(targetUuid, false);
         clearSearchState(targetUuid);
 
-        Player target = Bukkit.getPlayer(targetUuid);
-        if (target != null) {
-            target.sendMessage(ColorUtils.toComponent(
-                    plugin.getConfigManager().getMessage("TEAM.KICKED-FROM-TEAM")));
+        if (Bukkit.getServer() != null) {
+            Player target = Bukkit.getPlayer(targetUuid);
+            if (target != null && plugin != null && plugin.getConfigManager() != null) {
+                target.sendMessage(ColorUtils.toComponent(
+                        plugin.getConfigManager().getMessage("TEAM.KICKED-FROM-TEAM")));
+            }
         }
 
         save(team);
@@ -301,7 +350,7 @@ public class TeamManager {
     }
 
     public void save(Team team) {
-        if (team == null) return;
+        if (team == null || plugin == null || plugin.getDatabaseManager() == null) return;
         plugin.getDatabaseManager().saveTeam(team);
     }
 
@@ -369,7 +418,7 @@ public class TeamManager {
     }
 
     private void refreshTablist(UUID uuid) {
-        if (uuid == null) return;
+        if (uuid == null || plugin == null || plugin.getTablistManager() == null || Bukkit.getServer() == null) return;
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             plugin.getTablistManager().updateTablistName(player);
@@ -383,6 +432,7 @@ public class TeamManager {
     }
 
     private void refreshRichPresence(UUID uuid) {
+        if (plugin == null) return;
         LunarRichPresenceManager richPresenceManager = plugin.getLunarRichPresenceManager();
         if (richPresenceManager != null) {
             richPresenceManager.refreshPlayer(uuid);
@@ -390,6 +440,7 @@ public class TeamManager {
     }
 
     private void refreshRichPresence(Collection<UUID> uuids) {
+        if (plugin == null) return;
         LunarRichPresenceManager richPresenceManager = plugin.getLunarRichPresenceManager();
         if (richPresenceManager != null) {
             richPresenceManager.refreshPlayers(new ArrayList<>(uuids));

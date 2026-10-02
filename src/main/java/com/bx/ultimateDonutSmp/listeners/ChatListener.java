@@ -9,6 +9,7 @@ import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.NumberUtils;
 import com.bx.ultimateDonutSmp.utils.PlayerSettingUtils;
+import java.util.Locale;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -74,7 +75,10 @@ public class ChatListener implements Listener {
                                 plugin.getConfigManager().getMessage("TEAM.NO-TEAM-CHAT-PERMISSION"))));
                 return;
             }
-            String teamFormat = "&8[&b" + team.getName().toUpperCase() + "&8] &7%player%&8: &f%message%";
+            String formattedTeam = ColorUtils.containsColorCodes(team.getName())
+                    ? team.getName()
+                    : "&b" + team.getName().toUpperCase(Locale.ROOT);
+            String teamFormat = "&8[" + formattedTeam + "&8] &7%player%&8: &f%message%";
             var component = plugin.getHoverStatsManager().buildChatComponent(player, "", rawMessage, teamFormat);
             for (java.util.UUID uuid : team.getMemberUuids()) {
                 Player member = Bukkit.getPlayer(uuid);
