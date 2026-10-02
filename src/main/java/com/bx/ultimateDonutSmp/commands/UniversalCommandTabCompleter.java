@@ -137,9 +137,15 @@ public class UniversalCommandTabCompleter implements TabCompleter {
     }
 
     private List<String> teamNames() {
-        return plugin.getTeamManager().getAllTeams().stream()
-                .map(Team::getName)
-                .toList();
+        List<String> names = new ArrayList<>();
+        for (Team team : plugin.getTeamManager().getAllTeams()) {
+            names.add(team.getName());
+            String clean = team.getCleanName();
+            if (!clean.isEmpty() && !clean.equalsIgnoreCase(team.getName()) && !names.contains(clean)) {
+                names.add(clean);
+            }
+        }
+        return names;
     }
 
     private List<String> completeHome(CommandSender sender, String commandName, String[] args) {

@@ -1930,8 +1930,8 @@ TEAM:
 
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `TEAM.NAME-MIN-LENGTH` | `int` | Any valid integer number | `'3'` | Configures the technical `NAME-MIN-LENGTH` parameter for `TEAM.NAME-MIN-LENGTH` in `config.yml`. |
-| `TEAM.NAME-MAX-LENGTH` | `int` | Any valid integer number | `'5'` | Configures the technical `NAME-MAX-LENGTH` parameter for `TEAM.NAME-MAX-LENGTH` in `config.yml`. |
+| `TEAM.NAME-MIN-LENGTH` | `int` | Any valid integer number | `'3'` | Minimum length of the visible team name (default 3). Minecraft color and formatting codes (e.g. `&7`, `&#FF0000`, `&l`) are stripped before length validation. |
+| `TEAM.NAME-MAX-LENGTH` | `int` | Any valid integer number | `'5'` | Maximum length of the visible team name (default 5). Color codes are stripped before length validation to allow styled tags without restricting display length. |
 | `TEAM.LIMIT-MEMBERS` | `int` | Any valid integer number | `'10'` | Configures the technical `LIMIT-MEMBERS` parameter for `TEAM.LIMIT-MEMBERS` in `config.yml`. |
 | `TEAM.EXCLUDED-WORLDS` | `list` | List of world names | `[]` | List of world names where players cannot set team homes (`/team sethome`, menus, Bedrock form). If left empty, falls back to `SETTINGS.HOME-EXCLUDED-WORLDS`. Players with `ultimatedonutsmp.teams.bypass` bypass this restriction. |
 
