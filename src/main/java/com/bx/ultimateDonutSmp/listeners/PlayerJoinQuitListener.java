@@ -192,6 +192,7 @@ public class PlayerJoinQuitListener implements Listener {
         // Update tablist name
         plugin.getTablistManager().updateTablistName(player);
         plugin.getTablistManager().update(player);
+        plugin.getTablistManager().scheduleDeferredTablistNameRefresh(player);
         plugin.getTablistManager().refreshSkinHeads(player);
 
         // Track for AFK

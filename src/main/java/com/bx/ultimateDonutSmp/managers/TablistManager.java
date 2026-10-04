@@ -44,6 +44,9 @@ import java.util.regex.Pattern;
 
 public class TablistManager {
 
+    /** LuckPerms user metadata may not be ready on the first join tick; retry tab names after these delays. */
+    static final List<Long> DEFERRED_TABLIST_NAME_REFRESH_DELAYS = List.of(8L, 20L);
+
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
     private static final Pattern HEAD_TAG_PATTERN = Pattern.compile("(?i)<head:[^>\\r\\n]*>");
     private static final Pattern GRADIENT_TAG_PATTERN = Pattern.compile(
@@ -137,6 +140,30 @@ public class TablistManager {
 
         player.setPlayerListName(parseTabText(nameFormat, player));
         lastNameCache.put(player.getUniqueId(), nameFormat);
+    }
+
+    /**
+     * Re-applies the tab list name after LuckPerms has finished loading user metadata. The first
+     * refresh on join can run before prefix meta is available, which leaves {@code %prefix%} empty
+     * until a later reload.
+     */
+    public void scheduleDeferredTablistNameRefresh(Player player) {
+        if (player == null || !player.isOnline() || !isEnabled()) {
+            return;
+        }
+
+        UUID playerId = player.getUniqueId();
+        for (long delayTicks : DEFERRED_TABLIST_NAME_REFRESH_DELAYS) {
+            plugin.getSpigotScheduler().runEntityLater(player, () -> {
+                Player online = Bukkit.getPlayer(playerId);
+                if (online == null || !online.isOnline() || !isEnabled()) {
+                    return;
+                }
+                invalidateLuckPermsCachedData(online);
+                updateTablistName(online);
+                update(online);
+            }, delayTicks);
+        }
     }
 
     public void refreshSkinHeads(Player player) {
@@ -405,16 +432,7 @@ public class TablistManager {
         updateTablistName(player);
         update(player);
         refreshTablistAvatar(player);
-        UUID playerId = player.getUniqueId();
-        for (long delayTicks : List.of(8L, 20L)) {
-            plugin.getSpigotScheduler().runEntityLater(player, () -> {
-                Player online = Bukkit.getPlayer(playerId);
-                if (online != null && online.isOnline()) {
-                    updateTablistName(online);
-                    update(online);
-                }
-            }, delayTicks);
-        }
+        scheduleDeferredTablistNameRefresh(player);
     }
 
     public void refreshStoredSkinTexture(Player player) {
