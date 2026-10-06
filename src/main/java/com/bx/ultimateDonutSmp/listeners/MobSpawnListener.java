@@ -49,8 +49,13 @@ public class MobSpawnListener implements Listener {
 
         if (!MobSpawnPolicy.isPreventableSpawnReason(event.getSpawnReason(), trialSpawnersBlocked)) return;
 
+        Location spawnLocation = MobSpawnPolicy.creatureSpawnLocation(event);
+        if (spawnLocation == null) {
+            return;
+        }
+
         if (event.getEntityType() == EntityType.PHANTOM) {
-            if (shouldCancelPhantomSpawn(entity.getLocation())) {
+            if (shouldCancelPhantomSpawn(spawnLocation)) {
                 event.setCancelled(true);
             }
             return;
@@ -60,7 +65,7 @@ public class MobSpawnListener implements Listener {
 
         if (MobSpawnPolicy.isBoss(event.getEntityType())) return;
 
-        if (shouldCancelMobSpawn(entity.getLocation())) {
+        if (shouldCancelMobSpawn(spawnLocation)) {
             event.setCancelled(true);
         }
     }
