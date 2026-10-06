@@ -71,6 +71,29 @@ public final class MobSpawnPolicy {
         return entity.getCustomName() != null && !entity.getCustomName().isEmpty();
     }
 
+    /**
+     * Spawn radius checks must use the location Minecraft is attempting to spawn at. During
+     * {@link CreatureSpawnEvent} the entity is not always positioned there yet, so
+     * {@link LivingEntity#getLocation()} can disagree with {@link CreatureSpawnEvent#getLocation()}.
+     */
+    public static Location creatureSpawnLocation(Location eventLocation, Location entityLocation) {
+        if (eventLocation != null) {
+            return eventLocation;
+        }
+        return entityLocation;
+    }
+
+    public static Location creatureSpawnLocation(CreatureSpawnEvent event) {
+        if (event == null) {
+            return null;
+        }
+        LivingEntity entity = event.getEntity();
+        return creatureSpawnLocation(
+                event.getLocation(),
+                entity != null ? entity.getLocation() : null
+        );
+    }
+
     public static boolean shouldCancelMobSpawn(
             Location spawnLocation,
             Collection<? extends Player> players,

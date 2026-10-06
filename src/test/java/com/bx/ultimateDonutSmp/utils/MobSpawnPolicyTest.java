@@ -187,6 +187,37 @@ class MobSpawnPolicyTest {
     }
 
     @Test
+    void creatureSpawnLocationPrefersTheEventLocation() {
+        Location eventLocation = new Location(null, 5, 64, 5);
+        Location entityLocation = new Location(null, 200, 64, 200);
+
+        assertEquals(eventLocation, MobSpawnPolicy.creatureSpawnLocation(eventLocation, entityLocation));
+
+        Player player = createMockPlayer(new Location(null, 0, 64, 0));
+        PlayerData data = new PlayerData(UUID.randomUUID(), "Player");
+        data.setMobSpawnEnabled(false);
+        Map<Player, PlayerData> dataMap = Map.of(player, data);
+
+        assertTrue(MobSpawnPolicy.shouldCancelMobSpawn(
+                MobSpawnPolicy.creatureSpawnLocation(eventLocation, entityLocation),
+                List.of(player),
+                50.0,
+                dataMap::get));
+        assertFalse(MobSpawnPolicy.shouldCancelMobSpawn(
+                entityLocation,
+                List.of(player),
+                50.0,
+                dataMap::get));
+    }
+
+    @Test
+    void creatureSpawnLocationFallsBackWhenEventLocationIsMissing() {
+        Location entityLocation = new Location(null, 6, 64, 6);
+
+        assertEquals(entityLocation, MobSpawnPolicy.creatureSpawnLocation(null, entityLocation));
+    }
+
+    @Test
     void phantomFilterIgnoresVerticalDistance() {
         Player player = createMockPlayer(new Location(null, 0, 200, 0));
         PlayerData data = new PlayerData(UUID.randomUUID(), "Player");
