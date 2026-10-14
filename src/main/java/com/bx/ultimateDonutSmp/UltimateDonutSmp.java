@@ -1176,6 +1176,7 @@ public final class UltimateDonutSmp extends JavaPlugin {
             playerDataManager.refreshRemovedSettingOptions();
         }
 
+        tablistManager.forgetCachedTablistNames();
         for (Player player : getServer().getOnlinePlayers()) {
             tablistManager.updateTablistName(player);
             worthManager.clearWorthDisplay(player);

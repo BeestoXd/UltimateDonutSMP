@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -57,16 +58,29 @@ public class TablistManager {
     }
 
     /**
-     * Inserts the resolved LuckPerms prefix for both tokens servers actually put in NAME-FORMAT.
-     * {@code %prefix%} is the plugin token. {@code %luckperms_prefix%} is the PlaceholderAPI token.
-     * Leaving the second one literal makes the name cache treat every refresh as unchanged.
+     * Fills {@code %prefix%} from the plugin's own prefix lookup.
+     * {@code %luckperms_prefix%} is left untouched so PlaceholderAPI can resolve it the same way
+     * {@code /papi parse} does. Substituting that token here used an empty or different value and
+     * the later placeholder pass never saw it.
      */
     static String applyResolvedPrefix(String format, String prefix) {
         String value = prefix == null ? "" : prefix;
         if (format == null || format.isEmpty()) {
             return format == null ? "" : format;
         }
-        return format.replace("%prefix%", value).replace("%luckperms_prefix%", value);
+        return format.replace("%prefix%", value);
+    }
+
+    /**
+     * If PlaceholderAPI left {@code %luckperms_prefix%} unresolved, use the LuckPerms API prefix.
+     * A value PlaceholderAPI already produced is kept, even when the API prefix differs.
+     */
+    static String fillUnresolvedLuckPermsPrefix(String expanded, String apiPrefix) {
+        if (expanded == null || !expanded.contains("%luckperms_prefix%")) {
+            return expanded == null ? "" : expanded;
+        }
+        String value = apiPrefix == null ? "" : apiPrefix;
+        return expanded.replace("%luckperms_prefix%", value);
     }
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
@@ -148,12 +162,16 @@ public class TablistManager {
 
         String nameFormat = resolveNameFormat(player);
         refreshSkinHeadTextureIfNeeded(player, nameFormat, false);
-        String rendered = expandPlaceholders(nameFormat, player);
-        if (!tablistRenderChanged(lastNameCache.get(player.getUniqueId()), rendered)) {
+        String rendered = fillUnresolvedLuckPermsPrefix(
+                expandPlaceholders(nameFormat, player),
+                resolveLuckPermsPrefix(player)
+        );
+        Component adventureComponent = deserializeTabComponent(rendered, player);
+        boolean renderedChanged = tablistRenderChanged(lastNameCache.get(player.getUniqueId()), rendered);
+        if (!renderedChanged && !displayedTabNameDiffers(player, adventureComponent)) {
             return;
         }
 
-        Component adventureComponent = deserializeTabComponent(rendered, player);
         if (adventureComponent != null) {
             if (componentUpdater.updateName(player, adventureComponent)) {
                 lastNameCache.put(player.getUniqueId(), rendered);
@@ -163,6 +181,43 @@ public class TablistManager {
 
         player.setPlayerListName(colorizeTabText(rendered));
         lastNameCache.put(player.getUniqueId(), rendered);
+    }
+
+    public void forgetCachedTablistNames() {
+        lastNameCache.clear();
+    }
+
+    private boolean displayedTabNameDiffers(Player player, Component wanted) {
+        if (player == null || wanted == null) {
+            return false;
+        }
+
+        String wantedPlain = plainTabText(wanted);
+        try {
+            Method getter = player.getClass().getMethod("playerListName");
+            Object current = getter.invoke(player);
+            if (!(current instanceof Component currentComponent)) {
+                return !wantedPlain.isEmpty();
+            }
+            return !wantedPlain.equals(plainTabText(currentComponent));
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError ignored) {
+            return false;
+        }
+    }
+
+    private static String plainTabText(Component component) {
+        StringBuilder builder = new StringBuilder();
+        appendPlainTabText(component, builder);
+        return builder.toString().replaceAll("\\s+", " ").trim();
+    }
+
+    private static void appendPlainTabText(Component component, StringBuilder builder) {
+        if (component instanceof TextComponent textComponent) {
+            builder.append(textComponent.content());
+        }
+        for (Component child : component.children()) {
+            appendPlainTabText(child, builder);
+        }
     }
 
     /**
