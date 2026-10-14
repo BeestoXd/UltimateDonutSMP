@@ -47,6 +47,28 @@ public class TablistManager {
     /** LuckPerms user metadata may not be ready on the first join tick; retry tab names after these delays. */
     static final List<Long> DEFERRED_TABLIST_NAME_REFRESH_DELAYS = List.of(8L, 20L);
 
+    /**
+     * True when the painted tab text differs from the last packet we sent.
+     * The remembered value is the expanded text, so a later LuckPerms prefix still counts
+     * as a change when the configured template did not.
+     */
+    static boolean tablistRenderChanged(String cachedRendered, String rendered) {
+        return cachedRendered == null || !cachedRendered.equals(rendered);
+    }
+
+    /**
+     * Inserts the resolved LuckPerms prefix for both tokens servers actually put in NAME-FORMAT.
+     * {@code %prefix%} is the plugin token. {@code %luckperms_prefix%} is the PlaceholderAPI token.
+     * Leaving the second one literal makes the name cache treat every refresh as unchanged.
+     */
+    static String applyResolvedPrefix(String format, String prefix) {
+        String value = prefix == null ? "" : prefix;
+        if (format == null || format.isEmpty()) {
+            return format == null ? "" : format;
+        }
+        return format.replace("%prefix%", value).replace("%luckperms_prefix%", value);
+    }
+
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
     private static final Pattern HEAD_TAG_PATTERN = Pattern.compile("(?i)<head:[^>\\r\\n]*>");
     private static final Pattern GRADIENT_TAG_PATTERN = Pattern.compile(
@@ -89,12 +111,13 @@ public class TablistManager {
 
         String headerText = applyInternalPlaceholders(getMultilineText("TABLIST.HEADER"), player);
         String footerText = applyInternalPlaceholders(getMultilineText("TABLIST.FOOTER"), player);
-        String key = headerText + "\0" + footerText;
-        String cached = lastHeaderFooterCache.get(player.getUniqueId());
-        if (cached != null && cached.equals(key)) {
+        String headerRendered = expandPlaceholders(headerText, player);
+        String footerRendered = expandPlaceholders(footerText, player);
+        String key = headerRendered + "\0" + footerRendered;
+        if (!tablistRenderChanged(lastHeaderFooterCache.get(player.getUniqueId()), key)) {
             return;
         }
-        player.setPlayerListHeaderFooter(parseTabText(headerText, player), parseTabText(footerText, player));
+        player.setPlayerListHeaderFooter(colorizeTabText(headerRendered), colorizeTabText(footerRendered));
         lastHeaderFooterCache.put(player.getUniqueId(), key);
     }
 
@@ -125,27 +148,27 @@ public class TablistManager {
 
         String nameFormat = resolveNameFormat(player);
         refreshSkinHeadTextureIfNeeded(player, nameFormat, false);
-        String cached = lastNameCache.get(player.getUniqueId());
-        if (cached != null && cached.equals(nameFormat)) {
+        String rendered = expandPlaceholders(nameFormat, player);
+        if (!tablistRenderChanged(lastNameCache.get(player.getUniqueId()), rendered)) {
             return;
         }
 
-        Component adventureComponent = parseTabComponent(nameFormat, player);
+        Component adventureComponent = deserializeTabComponent(rendered, player);
         if (adventureComponent != null) {
             if (componentUpdater.updateName(player, adventureComponent)) {
-                lastNameCache.put(player.getUniqueId(), nameFormat);
+                lastNameCache.put(player.getUniqueId(), rendered);
                 return;
             }
         }
 
-        player.setPlayerListName(parseTabText(nameFormat, player));
-        lastNameCache.put(player.getUniqueId(), nameFormat);
+        player.setPlayerListName(colorizeTabText(rendered));
+        lastNameCache.put(player.getUniqueId(), rendered);
     }
 
     /**
      * Re-applies the tab list name after LuckPerms has finished loading user metadata. The first
-     * refresh on join can run before prefix meta is available, which leaves {@code %prefix%} empty
-     * until a later reload.
+     * refresh on join can run before prefix meta is available, which leaves {@code %prefix%} and
+     * {@code %luckperms_prefix%} empty until a later refresh.
      */
     public void scheduleDeferredTablistNameRefresh(Player player) {
         if (player == null || !player.isOnline() || !isEnabled()) {
@@ -596,8 +619,7 @@ public class TablistManager {
             configuredFormat = configuredFormat + "%team_suffix%";
         }
 
-        return applyInternalPlaceholders(configuredFormat, player)
-                .replace("%prefix%", prefix)
+        return applyResolvedPrefix(applyInternalPlaceholders(configuredFormat, player), prefix)
                 .replace("%player%", publicName)
                 .replace("%nick%", nickname)
                 .replace("<player>", publicName)
@@ -1079,7 +1101,7 @@ public class TablistManager {
         return player.getName();
     }
 
-    private String parseTabText(String text, Player player) {
+    private String expandPlaceholders(String text, Player player) {
         if (text == null || text.isBlank()) {
             return "";
         }
@@ -1092,27 +1114,28 @@ public class TablistManager {
             }
         }
 
-        resolved = applyInternalPlaceholders(resolved, player);
+        return applyInternalPlaceholders(resolved, player);
+    }
+
+    private String colorizeTabText(String resolved) {
+        if (resolved == null || resolved.isBlank()) {
+            return "";
+        }
         return ColorUtils.colorize(stripUnsupportedHeadTags(resolved));
     }
 
     private Component parseTabComponent(String text, Player player) {
-        if (text == null || text.isBlank()) {
+        return deserializeTabComponent(expandPlaceholders(text, player), player);
+    }
+
+    private Component deserializeTabComponent(String resolved, Player player) {
+        if (resolved == null || resolved.isBlank()) {
             return null;
         }
 
-        String resolved = text;
-        if (ColorUtils.hasPAPI()) {
-            try {
-                resolved = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, resolved);
-            } catch (Exception ignored) {
-            }
-        }
-
-        resolved = applyInternalPlaceholders(resolved, player);
-        resolved = convertLegacyAndGradientToMiniMessage(resolved);
+        String formatted = convertLegacyAndGradientToMiniMessage(resolved);
         try {
-            return MINI_MESSAGE.deserialize(resolved, headTagResolver(player));
+            return MINI_MESSAGE.deserialize(formatted, headTagResolver(player));
         } catch (RuntimeException exception) {
             return null;
         }
