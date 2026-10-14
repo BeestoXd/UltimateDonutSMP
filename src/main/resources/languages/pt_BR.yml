@@ -2057,37 +2057,37 @@ CONFIG:
   HIDE:
     GUI:
       MAIN:
-        TITLE: "&8Hide"
+        TITLE: "&8hide"
       ALIASES:
-        TITLE: '&8Select a name - {page}/{pages}'
+        TITLE: '&8select a name - {page}/{pages}'
       SKINS:
-        TITLE: "&8Select a skin - {page}/{pages}"
+        TITLE: "&8select a skin - {page}/{pages}"
       LIST:
-        TITLE: "&8Hidden players - {page}/{pages}"
+        TITLE: "&8hidden players - {page}/{pages}"
     MESSAGES:
-      PLAYER-ONLY: "&cOnly players can use this command."
-      NO-PERMISSION: '&cYou do not have permission.'
-      DEPENDENCY-MISSING: "&cHide requires protocollib to be installed and enabled."
-      DISABLED: "&cThe hide feature is currently disabled."
-      IN-COMBAT: "&cYou cannot change your hide state while in combat."
-      COOLDOWN: "&cWait &f{seconds}s &cbefore changing hide again."
-      ALREADY-HIDDEN: "&cYou are already using that hide identity."
-      NOT-HIDDEN: "&cThat player is not hidden."
-      PLAYER-NOT-FOUND: "&cPlayer not found."
-      INVALID-ALIAS: "&cThat disguise alias is not configured or is invalid."
-      INVALID-SKIN: "&cUnable to resolve that skin name or url."
-      SKIN-SEARCHING: "&7Searching skin for &f{skin}&7..."
-      ALIAS-IN-USE: "&cThat alias is already in use."
-      SCRAMBLED: "&aYour identity is now scrambled as &f{alias}&a."
-      DISGUISED: "&aYou are now disguised as &f{alias}&a."
-      REMOVED: "&aYour hide state has been removed."
-      ADMIN-REMOVED: "&aSuccessfully removed hide from &f{player}&a."
-      REMOVED-BY-ADMIN: "&cYour hide state has been removed by an administrator."
-      STATUS-NONE: "&7Hide status: &cinactive"
-      STATUS-ACTIVE: "&7Hide status: &a{mode} &8- &f{alias}"
-      CHECK: "&bHide check\n&7Real name: &f{real}\n&7Alias: &f{alias}\n&7Mode: &f{mode}\n\
-        &7Skin: &f{skin}"
-      PERMISSION-REMOVED: "&cYour hide state was removed because its permission is
+      PLAYER-ONLY: "&conly players can use this command."
+      NO-PERMISSION: '&cyou do not have permission.'
+      DEPENDENCY-MISSING: "&chide requires protocollib to be installed and enabled."
+      DISABLED: "&cthe hide feature is currently disabled."
+      IN-COMBAT: "&cyou cannot change your hide state while in combat."
+      COOLDOWN: "&cwait &f{seconds}s &cbefore changing hide again."
+      ALREADY-HIDDEN: "&cyou are already using that hide identity."
+      NOT-HIDDEN: "&cthat player is not hidden."
+      PLAYER-NOT-FOUND: "&cplayer not found."
+      INVALID-ALIAS: "&cthat disguise alias is not configured or is invalid."
+      INVALID-SKIN: "&cunable to resolve that skin name or url."
+      SKIN-SEARCHING: "&7searching skin for &f{skin}&7..."
+      ALIAS-IN-USE: "&cthat alias is already in use."
+      SCRAMBLED: "&ayour identity is now scrambled as &f{alias}&a."
+      DISGUISED: "&ayou are now disguised as &f{alias}&a."
+      REMOVED: "&ayour hide state has been removed."
+      ADMIN-REMOVED: "&asuccessfully removed hide from &f{player}&a."
+      REMOVED-BY-ADMIN: "&cyour hide state has been removed by an administrator."
+      STATUS-NONE: "&7hide status: &cinactive"
+      STATUS-ACTIVE: "&7hide status: &a{mode} &8- &f{alias}"
+      CHECK: "&bhide check\n&7real name: &f{real}\n&7alias: &f{alias}\n&7mode: &f{mode}\n\
+        &7skin: &f{skin}"
+      PERMISSION-REMOVED: "&cyour hide state was removed because its permission is
         no longer available."
   ENCHANTMENTS:
     messages:
@@ -2095,7 +2095,7 @@ CONFIG:
       selected: '&aSelected'
       cannot: '&fCannot add this enchantment'
     gui:
-      title: '&#444444Pick enchantments'
+      title: '&#444444pick enchantments'
       buttons:
         cancel:
           name: '&#39FF14Cancel'

@@ -1183,12 +1183,12 @@ public class ConfigManager {
     public FileConfiguration getSpawnStash()    { return localized("CONFIG.SPAWN_STASH", spawnStash); }
     public FileConfiguration getNetwork()       { return localized("CONFIG.NETWORK", network); }
     public FileConfiguration getStaffMode()     { return localized("CONFIG.STAFF_MODE", staffMode); }
-    public FileConfiguration getHide()          { return hide; }
+    public FileConfiguration getHide()          { return localized("CONFIG.HIDE", hide); }
     public FileConfiguration getDatabase()      { return database; }
     public FileConfiguration getServerWipe()    { return localized("CONFIG.SERVER_WIPE", serverWipe); }
     public FileConfiguration getDiscord()       { return discord; }
     public FileConfiguration getAnvilModeration() { return anvilModeration; }
-    public FileConfiguration getEnchantments()  { return enchantments; }
+    public FileConfiguration getEnchantments()  { return localized("CONFIG.ENCHANTMENTS", enchantments); }
     public FileConfiguration getFilter()        { return filter; }
 
     public FileConfiguration getLegacyMessages() { return messages; }

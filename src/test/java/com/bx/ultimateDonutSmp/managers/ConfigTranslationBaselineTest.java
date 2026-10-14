@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * every translated server, silently. One capital letter is enough, and 111 keys were stuck this way.
  *
  * <p>Only the roots whose {@code ConfigManager} getter runs through {@code localized(...)} are
- * listed. {@code getHide()} and {@code getEnchantments()} hand back the raw config, so drift there
- * costs nothing.
+ * listed. A root left off this list can drift forever, and the first day it starts going through
+ * {@code localized(...)} every stock install looks hand-edited.
  */
 class ConfigTranslationBaselineTest {
 
@@ -50,6 +50,8 @@ class ConfigTranslationBaselineTest {
         LOCALIZED_ROOTS.put("STAFF_MODE", "staff-mode.yml");
         LOCALIZED_ROOTS.put("SERVER_WIPE", "server-wipe.yml");
         LOCALIZED_ROOTS.put("WORTH", "worth.yml");
+        LOCALIZED_ROOTS.put("HIDE", "hide.yml");
+        LOCALIZED_ROOTS.put("ENCHANTMENTS", "enchantments.yml");
     }
 
     private static final List<String> MAINTENANCE_MESSAGES = List.of(
