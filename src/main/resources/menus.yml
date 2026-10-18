@@ -185,6 +185,8 @@ TEAM-MENUS:
       LORE:
       - '&fClick to confirm'
 HOME-MENU:
+  # Chest menu for Bedrock players. Set true to use the Floodgate popup.
+  BEDROCK-FORMS: false
   TITLE: '&8Homes'
   SIZE: 36
   TELEPORT-USED-MATERIAL: LIGHT_BLUE_BED
