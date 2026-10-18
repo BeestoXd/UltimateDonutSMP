@@ -32,7 +32,7 @@ public class HomeCommand implements CommandExecutor {
         String sub = CommandLabelUtils.normalizeLabel(label, command);
 
         if (sub.equals("homes")) {
-            if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {
+            if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().useForms(player)) {
                 plugin.getHomeBedrockManager().openMain(player);
             } else {
                 new HomeMenu(plugin).open(player);
@@ -72,8 +72,11 @@ public class HomeCommand implements CommandExecutor {
 
         if (sub.equals("delhome")) {
             if (args.length == 0) {
-                if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {
+                if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().useForms(player)) {
                     plugin.getHomeBedrockManager().openDeleteSelect(player);
+                } else if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {
+                    // Chest mode: the Homes GUI has a per-home action menu with delete (works on touch too)
+                    new HomeMenu(plugin).open(player);
                 } else {
                     player.sendMessage(ColorUtils.toComponent("&cUsage: /delhome <name>"));
                 }
@@ -100,7 +103,7 @@ public class HomeCommand implements CommandExecutor {
         Home home = plugin.getHomeManager().getHome(player.getUniqueId(), homeName);
         if (home == null) {
             if (plugin.getHomeManager().getHomeCount(player.getUniqueId()) == 0) {
-                if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player)) {
+                if (plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().useForms(player)) {
                     plugin.getHomeBedrockManager().openMain(player);
                 } else {
                     new HomeMenu(plugin).open(player);
