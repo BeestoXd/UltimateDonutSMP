@@ -32,6 +32,10 @@ public final class HomeBedrockManager {
             return false;
         }
     }
+    public boolean useForms(Player player) {
+        return isBedrockPlayer(player)
+                && plugin.getConfigManager().getMenus().getBoolean("HOME-MENU.BEDROCK-FORMS", false);
+    }
 
     public boolean openMain(Player player) {
         if (!isBedrockPlayer(player)) {
