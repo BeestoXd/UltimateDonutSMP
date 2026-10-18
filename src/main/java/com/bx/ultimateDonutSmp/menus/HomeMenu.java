@@ -161,7 +161,7 @@ public class HomeMenu extends BaseMenu {
             slotActions.put(TEAM_ACTION_SLOT, (p, click) -> {
                 if (click.isRightClick()) {
                     confirmTeamHomeDelete(p, team);
-                } else if (isBedrock(p)) {
+                } else if (useForms(p)) {
                     plugin.getHomeBedrockManager().openTeamHomeOptions(p);
                 } else {
                     setTeamHome(p, team);
@@ -221,7 +221,7 @@ public class HomeMenu extends BaseMenu {
         slotActions.put(actionSlot, (p, click) -> {
             if (click.isRightClick()) {
                 confirmHomeDelete(p, home);
-            } else if (isBedrock(p)) {
+            } else if (useForms(p)) {
                 plugin.getHomeBedrockManager().openHomeOptions(p, home);
             } else {
                 new HomeActionMenu(plugin, home).open(p);
@@ -310,10 +310,10 @@ public class HomeMenu extends BaseMenu {
 
     /**
      * Right-clicking a home button destroys it, so it asks first instead of acting on a misclick.
-     * Bedrock players get the Floodgate form, which already confirms.
+     * The Floodgate form asks the same question, and only when HOME-MENU.BEDROCK-FORMS is on.
      */
     private void confirmHomeDelete(Player player, Home home) {
-        if (isBedrock(player)) {
+        if (useForms(player)) {
             plugin.getHomeBedrockManager().openDeleteConfirmation(player, home);
             return;
         }
@@ -322,7 +322,7 @@ public class HomeMenu extends BaseMenu {
     }
 
     private void confirmTeamHomeDelete(Player player, Team team) {
-        if (isBedrock(player)) {
+        if (useForms(player)) {
             plugin.getHomeBedrockManager().openDeleteTeamHomeConfirmation(player, team);
             return;
         }
@@ -330,8 +330,8 @@ public class HomeMenu extends BaseMenu {
         HomeDeleteConfirmMenu.forTeamHome(plugin, page, target -> deleteTeamHome(target, team)).open(player);
     }
 
-    private boolean isBedrock(Player player) {
-        return plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().isBedrockPlayer(player);
+    private boolean useForms(Player player) {
+        return plugin.getHomeBedrockManager() != null && plugin.getHomeBedrockManager().useForms(player);
     }
 
     private void setTeamHome(Player player, Team team) {

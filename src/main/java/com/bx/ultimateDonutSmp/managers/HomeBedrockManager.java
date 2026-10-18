@@ -5,6 +5,7 @@ import com.bx.ultimateDonutSmp.models.Home;
 import com.bx.ultimateDonutSmp.models.Team;
 import com.bx.ultimateDonutSmp.utils.ColorUtils;
 import com.bx.ultimateDonutSmp.utils.PermissionUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.form.CustomForm;
 import org.geysermc.cumulus.form.Form;
@@ -32,13 +33,21 @@ public final class HomeBedrockManager {
             return false;
         }
     }
+
+    /**
+     * Chest is the Bedrock home menu unless {@code HOME-MENU.BEDROCK-FORMS} is turned on.
+     * A missing key stays off, so an old menus.yml does not keep the popup.
+     */
+    static boolean formsRequested(ConfigurationSection menus) {
+        return menus != null && menus.getBoolean("HOME-MENU.BEDROCK-FORMS", false);
+    }
+
     public boolean useForms(Player player) {
-        return isBedrockPlayer(player)
-                && plugin.getConfigManager().getMenus().getBoolean("HOME-MENU.BEDROCK-FORMS", false);
+        return isBedrockPlayer(player) && formsRequested(plugin.getConfigManager().getMenus());
     }
 
     public boolean openMain(Player player) {
-        if (!isBedrockPlayer(player)) {
+        if (!useForms(player)) {
             return false;
         }
 
@@ -110,6 +119,9 @@ public final class HomeBedrockManager {
     }
 
     public void openHomeOptions(Player player, Home home) {
+        if (!useForms(player)) {
+            return;
+        }
         if (home == null) {
             openMain(player);
             return;
@@ -140,6 +152,9 @@ public final class HomeBedrockManager {
     }
 
     public void openDeleteConfirmation(Player player, Home home) {
+        if (!useForms(player)) {
+            return;
+        }
         if (home == null) {
             openMain(player);
             return;
@@ -169,7 +184,7 @@ public final class HomeBedrockManager {
     }
 
     public void openDeleteSelect(Player player) {
-        if (!isBedrockPlayer(player)) return;
+        if (!useForms(player)) return;
 
         List<Home> homes = plugin.getHomeManager().getHomes(player.getUniqueId());
         if (homes.isEmpty()) {
@@ -202,6 +217,9 @@ public final class HomeBedrockManager {
     }
 
     public void openRenameForm(Player player, Home home) {
+        if (!useForms(player)) {
+            return;
+        }
         if (home == null) {
             openMain(player);
             return;
@@ -236,6 +254,9 @@ public final class HomeBedrockManager {
     }
 
     public void openCreateForm(Player player) {
+        if (!useForms(player)) {
+            return;
+        }
         if (plugin.getDuelManager() != null && (plugin.getDuelManager().isInDuel(player.getUniqueId())
                 || plugin.getDuelManager().isTransitioning(player.getUniqueId())
                 || plugin.getDuelManager().isLocationInDuelArena(player.getLocation()))) {
@@ -303,6 +324,9 @@ public final class HomeBedrockManager {
     }
 
     public void openTeamHomeOptions(Player player) {
+        if (!useForms(player)) {
+            return;
+        }
         Team team = plugin.getTeamManager().getTeam(player);
         if (team == null) {
             openMain(player);
@@ -367,6 +391,9 @@ public final class HomeBedrockManager {
     }
 
     public void openDeleteTeamHomeConfirmation(Player player, Team team) {
+        if (!useForms(player)) {
+            return;
+        }
         ModalForm.Builder form = ModalForm.builder()
                 .title(plain("Delete Team Home"))
                 .content(plain("Are you sure you want to delete your team home?"))

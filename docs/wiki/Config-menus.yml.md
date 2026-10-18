@@ -390,6 +390,8 @@ TEAM-MENUS:
 
 ```yaml
 HOME-MENU:
+  # Chest menu for Bedrock players. Set true to use the Floodgate popup.
+  BEDROCK-FORMS: false
   TITLE: '&8Homes'
   SIZE: 36
   TELEPORT-USED-MATERIAL: LIGHT_BLUE_BED
@@ -509,13 +511,16 @@ HOME-MENU:
 
 Both `&cRight-click to delete` lines mean what they say, but the click opens a confirmation screen
 rather than removing anything on the spot, so a missed left-click no longer costs a player a home.
-Cancelling puts them back on the page they were reading. Bedrock players get the Floodgate form
-instead, which asks the same question.
+Cancelling puts them back on the page they were reading. Bedrock players get that same chest
+confirmation. Set `HOME-MENU.BEDROCK-FORMS` to `true` in `menus.yml` when you want the Floodgate
+popup.
 
 ### 3. Practical Setup Example
 
 ```yaml
 HOME-MENU:
+  # Chest menu for Bedrock players. Set true to use the Floodgate popup.
+  BEDROCK-FORMS: false
   TITLE: '&8Homes'
   SIZE: 36
   TELEPORT-USED-MATERIAL: LIGHT_BLUE_BED
