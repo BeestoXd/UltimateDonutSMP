@@ -25,8 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * every translated server, silently. One capital letter is enough, and 111 keys were stuck this way.
  *
  * <p>Only the roots whose {@code ConfigManager} getter runs through {@code localized(...)} are
- * listed. A root left off this list can drift forever, and the first day it starts going through
- * {@code localized(...)} every stock install looks hand-edited.
+ * listed. {@code getMessages()} is one of them: {@code messages.yml} is compared with
+ * {@code MESSAGES} in the English catalogue, not with a {@code CONFIG.*} block. A root left off
+ * this list can drift forever, and the first day it starts going through {@code localized(...)}
+ * every stock install looks hand-edited.
  */
 class ConfigTranslationBaselineTest {
 
@@ -73,31 +75,52 @@ class ConfigTranslationBaselineTest {
         return section;
     }
 
+    private static int compare(String cataloguePath, String resourceName, List<String> drifted) {
+        ConfigurationSection catalogue = resource("languages/en_US.yml").getConfigurationSection(cataloguePath);
+        assertNotNull(catalogue, "en_US.yml lost its " + cataloguePath + " section");
+        YamlConfiguration source = resource(resourceName);
+        int compared = 0;
+        for (String path : catalogue.getKeys(true)) {
+            if (catalogue.isConfigurationSection(path) || !source.contains(path)) {
+                continue;
+            }
+            compared++;
+            if (!catalogue.get(path).equals(source.get(path))) {
+                drifted.add(cataloguePath + "." + path
+                        + "\n      " + resourceName + ": " + source.get(path)
+                        + "\n      en_US.yml: " + catalogue.get(path));
+            }
+        }
+        return compared;
+    }
+
     @Test
     void noLocalizedConfigKeyIsPinnedToEnglishByADriftingCatalogue() {
         List<String> drifted = new ArrayList<>();
         int compared = 0;
 
         for (Map.Entry<String, String> entry : LOCALIZED_ROOTS.entrySet()) {
-            ConfigurationSection catalogue = catalogue(entry.getKey());
-            YamlConfiguration source = resource(entry.getValue());
-
-            for (String path : catalogue.getKeys(true)) {
-                if (catalogue.isConfigurationSection(path) || !source.contains(path)) {
-                    continue;
-                }
-                compared++;
-                if (!catalogue.get(path).equals(source.get(path))) {
-                    drifted.add("CONFIG." + entry.getKey() + "." + path
-                            + "\n      " + entry.getValue() + ": " + source.get(path)
-                            + "\n      en_US.yml: " + catalogue.get(path));
-                }
-            }
+            compared += compare("CONFIG." + entry.getKey(), entry.getValue(), drifted);
         }
+        // messages.yml is the stock text for /discord and the rest of getMessages().
+        // A case change here is enough for customizedLegacyKeys to treat the key as a
+        // hand edit and leave every language on the English file.
+        compared += compare("MESSAGES", "messages.yml", drifted);
 
         assertTrue(compared > 100, "expected the catalogue to share plenty of keys, saw " + compared);
         assertEquals(List.of(), drifted,
                 "these keys differ from their feature yml, so no translation of them is ever applied");
+    }
+
+    @Test
+    void stockSocialLinksMatchTheEnglishCatalogue() {
+        YamlConfiguration messages = resource("messages.yml");
+        ConfigurationSection social = resource("languages/en_US.yml").getConfigurationSection("MESSAGES.SOCIAL");
+        assertNotNull(social, "en_US.yml lost MESSAGES.SOCIAL");
+
+        for (String key : List.of("DISCORD", "TWITTER", "STORE")) {
+            assertEquals(messages.getStringList("SOCIAL." + key), social.getStringList(key), key);
+        }
     }
 
     @Test

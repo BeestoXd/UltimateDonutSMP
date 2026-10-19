@@ -2133,7 +2133,7 @@ MESSAGES:
     CLAIM_DATABASE_ERROR: "&cNão foi possível concluir o resgate agora."
     DISABLED: "&cAuction house is currently disabled."
     SELL_USAGE: "&cUsage: /ah vende <price>"
-    CANCEL_USAGE: "&cUsage: /ah cancelar <listingid>"
+    CANCEL_USAGE: "&cUsage: /ah cancelar <listingId>"
     INVALID_PRICE: "&cInvalid price format. use numbers like 100, 5k, or 1,5m."
     INVALID_LISTING_ID: "&cInvalid listing id."
     NO_ADMIN_PERMISSION: '&cYou do not have permission to reload auction house settings.'
@@ -2404,8 +2404,8 @@ MESSAGES:
     INFO-PERMISSION: '&7Permission: &f{permission}'
     INFO-HOLOGRAM: "&7Hologram: &f{hologram}"
   WORTH:
-    DEFAULT: "&b1 {item} &7Is now &a${price}"
-    HAND-ITEM: "&b{amount} {item} &7Is now &a${total}"
+    DEFAULT: "&b1 {item} &fis worth &a{price_formatted}"
+    HAND-ITEM: "&b{amount} {item} &fis worth &a{total_formatted}"
     NO-SELLABLE: "&cThis item is not sellable."
     CONTAINER-BREAKDOWN: "&7Base: &f${base} &8| &7contents: &f${contents}"
     RELOADED: "&aWorth config reloaded."
