@@ -2246,6 +2246,92 @@ CONFIG:
           displayname: '&7 '
       sounds:
         click: {}
+  PVP:
+    MATCH:
+      DATE_FORMAT: dd/MM/yyyy HH:mm
+    BROADCASTS:
+      LEVEL_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7mencapai Level PvP &c%pvp_level%&7!"
+      RANK_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7naik ke rank %pvp_rank% &7dengan &c%pvp_elo% &7elo!"
+      RANK_DOWN:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7turun ke rank %pvp_rank% &7dengan &c%pvp_elo% &7elo!"
+    SCOREBOARD:
+      TITLE:
+      - "&c&lARENA PVP"
+      LINES:
+      - ''
+      - "&fPEMAIN: &c%player_name%"
+      - "&fRANK: %pvp_rank%"
+      - "&fLEVEL: &c%pvp_level%"
+      - "&fK/D: &c%pvp_kills%&7/&c%pvp_deaths%"
+      - ''
+      - "&fRESET ARENA"
+      - "&c%pvp_arena_reset%"
+      - ''
+      - "&7play.example.net"
+      RESET_FORMAT: "{d}D:{h}H:{m}M:{s}S"
+      RESET_DISABLED_TEXT: "&7-"
+    MENUS:
+      QUEUE:
+        TITLE: "&8Antrean PvP"
+        CONFIRM:
+          DISPLAY-NAME: "&aKONFIRMASI"
+        CANCEL:
+          DISPLAY-NAME: "&cKELUAR"
+      LEADERBOARD:
+        TITLE: "&8Papan peringkat"
+      HISTORY:
+        TITLE: "&8Riwayat laga &7- &f{player}"
+      ASSIGN:
+        TITLE: "&8Tetapkan laga"
+        CONFIRM:
+          DISPLAY-NAME: "&aMULAI"
+    MESSAGES:
+      DISABLED: "&cArena PvP tidak diaktifkan."
+      NOT_SET_UP: "&cArena PvP belum disiapkan."
+      NO_KITS: "&cBelum ada kit PvP untuk dipilih."
+      JOINED: "&aKamu masuk ke arena PvP."
+      LEFT: "&aKamu keluar dari arena PvP."
+      ALREADY_IN: "&cKamu sudah berada di arena PvP."
+      NOT_IN: "&cKamu tidak berada di arena PvP."
+      KIT_GIVEN: "&aKamu memilih kit &f{kit}&a."
+      KIT_NO_PERMISSION: "&cKamu tidak punya akses ke kit itu."
+      RESPAWN_COUNTDOWN: "&fMuncul lagi dalam &c{seconds}&f..."
+      BLOCKED_COMMAND: "&cKamu tidak bisa memakai perintah itu di dalam arena PvP."
+      LEFT_BOUNDARY: "&cKamu keluar dari arena dan dikeluarkan dari pertarungan."
+      KILL_REWARD: "&8[&cPVP&8] &7Kamu membunuh &f{victim} &8(&c+{elo} elo&8, &c+{xp} xp&8)"
+      DEATH_PENALTY: "&8[&cPVP&8] &f{killer} &7membunuhmu &8(&c-{elo} elo&8)"
+      KILL_FARM_LIMIT: "&7Tidak ada hadiah - kamu baru saja membunuh &f{victim} &7terlalu sering."
+      LEVEL_UP: "&aKamu mencapai Level PvP &f{level}&a!"
+      RANK_UP: "&aKamu naik ke rank {rank}&a!"
+      RANK_DOWN: "&cKamu turun ke rank {rank}&c."
+      RESET_WARNING: "&8[&cPVP&8] &7Arena direset dalam &c{time}&7."
+      RESET_DONE: "&8[&cPVP&8] &7Arena sudah direset."
+      RESET_NO_SCHEMATIC: "&cTidak ada schematic yang diatur untuk reset arena."
+      STATS_HEADER: "&8&m--------&r &cStatistik PvP: &f{player} &8&m--------"
+      STATS_LINE: "&7{label}: &f{value}"
+      TOP_HEADER: "&8&m--------&r &cPemain PvP teratas &8&m--------"
+      TOP_LINE: "&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)"
+      TOP_EMPTY: "&7Belum ada yang bertarung di arena."
+      QUEUE_JOINED: "&aKamu masuk antrean berperingkat. Menunggu lawan..."
+      QUEUE_LEFT: "&aKamu keluar dari antrean berperingkat."
+      QUEUE_ALREADY_IN: "&cKamu sudah ada di antrean."
+      QUEUE_NOT_IN: "&cKamu tidak ada di antrean."
+      MATCH_ALREADY_IN: "&cKamu sudah ada di laga berperingkat."
+      MATCH_LEAVE_ARENA_FIRST: "&cKeluar dari arena sebelum masuk antrean."
+      MATCH_NEEDS_TWO: "&cLaga berperingkat butuh dua pemain yang berbeda."
+      MATCH_BUSY: "&c{player} sudah berada di arena."
+      SYNC_DISABLED: "&cSinkronisasi akun dimatikan."
+      SYNC_FAILED: "&cKode sinkronisasi tidak bisa dibuat sekarang."
+      SYNC_HEADER: "&e&lSinkron rank"
+      SYNC_CODE: "&fKode sinkronmu: &e{code}"
+      SYNC_HINT: "&7Pakai &f/sync {code} &7di Discord kami untuk menautkan akun."
+      MATCH_STARTED: "&8[&cPVP&8] &f{first} &7vs &f{second}"
+      MATCH_COUNTDOWN: "&fMulai dalam &c{seconds}&f..."
+      MATCH_WIN: "&aKamu mengalahkan &f{opponent} &8(&a{elo} elo&8, &a{hits} pukulan&8)"
+      MATCH_LOSS: "&cKamu kalah dari &f{opponent} &8(&c{elo} elo&8, &c{hits} pukulan&8)"
+      MATCH_DRAW: "&7Laga melawan &f{opponent} &7berakhir seri."
 MESSAGES:
   AUCTION_HOUSE:
     PLAYERS_ONLY: "&cOnly players can use this command."

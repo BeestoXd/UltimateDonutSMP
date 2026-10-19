@@ -2111,6 +2111,92 @@ CONFIG:
           displayname: '&7 '
       sounds:
         click: {}
+  PVP:
+    MATCH:
+      DATE_FORMAT: dd/MM/yyyy HH:mm
+    BROADCASTS:
+      LEVEL_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7alcançou o nível PvP &c%pvp_level%&7!"
+      RANK_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7subiu para o rank %pvp_rank% &7com &c%pvp_elo% &7elo!"
+      RANK_DOWN:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7caiu para o rank %pvp_rank% &7com &c%pvp_elo% &7elo!"
+    SCOREBOARD:
+      TITLE:
+      - "&c&lARENA PVP"
+      LINES:
+      - ''
+      - "&fJOGADOR: &c%player_name%"
+      - "&fRANK: %pvp_rank%"
+      - "&fNÍVEL: &c%pvp_level%"
+      - "&fK/D: &c%pvp_kills%&7/&c%pvp_deaths%"
+      - ''
+      - "&fRESET DA ARENA"
+      - "&c%pvp_arena_reset%"
+      - ''
+      - "&7play.example.net"
+      RESET_FORMAT: "{d}D:{h}H:{m}M:{s}S"
+      RESET_DISABLED_TEXT: "&7-"
+    MENUS:
+      QUEUE:
+        TITLE: "&8Fila PvP"
+        CONFIRM:
+          DISPLAY-NAME: "&aCONFIRMAR"
+        CANCEL:
+          DISPLAY-NAME: "&cSAIR"
+      LEADERBOARD:
+        TITLE: "&8Classificações"
+      HISTORY:
+        TITLE: "&8Histórico &7- &f{player}"
+      ASSIGN:
+        TITLE: "&8Atribuir partida"
+        CONFIRM:
+          DISPLAY-NAME: "&aINICIAR"
+    MESSAGES:
+      DISABLED: "&cA arena PvP não está ativada."
+      NOT_SET_UP: "&cA arena PvP ainda não foi configurada."
+      NO_KITS: "&cAinda não há kits de PvP para escolher."
+      JOINED: "&aVocê entrou na arena PvP."
+      LEFT: "&aVocê saiu da arena PvP."
+      ALREADY_IN: "&cVocê já está na arena PvP."
+      NOT_IN: "&cVocê não está na arena PvP."
+      KIT_GIVEN: "&aVocê escolheu o kit &f{kit}&a."
+      KIT_NO_PERMISSION: "&cVocê não tem acesso a esse kit."
+      RESPAWN_COUNTDOWN: "&fRenascendo em &c{seconds}&f..."
+      BLOCKED_COMMAND: "&cVocê não pode usar esse comando dentro da arena PvP."
+      LEFT_BOUNDARY: "&cVocê saiu da arena e foi removido da luta."
+      KILL_REWARD: "&8[&cPVP&8] &7Você matou &f{victim} &8(&c+{elo} elo&8, &c+{xp} xp&8)"
+      DEATH_PENALTY: "&8[&cPVP&8] &f{killer} &7matou você &8(&c-{elo} elo&8)"
+      KILL_FARM_LIMIT: "&7Sem recompensa - você já matou &f{victim} &7há pouco tempo."
+      LEVEL_UP: "&aVocê alcançou o nível PvP &f{level}&a!"
+      RANK_UP: "&aVocê subiu para o rank {rank}&a!"
+      RANK_DOWN: "&cVocê caiu para o rank {rank}&c."
+      RESET_WARNING: "&8[&cPVP&8] &7A arena reinicia em &c{time}&7."
+      RESET_DONE: "&8[&cPVP&8] &7A arena foi reiniciada."
+      RESET_NO_SCHEMATIC: "&cNenhum esquemático está configurado para reiniciar a arena."
+      STATS_HEADER: "&8&m--------&r &cEstatísticas PvP: &f{player} &8&m--------"
+      STATS_LINE: "&7{label}: &f{value}"
+      TOP_HEADER: "&8&m--------&r &cMelhores jogadores PvP &8&m--------"
+      TOP_LINE: "&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)"
+      TOP_EMPTY: "&7Ninguém lutou na arena ainda."
+      QUEUE_JOINED: "&aVocê entrou na fila ranqueada. Esperando um oponente..."
+      QUEUE_LEFT: "&aVocê saiu da fila ranqueada."
+      QUEUE_ALREADY_IN: "&cVocê já está na fila."
+      QUEUE_NOT_IN: "&cVocê não está na fila."
+      MATCH_ALREADY_IN: "&cVocê já está em uma partida ranqueada."
+      MATCH_LEAVE_ARENA_FIRST: "&cSaia da arena antes de entrar na fila."
+      MATCH_NEEDS_TWO: "&cUma partida ranqueada precisa de dois jogadores diferentes."
+      MATCH_BUSY: "&c{player} já está na arena."
+      SYNC_DISABLED: "&cA sincronização de conta está desligada."
+      SYNC_FAILED: "&cNão foi possível criar um código de sincronização agora."
+      SYNC_HEADER: "&e&lSincronizar rank"
+      SYNC_CODE: "&fSeu código: &e{code}"
+      SYNC_HINT: "&7Use &f/sync {code} &7no nosso Discord para vincular sua conta."
+      MATCH_STARTED: "&8[&cPVP&8] &f{first} &7vs &f{second}"
+      MATCH_COUNTDOWN: "&fComeça em &c{seconds}&f..."
+      MATCH_WIN: "&aVocê venceu &f{opponent} &8(&a{elo} elo&8, &a{hits} acertos&8)"
+      MATCH_LOSS: "&cVocê perdeu para &f{opponent} &8(&c{elo} elo&8, &c{hits} acertos&8)"
+      MATCH_DRAW: "&7A partida contra &f{opponent} &7terminou em empate."
 MESSAGES:
   AUCTION_HOUSE:
     PLAYERS_ONLY: "&cOnly players can use this command."
