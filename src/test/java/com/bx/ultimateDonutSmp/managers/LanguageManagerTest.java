@@ -354,6 +354,30 @@ class LanguageManagerTest {
     }
 
     @Test
+    void stockSocialLinksFollowTheActiveLanguageFile() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration english = load("en_US");
+        YamlConfiguration french = load("fr_FR");
+        useLanguages(
+                manager,
+                "fr_FR",
+                "en_US",
+                Map.of("en_US", english, "fr_FR", french),
+                Map.of("en_us", english, "fr_fr", french)
+        );
+
+        FileConfiguration localized = manager.localize("MESSAGES", loadResource("messages.yml"));
+
+        for (String key : List.of("DISCORD", "TWITTER", "STORE")) {
+            assertEquals(
+                    french.getStringList("MESSAGES.SOCIAL." + key),
+                    localized.getStringList("SOCIAL." + key),
+                    key
+            );
+        }
+    }
+
+    @Test
     void customizedLegacyValueSurvivesTranslation() throws Exception {
         LanguageManager manager = new LanguageManager(null);
         YamlConfiguration bundledEnglish = language("MESSAGES.SOCIAL.DISCORD", "&fJoin our discord");

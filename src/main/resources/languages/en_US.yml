@@ -2815,20 +2815,20 @@ MESSAGES:
       now.'
     CANCEL_DATABASE_ERROR: '&cAuction house could not cancel that listing right now.'
     CLAIM_DATABASE_ERROR: '&cAuction house could not complete that claim right now.'
-    DISABLED: '&cAuction house is currently disabled.'
+    DISABLED: '&cAuction House is currently disabled.'
     SELL_USAGE: '&cUsage: /ah sell <price>'
-    CANCEL_USAGE: '&cUsage: /ah cancel <listingid>'
-    INVALID_PRICE: '&cInvalid price format. use numbers like 100, 5k, or 1.5M.'
+    CANCEL_USAGE: '&cUsage: /ah cancel <listingId>'
+    INVALID_PRICE: '&cInvalid price format. Use numbers like 100, 5K, or 1.5M.'
     INVALID_LISTING_ID: '&cInvalid listing id.'
-    NO_ADMIN_PERMISSION: '&cYou do not have permission to reload auction house settings.'
-    RELOADED: '&aAuction house config reloaded.'
+    NO_ADMIN_PERMISSION: '&cYou do not have permission to reload Auction House settings.'
+    RELOADED: '&aAuction House config reloaded.'
     NO_ITEM_IN_HAND: '&cHold the item you want to list in your main hand.'
-    ITEM_BLOCKED: '&cThat item cannot be listed in the auction house.'
+    ITEM_BLOCKED: '&cThat item cannot be listed in the Auction House.'
     PRICE_OUT_OF_RANGE: '&cThat price is outside the allowed range.'
     NO_MONEY_FOR_FEE: '&cYou do not have enough money to pay the listing fee.'
     MAX_LISTINGS_REACHED: '&cYou have reached your active listing limit.'
     LISTING_CREATED: '&aListing created! &7#{listing_id} &f{item} &7for &a${price}&7.
-      fee: &a${fee}&7. expires in &f{expires}&7.'
+      Fee: &a${fee}&7. Expires in &f{expires}&7.'
     LISTING_CANCELLED: '&eListing #{listing_id} &f({item}) &ehas been moved to your
       claim queue.'
     LISTING_NOT_FOUND: '&cThat listing no longer exists.'
@@ -2839,24 +2839,24 @@ MESSAGES:
     FULL_INVENTORY: '&cYou need free inventory space to buy that item.'
     PURCHASE_SUCCESS: '&aPurchased &f{item} &afor &a${price} &afrom &f{seller}&a.'
     ITEM_SOLD: '&aYour listing sold! &f{buyer} &abought &f{item} &afor &a${price}&a.
-      claimable payout: &a${payout}&a.'
+      Claimable payout: &a${payout}&a.'
     CLAIM_NOT_FOUND: '&cThat claim no longer exists.'
     NOT_YOUR_CLAIM: '&cThat claim does not belong to you.'
     CLAIM_ALREADY_CLAIMED: '&cThat claim was already collected.'
     CLAIM_INVENTORY_FULL: '&cYou need a free inventory slot to claim that item.'
-    CLAIMED_MONEY: '&aClaimed &a${amount} &afrom your auction house sales.'
+    CLAIMED_MONEY: '&aClaimed &a${amount} &afrom your Auction House sales.'
     CLAIMED_ITEM: '&aClaimed returned item: &f{item}&a.'
     SEARCH_PROMPT: '&6&lAuctionhouse &8» &etype an item name in chat to search the
       auction house.'
   TEAM:
-    NO-TEAM: '&cYou don''t have a team. type /team create (name) to create a team.'
+    NO-TEAM: '&cYou don''t have a team. Type /team create (name) to create a team.'
     ALREADY-EXISTS: '&cYou cannot create a team with this name, it is already taken.'
     TEAM-CREATED: '&aTeam created.'
     TEAM-DISBANDED: '&7Team disbanded.'
     ALREADY-IN-TEAM: '&cYou are already in a team.'
     NOT-LEADER: '&cYou are not the leader.'
     PLAYER-NO-INVITES: '&cThis player does not accept invitations.'
-    PLAYER-IN-TEAM: '&c{player} Is already in a team.'
+    PLAYER-IN-TEAM: '&c{player} is already in a team.'
     TEAM-FULL: '&cTeam has reached the maximum members.'
     INVITE-SENT: '&eYou have invited &a{player} &eto join the team.'
     NO-PENDING-INVITES: '&cYou have no pending invites for &6{team}&c.'
@@ -2864,16 +2864,16 @@ MESSAGES:
     CANT-KICK-SELF: '&cYou cannot kick yourself!'
     KICK-SUCCESS: '&aSuccessfully kicked &7({player}).'
     KICKED-FROM-TEAM: '&aYou have been kicked from the team.'
-    PLAYER-NOT-IN-TEAM: '&c{player} Is not a member of your team.'
+    PLAYER-NOT-IN-TEAM: '&c{player} is not a member of your team.'
     TEAM-CHAT-ENABLED: '&7You enabled team chat.'
     TEAM-CHAT-DISABLED: '&7You disabled team chat.'
     NO-MANAGE-PERMISSION: '&cYou don''t have permission to invite or kick teammates.'
     NO-EDIT-HOME-PERMISSION: '&cYou don''t have permission to edit the team home.'
     NO-VISIT-HOME-PERMISSION: '&cYou don''t have permission to visit the team home.'
     NO-TEAM-CHAT-PERMISSION: '&cYou don''t have permission to use team chat.'
-    NO-PVP-PERMISSION: '&cYou don''t have permission to change team pvp.'
-    TEAM-PVP-ENABLED: '&7Team pvp is now &aenabled&7.'
-    TEAM-PVP-DISABLED: '&7Team pvp is now &cdisabled&7.'
+    NO-PVP-PERMISSION: '&cYou don''t have permission to change team PvP.'
+    TEAM-PVP-ENABLED: '&7Team PvP is now &aenabled&7.'
+    TEAM-PVP-DISABLED: '&7Team PvP is now &cdisabled&7.'
     NO-TEAM-HOME: '&7Your team does not have a home.'
     TEAM-HOME-DELETED: '&7Team home deleted.'
     TEAM-HOME-SET: '&7Team home set'
@@ -2881,19 +2881,19 @@ MESSAGES:
     INVITED-TO-JOIN: '&7You have been invited to join the &a{team}&7 team!'
     CLICK-TO-JOIN: '&b[Click to join]'
     HOVER-JOIN: '&eClick to join the {team} team.'
-    OR-TYPE-COMMAND: '&7Or type &f{command}&7 to join.'
-    JOINED-BROADCAST: '&a{player} &eHas joined the team.'
+    OR-TYPE-COMMAND: '&7or type &f{command}&7 to join.'
+    JOINED-BROADCAST: '&a{player} &ehas joined the team.'
     CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
     EXCLUDED-WORLD: '&cYou cannot set a team home in this world.'
   CHAT-MANAGER:
     HELP:
     - ''
-    - '&b&lChat manager &7(commands)'
+    - '&b&lChat Manager &7(Commands)'
     - ''
-    - '&f/chat Mute &7- to mute global chat.'
-    - '&f/chat Unmute &7- to unmute global chat.'
-    - '&f/chat Delay (time) &7- to add delay to global chat.'
-    - '&f/chat Clear &7- to clear global chat.'
+    - '&f/chat mute &7- To mute global chat.'
+    - '&f/chat unmute &7- To unmute global chat.'
+    - '&f/chat delay (time) &7- To add delay to global chat.'
+    - '&f/chat clear &7- To clear global chat.'
     - ''
     MUTED: '&aGlobal chat is now muted.'
     UNMUTED: '&aGlobal chat is now unmuted.'
@@ -2901,14 +2901,14 @@ MESSAGES:
     CLEARED: '&aGlobal chat is cleared.'
     NO-PERMISSION: '&cYou do not have permission.'
     DISABLED: '&cChat command is currently disabled.'
-    INVALID-DELAY: '&cInvalid delay. use a number between 0 and {max}.'
-    STATUS-ENABLED: Enabled
-    STATUS-DISABLED: Disabled
+    INVALID-DELAY: '&cInvalid delay. Use a number between 0 and {max}.'
+    STATUS-ENABLED: enabled
+    STATUS-DISABLED: disabled
     GLOBAL-MUTED-BLOCK: '&cGlobal chat is currently muted.'
     GLOBAL-DELAY-BLOCK: '&cYou must wait &f{seconds}s &cbefore chatting again.'
   IGNORE:
-    ADDED: '&7%player% &cHas been added to your ignore list.'
-    REMOVED: '&7%player% &cHas been removed from your ignore list.'
+    ADDED: '&7%player% &chas been added to your ignore list.'
+    REMOVED: '&7%player% &chas been removed from your ignore list.'
     USAGE: '&cUsage: /ignore <player|list>'
     UNIGNORE-USAGE: '&cUsage: /unignore <player>'
     PLAYER-ONLY: '&cOnly players can use this command.'
@@ -2916,9 +2916,9 @@ MESSAGES:
     DISABLED: '&cIgnore command is currently disabled.'
     CANNOT-IGNORE-SELF: '&cYou cannot ignore yourself.'
     PLAYER-NOT-FOUND: '&cPlayer not found.'
-    NOT-IGNORED: '&7%player% &cIs not in your ignore list.'
+    NOT-IGNORED: '&7%player% &cis not in your ignore list.'
     LIST-EMPTY: '&7You are not ignoring anyone.'
-    LIST-HEADER: '&8&m-------- &cIgnored players &7(%count%) &8&m--------'
+    LIST-HEADER: '&8&m-------- &cIgnored Players &7(%count%) &8&m--------'
     LIST-ENTRY: '&8- &7%player%'
     MESSAGE-BLOCKED-SENDER: '&cYou cannot message %player%.'
     ERROR: '&cCould not update your ignore list.'
@@ -2927,8 +2927,8 @@ MESSAGES:
     PM_DISABLED: '&cPrivate messages are now disabled'
   MESSAGES:
     CANNOT_MESSAGE_SELF: '&cYou cannot message yourself!'
-    PLAYER_BLOCKED: '&c%player% Has blocked you.'
-    PMS_DISABLED: '&c%player% Has private messages disabled.'
+    PLAYER_BLOCKED: '&c%player% has blocked you.'
+    PMS_DISABLED: '&c%player% has private messages disabled.'
     NO_CONVERSATION: '&cYou are currently not in conversation with anyone or the player
       is offline.'
     SENDER_FORMAT: '&d(To &a%player%&d) %message%'
@@ -2969,7 +2969,7 @@ MESSAGES:
   TELEPORT:
     SUCCESS: '&7You have been teleported successfully'
     COUNTDOWN: '&7Teleporting in &b{seconds}&7 seconds'
-    WARNING: '&eDo not move for &b{seconds}&e seconds. if you move, the teleport will
+    WARNING: '&eDo not move for &b{seconds}&e seconds. If you move, the teleport will
       be canceled.'
     CANCELED: '&cTeleport canceled because you moved.'
     TO_PLAYER: '&dTeleported &7to %player%'
@@ -2982,38 +2982,38 @@ MESSAGES:
     TO_OFFLINE_PLAYER: '&dTeleported &7to last known location of %player%'
     OFFLINE_NO_LOCATION: '&cNo saved location found for %player%.'
   SHARD-BOOSTER:
-    ACTIVATED: '&aYou have activated your &5shard booster &afor 24h.'
-    ALREADY-ACTIVATED: '&cYou already have an active shard booster.'
+    ACTIVATED: '&aYou have activated your &5Shard Booster &afor 24h.'
+    ALREADY-ACTIVATED: '&cYou already have an active Shard Booster.'
     EXPIRED: '&cYour shard booster has expired.'
   TPA:
-    INVITE-SENT: '&eYou have invited &a{player} &eto teleport.'
-    INVITE-HERE-SENT: '&eYou have invited &a{player} &eto teleport to you.'
+    INVITE-SENT: '&eyou have invited &a{player} &eto teleport.'
+    INVITE-HERE-SENT: '&eyou have invited &a{player} &eto teleport to you.'
     ALREADY-SENT: '&cYou have already sent the request to &6{player}.'
-    REQUEST-RECEIVED: '&e[&d&lTpa request&e] &eyou have a request from &a&l{player}&e.
+    REQUEST-RECEIVED: '&e[&d&ltpa request&e] &eyou have a request from &a&l{player}&e.
       &a&l(click to accept)'
-    REQUEST-HERE-RECEIVED: '&e[&d&lTpahere request&e] &eyou have a request from &a&l{player}&e
+    REQUEST-HERE-RECEIVED: '&e[&d&ltpahere request&e] &eyou have a request from &a&l{player}&e
       to teleport to them. &a&l(click to accept)'
-    NO-REQUEST: '&cYou have no tpa request from &a{player}.'
+    NO-REQUEST: '&cyou have no tpa request from &a{player}.'
     NO-SENT-REQUESTS: '&cThis teleport request doest not exist.'
     CANCELLED-REQUESTS: '&7You canceled your tpa requests.'
-    NO-REQUEST-HERE: '&cYou have no tpahere request from &a{player}.'
-    ACCEPTED: '&aYou have accepted the tpa request from &a{player}.'
-    ACCEPTED-HERE: '&aYou have accepted the tpahere request from &a{player}.'
-    YOUR-REQUEST-ACCEPTED: '&a{player} Has accepted your tpa request.'
-    YOUR-REQUEST-HERE-ACCEPTED: '&a{player} Has accepted your tpahere request.'
+    NO-REQUEST-HERE: '&cyou have no tpahere request from &a{player}.'
+    ACCEPTED: '&ayou have accepted the tpa request from &a{player}.'
+    ACCEPTED-HERE: '&ayou have accepted the tpahere request from &a{player}.'
+    YOUR-REQUEST-ACCEPTED: '&a{player} has accepted your tpa request.'
+    YOUR-REQUEST-HERE-ACCEPTED: '&a{player} has accepted your tpahere request.'
     CANNOT-INVITE-YOURSELF: '&cYou cannot invite yourself!'
     NOT-ACCEPTING-REQUESTS: '&cThis player is not accepting requests.'
     EXPIRED: '&cThe teleport request from &a{player} &chas expired.'
     YOUR-REQUEST-EXPIRED: '&cYour teleport request to &a{player} &chas expired.'
   HOME:
-    NAME-PROMPT: '&7Type the home name in chat for &b{name}&7. type &ccancel &7to
+    NAME-PROMPT: '&7Type the home name in chat for &b{name}&7. Type &ccancel &7to
       abort.'
     SET: '&7Home set'
     DELETED: '&7Home deleted'
-    RENAME-PROMPT: '&7Type the new name for &b{name}&7 in chat. type &ccancel &7to
+    RENAME-PROMPT: '&7Type the new name for &b{name}&7 in chat. Type &ccancel &7to
       abort.'
     RENAME-SUCCESS: '&7You rename your home to &b{name}'
-    INVALID-NAME: '&cInvalid home name. do not use spaces.'
+    INVALID-NAME: '&cInvalid home name. Do not use spaces.'
     ALREADY-EXISTS: '&cA home with that name already exists.'
     CANCELLED: '&7Home input cancelled.'
     EXCLUDED-WORLD: '&cYou cannot set a home in this world.'
@@ -3028,7 +3028,7 @@ MESSAGES:
     CREATED: '&aWarp &b{name} &ahas been created.'
     DELETED: '&aWarp &b{name} &ahas been deleted.'
     ALREADY-EXISTS: '&cWarp ''&e{name}&c'' already exists.'
-    INVALID-NAME: '&cInvalid warp name. use only letters, numbers, dashes, and underscores.'
+    INVALID-NAME: '&cInvalid warp name. Use only letters, numbers, dashes, and underscores.'
   WARPMANAGER:
     USAGE: '&cUsage: /warpmanager <create|delete|list> [name]'
     CREATE-USAGE: '&cUsage: /warpmanager create <name>'
@@ -3046,10 +3046,10 @@ MESSAGES:
     NO-PERMISSION: '&cYou do not have permission to use this portal.'
     IN-COMBAT: '&cYou cannot use portals while in combat.'
     TELEPORT-IN-PROGRESS: '&cYou are already teleporting.'
-    STATUS-READY: '&aReady'
-    STATUS-DISABLED: '&cDisabled'
-    STATUS-INVALID-CUBOID: '&eInvalid cuboid'
-    STATUS-INVALID-DESTINATION: '&eInvalid destination'
+    STATUS-READY: '&aready'
+    STATUS-DISABLED: '&cdisabled'
+    STATUS-INVALID-CUBOID: '&einvalid cuboid'
+    STATUS-INVALID-DESTINATION: '&einvalid destination'
   PORTALMANAGER:
     USAGE: '&cUsage: /portalmanager <list|info|create|delete|setcuboid|setdestination|setdisplay|toggle|setpriority|sethologramhere>'
     NO-PERMISSION: '&cYou do not have permission to manage portals.'
@@ -3063,9 +3063,9 @@ MESSAGES:
     TOGGLE-USAGE: '&cUsage: /portalmanager toggle <id>'
     SETPRIORITY-USAGE: '&cUsage: /portalmanager setpriority <id> <number>'
     SETHOLOGRAMHERE-USAGE: '&cUsage: /portalmanager sethologramhere <id>'
-    INVALID-ID: '&cInvalid portal id. use only letters, numbers, dashes, and underscores.'
+    INVALID-ID: '&cInvalid portal id. Use only letters, numbers, dashes, and underscores.'
     INVALID-CUBOID: '&cCuboid ''&e{cuboid}&c'' does not exist.'
-    INVALID-DESTINATION: '&cRtp destination ''&e{destination}&c'' is unavailable.'
+    INVALID-DESTINATION: '&cRTP destination ''&e{destination}&c'' is unavailable.'
     INVALID-PRIORITY: '&cPriority must be a whole number.'
     NOT-FOUND: '&cPortal ''&e{id}&c'' not found.'
     ALREADY-EXISTS: '&cPortal ''&e{id}&c'' already exists.'
@@ -3075,22 +3075,22 @@ MESSAGES:
     DELETED: '&aPortal &d{id} &ahas been deleted.'
     TOGGLED: '&aPortal &d{id} &ais now &f{state}&a.'
     LIST-HEADER: '&8&m---------------- &dPortals &7({count}) &8&m----------------'
-    LIST-ENTRY: '&7- &d{id} &8[&f{state}&8] &7Cuboid=&f{cuboid} &7destination=&f{destination}'
+    LIST-ENTRY: '&7- &d{id} &8[&f{state}&8] &7cuboid=&f{cuboid} &7destination=&f{destination}'
     INFO-HEADER: '&8&m---------------- &dPortal: &f{id} &8&m----------------'
     INFO-DISPLAY: '&7Display: &f{display}'
     INFO-STATE: '&7State: &f{state}'
     INFO-CUBOID: '&7Cuboid: &f{cuboid}'
     INFO-DESTINATION: '&7Destination: &f{destination}'
-    INFO-WORLD: '&7Resolved world: &f{world}'
+    INFO-WORLD: '&7Resolved World: &f{world}'
     INFO-PRIORITY: '&7Priority: &f{priority}'
-    INFO-COOLDOWN: '&7Trigger cooldown: &f{cooldown}ms'
+    INFO-COOLDOWN: '&7Trigger Cooldown: &f{cooldown}ms'
     INFO-PERMISSION: '&7Permission: &f{permission}'
     INFO-HOLOGRAM: '&7Hologram: &f{hologram}'
   WORTH:
-    DEFAULT: '&b1 {item} &7Is now &a${price}'
-    HAND-ITEM: '&b{amount} {item} &7Is now &a${total}'
+    DEFAULT: '&b1 {item} &fis worth &a{price_formatted}'
+    HAND-ITEM: '&b{amount} {item} &fis worth &a{total_formatted}'
     NO-SELLABLE: '&cThis item is not sellable.'
-    CONTAINER-BREAKDOWN: '&7Base: &f${base} &8| &7contents: &f${contents}'
+    CONTAINER-BREAKDOWN: '&7Base: &f${base} &8| &7Contents: &f${contents}'
     RELOADED: '&aWorth config reloaded.'
     NO-ADMIN-PERMISSION: '&cYou do not have permission to reload worth settings.'
     META-CURRENT: '&b{item} &fis the farming meta at &a{multiplier}x&f and sells for
@@ -3104,55 +3104,55 @@ MESSAGES:
     ALERT: '&aYou have a new bounty from {who} for ${price}'
     CLAIM-SUCCESS: '&7You received &b${amount}&7 for killing &c{player}&7.'
     PLAYER-NOT-EXIST: '&cThat player does not exist.'
-    PLAYER-HAS-BOUNTY: '&b{player} &7Has a bounty of &c${amount}'
+    PLAYER-HAS-BOUNTY: '&b{player} &7has a bounty of &c${amount}'
     NO-BOUNTY: '&cThe user does not have a bounty.'
     CANT-SELF-BOUNTY: '&cYou can''t do this yourself.'
     MINIMUM-PRICE: '&cMinimum price is $1.00.'
   BILLFORD:
     REQUIRED_CONTENTS: '&cYou don''t have all the required items for this trade.'
-    FULL-INVENTORY: '&cYour inventory is full! free up a slot before confirming the
+    FULL-INVENTORY: '&cYour inventory is full! Free up a slot before confirming the
       trade.'
-    TRADE-COMPLETED: '&aTrade complete! you received &f{reward}&a. &7shards: &#A303F9{shard_bonus}&7,
-      money: &a${money_bonus}&7. &8next refresh in &f{next_rotation}&8.'
-    LIMIT-REACHED: '&cYou''ve reached the trade limit for this rotation. come back
+    TRADE-COMPLETED: '&aTrade complete! You received &f{reward}&a. &7Shards: &#A303F9{shard_bonus}&7,
+      Money: &a${money_bonus}&7. &8Next refresh in &f{next_rotation}&8.'
+    LIMIT-REACHED: '&cYou''ve reached the trade limit for this rotation. Come back
       after the next trade change!'
-    CLICK-COOLDOWN: '&cSlow down. billford is still processing your last click.'
+    CLICK-COOLDOWN: '&cSlow down. Billford is still processing your last click.'
     TRADE-CHANGED: '&eBillford rotated to a new offer while you had the menu open.
-      &7next change in &b{countdown}&7.'
+      &7Next change in &b{countdown}&7.'
     BUSY: '&cBillford is already processing your last click.'
     NOT-CONFIGURED: '&cBillford does not have an active trade configured right now.'
-    NO-PERMISSION: '&cYou need &f{permission} &cto use billford.'
+    NO-PERMISSION: '&cYou need &f{permission} &cto use Billford.'
   BALANCE:
     YOUR-BALANCE: '&7You have &a${amount}&7.'
-    OTHER-BALANCE: '&b{player} &7Has &a${amount}&7.'
+    OTHER-BALANCE: '&b{player} &7has &a${amount}&7.'
     YOUR-SHARDS: '&7Your shards: &#A303F9{amount}'
-    OTHER-SHARDS: '&7{player}''S shards: &#A303F9{amount}'
+    OTHER-SHARDS: '&7{player}''s shards: &#A303F9{amount}'
     ADMIN:
-      INVALID-AMOUNT: '&cInvalid amount format. use numbers with optional k, m, or
-        b suffix (e.g. 100k, 1.5M, 2b)'
+      INVALID-AMOUNT: '&cInvalid amount format. Use numbers with optional K, M, or
+        B suffix (e.g. 100K, 1.5M, 2B)'
       MUST-BE-POSITIVE: '&cThe amount must be positive.'
       MUST-BE-NON-NEGATIVE: '&cThe amount must be zero or positive.'
       PLAYER-NOT-FOUND: '&cPlayer not found.'
-      TARGET-NOT-ENOUGH-MONEY: '&c{player} Does not have enough money. current balance:
+      TARGET-NOT-ENOUGH-MONEY: '&c{player} does not have enough money. Current balance:
         &f${balance}&c.'
-      ADD-MONEY-SUCCESS: '&aAdded &f${amount} &ato &b{player}&a. new balance: &f${balance}&a.'
-      ADD-MONEY-RECEIVED: '&a{admin} Added &f${amount} &ato your balance. new balance:
+      ADD-MONEY-SUCCESS: '&aAdded &f${amount} &ato &b{player}&a. New balance: &f${balance}&a.'
+      ADD-MONEY-RECEIVED: '&a{admin} added &f${amount} &ato your balance. New balance:
         &f${balance}&a.'
-      REMOVE-MONEY-SUCCESS: '&aRemoved &f${amount} &afrom &b{player}&a. new balance:
+      REMOVE-MONEY-SUCCESS: '&aRemoved &f${amount} &afrom &b{player}&a. New balance:
         &f${balance}&a.'
-      REMOVE-MONEY-RECEIVED: '&c{admin} Removed &f${amount} &cfrom your balance. new
+      REMOVE-MONEY-RECEIVED: '&c{admin} removed &f${amount} &cfrom your balance. New
         balance: &f${balance}&c.'
-      SET-MONEY-SUCCESS: '&aSet &b{player}&a''s balance to &f${amount}&a. previous
+      SET-MONEY-SUCCESS: '&aSet &b{player}&a''s balance to &f${amount}&a. Previous
         balance: &f${previous_balance}&a.'
-      SET-MONEY-RECEIVED: '&e{admin} Set your balance to &f${amount}&e. previous balance:
+      SET-MONEY-RECEIVED: '&e{admin} set your balance to &f${amount}&e. Previous balance:
         &f${previous_balance}&e.'
     PAY:
       CANT-PAY-SELF: '&cYou cannot pay yourself.'
-      INVALID-AMOUNT: '&cInvalid amount format. use numbers with optional k, m, or
-        b suffix (e.g. 100k, 1.5M, 2b)'
+      INVALID-AMOUNT: '&cInvalid amount format. Use numbers with optional K, M, or
+        B suffix (e.g. 100K, 1.5M, 2B)'
       MUST-BE-POSITIVE: '&cThe amount must be positive.'
       NOT-ENOUGH-MONEY: '&cYou don''t have enough money.'
-      TRANSACTION-ERROR: '&cError occurred during transaction. your money has been
+      TRANSACTION-ERROR: '&cError occurred during transaction. Your money has been
         refunded.'
       PLAYER-NOT-ONLINE: '&cPlayer not online.'
       TARGET-PROFILE-NOT-FOUND: '&cTarget profile not found.'
@@ -3161,8 +3161,8 @@ MESSAGES:
       TARGET-DISABLED-PAYMENTS: '&cThe target player has the payments disabled.'
   SHARD_PAY:
     CANT-PAY-SELF: '&cYou cannot pay yourself.'
-    INVALID-AMOUNT: '&cInvalid amount format. use numbers with optional k, m, or b
-      suffix (e.g. 100k, 1.5M, 2b)'
+    INVALID-AMOUNT: '&cInvalid amount format. Use numbers with optional K, M, or B
+      suffix (e.g. 100K, 1.5M, 2B)'
     MUST-BE-POSITIVE: '&cThe amount must be positive.'
     NOT-ENOUGH-SHARDS: '&cYou don''t have enough shards.'
     TARGET-PROFILE-NOT-FOUND: '&cTarget profile not found.'
@@ -3170,13 +3170,13 @@ MESSAGES:
     SUCCESS-SENDER: '&7You paid &b{player} &#A303F9{amount}&7 shards.'
     SUCCESS-RECEIVER: '&7You received &#A303F9{amount}&7 shards from &b{player}&7.'
   FINDPLAYER:
-    AFK: '&7{player}''S in the &#A303F9afk'
-    RTP_ZONE: '&7{player}''S in the &crtpzone'
-    SPAWN: '&7{player}''S in the &bspawn'
-    OVERWORLD: '&7{player}''S in the &boverworld &7(&b{biome}&7)'
-    NETHER: '&7{player}''S in the &bnether &7(&b{biome}&7)'
-    THE_END: '&7{player}''S in the &bthe end &7(&b{biome}&7)'
-    UNKNOWN: '&7{player}''S in the &b{world}'
+    AFK: '&7{player}''s in the &#A303F9afk'
+    RTP_ZONE: '&7{player}''s in the &crtpzone'
+    SPAWN: '&7{player}''s in the &bspawn'
+    OVERWORLD: '&7{player}''s in the &boverworld &7(&b{biome}&7)'
+    NETHER: '&7{player}''s in the &bnether &7(&b{biome}&7)'
+    THE_END: '&7{player}''s in the &bthe end &7(&b{biome}&7)'
+    UNKNOWN: '&7{player}''s in the &b{world}'
   PUNISHMENTS:
     PLAYER-ONLY: '&cOnly players can use this command.'
     NO-PERMISSION: '&cYou do not have permission to view punishment history.'
@@ -3186,10 +3186,10 @@ MESSAGES:
       records.'
     USAGE: '&cUsage: /punishments [player]'
     USAGE-BAN: '&cUsage: /ban <player> [reason]'
-    USAGE-TEMPBAN: '&cUsage: /tempban <player> <time> [reason] &7(time: 30s, 15m,
+    USAGE-TEMPBAN: '&cUsage: /tempban <player> <time> [reason] &7(Time: 30s, 15m,
       2h, 5d, or 5d 15m 30s)'
     USAGE-MUTE: '&cUsage: /mute <player> [reason]'
-    USAGE-TEMPMUTE: '&cUsage: /tempmute <player> <time> [reason] &7(time: 30s, 15m,
+    USAGE-TEMPMUTE: '&cUsage: /tempmute <player> <time> [reason] &7(Time: 30s, 15m,
       2h, 5d, or 5d 15m 30s)'
     USAGE-WARN: '&cUsage: /warn <player> [reason]'
     USAGE-KICK: '&cUsage: /kick <player> [reason]'
@@ -3200,11 +3200,11 @@ MESSAGES:
     USAGE-UNBLACKLIST: '&cUsage: /unblacklist <player> [reason]'
     NOT-FOUND: '&cPlayer not found.'
     TARGET-OFFLINE: '&cThat player is not online.'
-    INVALID-DURATION: '&cInvalid time. use values like 30s, 15m, 2h, 5d, or combine:
+    INVALID-DURATION: '&cInvalid time. Use values like 30s, 15m, 2h, 5d, or combine:
       5d 15m 30s.'
     CREATE-FAILED: '&cFailed to create punishment record.'
     DELETE-FAILED: '&cFailed to delete punishment record #{id}.'
-    CREATED: '&aCreated &f{type} &apunishment for &b{player}&a. id: &f#{id}'
+    CREATED: '&aCreated &f{type} &apunishment for &b{player}&a. ID: &f#{id}'
     DELETED-RECORD: '&aDeleted punishment history record &f#{id}&a.'
     REMOVED: '&aRemoved active &f{type} &apunishment(s) for &b{player}&a.'
     NO-ACTIVE: '&cNo active {type} punishment found for {player}.'
@@ -3216,7 +3216,7 @@ MESSAGES:
       &7Expires: &f%nicest_expiration%
       &7Banned by: &f%issuer%
       &8&m----------------------------
-      &7Appeal at: &fdiscord.eXample.space
+      &7Appeal at: &fdiscord.example.space
     KICK: |
       &c&lYou have been kicked!
       &8&m----------------------------
@@ -3233,7 +3233,7 @@ MESSAGES:
       &8&m----------------------------
       &7You cannot speak in chat
     BLACKLIST: |
-      &4&lYou have been blacklisted!
+      &4&lYOU HAVE BEEN BLACKLISTED!
       &8&m----------------------------
       &7Reason: &f%reason%
       &7Blacklisted by: &f%issuer%
@@ -3253,29 +3253,29 @@ MESSAGES:
   SOCIAL:
     DISCORD:
     - ''
-    - '&fJoin our discord: &#6BF18Ddiscord.eXample.space'
+    - '&fJoin our discord: &#6BF18Ddiscord.example.space'
     - ''
     TWITTER:
     - ''
-    - '&fFollow on x: &#6BF18D@elonmusk'
+    - '&fFollow on X: &#6BF18D@ElonMusk'
     - ''
     STORE:
     - ''
-    - '&fVisit our store: &#6BF18Dstore.eXample.space'
+    - '&fVisit our store: &#6BF18Dstore.example.space'
     - ''
   CRASH_PROTECTION:
     ITEM_BLOCKED: '&cThat item cannot be used here because its data looks unsafe.
       &7context: &f{context}&7. reason: &f{reason}'
   ORDERS:
     DISABLED: '&cOrders is currently disabled.'
-    NO_ADMIN_PERMISSION: '&cYou do not have permission to reload orders settings.'
+    NO_ADMIN_PERMISSION: '&cYou do not have permission to reload Orders settings.'
     RELOADED: '&aOrders config reloaded.'
     PROMPT_SEARCH: '&7Enter an item or category search in chat. type &ccancel&7 to
       abort.'
     SEARCH_EMPTY: '&cType an item or category name to search.'
-    PROMPT_QUANTITY: '&7Enter the order quantity for &f{item}&7 in chat. type &ccancel&7
+    PROMPT_QUANTITY: '&7Enter the order quantity for &f{item}&7 in chat. Type &ccancel&7
       to abort.'
-    PROMPT_PRICE: '&7Enter the price each for &f{item}&7 in chat. type &ccancel&7
+    PROMPT_PRICE: '&7Enter the price each for &f{item}&7 in chat. Type &ccancel&7
       to abort.'
     INPUT_CANCELLED: '&7Order creation cancelled.'
     PROMPT_EDIT_QUANTITY: '&7Enter the new quantity for order &f#{order_id}&7. current:
@@ -3288,15 +3288,15 @@ MESSAGES:
     EDIT_LOCKED: '&cThis order already has deliveries, so it cannot be edited.'
     NO_PENDING_ORDER: '&cThere is no pending order draft to confirm.'
     ITEM_BLOCKED: '&cThat item cannot be ordered.'
-    INVALID_QUANTITY: '&cInvalid quantity. use a whole number greater than 0.'
+    INVALID_QUANTITY: '&cInvalid quantity. Use a whole number greater than 0.'
     QUANTITY_OUT_OF_RANGE: '&cQuantity must be between 1 and {max}.'
-    INVALID_PRICE: '&cInvalid price format. use numbers like 100, 5k, or 1.5M.'
+    INVALID_PRICE: '&cInvalid price format. Use numbers like 100, 5K, or 1.5M.'
     PRICE_OUT_OF_RANGE: '&cPrice each must be between &f{min_formatted}&c and &f{max_formatted}&c.'
     TOTAL_TOO_HIGH: '&cTotal order budget cannot exceed &f{max_formatted}&c.'
     NOT_ENOUGH_MONEY: '&cYou do not have enough money for that order.'
     MAX_ACTIVE_REACHED: '&cYou have reached your active order limit.'
     CREATED: '&aOrder created! &7#{order_id} &ffor &e{quantity} {item}&7 at &a${price_each}
-      &7each. budget locked: &a${budget}&7.'
+      &7each. Budget locked: &a${budget}&7.'
     ORDER_NOT_FOUND: '&cThat order no longer exists.'
     ORDER_NOT_ACTIVE: '&cThat order is no longer active.'
     NOT_YOUR_ORDER: '&cThat order does not belong to you.'
@@ -3304,7 +3304,7 @@ MESSAGES:
     NO_MATCHING_ITEMS: '&cYou do not have the required items to deliver.'
     ORDER_FULL: '&cThat order is already full.'
     DELIVERY_SUCCESS: '&aDelivered &e{quantity} {item}&a and received &a${payout}&a.'
-    CANCELLED: '&eOrder #{order_id} &ehas been closed. remaining escrow was moved
+    CANCELLED: '&eOrder #{order_id} &ehas been closed. Remaining escrow was moved
       to your collect queue.'
     CLAIM_NOT_FOUND: '&cThat claim no longer exists.'
     CLAIMS_DISABLED: '&cOrders claims are currently disabled.'
@@ -3314,35 +3314,35 @@ MESSAGES:
     CLAIMED_REFUND: '&aClaimed escrow refund of &a${amount}&a.'
     CLAIMED_ITEM: '&aClaimed delivered item: &f{item}&a.'
   STATS-WIPE:
-    NO-PERMISSION: '&cYou do not have permission to use stats wipe.'
-    PLAYER-ONLY-GUI: '&cOpen the stats wipe gui in-game, or use /uds statswipe <target>
+    NO-PERMISSION: '&cYou do not have permission to use Stats Wipe.'
+    PLAYER-ONLY-GUI: '&cOpen the Stats Wipe GUI in-game, or use /uds statswipe <target>
       confirm.'
-    INVALID-TARGET: '&cInvalid stats wipe target. available: {targets}'
+    INVALID-TARGET: '&cInvalid Stats Wipe target. Available: {targets}'
     DIRECT-USAGE: '&cUse /uds statswipe <target> confirm to run directly, or /uds
-      statswipe to open the gui.'
+      statswipe to open the GUI.'
     BUSY: '&cA wipe is already in progress.'
-    FAILED: '&cStats wipe failed: {error}'
-    SUCCESS: '&aWipe complete: &f{target}&a. affected records: &f{count}&a.'
+    FAILED: '&cStats Wipe failed: {error}'
+    SUCCESS: '&aWipe complete: &f{target}&a. Affected records: &f{count}&a.'
   STAFF:
-    NO_PERMISSION_OTHERS: '&c&lError &7» &cyou don''t have permission to manage other
+    NO_PERMISSION_OTHERS: '&c&lERROR &7» &cYou don''t have permission to manage other
       players'' staff mode!'
-    TOGGLE_ERROR: '&c&lError &7» &cfailed to toggle staff mode!'
+    TOGGLE_ERROR: '&c&lERROR &7» &cFailed to toggle staff mode!'
     STATUS_ENABLED: '&aEnabled'
     STATUS_DISABLED: '&cDisabled'
     ICON_ENABLED: '&a✓'
     ICON_DISABLED: '&c✗'
     STATE_ACTIVE: '&aActive'
     STATE_INACTIVE: '&cInactive'
-    SELF_TOGGLE: '&6&lStaff mode &7» %status%&7!'
+    SELF_TOGGLE: '&6&lSTAFF MODE &7» %status%&7!'
     SELF_STATUS: '&7Status: %icon% %status%'
-    OTHER_TOGGLE: '&6&lStaff mode &7» %status% &7staff mode for &e%target%&7!'
-    TARGET_NOTIFY: '&6&lStaff mode &7» your staff mode has been %status% &7by &e%staff%&7!'
-    BROADCAST: '&8[&6Staff&8] &e%staff% &7has %status% &7staff mode for &e%target%'
+    OTHER_TOGGLE: '&6&lSTAFF MODE &7» %status% &7staff mode for &e%target%&7!'
+    TARGET_NOTIFY: '&6&lSTAFF MODE &7» Your staff mode has been %status% &7by &e%staff%&7!'
+    BROADCAST: '&8[&6STAFF&8] &e%staff% &7has %status% &7staff mode for &e%target%'
     ACTIVATION_MESSAGES:
     - '&7&m------------------------------'
-    - '&6&lStaff mode activated'
+    - '&6&lSTAFF MODE ACTIVATED'
     - '&7• Inventory cleared and saved'
-    - '&7• Game mode set to creative'
+    - '&7• Game mode set to Creative'
     - '&7• Flight enabled'
     - '&7• Use &e/vanish &7to become invisible'
     - '&7&m------------------------------'
@@ -3355,17 +3355,17 @@ MESSAGES:
       entered combat.'
   FLYSPEED:
     SET: '&aFly speed set to &f{speed}&a.'
-    INVALID: '&cInvalid speed. please enter a number from 1 to 10.'
+    INVALID: '&cInvalid speed. Please enter a number from 1 to 10.'
   WALKSPEED:
     SET: '&aWalk speed set to &f{speed}&a.'
-    INVALID: '&cInvalid speed. please enter a number from 1 to 10.'
+    INVALID: '&cInvalid speed. Please enter a number from 1 to 10.'
   HEAL:
     SELF: '&a♡ &7Your health has been restored!'
-    OTHER: '&8[&cHeal&8] &7you healed &d%player%'
+    OTHER: '&8[&cHeal&8] &7You healed &d%player%'
     NOTIFY: '&8[&cHeal&8] &d%sender% &7restored your health'
   FEED:
     SELF: '&7Your hunger has been satisfied!'
-    OTHER: '&8[&6Feed&8] &7you fed &d%player%'
+    OTHER: '&8[&6Feed&8] &7You fed &d%player%'
     NOTIFY: '&8[&6Feed&8] &d%sender% &7restored your hunger'
   GOD:
     ENABLED: '&aGod mode enabled.'
@@ -3379,54 +3379,54 @@ MESSAGES:
     CONSOLE_USAGE: '&cUsage: /%label% <player>'
     PLAYER_NOT_ONLINE: '&cPlayer not online.'
   GAMEMODE:
-    MESSAGE: '&d%player% &7Is now in &e%mode% mode'
+    MESSAGE: '&d%player% &7is now in &e%mode% mode'
     TARGET_MESSAGE: '&7Your gamemode has been changed to &e%mode% &7by &d%sender%'
     NO_PERMISSION: '&cYou do not have permission.'
     NO_PERMISSION_OTHERS: '&cYou do not have permission to change other players''
       gamemode.'
     PLAYER_ONLY: '&cOnly players can use this command without a target.'
     PLAYER_NOT_ONLINE: '&cPlayer not online.'
-    INVALID_MODE: '&cInvalid gamemode. use survival, creative, adventure, or spectator.'
+    INVALID_MODE: '&cInvalid gamemode. Use survival, creative, adventure, or spectator.'
     USAGE: '&cUsage: /%label% <survival|creative|adventure|spectator> [player]'
     USAGE_SHORT: '&cUsage: /%label% [player]'
     DISABLED: '&cGamemode commands are currently disabled.'
   RANDOMTP:
-    SUCCESS: '&8[&dRtp&8] &7you were teleported to &e%player%'
-    NOTIFY: '&8[&dRtp&8] &e%player% &7appeared near you!'
+    SUCCESS: '&8[&dRTP&8] &7You were teleported to &e%player%'
+    NOTIFY: '&8[&dRTP&8] &e%player% &7appeared near you!'
     NO_PLAYERS: '&c✖ &7No other players available for random teleport'
   RENAME:
     NO_ITEM: '&c✖ &7You must hold an item to rename it'
     META_ERROR: '&c⚠ &7This item cannot be renamed'
     STAFFMODE_BLOCKED: '&c✖ &7Staff mode items cannot be renamed'
-    RESET_SUCCESS: '&8[&aRename&8] &7item name has been reset'
-    SUCCESS: '&8[&aRename&8] &7new name: &f%name%'
+    RESET_SUCCESS: '&8[&aRename&8] &7Item name has been reset'
+    SUCCESS: '&8[&aRename&8] &7New name: &f%name%'
   PING:
     SELF: '&7Your ping is &b%ping%ms'
-    OTHER: '&e%player%''S &7ping is &b%ping%ms'
+    OTHER: '&e%player%''s &7ping is &b%ping%ms'
   PLAYTIME:
-    MESSAGE: '&a%time% &ePlaying on &a%server%'
-    OTHER: '&e%player% &7Has played for &a%time% &7on &a%server%'
+    MESSAGE: '&a%time% &eplaying on &a%server%'
+    OTHER: '&e%player% &7has played for &a%time% &7on &a%server%'
   STAFFCHAT:
     NO_PERMISSION: '&cYou do not have permission to use staff chat.'
     USAGE: '&cUsage: /staffchat <message>'
-    FORMAT: '&8[&6Staffchat&8] &e%player%&7: %message%'
+    FORMAT: '&8[&6StaffChat&8] &e%player%&7: %message%'
     DISABLED: '&cNetwork staff chat is currently disabled.'
-    MESSAGE_TOO_LONG: '&cStaff chat message is too long. max: %max% characters.'
-    REDIS_UNAVAILABLE: '&eStaff chat was delivered locally, but redis is unavailable
+    MESSAGE_TOO_LONG: '&cStaff chat message is too long. Max: %max% characters.'
+    REDIS_UNAVAILABLE: '&eStaff chat was delivered locally, but Redis is unavailable
       for cross-server delivery.'
   HELPOP:
     NO_PERMISSION: '&cYou do not have permission to request staff assistance.'
     PLAYER_ONLY: '&cOnly players can use helpop.'
     USAGE: '&cUsage: /helpop <message>'
     DISABLED: '&cHelpop is currently disabled.'
-    MESSAGE_TOO_LONG: '&cYour request is too long. max: %max% characters.'
+    MESSAGE_TOO_LONG: '&cYour request is too long. Max: %max% characters.'
     COOLDOWN: '&cPlease wait %seconds%s before using helpop again.'
-    REDIS_UNAVAILABLE: '&eYour request was delivered locally, but redis is unavailable
+    REDIS_UNAVAILABLE: '&eYour request was delivered locally, but Redis is unavailable
       for cross-server delivery.'
     FORMAT:
     - ''
-    - '&9[Request] &7[%server%] &a%player% &bhas requested assistance'
-    - '     &9Reason: &b%message%'
+    - '&9[request] &7[%server%] &a%player% &bhas requested assistance'
+    - '     &9reason: &b%message%'
     - ''
     CONFIRMATION: '&aYour request has been sent to all staff members.'
   REPORT:
@@ -3436,24 +3436,24 @@ MESSAGES:
     DISABLED: '&cReports are currently disabled.'
     PLAYER_NOT_FOUND: '&cPlayer not found.'
     CANNOT_REPORT_SELF: '&cYou can''t report yourself!'
-    MESSAGE_TOO_LONG: '&cYour report reason is too long. max: %max% characters.'
+    MESSAGE_TOO_LONG: '&cYour report reason is too long. Max: %max% characters.'
     COOLDOWN: '&cPlease wait %seconds%s before reporting again.'
-    REDIS_UNAVAILABLE: '&eYour report was delivered locally, but redis is unavailable
+    REDIS_UNAVAILABLE: '&eYour report was delivered locally, but Redis is unavailable
       for cross-server delivery.'
     FORMAT:
     - ''
-    - '&9[Report] &7[%server%] &c%reported% &bhas been reported by &a%reporter%'
-    - '     &9Reason: &b%reason%'
+    - '&9[report] &7[%server%] &c%reported% &bhas been reported by &a%reporter%'
+    - '     &9reason: &b%reason%'
     - ''
     CONFIRMATION: '&aYour report has been sent to all staff members.'
   ALTS:
     USAGE: '&cUsage: /alts <player>'
     NOT_FOUND: '&cPlayer not found.'
-    NO_DATA: '&cNo ip history found for that player.'
+    NO_DATA: '&cNo IP history found for that player.'
     NONE: '&7No alternate accounts found.'
     HEADER: '&8[&6Alts&8] &e%player%'
-    KNOWN_IPS: '&7Known ips: &f%ips%'
-    ENTRY: '&8- &e%player% &7[%status%&7] &fShared: %ips%'
+    KNOWN_IPS: '&7Known IPs: &f%ips%'
+    ENTRY: '&8- &e%player% &7[%status%&7] &fshared: %ips%'
   CRATES:
     REWARD-CLAIM-HINT: '&aClick to claim this reward!'
     REWARD-NO-KEY: '&cYou don''t have a {crate} key!'
