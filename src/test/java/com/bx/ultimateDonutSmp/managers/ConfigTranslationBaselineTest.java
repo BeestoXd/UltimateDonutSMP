@@ -106,6 +106,9 @@ class ConfigTranslationBaselineTest {
         // A case change here is enough for customizedLegacyKeys to treat the key as a
         // hand edit and leave every language on the English file.
         compared += compare("MESSAGES", "messages.yml", drifted);
+        // death-messages.yml is the stock text for getDeathMessages(). The same case
+        // check applies: one capital letter pins the line to English on every language.
+        compared += compare("DEATH_MESSAGES", "death-messages.yml", drifted);
 
         assertTrue(compared > 100, "expected the catalogue to share plenty of keys, saw " + compared);
         assertEquals(List.of(), drifted,

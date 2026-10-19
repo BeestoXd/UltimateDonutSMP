@@ -354,6 +354,38 @@ class LanguageManagerTest {
     }
 
     @Test
+    void stockDeathMessagesFollowTheActiveLanguageFile() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration english = load("en_US");
+        YamlConfiguration french = load("fr_FR");
+        useLanguages(
+                manager,
+                "fr_FR",
+                "en_US",
+                Map.of("en_US", english, "fr_FR", french),
+                Map.of("en_us", english, "fr_fr", french)
+        );
+
+        FileConfiguration localized = manager.localize("DEATH_MESSAGES", loadResource("death-messages.yml"));
+
+        assertEquals(
+                french.getString("DEATH_MESSAGES.MESSAGES.BLOCK-EXPLOSION"),
+                localized.getString("MESSAGES.BLOCK-EXPLOSION")
+        );
+        assertEquals(
+                french.getString("DEATH_MESSAGES.MESSAGES.DEFAULT"),
+                localized.getString("MESSAGES.DEFAULT")
+        );
+
+        YamlConfiguration edited = loadResource("death-messages.yml");
+        edited.set("MESSAGES.BLOCK-EXPLOSION", "{player} exploded on purpose");
+        assertEquals(
+                "{player} exploded on purpose",
+                manager.localize("DEATH_MESSAGES", edited).getString("MESSAGES.BLOCK-EXPLOSION")
+        );
+    }
+
+    @Test
     void stockSocialLinksFollowTheActiveLanguageFile() throws Exception {
         LanguageManager manager = new LanguageManager(null);
         YamlConfiguration english = load("en_US");
