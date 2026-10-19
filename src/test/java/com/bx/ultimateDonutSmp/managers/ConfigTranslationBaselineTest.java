@@ -109,6 +109,9 @@ class ConfigTranslationBaselineTest {
         // death-messages.yml is the stock text for getDeathMessages(). The same case
         // check applies: one capital letter pins the line to English on every language.
         compared += compare("DEATH_MESSAGES", "death-messages.yml", drifted);
+        // menus.yml is the stock text for getMenus(). A capital, or a renamed button,
+        // is enough to pin that line to the English file on every language.
+        compared += compare("MENUS", "menus.yml", drifted);
 
         assertTrue(compared > 100, "expected the catalogue to share plenty of keys, saw " + compared);
         assertEquals(List.of(), drifted,

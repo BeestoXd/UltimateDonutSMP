@@ -577,7 +577,7 @@ MENUS:
         - '&7Show confirmation gui for payments'
         - '&fCurrently: {status}'
       AUTO_CONFIRM_TPAS:
-        DISPLAY-NAME: '&bTp auto'
+        DISPLAY-NAME: '&#6BF18DAuto-Confirm Tpas'
         LORE:
         - '&7Auto-confirm teleport requests'
         - '&fCurrently: {status}'

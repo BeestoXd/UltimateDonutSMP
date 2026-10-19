@@ -386,6 +386,38 @@ class LanguageManagerTest {
     }
 
     @Test
+    void stockMenuTextFollowsTheActiveLanguageFile() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration english = load("en_US");
+        YamlConfiguration french = load("fr_FR");
+        useLanguages(
+                manager,
+                "fr_FR",
+                "en_US",
+                Map.of("en_US", english, "fr_FR", french),
+                Map.of("en_us", english, "fr_fr", french)
+        );
+
+        FileConfiguration localized = manager.localize("MENUS", loadResource("menus.yml"));
+
+        assertEquals(
+                french.getString("MENUS.GLOBAL.PAGE-MENU.NEXT-BUTTON"),
+                localized.getString("GLOBAL.PAGE-MENU.NEXT-BUTTON")
+        );
+        assertEquals(
+                french.getString("MENUS.COMMON.CLOSE.NAME"),
+                localized.getString("COMMON.CLOSE.NAME")
+        );
+
+        YamlConfiguration edited = loadResource("menus.yml");
+        edited.set("GLOBAL.PAGE-MENU.NEXT-BUTTON", "&aOnward");
+        assertEquals(
+                "&aOnward",
+                manager.localize("MENUS", edited).getString("GLOBAL.PAGE-MENU.NEXT-BUTTON")
+        );
+    }
+
+    @Test
     void stockSocialLinksFollowTheActiveLanguageFile() throws Exception {
         LanguageManager manager = new LanguageManager(null);
         YamlConfiguration english = load("en_US");

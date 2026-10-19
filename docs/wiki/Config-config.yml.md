@@ -31,7 +31,7 @@ LANGUAGE:
 
 | Option / Key Path | Data Type | Allowed Values | Default | Technical Function & Setup Guide |
 | :--- | :--- | :--- | :--- | :--- |
-| `LANGUAGE.ACTIVE` | `str` | Any bundled locale, a locale alias, or the file name of a custom language file | `en_US` | Selects the language file under `languages/` that supplies player-facing text, including hide messages, hide menu titles, the enchantment picker, and death messages. Aliases such as `Bahasa Indonesia`, `Spanish` and `pt-BR` resolve to the bundled locales. A line you have edited yourself in `messages.yml`, `death-messages.yml`, `hide.yml`, or `enchantments.yml` still takes priority over the translation. |
+| `LANGUAGE.ACTIVE` | `str` | Any bundled locale, a locale alias, or the file name of a custom language file | `en_US` | Selects the language file under `languages/` that supplies player-facing text, including hide messages, menu titles and button names, the enchantment picker, and death messages. Aliases such as `Bahasa Indonesia`, `Spanish` and `pt-BR` resolve to the bundled locales. A line you have edited yourself in `messages.yml`, `death-messages.yml`, `menus.yml`, `hide.yml`, or `enchantments.yml` still takes priority over the translation. |
 | `LANGUAGE.FALLBACK` | `str` | Same values as `LANGUAGE.ACTIVE` | `en_US` | Supplies any key the active language file does not define, so a partial translation still shows text rather than a missing key. |
 
 ### 3. Practical Setup Example
