@@ -2246,6 +2246,92 @@ CONFIG:
           displayname: '&7 '
       sounds:
         click: {}
+  PVP:
+    MATCH:
+      DATE_FORMAT: dd/MM/yyyy HH:mm
+    BROADCASTS:
+      LEVEL_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7hat PvP-Level &c%pvp_level% &7erreicht!"
+      RANK_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7ist aufgestiegen zu %pvp_rank% &7mit &c%pvp_elo% &7elo!"
+      RANK_DOWN:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7ist abgestiegen auf %pvp_rank% &7mit &c%pvp_elo% &7elo!"
+    SCOREBOARD:
+      TITLE:
+      - "&c&lPVP-ARENA"
+      LINES:
+      - ''
+      - "&fSPIELER: &c%player_name%"
+      - "&fRANG: %pvp_rank%"
+      - "&fLEVEL: &c%pvp_level%"
+      - "&fK/D: &c%pvp_kills%&7/&c%pvp_deaths%"
+      - ''
+      - "&fARENA-RESET"
+      - "&c%pvp_arena_reset%"
+      - ''
+      - "&7play.example.net"
+      RESET_FORMAT: "{d}D:{h}H:{m}M:{s}S"
+      RESET_DISABLED_TEXT: "&7-"
+    MENUS:
+      QUEUE:
+        TITLE: "&8PvP-Warteschlange"
+        CONFIRM:
+          DISPLAY-NAME: "&aBESTÄTIGEN"
+        CANCEL:
+          DISPLAY-NAME: "&cVERLASSEN"
+      LEADERBOARD:
+        TITLE: "&8Bestenlisten"
+      HISTORY:
+        TITLE: "&8Matchverlauf &7- &f{player}"
+      ASSIGN:
+        TITLE: "&8Match zuweisen"
+        CONFIRM:
+          DISPLAY-NAME: "&aSTARTEN"
+    MESSAGES:
+      DISABLED: "&cDie PvP-Arena ist nicht aktiviert."
+      NOT_SET_UP: "&cDie PvP-Arena ist noch nicht eingerichtet."
+      NO_KITS: "&cEs gibt noch keine PvP-Kits."
+      JOINED: "&aDu hast die PvP-Arena betreten."
+      LEFT: "&aDu hast die PvP-Arena verlassen."
+      ALREADY_IN: "&cDu bist bereits in der PvP-Arena."
+      NOT_IN: "&cDu bist nicht in der PvP-Arena."
+      KIT_GIVEN: "&aDu hast das Kit &f{kit} &agewählt."
+      KIT_NO_PERMISSION: "&cDu hast keinen Zugriff auf dieses Kit."
+      RESPAWN_COUNTDOWN: "&fRespawn in &c{seconds}&f..."
+      BLOCKED_COMMAND: "&cDiesen Befehl kannst du in der PvP-Arena nicht nutzen."
+      LEFT_BOUNDARY: "&cDu hast die Arena verlassen und wurdest aus dem Kampf entfernt."
+      KILL_REWARD: "&8[&cPVP&8] &7Du hast &f{victim} getötet &8(&c+{elo} elo&8, &c+{xp} xp&8)"
+      DEATH_PENALTY: "&8[&cPVP&8] &f{killer} &7hat dich getötet &8(&c-{elo} elo&8)"
+      KILL_FARM_LIMIT: "&7Keine Belohnung - du hast &f{victim} &7kürzlich schon getötet."
+      LEVEL_UP: "&aDu hast PvP-Level &f{level}&a erreicht!"
+      RANK_UP: "&aDu bist aufgestiegen zu {rank}&a!"
+      RANK_DOWN: "&cDu bist abgestiegen zu {rank}&c."
+      RESET_WARNING: "&8[&cPVP&8] &7Die Arena setzt sich zurück in &c{time}&7."
+      RESET_DONE: "&8[&cPVP&8] &7Die Arena wurde zurückgesetzt."
+      RESET_NO_SCHEMATIC: "&cFür den Arena-Reset ist kein Schematic konfiguriert."
+      STATS_HEADER: "&8&m--------&r &cPvP-Statistik: &f{player} &8&m--------"
+      STATS_LINE: "&7{label}: &f{value}"
+      TOP_HEADER: "&8&m--------&r &cTop-PvP-Spieler &8&m--------"
+      TOP_LINE: "&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)"
+      TOP_EMPTY: "&7In der Arena hat noch niemand gekämpft."
+      QUEUE_JOINED: "&aDu hast die gewertete Warteschlange betreten. Warte auf einen Gegner..."
+      QUEUE_LEFT: "&aDu hast die gewertete Warteschlange verlassen."
+      QUEUE_ALREADY_IN: "&cDu bist bereits in der Warteschlange."
+      QUEUE_NOT_IN: "&cDu bist nicht in der Warteschlange."
+      MATCH_ALREADY_IN: "&cDu bist bereits in einem gewerteten Match."
+      MATCH_LEAVE_ARENA_FIRST: "&cVerlasse die Arena, bevor du der Warteschlange beitrittst."
+      MATCH_NEEDS_TWO: "&cEin gewertetes Match braucht zwei verschiedene Spieler."
+      MATCH_BUSY: "&c{player} ist bereits in der Arena."
+      SYNC_DISABLED: "&cDie Konto-Synchronisierung ist ausgeschaltet."
+      SYNC_FAILED: "&cEin Sync-Code konnte gerade nicht erstellt werden."
+      SYNC_HEADER: "&e&lRang-Sync"
+      SYNC_CODE: "&fDein Sync-Code: &e{code}"
+      SYNC_HINT: "&7Nutze &f/sync {code} &7auf unserem Discord, um dein Konto zu verknüpfen."
+      MATCH_STARTED: "&8[&cPVP&8] &f{first} &7vs &f{second}"
+      MATCH_COUNTDOWN: "&fStart in &c{seconds}&f..."
+      MATCH_WIN: "&aDu hast &f{opponent} geschlagen &8(&a{elo} elo&8, &a{hits} Treffer&8)"
+      MATCH_LOSS: "&cDu hast gegen &f{opponent} verloren &8(&c{elo} elo&8, &c{hits} Treffer&8)"
+      MATCH_DRAW: "&7Das Match gegen &f{opponent} &7endete unentschieden."
 MESSAGES:
   AUCTION_HOUSE:
     PLAYERS_ONLY: "&cOnly players can use this command."

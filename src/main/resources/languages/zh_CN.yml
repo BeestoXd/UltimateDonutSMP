@@ -2104,6 +2104,92 @@ CONFIG:
           displayname: '&7 '
       sounds:
         click: {}
+  PVP:
+    MATCH:
+      DATE_FORMAT: dd/MM/yyyy HH:mm
+    BROADCASTS:
+      LEVEL_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7达到了 PvP 等级 &c%pvp_level%&7！"
+      RANK_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7段位升至 %pvp_rank% &7，当前 &c%pvp_elo% &7elo！"
+      RANK_DOWN:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7段位降至 %pvp_rank% &7，当前 &c%pvp_elo% &7elo！"
+    SCOREBOARD:
+      TITLE:
+      - "&c&lPVP 竞技场"
+      LINES:
+      - ''
+      - "&f玩家：&c%player_name%"
+      - "&f段位：%pvp_rank%"
+      - "&f等级：&c%pvp_level%"
+      - "&fK/D：&c%pvp_kills%&7/&c%pvp_deaths%"
+      - ''
+      - "&f竞技场重置"
+      - "&c%pvp_arena_reset%"
+      - ''
+      - "&7play.example.net"
+      RESET_FORMAT: "{d}D:{h}H:{m}M:{s}S"
+      RESET_DISABLED_TEXT: "&7-"
+    MENUS:
+      QUEUE:
+        TITLE: "&8PvP 队列"
+        CONFIRM:
+          DISPLAY-NAME: "&a确认"
+        CANCEL:
+          DISPLAY-NAME: "&c离开"
+      LEADERBOARD:
+        TITLE: "&8排行榜"
+      HISTORY:
+        TITLE: "&8比赛记录 &7- &f{player}"
+      ASSIGN:
+        TITLE: "&8指定比赛"
+        CONFIRM:
+          DISPLAY-NAME: "&a开始比赛"
+    MESSAGES:
+      DISABLED: "&cPvP 竞技场未开启。"
+      NOT_SET_UP: "&cPvP 竞技场尚未设置。"
+      NO_KITS: "&c还没有可选的 PvP 装备套装。"
+      JOINED: "&a你加入了 PvP 竞技场。"
+      LEFT: "&a你离开了 PvP 竞技场。"
+      ALREADY_IN: "&c你已经在 PvP 竞技场里。"
+      NOT_IN: "&c你不在 PvP 竞技场里。"
+      KIT_GIVEN: "&a你选择了套装 &f{kit}&a。"
+      KIT_NO_PERMISSION: "&c你不能使用那套装备。"
+      RESPAWN_COUNTDOWN: "&f将在 &c{seconds}&f 秒后重生..."
+      BLOCKED_COMMAND: "&c在 PvP 竞技场内不能使用该命令。"
+      LEFT_BOUNDARY: "&c你离开了竞技场，并被移出战斗。"
+      KILL_REWARD: "&8[&cPVP&8] &7你击杀了 &f{victim} &8(&c+{elo} elo&8, &c+{xp} xp&8)"
+      DEATH_PENALTY: "&8[&cPVP&8] &f{killer} &7击杀了你 &8(&c-{elo} elo&8)"
+      KILL_FARM_LIMIT: "&7没有奖励 - 你刚刚已经击杀过 &f{victim} &7太多次。"
+      LEVEL_UP: "&a你达到了 PvP 等级 &f{level}&a！"
+      RANK_UP: "&a你的段位升到了 {rank}&a！"
+      RANK_DOWN: "&c你的段位降到了 {rank}&c。"
+      RESET_WARNING: "&8[&cPVP&8] &7竞技场将在 &c{time}&7 后重置。"
+      RESET_DONE: "&8[&cPVP&8] &7竞技场已重置。"
+      RESET_NO_SCHEMATIC: "&c没有为竞技场重置配置原理图。"
+      STATS_HEADER: "&8&m--------&r &cPvP 统计：&f{player} &8&m--------"
+      STATS_LINE: "&7{label}: &f{value}"
+      TOP_HEADER: "&8&m--------&r &cPvP 顶尖玩家 &8&m--------"
+      TOP_LINE: "&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)"
+      TOP_EMPTY: "&7还没有人在竞技场里战斗过。"
+      QUEUE_JOINED: "&a你加入了排位队列。正在等待对手..."
+      QUEUE_LEFT: "&a你离开了排位队列。"
+      QUEUE_ALREADY_IN: "&c你已经在队列里。"
+      QUEUE_NOT_IN: "&c你不在队列里。"
+      MATCH_ALREADY_IN: "&c你已经在一场排位赛里。"
+      MATCH_LEAVE_ARENA_FIRST: "&c先离开竞技场，再加入队列。"
+      MATCH_NEEDS_TWO: "&c排位赛需要两名不同的玩家。"
+      MATCH_BUSY: "&c{player} 已经在竞技场里。"
+      SYNC_DISABLED: "&c账号同步已关闭。"
+      SYNC_FAILED: "&c现在无法创建同步码。"
+      SYNC_HEADER: "&e&l段位同步"
+      SYNC_CODE: "&f你的同步码：&e{code}"
+      SYNC_HINT: "&7在我们的 Discord 上使用 &f/sync {code} &7来绑定账号。"
+      MATCH_STARTED: "&8[&cPVP&8] &f{first} &7vs &f{second}"
+      MATCH_COUNTDOWN: "&f将在 &c{seconds}&f 秒后开始..."
+      MATCH_WIN: "&a你打败了 &f{opponent} &8(&a{elo} elo&8, &a{hits} 次命中&8)"
+      MATCH_LOSS: "&c你输给了 &f{opponent} &8(&c{elo} elo&8, &c{hits} 次命中&8)"
+      MATCH_DRAW: "&7对阵 &f{opponent} &7的比赛以平局结束。"
 MESSAGES:
   AUCTION_HOUSE:
     PLAYERS_ONLY: "&cOnly players can use this command."

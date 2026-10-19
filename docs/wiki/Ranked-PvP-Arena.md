@@ -185,6 +185,8 @@ click the middle slot to pick the kit, then confirm to start the match without e
 queued. `/pvp assign <player> <player> [kit]` does the same thing from the command line, which is
 what you want when running the same fixture repeatedly. Both need `ultimatedonutsmp.admin.pvp`.
 
+Chat lines, the queue title, the button names and the arena sidebar follow the active language file. A line you changed in `pvp.yml` stays as you wrote it. The arena name, kits and rank labels stay in `pvp.yml`, because those are the live arena rather than stock text.
+
 Hits and crystals are counted separately during a match. A crystal explosion names the crystal as
 the damager rather than whoever set it off, so in a ranked match it is credited to the opponent,
 which is exact because a match only ever has two people in it.

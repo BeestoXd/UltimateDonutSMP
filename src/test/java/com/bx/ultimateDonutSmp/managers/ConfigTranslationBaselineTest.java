@@ -45,6 +45,7 @@ class ConfigTranslationBaselineTest {
         LOCALIZED_ROOTS.put("ORDERS", "orders.yml");
         LOCALIZED_ROOTS.put("DUELS", "duels.yml");
         LOCALIZED_ROOTS.put("FFA", "ffa.yml");
+        LOCALIZED_ROOTS.put("PVP", "pvp.yml");
         LOCALIZED_ROOTS.put("CRATES", "crates.yml");
         LOCALIZED_ROOTS.put("SPAWNERS", "spawners.yml");
         LOCALIZED_ROOTS.put("SPAWN_STASH", "spawn-stash.yml");

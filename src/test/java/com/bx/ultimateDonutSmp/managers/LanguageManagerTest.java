@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -216,6 +217,7 @@ class LanguageManagerTest {
         added += mergeText(target, "CONFIG.DUELS", "duels.yml", false,
                 List.of("ARENA_SETTINGS", "MAP_SOURCES", "CROSS_SERVER.PROXY_SERVER_NAME"));
         added += mergeText(target, "CONFIG.FFA", "ffa.yml", false, List.of("ARENA_SETTINGS"));
+        added += mergeText(target, "CONFIG.PVP", "pvp.yml", false, List.of("ARENA", "KITS", "RANKS"));
         added += mergeText(target, "CONFIG.CRATES", "crates.yml", false, List.of("CRATES"));
         added += mergeText(target, "CONFIG.SPAWNERS", "spawners.yml", false, List.of("TYPES"));
         added += mergeText(target, "CONFIG.SPAWN_STASH", "spawn-stash.yml", false, List.of("TYPES"));
@@ -414,6 +416,42 @@ class LanguageManagerTest {
         assertEquals(
                 "&aOnward",
                 manager.localize("MENUS", edited).getString("GLOBAL.PAGE-MENU.NEXT-BUTTON")
+        );
+    }
+
+    @Test
+    void stockPvpTextFollowsTheActiveLanguageFile() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration english = load("en_US");
+        YamlConfiguration french = load("fr_FR");
+        useLanguages(
+                manager,
+                "fr_FR",
+                "en_US",
+                Map.of("en_US", english, "fr_FR", french),
+                Map.of("en_us", english, "fr_fr", french)
+        );
+
+        FileConfiguration localized = manager.localize("CONFIG.PVP", loadResource("pvp.yml"));
+
+        assertEquals(
+                french.getString("CONFIG.PVP.MESSAGES.JOINED"),
+                localized.getString("MESSAGES.JOINED")
+        );
+        assertEquals(
+                french.getString("CONFIG.PVP.MENUS.QUEUE.TITLE"),
+                localized.getString("MENUS.QUEUE.TITLE")
+        );
+        assertNotEquals(
+                loadResource("pvp.yml").getString("MESSAGES.JOINED"),
+                localized.getString("MESSAGES.JOINED")
+        );
+
+        YamlConfiguration edited = loadResource("pvp.yml");
+        edited.set("MESSAGES.JOINED", "&aYou stepped into a custom arena.");
+        assertEquals(
+                "&aYou stepped into a custom arena.",
+                manager.localize("CONFIG.PVP", edited).getString("MESSAGES.JOINED")
         );
     }
 

@@ -2108,6 +2108,92 @@ CONFIG:
           displayname: '&7 '
       sounds:
         click: {}
+  PVP:
+    MATCH:
+      DATE_FORMAT: dd/MM/yyyy HH:mm
+    BROADCASTS:
+      LEVEL_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7достиг уровня PvP &c%pvp_level%&7!"
+      RANK_UP:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7повысился до %pvp_rank% &7с &c%pvp_elo% &7elo!"
+      RANK_DOWN:
+        MESSAGE: "&8[&cPVP&8] &f%player_name% &7понизился до %pvp_rank% &7с &c%pvp_elo% &7elo!"
+    SCOREBOARD:
+      TITLE:
+      - "&c&lPVP АРЕНА"
+      LINES:
+      - ''
+      - "&fИГРОК: &c%player_name%"
+      - "&fРАНГ: %pvp_rank%"
+      - "&fУРОВЕНЬ: &c%pvp_level%"
+      - "&fK/D: &c%pvp_kills%&7/&c%pvp_deaths%"
+      - ''
+      - "&fСБРОС АРЕНЫ"
+      - "&c%pvp_arena_reset%"
+      - ''
+      - "&7play.example.net"
+      RESET_FORMAT: "{d}D:{h}H:{m}M:{s}S"
+      RESET_DISABLED_TEXT: "&7-"
+    MENUS:
+      QUEUE:
+        TITLE: "&8Очередь PvP"
+        CONFIRM:
+          DISPLAY-NAME: "&aПОДТВЕРДИТЬ"
+        CANCEL:
+          DISPLAY-NAME: "&cВЫЙТИ"
+      LEADERBOARD:
+        TITLE: "&8Таблицы лидеров"
+      HISTORY:
+        TITLE: "&8История матчей &7- &f{player}"
+      ASSIGN:
+        TITLE: "&8Назначить матч"
+        CONFIRM:
+          DISPLAY-NAME: "&aНАЧАТЬ"
+    MESSAGES:
+      DISABLED: "&cPvP-арена выключена."
+      NOT_SET_UP: "&cPvP-арена ещё не настроена."
+      NO_KITS: "&cПока нет комплектов PvP."
+      JOINED: "&aТы вошёл на PvP-арену."
+      LEFT: "&aТы вышел с PvP-арены."
+      ALREADY_IN: "&cТы уже на PvP-арене."
+      NOT_IN: "&cТебя нет на PvP-арене."
+      KIT_GIVEN: "&aТы выбрал комплект &f{kit}&a."
+      KIT_NO_PERMISSION: "&cУ тебя нет доступа к этому комплекту."
+      RESPAWN_COUNTDOWN: "&fВозрождение через &c{seconds}&f..."
+      BLOCKED_COMMAND: "&cЭту команду нельзя использовать на PvP-арене."
+      LEFT_BOUNDARY: "&cТы вышел за арену и был убран из боя."
+      KILL_REWARD: "&8[&cPVP&8] &7Ты убил &f{victim} &8(&c+{elo} elo&8, &c+{xp} xp&8)"
+      DEATH_PENALTY: "&8[&cPVP&8] &f{killer} &7убил тебя &8(&c-{elo} elo&8)"
+      KILL_FARM_LIMIT: "&7Нет награды - ты уже убивал &f{victim} &7слишком недавно."
+      LEVEL_UP: "&aТы достиг уровня PvP &f{level}&a!"
+      RANK_UP: "&aТы поднялся до ранга {rank}&a!"
+      RANK_DOWN: "&cТы опустился до ранга {rank}&c."
+      RESET_WARNING: "&8[&cPVP&8] &7Арена сбросится через &c{time}&7."
+      RESET_DONE: "&8[&cPVP&8] &7Арена сброшена."
+      RESET_NO_SCHEMATIC: "&cДля сброса арены не задана схема."
+      STATS_HEADER: "&8&m--------&r &cСтатистика PvP: &f{player} &8&m--------"
+      STATS_LINE: "&7{label}: &f{value}"
+      TOP_HEADER: "&8&m--------&r &cЛучшие игроки PvP &8&m--------"
+      TOP_LINE: "&7#{position} &f{player} &8- &c{elo} elo &8(&7{rank}&8)"
+      TOP_EMPTY: "&7На арене ещё никто не дрался."
+      QUEUE_JOINED: "&aТы встал в рейтинговую очередь. Ожидание соперника..."
+      QUEUE_LEFT: "&aТы вышел из рейтинговой очереди."
+      QUEUE_ALREADY_IN: "&cТы уже в очереди."
+      QUEUE_NOT_IN: "&cТебя нет в очереди."
+      MATCH_ALREADY_IN: "&cТы уже в рейтинговом матче."
+      MATCH_LEAVE_ARENA_FIRST: "&cВыйди с арены, прежде чем вставать в очередь."
+      MATCH_NEEDS_TWO: "&cДля рейтингового матча нужны два разных игрока."
+      MATCH_BUSY: "&c{player} уже на арене."
+      SYNC_DISABLED: "&cСинхронизация аккаунта выключена."
+      SYNC_FAILED: "&cНе удалось создать код синхронизации."
+      SYNC_HEADER: "&e&lСинхронизация ранга"
+      SYNC_CODE: "&fТвой код: &e{code}"
+      SYNC_HINT: "&7Используй &f/sync {code} &7в нашем Discord, чтобы привязать аккаунт."
+      MATCH_STARTED: "&8[&cPVP&8] &f{first} &7vs &f{second}"
+      MATCH_COUNTDOWN: "&fСтарт через &c{seconds}&f..."
+      MATCH_WIN: "&aТы победил &f{opponent} &8(&a{elo} elo&8, &a{hits} ударов&8)"
+      MATCH_LOSS: "&cТы проиграл &f{opponent} &8(&c{elo} elo&8, &c{hits} ударов&8)"
+      MATCH_DRAW: "&7Матч против &f{opponent} &7закончился вничью."
 MESSAGES:
   AUCTION_HOUSE:
     PLAYERS_ONLY: "&cOnly players can use this command."

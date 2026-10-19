@@ -482,6 +482,7 @@ public class LanguageManager {
         mergeFeature(target, "DUELS", config.getDuels(),
                 List.of("ARENA_SETTINGS", "MAP_SOURCES", "CROSS_SERVER.PROXY_SERVER_NAME"), force);
         mergeFeature(target, "FFA", config.getFfa(), List.of("ARENA_SETTINGS"), force);
+        mergeFeature(target, "PVP", config.getPvp(), List.of("ARENA", "KITS", "RANKS"), force);
         mergeFeature(target, "CRATES", config.getCrates(), List.of("CRATES"), force);
         mergeFeature(target, "SPAWNERS", config.getSpawners(), List.of("TYPES"), force);
         mergeFeature(target, "SPAWN_STASH", config.getSpawnStash(), List.of("TYPES"), force);
