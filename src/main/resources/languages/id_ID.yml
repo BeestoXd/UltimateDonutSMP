@@ -3020,42 +3020,42 @@ MESSAGES:
 DEATH_MESSAGES:
   MESSAGES:
     PREFIX: "&c☠ "
-    BLOCK-EXPLOSION: "{player} Dan seterusnya"
-    CONTACT: "{player} Was pricked to death"
+    BLOCK-EXPLOSION: "{player} hancur berkeping-keping akibat ledakan"
+    CONTACT: "{player} tertusuk sampai mati"
     DROWNING:
-      NORMAL: "{player} Drowned!"
-      PVP: '{player} {killer}'
-    ENTITY-ATTACK: "{player} Dan {killer}"
+      NORMAL: "{player} tenggelam!"
+      PVP: "{player} tenggelam saat mencoba kabur dari {killer}"
+    ENTITY-ATTACK: "{player} dibunuh oleh {killer}"
     FALL:
-      NORMAL: "{player} Dan hit the ground"
-      PVP: "{player} Dan {killer}"
-    FALLING-BLOCK: "{player} Nama produk"
+      NORMAL: "{player} menghantam tanah terlalu keras"
+      PVP: "{player} didorong jatuh oleh {killer}"
+    FALLING-BLOCK: "{player} tertimpa balok jatuh"
     FIRE:
-      NORMAL: "{player} Tidak dapat digunakan kembali"
-      PVP: '{player} {killer}'
+      NORMAL: "{player} terbakar api"
+      PVP: "{player} masuk ke kobaran api saat melawan {killer}"
     FIRE-TICK:
-      NORMAL: "{player} Burned to death"
-      PVP: "{player} Dan {killer}"
+      NORMAL: "{player} terbakar sampai mati"
+      PVP: "{player} hangus terbakar saat melawan {killer}"
     LAVA:
-      NORMAL: "{player} Tried to swim in lava"
-      PVP: "{player} Tried to swim to escape {killer}"
-    LIGHTNING: "{player} Got lit the hell up by a lightning"
-    POISON: "{player} Was poisoned"
+      NORMAL: "{player} mencoba berenang di lahar"
+      PVP: "{player} mencoba berenang di lahar saat kabur dari {killer}"
+    LIGHTNING: "{player} tersambar petir"
+    POISON: "{player} mati teracuni"
     PROJECTILE:
-      NORMAL: "{player} Was shot"
-      PVP: "{player} Dan {killer}"
-    STARVATION: "{player} Starved to death"
-    SUFFOCATION: "{player} Suffocated in a wall"
-    SUICIDE: "{player} Took his own ````"
-    THORNS: "{player} Killed themself by trying to kill someone"
+      NORMAL: "{player} tertembak"
+      PVP: "{player} tertembak oleh {killer}"
+    STARVATION: "{player} mati kelaparan"
+    SUFFOCATION: "{player} mati lemas di dalam dinding"
+    SUICIDE: "{player} mengakhiri hidupnya sendiri"
+    THORNS: "{player} mati karena mencoba menyerang orang lain"
     VOID:
-      NORMAL: "{player} Fell out of the world"
-      PVP: "{player} Dan {killer}"
-    WITHER: "{player} Withered away"
+      NORMAL: "{player} jatuh dari dunia"
+      PVP: "{player} didorong ke void oleh {killer}"
+    WITHER: "{player} lenyap oleh wither"
     ENTITY-EXPLOSION:
-      NORMAL: "{player} Was blown up"
-      PVP: "{player} Dan {killer}"
-    DEFAULT: "{player} Died"
+      NORMAL: "{player} meledak"
+      PVP: "{player} diledakkan oleh {killer}"
+    DEFAULT: "{player} mati"
 BUILTIN:
   f644b07bb7d7194c2190: '&7(Upaya: &f'
   39f0408258ee4724d5ba: '&7-> &e'

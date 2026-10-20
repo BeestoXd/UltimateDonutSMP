@@ -388,6 +388,38 @@ class LanguageManagerTest {
     }
 
     @Test
+    void indonesianDeathMessagesFollowTheActiveLanguageFile() throws Exception {
+        LanguageManager manager = new LanguageManager(null);
+        YamlConfiguration english = load("en_US");
+        YamlConfiguration indonesian = load("id_ID");
+        useLanguages(
+                manager,
+                "id_ID",
+                "en_US",
+                Map.of("en_US", english, "id_ID", indonesian),
+                Map.of("en_us", english, "id_id", indonesian)
+        );
+
+        FileConfiguration localized = manager.localize("DEATH_MESSAGES", loadResource("death-messages.yml"));
+
+        assertEquals(
+                indonesian.getString("DEATH_MESSAGES.MESSAGES.BLOCK-EXPLOSION"),
+                localized.getString("MESSAGES.BLOCK-EXPLOSION")
+        );
+        assertEquals(
+                indonesian.getString("DEATH_MESSAGES.MESSAGES.FALLING-BLOCK"),
+                localized.getString("MESSAGES.FALLING-BLOCK")
+        );
+        assertEquals(
+                indonesian.getString("DEATH_MESSAGES.MESSAGES.SUICIDE"),
+                localized.getString("MESSAGES.SUICIDE")
+        );
+        assertFalse(localized.getString("MESSAGES.BLOCK-EXPLOSION").contains("Dan seterusnya"));
+        assertFalse(localized.getString("MESSAGES.FALLING-BLOCK").contains("Nama produk"));
+        assertFalse(localized.getString("MESSAGES.SUICIDE").contains("````"));
+    }
+
+    @Test
     void stockMenuTextFollowsTheActiveLanguageFile() throws Exception {
         LanguageManager manager = new LanguageManager(null);
         YamlConfiguration english = load("en_US");
